@@ -118,8 +118,8 @@ public class RandomProblem {
                 matrix[tuple[0]][tuple[1]] = true;
             }
 
-            constraints.add(feasPairAC("cp:ac32", variables[arc[0]],
-                    variables[arc[1]], matrix));
+            constraints.add(feasPairAC(variables[arc[0]], variables[arc[1]],
+                    matrix));
         }
     }
 
