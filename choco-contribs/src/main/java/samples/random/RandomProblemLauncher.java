@@ -53,6 +53,9 @@ public class RandomProblemLauncher {
         }
     }
 
+    private static final List<Filter> TEST = Arrays.asList(Filter.MaxRPCLight,
+            Filter.MaxRPC, Filter.AC);
+
     private RandomProblemLauncher() {
 
     }
@@ -146,7 +149,7 @@ public class RandomProblemLauncher {
 
             nbCliques.add(cliques(constraints).size());
 
-            for (Filter filter : Filter.values()) {
+            for (Filter filter : TEST) {
                 System.out.print(filter);
                 System.gc();
                 System.gc();
@@ -182,6 +185,9 @@ public class RandomProblemLauncher {
                 switch (filter) {
                 case MaxRPC:
                 case MaxRPCLight:
+                    for (Constraint c : constraints) {
+                        c.addOption("cp:ac3");
+                    }
                     final Constraint cc = new ComponentConstraintWithSubConstraints(
                             StrongConsistencyManager.class, problem
                                     .getVariables(), MaxRPCrm.class,
@@ -194,6 +200,7 @@ public class RandomProblemLauncher {
                     break;
                 default:
                     for (Constraint c : constraints) {
+                        c.addOption("cp:ac32");
                         m.addConstraint(c);
                     }
                 }
@@ -279,14 +286,14 @@ public class RandomProblemLauncher {
         }
 
         System.out.println();
-        System.out.println(median(nbCliques) + " cliques med");
-        for (Filter f : Filter.values()) {
+        System.out.println(avg(nbCliques) + " cliques avg");
+        for (Filter f : TEST) {
             System.out.println();
             System.out.println(f + " :");
-            System.out.println(median(cpu.get(f)) + " seconds med");
-            System.out.println(median(nodes.get(f)) + " nodes med");
-            System.out.println(median(nbAwakes.get(f)) + " awakes med");
-            System.out.println(median(mem.get(f)) + " mem med");
+            System.out.println(avg(cpu.get(f)) + " seconds avg");
+            System.out.println(avg(nodes.get(f)) + " nodes avg");
+            System.out.println(avg(nbAwakes.get(f)) + " awakes avg");
+            System.out.println(avg(mem.get(f)) + " mem avg");
         }
     }
 
@@ -302,6 +309,14 @@ public class RandomProblemLauncher {
         final List<T> sorted = new ArrayList<T>(array);
         Collections.sort(sorted);
         return sorted.get((sorted.size() - 1) / 2);
+    }
+
+    private static <T extends Number> double avg(List<T> array) {
+        double sum = 0;
+        for (T i : array) {
+            sum += i.doubleValue();
+        }
+        return sum / array.size();
     }
 
     private static Collection<Clique> cliques(List<Constraint> constraints) {
