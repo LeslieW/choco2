@@ -1,23 +1,19 @@
 package choco.scheduling;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 import choco.cp.solver.search.task.ProbabilisticProfile;
 import choco.kernel.common.VizFactory;
-import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
+import choco.kernel.solver.constraints.global.scheduling.FakeResource;
 import choco.kernel.solver.constraints.global.scheduling.IResource;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.AbstractTask;
-import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
 
 ///////////////////// REMOVE class (import problem with cp.test) ///////////////////
@@ -114,110 +110,6 @@ class SimpleTask extends AbstractTask {
 
 
 
-class SimpleResource implements ICumulativeResource<SimpleTask> {
-
-	
-	public final List<SimpleTask> tasksL;
-
-	public int[] heights;
-	
-	public int capacity;
-	
-	
-	public SimpleResource(List<SimpleTask> tasksL, int[] heights, int capacity) {
-		super();
-		this.tasksL = tasksL;
-		this.heights = heights;
-		this.capacity = capacity;
-	}
-
-	public SimpleResource(List<SimpleTask> tasksL) {
-		super();
-		this.tasksL=new ArrayList<SimpleTask>(tasksL);
-		this.capacity = 1;
-		this.heights = new int[tasksL.size()];
-		Arrays.fill(heights, 1);
-	}
-
-	
-	@Override
-	public IRTask getRTask(int idx) {
-		return null;
-	}
-
-	@Override
-	public int getNbTasks() {
-		return tasksL.size();
-	}
-
-	@Override
-	public String getRscName() {
-		return "internal resource (test)";
-	}
-
-	@Override
-	public SimpleTask getTask(int idx) {
-		return tasksL.get(idx);
-	}
-
-	@Override
-	public Iterator<SimpleTask> getTaskIterator() {
-		return tasksL.listIterator();
-	}
-	
-	@Override
-	public List<SimpleTask> asList() {
-		return Collections.unmodifiableList(tasksL);
-	}
-
-	@Override
-	public IntDomainVar getCapacity() {
-		return null;
-	}
-	@Override
-	
-	public int getMaxCapacity() {
-		return capacity;
-	}
-
-	@Override
-	public int getMinCapacity() {
-		return getCapacity().getInf();
-	}
-
-	public IntDomainVar getHeight(int idx) {
-		return null;
-	}
-	
-	
-	@Override
-	public IntDomainVar getConsumption() {
-		return null;
-	}
-
-	@Override
-	public int getMaxConsumption() {
-		return 0;
-	}
-
-	@Override
-	public int getMinConsumption() {
-		return 0;
-	}
-
-	@Override
-	public boolean isInstantiatedHeights() {
-		return true;
-	}
-
-	@Override
-	public boolean hasOnlyPosisiveHeights() {
-		return true;
-	}
-	
-	
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -253,12 +145,16 @@ public class TestProbProfile {
 		}
 	}
 
+	protected IResource<SimpleTask> createResource(List<SimpleTask> taskL) {
+		return new FakeResource<SimpleTask>(taskL.toArray(new SimpleTask[taskL.size()]));
+	}
+	
 	public void initialize(boolean[] tasks) {
 		List<SimpleTask> l=new LinkedList<SimpleTask>();
 		for (int i = 0; i < tasks.length; i++) {
 			if(tasks[i]) {setTask(i, l);}
 		}
-		rsc=new SimpleResource(l);
+		rsc= createResource(l);
 		profile=new ProbabilisticProfile(l);
 		profile.initializeEvents();
 		profile.generateEventsList(rsc);
@@ -346,7 +242,7 @@ public class TestProbProfile {
 		l.add(new SimpleTask(0,0,10));
 		l.add(new SimpleTask(10,20,12));
 		l.add(new SimpleTask(28,38,15));
-		rsc=new SimpleResource(l);
+		rsc= createResource(l);
 		profile=new ProbabilisticProfile(l);
 		profile.initializeEvents();
 		profile.computeMaximum(rsc);

@@ -12,11 +12,9 @@ public class PrecedenceStore implements IPrecedenceStore {
 
 	private final static ReifiedCounter COUNT = new ReifiedCounter();
 
-	private final TIntObjectHashMap<StoredPrecedence> directionMap = new TIntObjectHashMap<StoredPrecedence>();
+	private final TIntObjectHashMap<StoredPrecedence> precMap = new TIntObjectHashMap<StoredPrecedence>();
 
 	private final int offset;
-
-
 
 	public PrecedenceStore(int n) {
 		super();
@@ -29,17 +27,17 @@ public class PrecedenceStore implements IPrecedenceStore {
 
 	@Override
 	public StoredPrecedence getStoredPrecedence(ITask t1, ITask t2) {
-		return directionMap.get(getTaskPairKey(t1, t2));
+		return precMap.get(getTaskPairKey(t1, t2));
 	}
 
 
 	@Override
 	public void addPrecedence(ITask t1, ITask t2, IntDomainVar direction) {
 		final int key = getTaskPairKey(t1, t2);
-		if(directionMap.contains(key)) {
+		if(precMap.contains(key)) {
 			throw new SolverException("duplicate or opposite precedence");
 		}
-		directionMap.put(key, new StoredPrecedence(t1,t2,direction));
+		precMap.put(key, new StoredPrecedence(t1,t2,direction));
 
 	}
 
@@ -55,14 +53,21 @@ public class PrecedenceStore implements IPrecedenceStore {
 
 	@Override
 	public boolean containsReifiedPrecedence() {
-		return !directionMap.forEachValue(CHECK);
+		return !precMap.forEachValue(CHECK);
 	}
 
 	@Override
 	public int getNbReifiedPrecedence() {
 		COUNT.count=0;
-		directionMap.forEachValue(COUNT);
+		precMap.forEachValue(COUNT);
 		return COUNT.count;
+	}
+
+
+
+	@Override
+	public StoredPrecedence[] getValues() {
+		return precMap.getValues(new StoredPrecedence[precMap.size()]);
 	}
 
 
