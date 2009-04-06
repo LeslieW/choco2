@@ -15,5 +15,6 @@ public interface IPrecedenceStore {
 	
 	boolean containsReifiedPrecedence();
 
+	StoredPrecedence[] getValues();
 }
 
