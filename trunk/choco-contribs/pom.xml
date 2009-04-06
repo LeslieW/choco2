@@ -18,10 +18,6 @@
       <groupId>choco</groupId>
       <artifactId>choco-cp</artifactId>
     </dependency>
-    <dependency>
-      <groupId>choco</groupId>
-      <artifactId>choco-visu</artifactId>
-    </dependency>
   </dependencies>
   <distributionManagement>
   <site>

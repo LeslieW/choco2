@@ -87,10 +87,11 @@ public class ProfileSelector implements VarValPairSelector {
 		if(taskL.size()>1) {
 			double maxContrib = Double.MIN_VALUE;
 			for (int i = 0; i < taskL.size(); i++) {
-				ITask t1 =  taskL.get(i);
+				final ITask t1 =  taskL.get(i);
+				final double contribT1 = profiles.getIndividualContribution(t1,c);
 				for (int j = i+1; j < taskL.size(); j++) {
-					ITask t2 =  taskL.get(j);
-					final double contrib = profiles.getIndividualContribution(t1,c);
+					final ITask t2 =  taskL.get(j);
+					final double contrib = contribT1 + profiles.getIndividualContribution(t2,c);
 					if(contrib > maxContrib && precStore.isReified(t1, t2)) {
 						st1 = t1; 
 						st2 = t2;
