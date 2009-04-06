@@ -1,0 +1,752 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * 
+ *          _       _                            *
+ *         |  °(..)  |                           *
+ *         |_  J||L _|        CHOCO solver       *
+ *                                               *
+ *    Choco is a java library for constraint     *
+ *    satisfaction problems (CSP), constraint    *
+ *    programming (CP) and explanation-based     *
+ *    constraint solving (e-CP). It is built     *
+ *    on a event-based propagation mechanism     *
+ *    with backtrackable structures.             *
+ *                                               *
+ *    Choco is an open-source software,          *
+ *    distributed under a BSD licence            *
+ *    and hosted by sourceforge.net              *
+ *                                               *
+ *    + website : http://choco.emn.fr            *
+ *    + support : choco@emn.fr                   *
+ *                                               *
+ *    Copyright (C) F. Laburthe,                 *
+ *                  N. Jussien    1999-2008      *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+package choco.model.constraints.integer;
+
+import static choco.Choco.*;
+import choco.cp.model.CPModel;
+import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
+import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.constraints.integer.extension.LargeRelation;
+import choco.kernel.solver.constraints.integer.extension.TuplesTest;
+import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.propagation.Propagator;
+import choco.Choco;
+import org.junit.After;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.Assert;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+// **************************************************
+// *                   J-CHOCO                      *
+// *   Copyright (C) F. Laburthe, 1999-2003         *
+// **************************************************
+// *  an open-source Constraint Programming Kernel  *
+// *     for Research and Education                 *
+// **************************************************
+
+public class NaryRelationTest {
+
+	private CPModel m;
+	private CPSolver s;
+
+	@Before
+	public void before() {
+		m = new CPModel();
+		s = new CPSolver();
+	}
+
+	@After
+	public void after() {
+		m = null;
+		s = null;
+	}
+
+	@Test
+	public void test1() {
+		IntegerVariable x = makeIntVar("x", 1, 5);
+		IntegerVariable y = makeIntVar("y", 1, 5);
+		IntegerVariable z = makeIntVar("z", 1, 5);
+		m.addConstraint(relationTupleFC(new IntegerVariable[]{x, y, z}, new NotAllEqual()));
+		s.read(m);
+		s.solveAll();
+		assertEquals(120, s.getNbSolutions());
+	}
+
+	@Test
+	public void test1GAC() {
+
+		IntegerVariable x = makeIntVar("x", 1, 5);
+		IntegerVariable y = makeIntVar("y", 1, 5);
+		IntegerVariable z = makeIntVar("z", 1, 5);
+		m.addConstraint(relationTupleAC(new IntegerVariable[]{x, y, z}, new NotAllEqual()));
+		s.read(m);
+		s.solveAll();
+		assertEquals(120, s.getNbSolutions());
+	}
+
+	@Test
+	public void test1GAC2001() {
+
+		IntegerVariable x = makeIntVar("x", 1, 5);
+		IntegerVariable y = makeIntVar("y", 1, 5);
+		IntegerVariable z = makeIntVar("z", 1, 5);
+		m.addConstraint(relationTupleAC("cp:ac2001",new IntegerVariable[]{x, y, z}, new NotAllEqual()));
+		s.read(m);
+		s.solveAll();
+		assertEquals(120, s.getNbSolutions());
+	}
+
+
+	@Test
+	public void test2() {
+
+		IntegerVariable x = makeIntVar("x", 1, 5);
+		IntegerVariable y = makeIntVar("y", 1, 5);
+		IntegerVariable z = makeIntVar("z", 1, 5);
+		m.addConstraint(relationTupleFC(new IntegerVariable[]{x, y, z}, (LargeRelation) (new NotAllEqual()).getOpposite()));
+		s.read(m);
+		s.solveAll();
+		assertEquals(5, s.getNbSolutions());
+	}
+
+	@Test
+	public void test2GAC() {
+
+		IntegerVariable x = makeIntVar("x", 1, 5);
+		IntegerVariable y = makeIntVar("y", 1, 5);
+		IntegerVariable z = makeIntVar("z", 1, 5);
+		m.addConstraint(relationTupleAC(new IntegerVariable[]{x, y, z}, (LargeRelation) (new NotAllEqual()).getOpposite()));
+		s.read(m);
+		s.solveAll();
+		assertEquals(5, s.getNbSolutions());
+	}
+
+	private class NotAllEqual extends TuplesTest {
+
+		public boolean checkTuple(int[] tuple) {
+			for (int i = 1; i < tuple.length; i++) {
+				if (tuple[i - 1] != tuple[i]) return true;
+			}
+			return false;
+		}
+
+	}
+
+	@Test
+	public void test3() {
+
+		IntegerVariable x = makeIntVar("x", 1, 5);
+		IntegerVariable y = makeIntVar("y", 1, 5);
+		IntegerVariable z = makeIntVar("z", 1, 5);
+		ArrayList forbiddenTuples = new ArrayList();
+		forbiddenTuples.add(new int[]{1, 1, 1});
+		forbiddenTuples.add(new int[]{2, 2, 2});
+		forbiddenTuples.add(new int[]{3, 3, 3});
+		forbiddenTuples.add(new int[]{4, 4, 4});
+		forbiddenTuples.add(new int[]{5, 5, 5});
+		m.addConstraint(infeasTupleFC(forbiddenTuples, new IntegerVariable[]{x, y, z}));
+		s.read(m);
+		s.solveAll();
+		assertEquals(120, s.getNbSolutions());
+	}
+
+	@Test
+	public void test3GAC() {
+
+		IntegerVariable x = makeIntVar("x", 1, 5);
+		IntegerVariable y = makeIntVar("y", 1, 5);
+		IntegerVariable z = makeIntVar("z", 1, 5);
+		ArrayList forbiddenTuples = new ArrayList();
+		forbiddenTuples.add(new int[]{1, 1, 1});
+		forbiddenTuples.add(new int[]{2, 2, 2});
+		forbiddenTuples.add(new int[]{3, 3, 3});
+		forbiddenTuples.add(new int[]{4, 4, 4});
+		forbiddenTuples.add(new int[]{5, 5, 5});
+		m.addConstraint(infeasTupleAC(forbiddenTuples, new IntegerVariable[]{x, y, z}));
+		s.read(m);
+		s.solveAll();
+		assertEquals(120, s.getNbSolutions());
+	}
+
+	@Test
+	public void test3GACRelation() {
+
+		IntegerVariable x = makeIntVar("x", 1, 5);
+		IntegerVariable y = makeIntVar("y", 1, 5);
+		IntegerVariable z = makeIntVar("z", 1, 5);
+		IntegerVariable w = makeIntVar("w", 1, 5);
+		ArrayList allowedTuples = new ArrayList();
+		allowedTuples.add(new int[]{1, 1, 1});
+		allowedTuples.add(new int[]{2, 2, 2});
+		allowedTuples.add(new int[]{3, 3, 3});
+		allowedTuples.add(new int[]{4, 4, 4});
+		allowedTuples.add(new int[]{5, 5, 5});
+		LargeRelation lrela = s.makeLargeRelation(new int[]{0, 1, 0}, new int[]{6, 6, 5}, allowedTuples, true);
+
+		m.addConstraint(relationTupleAC(new IntegerVariable[]{x, y, z}, lrela));
+		m.addConstraint(relationTupleAC(new IntegerVariable[]{x, w, y}, lrela));
+
+		s.read(m);
+		s.solveAll();
+		assertEquals(5, s.getNbSolutions());
+	}
+
+	@Test
+	public void test3GACRelation2001() {
+
+		IntegerVariable x = makeIntVar("x", 1, 5);
+		IntegerVariable y = makeIntVar("y", 1, 5);
+		IntegerVariable z = makeIntVar("z", 1, 5);
+		IntegerVariable w = makeIntVar("w", 1, 5);
+		ArrayList allowedTuples = new ArrayList();
+		allowedTuples.add(new int[]{1, 1, 1});
+		allowedTuples.add(new int[]{2, 2, 2});
+		allowedTuples.add(new int[]{3, 3, 3});
+		allowedTuples.add(new int[]{4, 4, 4});
+		allowedTuples.add(new int[]{5, 5, 5});
+		LargeRelation lrela = s.makeLargeRelation(new int[]{0, 1, 0}, new int[]{6, 6, 5}, allowedTuples, true);
+
+		m.addConstraint(relationTupleAC("cp:ac2001",new IntegerVariable[]{x, y, z}, lrela));
+		m.addConstraint(relationTupleAC("cp:ac2001",new IntegerVariable[]{x, w, y}, lrela));
+
+		s.read(m);
+		s.solveAll();
+		assertEquals(5, s.getNbSolutions());
+	}
+
+    @Test    
+    public void test3GACRelation2008() {
+
+        IntegerVariable x = makeIntVar("x", 1, 5);
+        IntegerVariable y = makeIntVar("y", 1, 5);
+        IntegerVariable z = makeIntVar("z", 1, 5);
+        IntegerVariable w = makeIntVar("w", 1, 5);
+        ArrayList allowedTuples = new ArrayList();
+        allowedTuples.add(new int[]{1, 1, 1});
+        allowedTuples.add(new int[]{2, 2, 2});
+        allowedTuples.add(new int[]{3, 3, 3});
+        allowedTuples.add(new int[]{4, 4, 4});
+        allowedTuples.add(new int[]{5, 5, 5});
+        LargeRelation lrela = s.makeLargeRelation(new int[]{0, 1, 0}, new int[]{6, 6, 5}, allowedTuples, true, 2);
+
+        m.addConstraint(relationTupleAC("cp:ac2008",new IntegerVariable[]{x, y, z}, lrela));
+        m.addConstraint(relationTupleAC("cp:ac2008",new IntegerVariable[]{x, w, y}, lrela));
+
+        s.read(m);
+        s.solveAll();
+        assertEquals(5, s.getNbSolutions());
+    }
+
+
+
+    @Test
+	public void test3bis() {
+
+		IntegerVariable x = makeIntVar("x", 1, 5);
+		IntegerVariable y = makeIntVar("y", 1, 5);
+		IntegerVariable z = makeIntVar("z", 1, 5);
+		ArrayList forbiddenTuples = new ArrayList();
+		forbiddenTuples.add(new int[]{1, 1, 1});
+		forbiddenTuples.add(new int[]{2, 2, 2});
+		forbiddenTuples.add(new int[]{2, 5, 3});
+		m.addConstraint(infeasTupleFC(forbiddenTuples, new IntegerVariable[]{x, y, z}));
+		s.read(m);
+		s.solveAll();
+		assertEquals(122, s.getNbSolutions());
+	}
+
+	@Test
+	public void test3bisGAC() {
+
+		IntegerVariable x = makeIntVar("x", 1, 5);
+		IntegerVariable y = makeIntVar("y", 1, 5);
+		IntegerVariable z = makeIntVar("z", 1, 5);
+		ArrayList forbiddenTuples = new ArrayList();
+		forbiddenTuples.add(new int[]{1, 1, 1});
+		forbiddenTuples.add(new int[]{2, 2, 2});
+		forbiddenTuples.add(new int[]{2, 5, 3});
+		m.addConstraint(infeasTupleAC(forbiddenTuples, new IntegerVariable[]{x, y, z}));
+		s.read(m);
+		s.solveAll();
+		assertEquals(122, s.getNbSolutions());
+	}
+
+	@Test
+	public void test3bisbis() {
+
+		IntegerVariable v1 = makeIntVar("v1", 0, 2);
+		IntegerVariable v2 = makeIntVar("v2", 0, 4);
+		ArrayList feasTuple = new ArrayList();
+		feasTuple.add(new int[]{1, 1}); // x*y = 1
+		feasTuple.add(new int[]{2, 4}); // x*y = 1
+		m.addConstraint(feasTupleFC(feasTuple, new IntegerVariable[]{v1, v2}));
+		s.read(m);
+		s.solve();
+		do {
+			System.out.println("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
+		} while (s.nextSolution() == Boolean.TRUE);
+		assertEquals(2, s.getNbSolutions());
+	}
+
+	@Test
+	public void test3bisbisGAC() {
+
+		IntegerVariable v1 = makeIntVar("v1", 0, 2);
+		IntegerVariable v2 = makeIntVar("v2", 0, 4);
+		ArrayList feasTuple = new ArrayList();
+		feasTuple.add(new int[]{1, 1}); // x*y = 1
+		feasTuple.add(new int[]{2, 4}); // x*y = 1
+		m.addConstraint(feasTupleAC(feasTuple, new IntegerVariable[]{v1, v2}));
+		s.read(m);
+		s.solve();
+		do {
+			System.out.println("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
+		} while (s.nextSolution() == Boolean.TRUE);
+		assertEquals(2, s.getNbSolutions());
+	}
+
+	@Test
+	public void test3bisbisGAC2001() {
+
+		IntegerVariable v1 = makeIntVar("v1", 0, 2);
+		IntegerVariable v2 = makeIntVar("v2", 0, 4);
+		ArrayList feasTuple = new ArrayList();
+		feasTuple.add(new int[]{1, 1}); // x*y = 1
+		feasTuple.add(new int[]{2, 4}); // x*y = 1
+		m.addConstraint(feasTupleAC("cp:ac2001",feasTuple, new IntegerVariable[]{v1, v2}));
+		s.read(m);
+		s.solve();
+		do {
+			System.out.println("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
+		} while (s.nextSolution() == Boolean.TRUE);
+		assertEquals(2, s.getNbSolutions());
+	}
+
+    @Test
+	public void test3bisbisGAC2008() {
+
+		IntegerVariable v1 = makeIntVar("v1", 0, 2);
+		IntegerVariable v2 = makeIntVar("v2", 0, 4);
+		ArrayList feasTuple = new ArrayList();
+		feasTuple.add(new int[]{1, 1}); // x*y = 1
+		feasTuple.add(new int[]{2, 4}); // x*y = 1
+		m.addConstraint(feasTupleAC("cp:ac2008",feasTuple, new IntegerVariable[]{v1, v2}));
+		s.read(m);
+		s.solve();
+		do {
+			System.out.println("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
+		} while (s.nextSolution() == Boolean.TRUE);
+		assertEquals(2, s.getNbSolutions());
+	}
+
+    @Test
+	public void test4() {
+
+		IntegerVariable x = makeIntVar("x", 1, 5);
+		IntegerVariable y = makeIntVar("y", 1, 5);
+		IntegerVariable z = makeIntVar("z", 1, 5);
+		ArrayList forbiddenTuples = new ArrayList();
+		int cpt = 0;
+		for (int i = 1; i <= 5; i++) {
+			for (int j = 1; j <= 5; j++) {
+				for (int k = 1; k <= 5; k++) {
+					if (i != j || i != k || k != j) {
+						int[] tuple = new int[3];
+						tuple[0] = i;
+						tuple[1] = j;
+						tuple[2] = k;
+						cpt++;
+						forbiddenTuples.add(tuple);
+					}
+				}
+			}
+		}
+		m.addConstraint(infeasTupleFC(forbiddenTuples, new IntegerVariable[]{x, y, z}));
+		s.read(m);
+		s.solveAll();
+		assertEquals(5, s.getNbSolutions());
+	}
+
+	@Test
+	public void test5() {
+
+		IntegerVariable x = makeIntVar("x", 1, 5);
+		IntegerVariable y = makeIntVar("y", 1, 5);
+		IntegerVariable z = makeIntVar("z", 1, 5);
+		ArrayList goodTuples = new ArrayList();
+		goodTuples.add(new int[]{1, 1, 1});
+		goodTuples.add(new int[]{2, 2, 2});
+		goodTuples.add(new int[]{3, 3, 3});
+		goodTuples.add(new int[]{4, 4, 4});
+		goodTuples.add(new int[]{5, 5, 5});
+		m.addConstraint(feasTupleFC(goodTuples, new IntegerVariable[]{x, y, z}));
+		s.read(m);
+		s.solveAll();
+		assertEquals(5, s.getNbSolutions());
+	}
+
+	//
+	// un petit probl�me pos� en sixi�me � la petite soeur de Ludivine :
+	// trouvez l'�ge de mes trois enfants :
+	//     - le produit de leurs ages est �gal � 36
+	//     - la somme de leurs ages est �gal � 13
+	//     - mon a�n� est blond (info cruciale)
+	// ici il est r�solu de mani�re compl�tement bidon (on a d�j� la solution avant
+	// de lancer le solve en ayant �limin� tous les tuples infaisables :))
+	@Test
+	public void test6() {
+
+		IntegerVariable x = makeIntVar("x", 1, 12);
+		IntegerVariable y = makeIntVar("y", 1, 12);
+		IntegerVariable z = makeIntVar("z", 1, 12);
+		ArrayList forbiddenTuplesProduct = new ArrayList();
+		ArrayList forbiddenTuplesAine = new ArrayList();
+		ArrayList symetryTuples = new ArrayList();
+		for (int i = 1; i <= 12; i++) {
+			for (int j = 1; j <= 12; j++) {
+				for (int k = 1; k <= 12; k++) {
+					int[] tuple = new int[3];
+					tuple[0] = i;
+					tuple[1] = j;
+					tuple[2] = k;
+					if (i * j * k != 36)
+						forbiddenTuplesProduct.add(tuple);
+					if (i > j || j > k || i > k)
+						symetryTuples.add(tuple);
+					if ((i == j && i > k) || (i == k && j > k) || (j == k && k > i))
+						forbiddenTuplesAine.add(tuple);
+				}
+			}
+		}
+
+		m.addConstraint(eq(sum(new IntegerVariable[]{x, y, z}), 13));
+		m.addConstraint(infeasTupleFC(forbiddenTuplesProduct, new IntegerVariable[]{x, y, z}));
+		m.addConstraint(infeasTupleFC(forbiddenTuplesAine, new IntegerVariable[]{x, y, z}));
+		m.addConstraint(infeasTupleFC(symetryTuples, new IntegerVariable[]{x, y, z}));
+		s.read(m);
+		s.solveAll();
+		System.out.println("x " + s.getVar(x).getVal() + " y " + s.getVar(y).getVal() + " z " + s.getVar(z).getVal());
+		assertEquals(1, s.getNbSolutions());
+		assertEquals(2, s.getVar(x).getVal());
+		assertEquals(2, s.getVar(y).getVal());
+		assertEquals(9, s.getVar(z).getVal());
+	}
+
+	private void genereCst(ArrayList tuples, int n) {
+		int[] tuple = new int[n];
+		int k = 0;
+		for (int i = 0; i < n; i++)
+			tuple[i] = 1;
+		tuple[0] = 0;
+		while (k < n) {
+			tuple[k]++;
+			if (tuple[k] > n) {
+				tuple[k] = 1;
+				k++;
+			} else {
+				if (testDouble(tuple)) {
+					int[] t = new int[n];
+					System.arraycopy(tuple, 0, t, 0, tuple.length);
+					tuples.add(t);
+				}
+				k = 0;
+			}
+		}
+	}
+
+
+	private boolean testDouble(int[] tuple) {
+		for (int i = 0; i < tuple.length; i++) {
+			for (int j = i + 1; j < tuple.length; j++) {
+				if (tuple[i] == tuple[j])
+					return true;
+			}
+		}
+		return false;
+	}
+
+	@Test
+	public void testFeasibleTupleAC() throws Exception {
+		int N = 9;
+		java.util.ArrayList<int[]> tuples = new java.util.ArrayList<int[]>();
+		tuples.add(new int[]{0, 1, 1, 1, 0, 4, 1, 1, 1, 0});
+		IntegerVariable[] v = new IntegerVariable[10];
+		for (int n = 0; n < v.length; n++) {
+			v[n] = makeIntVar("V" + n, 0, N);
+		}
+        m.addVariables("cp:bound", v);
+        m.addConstraint(regular(v, tuples));
+		s.read(m);
+		Boolean b = s.solve();
+		assertEquals(true, b.booleanValue());
+		assertEquals(0, s.getVar(v[0]).getVal());
+		assertEquals(1, s.getVar(v[1]).getVal());
+		assertEquals(1, s.getVar(v[2]).getVal());
+		assertEquals(1, s.getVar(v[3]).getVal());
+		assertEquals(0, s.getVar(v[4]).getVal());
+		assertEquals(4, s.getVar(v[5]).getVal());
+		assertEquals(1, s.getVar(v[6]).getVal());
+		assertEquals(1, s.getVar(v[7]).getVal());
+		assertEquals(1, s.getVar(v[8]).getVal());
+		assertEquals(0, s.getVar(v[9]).getVal());
+	}
+
+
+	@Test
+	public void test7() {
+
+		int n = 7;
+		IntegerVariable[] reines = new IntegerVariable[n];
+		IntegerVariable[] diag1 = new IntegerVariable[n];
+		IntegerVariable[] diag2 = new IntegerVariable[n];
+		//Definition Variables
+		for (int i = 0; i < n; i++) {
+			reines[i] = makeIntVar("reine-" + i, 1, n);
+		}
+		for (int i = 0; i < n; i++) {
+			diag1[i] = makeIntVar("diag1-" + i, -n, 2 * n);
+			diag2[i] = makeIntVar("diag2-" + i, -n, 2 * n);
+		}
+		//Tests contraintes N-aires
+		ArrayList tuples = new ArrayList();
+		genereCst(tuples, n);
+		m.addConstraint(infeasTupleFC(tuples, reines));
+//      m.addConstraint(infeasTuple(reines, tuples, 2001)); TODO: que voulait dire le parametre 2001 ?
+
+		//Definition Contraintes restantes
+		for (int i = 0; i < n; i++) {
+			m.addConstraint(eq(diag1[i], plus(reines[i], i)));
+			m.addConstraint(eq(diag2[i], minus(reines[i], i)));
+
+			for (int j = i + 1; j < n; j++) {
+				// m.addConstraint( neq(reines[i],reines[j]));
+				m.addConstraint(neq(diag1[i], diag1[j]));
+				m.addConstraint(neq(diag2[i], diag2[j]));
+			}
+		}
+		// Resolution
+		s.setValIntSelector(new RandomIntValSelector(110));
+		s.setVarIntSelector(new RandomIntVarSelector(s, 110));
+		s.read(m);
+		s.solveAll();
+		assertEquals(40, s.getNbSolutions());
+	}
+
+	@Test
+	public void test7GAC() {
+
+		int n = 7;
+		IntegerVariable[] reines = new IntegerVariable[n];
+		IntegerVariable[] diag1 = new IntegerVariable[n];
+		IntegerVariable[] diag2 = new IntegerVariable[n];
+		//Definition Variables
+		for (int i = 0; i < n; i++) {
+			reines[i] = makeIntVar("reine-" + i, 1, n);
+		}
+		for (int i = 0; i < n; i++) {
+			diag1[i] = makeIntVar("diag1-" + i, -n, 2 * n);
+			diag2[i] = makeIntVar("diag2-" + i, -n, 2 * n);
+		}
+		//Tests contraintes N-aires
+		ArrayList tuples = new ArrayList();
+		genereCst(tuples, n);
+		m.addConstraint(infeasTupleAC(tuples, reines));
+//       m.addConstraint(infeasTuple(reines, tuples, 2001)); TODO: que voulait dire le parametre 2001 ?
+
+		//Definition Contraintes restantes
+		for (int i = 0; i < n; i++) {
+			m.addConstraint(eq(diag1[i], plus(reines[i], i)));
+			m.addConstraint(eq(diag2[i], minus(reines[i], i)));
+
+			for (int j = i + 1; j < n; j++) {
+				// m.addConstraint( neq(reines[i],reines[j]));
+				m.addConstraint(neq(diag1[i], diag1[j]));
+				m.addConstraint(neq(diag2[i], diag2[j]));
+			}
+		}
+		// Resolution
+		s.setValIntSelector(new RandomIntValSelector(110));
+		s.setVarIntSelector(new RandomIntVarSelector(s, 110));
+		s.read(m);
+		s.solveAll();
+		assertEquals(40, s.getNbSolutions());
+	}
+
+	@Test
+	public void testVain() {
+		IntegerVariable[] vars = new IntegerVariable[5];
+		Constraint[] cons = new Constraint[4];
+		//-----Construct all variables
+		int id = 0;
+		vars[id] = makeIntVar("v" + id++, new int[]{4, 2});
+		vars[id] = makeIntVar("v" + id++, new int[]{5, 1, 4});
+		vars[id] = makeIntVar("v" + id++, new int[]{3, 4, 6});
+		vars[id] = makeIntVar("v" + id++, new int[]{1, 2});
+		vars[id] = makeIntVar("v" + id++, new int[]{7, 8, 6, 1});
+		id = 0;
+		ArrayList<int[]> tuples;
+
+		//-----Now construct all constraints
+		//-----Constraint0
+		tuples = new ArrayList<int[]>();
+		tuples.add(new int[]{1});
+		cons[id] = feasTupleFC(tuples, new IntegerVariable[]{vars[3]});
+		m.addConstraint(cons[id++]);
+
+		//-----Constraint1
+		tuples = new ArrayList<int[]>();
+		tuples.add(new int[]{6, 7});
+		cons[id] = feasTupleFC(tuples, new IntegerVariable[]{vars[2], vars[4]});
+		m.addConstraint(cons[id++]);
+
+		//-----Constraint2
+		tuples = new ArrayList<int[]>();
+		tuples.add(new int[]{3});
+		tuples.add(new int[]{4});
+		cons[id] = feasTupleFC(tuples, new IntegerVariable[]{vars[2]});
+		m.addConstraint(cons[id++]);
+
+		//-----Constraint3
+		tuples = new ArrayList<int[]>();
+		tuples.add(new int[]{7, 1});
+		tuples.add(new int[]{8, 1});
+		tuples.add(new int[]{6, 5});
+		tuples.add(new int[]{1, 5});
+		cons[id] = feasTupleFC(tuples, new IntegerVariable[]{vars[4], vars[1]});
+		m.addConstraint(cons[id++]);
+
+		//-----Now get solutions
+		System.out.println("Choco Solutions");
+		s.read(m);
+		s.solveAll();
+		assertTrue(s.isFeasible() == Boolean.FALSE);
+	}
+
+	private ArrayList tables4() {
+		int[] tuple = new int[5];
+		ArrayList tuples = new ArrayList();
+		for (int i = 1; i <= 5; i++) {
+			tuple[0] = i;
+			for (int j = 1; j <= 5; j++) {
+				tuple[1] = j;
+				for (int k = 1; k <= 5; k++) {
+					tuple[2] = k;
+					for (int l = 1; l <= 5; l++) {
+						tuple[3] = l;
+						for (int m = 1; m <= 5; m++) {
+							tuple[4] = m;
+							if ((i != j) && (i != k) && (i != l) && (j != k) && (j != l) && (k != l) && (m != i) && (m != j) && (m != k) && (m != l)) {
+								int[] tupleToAdd = new int[5];
+								System.arraycopy(tuple, 0, tupleToAdd, 0, 5);
+								tuples.add(tupleToAdd);
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return tuples;
+	}
+
+    @Test
+    public void testGAC2001OnQueen() {
+        testGACPositive(2001);
+    }
+
+    @Test
+    public void testGAC32OnQueen() {
+        testGACPositive(32);
+    }
+
+    @Test
+    public void testGAC2008OnQueen() {
+        testGACPositive(2008);
+    }
+
+    public void testGACPositive(int ac) {
+		for (int seed = 0; seed < 10; seed++) {
+			m = new CPModel();
+			s = new CPSolver();
+			//int n = Integer.parseInt(args[0]);
+			int n = 5;
+			int sizeDomain = n;
+			int nbVar = n;
+			IntegerVariable[] reines = new IntegerVariable[nbVar];
+			IntegerVariable[] diag1 = new IntegerVariable[n];
+			IntegerVariable[] diag2 = new IntegerVariable[n];
+
+			for (int i = 0; i < nbVar; i++) {
+				reines[i] = makeIntVar("reine-" + i, 1, sizeDomain);
+				diag1[i] = makeIntVar("diag1-" + i, -n, 2 * n);
+				diag2[i] = makeIntVar("diag2-" + i, -n, 2 * n);
+			}
+
+			for (int i = 0; i < n; i++) {
+				m.addConstraint(eq(diag1[i], plus(reines[i], i)));
+				m.addConstraint(eq(diag2[i], minus(reines[i], i)));
+
+				for (int j = i + 1; j < n; j++) {
+					//m.addConstraint(neq(reines[i], reines[j]));
+					m.addConstraint(neq(diag1[i], diag1[j]));
+					m.addConstraint(neq(diag2[i], diag2[j]));
+				}
+			}
+
+			m.addConstraint(feasTupleAC("cp:ac" + ac,tables4(), reines));
+
+			s.setValIntSelector(new RandomIntValSelector(seed + 120));
+			s.setVarIntSelector(new RandomIntVarSelector(s, seed + 3));
+			s.read(m);
+			System.out.println("Choco Solutions");
+			if (s.solve() == Boolean.TRUE) {
+				do {
+					for (int i = 0; i < m.getNbIntVars(); i++) {
+						System.out.print(((IntegerVariable) m.getIntVar(i)) + ", ");
+					}
+					System.out.println();
+				} while (s.nextSolution() == Boolean.TRUE);
+			}
+			assertEquals(s.getNbSolutions(), 10);
+		}
+	}
+
+    @Test
+     public void testBoundGAC() {
+        CPModel m = new CPModel();
+        m.setDefaultExpressionDecomposition(true);
+        IntegerVariable x = makeIntVar("x", 0, 2, "cp:bound");
+        IntegerVariable y = makeIntVar("y", 0, 2, "cp:bound");
+        m.addConstraint(ifThenElse(gt(x, 0), eq(y, 0), Choco.TRUE));
+
+        CPSolver s = new CPSolver();
+        s.read(m);
+
+        System.out.println("" + s.pretty());
+        try {
+
+            s.propagate();
+
+            s.worldPush();
+            s.post(s.eq(s.getVar(x), 1));
+            s.propagate();
+            System.out.println(s.varsToString());
+
+            s.worldPop();
+            s.post(s.eq(s.getVar(x), 1));
+            s.propagate();
+
+            assertEquals(s.getVar(y).getVal(),0);
+        } catch (Exception e) {
+            Assert.fail();
+        }
+    }
+
+}

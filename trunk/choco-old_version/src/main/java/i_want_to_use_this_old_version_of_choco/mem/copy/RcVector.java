@@ -1,0 +1,191 @@
+package i_want_to_use_this_old_version_of_choco.mem.copy;
+
+import i_want_to_use_this_old_version_of_choco.mem.IStateVector;
+
+import java.util.logging.Logger;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: Julien
+ * Date: 29 mars 2007
+ * Time: 12:22:50
+ * To change this template use File | Settings | File Templates.
+ */
+public class RcVector implements IStateVector, RecomputableElement {
+
+    /**
+     * Reference to an object for logging trace statements related memory & backtrack (using the java.util.logging package)
+     */
+
+    private static Logger logger = Logger.getLogger("dev.i_want_to_use_this_old_version_of_choco.mem");
+
+    /**
+     * Contains the elements of the vector.
+     */
+
+    private Object[] elementData;
+
+
+    /**
+     * A backtrackable search with the size of the vector.
+     */
+
+    private RcInt size;
+
+
+    /**
+     * The current environment.
+     */
+
+    private final EnvironmentCopying environment;
+
+
+    /**
+     * Constructs a stored search vector with an initial size, and initial values.
+     *
+     * @param env The current environment.
+     */
+
+    private int timeStamp;
+
+    public RcVector(EnvironmentCopying env) {
+        int initialCapacity = MIN_CAPACITY;
+        int w = env.currentWorld;
+
+        this.environment = env;
+        this.elementData = new Object[initialCapacity];
+        timeStamp = env.getWorldIndex();
+        this.size = new RcInt(env, 0);
+        env.add(this);
+    }
+
+
+    public RcVector(int[] entries) {
+        // TODO
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Constructs an empty stored search vector.
+     * @param env The current environment.
+     */
+
+
+
+    /**
+     * Returns the current size of the stored search vector.
+     */
+
+    public int size() {
+        return size.get();
+    }
+
+
+    /**
+     * Checks if the vector is empty.
+     */
+
+    public boolean isEmpty() {
+        return (size.get() == 0);
+    }
+
+/*    public Object[] toArray() {
+        // TODO : voir ci c'est utile
+        return new Object[0];
+    }*/
+
+
+    /**
+     * Checks if the capacity is great enough, else the capacity
+     * is extended.
+     *
+     * @param minCapacity the necessary capacity.
+     */
+
+    public void ensureCapacity(int minCapacity) {
+        int oldCapacity = elementData.length;
+        if (minCapacity > oldCapacity) {
+            Object[] oldData = elementData;
+            int newCapacity = (oldCapacity * 3) / 2 + 1;
+            if (newCapacity < minCapacity)
+                newCapacity = minCapacity;
+            elementData = new Object[newCapacity];
+            System.arraycopy(oldData, 0, elementData, 0, size.get());
+        }
+    }
+
+
+    /**
+     * Adds a new search at the end of the vector.
+     *
+     * @param i The search to add.
+     */
+
+    public boolean add(java.lang.Object i) {
+        timeStamp = environment.getWorldIndex();
+        int newsize = size.get() + 1;
+        ensureCapacity(newsize);
+        size.set(newsize);
+        elementData[newsize - 1] = i;
+        return true;
+    }
+
+    /**
+     * removes the search at the end of the vector.
+     * does nothing when called on an empty vector
+     */
+
+    public void removeLast() {
+        timeStamp = environment.getWorldIndex();
+        int newsize = size.get() - 1;
+        if (newsize >= 0)
+            size.set(newsize);
+    }
+
+    /**
+     * Returns the <code>index</code>th element of the vector.
+     */
+
+    public Object get(int index) {
+        if (index < size.get() && index >= 0) {
+            return elementData[index];
+        }
+        throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size.get());
+    }
+
+
+    /**
+     * Assigns a new value <code>val</code> to the element <code>index</code>.
+     */
+
+    public Object set(int index, Object val) {
+        if (index < size.get() && index >= 0) {
+            Object oldValue = elementData[index];
+            if (val != oldValue) {
+                elementData[index] = val;
+            }
+            timeStamp = environment.getWorldIndex();
+            return oldValue;
+        }
+        throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size.get());
+    }
+
+    public void _set(Object[] vals) {
+        timeStamp = environment.getWorldIndex();
+        System.arraycopy(vals,0,elementData,0,vals.length);
+    }
+
+    public Object[] deepCopy() {
+        Object[] ret = new Object[size.get()];
+        System.arraycopy(elementData,0,ret,0,size.get());
+        return ret;
+    }
+
+    public int getType() {
+        return VECTOR;
+    }
+
+    public int getTimeStamp() {
+        return timeStamp;
+    }
+}

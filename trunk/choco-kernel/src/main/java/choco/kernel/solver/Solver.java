@@ -1,0 +1,696 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * *
+ *          _       _                            *
+ *         |  °(..)  |                           *
+ *         |_  J||L _|        CHOCO solver       *
+ *                                               *
+ *    Choco is a java library for constraint     *
+ *    satisfaction problems (CSP), constraint    *
+ *    programming (CP) and explanation-based     *
+ *    constraint solving (e-CP). It is built     *
+ *    on a event-based propagation mechanism     *
+ *    with backtrackable structures.             *
+ *                                               *
+ *    Choco is an open-source software,          *
+ *    distributed under a BSD licence            *
+ *    and hosted by sourceforge.net              *
+ *                                               *
+ *    + website : http://choco.emn.fr            *
+ *    + support : choco@emn.fr                   *
+ *                                               *
+ *    Copyright (C) F. Laburthe,                 *
+ *                  N. Jussien    1999-2008      *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+package choco.kernel.solver;
+
+import choco.IPretty;
+import choco.kernel.common.IndexFactory;
+import choco.kernel.memory.IEnvironment;
+import choco.kernel.model.Model;
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.variables.Variable;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.model.variables.real.RealVariable;
+import choco.kernel.model.variables.scheduling.TaskVariable;
+import choco.kernel.model.variables.set.SetVariable;
+import choco.kernel.solver.branch.AbstractIntBranching;
+import choco.kernel.solver.branch.VarSelector;
+import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.integer.IntExp;
+import choco.kernel.solver.constraints.integer.IntSConstraint;
+import choco.kernel.solver.constraints.integer.extension.BinRelation;
+import choco.kernel.solver.constraints.integer.extension.LargeRelation;
+import choco.kernel.solver.goals.Goal;
+import choco.kernel.solver.propagation.PropagationEngine;
+import choco.kernel.solver.search.AbstractGlobalSearchLimit;
+import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.GlobalSearchLimit;
+import choco.kernel.solver.search.integer.ValIterator;
+import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.real.RealValIterator;
+import choco.kernel.solver.search.real.RealVarSelector;
+import choco.kernel.solver.search.set.SetValSelector;
+import choco.kernel.solver.search.set.SetVarSelector;
+import choco.kernel.solver.variables.Var;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.integer.IntVar;
+import choco.kernel.solver.variables.real.RealConstant;
+import choco.kernel.solver.variables.real.RealVar;
+import choco.kernel.solver.variables.scheduling.TaskVar;
+import choco.kernel.solver.variables.set.SetVar;
+import choco.kernel.visu.IVisu;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: charles
+ * Date: 12 mars 2008
+ * Time: 16:43:08
+ * Interface for Solver class, declare main expected methods.
+ */
+public interface Solver extends IPretty {
+
+    public IndexFactory getIndexfactory();
+
+    public Model getModel();
+
+	public void setModel(Model model);
+
+	public void generateSearchStrategy();
+
+	public void attachGoal(AbstractIntBranching branching);
+
+	public void addGoal(AbstractIntBranching branching);
+
+
+    /**
+     * Check wether every decisions variables are instantiated
+     * @return true if all variables are instantiated
+     */
+    public boolean checkDecisionVariables();
+    /**
+	 * commands the strategy to start
+	 */
+	public void launch();
+
+	/**
+	 * returns the number of solutions encountered during the search
+	 *
+	 * @return the number of solutions to the model that were encountered during the search
+	 */
+	public int getNbSolutions();
+
+    /**
+     * Monitor the time limit (default to true)
+     * @param b indicates wether the search stategy monitor the time limit
+     */
+    public void monitorTimeLimit(boolean b);
+
+    /**
+     * Monitor the CPU time limit (default to false)
+     * @param b indicates wether the search stategy monitor the time limit
+     */
+    public void monitorCpuTimeLimit(boolean b);
+
+    /**
+     * Monitor the node limit (default to true)
+     * @param b indicates wether the search stategy monitor the node limit
+     */
+    public void monitorNodeLimit(boolean b);
+
+    /**
+     * Monitor the backtrack limit (default to false)
+     * @param b indicates wether the search stategy monitor the backtrack limit
+     */
+    public void monitorBackTrackLimit(boolean b);
+
+    /**
+     * Monitor the fail limit (default to false)
+     * @param b indicates wether the search stategy monitor the fail limit
+     */
+    public void monitorFailLimit(boolean b);
+
+
+    /**
+	 * Sets the time limit i.e. the maximal time before stopping the search algorithm
+	 */
+	public void setTimeLimit(int timeLimit);
+
+	/**
+	 * Sets the CPU time limit i.e. the maximal CPU time (user + system) before stopping the search algorithm
+	 */
+	public void setCpuTimeLimit(int timeLimit);
+
+	/**
+	 * Sets the node limit i.e. the maximal number of nodes explored by the search algorithm
+	 */
+	public void setNodeLimit(int nodeLimit);
+
+    /**
+	 * Sets the backtrack limit i.e. the maximal number of backtracks before stopping the search algorithm
+	 */
+	public void setBackTrackLimit(int backtracklimit);
+
+	/**
+	 * Sets the fail limit i.e. the maximal numnber of fails before stopping the search algorithm
+	 */
+	public void setFailLimit(int nodeLimit);
+
+
+    /**
+     * Get the time count of the search algorithm
+     * @return time count
+     */
+    public int getTimeCount();
+
+    /**
+     * Get the cpu time count of the search algorithm
+     * @return cpu time count
+     */
+    public int getCpuTimeCount();
+
+    /**
+     * Get the node count of the search algorithm
+     * @return node count
+     */
+    public int getNodeCount();
+
+    /**
+     * Get the backtrack count of the search algorithm
+     * @return backtrack count
+     */
+    public int getBackTrackCount();
+
+    /**
+     * Get the fail count of the search algorithm
+     * @return fail count
+     */
+    public int getFailCount();
+
+    /**
+	 * @return true if only the first solution must be found
+	 */
+	public boolean getFirstSolution();
+
+	/**
+	 * Sets wether only the first solution must be found
+	 */
+	public void setFirstSolution(boolean firstSolution);
+
+	/**
+	 * Sets the integer variable selector the search olver should use.
+	 */
+	public void setVarIntSelector(VarSelector varSelector);
+
+	/**
+	 * Sets the real variable selector the search strategy should use.
+	 */
+	public void setVarRealSelector(RealVarSelector realVarSelector);
+
+	/**
+	 * Sets the set variable selector the search strategy should use.
+	 */
+	public void setVarSetSelector(SetVarSelector setVarIntSelector);
+
+	/**
+	 * Sets the integer value iterator the search should use
+	 */
+	public void setValIntIterator(ValIterator valIterator);
+
+	/**
+	 * Sets the real value iterator the search should use
+	 */
+	public void setValRealIterator(RealValIterator realValIterator);
+
+	/**
+	 * Sets the integer value iterator the search should use
+	 */
+	public void setValSetIterator(ValIterator valIterator);
+
+	/**
+	 * Sets the integer value selector the search should use
+	 */
+	public void setValIntSelector(ValSelector valSelector);
+
+	/**
+	 * Sets the integer value selector the search should use
+	 */
+	public void setValRealSelector(ValSelector valSelector);
+
+	/**
+	 * Sets the integer value selector the search should use
+	 */
+	public void setValSetSelector(SetValSelector setValIntSelector);
+
+	public Iterator<SConstraint> getIntConstraintIterator();
+
+	/**
+	 * Returns the propagation engine associated to the model
+	 */
+
+	public PropagationEngine getPropagationEngine();
+
+	/**
+	 * set the optimization strategy:
+	 * - restart or not after each solution found
+	 *
+	 * @param restart
+	 */
+	public void setRestart(boolean restart);
+
+	/**
+	 * a boolean indicating if the strategy minize or maximize the objective function
+	 *
+	 * @param doMaximize
+	 */
+	public void setDoMaximize(boolean doMaximize);
+
+	/**
+	 * Set the variable to optimize
+	 *
+	 * @param objective
+	 */
+	public void setObjective(Var objective);
+
+	public Number getOptimumValue();
+	
+	/**
+	 * set the scheduling horizon. 
+	 */
+	void setHorizon(int horizon);
+	
+	/**
+	 * Get the makespan variable if any
+	 */
+	IntDomainVar getMakespan();
+
+	/**
+	 * get the makespan value or +inf.
+	 */
+	int getMakespanValue();
+	
+	/**
+	 * Checks if a limit has been encountered
+	 */
+	public boolean isEncounteredLimit();
+
+	/**
+	 * If a limit has been encountered, return the involved limit
+	 */
+	public GlobalSearchLimit getEncounteredLimit();
+
+	public AbstractGlobalSearchStrategy getSearchStrategy();
+
+	public abstract void post(SConstraint c);
+
+	public abstract void postCut(SConstraint c);
+
+	public String solutionToString();
+
+	/**
+	 * <i>Network management:</i>
+	 * Retrieve a variable by its index (all integer variables of
+	 * the model are numbered in sequence from 0 on)
+	 *
+	 * @param i index of the variable in the model
+	 */
+
+	public IntVar getIntVar(int i);
+
+	public int getIntVarIndex(IntVar c);
+
+	/**
+	 * retrieving the total number of variables
+	 *
+	 * @return the total number of variables in the model
+	 */
+	public int getNbIntVars();
+
+	/**
+	 * retrieving the total number of constants
+	 *
+	 * @return the total number of constants in the model
+	 */
+	public int getNbConstants();
+
+	/**
+	 * Returns the constant corresponding to the int i.
+	 *
+	 * @param i object (value) of the constant represented as an instantiated "variable"
+	 * @return the constant corresponding to the object i.
+	 */
+	public Var getIntConstant(int i);
+
+    /**
+	 * Returns the constant corresponding to the real i.
+	 *
+	 * @param i object (value) of the constant represented as an instantiated "variable"
+	 * @return the constant corresponding to the object i.
+	 */
+	public Var getRealConstant(double i);
+
+    /**
+     * Returns the collection of integer constant values
+     * @return the set of values
+     */
+    public Collection<Integer> getIntConstantSet();
+
+    /**
+     * Returns the collection of real constant values
+     * @return the set of values
+     */
+    public Collection<Double> getRealConstantSet();
+
+    /**
+	 * Returns a real variable.
+	 *
+	 * @param i index of the variable
+	 * @return the i-th real variable
+	 */
+	public RealVar getRealVar(int i);
+
+	/**
+	 * Returns the number of variables modelling real numbers.
+	 */
+	public int getNbRealVars();
+
+	/**
+	 * Returns a set variable.
+	 *
+	 * @param i index of the variable
+	 * @return the i-th real variable
+	 */
+	public SetVar getSetVar(int i);
+
+	/**
+	 * Returns the number of variables modelling real numbers.
+	 */
+	public int getNbSetVars();
+
+
+	/**
+	 * Returns a task variable.
+	 *
+	 * @param i index of the variable
+	 * @return the i-th task variable
+	 */
+	public TaskVar getTaskVar(int i);
+
+	/**
+	 * Returns the number of variables modelling tasks.
+	 */
+	public int getNbTaskVars();
+
+
+    /**
+     * Set the precision of the search for a real model.
+     */
+    public void setPrecision(double precision);
+    /**
+     * Get the precision of the search for a real model.
+     */
+    public double getPrecision();
+
+    /**
+     * Set the minimal width reduction between two propagations.
+     */
+    public void setReduction(double reduction);
+
+    /**
+     * Get the minimal width reduction between two propagations.
+     */
+    public double getReduction();
+
+
+	/**
+	 * <i>Propagation:</i>
+	 * Computes consistency on the model (the model may no longer
+	 * be consistent since the last propagation because of listeners
+	 * that have been posted and variables that have been reduced
+	 *
+	 * @throws ContradictionException
+	 */
+	public void propagate() throws ContradictionException;
+
+
+	public Boolean maximize(boolean restart);
+
+	public Boolean minimize(boolean restart);
+
+    public Boolean maximize(Var obj, boolean restart);
+
+    public Boolean minimize(Var obj, boolean restart);
+
+    public void printRuntimeSatistics();
+
+	public void setLoggingMaxDepth(int loggingMaxDepth);
+
+	/**
+	 * pushing one world on the stack
+	 */
+	public void worldPush();
+
+	/**
+	 * popping one world from the stack:
+	 * overrides AbstractModel.worldPop because the Model class adds
+	 * the notion of static constraints that need be repropagated upon backtracking
+	 */
+	public void worldPop();
+
+	/**
+	 * Backtracks to a given level in the search tree.
+	 */
+	public void worldPopUntil(int n);
+
+    /**
+     * pushing the world during propagation
+     */
+    public void worldPushDuringPropagation();
+
+    /**
+     * poping the world during propagation
+     */
+    public void worldPopDuringPropagation();
+
+
+    /**
+     * Record a solution by getting every variables' value.
+     *
+     * @return the recorded solution
+     */
+    public Solution recordSolution();
+
+    /**
+     * Restore a solution by setting value to every variable
+     * @param sol
+     */
+    public void restoreSolution(Solution sol);
+
+
+    /**
+     * get the limits when the last solution has been found.
+     * @return <code>null</code> if no solution has been found yet.
+     */
+    public Collection<AbstractGlobalSearchLimit> getSolutionLimits();
+    /**
+     * Restore the previous solution
+     */
+    //public void restoreSolution();
+
+    /**
+	 * Returns the memory environment used by the model.
+	 */
+
+	public IEnvironment getEnvironment();
+
+	public void setFeasible(boolean b);
+
+	public Boolean getFeasible();
+
+
+	/**
+	 * returning the index of the current worl
+	 */
+	public int getWorldIndex();
+
+	public void eraseConstraint(SConstraint c);
+
+	/**
+	 * retrieving the total number of constraints over integers
+	 *
+	 * @return the total number of constraints over integers in the model
+	 */
+	public int getNbIntConstraints();
+
+	/**
+	 * <i>Network management:</i>
+	 * Retrieve a constraint by its index.
+	 *
+	 * @param i index of the constraint in the model
+	 * @deprecated
+	 */
+
+	@Deprecated
+	public IntSConstraint getIntConstraint(int i);
+
+	public abstract IntExp plus(IntExp v1, int v2);
+
+	public abstract IntExp plus(int v1, IntExp v2);
+
+	public abstract IntExp plus(IntExp v1, IntExp v2);
+
+	public SConstraint lt(IntExp x, int c);
+
+	public SConstraint lt(int c, IntExp x);
+
+	public SConstraint lt(IntExp x, IntExp y);
+
+	public SConstraint leq(IntExp x, int c);
+
+	public SConstraint leq(int c, IntExp x);
+
+	public SConstraint leq(IntExp x, IntExp y);
+
+	public SConstraint geq(IntExp x, int c);
+
+	public SConstraint geq(int c, IntExp x);
+
+	public SConstraint geq(IntExp x, IntExp y);
+
+	public SConstraint eq(IntExp x, IntExp y);
+
+	public SConstraint eq(IntExp x, int c);
+
+	public SConstraint eq(int c, IntExp x);
+
+	public SConstraint eq(RealVar r, IntDomainVar i);
+
+	public SConstraint gt(IntExp x, IntExp y);
+
+	public SConstraint gt(IntExp x, int c);
+
+	public SConstraint gt(int c, IntExp x);
+
+	public SConstraint neq(IntExp x, int c);
+
+	public SConstraint neq(int c, IntExp x);
+
+	public SConstraint neq(IntExp x, IntExp y);
+
+	public IntExp scalar(int[] lc, IntDomainVar[] lv);
+
+	public IntExp scalar(IntDomainVar[] lv, int[] lc);
+
+	public IntExp sum(IntExp...lv);
+
+	public void read(Model m);
+
+    public void visualize(IVisu visu);
+
+    /**
+     * Return the type of eventQueues.
+     * @return the type of event queue
+     */
+    public int getEventQueueType();
+
+    public Boolean solve(boolean all);
+
+	public Boolean solve();
+
+	public Boolean solveAll();
+
+	public Boolean isFeasible();
+
+    /**
+     * Solution checker.
+     * Usefull for debug and development.
+     * @return a boolean indicating wether the solution is correct or not.
+     */
+    public Boolean checkSolution(boolean printAll);
+
+    public Boolean nextSolution();
+
+    public Var getVar(Variable v);
+
+    public Var[] getVar(Variable[] v);
+
+    public IntDomainVar getVar(IntegerVariable v);
+
+	public IntDomainVar[] getVar(IntegerVariable...v);
+
+	public RealVar getVar(RealVariable v);
+
+	public RealVar[] getVar(RealVariable... v);
+
+	public SetVar getVar(SetVariable v);
+
+	public SetVar[] getVar(SetVariable... v);
+
+    public TaskVar getVar(TaskVariable v);
+
+    public TaskVar[] getVar(TaskVariable... v);
+
+    public SConstraint getCstr(Constraint ic);
+
+	public void setIlogGoal(Goal ilogGoal);
+
+
+	public IntDomainVar createIntVar(String name, int domainType, int min, int max);
+
+    public IntDomainVar createBooleanVar(String name);
+
+	public IntDomainVar createEnumIntVar(String name, int min, int max);
+
+	public IntDomainVar createBoundIntVar(String name, int min, int max);
+
+    public IntDomainVar createBinTreeIntVar(String name, int min, int max);
+
+    public IntDomainVar createEnumIntVar(String name, int[] sortedValues);
+
+    public IntDomainVar createBinTreeIntVar(String name, int[] sortedValues);
+
+    public RealVar createRealVal(String name, double min, double max);
+
+	public RealConstant createRealIntervalConstant(double a, double b);
+
+	/**
+	 * Makes a constant interval from a double d ([d,d]).
+	 */
+	public RealConstant cst(double d);
+
+	/**
+	 * Makes a constant interval between two doubles [a,b].
+	 */
+	public RealConstant cst(double a, double b);
+
+
+	public SetVar createSetVar(String name, int a, int b, int domainType);
+
+	public SetVar createBoundSetVar(String name, int a, int b);
+
+	public SetVar createEnumSetVar(String name, int a, int b);
+
+	public TaskVar createTaskVar(String name, IntDomainVar start, IntDomainVar end, IntDomainVar duration);
+
+	public IntDomainVar createIntegerConstant(String name, int val);
+
+	public RealConstant createRealConstant(String name, double val);
+
+	public void setCardReasoning(boolean creas);
+
+	public LargeRelation makeLargeRelation(int[] min, int[] max, List<int[]> tuples, boolean feas);
+
+	public LargeRelation makeLargeRelation(int[] min, int[] max, List<int[]> tuples, boolean feas, int scheme);
+
+	public BinRelation makeBinRelation(int[] min, int[] max, List<int[]> mat, boolean feas, boolean bitset);
+
+	public BinRelation makeBinRelation(int[] min, int[] max, List<int[]> mat, boolean feas);
+
+	public SConstraint relationTupleAC(IntDomainVar[] vs, LargeRelation rela);
+
+	public SConstraint relationTupleAC(IntDomainVar[] vs, LargeRelation rela, int ac);
+
+}

@@ -1,0 +1,248 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * 
+ *          _       _                            *
+ *         |  °(..)  |                           *
+ *         |_  J||L _|        CHOCO solver       *
+ *                                               *
+ *    Choco is a java library for constraint     *
+ *    satisfaction problems (CSP), constraint    *
+ *    programming (CP) and explanation-based     *
+ *    constraint solving (e-CP). It is built     *
+ *    on a event-based propagation mechanism     *
+ *    with backtrackable structures.             *
+ *                                               *
+ *    Choco is an open-source software,          *
+ *    distributed under a BSD licence            *
+ *    and hosted by sourceforge.net              *
+ *                                               *
+ *    + website : http://choco.emn.fr            *
+ *    + support : choco@emn.fr                   *
+ *                                               *
+ *    Copyright (C) F. Laburthe,                 *
+ *                  N. Jussien    1999-2008      *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+package choco.model.constraints.global;
+
+import static choco.Choco.*;
+import choco.cp.model.CPModel;
+import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.limit.NodeLimit;
+import choco.kernel.model.Model;
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
+import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+
+/**
+ * Tests for the AllDifferent constraint.
+ */
+public class AllDifferentTest{
+    @Test
+    public void testDummy() {
+        System.out.println("Dummy AllDifferent currentElement...");
+        CPModel m = new CPModel();
+        IntegerVariable a = makeIntVar("a", 1, 2);
+        IntegerVariable b = makeIntVar("b", 1, 2);
+        IntegerVariable c = makeIntVar("c", 1, 4);
+        IntegerVariable d = makeIntVar("d", 1, 4);
+        IntegerVariable[] vars = new IntegerVariable[]{a, b, c, d};
+        Constraint alldiff = allDifferent(vars);
+
+        m.addConstraint(alldiff);
+
+        CPSolver s = new CPSolver();
+
+        s.read(m);
+        try {
+            s.propagate();
+        } catch (ContradictionException e) {
+            assertTrue(false);
+        }
+        assertEquals(s.getVar(c).getInf(), 3);
+    }
+    @Test
+    public void testNQueen() {
+        int n = 8;
+        CPModel m = new CPModel();
+        IntegerVariable[] queens = new IntegerVariable[n];
+        IntegerVariable[] diag1 = new IntegerVariable[n];
+        IntegerVariable[] diag2 = new IntegerVariable[n];
+        for (int i = 0; i < n; i++) {
+            queens[i] = makeIntVar("Q" + i, 1, n);
+            diag1[i] = makeIntVar("D1" + i, 1, 2 * n);
+            diag2[i] = makeIntVar("D2" + i, -n + 1, n);
+        }
+
+        m.addConstraint(allDifferent(queens));
+        for (int i = 0; i < n; i++) {
+            m.addConstraint(eq(diag1[i], plus(queens[i], i)));
+            m.addConstraint(eq(diag2[i], minus(queens[i], i)));
+        }
+        m.addConstraint("cp:clique", allDifferent(diag1));
+        m.addConstraint("cp:clique", allDifferent(diag2));
+
+        // diagonal constraints
+        CPSolver s = new CPSolver();
+        s.read(m);
+        //s.setTimeLimit(30000);
+        long tps = System.currentTimeMillis();
+        s.solveAll();
+        System.out.println("tps nreines1 " + (System.currentTimeMillis() - tps) + " nbNode " + s.getNodeCount());
+        assertEquals(92,s.getNbSolutions());
+    }
+     @Test
+     public void testNQueen2() {
+        int n = 8;
+	    CPModel m = new CPModel();
+        IntegerVariable[] queens = new IntegerVariable[n];
+        IntegerVariable[] diag1 = new IntegerVariable[n];
+        IntegerVariable[] diag2 = new IntegerVariable[n];
+        for (int i = 0; i < n; i++) {
+            queens[i] = makeIntVar("Q" + i, 1, n);
+            diag1[i] = makeIntVar("D1" + i, 1, 2 * n);
+            diag2[i] = makeIntVar("D2" + i, -n + 1, n);
+        }
+
+        m.addConstraint(allDifferent(queens));
+        for (int i = 0; i < n; i++) {
+            m.addConstraint(eq(diag1[i], plus(queens[i], i)));
+            m.addConstraint(eq(diag2[i], minus(queens[i], i)));
+        }
+        m.addConstraint(allDifferent(diag1));
+        m.addConstraint(allDifferent(diag2));
+
+        // diagonal constraints
+        CPSolver s = new CPSolver();
+        s.read(m);
+        //s.setTimeLimit(30000);
+        long tps = System.currentTimeMillis();
+        s.solveAll();
+        System.out.println("tps nreines2 " + (System.currentTimeMillis() - tps) + " nbNode " + ((NodeLimit) s.getSearchStrategy().limits.get(1)).getNbTot());
+        assertEquals(92,s.getNbSolutions());
+    }
+    @Test
+    public void testNQueen3() {
+        int n = 8;
+        CPModel m = new CPModel();
+        IntegerVariable[] queens = new IntegerVariable[n];
+        IntegerVariable[] diag1 = new IntegerVariable[n];
+        IntegerVariable[] diag2 = new IntegerVariable[n];
+        for (int i = 0; i < n; i++) {
+            queens[i] = makeIntVar("Q" + i, 1, n);
+            diag1[i] = makeIntVar("D1" + i, 1, 2 * n);
+            diag2[i] = makeIntVar("D2" + i, -n + 1, n);
+        }
+        m.addVariables("cp:bound", queens);
+        m.addVariables("cp:bound", diag1);
+        m.addVariables("cp:bound", diag2);
+
+        m.addConstraint(allDifferent(queens));
+        for (int i = 0; i < n; i++) {
+            m.addConstraint(eq(diag1[i], plus(queens[i], i)));
+            m.addConstraint(eq(diag2[i], minus(queens[i], i)));
+        }
+        m.addConstraint(allDifferent(diag1));
+        m.addConstraint(allDifferent(diag2));
+
+        // diagonal constraints
+        CPSolver s = new CPSolver();
+        s.read(m);
+        //s.setTimeLimit(30000);
+        long tps = System.currentTimeMillis();
+        s.solveAll();
+        System.out.println("tps nreines3 " + (System.currentTimeMillis() - tps) + " nbNode " + ((NodeLimit) s.getSearchStrategy().limits.get(1)).getNbTot());
+        assertEquals(92,s.getNbSolutions());
+    }
+   @Test
+    public void testLatinSquare() {
+        System.out.println("Latin Square Test...");
+        // Toutes les solutions de n=5 en 90 sec  (161280 solutions)
+        final int n = 4;
+        final int[] soluces = new int[]{1, 2, 12, 576, 161280};
+
+        // Model
+        CPModel m = new CPModel();
+
+        // Variables
+        IntegerVariable[] vars = new IntegerVariable[n * n];
+        for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+                vars[i * n + j] = makeIntVar("C" + i + "_" + j, 1, n);
+            }
+		}
+
+        // Constraints
+        for (int i = 0; i < n; i++) {
+            IntegerVariable[] row = new IntegerVariable[n];
+            IntegerVariable[] col = new IntegerVariable[n];
+            for (int x = 0; x < n; x++) {
+                row[x] = vars[i * n + x];
+                col[x] = vars[x * n + i];
+            }
+            m.addConstraint(allDifferent(row));
+            m.addConstraint(allDifferent(col));
+        }
+
+       CPSolver s = new CPSolver();
+       s.read(m);
+        s.solve(true);
+
+        assertEquals(soluces[n - 1], s.getNbSolutions());
+        System.out.println("LatinSquare Solutions : " + s.getNbSolutions());
+    }
+    @Test
+    public void testLatinSquare2() {
+        System.out.println("Latin Square Test...");
+        // Toutes les solutions de n=5 en 90 sec  (161280 solutions)
+        final int n = 4;
+        final int[] soluces = new int[]{1, 2, 12, 576, 161280};
+
+        // Model
+        CPModel m = new CPModel();
+
+        // Variables
+        IntegerVariable[] vars = new IntegerVariable[n * n];
+        for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+                vars[i * n + j] = makeIntVar("C" + i + "_" + j, 1, n, "cp:bound");
+            }
+		}
+
+        // Constraints
+        for (int i = 0; i < n; i++) {
+            IntegerVariable[] row = new IntegerVariable[n];
+            IntegerVariable[] col = new IntegerVariable[n];
+            for (int x = 0; x < n; x++) {
+                row[x] = vars[i * n + x];
+                col[x] = vars[x * n + i];
+            }
+            m.addConstraint(allDifferent(row));
+            m.addConstraint(allDifferent(col));
+        }
+
+        CPSolver s = new CPSolver();
+        s.read(m);
+        s.solve(true);
+
+        assertEquals(soluces[n - 1], s.getNbSolutions());
+        System.out.println("LatinSquare Solutions : " + s.getNbSolutions());
+    }
+
+
+    @Test
+    public void testOneVariable(){
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+        IntegerVariable v = makeIntVar("v", 1, 10);
+        m.addConstraint(allDifferent(v));
+        try{
+            s.read(m);
+            s.solve();
+        }catch (Exception e){
+            Assert.fail();
+        }
+    }
+}

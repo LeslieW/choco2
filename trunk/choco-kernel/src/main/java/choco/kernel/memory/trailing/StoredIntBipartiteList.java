@@ -1,0 +1,145 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * 
+ *          _       _                            *
+ *         |  °(..)  |                           *
+ *         |_  J||L _|        CHOCO solver       *
+ *                                               *
+ *    Choco is a java library for constraint     *
+ *    satisfaction problems (CSP), constraint    *
+ *    programming (CP) and explanation-based     *
+ *    constraint solving (e-CP). It is built     *
+ *    on a event-based propagation mechanism     *
+ *    with backtrackable structures.             *
+ *                                               *
+ *    Choco is an open-source software,          *
+ *    distributed under a BSD licence            *
+ *    and hosted by sourceforge.net              *
+ *                                               *
+ *    + website : http://choco.emn.fr            *
+ *    + support : choco@emn.fr                   *
+ *                                               *
+ *    Copyright (C) F. Laburthe,                 *
+ *                  N. Jussien    1999-2008      *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+package choco.kernel.memory.trailing;
+
+import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.IStateInt;
+import choco.kernel.memory.IStateIntVector;
+import choco.kernel.solver.SolverException;
+
+/**
+ * A stored list dedicated to two operations :
+ * - iteration
+ * - removal of an element during iteration
+ * It only requires a StoredInt to denote the first element of the list
+ * and proceeds by swapping element with the first one to remove them and incrementing
+ * the index of the first element.
+ * IT DOES NOT PRESERVE THE ORDER OF THE LIST
+ */
+public class StoredIntBipartiteList implements IStateIntVector {
+
+    /**
+     * The list of values
+     */
+    protected int[] list;
+
+    /**
+     * The first element of the list
+     */
+    protected IStateInt last;
+
+
+    /**
+     * An iterator to be reused
+     */
+    protected DisposableIntIterator lastIterator;
+
+    public StoredIntBipartiteList(IEnvironment environment, int[] values) {
+        this.list = values;
+        this.last = environment.makeInt(values.length - 1);
+    }
+
+
+    public int size() {
+        return last.get() + 1;
+    }
+
+    public boolean isEmpty() {
+        return last.get() == -1;
+    }
+
+    public void add(final int i) {
+        throw new UnsupportedOperationException("adding element is not permitted in this structure (the list is only meant to decrease during search)");
+    }
+
+    public void remove(int i) {
+        throw new UnsupportedOperationException("removing element is not permitted in this structure (the list is only meant to decrease during search)");
+    }
+
+    public void removeLast() {
+        last.add(-1);
+    }
+
+    public int get(final int index) {
+        return list[index];
+    }
+
+    public int set(final int index, final int val) {
+        throw new SolverException("setting an element is not permitted on this structure");
+    }
+
+    public DisposableIntIterator getIterator() {
+      BipartiteListIterator iter = (BipartiteListIterator) lastIterator;
+      if (iter != null && iter.disposed) {
+        iter.init();
+        return iter;
+      }
+      lastIterator = new BipartiteListIterator();
+      return lastIterator;
+    }
+
+    public String pretty() {
+        String s = "[";
+        for (int i = 0; i <= last.get(); i++) {
+            s+= list[i] + (i == last.get() ? "":",");
+        }
+        return s + "]";
+    }
+    
+
+    private class BipartiteListIterator extends DisposableIntIterator {
+        int idx;
+        boolean disposed;
+
+        public BipartiteListIterator() {
+           init();
+        }
+
+        public void init() {
+           idx = 0;
+           disposed = false;
+        }
+
+        public boolean hasNext() {
+            return idx <= last.get();
+        }
+
+        public int next() {
+            return list[idx++];
+        }
+
+        public void remove() {
+            idx--;
+            int temp = list[last.get()];
+            list[last.get()] = list[idx];
+            list[idx] = temp;
+            last.add(-1);
+        }
+
+        @Override
+        public void dispose() {
+            disposed = true;
+        }
+    }
+}
