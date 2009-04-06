@@ -1,0 +1,74 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * 
+ *          _       _                            *
+ *         |  °(..)  |                           *
+ *         |_  J||L _|        CHOCO solver       *
+ *                                               *
+ *    Choco is a java library for constraint     *
+ *    satisfaction problems (CSP), constraint    *
+ *    programming (CP) and explanation-based     *
+ *    constraint solving (e-CP). It is built     *
+ *    on a event-based propagation mechanism     *
+ *    with backtrackable structures.             *
+ *                                               *
+ *    Choco is an open-source software,          *
+ *    distributed under a BSD licence            *
+ *    and hosted by sourceforge.net              *
+ *                                               *
+ *    + website : http://choco.emn.fr            *
+ *    + support : choco@emn.fr                   *
+ *                                               *
+ *    Copyright (C) F. Laburthe,                 *
+ *                  N. Jussien    1999-2008      *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+package choco.cp.model.managers.constraints.global;
+
+import choco.cp.model.managers.IntConstraintManager;
+import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.global.multicostregular.MultiCostRegular;
+import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.model.variables.Variable;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.model.constraints.automaton.FA.Automaton;
+
+import java.util.HashSet;
+
+/**
+ * Created by IntelliJ IDEA.
+* User: julien
+* Mail: julien.menana{at}emn.fr
+* Date: Mar 23, 2009
+* Time: 4:43:36 PM
+*/
+public class MultiCostRegularManager extends IntConstraintManager
+{
+
+    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options)
+    {
+        if (solver instanceof CPSolver && parameters instanceof Object[])
+        {
+
+            IntDomainVar[] all = solver.getVar((IntegerVariable[]) variables);
+
+
+            Object[] param = (Object[]) parameters;
+            if (param.length == 3)
+            {
+                int sz = (Integer) param[0];
+                Automaton pi = (Automaton) param[1];
+                int[][][] csts = (int[][][]) param[2];
+
+                IntDomainVar[] vs = new IntDomainVar[sz];
+                IntDomainVar[] z = new IntDomainVar[all.length-sz];
+                System.arraycopy(all, 0, vs, 0, vs.length);
+                System.arraycopy(all, vs.length, z, 0, all.length - vs.length);
+
+
+                return new MultiCostRegular(vs,z,pi,csts);
+            }
+        }
+        return null;
+    }
+
+}

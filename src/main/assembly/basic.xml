@@ -1,0 +1,25 @@
+<assembly>
+  <id>basic</id>
+  <formats>
+    <format>jar</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>choco-kernel/target/classes</directory>
+      <outputDirectory>/</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>choco-cp/target/classes</directory>
+      <outputDirectory>/</outputDirectory>
+      <excludes>
+        <exclude>**/samples/**</exclude>
+      </excludes>
+    </fileSet>
+  </fileSets>
+    <dependencySets>
+      <dependencySet>
+      <unpack>true</unpack>
+      </dependencySet>
+  </dependencySets>
+</assembly>

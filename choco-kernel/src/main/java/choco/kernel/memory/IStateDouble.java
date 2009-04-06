@@ -1,0 +1,57 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * 
+ *          _       _                            *
+ *         |  °(..)  |                           *
+ *         |_  J||L _|        CHOCO solver       *
+ *                                               *
+ *    Choco is a java library for constraint     *
+ *    satisfaction problems (CSP), constraint    *
+ *    programming (CP) and explanation-based     *
+ *    constraint solving (e-CP). It is built     *
+ *    on a event-based propagation mechanism     *
+ *    with backtrackable structures.             *
+ *                                               *
+ *    Choco is an open-source software,          *
+ *    distributed under a BSD licence            *
+ *    and hosted by sourceforge.net              *
+ *                                               *
+ *    + website : http://choco.emn.fr            *
+ *    + support : choco@emn.fr                   *
+ *                                               *
+ *    Copyright (C) F. Laburthe,                 *
+ *                  N. Jussien    1999-2008      *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+package choco.kernel.memory;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: julien
+ * Date: 12 juil. 2007
+ * Time: 10:18:42
+ */
+public interface IStateDouble {
+    /**
+   * Returns the current value.
+     */
+
+    double get();
+
+ 
+    /**
+   * Modifies the value and stores if needed the former value on the
+     * trailing stack.
+     */
+
+    void set(double y);
+
+    /**
+   * modifying a StoredInt by an increment
+     *
+     * @param delta
+     */
+    void add(double delta);
+
+    /**
+   * Retrieving the environment
+     */
+    IEnvironment getEnvironment();
+}

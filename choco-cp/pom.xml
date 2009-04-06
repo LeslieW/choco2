@@ -1,0 +1,24 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>choco</groupId>
+    <artifactId>choco</artifactId>
+    <version>2.1.0</version>
+  </parent>
+  <url>http://www.emn.fr/x-info/choco-solver/mvn/choco//choco-cp</url>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>choco-cp</artifactId>
+  <packaging>jar</packaging>
+  <name>CHOCO Constraint Programming</name>
+  <dependencies>
+    <dependency>
+      <groupId>choco</groupId>
+      <artifactId>choco-kernel</artifactId>
+    </dependency>
+  </dependencies>
+  <distributionManagement>
+  <site>
+    <id>choco.cp.site</id>
+    <url>${mvn-local-repo}/choco-cp</url>
+  </site>
+  </distributionManagement>
+</project>

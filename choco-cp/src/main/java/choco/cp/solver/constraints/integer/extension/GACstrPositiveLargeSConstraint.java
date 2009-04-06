@@ -1,0 +1,327 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * 
+ *          _       _                            *
+ *         |  °(..)  |                           *
+ *         |_  J||L _|        CHOCO solver       *
+ *                                               *
+ *    Choco is a java library for constraint     *
+ *    satisfaction problems (CSP), constraint    *
+ *    programming (CP) and explanation-based     *
+ *    constraint solving (e-CP). It is built     *
+ *    on a event-based propagation mechanism     *
+ *    with backtrackable structures.             *
+ *                                               *
+ *    Choco is an open-source software,          *
+ *    distributed under a BSD licence            *
+ *    and hosted by sourceforge.net              *
+ *                                               *
+ *    + website : http://choco.emn.fr            *
+ *    + support : choco@emn.fr                   *
+ *                                               *
+ *    Copyright (C) F. Laburthe,                 *
+ *                  N. Jussien    1999-2008      *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+package choco.cp.solver.constraints.integer.extension;
+
+import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.IntIterator;
+import choco.kernel.memory.trailing.EnvironmentTrailing;
+import choco.kernel.memory.trailing.StoredIntBipartiteList;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.integer.extension.LargeRelation;
+import choco.kernel.solver.constraints.integer.extension.TuplesList;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.BitSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+/**
+ * GAC maintained by STR
+ */
+public class GACstrPositiveLargeSConstraint extends CspLargeSConstraint {
+
+    protected TuplesList relation;
+
+    // check if none of the tuple is trivially outside
+    // the domains and if yes use a fast valid check
+    // by avoiding checking the bounds
+    protected ValidityChecker valcheck;
+
+    /**
+     * size of the scope
+     */
+    protected int arity;
+
+    /**
+     * original lower bounds
+     */
+    protected int[] offsets;
+
+    /**
+     * Variables that are not proved to be GAC yet
+     */
+    protected List<Integer> futureVars;
+
+    /**
+     * Values that have found a support for each variable
+     */
+    protected BitSet[] gacValues;
+
+    protected int[] nbGacValues;
+
+    /**
+     * The backtrackable list of tuples representing the current
+     * allowed tuples of the constraint
+     */
+    protected StoredIntBipartiteList ltuples;
+
+
+    public GACstrPositiveLargeSConstraint(IntDomainVar[] vs, LargeRelation relation) {
+        super(vs, relation);
+        this.arity = vs.length;
+        this.solver = vs[0].getSolver();
+        this.relation = (TuplesList) relation;
+        this.futureVars = new LinkedList<Integer>();
+        this.gacValues = new BitSet[arity];
+        this.nbGacValues = new int[arity];
+
+        this.offsets = new int[arity];
+        for (int i = 0; i < arity; i++) {
+            this.offsets[i] = vs[i].getInf();
+            this.gacValues[i] = new BitSet(vs[i].getSup() - vs[i].getInf() + 1);
+        }
+
+        int[] listuples = new int[this.relation.getTupleTable().length];
+        for (int i = 0; i < listuples.length; i++) {
+            listuples[i] = i;
+        }
+        ltuples = (StoredIntBipartiteList) ((EnvironmentTrailing) this.solver.getEnvironment()).makeBipartiteIntList(listuples);
+
+        int[][] tt = this.relation.getTupleTable();
+        boolean fastValidCheckAllowed = true;
+        boolean fastBooleanValidCheckAllowed = true;
+        // check if all tuples are within the range
+        // of the domain and if so set up a faster validity checker
+        // that avoids checking original bounds first
+        for (int i = 0; i < tt.length; i++) {
+            for (int j = 0; j < tt[i].length; j++) {
+                int lb = vs[j].getInf();
+                int ub = vs[j].getSup();
+                if (lb > tt[i][j] ||
+                        ub < tt[i][j]) {
+                    fastValidCheckAllowed = false;
+                }
+                if (lb < 0 || ub > 1) {
+                    fastBooleanValidCheckAllowed = false;
+                }
+            }
+            if (!fastBooleanValidCheckAllowed &&
+                    !fastValidCheckAllowed) break;
+        }
+        if (fastBooleanValidCheckAllowed) {
+            valcheck = new FastBooleanValidityChecker(arity, vars);
+        } else if (fastValidCheckAllowed) {
+            valcheck = new FastValidityChecker(arity, vars);
+        } else valcheck = new ValidityChecker(arity, vars);
+    }
+
+    public int getFilteredEventMask(int idx) {
+        return IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
+    }
+
+    public void initializeData() {
+        //INITIALIZATION
+        futureVars.clear();
+        for (int i = 0; i < arity; i++) {
+            gacValues[i].clear();
+            nbGacValues[i] = 0;
+            futureVars.add(i);
+        }
+    }
+
+    public void pruningPhase() throws ContradictionException {
+        for (Iterator<Integer> itf = futureVars.iterator(); itf.hasNext();) {
+            int vIdx = itf.next();
+            IntDomainVar v = vars[vIdx];
+            DisposableIntIterator it3 = v.getDomain().getIterator();
+            while (it3.hasNext()) {
+                int val = it3.next();
+                if (!gacValues[vIdx].get(val - offsets[vIdx])) {
+                    v.removeVal(val, cIndices[vIdx]);
+                }
+            }
+        }
+    }
+
+    /**
+     * maintain the list by checking only the variable that has changed when
+     * checking if a tuple is valid.
+     *
+     * @param idx : the variable changed
+     */
+    public void maintainList(int idx) {
+        DisposableIntIterator it = ltuples.getIterator();
+        while (it.hasNext()) {
+            int idxt = it.next();
+            int[] tuple = relation.getTuple(idxt);
+            try {
+                if (valcheck.isValid(tuple, idx)) {
+                    //extract the supports
+                    for (Iterator<Integer> itf = futureVars.iterator(); itf.hasNext();) {
+                        int vIdx = itf.next();
+                        if (!gacValues[vIdx].get(tuple[vIdx] - offsets[vIdx])) {
+                            gacValues[vIdx].set(tuple[vIdx] - offsets[vIdx]);
+                            nbGacValues[vIdx]++;
+                            if (nbGacValues[vIdx] == vars[vIdx].getDomainSize()) {
+                                itf.remove();
+                            }
+                        }
+                    }
+                } else {
+                    //remove the tuple from the current list
+                    it.remove();
+                }
+            } finally {
+                it.dispose();
+            }
+        }
+    }
+
+    /**
+     * maintain the list by checking all variable within isValid
+     */
+    public void maintainList() {
+        DisposableIntIterator it = ltuples.getIterator();
+        while (it.hasNext()) {
+            int idxt = it.next();
+            int[] tuple = relation.getTuple(idxt);
+
+            if (valcheck.isValid(tuple)) {
+                //extract the supports
+                for (Iterator<Integer> itf = futureVars.iterator(); itf.hasNext();) {
+                    int vIdx = itf.next();
+                    if (!gacValues[vIdx].get(tuple[vIdx] - offsets[vIdx])) {
+                        gacValues[vIdx].set(tuple[vIdx] - offsets[vIdx]);
+                        nbGacValues[vIdx]++;
+                        if (nbGacValues[vIdx] == vars[vIdx].getDomainSize()) {
+                            itf.remove();
+                        }
+                    }
+                }
+            } else {
+                //remove the tuple from the current list
+                it.remove();
+            }
+        }
+    }
+
+
+    /**
+     * Main Incremental propagation loop. It maintains the list of valid tuples
+     * through the search
+     *
+     * @throws ContradictionException
+     */
+    public void gacstr(int idx) throws ContradictionException {
+        initializeData();
+        maintainList(idx);
+        pruningPhase();
+    }
+
+    /**
+     * Main propagation loop. It maintains the list of valid tuples
+     * through the search
+     *
+     * @throws ContradictionException
+     */
+    public void gacstr() throws ContradictionException {
+        initializeData();
+        maintainList();
+        pruningPhase();
+        if (getCartesianProduct() <= ltuples.size()) {
+            setEntailed();
+        }
+    }
+
+    public double getCartesianProduct() {
+        double cp = 1d;
+        for (int i = 0; i < arity; i++) {
+            cp *= vars[i].getDomainSize();
+        }
+        return cp;
+    }
+
+    public void propagate() throws ContradictionException {
+        valcheck.sortvars();
+        gacstr();
+    }
+
+    public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+        filter(idx);
+    }
+
+    public void awakeOnInf(int idx) throws ContradictionException {
+        filter(idx);
+    }
+
+    public void awakeOnSup(int idx) throws ContradictionException {
+        filter(idx);
+    }
+
+    public void awakeOnRem(int idx, int x) throws ContradictionException {
+        filter(idx);
+    }
+
+    public void awakeOnBounds(int varIndex) throws ContradictionException {
+        filter(varIndex);
+    }
+
+    public void awakeOnInst(int idx) throws ContradictionException {
+        filter(idx);
+    }
+
+    public void awake() throws ContradictionException {
+        propagate();
+    }
+
+    public void filter(int idx) throws ContradictionException {
+        //sort variables regarding domain sizes to speedup the check !
+        valcheck.sortvars();
+        gacstr();
+        //constAwake(false);
+    }
+
+
+       //<hca> implementation not efficient at all because
+    //this constraint never "check" tuples but iterate over them and check the domains.
+    //this should only be called in the restore solution
+    @Override
+    public boolean isSatisfied(int[] tuple) {
+        int[][] tupleList = relation.getTupleTable();
+        for (int i = 0; i < tupleList.length; i++) {
+            boolean isValid = true;
+            for (int j = 0; isValid && j < tuple.length; j++) {
+                if (tuple[j] != tupleList[i][j]) {
+                    isValid = false;
+                }
+            }
+            if (isValid) return true;
+        }
+        return false;
+    }
+
+    public String pretty() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("GACStrAllowedLarge({");
+        for (int i = 0; i < vars.length; i++) {
+            if (i > 0) sb.append(", ");
+            IntDomainVar var = vars[i];
+            sb.append(var.pretty());
+        }
+        sb.append("})");
+        return sb.toString();
+    }
+
+}

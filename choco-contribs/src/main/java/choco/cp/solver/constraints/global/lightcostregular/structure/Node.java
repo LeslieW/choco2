@@ -1,0 +1,178 @@
+package choco.cp.solver.constraints.global.lightcostregular.structure;
+
+import choco.kernel.memory.IStateDouble;
+import choco.kernel.memory.IStateInt;
+import choco.kernel.memory.IEnvironment;
+
+/**
+ * Created by IntelliJ IDEA.
+ * User: julien
+ * Date: Nov 24, 2008
+ * Time: 1:00:47 PM
+ */
+
+public class Node implements Comparable{
+    static int ID = 0;
+
+    IEnvironment env;
+
+    IStateDouble spfs;
+    IStateDouble spft;
+    IStateDouble lpfs;
+    IStateDouble lpft;
+
+    IStateInt sptt;
+    IStateInt spts;
+    IStateInt lptt;
+    IStateInt lpts;
+
+    int id;
+    int layer;
+    int state;
+    int offset;
+    int nbEdges;
+    int offsetRev;
+    int nbEdgesRev;
+
+
+
+
+
+    public Node(IEnvironment env, int layer, int state)
+    {
+        this.env = env;
+        this.layer = layer;
+        this.state = state;
+        this.id = ID++;
+    }
+
+    public void setShortestPathFromSource(double val)
+    {
+        if (spfs == null)
+            spfs = env.makeFloat(val);
+        else
+            spfs.set(val);
+    }
+    public void setShortestPathFromTink(double val)
+    {
+        if (spft == null)
+            spft = env.makeFloat(val);
+        else
+            spft.set(val);
+    }
+    public void setLongestPathFromTink(double val)
+    {
+        if (lpft == null)
+            lpft = env.makeFloat(val);
+        else
+            lpft.set(val);
+    }
+    public void setLongestPathFromSource(double val)
+    {
+        if (lpfs == null)
+            lpfs = env.makeFloat(val);
+        else
+            lpfs.set(val);
+    }
+
+    public double getShortestPathFromSource()
+    {
+        if (spfs == null)
+            return Integer.MAX_VALUE;
+        else
+            return spfs.get();
+    }
+    public double getShortestPathFromTink()
+    {
+        if (spft == null)
+            return Integer.MAX_VALUE;
+        else
+            return spft.get();
+    }
+    public double getLongestPathFromTink()
+    {
+        if (lpft == null)
+            return Integer.MIN_VALUE;
+        else
+            return lpft.get();
+    }
+    public double getLongestPathFromSource()
+    {
+        if (lpfs == null)
+            return Integer.MIN_VALUE;
+        else
+            return lpfs.get();
+    }
+
+
+    public void setShortestPathToTink(int id)
+    {
+        if (sptt == null)
+            sptt = env.makeInt(id);
+        else
+            this.sptt.set(id);
+    }
+    public void setShortestPathToSource(int id)
+    {
+        if (spts == null)
+            spts = env.makeInt(id);
+        else
+            this.spts.set(id);
+    }
+    public void setLongestPathToSource(int id)
+    {
+        if (lpts == null)
+            lpts = env.makeInt(id);
+        else
+            this.lpts.set(id);
+    }
+    public void setLongestPathToTink(int id)
+    {
+        if (lptt == null)
+            lptt = env.makeInt(id);
+        else
+            this.lptt.set(id);
+    }
+
+    public int getShortestPathToTink()
+    {
+        if (sptt == null)
+            return -1;
+        else
+            return this.sptt.get();
+    }
+    public int getShortestPathToSource()
+    {
+        if (spts == null)
+            return -1;
+        else
+            return this.spts.get();
+    }
+    public int getLongestPathToSource()
+    {
+        if (lpts == null)
+            return -1;
+        else
+            return this.lpts.get();
+    }
+    public int getLongestPathToTink()
+    {
+        if (lptt == null)
+            return -1;
+        else
+            return this.lptt.get();
+    }
+
+    public void updateShortestPathtoSource() {
+        
+    }
+
+    public void updateLongestPathFromSource() {
+        
+    }
+
+    public int compareTo(Object o) {
+        Node n = (Node) o;
+        return new Integer(this.id).compareTo(n.id);
+    }
+}

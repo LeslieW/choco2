@@ -1,0 +1,65 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * 
+ *          _       _                            *
+ *         |  °(..)  |                           *
+ *         |_  J||L _|        CHOCO solver       *
+ *                                               *
+ *    Choco is a java library for constraint     *
+ *    satisfaction problems (CSP), constraint    *
+ *    programming (CP) and explanation-based     *
+ *    constraint solving (e-CP). It is built     *
+ *    on a event-based propagation mechanism     *
+ *    with backtrackable structures.             *
+ *                                               *
+ *    Choco is an open-source software,          *
+ *    distributed under a BSD licence            *
+ *    and hosted by sourceforge.net              *
+ *                                               *
+ *    + website : http://choco.emn.fr            *
+ *    + support : choco@emn.fr                   *
+ *                                               *
+ *    Copyright (C) F. Laburthe,                 *
+ *                  N. Jussien    1999-2008      *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+package choco.cp.model.managers;
+
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.ConstraintManager;
+import choco.kernel.model.variables.integer.IntegerExpressionVariable;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.reified.INode;
+import choco.kernel.solver.variables.set.SetVar;
+
+import java.util.HashSet;
+
+/*
+ * Created by IntelliJ IDEA.
+ * User: hcambaza
+ * Date: Aug 8, 2008
+ * Since : Choco 2.0.0
+ *
+ */
+public abstract class SetConstraintManager implements ConstraintManager {
+
+    /**
+     * @param options the set of options on the constraint (Typically the level of consistency)
+     * @return a list of domains accepted by the constraint and sorted
+     *         by order of preference
+     */
+    public int[] getFavoriteDomains(HashSet<String> options) {
+        return new int[]{SetVar.BOUNDSET_BOUNDCARD,
+                SetVar.BOUNDSET_ENUMCARD
+        };
+    }
+
+    /**
+     * Build a expression node
+     *
+     * @param solver
+     * @param cstrs  constraints
+     * @param vars   variables
+     * @return
+     */
+    public INode makeNode(Solver solver, Constraint[] cstrs, IntegerExpressionVariable[] vars) {
+        return null;
+    }
+}

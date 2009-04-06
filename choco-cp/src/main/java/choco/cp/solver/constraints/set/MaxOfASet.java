@@ -1,0 +1,396 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * *
+ *          _       _                            *
+ *         |  °(..)  |                           *
+ *         |_  J||L _|        CHOCO solver       *
+ *                                               *
+ *    Choco is a java library for constraint     *
+ *    satisfaction problems (CSP), constraint    *
+ *    programming (CP) and explanation-based     *
+ *    constraint solving (e-CP). It is built     *
+ *    on a event-based propagation mechanism     *
+ *    with backtrackable structures.             *
+ *                                               *
+ *    Choco is an open-source software,          *
+ *    distributed under a BSD licence            *
+ *    and hosted by sourceforge.net              *
+ *                                               *
+ *    + website : http://choco.emn.fr            *
+ *    + support : choco@emn.fr                   *
+ *                                               *
+ *    Copyright (C) F. Laburthe,                 *
+ *                  N. Jussien    1999-2008      *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
+package choco.cp.solver.constraints.set;
+
+import choco.cp.solver.CPSolver;
+import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.IntIterator;
+import choco.kernel.memory.IStateInt;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.SolverException;
+import choco.kernel.solver.constraints.set.AbstractLargeSetIntSConstraint;
+import choco.kernel.solver.variables.integer.IntVar;
+import choco.kernel.solver.variables.set.SetDomain;
+import choco.kernel.solver.variables.set.SetVar;
+
+/**
+ * An abstract class used for MaxOfASet and MinOfaSet constraints
+ * @author Arnaud Malapert</br>
+ * @since 8 déc. 2008 version 2.0.1</br>
+ * @version 2.0.1</br>
+ */
+abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
+
+	/** Index of the set variable*/
+	public static final int SET_INDEX = 0;
+
+	/**
+	 * Index of the maximum variable.
+	 */
+	public static final int BOUND_INDEX = 0;
+
+	/**
+	 * First index of the variables among which the maximum should be chosen.
+	 */
+	public static final int VARS_OFFSET = 1;
+
+
+	public AbstractBoundOfASet(IntVar[] intvars, SetVar setvar) {
+		super(intvars, new SetVar[]{setvar});
+		if(setvar.getEnveloppeInf()<0 || setvar.getEnveloppeSup()>intvars.length-2) {
+			throw new SolverException("The enveloppe of the set variable "+setvar.pretty()+" is larger than the array");
+		}
+	}
+
+	protected final int getConstraintIntIdx(int idx) {
+		return getConstraintIdx(VARS_OFFSET+1);
+	}
+
+	protected final boolean isInKernel(int idx) {
+		return svars[SET_INDEX].isInDomainKernel(idx);
+	}
+
+	protected final boolean isInEnveloppe(int idx) {
+		return svars[SET_INDEX].isInDomainEnveloppe(idx);
+	}
+
+	protected final SetDomain getSetDomain() {
+		return svars[SET_INDEX].getDomain();
+	}
+
+	protected final boolean isNotEmptySet() {
+		return this.svars[SET_INDEX].getCard().getInf() > 0;
+	}
+
+	protected final boolean isSetInstantiated() {
+		return svars[SET_INDEX].isInstantiated();
+	}
+
+	protected final boolean updateBoundInf(int val) throws ContradictionException {
+		return ivars[BOUND_INDEX].updateInf(val, this.getConstraintIntIdx(BOUND_INDEX));
+	}
+
+	protected final boolean updateBoundSup(int val) throws ContradictionException {
+		return ivars[BOUND_INDEX].updateSup(val, this.getConstraintIntIdx(BOUND_INDEX));
+	}
+
+	protected final boolean removeFromEnv(int idx) throws ContradictionException {
+		return removeFromEnv(idx, ivars[BOUND_INDEX].getInf(), ivars[BOUND_INDEX].getSup());
+	}
+
+	protected final boolean removeFromEnv(int idx,int minValue,int maxValue) throws ContradictionException {
+		if(ivars[VARS_OFFSET+idx].getSup()<minValue || ivars[VARS_OFFSET+idx].getInf()>maxValue) {
+			return this.svars[SET_INDEX].remFromEnveloppe(idx, getConstraintIdx(SET_INDEX));
+		}
+		return false;
+	}
+
+	protected final boolean updateEnveloppe() throws ContradictionException {
+		final int minValue = ivars[BOUND_INDEX].getInf();
+		final int maxValue = ivars[BOUND_INDEX].getSup();
+		final IntIterator iter= getSetDomain().getOpenDomainIterator();
+		boolean update = false;
+		while(iter.hasNext()) {
+			removeFromEnv(iter.next(), minValue, maxValue);
+		}
+		return update;
+	}
+
+	@Override
+	public void awakeOnEnvRemovals(int idx, IntIterator deltaDomain)
+	throws ContradictionException {
+		if(idx==SET_INDEX && deltaDomain.hasNext()) {
+			awakeOnEnv(idx, deltaDomain.next());
+		}
+	}
+
+
+	@Override
+	public void awakeOnkerAdditions(int idx, IntIterator deltaDomain)
+	throws ContradictionException {
+		if(idx==SET_INDEX && deltaDomain.hasNext()) {
+			awakeOnKer(idx, deltaDomain.next());
+		}
+	}
+
+	@Override
+	public Boolean isEntailed() {
+		throw new UnsupportedOperationException("isEntailed not yet implemented on MaxOfAList");
+	}
+
+
+
+	@Override
+	public boolean isConsistent() {
+		return false;
+	}
+
+	@Override
+	public boolean isSatisfied() {
+		return false;
+	}
+
+	@Override
+	public String pretty() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(svars[SET_INDEX].pretty());
+		sb.append(ChocoUtil.pretty(ivars));
+		return new String(sb);
+	}
+}
+
+/**
+ * Implements a constraint X = max(Y_i | i \in S).
+ * I only modified the maxOfAList constraint
+ * @author Arnaud Malapert</br>
+ * @since 8 déc. 2008 version 2.0.1</br>
+ * @version 2.0.1</br>
+ */
+public class MaxOfASet extends AbstractBoundOfASet {
+
+	/**
+	 * Index of the maximum variable.
+	 */
+	protected final IStateInt indexOfMaximumVariable;
+
+
+	public MaxOfASet(IntVar[] intvars, SetVar setvar) {
+		super(intvars, setvar);
+		indexOfMaximumVariable = this.getSolver().getEnvironment().makeInt(-1);
+	}
+
+
+	protected void updateIndexOfMaximumVariables() throws ContradictionException {
+		int maxMax = Integer.MIN_VALUE, maxMaxIdx = -1;
+		int maxMax2 = Integer.MIN_VALUE;
+		IntIterator iter= this.getSetDomain().getEnveloppeIterator();
+		while(iter.hasNext()) {
+			final int idx = iter.next() + VARS_OFFSET;
+			final int val = ivars[idx].getSup();
+			if (val >= maxMax) {
+				maxMax2 = maxMax;
+				maxMax = val;
+				maxMaxIdx = idx;
+			} else if (val > maxMax2) {
+				maxMax2 = val;
+			}
+		}
+		if (maxMax2 < ivars[BOUND_INDEX].getInf()) {
+			this.indexOfMaximumVariable.set(maxMaxIdx);
+
+		}
+
+	}
+
+	/**
+	 * If only one candidate to be the max of the list, some additionnal
+	 * propagation can be performed (as in usual x == y constraint).
+	 */
+	protected boolean onlyOneMaxCandidatePropagation() throws ContradictionException {
+		boolean update=false;
+		if(isNotEmptySet()) {
+			//if the set could be empty : we do nothing
+			if (this.indexOfMaximumVariable.get() == -1) {
+				updateIndexOfMaximumVariables();
+			}
+			int idx = this.indexOfMaximumVariable.get();
+			if (idx != -1) {
+				update = svars[SET_INDEX].addToKernel(idx-1, getConstraintIdx(SET_INDEX));
+				updateBoundInf(ivars[idx].getInf());
+				ivars[idx].updateInf(ivars[BOUND_INDEX].getInf(),getConstraintIntIdx(idx));
+			}
+		}
+		return update;
+
+	}
+
+	protected final int maxInf() {
+		IntIterator iter= getSetDomain().getKernelIterator();
+		int max = Integer.MIN_VALUE;
+		while(iter.hasNext()) {
+			int val = ivars[VARS_OFFSET+iter.next()].getInf();
+			if(val>max) {max=val;}
+		}
+		return max;
+	}
+
+
+	protected final int maxSup() {
+		if( isNotEmptySet()) {
+			int max = Integer.MIN_VALUE;
+			//if the set could be empty : we do nothing
+			IntIterator iter= getSetDomain().getEnveloppeIterator();
+			while(iter.hasNext()) {
+				int val = ivars[VARS_OFFSET+iter.next()].getSup();
+				if(val>max) {max=val;}
+			}
+			return max;
+		}else {
+			return Integer.MAX_VALUE;
+		}
+	}
+
+	protected final void updateKernelSup() throws ContradictionException {
+		final int maxValue = ivars[BOUND_INDEX].getSup();
+		IntIterator iter= svars[SET_INDEX].getDomain().getKernelIterator();
+		while(iter.hasNext()) {
+			final int i = VARS_OFFSET+iter.next();
+			ivars[i].updateSup(maxValue, this.getConstraintIntIdx(i));
+		}
+	}
+
+	/**
+	 * Propagation of the constraint.
+	 *
+	 * @throws choco.kernel.solver.ContradictionException if a domain becomes empty.
+	 */
+	@Override
+	public void propagate() throws ContradictionException {
+		boolean noFixPoint = true;
+		while(noFixPoint) {
+			noFixPoint =false;
+			updateBoundInf(maxInf());
+			updateBoundSup(maxSup());
+			updateKernelSup();
+			noFixPoint |= updateEnveloppe();
+			noFixPoint |= onlyOneMaxCandidatePropagation();
+
+		}
+	}
+
+	/**
+	 * Propagation when lower bound is increased.
+	 *
+	 * @param idx the index of the modified variable.
+	 * @throws ContradictionException if a domain becomes empty.
+	 */
+	@Override
+	public void awakeOnInf(final int idx) throws ContradictionException {
+		if (idx >= 2*VARS_OFFSET) { // Variable in the list
+			final int i = idx-2*VARS_OFFSET;
+			if(isInEnveloppe(i)) {
+				if(isSetInstantiated()) {
+					//maxOfaList case
+					updateBoundInf(maxInf());
+				}else {
+					if( ( isInKernel(i) && updateBoundInf(maxInf()) ) || removeFromEnv(i) ) {
+						this.constAwake(false);
+					}
+				}
+			}
+		} else { // Maximum variable
+			if(isSetInstantiated()) {
+				//maxOfaList case
+				onlyOneMaxCandidatePropagation();
+			}else if(updateEnveloppe() ||  onlyOneMaxCandidatePropagation()) {
+				this.constAwake(false);
+			}
+		}
+	}
+
+	/**
+	 * Propagation when upper bound is decreased.
+	 *
+	 * @param idx the index of the modified variable.
+	 * @throws choco.kernel.solver.ContradictionException if a domain becomes empty.
+	 */
+	@Override
+	public void awakeOnSup(final int idx) throws ContradictionException {
+		if (idx >= 2*VARS_OFFSET) { // Variable in the list
+			final int i = idx-2*VARS_OFFSET;
+			if(isInEnveloppe(i)) {
+				if(isSetInstantiated()) {
+					//maxOfaList case
+					updateBoundSup(maxSup());
+					onlyOneMaxCandidatePropagation();
+				}else {
+					if(removeFromEnv(i) || updateBoundSup(maxSup())) {
+						this.constAwake(false);
+					}
+				}
+			}
+		} else { // Maximum variable
+			updateKernelSup();
+			if(updateEnveloppe()) {
+				//if the enveloppe changed, we need to propagate.
+				this.constAwake(false);
+			}
+		}
+	}
+
+
+
+
+	/**
+	 * Propagation when a variable is instantiated.
+	 *
+	 * @param idx the index of the modified variable.
+	 * @throws choco.kernel.solver.ContradictionException if a domain becomes empty.
+	 */
+	@Override
+	public void awakeOnInst(final int idx) throws ContradictionException {
+		CPSolver.flushLogs();
+		if (idx >= 2*VARS_OFFSET) { //of the list
+			final int i = idx-2*VARS_OFFSET;
+			if(isInEnveloppe(i)) { //of the set
+				boolean propagate = updateBoundSup(maxSup());
+				if(isInKernel(i)) {	propagate |= updateBoundInf(maxInf());}
+				if(propagate && !isSetInstantiated()) {
+					this.constAwake(false);
+				}
+			}
+
+		} else if (idx == VARS_OFFSET) { // Maximum variable
+			updateKernelSup();
+			boolean propagate = onlyOneMaxCandidatePropagation();
+			if(!isSetInstantiated()) {
+				propagate |= updateEnveloppe();
+				if(propagate) {this.constAwake(false);}
+			}
+		}else { //set is instantiated, propagate
+			this.propagate();
+		}
+	}
+
+
+
+	@Override
+	public void awakeOnEnv(int varIdx, int x) throws ContradictionException {
+		if( updateBoundSup(maxSup()) || onlyOneMaxCandidatePropagation() ) {
+			//if the max has changed or the maximum variable was found : propagate
+			this.constAwake(false);
+		}
+
+	}
+
+	@Override
+	public void awakeOnKer(int varIdx, int x) throws ContradictionException {
+		if( updateBoundInf(maxInf()) ) {
+			if(updateEnveloppe() || onlyOneMaxCandidatePropagation()) {
+				//set has changed again
+				this.constAwake(false);
+			}
+		}
+	}
+
+}

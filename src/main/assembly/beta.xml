@@ -1,0 +1,30 @@
+<assembly>
+  <id>beta</id>
+  <formats>
+    <format>jar</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+<fileSets>
+    <fileSet>
+      <directory>choco-kernel/target/classes</directory>
+      <outputDirectory>/</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>choco-cp/target/classes</directory>
+      <outputDirectory>/</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>choco-visu/target/classes</directory>
+      <outputDirectory>/</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>choco-contribs/target/classes</directory>
+      <outputDirectory>/</outputDirectory>
+    </fileSet>
+  </fileSets>
+    <dependencySets>
+      <dependencySet>
+      <unpack>false</unpack>
+      </dependencySet>
+  </dependencySets>
+</assembly>

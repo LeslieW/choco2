@@ -1,0 +1,204 @@
+/* ************************************************
+ *           _       _                            *
+ *          |  °(..)  |                           *
+ *          |_  J||L _|        CHOCO solver       *
+ *                                                *
+ *     Choco is a java library for constraint     *
+ *     satisfaction problems (CSP), constraint    *
+ *     programming (CP) and explanation-based     *
+ *     constraint solving (e-CP). It is built     *
+ *     on a event-based propagation mechanism     *
+ *     with backtrackable structures.             *
+ *                                                *
+ *     Choco is an open-source software,          *
+ *     distributed under a BSD licence            *
+ *     and hosted by sourceforge.net              *
+ *                                                *
+ *     + website : http://choco.emn.fr            *
+ *     + support : choco@emn.fr                   *
+ *                                                *
+ *     Copyright (C) F. Laburthe,                 *
+ *                   N. Jussien    1999-2008      *
+ **************************************************/
+package parser;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import parser.absconparseur.tools.SolutionChecker;
+import parser.chocogen.XmlModel;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.security.Permission;
+import java.util.Properties;
+
+/*
+* User : charles
+* Mail : cprudhom(a)emn.fr
+* Date : 12 févr. 2009
+* Since : Choco 2.0.1
+* Update : Choco 2.0.1
+*/
+public class ResolutionTest {
+
+    Properties properties = new Properties();
+    String[] args = new String[12];
+
+    @Before
+    public void before() throws IOException, URISyntaxException {
+        InputStream is = getClass().getResourceAsStream("/csp.properties");
+        properties.load(is);
+        String f = getClass().getResource("/csp").toURI().getPath();
+        args[0] = "-file";
+        args[1] = f;
+        args[2] = "-h";
+        args[3] = properties.getProperty("csp.h");
+        args[4] = "-ac";
+        args[5] = properties.getProperty("csp.ac");
+        args[6] = "-s";
+        args[7] = properties.getProperty("csp.s");
+        args[8] = "-verb";
+        args[9] = properties.getProperty("csp.verb");
+        args[10] = "-time";
+        args[11] = properties.getProperty("csp.time");
+    }
+
+
+    @Test
+    public void mainTest() {
+
+        String directory = args[1]; 
+        int nbpb=Integer.parseInt((String) properties.get("pb.nbpb"));
+        for(int i = 1; i < nbpb+1; i++){
+            args[1] = directory + "/"+ properties.get("pb."+i+".name")+".xml";
+
+            XmlModel xm = new XmlModel();
+            try {
+                xm.generate(args);
+            } catch (Exception e) {
+                System.err.println(e.toString());
+                Assert.fail();
+            }
+            System.setSecurityManager(new NoExitSecurityManager());
+            try{
+                if(xm.isFeasible()==Boolean.TRUE)
+                    SolutionChecker.main(xm.getValues());
+            }catch (ExitException e){
+                System.err.println(e.toString());
+                Assert.fail();
+            }finally {
+                System.setSecurityManager(null);
+            }
+            int builtime = Integer.valueOf((String) properties.get("pb."+i+".buildtime"));
+            System.out.println(xm.getBuildTime()  + " > " + builtime + "?" + " for " + "pb."+i);
+            Assert.assertTrue("too much time spending in building problem...", xm.getBuildTime() < builtime);
+        }
+    }
+
+
+    @Test
+    public void bibdTest() {
+        XmlModel xm = new XmlModel();
+        args[1] = args[1] + "/bibd-8-14-7-4-3_glb.xml";
+        int nbNodes = -1;
+        for (int i = 0; i < 5; i++) {
+            try {
+                xm.generate(args);
+            } catch (Exception e) {
+                System.err.println(e.toString());
+                Assert.fail();
+            }
+            if (nbNodes == -1) {
+                nbNodes = xm.getNbNodes();
+            } else {
+                Assert.assertEquals("not same number of nodes", nbNodes, xm.getNbNodes());
+            }
+
+        }
+    }
+
+
+    @Test
+    @Ignore
+    public void aTest() {
+        XmlModel xm = new XmlModel();
+        args[1] = args[1] + "/normalized-C7-1-240.xml";
+        try {
+            xm.generate(args);
+        } catch (Exception e) {
+            System.err.println(e.toString());
+            Assert.fail();
+        }
+    }
+
+
+    //***************************************************************************************
+/**
+	 * An exception thrown when an System.exit() occurred.
+	 * @author Fabien Hermenier
+	 *
+	 */
+	class ExitException extends SecurityException {
+
+		/**
+		 * The exit status.
+		 */
+		private int status;
+
+		/**
+		 * A new exception.
+		 * @param st the exit status
+		 */
+		public ExitException(int st) {
+			super("There is no escape");
+			this.status = st;
+		}
+
+		/**
+		 * Return the error message.
+		 * @return a String!
+		 */
+		public String getMessage() {
+			return "Application execute a 'System.exit(" + this.status + ")'";
+		}
+	}
+
+	/**
+	 * A Mock security manager to "transform" a System.exit() into
+	 * a ExitException.
+	 * @author Fabien Hermenier
+	 *
+	 */
+	class NoExitSecurityManager extends SecurityManager {
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void checkPermission(Permission perm, Object ctx) {
+
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void checkPermission(Permission perm) {
+
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public void checkExit(int st) {
+			super.checkExit(st);
+			throw new ExitException(st);
+		}
+	}
+    
+
+}
