@@ -80,9 +80,11 @@ public class LubyRestart extends GeometricalRestart {
 
 
 	public final int getLasVegasCoef(int i) {
-		double log = log( i * divFactor + 1,geometricalIntFactor);
-		int k = (int) Math.floor(log);
-		if(log == k) {
+        //<hca> I round it to 10^-5 because of issues between versions of the jvm on mac and pc 
+        double log = Math.round(log(i * divFactor + 1, geometricalIntFactor) * 100000) / 100000d;
+        int k = (int) Math.floor(log);
+
+        if(log == k) {
 			// i = factor^k -1
 			return pow(geometricalIntFactor,k-1);
 		}else {
