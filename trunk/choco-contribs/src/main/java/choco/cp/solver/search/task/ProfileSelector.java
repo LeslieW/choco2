@@ -52,6 +52,14 @@ public class ProfileSelector implements VarValPairSelector {
 
 	public final IResource<?>[] rscL;
 
+	protected ProfileSelector(Solver solver, IResource<?>[] resources, IPrecedenceStore precStore) {
+		super();
+		this.precStore = precStore;
+		profiles = new ProbabilisticProfile(solver);
+		profiles.precStore = precStore;
+		rscL = resources;
+	}
+	
 	protected ProfileSelector(Solver solver, IPrecedenceStore precStore) {
 		super();
 		this.precStore = precStore;
@@ -75,6 +83,16 @@ public class ProfileSelector implements VarValPairSelector {
 		this.precSelector = precSelector;
 	}
 
+	public ProfileSelector(Solver solver,  IResource<?>[] resources, IPrecedenceStore precStore, ValSelector valSelector) {
+		this(solver, resources, precStore);
+		this.valSelector = valSelector;
+	}
+
+	public ProfileSelector(Solver solver,  IResource<?>[] resources, IPrecedenceStore precStore, PrecValSelector precSelector) {
+		this(solver, resources, precStore);
+		this.precSelector = precSelector;
+	}
+	
 	@Override
 	public IntVarValPair selectVarValPair() throws ContradictionException {
 		//compute maximal contention point

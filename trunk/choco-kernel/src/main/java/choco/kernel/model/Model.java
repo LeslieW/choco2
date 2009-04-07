@@ -306,8 +306,7 @@ public interface Model extends IPretty {
      * @param v variables to remove
      */
     public void removeVariables(Variable... v);
-
-
+    
     /**
      * Add one or more constraint to the model.
      * Also add variables to the model if necessary.
