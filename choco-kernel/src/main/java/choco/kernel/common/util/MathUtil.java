@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.common.util;
 
+
 /**
  * various mathematics utilities. The functions do not exist in the basic math package Math.*
  * @author Arnaud Malapert</br>
@@ -30,6 +31,7 @@ package choco.kernel.common.util;
  */
 public final class MathUtil {
 
+	public final static double ROUNDED_LOG_PRECISION = 10000;
 	/**
 	 *
 	 */
@@ -60,6 +62,21 @@ public final class MathUtil {
 
 	public static final boolean isPowerOfTwo(int x) {
 		return (x & (x - 1)) == 0;
+	}
+
+	public static int pow(int value,int exp){
+		return value==2 ? 1 << exp : (int) Math.pow(value, exp);
+	}
+
+	public static double log(double value,double exponent){
+		return Math.log(value)/Math.log(exponent);
+	}
+
+	/**
+	 * a rounded logarithm to avoid issues with jvm dependant math functions
+	 */
+	public static double roundedLog(double value,double exponent){
+		return Math.round( log(value, exponent) * ROUNDED_LOG_PRECISION) / ROUNDED_LOG_PRECISION;
 	}
 
 }

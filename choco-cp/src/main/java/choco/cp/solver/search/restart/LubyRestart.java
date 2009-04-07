@@ -22,6 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.restart;
 
+import java.math.BigDecimal;
+
+import choco.kernel.common.util.MathUtil;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.search.Limit;
 
@@ -54,39 +57,17 @@ public class LubyRestart extends GeometricalRestart {
 		divFactor = geometricalIntFactor - 1;
 	}
 
-	public final static int pow(int value,int exp){
-		return value==2 ? 1 << exp : (int) Math.pow(value, exp);
-	}
-
-	public final static double log(double value,double exponent){
-		return Math.log(value)/Math.log(exponent);
-	}
-
-
 	public static final int geometricalSum(int value, int exponent) {
-		return  ( pow(value,exponent)-1 ) / ( value -1 );
+		return  ( MathUtil.pow(value,exponent)-1 ) / ( value -1 );
 	}
-//	public final static int getLasVegasCoef(int i,int factor) {
-//		double log = log(i+1,factor);
-//		int k = (int) Math.floor(log);
-//		if(log == k) {
-//			// i = factor^k -1
-//			return pow(factor,k-1);
-//		}else {
-//			//recursion
-//			return getLasVegasCoef(i - pow(factor,k)+1,factor);
-//		}
-//	}
-
+	
 
 	public final int getLasVegasCoef(int i) {
-        //<hca> I round it to 10^-5 because of issues between versions of the jvm on mac and pc 
-        double log = Math.round(log(i * divFactor + 1, geometricalIntFactor) * 100000) / 100000d;
-        int k = (int) Math.floor(log);
-
-        if(log == k) {
-			// i = factor^k -1
-			return pow(geometricalIntFactor,k-1);
+		//<hca> I round it to PRECISION because of issues between versions of the jvm on mac and pc
+		final double log = MathUtil.roundedLog( i * divFactor + 1,geometricalIntFactor);
+		final int k = (int) Math.floor(log);
+		if(log == k) {
+			return MathUtil.pow(geometricalIntFactor,k-1);
 		}else {
 			//recursion
 			return getLasVegasCoef(i - geometricalSum(geometricalIntFactor, k));
@@ -97,4 +78,5 @@ public class LubyRestart extends GeometricalRestart {
 	protected int getNextLimit() {
 		return getLasVegasCoef(nbRestarts +1)*scaleFactor;
 	}
+	
 }
