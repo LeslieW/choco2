@@ -53,8 +53,7 @@ public class RandomProblemLauncher {
         }
     }
 
-    private static final List<Filter> TEST = Arrays.asList(Filter.MaxRPCLight,
-            Filter.MaxRPC, Filter.AC);
+    private static final List<Filter> TEST = Arrays.asList(Filter.AC);
 
     private RandomProblemLauncher() {
 
@@ -181,11 +180,12 @@ public class RandomProblemLauncher {
                 final Model m = new CPModel();
 
                 m.addVariables(problem.getVariables());
-
+                
                 switch (filter) {
                 case MaxRPC:
                 case MaxRPCLight:
                     for (Constraint c : constraints) {
+                        c.getOptions().clear();
                         c.addOption("cp:ac3");
                     }
                     final Constraint cc = new ComponentConstraintWithSubConstraints(
@@ -200,6 +200,7 @@ public class RandomProblemLauncher {
                     break;
                 default:
                     for (Constraint c : constraints) {
+                        c.getOptions().clear();
                         c.addOption("cp:ac32");
                         m.addConstraint(c);
                     }
@@ -212,7 +213,7 @@ public class RandomProblemLauncher {
                 // CPSolver.setVerbosity(CPSolver.SEARCH);
                 // Read the model
                 s.read(m);
-                // System.out.print(s.pretty());
+                //System.out.print(s.pretty());
                 s.setTimeLimit(TIMEOUT);
                 // System.out.println("Solving...");
                 Boolean result;
