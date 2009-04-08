@@ -11,9 +11,9 @@
 	 Choco is a java library for constraint satisfaction problems (CSP), constraint programming (CP) and explanation-based constraint solving (e-CP). It is built on a event-based propagation mechanism with backtrackable structures. Choco is an open-source software, distributed under a Choco Licence and hosted by sourceforge.net. 
     </description>
     <scm>
-	<connection>scm:svn:https://choco.svn.sourceforge.net/svnroot/choco/tags/choco-2.1.0</connection>
-	<developerConnection>scm:svn:https://choco.svn.sourceforge.net/svnroot/choco/tags/choco-2.1.0</developerConnection>
-	<url>http://choco.svn.sourceforge.net/viewvc/choco/tags/choco-2.1.0</url>
+	<connection>scm:svn:https://choco.svn.sourceforge.net/svnroot/choco/trunk</connection>
+	<developerConnection>scm:svn:https://choco.svn.sourceforge.net/svnroot/choco/trunk</developerConnection>
+	<url>http://choco.svn.sourceforge.net/viewvc/choco/trunk</url>
     </scm>
     <licenses>
         <license>

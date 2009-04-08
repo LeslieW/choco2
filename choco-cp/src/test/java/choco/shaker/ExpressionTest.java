@@ -461,7 +461,6 @@ public class ExpressionTest {
     }
 
     @Test
-    @Ignore
     public void testExpression18() {
         m  = new CPModel();
         IntegerVariable[] v = new IntegerVariable[4];
@@ -512,7 +511,6 @@ public class ExpressionTest {
     }
 
     @Test
-    @Ignore
     public void testExpression19() {
         /**
          * test 2 seed 1104
@@ -541,7 +539,6 @@ public class ExpressionTest {
     }
 
     @Test
-    @Ignore
     public void testExpression20() {
         m  = new CPModel();
         IntegerVariable[] v = new IntegerVariable[5];

@@ -23,17 +23,16 @@
 
 package choco.kernel.model.constraints.automaton.FA;
 
+import choco.kernel.common.util.UtilAlgo;
 import dk.brics.automaton.RegExp;
 import dk.brics.automaton.Transition;
+import gnu.trove.*;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
-
-import choco.kernel.common.util.UtilAlgo;
-import gnu.trove.*;
 
 
 /**
@@ -63,7 +62,7 @@ public class Automaton {
     static
     {
         int delta = 0;
-        for (int i = Character.MIN_VALUE; i < Character.MAX_VALUE ;i++)
+        for (int i = Character.MIN_VALUE; i < Character.MAX_VALUE-10 ;i++)
         {
             while ((char)(i+delta) == '"' || (char)(i+delta) == '{' || (char)(i+delta) == '}' || (char)(i+delta) =='<' ||
                     (char)(i+delta) =='>' || (char)(i+delta) =='[' || (char)(i+delta)==']' ||

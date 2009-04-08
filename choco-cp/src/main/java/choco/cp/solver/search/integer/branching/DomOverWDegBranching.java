@@ -27,8 +27,8 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.AbstractLargeIntBranching;
 import choco.kernel.solver.constraints.AbstractSConstraint;
-import choco.kernel.solver.constraints.SConstraintType;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.SConstraintType;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.propagation.PropagationEngineListener;
 import choco.kernel.solver.search.integer.ValIterator;
@@ -213,7 +213,7 @@ public class DomOverWDegBranching extends AbstractLargeIntBranching implements P
             for (int i = 0; i < _vars.length; i++) {
                 IntDomainVar var = (IntDomainVar) _vars[i];
                 if (var.isInstantiated()) continue;
-                if (!var.isInstantiated()) {
+                else/* (!var.isInstantiated()) */{
                     if (previous_Variable == null) {
                         previous_Variable = var;
                         previous_Size = var.getDomainSize();
@@ -235,7 +235,7 @@ public class DomOverWDegBranching extends AbstractLargeIntBranching implements P
             for (int i = 0; i < _vars.length; i++) {
                 IntDomainVar var = (IntDomainVar) _vars[i];
                 if (var.isInstantiated()) continue;
-                if (!var.isInstantiated()) {
+                else{ //if (!var.isInstantiated()) {
                     if (previous_Variable == null) {
                         previous_Variable = var;
                         previous_Size = var.getDomainSize();
