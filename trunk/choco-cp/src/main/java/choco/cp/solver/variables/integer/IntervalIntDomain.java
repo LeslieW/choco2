@@ -101,7 +101,7 @@ public class IntervalIntDomain extends AbstractIntDomain {
         return inf + rand;
     }
 
-    public int getSize() {
+    public final int getSize() {
         return getSup() - getInf() + 1;
     }
 
@@ -136,11 +136,11 @@ public class IntervalIntDomain extends AbstractIntDomain {
         return false;
     }
 
-    public int getSup() {
+    public final int getSup() {
         return sup.get();
     }
 
-    public int getInf() {
+    public final int getInf() {
         return inf.get();
     }
 
