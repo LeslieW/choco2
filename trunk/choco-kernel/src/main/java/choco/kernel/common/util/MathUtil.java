@@ -78,5 +78,21 @@ public final class MathUtil {
 	public static double roundedLog(double value,double exponent){
 		return Math.round( log(value, exponent) * ROUNDED_LOG_PRECISION) / ROUNDED_LOG_PRECISION;
 	}
+	
+	public static int max(int[] values) {
+		int max = Integer.MIN_VALUE;
+		for (int i = 0; i < values.length; i++) {
+			if(values[i] > max) {max = values[i];}
+		}
+		return max;
+	}
+	
+	public static int min(int[] values) {
+		int min = Integer.MAX_VALUE;
+		for (int i = 0; i < values.length; i++) {
+			if(values[i] < min) {min = values[i];}
+		}
+		return min;
+	}
 
 }

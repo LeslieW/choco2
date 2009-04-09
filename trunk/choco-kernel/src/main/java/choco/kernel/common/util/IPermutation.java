@@ -65,8 +65,8 @@ public interface IPermutation {
 	public int getPermutationIndex(int idx);
 
 	public boolean isIdentity();
-
-
+	
+	
 }
 
 /**
