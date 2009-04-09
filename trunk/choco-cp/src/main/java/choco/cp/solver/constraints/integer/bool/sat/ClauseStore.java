@@ -187,7 +187,7 @@ public class  ClauseStore extends AbstractLargeIntSConstraint {
             if (!cl.isRegistered())
                cl.register(this);
         }
-        propagateUnitClause();
+        propagate();
     }
 
     public void propagateUnitClause() throws ContradictionException {
@@ -208,7 +208,7 @@ public class  ClauseStore extends AbstractLargeIntSConstraint {
                 if (!cl.isRegistered()) {
                     cl.register(this);
                 }
-                if (!cl.update()) {
+                if (cl.update()) {
                     iterator.remove();
                 }
             }            
@@ -234,4 +234,9 @@ public class  ClauseStore extends AbstractLargeIntSConstraint {
     public int getFineDegree(int idx) {
         return fineDegree[idx];    //To change body of overridden methods use File | Settings | File Templates.
     }
+
+    public int getNbClause() {
+        return listclause.size();
+    }
 }
+

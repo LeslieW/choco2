@@ -136,12 +136,12 @@ public class PPSearch {
                     dwd.setBranchingVars(concat(getBooleanVars(s), getOtherVars(s)));
                     s.attachGoal(dwd);
                 }
-            } else if (isReified()) { //some constraints are reified (decide them before the rest)
-                DomOverWDegBranching dwd = new DomOverWDegBranching(s, new IncreasingDomain());
-                dwd.setBranchingVars(getBooleanVars(s));
-                s.attachGoal(dwd);
-                AssignVar dwd2 = new AssignVar(new MinDomain(s, getOtherVars(s)), new IncreasingDomain());
-                s.addGoal(dwd2);
+//            } else if (isReified()) { //some constraints are reified (decide them before the rest)
+//                DomOverWDegBranching dwd = new DomOverWDegBranching(s, new IncreasingDomain());
+//                dwd.setBranchingVars(getBooleanVars(s));
+//                s.attachGoal(dwd);
+//                AssignVar dwd2 = new AssignVar(new MinDomain(s, getOtherVars(s)), new IncreasingDomain());
+//                s.addGoal(dwd2);
             } else {                        //general case
                 DomOverWDegBranching dwd = new DomOverWDegBranching(s, new IncreasingDomain());
                 s.attachGoal(dwd);
@@ -175,13 +175,13 @@ public class PPSearch {
                     return false;
                 s.attachGoal(ibb);
             }
-        } else if (isReified()) { //some constraints are reified (decide them before the rest)
-            ibb = new ImpactBasedBranching(s, bvs);
-            if (!ibb.getImpactStrategy().initImpacts(initialisationtime))
-                return false;
-            s.attachGoal(ibb);
-            AssignVar dwd2 = new AssignVar(new MinDomain(s, ovs), new IncreasingDomain());
-            s.addGoal(dwd2);
+//        } else if (isReified()) { //some constraints are reified (decide them before the rest)
+//            ibb = new ImpactBasedBranching(s, bvs);
+//            if (!ibb.getImpactStrategy().initImpacts(initialisationtime))
+//                return false;
+//            s.attachGoal(ibb);
+//            AssignVar dwd2 = new AssignVar(new MinDomain(s, ovs), new IncreasingDomain());
+//            s.addGoal(dwd2);
         } else {                        //general case
             ibb = new ImpactBasedBranching(s);
             if (!ibb.getImpactStrategy().initImpacts(initialisationtime))

@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -48,10 +48,10 @@ import parser.chocogen.XmlModel;
 import java.util.*;
 
 /*
- * 
+ *
  * User:    charles
  * Date:    19 août 2008
- * 
+ *
  * Black box solver
  */
 public class PreProcessCPSolver extends CPSolver {
@@ -168,7 +168,7 @@ public class PreProcessCPSolver extends CPSolver {
         ppsearch.setModel(model);
 
         super.initReading();
-        
+
         setAllProcessing();
 
         associateIndexes(m);
@@ -320,7 +320,7 @@ public class PreProcessCPSolver extends CPSolver {
                 } else {
                     if (cleverExp.encompassDiff(c)) {
                        IntegerVariable[] vars = ((AbstractConstraint) ic).getIntVariableScope();
-                       neqToAdd.add(Choco.neq(vars[0],vars[1])); 
+                       neqToAdd.add(Choco.neq(vars[0],vars[1]));
                     }
                 }
             }
@@ -615,7 +615,7 @@ public class PreProcessCPSolver extends CPSolver {
 			return false;
 		}
 		proptime = (int) System.currentTimeMillis() - proptime;
-        restartMode = proptime <= 300 && !isBinaryExtensionnal();
+        restartMode = !isBinaryExtensionnal();
 		return true;
 	}
 
