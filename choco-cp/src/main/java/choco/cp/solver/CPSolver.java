@@ -2149,7 +2149,8 @@ public class CPSolver implements Solver {
 		}
 		//        indexOfLastInitializedStaticConstraint.set(environment.getWorldIndex());
 		if (nogoodStore != null && propNogoodWorld > this.getWorldIndex()) {
-			nogoodStore.constAwake(false);
+			nogoodStore.setActiveSilently();
+            nogoodStore.constAwake(false);
 			propNogoodWorld = this.getWorldIndex();
 		}
 	}

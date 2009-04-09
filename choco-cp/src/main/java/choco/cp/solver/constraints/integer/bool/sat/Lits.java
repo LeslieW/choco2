@@ -33,6 +33,16 @@ public class Lits {
         negwatches = new Vec[nblits];
     }
 
+    public boolean isFree(int lit) {
+        //negative indexes denote negative literals,
+        //similarly positive indexes denote positive literal
+        if (lit < 0) {
+            return !boolvars[-lit].isInstantiated();
+        } else {
+            return !boolvars[lit].isInstantiated();
+        }
+    }
+
     public boolean isFalsified(int lit) {
         //negative indexes denote negative literals,
         //similarly positive indexes denote positive literal
