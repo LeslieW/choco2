@@ -83,13 +83,13 @@ import choco.kernel.solver.constraints.integer.extension.TuplesTable;
  */
 public class Choco{
 
-	static Logger logger = Logger.getLogger("choco");
+	final static Logger logger = Logger.getLogger("choco");
 
 	public static boolean DEBUG = false;
 
-	public static int MIN_LOWER_BOUND  = Integer.MIN_VALUE / 100;
+	public final static int MIN_LOWER_BOUND  = Integer.MIN_VALUE / 100;
 
-	public static int MAX_LOWER_BOUND  = Integer.MAX_VALUE / 100;
+	public final static int MAX_UPPER_BOUND  = Integer.MAX_VALUE / 100;
 
 	// ############################################################################################################
 	// ######                                        VARIABLES                                                  ###
@@ -129,8 +129,8 @@ public class Choco{
 		if (lowB > uppB) {
 			throw new ModelException("makeIntVar : lowB > uppB");
 		}
-		if(lowB < MIN_LOWER_BOUND || uppB > MAX_LOWER_BOUND){
-			logger.warning("WARNING! Domains over ["+MIN_LOWER_BOUND+", "+MAX_LOWER_BOUND+"] are strongly inadvisable ! ");
+		if(lowB < MIN_LOWER_BOUND || uppB > MAX_UPPER_BOUND){
+			logger.warning("WARNING! Domains over ["+MIN_LOWER_BOUND+", "+MAX_UPPER_BOUND+"] are strongly inadvisable ! ");
 		}
 		IntegerVariable v = new IntegerVariable(name, VariableType.INTEGER, lowB, uppB);
         for (String option : options) {
@@ -162,7 +162,7 @@ public class Choco{
 	 *                </ul>
 	 */
 	public static IntegerVariable makeIntVar(String name, String... options) {
-		return makeIntVar(name, MIN_LOWER_BOUND, MAX_LOWER_BOUND, options);
+		return makeIntVar(name, MIN_LOWER_BOUND, MAX_UPPER_BOUND, options);
 	}
 
 	/**
@@ -201,8 +201,8 @@ public class Choco{
 			vars[i] = valuesList.get(i);
 		}
 		Arrays.sort(vars);
-		if(vars[0] < MIN_LOWER_BOUND || vars[vars.length-1] > MAX_LOWER_BOUND){
-			logger.warning("Domains over ["+MIN_LOWER_BOUND+", "+MAX_LOWER_BOUND+"] are strongly inadvisable ! ");
+		if(vars[0] < MIN_LOWER_BOUND || vars[vars.length-1] > MAX_UPPER_BOUND){
+			logger.warning("Domains over ["+MIN_LOWER_BOUND+", "+MAX_UPPER_BOUND+"] are strongly inadvisable ! ");
 		}
 		IntegerVariable v = new IntegerVariable(name, VariableType.INTEGER, vars);
         for (String option : options) {
@@ -245,8 +245,8 @@ public class Choco{
 		int[] values2 = new int[valuesArray.length];
 		System.arraycopy(valuesArray, 0, values2, 0, valuesArray.length);
 		Arrays.sort(values2);
-		if(values2[0] < MIN_LOWER_BOUND || values2[values2.length-1] > MAX_LOWER_BOUND){
-			logger.warning("Domains over ["+MIN_LOWER_BOUND+", "+MAX_LOWER_BOUND+"] are strongly inadvisable ! ");
+		if(values2[0] < MIN_LOWER_BOUND || values2[values2.length-1] > MAX_UPPER_BOUND){
+			logger.warning("Domains over ["+MIN_LOWER_BOUND+", "+MAX_UPPER_BOUND+"] are strongly inadvisable ! ");
 		}
 		IntegerVariable v = new IntegerVariable(name, VariableType.INTEGER, values2);
         for (String option : options) {
@@ -376,7 +376,7 @@ public class Choco{
 	 *                </ul>
 	 */
 	public static IntegerVariable[] makeIntVarArray(String name, int dim, String... options) {
-		return makeIntVarArray(name, dim, MIN_LOWER_BOUND, MAX_LOWER_BOUND, options);
+		return makeIntVarArray(name, dim, MIN_LOWER_BOUND, MAX_UPPER_BOUND, options);
 	}
 
 	/**
@@ -484,7 +484,7 @@ public class Choco{
 	 *                </ul>
 	 */
 	public static IntegerVariable[][] makeIntVarArray(String name, int dim1, int dim2, String... options) {
-		return makeIntVarArray(name, dim1, dim2, MIN_LOWER_BOUND, MAX_LOWER_BOUND, options);
+		return makeIntVarArray(name, dim1, dim2, MIN_LOWER_BOUND, MAX_UPPER_BOUND, options);
 	}
 
 	/**
