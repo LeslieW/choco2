@@ -22,8 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.pack;
 
+import java.awt.Point;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.BitFlags;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.common.util.UtilAlgo;
@@ -33,12 +37,6 @@ import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.set.AbstractLargeSetIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
-
-import java.awt.*;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * <b>{@link PrimalDualPack} which maintains a primal-dual packing domain.</b><br>

@@ -41,6 +41,9 @@ import choco.kernel.solver.variables.set.SetVar;
  */
 abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 
+	protected static final String MIN="min";
+	protected static final String MAX="max";
+
 	/** Index of the set variable*/
 	public static final int SET_INDEX = 0;
 
@@ -79,7 +82,7 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 	}
 
 	protected final boolean isNotEmptySet() {
-		return this.svars[SET_INDEX].getCard().getInf() > 0;
+		return this.svars[SET_INDEX].getKernelDomainSize()> 0;
 	}
 
 	protected final boolean isSetInstantiated() {
@@ -94,27 +97,23 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 		return ivars[BOUND_INDEX].updateSup(val, this.getConstraintIntIdx(BOUND_INDEX));
 	}
 
-	protected final boolean removeFromEnv(int idx) throws ContradictionException {
-		return removeFromEnv(idx, ivars[BOUND_INDEX].getInf(), ivars[BOUND_INDEX].getSup());
-	}
+	protected abstract boolean removeFromEnv(int idx) throws ContradictionException;
 
-	protected final boolean removeFromEnv(int idx,int minValue,int maxValue) throws ContradictionException {
-		if(ivars[VARS_OFFSET+idx].getSup()<minValue || ivars[VARS_OFFSET+idx].getInf()>maxValue) {
+	protected final boolean removeGreaterFromEnv(int idx, int maxValue) throws ContradictionException {
+		if(ivars[VARS_OFFSET+idx].getInf()>maxValue) {
 			return this.svars[SET_INDEX].remFromEnveloppe(idx, getConstraintIdx(SET_INDEX));
 		}
 		return false;
 	}
 
-	protected final boolean updateEnveloppe() throws ContradictionException {
-		final int minValue = ivars[BOUND_INDEX].getInf();
-		final int maxValue = ivars[BOUND_INDEX].getSup();
-		final IntIterator iter= getSetDomain().getOpenDomainIterator();
-		boolean update = false;
-		while(iter.hasNext()) {
-			removeFromEnv(iter.next(), minValue, maxValue);
+	protected final boolean removeLowerFromEnv(int idx, int minValue) throws ContradictionException {
+		if(ivars[VARS_OFFSET+idx].getSup() < minValue ) {
+			return this.svars[SET_INDEX].remFromEnveloppe(idx, getConstraintIdx(SET_INDEX));
 		}
-		return update;
+		return false;
 	}
+
+	protected abstract boolean updateEnveloppe() throws ContradictionException;
 
 	@Override
 	public void awakeOnEnvRemovals(int idx, IntIterator deltaDomain)
@@ -150,13 +149,18 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 		return false;
 	}
 
-	@Override
-	public String pretty() {
+
+	protected String pretty(String operator) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(svars[SET_INDEX].pretty());
-		sb.append(ChocoUtil.pretty(ivars));
+		sb.append(ivars[BOUND_INDEX].pretty());
+		sb.append(" = ").append(operator).append("(");
+		sb.append(svars[SET_INDEX].pretty()).append(", ");
+		sb.append(ChocoUtil.pretty(ivars, VARS_OFFSET, ivars.length));
+		sb.append(")");
 		return new String(sb);
+
 	}
+
 }
 
 /**
@@ -178,6 +182,27 @@ public class MaxOfASet extends AbstractBoundOfASet {
 		super(intvars, setvar);
 		indexOfMaximumVariable = this.getSolver().getEnvironment().makeInt(-1);
 	}
+
+
+
+	@Override
+	protected boolean removeFromEnv(int idx) throws ContradictionException {
+		return removeGreaterFromEnv(idx, ivars[BOUND_INDEX].getSup());
+	}
+
+
+
+	@Override
+	protected boolean updateEnveloppe() throws ContradictionException {
+		final int maxValue = ivars[BOUND_INDEX].getSup();
+		final IntIterator iter= getSetDomain().getOpenDomainIterator();
+		boolean update = false;
+		while(iter.hasNext()) {
+			removeGreaterFromEnv(iter.next(), maxValue);
+		}
+		return update;
+	}
+
 
 
 	protected void updateIndexOfMaximumVariables() throws ContradictionException {
@@ -349,7 +374,7 @@ public class MaxOfASet extends AbstractBoundOfASet {
 	 */
 	@Override
 	public void awakeOnInst(final int idx) throws ContradictionException {
-		CPSolver.flushLogs();
+		//CPSolver.flushLogs();
 		if (idx >= 2*VARS_OFFSET) { //of the list
 			final int i = idx-2*VARS_OFFSET;
 			if(isInEnveloppe(i)) { //of the set
@@ -392,5 +417,12 @@ public class MaxOfASet extends AbstractBoundOfASet {
 			}
 		}
 	}
+
+
+	@Override
+	public String pretty() {
+		return pretty(MAX);
+	}
+
 
 }
