@@ -27,6 +27,8 @@ import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 
+import gnu.trove.TIntArrayList;
+
 import java.lang.reflect.Array;
 import java.util.*;
 
@@ -165,7 +167,7 @@ public final class ChocoUtil {
 	//****************************************************************//
 	//********* Array *******************************************//
 	//****************************************************************//
-	
+
 	public static int[] zeroToN(int n) {
 		final int[] r=new int[n];
 		for (int i = 0; i < n; i++) {
@@ -173,7 +175,7 @@ public final class ChocoUtil {
 		}
 		return r;
 	}
-	
+
 	public static int[] oneToN(int n) {
 		final int[] r=new int[n];
 		for (int i = 1; i <= n; i++) {
@@ -181,7 +183,7 @@ public final class ChocoUtil {
 		}
 		return r;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static <T> T[] getColumn(final T[][] array, final int column) {
 		if(array != null && array.length> 0 
@@ -254,28 +256,56 @@ public final class ChocoUtil {
 		return 10*t1+t2;
 
 	}
+	
+	/**
+	 * create a new array which contains sorted distinct values;
+	 * @param values
+	 * @return
+	 */
+	public static int[] getNonRedundantSortedValues(int[] values) {
+		return createNonRedundantSortedValues(new TIntArrayList(values));
+	}
 
-    
-    public static <V> V[] getNonRedundantObjects(Class classe, V[] all) {
-        V[] a = all.clone();
-        Arrays.sort(a);
-        //Remove duplicated one
-        V[] c = (V[]) Array.newInstance(classe, a.length);
-        int ind = 0;
-        V previous = null;
-        for (int i = 0; i < a.length; i++) {
-            if (!a[i].equals(previous)) {
-                previous = a[i];
-                c[ind++] = previous;
-            }
-        }
-        if(ind != a.length){
-            a = (V[]) Array.newInstance(classe, ind);
-            System.arraycopy(c, 0, a, 0, ind);
-        }
-        c = null;
-        return a;
-    }
+	/**
+	 * create an array which contains sorted distinct values. do not modify the original list
+	 */
+	public static int[] getNonRedundantSortedValues(TIntArrayList values) {
+		return createNonRedundantSortedValues( (TIntArrayList) values.clone());
+	}
+	
+	protected static int[] createNonRedundantSortedValues(TIntArrayList values) {
+		values.sort();
+		int offset = 1;
+		while(offset < values.size()) {
+			while(values.get(offset -1) == values.get(offset)) {
+				values.remove(offset);
+				if(offset == values.size()) {break;}
+			}
+			offset++;
+		}
+		return values.toNativeArray();
+	}
+
+	public static <V> V[] getNonRedundantObjects(Class classe, V[] all) {
+		V[] a = all.clone();
+		Arrays.sort(a);
+		//Remove duplicated one
+		V[] c = (V[]) Array.newInstance(classe, a.length);
+		int ind = 0;
+		V previous = null;
+		for (int i = 0; i < a.length; i++) {
+			if (!a[i].equals(previous)) {
+				previous = a[i];
+				c[ind++] = previous;
+			}
+		}
+		if(ind != a.length){
+			a = (V[]) Array.newInstance(classe, ind);
+			System.arraycopy(c, 0, a, 0, ind);
+		}
+		c = null;
+		return a;
+	}
 
 	//****************************************************************//
 	//********* TYPE *******************************************//

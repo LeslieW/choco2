@@ -28,6 +28,8 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.global.pack.PrimalDualPack;
 import choco.cp.solver.search.integer.branching.AssignVar;
+import choco.cp.solver.search.integer.branching.PackDynRemovals;
+import choco.cp.solver.search.integer.valselector.BestFit;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.opres.pack.AbstractHeurisic1BP;
@@ -39,8 +41,6 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.integer.ValSelector;
-import samples.pack.search.BestFit;
-import samples.pack.search.PackDynRemove;
 
 import java.util.Arrays;
 
@@ -167,7 +167,7 @@ public class CPpack {
 		VarSelector varsel = new StaticVarOrder(s.getVar(modeler.bins));
 		ValSelector valsel= branching==Branching.BASIC ? new MinVal() : new BestFit(cstr);
 		s.attachGoal( branching==Branching.DYN_RM ?
-					new PackDynRemove(varsel,valsel,cstr) :
+					new PackDynRemovals(varsel,valsel,cstr) :
 						new AssignVar(varsel,valsel)
 					);
 	}

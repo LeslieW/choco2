@@ -25,6 +25,7 @@ package choco;
 import static choco.kernel.common.util.UtilAlgo.append;
 import static choco.kernel.common.util.UtilAlgo.appendAndCast;
 import gnu.trove.TIntArrayList;
+import gnu.trove.TIntIterator;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +33,7 @@ import java.util.Vector;
 import java.util.logging.Logger;
 
 import choco.kernel.common.IndexFactory;
+import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.common.util.UtilAlgo;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.ComponentConstraint;
@@ -94,6 +96,16 @@ public class Choco{
 	// ############################################################################################################
 	// ######                                        VARIABLES                                                  ###
 	// ############################################################################################################
+	
+	private static void checkIntVarBounds(int lowB, int uppB) {
+		if (lowB > uppB) {
+			throw new ModelException("makeIntVar : lowB > uppB");
+		}
+		if(lowB < MIN_LOWER_BOUND || uppB > MAX_UPPER_BOUND){
+			logger.warning("WARNING! Domains over ["+MIN_LOWER_BOUND+", "+MAX_UPPER_BOUND+"] are strongly inadvisable ! ");
+		}
+	}
+	
 	/**
 	 * Make an integer variable
 	 *
@@ -126,12 +138,7 @@ public class Choco{
 	 *                </ul>
 	 */
 	public static IntegerVariable makeIntVar(String name, int lowB, int uppB, String... options) {
-		if (lowB > uppB) {
-			throw new ModelException("makeIntVar : lowB > uppB");
-		}
-		if(lowB < MIN_LOWER_BOUND || uppB > MAX_UPPER_BOUND){
-			logger.warning("WARNING! Domains over ["+MIN_LOWER_BOUND+", "+MAX_UPPER_BOUND+"] are strongly inadvisable ! ");
-		}
+		checkIntVarBounds(lowB, uppB);
 		IntegerVariable v = new IntegerVariable(name, VariableType.INTEGER, lowB, uppB);
         for (String option : options) {
             v.addOption(option);
@@ -196,15 +203,9 @@ public class Choco{
 	 *                </ul>
 	 */
 	public static IntegerVariable makeIntVar(String name, TIntArrayList valuesList, String... options) {
-		int[] vars = new int[valuesList.size()];
-		for (int i = 0; i < valuesList.size(); i++) {
-			vars[i] = valuesList.get(i);
-		}
-		Arrays.sort(vars);
-		if(vars[0] < MIN_LOWER_BOUND || vars[vars.length-1] > MAX_UPPER_BOUND){
-			logger.warning("Domains over ["+MIN_LOWER_BOUND+", "+MAX_UPPER_BOUND+"] are strongly inadvisable ! ");
-		}
-		IntegerVariable v = new IntegerVariable(name, VariableType.INTEGER, vars);
+		int[] values = ChocoUtil.getNonRedundantSortedValues(valuesList);
+		checkIntVarBounds(values[0], values[values.length-1]);
+		IntegerVariable v = new IntegerVariable(name, VariableType.INTEGER, values);
         for (String option : options) {
             v.addOption(option);
         }
@@ -242,18 +243,15 @@ public class Choco{
 	 *                </ul>
 	 */
 	public static IntegerVariable makeIntVar(String name, int[] valuesArray, String... options) {
-		int[] values2 = new int[valuesArray.length];
-		System.arraycopy(valuesArray, 0, values2, 0, valuesArray.length);
-		Arrays.sort(values2);
-		if(values2[0] < MIN_LOWER_BOUND || values2[values2.length-1] > MAX_UPPER_BOUND){
-			logger.warning("Domains over ["+MIN_LOWER_BOUND+", "+MAX_UPPER_BOUND+"] are strongly inadvisable ! ");
-		}
-		IntegerVariable v = new IntegerVariable(name, VariableType.INTEGER, values2);
+		int[] values = ChocoUtil.getNonRedundantSortedValues(valuesArray);
+		checkIntVarBounds(values[0], values[values.length-1]);
+		IntegerVariable v = new IntegerVariable(name, VariableType.INTEGER, values);
         for (String option : options) {
             v.addOption(option);
         }
 		return v;
 	}
+	
 
 	/**
 	 * Make a boolean variable
