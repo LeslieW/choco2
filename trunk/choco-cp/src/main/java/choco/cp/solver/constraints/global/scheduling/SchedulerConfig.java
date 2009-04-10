@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
+import choco.Choco;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.global.scheduling.IPrecedenceNetwork;
@@ -81,7 +82,7 @@ public class SchedulerConfig {
 
 	public final IntDomainVar createMakespan() {
 		if(makespan == null) {
-			this.makespan = solver.createBoundIntVar("makespan", Integer.MIN_VALUE+1, Integer.MAX_VALUE-1);
+			this.makespan = solver.createBoundIntVar("makespan", Choco.MIN_LOWER_BOUND, Choco.MAX_UPPER_BOUND);
 		}
 		return makespan;
 	}

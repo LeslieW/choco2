@@ -35,8 +35,9 @@ import choco.kernel.solver.variables.set.SetVar;
  */
 public class MinOfASet extends AbstractBoundOfASet {
 
+
 	/**
-	 * Index of the maximum variable.
+	 * Index of the minimum variable.
 	 */
 	protected final IStateInt indexOfMinimumVariable;
 
@@ -44,6 +45,24 @@ public class MinOfASet extends AbstractBoundOfASet {
 	public MinOfASet(IntVar[] intvars, SetVar setvar) {
 		super(intvars, setvar);
 		indexOfMinimumVariable = this.getSolver().getEnvironment().makeInt(-1);
+	}
+	
+	@Override
+	protected boolean removeFromEnv(int idx) throws ContradictionException {
+		return removeLowerFromEnv(idx, ivars[BOUND_INDEX].getInf());
+	}
+
+
+
+	@Override
+	protected boolean updateEnveloppe() throws ContradictionException {
+		final int maxValue = ivars[BOUND_INDEX].getInf();
+		final IntIterator iter= getSetDomain().getOpenDomainIterator();
+		boolean update = false;
+		while(iter.hasNext()) {
+			removeLowerFromEnv(iter.next(), maxValue);
+		}
+		return update;
 	}
 
 	protected void updateIndexOfMinimumVariables() throws ContradictionException {
@@ -90,26 +109,26 @@ public class MinOfASet extends AbstractBoundOfASet {
 
 	protected final int minInf() {
 		if( isNotEmptySet()) {
-		IntIterator iter= getSetDomain().getKernelIterator();
-		int min = Integer.MAX_VALUE;
-		while(iter.hasNext()) {
-			int val = ivars[VARS_OFFSET+iter.next()].getInf();
-			if(val<min) {min=val;}
-		}
-		return min;
+			IntIterator iter= getSetDomain().getEnveloppeIterator();
+			int min = Integer.MAX_VALUE;
+			while(iter.hasNext()) {
+				int val = ivars[VARS_OFFSET+iter.next()].getInf();
+				if(val<min) {min=val;}
+			}
+			return min;
 		}else {return Integer.MIN_VALUE;}
 	}
 
 
 	protected final int minSup() {
 		int min = Integer.MAX_VALUE;
-			//if the set could be empty : we do nothing
-			IntIterator iter= getSetDomain().getEnveloppeIterator();
-			while(iter.hasNext()) {
-				int val = ivars[VARS_OFFSET+iter.next()].getSup();
-				if(val<min) {min=val;}
-			}
-			return min;
+		//if the set could be empty : we do nothing
+		IntIterator iter= getSetDomain().getKernelIterator();
+		while(iter.hasNext()) {
+			int val = ivars[VARS_OFFSET+iter.next()].getSup();
+			if(val<min) {min=val;}
+		}
+		return min;	
 	}
 
 	protected final void updateKernelInf() throws ContradictionException {
@@ -249,4 +268,11 @@ public class MinOfASet extends AbstractBoundOfASet {
 			}
 		}
 	}
+
+	@Override
+	public String pretty() {
+		return pretty(MIN);
+	}
+
+
 }
