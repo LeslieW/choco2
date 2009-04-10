@@ -36,6 +36,8 @@ import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import gnu.trove.TIntArrayList;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 /** History:
@@ -101,23 +103,23 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
         buildDataStructures(solver.getEnvironment());
   }
 
-  public IntDomainVarImpl(Solver solver, String name, int domainType, int[] sortedValues) {
+  public IntDomainVarImpl(Solver solver, String name, int domainType, int[] distinctSortedValues) {
     super(solver, name);
     if (domainType == IntDomainVar.BINARYTREE) {
-        domain = new IntervalBTreeDomain(this, sortedValues);
+        domain = new IntervalBTreeDomain(this, distinctSortedValues);
     } else
     if (domainType == IntDomainVar.LINKEDLIST) {
-      domain = new LinkedIntDomain(this, sortedValues);
+      domain = new LinkedIntDomain(this, distinctSortedValues);
     } else if (domainType == IntDomainVar.BIPARTITELIST) {
-      domain = new BipartiteIntDomain(this, sortedValues);
+      domain = new BipartiteIntDomain(this, distinctSortedValues);
     } else {
-      domain = new BitSetIntDomain(this, sortedValues);
+      domain = new BitSetIntDomain(this, distinctSortedValues);
     }
     this.event = new IntVarEvent(this);
       buildDataStructures(solver.getEnvironment());
   }
 
-
+  
     protected void buildDataStructures(IEnvironment env){
         events = new PartiallyStoredIntVector[4];
         for(int i = 0; i < 4; i++){

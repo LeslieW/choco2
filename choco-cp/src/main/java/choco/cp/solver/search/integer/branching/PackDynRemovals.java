@@ -20,11 +20,10 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package samples.pack.search;
+package choco.cp.solver.search.integer.branching;
 
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.pack.PrimalDualPack;
-import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.VarSelector;
@@ -39,12 +38,12 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * @since 7 déc. 2008 version 2.0.1</br>
  * @version 2.0.1</br>
  */
-public class PackDynRemove extends AssignVar {
+public class PackDynRemovals extends AssignVar {
 
 	public final PrimalDualPack pack;
 
 
-	public PackDynRemove(VarSelector varSel, ValSelector valHeuri,
+	public PackDynRemovals(VarSelector varSel, ValSelector valHeuri,
 			PrimalDualPack pack) {
 		super(varSel, valHeuri);
 		this.pack = pack;
@@ -79,14 +78,15 @@ public class PackDynRemove extends AssignVar {
 	public void goUpBranch(final Object x, final int i) throws ContradictionException {
 		super.goUpBranch(x, i);
 		final IntDomainVar bin= (IntDomainVar) x;
-		CPSolver.flushLogs();
-		//remove other empty bin
 		if(pack.svars[i].isInstantiated()) {
-			//if we remove an item from a filled bin, fail.
+			//we cant pack another item into the bin, so the free space is lost.
+			//the previous partial assignment dominates any assignment where the item is packed into antother bin
 			fail();
 		}else if(pack.isEmpty(i)) {
+			//there was a single item into the bin, so we cant pack the item into a empty bin again
 			removeEmptyBins(bin);
 		} else {
+			//there was other items into the bin, so we cant pack the item into a bin with the same available space again
 			removeEquivalentBins(bin, i);
 		}
 	}

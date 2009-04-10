@@ -22,24 +22,34 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.variables;
 
+import static choco.Choco.constant;
+import static choco.Choco.makeIntVarArray;
+import static choco.Choco.makeSetVar;
+import static choco.Choco.makeSetVarArray;
+import static choco.Choco.neq;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+
+import java.util.Iterator;
+import java.util.List;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import choco.Choco;
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * @author Arnaud Malapert
@@ -91,6 +101,30 @@ public class VariablesTest {
 		test(v[0],0);
 	}
 
+	@Test
+	public void testEnumVarWithRedundantValues() {
+		int[] values = new int[] {3,5,7,3,5,9,10, 10};
+		int[] res = new int[] {3,5,7,9,10};
+		Assert.assertArrayEquals("sort and remove redundat values ", res, ChocoUtil.getNonRedundantSortedValues(values));
+		final CPModel m = new CPModel();
+		final IntegerVariable v = Choco.makeIntVar("v", values);
+		m.addVariable(v);
+		final CPSolver s = new CPSolver();
+		s.read(m);
+		IntDomainVar var = s.getVar(v);
+		try {
+			assertEquals("Enum Domain size",5, var.getDomainSize());
+			var.updateInf(6, IntVarEvent.NOCAUSE);
+			assertEquals("Enum Domain size",3, var.getDomainSize());
+			var.updateSup(8, IntVarEvent.NOCAUSE);
+			assertEquals("Enum Domain size",1, var.getDomainSize());
+			assertTrue("Enum Inst. Domain", var.isInstantiatedTo(7));
+		} catch (ContradictionException e) {
+			Assert.fail("inconsitent integer enum domain");
+		}
+		
+	}
+	
 	@Test
 	public void testRemoveReal() {
 		SetVariable[] v=makeSetVarArray("v",2, 0, 2);
@@ -154,27 +188,27 @@ public class VariablesTest {
         Assert.assertEquals("Nb constraint for v1", 1, v1.getNbConstraint(m2));
 
         Iterator it = v1.getConstraintIterator(m1);
-        Assert.assertTrue("iter has next", it.hasNext());
-        Assert.assertEquals("iter next ", c1, it.next());
-        Assert.assertFalse("iter next ", it.hasNext());
+       assertTrue("iter has next", it.hasNext());
+       assertEquals("iter next ", c1, it.next());
+       assertFalse("iter next ", it.hasNext());
 
         it = v1.getConstraintIterator(m2);
-        Assert.assertTrue("iter has next", it.hasNext());
-        Assert.assertEquals("iter next ", c2, it.next());
-        Assert.assertFalse("iter next ", it.hasNext());
+       assertTrue("iter has next", it.hasNext());
+       assertEquals("iter next ", c2, it.next());
+       assertFalse("iter next ", it.hasNext());
 
         m1.removeConstraint(c1);
 
-        Assert.assertEquals("", 0, v1.getNbConstraint(m1));
-        Assert.assertEquals("", 1, v1.getNbConstraint(m2));
+       assertEquals("", 0, v1.getNbConstraint(m1));
+       assertEquals("", 1, v1.getNbConstraint(m2));
 
         it = v1.getConstraintIterator(m1);
-        Assert.assertFalse("iter next ", it.hasNext());
+       assertFalse("iter next ", it.hasNext());
 
         it = v1.getConstraintIterator(m2);
-        Assert.assertTrue("iter has next", it.hasNext());
-        Assert.assertEquals("iter next ", c2, it.next());
-        Assert.assertFalse("iter next ", it.hasNext());
+       assertTrue("iter has next", it.hasNext());
+       assertEquals("iter next ", c2, it.next());
+       assertFalse("iter next ", it.hasNext());
 
 
     }

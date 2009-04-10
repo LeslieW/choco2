@@ -20,7 +20,7 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package samples.pack.search;
+package choco.cp.solver.search.integer.valselector;
 
 import choco.cp.solver.constraints.global.pack.PrimalDualPack;
 import choco.kernel.common.util.IntIterator;
