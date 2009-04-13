@@ -2073,7 +2073,15 @@ public class CPSolver implements Solver {
         //put the nogood store last in the static list
 	}
 
-	/**
+    
+    public void initNogoodBase() {
+        if (nogoodStore != null) {
+            nogoodStore.setActiveSilently();
+            nogoodStore.constAwake(false);
+        }
+    }
+
+    /**
 	 * @return the number of boolean variables 
 	 */
 	public int getNbBooleanVars() {

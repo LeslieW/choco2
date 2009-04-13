@@ -45,8 +45,9 @@ public class WLClause {
      * @param propagator
      * @throws ContradictionException
      */
-    public void register(ClauseStore propagator) throws ContradictionException {
+    public boolean register(ClauseStore propagator) throws ContradictionException {
         assert lits.length > 1;
+        if (isreg) return true;
         findLiteral(0);  // find a non falsified literal and exchange it with lits[0]
         if (voc.isFalsified(lits[0])) { // if none, raise a contradiction
             propagator.fail();
@@ -54,15 +55,17 @@ public class WLClause {
         findLiteral(1);  // find a second non falsified literal and exchange it with lits[1]
 
         // ajoute la clause a la liste des clauses controles.
-        isreg = true;
-        voc.watch(lits[0], this);
-        voc.watch(lits[1], this);
-
         if (voc.isFalsified(lits[1])) { // if none, propagate lits[0]
-            //System.out.println("lits0 " + voc.boolvars[lits[0] > 0 ? lits[0] : -lits[0]]);
-            //System.out.println("propagate from register " + voc.boolvars[lits[1] > 0 ? lits[1] : -lits[1]]);
+//            System.out.println("lits0 " + voc.boolvars[lits[0] > 0 ? lits[0] : -lits[0]]);
+//            System.out.println("propagate from register " + voc.boolvars[lits[1] > 0 ? lits[1] : -lits[1]]);
             updateDomain();
         }
+        if (voc.isFree(lits[0]) && voc.isFree(lits[1])) {
+            isreg = true;
+            voc.watch(lits[0], this);
+            voc.watch(lits[1], this);        
+        }
+        return isreg;
     }
 
     /**
@@ -101,10 +104,10 @@ public class WLClause {
 
     public void updateDomain() throws ContradictionException {
         if (lits[0] > 0) {
-            //System.out.println("Clause "+ this+" instantiate " + voc.boolvars[lits[0]] + " to 1");
+  //         System.out.println("Clause "+ this+" instantiate " + voc.boolvars[lits[0]] + " to 1");
             voc.boolvars[lits[0]].instantiate(1, -1);//propagator.cIndices[lits[0] - 1]);
         } else {
-            //System.out.println("Clause "+ this+" instantiate " + voc.boolvars[-lits[0]] + " to 0");
+  //         System.out.println("Clause "+ this+" instantiate " + voc.boolvars[-lits[0]] + " to 0");
             voc.boolvars[-lits[0]].instantiate(0, -1);//propagator.cIndices[-lits[0] - 1]);
         }
     }

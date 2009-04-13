@@ -205,10 +205,7 @@ public class  ClauseStore extends AbstractLargeIntSConstraint {
         } else {
             for (Iterator<WLClause> iterator = listToPropagate.iterator(); iterator.hasNext();) {
                 WLClause cl = iterator.next();
-                if (!cl.isRegistered()) {
-                    cl.register(this);
-                }
-                if (cl.update()) {
+                if (cl.register(this)) {
                     iterator.remove();
                 }
             }            
