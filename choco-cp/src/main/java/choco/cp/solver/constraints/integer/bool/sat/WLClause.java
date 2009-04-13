@@ -29,7 +29,6 @@ public class WLClause {
     // jl = 0 or 1
     public void findLiteral(int start) {
         for (int i = start; i < lits.length; i++) {
-            //System.out.println(lits[i]);
             if (!voc.isFalsified(lits[i])) {
                 int tlit = lits[start];
                 lits[start] = lits[i];
@@ -60,6 +59,8 @@ public class WLClause {
         voc.watch(lits[1], this);
 
         if (voc.isFalsified(lits[1])) { // if none, propagate lits[0]
+            //System.out.println("lits0 " + voc.boolvars[lits[0] > 0 ? lits[0] : -lits[0]]);
+            //System.out.println("propagate from register " + voc.boolvars[lits[1] > 0 ? lits[1] : -lits[1]]);
             updateDomain();
         }
     }
@@ -100,8 +101,10 @@ public class WLClause {
 
     public void updateDomain() throws ContradictionException {
         if (lits[0] > 0) {
+            //System.out.println("Clause "+ this+" instantiate " + voc.boolvars[lits[0]] + " to 1");
             voc.boolvars[lits[0]].instantiate(1, -1);//propagator.cIndices[lits[0] - 1]);
         } else {
+            //System.out.println("Clause "+ this+" instantiate " + voc.boolvars[-lits[0]] + " to 0");
             voc.boolvars[-lits[0]].instantiate(0, -1);//propagator.cIndices[-lits[0] - 1]);
         }
     }
@@ -182,12 +185,11 @@ public class WLClause {
     public String toString() {
         String clname = "";
         for (int i = 0; i < lits.length; i++) {
-            String s = "";
             if (lits[i] > 0) {
-                s += voc.boolvars[lits[i]].toString();
-            } else s += "!" + voc.boolvars[-lits[i]].toString();
+                clname += voc.boolvars[lits[i]];
+            } else clname += "!" + voc.boolvars[-lits[i]];
             if (i < lits.length - 1)
-                clname += " v ";
+            clname += " v ";
         }
         return clname;
     }
