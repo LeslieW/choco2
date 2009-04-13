@@ -80,7 +80,8 @@ public class SearchLoopWithRestart extends SearchLoop {
 	protected void restoreRootNode(IntBranchingTrace ctx) {
 		searchStrategy.popTraceUntil(searchStrategy.baseWorld + 1);
 		searchStrategy.solver.worldPopUntil(searchStrategy.baseWorld + 1);
-	}
+        ((CPSolver) searchStrategy.getSolver()).initNogoodBase();
+    }
 
 	/**
 	 * perform the restart.
