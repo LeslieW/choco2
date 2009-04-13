@@ -22,7 +22,7 @@ public class DynWLClause extends WLClause {
         for (int i = start; i < lits.length; i++) {
             int var = (lits[i] < 0) ? -lits[i] : lits[i];
             BooleanVarImpl v = voc.boolvars[var];
-            if (!v.isInstantiated()) {
+            if (!v.isInstantiated() || !voc.isFalsified(lits[i])) {
                 int tlit = lits[start];
                 lits[start] = lits[i];
                 lits[i] = tlit;

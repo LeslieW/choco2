@@ -238,5 +238,12 @@ public class  ClauseStore extends AbstractLargeIntSConstraint {
     public int getNbClause() {
         return listclause.size();
     }
+
+    public void printClauses() {
+        for (Iterator<WLClause> iterator = listclause.iterator(); iterator.hasNext();) {
+            WLClause wlClause = iterator.next();
+            System.out.println("" + wlClause);
+        }
+    }
 }
 
