@@ -271,35 +271,40 @@ public interface Solver extends IPretty {
 	/**
 	 * Set the variable to optimize
 	 *
-	 * @param objective
+	 * @param objective variable to optimize
 	 */
 	public void setObjective(Var objective);
 
 	public Number getOptimumValue();
 	
 	/**
-	 * set the scheduling horizon. 
-	 */
+	 * set the scheduling horizon.
+     * @param horizon scheduling horizon
+     */
 	void setHorizon(int horizon);
 	
 	/**
 	 * Get the makespan variable if any
-	 */
+     * @return makespan variable
+     */
 	IntDomainVar getMakespan();
 
 	/**
 	 * get the makespan value or +inf.
-	 */
+     * @return makespan value
+     */
 	int getMakespanValue();
 	
 	/**
 	 * Checks if a limit has been encountered
-	 */
+     * @return a boolean
+     */
 	public boolean isEncounteredLimit();
 
 	/**
 	 * If a limit has been encountered, return the involved limit
-	 */
+     * @return the limit encountered
+     */
 	public GlobalSearchLimit getEncounteredLimit();
 
 	public AbstractGlobalSearchStrategy getSearchStrategy();
@@ -316,6 +321,7 @@ public interface Solver extends IPretty {
 	 * the model are numbered in sequence from 0 on)
 	 *
 	 * @param i index of the variable in the model
+     * @return number of integer variables
 	 */
 
 	public IntVar getIntVar(int i);
@@ -374,7 +380,8 @@ public interface Solver extends IPretty {
 
 	/**
 	 * Returns the number of variables modelling real numbers.
-	 */
+     * @return number of real variables
+     */
 	public int getNbRealVars();
 
 	/**
@@ -387,7 +394,8 @@ public interface Solver extends IPretty {
 
 	/**
 	 * Returns the number of variables modelling real numbers.
-	 */
+     * @return number of set variables
+     */
 	public int getNbSetVars();
 
 
@@ -401,26 +409,31 @@ public interface Solver extends IPretty {
 
 	/**
 	 * Returns the number of variables modelling tasks.
-	 */
+     * @return actual number of task vars
+     */
 	public int getNbTaskVars();
 
 
     /**
      * Set the precision of the search for a real model.
+     * @param precision the new precision
      */
     public void setPrecision(double precision);
     /**
      * Get the precision of the search for a real model.
+     * @return the actual precision
      */
     public double getPrecision();
 
     /**
      * Set the minimal width reduction between two propagations.
+     * @param reduction new width reduction
      */
     public void setReduction(double reduction);
 
     /**
      * Get the minimal width reduction between two propagations.
+     * @return width reduction
      */
     public double getReduction();
 
@@ -462,7 +475,8 @@ public interface Solver extends IPretty {
 
 	/**
 	 * Backtracks to a given level in the search tree.
-	 */
+     * @param n number of world to pop
+     */
 	public void worldPopUntil(int n);
 
     /**
@@ -485,7 +499,7 @@ public interface Solver extends IPretty {
 
     /**
      * Restore a solution by setting value to every variable
-     * @param sol
+     * @param sol solution to restore
      */
     public void restoreSolution(Solution sol);
 
@@ -502,7 +516,8 @@ public interface Solver extends IPretty {
 
     /**
 	 * Returns the memory environment used by the model.
-	 */
+     * @return memory environment
+     */
 
 	public IEnvironment getEnvironment();
 
@@ -513,7 +528,8 @@ public interface Solver extends IPretty {
 
 	/**
 	 * returning the index of the current worl
-	 */
+     * @return current world index
+     */
 	public int getWorldIndex();
 
 	public void eraseConstraint(SConstraint c);
@@ -531,6 +547,7 @@ public interface Solver extends IPretty {
 	 *
 	 * @param i index of the constraint in the model
 	 * @deprecated
+     * @return the ith constraint
 	 */
 
 	@Deprecated
@@ -607,6 +624,7 @@ public interface Solver extends IPretty {
     /**
      * Solution checker.
      * Usefull for debug and development.
+     * @param printAll print every available information
      * @return a boolean indicating wether the solution is correct or not.
      */
     public Boolean checkSolution(boolean printAll);
@@ -658,12 +676,17 @@ public interface Solver extends IPretty {
 
 	/**
 	 * Makes a constant interval from a double d ([d,d]).
-	 */
+     * @param d double
+     * @return constant interval
+     */
 	public RealConstant cst(double d);
 
 	/**
 	 * Makes a constant interval between two doubles [a,b].
-	 */
+     * @param a lower bound
+     * @param b upper bound
+     * @return constant interval
+     */
 	public RealConstant cst(double a, double b);
 
 
@@ -692,5 +715,4 @@ public interface Solver extends IPretty {
 	public SConstraint relationTupleAC(IntDomainVar[] vs, LargeRelation rela);
 
 	public SConstraint relationTupleAC(IntDomainVar[] vs, LargeRelation rela, int ac);
-
 }
