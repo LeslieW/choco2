@@ -1,11 +1,11 @@
 package choco.cp.solver.variables.integer;
 
+import java.util.logging.Level;
+
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.logging.Level;
 
 /**
  * A variable implementation dedicated to boolean domains
@@ -136,7 +136,7 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      */
 
     public int getRandomDomainValue() {
-        return booldomain.getRandomValue();
+    	return booldomain.getRandomValue();
     }
 
 
@@ -154,7 +154,7 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      */
 
     public int getPrevDomainValue(int currentv) {
-        return booldomain.getPrevValue(currentv);
+    	return booldomain.getPrevValue(currentv);
     }
 
 
@@ -169,9 +169,8 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      */
 
     public boolean updateInf(int x, int idx) throws ContradictionException {
-        if (logger.isLoggable(Level.FINEST))
-              logger.finest("INF(" + this.toString() + "): " + this.getInf() + " -> " + x);
-        if(x > 0){
+    	logOnInf(x);
+    	if(x > 0){
             return booldomain.instantiate(x, idx);
         }
         return false;
@@ -188,9 +187,8 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      */
 
     public boolean updateSup(int x, int idx) throws ContradictionException {
-        if (logger.isLoggable(Level.FINEST))
-            logger.finest("SUP(" + this.toString() + "): " + this.getSup() + " -> " + x);
-        if(x < 1){
+    	logOnSup(x); 
+    	if(x < 1){
             return booldomain.instantiate(x, idx);
         }
         return false;
@@ -212,9 +210,8 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      */
 
     public boolean removeVal(int x, int idx) throws ContradictionException {
-        if (logger.isLoggable(Level.FINEST))
-              logger.finest("REM(" + this.toString() + "): - " + x);
-        if (x == 0)
+    	logOnRem(x); 
+    	if (x == 0)
             return booldomain.instantiate(1,idx);
         else if (x == 1)
             return booldomain.instantiate(0,idx);
@@ -233,7 +230,8 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      */
 
     public boolean removeInterval(int a, int b, int idx) throws ContradictionException {
-        return booldomain.removeInterval(a, b, idx);
+    	logOnRemInt(a, b);
+    	return booldomain.removeInterval(a, b, idx);
     }
 
     /**
@@ -246,9 +244,8 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      */
 
     public boolean instantiate(int x, int idx) throws ContradictionException {
-        if (logger.isLoggable(Level.FINEST))
-              logger.finest("INST(" + this.toString() + "):-> " + x);
-        return booldomain.instantiate(x, idx);
+    	logOnInst(x);
+    	return booldomain.instantiate(x, idx);
     }
 
 

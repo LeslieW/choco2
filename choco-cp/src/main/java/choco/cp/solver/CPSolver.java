@@ -427,10 +427,7 @@ public class CPSolver implements Solver {
 		if (env instanceof EnvironmentRecomputation) {
 			useRecomputation = true;
 		}
-		setDefaultHandler();
-		setVerbosity(SILENT);
-		this.indexOfLastInitializedStaticConstraint = env
-		.makeInt(PartiallyStoredVector.getFirstStaticIndex() - 1);
+		this.indexOfLastInitializedStaticConstraint = env.makeInt(PartiallyStoredVector.getFirstStaticIndex() - 1);
 		initLimit();
 	}
 
@@ -2530,146 +2527,45 @@ public class CPSolver implements Solver {
 	// **********************************************************************
 	// LOGGERS MANAGEMENT
 	// **********************************************************************
+	
 	public static final int SILENT = 0;
 	public static final int SOLUTION = 1;
 	public static final int SEARCH = 2;
 	public static final int PROPAGATION = 3;
 	public static final int FINEST = 4;
 
-	static {
-		try {
-			setDefaultHandler();
-			setVerbosity(SILENT);
-		} catch (AccessControlException e) {
-			// Do nothing if this is an applet !
-			// TODO: see how to make it work with an applet !
-		}
-	}
-
-	private static void setDefaultHandler() {
-		// define default levels, take into account only info, warning and
-		// severe messages
-		setHandler(Logger.getLogger("choco"), new StreamHandler(System.err, new LightFormatter()));
-
-		setHandler(Logger.getLogger("choco.kernel.solver.search"), new StreamHandler(System.err, new LightFormatter()));
-
-		setHandler(Logger.getLogger("choco.kernel.solver.propagation"),
-				new StreamHandler(System.err, new LightFormatter()));
-
-		// Some loggers for debug purposes... not available for final user !
-		Logger.getLogger("choco.kernel.solver.propagation.const").setLevel(
-				Level.SEVERE);
-		Logger.getLogger("choco.kernel.memory").setLevel(Level.SEVERE);
-		Logger.getLogger("choco.currentElement").setLevel(Level.SEVERE);
-	}
-
-	private static void setHandler(Logger logger, Handler handler) {
-		// remove existing handler on choco logger and define choco handler
-		// the handler defined here could be reused by other packages
-		logger.setUseParentHandlers(false);
-
-		for (Handler h : logger.getHandlers()) {
-			logger.removeHandler(h);
-		}
-		// by default, handle (so print) only severe message, it could be
-		// modified in other package
-		logger.addHandler(handler);
-	}
-
+	
+	/**
+	 * use {@link ChocoLogging#setVerbosity(Verbosity)}
+	 * @param verbosity
+	 */
+	@Deprecated
 	public static void setVerbosity(int verbosity) {
 		switch (verbosity) {
 		case SOLUTION:
-			ChocoLogging.setVerbosity(Verbosity.SOLUTION);
-			setVerbosity(Logger.getLogger("choco"), Level.ALL);
-			setVerbosity(Logger.getLogger("choco.kernel.solver.search"),
-					Level.ALL);
-			setVerbosity(Logger
-					.getLogger("choco.kernel.solver.search.branching"),
-					Level.SEVERE);
-			setVerbosity(Logger.getLogger("choco.kernel.solver.propagation"),
-					Level.SEVERE);
-			break;
+			ChocoLogging.setVerbosity(Verbosity.SOLUTION);break;
 		case SEARCH:
-			ChocoLogging.setVerbosity(Verbosity.SEARCH);
-			setVerbosity(Logger.getLogger("choco"), Level.ALL);
-			setVerbosity(Logger.getLogger("choco.kernel.solver.search"),
-					Level.ALL);
-			setVerbosity(Logger
-					.getLogger("choco.kernel.solver.search.branching"),
-					Level.ALL);
-			setVerbosity(Logger.getLogger("choco.kernel.solver.propagation"),
-					Level.SEVERE);
-			break;
+			ChocoLogging.setVerbosity(Verbosity.SEARCH);break;
 		case PROPAGATION:
-			ChocoLogging.setVerbosity(Verbosity.DEBUG);
-			setVerbosity(Logger.getLogger("choco"), Level.ALL);
-			setVerbosity(Logger.getLogger("choco.kernel.solver.search"),
-					Level.ALL);
-			setVerbosity(Logger
-					.getLogger("choco.kernel.solver.search.branching"),
-					Level.ALL);
-			setVerbosity(Logger.getLogger("choco.kernel.solver.propagation"),
-					Level.INFO);
-			break;
+			ChocoLogging.setVerbosity(Verbosity.DEBUG);	break;
 		case FINEST:
-			ChocoLogging.setVerbosity(Verbosity.FINEST);
-			setVerbosity(Logger.getLogger("choco"), Level.FINEST);
-			setVerbosity(Logger.getLogger("choco.kernel.solver.search"),
-					Level.FINEST);
-			setVerbosity(Logger
-					.getLogger("choco.kernel.solver.search.branching"),
-					Level.FINEST);
-			setVerbosity(Logger.getLogger("choco.kernel.solver.propagation"),
-					Level.FINEST);
-			break;
+			ChocoLogging.setVerbosity(Verbosity.FINEST);break;
 		case SILENT:
-			ChocoLogging.setVerbosity(Verbosity.SILENT);
+			ChocoLogging.setVerbosity(Verbosity.SILENT);break;
 		default:
-			setVerbosity(Logger.getLogger("choco"), Level.SEVERE);
-		setVerbosity(Logger.getLogger("choco.kernel.solver.search"),
-				Level.SEVERE);
-		setVerbosity(Logger
-				.getLogger("choco.kernel.solver.search.branching"),
-				Level.SEVERE);
-		setVerbosity(Logger.getLogger("choco.kernel.solver.propagation"),
-				Level.SEVERE);
+			ChocoLogging.setVerbosity(Verbosity.SILENT);break;
 		}
-	}
-
-	public static void flushLogs() {
-		flushLog(Logger.getLogger("choco"));
-		flushLog(Logger.getLogger("choco.kernel.solver.search"));
-		flushLog(Logger.getLogger("choco.kernel.solver.search.branching"));
-		flushLog(Logger.getLogger("choco.kernel.solver.propagation"));
 	}
 
 	/**
-	 * Sets the level of log for the Logger and the Handler. This means that
-	 * inherited loggers will have at least same level if they do not have
-	 * custom handler.
-	 * 
-	 * @param logger
-	 *            the logger to modify its level
-	 * @param level
-	 *            the new level
+	 * use {@link ChocoLogging#flushLogs()}
 	 */
-	protected static void setVerbosity(Logger logger, Level level) {
-		logger.setLevel(level);
-		for (Handler h : logger.getHandlers()) {
-			h.setLevel(level);
-		}
+	@Deprecated
+	public static void flushLogs() {
+		ChocoLogging.flushLogs();
 	}
 
-	protected static void flushLog(Logger logger) {
-		for (Handler h : logger.getHandlers()) {
-			h.flush();
-		}
-	}
-
-	// **********************************************************************
-	// END OF LOGGERS MANAGEMENT
-	// **********************************************************************
-
+	
 	// All abstract methods for constructing constraint
 	// that need be defined by a Model implementing a model
 

@@ -22,7 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
-import static choco.cp.solver.variables.integer.IntVarEvent.*;
+import static choco.cp.solver.variables.integer.IntVarEvent.DECSUPbitvector;
+import static choco.cp.solver.variables.integer.IntVarEvent.INCINFbitvector;
+import static choco.cp.solver.variables.integer.IntVarEvent.INSTINTbitvector;
+import static choco.cp.solver.variables.integer.IntVarEvent.REMVALbitvector;
+
+import java.util.logging.Level;
+
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
@@ -35,11 +41,6 @@ import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import gnu.trove.TIntArrayList;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 /** History:
  * 2007-12-07 : FR_1873619 CPRU: DomOverDeg+DomOverWDeg
  * */
@@ -48,525 +49,546 @@ import java.util.logging.Logger;
  */
 public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 
-  /**
-   * The backtrackable domain of the variable.
-   */
-
-  protected AbstractIntDomain domain;
-
-  /**
-   * Reference to an object for logging trace statements related to IntDomainVar (using the java.util.logging package)
-   */
-
-  protected static Logger logger = Logger.getLogger("choco.kernel.solver.propagation");
-
-    protected PartiallyStoredIntVector[] events;
-
-    protected IStateInt priority;
-
-
-   /**
-   * Default constructor
-   */
-  public IntDomainVarImpl(Solver solver, String name) {
-    super(solver, name);
-       buildDataStructures(solver.getEnvironment());
-  }
-
-    /**
-   * Constructs a new variable for the specified model and with the
-   * specified name and bounds.
-   *
-   * @param solver         The model of the variable.
-   * @param name       Its name.
-   * @param domainType the type of encoding for the domain (BOUNDS, BITSET, ...)
-   * @param a          Its minimal value.
-   * @param b          Its maximal value.
-   */
-
-  public IntDomainVarImpl(Solver solver, String name, int domainType, int a, int b) {
-    super(solver, name);
-    if (domainType == IntDomainVar.BITSET) {
-        domain = new BitSetIntDomain(this, a, b);
-    } else if (domainType == IntDomainVar.LINKEDLIST) {
-        domain = new LinkedIntDomain(this, a, b);
-    } else if (domainType == IntDomainVar.BINARYTREE) {
-        domain = new IntervalBTreeDomain(this, a, b);
-    } else if (domainType == IntDomainVar.BIPARTITELIST) {
-        domain = new BipartiteIntDomain(this, a, b);
-    } else if (domainType == IntDomainVar.BOOLEAN) {
-        domain = new BooleanDomain(this);
-    } else {
-      domain = new IntervalIntDomain(this, a, b);
-    }
-    this.event = new IntVarEvent(this);
-        buildDataStructures(solver.getEnvironment());
-  }
-
-  public IntDomainVarImpl(Solver solver, String name, int domainType, int[] distinctSortedValues) {
-    super(solver, name);
-    if (domainType == IntDomainVar.BINARYTREE) {
-        domain = new IntervalBTreeDomain(this, distinctSortedValues);
-    } else
-    if (domainType == IntDomainVar.LINKEDLIST) {
-      domain = new LinkedIntDomain(this, distinctSortedValues);
-    } else if (domainType == IntDomainVar.BIPARTITELIST) {
-      domain = new BipartiteIntDomain(this, distinctSortedValues);
-    } else {
-      domain = new BitSetIntDomain(this, distinctSortedValues);
-    }
-    this.event = new IntVarEvent(this);
-      buildDataStructures(solver.getEnvironment());
-  }
-
-  
-    protected void buildDataStructures(IEnvironment env){
-        events = new PartiallyStoredIntVector[4];
-        for(int i = 0; i < 4; i++){
-            events[i] = env.makePartiallyStoredIntVector();
-        }
-        priority = env.makeInt(0);
-    }
-
-    /**
-     * Adds a new constraints on the stack of constraints
-     * the addition can be dynamic (undone upon backtracking) or not.
-     *
-     * @param c               the constraint to add
-     * @param varIdx          the variable index accrding to the added constraint
-     * @param dynamicAddition states if the addition is definitic (cut) or
-     *                        subject to backtracking (standard constraint)
-     * @return the index affected to the constraint according to this variable
-     */
-    @Override
-    public int addConstraint(SConstraint c, int varIdx, boolean dynamicAddition) {
-        int constraintIdx = super.addConstraint(c, varIdx, dynamicAddition);
-        computePriority(c);
-        int mask = ((Propagator)c).getFilteredEventMask(varIdx);
-        if((mask & INSTINTbitvector) != 0){
-            addEvent(dynamicAddition, 0, constraintIdx);
-        }
-        if((mask & INCINFbitvector) != 0){
-            addEvent(dynamicAddition, 1, constraintIdx);
-        }
-        if((mask & DECSUPbitvector) != 0){
-            addEvent(dynamicAddition, 2, constraintIdx);
-        }
-        if((mask & REMVALbitvector) != 0){
-            addEvent(dynamicAddition, 3, constraintIdx);
-        }
-        return constraintIdx;
-    }
-
-    /**
-     * Add event to the correct partially stored int vector
-     * @param dynamicAddition
-     * @param indice
-     * @param constraintIdx
-     */
-    private void addEvent(boolean dynamicAddition, int indice, int constraintIdx) {
-        if (dynamicAddition) {
-            events[indice].add(constraintIdx);
-        } else {
-            events[indice].staticAdd(constraintIdx);
-        }
-    }
-
-    /**
-     * Compute the priotity of the variable
-     * @param c
-     */
-    private void computePriority(SConstraint c) {
-        priority.set(Math.max(priority.get(),((Propagator)c).getPriority()));
-    }
-
-    /**
-     * Removes (permanently) a constraint from the list of constraints
-     * connected to the variable.
-     *
-     * @param c the constraint that should be removed from the list this variable
-     *          maintains.
-     */
-    @Override
-    public void eraseConstraint(SConstraint c) {
-        int constraintIdx = constraints.remove(c);
-        indices.remove(constraintIdx);
-        int mask = ((Propagator)c).getFilteredEventMask(indices.get(constraintIdx));
-        if((mask & INSTINTbitvector) != 0){
-            events[0].remove(constraintIdx);
-        }
-        if((mask & INCINFbitvector) != 0){
-            events[1].remove(constraintIdx);
-        }
-        if((mask & DECSUPbitvector) != 0){
-            events[2].remove(constraintIdx);
-        }
-        if((mask & REMVALbitvector) != 0){
-            events[3].remove(constraintIdx);
-        }
-    }
-
-    public PartiallyStoredIntVector[] getEventsVector(){
-        return events;
-    }
-
-    public int getPriority() {
-        return priority.get();
-    }
-
-// ============================================
-  // Methods of the interface
-  // ============================================
-
-  /**
-   * Checks if the variable is instantiated to a specific value.
-   */
-
-  public boolean isInstantiatedTo(int x) {
-    return isInstantiated() && (getVal() == x);
-  }
-
-
-  /**
-   * Checks if the variables is instantiated to any value.
-   */
-
-  public boolean isInstantiated() {
-      return domain.getSize() == 1;//(value.isKnown());
-  }
-
-
-  /**
-   * Checks if a value is still in the domain.
-   */
-
-  public boolean canBeInstantiatedTo(int x) {
-    //return domain.contains(x);
-    return (getInf() <= x && x <= getSup() && (domain == null || domain.contains(x)));
-  }
-
-    /**
-     * Checks if a value is still in the domain assuming the value is
-     * in the initial bound of the domain
-     */
-    public boolean fastCanBeInstantiatedTo(int x) {
-        return domain.contains(x);
-    }
-
-    /**
-   * Sets the minimum value.
-   */
-
-  public void setInf(int x) throws ContradictionException {
-    updateInf(x, VarEvent.NOCAUSE);
-  }
-
-  /**
-   * @deprecated replaced by setInf
-   */
-  public void setMin(int x) throws ContradictionException {
-    updateInf(x, VarEvent.NOCAUSE);
-  }
-
-  /**
-   * Sets the maximal value.
-   */
-
-  public void setSup(int x) throws ContradictionException {
-    updateSup(x, VarEvent.NOCAUSE);
-  }
-
-  /**
-   * @deprecated replaced by setSup
-   */
-  public void setMax(int x) throws ContradictionException {
-    updateSup(x, VarEvent.NOCAUSE);
-  }
-
-  /**
-   * Instantiates the variable.
-   *
-   * @throws choco.kernel.solver.ContradictionException
-   */
-
-  public void setVal(int x) throws ContradictionException {
-    instantiate(x, VarEvent.NOCAUSE);
-  }
-
-
-  /**
-   * Removes a value.
-   *
-   * @throws choco.kernel.solver.ContradictionException
-   */
-
-  public void remVal(int x) throws ContradictionException {
-    removeVal(x, VarEvent.NOCAUSE);
-  }
-
-  public void wipeOut() throws ContradictionException {
-    this.getSolver().getPropagationEngine().raiseContradiction(this, ContradictionException.DOMAIN);
-  }
-
-  public boolean hasEnumeratedDomain() {
-    return domain.isEnumerated();
-  }
-
-  public boolean hasBooleanDomain() {
-    return domain.isBoolean();
-  }
-
-  public IntDomain getDomain() {
-    return domain;
-  }
-
-  /**
-   * Gets the domain size.
-   */
-
-  public int getDomainSize() {
-    return domain.getSize();
-  }
-
-  /**
-   * Checks if it can be equals to another variable.
-   */
-
-  public boolean canBeEqualTo(IntDomainVar x) {
-    if (x.getInf() <= this.getSup()) {
-      if (this.getInf() <= x.getSup()) {
-        if (!this.hasEnumeratedDomain() || !x.hasEnumeratedDomain())
-          return true;
-        else {
-          for (IntIterator it = this.getDomain().getIterator(); it.hasNext();) {
-            int v = it.next();
-            if (x.canBeInstantiatedTo(v))
-              return true;
-          }
-          return false;
-        }
-      } else
-        return false;
-    } else
-      return false;
-  }
-
-
-  /**
-   * Checks if the variables can be instantiated to at least one value
-   * in the array.
-   *
-   * @param sortedValList The value array.
-   * @param nVals         The number of interesting value in this array.
-   */
-
-  public boolean canBeInstantiatedIn(int[] sortedValList, int nVals) {
-    if (getInf() <= sortedValList[nVals - 1]) {
-      if (getSup() >= sortedValList[0]) {
-        if (domain == null)
-          return true;
-        else {
-          for (int i = 0; i < nVals; i++) {
-            if (canBeInstantiatedTo(sortedValList[i]))
-              return true;
-          }
-          return false;
-        }
-      } else
-        return false;
-    } else
-      return false;
-  }
-
-
-  /**
-   * Returns a randomly choosed value in the domain.
-   * <p/>
-   * Not implemented yet.
-   */
-
-  public int getRandomDomainValue() {
-    if (domain == null)
-      return getInf();
-// TODO     return inf.get() + random(sup.get() - inf.get() + 1);
-    else
-      return domain.getRandomValue();
-  }
-
-
-  /**
-   * Gets the next value in the domain.
-   */
-
-  public int getNextDomainValue(int currentv) {
-    if (currentv < getInf())
-      return getInf();
-    else if (domain == null)
-      return currentv + 1;
-    else
-      return domain.getNextValue(currentv);
-  }
-
-
-  /**
-   * Gets the previous value in the domain.
-   */
-
-  public int getPrevDomainValue(int currentv) {
-    if (currentv > getSup())
-      return getSup();
-    else if (domain == null)
-      return currentv - 1;
-    else
-      return domain.getPrevValue(currentv);
-  }
-
-
-  /**
-   * Internal var: update on the variable lower bound caused by its i-th
-   * constraint.
-   * Returns a boolean indicating whether the call indeed added new information
-   *
-   * @param x   The new lower bound.
-   * @param idx The index of the constraint (among all constraints linked to
-   *            the variable) responsible for the update.
-   */
-
-  public boolean updateInf(int x, int idx) throws ContradictionException {
-          if (logger.isLoggable(Level.FINEST))
-            logger.finest("INF(" + this.toString() + "): " + this.getInf() + " -> " + x);
-          return domain.updateInf(x, idx);
-  }
-
-  /**
-   * Internal var: update on the variable upper bound caused by its i-th
-   * constraint.
-   * Returns a boolean indicating whether the call indeed added new information.
-   *
-   * @param x   The new upper bound
-   * @param idx The index of the constraint (among all constraints linked to
-   *            the variable) responsible for the update
-   */
-
-  public boolean updateSup(int x, int idx) throws ContradictionException {
-          if (logger.isLoggable(Level.FINEST))
-            logger.finest("SUP(" + this.toString() + "): " + this.getSup() + " -> " + x);
-          return domain.updateSup(x, idx);
-  }
-
-
-  /**
-   * Internal var: update (value removal) on the domain of a variable caused by
-   * its i-th constraint.
-   * <i>Note:</i> Whenever the hole results in a stronger var (such as a bound update or
-   * an instantiation, then we forget about the index of the var generating constraint.
-   * Indeed the propagated var is stronger than the initial one that
-   * was generated; thus the generating constraint should be informed
-   * about such a new var.
-   * Returns a boolean indicating whether the call indeed added new information.
-   *
-   * @param x   The removed value
-   * @param idx The index of the constraint (among all constraints linked to the variable) responsible for the update
-   */
-
-  public boolean removeVal(int x, int idx) throws ContradictionException {
-      if (logger.isLoggable(Level.FINEST))
-            logger.finest("REM(" + this.toString() + "): - " + x);
-      return domain.removeVal(x, idx);
-  }
-
-  /**
-   * Internal var: remove an interval (a sequence of consecutive values) from
-   * the domain of a variable caused by its i-th constraint.
-   * Returns a boolean indicating whether the call indeed added new information.
-   *
-   * @param a   the first removed value
-   * @param b   the last removed value
-   * @param idx the index of the constraint (among all constraints linked to the variable)
-   *            responsible for the update
-   */
-
-  public boolean removeInterval(int a, int b, int idx) throws ContradictionException {
-      return domain.removeInterval(a, b, idx);
-  }
-
-  /**
-   * Internal var: instantiation of the variable caused by its i-th constraint
-   * Returns a boolean indicating whether the call indeed added new information.
-   *
-   * @param x   the new upper bound
-   * @param idx the index of the constraint (among all constraints linked to the
-   *            variable) responsible for the update
-   */
-
-  public boolean instantiate(int x, int idx) throws ContradictionException {
-      if (logger.isLoggable(Level.FINEST))
-            logger.finest("INST(" + this.toString() + "):-> " + x);
-      return domain.instantiate(x, idx);
-  }
-
-
-    public void fail() throws ContradictionException {
-        solver.getPropagationEngine().raiseContradiction(this, ContradictionException.DOMAIN);
-  }
-
-
-  /**
-   * Gets the minimal value of the variable.
-   */
-
-  public int getInf() {
-    return domain.getInf();
-  }
-
-
-  /**
-   * Gets the maximal value of the variable.
-   */
-
-  public int getSup() {
-    return domain.getSup();
-  }
-
-
-  /**
-   * Gets the value of the variable if instantiated.
-   */
-
-  public int getVal() {
-    return domain.getInf();//value.get();
-  }
-
-  /**
-   * @deprecated replaced by getVal
-   */
-  public int getValue() {
-    return domain.getInf();//value.get();
-  }
-
-  /**
-   * pretty printing
-   *
-   * @return a String representation of the variable
-   */
-  public String toString() {
-    return (super.toString() + ":" + (isInstantiated() ? getVal() : "?"));
-  }
-
-  /**
-   * pretty printing
-   *
-   * @return a String representation of the variable
-   */
-  public String pretty() {
-    return (this.toString() + "[" + this.domain.getSize() + "]" + this.domain.pretty());
-  }
-
-    public Solver getSolver() {
-        return this.solver;
-    }
-
-    public void setSolver(Solver solver) {
-        this.solver = solver;
-    }
+	/**
+	 * The backtrackable domain of the variable.
+	 */
+
+	protected AbstractIntDomain domain;
+
+	protected PartiallyStoredIntVector[] events;
+
+	protected IStateInt priority;
+
+
+	/**
+	 * Default constructor
+	 */
+	protected IntDomainVarImpl(Solver solver, String name) {
+		super(solver, name);
+		buildDataStructures(solver.getEnvironment());
+	}
+
+	/**
+	 * Constructs a new variable for the specified model and with the
+	 * specified name and bounds.
+	 *
+	 * @param solver         The model of the variable.
+	 * @param name       Its name.
+	 * @param domainType the type of encoding for the domain (BOUNDS, BITSET, ...)
+	 * @param a          Its minimal value.
+	 * @param b          Its maximal value.
+	 */
+
+	public IntDomainVarImpl(Solver solver, String name, int domainType, int a, int b) {
+		super(solver, name);
+		if (domainType == IntDomainVar.BITSET) {
+			domain = new BitSetIntDomain(this, a, b);
+		} else if (domainType == IntDomainVar.LINKEDLIST) {
+			domain = new LinkedIntDomain(this, a, b);
+		} else if (domainType == IntDomainVar.BINARYTREE) {
+			domain = new IntervalBTreeDomain(this, a, b);
+		} else if (domainType == IntDomainVar.BIPARTITELIST) {
+			domain = new BipartiteIntDomain(this, a, b);
+		} else if (domainType == IntDomainVar.BOOLEAN) {
+			domain = new BooleanDomain(this);
+		} else {
+			domain = new IntervalIntDomain(this, a, b);
+		}
+		this.event = new IntVarEvent(this);
+		buildDataStructures(solver.getEnvironment());
+	}
+
+	public IntDomainVarImpl(Solver solver, String name, int domainType, int[] distinctSortedValues) {
+		super(solver, name);
+		if (domainType == IntDomainVar.BINARYTREE) {
+			domain = new IntervalBTreeDomain(this, distinctSortedValues);
+		} else
+			if (domainType == IntDomainVar.LINKEDLIST) {
+				domain = new LinkedIntDomain(this, distinctSortedValues);
+			} else if (domainType == IntDomainVar.BIPARTITELIST) {
+				domain = new BipartiteIntDomain(this, distinctSortedValues);
+			} else {
+				domain = new BitSetIntDomain(this, distinctSortedValues);
+			}
+		this.event = new IntVarEvent(this);
+		buildDataStructures(solver.getEnvironment());
+	}
+
+
+	protected void buildDataStructures(IEnvironment env){
+		events = new PartiallyStoredIntVector[4];
+		for(int i = 0; i < 4; i++){
+			events[i] = env.makePartiallyStoredIntVector();
+		}
+		priority = env.makeInt(0);
+	}
+
+	/**
+	 * Adds a new constraints on the stack of constraints
+	 * the addition can be dynamic (undone upon backtracking) or not.
+	 *
+	 * @param c               the constraint to add
+	 * @param varIdx          the variable index accrding to the added constraint
+	 * @param dynamicAddition states if the addition is definitic (cut) or
+	 *                        subject to backtracking (standard constraint)
+	 * @return the index affected to the constraint according to this variable
+	 */
+	@Override
+	public int addConstraint(SConstraint c, int varIdx, boolean dynamicAddition) {
+		int constraintIdx = super.addConstraint(c, varIdx, dynamicAddition);
+		computePriority(c);
+		int mask = ((Propagator)c).getFilteredEventMask(varIdx);
+		if((mask & INSTINTbitvector) != 0){
+			addEvent(dynamicAddition, 0, constraintIdx);
+		}
+		if((mask & INCINFbitvector) != 0){
+			addEvent(dynamicAddition, 1, constraintIdx);
+		}
+		if((mask & DECSUPbitvector) != 0){
+			addEvent(dynamicAddition, 2, constraintIdx);
+		}
+		if((mask & REMVALbitvector) != 0){
+			addEvent(dynamicAddition, 3, constraintIdx);
+		}
+		return constraintIdx;
+	}
+
+	/**
+	 * Add event to the correct partially stored int vector
+	 * @param dynamicAddition
+	 * @param indice
+	 * @param constraintIdx
+	 */
+	private void addEvent(boolean dynamicAddition, int indice, int constraintIdx) {
+		if (dynamicAddition) {
+			events[indice].add(constraintIdx);
+		} else {
+			events[indice].staticAdd(constraintIdx);
+		}
+	}
+
+	/**
+	 * Compute the priotity of the variable
+	 * @param c
+	 */
+	private void computePriority(SConstraint c) {
+		priority.set(Math.max(priority.get(),((Propagator)c).getPriority()));
+	}
+
+	/**
+	 * Removes (permanently) a constraint from the list of constraints
+	 * connected to the variable.
+	 *
+	 * @param c the constraint that should be removed from the list this variable
+	 *          maintains.
+	 */
+	@Override
+	public final void eraseConstraint(SConstraint c) {
+		int constraintIdx = constraints.remove(c);
+		indices.remove(constraintIdx);
+		int mask = ((Propagator)c).getFilteredEventMask(indices.get(constraintIdx));
+		if((mask & INSTINTbitvector) != 0){
+			events[0].remove(constraintIdx);
+		}
+		if((mask & INCINFbitvector) != 0){
+			events[1].remove(constraintIdx);
+		}
+		if((mask & DECSUPbitvector) != 0){
+			events[2].remove(constraintIdx);
+		}
+		if((mask & REMVALbitvector) != 0){
+			events[3].remove(constraintIdx);
+		}
+	}
+
+	public final PartiallyStoredIntVector[] getEventsVector(){
+		return events;
+	}
+
+	public final int getPriority() {
+		return priority.get();
+	}
+
+	// ============================================
+	// Methods of the interface
+	// ============================================
+
+	/**
+	 * Checks if the variable is instantiated to a specific value.
+	 */
+
+	public boolean isInstantiatedTo(int x) {
+		return isInstantiated() && (getVal() == x);
+	}
+
+
+	/**
+	 * Checks if the variables is instantiated to any value.
+	 */
+
+	public boolean isInstantiated() {
+		return domain.getSize() == 1;//(value.isKnown());
+	}
+
+
+	/**
+	 * Checks if a value is still in the domain.
+	 */
+
+	public boolean canBeInstantiatedTo(int x) {
+		//return domain.contains(x);
+		return (getInf() <= x && x <= getSup() && (domain == null || domain.contains(x)));
+	}
+
+	/**
+	 * Checks if a value is still in the domain assuming the value is
+	 * in the initial bound of the domain
+	 */
+	public boolean fastCanBeInstantiatedTo(int x) {
+		return domain.contains(x);
+	}
+
+	/**
+	 * Sets the minimum value.
+	 */
+
+	public final void setInf(int x) throws ContradictionException {
+		updateInf(x, VarEvent.NOCAUSE);
+	}
+
+	/**
+	 * @deprecated replaced by setInf
+	 */
+	public final void setMin(int x) throws ContradictionException {
+		updateInf(x, VarEvent.NOCAUSE);
+	}
+
+	/**
+	 * Sets the maximal value.
+	 */
+
+	public final void setSup(int x) throws ContradictionException {
+		updateSup(x, VarEvent.NOCAUSE);
+	}
+
+	/**
+	 * @deprecated replaced by setSup
+	 */
+	public final void setMax(int x) throws ContradictionException {
+		updateSup(x, VarEvent.NOCAUSE);
+	}
+
+	/**
+	 * Instantiates the variable.
+	 *
+	 * @throws choco.kernel.solver.ContradictionException
+	 */
+
+	public final void setVal(int x) throws ContradictionException {
+		instantiate(x, VarEvent.NOCAUSE);
+	}
+
+
+	/**
+	 * Removes a value.
+	 *
+	 * @throws choco.kernel.solver.ContradictionException
+	 */
+
+	public final void remVal(int x) throws ContradictionException {
+		removeVal(x, VarEvent.NOCAUSE);
+	}
+
+	public final void wipeOut() throws ContradictionException {
+		this.getSolver().getPropagationEngine().raiseContradiction(this, ContradictionException.DOMAIN);
+	}
+
+	public boolean hasEnumeratedDomain() {
+		return domain.isEnumerated();
+	}
+
+	public boolean hasBooleanDomain() {
+		return domain.isBoolean();
+	}
+
+	public IntDomain getDomain() {
+		return domain;
+	}
+
+	/**
+	 * Gets the domain size.
+	 */
+
+	public int getDomainSize() {
+		return domain.getSize();
+	}
+
+	/**
+	 * Checks if it can be equals to another variable.
+	 */
+
+	public boolean canBeEqualTo(IntDomainVar x) {
+		if (x.getInf() <= this.getSup()) {
+			if (this.getInf() <= x.getSup()) {
+				if (!this.hasEnumeratedDomain() || !x.hasEnumeratedDomain())
+					return true;
+				else {
+					for (IntIterator it = this.getDomain().getIterator(); it.hasNext();) {
+						int v = it.next();
+						if (x.canBeInstantiatedTo(v))
+							return true;
+					}
+					return false;
+				}
+			} else
+				return false;
+		} else
+			return false;
+	}
+
+
+	/**
+	 * Checks if the variables can be instantiated to at least one value
+	 * in the array.
+	 *
+	 * @param sortedValList The value array.
+	 * @param nVals         The number of interesting value in this array.
+	 */
+
+	public boolean canBeInstantiatedIn(int[] sortedValList, int nVals) {
+		if (getInf() <= sortedValList[nVals - 1]) {
+			if (getSup() >= sortedValList[0]) {
+				if (domain == null)
+					return true;
+				else {
+					for (int i = 0; i < nVals; i++) {
+						if (canBeInstantiatedTo(sortedValList[i]))
+							return true;
+					}
+					return false;
+				}
+			} else
+				return false;
+		} else
+			return false;
+	}
+
+
+	/**
+	 * Returns a randomly choosed value in the domain.
+	 * <p/>
+	 * Not implemented yet.
+	 */
+
+	public int getRandomDomainValue() {
+		if (domain == null)
+			return getInf();
+		// TODO     return inf.get() + random(sup.get() - inf.get() + 1);
+		else
+			return domain.getRandomValue();
+	}
+
+
+	/**
+	 * Gets the next value in the domain.
+	 */
+
+	public int getNextDomainValue(int currentv) {
+		if (currentv < getInf())
+			return getInf();
+		else if (domain == null)
+			return currentv + 1;
+		else
+			return domain.getNextValue(currentv);
+	}
+
+
+	/**
+	 * Gets the previous value in the domain.
+	 */
+
+	public int getPrevDomainValue(int currentv) {
+		if (currentv > getSup())
+			return getSup();
+		else if (domain == null)
+			return currentv - 1;
+		else
+			return domain.getPrevValue(currentv);
+	}
+
+
+	/**
+	 * Internal var: update on the variable lower bound caused by its i-th
+	 * constraint.
+	 * Returns a boolean indicating whether the call indeed added new information
+	 *
+	 * @param x   The new lower bound.
+	 * @param idx The index of the constraint (among all constraints linked to
+	 *            the variable) responsible for the update.
+	 */
+
+	public boolean updateInf(int x, int idx) throws ContradictionException {
+		logOnInf(x);
+		return domain.updateInf(x, idx);
+	}
+
+	/**
+	 * Internal var: update on the variable upper bound caused by its i-th
+	 * constraint.
+	 * Returns a boolean indicating whether the call indeed added new information.
+	 *
+	 * @param x   The new upper bound
+	 * @param idx The index of the constraint (among all constraints linked to
+	 *            the variable) responsible for the update
+	 */
+
+	public boolean updateSup(int x, int idx) throws ContradictionException {
+		logOnSup(x); 
+		return domain.updateSup(x, idx);
+	}
+
+
+	/**
+	 * Internal var: update (value removal) on the domain of a variable caused by
+	 * its i-th constraint.
+	 * <i>Note:</i> Whenever the hole results in a stronger var (such as a bound update or
+	 * an instantiation, then we forget about the index of the var generating constraint.
+	 * Indeed the propagated var is stronger than the initial one that
+	 * was generated; thus the generating constraint should be informed
+	 * about such a new var.
+	 * Returns a boolean indicating whether the call indeed added new information.
+	 *
+	 * @param x   The removed value
+	 * @param idx The index of the constraint (among all constraints linked to the variable) responsible for the update
+	 */
+
+	public boolean removeVal(int x, int idx) throws ContradictionException {
+		logOnRem(x); 
+		return domain.removeVal(x, idx);
+	}
+
+	/**
+	 * Internal var: remove an interval (a sequence of consecutive values) from
+	 * the domain of a variable caused by its i-th constraint.
+	 * Returns a boolean indicating whether the call indeed added new information.
+	 *
+	 * @param a   the first removed value
+	 * @param b   the last removed value
+	 * @param idx the index of the constraint (among all constraints linked to the variable)
+	 *            responsible for the update
+	 */
+
+	public boolean removeInterval(int a, int b, int idx) throws ContradictionException {
+		logOnRemInt(a, b); 
+		return domain.removeInterval(a, b, idx);
+	}
+
+	/**
+	 * Internal var: instantiation of the variable caused by its i-th constraint
+	 * Returns a boolean indicating whether the call indeed added new information.
+	 *
+	 * @param x   the new upper bound
+	 * @param idx the index of the constraint (among all constraints linked to the
+	 *            variable) responsible for the update
+	 */
+
+	public boolean instantiate(int x, int idx) throws ContradictionException {
+		logOnInst(x);
+		return domain.instantiate(x, idx);
+	}
+
+
+	public final void fail() throws ContradictionException {
+		solver.getPropagationEngine().raiseContradiction(this, ContradictionException.DOMAIN);
+	}
+
+
+	/**
+	 * Gets the minimal value of the variable.
+	 */
+
+	public int getInf() {
+		return domain.getInf();
+	}
+
+
+	/**
+	 * Gets the maximal value of the variable.
+	 */
+
+	public int getSup() {
+		return domain.getSup();
+	}
+
+
+	/**
+	 * Gets the value of the variable if instantiated.
+	 */
+
+	public int getVal() {
+		return domain.getInf();//value.get();
+	}
+
+	/**
+	 * @deprecated replaced by getVal
+	 */
+	public int getValue() {
+		return domain.getInf();//value.get();
+	}
+
+	/**
+	 * pretty printing
+	 *
+	 * @return a String representation of the variable
+	 */
+	public String toString() {
+		return (super.toString() + ":" + (isInstantiated() ? getVal() : "?"));
+	}
+
+	/**
+	 * pretty printing
+	 *
+	 * @return a String representation of the variable
+	 */
+	public String pretty() {
+		return (this.toString() + "[" + this.domain.getSize() + "]" + this.domain.pretty());
+	}
+
+	public final Solver getSolver() {
+		return this.solver;
+	}
+
+	public final void setSolver(Solver solver) {
+		this.solver = solver;
+	}
+
+	//*****************************************************************//
+	//*******************  Logging  ********************************//
+	//***************************************************************//
+
+	protected final void logOnInst(final int x) {
+		if (LOGGER.isLoggable(Level.FINEST))
+			LOGGER.log(Level.FINEST, "INST({0}): {1}", new Object[]{this, x}); 
+	}
+
+	protected final void logOnRem(final int x) {
+		if (LOGGER.isLoggable(Level.FINEST))
+			LOGGER.log(Level.FINEST, "REM({0}): {1}", new Object[]{this, x}); 
+	}
+
+	protected final void logOnInf(final int x) {
+		if (LOGGER.isLoggable(Level.FINEST))
+			LOGGER.log(Level.FINEST, "INF({0}): {1} -> {2}", new Object[]{this, this.getInf(), x});  
+	}
+
+	protected final void logOnSup(final int x) {
+		if (LOGGER.isLoggable(Level.FINEST))
+			LOGGER.log(Level.FINEST, "SUP({0}): {1} -> {2}", new Object[]{this, this.getSup(), x});  
+	}
+
+	protected final void logOnRemInt(final int a, final int b) {
+		if (LOGGER.isLoggable(Level.FINEST))
+			LOGGER.log(Level.FINEST, "REMINT({0}): [{1}, {2}]", new Object[]{this, a,b});   
+	}
+
 }

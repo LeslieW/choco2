@@ -86,8 +86,8 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 
 	/**
 	 * count of the backtracks made during search
-     * @param loggingMaxDepth max depth of the logging
-     */
+	 * @param loggingMaxDepth max depth of the logging
+	 */
 	public void setLoggingMaxDepth(int loggingMaxDepth) {
 		this.loggingMaxDepth = loggingMaxDepth;
 	}
@@ -130,16 +130,16 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		nextMove = INIT_SEARCH;
 	}
 
-    public void initMainGoal(SConstraint c) {
-        if (mainGoal != null) {
-            mainGoal.initConstraintForBranching(c);
-            AbstractBranching branch = mainGoal.getNextBranching();
-            while(branch != null) {
-                branch.initConstraintForBranching(c);
-                branch = branch.getNextBranching();
-            }
-        }
-    }
+	public void initMainGoal(SConstraint c) {
+		if (mainGoal != null) {
+			mainGoal.initConstraintForBranching(c);
+			AbstractBranching branch = mainGoal.getNextBranching();
+			while(branch != null) {
+				branch.initConstraintForBranching(c);
+				branch = branch.getNextBranching();
+			}
+		}
+	}
 
 	/*
 	 * main entry point: searching for one solution
@@ -172,27 +172,27 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
     endTreeSearch();
   }*/
 
-    public void initializeDegreeOfVariables() {
-        for (int i = 0; i < solver.getNbIntVars(); i++) {
-            IntDomainVar v = (IntDomainVar) solver.getIntVar(i);
-            if (v.isInstantiated()) {
-                v.updateNbVarInstanciated();
-              }
-        }
-    }
+	public void initializeDegreeOfVariables() {
+		for (int i = 0; i < solver.getNbIntVars(); i++) {
+			IntDomainVar v = (IntDomainVar) solver.getIntVar(i);
+			if (v.isInstantiated()) {
+				v.updateNbVarInstanciated();
+			}
+		}
+	}
 
-    /**
+	/**
 	 * main entry point: searching for one solution
 	 * Note: the initial propagation must be done before pushing any world level.
 	 * It is therefore kept before restoring a solution
-     */
+	 */
 	public void incrementalRun() {
 		baseWorld = solver.getEnvironment().getWorldIndex();
 		boolean feasibleRootState = true;
 		try {
 			newTreeSearch();
-            //initializeDegreeOfVariables();
-            solver.propagate();
+			//initializeDegreeOfVariables();
+			solver.propagate();
 		} catch (ContradictionException e) {
 			feasibleRootState = false;
 		}
@@ -222,8 +222,8 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 
 	/**
 	 * called before a new search tree is explored
-     * @throws choco.kernel.solver.ContradictionException
-     */
+	 * @throws choco.kernel.solver.ContradictionException
+	 */
 	public void newTreeSearch() throws ContradictionException {
 		assert(solver.getSearchStrategy() == this);
 		for (AbstractGlobalSearchLimit lim : limits) {
@@ -239,22 +239,24 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	public void endTreeSearch() {
 		if (LOGGER.isLoggable(Level.INFO)) {
+			StringBuilder sb = new StringBuilder();
 			if (solver.getFeasible() == Boolean.TRUE) {
-				LOGGER.log(Level.INFO, "solve => {0} solutions", nbSolutions);
+				sb.append("solve => ").append(nbSolutions).append(" solutions");
 
 			} else {
-				LOGGER.info("solve => no solution");
+				sb.append("solve => no solution");
 			}
 			for (AbstractGlobalSearchLimit lim : limits) {
-				LOGGER.info(lim.pretty());
+				sb.append('\n').append(lim.pretty());
 			}
+			LOGGER.log(Level.INFO, new String(sb), 0);
 		}
 	}
 
 	/**
 	 * called before a node is expanded in the search tree (choice point creation)
-     * @throws choco.kernel.solver.ContradictionException
-     */
+	 * @throws choco.kernel.solver.ContradictionException
+	 */
 	public void newTreeNode() throws ContradictionException {
 		for (AbstractGlobalSearchLimit lim : limits) {
 			if (!lim.newNode(this)) {
@@ -266,8 +268,8 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 
 	/**
 	 * called after a node is expanded in the search tree (choice point creation)
-     * @throws choco.kernel.solver.ContradictionException
-     */
+	 * @throws choco.kernel.solver.ContradictionException
+	 */
 	public void endTreeNode() throws ContradictionException {
 		for (AbstractGlobalSearchLimit lim : limits) {
 			if (!lim.endNode(this)) {//<hca> currentElement also the limit while going up to avoid useless propagation steps lim.endNode(this);
@@ -292,31 +294,30 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	@Override
 	public void recordSolution() {
-        //Check wether every decisions variables have been instantiated
-        if(solver.checkDecisionVariables()){
-            solver.setFeasible(Boolean.TRUE);
-            nbSolutions = nbSolutions + 1;
-            if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("Solution #" + nbSolutions + " is found");
-                if  ((LOGGER.isLoggable(Level.FINER)) && (this.limits.size() > 0)) {
-                    StringBuffer sb = new StringBuffer("  with ");
-                    for (AbstractGlobalSearchLimit lim : limits) {
-                        sb.append(lim.pretty());
-                        sb.append("; ");
-                    }
-                    LOGGER.finer(sb.toString());
-                }
-                if  (LOGGER.isLoggable(Level.FINEST)) {
-                    LOGGER.finest("  " + solver.solutionToString());
-                }
-            }
-            if (maxNbSolutionStored > 0) {
-                super.recordSolution();
-            }
-        }else{
-            throw new SolverException("Bug in solution :one or more decisions variables is not instantiated");
-        }
-    }
+		//Check wether every decisions variables have been instantiated
+		if(solver.checkDecisionVariables()){
+			solver.setFeasible(Boolean.TRUE);
+			nbSolutions = nbSolutions + 1;
+			if (LOGGER.isLoggable(Level.FINE)) {
+				StringBuilder sb = new StringBuilder();
+				sb.append("Solution #").append(nbSolutions).append(" is found");
+				if  (this.limits.size() > 0) {
+					sb.append("\n\twith ");
+					for (AbstractGlobalSearchLimit lim : limits) {
+						sb.append(lim.pretty());
+						sb.append("; ");
+					}
+				}
+				if  (LOGGER.isLoggable(Level.FINEST)) {sb.append("\n\t").append(solver.solutionToString());}
+				LOGGER.log(Level.FINE, new String(sb), solver );
+			}
+			if (maxNbSolutionStored > 0) {
+				super.recordSolution();
+			}
+		}else{
+			throw new SolverException("Bug in solution :one or more decisions variables is not instantiated");
+		}
+	}
 
 
 
@@ -328,8 +329,8 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 
 	/**
 	 * called before going down into each branch of the choice point
-     * @throws choco.kernel.solver.ContradictionException
-     */
+	 * @throws choco.kernel.solver.ContradictionException
+	 */
 	public void postDynamicCut() throws ContradictionException {
 	}
 
@@ -386,7 +387,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	public void printRuntimeStatistics() {
 		System.out.print(runtimeStatistics());
 	}
-	
+
 	public String runtimeStatistics() {
 		final StringBuilder stb = new StringBuilder();
 		for (AbstractGlobalSearchLimit l : limits) {
@@ -458,8 +459,8 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 
 	/**
 	 * If a limit has been encounteres, return the involved limit
-     * @return the encoutered limit
-     */
+	 * @return the encoutered limit
+	 */
 	public GlobalSearchLimit getEncounteredLimit() {
 		return encounteredLimit;
 	}

@@ -104,8 +104,7 @@ public class AssignInterval extends AbstractIntBranching implements IntBranching
       ((RealVar) x).intersect(RealMath.secondHalf((RealVar) x));
       manager.solver.propagate();
     } else {
-      if (logger.isLoggable(Level.SEVERE))
-        logger.severe("!! Not a valid value for AssignInterval branching !!");
+    	LOGGER.severe("!! Not a valid value for AssignInterval branching !!");
     }
   }
 

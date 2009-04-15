@@ -359,8 +359,6 @@ public class BooleanDomain extends AbstractIntDomain {
      */
     public boolean updateSup(int x, int idx) throws ContradictionException {
         if (_updateSup(x, idx)) {
-            if (logger.isLoggable(Level.FINEST))
-                logger.finest("INST(" + this.toString() + "): " + x);
             solver.getPropagationEngine().postInstInt(variable, idx);
 
             return true;
@@ -382,10 +380,7 @@ public class BooleanDomain extends AbstractIntDomain {
 
     public boolean updateInf(int x, int idx) throws ContradictionException {
         if (_updateInf(x, idx)) {
-            if (logger.isLoggable(Level.FINEST))
-                logger.finest("INST(" + this.toString() + "): " + x);
             solver.getPropagationEngine().postInstInt(variable, idx);
-
             return true;
         } else
             return false;
@@ -409,10 +404,7 @@ public class BooleanDomain extends AbstractIntDomain {
 
     public boolean removeVal(int x, int idx) throws ContradictionException {
         if (_removeVal(x, idx)) {
-            if (logger.isLoggable(Level.FINEST))
-                logger.finest("INST(" + this.toString() + "): " + x);
             solver.getPropagationEngine().postInstInt(variable, idx);
-
             return true;
         } else
             return false;
@@ -431,8 +423,6 @@ public class BooleanDomain extends AbstractIntDomain {
 
     public boolean instantiate(int x, int idx) throws ContradictionException {
         if (_instantiate(x, idx)) {
-            if (logger.isLoggable(Level.FINEST))
-                logger.finest("INST(" + this.toString() + "): " + x);
             solver.getPropagationEngine().postInstInt(variable, idx);
             return true;
         } else

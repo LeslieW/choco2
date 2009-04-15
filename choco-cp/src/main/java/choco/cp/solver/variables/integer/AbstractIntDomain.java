@@ -28,9 +28,6 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomain;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * History:
  * 2007-12-07 : FR_1873619 CPRU: DomOverDeg+DomOverWDeg
@@ -43,10 +40,6 @@ public abstract class AbstractIntDomain implements IntDomain {
 
   public Solver solver;
 
-  /**
-   * Reference to an object for logging trace statements related to domains of search variables (using the java.util.logging package)
-   */
-  protected static Logger logger = Logger.getLogger("choco.kernel.solver.propagation");
 
   /**
    * The involved variable.
@@ -197,8 +190,6 @@ public abstract class AbstractIntDomain implements IntDomain {
 
   public boolean removeVal(int x, int idx) throws ContradictionException {
     if (_removeVal(x, idx)) {
-      if (logger.isLoggable(Level.FINEST))
-        logger.finest("REM(" + this.toString() + "): " + x);
       // TODO : to test !!
       //int promoteCause = variable.getEvent().getCause() == VarEvent.NOEVENT ? idx : VarEvent.NOCAUSE;
       //int promoteCause = idx;
@@ -259,8 +250,6 @@ public abstract class AbstractIntDomain implements IntDomain {
 
   public boolean instantiate(int x, int idx) throws ContradictionException {
     if (_instantiate(x, idx)) {
-      if (logger.isLoggable(Level.FINEST))
-        logger.finest("INST(" + this.toString() + "): " + x);
       solver.getPropagationEngine().postInstInt(variable, idx);
       return true;
     } else

@@ -27,6 +27,7 @@ package choco.memory;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.junit.After;
@@ -34,6 +35,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import choco.Choco;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.memory.trailing.StoredBipartiteList;
@@ -46,14 +48,14 @@ import choco.kernel.model.variables.scheduling.TaskVariable;
  */
 public class StoredBipartiteListTest {
   
-	private Logger logger = Logger.getLogger("src.choco.currentElement");
+	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
     private EnvironmentTrailing env;
    
     private StoredBipartiteList<TaskVariable> iVectA;
     private TaskVariable[] tasks;
     @Before
     public void setUp() {
-        logger.fine("StoredIntBipartiteList Testing...");
+        LOGGER.fine("StoredIntBipartiteList Testing...");
 
         env = new EnvironmentTrailing();
         tasks = Choco.makeTaskVarArray("T", 0, 20, new int[]{1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 200});
@@ -104,7 +106,7 @@ public class StoredBipartiteListTest {
         it = iVectA.iterator();
         System.out.println(ChocoUtil.pretty(iVectA));
         while (it.hasNext()) {
-            System.out.println("value " + it.next());
+            LOGGER.log(Level.INFO, "value {0}", it.next());
             it.remove();
         }
        // it.dispose();
