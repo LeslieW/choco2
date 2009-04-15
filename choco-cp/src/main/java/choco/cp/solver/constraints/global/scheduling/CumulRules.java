@@ -22,17 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
-
 import choco.cp.solver.constraints.global.scheduling.trees.CumTreeT;
 import choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode;
 import choco.kernel.common.util.TaskComparators;
@@ -40,6 +29,8 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+
+import java.util.*;
 
 /**
  * @author Arnaud Malapert</br> 
@@ -329,8 +320,8 @@ public class CumulRules implements ICumulRules {
 		//pruning phase
 		for (IRTask x : tasksLX) {
 			final int i = x.getTaskIndex();
-			//			if (logger.isLoggable(Level.FINE) && newSdates[i] > x.getTaskVar().getEST()) {
-			//				logger.fine("edge finding update lb of " + x.getTaskVar().getEST() + " to " + newSdates[i]);
+			//			if (LOGGER.isLoggable(Level.FINE) && newSdates[i] > x.getTaskVar().getEST()) {
+			//				LOGGER.fine("edge finding update lb of " + x.getTaskVar().getEST() + " to " + newSdates[i]);
 			//			}
 			modif |= x.updateEST(newSdates[i]);
 		}
@@ -425,8 +416,8 @@ public class CumulRules implements ICumulRules {
 		for (IRTask crx : tasksLX) {
 			//final TaskVar x = crx.getTaskVar();
 			final int i = crx.getTaskIndex();
-			//			if (logger.isLoggable(Level.FINE) && newEdates[i] < x.getLCT()) {
-			//				logger.fine("edge finding update ub of " + x.end() + " to " + newEdates[i]);
+			//			if (LOGGER.isLoggable(Level.FINE) && newEdates[i] < x.getLCT()) {
+			//				LOGGER.fine("edge finding update ub of " + x.end() + " to " + newEdates[i]);
 			//			}
 			modif |= crx.updateLCT(newEdates[i]);
 		}

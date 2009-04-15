@@ -276,8 +276,8 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
     for (i = nbPosVars; i < nbVars; i++) {
       s += (vars[i].getInf() * coeffs[i]);
     }
-    if (logger.isLoggable(Level.FINEST)) {
-      logger.finest("ub for " + toString() + ": " + s);
+    if (LOGGER.isLoggable(Level.FINEST)) {
+        LOGGER.log(Level.FINEST, "ub for {0} : {1}", new Object[]{toString(), s});
     }
     return s;
   }
@@ -296,8 +296,8 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
     for (i = nbPosVars; i < nbVars; i++) {
       s += (vars[i].getSup() * coeffs[i]);
     }
-    if (logger.isLoggable(Level.FINEST)) {
-      logger.finest("lb for " + toString() + ": " + s);
+    if (LOGGER.isLoggable(Level.FINEST)) {
+      LOGGER.log(Level.FINEST, "lb for {0} : {1}", new Object[]{toString(), s});
     }
     return s;
   }
@@ -333,13 +333,13 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
     // whether the next rule that should be filtered is LB (or UB)
     while (lastRuleEffective || nbr < minNbRules) {
       if (nextRuleIsLB) {
-        if (logger.isLoggable(Level.FINER)) {
-          logger.finer("-- LB propagation for " + toString());
+        if (LOGGER.isLoggable(Level.FINER)) {
+            LOGGER.log(Level.FINER, "-- LB propagation for {0}", toString());
         }
         lastRuleEffective = filterOnImprovedLowerBound();
       } else {
-        if (logger.isLoggable(Level.FINER)) {
-          logger.finer("-- UB propagation for " + toString());
+        if (LOGGER.isLoggable(Level.FINER)) {
+            LOGGER.log(Level.FINER, "-- UB propagation for {0}", toString());
         }
         lastRuleEffective = filterOnImprovedUpperBound();
       }
@@ -367,8 +367,8 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
       assert op == NEQ;
       int mylb = computeLowerBound();
       if (mylb == 0) { // propagate the constraint sigma(ai) + c >= 1
-        if (logger.isLoggable(Level.FINER)) {
-          logger.finer("propagate > 0 for " + toString());
+        if (LOGGER.isLoggable(Level.FINER)) {
+          LOGGER.log(Level.FINER, "propagate > 0 for {0}", toString());
         }
         return propagateNewUpperBound(computeUpperBound() - 1);
         // TODO I have doubts.....
@@ -394,8 +394,8 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
     } else {
       assert op == NEQ;
       if (myub == 0) { // propagate the constraint sigma(ai) + c <= -1
-        if (logger.isLoggable(Level.FINER)) {
-          logger.finer("propagate < 0 for " + toString());
+        if (LOGGER.isLoggable(Level.FINER)) {
+          LOGGER.log(Level.FINER, "propagate < 0 for {0}", toString());
         }
         return propagateNewLowerBound(computeLowerBound() + 1);
         // TODO I have doubts.....
@@ -421,8 +421,8 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
     boolean anyChange = false;
     int nbVars = getNbVars();
     if (mylb > 0) {
-      if (logger.isLoggable(Level.FINER)) {
-        logger.finer("lb = " + mylb + " > 0 => fail");
+      if (LOGGER.isLoggable(Level.FINER)) {
+        LOGGER.log(Level.FINER, "lb = {0} > 0 => fail", mylb);
       }
       this.fail();
     }
@@ -430,10 +430,9 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
     for (i = 0; i < nbPosVars; i++) {
       int newSupi = Arithm.divFloor(-(mylb), coeffs[i]) + vars[i].getInf();
       if (vars[i].updateSup(newSupi, cIndices[i])) {
-        if (logger.isLoggable(Level.FINER)) {
-          logger.finer("SUP(" + vars[i].toString() + ") <= "
-              + -(mylb) + "/" + coeffs[i] + " + " + vars[i].getInf()
-              + " = " + newSupi);
+        if (LOGGER.isLoggable(Level.FINER)) {
+          LOGGER.log(Level.FINER,  "SUP({0}) <= {1}/{2} + {3} = {4}",
+                  new Object[]{vars[i].toString(), -(mylb), coeffs[i], vars[i].getInf(), newSupi});
         }
         anyChange = true;
       }
@@ -441,10 +440,9 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
     for (i = nbPosVars; i < nbVars; i++) {
       int newInfi = Arithm.divCeil(mylb, -(coeffs[i])) + vars[i].getSup();
       if (vars[i].updateInf(newInfi, cIndices[i])) {
-        if (logger.isLoggable(Level.FINER)) {
-          logger.finer("INF(" + vars[i].toString() + ") >= "
-              + mylb + "/" + -(coeffs[i]) + " + " + vars[i].getSup()
-              + " = " + newInfi);
+        if (LOGGER.isLoggable(Level.FINER)) {
+          LOGGER.log(Level.FINER, "INF({0}) >= {1}/{2} + {3} = {4}",
+                  new Object[]{vars[i].toString(), mylb, -(coeffs[i]), vars[i].getSup(), newInfi});
         }
         anyChange = true;
       }
@@ -468,8 +466,8 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
     boolean anyChange = false;
     int nbVars = getNbVars();
     if (myub < 0) {
-      if (logger.isLoggable(Level.FINER)) {
-        logger.finer("ub = " + myub + " < 0 => fail");
+      if (LOGGER.isLoggable(Level.FINER)) {
+        LOGGER.log(Level.FINER, "ub = {0} < 0 => fail", myub);
       }
       this.fail();
     }
@@ -477,10 +475,9 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
     for (i = 0; i < nbPosVars; i++) {
       int newInfi = Arithm.divCeil(-(myub), coeffs[i]) + vars[i].getSup();
       if (vars[i].updateInf(newInfi, cIndices[i])) {
-        if (logger.isLoggable(Level.FINER)) {
-          logger.finer("INF(" + vars[i].toString() + ") >= "
-              + -(myub) + "/" + coeffs[i] + " + " + vars[i].getSup()
-              + " = " + newInfi);
+        if (LOGGER.isLoggable(Level.FINER)) {
+          LOGGER.log(Level.FINEST, "INF({0}) >= {1}/{2} + {3} = {4}",
+                  new Object[]{vars[i].toString(), -(myub), coeffs[i], vars[i].getSup(), newInfi});
         }
         anyChange = true;
       }
@@ -488,10 +485,9 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
     for (i = nbPosVars; i < nbVars; i++) {
       int newSupi = Arithm.divFloor(myub, -(coeffs[i])) + vars[i].getInf();
       if (vars[i].updateSup(newSupi, cIndices[i])) {
-        if (logger.isLoggable(Level.FINER)) {
-          logger.finer("SUP(" + vars[i].toString() + ") <= "
-              + myub + "/" + -(coeffs[i]) + " + " + vars[i].getInf()
-              + " = " + newSupi);
+        if (LOGGER.isLoggable(Level.FINER)) {
+            {LOGGER.log(Level.FINER, "SUP({0}) <= {1}/{2} + {3} = {4} ",
+                    new Object[]{vars[i].toString(), myub, -(coeffs[i]), vars[i].getInf(), newSupi});}
         }
         anyChange = true;
       }

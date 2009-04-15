@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
+import choco.Choco;
 import static choco.Choco.geq;
 import static choco.Choco.makeIntVar;
 import choco.cp.model.CPModel;
@@ -29,12 +30,11 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.util.IntIterator;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractTernIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.common.util.IntIterator;
-import choco.Choco;
 
 /**
  *
@@ -181,7 +181,7 @@ public class PrecedenceDisjoint extends AbstractTernIntSConstraint {
 	public static void main(String[] args) {
 		for (int i = 0; i < 1; i++) {
 		  CPModel m = new CPModel();
-		  logger.finer("test2");
+		  LOGGER.finer("test2");
 	      int k1 = 5, k2 = 5;
 		  IntegerVariable x = makeIntVar("x", 1, 10);
 		  IntegerVariable y = makeIntVar("y", 1, 10);

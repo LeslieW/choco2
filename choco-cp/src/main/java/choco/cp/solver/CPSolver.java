@@ -147,7 +147,7 @@ public class CPSolver implements Solver {
 	 * Solver (using the java.util.logging package)
 	 */
 
-	private static Logger logger = Logger.getLogger("choco");
+	protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
 	protected final IndexFactory indexfactory;
 	/**
@@ -286,7 +286,7 @@ public class CPSolver implements Solver {
 	 */
 	public int propNogoodWorld;
 
-	public void setLoggingMaxDepth(int loggingMaxDepth) {
+    public void setLoggingMaxDepth(int loggingMaxDepth) {
 		this.loggingMaxDepth = loggingMaxDepth;
 	}
 
@@ -305,7 +305,7 @@ public class CPSolver implements Solver {
 	 * A restart strategy (null by default)
 	 */
 	protected RestartStrategy restartS = null;
-	
+
 	/**
 	 * If <code>true</code>, nogood are recorded at each restart
 	 */
@@ -421,7 +421,7 @@ public class CPSolver implements Solver {
 		realconstantVars = new HashMap<Double, RealIntervalConstant>();
 		this.propagationEngine = new ChocEngine(this);
 		this.environment = env;
-		this.constraints = env.<Propagator> makePartiallyStoredVector();
+		this.constraints = env.makePartiallyStoredVector();
 		indexfactory = new IndexFactory();
 		scheduler = new SchedulerConfig(this);
 		if (env instanceof EnvironmentRecomputation) {
@@ -437,7 +437,7 @@ public class CPSolver implements Solver {
 	/**
 	 * Specify the visualization of the solver. Allow the visu to get
 	 * informations from the solver to visualize it.
-	 * 
+	 *
 	 * @param visu
 	 */
 	public void visualize(IVisu visu) {
@@ -614,7 +614,7 @@ public class CPSolver implements Solver {
 	 * Return the type of eventQueues. It can be equal to -
 	 * {@value choco.cp.solver.propagation.EventQueueFactory#BASIC} -
 	 * {@value choco.cp.solver.propagation.EventQueueFactory#OBSERVABLE}
-	 * 
+	 *
 	 * @return the type of event queue
 	 */
 	public final int getEventQueueType() {
@@ -850,7 +850,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Check wether every decisions variables are instantiated
-	 * 
+	 *
 	 * @return true if all variables are instantiated
 	 */
 	public boolean checkDecisionVariables() {
@@ -964,7 +964,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Attach the FIRST branching strategy to the search strategy
-	 * 
+	 *
 	 * @param branching
 	 *            the branching strategy
 	 */
@@ -984,7 +984,7 @@ public class CPSolver implements Solver {
 	/**
 	 * Add branching strategy to the search strategy. (Do not have to be called
 	 * before attachGoal(AbstractIntBranching branching))
-	 * 
+	 *
 	 * @param branching
 	 *            the next branching strategy Branching strategies are run in
 	 *            the order given by the adding.
@@ -1005,7 +1005,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Set the ilogGoal of the search strategy
-	 * 
+	 *
 	 * @param ilogGoal
 	 *            to take into account in the search strategy
 	 */
@@ -1023,7 +1023,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * returns the number of solutions encountered during the search
-	 * 
+	 *
 	 * @return the number of solutions to the model that were encountered during
 	 *         the search
 	 */
@@ -1092,7 +1092,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Monitor the time limit (default to true)
-	 * 
+	 *
 	 * @param b
 	 *            indicates wether the search stategy monitor the time limit
 	 */
@@ -1102,7 +1102,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Monitor the CPU time limit (default to false)
-	 * 
+	 *
 	 * @param b
 	 *            indicates wether the search stategy monitor the time limit
 	 */
@@ -1112,7 +1112,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Monitor the node limit (default to true)
-	 * 
+	 *
 	 * @param b
 	 *            indicates wether the search stategy monitor the node limit
 	 */
@@ -1122,7 +1122,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Monitor the backtrack limit (default to false)
-	 * 
+	 *
 	 * @param b
 	 *            indicates wether the search stategy monitor the backtrack
 	 *            limit
@@ -1133,7 +1133,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Monitor the fail limit (default to false)
-	 * 
+	 *
 	 * @param b
 	 *            indicates wether the search stategy monitor the fail limit
 	 */
@@ -1188,7 +1188,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Get the time count of the search algorithm
-	 * 
+	 *
 	 * @return time count
 	 */
 	public int getTimeCount() {
@@ -1197,7 +1197,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Get the CPU time count of the search algorithm
-	 * 
+	 *
 	 * @return CPU time count
 	 */
 	public int getCpuTimeCount() {
@@ -1206,7 +1206,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Get the node count of the search algorithm
-	 * 
+	 *
 	 * @return node count
 	 */
 	public int getNodeCount() {
@@ -1215,7 +1215,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Get the backtrack count of the search algorithm
-	 * 
+	 *
 	 * @return backtrack count
 	 */
 	public int getBackTrackCount() {
@@ -1224,7 +1224,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Get the fail count of the search algorithm
-	 * 
+	 *
 	 * @return fail count
 	 */
 	public int getFailCount() {
@@ -1296,7 +1296,7 @@ public class CPSolver implements Solver {
         } else if(!setDecisionVars.isEmpty()){
             vars = new SetVar[setDecisionVars.size()];
             intDecisionVars.toArray(vars);
-            ((AbstractSetVarSelector) setVarIntSelector).setVars(vars);             
+            ((AbstractSetVarSelector) setVarIntSelector).setVars(vars);
 		} else {
 			setDecisionVars.addAll(setVars);
 		}
@@ -1353,7 +1353,7 @@ public class CPSolver implements Solver {
 	 * that make choices based on the past experience of the search :
 	 * DomOverWdeg or Impact based search. It could also be used with a random
 	 * heuristic
-	 * 
+	 *
 	 * @param base
 	 *            : the initial number of fails limiting the first search
 	 * @param grow
@@ -1375,7 +1375,7 @@ public class CPSolver implements Solver {
 	 * that make choices based on the past experience of the search :
 	 * DomOverWdeg or Impact based search. It could also be used with a random
 	 * heuristic
-	 * 
+	 *
 	 * @param base
 	 *            : the initial number of fails limiting the first search
 	 * @param grow
@@ -1417,11 +1417,11 @@ public class CPSolver implements Solver {
 	 * <br>
 	 * example with growing factor of 3 : [1, 1, 1, 3, 1, 1, 1, 3, 9,...] <br>
 	 * the limit is length * base.
-	 * 
+	 *
 	 * Restart strategies makes really sense with strategies that make choices
 	 * based on the past experience of the search : DomOverWdeg or Impact based
 	 * search. It could also be used with a random heuristic
-	 * 
+	 *
 	 * @param base
 	 *            : the initial number of fails limiting the first search
 	 * @param grow
@@ -1444,11 +1444,11 @@ public class CPSolver implements Solver {
 	 * <br>
 	 * example with growing factor of 3 : [1, 1, 1, 3, 1, 1, 1, 3, 9,...] <br>
 	 * the limit is length * base.
-	 * 
+	 *
 	 * Restart strategies makes really sense with strategies that make choices
 	 * based on the past experience of the search : DomOverWdeg or Impact based
 	 * search. It could also be used with a random heuristic
-	 * 
+	 *
 	 * @param base
 	 *            : the initial number of fails limiting the first search
 	 * @param grow
@@ -1460,7 +1460,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * default growing factor:2
-	 * 
+	 *
 	 * @param base
 	 */
 	public void setLubyRestart(int base) {
@@ -1491,13 +1491,13 @@ public class CPSolver implements Solver {
 			this.restartS = restartS;
 		}
 	}
-	
-	
+
+
 	public RestartStrategy getRestartStrategy() {
 		return restartS;
 	}
-	
-	
+
+
 
 	public final boolean isRecordingNogoodFromRestart() {
 		return recordNogoodFromRestart;
@@ -1509,7 +1509,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * set the optimization strategy: - restart or not after each solution found
-	 * 
+	 *
 	 * @param restart
 	 */
 	public void setRestart(boolean restart) {
@@ -1519,7 +1519,7 @@ public class CPSolver implements Solver {
 	/**
 	 * a boolean indicating if the strategy minize or maximize the objective
 	 * function
-	 * 
+	 *
 	 * @param doMaximize
 	 */
 	public void setDoMaximize(boolean doMaximize) {
@@ -1528,7 +1528,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Set the variable to optimize
-	 * 
+	 *
 	 * @param objective
 	 */
 	public void setObjective(Var objective) {
@@ -1640,7 +1640,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * get the list of decision integer variables.
-	 * 
+	 *
 	 * @return an unmodifiable list
 	 */
 	public final List<IntDomainVar> getIntDecisionVars() {
@@ -1649,7 +1649,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * get the list of decision set variables.
-	 * 
+	 *
 	 * @return an unmodifiable list
 	 */
 	public final List<SetVar> getSetDecisionVars() {
@@ -1659,7 +1659,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * get the list of decision real variables.
-	 * 
+	 *
 	 * @return an unmodifiable list
 	 */
 	public final List<RealVar> getRealDecisionVars() {
@@ -1668,7 +1668,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * get the list of decision task variables.
-	 * 
+	 *
 	 * @return an unmodifiable list
 	 */
 	public final List<TaskVar> getTaskDecisionVars() {
@@ -1678,7 +1678,7 @@ public class CPSolver implements Solver {
 	/**
 	 * <i>Network management:</i> Retrieve a variable by its index (all integer
 	 * variables of the model are numbered in sequence from 0 on)
-	 * 
+	 *
 	 * @param i
 	 *            index of the variable in the model
 	 */
@@ -1689,7 +1689,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Add a integer variable to the integer variables list
-	 * 
+	 *
 	 * @param v
 	 *            the variable to add
 	 */
@@ -1743,7 +1743,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * retrieving the total number of variables
-	 * 
+	 *
 	 * @return the total number of variables in the model
 	 */
 	public final int getNbIntVars() {
@@ -1752,7 +1752,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Returns a real variable.
-	 * 
+	 *
 	 * @param i
 	 *            index of the variable
 	 * @return the i-th real variable
@@ -1763,7 +1763,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Add a real variable to the real variables list
-	 * 
+	 *
 	 * @param rv
 	 *            the variable to add
 	 */
@@ -1780,7 +1780,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Returns a set variable.
-	 * 
+	 *
 	 * @param i
 	 *            index of the variable
 	 * @return the i-th real variable
@@ -1791,7 +1791,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Add a set variable to the set variables list
-	 * 
+	 *
 	 * @param sv
 	 *            the variable to add
 	 */
@@ -1818,7 +1818,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * retrieving the total number of constraints over integers
-	 * 
+	 *
 	 * @return the total number of constraints over integers in the model
 	 */
 	public final int getNbIntConstraints() {
@@ -1827,7 +1827,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * <i>Network management:</i> Retrieve a constraint by its index.
-	 * 
+	 *
 	 * @param i
 	 *            index of the constraint in the model
 	 * @deprecated
@@ -1859,7 +1859,7 @@ public class CPSolver implements Solver {
 	/**
 	 * currentElement if the model has been found to be feasible (there exist
 	 * solutions) or not. precondition : has to be called after a search
-	 * 
+	 *
 	 * @return Boolean.TRUE if a solution was found, Boolean.FALSE if the model
 	 *         was proven infeasible, null otherwise
 	 */
@@ -1910,7 +1910,7 @@ public class CPSolver implements Solver {
 	 * this does not propagate anything ! This addition of a constraint is local
 	 * to the current search (sub)tree: the constraint will be un-posted upon
 	 * backtracking
-	 * 
+	 *
 	 * @param cc
 	 *            the constraint to add
 	 */
@@ -1918,7 +1918,7 @@ public class CPSolver implements Solver {
 	public void post(SConstraint cc) {
 		if (cc instanceof Propagator) {
 			if ((!cc.equals(TRUE) || !constraints.contains(TRUE))
-					&& (!cc.equals(FALSE) || !constraints.contains(FALSE))) { 
+					&& (!cc.equals(FALSE) || !constraints.contains(FALSE))) {
 				// avoid adding the TRUE or FALSE constraint more than once
 				Propagator c = (Propagator) cc;
 				c.setSolver(this);
@@ -1950,7 +1950,7 @@ public class CPSolver implements Solver {
 	 * Decide what kind of constraints to post in case on an Expression: -
 	 * Extract the list, build the table and post GAC - Post Gac on the implicit
 	 * table - Post FC on the explicit table
-	 * 
+	 *
 	 * @param exp
 	 */
 	protected void decisionOnExpression(ExpressionSConstraint exp) {
@@ -1979,7 +1979,7 @@ public class CPSolver implements Solver {
 	/**
 	 * Post the redundant constraint that allows to capture the reasonnings on
 	 * cardinalities
-	 * 
+	 *
 	 * @param p
 	 */
 	public void postRedundantSetConstraints(SConstraint p) {
@@ -2024,7 +2024,7 @@ public class CPSolver implements Solver {
 	 * <i>Network management:</i> adding a constraint to the model. Note that
 	 * this does not propagate anything ! This addition of a constraint is
 	 * global: the constraint will NOT be un-posted upon backtracking
-	 * 
+	 *
 	 * @param cc
 	 *            the constraint to add
 	 */
@@ -2032,7 +2032,7 @@ public class CPSolver implements Solver {
 	public void postCut(SConstraint cc) {
 		if (cc instanceof Propagator) {
 			if ((!cc.equals(TRUE) || !constraints.contains(TRUE))
-				&& (!cc.equals(FALSE) || !constraints.contains(FALSE))) { 
+				&& (!cc.equals(FALSE) || !constraints.contains(FALSE))) {
 				// avoid adding the TRUE or FALSE constraint more than once
 				Propagator c = (Propagator) cc;
 				c.setSolver(this);
@@ -2075,7 +2075,7 @@ public class CPSolver implements Solver {
         //put the nogood store last in the static list
 	}
 
-    
+
     public void initNogoodBase() {
         if (nogoodStore != null) {
             nogoodStore.setActiveSilently();
@@ -2084,7 +2084,7 @@ public class CPSolver implements Solver {
     }
 
     /**
-	 * @return the number of boolean variables 
+	 * @return the number of boolean variables
 	 */
 	public int getNbBooleanVars() {
 		int cpt = 0;
@@ -2094,7 +2094,7 @@ public class CPSolver implements Solver {
 		}
 		return cpt;
 	}
-	
+
 	/**
 	 * @return the boolean variables of the problem
 	 */
@@ -2113,9 +2113,9 @@ public class CPSolver implements Solver {
 	 * <i>Propagation:</i> Computes consistency on the model (the model may no
 	 * longer be consistent since the last propagation because of listeners that
 	 * have been posted and variables that have been reduced
-	 * 
+	 *
 	 * @throws choco.kernel.solver.ContradictionException
-	 * 
+	 *
 	 */
 
 	public void propagate() throws ContradictionException {
@@ -2232,7 +2232,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Solution checker. Usefull for debug and development.
-	 * 
+	 *
 	 * @return a boolean indicating wether the solution is correct or not.
 	 */
 	public Boolean checkSolution(boolean printAll) {
@@ -2266,7 +2266,7 @@ public class CPSolver implements Solver {
 		}
 
 		st.append("\n").append("~~~~~~~~~~~~~~~~~~~~~~~~~~").append("\n");
-		Logger.getLogger("choco").log(Level.INFO, st.toString());
+		LOGGER.log(Level.INFO, st.toString());
 		flushLogs();
 		return isSolution;
 	}
@@ -2285,7 +2285,7 @@ public class CPSolver implements Solver {
 	/**
 	 * <i>Resolution:</i> Searches for the solution minimizing the objective
 	 * criterion.
-	 * 
+	 *
 	 * @param obj
 	 *            The variable modelling the optimization criterion
 	 * @param restart
@@ -2308,7 +2308,7 @@ public class CPSolver implements Solver {
 	/**
 	 * <i>resolution:</i> Searches for the solution maximizing the objective
 	 * criterion.
-	 * 
+	 *
 	 * @param obj
 	 *            The variable modelling the optimization criterion
 	 * @param restart
@@ -2510,7 +2510,7 @@ public class CPSolver implements Solver {
 				// }
 			}
 		} catch (ContradictionException e) {
-			logger.severe("BUG in restoring solution !!!!!!!!!!!!!!!!");
+			LOGGER.log(Level.SEVERE, "BUG in restoring solution !!");
 			throw (new SolverException("Restored solution not consistent !!"));
 			// TODO : � voir comment g�rer les erreurs en g�n�ral
 		}

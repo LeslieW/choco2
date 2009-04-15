@@ -91,8 +91,8 @@ public class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
     public void awakeOnInf(int idx) throws ContradictionException {
 
         if (idx == 1) {
-            if (logger.isLoggable(Level.FINEST))
-                logger.finest("INF(" + v0.toString() + ") >= INF(" + v1.toString() + ") + " + this.cste);
+            if (LOGGER.isLoggable(Level.FINEST))
+            {LOGGER.log(Level.FINEST, "INF({0}) >= INF({1}) + {2}", new Object[]{v0.toString(), v1.toString(), this.cste});}
             v0.updateInf(v1.getInf() + this.cste, this.cIdx0);
         } else if (v0.getInf() >= v1.getSup() + this.cste)
             this.setEntailed();
@@ -109,8 +109,8 @@ public class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
 
     public void awakeOnSup(int idx) throws ContradictionException {
         if (idx == 0) {
-            if (logger.isLoggable(Level.FINEST))
-                logger.finest("SUP(" + v1.toString() + ") <= SUP(" + v0.toString() + ") - " + this.cste);
+            if (LOGGER.isLoggable(Level.FINEST))
+            {LOGGER.log(Level.FINEST, "SUP({0}) <= SUP({1}) - {2}", new Object[]{v1.toString(), v0.toString(), this.cste});}
             v1.updateSup(v0.getSup() - this.cste, this.cIdx1);
         } else if (v0.getInf() >= v1.getSup() + this.cste)
             this.setEntailed();
@@ -127,33 +127,17 @@ public class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
 
     public void awakeOnInst(int idx) throws ContradictionException {
         if (idx == 0) {
-            if (logger.isLoggable(Level.FINEST))
-                logger.finest("SUP(" + v1.toString() + ") <= SUP(" + v0.toString() + ") - " + this.cste);
+            if (LOGGER.isLoggable(Level.FINEST))
+            {LOGGER.log(Level.FINEST, "SUP({0}) <= SUP({1}) - {2}", new Object[]{v1.toString(), v0.toString(), this.cste});}
             v1.updateSup(v0.getSup() - this.cste, this.cIdx1);
         } else if (idx == 1) {
-            if (logger.isLoggable(Level.FINEST))
-                logger.finest("INF(" + v0.toString() + ") >= INF(" + v1.toString() + ") + " + this.cste);
+            if (LOGGER.isLoggable(Level.FINEST))
+            {LOGGER.log(Level.FINEST, "INF({0}) >= INF({1}) + {2}", new Object[]{v0.toString(), v1.toString(), this.cste});}
             v0.updateInf(v1.getInf() + this.cste, this.cIdx0);
         }
         if (v0.getInf() >= v1.getSup() + this.cste)
             this.setEntailed();
     }
-
-
-    /**
-     * Propagation when a value <code>x</code> of variable is removed.
-     * <p/>
-     * Not implemented yet.
-     *
-     * @param idx The index of the variable.
-     * @throws choco.kernel.solver.ContradictionException
-     *
-     */
-
-    public void awakeOnRem(int idx, int x) throws ContradictionException {
-        ;
-    }
-
 
     /**
      * Checks if the listeners must be checked or must fail.

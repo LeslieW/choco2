@@ -22,19 +22,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
-import static choco.cp.solver.SettingType.TASK_INTERVAL;
-import static choco.cp.solver.SettingType.TASK_INTERVAL_SLOW;
-import static choco.cp.solver.SettingType.VHM_CEF_ALGO_N2K;
-import static choco.cp.solver.SettingType.VILIM_CEF_ALGO;
-
-import java.util.Arrays;
-import java.util.logging.Level;
-
+import static choco.cp.solver.SettingType.*;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+
+import java.util.Arrays;
+import java.util.logging.Level;
 
 
 
@@ -92,10 +88,10 @@ public class Cumulative extends AbstractCumulativeSConstraint  {
 	 * @throws ContradictionException
 	 */
 	public final void filter() throws ContradictionException {
-		if (logger.isLoggable(Level.FINE)) {
-			logger.fine("========= Filtering on resource" + this + "========");
-			logger.fine("Initial state for resource ");
-			logger.fine(toString());
+		if (LOGGER.isLoggable(Level.FINE)) {
+			LOGGER.log(Level.FINE, "========= Filtering on resource {0} ========", this);
+			LOGGER.fine("Initial state for resource ");
+			LOGGER.fine(toString());
 		}
 		noFixPoint = true;
 		final boolean hasTaskInterval = flags.or(TASK_INTERVAL, VHM_CEF_ALGO_N2K, VILIM_CEF_ALGO, TASK_INTERVAL_SLOW) ;
@@ -103,13 +99,13 @@ public class Cumulative extends AbstractCumulativeSConstraint  {
 		if( hasTaskInterval) { checkRulesRequirement();}
 		while (noFixPoint) {  // apply the sweep process until saturation
 			noFixPoint = false;
-			if (logger.isLoggable(Level.FINE)) {
-				logger.fine("------ Start sweep for resource" + this + "========");
+			if (LOGGER.isLoggable(Level.FINE)) {
+				LOGGER.log(Level.FINE, "------ Start sweep for resource {0} ------", this);
 			}
 			noFixPoint |= cumulSweep.sweep();
 			if ( hasTaskInterval) {
-				if (logger.isLoggable(Level.FINE)) {
-					logger.fine("------ Energetic for resource" + this + "========");
+				if (LOGGER.isLoggable(Level.FINE)) {
+					LOGGER.log(Level.FINE, "------ Energetic for resource {0} ------", this);
 				}
 				//initial sorting of the tasks
 				cumulRules.initializeEdgeFindingStart();
@@ -146,8 +142,8 @@ public class Cumulative extends AbstractCumulativeSConstraint  {
 						noFixPoint |= cumulRules.calcEF_end();    // in O(n^2 \times k)
 					}
 
-					if (logger.isLoggable(Level.FINE)) {
-						logger.fine("------ Energetic  filtering done" + this + " =========");
+					if (LOGGER.isLoggable(Level.FINE)) {
+						LOGGER.log(Level.FINE, "------ Energetic  filtering done {0} ------", this);
 					}
 				}
 			}
@@ -194,11 +190,11 @@ public class Cumulative extends AbstractCumulativeSConstraint  {
 				}
 			}
 		}
-		for(int i = 0; i < load.length; i++) {
-			if (load[i] > this.getMaxCapacity()) {
-				return false;
-			}
-		}
+        for (int aLoad : load) {
+            if (aLoad > this.getMaxCapacity()) {
+                return false;
+            }
+        }
 		return true;
 	}
 

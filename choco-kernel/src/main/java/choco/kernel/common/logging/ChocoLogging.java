@@ -1,17 +1,12 @@
 package choco.kernel.common.logging;
 
-import static java.util.logging.Logger.getLogger;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.security.AccessControlException;
-import java.util.logging.Formatter;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.StreamHandler;
+import java.util.logging.*;
+import static java.util.logging.Logger.getLogger;
 
 public final class ChocoLogging {
 
@@ -42,6 +37,7 @@ public final class ChocoLogging {
 		getLogger("choco2.kernel.memory"),
 		getLogger("choco2.api"),
 		getLogger("choco2.api.model"),
+        getLogger("choco2.api.solver"),
 		getLogger("choco2.api.parser"),
 		getLogger("choco2.dev.debug"),	
 		getLogger("choco2.dev.test"),
@@ -103,21 +99,25 @@ public final class ChocoLogging {
 		return CHOCO_LOGGERS[7];
 	}
 
-	public static Logger getParserLogger() {
+    public static Logger getSolverLogger() {
 		return CHOCO_LOGGERS[8];
+	}
+
+	public static Logger getParserLogger() {
+		return CHOCO_LOGGERS[9];
 	}
 
 
 	public static Logger getDebugLogger() {
-		return CHOCO_LOGGERS[9];
-	}
-
-	public static Logger getTestLogger() {
 		return CHOCO_LOGGERS[10];
 	}
 
-	public static Logger getUserLogger() {
+	public static Logger getTestLogger() {
 		return CHOCO_LOGGERS[11];
+	}
+
+	public static Logger getUserLogger() {
+		return CHOCO_LOGGERS[12];
 	}
 
 	public static Formatter getDefaultFormatter() {

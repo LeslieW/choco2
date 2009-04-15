@@ -24,13 +24,11 @@
 
 package choco.cp.solver.constraints.global.matching;
 
+import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.global.matching.AbstractBipartiteMatching;
 import choco.kernel.solver.constraints.integer.IntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.cp.solver.variables.integer.IntVarEvent;
-
-import java.util.logging.Logger;
 
 /**
  * Standard alldiff constraint with generalized AC
@@ -39,7 +37,6 @@ import java.util.logging.Logger;
  * the right vertex set is the interval (minValue .. maxValue)
  */
 public class AllDifferent extends AbstractBipartiteMatching implements IntSConstraint {
-  private Logger logger = Logger.getLogger("choco.kernel.solver.propagation.const");
 
   /**
    * API entry point: creating an ice alldifferent constraint (before posting it)

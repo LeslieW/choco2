@@ -23,8 +23,8 @@
 
 package choco.cp.model;
 
-import choco.Choco;
 import choco.kernel.common.IndexFactory;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.ChocoUtil;
 import static choco.kernel.common.util.ChocoUtil.getImmutableIterator;
 import choco.kernel.model.IOptions;
@@ -53,6 +53,7 @@ import gnu.trove.TIntObjectIterator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -62,7 +63,7 @@ import java.util.logging.Logger;
  */
 public class CPModel implements Model {
 
-    private static Logger logger = Logger.getLogger("choco");
+    protected final static Logger LOGGER = ChocoLogging.getModelLogger();
 
     /**
      * Precision of the search for a real model.
@@ -151,7 +152,7 @@ public class CPModel implements Model {
             InputStream is = getClass().getResourceAsStream( "/application.properties" );
             properties.load(is);
         } catch (IOException e) {
-            logger.severe("Could not open application.properties");
+            LOGGER.log(Level.SEVERE, "Could not open application.properties");
         }
     }
 
@@ -905,10 +906,8 @@ public class CPModel implements Model {
             Iterator<Variable> it = c.getVariableIterator();
             while (it.hasNext()) {
                 Variable v = it.next();
-                if (Choco.DEBUG) {
-                    if (v == null) {
-                        logger.severe("Adding null variable in the model !");
-                    }
+                if (v == null) {
+                    LOGGER.log(Level.SEVERE, "Adding null variable in the model !");
                 }
                 addVariable(v);
                 if (v.getVariableType() != VariableType.CONSTANT_INTEGER

@@ -167,7 +167,7 @@ public class PrecedenceReified extends AbstractTernIntSConstraint {
 	public static void main(String[] args) {
 		for (int i = 0; i < 100; i++) {
 		  CPModel m = new CPModel();
-		  logger.finer("test2");
+		  LOGGER.finer("test2");
 	      int k1 = 5;
 		  IntegerVariable x = makeIntVar("x", 1, 10);
 		  IntegerVariable y = makeIntVar("y", 1, 10);
