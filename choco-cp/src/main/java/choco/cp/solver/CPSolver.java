@@ -64,6 +64,8 @@ import choco.cp.solver.variables.integer.IntTerm;
 import choco.cp.solver.variables.real.RealVarImpl;
 import choco.cp.solver.variables.set.SetVarImpl;
 import choco.kernel.common.IndexFactory;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.common.util.LightFormatter;
@@ -2577,6 +2579,7 @@ public class CPSolver implements Solver {
 	public static void setVerbosity(int verbosity) {
 		switch (verbosity) {
 		case SOLUTION:
+			ChocoLogging.setVerbosity(Verbosity.SOLUTION);
 			setVerbosity(Logger.getLogger("choco"), Level.ALL);
 			setVerbosity(Logger.getLogger("choco.kernel.solver.search"),
 					Level.ALL);
@@ -2587,6 +2590,7 @@ public class CPSolver implements Solver {
 					Level.SEVERE);
 			break;
 		case SEARCH:
+			ChocoLogging.setVerbosity(Verbosity.SEARCH);
 			setVerbosity(Logger.getLogger("choco"), Level.ALL);
 			setVerbosity(Logger.getLogger("choco.kernel.solver.search"),
 					Level.ALL);
@@ -2597,6 +2601,7 @@ public class CPSolver implements Solver {
 					Level.SEVERE);
 			break;
 		case PROPAGATION:
+			ChocoLogging.setVerbosity(Verbosity.DEBUG);
 			setVerbosity(Logger.getLogger("choco"), Level.ALL);
 			setVerbosity(Logger.getLogger("choco.kernel.solver.search"),
 					Level.ALL);
@@ -2607,6 +2612,7 @@ public class CPSolver implements Solver {
 					Level.INFO);
 			break;
 		case FINEST:
+			ChocoLogging.setVerbosity(Verbosity.FINEST);
 			setVerbosity(Logger.getLogger("choco"), Level.FINEST);
 			setVerbosity(Logger.getLogger("choco.kernel.solver.search"),
 					Level.FINEST);
@@ -2617,6 +2623,7 @@ public class CPSolver implements Solver {
 					Level.FINEST);
 			break;
 		case SILENT:
+			ChocoLogging.setVerbosity(Verbosity.SILENT);
 		default:
 			setVerbosity(Logger.getLogger("choco"), Level.SEVERE);
 		setVerbosity(Logger.getLogger("choco.kernel.solver.search"),
