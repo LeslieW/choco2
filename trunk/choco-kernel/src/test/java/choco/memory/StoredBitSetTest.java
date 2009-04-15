@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.memory;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.memory.trailing.StoredBitSet;
 import org.junit.After;
@@ -38,7 +39,7 @@ import java.util.logging.Logger;
  * To change this template use Options | File Templates.
  */
 public class StoredBitSetTest {
-  private Logger logger = Logger.getLogger("choco.currentElement");
+	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
   private EnvironmentTrailing env;
   private StoredBitSet bSetA;
   private StoredBitSet bSetB;
@@ -58,7 +59,7 @@ public class StoredBitSetTest {
 
     @Before
   public void setUp() {
-    logger.fine("StoredBitSetTest Testing...");
+    LOGGER.fine("StoredBitSetTest Testing...");
 
     env = new EnvironmentTrailing();
     bSetA = new StoredBitSet(env, 5);
@@ -77,15 +78,15 @@ public class StoredBitSetTest {
    */
   @Test
   public void test1() {
-    logger.finer("test1");
+    LOGGER.finer("test1");
     assertEquals(0, env.getWorldIndex());
     assertEquals(0, env.getTrailSize());
-    //logger.finest("bsetA" + bSetA.getRepresentedBy().get(0));
+    //LOGGER.finest("bsetA" + bSetA.getRepresentedBy().get(0));
 
     for (int i = 0; i < 5; i++) {
       assertFalse(bSetA.get(i));
     }
-    logger.finest("bSetA OK in root world 0");
+    LOGGER.finest("bSetA OK in root world 0");
 
     env.worldPush();
     assertEquals(0, env.getTrailSize());
@@ -121,20 +122,20 @@ public class StoredBitSetTest {
       assertFalse(bSetA.get(i));
     }
 
-    logger.finest("bSetA OK in world 0");
+    LOGGER.finest("bSetA OK in world 0");
   }
 
     @Test
   public void test2() {
-    logger.finer("test2");
+    LOGGER.finer("test2");
     assertEquals(0, env.getWorldIndex());
     assertEquals(0, env.getTrailSize());
-    //logger.finest("bsetB" + bSetB.getRepresentedBy().get(0));
+    //LOGGER.finest("bsetB" + bSetB.getRepresentedBy().get(0));
 
     for (int i = 0; i < 33; i++) {
       assertFalse(bSetB.get(i));
     }
-    logger.finest("bSetB OK in root world 0");
+    LOGGER.finest("bSetB OK in root world 0");
 
     env.worldPush();
     assertEquals(0, env.getTrailSize());
@@ -163,7 +164,7 @@ public class StoredBitSetTest {
     for (int i = 0; i < 33; i++) {
       assertFalse(bSetB.get(i));
     }
-    logger.finest("bSetB OK in world 0");
+    LOGGER.finest("bSetB OK in world 0");
   }
 
   /**
@@ -171,7 +172,7 @@ public class StoredBitSetTest {
    */
   @Test
   public void test3() {
-    logger.finer("test3");
+    LOGGER.finer("test3");
     // 10 = 2^3 + 2^1
     assertEquals(1, Long.numberOfTrailingZeros(10));
     assertEquals(60, Long.numberOfLeadingZeros(10));
@@ -189,7 +190,7 @@ public class StoredBitSetTest {
    */
   @Test
   public void test4() {
-    logger.finer("test4");
+    LOGGER.finer("test4");
     assertEquals(-1, bSetA.prevSetBit(4));
     assertEquals(-1, bSetA.nextSetBit(0));
     bSetA.set(2);
@@ -224,7 +225,7 @@ public class StoredBitSetTest {
 
     @Test
   public void test5() {
-    logger.finer("test5");
+    LOGGER.finer("test5");
     bSetB.set(0);
     bSetB.set(2);
     assertEquals(bSetB.prevSetBit(7), 2);
@@ -232,7 +233,7 @@ public class StoredBitSetTest {
 
     @Test
   public void test6() {
-    logger.finer("test6");
+    LOGGER.finer("test6");
     bSetB.set(0);
     bSetB.set(2);
     assertEquals(bSetB.prevSetBit(7), 2);

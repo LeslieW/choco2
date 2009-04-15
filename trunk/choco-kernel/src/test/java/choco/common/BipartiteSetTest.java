@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.common;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.BipartiteSet;
 import org.junit.After;
 import static org.junit.Assert.*;
@@ -38,50 +39,51 @@ import java.util.logging.Logger;
  * To change this template use Options | File Templates.
  */
 public class BipartiteSetTest {
-  private Logger logger = Logger.getLogger("choco.currentElement");
 
-    @Before
-  public void setUp() {
-    logger.fine("BipartiteSet Testing...");
-  }
+	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
-    @After
-  public void tearDown() {
-  }
+	@Before
+	public void setUp() {
+		LOGGER.fine("BipartiteSet Testing...");
+	}
 
-    @Test
-  public void test1() {
-    logger.finer("test1");
-    BipartiteSet set = new BipartiteSet();
-    Object obj1 = new Object();
-    Object obj2 = new Object();
-    Object obj3 = new Object();
+	@After
+	public void tearDown() {
+	}
 
-    set.addLeft(obj1);
-    set.addLeft(obj2);
-    set.addRight(obj3);
+	@Test
+	public void test1() {
+		LOGGER.finer("test1");
+		BipartiteSet set = new BipartiteSet();
+		Object obj1 = new Object();
+		Object obj2 = new Object();
+		Object obj3 = new Object();
 
-    assertEquals(2, set.getNbLeft());
-    assertEquals(1, set.getNbRight());
-    assertTrue(set.isLeft(obj1));
-    logger.finest("First Step passed");
+		set.addLeft(obj1);
+		set.addLeft(obj2);
+		set.addRight(obj3);
 
-    set.moveRight(obj1);
+		assertEquals(2, set.getNbLeft());
+		assertEquals(1, set.getNbRight());
+		assertTrue(set.isLeft(obj1));
+		LOGGER.finest("First Step passed");
 
-    assertEquals(1, set.getNbLeft());
-    assertEquals(2, set.getNbRight());
-    assertTrue(set.isLeft(obj2));
-    assertFalse(set.isLeft(obj1));
-    assertFalse(set.isLeft(obj3));
-    logger.finest("Second Step passed");
+		set.moveRight(obj1);
 
-    set.moveAllLeft();
+		assertEquals(1, set.getNbLeft());
+		assertEquals(2, set.getNbRight());
+		assertTrue(set.isLeft(obj2));
+		assertFalse(set.isLeft(obj1));
+		assertFalse(set.isLeft(obj3));
+		LOGGER.finest("Second Step passed");
 
-    assertEquals(3, set.getNbLeft());
-    assertEquals(0, set.getNbRight());
-    assertTrue(set.isLeft(obj1));
-    assertTrue(set.isLeft(obj2));
-    assertTrue(set.isLeft(obj3));
-    logger.finest("Third Step passed");
-  }
+		set.moveAllLeft();
+
+		assertEquals(3, set.getNbLeft());
+		assertEquals(0, set.getNbRight());
+		assertTrue(set.isLeft(obj1));
+		assertTrue(set.isLeft(obj2));
+		assertTrue(set.isLeft(obj3));
+		LOGGER.finest("Third Step passed");
+	}
 }

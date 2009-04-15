@@ -23,6 +23,9 @@
 
 package choco.kernel.solver.propagation;
 
+import java.util.logging.Logger;
+
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -34,101 +37,102 @@ import choco.kernel.solver.variables.set.SetVar;
  */
 public interface PropagationEngine {
 
+	public final static Logger LOGGER = ChocoLogging.getPropagationLogger();
 
-  /**
-   * Raising a contradiction with a cause.
-   */
+	/**
+	 * Raising a contradiction with a cause.
+	 */
 
-  public void raiseContradiction(Object cause, int type) throws ContradictionException;
-
-
-  /**
-   * Recording that there was no known cause for the last contradiction.
-   */
-
-  public void setNoContradictionCause();
-
-  /**
-   * Recording the cause of the last contradiction.
-   */
-
-  public void setContradictionCause(Object cause, int type);
-
-  /**
-   * Retrieving the cause of the last contradiction.
-   */
-
-  public Object getContradictionCause();
+	public void raiseContradiction(Object cause, int type) throws ContradictionException;
 
 
-  /**
-   * Returns the next active var queue to propagate some events.
-   * If it returns null, the propagation is finished.
-   */
+	/**
+	 * Recording that there was no known cause for the last contradiction.
+	 */
 
-  public EventQueue getNextActiveEventQueue();
+	public void setNoContradictionCause();
 
-  /**
-   * Removes all pending events (used when interrupting a propagation because
-   * a contradiction has been raised)
-   */
-  public void flushEvents();
+	/**
+	 * Recording the cause of the last contradiction.
+	 */
 
-    /**
-   * checking that the propagation engine remains in a proper state
-   */
-  public boolean checkCleanState();
+	public void setContradictionCause(Object cause, int type);
 
-  void postUpdateInf(IntDomainVar v, int idx);
+	/**
+	 * Retrieving the cause of the last contradiction.
+	 */
 
-  void postUpdateSup(IntDomainVar v, int idx);
-
-  void postInstInt(IntDomainVar v, int idx);
-
-  void postRemoveVal(IntDomainVar v, int x, int idx);
-
-  void postUpdateInf(RealVar v, int idx);
-
-  void postUpdateSup(RealVar v, int idx);
-
-  void postRemEnv(SetVar v, int idx);
-
-  void postAddKer(SetVar v, int idx);
-
-  void postInstSet(SetVar v, int idx);
-
-  /**
-   * Generic method to post events. The caller is reponsible of basic event
-   * type field: it should be meaningful for the the associate kind of event.
-   * @param v The modified variable.
-   * @param idx The index of the constraint which deduced the domain filtering.
-   * @param basicEvt A integer specifying mdofication kind for the attached
-   * event.
-   */
-  void postEvent(Var v, int idx, int basicEvt);
-
-  boolean postConstAwake(Propagator constraint, boolean init);
-
-  void registerEvent(ConstraintEvent event);
-
-  VarEventQueue[] getVarEventQueues();
+	public Object getContradictionCause();
 
 
-    void setVarEventQueues(int eventQueueType);
+	/**
+	 * Returns the next active var queue to propagate some events.
+	 * If it returns null, the propagation is finished.
+	 */
 
-    void setVarEventQueues(VarEventQueue[] veq);
+	public EventQueue getNextActiveEventQueue();
 
-    ConstraintEventQueue[] getConstraintEventQueues();
+	/**
+	 * Removes all pending events (used when interrupting a propagation because
+	 * a contradiction has been raised)
+	 */
+	public void flushEvents();
 
-    void setConstraintEventQueues(ConstraintEventQueue[] ceq);
+	/**
+	 * checking that the propagation engine remains in a proper state
+	 */
+	public boolean checkCleanState();
 
-    void decPendingInitConstAwakeEvent();
+	void postUpdateInf(IntDomainVar v, int idx);
 
-  /**
-   * Adds a new listener to some events occuring in the propagation engine.
-   * @param listener a new listener
-   */
-  void addPropagationEngineListener(PropagationEngineListener listener);
+	void postUpdateSup(IntDomainVar v, int idx);
 
-  EventQueue getQueue(ConstraintEvent csvt);
+	void postInstInt(IntDomainVar v, int idx);
+
+	void postRemoveVal(IntDomainVar v, int x, int idx);
+
+	void postUpdateInf(RealVar v, int idx);
+
+	void postUpdateSup(RealVar v, int idx);
+
+	void postRemEnv(SetVar v, int idx);
+
+	void postAddKer(SetVar v, int idx);
+
+	void postInstSet(SetVar v, int idx);
+
+	/**
+	 * Generic method to post events. The caller is reponsible of basic event
+	 * type field: it should be meaningful for the the associate kind of event.
+	 * @param v The modified variable.
+	 * @param idx The index of the constraint which deduced the domain filtering.
+	 * @param basicEvt A integer specifying mdofication kind for the attached
+	 * event.
+	 */
+	void postEvent(Var v, int idx, int basicEvt);
+
+	boolean postConstAwake(Propagator constraint, boolean init);
+
+	void registerEvent(ConstraintEvent event);
+
+	VarEventQueue[] getVarEventQueues();
+
+
+	void setVarEventQueues(int eventQueueType);
+
+	void setVarEventQueues(VarEventQueue[] veq);
+
+	ConstraintEventQueue[] getConstraintEventQueues();
+
+	void setConstraintEventQueues(ConstraintEventQueue[] ceq);
+
+	void decPendingInitConstAwakeEvent();
+
+	/**
+	 * Adds a new listener to some events occuring in the propagation engine.
+	 * @param listener a new listener
+	 */
+	void addPropagationEngineListener(PropagationEngineListener listener);
+
+	EventQueue getQueue(ConstraintEvent csvt);
 }

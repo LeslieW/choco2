@@ -38,12 +38,6 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractIntSConstraint extends AbstractSConstraint implements IntSConstraint {
 
-  /**
-   * Reference to an object for logging trace statements related to constraints over integers (using the java.util.logging package)
-   */
-
-  protected final static Logger logger = Logger.getLogger("choco.kernel.solver.propagation.const");
-
 
     /**
      * Constructs a constraint with the specified priority.

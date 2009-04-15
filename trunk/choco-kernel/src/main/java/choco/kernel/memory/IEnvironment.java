@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.trailing.IndexedObject;
 
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ public interface IEnvironment {
 	/**
 	 * Reference to an object for logging trace statements related memory & backtrack (using the java.util.logging package)
 	 */
-	final static Logger LOGGER = Logger.getLogger("choco.kernel.memory");
+	final static Logger LOGGER = ChocoLogging.getMemoryLogger();
 	
 	/**
      * Index of the Environment using trailing

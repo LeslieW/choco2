@@ -28,6 +28,8 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import choco.kernel.common.logging.ChocoLogging;
+
 /**
  * Implements a bipartite set.
  * <p/>
@@ -40,7 +42,7 @@ public class BipartiteSet<E> {
    * Reference to an object for logging trace statements related to util (using the java.util.logging package)
    */
 
-  private static Logger logger = Logger.getLogger("choco");
+  protected final static Logger LOGGER = ChocoLogging.getKernelLogger();
 
   /**
    * Contains all the objects in the two parts of the set.
@@ -96,8 +98,8 @@ public class BipartiteSet<E> {
   public void moveLeft(E object) {
     Integer idx = this.indices.get(object);
     if (idx == null) {
-      if (logger.isLoggable(Level.SEVERE))
-        logger.logp(Level.SEVERE, "BipartiteSet", "moveLeft", "bipartite set does not contain " + object);
+      if (LOGGER.isLoggable(Level.SEVERE))
+        LOGGER.logp(Level.SEVERE, "BipartiteSet", "moveLeft", "bipartite set does not contain " + object);
     } else {
       int index = idx.intValue();
       if (index >= this.nbLeft) {
@@ -114,8 +116,8 @@ public class BipartiteSet<E> {
   public void moveRight(E object) {
     Integer idx = this.indices.get(object);
     if (idx == null) {
-      if (logger.isLoggable(Level.SEVERE))
-        logger.logp(Level.SEVERE, "BipartiteSet", "moveRight", "bipartite set does not contain " + object);
+      if (LOGGER.isLoggable(Level.SEVERE))
+        LOGGER.logp(Level.SEVERE, "BipartiteSet", "moveRight", "bipartite set does not contain " + object);
     } else {
       int index = idx.intValue();
       if (index < this.nbLeft) {
@@ -149,8 +151,8 @@ public class BipartiteSet<E> {
 
   public void addRight(E object) {
     if (this.indices.get(object) != null) {
-      if (logger.isLoggable(Level.SEVERE))
-        logger.logp(Level.SEVERE, "BipartiteSet", "addRight", object + "already in the set bipartite set ");
+      if (LOGGER.isLoggable(Level.SEVERE))
+        LOGGER.logp(Level.SEVERE, "BipartiteSet", "addRight", object + "already in the set bipartite set ");
     } else {
       objects.add(object);
       indices.put(object, objects.size() - 1);
@@ -175,8 +177,8 @@ public class BipartiteSet<E> {
   public boolean isLeft(E object) {
     Integer idx = indices.get(object);
     if (idx == null) {
-      if (logger.isLoggable(Level.SEVERE))
-        logger.logp(Level.SEVERE, "BipartiteSet", "isLeft", "bipartite set does not contain " + object);
+      if (LOGGER.isLoggable(Level.SEVERE))
+        LOGGER.logp(Level.SEVERE, "BipartiteSet", "isLeft", "bipartite set does not contain " + object);
       return false;
     } else {
       int index = idx.intValue();

@@ -40,7 +40,7 @@ import java.util.logging.Logger;
  * To change this template use File | Settings | File Templates.
  */
 public class RemoveVal implements Goal {
-  protected static Logger logger = Logger.getLogger("i_want_to_use_this_old_version_of_choco.search.branching");
+ 
   protected IntDomainVar var;
   protected int val;
 
@@ -54,10 +54,10 @@ public class RemoveVal implements Goal {
   }
 
   public Goal execute(Solver s) throws ContradictionException {
-    if (logger.isLoggable(Level.FINE)) {
+    if (LOGGER.isLoggable(Level.FINE)) {
 		  int n = s.getEnvironment().getWorldIndex();
 		  if (n <= s.getSearchStrategy().getLoggingMaxDepth()) {
-		    logger.log(Level.FINE, AbstractIntBranching.LOG_UP_MSG, new Object[]{new Integer(n + 1), var, " != ", new Integer(val)});
+		    LOGGER.log(Level.FINE, AbstractIntBranching.LOG_UP_MSG, new Object[]{new Integer(n + 1), var, " != ", new Integer(val)});
 		  }
 		}
     var.remVal(val);

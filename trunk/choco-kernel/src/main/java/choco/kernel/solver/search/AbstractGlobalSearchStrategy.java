@@ -238,14 +238,15 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 * called before a new search tree is explored
 	 */
 	public void endTreeSearch() {
-		if (logger.isLoggable(Level.SEVERE)) {
+		if (LOGGER.isLoggable(Level.INFO)) {
 			if (solver.getFeasible() == Boolean.TRUE) {
-				logger.log(Level.INFO, "solve => " + nbSolutions + " solutions");
+				LOGGER.log(Level.INFO, "solve => {0} solutions", nbSolutions);
+
 			} else {
-				logger.info("solve => no solution");
+				LOGGER.info("solve => no solution");
 			}
 			for (AbstractGlobalSearchLimit lim : limits) {
-				logger.info(lim.pretty());
+				LOGGER.info(lim.pretty());
 			}
 		}
 	}
@@ -295,18 +296,18 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
         if(solver.checkDecisionVariables()){
             solver.setFeasible(Boolean.TRUE);
             nbSolutions = nbSolutions + 1;
-            if (logger.isLoggable(Level.FINE)) {
-                logger.fine("Solution #" + nbSolutions + " is found");
-                if  ((logger.isLoggable(Level.FINER)) && (this.limits.size() > 0)) {
+            if (LOGGER.isLoggable(Level.FINE)) {
+                LOGGER.fine("Solution #" + nbSolutions + " is found");
+                if  ((LOGGER.isLoggable(Level.FINER)) && (this.limits.size() > 0)) {
                     StringBuffer sb = new StringBuffer("  with ");
                     for (AbstractGlobalSearchLimit lim : limits) {
                         sb.append(lim.pretty());
                         sb.append("; ");
                     }
-                    logger.finer(sb.toString());
+                    LOGGER.finer(sb.toString());
                 }
-                if  (logger.isLoggable(Level.FINEST)) {
-                    logger.finest("  " + solver.solutionToString());
+                if  (LOGGER.isLoggable(Level.FINEST)) {
+                    LOGGER.finest("  " + solver.solutionToString());
                 }
             }
             if (maxNbSolutionStored > 0) {

@@ -2,13 +2,15 @@ package choco.kernel.memory.trailing;
 
 import java.util.logging.Logger;
 
+import choco.kernel.common.logging.ChocoLogging;
+
 public class AbstractStoredObject {
 
 	/**
 	 * Reference to an object for logging trace statements related memory & backtrack (using the java.util.logging package)
 	 */
 
-	protected final static Logger LOGGER = Logger.getLogger("choco.kernel.memory");
+	protected final static Logger LOGGER = ChocoLogging.getMemoryLogger();
 
 	/**
 	 * The current {@link EnvironmentTrailing}.

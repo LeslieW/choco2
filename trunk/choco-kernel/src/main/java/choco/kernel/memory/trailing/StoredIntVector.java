@@ -35,11 +35,7 @@ import java.util.logging.Logger;
  * backtrackable d'entiers.
  */
 public final class StoredIntVector implements IStateIntVector {
-	/**
-	 * Reference to an object for logging trace statements related memory & backtrack (using the java.util.logging package)
-	 */
 
-	private static Logger logger = Logger.getLogger("choco.kernel.memory");
 
 	/**
 	 * Minimal capacity of a vector
@@ -251,8 +247,8 @@ public final class StoredIntVector implements IStateIntVector {
 			int oldValue = elementData[index];
 			if (val != oldValue) {
 				int oldStamp = this.worldStamps[index];
-				if (logger.isLoggable(Level.FINEST))
-					logger.finest("W:" + environment.getWorldIndex() + "@" + index + "ts:" + this.worldStamps[index]);
+				if (LOGGER.isLoggable(Level.FINEST))
+					  LOGGER.log(Level.FINEST, "W: {0}@{1}ts:{2}", new Object[]{ environment.getWorldIndex(), index,this.worldStamps[index]});
 				if (oldStamp < environment.getWorldIndex()) {
 					trail.savePreviousState(this, index, oldValue, oldStamp);
 					worldStamps[index] = environment.getWorldIndex();

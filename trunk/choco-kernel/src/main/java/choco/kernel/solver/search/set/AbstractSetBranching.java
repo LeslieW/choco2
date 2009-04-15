@@ -88,13 +88,13 @@ public abstract class AbstractSetBranching extends AbstractIntBranching {
 	 */
 	@Override
 	protected void logDownBranch(Object x, int i) {
-		if (logger.isLoggable(Level.FINE)) {
+		if (LOGGER.isLoggable(Level.FINE)) {
 			Object[] xx = (Object[]) x;
 			Object var = xx[0];
 			int val = ((Integer) xx[1]).intValue();
 			int n = manager.solver.getEnvironment().getWorldIndex();
 			if (n <= manager.getLoggingMaxDepth()) {
-				logger.log(Level.FINE, LOG_DOWN_MSG, new Object[]{new Integer(n),var,getDecisionLogMsg(i)+val+ " branch ", new Integer(i)});
+				LOGGER.log(Level.FINE, LOG_DOWN_MSG, new Object[]{new Integer(n),var,getDecisionLogMsg(i)+val+ " branch ", new Integer(i)});
 			}
 		}
 	}
@@ -104,13 +104,13 @@ public abstract class AbstractSetBranching extends AbstractIntBranching {
 	 */
 	@Override
 	protected void logUpBranch(Object x, int i) {
-		if (logger.isLoggable(Level.FINE)) {
+		if (LOGGER.isLoggable(Level.FINE)) {
 			Object[] xx = (Object[]) x;
 			Object var = xx[0];
 			int val = ((Integer) xx[1]).intValue();
 			int n = manager.solver.getEnvironment().getWorldIndex();
 			if (n <= manager.getLoggingMaxDepth()) {
-				logger.log(Level.FINE, LOG_UP_MSG, new Object[]{new Integer(n + 1),var,getDecisionLogMsg(i)+val+" branch ", new Integer(i)});
+				LOGGER.log(Level.FINE, LOG_UP_MSG, new Object[]{new Integer(n + 1),var,getDecisionLogMsg(i)+val+" branch ", new Integer(i)});
 			}
 		}
 	}

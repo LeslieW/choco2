@@ -22,6 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory;
 
+import java.util.logging.Logger;
+
+import choco.kernel.common.logging.ChocoLogging;
+
 /**
  * Created by IntelliJ IDEA.
  * User: julien
@@ -29,6 +33,8 @@ package choco.kernel.memory;
  * Time: 10:25:47
  */
 public interface IStateVector<E> {
+	
+	public final static Logger LOGGER = ChocoLogging.getMemoryLogger();
     /**
    * Minimal capacity of a vector
      */

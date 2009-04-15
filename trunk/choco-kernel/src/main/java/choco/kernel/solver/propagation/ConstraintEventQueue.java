@@ -49,11 +49,6 @@ public class ConstraintEventQueue implements EventQueue {
 
   private BipartiteSet<PropagationEvent> partition;
 
-  /**
-   * Reference to the root Logger, an object for logging trace statements related to propagation events (using the java.util.logging package)
-   */
-
-  private static Logger logger = Logger.getLogger("choco.kernel.solver.propagation");
 
   /**
    * Constructs a new queue for the specified engine.
@@ -81,8 +76,7 @@ public class ConstraintEventQueue implements EventQueue {
   public PropagationEvent popEvent() {
     PropagationEvent event = this.partition.moveLastLeft();
     if (event == null) {
-      if (logger.isLoggable(Level.SEVERE))
-        logger.severe("Error: There is no more events in the queue.");
+    	LOGGER.severe("Error: There is no more events in the queue.");
     } else {
       if (!((ConstraintEvent) event).isInitialized()) {
         engine.decPendingInitConstAwakeEvent();

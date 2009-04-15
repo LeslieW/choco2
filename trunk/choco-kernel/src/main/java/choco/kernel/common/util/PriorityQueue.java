@@ -31,11 +31,14 @@ import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import choco.kernel.common.logging.ChocoLogging;
+
 /**
  * Implements a priority aware queue (FIFO structure).
  */
 public class PriorityQueue {
-  private static Logger logger = Logger.getLogger("choco");
+  
+	protected final static Logger LOGGER = ChocoLogging.getKernelLogger();
 
   /**
    * The number of available priority levels.
@@ -147,8 +150,8 @@ public class PriorityQueue {
       this.size++;
       return true;
     } else {
-      if (logger.isLoggable(Level.SEVERE))
-        logger.severe("PriorityQueue: Element added already in the queue !");
+      if (LOGGER.isLoggable(Level.SEVERE))
+        LOGGER.severe("PriorityQueue: Element added already in the queue !");
       return false;
     }
   }
@@ -336,8 +339,7 @@ public class PriorityQueue {
       i++;
     }
     if (current != header)
-      if (logger.isLoggable(Level.SEVERE))
-        logger.log(Level.SEVERE, "Model in PriorityQueue implementation !");
+    	LOGGER.severe("Model in PriorityQueue implementation !");
     return ret;
   }
 
@@ -404,8 +406,8 @@ public class PriorityQueue {
           prior++;
         }
       }
-    } else if (logger.isLoggable(Level.SEVERE))
-      logger.log(Level.SEVERE, "Model in the PriorityQueue update.");
+    } else 
+      LOGGER.severe("Model in the PriorityQueue update.");
   }
 
 

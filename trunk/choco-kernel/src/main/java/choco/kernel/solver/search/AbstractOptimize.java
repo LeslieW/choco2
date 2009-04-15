@@ -126,7 +126,7 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
       AbstractGlobalSearchLimit lim = (AbstractGlobalSearchLimit) limits.get(i);
       b.append(lim.pretty()).append(" ");
     }
-    logger.info(b.toString());
+    LOGGER.info(b.toString());
     setBound();
     setTargetBound();
     super.recordSolution();

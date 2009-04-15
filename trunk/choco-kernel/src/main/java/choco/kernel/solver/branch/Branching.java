@@ -23,6 +23,9 @@
 
 package choco.kernel.solver.branch;
 
+import java.util.logging.Logger;
+
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 
 /**
@@ -31,10 +34,15 @@ import choco.kernel.solver.ContradictionException;
  */
 public interface Branching {
 
-  /**
-   * selecting the object under scrutiny (that object on which an alternative will be set)
-   *
-   * @return the object on which an alternative will be set (often  a variable)
-   */
-  public Object selectBranchingObject() throws ContradictionException;
+	/**
+	 * an object for logging trace statements
+	 */
+	public final static Logger LOGGER = ChocoLogging.getBranchingLogger();
+	
+	/**
+	 * selecting the object under scrutiny (that object on which an alternative will be set)
+	 *
+	 * @return the object on which an alternative will be set (often  a variable)
+	 */
+	public Object selectBranchingObject() throws ContradictionException;
 }

@@ -35,11 +35,6 @@ import java.util.logging.Logger;
  */
 public class RcVector<E> implements IStateVector<E>, RecomputableElement {
 
-    /**
-     * Reference to an object for logging trace statements related memory & backtrack (using the java.util.logging package)
-     */
-
-    private static Logger logger = Logger.getLogger("choco.kernel.memory");
 
     /**
      * Contains the elements of the vector.

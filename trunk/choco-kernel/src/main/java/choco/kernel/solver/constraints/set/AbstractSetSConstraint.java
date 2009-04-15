@@ -43,11 +43,6 @@ import java.util.logging.Logger;
 
 public abstract class AbstractSetSConstraint extends AbstractSConstraint implements SetSConstraint {
 
-  /**
-   * Reference to an object for logging trace statements related to constraints over set
-   * (using the java.util.logging package)
-   */
-  protected static Logger logger = Logger.getLogger("choco.kernel.solver.propagation.const");
 
   public void awakeOnKer(int varIdx, int x) throws ContradictionException {
     propagate();

@@ -64,8 +64,8 @@ public class RealBranchAndBound extends AbstractRealOptimize {
     }
     for (int i = 0; i < limits.size(); i++) {
       AbstractGlobalSearchLimit lim = (AbstractGlobalSearchLimit) limits.get(i);
-      if (logger.isLoggable(Level.SEVERE))
-        logger.severe(lim.pretty());
+      if (LOGGER.isLoggable(Level.SEVERE))
+        LOGGER.severe(lim.pretty());
     }
   }
 

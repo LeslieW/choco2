@@ -22,22 +22,19 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver;
 
-import choco.kernel.solver.search.AbstractGlobalSearchLimit;
-import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.variables.real.RealInterval;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+
+import choco.kernel.solver.search.AbstractGlobalSearchLimit;
+import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.variables.real.RealInterval;
 
 /**
  * A class storing a state of the model
  */
 public class Solution {
-
-	protected static final Logger logger = Logger.getLogger("choco");
 
 	/**
 	 * the solver owning the solution

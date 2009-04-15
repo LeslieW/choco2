@@ -32,6 +32,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.common.util.StoredPointerCycle;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
@@ -50,7 +51,9 @@ import choco.kernel.memory.trailing.EnvironmentTrailing;
 // Last Contributor:   $Author: menana $
 
 public class StoredPointerCycleTest {
-  private Logger logger = Logger.getLogger("choco.currentElement");
+ 
+	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+	
   private choco.kernel.memory.IEnvironment env;
   private StoredPointerCycle pcyc1;
   private StoredPointerCycle pcyc2;
@@ -58,7 +61,7 @@ public class StoredPointerCycleTest {
 
     @Before
   public void setUp() {
-    logger.fine("StoredPointerCycle Testing...");
+   LOGGER.fine("StoredPointerCycle Testing...");
     env = new EnvironmentTrailing();
     pcyc1 = new StoredPointerCycle(env);
     for (int i = 0; i < 5; i++) {
@@ -90,7 +93,7 @@ public class StoredPointerCycleTest {
    */
   @Test
   public void test1() {
-    logger.finer("test1");
+   LOGGER.finer("test1");
     it = pcyc1.getCycleButIterator(-1);
     assertTrue(it.hasNext());
     assertEquals(0, it.next());
@@ -106,7 +109,7 @@ public class StoredPointerCycleTest {
    */
   @Test
   public void test2() {
-    logger.finer("test2");
+   LOGGER.finer("test2");
     it = pcyc1.getCycleButIterator(2);
     assertTrue(it.hasNext());
     assertEquals(4, it.next());
@@ -120,7 +123,7 @@ public class StoredPointerCycleTest {
    */
   @Test
   public void test3() {
-    logger.finer("test3");
+   LOGGER.finer("test3");
     it = pcyc1.getCycleButIterator(3);
     assertTrue(it.hasNext());
     assertEquals(4, it.next());
@@ -136,7 +139,7 @@ public class StoredPointerCycleTest {
    */
   @Test
   public void test4() {
-    logger.finer("test4");
+   LOGGER.finer("test4");
     it = pcyc1.getCycleButIterator(0);
     assertTrue(it.hasNext());
     assertEquals(2, it.next());
@@ -150,7 +153,7 @@ public class StoredPointerCycleTest {
    */
   @Test
   public void test5() {
-    logger.finer("test5");
+   LOGGER.finer("test5");
     it = pcyc1.getCycleButIterator(4);
     assertTrue(it.hasNext());
     assertEquals(0, it.next());
@@ -164,7 +167,7 @@ public class StoredPointerCycleTest {
    */
   @Test
   public void test6() {
-    logger.finer("test6");
+   LOGGER.finer("test6");
     it = pcyc1.getCycleButIterator(2);
     assertTrue(it.hasNext());
     assertEquals(4, it.next());
@@ -177,7 +180,7 @@ public class StoredPointerCycleTest {
    */
   @Test
   public void test7() {
-    logger.finer("test7");
+   LOGGER.finer("test7");
     it = pcyc1.getCycleButIterator(1);
     assertTrue(it.hasNext());
     assertEquals(2, it.next());
@@ -194,7 +197,7 @@ public class StoredPointerCycleTest {
    */
   @Test
   public void test8() {
-    logger.finer("test8");
+   LOGGER.finer("test8");
     it = pcyc1.getCycleButIterator(1);
     assertTrue(it.hasNext());
     assertEquals(2, it.next());
@@ -208,7 +211,7 @@ public class StoredPointerCycleTest {
    */
   @Test
   public void test9() {
-    logger.finer("test9");
+   LOGGER.finer("test9");
     it = pcyc1.getCycleButIterator(-1);
     pcyc1.setOutOfCycle(2);
     pcyc1.setOutOfCycle(4);
@@ -221,7 +224,7 @@ public class StoredPointerCycleTest {
    */
   @Test
   public void test10() {
-    logger.finer("test10");
+   LOGGER.finer("test10");
     it = pcyc1.getCycleButIterator(-1);
     assertTrue(it.hasNext());
     assertEquals(0, it.next());
@@ -236,7 +239,7 @@ public class StoredPointerCycleTest {
    */
   @Test
   public void test11() {
-    logger.finer("test11");
+   LOGGER.finer("test11");
     it = pcyc2.getCycleButIterator(2);
     assertTrue(it.hasNext());
     assertEquals(3, it.next());
@@ -248,7 +251,7 @@ public class StoredPointerCycleTest {
    */
   @Test
   public void test12() {
-    logger.finer("test12");
+   LOGGER.finer("test12");
     it = pcyc2.getCycleButIterator(4);
     assertTrue(it.hasNext());
     pcyc2.setOutOfCycle(3);
@@ -261,7 +264,7 @@ public class StoredPointerCycleTest {
    */
   @Test
   public void test13() {
-    logger.finer("test13");
+   LOGGER.finer("test13");
     it = pcyc2.getCycleButIterator(3);
     assertFalse(it.hasNext());
   }

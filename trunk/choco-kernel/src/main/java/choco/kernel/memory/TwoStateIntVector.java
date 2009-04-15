@@ -24,18 +24,12 @@ package choco.kernel.memory;
 
 import choco.kernel.common.util.DisposableIntIterator;
 
-import java.util.logging.Logger;
-
 /**
  * A class that implements a vector of integers with two states (one current and one single historical state)
  * TODO: implement all those darn methods
  */
 public class TwoStateIntVector implements IStateIntVector {
 
-  /**
-   * Reference to an object for logging trace statements related memory & backtrack (using the java.util.logging package)
-   */
-  private static Logger logger = Logger.getLogger("choco.kernel.memory");
 
   /**
    * Minimal capacity of a vector
