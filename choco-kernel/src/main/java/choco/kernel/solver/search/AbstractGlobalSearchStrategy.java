@@ -31,9 +31,9 @@ package choco.kernel.solver.search;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
-import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.branch.AbstractIntBranching;
 import choco.kernel.solver.branch.AbstractBranching;
+import choco.kernel.solver.branch.AbstractIntBranching;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
@@ -86,10 +86,8 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 
 	/**
 	 * count of the backtracks made during search
-	 */
-	//	public int nbBacktracks = 0;
-
-
+     * @param loggingMaxDepth max depth of the logging
+     */
 	public void setLoggingMaxDepth(int loggingMaxDepth) {
 		this.loggingMaxDepth = loggingMaxDepth;
 	}
@@ -187,7 +185,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 * main entry point: searching for one solution
 	 * Note: the initial propagation must be done before pushing any world level.
 	 * It is therefore kept before restoring a solution
-	 */
+     */
 	public void incrementalRun() {
 		baseWorld = solver.getEnvironment().getWorldIndex();
 		boolean feasibleRootState = true;
@@ -224,7 +222,8 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 
 	/**
 	 * called before a new search tree is explored
-	 */
+     * @throws choco.kernel.solver.ContradictionException
+     */
 	public void newTreeSearch() throws ContradictionException {
 		assert(solver.getSearchStrategy() == this);
 		for (AbstractGlobalSearchLimit lim : limits) {
@@ -241,7 +240,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	public void endTreeSearch() {
 		if (logger.isLoggable(Level.SEVERE)) {
 			if (solver.getFeasible() == Boolean.TRUE) {
-				logger.log(Level.INFO, "solve => " + new Integer(nbSolutions) + " solutions");
+				logger.log(Level.INFO, "solve => " + nbSolutions + " solutions");
 			} else {
 				logger.info("solve => no solution");
 			}
@@ -253,10 +252,11 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 
 	/**
 	 * called before a node is expanded in the search tree (choice point creation)
-	 */
+     * @throws choco.kernel.solver.ContradictionException
+     */
 	public void newTreeNode() throws ContradictionException {
 		for (AbstractGlobalSearchLimit lim : limits) {
-			if (lim.newNode(this) == false) {
+			if (!lim.newNode(this)) {
 				encounteredLimit = lim;
 				solver.getPropagationEngine().raiseContradiction(lim, ContradictionException.SEARCH_LIMIT);
 			}
@@ -265,10 +265,11 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 
 	/**
 	 * called after a node is expanded in the search tree (choice point creation)
-	 */
+     * @throws choco.kernel.solver.ContradictionException
+     */
 	public void endTreeNode() throws ContradictionException {
 		for (AbstractGlobalSearchLimit lim : limits) {
-			if (lim.endNode(this) == false) {//<hca> currentElement also the limit while going up to avoid useless propagation steps lim.endNode(this);
+			if (!lim.endNode(this)) {//<hca> currentElement also the limit while going up to avoid useless propagation steps lim.endNode(this);
 				encounteredLimit = lim;
 				solver.getPropagationEngine().raiseContradiction(lim, ContradictionException.SEARCH_LIMIT);
 			}
@@ -326,14 +327,15 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 
 	/**
 	 * called before going down into each branch of the choice point
-	 */
+     * @throws choco.kernel.solver.ContradictionException
+     */
 	public void postDynamicCut() throws ContradictionException {
 	}
 
 
 	public IntBranchingTrace pushTrace() {
 		currentTraceIndex++;
-		IntBranchingTrace nextTrace = null;
+		IntBranchingTrace nextTrace;
 		if (currentTraceIndex > traceStack.size() - 1) {
 			nextTrace = new IntBranchingTrace();
 			traceStack.add(nextTrace);
@@ -455,7 +457,8 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 
 	/**
 	 * If a limit has been encounteres, return the involved limit
-	 */
+     * @return the encoutered limit
+     */
 	public GlobalSearchLimit getEncounteredLimit() {
 		return encounteredLimit;
 	}
