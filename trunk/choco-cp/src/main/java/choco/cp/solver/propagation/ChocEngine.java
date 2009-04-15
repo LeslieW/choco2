@@ -42,11 +42,6 @@ import java.util.logging.Logger;
  */
 public class ChocEngine extends AbstractPropagationEngine {
 
-  /**
-   * Reference to object for logging trace statements related to propagation events (using the java.util.logging package)
-   */
-
-  private static Logger logger = Logger.getLogger("choco.kernel.solver.propagation");
 
   /**
    * the number of queues for storing constraint events
@@ -134,8 +129,8 @@ public class ChocEngine extends AbstractPropagationEngine {
   //       - devenir enqueued
   public void postEvent(Var v, int idx, int basicEvt) {
     VarEvent<? extends Var> event = v.getEvent();
-    if (logger.isLoggable(Level.FINEST))
-      logger.finest("post Event " + event.toString() + " for basicEvt:" + basicEvt);
+    if (LOGGER.isLoggable(Level.FINEST))
+      LOGGER.log(Level.FINEST, "post Event {0} for basicEvt: {1}", new Object[]{event, basicEvt});
     boolean alreadyEnqueued = event.isEnqueued();
     event.recordEventTypeAndCause(basicEvt, idx);
     if (!alreadyEnqueued) {
@@ -144,8 +139,7 @@ public class ChocEngine extends AbstractPropagationEngine {
       // no priority anymore
       //varEventQueue.updatePriority(event);
     }
-    if (logger.isLoggable(Level.FINEST))
-      logger.finest("posted Event " + event.toString());
+    LOGGER.log(Level.FINEST, "posted Event {0}", event);
   }
 
   /**
@@ -255,8 +249,7 @@ public class ChocEngine extends AbstractPropagationEngine {
     if (prio < NB_CONST_QUEUES) {
       return constEventQueues[prio];
     } else {
-      if (logger.isLoggable(Level.WARNING))
-        logger.warning("wrong constraint priority. It should be between 0 and 3.");
+    	LOGGER.warning("wrong constraint priority. It should be between 0 and 3.");
       return constEventQueues[3];
     }
   }
@@ -457,7 +450,7 @@ public class ChocEngine extends AbstractPropagationEngine {
     for (int i = 0; i < nbiv; i++) {
       IntVarEvent evt = (IntVarEvent) solver.getIntVar(i).getEvent();
       if (!(evt.getReleased())) {
-        logger.severe("var event non released " + evt.toString());
+        LOGGER.log(Level.SEVERE, "var event non released {0}", evt);
         new Exception().printStackTrace();
         ok = false;
       }
@@ -466,7 +459,7 @@ public class ChocEngine extends AbstractPropagationEngine {
     for (int i = 0; i < nbsv; i++) {
       SetVarEvent evt = (SetVarEvent) solver.getSetVar(i).getEvent();
       if (!(evt.getReleased())) {
-        logger.severe("var event non released " + evt.toString());
+    	  LOGGER.log(Level.SEVERE, "var event non released {0}", evt);
         new Exception().printStackTrace();
         ok = false;
       }

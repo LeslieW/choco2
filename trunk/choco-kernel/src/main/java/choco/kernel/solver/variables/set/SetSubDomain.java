@@ -22,6 +22,9 @@
  **************************************************/
 package choco.kernel.solver.variables.set;
 
+import java.util.logging.Logger;
+
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
 
 /*
@@ -33,6 +36,8 @@ import choco.kernel.common.util.IntIterator;
 */
 public interface SetSubDomain {
 
+	public static final Logger LOGGER = ChocoLogging.getPropagationLogger();
+	
     public boolean contains(int val);
 
     public boolean remove(int val);

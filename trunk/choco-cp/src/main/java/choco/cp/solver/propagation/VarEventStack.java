@@ -48,13 +48,6 @@ public class VarEventStack implements EventQueue {
 	 */
 	protected PropagationEvent lastPopped = null;
 
-	/**
-	 * Reference to object for logging trace statements related to propagation
-	 * events (using the java.util.logging package)
-	 */
-
-	private static Logger logger = Logger
-			.getLogger("choco.kernel.solver.propagation");
 
 	/**
 	 * Checks if the queue is empty.
@@ -104,8 +97,7 @@ public class VarEventStack implements EventQueue {
 	public PropagationEvent popEvent() {
 		PropagationEvent event = queue.pop();
 		lastPopped = event;
-		if (logger.isLoggable(Level.FINEST))
-			logger.finest("just popped " + event.toString());
+		LOGGER.log(Level.FINEST, "just popped {0}", event);
 		return event;
 	}
 

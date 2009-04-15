@@ -104,46 +104,7 @@ public class ViewIntDomainVarImpl extends IntDomainVarImpl{
         return domain.contains(x/coefficient-constant);
     }
 
-    /**
-   * Sets the minimum value.
-   */
-
-  public void setInf(int x) throws ContradictionException {
-    updateInf(x, VarEvent.NOCAUSE);
-  }
-
-  /**
-   * Sets the maximal value.
-   */
-
-  public void setSup(int x) throws ContradictionException {
-    updateSup(x, VarEvent.NOCAUSE);
-  }
-
-  /**
-   * Instantiates the variable.
-   *
-   * @throws choco.kernel.solver.ContradictionException
-   */
-
-  public void setVal(int x) throws ContradictionException {
-    instantiate(x, VarEvent.NOCAUSE);
-  }
-
-
-  /**
-   * Removes a value.
-   *
-   * @throws choco.kernel.solver.ContradictionException
-   */
-
-  public void remVal(int x) throws ContradictionException {
-    removeVal(x, VarEvent.NOCAUSE);
-  }
-
-  public void wipeOut() throws ContradictionException {
-    this.getSolver().getPropagationEngine().raiseContradiction(this, ContradictionException.DOMAIN);
-  }
+  
 
   public boolean hasEnumeratedDomain() {
     return domain.isEnumerated();
@@ -275,8 +236,7 @@ public class ViewIntDomainVarImpl extends IntDomainVarImpl{
    */
 
   public boolean updateInf(int x, int idx) throws ContradictionException {
-          if (logger.isLoggable(Level.FINEST))
-            logger.finest("INF(" + this.toString() + "): " + this.getInf() + " -> " + x);
+          logOnInf(x);
           return domain.updateInf(computeValue(x, false), idx);
   }
 
@@ -291,8 +251,7 @@ public class ViewIntDomainVarImpl extends IntDomainVarImpl{
    */
 
   public boolean updateSup(int x, int idx) throws ContradictionException {
-          if (logger.isLoggable(Level.FINEST))
-            logger.finest("SUP(" + this.toString() + "): " + this.getSup() + " -> " + x);
+          logOnSup(x);
           return domain.updateSup(computeValue(x, true), idx);
   }
 
@@ -312,8 +271,7 @@ public class ViewIntDomainVarImpl extends IntDomainVarImpl{
    */
 
   public boolean removeVal(int x, int idx) throws ContradictionException {
-      if (logger.isLoggable(Level.FINEST))
-            logger.finest("REM(" + this.toString() + "): - " + x);
+      logOnRem(x);
       return domain.removeVal(computeValue(x, true), idx);
   }
 
@@ -329,7 +287,8 @@ public class ViewIntDomainVarImpl extends IntDomainVarImpl{
    */
 
   public boolean removeInterval(int a, int b, int idx) throws ContradictionException {
-      return domain.removeInterval(computeValue(a, false), computeValue(b, true), idx);
+      logOnRemInt(a, b);
+	  return domain.removeInterval(computeValue(a, false), computeValue(b, true), idx);
   }
 
   /**
@@ -342,15 +301,10 @@ public class ViewIntDomainVarImpl extends IntDomainVarImpl{
    */
 
   public boolean instantiate(int x, int idx) throws ContradictionException {
-      if (logger.isLoggable(Level.FINEST))
-            logger.finest("INST(" + this.toString() + "):-> " + x);
+     logOnInst(x);
       return domain.instantiate(computeValue(x, false), idx);
   }
 
-
-    public void fail() throws ContradictionException {
-        solver.getPropagationEngine().raiseContradiction(this, ContradictionException.DOMAIN);
-  }
 
 
   /**

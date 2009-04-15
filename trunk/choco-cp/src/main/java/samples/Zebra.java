@@ -39,7 +39,6 @@ import java.util.logging.Logger;
 
 public class Zebra {
 
-	private static Logger logger = Logger.getLogger("choco.samples.zebra");
 	private static Model model;
 	private static CPSolver solver;
 	private static IntegerVariable green, blue, yellow, ivory, red;
@@ -58,7 +57,7 @@ public class Zebra {
 	}
 
 	public static void main(String args[]) {
-		logger.fine("Zebra Testing...");
+		System.out.println("Zebra Testing...");
 		model = new CPModel();
 		green = makeIntVar("green", 1, 5);
 		blue = makeIntVar("blue", 1, 5);

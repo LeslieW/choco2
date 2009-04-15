@@ -22,6 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.set;
 
+import java.util.Arrays;
+import java.util.logging.Level;
+
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -122,7 +125,7 @@ public class SetVarImpl extends AbstractVar implements SetVar {
 	 * @throws ContradictionException
 	 */
 	@Override
-	public void fail() throws ContradictionException {
+	public final void fail() throws ContradictionException {
 		super.fail();
 		solver.getPropagationEngine().raiseContradiction(this, ContradictionException.VARIABLE);
 		//this.fail();
@@ -132,11 +135,11 @@ public class SetVarImpl extends AbstractVar implements SetVar {
 		return domain.isInstantiated();  //To change body of implemented methods use File | Settings | File Templates.
 	}
 
-	public void setValIn(int x) throws ContradictionException {
+	public final void setValIn(int x) throws ContradictionException {
 		addToKernel(x, SetVarEvent.NOCAUSE);
 	}
 
-	public void setValOut(int x) throws ContradictionException {
+	public final void setValOut(int x) throws ContradictionException {
 		remFromEnveloppe(x, SetVarEvent.NOCAUSE);
 	}
 
@@ -197,19 +200,25 @@ public class SetVarImpl extends AbstractVar implements SetVar {
 		return val;
 	}
 
-	public void setVal(int[] val) throws ContradictionException {
+	public final void setVal(int[] val) throws ContradictionException {
 		instantiate(val, SetVarEvent.NOCAUSE);
 	}
 
 	public boolean addToKernel(int x, int idx) throws ContradictionException {
+		if (LOGGER.isLoggable(Level.FINEST))
+			LOGGER.log(Level.FINEST, "KER({0}): {1}", new Object[]{this, x});
 		return domain.addToKernel(x, idx);
 	}
 
 	public boolean remFromEnveloppe(int x, int idx) throws ContradictionException {
+		if (LOGGER.isLoggable(Level.FINEST))
+			LOGGER.log(Level.FINEST, "ENV({0}): {1}", new Object[]{this, x}); 
 		return domain.remFromEnveloppe(x, idx);
 	}
 
 	public boolean instantiate(int[] x, int idx) throws ContradictionException {
+		if (LOGGER.isLoggable(Level.FINEST))
+			LOGGER.log(Level.FINEST, "INST({0}): {1}", new Object[]{this, Arrays.toString(x)}); 
 		return domain.instantiate(x, idx);
 	}
 

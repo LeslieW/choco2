@@ -296,20 +296,20 @@ public class SetTimes extends AbstractLargeIntBranching {
 
 	@Override
 	protected void logDownBranch(final Object x, final int i) {
-		if (logger.isLoggable(Level.FINE)) {
+		if (LOGGER.isLoggable(Level.FINE)) {
 			final int n = manager.solver.getEnvironment().getWorldIndex();
 			if (n <= manager.getLoggingMaxDepth()) {
-				logger.log(Level.FINE, LOG_DOWN_MSG, new Object[]{Integer.valueOf(n),getDecisionLogMsg((TaskVar) x,i)," branch ", Integer.valueOf(i)});
+				LOGGER.log(Level.FINE, LOG_DOWN_MSG, new Object[]{Integer.valueOf(n),getDecisionLogMsg((TaskVar) x,i)," branch ", Integer.valueOf(i)});
 			}
 		}
 	}
 
 	@Override
 	protected void logUpBranch(final Object x, final int i) {
-		if (logger.isLoggable(Level.FINE)) {
+		if (LOGGER.isLoggable(Level.FINE)) {
 			final int n = manager.solver.getEnvironment().getWorldIndex();
 			if (n <= manager.getLoggingMaxDepth()) {
-				logger.log(Level.FINE, LOG_UP_MSG, new Object[]{Integer.valueOf(n+1),getDecisionLogMsg((TaskVar) x,i)," branch ", Integer.valueOf(i)});
+				LOGGER.log(Level.FINE, LOG_UP_MSG, new Object[]{Integer.valueOf(n+1),getDecisionLogMsg((TaskVar) x,i)," branch ", Integer.valueOf(i)});
 			}
 		}
 	}

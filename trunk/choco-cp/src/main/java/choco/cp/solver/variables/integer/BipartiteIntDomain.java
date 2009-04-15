@@ -31,6 +31,7 @@ import choco.kernel.solver.ContradictionException;
 
 import java.util.Arrays;
 import java.util.Random;
+import java.util.logging.Level;
 
 /**
  * @author Guillaume Rochart
@@ -97,11 +98,11 @@ public class BipartiteIntDomain extends AbstractIntDomain {
     public BipartiteIntDomain(IntDomainVarImpl v, int[] sortedValues) {
         if (Choco.DEBUG) {
             if (v == null) {
-                System.err.println("Cannot create a domain without a not null variable !");
+                LOGGER.severe("Cannot create a domain without a not null variable !");
                 System.exit(-1);
             }
             if (sortedValues == null) {
-                System.err.println("Variable " + v + " cannot have an empty domain at the beginning !");
+                LOGGER.log(Level.SEVERE, "Variable {0} cannot have an empty domain at the beginning !", v);
                 System.exit(-1);
             }
         }
@@ -119,11 +120,11 @@ public class BipartiteIntDomain extends AbstractIntDomain {
         // Pre-condition
         if (Choco.DEBUG) {
             if (v == null) {
-                System.err.println("Cannot create a domain without a not null variable !");
+            	 LOGGER.severe("Cannot create a domain without a not null variable !");
                 System.exit(-1);
             }
             if (low > up) {
-                System.err.println("Variable " + v + " cannot have an empty domain at the beginning !");
+            	 LOGGER.log(Level.SEVERE, "Variable {0} cannot have an empty domain at the beginning !", v);
                 System.exit(-1);
             }
         }

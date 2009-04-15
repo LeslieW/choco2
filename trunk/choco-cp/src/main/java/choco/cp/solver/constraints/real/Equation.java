@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.real;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.real.AbstractLargeRealSConstraint;
@@ -89,14 +90,14 @@ public class Equation extends AbstractLargeRealSConstraint {
 
   public void addBoxedVar(RealVar var) {
     if (nbBoxedVars == boxedVars.length) {
-      Logger.getLogger("choco.kernel.solver.propagation.const").severe("Cannot box more variables than variables involved in the constraint !!");
+      ChocoLogging.getPropagationLogger().severe("Cannot box more variables than variables involved in the constraint !!");
       return;
     }
     List wx = new ArrayList();
     List wox = new ArrayList();
     this.exp.isolate(var, wx, wox);
     if (wx.size() == 0) {
-      Logger.getLogger("choco.kernel.solver.propagation.const").severe("Cannot box variables not involved in the constraint !!");
+    	ChocoLogging.getPropagationLogger().severe("Cannot box variables not involved in the constraint !!");
       return;
     }
     boxedVars[nbBoxedVars] = var;

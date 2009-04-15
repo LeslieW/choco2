@@ -23,6 +23,7 @@
 package choco.common;
 
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.BipartiteSet;
 import org.junit.After;
 import static org.junit.Assert.*;
@@ -85,5 +86,6 @@ public class BipartiteSetTest {
 		assertTrue(set.isLeft(obj2));
 		assertTrue(set.isLeft(obj3));
 		LOGGER.finest("Third Step passed");
+		ChocoLogging.flushLogs();
 	}
 }

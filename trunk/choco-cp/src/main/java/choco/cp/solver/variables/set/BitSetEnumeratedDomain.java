@@ -30,8 +30,6 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.set.SetSubDomain;
 import choco.kernel.solver.variables.set.SetVar;
 
-import java.util.logging.Logger;
-
 /*
  * Created by IntelliJ IDEA.
  * User: Hadrien
@@ -40,8 +38,7 @@ import java.util.logging.Logger;
  *
  */
 public class BitSetEnumeratedDomain implements SetSubDomain {
-  protected static final Logger logger = Logger.getLogger("choco.kernel.solver.propagation");
-
+  
     /**
      * The (optimization or decision) model to which the entity belongs.
      */
@@ -221,12 +218,12 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
 
   private void removeIndex(int i) {
     if (i == firstIndexToBePropagated)
-      logger.severe("RemoveIndex BIZARRE !!!!!!!!!!!!");
+      LOGGER.severe("RemoveIndex BIZARRE !!!!!!!!!!!!");
     contents.clear(i);
     chain[i] = firstIndexToBePropagated;
     firstIndexToBePropagated = i;
     if (contents.get(i))
-      logger.severe("etrange etrange");
+      LOGGER.severe("etrange etrange");
     size.add(-1);
   }
 
@@ -247,12 +244,12 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
 
   private void addIndex(int i) {
     if (i == firstIndexToBePropagated)
-      logger.severe("AddIndex BIZARRE !!!!!!!!!!!!");
+      LOGGER.severe("AddIndex BIZARRE !!!!!!!!!!!!");
     contents.set(i);
     chain[i] = firstIndexToBePropagated;
     firstIndexToBePropagated = i;
     if (!contents.get(i))
-      logger.severe("etrange etrange");
+      LOGGER.severe("etrange etrange");
     size.add(1);
   }
 

@@ -29,27 +29,28 @@ public final class ChocoLogging {
 
 
 	public final static Logger[] CHOCO_LOGGERS = new Logger[] {
-		getLogger("choco2"),
-		getLogger("choco2.kernel"),
-		getLogger("choco2.kernel.search"),
-		getLogger("choco2.kernel.search.branching"),
-		getLogger("choco2.kernel.propagation"),
-		getLogger("choco2.kernel.memory"),
-		getLogger("choco2.api"),
-		getLogger("choco2.api.model"),
-        getLogger("choco2.api.solver"),
-		getLogger("choco2.api.parser"),
-		getLogger("choco2.dev.debug"),	
-		getLogger("choco2.dev.test"),
-		getLogger("choco2.user"),
+		getLogger("choco"),
+		getLogger("choco.kernel"),
+		getLogger("choco.kernel.search"),
+		getLogger("choco.kernel.search.branching"),
+		getLogger("choco.kernel.propagation"),
+		getLogger("choco.kernel.memory"),
+		getLogger("choco.api"),
+		getLogger("choco.api.model"),
+        getLogger("choco.api.solver"),
+		getLogger("choco.api.parser"),
+		getLogger("choco.dev.debug"),	
+		getLogger("choco.dev.test"),
+		getLogger("choco.user"),
+		getLogger("choco.samples"),
 	};
 
 	static {
 		try {
-			setLevel(Level.FINEST, DEFAULT_HANDLER, DETAILED_HANDLER, SEARCH_DEFAULT_HANDLER);
+			setLevel(Level.ALL, DEFAULT_HANDLER, DETAILED_HANDLER, SEARCH_DEFAULT_HANDLER);
 			setLevel(Level.WARNING, ERROR_HANDLER, SEARCH_ERROR_HANDLER);
 			setDefaultHandler();
-			setVerbosity(Verbosity.VERBOSE);
+			setVerbosity(Verbosity.SILENT);
 		} catch (AccessControlException e) {
 			// Do nothing if this is an applet !
 			// TODO: see how to make it work with an applet !
@@ -61,7 +62,7 @@ public final class ChocoLogging {
 	}
 
 	public static Logger makeUserLogger(String suffix) {
-		return Logger.getLogger("choco2.user."+suffix);
+		return Logger.getLogger("choco.user."+suffix);
 	}
 
 	public static Logger getChocoLogger() {
@@ -89,8 +90,7 @@ public final class ChocoLogging {
 		return CHOCO_LOGGERS[5];
 	}
 
-	
-	
+		
 	public static Logger getAPILogger() {
 		return CHOCO_LOGGERS[6];
 	}
@@ -118,6 +118,10 @@ public final class ChocoLogging {
 
 	public static Logger getUserLogger() {
 		return CHOCO_LOGGERS[12];
+	}
+	
+	public static Logger getSamplesLogger() {
+		return CHOCO_LOGGERS[13];
 	}
 
 	public static Formatter getDefaultFormatter() {
@@ -325,10 +329,6 @@ public final class ChocoLogging {
 	}
 
 
-	private static void setSolution(Level level) {
-		setLevel(level, getChocoLogger(), getKernelLogger(),getSearchLogger());
-	}
-
 	public static void setOldChocoVerbosity(Verbosity verbosity) {
 //		switch(verbosity) {
 //		case OFF: 
@@ -342,6 +342,13 @@ public final class ChocoLogging {
 //		}
 	}
 	
+	private static void setPattern(Level solLevel) {
+		setLevel(Level.WARNING, getBranchingLogger(), getPropagationLogger(), getMemoryLogger(),
+				getParserLogger(), getDebugLogger(), getTestLogger());
+		setLevel(Level.INFO, getAPILogger(), getModelLogger(), getSamplesLogger(), getUserLogger(), getSolverLogger());
+		setLevel(solLevel, getChocoLogger(), getKernelLogger(),getSearchLogger());
+	}
+	
 	public static void setVerbosity(Verbosity verbosity) {
 		switch(verbosity) {
 		case OFF: {
@@ -350,42 +357,37 @@ public final class ChocoLogging {
 		}
 		case SILENT: {
 			setLevel(Level.SEVERE, CHOCO_LOGGERS);
-			setLevel(Level.OFF, getDebugLogger(), getTestLogger());
+			setLevel(Level.OFF, getDebugLogger());
 			break;
 		}
 
 		case VERBOSE: {
-			setLevel(Level.WARNING,getParserLogger(), getTestLogger(), getDebugLogger(),getMemoryLogger(),getPropagationLogger(),getBranchingLogger());
-			setLevel(Level.INFO, getAPILogger(), getModelLogger(), getUserLogger());
-			setSolution(Level.INFO); //ouput best solution
+			setPattern(Level.INFO); //output only best solution
 			break;
 		}
-
 		case SOLUTION: { 
-			setLevel(Level.WARNING,getParserLogger(), getTestLogger(), getDebugLogger(),getMemoryLogger(),getPropagationLogger(),getBranchingLogger());
-			setLevel(Level.INFO, getAPILogger(), getModelLogger(), getUserLogger());
-			setSolution(Level.FINEST); //output all solutions
+			setPattern(Level.FINEST); //output all solutions
 			break;
 		}
-
 		case SEARCH: {
-			setLevel(Level.WARNING, getParserLogger(), getTestLogger(), getDebugLogger(),getMemoryLogger(),getPropagationLogger());
-			setLevel(Level.INFO, getAPILogger(), getModelLogger(), getUserLogger(), getBranchingLogger()); //ouput branching
-			setSolution(Level.FINEST);
+			setPattern(Level.FINEST);
+			setLevel(Level.INFO, getBranchingLogger()); //ouput search logs (branching)
 			break;
 		}
 		case DEBUG: {
-			setLevel(Level.INFO,getTestLogger(), getDebugLogger(), getMemoryLogger(), getPropagationLogger());
-			setLevel(Level.FINEST, getParserLogger(), getAPILogger(), getUserLogger(), getModelLogger()); //output all solutions
-			setSolution(Level.FINEST);
+			setPattern(Level.FINEST); 
+			setLevel(Level.FINEST, 
+					getBranchingLogger(), getPropagationLogger(), getMemoryLogger(),  //ouput search, propgation and memory logs
+					getParserLogger(), getAPILogger(), getUserLogger(), getSolverLogger(), getModelLogger()); //output model logs
 			break;
 		}
 		case FINEST: {
 			for (Logger logger : CHOCO_LOGGERS) {
 				logger.setLevel(Level.FINEST);
-				for (Handler h : logger.getHandlers()) {
-					h.setLevel(Level.FINEST);
-				}
+				//modify also handlers
+//				for (Handler h : logger.getHandlers()) {
+//					h.setLevel(Level.FINEST);
+//				}
 			}
 			break;
 		}
