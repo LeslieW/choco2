@@ -13,8 +13,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
-import choco.cp.solver.CPSolver;
-
 public final class ChocoLogging {
 
 
@@ -137,7 +135,7 @@ public final class ChocoLogging {
 
 
 	public static void flushLogs() {
-		CPSolver.flushLogs();
+		//CPSolver.flushLogs();
 		for (Logger logger : CHOCO_LOGGERS) {
 			flushLog(logger);
 		}
@@ -330,16 +328,16 @@ public final class ChocoLogging {
 	}
 
 	public static void setOldChocoVerbosity(Verbosity verbosity) {
-		switch(verbosity) {
-		case OFF: 
-		case SILENT: 
-		case VERBOSE: CPSolver.setVerbosity(CPSolver.SILENT);break; 
-		case SOLUTION: CPSolver.setVerbosity(CPSolver.SOLUTION);break;
-		case SEARCH: CPSolver.setVerbosity(CPSolver.SEARCH);
-		case DEBUG: CPSolver.setVerbosity(CPSolver.PROPAGATION);break;
-		case FINEST: CPSolver.setVerbosity(CPSolver.FINEST);break;
-		default: getChocoLogger().log(Level.WARNING,"cant set logger verbosity: ${0}",verbosity);
-		}
+//		switch(verbosity) {
+//		case OFF: 
+//		case SILENT: 
+//		case VERBOSE: CPSolver.setVerbosity(CPSolver.SILENT);break; 
+//		case SOLUTION: CPSolver.setVerbosity(CPSolver.SOLUTION);break;
+//		case SEARCH: CPSolver.setVerbosity(CPSolver.SEARCH);
+//		case DEBUG: CPSolver.setVerbosity(CPSolver.PROPAGATION);break;
+//		case FINEST: CPSolver.setVerbosity(CPSolver.FINEST);break;
+//		default: getChocoLogger().log(Level.WARNING,"cant set logger verbosity: ${0}",verbosity);
+//		}
 	}
 	
 	public static void setVerbosity(Verbosity verbosity) {
