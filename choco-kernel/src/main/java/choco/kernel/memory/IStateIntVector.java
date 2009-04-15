@@ -23,6 +23,9 @@
 
 package choco.kernel.memory;
 
+import java.util.logging.Logger;
+
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.DisposableIntIterator;
 
 /**
@@ -30,6 +33,7 @@ import choco.kernel.common.util.DisposableIntIterator;
  */
 public interface IStateIntVector {
 
+	public final static Logger LOGGER = ChocoLogging.getMemoryLogger();
   /**
    * Minimal capacity of a vector
    */

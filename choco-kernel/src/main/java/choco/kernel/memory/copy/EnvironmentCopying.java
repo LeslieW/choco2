@@ -54,7 +54,6 @@ import java.util.logging.Logger;
 
 public class EnvironmentCopying extends AbstractEnvironment {
 
-	Logger logger = Logger.getLogger("environment");
 
 	Stack<Integer> clonedWorldIdxStack;
 
@@ -192,22 +191,22 @@ public class EnvironmentCopying extends AbstractEnvironment {
 	}
 
 	public IStateIntVector makeBipartiteSet(int[] entries) {
-		logger.warning("using trailing data structure inside copying environnement...");
+		LOGGER.warning("using trailing data structure inside copying environnement...");
 		return new StoredIndexedBipartiteSet(this,entries);
 	}
 
 	public IStateIntVector makeBipartiteSet(int nbEntries) {
-		logger.warning("using trailing data structure inside copying environnement...");
+		LOGGER.warning("using trailing data structure inside copying environnement...");
 		return new StoredIndexedBipartiteSet(this,nbEntries);
 	}
 
 	public IStateIntVector makeBipartiteSet(IndexedObject[] entries) {
-		logger.warning("using trailing data structure inside copying environnement...");
+		LOGGER.warning("using trailing data structure inside copying environnement...");
 		return new StoredIndexedBipartiteSet(this,entries);
 	}
 
 	public IStateIntVector makeBipartiteSet(ArrayList<IndexedObject> entries) {
-		logger.warning("using trailing data structure inside copying environnement...");
+		LOGGER.warning("using trailing data structure inside copying environnement...");
 		return new StoredIndexedBipartiteSet(this,entries);
 	}
 

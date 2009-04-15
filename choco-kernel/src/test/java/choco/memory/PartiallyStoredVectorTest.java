@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.memory;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.PartiallyStoredVector;
@@ -35,13 +36,15 @@ import java.util.Random;
 import java.util.logging.Logger;
 
 public class PartiallyStoredVectorTest {
-  private Logger logger = Logger.getLogger("choco.currentElement");
+	
+	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+	
   private IEnvironment env;
   private PartiallyStoredVector vector;
 
     @Before
   public void setUp() {
-    logger.fine("StoredIntVector Testing...");
+    LOGGER.fine("StoredIntVector Testing...");
 
     env = new EnvironmentTrailing();
     vector = env.makePartiallyStoredVector();
@@ -58,7 +61,7 @@ public class PartiallyStoredVectorTest {
    */
   @Test
   public void test1() {
-    logger.finer("test1");
+    LOGGER.finer("test1");
     assertEquals(0, env.getWorldIndex());
     assertTrue(vector.isEmpty());
     env.worldPush();

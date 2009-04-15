@@ -53,12 +53,6 @@ public class StoredPointerCycle {
    */
   protected IStateIntVector next;
 
-  /**
-   * Reference to the root Logger, an object for logging trace statements
-   * related to propagation events (using the java.util.logging package).
-   */
-  protected static Logger logger =
-      Logger.getLogger("choco");
 
   /**
    * Builds the data structure with the specified environment.

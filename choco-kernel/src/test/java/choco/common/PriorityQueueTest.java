@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.common;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IPrioritizable;
 import choco.kernel.common.util.PriorityQueue;
 import org.junit.After;
@@ -32,11 +33,12 @@ import org.junit.Test;
 import java.util.logging.Logger;
 
 public class PriorityQueueTest {
-  private Logger logger = Logger.getLogger("choco.currentElement");
+ 
+	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     @Before
   public void setUp() {
-    logger.fine("PriorityQueue Testing...");
+    LOGGER.fine("PriorityQueue Testing...");
   }
 
     @After
@@ -45,7 +47,7 @@ public class PriorityQueueTest {
 
     @Test
   public void test1() {
-    logger.finer("test1");
+    LOGGER.finer("test1");
 
     Entity obj1 = new Entity("Objet 1", 2);
     Entity obj2 = new Entity("Objet 2", 0);
@@ -56,14 +58,14 @@ public class PriorityQueueTest {
 
     Object[] ret;
 
-    logger.finest("Step 1");
+    LOGGER.finest("Step 1");
     queue.add(obj1);
 
     ret = queue.toArray();
     assertEquals(ret.length, 1);
     assertEquals(ret[0], obj1);
 
-    logger.finest("Step 2");
+    LOGGER.finest("Step 2");
     queue.add(obj2);
 
     ret = queue.toArray();
@@ -71,7 +73,7 @@ public class PriorityQueueTest {
     assertEquals(ret[0], obj2);
     assertEquals(ret[1], obj1);
 
-    logger.finest("Step 3");
+    LOGGER.finest("Step 3");
     queue.add(obj3);
 
     ret = queue.toArray();
@@ -80,7 +82,7 @@ public class PriorityQueueTest {
     assertEquals(ret[1], obj1);
     assertEquals(ret[2], obj3);
 
-    logger.finest("Step 4");
+    LOGGER.finest("Step 4");
     queue.add(obj4);
 
     ret = queue.toArray();
@@ -90,7 +92,7 @@ public class PriorityQueueTest {
     assertEquals(ret[2], obj1);
     assertEquals(ret[3], obj3);
 
-    logger.finest("Step 5");
+    LOGGER.finest("Step 5");
     obj3.priority = 1;
     queue.updatePriority(obj3);
 
@@ -101,7 +103,7 @@ public class PriorityQueueTest {
     assertEquals(ret[2], obj3);
     assertEquals(ret[3], obj1);
 
-    logger.finest("Step 6");
+    LOGGER.finest("Step 6");
     obj2.priority = 3;
     queue.updatePriority(obj2);
 
@@ -112,7 +114,7 @@ public class PriorityQueueTest {
     assertEquals(ret[2], obj1);
     assertEquals(ret[3], obj2);
 
-    logger.finest("Step 7");
+    LOGGER.finest("Step 7");
     Object obj = queue.popFirst();
 
     ret = queue.toArray();

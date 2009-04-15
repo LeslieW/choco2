@@ -23,6 +23,7 @@
 
 package choco.memory;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import org.junit.After;
@@ -35,7 +36,7 @@ import java.util.logging.Logger;
  * a class implementing tests for backtrackable search
  */
 public class StoredIntTest {
-  private Logger logger = Logger.getLogger("choco.currentElement");
+	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
   private EnvironmentTrailing env;
   private IStateInt x1;
   private IStateInt x2;
@@ -43,7 +44,7 @@ public class StoredIntTest {
 
     @Before
   public void setUp() {
-    logger.fine("StoredInt Testing...");
+    LOGGER.fine("StoredInt Testing...");
     env = new EnvironmentTrailing();
     x1 = env.makeInt(0);
     x2 = env.makeInt(0);
@@ -63,7 +64,7 @@ public class StoredIntTest {
    */
   @Test
   public void test1() {
-    logger.finer("test1");
+    LOGGER.finer("test1");
     assertTrue(env.getWorldIndex() == 0);
     assertTrue(env.getTrailSize() == 0);
     env.worldPush();
@@ -82,7 +83,7 @@ public class StoredIntTest {
    */
   @Test
   public void test2() {
-    logger.finer("test2");
+    LOGGER.finer("test2");
     assertTrue(env.getWorldIndex() == 0);
     assertTrue(env.getTrailSize() == 0);
     for (int i = 1; i <= 100; i++) {

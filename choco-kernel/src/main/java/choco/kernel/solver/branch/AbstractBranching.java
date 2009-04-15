@@ -37,10 +37,8 @@ public abstract class AbstractBranching {
    * a link towards the next branching object (once this one is exhausted)
    */
   protected AbstractBranching nextBranching;
-  /**
-   * an object for logging trace statements
-   */
-  protected static Logger logger = Logger.getLogger("choco.kernel.solver.search.branching");
+  
+  
 
   public static String LOG_DOWN_MSG = "down branch ";
   public static String LOG_UP_MSG = "up branch ";

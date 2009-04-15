@@ -37,12 +37,6 @@ import java.util.logging.Logger;
 public class RcIntVector implements IStateIntVector, RecomputableElement {
 
     /**
-     * Reference to an object for logging trace statements related memory & backtrack (using the java.util.logging package)
-     */
-
-    private static Logger logger = Logger.getLogger("choco.kernel.memory");
-
-    /**
      * Minimal capacity of a vector
      */
     public static final int MIN_CAPACITY = 8;

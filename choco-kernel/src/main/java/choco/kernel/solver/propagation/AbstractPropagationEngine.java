@@ -24,8 +24,6 @@ package choco.kernel.solver.propagation;
 
 import choco.kernel.solver.Solver;
 
-import java.util.logging.Logger;
-
 /**
  * An abstract class for all implementations of propagation engines.
  */
@@ -52,11 +50,6 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
 
   protected Object contradictionCause;
 
-  /**
-   * Reference to an object for logging trace statements related to propagation events (using the java.util.logging package)
-   */
-
-  protected static Logger logger = Logger.getLogger("choco.kernel.solver.propagation");
 
 
   public AbstractPropagationEngine(Solver solver) {

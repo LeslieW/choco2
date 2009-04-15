@@ -40,19 +40,19 @@ public abstract class AbstractIntBranching extends AbstractBranching implements 
   }
 
   protected void logDownBranch(final Object x, final int i) {
-    if (logger.isLoggable(Level.FINE)) {
+    if (LOGGER.isLoggable(Level.FINE)) {
       int n = manager.solver.getEnvironment().getWorldIndex();
       if (n <= manager.getLoggingMaxDepth()) {
-        logger.log(Level.FINE, LOG_DOWN_MSG, new Object[]{n,x,getDecisionLogMsg(i), i});
+        LOGGER.log(Level.FINE, LOG_DOWN_MSG, new Object[]{n,x,getDecisionLogMsg(i), i});
       }
     }
   }
   
   protected void logUpBranch(final Object x, final int i) {
-    if (logger.isLoggable(Level.FINE)) {
+    if (LOGGER.isLoggable(Level.FINE)) {
       int n = manager.solver.getEnvironment().getWorldIndex();
       if (n <= manager.getLoggingMaxDepth()) {
-        logger.log(Level.FINE, LOG_UP_MSG, new Object[]{n + 1,x,getDecisionLogMsg(i), i});
+        LOGGER.log(Level.FINE, LOG_UP_MSG, new Object[]{n + 1,x,getDecisionLogMsg(i), i});
       }
     }
   }

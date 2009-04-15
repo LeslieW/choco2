@@ -27,8 +27,6 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.Var;
 
-import java.util.logging.Logger;
-
 /**
  * Implements an
  * {@link choco.kernel.solver.propagation.PropagationEvent} for the variable events.
@@ -62,12 +60,6 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
 
   protected E modifiedVar;
 
-
-  /**
-   * Reference to the root Logger, an object for logging trace statements related to propagation events (using the java.util.logging package)
-   */
-
-  protected static Logger logger = Logger.getLogger("choco.kernel.solver.propagation");
 
   /**
    * active constraints to be propagated

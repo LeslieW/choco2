@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.memory;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.DisposableIntIterator;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.memory.trailing.IndexedObject;
@@ -42,13 +43,13 @@ import java.util.logging.Logger;
  * To change this template use File | Settings | File Templates.
  */
 public class StoredIntBipartiteListTest {
-    private Logger logger = Logger.getLogger("src.choco.currentElement");
+	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
     private EnvironmentTrailing env;
     private StoredIntBipartiteList iVectA;
 
     @Before
     public void setUp() {
-        logger.fine("StoredIntBipartiteList Testing...");
+        LOGGER.fine("StoredIntBipartiteList Testing...");
 
         env = new EnvironmentTrailing();
         iVectA = (StoredIntBipartiteList) env.makeBipartiteIntList(new int[]{1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 200});

@@ -22,10 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco;
 
+import static java.lang.System.arraycopy;
 import static choco.kernel.common.util.UtilAlgo.append;
 import static choco.kernel.common.util.UtilAlgo.appendAndCast;
 import gnu.trove.TIntArrayList;
-import gnu.trove.TIntIterator;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,6 +33,7 @@ import java.util.Vector;
 import java.util.logging.Logger;
 
 import choco.kernel.common.IndexFactory;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.common.util.UtilAlgo;
 import choco.kernel.model.ModelException;
@@ -85,7 +86,7 @@ import choco.kernel.solver.constraints.integer.extension.TuplesTable;
  */
 public class Choco{
 
-	final static Logger logger = Logger.getLogger("choco");
+	final static Logger LOGGER = ChocoLogging.getAPILogger();
 
 	public static boolean DEBUG = false;
 
@@ -102,7 +103,7 @@ public class Choco{
 			throw new ModelException("makeIntVar : lowB > uppB");
 		}
 		if(lowB < MIN_LOWER_BOUND || uppB > MAX_UPPER_BOUND){
-			logger.warning("WARNING! Domains over ["+MIN_LOWER_BOUND+", "+MAX_UPPER_BOUND+"] are strongly inadvisable ! ");
+			LOGGER.warning("WARNING! Domains over ["+MIN_LOWER_BOUND+", "+MAX_UPPER_BOUND+"] are strongly inadvisable ! ");
 		}
 	}
 	
@@ -591,7 +592,7 @@ public class Choco{
 	 */
 	public static SetVariable makeSetVar(String name, int[] valuesArray, String... options) {
 		int[] values2 = new int[valuesArray.length];
-		System.arraycopy(valuesArray, 0, values2, 0, valuesArray.length);
+		arraycopy(valuesArray, 0, values2, 0, valuesArray.length);
 		Arrays.sort(values2);
 		int c = values2.length;
 		IntegerVariable card = makeIntVar("|"+name+"|", 0, c, options);
@@ -1767,7 +1768,7 @@ public class Choco{
 	public static Constraint min(SetVariable svar,IntegerVariable[] vars, IntegerVariable min) {
 		final Variable[] tmp = new Variable[vars.length + 2];
 		tmp[0] = svar;
-		System.arraycopy(vars, 0, tmp, 1, vars.length);
+		arraycopy(vars, 0, tmp, 1, vars.length);
 		tmp[tmp.length - 1] = min;
 		return new ComponentConstraint(ConstraintType.MIN, true, tmp);
 	}
@@ -1781,7 +1782,7 @@ public class Choco{
 	 */
 	public static Constraint min(IntegerVariable[] vars, IntegerVariable min) {
 		Variable[] tmp = new Variable[vars.length + 1];
-		System.arraycopy(vars, 0, tmp, 0, vars.length);
+		arraycopy(vars, 0, tmp, 0, vars.length);
 		tmp[tmp.length - 1] = min;
 		return new ComponentConstraint(ConstraintType.MIN, true, tmp);
 	}
@@ -1799,7 +1800,7 @@ public class Choco{
 	public static Constraint max(SetVariable svar,IntegerVariable[] vars, IntegerVariable max) {
 		final Variable[] tmp = new Variable[vars.length + 2];
 		tmp[0] = svar;
-		System.arraycopy(vars, 0, tmp, 1, vars.length);
+		arraycopy(vars, 0, tmp, 1, vars.length);
 		tmp[tmp.length - 1] = max;
 		return new ComponentConstraint(ConstraintType.MAX, false, tmp);
 	}
@@ -1813,7 +1814,7 @@ public class Choco{
 	 */
 	public static Constraint max(IntegerVariable[] vars, IntegerVariable max) {
 		Variable[] tmp = new Variable[vars.length + 1];
-		System.arraycopy(vars, 0, tmp, 0, vars.length);
+		arraycopy(vars, 0, tmp, 0, vars.length);
 		tmp[tmp.length - 1] = max;
 		return new ComponentConstraint(ConstraintType.MAX, false, tmp);
 	}
@@ -1910,7 +1911,7 @@ public class Choco{
 		IntegerVariable[] variables = new IntegerVariable[vars.length + 2];
 		variables[0] = constant(value);
 		variables[1] = occurrence;
-		System.arraycopy(vars, 0, variables, 2, vars.length);
+		arraycopy(vars, 0, variables, 2, vars.length);
 		return new ComponentConstraint(ConstraintType.OCCURRENCE, 0, variables);
 	}
 
@@ -1926,7 +1927,7 @@ public class Choco{
 		IntegerVariable[] variables = new IntegerVariable[vars.length + 2];
 		variables[0] = constant(value);
 		variables[1] = occurrence;
-		System.arraycopy(vars, 0, variables, 2, vars.length);
+		arraycopy(vars, 0, variables, 2, vars.length);
 		return new ComponentConstraint(ConstraintType.OCCURRENCE, -1, variables);
 	}
 
@@ -1942,7 +1943,7 @@ public class Choco{
 		IntegerVariable[] variables = new IntegerVariable[vars.length + 2];
 		variables[0] = constant(value);
 		variables[1] = occurrence;
-		System.arraycopy(vars, 0, variables, 2, vars.length);
+		arraycopy(vars, 0, variables, 2, vars.length);
 		return new ComponentConstraint(ConstraintType.OCCURRENCE, 1, variables);
 	}
 
@@ -2230,8 +2231,8 @@ public class Choco{
 	public static Constraint globalCardinality(IntegerVariable[] vars, int min, int max, IntegerVariable[] card) {
 		int n = vars.length;
 		IntegerVariable[] variables = new IntegerVariable[vars.length + card.length];
-		System.arraycopy(vars, 0, variables, 0, n);
-		System.arraycopy(card, 0, variables, n, card.length);
+		arraycopy(vars, 0, variables, 0, n);
+		arraycopy(card, 0, variables, n, card.length);
 		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY, new Object[]{ConstraintType.GLOBALCARDINALITYVAR, min, max, n}, variables);
 	}
 
@@ -2277,10 +2278,10 @@ public class Choco{
 			}
 		}
 		Variable[] vars = new Variable[2*(n+m)+1];
-		System.arraycopy(itemSets, 0, vars, 0, m);
-		System.arraycopy(loads, 0, vars, m, m);
-		System.arraycopy(bins, 0, vars, 2*m, n);
-		System.arraycopy(sizes, 0, vars, 2*m+n,n);
+		arraycopy(itemSets, 0, vars, 0, m);
+		arraycopy(loads, 0, vars, m, m);
+		arraycopy(bins, 0, vars, 2*m, n);
+		arraycopy(sizes, 0, vars, 2*m+n,n);
 		vars[vars.length-1]=nbNonEmpty;
 		Constraint pack = new ComponentConstraint(ConstraintType.PACK, new Object[]{n,m},vars);
 		pack.addOptions(options);
@@ -2575,7 +2576,7 @@ public class Choco{
 			if(arrayOfVectors[i].length != n) {
 				throw new ModelException("LexChain : every arrays in parameters are of different size");
 			}
-			System.arraycopy(arrayOfVectors[i], 0, vs, n * i, n);
+			arraycopy(arrayOfVectors[i], 0, vs, n * i, n);
 		}
 		return new ComponentConstraint(ConstraintType.LEXCHAIN, new Object[]{true, n}, vs);
 	}
@@ -2593,7 +2594,7 @@ public class Choco{
 		int n = arrayOfVectors[0].length;
 		IntegerVariable[] vs = new IntegerVariable[arrayOfVectors.length * n];
 		for (int i = 0; i < arrayOfVectors.length; i++) {
-			System.arraycopy(arrayOfVectors[i], 0, vs, n * i, n);
+			arraycopy(arrayOfVectors[i], 0, vs, n * i, n);
 		}
 		return new ComponentConstraint(ConstraintType.LEXCHAIN, new Object[]{false, n}, vs);
 	}
@@ -2631,8 +2632,8 @@ public class Choco{
      */
 	public static Constraint leximin(IntegerVariable[] v1, IntegerVariable[] v2) {
 		IntegerVariable[] vars = new IntegerVariable[v1.length + v2.length];
-		System.arraycopy(v1, 0, vars, 0, v1.length);
-		System.arraycopy(v2, 0, vars, v1.length, v2.length);
+		arraycopy(v1, 0, vars, 0, v1.length);
+		arraycopy(v2, 0, vars, v1.length, v2.length);
 		return new ComponentConstraint(ConstraintType.LEXIMIN,
 				null, vars);
 	}
@@ -2663,7 +2664,7 @@ public class Choco{
      */
 	public static Constraint atMostNValue(IntegerVariable[] vars, IntegerVariable nvalue) {
 		IntegerVariable[] tmp = new IntegerVariable[vars.length + 1];
-		System.arraycopy(vars, 0, tmp, 0, vars.length);
+		arraycopy(vars, 0, tmp, 0, vars.length);
 		tmp[tmp.length - 1] = nvalue;
 		return new ComponentConstraint(ConstraintType.ATMOSTNVALUE, null, tmp);
 	}
@@ -3133,7 +3134,7 @@ public class Choco{
 		for (int i = 0; i < lc.length; i++) {
 			tmp[i] = constant(lc[i]);
 		}
-		System.arraycopy(lv, 0, tmp, lc.length, lv.length);
+		arraycopy(lv, 0, tmp, lc.length, lv.length);
 		return new IntegerExpressionVariable(null, Operator.SCALAR, tmp);
 	}
 

@@ -25,6 +25,8 @@ package choco.kernel.memory.trailing;
 
 import java.util.logging.Logger;
 
+import choco.kernel.common.logging.ChocoLogging;
+
 /**
  * An interface for classes implementing trails of modifications to objects.
  * <p/>
@@ -37,7 +39,7 @@ public interface ITrailStorage {
 	/**
 	 * Reference to an object for logging trace statements related memory & backtrack (using the java.util.logging package)
 	 */
-	final static Logger logger = Logger.getLogger("choco.kernel.memory");
+	final static Logger LOGGER = ChocoLogging.getMemoryLogger();
 
 	/**
 	 * Moving up to the next world.

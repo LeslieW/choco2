@@ -59,12 +59,6 @@ public class ConstraintEvent implements PropagationEvent {
   private int priority = (-1);
 
   /**
-   * Reference to an object for logging trace statements related to propagation events (using the java.util.logging package)
-   */
-
-  private static Logger logger = Logger.getLogger("choco.kernel.solver.propagation");
-
-  /**
    * Constructs a new var with the specified values for the fileds.
    */
 
@@ -142,8 +136,7 @@ public class ConstraintEvent implements PropagationEvent {
    */
 
   public void clear() {
-    if (logger.isLoggable(Level.WARNING))
-      logger.warning("Const Awake Event does not need to be cleared !");
+	  LOGGER.warning("Const Awake Event does not need to be cleared !");
   }
 }
 

@@ -23,6 +23,9 @@
 
 package choco.kernel.solver.propagation;
 
+import java.util.logging.Logger;
+
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 
 /**
@@ -31,71 +34,76 @@ import choco.kernel.solver.ContradictionException;
  */
 public interface EventQueue {
 
-  /**
-   * Checks if the queue is empty.
-   */
+	/**
+	 * Reference to the root Logger, an object for logging trace statements related to propagation events (using the java.util.logging package)
+	 */
+	public final static Logger LOGGER = ChocoLogging.getPropagationLogger();
 
-  public boolean isEmpty();
+	/**
+	 * Checks if the queue is empty.
+	 */
 
-
-  /**
-   * Pops the next var to propagate.
-   */
-
-  public PropagationEvent popEvent();
+	public boolean isEmpty();
 
 
-  /**
-   * Adds an event to the queue.
-   *
-   * @param event
-   */
+	/**
+	 * Pops the next var to propagate.
+	 */
 
-  public boolean pushEvent(PropagationEvent event);
+	public PropagationEvent popEvent();
 
 
-  /**
-   * Removes all the events and clears all the events if needed.
-   */
+	/**
+	 * Adds an event to the queue.
+	 *
+	 * @param event
+	 */
 
-  public void flushEventQueue();
-
-
-  /**
-   * Removes an event.
-   */
-
-  public void remove(PropagationEvent event);
+	public boolean pushEvent(PropagationEvent event);
 
 
-  /**
-   * Propagate some events (one or several depending on the queue).
-   *
-   * @throws choco.kernel.solver.ContradictionException
-   */
+	/**
+	 * Removes all the events and clears all the events if needed.
+	 */
 
-  public void propagateSomeEvents() throws ContradictionException;
+	public void flushEventQueue();
 
-  /**
-   * Propagate one single event from the queue).
-   *
-   * @throws choco.kernel.solver.ContradictionException
-   */
 
-  public void propagateOneEvent() throws ContradictionException;
+	/**
+	 * Removes an event.
+	 */
 
-  /**
-   * returns the number of pending events in the queue
-   *
-   * @return the number of pending events in the queue
-   */
-  public int size();
+	public void remove(PropagationEvent event);
 
-  /**
-   * returns the i-th pending event in the queue
-   *
-   * @param idx the index of the event
-   * @return null if the index is inproper (idx<0 or idx>=size())
-   */
-  public PropagationEvent get(int idx);
+
+	/**
+	 * Propagate some events (one or several depending on the queue).
+	 *
+	 * @throws choco.kernel.solver.ContradictionException
+	 */
+
+	public void propagateSomeEvents() throws ContradictionException;
+
+	/**
+	 * Propagate one single event from the queue).
+	 *
+	 * @throws choco.kernel.solver.ContradictionException
+	 */
+
+	public void propagateOneEvent() throws ContradictionException;
+
+	/**
+	 * returns the number of pending events in the queue
+	 *
+	 * @return the number of pending events in the queue
+	 */
+	public int size();
+
+	/**
+	 * returns the i-th pending event in the queue
+	 *
+	 * @param idx the index of the event
+	 * @return null if the index is inproper (idx<0 or idx>=size())
+	 */
+	public PropagationEvent get(int idx);
 }

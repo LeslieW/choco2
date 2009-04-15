@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.memory;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.IStateBool;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import org.junit.After;
@@ -35,7 +36,7 @@ import java.util.logging.Logger;
  * a class implementing tests for backtrackable booleans
  */
 public class StoredBoolTest {
-  private Logger logger = Logger.getLogger("choco.currentElement");
+	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
   private EnvironmentTrailing env;
   private IStateBool x1;
   private IStateBool x2;
@@ -43,7 +44,7 @@ public class StoredBoolTest {
 
     @Before
   public void setUp() {
-    logger.fine("StoredBool Testing...");
+    LOGGER.fine("StoredBool Testing...");
     env = new EnvironmentTrailing();
     x1 = env.makeBool(true);
     x2 = env.makeBool(true);
@@ -63,7 +64,7 @@ public class StoredBoolTest {
    */
   @Test
   public void test1() {
-    logger.finer("test1");
+    LOGGER.finer("test1");
     assertTrue(env.getWorldIndex() == 0);
     assertTrue(env.getTrailSize() == 0);
     env.worldPush();
@@ -82,7 +83,7 @@ public class StoredBoolTest {
    */
   @Test
   public void test2() {
-    logger.finer("test2");
+    LOGGER.finer("test2");
     assertTrue(env.getWorldIndex() == 0);
     assertTrue(env.getTrailSize() == 0);
     for (int i = 1; i <= 100; i++) {
