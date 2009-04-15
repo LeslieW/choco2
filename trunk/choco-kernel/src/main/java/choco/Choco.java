@@ -22,27 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco;
 
-import static java.lang.System.arraycopy;
-import static choco.kernel.common.util.UtilAlgo.append;
-import static choco.kernel.common.util.UtilAlgo.appendAndCast;
-import gnu.trove.TIntArrayList;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Vector;
-import java.util.logging.Logger;
-
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.common.util.UtilAlgo;
+import static choco.kernel.common.util.UtilAlgo.append;
+import static choco.kernel.common.util.UtilAlgo.appendAndCast;
 import choco.kernel.model.ModelException;
-import choco.kernel.model.constraints.ComponentConstraint;
-import choco.kernel.model.constraints.ComponentConstraintWithSubConstraints;
-import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.ConstraintType;
-import choco.kernel.model.constraints.MetaConstraint;
-import choco.kernel.model.constraints.MetaTaskConstraint;
+import choco.kernel.model.constraints.*;
 import choco.kernel.model.constraints.automaton.DFA;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.model.constraints.pack.PackModeler;
@@ -66,14 +53,14 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.model.variables.tree.TreeParametersObject;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.global.scheduling.RscData;
-import choco.kernel.solver.constraints.integer.extension.BinRelation;
-import choco.kernel.solver.constraints.integer.extension.CouplesBitSetTable;
-import choco.kernel.solver.constraints.integer.extension.CouplesTable;
-import choco.kernel.solver.constraints.integer.extension.ExtensionalBinRelation;
-import choco.kernel.solver.constraints.integer.extension.IterTuplesTable;
-import choco.kernel.solver.constraints.integer.extension.LargeRelation;
-import choco.kernel.solver.constraints.integer.extension.TuplesList;
-import choco.kernel.solver.constraints.integer.extension.TuplesTable;
+import choco.kernel.solver.constraints.integer.extension.*;
+import gnu.trove.TIntArrayList;
+
+import static java.lang.System.arraycopy;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -97,7 +84,7 @@ public class Choco{
 	// ############################################################################################################
 	// ######                                        VARIABLES                                                  ###
 	// ############################################################################################################
-	
+
 	private static void checkIntVarBounds(int lowB, int uppB) {
 		if (lowB > uppB) {
 			throw new ModelException("makeIntVar : lowB > uppB");
@@ -106,7 +93,7 @@ public class Choco{
 			LOGGER.warning("WARNING! Domains over ["+MIN_LOWER_BOUND+", "+MAX_UPPER_BOUND+"] are strongly inadvisable ! ");
 		}
 	}
-	
+
 	/**
 	 * Make an integer variable
 	 *
@@ -252,7 +239,7 @@ public class Choco{
         }
 		return v;
 	}
-	
+
 
 	/**
 	 * Make a boolean variable
@@ -679,7 +666,7 @@ public class Choco{
 
 
 	/**
-	 * 
+	 *
 	 * create a task variable.
 	 * @param name the name of the task
 	 * @param start starting time integer variable
@@ -693,7 +680,7 @@ public class Choco{
 		for (String opt : options) {
 			tv.addOption(opt);
 		}
-		return tv;		
+		return tv;
 	}
 
 	/**
@@ -711,7 +698,7 @@ public class Choco{
 		for (String opt : options) {
 			tv.addOption(opt);
 		}
-		return tv;		
+		return tv;
 	}
 
 	/**
@@ -2670,7 +2657,7 @@ public class Choco{
 	}
 
 	// ------------- Constraints over sets -------------------------------
-	/**
+    /**
 	 * Enforce a set to be the intersection of two others.
 	 *
 	 * @param sv1 the first set variable
@@ -2693,6 +2680,13 @@ public class Choco{
 	public static Constraint setUnion(SetVariable sv1, SetVariable sv2, SetVariable union) {
 		return new ComponentConstraint(ConstraintType.SETUNION, null, new Variable[]{sv1, sv2, union});
 	}
+
+    //UNDERDEVELOPMENT
+/*
+    public static Constraint setUnion(SetVariable[] sv, SetVariable union) {
+		return new ComponentConstraint(ConstraintType.SETUNION, null, UtilAlgo.append(new SetVariable[]{union}, sv));
+	}
+*/
 
 	/**
 	 * Return a constraint that ensures sv1 == sv2
@@ -2768,6 +2762,13 @@ public class Choco{
 	public static Constraint setDisjoint(SetVariable sv1, SetVariable sv2) {
 		return new ComponentConstraint(ConstraintType.SETDISJOINT, null, new Variable[]{sv1, sv2});
 	}
+
+    // UNDERDEVELOPMENT
+/*
+    public static Constraint setDisjoint(SetVariable[] sv) {
+		return new ComponentConstraint(ConstraintType.SETDISJOINT, null, sv);
+	}
+*/
 
 	/**
 	 * Ensures that a value is contained in a set variable.
@@ -2973,7 +2974,7 @@ public class Choco{
 
 	/**
 	 * Constructs a new CostRegular constraint
-	 * This constraint ensures that the sequence of variables values 
+	 * This constraint ensures that the sequence of variables values
 	 * will follow a pattern defined by a DFA and that this sequence has a cost bounded by the cost variable
 	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
 	 * @param cvar the cost variable

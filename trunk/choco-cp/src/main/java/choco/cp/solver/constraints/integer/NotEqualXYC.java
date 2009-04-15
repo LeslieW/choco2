@@ -72,62 +72,52 @@ public class NotEqualXYC extends AbstractBinIntSConstraint {
 
     public void propagate() throws ContradictionException {
         if (v0.isInstantiated()) {
-            if (logger.isLoggable(Level.FINEST))
-                logger.finest("VAL(" + v1.toString() + ") != VAL(" + v0.toString() + ") - " + this.cste);
+            if (LOGGER.isLoggable(Level.FINEST))
+            {LOGGER.log(Level.FINEST, "VAL({0}) != VAL({1}) - {2}", new Object[]{v1.toString(), v0.toString(),this.cste});}
             v1.removeVal(v0.getVal() - this.cste, this.cIdx1);
         } else if (v1.isInstantiated()) {
-            if (logger.isLoggable(Level.FINEST))
-                logger.finest("VAL(" + v0.toString() + ") != VAL(" + v1.toString() + ") + " + this.cste);
+            if (LOGGER.isLoggable(Level.FINEST))
+            {LOGGER.log(Level.FINEST, "VAL({0}) != VAL({1}) + {2}", new Object[]{v0.toString(), v1.toString(), this.cste});}
             v0.removeVal(v1.getVal() + this.cste, this.cIdx0);
         }
     }
 
     public void awakeOnInf(int idx) throws ContradictionException {
         if (v0.isInstantiated()) {
-            if (logger.isLoggable(Level.FINEST))
-                logger.finest("VAL(" + v1.toString() + ") != VAL(" + v0.toString() + ") - " + this.cste);
+            if (LOGGER.isLoggable(Level.FINEST))
+            {LOGGER.log(Level.FINEST, "VAL({0} != VAL({1}) - {2}", new Object[]{v1.toString(), v0.toString(), this.cste});}
             v1.removeVal(v0.getVal() - this.cste, this.cIdx1);
         } else if (v1.isInstantiated()) {
-            if (logger.isLoggable(Level.FINEST))
-                logger.finest("VAL(" + v0.toString() + ") != VAL(" + v1.toString() + ") + " + this.cste);
+            if (LOGGER.isLoggable(Level.FINEST))
+            {LOGGER.log(Level.FINEST, "VAL({0} != VAL({1}) + {2}", new Object[]{v0.toString(), v1.toString(), this.cste});}
             v0.removeVal(v1.getVal() + this.cste, this.cIdx0);
         }
     }
 
     public void awakeOnSup(int idx) throws ContradictionException {
         if (v0.isInstantiated()) {
-            if (logger.isLoggable(Level.FINEST))
-                logger.finest("VAL(" + v1.toString() + ") != VAL(" + v0.toString() + ") - " + this.cste);
+            if (LOGGER.isLoggable(Level.FINEST))
+            {LOGGER.log(Level.FINEST, "VAL({0}) != VAL({1}) - {2}", new Object[]{v1.toString(), v0.toString(), this.cste});}
             v1.removeVal(v0.getVal() - this.cste, this.cIdx1);
         } else if (v1.isInstantiated()) {
-            if (logger.isLoggable(Level.FINEST))
-                logger.finest("VAL(" + v0.toString() + ") != VAL(" + v1.toString() + ") + " + this.cste);
+            if (LOGGER.isLoggable(Level.FINEST))
+            {LOGGER.log(Level.FINEST, "VAL({0}) != VAL({1}) + {2}", new Object[]{v0.toString(), v1.toString(), this.cste});}
             v0.removeVal(v1.getVal() + this.cste, this.cIdx0);
         }
     }
 
     public void awakeOnInst(int idx) throws ContradictionException {
         if (idx == 0) {
-            if (logger.isLoggable(Level.FINEST))
-                logger.finest("VAL(" + v1.toString() + ") != VAL(" + v0.toString() + ") - " + this.cste);
+            if (LOGGER.isLoggable(Level.FINEST))
+            {LOGGER.log(Level.FINEST, "VAL({0}) != VAL({1}) - {2}", new Object[]{v1.toString(), v0.toString(), this.cste});}
             v1.removeVal(v0.getVal() - this.cste, this.cIdx1);
         } else {
             assert (idx == 1);
-            if (logger.isLoggable(Level.FINEST))
-                logger.finest("VAL(" + v0.toString() + ") != VAL(" + v1.toString() + ") + " + this.cste);
+            if (LOGGER.isLoggable(Level.FINEST))
+            {LOGGER.log(Level.FINEST, "VAL({0}) != VAL({1}) + {2}", new Object[]{v0.toString(), v1.toString(),this.cste});}
             v0.removeVal(v1.getVal() + this.cste, this.cIdx0);
         }
     }
-
-
-    /**
-     * Nothing to do when only a hole in a domain is made
-     */
-
-    public void awakeOnRem(int idx, int x) throws ContradictionException {
-        ;
-    }
-
 
     /**
      * Checks if the listeners must be checked or must fail.
@@ -163,11 +153,9 @@ public class NotEqualXYC extends AbstractBinIntSConstraint {
                 ((v1.hasEnumeratedDomain()) ?
                         (!v1.canBeInstantiatedTo(v0.getVal())) :
                         ((v1.getInf() != v0.getVal()) && (v1.getSup() != v0.getVal()))) :
-                ((v1.isInstantiated()) ?
-                        ((v0.hasEnumeratedDomain()) ?
-                                (!v0.canBeInstantiatedTo(v1.getVal())) :
-                                ((v0.getInf() != v1.getVal()) && (v0.getSup() != v1.getVal()))) :
-                        true));
+                ((!v1.isInstantiated()) || ((v0.hasEnumeratedDomain()) ?
+                        (!v0.canBeInstantiatedTo(v1.getVal())) :
+                        ((v0.getInf() != v1.getVal()) && (v0.getSup() != v1.getVal())))));
     }
 
     public AbstractSConstraint opposite() {

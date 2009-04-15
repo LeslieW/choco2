@@ -24,18 +24,14 @@
 
 package choco.cp.solver.constraints.global;
 
+import choco.kernel.common.util.IntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.common.util.IntIterator;
-
-import java.util.logging.Logger;
 
 public class Occurrence extends AbstractLargeIntSConstraint {
-    private Logger logger = Logger.getLogger("choco.kernel.solver.propagation.const");
-
     /**
      * Store the number of variables which can still take the occurence value
      */
@@ -61,6 +57,7 @@ public class Occurrence extends AbstractLargeIntSConstraint {
      * vars = [lvars | occVar]
      * with  lvars = list of variables for which the occurence of occval in their domain is constrained
      *
+     * @param vars variables
      * @param occval checking value
      * @param onInf  if true, constraint insures size{forall v in lvars | v = occval} <= occVar
      * @param onSup  if true, constraint insure size{forall v in lvars | v = occval} >= occVar
@@ -155,10 +152,10 @@ public class Occurrence extends AbstractLargeIntSConstraint {
         if (constrainOnInfNumber) {
             vars[nbVars].updateSup(nbPossible.get(), cIndices[nbVars]);
             if (vars[nbVars].getInf() == nbPossible.get()) {
-                for (int i = 0; i < relevantVar.length; i++) {
-                    if (relevantVar[i].getDomain().contains(cste) && !relevantVar[i].isInstantiated()) {
+                for (IntDomainVar aRelevantVar : relevantVar) {
+                    if (aRelevantVar.getDomain().contains(cste) && !aRelevantVar.isInstantiated()) {
                         //nbSure.add(1); // must be dealed by the event listener not here !!
-                        relevantVar[i].instantiate(cste, -1 /*cIndices[i]*/);
+                        aRelevantVar.instantiate(cste, -1 /*cIndices[i]*/);
                     }
                 }
             }
@@ -170,10 +167,10 @@ public class Occurrence extends AbstractLargeIntSConstraint {
         if (constrainOnSupNumber) {
             vars[nbVars].updateInf(nbSure.get(), cIndices[nbVars]);
             if (vars[nbVars].getSup() == nbSure.get()) {
-                for (int i = 0; i < relevantVar.length; i++) {
-                    if (relevantVar[i].getDomain().contains(cste) && !relevantVar[i].isInstantiated()) {
+                for (IntDomainVar aRelevantVar : relevantVar) {
+                    if (aRelevantVar.getDomain().contains(cste) && !aRelevantVar.isInstantiated()) {
                         //nbPossible.add(-1);
-                        relevantVar[i].removeVal(cste, -1 /*cIndices[i]*/);
+                        aRelevantVar.removeVal(cste, -1 /*cIndices[i]*/);
                     }
                 }
             }

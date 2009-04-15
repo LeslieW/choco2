@@ -79,33 +79,33 @@ public class EqualXC extends AbstractUnIntSConstraint {
    */
 
   public void propagate() throws ContradictionException {
-    if (logger.isLoggable(Level.FINEST))
-      logger.finest("VAL(" + v0.toString() + ") = " + this.cste);
+    if (LOGGER.isLoggable(Level.FINEST))
+      LOGGER.log(Level.FINEST, "VAL({0} = {1}", new Object[]{v0.toString(), this.cste});
     v0.instantiate(this.cste, this.cIdx0);
   }
 
 
   public void awakeOnInf(int idx) throws ContradictionException {
-    if (logger.isLoggable(Level.FINEST))
-      logger.finest("VAL(" + v0.toString() + ") = " + this.cste);
+    if (LOGGER.isLoggable(Level.FINEST))
+    {LOGGER.log(Level.FINEST,"VAL({0}) = {1}", new Object[]{v0.toString(), this.cste});}
     v0.instantiate(this.cste, this.cIdx0);
   }
 
   public void awakeOnSup(int idx) throws ContradictionException {
-    if (logger.isLoggable(Level.FINEST))
-      logger.finest("VAL(" + v0.toString() + ") = " + this.cste);
+    if (LOGGER.isLoggable(Level.FINEST))
+    {LOGGER.log(Level.FINEST,"VAL({0}) = {1}", new Object[]{v0.toString(), this.cste});}
     v0.instantiate(this.cste, this.cIdx0);
   }
 
   public void awakeOnInst(int idx) throws ContradictionException {
-    if (logger.isLoggable(Level.FINEST))
-      logger.finest("VAL(" + v0.toString() + ") = " + this.cste);
+    if (LOGGER.isLoggable(Level.FINEST))
+    {LOGGER.log(Level.FINEST,"VAL({0}) = {1}", new Object[]{v0.toString(), this.cste});}
     v0.instantiate(this.cste, this.cIdx0);
   }
 
   public void awakeOnRem(int idx, int x) throws ContradictionException {
-    if (logger.isLoggable(Level.FINEST))
-      logger.finest("VAL(" + v0.toString() + ") = " + this.cste);
+    if (LOGGER.isLoggable(Level.FINEST))
+    {LOGGER.log(Level.FINEST,"VAL({0}) = {1}", new Object[]{v0.toString(), this.cste});}
     v0.instantiate(this.cste, this.cIdx0);
   }
 

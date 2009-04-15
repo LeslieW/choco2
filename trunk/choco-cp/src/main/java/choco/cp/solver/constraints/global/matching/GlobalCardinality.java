@@ -30,14 +30,11 @@ import choco.kernel.solver.constraints.global.matching.AbstractBipartiteFlow;
 import choco.kernel.solver.constraints.integer.IntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.logging.Logger;
-
 /**
  * very simple version of the cardinality constraint where the values
  * the set of values whose occurrences are counted in the interval (minValue .. maxValue)
  */
 public class GlobalCardinality extends AbstractBipartiteFlow implements IntSConstraint {
-  private Logger logger = Logger.getLogger("choco.kernel.solver.propagation.const");
   
   /**
    * Constructor, Global cardinality constraint API

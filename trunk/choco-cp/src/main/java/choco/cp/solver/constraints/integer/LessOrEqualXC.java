@@ -80,31 +80,19 @@ public class LessOrEqualXC extends AbstractUnIntSConstraint {
    */
 
   public void propagate() throws ContradictionException {
-    if (logger.isLoggable(Level.FINEST))
-      logger.finest("VAL(" + v0.toString() + ") <= " + this.cste);
+    if (LOGGER.isLoggable(Level.FINEST))
+    {LOGGER.log(Level.FINEST, "VAL({0}) <= {1}", new Object[]{v0.toString(), this.cste});}
     v0.updateSup(this.cste, this.cIdx0);
     this.setEntailed();
   }
 
 
-  public void awakeOnInf(int idx) throws ContradictionException {
-    ;
-  }
-
-  public void awakeOnSup(int idx) throws ContradictionException {
-    ;
-  }
-
   public void awakeOnInst(int idx) throws ContradictionException {
     assert(idx == 0);
-    if (logger.isLoggable(Level.FINEST))
-      logger.finest("VAL(" + v0.toString() + ") <= " + this.cste);
+    if (LOGGER.isLoggable(Level.FINEST))
+    {LOGGER.log(Level.FINEST, "VAL({0} <= {1}", new Object[]{v0.toString(),this.cste});}
     if (v0.getVal() > this.cste)
       this.fail();
-  }
-
-  public void awakeOnRem(int idx, int x) throws ContradictionException {
-    ;
   }
 
   /**
