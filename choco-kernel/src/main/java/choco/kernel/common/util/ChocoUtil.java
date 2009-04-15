@@ -338,6 +338,7 @@ public final class ChocoUtil {
 	public static IPermutation getSortingPermuation(int[] criteria,boolean reverse) {
 		return new IntPermutation(criteria,reverse);
 	}
+	
 
 	public static IPermutation getSortingPermuation(IntegerConstantVariable[] criteria,boolean reverse) {
 		return new ConstantPermutation(criteria,reverse);

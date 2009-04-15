@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.jfree.data.category.CategoryDataset;
@@ -18,9 +17,11 @@ import org.jfree.data.time.SimpleTimePeriod;
 import org.jfree.data.time.TimePeriod;
 import org.jfree.data.time.TimeTableXYDataset;
 import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.YIntervalSeries;
 
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.global.pack.PrimalDualPack;
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.constraints.pack.PackModeler;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.Solution;
@@ -100,15 +101,17 @@ public final class ChocoDatasetFactory {
 		return c;
 	}
 
-	public static TaskSeriesCollection createUnaryRscTaskCollection(CPSolver s) {
-		TaskSeriesCollection c = new TaskSeriesCollection();
-		throw new UnsupportedOperationException("regression");
-//		for (UnarySResource rsc : s.getUnaryResources()) {
-//			c.add(createTaskSeries(rsc));
-//		}
-//		return c;
+	@SuppressWarnings("unchecked")
+	public static TaskSeriesCollection createUnaryRscTaskCollection(Solver s) {
+		final TaskSeriesCollection c = new TaskSeriesCollection();
+		final Iterator<Constraint> iter = s.getModel().getConstraintByType(ConstraintType.DISJUNCTIVE);
+		while(iter.hasNext()) {
+			c.add(createTaskSeries((IResource<TaskVar>) s.getCstr(iter.next())));
+		}
+		return c;
 	}
 
+	
 
 	protected static Integer[] createDates(ICumulativeResource<TaskVar> rsc) {
 		final Set<Integer> dateSet = new HashSet<Integer>();
@@ -128,7 +131,7 @@ public final class ChocoDatasetFactory {
 		Integer[] dates = createDates(rsc);
 		TimePeriod[] periods = new TimePeriod[dates.length-1];
 		for (int i = 0; i < periods.length; i++) {
-			periods[i] = new SimpleTimePeriod(dates[i],dates[i+1]+1);
+			periods[i] = new SimpleTimePeriod(dates[i],dates[i+1]);
 		}
 		final TimeTableXYDataset dataset = new TimeTableXYDataset();
 		for (int i = 0; i < rsc.getNbTasks(); i++) {
@@ -146,7 +149,20 @@ public final class ChocoDatasetFactory {
 	//*****************************************************************//
 	//*******************  Pack  ********************************//
 	//***************************************************************//
-	public static DefaultCategoryDataset createPackDataset(int nbBins, IntDomainVar[] bins,IntDomainVar[] sizes) {
+	
+	
+	public static CategoryDataset[] createPackDataset(String title, Solver s) {
+		final int n = s.getModel().getNbConstraintByType(ConstraintType.PACK);
+		Iterator<Constraint> cstr = s.getModel().getConstraintByType(ConstraintType.PACK);
+		CategoryDataset[] datasets = new CategoryDataset[n];
+		for (int i = 0; i < n; i++) {
+			PrimalDualPack pack = (PrimalDualPack) s.getCstr(cstr.next());
+			datasets[i] = createPackDataset(pack.getNbBins(), pack.getBins(), pack.getSizes());
+		}
+		return datasets;
+	}
+	
+	public static CategoryDataset createPackDataset(int nbBins, IntDomainVar[] bins,IntDomainVar[] sizes) {
 		DefaultCategoryDataset   dataset =   new   DefaultCategoryDataset();
 		int[] series = new int[nbBins];
 		for (int i = 0; i < bins.length; i++) {
@@ -159,7 +175,7 @@ public final class ChocoDatasetFactory {
 		return dataset;
 	}
 
-	public static DefaultCategoryDataset createPackDataset(Solver s,PackModeler modeler) {
+	public static CategoryDataset createPackDataset(Solver s,PackModeler modeler) {
 		return createPackDataset(modeler.nbBins, s.getVar(modeler.bins), s.getVar(modeler.sizes));
 	}
 

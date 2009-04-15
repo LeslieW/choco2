@@ -1,5 +1,6 @@
 package samples;
 
+import static choco.visu.components.chart.ChocoChartFactory.createCumulativeChart;
 import static choco.visu.components.chart.ChocoChartFactory.createDeviationLineChart;
 
 import java.awt.Dimension;
@@ -17,6 +18,7 @@ import samples.pack.CPpack;
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.pack.PackModeler;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
@@ -68,7 +70,7 @@ public final class ChocoDemo {
 //		osp.setHeuristics(new ListHeuristics(osp,null));
 //		osp.solve();
 //		ShopUI.createApplicationFrame(osp, null,true);
-		//demo("Solver Unary Resources", ChocoChartFactory.createUnaryRscChart("Solver", osp.getSolver(), true));
+//demo("Solver Unary Resources", ChocoChartFactory.createUnaryRscChart("Solver", osp.getSolver(), true));
 	}
 
 	public static void cumulativeDemo() {
@@ -76,16 +78,15 @@ public final class ChocoDemo {
 		IntegerVariable[] duration = Choco.constantArray(new int[]{20,30,50,15,25,40,25,30});
 		int[] height = new int[]{5,6,3,7,2,3,3,4};
 		TaskVariable[] tasks = Choco.makeTaskVarArray("T", 0, 100, duration, "cp:bound");
-		//Constraint rsc = Choco.cumulativeMax(tasks, height, 10);
-		//model.addConstraint( );
+		Constraint rsc = Choco.cumulativeMax(tasks, height, 10);
+		model.addConstraint( rsc);
 		CPSolver s = new CPSolver();
 		s.read(model);
 		s.solve();
 		s.printRuntimeSatistics();
 		System.out.println(s.solutionToString());
 		final String title = "Cumulative Resource Example";
-		throw new UnsupportedOperationException("regression");
-		//demo(title,createCumulativeChart(title, s, rsc, true));
+		demo(title,createCumulativeChart(title, s, rsc, true));
 		
 	}
 
@@ -131,6 +132,7 @@ public final class ChocoDemo {
 
 	public static void main(String[] args) {
 		//packDemo1();
+		//packDemo2();
 		//unaryDemo();
 		//deviationDemo();
 		cumulativeDemo();

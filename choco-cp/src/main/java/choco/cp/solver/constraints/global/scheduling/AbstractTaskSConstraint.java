@@ -13,6 +13,7 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
 
 public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstraint {
 
+	protected static final int EVENT_MASK = IntVarEvent.INSTINTbitvector + IntVarEvent.INCINFbitvector + IntVarEvent.DECSUPbitvector ;;
 	protected final TaskVar[] taskvars;
 	protected final int taskIntVarOffset;
 	
@@ -94,7 +95,7 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 
 	@Override
 	public int getFilteredEventMask(final int idx) {
-		return IntVarEvent.INSTINTbitvector + IntVarEvent.INCINFbitvector + IntVarEvent.DECSUPbitvector ;
+		return EVENT_MASK;
 	}
 
 	@Override

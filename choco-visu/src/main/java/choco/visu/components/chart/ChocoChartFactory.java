@@ -11,6 +11,7 @@ import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartTheme;
@@ -26,6 +27,7 @@ import org.jfree.chart.axis.SymbolAxis;
 import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
+import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.chart.labels.StandardXYItemLabelGenerator;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.labels.XYToolTipGenerator;
@@ -52,14 +54,18 @@ import org.jfree.ui.RectangleInsets;
 import org.jfree.ui.TextAnchor;
 
 import choco.cp.solver.CPSolver;
-import choco.kernel.model.Model;
+import choco.cp.solver.constraints.global.pack.PrimalDualPack;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.constraints.pack.PackModeler;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
 import choco.kernel.solver.search.Limit;
+import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.visu.components.chart.axis.Log2Axis;
 import choco.visu.components.chart.dataset.MyXYTaskDataset;
+import choco.visu.components.chart.labels.CumulTaskToolTipGenerator;
 import choco.visu.components.chart.labels.TaskLabelGenerator;
 import choco.visu.components.chart.labels.TaskToolTipGenerator;
 import choco.visu.components.chart.renderer.MyTaskKeyXYBarRenderer;
@@ -113,11 +119,12 @@ public final class ChocoChartFactory {
 	//*******************  Pack Visualization  ***********************//
 	//***************************************************************//
 
-	protected static void setPackRendererSettings(StackedBarRenderer3D   renderer) {
+	protected static void setPackRendererSettings(StackedBarRenderer3D renderer) {
 		renderer.setRenderAsPercentages(false);
 		renderer.setDrawBarOutline(false);
-		renderer.setBaseItemLabelGenerator(new   StandardCategoryItemLabelGenerator( "{2} ",   NumberFormat.getIntegerInstance()));
+		renderer.setBaseItemLabelGenerator(new StandardCategoryItemLabelGenerator( "{2}",   NumberFormat.getIntegerInstance()));
 		renderer.setBaseItemLabelsVisible(true);
+		renderer.setBaseToolTipGenerator( new StandardCategoryToolTipGenerator("{2}",   NumberFormat.getIntegerInstance()));
 		renderer.setBasePositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.CENTER, TextAnchor.CENTER));
 		renderer.setBaseNegativeItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.CENTER, TextAnchor.CENTER));
 	}
@@ -139,20 +146,26 @@ public final class ChocoChartFactory {
 		return createPackChart(title, datasets, capa, false);
 	}
 
-	public static JFreeChart createPackChart(String title, Model m, Solver s) {
-		final int n = m.getNbConstraintByType(ConstraintType.PACK);
-		//TIntObjectIterator<Constraint> cstr = m.getConstraintByType(ConstraintType.PACK);
-//		CategoryDataset[] datasets = new CategoryDataset[n];
-//		for (int i = 0; i < n; i++) {
-//			PrimalDualPack pack = (PrimalDualPack) s.getCstr(cstr.next());
-//			datasets[i] = createPackDataset(pack.getNbBins(), pack.getBins(), pack.getSizes());
-//		}
-//		return createPackChart(title, datasets, null, false);
-		return null;
+	public static JFreeChart createPackChart(String title, Solver s) {
+		final int n = s.getModel().getNbConstraintByType(ConstraintType.PACK);
+		Iterator<Constraint> cstr = s.getModel().getConstraintByType(ConstraintType.PACK);
+		CategoryDataset[] datasets = new CategoryDataset[n];
+		for (int i = 0; i < n; i++) {
+			PrimalDualPack pack = (PrimalDualPack) s.getCstr(cstr.next());
+			datasets[i] = createPackDataset(pack.getNbBins(), pack.getBins(), pack.getSizes());
+		}
+		return createPackChart(title, datasets, null, false);
 	}
 
+	public static JFreeChart createPackChart(String title, PrimalDualPack pack) {
+		return createPackChart(title, createPackDataset(pack.getNbBins(), pack.getBins(), pack.getSizes()), -1, false);
+	}
+
+
+
 	public static JFreeChart createPackChart(String title, CategoryDataset dataset, int capacity, boolean legend) {
-		final JFreeChart chart = null; //ChartFactory.createBarChart3D(title, "Bins","Load", dataset, PlotOrientation.VERTICAL, legend, false, false);
+		final JFreeChart chart = 
+			ChartFactory.createBarChart3D(title, "Bins","Load", dataset, PlotOrientation.VERTICAL, legend, false, false);
 		final CategoryPlot plot = chart.getCategoryPlot();
 		StackedBarRenderer3D   renderer   =   new StackedBarRenderer3D();
 		setPackRendererSettings(renderer);
@@ -244,17 +257,17 @@ public final class ChocoChartFactory {
 		}
 	}
 
-//FIXME move or remove method	
-//	public static JFreeChart createUnaryRscChart(String title, BSolution bsol, boolean isMachineChart) {
-//		final TaskSeriesCollection coll = isMachineChart ? createJobsTaskCollection(bsol) : createJobsTaskCollection(bsol);
-//		final MyXYTaskDataset dataset = new MyXYTaskDataset(coll);
-//		dataset.setTransposed(true);
-//		dataset.setInverted(true);
-//		return createUnaryRscChart(title, dataset, true, false, null);
-//	}
+	//FIXME move or remove method	
+	//	public static JFreeChart createUnaryRscChart(String title, BSolution bsol, boolean isMachineChart) {
+	//		final TaskSeriesCollection coll = isMachineChart ? createJobsTaskCollection(bsol) : createJobsTaskCollection(bsol);
+	//		final MyXYTaskDataset dataset = new MyXYTaskDataset(coll);
+	//		dataset.setTransposed(true);
+	//		dataset.setInverted(true);
+	//		return createUnaryRscChart(title, dataset, true, false, null);
+	//	}
 
-	
-	public static JFreeChart createUnaryRscChart(String title, CPSolver scheduler, boolean taskColor) {
+
+	public static JFreeChart createUnaryRscChart(String title, Solver scheduler, boolean taskColor) {
 		final TaskSeriesCollection coll = createUnaryRscTaskCollection(scheduler);
 		final MyXYTaskDataset dataset = new MyXYTaskDataset(coll);
 		dataset.setTransposed(true);
@@ -265,30 +278,30 @@ public final class ChocoChartFactory {
 
 
 
-//	public static JFreeChart createUnaryRscChart(String title, GenericShopProblem shop, boolean isMachineChart) {
-//		final TaskSeriesCollection coll = new TaskSeriesCollection();
-//		//create axis labels
-//		IResource<TaskVar>[] tmp =  isMachineChart ? shop.machines: shop.jobs;
-//		String[] labs = null;
-//		if(tmp!=null) {
-//			labs = new String[tmp.length];
-//			for (int i = 0; i < labs.length; i++) {
-//				labs[i]= tmp[i].getRscName();
-//			}
-//		}
-//		//create dataset
-//		tmp =  isMachineChart ? shop.jobs : shop.machines;
-//		final Scheduler s= (Scheduler) shop.getSolver();
-//		for (UnaryResource rsc : tmp) {
-//			coll.add(createTaskSeries( (UnarySResource) s.getCstr(rsc)));
-//		}
-//
-//		final MyXYTaskDataset dataset = new MyXYTaskDataset(coll);
-//		dataset.setTransposed(true);
-//		dataset.setInverted(true);
-//		return createUnaryRscChart(title, dataset, true, false, labs);
-//		throw new UnsupportedOperationException("regression");
-//	}
+	//	public static JFreeChart createUnaryRscChart(String title, GenericShopProblem shop, boolean isMachineChart) {
+	//		final TaskSeriesCollection coll = new TaskSeriesCollection();
+	//		//create axis labels
+	//		IResource<TaskVar>[] tmp =  isMachineChart ? shop.machines: shop.jobs;
+	//		String[] labs = null;
+	//		if(tmp!=null) {
+	//			labs = new String[tmp.length];
+	//			for (int i = 0; i < labs.length; i++) {
+	//				labs[i]= tmp[i].getRscName();
+	//			}
+	//		}
+	//		//create dataset
+	//		tmp =  isMachineChart ? shop.jobs : shop.machines;
+	//		final Scheduler s= (Scheduler) shop.getSolver();
+	//		for (UnaryResource rsc : tmp) {
+	//			coll.add(createTaskSeries( (UnarySResource) s.getCstr(rsc)));
+	//		}
+	//
+	//		final MyXYTaskDataset dataset = new MyXYTaskDataset(coll);
+	//		dataset.setTransposed(true);
+	//		dataset.setInverted(true);
+	//		return createUnaryRscChart(title, dataset, true, false, labs);
+	//		throw new UnsupportedOperationException("regression");
+	//	}
 
 	public static JFreeChart createUnaryRscChart(String title,MyXYTaskDataset dataset,boolean intDate, boolean taskColor, String[] rscAxisLabels) {
 		JFreeChart chart = ChartFactory.createXYBarChart(title,
@@ -315,13 +328,24 @@ public final class ChocoChartFactory {
 	//*******************  Cumulative Resource ***********************//
 	//***************************************************************//
 
-	public static JFreeChart createCumulativeChart(String title, CPSolver s, boolean legend) {
+
+	@SuppressWarnings("unchecked")
+	public static JFreeChart createCumulativeChart(String title, CPSolver s, Constraint rsc, boolean legend) {
+		SConstraint cstr = s.getCstr(rsc);
+		if (cstr instanceof ICumulativeResource<?>) {
+			ICumulativeResource<TaskVar> cumul = (ICumulativeResource<TaskVar>) cstr;
+			return createCumulativeChart(title, cumul, legend);
+		}
 		return null;
 	}
-	public static JFreeChart createCumulativeChart(String title, CPSolver s, Constraint rsc, boolean legend) {
-		throw new UnsupportedOperationException("regression");
-		//return createCumulativeChart(title, ChocoDatasetFactory.createCumulativeDataset(s, rsc),
-		//		rsc.getCapacity().getLowB(), legend,INTEGER_DATE_FORMAT,new CumulTaskToolTipGenerator(s, rsc));
+
+	@SuppressWarnings("unchecked")
+	public static JFreeChart createCumulativeChart(String title, ICumulativeResource<TaskVar> cumul, boolean legend) {
+		if(cumul.hasOnlyPosisiveHeights()) {
+			return createCumulativeChart(title, ChocoDatasetFactory.createCumulativeDataset(cumul),
+					cumul.getCapacity().getVal(), legend,INTEGER_DATE_FORMAT,new CumulTaskToolTipGenerator(cumul));
+		}
+		return null;
 	}
 
 	public static JFreeChart createCumulativeChart(String title, TableXYDataset dataset, int capacity,boolean legend, DateFormat format,XYToolTipGenerator tooltip) {
@@ -338,6 +362,7 @@ public final class ChocoChartFactory {
 		// Renderer
 		StackedXYBarRenderer renderer = new StackedXYBarRenderer();
 		renderer.setShadowVisible(false);
+		renderer.setShadowXOffset(0);
 		if(tooltip==null) {
 			renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator("{0}: h={2}", new SimpleDateFormat(), NumberFormat.getInstance()));
 		}else {
@@ -356,6 +381,7 @@ public final class ChocoChartFactory {
 		JFreeChart chart = new JFreeChart(title,plot);
 		CHOCO_THEME.apply(chart);
 		return chart;
+
 	}
 
 
@@ -382,13 +408,13 @@ public final class ChocoChartFactory {
 	}
 
 
-//	public static JFreeChart createHeuristicsChart(ListHeuristics heuritics) {
-//		final JFreeChart chart = createBarChart("Heuristics Solutions", createHeuristicsCategoryDataset(heuritics), "Itérations", 0);
-//		CategoryPlot plot =  chart.getCategoryPlot();
-//		plot.getDomainAxis().setCategoryLabelPositions(CategoryLabelPositions.UP_45);
-//		CHOCO_THEME.apply(chart);
-//		return chart;
-//	}
+	//	public static JFreeChart createHeuristicsChart(ListHeuristics heuritics) {
+	//		final JFreeChart chart = createBarChart("Heuristics Solutions", createHeuristicsCategoryDataset(heuritics), "Itérations", 0);
+	//		CategoryPlot plot =  chart.getCategoryPlot();
+	//		plot.getDomainAxis().setCategoryLabelPositions(CategoryLabelPositions.UP_45);
+	//		CHOCO_THEME.apply(chart);
+	//		return chart;
+	//	}
 
 	public static JFreeChart createSolutionChart(CPSolver s, Limit l) {
 		final JFreeChart chart = createBarChart("Solver Solutions", createSolutionCategoryDataset(s, l), l.toString(), 0);
@@ -398,22 +424,22 @@ public final class ChocoChartFactory {
 		return chart;
 	}
 
-//	public static JFreeChart createSolutionChart(GenericShopProblem shop, Limit limit) {
-//		if (shop.getHeuristics() instanceof ListHeuristics) {
-//			ListHeuristics h = (ListHeuristics) shop.getHeuristics();
-//			if(h.hasSolution()) {
-//				if(shop.getCPSearch().hasSolution()) {
-//					final CategoryDataset[] datasets = { createHeuristicsCategoryDataset(h),createSolutionCategoryDataset((CPSolver) shop.getSolver(), limit)};
-//					final String[] labels = {"Itération", limit.toString()};
-//					return createCombinedBarChart("Solutions", datasets, labels, shop.getComputedLowerBound());
-//
-//				}else {
-//					return createHeuristicsChart(h);
-//				}
-//			}
-//		}
-//		return createSolutionChart( (CPSolver) shop.getSolver(), limit);
-//	}
+	//	public static JFreeChart createSolutionChart(GenericShopProblem shop, Limit limit) {
+	//		if (shop.getHeuristics() instanceof ListHeuristics) {
+	//			ListHeuristics h = (ListHeuristics) shop.getHeuristics();
+	//			if(h.hasSolution()) {
+	//				if(shop.getCPSearch().hasSolution()) {
+	//					final CategoryDataset[] datasets = { createHeuristicsCategoryDataset(h),createSolutionCategoryDataset((CPSolver) shop.getSolver(), limit)};
+	//					final String[] labels = {"Itération", limit.toString()};
+	//					return createCombinedBarChart("Solutions", datasets, labels, shop.getComputedLowerBound());
+	//
+	//				}else {
+	//					return createHeuristicsChart(h);
+	//				}
+	//			}
+	//		}
+	//		return createSolutionChart( (CPSolver) shop.getSolver(), limit);
+	//	}
 
 	public static JFreeChart createBarChart(String title, CategoryDataset dataset,String categoryAxisLabel, int lowerBound) {
 		JFreeChart result = ChartFactory.createBarChart(title, categoryAxisLabel, "Objective", dataset, 
