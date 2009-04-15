@@ -233,6 +233,8 @@ class IntPermutation extends AbstractSortingPermutation {
 	}
 }
 
+
+
 class ConstantPermutation extends AbstractSortingPermutation {
 
 	protected final IntegerConstantVariable[] elements;
@@ -252,106 +254,106 @@ class ConstantPermutation extends AbstractSortingPermutation {
 }
 
 
-class SortingPermutation implements IPermutation,Comparator<Integer> {
-
-	public final static IPermutation IDENTITY = Identity.SINGLETON;
-
-	protected boolean identity;
-
-	protected final int[] elements;
-
-	protected final Integer[] orderingPermutation;
-
-	protected final Integer[] reversePermutation;
-
-	public SortingPermutation(int[] elements,boolean reverse) {
-		super();
-		this.elements = elements;
-		orderingPermutation =new Integer[elements.length];
-		reversePermutation =new Integer[elements.length];
-		for (int i = 0; i < orderingPermutation.length; i++) {
-			orderingPermutation[i]=Integer.valueOf(i);
-		}
-		sort(reverse);
-	}
-
-	public final void sort(boolean reverse) {
-		Arrays.sort(orderingPermutation,  reverse ? Collections.reverseOrder(this) : this);
-		identity=true;
-		for (int i = 0; i < orderingPermutation.length; i++) {
-			reversePermutation[orderingPermutation[i]]=i;
-			if(identity && i!=orderingPermutation[i]) {identity=false;}
-		}
-	}
-
-
-	public final <T> void applyPermutation(T[] source,T[] dest) {
-		if(source.length != orderingPermutation.length || source.length != dest.length) {
-			throw new ArrayIndexOutOfBoundsException("the two arguments should have the same length than the permutation array");
-		}else {
-			for (int i = 0; i < source.length; i++) {
-				dest[i]=source[orderingPermutation[i]];
-			}
-		}
-
-	}
-
-
-	@Override
-	public int[] applyPermutation(int[] source) {
-		int[] dest=new int[elements.length];
-		for (int i = 0; i < elements.length; i++) {
-			dest[i]=source[orderingPermutation[i]];
-		}
-		return dest;
-	}
-
-
-	public final int[] applyPermutation() {
-		return applyPermutation(elements);
-	}
-
-	/**
-	 * return the original index of the idx-th element of the permuted array
-	 */
-	public final int getOriginalIndex(int idx) {
-		return this.orderingPermutation[idx];
-	}
-	/**
-	 * return the index in the permutation of the idx-th element
-	 */
-	public final int getPermutationIndex(int idx) {
-		return reversePermutation[idx];
-	}
-
-
-
-	@Override
-	public int compare(Integer o1, Integer o2) {
-		if(elements[o1]>elements[o2]) {return 1;}
-		else if(elements[o1]<elements[o2]) {return -1;}
-		else {return 0;}
-	}
-
-
-	public final boolean isIdentity() {
-		return identity;
-	}
-
-
-	@Override
-	public String toString() {
-		StringBuilder b = new StringBuilder();
-		b.append("Criteria: ");
-		b.append(Arrays.toString(elements));
-		b.append("\nOrdering permutation: ");
-		b.append(Arrays.toString(orderingPermutation));
-		b.append('\n');
-		return new String(b);
-	}
-
-
-}
+//class SortingPermutation implements IPermutation,Comparator<Integer> {
+//
+//	public final static IPermutation IDENTITY = Identity.SINGLETON;
+//
+//	protected boolean identity;
+//
+//	protected final int[] elements;
+//
+//	protected final Integer[] orderingPermutation;
+//
+//	protected final Integer[] reversePermutation;
+//
+//	public SortingPermutation(int[] elements,boolean reverse) {
+//		super();
+//		this.elements = elements;
+//		orderingPermutation =new Integer[elements.length];
+//		reversePermutation =new Integer[elements.length];
+//		for (int i = 0; i < orderingPermutation.length; i++) {
+//			orderingPermutation[i]=Integer.valueOf(i);
+//		}
+//		sort(reverse);
+//	}
+//
+//	public final void sort(boolean reverse) {
+//		Arrays.sort(orderingPermutation,  reverse ? Collections.reverseOrder(this) : this);
+//		identity=true;
+//		for (int i = 0; i < orderingPermutation.length; i++) {
+//			reversePermutation[orderingPermutation[i]]=i;
+//			if(identity && i!=orderingPermutation[i]) {identity=false;}
+//		}
+//	}
+//
+//
+//	public final <T> void applyPermutation(T[] source,T[] dest) {
+//		if(source.length != orderingPermutation.length || source.length != dest.length) {
+//			throw new ArrayIndexOutOfBoundsException("the two arguments should have the same length than the permutation array");
+//		}else {
+//			for (int i = 0; i < source.length; i++) {
+//				dest[i]=source[orderingPermutation[i]];
+//			}
+//		}
+//
+//	}
+//
+//
+//	@Override
+//	public int[] applyPermutation(int[] source) {
+//		int[] dest=new int[elements.length];
+//		for (int i = 0; i < elements.length; i++) {
+//			dest[i]=source[orderingPermutation[i]];
+//		}
+//		return dest;
+//	}
+//
+//
+//	public final int[] applyPermutation() {
+//		return applyPermutation(elements);
+//	}
+//
+//	/**
+//	 * return the original index of the idx-th element of the permuted array
+//	 */
+//	public final int getOriginalIndex(int idx) {
+//		return this.orderingPermutation[idx];
+//	}
+//	/**
+//	 * return the index in the permutation of the idx-th element
+//	 */
+//	public final int getPermutationIndex(int idx) {
+//		return reversePermutation[idx];
+//	}
+//
+//
+//
+//	@Override
+//	public int compare(Integer o1, Integer o2) {
+//		if(elements[o1]>elements[o2]) {return 1;}
+//		else if(elements[o1]<elements[o2]) {return -1;}
+//		else {return 0;}
+//	}
+//
+//
+//	public final boolean isIdentity() {
+//		return identity;
+//	}
+//
+//
+//	@Override
+//	public String toString() {
+//		StringBuilder b = new StringBuilder();
+//		b.append("Criteria: ");
+//		b.append(Arrays.toString(elements));
+//		b.append("\nOrdering permutation: ");
+//		b.append(Arrays.toString(orderingPermutation));
+//		b.append('\n');
+//		return new String(b);
+//	}
+//
+//
+//}
 
 
 
