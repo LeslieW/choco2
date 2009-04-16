@@ -1,3 +1,25 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * 
+ *          _       _                            *
+ *         |  °(..)  |                           *
+ *         |_  J||L _|        CHOCO solver       *
+ *                                               *
+ *    Choco is a java library for constraint     *
+ *    satisfaction problems (CSP), constraint    *
+ *    programming (CP) and explanation-based     *
+ *    constraint solving (e-CP). It is built     *
+ *    on a event-based propagation mechanism     *
+ *    with backtrackable structures.             *
+ *                                               *
+ *    Choco is an open-source software,          *
+ *    distributed under a BSD licence            *
+ *    and hosted by sourceforge.net              *
+ *                                               *
+ *    + website : http://choco.emn.fr            *
+ *    + support : choco@emn.fr                   *
+ *                                               *
+ *    Copyright (C) F. Laburthe,                 *
+ *                  N. Jussien    1999-2008      *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.common.logging;
 
 import java.io.File;
@@ -8,6 +30,14 @@ import java.security.AccessControlException;
 import java.util.logging.*;
 import static java.util.logging.Logger.getLogger;
 
+
+/**
+ * A final class which handles choco logging statements.
+ * Most of choco class propose a static final field LOGGER.
+ * @author Arnaud Malapert</br> 
+ * @since 16 avr. 2009 version 2.0.3</br>
+ * @version 2.0.3</br>
+ */
 public final class ChocoLogging {
 
 
@@ -61,6 +91,11 @@ public final class ChocoLogging {
 		super();
 	}
 
+	/**
+	 * create a new user logger with valid name
+	 * @param suffix
+	 * @return
+	 */
 	public static Logger makeUserLogger(String suffix) {
 		return Logger.getLogger("choco.user."+suffix);
 	}
@@ -133,6 +168,7 @@ public final class ChocoLogging {
 		return SEARCH_FORMATTER;
 	}
 
+	
 	public static void flushLog(Logger logger) {
 		for (Handler h : logger.getHandlers()) {
 			h.flush();
@@ -140,8 +176,10 @@ public final class ChocoLogging {
 	}
 
 
+	/**
+	 * flush pending logs
+	 */
 	public static void flushLogs() {
-		//CPSolver.flushLogs();
 		for (Logger logger : CHOCO_LOGGERS) {
 			flushLog(logger);
 		}
@@ -160,6 +198,9 @@ public final class ChocoLogging {
 		}
 	}
 
+	/**
+	 * set the default handler (out and err) for all loggers
+	 */
 	public static void setDefaultHandler() {
 		clearHandlers();
 		Logger log = getChocoLogger();
@@ -197,7 +238,11 @@ public final class ChocoLogging {
 	}
 
 	
-	
+	/**
+	 * remove handlers and write error logs into a file
+	 * @param file the error log file
+	 * @return the error stream
+	 */
 	public static OutputStream setErrorFileHandler(File file) {
 		try {
 			final OutputStream stream = new FileOutputStream(file);
@@ -218,11 +263,20 @@ public final class ChocoLogging {
 		return null;
 	}
 	
+	/**
+	 * remove handlers and write logs into a file
+	 * @param file the log file
+	 * @return the log stream
+	 */
 	public static OutputStream setFileHandler(File file) {
 		return setFileHandler(file, Level.ALL);
 	}
+	
 	/**
-	 * replace handler by a file handler
+	 * remove handlers and write logs with a given level into a file 
+	 * @param file the log file
+	 * @param level the minimal logging level for this handler
+	 * @return the log stream
 	 */
 	public static OutputStream setFileHandler(File file, Level level) {
 		try {
@@ -252,7 +306,7 @@ public final class ChocoLogging {
 
 
 	/**
-	 * remove other handlers.
+	 * remove other handlers and set the only handler for this logger
 	 */
 	public static void setHandler(Logger logger, Handler handler) {
 		clearHandlers(logger);
@@ -269,6 +323,11 @@ public final class ChocoLogging {
 		}
 	}
 
+	/**
+	 * add a new handler whichs receive error logs
+	 * @param file the error log file
+	 * @return the error stream
+	 */
 	public static OutputStream addErrorFileHandler(File file) {
 		try {
 			final OutputStream stream = new FileOutputStream(file);
@@ -286,10 +345,20 @@ public final class ChocoLogging {
 		return null;
 	}
 
+	/**
+	 * add a new handler whichs receive logs
+	 * @param file the log file
+	 * @return the stream
+	 */
 	public static OutputStream addFileHandler(File file) {
 		return addFileHandler(file, Level.ALL);
 	}
 
+	/**
+	 * add a new handler whichs receive logs with a minimal level
+	 * @param file the log file
+	 * @return the stream
+	 */
 	public static OutputStream addFileHandler(File file, Level level) {
 		try {
 			final OutputStream stream = new FileOutputStream(file);
@@ -324,6 +393,11 @@ public final class ChocoLogging {
 		setLevel(solLevel, getChocoLogger(), getKernelLogger(),getSearchLogger());
 	}
 	
+	
+	/**
+	 * set the choco verbosity level
+	 * @param verbosity the new verbosity level
+	 */
 	public static void setVerbosity(Verbosity verbosity) {
 		switch(verbosity) {
 		case OFF: {
