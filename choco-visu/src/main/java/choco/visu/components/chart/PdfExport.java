@@ -1,15 +1,6 @@
 package choco.visu.components.chart;
 
-import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
-import org.jfree.chart.JFreeChart;
-
+import choco.kernel.common.logging.ChocoLogging;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Rectangle;
@@ -17,10 +8,17 @@ import com.lowagie.text.pdf.FontMapper;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
+import org.jfree.chart.JFreeChart;
+
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
+import java.io.*;
+import java.util.logging.Logger;
 
 public final class PdfExport {
 
-	
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
 	private PdfExport() {
 		super();
@@ -72,7 +70,7 @@ public final class PdfExport {
 			cb.addTemplate(tp, 0, 0);
 		}
 		catch (DocumentException de) {
-			System.err.println(de.getMessage());
+			LOGGER.severe(de.getMessage());
 		}
 		document.close();
 	}

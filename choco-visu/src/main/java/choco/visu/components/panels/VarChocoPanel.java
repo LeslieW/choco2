@@ -57,27 +57,27 @@ public final class VarChocoPanel extends AVarChocoPanel {
         try {
             componentClass = Class.forName(path);
         } catch (ClassNotFoundException e) {
-            System.err.println("Component class could not be found: " + path);
+            LOGGER.severe("Component class could not be found: " + path);
             System.exit(-1);
         }
         try {
             Constructor constructeur =
                                  componentClass.getConstructor (new Class [] {Class.forName ("java.lang.Object")});
-            tmp = (AChocoPApplet)constructeur.newInstance (new Object [] {parameters});
+            tmp = (AChocoPApplet)constructeur.newInstance (parameters);
         } catch (InstantiationException e) {
-            System.err.println("Component class could not be instantiated: " + path);
+            LOGGER.severe("Component class could not be instantiated: " + path);
             System.exit(-1);
         } catch (IllegalAccessException e) {
-            System.err.println("Component class could not be accessed: " + path);
+            LOGGER.severe("Component class could not be accessed: " + path);
             System.exit(-1);
         } catch (InvocationTargetException e) {
-            System.err.println("Component class could not be invocated: " + path);
+            LOGGER.severe("Component class could not be invocated: " + path);
             System.exit(-1);
         } catch (ClassNotFoundException e) {
-            System.err.println("Component class could not be found: " + path);
+            LOGGER.severe("Component class could not be found: " + path);
             System.exit(-1);
         } catch (NoSuchMethodException e) {
-            System.err.println("Component class could not be get correct constructor: " + path);
+            LOGGER.severe("Component class could not be get correct constructor: " + path);
             System.exit(-1);
         }
         this.setLayout(new BorderLayout());
@@ -94,19 +94,19 @@ public final class VarChocoPanel extends AVarChocoPanel {
                                  classname.getConstructor (new Class [] {Class.forName ("java.lang.Object")});
             tmp = (AChocoPApplet)constructeur.newInstance (parameters);
         } catch (InstantiationException e) {
-            System.err.println("Component class could not be instantiated: " + classname);
+            LOGGER.severe("Component class could not be instantiated: " + classname);
             System.exit(-1);
         } catch (IllegalAccessException e) {
-            System.err.println("Component class could not be accessed: " + classname);
+            LOGGER.severe("Component class could not be accessed: " + classname);
             System.exit(-1);
         } catch (InvocationTargetException e) {
-            System.err.println("Component class could not be invocated: " + classname);
+            LOGGER.severe("Component class could not be invocated: " + classname);
             System.exit(-1);
         } catch (ClassNotFoundException e) {
-            System.err.println("Component class could not be found: " + classname);
+            LOGGER.severe("Component class could not be found: " + classname);
             System.exit(-1);
         } catch (NoSuchMethodException e) {
-            System.err.println("Component class could not be get correct constructor: " + classname);
+            LOGGER.severe("Component class could not be get correct constructor: " + classname);
             System.exit(-1);
         }
         this.setLayout(new BorderLayout());

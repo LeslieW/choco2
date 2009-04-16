@@ -1,30 +1,31 @@
 package samples;
 
+import choco.Choco;
+import choco.cp.model.CPModel;
+import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.pack.PackModeler;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.model.variables.scheduling.TaskVariable;
+import choco.visu.components.chart.ChocoChartFactory;
 import static choco.visu.components.chart.ChocoChartFactory.createCumulativeChart;
 import static choco.visu.components.chart.ChocoChartFactory.createDeviationLineChart;
-
-import java.awt.Dimension;
-import java.awt.LayoutManager;
-
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.YIntervalSeries;
 import org.jfree.data.xy.YIntervalSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
-
 import samples.pack.BinPackingExample;
 import samples.pack.CPpack;
-import choco.Choco;
-import choco.cp.model.CPModel;
-import choco.cp.solver.CPSolver;
-import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.pack.PackModeler;
-import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.model.variables.scheduling.TaskVariable;
-import choco.visu.components.chart.ChocoChartFactory;
+
+import java.awt.*;
+import java.util.logging.Logger;
 
 public final class ChocoDemo {
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
 	private static final int TIME_LIMIT = 15;
 
@@ -48,7 +49,6 @@ public final class ChocoDemo {
 		//m.addConstraints( Choco.pack(m1));
 		CPSolver s =new CPSolver();
 		s.read(m);
-		//System.out.println(s.pretty());
 		s.setTimeLimit(TIME_LIMIT*1000);
 		s.solve();
 		final String title = "Bin Packing Constraint Visualization 2";
@@ -82,7 +82,7 @@ public final class ChocoDemo {
 		s.read(model);
 		s.solve();
 		s.printRuntimeSatistics();
-		System.out.println(s.solutionToString());
+		LOGGER.info(s.solutionToString());
 		final String title = "Cumulative Resource Example";
 		demo(title,createCumulativeChart(title, s, rsc, true));
 		

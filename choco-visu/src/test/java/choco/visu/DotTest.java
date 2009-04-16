@@ -28,6 +28,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.UtilAlgo;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.Variable;
@@ -41,15 +42,17 @@ import org.junit.Test;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
  * User: charles
  * Date: 25 sept. 2008
  * Time: 18:23:06
- * To change this template use File | Settings | File Templates.
  */
 public class DotTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     @Before
     public void checkEnvironment(){
@@ -63,7 +66,7 @@ public class DotTest {
 	public static String createDotFileName(String prefix) {
 		try {
 			String filename = File.createTempFile(prefix,".dot").getAbsolutePath();
-			System.out.println("generated filename : "+filename);
+			LOGGER.info("generated filename : "+filename);
 			return filename;
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -168,8 +171,8 @@ public class DotTest {
         s.attachGoal(new AssignVar(new MinDomain(s,s.getVar(queens)),new IncreasingDomain()));
 
         s.setLoggingMaxDepth(50);
-        int timeLimit = 60000;
-        //s.setTimeLimit(timeLimit);
+//        int timeLimit = 60000;
+//        s.setTimeLimit(timeLimit);
         Visu v = Visu.createVisu(220, 200);
         Variable[] vars = UtilAlgo.append(queens, queensdual);
         v.addPanel(new VarChocoPanel("Dotty", vars, DOTTYTREESEARCH, new Object[]{url, 100, null, null, Boolean.TRUE}));
@@ -210,7 +213,7 @@ public class DotTest {
         s.read(m);
 
         //s.setValIntIterator(new DecreasingDomain());
-        Visu v = Visu.createVisu(220, 200);;
+        Visu v = Visu.createVisu(220, 200);
         Variable[] vars = new Variable[]{obj1, obj2, obj3};
         v.addPanel(new VarChocoPanel("Dotty", vars, DOTTYTREESEARCH, new Object[]{url, 100, s.getVar(c), Boolean.TRUE, Boolean.TRUE}));
 
@@ -224,10 +227,10 @@ public class DotTest {
         s.visualize(v);
 
         s.launch();
-        System.out.println("obj1: " + s.getVar(obj1).getVal());
-        System.out.println("obj2: " + s.getVar(obj2).getVal());
-        System.out.println("obj3: " + s.getVar(obj3).getVal());
-        System.out.println("cost: " + s.getVar(c).getVal());
+        LOGGER.info("obj1: " + s.getVar(obj1).getVal());
+        LOGGER.info("obj2: " + s.getVar(obj2).getVal());
+        LOGGER.info("obj3: " + s.getVar(obj3).getVal());
+        LOGGER.info("cost: " + s.getVar(c).getVal());
         v.kill();
     }
 

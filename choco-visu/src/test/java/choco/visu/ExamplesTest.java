@@ -25,6 +25,7 @@ package choco.visu;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.UtilAlgo;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -36,14 +37,15 @@ import static choco.visu.components.papplets.ChocoPApplet.*;
 import choco.visu.papplet.ColoringPApplet;
 import choco.visu.papplet.DonaldAndFriendsPApplet;
 import choco.visu.papplet.PicrossPApplet;
+import gnu.trove.TIntObjectHashMap;
+import gnu.trove.TObjectIntHashMap;
 import org.junit.Before;
 import org.junit.Test;
 import samples.Picross;
 import static samples.seminar.ExDonaldGeraldRobert.*;
 
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.logging.Logger;
 
 /*
  * Created by IntelliJ IDEA.
@@ -52,6 +54,8 @@ import java.util.Iterator;
  */
 
 public class ExamplesTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     @Before
     public void checkEnvironment(){
@@ -101,7 +105,7 @@ public class ExamplesTest {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
-                    carres[j + k * 3][i] = rows[0 + k * 3][i + j * 3];
+                    carres[j + k * 3][i] = rows[(k * 3)][i + j * 3];
                     carres[j + k * 3][i + 3] = rows[1 + k * 3][i + j * 3];
                     carres[j + k * 3][i + 6] = rows[2 + k * 3][i + j * 3];
                 }
@@ -133,9 +137,7 @@ public class ExamplesTest {
 //        Visu v = Visu.createFullVisu(200, 200);
         Variable[] vars = new Variable[9 * 9];
         for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                vars[i * 9 + j] = rows[i][j];
-            }
+            System.arraycopy(rows[i], 0, vars, i * 9, 9);
         }
         v.addPanel(new VarChocoPanel("Grid", vars, SUDOKU, null));
         v.addPanel(new VarChocoPanel("Domain", vars, FULLDOMAIN, null));
@@ -209,9 +211,7 @@ public class ExamplesTest {
 //          Visu v = Visu.createFullVisu();
       Variable[] vars = new Variable[n * n];
         for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                vars[i * n + j] = var[i][j];
-            }
+            System.arraycopy(var[i], 0, vars, i * n, n);
         }
         v.addPanel(new VarChocoPanel("Grid", vars, GRID, null));
         v.addPanel(new VarChocoPanel("TreeSearch", vars, TREESEARCH, null));
@@ -227,10 +227,11 @@ public class ExamplesTest {
         s.visualize(v);
         s.launch();
         for (int i = 0; i < n; i++) {
+        StringBuffer st = new StringBuffer();
             for (int j = 0; j < n; j++) {
-                System.out.print(s.getVar(var[i][j]).getVal() + " ");
+                st.append(s.getVar(var[i][j]).getVal() + " ");
             }
-            System.out.println("");
+            LOGGER.info(st.toString());
         }
         v.kill();
     }
@@ -255,16 +256,16 @@ public class ExamplesTest {
         s.launch();
         s.printRuntimeSatistics();
         // Print name value
-        System.out.println("donald = " + s.getVar(_d).getVal() + s.getVar(_o).getVal() + s.getVar(_n).getVal() + s.getVar(_a).getVal() + s.getVar(_l).getVal() + s.getVar(_d).getVal());
-        System.out.println("gerald = " + s.getVar(_g).getVal() + s.getVar(_e).getVal() + s.getVar(_r).getVal() + s.getVar(_a).getVal() + s.getVar(_l).getVal() + s.getVar(_d).getVal());
-        System.out.println("robert = " + s.getVar(_r).getVal() + s.getVar(_o).getVal() + s.getVar(_b).getVal() + s.getVar(_e).getVal() + s.getVar(_r).getVal() + s.getVar(_t).getVal());
+        LOGGER.info("donald = " + s.getVar(_d).getVal() + s.getVar(_o).getVal() + s.getVar(_n).getVal() + s.getVar(_a).getVal() + s.getVar(_l).getVal() + s.getVar(_d).getVal());
+        LOGGER.info("gerald = " + s.getVar(_g).getVal() + s.getVar(_e).getVal() + s.getVar(_r).getVal() + s.getVar(_a).getVal() + s.getVar(_l).getVal() + s.getVar(_d).getVal());
+        LOGGER.info("robert = " + s.getVar(_r).getVal() + s.getVar(_o).getVal() + s.getVar(_b).getVal() + s.getVar(_e).getVal() + s.getVar(_r).getVal() + s.getVar(_t).getVal());
         v.kill();
     }
 
 
-        private static final HashMap<String, Integer> states;
+        private static final TObjectIntHashMap<String> states;
     static{
-        states = new HashMap();
+        states = new TObjectIntHashMap<String>();
         states.put("WA",0);
         states.put("OR",1);
         states.put("CA",2);
@@ -322,17 +323,15 @@ public class ExamplesTest {
         Model m = new CPModel();
         Solver s = new CPSolver();
         int nbColor = 4;
-        HashMap<Integer, String> invStates = new HashMap();
-
-        Iterator<String> it = states.keySet().iterator();
-        while(it.hasNext()){
-            String name = it.next();
+        TIntObjectHashMap<String> invStates = new TIntObjectHashMap<String>();
+        for(int i = 0; i< states.keys().length; i++){
+            String name = (String) states.keys()[i];
             invStates.put(states.get(name), name);
         }
 
 
-        IntegerVariable[] etats = new IntegerVariable[states.keySet().size()];
-        for(int i = 0; i < states.keySet().size(); i++){
+        IntegerVariable[] etats = new IntegerVariable[states.keys().length];
+        for(int i = 0; i < states.keys().length; i++){
             etats[i] = makeIntVar(invStates.get(i), 1, nbColor);
         }
         m.addVariables(etats);
