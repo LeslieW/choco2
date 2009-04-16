@@ -40,7 +40,6 @@ import java.util.logging.Logger;
  * User: hcambaza
  * Date: Aug 4, 2008
  * Time: 4:17:27 PM
- * To change this template use File | Settings | File Templates.
  */
 public class StoredIntBipartiteListTest {
 	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
@@ -64,7 +63,7 @@ public class StoredIntBipartiteListTest {
     @Test
     public void test1() {
         assertEquals(12, iVectA.size());
-        System.out.println("" + iVectA.pretty());
+        LOGGER.info("" + iVectA.pretty());
         env.worldPush();
         DisposableIntIterator it = iVectA.getIterator();
         int cpt = 6;
@@ -76,7 +75,7 @@ public class StoredIntBipartiteListTest {
             }
         }
         it.dispose();
-        System.out.println("" + iVectA.pretty());
+        LOGGER.info("" + iVectA.pretty());
         assertEquals(11, iVectA.size());
         assertEquals(15, iVectA.get(10));
         env.worldPush();
@@ -88,22 +87,22 @@ public class StoredIntBipartiteListTest {
             cpt--;
         }
         it.dispose();
-        System.out.println("" + iVectA.pretty());
+        LOGGER.info("" + iVectA.pretty());
         assertEquals(5, iVectA.size());
         env.worldPop();
-        System.out.println("" + iVectA.pretty());
+        LOGGER.info("" + iVectA.pretty());
         assertEquals(11, iVectA.size());
         env.worldPop();
         assertEquals(12, iVectA.size());
         env.worldPush();
         it = iVectA.getIterator();
-        System.out.println("before " + iVectA.pretty());
+        LOGGER.info("before " + iVectA.pretty());
         while (it.hasNext()) {
-            System.out.println("value " + it.next());
+            LOGGER.info("value " + it.next());
             it.remove();
         }
         it.dispose();
-        System.out.println("after" + iVectA.pretty());
+        LOGGER.info("after" + iVectA.pretty());
         assertEquals(0, iVectA.size());
 
     }
@@ -143,7 +142,7 @@ public class StoredIntBipartiteListTest {
         iVectB = (StoredIndexedBipartiteSet) env.makeBipartiteSet(stint);
 
         assertEquals(12, iVectB.size());
-        System.out.println("" + iVectB.pretty());
+        LOGGER.info("" + iVectB.pretty());
         env.worldPush();
         StoredIndexedBipartiteSet.BipartiteSetIterator it = iVectB.getObjectIterator();
         int cpt = 6;
@@ -155,17 +154,17 @@ public class StoredIntBipartiteListTest {
             }
         }
         it.dispose();
-        System.out.println("" + iVectB.pretty());
+        LOGGER.info("" + iVectB.pretty());
         assertEquals(11, iVectB.size());
         env.worldPush();
         iVectB.remove(stint[9]);
-        System.out.println("" + iVectB.pretty());
+        LOGGER.info("" + iVectB.pretty());
         assertEquals(10, iVectB.size());
         env.worldPop();
-        System.out.println("" + iVectB.pretty());
+        LOGGER.info("" + iVectB.pretty());
         assertEquals(11, iVectB.size());
         iVectB.remove(stint[9]);
-        System.out.println("" + iVectB.pretty());
+        LOGGER.info("" + iVectB.pretty());
         it = iVectB.getObjectIterator();
         cpt = 2;
         while (it.hasNext() && cpt > 0) {
@@ -174,12 +173,12 @@ public class StoredIntBipartiteListTest {
             cpt--;
         }
         it.dispose();
-        System.out.println("" + iVectB.pretty());
+        LOGGER.info("" + iVectB.pretty());
         iVectB.remove(stint[11]);
-        System.out.println("" + iVectB.pretty());
+        LOGGER.info("" + iVectB.pretty());
         assertEquals(7, iVectB.size());
         env.worldPop();
-        System.out.println("" + iVectB.pretty());
+        LOGGER.info("" + iVectB.pretty());
         assertEquals(12, iVectB.size());
     }
 }

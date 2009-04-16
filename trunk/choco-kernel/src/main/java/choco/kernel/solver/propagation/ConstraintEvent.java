@@ -26,9 +26,6 @@ package choco.kernel.solver.propagation;
 import choco.Choco;
 import choco.kernel.solver.ContradictionException;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * A class for constraint revisions in the propagation process.
  */
@@ -92,7 +89,7 @@ public class ConstraintEvent implements PropagationEvent {
     if (this.initialized) {
       if (Choco.DEBUG) {
         if (!this.touchedConstraint.isActive()) {
-          System.err.println("There should not be some not active constraint events in the queue !");
+          LOGGER.severe("There should not be some not active constraint events in the queue !");
         }
       }
       this.touchedConstraint.propagate();

@@ -58,7 +58,7 @@ public class State extends LightState {
     protected DoubleLinkedList transitions;
 
     // Hashedtable of predecessors
-    protected Hashtable hashPred;
+    protected Hashtable<State, BitSet> hashPred;
 
     // Constructor
     public State(LayeredDFA a, int level) {
@@ -66,7 +66,7 @@ public class State extends LightState {
         this.idx = this.auto.getNextIdx();
         this.delta = new State[a.domSizes[level]];
         this.transitions = new DoubleLinkedList(a.domSizes[level]);
-        this.hashPred = new Hashtable();
+        this.hashPred = new Hashtable<State, BitSet>();
         this.level = level;
         this.idxLevel = this.auto.levelStates[level].size();
         this.auto.levelStates[level].add(this);
@@ -80,7 +80,7 @@ public class State extends LightState {
         this.delta = new State[origin.auto.domSizes[level]];
         System.arraycopy(origin.delta, 0, this.delta, 0, origin.delta.length);
         this.transitions = new DoubleLinkedList(origin.transitions);
-        this.hashPred = new Hashtable();
+        this.hashPred = new Hashtable<State, BitSet>();
         this.clonePred(origin);
         this.idxLevel = this.auto.levelStates[level].size();
         this.auto.levelStates[level].add(this);
@@ -91,7 +91,7 @@ public class State extends LightState {
     public void clonePred(State origin) {
         for (origin.transitions.restart(); origin.transitions.hasNext();) {
             int i = origin.transitions.next();
-            BitSet bsn = ((BitSet) ((BitSet) origin.delta[i].hashPred.get(origin)).clone());
+            BitSet bsn = ((BitSet) (origin.delta[i].hashPred.get(origin)).clone());
             origin.delta[i].hashPred.put(this, bsn);
         }
     }
@@ -130,7 +130,7 @@ public class State extends LightState {
     // Remove the incoming edge: delta(st, value) = this
     protected void retraitTransition(State st, int value) {
         if (this.hashPred.containsKey(st)) {
-            BitSet vals = ((BitSet) this.hashPred.get(st));
+            BitSet vals = (this.hashPred.get(st));
             vals.clear(value);
             this.hashPred.put(st, vals);
 
@@ -156,7 +156,7 @@ public class State extends LightState {
     // Add ingoing edge: delta(st, value) = this
     protected void ajoutInTransition(State st, int value) {
         if (this.hashPred.containsKey(st)) {
-            BitSet vals = ((BitSet) this.hashPred.get(st));
+            BitSet vals = (this.hashPred.get(st));
             vals.set(value);
             this.hashPred.put(st, vals);
         } else {
@@ -174,17 +174,17 @@ public class State extends LightState {
 
     // Replace "delta(node, value) = this" by "delta(node, value) = st1"
     protected void remplaceRef(State st1) {
-        for (Enumeration e = this.hashPred.keys(); e.hasMoreElements();) {
-            State stPred = (State) e.nextElement();
+        for (Enumeration<State> e = this.hashPred.keys(); e.hasMoreElements();) {
+            State stPred = e.nextElement();
             // MAJ des transitions chez les pred.
-            stPred.remplaceNext(st1, (BitSet) this.hashPred.get(stPred));
+            stPred.remplaceNext(st1, this.hashPred.get(stPred));
             // MAJ des hashTable de this et st1
             if (st1.hashPred.containsKey(stPred)) {
-                BitSet bs = (BitSet) st1.hashPred.get(stPred);
-                bs.or((BitSet) this.hashPred.get(stPred));
+                BitSet bs = st1.hashPred.get(stPred);
+                bs.or(this.hashPred.get(stPred));
                 st1.hashPred.put(stPred, bs);
             } else {
-                BitSet bs = (BitSet) this.hashPred.get(stPred);
+                BitSet bs = this.hashPred.get(stPred);
                 st1.hashPred.put(stPred, bs);
             }
         }
@@ -200,9 +200,9 @@ public class State extends LightState {
 
     // Remove ingoings states: this.hashTable et delta des pred.
     protected void removeInTransitions() {
-        for (Enumeration e = this.hashPred.keys(); e.hasMoreElements();) {
-            State stPred = (State) e.nextElement();
-            stPred.deleteNext((BitSet) this.hashPred.get(stPred));
+        for (Enumeration<State> e = this.hashPred.keys(); e.hasMoreElements();) {
+            State stPred = e.nextElement();
+            stPred.deleteNext(this.hashPred.get(stPred));
         }
         this.hashPred.clear();
     }
@@ -273,9 +273,9 @@ public class State extends LightState {
         //int tot = getNbInGoing();
         int cTab = 0;
         trPred = new Arcs[this.hashPred.size()];
-        for (Enumeration e = this.hashPred.keys(); e.hasMoreElements();) {
-            State cNode = (State) e.nextElement();
-            BitSet predBs = (BitSet) this.hashPred.get(cNode);
+        for (Enumeration<State> e = this.hashPred.keys(); e.hasMoreElements();) {
+            State cNode = e.nextElement();
+            BitSet predBs = this.hashPred.get(cNode);
             trPred[cTab] = new Arcs((LightState)ht.get(cNode), predBs);
             cTab++;
         }
@@ -293,10 +293,10 @@ public class State extends LightState {
 
     // Print
     public void pretty() {
-        System.out.println("Noeud(" + idx + ") : ");
+        LOGGER.info("Noeud(" + idx + ") : ");
         for (this.transitions.restart(); this.transitions.hasNext();) {
             int t = this.transitions.next();
-            System.out.println(" val(" + t + ") -> " + "Dest(" + (delta[t].idx) + ")");
+            LOGGER.info(" val(" + t + ") -> " + "Dest(" + (delta[t].idx) + ")");
         }
     }
 

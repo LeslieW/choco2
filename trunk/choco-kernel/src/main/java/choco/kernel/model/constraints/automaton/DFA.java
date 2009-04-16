@@ -22,9 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.constraints.automaton;
 
-import choco.kernel.solver.SolverException;
 import choco.kernel.common.util.UtilAlgo;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.solver.SolverException;
 import dk.brics.automaton.RegExp;
 
 import java.util.*;
@@ -257,7 +257,6 @@ public class DFA {
         int minValue = Integer.MAX_VALUE, maxValue = Integer.MIN_VALUE;
         while (stateLi.hasMoreElements()) {
             int o_state = stateLi.nextElement();
-            //  System.out.println("Layer : " + layer + " , State:" + o_state);
             List<Transition> outedges = getOutEdges(o_state);
             for (Transition t : outedges) {
                 if (t.value < minValue) {
@@ -304,7 +303,6 @@ public class DFA {
         Iterator it = stateLi.iterator();
         while (it.hasNext()) {
             int o_state = (Integer) it.next();
-            //  System.out.println("Layer : " + layer + " , State:" + o_state);
             List<Transition> outedges = getOutEdges(o_state);
             for (Transition t : outedges) {
                 if (t.value < minValue) {

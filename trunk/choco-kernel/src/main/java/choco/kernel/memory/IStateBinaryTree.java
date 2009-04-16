@@ -22,8 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.memory.trailing.StoredBinaryTreeTrail;
+
+import java.util.logging.Logger;
 
 
 /**
@@ -34,6 +37,8 @@ import choco.kernel.memory.trailing.StoredBinaryTreeTrail;
  * Interface for a backtrackable binary tree of integer intervals
  */
 public interface IStateBinaryTree {
+
+    final static Logger LOGGER = ChocoLogging.getMemoryLogger();
 
     /**
      * static integer representing an operation over a binary tree

@@ -270,16 +270,16 @@ public abstract class AbstractConstraint implements Constraint, Comparable {
         try {
           componentClass = Class.forName(manager);
         } catch (ClassNotFoundException e) {
-          System.err.println("Component class could not be found: " + manager);
+          LOGGER.severe("Component class could not be found: " + manager);
           System.exit(-1);
         }
         try {
           return componentClass.newInstance();
         } catch (InstantiationException e) {
-          System.err.println("Component class could not be instantiated: " + manager);
+          LOGGER.severe("Component class could not be instantiated: " + manager);
           System.exit(-1);
         } catch (IllegalAccessException e) {
-          System.err.println("Component class could not be accessed: " + manager);
+          LOGGER.severe("Component class could not be accessed: " + manager);
           System.exit(-1);
         }
         return null;

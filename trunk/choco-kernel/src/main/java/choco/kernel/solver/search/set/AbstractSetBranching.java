@@ -26,8 +26,6 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.AbstractIntBranching;
 import choco.kernel.solver.variables.set.SetVar;
 
-import java.util.logging.Level;
-
 //**************************************************
 //*                   J-CHOCO                      *
 //*   Copyright (C) F. Laburthe, 1999-2003         *
@@ -57,11 +55,9 @@ public abstract class AbstractSetBranching extends AbstractIntBranching {
 		SetVar var = (SetVar) xx[0];
 		int val = ((Integer) xx[1]).intValue();
 		if (numBranch == 1) {
-			//System.out.println("addToKer[" + y + "," + i + "]");
 			var.setValIn(val);
 			manager.solver.propagate();
 		} else if (numBranch == 2) {
-			//System.out.println("remFromEnv[" + y + "," + i + "]");
 			var.setValOut(val);
 			manager.solver.propagate();
 		}

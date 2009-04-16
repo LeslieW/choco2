@@ -361,7 +361,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		/*int deltaWorld = (solver.getEnvironment().getWorldIndex() - targetWorld);
     if (deltaWorld > 0) {
       if (currentTraceIndex - deltaWorld < -1)
-        System.err.println("bizarre");
+        LOGGER.severe("bizarre");
       currentTraceIndex = currentTraceIndex - deltaWorld;
     }*/
 	}
@@ -372,7 +372,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 * Print all statistics
 	 */
 	public void printRuntimeStatistics() {
-		System.out.print(runtimeStatistics());
+		LOGGER.info(runtimeStatistics());
 	}
 
 	public String runtimeStatistics() {

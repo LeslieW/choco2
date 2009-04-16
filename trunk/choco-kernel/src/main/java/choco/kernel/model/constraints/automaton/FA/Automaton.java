@@ -23,6 +23,7 @@
 
 package choco.kernel.model.constraints.automaton.FA;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.UtilAlgo;
 import dk.brics.automaton.RegExp;
 import dk.brics.automaton.Transition;
@@ -33,6 +34,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Logger;
 
 
 /**
@@ -44,7 +46,7 @@ import java.util.*;
 
 public class Automaton {
 
-
+    protected final static Logger LOGGER = ChocoLogging.getModelLogger();
 
 
     protected ArrayList<int[]> representedBy;
@@ -313,7 +315,7 @@ public class Automaton {
             representedBy.get(source)[idx] = destination;
         }
         else {
-            System.err.println("state does not exist... not adding transition");
+            LOGGER.severe("state does not exist... not adding transition");
         }
     }
 
@@ -324,7 +326,7 @@ public class Automaton {
             representedBy.get(source)[idx] = -1;
         }
         else {
-            System.err.println("Symbol or state does not exist");
+            LOGGER.severe("Symbol or state does not exist");
         }
     }
 
@@ -551,283 +553,4 @@ public class Automaton {
             e.printStackTrace();
         }
     }
-
-
-
-
-
-
 }
-
-
-   /* public class Partition {
-        public Vector<TreeSet<Integer>> part;
-
-        public Partition() {
-            part = new Vector<TreeSet<Integer>>();
-        }
-
-        public Partition(Partition p) {
-            this();
-            for (TreeSet<Integer> S : p.part) {
-                TreeSet<Integer> nS =  new TreeSet<Integer>(S);
-                Vector<TreeSet<Integer>> to = partition(nS,p);
-                part.addAll(to);
-            }
-
-
-        }
-
-        public boolean equals(Object o) {
-            if (o instanceof Partition) {
-                Partition p = (Partition) o;
-                return p.part.size() == part.size();
-            }
-            return false;
-        }
-
-        public Vector<TreeSet<Integer>> partition(TreeSet<Integer> S, Partition p) {
-            Vector<TreeSet<Integer>> newSet = new Vector<TreeSet<Integer>>();
-            Integer[] as = S.toArray(new Integer[S.size()]);
-            int[] index = new int[nbStates];
-            Arrays.fill(index,-1);
-
-            for (int i = 0 ; i < as.length ; i++) {
-                for (int j = i+1 ; j < as.length ; j++) {
-                    int q1 = as[i];
-                    int q2 = as[j];
-                    boolean b = true;
-                    for (int symb : alphabet) {
-                        if (delta(q1,symb) != -1)
-                            b &= p.set(delta(q1,symb)) == p.set(delta(q2,symb));
-                    }
-                    if (b) {
-                        if (index[q1] == -1 && index[q2] == -1) {
-                            TreeSet<Integer> n = new TreeSet<Integer>();
-                            n.add(q1);
-                            n.add(q2);
-                            S.remove(q1);
-                            S.remove(q2);
-                            newSet.add(n);
-                            index[q1] = newSet.size() -1;
-                            index[q2] = newSet.size() -1;
-                        }
-                        else if (index[q1] == -1) {
-                            int idx =index[q2];
-                            S.remove(q1);
-                            index[q1] =idx;
-                            newSet.get(idx).add(q1);
-                        }
-                        else if (index[q2] == -1) {
-                            int idx =index[q1];
-                            S.remove(q2);
-                            index[q2] =idx;
-                            newSet.get(idx).add(q2);
-                        }
-                    }
-                    else {
-                        S.remove(q1);
-                        S.remove(q2);
-                        if (index[q1] == -1) {
-                            TreeSet<Integer> n = new TreeSet<Integer>();
-                            n.add(q1);
-                            newSet.add(n);
-                            index[q1] = newSet.size()-1;
-                        }
-                        if (index[q2] == -1) {
-                            TreeSet<Integer> n = new TreeSet<Integer>();
-                            n.add(q2);
-                            newSet.add(n);
-                            index[q2] = newSet.size()-1;
-                        }
-
-                    }
-                }
-            }
-            if (!S.isEmpty())
-                newSet.add(S);
-            return newSet;
-
-        }
-
-        public TreeSet<Integer> set(int look) {
-            for (TreeSet<Integer> S : part) {
-                if (S.contains(look))
-                    return S;
-            }
-            return null;
-        }
-
-        public void add(TreeSet<Integer> a) {
-            part.add(a);
-        }
-        public String toString() {
-            StringBuffer b = new StringBuffer("{");
-            int ps = part.size();
-            int ct = 1;
-            for (TreeSet<Integer> ts : part) {
-                b.append("{");
-                int l = 1;
-                int sz = ts.size();
-                for (int k : ts) {
-                    b.append(k).append((l == sz)?"}":",");
-                    l++ ;
-                }
-                b.append((ct == ps)?"}":",");
-                ct++;
-            }
-            return (b.toString());
-        }
-    }
-
-    public Automaton minimize() {
-        Partition p = partition();
-        Automaton n = new Automaton();
-        int[] smap = new int[p.part.size()];
-        int i = 0;
-        for (TreeSet<Integer> h : p.part)
-        {
-            smap[i] = n.addState();
-            boolean b = false;
-            for (int k : h)  {
-                if (getStartingState() == k)
-                    n.setStartingState(smap[i]);
-                if (isAccepting(k))
-                    b = true;
-            }
-            if (b)
-                n.setAcceptingState(smap[i]);
-            i++;
-
-        }
-        for (i = 0 ; i < p.part.size() ; i++) {
-            for (int j = 0 ; j < p.part.size(); j++) {
-                for (int k : p.part.get(i)) {
-                    for (int l : p.part.get(j)) {
-                        for (int a : alphabet) {
-                            int next =delta(k,a);
-                            boolean b = next == l;
-                            if (b) {
-                                n.addTransition(smap[i],smap[j],a);
-                                //  System.out.println("adding transition "+rep[i]+"->"+a+"->"+rep[j]);
-                                //  System.out.println("because there was "+k+"->"+a+"->"+next);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        n.removeDeadState();
-        return n;
-
-
-    }
-
-    public  Partition partition()
-    {
-        TreeSet<Integer> acc = new TreeSet<Integer>(this.acceptingStates);
-        TreeSet<Integer> all = new TreeSet<Integer>();
-        for (int i = 0 ; i < nbStates ; i++){
-            if (!acc.contains(i))
-                all.add(i);
-        }
-        Partition p = new Partition();
-        p.add(acc);
-        p.add(all);
-        Partition p2 = new Partition(p);
-        while (!p.equals(p2)) {
-            p = p2;
-            p2 = new Partition(p);
-        }
-        return p;
-
-    }
-
-    public void removeDeadState()
-    {
-        System.out.println("removing dead states of ");
-        System.out.println(this);
-        int save = -1;
-        while (save != nbStates) {
-            save = nbStates;
-            TIntHashSet used = new TIntHashSet();
-            used.add(getStartingState());
-            for (int i = 0 ;i < nbStates ; i++)
-            {
-                if (!isAccepting(i)) {
-                    boolean b = true;
-                    for (int a : alphabet) {
-                        int next = delta(i,a);
-                        b&= next == -1 || next == i;
-
-                    }
-                    if (b) {
-                        remState(i);
-                        i--;
-                    }
-                }
-                for (int a :alphabet) {
-                    int next = delta(i,a);
-                    if (next != i )
-                        used.add(next);
-                }
-
-            }
-            for (int i = 0; i < nbStates ; i++)
-                if (!used.contains(i))
-                {
-                    remState(i);
-                    Integer[] u = used.toArray(new Integer[used.size()]);
-                    for (int k : u) {
-                        if (k > i) {
-                            used.remove(k);
-                            used.add(k-1);
-                        }
-                    }
-                }
-
-        }
-
-    }
-
-      public static Automaton generate(int[] tL, long seed)
-    {
-        int max = 30;
-        Random r = new Random(seed);
-        Automaton a = new Automaton();
-
-        for (int i = 0 ; i < max - r.nextInt(max) ; i++)
-        {
-            a.addState();
-        }
-        a.setStartingState(0);
-
-        int nbAcc = r.nextInt(a.nbStates) +1 ;
-
-        TIntArrayList v = new TIntArrayList();
-        for (int i = 0 ; i < a.nbStates ; i++)
-            v.add(i);
-
-
-        for (int i = 0 ; i < nbAcc ; i++)
-        {
-            int tmp = v.get(r.nextInt(v.size()));
-            a.setAcceptingState(tmp);
-            v.remove(tmp);
-        }
-        int nb = tL.length * a.nbStates;
-        for (int i = 0 ; i < nb ; i++)
-        {
-            int source = r.nextInt(a.nbStates);
-            int dest = r.nextInt(a.nbStates);
-            int symb = tL[r.nextInt(tL.length)];
-
-            a.addTransition(source,dest,symb);
-        }
-
-
-        return a.minimize();
-
-    }
-    */

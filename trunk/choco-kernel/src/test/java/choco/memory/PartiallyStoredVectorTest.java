@@ -40,7 +40,7 @@ public class PartiallyStoredVectorTest {
 	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 	
   private IEnvironment env;
-  private PartiallyStoredVector vector;
+  private PartiallyStoredVector<Integer> vector;
 
     @Before
   public void setUp() {
@@ -66,13 +66,13 @@ public class PartiallyStoredVectorTest {
     assertTrue(vector.isEmpty());
     env.worldPush();
     assertEquals(1, env.getWorldIndex());
-    vector.add(new Integer(0));
-    vector.add(new Integer(1));
+    vector.add(0);
+    vector.add(1);
     env.worldPush();
     assertEquals(2, env.getWorldIndex());
-    vector.add(new Integer(2));
-    vector.add(new Integer(3));
-    vector.staticAdd(new Integer(4));
+    vector.add(2);
+    vector.add(3);
+    vector.staticAdd(4);
     assertTrue(vector.size() == 5);
     env.worldPop();
     assertTrue(vector.size() == 3);
@@ -82,7 +82,7 @@ public class PartiallyStoredVectorTest {
     assertEquals(0, env.getWorldIndex());
   }
 
-    static int A=0, B=1, C=2, D=3;
+    static Integer A=0, B=1, C=2, D=3;
     @Test
     @Ignore
     public void test2() {
@@ -98,44 +98,21 @@ public class PartiallyStoredVectorTest {
         long t1 = System.currentTimeMillis();
         for (int i = 0; i < n; i++) {
             int obj = types[r.nextInt(types.length-1)];
-            int stat = 0;//r.nextInt(2);
 
             if ((obj == A)) {
-                if ((stat == 0)) {
-                    vector.insert(b.get(), obj);
-                    b.add(1);
-                    c.add(1);
-                    d.add(1);
-                } else {
-                    vector.staticInsert(bs, obj);
-                    bs++;
-                    cs++;
-                    ds++;
-                }
+                vector.insert(b.get(), obj);
+                b.add(1);
+                c.add(1);
+                d.add(1);
             } else if ((obj == B)) {
-                if ((stat == 0)) {
-                    vector.insert(c.get(), obj);
-                    c.add(1);
-                    d.add(1);
-                } else {
-                    vector.staticInsert(cs, obj);
-                    cs++;
-                    ds++;
-                }
+                vector.insert(c.get(), obj);
+                c.add(1);
+                d.add(1);
             } else if ((obj == C)) {
-                if ((stat == 0)) {
-                    vector.insert(d.get(), obj);
-                    d.add(1);
-                } else {
-                    vector.staticInsert(ds, obj);
-                    ds++;
-                }
+                vector.insert(d.get(), obj);
+                d.add(1);
             } else if ((obj == D)) {
-                if ((stat == 0)) {
-                    vector.add(obj);
-                } else {
-                    vector.staticAdd(obj);
-                }
+                vector.add(obj);
             }
             env.worldPush();
         }
@@ -169,10 +146,10 @@ public class PartiallyStoredVectorTest {
             }
         }
         long t4 = System.currentTimeMillis();
-        System.out.println("t1:"+t1);
-        System.out.println("t2:"+t2);
-        System.out.println("t3:"+t3);
-        System.out.println("t4:"+t4);
+        LOGGER.info("t1:"+t1);
+        LOGGER.info("t2:"+t2);
+        LOGGER.info("t3:"+t3);
+        LOGGER.info("t4:"+t4);
     }
 
 }

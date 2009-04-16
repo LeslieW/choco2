@@ -54,7 +54,7 @@ public class ChoicePoint implements Goal {
   }
 
   public Goal execute(Solver solver) throws ContradictionException {
-    System.err.println("Should not be called in ChoicePoint !!");
+    LOGGER.severe("Should not be called in ChoicePoint !!");
     return null;
   }
 

@@ -22,7 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.constraints.integer.extension;
 
+import choco.kernel.common.logging.ChocoLogging;
+
+import java.util.logging.Logger;
+
 public abstract class ConsistencyRelation implements Cloneable {
+
+    protected final static Logger LOGGER = ChocoLogging.getKernelLogger();
 
   protected boolean feasible;
 

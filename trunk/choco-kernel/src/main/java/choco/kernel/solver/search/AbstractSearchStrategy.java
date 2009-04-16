@@ -22,15 +22,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.search;
 
-import java.util.ArrayList;
-import java.util.logging.Logger;
-
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.set.SetVar;
+
+import java.util.ArrayList;
+import java.util.logging.Logger;
 
 /**
  * An abstract class handling the control for solving a model
@@ -124,7 +124,7 @@ public abstract class AbstractSearchStrategy {
 	 * showing information about the last solution
 	 */
 	public void showSolution() {
-		System.out.println(solver.pretty());
+		LOGGER.info(solver.pretty());
 		// TODO
 	}
 

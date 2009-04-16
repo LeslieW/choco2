@@ -22,11 +22,17 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.variables.real;
 
+import choco.kernel.common.logging.ChocoLogging;
+
+import java.util.logging.Logger;
+
 /**
  * Some tools for float computing.
  * Inspired from IAMath : interval.sourceforge.net
  */
 public class RealMath {
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
+
   public static final double ZERO = 0.0;
   public static final double NEG_ZER0 = 0.0 * -1.0;
 
@@ -335,7 +341,7 @@ public class RealMath {
 
   public static RealInterval evenIRoot(RealInterval i, int p, RealInterval res) {
     if (i.getSup() < 0) {
-      System.err.println("Erreur !!");
+      LOGGER.severe("Erreur !!");
     }
     double inf, sup;
     if (i.getInf() < 0)
@@ -380,20 +386,20 @@ public class RealMath {
   public static RealInterval sinRange(int a, int b) {
     switch (4 * a + b) {
       case 0:
-        System.err.println("Erreur !");
+        LOGGER.severe("Erreur !");
         return null;
       case 1:
         return new RealIntervalConstant(1.0, 1.0);
       case 2:
         return new RealIntervalConstant(0.0, 1.0);
       case 3:
-        System.err.println("Erreur !");
+        LOGGER.severe("Erreur !");
         return null;
       case 4:
-        System.err.println("Erreur !");
+        LOGGER.severe("Erreur !");
         return null;
       case 5:
-        System.err.println("Erreur !");
+        LOGGER.severe("Erreur !");
         return null;
       case 6:
         return new RealIntervalConstant(0.0, 0.0);
@@ -402,10 +408,10 @@ public class RealMath {
       case 8:
         return new RealIntervalConstant(-1.0, 0.0);
       case 9:
-        System.err.println("Erreur !");
+        LOGGER.severe("Erreur !");
         return null;
       case 10:
-        System.err.println("Erreur !");
+        LOGGER.severe("Erreur !");
         return null;
       case 11:
         return new RealIntervalConstant(-1.0, -1.0);
@@ -414,10 +420,10 @@ public class RealMath {
       case 13:
         return new RealIntervalConstant(0.0, 1.0);
       case 14:
-        System.err.println("Erreur !");
+        LOGGER.severe("Erreur !");
         return null;
       case 15:
-        System.err.println("Erreur !");
+        LOGGER.severe("Erreur !");
         return null;
     }
     throw new UnsupportedOperationException();
@@ -625,32 +631,4 @@ public class RealMath {
     return new RealIntervalConstant(retInf, retSup);
   }
 
-
-  // ============================================
-
-  /*public static void main(String args[]) {
-    Model pb = new Model();
-    RealInterval r1 = new RealIntervalConstant(1, 4);
-    RealInterval r2 = new RealIntervalConstant(-5, -3);
-    RealInterval r3 = new RealIntervalConstant(-3, 4);
-    RealInterval r4 = new RealIntervalConstant(0, Double.POSITIVE_INFINITY);
-    RealInterval r5 = new RealIntervalConstant(0.0, 0.9);
-    RealInterval r6 = new RealIntervalConstant(-0.9, 0.0);
-
-    System.out.println(r1 + "+" + r2 + " = " + add(r1, r2));
-    System.out.println(r1 + "-" + r2 + " = " + sub(r1, r2));
-    System.out.println(r1 + "*" + r2 + " = " + mul(r1, r2));
-    System.out.println(r1 + "/" + r2 + " = " + odiv(r1, r2));
-    System.out.println(r1 + "/" + r3 + " (in " + r4 + ") = " + odiv_wrt(r1, r3, r4));
-    System.out.println(r3 + " ** 3 = " + iPower(r3, 3));
-    System.out.println(r3 + " ** 2 = " + iPower(r3, 2));
-    System.out.println(r3 + " ** 3 ** 1/3 " + iRoot(iPower(r3, 3), 3, new RealIntervalConstant(-100, 100)));
-    System.out.println(r3 + " ** 2 ** 1/2 " + iRoot(iPower(r3, 2), 2, new RealIntervalConstant(-100, 100)));
-    System.out.println("cos(" + r2 + ") in " + cos(r2));
-    System.out.println("cos(" + r1 + ") in " + cos(r1));
-    System.out.println("sin(" + r2 + ") in " + sin(r2));
-    System.out.println("sin(" + r1 + ") in " + sin(r1));
-    System.out.println("asin_wrt(" + r5 + ", " + r2 + ") in " + asin_wrt(r5, r2));
-    System.out.println("acos_wrt(" + r6 + ", " + r2 + ") in " + acos_wrt(r6, r2));
-  }  */
 }

@@ -22,8 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.visu;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solver;
 import choco.kernel.visu.components.panels.AVarChocoPanel;
+
+import java.util.logging.Logger;
 
 /*
  * Created by IntelliJ IDEA.
@@ -35,6 +38,9 @@ import choco.kernel.visu.components.panels.AVarChocoPanel;
  */
 
 public interface IVisu {
+
+       final static Logger LOGGER = ChocoLogging.getSolverLogger();
+    
 
     /**
      * Add a new panel to the main frame of the Choco visualizer.
@@ -48,13 +54,12 @@ public interface IVisu {
      * {@code visible}.
      * @param visible  if {@code true}, makes the {@code IVisu} visible, 
      * otherwise hides the {@code IVisu}.
-     * @param visible
      */
     public void setVisible(final boolean visible);
 
     /**
      * Initializes the {@code IVisu} from the {@code Solver}
-     * @param s
+     * @param s solver
      */
     public void init(final Solver s);
 

@@ -22,9 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.constraints;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.INode;
+
+import java.util.logging.Logger;
 
 /*
  * User:    charles
@@ -32,6 +35,7 @@ import choco.kernel.solver.constraints.reified.INode;
  */
 public interface ExpressionManager {
 
+    final static Logger LOGGER = ChocoLogging.getModelLogger();
 
     /**
      * Build a expression node

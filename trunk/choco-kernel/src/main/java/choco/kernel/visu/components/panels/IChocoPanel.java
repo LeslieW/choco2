@@ -22,10 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.visu.components.panels;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.visu.components.IVisuVariable;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 /*
  * Created by IntelliJ IDEA.
  * User: charles
@@ -36,6 +38,8 @@ import java.util.ArrayList;
  */
 
 public interface IChocoPanel {
+
+    final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
 
     /**

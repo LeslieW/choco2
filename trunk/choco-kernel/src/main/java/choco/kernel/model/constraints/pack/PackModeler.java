@@ -300,20 +300,4 @@ public class PackModeler {
 		model.addConstraints(redundantCstrAllDiffLargeItems(option));
 	}
 
-//	public static void main(String[] args) {
-//		int[] s ={4,6,8,4,3,10,13,5,4,6,5};
-//		PackModeler modeler= new PackModeler(s,20,15);
-//		System.out.println(ChocoUtil.pretty(modeler.sizes));
-//		//System.out.println(ChocoUtil.pretty(modeler.symBreakLoadOrdering(true)));
-//		//System.out.println(ChocoUtil.pretty(modeler.symBreakAllDiffLargeItems()));
-//		System.out.println(ChocoUtil.pretty(modeler.symBreakEndsWithEmptyBins(2, modeler.nbBins)));
-//		Model model= new CPModel();
-//		model.addConstraints(modeler.symBreakEndsWithEmptyBins(2, modeler.nbBins));
-////		modeler.packAll(model,false,false);
-//		System.out.println(model.pretty());
-//
-//	}
-
-
-
 }

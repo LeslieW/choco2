@@ -336,12 +336,10 @@ public class StoredBinaryTree implements IStateBinaryTree {
                 else current = current.rightNode;
             }
             else          {
-                System.err.println("GFROS PB");
+                LOGGER.severe("GFROS PB");
                 done = true;
             }
         }
-        //   System.out.println(this);
-
     }
 
     public Node getRoot() {

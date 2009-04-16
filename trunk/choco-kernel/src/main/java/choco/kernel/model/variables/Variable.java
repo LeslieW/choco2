@@ -24,12 +24,14 @@ package choco.kernel.model.variables;
 
 import choco.IPretty;
 import choco.kernel.common.IIndex;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.IOptions;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -41,6 +43,8 @@ import java.util.Properties;
  * on the Model.
  */
 public interface Variable extends IPretty, IIndex, IOptions {
+
+    final static Logger LOGGER = ChocoLogging.getModelLogger();
 
 	public VariableType getVariableType();
 

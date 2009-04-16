@@ -22,7 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.common.util;
 
+import choco.kernel.common.logging.ChocoLogging;
+
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 /**
  * A double linked list with constant time access, addition and deletion in o(1)
@@ -30,6 +33,8 @@ import java.util.Arrays;
  * time but very poor for memory.
  */
 public class DoubleLinkedList implements IntIterator {
+
+    protected final static Logger LOGGER = ChocoLogging.getKernelLogger();
 
     /**
      *   Successors table
@@ -189,7 +194,7 @@ public class DoubleLinkedList implements IntIterator {
 
     /**
      * Restrict the domain to the element val
-     * @param idx
+     * @param val
      */
     public void restrict(int val) {
         reset();
@@ -223,9 +228,9 @@ public class DoubleLinkedList implements IntIterator {
     // Display the table
     public void AfficheTab() {
         for (int i = 0; i < nextT.length; i++) {
-            System.out.println(nextT[i] + " | " + prevT[i]);
+            LOGGER.info(nextT[i] + " | " + prevT[i]);
         }
-        System.out.println("---");
+        LOGGER.info("---");
     }
 
 

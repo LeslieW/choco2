@@ -306,7 +306,6 @@ public class LayeredDFA {
             setInitState(firstState);
 
             while (nodeInfo.length != 0) {
-                //System.out.println(nodeInfo[0] + " // " + nodeInfo[1] + " -> " + nodeInfo[2]);
                 State currentState = (State) builtStates.get(Integer.parseInt(nodeInfo[1]));
                 State newState = (State) builtStates.get(Integer.parseInt(nodeInfo[2]));
                 if (newState == null) {

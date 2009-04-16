@@ -102,7 +102,6 @@ public class LightLayeredDFA {
             etatsDeLaCouche[i] = new ArrayList();
         }
 
-       //System.out.println("Initialisation des etats");
         Hashtable ht = new Hashtable();
         nbState = 0;
 

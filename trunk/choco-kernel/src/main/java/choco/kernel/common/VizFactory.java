@@ -23,15 +23,21 @@
 package choco.kernel.common;
 
 
+import choco.kernel.common.logging.ChocoLogging;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.logging.Logger;
 
 /**
  * @author Arnaud Malapert : arnaud(dot)malapert(at)emn(dot)fr
  *
  */
 public final class VizFactory {
+
+    protected final static Logger LOGGER = ChocoLogging.getKernelLogger();
 
 	/**
 	 * empty constructor
@@ -95,14 +101,16 @@ public final class VizFactory {
 	}
 	/**
 	 * gnuplot should be in the PATH variable
-	 */
+     * @param curve
+     */
 	public static void displayGnuplot(final String curve) {
 		displayGnuplot(createTempFile("gnuplot", ".gpl"));
 	}
 
 	/**
 	 * gnuplot should be in the PATH variable
-	 */
+     * @param curve
+     */
 	public static void displayGnuplot(final File curve) {
 		final File script=createFile("gnuplot",".gpl","plot \'"+curve.getAbsolutePath()+"\' with lines");
 		execGnuplot(script);
@@ -117,11 +125,11 @@ public final class VizFactory {
 	//****************************************************************//
 
 	protected static void error(String message) {
-		System.err.println(message);
+		LOGGER.severe(message);
 	}
 
 	protected static void info(String message) {
-		System.out.println(message);
+		LOGGER.info(message);
 	}
 
 	protected static void created(File f) {
@@ -172,7 +180,7 @@ public final class VizFactory {
 				p.waitFor();//si l'application doit attendre a ce que ce process fini
 			}
 		}catch(Exception e) {
-			System.out.println("erreur d'execution " + cmd + e.toString());
+			LOGGER.warning(MessageFormat.format("erreur d''execution {0}{1}", cmd, e.toString()));
 		}
 	}
 
