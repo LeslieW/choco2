@@ -384,7 +384,6 @@ public class MaxTest {
 				//CPSolver.setVerbosity(CPSolver.SEARCH);
 				//s.setLoggingMaxDepth(4);
 				s.solveAll();
-				CPSolver.flushLogs();
 				assertEquals("set of cardinality <= "+k,sum, s.getNbSolutions());
 
 			}

@@ -112,7 +112,6 @@ public class CycleMain {
             solver.minimize(solver.getVar(objective), true);
             break;
         }
-        CPSolver.flushLogs();
         System.out.println("==========================");
     }
 

@@ -140,13 +140,11 @@ public class ExamplesTest {
         v.addPanel(new VarChocoPanel("Grid", vars, SUDOKU, null));
         v.addPanel(new VarChocoPanel("Domain", vars, FULLDOMAIN, null));
 
-        CPSolver.setVerbosity(CPSolver.SOLUTION);
         s.setFirstSolution(true);
         s.generateSearchStrategy();
         s.visualize(v);
         s.launch();
 
-        CPSolver.flushLogs();
         v.kill();
     }
 
@@ -501,7 +499,6 @@ public class ExamplesTest {
 
         Visu v = Visu.createVisu(1024, 1600);
         v.addPanel(new VarChocoPanel("Map", etats, ColoringPApplet.class, "./images/usa.svg"));
-        CPSolver.setVerbosity(CPSolver.SOLUTION);
         s.setFirstSolution(true);
         s.generateSearchStrategy();
         s.visualize(v);
@@ -555,7 +552,6 @@ public class ExamplesTest {
         Visu v = Visu.createVisu(220, 250);
         Variable[] vars = UtilAlgo.append(p.myvars);
         v.addPanel(new VarChocoPanel("Picross", vars, PicrossPApplet.class, new int[]{rows.length, cols.length}));
-        CPSolver.setVerbosity(CPSolver.SOLUTION);
         s.setFirstSolution(true);
         s.generateSearchStrategy();
         s.visualize(v);

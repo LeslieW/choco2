@@ -68,7 +68,6 @@ public class TestNogoodFromRestart {
 			//CPSolver.setVerbosity(CPSolver.SEARCH);
 			s.setLoggingMaxDepth(100);
 			s.launch();
-			CPSolver.flushLogs();
 			System.out.println(s.solutionToString());
 			final String str = label +" index "+i;
 			repmessage(str,"opt="+s.getOptimumValue(),s.isFeasible(),s);

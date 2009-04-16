@@ -118,8 +118,6 @@ public class MinimumEdgeDeletion extends PatternExample {
 	@Override
 	public void solve() {
 		_s.launch();
-		CPSolver.flushLogs();
-
 	}
 
 

@@ -50,9 +50,7 @@ public final class ChocoDemo {
 		s.read(m);
 		//System.out.println(s.pretty());
 		s.setTimeLimit(TIME_LIMIT*1000);
-		CPSolver.setVerbosity(CPSolver.SOLUTION);
 		s.solve();
-		CPSolver.flushLogs();
 		final String title = "Bin Packing Constraint Visualization 2";
 		demo(title,ChocoChartFactory.createPackChart(title, s,m1,m2));
 	}

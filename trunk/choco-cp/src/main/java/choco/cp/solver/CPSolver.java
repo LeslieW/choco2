@@ -2266,7 +2266,6 @@ public class CPSolver implements Solver {
 
 		st.append("\n").append("~~~~~~~~~~~~~~~~~~~~~~~~~~").append("\n");
 		LOGGER.log(Level.INFO, st.toString());
-		flushLogs();
 		return isSolution;
 	}
 

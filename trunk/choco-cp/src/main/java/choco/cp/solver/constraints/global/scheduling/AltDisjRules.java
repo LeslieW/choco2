@@ -171,7 +171,6 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 
 	@Override
 	public boolean detectablePrecedenceLCT() throws ContradictionException {
-		CPSolver.flushLogs();
 		setupListsAndTreeTL(makeReverseRLatestCompletionTimeCmp(), makeReverseREarliestCompletionTimeCmp(), LST);
 		for (IRTask rti : this) {
 			final ITask i = rti.getTaskVar();

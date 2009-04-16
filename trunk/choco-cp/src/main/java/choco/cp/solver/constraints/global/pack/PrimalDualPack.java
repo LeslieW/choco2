@@ -29,6 +29,7 @@ import java.util.List;
 
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.BitFlags;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.common.util.UtilAlgo;
 import choco.kernel.solver.ContradictionException;
@@ -155,7 +156,7 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 	public boolean pack(int item, int bin) throws ContradictionException {
 		boolean res = svars[bin].addToKernel(item, set_cIndices[bin]);
 		if(bins[item].isInstantiated()) {
-			CPSolver.flushLogs();
+			ChocoLogging.flushLogs();
 			throw new SolverException("Internal error : "+bins[item].pretty()+" should not be instantiated");
 		}
 		final IntIterator iter = bins[item].getDomain().getIterator();

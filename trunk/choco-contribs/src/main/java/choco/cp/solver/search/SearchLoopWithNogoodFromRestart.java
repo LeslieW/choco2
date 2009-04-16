@@ -52,7 +52,6 @@ public class SearchLoopWithNogoodFromRestart extends SearchLoopWithRestart {
 
 	@Override
 	protected void restoreRootNode(IntBranchingTrace ctx) {
-		if(Choco.DEBUG){CPSolver.flushLogs();}
 		recorder.reset();
 		recorder.handleTrace(ctx);
 		while (searchStrategy.currentTraceIndex > searchStrategy.baseWorld) {

@@ -337,7 +337,7 @@ public final class ChocoLogging {
 		}
 
 		case VERBOSE: {
-			setPattern(Level.INFO); //output only best solution
+			setPattern(Level.INFO); //output only number of solutions and statistics
 			break;
 		}
 		case SOLUTION: { 

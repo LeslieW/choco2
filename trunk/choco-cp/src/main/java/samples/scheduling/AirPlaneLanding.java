@@ -142,7 +142,6 @@ public class AirPlaneLanding {
 		System.out.println(solver.pretty());
 		//TODO add (find !) a good search strategy
 		solver.minimize(false);
-		CPSolver.flushLogs();
 		solver.printRuntimeSatistics();
 
 	}

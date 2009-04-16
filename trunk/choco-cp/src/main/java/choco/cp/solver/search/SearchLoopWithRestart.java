@@ -121,7 +121,6 @@ public class SearchLoopWithRestart extends SearchLoop {
 		boolean restartLimit;
 		do {
 			restartLimit = false;
-			CPSolver.flushLogs();
 			while (!stop) {
 				if ( checkRestartMoveMask(searchStrategy.nextMove) && 
 						restartStrategy.shouldRestart(searchStrategy)) {
