@@ -1,15 +1,5 @@
 package samples.random;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.strong.DomOverDDegRPC;
@@ -18,6 +8,7 @@ import choco.cp.solver.constraints.strong.StrongConsistencyManager;
 import choco.cp.solver.constraints.strong.maxrpcrm.MaxRPCrm;
 import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
 import choco.cp.solver.search.integer.valselector.MinVal;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraintWithSubConstraints;
 import choco.kernel.model.constraints.Constraint;
@@ -25,7 +16,13 @@ import choco.kernel.model.variables.Variable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 
+import static java.text.MessageFormat.format;
+import java.util.*;
+import java.util.logging.Logger;
+
 public class RandomProblemLauncher {
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
     private static int NBINSTANCES = -1;
 
@@ -98,17 +95,16 @@ public class RandomProblemLauncher {
             NBINSTANCES = Integer.valueOf(args[i++]);
 
         } catch (Exception exception) {
-            System.out.println(exception);
-            System.out
-                    .println("Usage : RandomProblem nbVar nbVal density tightness1 tightness2 increment force seed heuristic timeout nbinstances");
+            LOGGER.info(exception.getMessage());
+            LOGGER.info("Usage : RandomProblem nbVar nbVal density tightness1 tightness2 increment force seed heuristic timeout nbinstances");
             return;
         }
 
         e = RandomProblem.nbArcs(nbVar, density);
 
         for (double tightness = tightness1; tightness <= tightness2; tightness += increment) {
-            System.out.println("-------------------");
-            System.out.println(nbVar + " var, " + nbVal + " val, " + density
+            LOGGER.info("-------------------");
+            LOGGER.info(nbVar + " var, " + nbVal + " val, " + density
                     + " density (" + e + " cstr), " + tightness + " tightness"
                     + (force ? ", forced" : "") + " (pcr = "
                     + RandomProblem.criticTightness(nbVar, nbVal, e) + "), "
@@ -139,7 +135,8 @@ public class RandomProblemLauncher {
         }
 
         for (int i = NBINSTANCES; --i >= 0;) {
-            System.out.print("g");
+            StringBuffer st = new StringBuffer();
+            st.append("g");
             final RandomProblem problem = new RandomProblem(nbVar, nbVal,
                     nbCons, tightness, seed + i, force);
 
@@ -149,7 +146,7 @@ public class RandomProblemLauncher {
             nbCliques.add(cliques(constraints).size());
 
             for (Filter filter : TEST) {
-                System.out.print(filter);
+                st.append(filter);
                 System.gc();
                 System.gc();
                 System.gc();
@@ -206,16 +203,15 @@ public class RandomProblemLauncher {
                     }
                 }
 
-                // System.out.println("Building solver...");
+                // LOGGER.info("Building solver...");
 
                 // Build a solver
                 final Solver s = new CPSolver();
                 // CPSolver.setVerbosity(CPSolver.SEARCH);
                 // Read the model
                 s.read(m);
-                //System.out.print(s.pretty());
                 s.setTimeLimit(TIMEOUT);
-                // System.out.println("Solving...");
+                // LOGGER.info("Solving...");
                 Boolean result;
 
                 long time;
@@ -265,14 +261,13 @@ public class RandomProblemLauncher {
                 // CPSolver.flushLogs();
 
                 if (result == null) {
-                    System.out.print("*");
-                    // System.out.print(">=" + nbSol);
+                    st.append("*");
                     // nodes[i] = Integer.MAX_VALUE;
                     cpu.get(filter).add(Double.POSITIVE_INFINITY);
                     nbAwakes.get(filter).add(Integer.MAX_VALUE);
                     nodes.get(filter).add(Integer.MAX_VALUE);
                 } else {
-                    System.out.print(result ? 1 : 0);
+                    st.append(result ? 1 : 0);
                     try {
                         nodes.get(filter).add(s.getNodeCount());
                     } catch (Exception e) {
@@ -284,17 +279,16 @@ public class RandomProblemLauncher {
                 }
                 // nps[i] = 1000 * s.getNodeCount() / s.getTimeCount();
             }
+            LOGGER.info(st.toString());
         }
 
-        System.out.println();
-        System.out.println(avg(nbCliques) + " cliques avg");
+        LOGGER.info(format("\n{0} cliques avg", avg(nbCliques)));
         for (Filter f : TEST) {
-            System.out.println();
-            System.out.println(f + " :");
-            System.out.println(avg(cpu.get(f)) + " seconds avg");
-            System.out.println(avg(nodes.get(f)) + " nodes avg");
-            System.out.println(avg(nbAwakes.get(f)) + " awakes avg");
-            System.out.println(avg(mem.get(f)) + " mem avg");
+            LOGGER.info(f + " :");
+            LOGGER.info(avg(cpu.get(f)) + " seconds avg");
+            LOGGER.info(avg(nodes.get(f)) + " nodes avg");
+            LOGGER.info(avg(nbAwakes.get(f)) + " awakes avg");
+            LOGGER.info(avg(mem.get(f)) + " mem avg");
         }
     }
 

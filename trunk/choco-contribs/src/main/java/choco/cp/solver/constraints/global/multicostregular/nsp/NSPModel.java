@@ -1,19 +1,17 @@
 package choco.cp.solver.constraints.global.multicostregular.nsp;
 
-import choco.cp.model.CPModel;
-import choco.cp.model.managers.constraints.global.MultiCostRegularManager;
-
-import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.ComponentConstraint;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
-import choco.kernel.model.constraints.automaton.DFA;
-import choco.kernel.model.constraints.automaton.Transition;
-import choco.kernel.solver.Solver;
 import static choco.Choco.*;
+import choco.cp.model.CPModel;
+import choco.kernel.model.constraints.ComponentConstraint;
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.automaton.DFA;
+import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.Transition;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Solver;
 
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by IntelliJ IDEA.
@@ -131,9 +129,10 @@ public class NSPModel extends CPModel {
             int[] gmax = new int[4];
             //System.arraycopy(instance.coverages[d], 0, gmax, 0, gmax.length - 1);
             //gmax[gmax.length-1] = instance.nbNurses;
+            StringBuffer st = new StringBuffer();
             for (int l : instance.coverages[d])
-                System.out.print(l+"\t");
-            System.out.println("");
+                st.append(l).append("\t");
+            LOGGER.info(st.toString());
             Arrays.fill(gmax,instance.nbNurses);
             cgcc[d] = globalCardinality("cp:bc",tmp[d],0,3,instance.coverages[d],gmax);
         }

@@ -32,6 +32,7 @@ import parser.absconparseur.tools.InstanceParser;
 import parser.chocogen.XmlModel;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.Iterator;
 
 /**
@@ -42,7 +43,7 @@ public class XmlModelRPC extends XmlModel {
 
 	enum Filter {
 		AC, MaxRPC, MaxRPCLight
-	};
+	}
 
 	private final boolean light;
 
@@ -86,10 +87,9 @@ public class XmlModelRPC extends XmlModel {
 
 	private static void solve(File instance, Filter filter) throws Exception,
 			Error {
-		System.out.println();
-		System.out.println("--------------");
-		System.out.println(filter + " - " + instance);
-		System.out.println("--------------");
+		LOGGER.info("--------------");
+		LOGGER.info(filter + " - " + instance);
+		LOGGER.info("--------------");
 		final XmlModel xs;
 		switch (filter) {
 		case MaxRPC:
@@ -120,26 +120,24 @@ public class XmlModelRPC extends XmlModel {
 		Boolean result = s.solve();
 
 		if (result == null) {
-			System.out.println("s UNKNOWN");
-		} else if (result == false) {
-			System.out.println("s UNSATISFIABLE");
+			LOGGER.info("s UNKNOWN");
+		} else if (!result) {
+			LOGGER.info("s UNSATISFIABLE");
 		} else {
-			System.out.println("s SATISFIABLE");
-			System.out.print("v ");
+			LOGGER.info("s SATISFIABLE");
+			StringBuffer st =  new StringBuffer("v ");
 			for (int i = 0; i < parser.getVariables().length; i++) {
 				try {
-					System.out.print(s.getVar(
+					st.append(s.getVar(
 							parser.getVariables()[i].getChocovar()).getVal());
 				} catch (NullPointerException e) {
-					System.out.print(parser.getVariables()[i].getChocovar()
-							.getLowB());
+					LOGGER.severe(MessageFormat.format("{0}", parser.getVariables()[i].getChocovar().getLowB()));
 				}
-				System.out.print(" ");
 			}
-			System.out.println();
+            LOGGER.info(st.toString());
 		}
 
-		// System.out.println(s.pretty());
+		// LOGGER.info(s.pretty());
 		s.printRuntimeSatistics();
 
 		for (Iterator<SConstraint> itr = s.getIntConstraintIterator(); itr
@@ -147,13 +145,13 @@ public class XmlModelRPC extends XmlModel {
 
 			SConstraint c = itr.next();
 			if (c instanceof MaxRPCrm) {
-				System.out.println("MaxRPC awake : " + ((MaxRPCrm) c).nbPropag);
-				System.out.println("MaxRPC arc revises : "
-						+ ((MaxRPCrm) c).nbArcRevise);
-				System.out.println("MaxRPC pc revises : "
-						+ ((MaxRPCrm) c).nbPCRevise);
+				LOGGER.info("MaxRPC awake : " + MaxRPCrm.nbPropag);
+				LOGGER.info("MaxRPC arc revises : "
+						+ MaxRPCrm.nbArcRevise);
+				LOGGER.info("MaxRPC pc revises : "
+						+ MaxRPCrm.nbPCRevise);
 			} else {
-				System.out.println(c.pretty());
+				LOGGER.info(c.pretty());
 			}
 		}
 

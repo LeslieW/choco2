@@ -3,7 +3,10 @@ package choco.cp.solver.constraints.global.multicostregular.nsp;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 
 /**
  * Created by IntelliJ IDEA.
@@ -105,53 +108,5 @@ public class NSPVarSelector extends AbstractIntVarSelector {
             if (!v.isInstantiated()) return v;
         }
         return null;
-        /*int max = Integer.MIN_VALUE/100;
-        int ni = -1;
-        int nj = -1;
-        for (int i = 0 ;i < this.struct.need.length ; i++)
-        {
-            for (int j = 0 ;j < this.struct.need[i].length ; j++)
-            {
-
-                int val = this.struct.need[i][j].get();
-                System.out.print(val+" ");
-                if (max < val)
-                {
-                    max = val;
-                    ni = i;
-                    nj = j;
-                }
-
-            }
-            System.out.println("");
-        }
-        System.out.println("");
-        IntDomainVar tmp = this.struct.vars[ni];
-        if (max > 0) {
-            max = Integer.MAX_VALUE/100;
-            for (int i = 0 ;i < struct.instance.nbNurses ; i++)
-            {
-                int bui = struct.instance.prefs[i][ni*struct.instance.nbShifts+nj];
-                IntDomainVar t2 = this.struct.vars[i*struct.instance.nbDays+ni];
-                if (bui < max && !t2.isInstantiated() && t2.canBeInstantiatedTo(nj))
-                {
-                    max = bui;
-                    tmp = t2;
-                }
-            }             }
-
-
-        if (tmp.isInstantiated())
-        {
-            for (int i = 0 ;i < struct.vars.length ; i++)
-            {
-                if (!struct.vars[i].isInstantiated())
-                    return struct.vars[i];
-
-            }
-            return null;
-        }
-        else return tmp;*/
-
     }
 }

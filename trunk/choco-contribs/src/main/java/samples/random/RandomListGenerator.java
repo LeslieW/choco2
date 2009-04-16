@@ -22,12 +22,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.random;
 
+import choco.kernel.common.logging.ChocoLogging;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.logging.Logger;
 
 /**
  * This class allows generating integer random lists.
@@ -40,6 +43,8 @@ import java.util.Random;
  */
 public abstract class RandomListGenerator
 {
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+
 	public static enum Structure {
 		/**
 		 * Constant used to denote that generated lists have no structure, i.e., are purely random.
@@ -122,7 +127,8 @@ public abstract class RandomListGenerator
 
 	/**
 	 * Returns the generated tuples.
-	 */
+     * @return
+     */
 	public int[][] getTuples()
 	{
 		return tuples;
@@ -195,8 +201,7 @@ public abstract class RandomListGenerator
 	 */
 	protected void updateNbValueOccurencesFor(int[] tuple)
 	{
-		for (int i = 0; i < tuple.length; i++)
-			nbOccurences[tuple[i]]++;
+        for (int aTuple : tuple) nbOccurences[aTuple]++;
 	}
 
 	/**
@@ -218,8 +223,7 @@ public abstract class RandomListGenerator
 	public static double computeNbArrangementsFrom(int[] t)
 	{
 		double d = 1;
-		for (int i = 0; i < t.length; i++)
-			d *= t[i];
+        for (int aT : t) d *= aT;
 		return d;
 	}
 
@@ -235,7 +239,7 @@ public abstract class RandomListGenerator
 
 	public static double computeNbCombinationsFrom(int[] t)
 	{
-		int[] tmp = (int[]) t.clone();
+		int[] tmp = t.clone();
 		Arrays.sort(tmp);
 		if (tmp[0] == tmp[tmp.length - 1])
 			return cnp(tmp[0], tmp.length);
@@ -243,16 +247,17 @@ public abstract class RandomListGenerator
 	}
 
 	/**
-	 * Reurns the number of distinct tuples (hence, we do not take into account tuple repetition). 
-	 */
+	 * Reurns the number of distinct tuples (hence, we do not take into account tuple repetition).
+     * @return
+     */
 	protected double computeNbDistinctTuples()
 	{
 		return (valueRepetition ? computeNbArrangementsFrom(nbValues) : computeNbCombinationsFrom(nbValues));
 	}
 
-	/**
-	 * Reurns the maximum number of tuples that can be built. 
-	 */
+//	/**
+//	 * Reurns the maximum number of tuples that can be built. 
+//     */
 	//	protected int computeNbMaxElements()
 	//	{
 	//		if (tupleRepetition)
@@ -281,7 +286,7 @@ public abstract class RandomListGenerator
 
 		String name =
 			"List_"
-				+ nbValues
+				+ Arrays.toString(nbValues)
 				+ "_"
 				+ tupleLength
 				+ "_"
@@ -304,16 +309,14 @@ public abstract class RandomListGenerator
 		}
 		catch (IOException e)
 		{
-			System.out.println(e);
+			LOGGER.info(""+e);
 			System.exit(1);
 		}
 
-		for (int i = 0; i < tuples.length; i++)
-		{
-			for (int j = 0; j < tuples[i].length; j++)
-				out.print(tuples[i][j] + " ");
-			out.println();
-		}
+        for (int[] tuple : tuples) {
+            for (int aTuple : tuple) out.print(aTuple + " ");
+            out.println();
+        }
 		out.close();
 	}
 
@@ -324,29 +327,28 @@ public abstract class RandomListGenerator
 	{
 		double max = (tupleRepetition ? -1 : (valueRepetition ? computeNbArrangementsFrom(nbValues) : computeNbCombinationsFrom(nbValues)));
 
-		System.out.println("There are " + tuples.length + " elements " + (max != -1 ? "/  " + max + " elements" : ""));
-		for (int i = 0; i < tuples.length; i++)
-		{
-			System.out.print("(");
-			for (int j = 0; j < tuples[i].length; j++)
-			{
-				System.out.print(tuples[i][j]);
-				if (j != tuples[i].length - 1)
-					System.out.print(",");
-			}
-			System.out.print(") ");
-		}
-		System.out.println();
-		System.out.println("Occurrences of values");
+		LOGGER.info("There are " + tuples.length + " elements " + (max != -1 ? "/  " + max + " elements" : ""));
+        StringBuffer st = new StringBuffer();
+        for (int[] tuple : tuples) {
+            st.append("(");
+            for (int j = 0; j < tuple.length; j++) {
+                st.append(tuple[j]);
+                if (j != tuple.length - 1)
+                    st.append(",");
+            }
+            st.append(") ");
+        }
+        LOGGER.info(st.toString());
+		LOGGER.info("\nOccurrences of values");
 		for (int i = 0; i < nbOccurences.length; i++)
-			System.out.println(" value " + i + " => " + nbOccurences[i]);
+			LOGGER.info(" value " + i + " => " + nbOccurences[i]);
 	}
 
 	static void main(String[] args)
 	{
 		int[] t = { 2, 2, 6, 23, 3, 7, 8, 10, 10, 10, 10, 12, 21, 30 };
-		System.out.println("Combinations = " + computeNbCombinationsFrom(t));
-		System.out.println("Arrangements = " + computeNbArrangementsFrom(t));
+		LOGGER.info("Combinations = " + computeNbCombinationsFrom(t));
+		LOGGER.info("Arrangements = " + computeNbArrangementsFrom(t));
 
 	}
 }

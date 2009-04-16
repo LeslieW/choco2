@@ -22,6 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.multicostregular.asap.hci.abstraction;
 
+import choco.kernel.common.logging.ChocoLogging;
+
+import java.util.logging.Logger;
+
 /**
  * Created by IntelliJ IDEA.
  * User: julien
@@ -30,6 +34,8 @@ package choco.cp.solver.constraints.global.multicostregular.asap.hci.abstraction
  * Time: 1:29:25 PM
  */
 public class ASAPResolutionThread extends Thread{
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     ASAPDataHandler d;
 
@@ -44,12 +50,12 @@ public class ASAPResolutionThread extends Thread{
         {
             if (this.d.solver.solve())
             {
-                System.out.println("SOLVE FINI +");
+                LOGGER.info("SOLVE FINI +");
                 this.d.setSolved(true);
             }
             else
             {
-                System.out.println("SOLVE FINI -");
+                LOGGER.info("SOLVE FINI -");
                 this.d.setSolved(false);
             }
         }

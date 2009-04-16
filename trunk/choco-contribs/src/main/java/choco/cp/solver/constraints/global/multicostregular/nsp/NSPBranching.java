@@ -1,9 +1,8 @@
 package choco.cp.solver.constraints.global.multicostregular.nsp;
 
-import choco.kernel.solver.branch.AbstractLargeIntBranching;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.branch.AbstractLargeIntBranching;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.cp.solver.variables.integer.IntDomainVarImpl;
 
 /**
  * Created by IntelliJ IDEA.
@@ -60,7 +59,6 @@ public class NSPBranching extends AbstractLargeIntBranching {
             v = varselec.selectIntVar();
             val = valselec.getBestVal(v);
         }
-       // System.out.println(v+" <- "+val);;
         super.goDownBranch(v, val);
         v.setVal(val);
 
@@ -79,8 +77,6 @@ public class NSPBranching extends AbstractLargeIntBranching {
             v = varselec.selectIntVar();
             val = valselec.getBestVal(v);
         }
-      //  System.out.println(v+" != "+val);;
-
         super.goUpBranch(v, val);
         v.remVal(val);
     }

@@ -23,17 +23,6 @@
 
 package samples.jobshop;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import samples.jobshop.SimpleDTConstraint.SimpleDTConstraintManager;
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -43,14 +32,21 @@ import choco.cp.solver.constraints.strong.StrongConsistencyManager;
 import choco.cp.solver.constraints.strong.maxrpcrm.MaxRPCrm;
 import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
 import choco.cp.solver.search.integer.valselector.MinVal;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.ComponentConstraintWithSubConstraints;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import samples.jobshop.SimpleDTConstraint.SimpleDTConstraintManager;
+
+import java.util.*;
+import java.util.logging.Logger;
 
 public class TaillardJobShopProblem {
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
     private IntegerVariable[][] variables;
     private Collection<Collection<Constraint>> disjunctive;
@@ -65,7 +61,7 @@ public class TaillardJobShopProblem {
             int[][] shuffle, int bound) {
         this.jobs = jobs;
         this.machines = machines;
-        // System.out.println("Generating problem with " + nbVar +
+        // LOGGER.info("Generating problem with " + nbVar +
         // " variables, "
         // + nbVal + " values, " + nbConstraints + " constraints, "
         // + tightness + " Tightness");
@@ -192,13 +188,12 @@ public class TaillardJobShopProblem {
 
             light = Boolean.valueOf(args[i++]);
 
-            TIMEOUT = 1000 * Integer.valueOf(args[i++]);
+            TIMEOUT = 1000 * Integer.valueOf(args[i]);
 
             // NBINSTANCES = Integer.valueOf(args[i++]);
 
         } catch (Exception exception) {
-            System.out
-                    .println("Usage : "
+            LOGGER.info("Usage : "
                             + TaillardJobShopProblem.class.getSimpleName()
                             + " nbJobs nbMachines timesSeed machinesSeed bound heuristic maxrpc light timeout");
             return;
@@ -210,14 +205,14 @@ public class TaillardJobShopProblem {
         final int[][] machinesMatrix = RandomGenerator.randShuffle(
                 machinesSeed, jobs, machines);
 
-        System.out.println("-------------------");
-        System.out.println(jobs + " jobs, " + machines + " machines, "
+        LOGGER.info("-------------------");
+        LOGGER.info(jobs + " jobs, " + machines + " machines, "
                 + timesSeed + " time seed, " + machinesSeed
                 + " machines seed, " + bound + " bound, "
                 + (maxrpc ? " maxrpc, " : "ac, ") + (light ? "light" : "full")
                 + ", " + heuristic);
-        System.out.println(Arrays.deepToString(timesMatrix));
-        System.out.println(Arrays.deepToString(machinesMatrix));
+        LOGGER.info(Arrays.deepToString(timesMatrix));
+        LOGGER.info(Arrays.deepToString(machinesMatrix));
 
         test(jobs, machines, timesMatrix, machinesMatrix, bound, heuristic,
                 maxrpc, light);
@@ -234,7 +229,8 @@ public class TaillardJobShopProblem {
         // final double[] nps = new double[NBINSTANCES - 1];
 
         for (int i = NBINSTANCES; --i >= 0;) {
-            System.out.print("g");
+            StringBuffer st = new StringBuffer();
+            st.append("g");
             final TaillardJobShopProblem problem = new TaillardJobShopProblem(
                     jobs, machines, timesMatrix, machinesMatrix, bound);
 
@@ -295,7 +291,7 @@ public class TaillardJobShopProblem {
                 }
             }
 
-            // System.out.println("Building solver...");
+            // LOGGER.info("Building solver...");
 
             // Build a solver
             final CPSolver s = new CPSolver();
@@ -306,8 +302,7 @@ public class TaillardJobShopProblem {
             if (TIMEOUT > 0) {
                 s.setTimeLimit(TIMEOUT);
             }
-            // System.out.println("Solving...");
-            System.out.print("s");
+            st.append("s");
             Boolean result;
             System.gc();
 
@@ -335,14 +330,13 @@ public class TaillardJobShopProblem {
             // CPSolver.flushLogs();
 
             if (result == null) {
-                System.out.print("*");
-                // System.out.print(">=" + nbSol);
+                st.append("*");
                 // nodes[i] = Integer.MAX_VALUE;
                 cpu.add(Double.POSITIVE_INFINITY);
                 nbAwakes.add(Integer.MAX_VALUE);
                 nodes.add(Integer.MAX_VALUE);
             } else {
-                System.out.print(s.getOptimumValue());
+                st.append(s.getOptimumValue());
                 try {
                     nodes.add(s.getNodeCount());
                 } catch (Exception e) {
@@ -353,15 +347,13 @@ public class TaillardJobShopProblem {
                 MaxRPCrm.nbPropag = 0;
             }
             // nps[i] = 1000 * s.getNodeCount() / s.getTimeCount();
-
+           LOGGER.info(st.toString());
         }
 
-        System.out.println();
-
-        System.out.println(median(cpu) + " seconds med");
-        System.out.println(median(nodes) + " nodes med");
-        System.out.println(median(nbAwakes) + " awakes med");
-        System.out.println(median(mem) + " mem med");
+        LOGGER.info(median(cpu) + " seconds med");
+        LOGGER.info(median(nodes) + " nodes med");
+        LOGGER.info(median(nbAwakes) + " awakes med");
+        LOGGER.info(median(mem) + " mem med");
     }
 
     private static <T extends Comparable<T>> T median(List<T> array) {

@@ -22,28 +22,27 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.multicostregular.asap;
 
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-import choco.cp.solver.constraints.global.multicostregular.asap.data.*;
+import choco.cp.solver.constraints.global.multicostregular.asap.data.ASAPItemHandler;
+import choco.cp.solver.constraints.global.multicostregular.asap.data.ASAPShiftOnRequest;
 import choco.cp.solver.constraints.global.multicostregular.asap.data.base.*;
-import choco.cp.solver.constraints.global.multicostregular.asap.data.base.ASAPDate;
 import choco.cp.solver.constraints.global.multicostregular.asap.parser.ASAPParser;
-import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.cp.solver.search.integer.varselector.StaticVarOrder;
+import static choco.kernel.common.util.ChocoUtil.pad;
+import choco.kernel.common.util.UtilAlgo;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.common.util.UtilAlgo;
-import choco.kernel.common.util.ChocoUtil;
-import static choco.Choco.*;
-import static choco.Choco.eq;
-
-import java.util.*;
-import java.io.BufferedWriter;
-import java.awt.*;
-
 import gnu.trove.TIntHashSet;
+
+import java.awt.*;
+import java.io.BufferedWriter;
+import java.text.MessageFormat;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -203,7 +202,6 @@ public class ASAPCPModel extends CPModel {
                     }
                     if (c.getMaxWorkingWeekEnds() >= 0 || c.getMinWorkingWeekEnds() >0)
                     {
-                        //System.out.println(this.data.getStart().getDayOfWeekName());
                         int d = (handler.getStart().getDayOfWeek()+i)%7;
                         if (d == 6 && j != handler.map.get("R")){
                             csts[i][j][where] = 1;
@@ -317,11 +315,6 @@ public class ASAPCPModel extends CPModel {
 
         }
 
-
-
-
-
-        //System.out.println(v);
     }
 
     private IntegerVariable[] makeSubSet(Collection<ASAPEmployee> emp, IntegerVariable[] iv) {
@@ -361,7 +354,7 @@ public class ASAPCPModel extends CPModel {
         //s.setValIntSelector(new MaxVal());
 
 
-        System.out.println("########## SOLVING... ##########");
+        LOGGER.info("########## SOLVING... ##########");
         long t1 = System.currentTimeMillis();
         if (s.solve())
         {
@@ -369,17 +362,18 @@ public class ASAPCPModel extends CPModel {
             int i = 0;
             for(IntegerVariable[] ivt : shifts)
             {
-                System.out.print(handler.orderedEmployees.get(i++)+" : ");
+                StringBuffer st = new StringBuffer();
+                st.append(MessageFormat.format("{0} : ", handler.orderedEmployees.get(i++)));
                 for (IntDomainVar iv : s.getVar(ivt))
                 {
-                    System.out.print(ChocoUtil.pad(handler.inverseMap.get(iv.getVal()),4," "));
+                    st.append(pad(handler.inverseMap.get(iv.getVal()),4," "));
                 }
-                System.out.println("");
+                LOGGER.info(st.toString());
             }
             }
             while (all && s.nextSolution());
         }
-        else System.out.println("NO SOLUTION");
+        else LOGGER.info("NO SOLUTION");
         s.printRuntimeSatistics();
 
 
@@ -465,9 +459,9 @@ public class ASAPCPModel extends CPModel {
             HashSet<dk.brics.automaton.Automaton> hs = new HashSet<dk.brics.automaton.Automaton>();
             for (ASAPPattern p : c.getPatterns())
             {
-                //System.out.println(makeRegExpOfPattern(p));
+                //LOGGER.info(makeRegExpOfPattern(p));
                 String reg = makeRegExpOfPattern(p);
-                System.out.println(reg);
+                LOGGER.info(reg);
                 for (int i = 0 ; i < reg.length() ; i++)
                 {
                     try {
@@ -475,7 +469,7 @@ public class ASAPCPModel extends CPModel {
                     }
                     catch (NumberFormatException ignored) {}
                 }
-                // System.out.println(reg);
+                // LOGGER.info(reg);
                 dk.brics.automaton.Automaton aa = new dk.brics.automaton.RegExp(UtilAlgo.toCharExp(reg)).toAutomaton();
 
                 BufferedWriter out = null;
@@ -515,8 +509,8 @@ public class ASAPCPModel extends CPModel {
             }
             a = a.complement();
             a.minimize();
-           // System.out.println(a.getNumberOfStates()+"\t"+a.getNumberOfTransitions());
-            //System.out.println(nbStates+"\t"+nbTra);
+           // LOGGER.info(a.getNumberOfStates()+"\t"+a.getNumberOfTransitions());
+            //LOGGER.info(nbStates+"\t"+nbTra);
 
 
             Automaton myA = new Automaton();

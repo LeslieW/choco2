@@ -29,6 +29,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.strong.DomOverDDegRPC;
 import choco.cp.solver.constraints.strong.StrongConsistencyManager;
 import choco.cp.solver.constraints.strong.maxrpcrm.MaxRPCrm;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
@@ -36,8 +37,11 @@ import choco.kernel.solver.Solver;
 
 import java.security.InvalidParameterException;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class ComposedRandomProblem {
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
 	private static double criticTightness(int nbvar, int nbval, int nbcons) {
 		// d = n^alpha
@@ -51,13 +55,12 @@ public class ComposedRandomProblem {
 		double r = nbcons / (nbvar * Math.log(nbvar));
 
 		// pcr = 1 − exp(−alpha/r)
-		double pcr = 1 - Math.exp(-alpha / r);
 
-		// if (pcr > .5) {
+        // if (pcr > .5) {
 		// System.err.println("Warning : tightness should not be > 0.5");
 		// }
 
-		return pcr;
+		return 1 - Math.exp(-alpha / r);
 	}
 
 	private static int nbArcs(double n, double density) {
@@ -113,20 +116,19 @@ public class ComposedRandomProblem {
 			}
 
 		} catch (Exception exception) {
-			System.out
-					.println("Usage : RandomProblem nbVar1 nbVal1 density1 tight1 force1 alg1 nbVar2 nbVal2 density2 tight2 force2 alg2 timeout seeds...");
+			LOGGER.info("Usage : RandomProblem nbVar1 nbVal1 density1 tight1 force1 alg1 nbVar2 nbVal2 density2 tight2 force2 alg2 timeout seeds...");
 			return;
 		}
 
 		final int e1 = nbArcs(nbVar1, density1);
 		final int e2 = nbArcs(nbVar2, density2);
 
-		System.out.println("-------------------");
-		System.out.println("1: " + nbVar1 + " var, " + nbVal1 + " val, "
+		LOGGER.info("-------------------");
+		LOGGER.info("1: " + nbVar1 + " var, " + nbVal1 + " val, "
 				+ density1 + " density (" + e1 + " cstr), tightness " + tight1
 				+ (force1 ? ", forced" : "") + " (pcr = "
 				+ criticTightness(nbVar1, nbVal1, e1) + "), " + filter1);
-		System.out.println("2: " + nbVar2 + " var, " + nbVal2 + " val, "
+		LOGGER.info("2: " + nbVar2 + " var, " + nbVal2 + " val, "
 				+ density2 + " density (" + e2 + " cstr), tightness " + tight2
 				+ (force2 ? ", forced" : "") + " (pcr = "
 				+ criticTightness(nbVar2, nbVal2, e2) + "), " + filter2);
@@ -145,8 +147,9 @@ public class ComposedRandomProblem {
 		final List<Long> mem = new ArrayList<Long>(seeds.size());
 		// final double[] nps = new double[NBINSTANCES - 1];
 
-		for (long seed : seeds) {
-			System.out.print(seed);
+        for (long seed : seeds) {
+            StringBuffer st = new StringBuffer();
+            st.append(seed);
 			// Build a model
 			final Model m = new CPModel();
 
@@ -215,7 +218,7 @@ public class ComposedRandomProblem {
 						problem2.getVariables()[0], Arrays.asList(new int[] {
 								0, 0 })));
 			}
-			// System.out.println("Building solver...");
+			// LOGGER.info("Building solver...");
 
 			// Build a solver
 			final Solver s = new CPSolver();
@@ -226,8 +229,8 @@ public class ComposedRandomProblem {
 			s.setVarIntSelector(new DomOverDDegRPC(s));
 
 			s.setTimeLimit(TIMEOUT);
-			// System.out.println("Solving...");
-			System.out.print("s");
+			// LOGGER.info("Solving...");
+			st.append("s");
 
 			System.gc();
 			final Boolean result = s.solve();
@@ -236,13 +239,12 @@ public class ComposedRandomProblem {
 			// CPSolver.flushLogs();
 
 			if (result == null) {
-				System.out.print("-");
-				// System.out.print(">=" + nbSol);
+				st.append("-");
 				nodes.add(Integer.MAX_VALUE);
 				cpu.add(Double.POSITIVE_INFINITY);
 				nbAwakes.add(Integer.MAX_VALUE);
 			} else {
-				System.out.print(result ? "*" : "o");
+				st.append(result ? "*" : "o");
 				nodes.add(s.getNodeCount());
 				cpu.add(s.getTimeCount() / 1000.0);
 				nbAwakes.add(MaxRPCrm.nbPropag);
@@ -250,18 +252,18 @@ public class ComposedRandomProblem {
 			}
 			// nps[i] = 1000 * s.getNodeCount() / s.getTimeCount();
 
-		}
+            LOGGER.info(st.toString());
+        }
 
-		System.out.println();
-		// System.out.println(average(cpu) + " seconds avg");
-		// System.out.println(average(nodes) + " nodes avg");
-		// System.out.println(average(nps) + " nds avg");
+		// LOGGER.info(average(cpu) + " seconds avg");
+		// LOGGER.info(average(nodes) + " nodes avg");
+		// LOGGER.info(average(nps) + " nds avg");
 
-		System.out.println(median(cpu) + " seconds med");
-		System.out.println(median(nodes) + " nodes med");
-		System.out.println(median(nbAwakes) + " awakes med");
-		System.out.println(median(mem) + " mem med");
-		// System.out.println(median(nps) + " nds med");
+		LOGGER.info(median(cpu) + " seconds med");
+		LOGGER.info(median(nodes) + " nodes med");
+		LOGGER.info(median(nbAwakes) + " awakes med");
+		LOGGER.info(median(mem) + " mem med");
+		// LOGGER.info(median(nps) + " nds med");
 	}
 
 	private static <T extends Comparable<T>> T median(List<T> list) {

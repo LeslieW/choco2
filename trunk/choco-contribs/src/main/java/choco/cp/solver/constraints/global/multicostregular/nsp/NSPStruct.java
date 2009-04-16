@@ -1,16 +1,15 @@
 package choco.cp.solver.constraints.global.multicostregular.nsp;
 
-import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
-import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.cp.model.managers.IntConstraintManager;
+import choco.kernel.common.util.IntIterator;
 import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.IStateVector;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.common.util.IntIterator;
-import choco.cp.model.managers.IntConstraintManager;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashSet;
 
@@ -75,12 +74,11 @@ public class NSPStruct extends AbstractLargeIntSConstraint {
         }
 
         for (int i = 0 ; i < instance.nbDays ; i++) {
+            StringBuffer st = new StringBuffer();
             for  (int j =0 ; j < instance.nbShifts ; j++)
-                System.out.print(getTypeNeed(i,j).get()+"\t");
-            System.out.println("");
+                st.append(getTypeNeed(i,j).get()+"\t");
+            LOGGER.info(st.toString());
         }
-        System.out.println("");
-
 
       /*  if (this.positiveSum.get() > (this.vars.length-this.nbInstanciated.get()))
             this.fail();

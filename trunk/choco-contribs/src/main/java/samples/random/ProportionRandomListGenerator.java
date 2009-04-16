@@ -183,7 +183,6 @@ public abstract class ProportionRandomListGenerator extends RandomListGenerator
 		int[] fixedTuple,
 		boolean requiredFixedTuple)
 	{
-	//	System.out.println("nbTuples = " + nbTuples + " length = "  );
 		setParameters(type, tupleRepetition, valueRepetition, fixedTuple, requiredFixedTuple);
 		if (tuples == null || tuples.length != nbTuples)
 			tuples = new int[nbTuples][tupleLength];
@@ -216,7 +215,6 @@ public abstract class ProportionRandomListGenerator extends RandomListGenerator
 	public void displayTuples()
 	{
 		super.displayTuples();
-		//System.out.println("wished=" + nbWishedOccurences + " max=" + nbMaxOccurences + " over=" + nbAllowedOverflows);
 	}
 
 }

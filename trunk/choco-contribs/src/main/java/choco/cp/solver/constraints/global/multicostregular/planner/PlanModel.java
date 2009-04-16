@@ -25,21 +25,24 @@ package choco.cp.solver.constraints.global.multicostregular.planner;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.cp.solver.constraints.global.costregular.CostRegular;
 import choco.cp.solver.constraints.global.costregular.CostRegularValSelector;
+import choco.cp.solver.constraints.global.multicostregular.MCRValSelector;
+import choco.cp.solver.constraints.global.multicostregular.MultiCostRegular;
+import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.UtilAlgo;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.solver.Solver;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.common.util.UtilAlgo;
-import choco.kernel.common.util.IntIterator;
-import choco.cp.solver.constraints.global.multicostregular.MCRValSelector;
-import choco.cp.solver.constraints.global.multicostregular.MultiCostRegular;
+
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -48,6 +51,8 @@ import choco.cp.solver.constraints.global.multicostregular.MultiCostRegular;
  * Time: 4:26:07 PM
  */
 public class PlanModel {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     final static int REGULAR = 0;
     final static int COSTREG = 1;
@@ -336,29 +341,14 @@ for (int i = 3 ; i < nbAct+3 ; i++)
         int bTime = 0 ;
         if (b != Boolean.FALSE)
         {
-          ///  System.out.println("#########################\t"+modelType+"\t#########################");
             do{
                 bVal = s.getVar(z).getVal();
                 bTime = s.getTimeCount();
-
-                //   System.out.println(b);
-               /* System.out.print("least cost shift : ");
-                for (IntegerVariable v : shifts)
-                {
-                    System.out.print(letterFromVal(s.getVar(v).getVal()));
-                }
-                System.out.println("\t with cost : "+s.getVar(z));
-                //   s.getVar(z). (s.getVar(z).getVal());    */
                 s.postCut(s.gt(s.getVar(z).getVal(),s.getVar(z)));
 
             } while(s.nextSolution() == Boolean.TRUE) ;
         }
 
-        //CPSolver.flushLogs();
-        
-       // s.printRuntimeSatistics();
-        //  System.out.println(s.getNbSolutions()+"[+0]"+" solution(s)");
-        // System.out.println("#########################################################################");
         return new int[]{b==Boolean.TRUE?1:0,s.isEncounteredLimit()?1:0, s.getTimeCount(),s.getFailCount(),bVal,bTime};
 
 
@@ -366,7 +356,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
 
     public double filteredPercentage(long seed,int act)
     {
-        System.out.println("FOR SEED "+seed+" WITH "+act+" ACTIVITIE(S)");
+        LOGGER.info("FOR SEED "+seed+" WITH "+act+" ACTIVITIE(S)");
 
         s = new CPSolver();
         s.read(m);
@@ -376,7 +366,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
 
         int bui = 0;
         for (IntDomainVar v: s.getVar(shifts)) bui+= v.getDomainSize();
-        System.out.println("AU DEPART : "+bui+" val");
+        LOGGER.info("AU DEPART : "+bui+" val");
 
         try {
             s.propagate();
@@ -409,12 +399,12 @@ for (int i = 3 ; i < nbAct+3 ; i++)
 
         }
 
-        System.out.println("NB VAL   : "+nbVal);
-        System.out.println("NB TRUE  : "+nbTrue);
-        System.out.println("NB FALSE : "+nbFalse);
+        LOGGER.info("NB VAL   : "+nbVal);
+        LOGGER.info("NB TRUE  : "+nbTrue);
+        LOGGER.info("NB FALSE : "+nbFalse);
         double perc = nbTrue/nbVal*100;
-        System.out.println("");
-        System.out.println("POURCENTAGE DE OK : "+perc+"%");
+        LOGGER.info("");
+        LOGGER.info("POURCENTAGE DE OK : "+perc+"%");
         return perc;
 
     }
@@ -466,8 +456,8 @@ for (int i = 3 ; i < nbAct+3 ; i++)
                 int[] resMCR = new int[5];
                 int nbSolvedCR = 0;
                 int nbSolvedMCR = 0; */
-                //System.out.println(nbAct+" activities,"+"L B in A ?"+old);
-                //System.out.println("SEED,+NB ACT,CONTRAINTES,VARHEUR,VALHEUR,TOTALTIME,TIMETOBEST,BEST, NBFAIL");
+                //LOGGER.info(nbAct+" activities,"+"L B in A ?"+old);
+                //LOGGER.info("SEED,+NB ACT,CONTRAINTES,VARHEUR,VALHEUR,TOTALTIME,TIMETOBEST,BEST, NBFAIL");
 
 
                 for (int valh = 1 ; valh <= 1 ; valh++)
@@ -476,23 +466,23 @@ for (int i = 3 ; i < nbAct+3 ; i++)
 
                     boolean varheur = varh == 1;
                     boolean valheur = valh == 1;
-                    // System.out.println("NB ACT : "+nbAct+"  seed : "+seed);
+                    // LOGGER.info("NB ACT : "+nbAct+"  seed : "+seed);
                     // PlanModel pm = new PlanModel(REGULAR,nbAct,seed);
                 //    PlanModel pm2 = new PlanModel(COSTREG,nbAct,seed,old);
                     PlanModel pm3 = new PlanModel(MCR,nbAct,seed,old);
 
                     pm3.filteredPercentage(seed,nbAct);
-                    System.out.println("");
+                    LOGGER.info("");
                     //   pm.solve();
                /*     int [] mcr = pm3.solve(varheur,valheur);
 
                      if (mcr[0] == 1 )
                     {
 
-                        System.out.println(seed+","+nbAct+",  MCR ,"+varheur+","+valheur+","+mcr[2]+","+mcr[5]+","+mcr[4]+","+mcr[3]);
+                        LOGGER.info(seed+","+nbAct+",  MCR ,"+varheur+","+valheur+","+mcr[2]+","+mcr[5]+","+mcr[4]+","+mcr[3]);
 
                     }   */
-                    //System.out.println("PASCR");
+                    //LOGGER.info("PASCR");
 
                  /*   int[] cr = pm2.solve(varheur,valheur);
 
@@ -500,12 +490,12 @@ for (int i = 3 ; i < nbAct+3 ; i++)
                     if (cr[0] == 1)
                     {
 
-                        System.out.println(seed+","+nbAct+",CR+GCC,"+varheur+","+valheur+","+cr[2]+","+cr[5]+","+cr[4]+","+cr[3]);
+                        LOGGER.info(seed+","+nbAct+",CR+GCC,"+varheur+","+valheur+","+cr[2]+","+cr[5]+","+cr[4]+","+cr[3]);
 
                     
 
                     }
-                    System.out.println(""); */
+                    LOGGER.info(""); */
 
 
                 }
@@ -531,8 +521,10 @@ for (int i = 3 ; i < nbAct+3 ; i++)
         s.read(m);
         if (s.solve())
         {
+            StringBuffer st = new StringBuffer();
             for (IntegerVariable v : vs)
-                System.out.print(s.getVar(v).getVal()+" ");
+                st.append(s.getVar(v).getVal()+" ");
+            LOGGER.info(st.toString());
         }
 
     }

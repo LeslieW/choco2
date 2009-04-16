@@ -22,17 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.multicostregular.asap.hci.abstraction;
 
-import choco.cp.solver.constraints.global.multicostregular.asap.ASAPCPModel;
-import choco.cp.solver.constraints.global.multicostregular.asap.heuristics.ASAPVarSelector;
-import choco.cp.solver.constraints.global.multicostregular.asap.heuristics.ASAPValSelector;
-import choco.cp.solver.constraints.global.multicostregular.asap.data.base.ASAPPattern;
-import choco.cp.solver.constraints.global.multicostregular.asap.data.base.ASAPShift;
-import choco.cp.solver.constraints.global.multicostregular.asap.data.base.ASAPEmployee;
-import choco.cp.solver.constraints.global.multicostregular.asap.data.base.ASAPSkill;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.global.multicostregular.asap.ASAPCPModel;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-import choco.kernel.solver.Solver;
 import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.solver.Solver;
 
 import java.util.Observable;
 
@@ -106,8 +100,6 @@ public class ASAPDataHandler extends Observable {
 
     public void setSolved(boolean b) {
         this.setChanged();
-        //System.out.println(solving.getState());
-
         if (b)
         {
             solved = true;

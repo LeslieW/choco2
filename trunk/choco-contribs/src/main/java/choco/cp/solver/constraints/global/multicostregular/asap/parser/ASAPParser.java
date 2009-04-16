@@ -22,17 +22,19 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.multicostregular.asap.parser;
 
-import choco.cp.solver.constraints.global.multicostregular.asap.data.*;
+import choco.cp.solver.constraints.global.multicostregular.asap.data.ASAPItemHandler;
+import choco.cp.solver.constraints.global.multicostregular.asap.data.ASAPShiftSet;
 import choco.cp.solver.constraints.global.multicostregular.asap.data.base.*;
+import choco.kernel.common.logging.ChocoLogging;
+import com.sun.org.apache.xerces.internal.parsers.DOMParser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.sun.org.apache.xerces.internal.parsers.DOMParser;
-
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -43,6 +45,7 @@ import java.util.Arrays;
  */
 public class ASAPParser {
 
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     String id;
 
@@ -540,8 +543,8 @@ public class ASAPParser {
                         p.add(all);
                     }
                 }
-                System.out.println(p.toRegExp());
-                System.out.println("############");
+                LOGGER.info(p.toRegExp());
+                LOGGER.info("############");
                 c.addPattern(p);
             }
 

@@ -24,22 +24,20 @@ package choco.memory;
  * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import choco.Choco;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.memory.trailing.StoredBipartiteList;
 import choco.kernel.model.variables.scheduling.TaskVariable;
+import org.junit.After;
+import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Arnaud Malapert</br> 
@@ -71,7 +69,7 @@ public class StoredBipartiteListTest {
     @Test
     public void test1() {
         assertEquals(12, iVectA.size());
-        System.out.println(ChocoUtil.pretty(iVectA));
+        LOGGER.info(ChocoUtil.pretty(iVectA));
         env.worldPush();
         Iterator<TaskVariable> it = iVectA.iterator();
         int cpt = 5;
@@ -83,7 +81,7 @@ public class StoredBipartiteListTest {
             }
         }
        // it.dispose();
-        System.out.println(ChocoUtil.pretty(iVectA));
+        LOGGER.info(ChocoUtil.pretty(iVectA));
         assertEquals(11, iVectA.size());
         assertEquals(tasks[10], iVectA.get(10));
         env.worldPush();
@@ -95,22 +93,22 @@ public class StoredBipartiteListTest {
             cpt--;
         }
       //  it.dispose();
-        System.out.println(ChocoUtil.pretty(iVectA));
+        LOGGER.info(ChocoUtil.pretty(iVectA));
         assertEquals(5, iVectA.size());
         env.worldPop();
-        System.out.println(ChocoUtil.pretty(iVectA));
+        LOGGER.info(ChocoUtil.pretty(iVectA));
         assertEquals(11, iVectA.size());
         env.worldPop();
         assertEquals(12, iVectA.size());
         env.worldPush();
         it = iVectA.iterator();
-        System.out.println(ChocoUtil.pretty(iVectA));
+        LOGGER.info(ChocoUtil.pretty(iVectA));
         while (it.hasNext()) {
             LOGGER.log(Level.INFO, "value {0}", it.next());
             it.remove();
         }
        // it.dispose();
-        System.out.println(ChocoUtil.pretty(iVectA));
+        LOGGER.info(ChocoUtil.pretty(iVectA));
         assertEquals(0, iVectA.size());
 
     }

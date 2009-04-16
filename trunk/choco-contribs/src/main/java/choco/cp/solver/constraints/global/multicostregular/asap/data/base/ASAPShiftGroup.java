@@ -22,11 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.multicostregular.asap.data.base;
 
-import choco.cp.solver.constraints.global.multicostregular.asap.data.base.ASAPPatternElement;
-import choco.cp.solver.constraints.global.multicostregular.asap.data.base.ASAPShift;
 import choco.cp.solver.constraints.global.multicostregular.asap.data.ASAPItemHandler;
 
-import java.util.*;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 
 /**
  * Created by IntelliJ IDEA.
@@ -100,7 +101,6 @@ public class ASAPShiftGroup extends AbstractList<ASAPShift> implements ASAPPatte
             b.append(e.toRegExp()).append("|");
         }
         b.deleteCharAt(b.length()-1).append(")");
-        //System.out.println(b.toString());
         return b.toString();
 
     }

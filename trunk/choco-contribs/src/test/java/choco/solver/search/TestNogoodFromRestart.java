@@ -3,22 +3,24 @@
  */
 package choco.solver.search;
 
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
-
-import samples.Examples.MinimumEdgeDeletion;
-import samples.Examples.PatternExample;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.SearchLoopWithNogoodFromRestart;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
+import samples.Examples.MinimumEdgeDeletion;
+import samples.Examples.PatternExample;
 
+import java.util.logging.Logger;
 
 
 public class TestNogoodFromRestart {
 
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	@Before
 	public void init() {
@@ -68,7 +70,7 @@ public class TestNogoodFromRestart {
 			//CPSolver.setVerbosity(CPSolver.SEARCH);
 			s.setLoggingMaxDepth(100);
 			s.launch();
-			System.out.println(s.solutionToString());
+			LOGGER.info(s.solutionToString());
 			final String str = label +" index "+i;
 			repmessage(str,"opt="+s.getOptimumValue(),s.isFeasible(),s);
 			if(i>0){
@@ -84,7 +86,7 @@ public class TestNogoodFromRestart {
 		}
 		buffer.append(label).append(' ').append(r).append(" ; nb Sol. ").append(solver.getNbSolutions());
 		buffer.append(" ; ").append(solver.getTimeCount()).append("ms ; ").append(solver.getNodeCount()).append(" node(s)");
-		System.out.println(buffer);
+		LOGGER.info(buffer.toString());
 	}
 
 

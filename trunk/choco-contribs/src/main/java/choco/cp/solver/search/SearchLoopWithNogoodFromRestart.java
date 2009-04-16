@@ -1,20 +1,19 @@
 
 package choco.cp.solver.search;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
 import choco.Choco;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.SearchLoopWithRestart;
 import choco.cp.solver.search.restart.RestartStrategy;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.IntBranchingTrace;
 import choco.kernel.solver.search.integer.IntVarValPair;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Logger;
 
 
 /**
@@ -67,6 +66,8 @@ public class SearchLoopWithNogoodFromRestart extends SearchLoopWithRestart {
 
 
 class NoGoodRecorder {
+
+    protected final static Logger LOGGER = ChocoLogging.getSearchLogger();
 
 	protected final CPSolver scheduler;
 
@@ -150,7 +151,7 @@ class NoGoodRecorder {
 			System.arraycopy(positiveLiterals, tail.posLitsOffset, posLits, 0, sp);
 			System.arraycopy(negativeLiterals, tail.negLitsOffset, negLits, 0, sn);
 			if(Choco.DEBUG) {
-				System.out.println(Arrays.toString(posLits)+" "+Arrays.toString(negLits));
+				LOGGER.info(Arrays.toString(posLits)+" "+Arrays.toString(negLits));
 			}
 			scheduler.addNogood(posLits, negLits);
 		}
