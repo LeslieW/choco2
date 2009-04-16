@@ -40,8 +40,8 @@ public abstract class AbstractBranching {
   
   
 
-  public static String LOG_DOWN_MSG = "down branch ";
-  public static String LOG_UP_MSG = "up branch ";
+  public final static String LOG_DOWN_MSG = "down branch ";
+  public final static String LOG_UP_MSG = "up branch ";
   public String[] LOG_DECISION_MSG = {""};
 
   public void setSolver(AbstractGlobalSearchStrategy s) {

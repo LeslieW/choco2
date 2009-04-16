@@ -36,119 +36,120 @@ import choco.kernel.solver.variables.real.RealVar;
  */
 public class RealDomainImpl implements RealDomain {
 
-  //public double width_zero = 1.e-8;
-  //public double reduction_factor = 0.99;
+	//public double width_zero = 1.e-8;
+	//public double reduction_factor = 0.99;
 
-    /**
-     * The (optimization or decision) solver to which the entity belongs.
-     */
+	/**
+	 * The (optimization or decision) solver to which the entity belongs.
+	 */
 
-    public Solver solver;
+	public Solver solver;
 
 
-  /**
-   * for the delta domain: current value of the inf (domain lower bound) when the bound started beeing propagated
-   * (just to check that it does not change during the propagation phase)
-   */
-  protected double currentInfPropagated = Double.NEGATIVE_INFINITY;
+	/**
+	 * for the delta domain: current value of the inf (domain lower bound) when the bound started beeing propagated
+	 * (just to check that it does not change during the propagation phase)
+	 */
+	protected double currentInfPropagated = Double.NEGATIVE_INFINITY;
 
-  /**
-   * for the delta domain: current value of the sup (domain upper bound) when the bound started beeing propagated
-   * (just to check that it does not change during the propagation phase)
-   */
-  protected double currentSupPropagated = Double.POSITIVE_INFINITY;
+	/**
+	 * for the delta domain: current value of the sup (domain upper bound) when the bound started beeing propagated
+	 * (just to check that it does not change during the propagation phase)
+	 */
+	protected double currentSupPropagated = Double.POSITIVE_INFINITY;
 
-  protected IStateDouble inf;
+	protected IStateDouble inf;
 
-  protected IStateDouble sup;
+	protected IStateDouble sup;
 
-  protected RealVar variable;
+	protected RealVar variable;
 
-  public RealDomainImpl(RealVar v, double a, double b) {
-    variable = v;
-    solver = v.getSolver();
-    IEnvironment env = solver.getEnvironment();
-    inf = env.makeFloat(a);
-    sup = env.makeFloat(b);
-  }
+	public RealDomainImpl(RealVar v, double a, double b) {
+		variable = v;
+		solver = v.getSolver();
+		IEnvironment env = solver.getEnvironment();
+		inf = env.makeFloat(a);
+		sup = env.makeFloat(b);
+	}
 
-  public String toString() {
-    return (super.toString() + ": [" +this.getInf() +", "+this.getSup()+"]");
-  }
+	@Override
+	public String toString() {
+		return "[" +this.getInf() +", "+this.getSup()+"]";
+	}
 
-  public String pretty() {
-    return (this.toString());
-  }
+	public String pretty() {
+		return this.toString();
+	}
 
-  public double getInf() {
-    return inf.get();
-  }
+	public double getInf() {
+		return inf.get();
+	}
 
-  public double getSup() {
-    return sup.get();
-  }
+	public double getSup() {
+		return sup.get();
+	}
 
-  public void intersect(RealInterval interval) throws ContradictionException {
-    intersect(interval, VarEvent.NOCAUSE);
-  }
+	public void intersect(RealInterval interval) throws ContradictionException {
+		intersect(interval, VarEvent.NOCAUSE);
+	}
 
-  public void intersect(RealInterval interval, int index) throws ContradictionException {
-    if ((interval.getInf() > this.getSup()) || (interval.getSup() < this.getInf())) {
-      this.getSolver().getPropagationEngine().raiseContradiction(this, ContradictionException.DOMAIN);
-    }
+	public void intersect(RealInterval interval, int index) throws ContradictionException {
+		if ((interval.getInf() > this.getSup()) || (interval.getSup() < this.getInf())) {
+			this.getSolver().getPropagationEngine().raiseContradiction(this, ContradictionException.DOMAIN);
+		}
 
-    double old_width = this.getSup() - this.getInf();
-    double new_width = Math.min(interval.getSup(), this.getSup()) -
-        Math.max(interval.getInf(), this.getInf());
-    boolean toAwake = (variable.getSolver().getPrecision() / 100. <= old_width)
-        && (new_width < old_width * variable.getSolver().getReduction());
+		double old_width = this.getSup() - this.getInf();
+		double new_width = Math.min(interval.getSup(), this.getSup()) -
+		Math.max(interval.getInf(), this.getInf());
+		boolean toAwake = (variable.getSolver().getPrecision() / 100. <= old_width)
+		&& (new_width < old_width * variable.getSolver().getReduction());
 
-    if (interval.getInf() > this.getInf()) {
-      if (toAwake) solver.getPropagationEngine().postUpdateInf(variable, index);
-      inf.set(interval.getInf());
-    }
+		if (interval.getInf() > this.getInf()) {
+			if (toAwake) solver.getPropagationEngine().postUpdateInf(variable, index);
+			inf.set(interval.getInf());
+		}
 
-    if (interval.getSup() < this.getSup()) {
-      if (toAwake) solver   .getPropagationEngine().postUpdateSup(variable, index);
-      sup.set(interval.getSup());
-    }
-  }
+		if (interval.getSup() < this.getSup()) {
+			if (toAwake) solver   .getPropagationEngine().postUpdateSup(variable, index);
+			sup.set(interval.getSup());
+		}
+	}
 
-  public void clearDeltaDomain() {
-    currentInfPropagated = Double.NEGATIVE_INFINITY;
-    currentSupPropagated = Double.POSITIVE_INFINITY;
-  }
+	public void clearDeltaDomain() {
+		currentInfPropagated = Double.NEGATIVE_INFINITY;
+		currentSupPropagated = Double.POSITIVE_INFINITY;
+	}
 
-  public boolean releaseDeltaDomain() {
-    boolean noNewUpdate = ((getInf() == currentInfPropagated) && (getSup() == currentSupPropagated));
-    currentInfPropagated = Double.NEGATIVE_INFINITY;
-    currentSupPropagated = Double.POSITIVE_INFINITY;
-    return noNewUpdate;
-  }
+	public boolean releaseDeltaDomain() {
+		boolean noNewUpdate = ((getInf() == currentInfPropagated) && (getSup() == currentSupPropagated));
+		currentInfPropagated = Double.NEGATIVE_INFINITY;
+		currentSupPropagated = Double.POSITIVE_INFINITY;
+		return noNewUpdate;
+	}
 
-  public void freezeDeltaDomain() {
-    currentInfPropagated = getInf();
-    currentSupPropagated = getSup();
-  }
+	public void freezeDeltaDomain() {
+		currentInfPropagated = getInf();
+		currentSupPropagated = getSup();
+	}
 
-  public boolean getReleasedDeltaDomain() {
-    return true;
-  }
+	public boolean getReleasedDeltaDomain() {
+		return true;
+	}
 
-  public void silentlyAssign(RealInterval i) {
-    inf.set(i.getInf());
-    sup.set(i.getSup());
-  }
+	public void silentlyAssign(RealInterval i) {
+		inf.set(i.getInf());
+		sup.set(i.getSup());
+	}
 
-    /**
-   * Retrieves the solver of the entity
-   */
+	/**
+	 * Retrieves the solver of the entity
+	 */
 
-  public Solver getSolver() {
-    return solver;
-  }
+	 public Solver getSolver() {
+		return solver;
+	 }
 
-  public void setSolver(Solver solver) {
-    this.solver = solver;
-  }
+	 public void setSolver(Solver solver) {
+		 this.solver = solver;
+	 }
 }

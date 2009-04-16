@@ -136,10 +136,7 @@ public class RackConfiguration {
 	public void solve() {
 		solver = new CPSolver();
 		solver.read(model);
-		CPSolver.setVerbosity(CPSolver.SOLUTION);
 		solver.solve();
-		CPSolver.flushLogs();
-
 	}
 
 	public void print() {

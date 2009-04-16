@@ -101,7 +101,6 @@ public class ClausesTest {
         IntegerVariable[] vars = makeIntVarArray("b", 3, 0, 1, "cp:binary");
         mod.addConstraint(clause(new IntegerVariable[]{vars[0], vars[1], vars[2]}, new IntegerVariable[]{}));
         s.read(mod);
-        CPSolver.setVerbosity(CPSolver.SEARCH);
         s.setGeometricRestart(1, 1.1);
         s.setVarIntSelector(new StaticVarOrder(s.getVar(vars)));
         s.solve();
@@ -111,7 +110,6 @@ public class ClausesTest {
         System.out.println(s.getVar(vars[0]) + " " + s.getVar(vars[1]) + " " + s.getVar(vars[2]));
 
         assertTrue(s.getVar(vars[0]).getVal() == 1 || s.getVar(vars[1]).getVal() == 1);
-        CPSolver.flushLogs();
         //}
     }
 

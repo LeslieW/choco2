@@ -179,7 +179,7 @@ public final class ChocoLogging {
 	}
 
 
-	private static void setLevel(Level level, Handler...handlers){
+	public static void setLevel(Level level, Handler...handlers){
 		for (Handler h : handlers) {
 			h.setLevel(level);
 		}
@@ -310,37 +310,12 @@ public final class ChocoLogging {
 
 
 
-
-	public static void setModelLevel(Level level) {
-		getModelLogger().setLevel(level);
-
-	}
-
-
-	public static void setUserLevel(Level level) {
-		getUserLogger().setLevel(level);
-
-	}
-
 	public static void setLevel(Level level, Logger... loggers) {
 		for (Logger logger : loggers) {
 			logger.setLevel(level);
 		}
 	}
 
-
-	public static void setOldChocoVerbosity(Verbosity verbosity) {
-//		switch(verbosity) {
-//		case OFF: 
-//		case SILENT: 
-//		case VERBOSE: CPSolver.setVerbosity(CPSolver.SILENT);break; 
-//		case SOLUTION: CPSolver.setVerbosity(CPSolver.SOLUTION);break;
-//		case SEARCH: CPSolver.setVerbosity(CPSolver.SEARCH);
-//		case DEBUG: CPSolver.setVerbosity(CPSolver.PROPAGATION);break;
-//		case FINEST: CPSolver.setVerbosity(CPSolver.FINEST);break;
-//		default: getChocoLogger().log(Level.WARNING,"cant set logger verbosity: ${0}",verbosity);
-//		}
-	}
 	
 	private static void setPattern(Level solLevel) {
 		setLevel(Level.WARNING, getBranchingLogger(), getPropagationLogger(), getMemoryLogger(),
@@ -370,7 +345,7 @@ public final class ChocoLogging {
 			break;
 		}
 		case SEARCH: {
-			setPattern(Level.FINEST);
+			setPattern(Level.FINE);
 			setLevel(Level.INFO, getBranchingLogger()); //ouput search logs (branching)
 			break;
 		}

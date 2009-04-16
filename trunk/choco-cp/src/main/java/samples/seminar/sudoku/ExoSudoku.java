@@ -39,171 +39,167 @@ import choco.kernel.solver.Solver;
  */
 public class ExoSudoku {
 
-    public static void sudokuSimple(int[][] instance, boolean onlyProp) {
-        int n = instance.length;
-        // Build Model
-        Model m = new CPModel();
+	public static void sudokuSimple(int[][] instance, boolean onlyProp) {
+		int n = instance.length;
+		// Build Model
+		Model m = new CPModel();
 
-        // Build an array of integer variables
-        IntegerVariable[][] rows = makeIntVarArray("rows", n, n, 1, n);
+		// Build an array of integer variables
+		IntegerVariable[][] rows = makeIntVarArray("rows", n, n, 1, n);
 
-        // Not equal constraint between each case of a row
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                for (int k = j; k < n; k++) {
-                    if (k != j) {
-                        m.addConstraint(neq(rows[i][j], rows[i][k]));
-                    }
-                }
-            }
-        }
-        // Not equal constraint between each case of a column
-        for (int j = 0; j < n; j++) {
-            for (int i = 0; i < n; i++) {
-                for (int k = 0; k < n; k++) {
-                    if (k != i) {
-                        m.addConstraint(neq(rows[i][j], rows[k][j]));
-                    }
-                }
-            }
-        }
-        // Not equal constraint between each case of a sub region
-        for (int ci = 0; ci < n; ci += 3) {
-            for (int cj = 0; cj < n; cj += 3) {
-                // Extraction of disequality of a sub region
-                for (int i = ci; i < ci + 3; i++) {
-                    for (int j = cj; j < cj + 3; j++) {
-                        for (int k = ci; k < ci + 3; k++) {
-                            for (int l = cj; l < cj + 3; l++) {
-                                if (k != i || l != j) m.addConstraint(neq(rows[i][j], rows[k][l]));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        // Read the instance given.
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                if (instance[i][j] != 0) {
-                    Constraint c = eq(rows[i][j], instance[i][j]);
-                    m.addConstraint(c);
-                }
-            }
-        }
+		// Not equal constraint between each case of a row
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				for (int k = j; k < n; k++) {
+					if (k != j) {
+						m.addConstraint(neq(rows[i][j], rows[i][k]));
+					}
+				}
+			}
+		}
+		// Not equal constraint between each case of a column
+		for (int j = 0; j < n; j++) {
+			for (int i = 0; i < n; i++) {
+				for (int k = 0; k < n; k++) {
+					if (k != i) {
+						m.addConstraint(neq(rows[i][j], rows[k][j]));
+					}
+				}
+			}
+		}
+		// Not equal constraint between each case of a sub region
+		for (int ci = 0; ci < n; ci += 3) {
+			for (int cj = 0; cj < n; cj += 3) {
+				// Extraction of disequality of a sub region
+				for (int i = ci; i < ci + 3; i++) {
+					for (int j = cj; j < cj + 3; j++) {
+						for (int k = ci; k < ci + 3; k++) {
+							for (int l = cj; l < cj + 3; l++) {
+								if (k != i || l != j) m.addConstraint(neq(rows[i][j], rows[k][l]));
+							}
+						}
+					}
+				}
+			}
+		}
+		// Read the instance given.
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				if (instance[i][j] != 0) {
+					Constraint c = eq(rows[i][j], instance[i][j]);
+					m.addConstraint(c);
+				}
+			}
+		}
 
-        // Build solver
-        Solver s = new CPSolver();
+		// Build solver
+		Solver s = new CPSolver();
 
-        // Read model
-        s.read(m);
+		// Read model
+		s.read(m);
 
-        // First choice : only propagation
-        if (onlyProp) {
-            try {
-                s.propagate();
-                printGrid(rows, s);
-            } catch (ContradictionException e) {
-                System.out.println("pas de solutions");
-            }
-        }
-        // Second choice : find a solution 
-        else {
-            CPSolver.setVerbosity(CPSolver.SOLUTION);
-            s.solve();
-            CPSolver.flushLogs();
-            printGrid(rows, s);
-        }
-    }
+		// First choice : only propagation
+		if (onlyProp) {
+			try {
+				s.propagate();
+				printGrid(rows, s);
+			} catch (ContradictionException e) {
+				System.out.println("pas de solutions");
+			}
+		}
+		// Second choice : find a solution 
+		else {
+			s.solve();
+			printGrid(rows, s);
+		}
+	}
 
-    public static void sudokuAdvanced(int[][] instance, boolean onlyProp) {
-        int n = instance.length;
-        // Build model
-        Model m = new CPModel();
-        // Declare variables
-        IntegerVariable[][] cols = new IntegerVariable[n][n];
-        IntegerVariable[][] rows = makeIntVarArray("rows", n, n, 1, n);
+	public static void sudokuAdvanced(int[][] instance, boolean onlyProp) {
+		int n = instance.length;
+		// Build model
+		Model m = new CPModel();
+		// Declare variables
+		IntegerVariable[][] cols = new IntegerVariable[n][n];
+		IntegerVariable[][] rows = makeIntVarArray("rows", n, n, 1, n);
 
-        // Channeling between rows and columns
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                cols[i][j] = rows[j][i];
-            }
-        }
+		// Channeling between rows and columns
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				cols[i][j] = rows[j][i];
+			}
+		}
 
-        // Add alldifferent constraint
-        for (int i = 0; i < n; i++) {
-            m.addConstraint(allDifferent(cols[i]));
-            m.addConstraint(allDifferent(rows[i]));
-        }
-        // Define sub regions
-        IntegerVariable[][] carres = new IntegerVariable[n][n];
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
-                    carres[j + k * 3][i] = rows[0 + k * 3][i + j * 3];
-                    carres[j + k * 3][i + 3] = rows[1 + k * 3][i + j * 3];
-                    carres[j + k * 3][i + 6] = rows[2 + k * 3][i + j * 3];
-                }
-            }
-        }
+		// Add alldifferent constraint
+		for (int i = 0; i < n; i++) {
+			m.addConstraint(allDifferent(cols[i]));
+			m.addConstraint(allDifferent(rows[i]));
+		}
+		// Define sub regions
+		IntegerVariable[][] carres = new IntegerVariable[n][n];
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				for (int k = 0; k < 3; k++) {
+					carres[j + k * 3][i] = rows[0 + k * 3][i + j * 3];
+					carres[j + k * 3][i + 3] = rows[1 + k * 3][i + j * 3];
+					carres[j + k * 3][i + 6] = rows[2 + k * 3][i + j * 3];
+				}
+			}
+		}
 
-        // Add alldifferent on sub regions
-        for (int i = 0; i < n; i++) {
-            Constraint c = allDifferent(carres[i]);
-            m.addConstraint(c);
-        }
+		// Add alldifferent on sub regions
+		for (int i = 0; i < n; i++) {
+			Constraint c = allDifferent(carres[i]);
+			m.addConstraint(c);
+		}
 
-        // Read the instance
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                if (instance[i][j] != 0) {
-                    Constraint c = eq(rows[i][j], instance[i][j]);
-                    m.addConstraint(c);
-                }
-            }
-        }
+		// Read the instance
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				if (instance[i][j] != 0) {
+					Constraint c = eq(rows[i][j], instance[i][j]);
+					m.addConstraint(c);
+				}
+			}
+		}
 
-        // Build solver
-        Solver s = new CPSolver();
+		// Build solver
+		Solver s = new CPSolver();
 
-        // Read model
-        s.read(m);
+		// Read model
+		s.read(m);
 
-        // First choice : only propagation
-        if (onlyProp) {
-            try {
-                s.propagate();
-                printGrid(rows, s);
-            } catch (ContradictionException e) {
-                System.out.println("No solution");
-            }
-        }
-        // Second choice : find a solution
-        else {
-            CPSolver.setVerbosity(CPSolver.SOLUTION);
-            s.solve();
-            CPSolver.flushLogs();
-            printGrid(rows, s);
-        }
-    }
+		// First choice : only propagation
+		if (onlyProp) {
+			try {
+				s.propagate();
+				printGrid(rows, s);
+			} catch (ContradictionException e) {
+				System.out.println("No solution");
+			}
+		}
+		// Second choice : find a solution
+		else {
+			s.solve();
+			printGrid(rows, s);
+		}
+	}
 
-    public static void printGrid(IntegerVariable[][] rows, Solver s) {
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) System.out.print(s.getVar(rows[i][j]).getVal() + " ");
-            System.out.println();
-        }
-    }
+	public static void printGrid(IntegerVariable[][] rows, Solver s) {
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) System.out.print(s.getVar(rows[i][j]).getVal() + " ");
+			System.out.println();
+		}
+	}
 
-    public static void main(String[] args) {
-        String nomFic = "./dev/src/samples/seminar/sudoku/sudoku_instance.txt";
-        SudokuParser p = new SudokuParser(nomFic);
-        int[][] instance1 = p.convert();
-        int[][] instance2 = p.convert();
-        sudokuSimple(instance1, false);
-        System.out.println("");
-        System.out.println("****************************************");
-        System.out.println("");
-        sudokuAdvanced(instance2, true);
-    }
+	public static void main(String[] args) {
+		String nomFic = "./dev/src/samples/seminar/sudoku/sudoku_instance.txt";
+		SudokuParser p = new SudokuParser(nomFic);
+		int[][] instance1 = p.convert();
+		int[][] instance2 = p.convert();
+		sudokuSimple(instance1, false);
+		System.out.println("");
+		System.out.println("****************************************");
+		System.out.println("");
+		sudokuAdvanced(instance2, true);
+	}
 }

@@ -243,10 +243,7 @@ public class ElementTest {
 			assertEquals(2 + 3 * i, s.getVar(vars[i]).getSup());
 			assertEquals(s.getVar(vars[i]).getDomainSize(), 3);
 		}
-		CPSolver.setVerbosity(CPSolver.SEARCH);
-		s.setLoggingMaxDepth(2);
 		s.solveAll();
-		CPSolver.flushLogs();
 		assertEquals(Math.round(n * Math.pow(3, n)), s.getNbSolutions());
 
 	}

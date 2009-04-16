@@ -319,9 +319,7 @@ public class XmlModel {
             }
         }
 
-        //CPSolver.setVerbosity(CPSolver.SEARCH);
         //s.setLoggingMaxDepth(200);
-        CPSolver.setVerbosity(CPSolver.SILENT);
         if (isFeasible != false && (cheuri == IMPACT || s.rootNodeSingleton(initialisationtime))) {
                 s.solve();
             isFeasible = s.isFeasible();

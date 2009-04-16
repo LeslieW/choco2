@@ -142,9 +142,7 @@ public class U2planning extends PatternExample{
 
     @Override
     public void solve() {
-        CPSolver.setVerbosity(CPSolver.SOLUTION);
-		_s.solve();
-		CPSolver.flushLogs();
+    	_s.solve();
     }
 
     @Override

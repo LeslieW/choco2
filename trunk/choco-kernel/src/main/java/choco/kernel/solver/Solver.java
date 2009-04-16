@@ -458,8 +458,10 @@ public interface Solver extends IPretty {
     public Boolean minimize(Var obj, boolean restart);
 
     public void printRuntimeSatistics();
-
-	public void setLoggingMaxDepth(int loggingMaxDepth);
+    
+    public String runtimeSatistics();
+	
+    public void setLoggingMaxDepth(int loggingMaxDepth);
 
 	/**
 	 * pushing one world on the stack

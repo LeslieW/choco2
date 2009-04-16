@@ -114,9 +114,7 @@ public class ExBinPacking {
             s.read(m);
             s.setVarIntSelector(new StaticVarOrder(s.getVar(vars)));
             s.setValIntIterator(new DecreasingDomain());
-            CPSolver.setVerbosity(CPSolver.SOLUTION);
             s.solve();
-            CPSolver.flushLogs();
             // Print of solution
             if (s.isFeasible() == Boolean.TRUE) {
                 for (int j = 0; j < nbBin; j++) {
@@ -174,9 +172,7 @@ public class ExBinPacking {
         s.monitorTimeLimit(false);
         s.monitorFailLimit(false);
         s.setVarIntSelector(new StaticVarOrder(s.getVar(branchvars)));
-        CPSolver.setVerbosity(CPSolver.SOLUTION);
         s.minimize(s.getVar(obj), false);
-        CPSolver.flushLogs();
         System.out.println("------------------------ " + (s.getVar(obj).getVal() + 1) + " bins");
         if (s.isFeasible() == Boolean.TRUE) {
             for (int j = 0; j <= s.getVar(obj).getVal(); j++) {

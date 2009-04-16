@@ -32,6 +32,8 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.Test;
 
@@ -40,6 +42,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
 import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.MathUtil;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
@@ -55,7 +58,7 @@ import choco.kernel.model.variables.integer.IntegerConstantVariable;
 @SuppressWarnings({"PMD.LocalVariableCouldBeFinal","PMD.MethodArgumentCouldBeFinal"})
 public class PackTest {
 
-
+	public final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	public final static int MIN_ITEMS=4;
 
@@ -139,16 +142,13 @@ public class PackTest {
 
 
 	protected void testAll(int nbSol) {
-		System.out.println("%%%%%%% TEST ALL%%%%%%%%%%%");
+		LOGGER.info("%%%%%%% PACK TEST ALL%%%%%%%%%%%");
 		CPSolver last=null;
 		for (int i = 0; i < NB_TESTS; i++) {
 			initializeSolvers();
 			for (CPSolver s : this.solvers) {
 				s.launch();
-				s.printRuntimeSatistics();
-				CPSolver.flushLogs();
 				assertEquals("sat ", nbSol != 0 , s.isFeasible());
-				System.out.println(s.getNbSolutions()+" solutions");
 				if(nbSol>0){
 					assertEquals("nb Sol.",nbSol,s.getNbSolutions());
 				}
@@ -276,11 +276,11 @@ public class PackTest {
 	}
 
 	protected void testRandom() {
-		System.out.println("%%%%%%%% TEST RANDOM %%%%%%%%");
+		LOGGER.info("%%%%%%%% TEST RANDOM %%%%%%%%");
 		int ub = modeler.nbBins;
 		CPSolver last;
 		do {
-			System.out.println("\n%%%%%% ub = "+ub+"\n");
+			LOGGER.info("\n%%%%%% ub = "+ub+"\n");
 			last=null;
 			initializeSolvers();
 			for (CPSolver s : this.solvers) {
@@ -288,9 +288,7 @@ public class PackTest {
 				//CPSolver.setVerbosity(CPSolver.SEARCH);
 				s.setLoggingMaxDepth(7);
 				s.launch();
-				System.out.println("Nb solutions: "+s.getNbSolutions());
-				s.printRuntimeSatistics();
-				CPSolver.flushLogs();
+				LOGGER.log(Level.INFO, "Nb solutions: {0}\n{1}", new Object[]{s.getNbSolutions(), s.runtimeSatistics()});
 				if(last!=null) {
 					assertEquals("sat ", last.isFeasible(), s.isFeasible());
 				}

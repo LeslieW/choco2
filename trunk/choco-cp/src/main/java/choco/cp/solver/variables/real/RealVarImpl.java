@@ -49,8 +49,9 @@ public class RealVarImpl extends AbstractVar implements RealVar {
     this.event = new RealVarEvent(this);
   }
 
-  public String toString() {
-    return this.name + "[" + this.getInf() + "," + this.getSup() + "]";
+  @Override
+public String toString() {
+    return this.name + domain.toString();
   }
 
   public String pretty() {

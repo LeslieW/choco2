@@ -22,8 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.seminar.nqueen;
 
+import static choco.Choco.allDifferent;
+import static choco.Choco.eq;
+import static choco.Choco.inverseChanneling;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.minus;
+import static choco.Choco.neq;
+import static choco.Choco.plus;
 import choco.Choco;
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.MinDomain;
@@ -41,277 +47,269 @@ import choco.kernel.solver.Solver;
  */
 public class ExQueen {
 
-    public static void nQueensNaif(int n) {
-        Model m = new CPModel();
+	public static void nQueensNaif(int n) {
+		Model m = new CPModel();
 
-        IntegerVariable[] queens = new IntegerVariable[n];
-        for (int i = 0; i < n; i++) {
-            queens[i] = makeIntVar("Q" + i, 1, n);
-        }
+		IntegerVariable[] queens = new IntegerVariable[n];
+		for (int i = 0; i < n; i++) {
+			queens[i] = makeIntVar("Q" + i, 1, n);
+		}
 
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                int k = j - i;
-                m.addConstraint(neq(queens[i], queens[j]));
-                m.addConstraint(neq(queens[i], plus(queens[j], k)));  // diagonal constraints
-                m.addConstraint(neq(queens[i], minus(queens[j], k))); // diagonal constraints
-            }
-        }
+		for (int i = 0; i < n; i++) {
+			for (int j = i + 1; j < n; j++) {
+				int k = j - i;
+				m.addConstraint(neq(queens[i], queens[j]));
+				m.addConstraint(neq(queens[i], plus(queens[j], k)));  // diagonal constraints
+				m.addConstraint(neq(queens[i], minus(queens[j], k))); // diagonal constraints
+			}
+		}
 
-        Solver s = new CPSolver();
-            s.read(m);
+		Solver s = new CPSolver();
+		s.read(m);
 
-        CPSolver.setVerbosity(CPSolver.SOLUTION);
-        int timeLimit = 60000;
-        s.setTimeLimit(timeLimit);
-        s.solve();
-        CPSolver.flushLogs();
-    }
+		int timeLimit = 60000;
+		s.setTimeLimit(timeLimit);
+		s.solve();
 
-    public static void nQueensAlldiff(int n) {
-        Model m = new CPModel();
+	}
 
-        IntegerVariable[] queens = Choco.makeIntVarArray("Q", n, 1,n);
-        IntegerVariable[] diag1 = Choco.makeIntVarArray("D1", n, 1, 2*n);
-        IntegerVariable[] diag2 = Choco.makeIntVarArray("D2", n, -n, n);
+	public static void nQueensAlldiff(int n) {
+		Model m = new CPModel();
 
-        m.addConstraint(allDifferent(queens));
-        for (int i = 0; i < n; i++) {
-            m.addConstraint(eq(diag1[i], plus(queens[i], i)));
-            m.addConstraint(eq(diag2[i], minus(queens[i], i)));
-        }
-        m.addConstraint(allDifferent(diag1));
-        m.addConstraint(allDifferent(diag2));
+		IntegerVariable[] queens = Choco.makeIntVarArray("Q", n, 1,n);
+		IntegerVariable[] diag1 = Choco.makeIntVarArray("D1", n, 1, 2*n);
+		IntegerVariable[] diag2 = Choco.makeIntVarArray("D2", n, -n, n);
 
-        Solver s = new CPSolver();
-            s.read(m);
+		m.addConstraint(allDifferent(queens));
+		for (int i = 0; i < n; i++) {
+			m.addConstraint(eq(diag1[i], plus(queens[i], i)));
+			m.addConstraint(eq(diag2[i], minus(queens[i], i)));
+		}
+		m.addConstraint(allDifferent(diag1));
+		m.addConstraint(allDifferent(diag2));
 
-        CPSolver.setVerbosity(CPSolver.SOLUTION);
-        int timeLimit = 60000;
-        s.setTimeLimit(timeLimit);
-        s.solve();
-        CPSolver.flushLogs();
-    }
+		Solver s = new CPSolver();
+		s.read(m);
 
-    public static void nQueensNaifRed(int n) {
-        Model m = new CPModel();
+		int timeLimit = 60000;
+		s.setTimeLimit(timeLimit);
+		s.solve();
 
-        IntegerVariable[] queens = new IntegerVariable[n];
-        IntegerVariable[] queensdual = new IntegerVariable[n];
+	}
 
-        for (int i = 0; i < n; i++) {
-            queens[i] = makeIntVar("Q" + i, 1, n);
-            queensdual[i] = makeIntVar("QD" + i, 1, n);
-        }
+	public static void nQueensNaifRed(int n) {
+		Model m = new CPModel();
 
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                int k = j - i;
-                m.addConstraint(neq(queens[i], queens[j]));
-                m.addConstraint(neq(queens[i], plus(queens[j], k)));  // diagonal constraints
-                m.addConstraint(neq(queens[i], minus(queens[j], k))); // diagonal constraints
-            }
-        }
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                int k = j - i;
-                m.addConstraint(neq(queensdual[i], queensdual[j]));
-                m.addConstraint(neq(queensdual[i], plus(queensdual[j], k)));  // diagonal constraints
-                m.addConstraint(neq(queensdual[i], minus(queensdual[j], k))); // diagonal constraints
-            }
-        }
-        m.addConstraint(inverseChanneling(queens, queensdual));
+		IntegerVariable[] queens = new IntegerVariable[n];
+		IntegerVariable[] queensdual = new IntegerVariable[n];
 
-        Solver s = new CPSolver();
-            s.read(m);
+		for (int i = 0; i < n; i++) {
+			queens[i] = makeIntVar("Q" + i, 1, n);
+			queensdual[i] = makeIntVar("QD" + i, 1, n);
+		}
 
-        s.setVarIntSelector(new MinDomain(s,s.getVar(queens)));
+		for (int i = 0; i < n; i++) {
+			for (int j = i + 1; j < n; j++) {
+				int k = j - i;
+				m.addConstraint(neq(queens[i], queens[j]));
+				m.addConstraint(neq(queens[i], plus(queens[j], k)));  // diagonal constraints
+				m.addConstraint(neq(queens[i], minus(queens[j], k))); // diagonal constraints
+			}
+		}
+		for (int i = 0; i < n; i++) {
+			for (int j = i + 1; j < n; j++) {
+				int k = j - i;
+				m.addConstraint(neq(queensdual[i], queensdual[j]));
+				m.addConstraint(neq(queensdual[i], plus(queensdual[j], k)));  // diagonal constraints
+				m.addConstraint(neq(queensdual[i], minus(queensdual[j], k))); // diagonal constraints
+			}
+		}
+		m.addConstraint(inverseChanneling(queens, queensdual));
 
-        CPSolver.setVerbosity(CPSolver.SOLUTION);
-        s.setLoggingMaxDepth(50);
-        int timeLimit = 60000;
-        s.setTimeLimit(timeLimit);
-        s.solve();
-        CPSolver.flushLogs();
-    }
+		Solver s = new CPSolver();
+		s.read(m);
 
-    public static void nQueensAlldiffRed(int n) {
-        Model m = new CPModel();
+		s.setVarIntSelector(new MinDomain(s,s.getVar(queens)));
 
-        IntegerVariable[] queens = new IntegerVariable[n];
-        IntegerVariable[] queensdual = new IntegerVariable[n];
-        IntegerVariable[] diag1 = new IntegerVariable[n];
-        IntegerVariable[] diag2 = new IntegerVariable[n];
-        IntegerVariable[] diag1dual = new IntegerVariable[n];
-        IntegerVariable[] diag2dual = new IntegerVariable[n];
+		s.setLoggingMaxDepth(50);
+		int timeLimit = 60000;
+		s.setTimeLimit(timeLimit);
+		s.solve();
+	}
 
-        for (int i = 0; i < n; i++) {
-            queens[i] = makeIntVar("Q" + i, 1, n);
-            queensdual[i] = makeIntVar("Qd" + i, 1, n);
-            diag1[i] = makeIntVar("D1" + i, 1, 2 * n);
-            diag2[i] = makeIntVar("D2" + i, -n, n);
-            diag1dual[i] = makeIntVar("D1" + i, 1, 2 * n);
-            diag2dual[i] = makeIntVar("D2" + i, -n, n);
-        }
+	public static void nQueensAlldiffRed(int n) {
+		Model m = new CPModel();
 
-        m.addConstraint(allDifferent(queens));
-        m.addConstraint(allDifferent(queensdual));
-        for (int i = 0; i < n; i++) {
-            m.addConstraint(eq(diag1[i], plus(queens[i], i)));
-            m.addConstraint(eq(diag2[i], minus(queens[i], i)));
+		IntegerVariable[] queens = new IntegerVariable[n];
+		IntegerVariable[] queensdual = new IntegerVariable[n];
+		IntegerVariable[] diag1 = new IntegerVariable[n];
+		IntegerVariable[] diag2 = new IntegerVariable[n];
+		IntegerVariable[] diag1dual = new IntegerVariable[n];
+		IntegerVariable[] diag2dual = new IntegerVariable[n];
 
-            m.addConstraint(eq(diag1dual[i], plus(queensdual[i], i)));
-            m.addConstraint(eq(diag2dual[i], minus(queensdual[i], i)));
-        }
+		for (int i = 0; i < n; i++) {
+			queens[i] = makeIntVar("Q" + i, 1, n);
+			queensdual[i] = makeIntVar("Qd" + i, 1, n);
+			diag1[i] = makeIntVar("D1" + i, 1, 2 * n);
+			diag2[i] = makeIntVar("D2" + i, -n, n);
+			diag1dual[i] = makeIntVar("D1" + i, 1, 2 * n);
+			diag2dual[i] = makeIntVar("D2" + i, -n, n);
+		}
 
-        m.addConstraint(allDifferent(diag1));
-        m.addConstraint(allDifferent(diag2));
-        m.addConstraint(allDifferent(diag1dual));
-        m.addConstraint(allDifferent(diag2dual));
-        m.addConstraint(inverseChanneling(queens,queensdual));
+		m.addConstraint(allDifferent(queens));
+		m.addConstraint(allDifferent(queensdual));
+		for (int i = 0; i < n; i++) {
+			m.addConstraint(eq(diag1[i], plus(queens[i], i)));
+			m.addConstraint(eq(diag2[i], minus(queens[i], i)));
 
-        Solver s = new CPSolver();
-            s.read(m);
+			m.addConstraint(eq(diag1dual[i], plus(queensdual[i], i)));
+			m.addConstraint(eq(diag2dual[i], minus(queensdual[i], i)));
+		}
 
-        s.setVarIntSelector(new MinDomain(s, s.getVar(queens)));
+		m.addConstraint(allDifferent(diag1));
+		m.addConstraint(allDifferent(diag2));
+		m.addConstraint(allDifferent(diag1dual));
+		m.addConstraint(allDifferent(diag2dual));
+		m.addConstraint(inverseChanneling(queens,queensdual));
 
-        CPSolver.setVerbosity(CPSolver.SOLUTION);
-        int timeLimit = 60000;
-        s.setTimeLimit(timeLimit);
-        s.solve();
-        CPSolver.flushLogs();
-    }
+		Solver s = new CPSolver();
+		s.read(m);
 
-    public static void heuristicNqueensNaifRed(int n) {
-        Model m = new CPModel();
-
-        IntegerVariable[] queens = new IntegerVariable[n];
-        IntegerVariable[] queensdual = new IntegerVariable[n];
-
-        for (int i = 0; i < n; i++) {
-            queens[i] = makeIntVar("Q" + i, 1, n);
-            queensdual[i] = makeIntVar("QD" + i, 1, n);
-        }
-
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                int k = j - i;
-                m.addConstraint(neq(queens[i], queens[j]));
-                m.addConstraint(neq(queens[i], plus(queens[j], k)));  // diagonal constraints
-                m.addConstraint(neq(queens[i], minus(queens[j], k))); // diagonal constraints
-            }
-        }
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                int k = j - i;
-                m.addConstraint(neq(queensdual[i], queensdual[j]));
-                m.addConstraint(neq(queensdual[i], plus(queensdual[j], k)));  // diagonal constraints
-                m.addConstraint(neq(queensdual[i], minus(queensdual[j], k))); // diagonal constraints
-            }
-        }
-        m.addConstraint(inverseChanneling(queens, queensdual));
-
-        Solver s = new CPSolver();
-        s.read(m);
-
-        s.setVarIntSelector(new MinDomain(s,s.getVar(queens)));
-        s.setValIntSelector(new NQueenValueSelector(s.getVar(queensdual)));
-
-        CPSolver.setVerbosity(CPSolver.SOLUTION);
-        int timeLimit = 60000;
-        s.setTimeLimit(timeLimit);
-        s.solve();
-        CPSolver.flushLogs();
-    }
+		s.setVarIntSelector(new MinDomain(s, s.getVar(queens)));
 
 
-    public static void heuristicNqueensAlldiffRed(int n) {
-        Model m = new CPModel();
+		int timeLimit = 60000;
+		s.setTimeLimit(timeLimit);
+		s.solve();
+	}
 
-        IntegerVariable[] queens = new IntegerVariable[n];
-        IntegerVariable[] queensdual = new IntegerVariable[n];
-        IntegerVariable[] diag1 = new IntegerVariable[n];
-        IntegerVariable[] diag2 = new IntegerVariable[n];
-        IntegerVariable[] diag1dual = new IntegerVariable[n];
-        IntegerVariable[] diag2dual = new IntegerVariable[n];
+	public static void heuristicNqueensNaifRed(int n) {
+		Model m = new CPModel();
 
-        for (int i = 0; i < n; i++) {
-            queens[i] = makeIntVar("Q" + i, 1, n);
-            queensdual[i] = makeIntVar("QD" + i, 1, n);
-            diag1[i] = makeIntVar("D1" + i, 1, 2 * n);
-            diag2[i] = makeIntVar("D2" + i, -n, n);
-            diag1dual[i] = makeIntVar("D1" + i, 1, 2 * n);
-            diag2dual[i] = makeIntVar("D2" + i, -n, n);
-        }
+		IntegerVariable[] queens = new IntegerVariable[n];
+		IntegerVariable[] queensdual = new IntegerVariable[n];
 
-        m.addConstraint(allDifferent(queens));
-        m.addConstraint(allDifferent(queensdual));
-        for (int i = 0; i < n; i++) {
-            m.addConstraint(eq(diag1[i], plus(queens[i], i)));
-            m.addConstraint(eq(diag2[i], minus(queens[i], i)));
+		for (int i = 0; i < n; i++) {
+			queens[i] = makeIntVar("Q" + i, 1, n);
+			queensdual[i] = makeIntVar("QD" + i, 1, n);
+		}
 
-            m.addConstraint(eq(diag1dual[i], plus(queensdual[i], i)));
-            m.addConstraint(eq(diag2dual[i], minus(queensdual[i], i)));
-        }
+		for (int i = 0; i < n; i++) {
+			for (int j = i + 1; j < n; j++) {
+				int k = j - i;
+				m.addConstraint(neq(queens[i], queens[j]));
+				m.addConstraint(neq(queens[i], plus(queens[j], k)));  // diagonal constraints
+				m.addConstraint(neq(queens[i], minus(queens[j], k))); // diagonal constraints
+			}
+		}
+		for (int i = 0; i < n; i++) {
+			for (int j = i + 1; j < n; j++) {
+				int k = j - i;
+				m.addConstraint(neq(queensdual[i], queensdual[j]));
+				m.addConstraint(neq(queensdual[i], plus(queensdual[j], k)));  // diagonal constraints
+				m.addConstraint(neq(queensdual[i], minus(queensdual[j], k))); // diagonal constraints
+			}
+		}
+		m.addConstraint(inverseChanneling(queens, queensdual));
 
-        m.addConstraint(allDifferent(diag1));
-        m.addConstraint(allDifferent(diag2));
-        m.addConstraint(allDifferent(diag1dual));
-        m.addConstraint(allDifferent(diag2dual));
-        m.addConstraint(inverseChanneling(queens,queensdual));
+		Solver s = new CPSolver();
+		s.read(m);
 
-        Solver s = new CPSolver();
-            s.read(m);
+		s.setVarIntSelector(new MinDomain(s,s.getVar(queens)));
+		s.setValIntSelector(new NQueenValueSelector(s.getVar(queensdual)));
 
-        s.setVarIntSelector(new MinDomain(s,s.getVar(queens)));
-        s.setValIntSelector(new NQueenValueSelector(s.getVar(queensdual)));
-
-        CPSolver.setVerbosity(CPSolver.SOLUTION);
-        int timeLimit = 60000;
-        s.setTimeLimit(timeLimit);
-        s.solve();
-        CPSolver.flushLogs();
-    }
+		int timeLimit = 60000;
+		s.setTimeLimit(timeLimit);
+		s.solve();
+	}
 
 
-    public static void main(String[] args) {
-        int nbQueens = 20;
+	public static void heuristicNqueensAlldiffRed(int n) {
+		Model m = new CPModel();
 
-        System.out.println("************* Nqueens naif *************");
-        nQueensNaif(nbQueens); // (1)
-        System.out.println("");
-        System.out.println("****************************************");
-        System.out.println("");
+		IntegerVariable[] queens = new IntegerVariable[n];
+		IntegerVariable[] queensdual = new IntegerVariable[n];
+		IntegerVariable[] diag1 = new IntegerVariable[n];
+		IntegerVariable[] diag2 = new IntegerVariable[n];
+		IntegerVariable[] diag1dual = new IntegerVariable[n];
+		IntegerVariable[] diag2dual = new IntegerVariable[n];
 
-        System.out.println("*********** Nqueens alldiff ************");
-        nQueensAlldiff(nbQueens); // (2)
-        System.out.println("");
-        System.out.println("****************************************");
-        System.out.println("");
+		for (int i = 0; i < n; i++) {
+			queens[i] = makeIntVar("Q" + i, 1, n);
+			queensdual[i] = makeIntVar("QD" + i, 1, n);
+			diag1[i] = makeIntVar("D1" + i, 1, 2 * n);
+			diag2[i] = makeIntVar("D2" + i, -n, n);
+			diag1dual[i] = makeIntVar("D1" + i, 1, 2 * n);
+			diag2dual[i] = makeIntVar("D2" + i, -n, n);
+		}
 
-        System.out.println("******* Nqueens naif redondant *********");
-        nQueensNaifRed(nbQueens); // (3)
-        System.out.println("");
-        System.out.println("****************************************");
-        System.out.println("");
+		m.addConstraint(allDifferent(queens));
+		m.addConstraint(allDifferent(queensdual));
+		for (int i = 0; i < n; i++) {
+			m.addConstraint(eq(diag1[i], plus(queens[i], i)));
+			m.addConstraint(eq(diag2[i], minus(queens[i], i)));
 
-        System.out.println("****** Nqueens alldiff redondant *******");
-        nQueensAlldiffRed(nbQueens); // (4)
-        System.out.println("");
-        System.out.println("****************************************");
-        System.out.println("");
+			m.addConstraint(eq(diag1dual[i], plus(queensdual[i], i)));
+			m.addConstraint(eq(diag2dual[i], minus(queensdual[i], i)));
+		}
 
-        System.out.println("***** Nqueens naif redondant heur ******");
-        heuristicNqueensNaifRed(nbQueens); // (5)
-        System.out.println("");
-        System.out.println("****************************************");
-        System.out.println("");
+		m.addConstraint(allDifferent(diag1));
+		m.addConstraint(allDifferent(diag2));
+		m.addConstraint(allDifferent(diag1dual));
+		m.addConstraint(allDifferent(diag2dual));
+		m.addConstraint(inverseChanneling(queens,queensdual));
 
-        System.out.println("**** Nqueens alldiff redondant heur ****");
-        heuristicNqueensAlldiffRed(nbQueens);  // (6)
-        System.out.println("");
-        System.out.println("****************************************");
-        System.out.println("");
-    }
+		Solver s = new CPSolver();
+		s.read(m);
+
+		s.setVarIntSelector(new MinDomain(s,s.getVar(queens)));
+		s.setValIntSelector(new NQueenValueSelector(s.getVar(queensdual)));
+
+		int timeLimit = 60000;
+		s.setTimeLimit(timeLimit);
+		s.solve();
+
+	}
+
+
+	public static void main(String[] args) {
+		int nbQueens = 20;
+
+		System.out.println("************* Nqueens naif *************");
+		nQueensNaif(nbQueens); // (1)
+		System.out.println("");
+		System.out.println("****************************************");
+		System.out.println("");
+
+		System.out.println("*********** Nqueens alldiff ************");
+		nQueensAlldiff(nbQueens); // (2)
+		System.out.println("");
+		System.out.println("****************************************");
+		System.out.println("");
+
+		System.out.println("******* Nqueens naif redondant *********");
+		nQueensNaifRed(nbQueens); // (3)
+		System.out.println("");
+		System.out.println("****************************************");
+		System.out.println("");
+
+		System.out.println("****** Nqueens alldiff redondant *******");
+		nQueensAlldiffRed(nbQueens); // (4)
+		System.out.println("");
+		System.out.println("****************************************");
+		System.out.println("");
+
+		System.out.println("***** Nqueens naif redondant heur ******");
+		heuristicNqueensNaifRed(nbQueens); // (5)
+		System.out.println("");
+		System.out.println("****************************************");
+		System.out.println("");
+
+		System.out.println("**** Nqueens alldiff redondant heur ****");
+		heuristicNqueensAlldiffRed(nbQueens);  // (6)
+		System.out.println("");
+		System.out.println("****************************************");
+		System.out.println("");
+	}
 
 }

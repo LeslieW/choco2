@@ -23,7 +23,27 @@
 package choco.model.constraints.global;
 
 
-import static choco.Choco.*;
+import static choco.Choco.eq;
+import static choco.Choco.feasTupleAC;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.makeIntVarArray;
+import static choco.Choco.occurrence;
+import static choco.Choco.plus;
+import static choco.Choco.scalar;
+import static choco.Choco.sum;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Logger;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
@@ -31,16 +51,6 @@ import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
-import org.junit.After;
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Logger;
 
 // **************************************************
 // *                   J-CHOCO                      *
@@ -311,7 +321,6 @@ public class OccurrenceTest {
         IntegerVariable[] tab = new IntegerVariable[]{x, y};
         m.addConstraint(occurrence(1, z, tab));
         CPSolver s = new CPSolver();
-        CPSolver.setVerbosity(CPSolver.SOLUTION);
         s.read(m);
         s.solveAll();
         assertEquals(6,s.getNbSolutions());

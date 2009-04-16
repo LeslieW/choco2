@@ -51,7 +51,7 @@ public class TestBranching {
 				if(obj==-1) { obj =s.getOptimumValue().intValue();}
 				n++;
 			}
-			SchedUtilities.message("solver "+i, s.getOptimumValue().toString(), s.isFeasible(), s);
+			SchedUtilities.message("solver "+i, s.getOptimumValue(), s);
 		}
 		//check
 		if(n==0) {System.err.println("no optimal found");}
@@ -66,7 +66,6 @@ public class TestBranching {
 			}
 		}
 		System.out.println("optimum found: "+n+"/"+solvers.length);
-		CPSolver.flushLogs();
 	}
 
 

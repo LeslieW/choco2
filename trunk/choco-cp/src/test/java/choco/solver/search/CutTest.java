@@ -25,6 +25,7 @@ package choco.solver.search;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.constraints.AbstractSConstraint;
@@ -46,15 +47,14 @@ import java.util.logging.Logger;
 // **************************************************
 
 public class CutTest {
-    private Logger logger = Logger.getLogger("choco.currentElement");
+    protected static final Logger LOGGER = ChocoLogging.getTestLogger();
     private Model m;
     private CPSolver s;
     private IntegerVariable v1, v2, v3, v4, v5;
 
     @Before
     public void setUp() {
-        logger.fine("StoredInt Testing...");
-        CPSolver.setVerbosity(CPSolver.FINEST);
+        LOGGER.fine("StoredInt Testing...");
         m = new CPModel();
         s = new CPSolver();
         v1 = makeIntVar("v1", 0, 1);
@@ -65,7 +65,6 @@ public class CutTest {
 
     @After
     public void tearDown() {
-        CPSolver.flushLogs();
         v1 = null;
         v2 = null;
         v3 = null;
@@ -79,7 +78,7 @@ public class CutTest {
     @Test
     public void test1() {
         System.out.println("test1");
-        logger.finer("test1");
+        LOGGER.finer("test1");
         s.solve();
         int valv1 = s.getVar(v1).getVal();
         int valv2 = s.getVar(v2).getVal();
@@ -95,7 +94,7 @@ public class CutTest {
      */
     @Test
     public void test2() {
-        logger.finer("test1");
+        LOGGER.finer("test1");
         System.out.println("test2");
         s.solve();
         int valv1 = s.getVar(v1).getVal();
@@ -117,7 +116,7 @@ public class CutTest {
     @Test
     public void test3() {
         System.out.println("test3");
-        logger.finer("test3");
+        LOGGER.finer("test3");
         s.solve();
         int valv1 = s.getVar(v1).getVal();
         s.postCut(s.eq(s.getVar(v1), valv1));
@@ -135,7 +134,7 @@ public class CutTest {
     @Test
     public void test4() {
         System.out.println("test4");
-        logger.finer("test4");
+        LOGGER.finer("test4");
         s.solve();
         int valv2 = s.getVar(v2).getVal();
         s.postCut(s.eq(s.getVar(v2), valv2));
@@ -149,7 +148,7 @@ public class CutTest {
     @Test
     public void test5() {
         System.out.println("test5");
-        logger.finer("test5");
+        LOGGER.finer("test5");
         IntegerVariable v3 = makeIntVar("v3", 0, 1);
         m.addVariable(v3);
         s.read(m);
@@ -170,7 +169,7 @@ public class CutTest {
     @Test
     public void test6() {
         System.out.println("test6");
-        logger.finer("test6");
+        LOGGER.finer("test6");
         IntegerVariable v3 = makeIntVar("v3", 0, 1);
         m.addVariable(v3);
         s.read(m);
@@ -201,7 +200,7 @@ public class CutTest {
     @Test
     public void test7() {
         System.out.println("test7");
-        logger.finer("test7");
+        LOGGER.finer("test7");
         IntegerVariable v3 = makeIntVar("v3", 0, 1);
         m.addVariable(v3);
         s.read(m);
@@ -226,7 +225,7 @@ public class CutTest {
     @Test
     public void test8() {
         System.out.println("test8");
-        logger.finer("test8");
+        LOGGER.finer("test8");
         IntegerVariable v3 = makeIntVar("v3", 0, 1);
         IntegerVariable v4 = makeIntVar("v4", 0, 1);
         IntegerVariable v5 = makeIntVar("v5", 0, 1);
