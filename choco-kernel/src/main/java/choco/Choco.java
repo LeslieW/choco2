@@ -73,7 +73,7 @@ import java.util.logging.Logger;
  */
 public class Choco{
 
-	final static Logger LOGGER = ChocoLogging.getAPILogger();
+	protected final static Logger LOGGER = ChocoLogging.getAPILogger();
 
 	public static boolean DEBUG = false;
 

@@ -22,12 +22,14 @@
  **************************************************/
 package choco.kernel.model.variables;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.real.RealConstantVariable;
 import choco.kernel.model.variables.set.SetConstantVariable;
 import gnu.trove.TIntObjectHashMap;
 
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 /*
 * User : charles
@@ -37,6 +39,8 @@ import java.util.HashMap;
 * Update : Choco 2.0.1
 */
 public class ConstantFactory {
+
+    protected final static Logger LOGGER = ChocoLogging.getModelLogger();
 
     static TIntObjectHashMap<IntegerConstantVariable> integerMap = new TIntObjectHashMap();
     static HashMap<int[], SetConstantVariable> setMap = new HashMap();
@@ -62,7 +66,7 @@ public class ConstantFactory {
     public static IntegerConstantVariable getConstant(String name, int value){
         if(integerMap.get(0)!=null
                 &&integerMap.get(0).getValue() !=0){
-            System.err.println("$$$$$$$$$$$$$ ALARM $$$$$$$$$$$$$$$$$$$$$$$$$$");
+            LOGGER.severe("$$$$$$$$$$$$$ ALARM $$$$$$$$$$$$$$$$$$$$$$$$$$");
             System.exit(-1589);
         }
         if(!integerMap.containsKey(value)){

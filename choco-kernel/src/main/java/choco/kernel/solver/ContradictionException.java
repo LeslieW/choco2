@@ -53,7 +53,7 @@ public class ContradictionException extends Exception {
 	private Object contradictionCause;
     private int contradictionType;
 
-	/**
+    /**
 	 * An exception may have a local cause (the last variable
 	 * / constraint responsible for the failure)
 	 */

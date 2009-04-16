@@ -278,21 +278,20 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
 
         public Object loadManager(String manager) {
              //We get it by reflection !
-            //System.out.println(manager);
             Class componentClass = null;
             try {
               componentClass = Class.forName(manager);
             } catch (ClassNotFoundException e) {
-              System.err.println("Component class could not be found: " + manager);
+              LOGGER.severe("Component class could not be found: " + manager);
               System.exit(-1);
             }
             try {
               return componentClass.newInstance();
             } catch (InstantiationException e) {
-              System.err.println("Component class could not be instantiated: " + manager);
+              LOGGER.severe("Component class could not be instantiated: " + manager);
               System.exit(-1);
             } catch (IllegalAccessException e) {
-              System.err.println("Component class could not be accessed: " + manager);
+              LOGGER.severe("Component class could not be accessed: " + manager);
               System.exit(-1);
             }
             return null;

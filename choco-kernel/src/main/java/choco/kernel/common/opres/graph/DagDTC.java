@@ -22,9 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.common.opres.graph;
 
+import choco.kernel.common.util.ChocoUtil;
 import gnu.trove.TIntArrayList;
 import gnu.trove.TIntProcedure;
-import choco.kernel.common.util.ChocoUtil;
 
 
 
@@ -53,7 +53,6 @@ public class DagDTC extends GraphDTC {
 
 	@Override
 	public int add(int i, int j) {
-		//System.out.println(i+"->"+j);
 		if(isNotCyclic(i, j)) {
 			final int val = super.add(i,j);
 			if(val == ADDED) {fireTopologicalorder(i, j);}

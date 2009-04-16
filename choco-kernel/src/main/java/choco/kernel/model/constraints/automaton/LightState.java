@@ -22,12 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.constraints.automaton;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntEnumeration;
 import choco.kernel.memory.trailing.IndexedObject;
 
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.logging.Logger;
 
 /*
  * Created by IntelliJ IDEA.
@@ -43,6 +45,9 @@ import java.util.Hashtable;
  *   this node.
  */
 public class LightState implements IndexedObject {
+
+    protected final static Logger LOGGER = ChocoLogging.getKernelLogger();
+
     // Identifier of the state
     protected int idx;
 
@@ -90,18 +95,18 @@ public class LightState implements IndexedObject {
 
 
    // Enumeration on predecessors
-    public Enumeration getEnumerationPred() {
+    public Enumeration<? extends Arcs> getEnumerationPred() {
         return new Enumerator<Arcs>();
     }
 
     // Enumeration on successors
-    public Enumeration getEnumerationSucc() {
+    public Enumeration<? extends Integer> getEnumerationSucc() {
         return (this.htransitions.keys());
     }
 
     // Get delta(value, this)
     public LightState delta(int value) {
-        return ((LightState) this.htransitions.get(value));
+        return (LightState)this.htransitions.get(value);
     }
 
     //  Has a successor
@@ -123,7 +128,7 @@ public class LightState implements IndexedObject {
         }
 
         public Arc nextElement() {
-            return ((Arc) trPred[currentIdx++]);
+            return (Arc)trPred[currentIdx++];
         }
     }
 

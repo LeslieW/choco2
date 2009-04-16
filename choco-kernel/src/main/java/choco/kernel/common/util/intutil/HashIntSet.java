@@ -162,7 +162,7 @@ public class HashIntSet
 
         for (int i = 0 ;i < 120 ; i++)
         {
-            System.out.println(HashIntToIntMap.hash(i));
+            LOGGER.info(String.valueOf(HashIntToIntMap.hash(i)));
 
         }
     }

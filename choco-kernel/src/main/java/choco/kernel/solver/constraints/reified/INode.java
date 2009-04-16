@@ -23,12 +23,14 @@
 package choco.kernel.solver.constraints.reified;
 
 import choco.IPretty;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntArrayList;
 
 import java.util.HashSet;
+import java.util.logging.Logger;
 
 /*
  * Created by IntelliJ IDEA.
@@ -39,6 +41,7 @@ import java.util.HashSet;
  */
 public abstract class INode implements IPretty {
 
+    protected final static Logger LOGGER = ChocoLogging.getModelLogger();
 
     /**
      * reference to branches below this node

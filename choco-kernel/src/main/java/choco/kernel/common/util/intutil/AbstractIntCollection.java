@@ -22,9 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.common.util.intutil;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
 
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -35,6 +37,8 @@ import java.util.Arrays;
  */
 @Deprecated // see trove4j librairy
 public abstract class AbstractIntCollection implements IntCollection {
+
+    protected final static Logger LOGGER = ChocoLogging.getKernelLogger();
 
     protected AbstractIntCollection() {
     }

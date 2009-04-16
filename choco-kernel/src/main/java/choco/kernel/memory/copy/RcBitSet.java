@@ -206,14 +206,14 @@ public class RcBitSet extends AbstractStateBitSet implements RecomputableElement
 
     public void _set(BitSet bitSet) {
         if (bitSet.cardinality() <= 0) {
-            System.out.println("bui");
-            System.out.println("2");
+            LOGGER.info("bui");
+            LOGGER.info("2");
         }
         timeStamp = env.getWorldIndex();
         BitSet b = (BitSet) bitSet.clone();
         if (b.cardinality() <= 0) {
-            System.out.println("bui");
-            System.out.println("2");
+            LOGGER.info("bui");
+            LOGGER.info("2");
         }
         representedBy = b ;
 

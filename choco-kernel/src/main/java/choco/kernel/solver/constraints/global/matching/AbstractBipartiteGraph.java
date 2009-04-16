@@ -30,8 +30,8 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.text.MessageFormat;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * An abstract class encoding assignment graphs (matching each left vertex with one single right vertex)
@@ -617,7 +617,6 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	 * @throws choco.kernel.solver.ContradictionException
 	 */
 	public void propagate() throws ContradictionException {
-		//System.out.println("propagate" + this);
 		LOGGER.finer("Propagate...");
 		this.removeUselessEdges();
 	}
@@ -628,12 +627,12 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 
 	public void prettyPrintForDebug() {
 		for(int i = 0; i < nbLeftVertices; i++) {
-			System.out.println(vars[i].pretty() + ": " + refMatch.get(i) + "[" + component[i] + "]");
+			LOGGER.info(MessageFormat.format("{0}: {1}[{2}]", vars[i].pretty(), refMatch.get(i), component[i]));
 		}
 		for(int i = 0; i < nbRightVertices; i++) {
-			System.out.println("val(" + i + "): [" + component[i+nbLeftVertices]+ "]");
+			LOGGER.info(MessageFormat.format("val({0}): [{1}]", i, component[i + nbLeftVertices]));
 		}
-		System.out.println("Matching size = " + matchingSize.get() + "/" + nbLeftVertices);
+		LOGGER.info(MessageFormat.format("Matching size = {0}/{1}", matchingSize.get(), nbLeftVertices));
 
 	}
 
