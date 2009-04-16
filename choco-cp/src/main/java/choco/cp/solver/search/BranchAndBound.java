@@ -60,10 +60,13 @@ public class BranchAndBound extends AbstractOptimize {
    * resets all limits.
    */  
   public void endTreeSearch() {
+	  super.endTreeSearch();
+	  //FIXME why did we not reset limits in the superclass if it is useful ?
     for (int i = 0; i < limits.size(); i++) {
       AbstractGlobalSearchLimit lim = (AbstractGlobalSearchLimit) limits.get(i);
       lim.reset(false);
     }
+    
     if (solver.getFeasible() == Boolean.TRUE) {
       //[SVIEW] solve => ~S sol, best:~S [~S]
       // a.nbSol,(if a.doMaximize a.lowerBound else a.upperBound),a.limits

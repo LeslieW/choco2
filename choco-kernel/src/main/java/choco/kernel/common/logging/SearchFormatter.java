@@ -21,7 +21,7 @@ public final class SearchFormatter extends AbstractFormatter {
 	@Override
 	public synchronized String format(LogRecord record) {
 		StringBuilder sb = new StringBuilder();
-		int depth =-1;
+		int depth =-2;
 		if(record.getParameters() != null) {
 			if (record.getParameters()[0] instanceof Integer) {
 				depth = (Integer) record.getParameters()[0];
@@ -32,8 +32,10 @@ public final class SearchFormatter extends AbstractFormatter {
 		if(depth>=0) {
 			sb.append(getLogPrefix(depth));
 			sb.append("[").append(depth).append("] ");
+		}else if(depth == -1) {
+			sb.append("=== ");
 		}else {
-			sb.append("[?]");
+			sb.append("[?] ");
 		}
 		setWarningSign(record, sb);
 		sb.append(formatMessage(record));			

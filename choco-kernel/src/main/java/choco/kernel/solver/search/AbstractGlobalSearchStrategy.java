@@ -244,12 +244,10 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 				sb.append("solve => ").append(nbSolutions).append(" solutions");
 
 			} else {
-				sb.append("solve => no solution");
+				sb.append("solve => no solution\n");
 			}
-			for (AbstractGlobalSearchLimit lim : limits) {
-				sb.append('\n').append(lim.pretty());
-			}
-			LOGGER.log(Level.INFO, new String(sb), 0);
+			sb.append(runtimeStatistics());
+			LOGGER.log(Level.INFO, "solve => {1} solutions\n\twith {2}", new Object[]{-1, Integer.valueOf(nbSolutions), runtimeStatistics()});
 		}
 	}
 
@@ -302,14 +300,10 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 				StringBuilder sb = new StringBuilder();
 				sb.append("Solution #").append(nbSolutions).append(" is found");
 				if  (this.limits.size() > 0) {
-					sb.append("\n\twith ");
-					for (AbstractGlobalSearchLimit lim : limits) {
-						sb.append(lim.pretty());
-						sb.append("; ");
-					}
+					sb.append("\n\twith ").append(runtimeStatistics());
 				}
 				if  (LOGGER.isLoggable(Level.FINEST)) {sb.append("\n\t").append(solver.solutionToString());}
-				LOGGER.log(Level.FINE, new String(sb), solver );
+				LOGGER.log(Level.FINE, new String(sb), -1 );
 			}
 			if (maxNbSolutionStored > 0) {
 				super.recordSolution();
@@ -391,10 +385,11 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	public String runtimeStatistics() {
 		final StringBuilder stb = new StringBuilder();
 		for (AbstractGlobalSearchLimit l : limits) {
-			stb.append(l.pretty()).append('\n');
+			stb.append(l.pretty()).append(" ; ");
 		}
 		return stb.toString();
 	}
+	
 
 	public final AbstractGlobalSearchLimit getLimit(Limit limit) {
 		for (AbstractGlobalSearchLimit l : limits) {
