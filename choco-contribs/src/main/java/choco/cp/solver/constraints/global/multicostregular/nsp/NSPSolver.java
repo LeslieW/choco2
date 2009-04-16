@@ -2,6 +2,9 @@ package choco.cp.solver.constraints.global.multicostregular.nsp;
 
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.multicostregular.MultiCostRegular;
+import choco.kernel.common.logging.ChocoLogging;
+
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -10,6 +13,8 @@ import choco.cp.solver.constraints.global.multicostregular.MultiCostRegular;
  * Time: 12:09:50 AM
  */
 public class NSPSolver {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     public static void main(String[] args) {
         for (int i = 25 ; i <= 25 ; i+=25)
@@ -37,16 +42,16 @@ public class NSPSolver {
                 
                 s.monitorBackTrackLimit(true);
 
-                System.out.println("N"+i+" : "+j);
+                LOGGER.info("N"+i+" : "+j);
                 //if (s.minimize(s.getVar(mod.globalCost),false))
                 if (s.solve())
                 do {
-                    System.out.println(mod.solution(s));
+                    LOGGER.info(mod.solution(s));
                     s.postCut(s.lt(s.getVar(mod.globalCost),s.getVar(mod.globalCost).getVal()));
                  } while(false && s.nextSolution());
                 s.printRuntimeSatistics();
-                System.out.println("");
-                System.out.println("");
+                LOGGER.info("");
+                LOGGER.info("");
             }
     }
 }

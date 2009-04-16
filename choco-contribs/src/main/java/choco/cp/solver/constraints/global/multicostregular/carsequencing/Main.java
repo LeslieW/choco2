@@ -23,11 +23,13 @@
 package choco.cp.solver.constraints.global.multicostregular.carsequencing;
 
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.multicostregular.carsequencing.heuristics.BothValHeur;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,6 +40,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public class Main {
 
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     public static void solve(String filename, boolean all)
     {
@@ -61,7 +64,7 @@ public class Main {
 
 
 
-        System.out.println("Trying "+m.getInstance().name+"...");
+        LOGGER.info("Trying "+m.getInstance().name+"...");
 
         if (s.solve())
         {
@@ -69,21 +72,20 @@ public class Main {
 
                 for (int i = 0 ; i < seqVars.length ; i++)
                 {
-                    System.out.print(seqVars[i].getVal()+"\t");
+                    StringBuffer st = new StringBuffer();
+                    st.append(seqVars[i].getVal()).append("\t");
                     for (int j = 0 ; j < m.getInstance().nbOptions ; j++)
-                        System.out.print(m.getInstance().optionRequirement[seqVars[i].getVal()][j+2]+" ");
-                    System.out.println("");
+                        st.append(m.getInstance().optionRequirement[seqVars[i].getVal()][j + 2]).append(" ");
+                    LOGGER.info(st.toString());
 
 
                 }
-                System.out.println("");
-                System.out.println("");
             } while(all && s.nextSolution());
 
 
         }
         s.printRuntimeSatistics();
-        System.out.println(s.getNbSolutions()+" SOLUTIONS" );
+        LOGGER.info(s.getNbSolutions()+" SOLUTIONS" );
 
     }
 

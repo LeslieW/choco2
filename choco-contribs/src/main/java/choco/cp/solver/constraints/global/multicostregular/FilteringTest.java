@@ -22,22 +22,24 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.multicostregular;
 
-import choco.kernel.model.constraints.automaton.FA.Automaton;
-import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.model.Model;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.propagation.EventQueue;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.common.util.IntIterator;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Random;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.IntIterator;
+import choco.kernel.model.Model;
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -48,6 +50,8 @@ import choco.cp.solver.CPSolver;
  */
 public class FilteringTest {
 
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
+
     private static Automaton generateRandomAutomaton(int nbVar, int[] val, Random r)
     {
         StringBuffer regexp = new StringBuffer();
@@ -55,7 +59,7 @@ public class FilteringTest {
         {
             regexp.append(getRandomSubset(val,r));
         }
-        System.out.println(regexp);
+        LOGGER.info(MessageFormat.format("{0}", regexp));
         return new Automaton(regexp.toString());
 
     }
@@ -144,7 +148,7 @@ public class FilteringTest {
 
             int bui = 0;
             for (IntDomainVar v: s.getVar(vars)) bui+= v.getDomainSize();
-            System.out.println("AU DEPART : "+bui+" val");
+            LOGGER.info("AU DEPART : "+bui+" val");
 
             try {
                 s.propagate();
@@ -178,25 +182,25 @@ public class FilteringTest {
 
                 }
 
-                System.out.println("NB VAL   : "+nbVal);
-                System.out.println("NB TRUE  : "+nbTrue);
-                System.out.println("NB FALSE : "+nbFalse);
+                LOGGER.info("NB VAL   : "+nbVal);
+                LOGGER.info("NB TRUE  : "+nbTrue);
+                LOGGER.info("NB FALSE : "+nbFalse);
                 double perc = nbTrue/nbVal*100;
                 all+=perc;
 
-                System.out.println("");
-                System.out.println("POURCENTAGE DE OK : "+perc+"%");
+                LOGGER.info("");
+                LOGGER.info("POURCENTAGE DE OK : "+perc+"%");
 
             }
             catch (ContradictionException e) {
-                System.out.println("PAS DE SOLUTION ET TOUT RETIRE");
+                LOGGER.info("PAS DE SOLUTION ET TOUT RETIRE");
                 all+=100.0;
             }
 
         }
 
-        System.out.println("");
-        System.out.println("ALL IN ALL : "+(all/iter)+'%');
+        LOGGER.info("");
+        LOGGER.info("ALL IN ALL : "+(all/iter)+'%');
 
     }
 

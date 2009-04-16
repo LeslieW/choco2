@@ -1,11 +1,15 @@
 package choco.cp.solver.constraints.global.multicostregular.nsp;
 
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
+import choco.kernel.common.logging.ChocoLogging;
+
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,7 +19,7 @@ import java.io.IOException;
  */
 public class NSPParser {
 
-
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
 
     public static NSPInstance parseNSPFile(String filename)
@@ -81,9 +85,7 @@ public class NSPParser {
 
     public static void main(String[] args) {
         NSPInstance nsp = NSPParser.parseNSPFile("/Users/julien/These/NSP/NSPLib/N25/1.nsp");
-        System.out.println(nsp);
-
-
+        LOGGER.info(MessageFormat.format("{0}", nsp));
     }
 
 }

@@ -25,26 +25,14 @@ package samples.random;
 
 import static choco.Choco.feasPairAC;
 import static choco.Choco.makeIntVar;
-import choco.cp.model.CPModel;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.strong.DomOverDDegRPC;
-import choco.cp.solver.constraints.strong.StrongConsistencyManager;
-import choco.cp.solver.constraints.strong.maxrpcrm.MaxRPCrm;
-import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
-import choco.cp.solver.search.integer.branching.DomOverWDegBranching;
-import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
-import choco.cp.solver.search.integer.valselector.MinVal;
-import choco.kernel.model.Model;
-import choco.kernel.model.constraints.ComponentConstraintWithSubConstraints;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
 import samples.random.RandomListGenerator.Structure;
 
 import java.security.InvalidParameterException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Random;
 
 public class RandomProblem {
 
@@ -59,11 +47,6 @@ public class RandomProblem {
 
     public RandomProblem(int nbVar, int nbVal, int nbConstraints,
             double tightness, long seed, boolean force) {
-        // System.out.println("Generating problem with " + nbVar +
-        // " variables, "
-        // + nbVal + " values, " + nbConstraints + " constraints, "
-        // + tightness + " Tightness");
-
         // Build enumerated domain variables
         variables = new IntegerVariable[nbVar];
 

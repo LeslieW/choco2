@@ -23,13 +23,14 @@
 package choco.memory;
 
 
-import choco.cp.solver.constraints.global.scheduling.Precedence;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.*;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
-import choco.kernel.solver.variables.scheduling.TaskVar;
 import static org.junit.Assert.*;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.logging.Logger;
 
 
 /**
@@ -38,6 +39,8 @@ import org.junit.Test;
  * @version 2.0.0</br>
  */
 public class StoredCollectionTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	private final static int NB_TESTS = 1000;
 
@@ -88,7 +91,7 @@ public class StoredCollectionTest {
 			sbtree.add(i, i+2);
 			env.worldPush();
 		}
-		System.out.println("Total Trail Size: "+env.getTrailSize());
+		LOGGER.info("Total Trail Size: "+env.getTrailSize());
 		//check final value
 		assertEquals(true, sbool.get());
 		assertEquals(0, sint.get());
@@ -123,7 +126,7 @@ public class StoredCollectionTest {
 			collTrail.worldPush();
 			env.worldPush();
 		}
-		System.out.println("Total Trail Size: "+env.getTrailSize());
+		LOGGER.info("Total Trail Size: "+env.getTrailSize());
 		//check final value
 		assertEquals(1, scoll.size());
 		//check Trail size
@@ -143,14 +146,14 @@ public class StoredCollectionTest {
 		collTrail.worldPush();
 		env.worldPush();
 		assertEquals(1, env.getWorldIndex());
-		vector.add(new Integer(0));
-		vector.add(new Integer(1));
+		vector.add(0);
+		vector.add(1);
 		collTrail.worldPush();
 		env.worldPush();
 		assertEquals(2, env.getWorldIndex());
-		vector.add(new Integer(2));
-		vector.add(new Integer(3));
-		vector.staticAdd(new Integer(4));
+		vector.add(2);
+		vector.add(3);
+		vector.staticAdd(4);
 		assertEquals(5, vector.size());
 		collTrail.worldPop();
 		env.worldPop();
@@ -226,7 +229,7 @@ public class StoredCollectionTest {
 	//		testTrail(3, 1, 1);
 	//		env.worldPop();
 	//		testTrail(2, 1, 2);
-	//		System.out.println(list.getList());
+	//		LOGGER.info(list.getList());
 	//		env.worldPop();
 	//		testTrail(1, 1, 1);
 	//		env.worldPop();
