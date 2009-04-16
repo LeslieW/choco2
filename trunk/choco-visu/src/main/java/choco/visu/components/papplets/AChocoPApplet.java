@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.visu.components.papplets;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.visu.components.IVisuVariable;
 import choco.visu.components.ColorConstant;
 import choco.visu.components.bricks.AChocoBrick;
@@ -29,6 +30,7 @@ import processing.core.PApplet;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 /*
  * Created by IntelliJ IDEA.
  * User: charles
@@ -43,6 +45,8 @@ import java.util.ArrayList;
  */
 
 public abstract class AChocoPApplet extends PApplet {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     protected AChocoBrick[] bricks;
 
@@ -122,7 +126,7 @@ public abstract class AChocoPApplet extends PApplet {
 
     /**
      * Return the ideal dimension of the chopapplet
-     * @return
+     * @return ideal dimensio
      */
     public abstract Dimension getDimension();
 
@@ -138,4 +142,7 @@ public abstract class AChocoPApplet extends PApplet {
 
     }
 
+    public Object getParameters() {
+        return parameters;
+    }
 }

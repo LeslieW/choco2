@@ -88,6 +88,7 @@ public final class Visu implements IVisu {
      *
      * @param width width of the window
      * @param height height of the window
+     * @param buttons the buttons to draw
      */
     private Visu(int width, int height, final VisuButton... buttons) {
         this.width = width;
@@ -115,25 +116,25 @@ public final class Visu implements IVisu {
         buildFrame();
         buildPanels();
 
-        panelList = new ArrayList(3);
-        visuvars = new HashMap(50);
+        panelList = new ArrayList<AVarChocoPanel>(3);
+        visuvars = new HashMap<Var, VisuVariable>(50);
     }
 
 
     //Available methods to build this Visu.
-    public static final Visu createFullVisu(){
+    public static Visu createFullVisu(){
         return new Visu(480, 640, NEXT, PLAY);
     }
 
-    public static final Visu createFullVisu(int width, int height){
+    public static Visu createFullVisu(int width, int height){
         return new Visu(width, height, NEXT, PLAY);
     }
 
-    public static final Visu createVisu(final VisuButton... buttons){
+    public static Visu createVisu(final VisuButton... buttons){
         return new Visu(480, 640, buttons);
     }
 
-    public static final Visu createVisu(int width, int height, final VisuButton... buttons){
+    public static Visu createVisu(int width, int height, final VisuButton... buttons){
         return new Visu(width, height, buttons);
     }
 
@@ -145,7 +146,7 @@ public final class Visu implements IVisu {
     /**
      * Build the visu's frame
      */
-    private final void buildFrame() {
+    private void buildFrame() {
         frame.setTitle("CHOCO solver");
         frame.setLocationRelativeTo(null); //Center it in the middle of the window
         frame.setResizable(true);
@@ -157,7 +158,7 @@ public final class Visu implements IVisu {
     /**
      *
      */
-    private final void buildPanels() {
+    private void buildPanels() {
         final JPanel north = new JPanel();
         final JPanel center = new JPanel();
 
@@ -252,7 +253,6 @@ public final class Visu implements IVisu {
      *
      * @param visible if {@code true}, makes the {@code IVisu} visible,
      *                otherwise hides the {@code IVisu}.
-     * @param visible
      */
     public final void setVisible(final boolean visible) {
         frame.setVisible(visible);
@@ -276,7 +276,7 @@ public final class Visu implements IVisu {
     /**
      * Initializes the {@code IVisu} from the {@code Solver}
      *
-     * @param s
+     * @param s the solver
      */
     public final void init(final Solver s) {
         for (AVarChocoPanel vp : panelList) {
@@ -308,7 +308,7 @@ public final class Visu implements IVisu {
         frame.setSize(width, heigth);
     }
 
-    private final IObservableStepSearchLoop chooseSearchLoop(final Solver s) {
+    private IObservableStepSearchLoop chooseSearchLoop(final Solver s) {
         try {
             if (s.getSearchStrategy().searchLoop instanceof SearchLoopWithRestart) {
                 ssl = new ObservableStepSearchLoopWithRestart(s.getSearchStrategy(),
@@ -322,7 +322,7 @@ public final class Visu implements IVisu {
                 s.getSearchStrategy().setSearchLoop((SearchLoop) ssl);
             }
         } catch (NullPointerException e) {
-            System.err.println("ERROR : Call Solver#generateSearchStrategy() before Solver#visualize(IVisu)");
+            LOGGER.severe("ERROR : Call Solver#generateSearchStrategy() before Solver#visualize(IVisu)");
             System.exit(-1);
         }
         return ssl;
@@ -331,14 +331,14 @@ public final class Visu implements IVisu {
     /**
      * Return the list of variables observed
      *
-     * @param s
-     * @param vars
-     * @return
+     * @param s the solver
+     * @param vars the array of variables
+     * @return ArrayList of IVisuVariable
      */
-    private final ArrayList<IVisuVariable> getVisuvariables(final Solver s, final Variable[] vars) {
-        ArrayList<IVisuVariable> list = new ArrayList(vars.length);
-        for (int i = 0; i < vars.length; i++) {
-            Var var = s.getVar(vars[i]);
+    private ArrayList<IVisuVariable> getVisuvariables(final Solver s, final Variable[] vars) {
+        ArrayList<IVisuVariable> list = new ArrayList<IVisuVariable>(vars.length);
+        for (Variable var1 : vars) {
+            Var var = s.getVar(var1);
             VisuVariable vv = visuvars.get(var);
             if (vv == null) {
                 vv = new VisuVariable(var);
