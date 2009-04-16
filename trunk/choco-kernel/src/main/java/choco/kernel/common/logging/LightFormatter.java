@@ -6,6 +6,11 @@ import java.util.logging.Formatter;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 
+/**
+ * @author Arnaud Malapert</br> 
+ * @since 16 avr. 2009 version 2.1.0</br>
+ * @version 2.1.0</br>
+ */
 abstract class AbstractFormatter extends Formatter {
 
 	// Line separator string.  This is the value of the line.separator
@@ -20,6 +25,11 @@ abstract class AbstractFormatter extends Formatter {
 	}
 }
 
+/**
+ * @author Arnaud Malapert</br> 
+ * @since 16 avr. 2009 version 2.1.0</br>
+ * @version 2.1.0</br>
+ */
 public final class LightFormatter extends AbstractFormatter {
 
 	/**
