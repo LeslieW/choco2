@@ -50,331 +50,328 @@ import java.util.Iterator;
  */
 public class ModelTest {
 
-    @Test
-    public void testOnDecisionVariables() {
-        int n = 8;
-        Model m = new CPModel();
+	@Test
+	public void testOnDecisionVariables() {
+		int n = 8;
+		Model m = new CPModel();
 
-        IntegerVariable[] queens = new IntegerVariable[n];
-        IntegerVariable[] queensdual = new IntegerVariable[n];
-        IntegerVariable toto = Choco.makeIntVar("toto", 1, 2);
-        m.addVariable(toto);
+		IntegerVariable[] queens = new IntegerVariable[n];
+		IntegerVariable[] queensdual = new IntegerVariable[n];
+		IntegerVariable toto = Choco.makeIntVar("toto", 1, 2);
+		m.addVariable(toto);
 
-        for (int i = 0; i < n; i++) {
-            queens[i] = makeIntVar("Q" + i, 1, n);
-            queensdual[i] = makeIntVar("QD" + i, 1, n);
-        }
+		for (int i = 0; i < n; i++) {
+			queens[i] = makeIntVar("Q" + i, 1, n);
+			queensdual[i] = makeIntVar("QD" + i, 1, n);
+		}
 
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                int k = j - i;
-                m.addConstraint(neq(queens[i], queens[j]));
-                m.addConstraint(neq(queens[i], plus(queens[j], k)));  // diagonal constraints
-                m.addConstraint(neq(queens[i], minus(queens[j], k))); // diagonal constraints
-            }
-        }
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                int k = j - i;
-                m.addConstraint(neq(queensdual[i], queensdual[j]));
-                m.addConstraint(neq(queensdual[i], plus(queensdual[j], k)));  // diagonal constraints
-                m.addConstraint(neq(queensdual[i], minus(queensdual[j], k))); // diagonal constraints
-            }
-        }
-        m.addConstraint(inverseChanneling(queens, queensdual));
+		for (int i = 0; i < n; i++) {
+			for (int j = i + 1; j < n; j++) {
+				int k = j - i;
+				m.addConstraint(neq(queens[i], queens[j]));
+				m.addConstraint(neq(queens[i], plus(queens[j], k)));  // diagonal constraints
+				m.addConstraint(neq(queens[i], minus(queens[j], k))); // diagonal constraints
+			}
+		}
+		for (int i = 0; i < n; i++) {
+			for (int j = i + 1; j < n; j++) {
+				int k = j - i;
+				m.addConstraint(neq(queensdual[i], queensdual[j]));
+				m.addConstraint(neq(queensdual[i], plus(queensdual[j], k)));  // diagonal constraints
+				m.addConstraint(neq(queensdual[i], minus(queensdual[j], k))); // diagonal constraints
+			}
+		}
+		m.addConstraint(inverseChanneling(queens, queensdual));
 
-        CPSolver s1 = new CPSolver();
-        s1.read(m);
-        s1.setVarIntSelector(new MinDomain(s1, s1.getVar(queens)));
-
-
-        m.addVariables("cp:decision", queens);
-        Solver s2 = new CPSolver();
-        s2.read(m);
-        s1.solveAll();
-        CPSolver.setVerbosity(CPSolver.SOLUTION);
-        s2.solveAll();
-        CPSolver.setVerbosity(CPSolver.SILENT);
-        CPSolver.flushLogs();
-        Assert.assertEquals("No same number of solutions", s1.getNbSolutions(), s2.getNbSolutions());
-        //Assert.assertEquals("No same number of nodes", s1.getSearchStrategy().getNodeCount(), s2.getSearchStrategy().getNodeCount());
-    }
-
-    @Test
-    public void testOnNonDecisionVariables() {
-        int n = 8;
-        Model m = new CPModel();
-
-        IntegerVariable[] queens = new IntegerVariable[n];
-        IntegerVariable[] queensdual = new IntegerVariable[n];
-        IntegerVariable toto = Choco.makeIntVar("toto", 1, 2);
-        m.addVariable(toto);
-
-        for (int i = 0; i < n; i++) {
-            queens[i] = makeIntVar("Q" + i, 1, n);
-            queensdual[i] = makeIntVar("QD" + i, 1, n);
-        }
-
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                int k = j - i;
-                m.addConstraint(neq(queens[i], queens[j]));
-                m.addConstraint(neq(queens[i], plus(queens[j], k)));  // diagonal constraints
-                m.addConstraint(neq(queens[i], minus(queens[j], k))); // diagonal constraints
-            }
-        }
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                int k = j - i;
-                m.addConstraint(neq(queensdual[i], queensdual[j]));
-                m.addConstraint(neq(queensdual[i], plus(queensdual[j], k)));  // diagonal constraints
-                m.addConstraint(neq(queensdual[i], minus(queensdual[j], k))); // diagonal constraints
-            }
-        }
-        m.addConstraint(inverseChanneling(queens, queensdual));
-
-        CPSolver s1 = new CPSolver();
-        s1.read(m);
-//        s1.setVarIntSelector(new DomOverWDeg(s1, s1.getVar(queens)));
-        s1.attachGoal(new DomOverWDegBranching(s1, new IncreasingDomain(), s1.getVar(queens)));
-
-        m.addOption("cp:no_decision", toto);
-        m.addOption("cp:no_decision", queensdual);
-        Solver s2 = new CPSolver();
-        s2.read(m);
-
-        s1.solveAll();
-        s2.solveAll();
-        Assert.assertEquals("No same number of solutions", s1.getNbSolutions(), s2.getNbSolutions());
-        //Assert.assertEquals("No same number of nodes", s1.getSearchStrategy().getNodeCount(), s2.getSearchStrategy().getNodeCount());
-    }
+		CPSolver s1 = new CPSolver();
+		s1.read(m);
+		s1.setVarIntSelector(new MinDomain(s1, s1.getVar(queens)));
 
 
-    @Test
-    public void testNullModel() {
-        Solver s = new CPSolver();
-        Model m = new CPModel();
-        IntegerVariable v = makeIntVar("v", 0, 1);
-        IntegerVariable w = makeIntVar("w", 0, 1);
-        Constraint c = eq(v, 1);
-        Constraint d = eq(v, w);
+		m.addVariables("cp:decision", queens);
+		Solver s2 = new CPSolver();
+		s2.read(m);
+		s1.solveAll();
+		s2.solveAll();
+		Assert.assertEquals("No same number of solutions", s1.getNbSolutions(), s2.getNbSolutions());
+		//Assert.assertEquals("No same number of nodes", s1.getSearchStrategy().getNodeCount(), s2.getSearchStrategy().getNodeCount());
+	}
 
-        for (int i = 0; i < 11; i++) {
-            m.addVariables(v, w);
-            m.addConstraints(c, d);
-            String message = i + ": ";
-            try {
-                switch (i) {
-                    case 0:
-                        message += "No variable, no constraint";
-                        m.removeVariable(w);
-                        m.removeVariable(v);
-                        m.removeConstraint(c);
-                        m.removeConstraint(d);
-                        break;
-                    case 1:
-                        message += "One variable, no constraint";
-                        m.removeVariable(w);
-                        m.removeConstraint(c);
-                        m.removeConstraint(d);
-                        break;
-                    case 2:
-                        message += "One variable, One constraint";
-                        m.removeVariable(w);
-                        m.removeConstraint(d);
-                        break;
-                    case 3:
-                        message += "Two variables, no constraint";
-                        m.removeConstraint(c);
-                        m.removeConstraint(d);
-                        break;
-                    case 4:
-                        message += "Two variables, one constraint";
-                        m.removeConstraint(c);
-                        break;
-                    case 5:
-                        message += "Two variables, one constraint (2)";
-                        m.removeConstraint(d);
-                        break;
-                    case 6:
-                        message += "No variable, one constraint";
-                        m.removeVariables(v, w);
-                        m.removeConstraint(c);
-                        break;
-                    case 7:
-                        message += "No variable, one constraint(2)";
-                        m.removeVariables(v, w);
-                        m.removeConstraint(d);
-                        break;
-                    case 8:
-                        message += "No variable, two constraints";
-                        m.removeVariables(v, w);
-                        break;
-                    case 9:
-                        message += "One variable, two constraints";
-                        m.removeVariable(v);
-                        break;
-                    case 10:
-                        message += "One variable, two constraints(2)";
-                        m.removeVariable(w);
-                        break;
-                }
-                s.read(m);
-            } catch (Exception e) {
-                Assert.fail(message);
-            }
-            Iterator<Constraint> itc;
-            try {
-                itc = v.getConstraintIterator(m);
-                while (itc.hasNext()) {
-                    itc.next();
-                }
-            } catch (Exception e) {
-                Assert.fail("v iterator");
-            }
-            try {
-                itc = w.getConstraintIterator(m);
-                while (itc.hasNext()) {
-                    itc.next();
-                }
-            } catch (Exception e) {
-                Assert.fail("w iterator");
-            }
-            Iterator<Variable> itv;
-            try {
-                itv = c.getVariableIterator();
-                while (itv.hasNext()) {
-                    itv.next();
-                }
-            } catch (Exception e) {
-                Assert.fail("c iterator");
-            }
-            try {
-                itv = d.getVariableIterator();
-                while (itv.hasNext()) {
-                    itv.next();
-                }
-            } catch (Exception e) {
-                Assert.fail("d iterator");
-            }
-        }
+	@Test
+	public void testOnNonDecisionVariables() {
+		int n = 8;
+		Model m = new CPModel();
 
-    }
+		IntegerVariable[] queens = new IntegerVariable[n];
+		IntegerVariable[] queensdual = new IntegerVariable[n];
+		IntegerVariable toto = Choco.makeIntVar("toto", 1, 2);
+		m.addVariable(toto);
+
+		for (int i = 0; i < n; i++) {
+			queens[i] = makeIntVar("Q" + i, 1, n);
+			queensdual[i] = makeIntVar("QD" + i, 1, n);
+		}
+
+		for (int i = 0; i < n; i++) {
+			for (int j = i + 1; j < n; j++) {
+				int k = j - i;
+				m.addConstraint(neq(queens[i], queens[j]));
+				m.addConstraint(neq(queens[i], plus(queens[j], k)));  // diagonal constraints
+				m.addConstraint(neq(queens[i], minus(queens[j], k))); // diagonal constraints
+			}
+		}
+		for (int i = 0; i < n; i++) {
+			for (int j = i + 1; j < n; j++) {
+				int k = j - i;
+				m.addConstraint(neq(queensdual[i], queensdual[j]));
+				m.addConstraint(neq(queensdual[i], plus(queensdual[j], k)));  // diagonal constraints
+				m.addConstraint(neq(queensdual[i], minus(queensdual[j], k))); // diagonal constraints
+			}
+		}
+		m.addConstraint(inverseChanneling(queens, queensdual));
+
+		CPSolver s1 = new CPSolver();
+		s1.read(m);
+		//        s1.setVarIntSelector(new DomOverWDeg(s1, s1.getVar(queens)));
+		s1.attachGoal(new DomOverWDegBranching(s1, new IncreasingDomain(), s1.getVar(queens)));
+
+		m.addOption("cp:no_decision", toto);
+		m.addOption("cp:no_decision", queensdual);
+		Solver s2 = new CPSolver();
+		s2.read(m);
+
+		s1.solveAll();
+		s2.solveAll();
+		Assert.assertEquals("No same number of solutions", s1.getNbSolutions(), s2.getNbSolutions());
+		//Assert.assertEquals("No same number of nodes", s1.getSearchStrategy().getNodeCount(), s2.getSearchStrategy().getNodeCount());
+	}
+
+
+	@Test
+	public void testNullModel() {
+		Solver s = new CPSolver();
+		Model m = new CPModel();
+		IntegerVariable v = makeIntVar("v", 0, 1);
+		IntegerVariable w = makeIntVar("w", 0, 1);
+		Constraint c = eq(v, 1);
+		Constraint d = eq(v, w);
+
+		for (int i = 0; i < 11; i++) {
+			m.addVariables(v, w);
+			m.addConstraints(c, d);
+			String message = i + ": ";
+			try {
+				switch (i) {
+				case 0:
+					message += "No variable, no constraint";
+					m.removeVariable(w);
+					m.removeVariable(v);
+					m.removeConstraint(c);
+					m.removeConstraint(d);
+					break;
+				case 1:
+					message += "One variable, no constraint";
+					m.removeVariable(w);
+					m.removeConstraint(c);
+					m.removeConstraint(d);
+					break;
+				case 2:
+					message += "One variable, One constraint";
+					m.removeVariable(w);
+					m.removeConstraint(d);
+					break;
+				case 3:
+					message += "Two variables, no constraint";
+					m.removeConstraint(c);
+					m.removeConstraint(d);
+					break;
+				case 4:
+					message += "Two variables, one constraint";
+					m.removeConstraint(c);
+					break;
+				case 5:
+					message += "Two variables, one constraint (2)";
+					m.removeConstraint(d);
+					break;
+				case 6:
+					message += "No variable, one constraint";
+					m.removeVariables(v, w);
+					m.removeConstraint(c);
+					break;
+				case 7:
+					message += "No variable, one constraint(2)";
+					m.removeVariables(v, w);
+					m.removeConstraint(d);
+					break;
+				case 8:
+					message += "No variable, two constraints";
+					m.removeVariables(v, w);
+					break;
+				case 9:
+					message += "One variable, two constraints";
+					m.removeVariable(v);
+					break;
+				case 10:
+					message += "One variable, two constraints(2)";
+					m.removeVariable(w);
+					break;
+				}
+				s.read(m);
+			} catch (Exception e) {
+				Assert.fail(message);
+			}
+			Iterator<Constraint> itc;
+			try {
+				itc = v.getConstraintIterator(m);
+				while (itc.hasNext()) {
+					itc.next();
+				}
+			} catch (Exception e) {
+				Assert.fail("v iterator");
+			}
+			try {
+				itc = w.getConstraintIterator(m);
+				while (itc.hasNext()) {
+					itc.next();
+				}
+			} catch (Exception e) {
+				Assert.fail("w iterator");
+			}
+			Iterator<Variable> itv;
+			try {
+				itv = c.getVariableIterator();
+				while (itv.hasNext()) {
+					itv.next();
+				}
+			} catch (Exception e) {
+				Assert.fail("c iterator");
+			}
+			try {
+				itv = d.getVariableIterator();
+				while (itv.hasNext()) {
+					itv.next();
+				}
+			} catch (Exception e) {
+				Assert.fail("d iterator");
+			}
+		}
+
+	}
 
 
 
-    @Test
-    @Ignore
-    public void testCharge1(){
-        int cpt = 0;
+	@Test
+	@Ignore
+	public void testCharge1(){
+		int cpt = 0;
 		int newcpt;
-        int[] nbVar = new int[]{10, 100, 1000, 100000, 1000000};
-        for(int i = 1; i < nbVar.length; i++) {
-            Runtime.getRuntime().gc();
-            long t = System.currentTimeMillis();
-            int n = nbVar[i];
-            int b = 100;
-            Model m = new CPModel();
-            IntegerVariable[] v = makeIntVarArray("v", n, 1, b);
-            m.addVariables(v);
-            newcpt = (int) Runtime.getRuntime().totalMemory() - (int) Runtime.getRuntime().freeMemory();
-//                if (cpt != 0) {
-//                    assertTrue(newcpt <= cpt + 10000);
-//                }
-            cpt = newcpt;
-            System.out.print("|" + ChocoUtil.pad("" + n, -9, " ") + " |");
-            System.out.print("|" + ChocoUtil.pad("" + (System.currentTimeMillis() - t), -5, " ") + " |");
-            System.out.println("|" + ChocoUtil.pad("" + cpt, -10, " ") + " |");
-        }
-    }
+		int[] nbVar = new int[]{10, 100, 1000, 100000, 1000000};
+		for(int i = 1; i < nbVar.length; i++) {
+			Runtime.getRuntime().gc();
+			long t = System.currentTimeMillis();
+			int n = nbVar[i];
+			int b = 100;
+			Model m = new CPModel();
+			IntegerVariable[] v = makeIntVarArray("v", n, 1, b);
+			m.addVariables(v);
+			newcpt = (int) Runtime.getRuntime().totalMemory() - (int) Runtime.getRuntime().freeMemory();
+			//                if (cpt != 0) {
+			//                    assertTrue(newcpt <= cpt + 10000);
+			//                }
+			cpt = newcpt;
+			System.out.print("|" + ChocoUtil.pad("" + n, -9, " ") + " |");
+			System.out.print("|" + ChocoUtil.pad("" + (System.currentTimeMillis() - t), -5, " ") + " |");
+			System.out.println("|" + ChocoUtil.pad("" + cpt, -10, " ") + " |");
+		}
+	}
 
 
-    @Test
-    @Ignore
-    public void testCharge2(){
-        int cpt = 0;
+	@Test
+	@Ignore
+	public void testCharge2(){
+		int cpt = 0;
 		int newcpt;
-        int[] nbCstr = new int[]{10, 100, 1000, 100000, 1000000};
-        for(int i = 1; i < nbCstr.length; i++) {
-            Runtime.getRuntime().gc();
-            long t = System.currentTimeMillis();
-            int n = nbCstr[i];
-            int b = 10;
-            Model m = new CPModel();
-            IntegerVariable v = makeIntVar("v", 1, b);
-            for(int j=0; j < nbCstr[i]; j++){
-                m.addConstraint(eq(v, 5));
-            }
-            newcpt = (int) Runtime.getRuntime().totalMemory() - (int) Runtime.getRuntime().freeMemory();
-//                if (cpt != 0) {
-//                    assertTrue(newcpt <= cpt + 10000);
-//                }
-            cpt = newcpt;
-            System.out.print("|" + ChocoUtil.pad("" + n, -9, " ") + " |");
-            System.out.print("|" + ChocoUtil.pad("" + (System.currentTimeMillis() - t), -5, " ") + " |");
-            System.out.println("|" + ChocoUtil.pad("" + cpt, -10, " ") + " |");
-        }
-    }
+		int[] nbCstr = new int[]{10, 100, 1000, 100000, 1000000};
+		for(int i = 1; i < nbCstr.length; i++) {
+			Runtime.getRuntime().gc();
+			long t = System.currentTimeMillis();
+			int n = nbCstr[i];
+			int b = 10;
+			Model m = new CPModel();
+			IntegerVariable v = makeIntVar("v", 1, b);
+			for(int j=0; j < nbCstr[i]; j++){
+				m.addConstraint(eq(v, 5));
+			}
+			newcpt = (int) Runtime.getRuntime().totalMemory() - (int) Runtime.getRuntime().freeMemory();
+			//                if (cpt != 0) {
+			//                    assertTrue(newcpt <= cpt + 10000);
+			//                }
+			cpt = newcpt;
+			System.out.print("|" + ChocoUtil.pad("" + n, -9, " ") + " |");
+			System.out.print("|" + ChocoUtil.pad("" + (System.currentTimeMillis() - t), -5, " ") + " |");
+			System.out.println("|" + ChocoUtil.pad("" + cpt, -10, " ") + " |");
+		}
+	}
 
 
-    @Test
-    @Ignore
-    public void testCharge3(){
-        int cpt = 0;
+	@Test
+	@Ignore
+	public void testCharge3(){
+		int cpt = 0;
 		int newcpt;
-        int[] domSize = new int[]{10, 100, 1000, 100000};
-        for(int i = 1; i < domSize.length; i++) {
-            Runtime.getRuntime().gc();
-            long t = System.currentTimeMillis();
-            int n = domSize[i];
-            Model m = new CPModel();
-            IntegerVariable v = makeIntVar("v", 1, n);
-            for(int j=0; j < n; j+=2){
-                v.removeVal(j);
-            }
-            newcpt = (int) Runtime.getRuntime().totalMemory() - (int) Runtime.getRuntime().freeMemory();
-//                if (cpt != 0) {
-//                    assertTrue(newcpt <= cpt + 10000);
-//                }
-            cpt = newcpt;
-            System.out.print("|" + ChocoUtil.pad("" + n, -9, " ") + " |");
-            System.out.print("|" + ChocoUtil.pad("" + (System.currentTimeMillis() - t), -5, " ") + " |");
-            System.out.println("|" + ChocoUtil.pad("" + cpt, -10, " ") + " |");
-        }
-    }
+		int[] domSize = new int[]{10, 100, 1000, 100000};
+		for(int i = 1; i < domSize.length; i++) {
+			Runtime.getRuntime().gc();
+			long t = System.currentTimeMillis();
+			int n = domSize[i];
+			Model m = new CPModel();
+			IntegerVariable v = makeIntVar("v", 1, n);
+			for(int j=0; j < n; j+=2){
+				v.removeVal(j);
+			}
+			newcpt = (int) Runtime.getRuntime().totalMemory() - (int) Runtime.getRuntime().freeMemory();
+			//                if (cpt != 0) {
+			//                    assertTrue(newcpt <= cpt + 10000);
+			//                }
+			cpt = newcpt;
+			System.out.print("|" + ChocoUtil.pad("" + n, -9, " ") + " |");
+			System.out.print("|" + ChocoUtil.pad("" + (System.currentTimeMillis() - t), -5, " ") + " |");
+			System.out.println("|" + ChocoUtil.pad("" + cpt, -10, " ") + " |");
+		}
+	}
 
-    @Test
-    public void testSeveralModels() {
+	@Test
+	public void testSeveralModels() {
 
-        IntegerVariable v1 = makeIntVar("v1", 0, 10);
-        IntegerVariable v2 = makeIntVar("v2", 0, 10);
-        IntegerVariable v3 = makeIntVar("v3", 0, 10);
-        IntegerVariable v4 = makeIntVar("v4", 0, 10);
+		IntegerVariable v1 = makeIntVar("v1", 0, 10);
+		IntegerVariable v2 = makeIntVar("v2", 0, 10);
+		IntegerVariable v3 = makeIntVar("v3", 0, 10);
+		IntegerVariable v4 = makeIntVar("v4", 0, 10);
 
-        CPModel m1 = new CPModel();
-        CPModel m2 = new CPModel();
+		CPModel m1 = new CPModel();
+		CPModel m2 = new CPModel();
 
-        m1.addConstraint(eq(v1, v2));
-        m1.addConstraint(neq(v2, v3));
+		m1.addConstraint(eq(v1, v2));
+		m1.addConstraint(neq(v2, v3));
 
-        Constraint ct = m1.getConstraint(1);
-        m2.addConstraint(ct);
-        
-        CPSolver s1 = new CPSolver();
-        CPSolver s2 = new CPSolver();
+		Constraint ct = m1.getConstraint(1);
+		m2.addConstraint(ct);
 
-        s1.read(m1);
-        s2.read(m2);
+		CPSolver s1 = new CPSolver();
+		CPSolver s2 = new CPSolver();
 
-        System.out.println("" + s1.pretty());
-        System.out.println("" + s2.pretty());
+		s1.read(m1);
+		s2.read(m2);
 
-        s1.solveAll();
-        s2.solveAll();
-        org.junit.Assert.assertEquals(s2.getNbSolutions(), 11);
-        org.junit.Assert.assertEquals(s1.getNbSolutions(), 110);
+		System.out.println("" + s1.pretty());
+		System.out.println("" + s2.pretty());
+
+		s1.solveAll();
+		s2.solveAll();
+		org.junit.Assert.assertEquals(s2.getNbSolutions(), 11);
+		org.junit.Assert.assertEquals(s1.getNbSolutions(), 110);
 
 
-    }
+	}
 
 }

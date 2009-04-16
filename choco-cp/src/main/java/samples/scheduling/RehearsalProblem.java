@@ -137,8 +137,6 @@ public class RehearsalProblem extends PatternExample {
 
 	@Override
 	public void solve() {
-		CPSolver.setVerbosity(CPSolver.SOLUTION);
-		_s.setLoggingMaxDepth(100);
 		_s.minimize(false);
 
 	}

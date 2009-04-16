@@ -1015,7 +1015,9 @@ public class CPSolver implements Solver {
 	 */
 	public void launch() {
 		// strategy.run();
+		ChocoLogging.flushLogs();
 		strategy.incrementalRun();
+		ChocoLogging.flushLogs();
 	}
 
 	/**

@@ -76,9 +76,7 @@ public class GolombRuler extends PatternExample {
 
     @Override
     public void solve() {
-        CPSolver.setVerbosity(CPSolver.SOLUTION);
-		_s.solveAll();
-		CPSolver.flushLogs();
+    	_s.solveAll();
     }
 
     @Override

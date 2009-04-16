@@ -258,26 +258,14 @@ public class DomOverWDegBinBranching extends AbstractBinIntBranching {
 		}
 	}
 
-	protected void logDownBranch(final Object x, final int i) {
-		if (LOGGER.isLoggable(Level.FINE)) {
-			int n = manager.solver.getEnvironment().getWorldIndex();
-			if (n <= manager.getLoggingMaxDepth()) {
-				IntVarValPair p = (IntVarValPair) x;
-				LOGGER.log(Level.FINE, LOG_DOWN_MSG, new Object[] { n, p.var,
-						getDecisionLogMsg(i), p.val });
-			}
-		}
+	@Override
+	protected Object getValueLogParameter(Object x, int branch) {
+		return Integer.valueOf(((IntVarValPair) x).val);
 	}
 
-	protected void logUpBranch(final Object x, final int i) {
-		if (LOGGER.isLoggable(Level.FINE)) {
-			int n = manager.solver.getEnvironment().getWorldIndex();
-			if (n <= manager.getLoggingMaxDepth()) {
-				IntVarValPair p = (IntVarValPair) x;
-				LOGGER.log(Level.FINE, LOG_UP_MSG, new Object[] { n + 1, p.var,
-						getDecisionLogMsg(i), p.val });
-			}
-		}
+	@Override
+	protected Object getVariableLogParameter(Object x) {
+		return ((IntVarValPair) x).var;
 	}
 
 	public String getDecisionLogMsg(int branchIndex) {

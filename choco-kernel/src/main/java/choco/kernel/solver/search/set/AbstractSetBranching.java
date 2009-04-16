@@ -82,37 +82,26 @@ public abstract class AbstractSetBranching extends AbstractIntBranching {
 		this.goUpBranch(x, numBranch);
 
 	}
-
-	/**
-	 * @see choco.kernel.solver.branch.AbstractIntBranching#logDownBranch(java.lang.Object, int)
-	 */
+	
+	
 	@Override
-	protected void logDownBranch(Object x, int i) {
-		if (LOGGER.isLoggable(Level.FINE)) {
-			Object[] xx = (Object[]) x;
-			Object var = xx[0];
-			int val = ((Integer) xx[1]).intValue();
-			int n = manager.solver.getEnvironment().getWorldIndex();
-			if (n <= manager.getLoggingMaxDepth()) {
-				LOGGER.log(Level.FINE, LOG_DOWN_MSG, new Object[]{new Integer(n),var,getDecisionLogMsg(i)+val+ " branch ", new Integer(i)});
-			}
-		}
+	protected final String getLogMessage() {
+		return getLogMessageWithBranch();
 	}
 
-	/**
-	 * @see choco.kernel.solver.branch.AbstractIntBranching#logUpBranch(java.lang.Object, int)
-	 */
 	@Override
-	protected void logUpBranch(Object x, int i) {
-		if (LOGGER.isLoggable(Level.FINE)) {
-			Object[] xx = (Object[]) x;
-			Object var = xx[0];
-			int val = ((Integer) xx[1]).intValue();
-			int n = manager.solver.getEnvironment().getWorldIndex();
-			if (n <= manager.getLoggingMaxDepth()) {
-				LOGGER.log(Level.FINE, LOG_UP_MSG, new Object[]{new Integer(n + 1),var,getDecisionLogMsg(i)+val+" branch ", new Integer(i)});
-			}
-		}
+	protected Object getValueLogParameter(Object x, int branch) {
+		return ((Object[]) x)[1];
+	}
+
+	@Override
+	protected Object getVariableLogParameter(Object x) {
+		return ((Object[]) x)[0];
+	}
+
+	@Override
+	public int getFirstBranch(Object x) {
+		return 0;
 	}
 
 

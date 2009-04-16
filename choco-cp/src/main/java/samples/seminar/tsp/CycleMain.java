@@ -92,7 +92,6 @@ public class CycleMain {
                 solver.getVar(vars), 0, n - 1));
         solver.setValIntSelector(new MyValSelector(solver.getVar(objective),
                 solver.getVar(vars), matrix, 0, n - 1));
-        CPSolver.setVerbosity(CPSolver.SOLUTION);
         solver.setLoggingMaxDepth(50);
         System.out.println("debut de la resolution");
         switch (type) {

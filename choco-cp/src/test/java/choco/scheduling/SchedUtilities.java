@@ -31,12 +31,15 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.constraints.global.scheduling.AbstractResourceSConstraint;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntList;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -56,6 +59,9 @@ import choco.kernel.solver.variables.scheduling.ITask;
  */
 public final class SchedUtilities {
 
+	
+	public final static Logger LOGGER = ChocoLogging.getTestLogger();
+	
 	public final static Random RANDOM=new Random();
 	
 	public static final int CHECK_NODES = -1;
@@ -66,14 +72,10 @@ public final class SchedUtilities {
     private SchedUtilities(){}
 
 
-    public static void message(String header,String label,Boolean r,Solver solver) {
-		StringBuilder buffer=new StringBuilder();
-		if( ! header.isEmpty() ) {
-			buffer.append(header).append("\t");
+    public static void message(Object header,Object label, Solver solver) {
+		if(LOGGER.isLoggable(Level.INFO)) {
+		LOGGER.log(Level.INFO,"{0}\t{1}: {2} solutions\n{3}", new Object[]{header, label,solver.getNbSolutions(), solver.runtimeSatistics()});
 		}
-		buffer.append(label).append(' ').append(r).append(" ; nb Sol. ").append(solver.getNbSolutions());
-		buffer.append(" ; ").append(solver.getTimeCount()).append("ms ; ").append(solver.getNodeCount()).append(" node(s)");
-		System.out.println(buffer);
 	}
 
 	private static String jmsg(String op,String label) {
@@ -87,11 +89,9 @@ public final class SchedUtilities {
 		int bestTime = Integer.MAX_VALUE;
 		for (int i = 0; i < solvers.length; i++) {
 			final Solver s=solvers[i];
-			//CPSolver.setVerbosity(CPSolver.SOLUTION);
 			s.solveAll();
-			CPSolver.flushLogs();
 			final String str = label +" index "+i;
-			message(str,"",s.isFeasible(),s);
+			message(str,"",s);
 			if( s.getTimeCount()< bestTime) {
 				bests.reInit();
 				bests.add(i);
@@ -110,23 +110,21 @@ public final class SchedUtilities {
 				assertEquals("check-cmp NbNodes "+str,solvers[i-1].getNodeCount(),s.getNodeCount());
 			}
 		}
-		System.out.println("Best solver: index "+bests+" in "+bestTime+" ms");
+		LOGGER.log(Level.INFO,"Best solver: index {0} in {1}ms", new Object[]{bests,bestTime});
 	}
 
 	public static void solveRandom(CPSolver solver,int nbsol,int nbNodes,String label) {
 		Choco.DEBUG=true;
-		//CPSolver.setVerbosity(CPSolver.SEARCH);
 		solver.setLoggingMaxDepth(10000);
 		solver.setRandomSelectors();
 		//System.out.println(solver.pretty());
 		Boolean r=solver.solveAll();
-		CPSolver.flushLogs();
-		message(label, "solve (random) : ", r, solver);
-		logRandom(solver, r, nbsol, nbNodes, label);
+		message(label, "solve (random) : ", solver);
+		checkRandom(solver, r, nbsol, nbNodes, label);
 		
 	}
 //
-	public static void logRandom(Solver solver,Boolean r,int nbsol,int nbNodes,String label) {
+	public static void checkRandom(Solver solver,Boolean r,int nbsol,int nbNodes,String label) {
 		if(nbsol==0) {
 			assertEquals(jmsg("unsat",label),Boolean.FALSE,r);
 		}else {

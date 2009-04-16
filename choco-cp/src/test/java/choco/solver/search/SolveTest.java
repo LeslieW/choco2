@@ -200,7 +200,6 @@ public class SolveTest {
 		}
 		s.worldPop();
 		m.addConstraint(c);
-		CPSolver.flushLogs();
 		//Logger.getLogger("choco").getHandlers()[0].flush();
 	}
 
@@ -274,16 +273,12 @@ public class SolveTest {
 		m.addConstraint(gt(v2, v3));
 		s.read(m);
 
-		CPSolver.setVerbosity(CPSolver.SEARCH);
-		s.setLoggingMaxDepth(10);
-
-        s.attachGoal(new AssignVar(new MinDomain(s), new IncreasingDomain()));
+		s.attachGoal(new AssignVar(new MinDomain(s), new IncreasingDomain()));
 		s.solve(false);
 		System.out.println(m.pretty());
 
 		int time = s.getSearchStrategy().getTimeCount();
 		int nds = s.getSearchStrategy().getNodeCount();
-		CPSolver.flushLogs();
 		assertEquals(nds, 3);
 		System.out.println(" time: " + time + " nodes: " + nds);
 	}
@@ -389,13 +384,10 @@ public class SolveTest {
 
 		m.addConstraint(leq(scalar(volumes, new IntegerVariable[]{obj1, obj2, obj3}), capacity));
 		m.addConstraint(eq(scalar(energy, new IntegerVariable[]{obj1, obj2, obj3}), c));
-		CPSolver.setVerbosity(CPSolver.SEARCH);
 		Solver s = new CPSolver();
 		s.read(m);
 		s.setValIntIterator(new DecreasingDomain());
 		s.maximize(s.getVar(c), true);
-		CPSolver.flushLogs();
-
 		System.out.println("obj1: " + s.getVar(obj1).getVal());
 		System.out.println("obj2: " + s.getVar(obj2).getVal());
 		System.out.println("obj3: " + s.getVar(obj3).getVal());

@@ -22,7 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.seminar.socialgolfer;
 
-import static choco.Choco.*;
+import static choco.Choco.eq;
+import static choco.Choco.lex;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.scalar;
+
+import java.util.Arrays;
+
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
@@ -30,8 +36,6 @@ import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-
-import java.util.Arrays;
 
 /*
  * Created by IntelliJ IDEA.
@@ -177,10 +181,7 @@ public class ExSocialGolfer {
 
         s.setTimeLimit(120000);
 
-        CPSolver.setVerbosity(CPSolver.SOLUTION);
         s.solve();
-        CPSolver.flushLogs();
-
         if (s.isFeasible() == Boolean.TRUE) printSol(golfmat, s);
     }
 

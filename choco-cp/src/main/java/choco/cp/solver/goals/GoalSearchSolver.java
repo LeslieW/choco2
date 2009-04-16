@@ -163,7 +163,7 @@ public class GoalSearchSolver extends AbstractGlobalSearchStrategy {
                   nextMove = DOWN_BRANCH;
                 } else {
                   if (g instanceof Generate) {
-                    LOGGER.log(Level.FINE, "generate " + g, new Object[]{0, null, " pop ", 0});
+                    if(LOGGER.isLoggable(Level.INFO)) {LOGGER.log(Level.INFO, "generate {1} pop", new Object[]{0, g.pretty()});}
                     newTreeNode();
                   }
                  // Logger.getLogger("i_want_to_use_this_old_version_of_choco.search.branching").log(Level.FINE, "execute " + g.pretty(), new Object[]{0, null, " pop ", 0});
@@ -175,7 +175,7 @@ public class GoalSearchSolver extends AbstractGlobalSearchStrategy {
               }
             }
           } catch (ContradictionException e) {
-            LOGGER.log(Level.FINE, "contradiction", new Object[]{0, null, " pop ", 0});
+            LOGGER.log(Level.INFO, "contradiction", 0);
             nextMove = UP_BRANCH;
           }
           break;
