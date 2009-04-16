@@ -239,14 +239,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	public void endTreeSearch() {
 		if (LOGGER.isLoggable(Level.INFO)) {
-			StringBuilder sb = new StringBuilder();
-			if (solver.getFeasible() == Boolean.TRUE) {
-				sb.append("solve => ").append(nbSolutions).append(" solutions");
-
-			} else {
-				sb.append("solve => no solution\n");
-			}
-			sb.append(runtimeStatistics());
+			//TODO display objective if any and makespan
 			LOGGER.log(Level.INFO, "solve => {1} solutions\n\twith {2}", new Object[]{-1, Integer.valueOf(nbSolutions), runtimeStatistics()});
 		}
 	}
@@ -389,7 +382,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		}
 		return stb.toString();
 	}
-	
+
 
 	public final AbstractGlobalSearchLimit getLimit(Limit limit) {
 		for (AbstractGlobalSearchLimit l : limits) {
