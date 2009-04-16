@@ -42,90 +42,89 @@ import choco.Choco;
 
 public class Queen extends PatternExample {
 
-    private int n = 8;
-    IntegerVariable[] queens;
+	private int n = 8;
+	IntegerVariable[] queens;
 
 
-    @Override
-    public void setUp(Object paramaters) {
-        if (paramaters instanceof Integer) {
-            n = (Integer) paramaters;
-        }
-    }
+	@Override
+	public void setUp(Object paramaters) {
+		if (paramaters instanceof Integer) {
+			n = (Integer) paramaters;
+		}
+	}
 
-    @Override
-    public void buildModel() {
-        _m = new CPModel();
+	@Override
+	public void buildModel() {
+		_m = new CPModel();
 
-        // create variables
-        queens = new IntegerVariable[n];
-        for (int i = 0; i < n; i++) {
-            queens[i] = makeIntVar("Q" + i, 1, n);
-        }
-        _m.addConstraint("cp:bc", Choco.allDifferent(queens));
+		// create variables
+		queens = new IntegerVariable[n];
+		for (int i = 0; i < n; i++) {
+			queens[i] = makeIntVar("Q" + i, 1, n);
+		}
+		_m.addConstraint("cp:bc", Choco.allDifferent(queens));
 
-        // all different constraints
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                int k = j - i;
-                _m.addConstraint(neq(queens[i], plus(queens[j], k)));
-                _m.addConstraint(neq(queens[i], minus(queens[j], k)));
-            }
-        }
-    }
+		// all different constraints
+		for (int i = 0; i < n; i++) {
+			for (int j = i + 1; j < n; j++) {
+				int k = j - i;
+				_m.addConstraint(neq(queens[i], plus(queens[j], k)));
+				_m.addConstraint(neq(queens[i], minus(queens[j], k)));
+			}
+		}
+	}
 
-    @Override
-    public void buildSolver() {
-        _s = new CPSolver();
-        _s.monitorBackTrackLimit(true);
-        _s.read(_m);
-        _s.attachGoal(new AssignVar(new MinDomain(_s, _s.getVar(queens)), new IncreasingDomain()));
-    }
+	@Override
+	public void buildSolver() {
+		_s = new CPSolver();
+		_s.monitorBackTrackLimit(true);
+		_s.read(_m);
+		_s.attachGoal(new AssignVar(new MinDomain(_s, _s.getVar(queens)), new IncreasingDomain()));
+	}
 
-    @Override
-    public void solve() {
-        _s.solve();
-        CPSolver.flushLogs();
-    }
+	@Override
+	public void solve() {
+		_s.solve();
+	}
 
-    @Override
-    public void prettyOut() {
-        System.out.println("feasible: " + _s.isFeasible());
-        System.out.println("nbSol: " + _s.getNbSolutions());
-        if (_s.getEnvironment() instanceof EnvironmentRecomputation) {
-            System.out.println("nbSave: " + ((EnvironmentRecomputation) _s.getEnvironment()).getNbSaves());
-        }
-        // Display
-        // -------
-        StringBuffer ret = new StringBuffer();
-        ret.append("The queen's problem asks how to place n queens on an n x n chess board " +
-                "so that none of them can hit any other in one move.\n");
-        ret.append("Here n = " + n + "\n\n");
-        ret.append("The " + _s.getSearchStrategy().solutions.size() + " last solutions (among " +
-                _s.getNbSolutions() + " solutions) are:\n");
-        String line = "+";
-        for (int i = 0; i < n; i++) {
-            line += "---+";
-        }
-        line += "\n";
-        for (int sol = 0; sol < _s.getSearchStrategy().solutions.size(); sol++) {
-            Solution solution = (Solution) _s.getSearchStrategy().solutions.get(sol);
-            ret.append(line);
-            for (int i = 0; i < n; i++) {
-                ret.append("|");
-                for (int j = 0; j < n; j++) {
-                    ret.append((solution.getIntValue(i) == j + 1) ? " * |" : "   |");
-                }
-                ret.append("\n" + line);
-            }
-            ret.append("\n\n\n");
-        }
-        System.out.println(ret.toString());
-        _s.printRuntimeSatistics();
-    }
+	@Override
+	public void prettyOut() {
+		System.out.println("feasible: " + _s.isFeasible());
+		System.out.println("nbSol: " + _s.getNbSolutions());
+		if (_s.getEnvironment() instanceof EnvironmentRecomputation) {
+			System.out.println("nbSave: " + ((EnvironmentRecomputation) _s.getEnvironment()).getNbSaves());
+		}
+		// Display
+		// -------
+		StringBuffer ret = new StringBuffer();
+		ret.append("The queen's problem asks how to place n queens on an n x n chess board " +
+		"so that none of them can hit any other in one move.\n");
+		ret.append("Here n = " + n + "\n\n");
+		ret.append("The " + _s.getSearchStrategy().solutions.size() + " last solutions (among " +
+				_s.getNbSolutions() + " solutions) are:\n");
+		String line = "+";
+		for (int i = 0; i < n; i++) {
+			line += "---+";
+		}
+		line += "\n";
+		for (int sol = 0; sol < _s.getSearchStrategy().solutions.size(); sol++) {
+			Solution solution = (Solution) _s.getSearchStrategy().solutions.get(sol);
+			ret.append(line);
+			for (int i = 0; i < n; i++) {
+				ret.append("|");
+				for (int j = 0; j < n; j++) {
+					ret.append((solution.getIntValue(i) == j + 1) ? " * |" : "   |");
+				}
+				ret.append("\n" + line);
+			}
+			ret.append("\n\n\n");
+		}
+		System.out.println(ret.toString());
+		_s.printRuntimeSatistics();
+	}
 
-    public static void main(String[] args) {
-        new Queen().execute(10);
-//        new Queen().execute(10);
-    }
+	public static void main(String[] args) {
+		new Queen().execute(10);
+		//        new Queen().execute(10);
+	}
 }

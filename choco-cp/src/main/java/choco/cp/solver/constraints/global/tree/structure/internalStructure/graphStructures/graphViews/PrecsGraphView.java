@@ -47,6 +47,7 @@ package choco.cp.solver.constraints.global.tree.structure.internalStructure.grap
 
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.Node;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.trailing.StoredBitSet;
 import choco.kernel.solver.Solver;
 
@@ -114,7 +115,7 @@ public class PrecsGraphView {
      */
     public boolean addPrec(int u, int v) {
         if (affiche) {
-            CPSolver.flushLogs();
+        	ChocoLogging.flushLogs();
             System.out.println("============= Add Incr�mental : (" + u + "," + v + ") ================");
             precs.showGraph("precs");
             System.out.println("---------------");

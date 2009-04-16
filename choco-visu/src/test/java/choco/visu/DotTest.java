@@ -110,7 +110,6 @@ public class DotTest {
     //    s.setVarIntSelector(new MinDomain(s,s.getVar(queens)));
         s.attachGoal(new AssignVar(new MinDomain(s,s.getVar(queens)),new IncreasingDomain()));
 
-        CPSolver.setVerbosity(CPSolver.SOLUTION);
         s.setLoggingMaxDepth(50);
         int timeLimit = 60000;
         s.setTimeLimit(timeLimit);
@@ -126,7 +125,6 @@ public class DotTest {
         s.launch();
 
 
-        CPSolver.flushLogs();
         v.kill();
     }
 
@@ -169,7 +167,6 @@ public class DotTest {
     //    s.setVarIntSelector(new MinDomain(s,s.getVar(queens)));
         s.attachGoal(new AssignVar(new MinDomain(s,s.getVar(queens)),new IncreasingDomain()));
 
-        CPSolver.setVerbosity(CPSolver.SOLUTION);
         s.setLoggingMaxDepth(50);
         int timeLimit = 60000;
         //s.setTimeLimit(timeLimit);
@@ -182,7 +179,6 @@ public class DotTest {
         s.generateSearchStrategy();
         s.visualize(v);
         s.launch();
-        CPSolver.flushLogs();
         v.kill();
     }
 
@@ -228,7 +224,6 @@ public class DotTest {
         s.visualize(v);
 
         s.launch();
-        CPSolver.flushLogs();
         System.out.println("obj1: " + s.getVar(obj1).getVal());
         System.out.println("obj2: " + s.getVar(obj2).getVal());
         System.out.println("obj3: " + s.getVar(obj3).getVal());

@@ -32,6 +32,7 @@ import choco.cp.solver.constraints.integer.channeling.ReifiedLargeOr;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
@@ -76,7 +77,7 @@ public class ReifiedSomeTest {
 
     @After
     public void tearDown() throws Exception {
-        CPSolver.flushLogs();
+        ChocoLogging.flushLogs();
         m = null;
         s = null;
         i1 = null;

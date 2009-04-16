@@ -62,7 +62,6 @@ public class LimitTest {
 
 	private void check(Class<?> c) {
 		solver.solveAll();
-        CPSolver.flushLogs();
 		assertTrue(solver.isEncounteredLimit());
 		assertEquals(c, solver.getEncounteredLimit().getClass());
 	}

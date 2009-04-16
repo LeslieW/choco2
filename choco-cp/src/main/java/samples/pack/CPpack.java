@@ -209,7 +209,6 @@ public class CPpack {
 	 * @return the final upper bound
 	 */
 	protected int analyze() {
-		CPSolver.flushLogs();
 		//Analyze
 		solver.printRuntimeSatistics();
 		if(solver.isFeasible()==Boolean.TRUE) {

@@ -27,6 +27,7 @@ import choco.cp.solver.constraints.global.tree.deduction.DeductionsAdvisor;
 import choco.cp.solver.constraints.global.tree.filtering.FilteringAdvisor;
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.TreeParameters;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.StructuresAdvisor;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -112,8 +113,7 @@ public class TreeSConstraint extends AbstractLargeIntSConstraint {
      */
     public void awake() throws ContradictionException {
         if (affiche) {
-            CPSolver.flushLogs();
-            System.out.println("*********************************");
+        	System.out.println("*********************************");
             structure.getInputGraph().showGlobal();
             System.out.println("-------------------------");
             structure.getPrecs().showPrecGraph();
@@ -136,8 +136,8 @@ public class TreeSConstraint extends AbstractLargeIntSConstraint {
      */
     public void propagate() throws ContradictionException {
         if (affiche) {
-            CPSolver.flushLogs();
-            System.out.println("=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=");
+        	ChocoLogging.flushLogs();
+        	System.out.println("=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=");
             System.out.println("propagate " + solver.getEnvironment().getWorldIndex());
         }
         boolean update;
@@ -157,7 +157,7 @@ public class TreeSConstraint extends AbstractLargeIntSConstraint {
             }
         } while (update);
         if (affiche) {
-            CPSolver.flushLogs();
+        	ChocoLogging.flushLogs();
             System.out.println("=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=");
         }
     }
