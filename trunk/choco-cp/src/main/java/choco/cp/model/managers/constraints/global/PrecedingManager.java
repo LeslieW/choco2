@@ -22,8 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
-import java.util.HashSet;
-
 import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
@@ -41,6 +39,8 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.global.scheduling.IPrecedenceNetwork;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+
+import java.util.HashSet;
 
 
 
@@ -126,7 +126,7 @@ public class PrecedingManager extends IntConstraintManager {
 			}
 		}
 		if (Choco.DEBUG) {
-			System.err.println("Could not found an implementation of preceding/precedingReifeid !");
+			LOGGER.severe("Could not found an implementation of preceding/precedingReifeid !");
 		}
 		return null;
 	}

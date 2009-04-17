@@ -83,7 +83,7 @@ public class SetVariableManager implements VariableManager {
             return s;
         }
         if(Choco.DEBUG){
-            System.err.println("Count not found implementation for SetVariable !");
+            LOGGER.severe("Count not found implementation for SetVariable !");
             System.exit(-1);
         }
         return null;

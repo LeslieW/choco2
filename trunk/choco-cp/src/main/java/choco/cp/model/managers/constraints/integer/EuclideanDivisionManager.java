@@ -63,7 +63,7 @@ public class EuclideanDivisionManager extends IntConstraintManager {
             return new EuclideanDivisionXYZ(vs[0],vs[1],vs[2]);
         }
         if(Choco.DEBUG){
-            System.err.println("Could not found an implementation of Euclidean Division !");
+            LOGGER.severe("Could not found an implementation of Euclidean Division !");
         }
         return null;
     }

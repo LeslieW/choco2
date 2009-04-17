@@ -83,7 +83,7 @@ public class GeostManager extends IntConstraintManager {
             }
         }
         if (Choco.DEBUG) {
-            System.err.println("Could not found implementation for Geost !");
+            LOGGER.severe("Could not found implementation for Geost !");
         }
         return null;
     }

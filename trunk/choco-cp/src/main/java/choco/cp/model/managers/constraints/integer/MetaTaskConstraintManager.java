@@ -39,7 +39,7 @@ public class MetaTaskConstraintManager extends IntConstraintManager {
 			}
 		  }
 		  if (Choco.DEBUG) {
-	            System.err.println("Could not found an implementation of distance !");
+	            LOGGER.severe("Could not found an implementation of distance !");
 	        }
 		return null;
 	}

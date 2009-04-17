@@ -64,7 +64,7 @@ public class AllDifferentManager extends IntConstraintManager {
             return defaultDetection(variables);
         }
         if (Choco.DEBUG) {
-            System.err.println("Could not found an implementation of alldifferent !");
+            LOGGER.severe("Could not found an implementation of alldifferent !");
         }
         return null;
     }

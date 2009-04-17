@@ -57,7 +57,7 @@ public class AtMostNValueManager extends IntConstraintManager {
              return new AtMostNValue(solver.getVar(vars), solver.getVar((IntegerVariable)variables[variables.length-1]));
         }
         if (Choco.DEBUG) {
-            System.err.println("Could not found an implementation of atMostNValue !");
+            LOGGER.severe("Could not found an implementation of atMostNValue !");
         }
         return null;
     }

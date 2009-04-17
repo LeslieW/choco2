@@ -78,7 +78,7 @@ public class PlusManager extends RealConstraintManager implements ExpressionMana
             }
         }
         if(Choco.DEBUG){
-            System.err.println("Could not found an implementation for PlusManager !");
+            LOGGER.severe("Could not found an implementation for PlusManager !");
             System.exit(-1);
         }
         return null;
@@ -101,7 +101,7 @@ public class PlusManager extends RealConstraintManager implements ExpressionMana
             }
         }
         if(Choco.DEBUG){
-            System.err.println("Could not found an implementation for PlusManager !");
+            LOGGER.severe("Could not found an implementation for PlusManager !");
             System.exit(-1);
         }
         return null;

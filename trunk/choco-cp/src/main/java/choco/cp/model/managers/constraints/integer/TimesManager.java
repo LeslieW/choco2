@@ -64,7 +64,7 @@ public class TimesManager extends IntConstraintManager {
             }
         }
         if(Choco.DEBUG){
-            System.err.println("Could not found an implementation of times !");
+            LOGGER.severe("Could not found an implementation of times !");
         }
         return null;
     }

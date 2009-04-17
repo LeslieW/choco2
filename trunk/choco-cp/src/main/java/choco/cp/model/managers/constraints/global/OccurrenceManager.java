@@ -73,7 +73,7 @@ public class OccurrenceManager extends IntConstraintManager {
             }
         }
         if(Choco.DEBUG){
-            System.err.println("Could not found an implementation of occurence !");
+            LOGGER.severe("Could not found an implementation of occurence !");
         }
         return null;
     }

@@ -24,8 +24,6 @@ package choco.cp.model.managers.constraints.global;
 
 import choco.Choco;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.SettingType;
-import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.constraints.global.pack.PrimalDualPack;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -70,7 +68,7 @@ public class PackManager extends AbstractResourceManager {
 			}
 		}
 		if(Choco.DEBUG){
-			System.err.println("Could not found implementation for BinPacking1D");
+			LOGGER.severe("Could not found implementation for BinPacking1D");
 		}
 		return null;
 	}
