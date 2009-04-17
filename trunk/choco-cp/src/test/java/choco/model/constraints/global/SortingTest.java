@@ -37,6 +37,7 @@ import junit.framework.TestCase;
 
 import java.text.MessageFormat;
 import java.util.HashSet;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -105,11 +106,11 @@ public class SortingTest extends TestCase {
 //                        st.append(",").append(s.getVar(y[i]).getVal());
 //                    }
                     sols.add(st.toString());
-                    System.out.println(st.toString());
+                    LOGGER.info(st.toString());
                 }while(s.nextSolution());
             }
 
-            System.out.println("---------------");
+            LOGGER.info("---------------");
             CPSolver s1 = new CPSolver();
             s1.read(m);
 //            s.setValIntSelector(new RandomIntValSelector(seed));
@@ -129,15 +130,15 @@ public class SortingTest extends TestCase {
 //                        st.append(",").append(s1.getVar(y[i]).getVal());
 //                    }
                     sols.remove(st.toString());
-                    System.out.println(st.toString());
+                    LOGGER.info(st.toString());
                 }while(s1.nextSolution());
             }
-            System.out.println("########");
+            LOGGER.info("########");
             for(int i = 0 ; i < sols.size(); i++){
                 System.out.println(sols.toArray()[i]);
             }
 
-            System.out.println(MessageFormat.format("{0} - {1}:{2}", n, s.getNbSolutions(), s1.getNbSolutions()));
+            LOGGER.log(Level.INFO,"{0} - {1}:{2}", new Object[]{n, s.getNbSolutions(), s1.getNbSolutions()});
             assertEquals(s.getNbSolutions(), s1.getNbSolutions());
 //            assertEquals(840, s1.getNbSolutions());
         }
@@ -163,9 +164,9 @@ public class SortingTest extends TestCase {
                     for(int i = 1; i < n; i++){
                         st.append(",").append(s.getVar(x[i]).getVal());
                     }
-                    System.out.println(st.toString());
+                    LOGGER.info(st.toString());
                 }while(s.nextSolution());
             }
-        System.out.println(MessageFormat.format("{0}", s.getNbSolutions()));
+        LOGGER.log(Level.INFO, "{0}", s.getNbSolutions());
     }
 }

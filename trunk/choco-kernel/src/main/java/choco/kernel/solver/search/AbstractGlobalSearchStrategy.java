@@ -239,7 +239,6 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	public void endTreeSearch() {
 		if (LOGGER.isLoggable(Level.INFO)) {
-			//TODO display objective if any and makespan
 			LOGGER.log(Level.INFO, "solve => {1} solutions\n\twith {2}", new Object[]{-1, Integer.valueOf(nbSolutions), runtimeStatistics()});
 		}
 	}

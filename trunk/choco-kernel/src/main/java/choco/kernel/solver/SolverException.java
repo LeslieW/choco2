@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver;
 
+import choco.kernel.common.logging.ChocoLogging;
+
 /**
  * @author Arnaud Malapert
  *
@@ -39,7 +41,7 @@ public class SolverException extends RuntimeException {
 	 */
 	public SolverException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
+		ChocoLogging.flushLogs();
 	}
 
 	/**
@@ -47,6 +49,7 @@ public class SolverException extends RuntimeException {
 	 */
 	public SolverException(Throwable cause) {
 		super(cause);
+		ChocoLogging.flushLogs();
 	}
 
 	/**
@@ -55,6 +58,7 @@ public class SolverException extends RuntimeException {
 	 */
 	public SolverException(String message, Throwable cause) {
 		super(message, cause);
+		ChocoLogging.flushLogs();
 	}
 
 }
