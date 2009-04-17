@@ -87,9 +87,6 @@ public class EuclideanDivisionXYZTest {
                     } while (s.nextSolution());
                 }
                 Assert.assertEquals("("+max+"-"+seed+") Nb solution test",_s.getNbSolutions(), s.getNbSolutions());
-//                System.out.print("|"+ChocoUtil.pad(""+_s.getNodeCount(), -5, " ")+" |"+ChocoUtil.pad(""+s.getNodeCount(), -5, " ")+" |");
-//                System.out.println("|"+ChocoUtil.pad(""+_s.getTimeCount(), -5, " ")+" |"+ChocoUtil.pad(""+s.getTimeCount(), -5, " ")+" |");
-//                Assert.assertEquals("("+max+"-"+seed+") Nb node test",_s.getNodeCount(), s.getNodeCount());
             }
         }
     }

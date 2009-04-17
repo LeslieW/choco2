@@ -93,8 +93,8 @@ public class PredicateManager {
 //	}
 
 	public static String[] extractUniversalEffectiveParameters(String effectiveParametersExpression, String[] variableNames) {
-		//System.out.println(" effective = " + effectiveParametersExpression);
-		//System.out.println(" variableNames = " + Toolkit.buildStringFromTokens(variableNames));
+		//LOGGER.info(" effective = " + effectiveParametersExpression);
+		//LOGGER.info(" variableNames = " + Toolkit.buildStringFromTokens(variableNames));
 		
 		
 		StringTokenizer st = new StringTokenizer(effectiveParametersExpression);
@@ -151,8 +151,8 @@ public class PredicateManager {
 	}
 
 	private static String[] buildNewUniversalPostfixExpression(String[] universalPostfixExpression, String[] universalEffectiveParameters) {
-		//System.out.println("univer post " + Toolkit.buildStringFromTokens(universalPostfixExpression));
-		//System.out.println("univer eff " + Toolkit.buildStringFromTokens(universalEffectiveParameters));
+		//LOGGER.info("univer post " + Toolkit.buildStringFromTokens(universalPostfixExpression));
+		//LOGGER.info("univer eff " + Toolkit.buildStringFromTokens(universalEffectiveParameters));
 		
 		
 		String[] tokens = new String[universalPostfixExpression.length];

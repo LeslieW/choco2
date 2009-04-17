@@ -31,7 +31,7 @@ import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
-import choco.cp.solver.search.limit.NodeLimit;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
@@ -46,17 +46,21 @@ import static org.junit.Assert.*;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.text.MessageFormat;
 import java.util.Date;
 import java.util.Random;
+import java.util.logging.Logger;
 
 /**
  * Tests for the GlobalCardinality constraint.
  */
 public class GlobalCardinalityTest {
 
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+
 	@Test
 	public void testGCC() {
-		System.out.println("Dummy GlobalCardinality currentElement...");
+		LOGGER.info("Dummy GlobalCardinality currentElement...");
 		CPModel m = new CPModel();
 
 		IntegerVariable peter = makeIntVar("Peter", 0, 1);
@@ -111,7 +115,7 @@ public class GlobalCardinalityTest {
 			assertTrue(false);
 		}
 
-		System.out.println(pb.varsToString());
+		LOGGER.info(pb.varsToString());
 	}
 	@Test
 	public void testBoundGcc4() {
@@ -138,7 +142,7 @@ public class GlobalCardinalityTest {
 			assertTrue(false);
 		}
 
-		System.out.println(pb.varsToString());
+		LOGGER.info(pb.varsToString());
 	}
 	@Test
 	public void testBoundGcc5() {
@@ -164,7 +168,7 @@ public class GlobalCardinalityTest {
 		} catch (ContradictionException e) {
 			assertTrue(false);
 		}
-		System.out.println(pb.varsToString());
+		LOGGER.info(pb.varsToString());
 	}
 	@Test
 	public void testBoundGcc6() {
@@ -193,7 +197,7 @@ public class GlobalCardinalityTest {
 		} catch (ContradictionException e) {
 			assertTrue(false);
 		}
-		System.out.println(pb.varsToString());
+		LOGGER.info(pb.varsToString());
 	}
 
   	@Test
@@ -221,7 +225,7 @@ public class GlobalCardinalityTest {
 		} catch (ContradictionException e) {
 			assertTrue(true);
 		}
-		System.out.println(pb.varsToString());
+		LOGGER.info(pb.varsToString());
 	}
 
   @Test
@@ -240,18 +244,20 @@ public class GlobalCardinalityTest {
 		s.read(pb);
 		int cpt = 1;
 		s.solve();
+      StringBuffer st = new StringBuffer();
 		for (int i = 0; i < n; i++) {
-			System.out.print("" + s.getVar(vars[i]).getVal());
+			st.append(MessageFormat.format("{0}", s.getVar(vars[i]).getVal()));
 		}
-		System.out.println("");
+		LOGGER.info(st.toString());
 		while (s.nextSolution() == Boolean.TRUE) {
 			cpt++;
+            st = new StringBuffer();
 			for (int i = 0; i < n; i++) {
-				System.out.print("" + s.getVar(vars[i]).getVal());
+				st.append(MessageFormat.format("{0}", s.getVar(vars[i]).getVal()));
 			}
-			System.out.println("");
+			LOGGER.info(st.toString());
 		}
-		System.out.println("nb Sol " + cpt + " time " + s.getSearchStrategy().getTimeCount());
+		LOGGER.info("nb Sol " + cpt + " time " + s.getSearchStrategy().getTimeCount());
 		assertEquals(20, cpt);
 	}
 	@Test
@@ -270,18 +276,20 @@ public class GlobalCardinalityTest {
 		s.read(pb);
 		int cpt = 1;
 		s.solve();
+        StringBuffer st = new StringBuffer();
 		for (int i = 0; i < n; i++) {
-			System.out.print("" + s.getVar(vars[i]).getVal());
+			st.append(MessageFormat.format("{0}", s.getVar(vars[i]).getVal()));
 		}
-		System.out.println("");
+		LOGGER.info(st.toString());
 		while (s.nextSolution() == Boolean.TRUE) {
 			cpt++;
+            st = new StringBuffer();
 			for (int i = 0; i < n; i++) {
-				System.out.print("" + s.getVar(vars[i]).getVal());
+				st.append(MessageFormat.format("{0}", s.getVar(vars[i]).getVal()));
 			}
-			System.out.println("");
+			LOGGER.info(st.toString());
 		}
-		System.out.println("nb Sol " + cpt + " time " + s.getSearchStrategy().getTimeCount());
+		LOGGER.info("nb Sol " + cpt + " time " + s.getSearchStrategy().getTimeCount());
 		assertEquals(7, cpt);
 	}
 
@@ -294,7 +302,7 @@ public class GlobalCardinalityTest {
 		}
 		int[] LB = {0, 1, 2, 0, 0, 0, 3, 0, 0, 0};
 		int[] UB = {5, 2, 2, 9, 10, 9, 5, 1, 5, 5};
-		System.out.println("premiere gcc :");
+		LOGGER.info("premiere gcc :");
 		if (bound) {
 			pb.addConstraint("cp:bc", globalCardinality(vars, 1, 10, LB, UB));
 		} else {
@@ -303,7 +311,7 @@ public class GlobalCardinalityTest {
 
 		int[] LB2 = {0, 0, 0, 0, 0, 4, 0, 0, 0, 0};
 		int[] UB2 = {10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
-		System.out.println("deuxieme gcc :");
+		LOGGER.info("deuxieme gcc :");
 		if (bound) {
 			pb.addConstraint("cp:bc",globalCardinality(vars, 1, 10, LB2, UB2));
 		} else {
@@ -313,18 +321,15 @@ public class GlobalCardinalityTest {
 		s.read(pb);
 		int cpt = 1;
 		s.solve();
+        StringBuffer st = new StringBuffer();
 		for (int i = 0; i < n; i++) {
-			System.out.print("" + s.getVar(vars[i]).getVal());
+			st.append(MessageFormat.format("{0}", s.getVar(vars[i]).getVal()));
 		}
-		System.out.println("");
+		LOGGER.info(st.toString());
 		while (s.nextSolution() == Boolean.TRUE) {
 			cpt++;
-			/*for (int i = 0; i < n; i++) {
-							System.out.print("" + vars[i].getVal());
-						}
-						System.out.println(""); */
 		}
-		System.out.println("nb Sol " + cpt + " time " + s.getSearchStrategy().getTimeCount() + " nbNode " + s.getSearchStrategy().getNodeCount());
+		LOGGER.info("nb Sol " + cpt + " time " + s.getSearchStrategy().getTimeCount() + " nbNode " + s.getSearchStrategy().getNodeCount());
 		assertEquals(12600, cpt);
 	}
 	@Test
@@ -376,7 +381,7 @@ public class GlobalCardinalityTest {
 	}
 
 	private void latinSquareGCC(boolean bound) {
-		System.out.println("Latin Square Test...");
+		LOGGER.info("Latin Square Test...");
 		// Toutes les solutions de n=5 en 90 sec  (161280 solutions)
 		final int n = 4;
 		final int[] soluces = new int[]{1, 2, 12, 576, 161280};
@@ -417,13 +422,13 @@ public class GlobalCardinalityTest {
 		s.solve(true);
 
 		assertEquals(soluces[n - 1], s.getNbSolutions());
-		System.out.println("LatinSquare Solutions : " + s.getNbSolutions() + " " + s.getSearchStrategy().getTimeCount());
+		LOGGER.info("LatinSquare Solutions : " + s.getNbSolutions() + " " + s.getSearchStrategy().getTimeCount());
 	}
 
 	@Test
 	public void testGccEmi() {
 		int n = 8;
-		System.out.println("Le probleme des " + n + " reines");
+		LOGGER.info("Le probleme des " + n + " reines");
 		CPModel nreine = new CPModel();
 		// mod�lisation par Ligne
 		IntegerVariable[] ligne = new IntegerVariable[n];
@@ -460,17 +465,18 @@ public class GlobalCardinalityTest {
 		s.solve(); // en solveAll, ca sort une erreur avec le choco 1_02_3 au passage
 		assertTrue(s.getNbSolutions() == 0);
 		if (s.getNbSolutions() > 0) {
-			System.out.print("Solution : ");
+            StringBuffer st = new StringBuffer();
+			st.append("Solution : ");
 			for (IntegerVariable l : ligne) {
-				System.out.print(s.getVar(l).getVal() + "/"); // les solutions
+				st.append(MessageFormat.format("{0}/", s.getVar(l).getVal())); // les solutions
 			}
-			System.out.println();
+			LOGGER.info(st.toString());
 		}
 
 
 		tps = System.currentTimeMillis() - tps;
-		int nbNode = ((NodeLimit) s.getSearchStrategy().limits.get(1)).getNbTot();
-		System.out.println("temps (en ms) : " + tps + " Noeud : " + nbNode + " Nombre de solutions : " + s.getNbSolutions());
+		int nbNode = s.getSearchStrategy().limits.get(1).getNbTot();
+		LOGGER.info("temps (en ms) : " + tps + " Noeud : " + nbNode + " Nombre de solutions : " + s.getNbSolutions());
 
 	}
 
@@ -486,7 +492,7 @@ public class GlobalCardinalityTest {
 	}
 
 	private void randomGCCTest(boolean bound) {
-		System.out.println("Random GlobalCardinality currentElement...");
+		LOGGER.info("Random GlobalCardinality currentElement...");
 		for (int seed = 0; seed < 20; seed++) {
 			int n = 6;
 			int[] min = new int[]{1, 1, 0, 0, 0, 1};
@@ -500,20 +506,20 @@ public class GlobalCardinalityTest {
 			pb.addVariables(vars);
 			CPSolver s = new CPSolver();
 			s.read(pb);
-			for (int i = 0; i < vars.length; i++) {
-				int val1 = rand.nextInt(n);
-				int val2 = rand.nextInt(n);
-				int val3 = rand.nextInt(n);
-				IntDomainVar v = s.getVar(vars[i]);
-				try {
-					v.remVal(val1);
-					v.remVal(val2);
-					v.remVal(val3);
-				} catch (ContradictionException e) {
-					e.printStackTrace();
-				}
-			}
-			System.out.println(ChocoUtil.pretty(vars));
+            for (IntegerVariable var : vars) {
+                int val1 = rand.nextInt(n);
+                int val2 = rand.nextInt(n);
+                int val3 = rand.nextInt(n);
+                IntDomainVar v = s.getVar(var);
+                try {
+                    v.remVal(val1);
+                    v.remVal(val2);
+                    v.remVal(val3);
+                } catch (ContradictionException e) {
+                    e.printStackTrace();
+                }
+            }
+			LOGGER.info(ChocoUtil.pretty(vars));
 			int nbsol = getNBSolByBruteForce(vars, n, seed, min, max, s);
 			Constraint gcc;
             gcc = globalCardinality(vars, 0, n - 1, min, max);
@@ -523,12 +529,12 @@ public class GlobalCardinalityTest {
 				pb.addConstraint("cp:bc", gcc);
 			}
 			s.read(pb);
-			System.out.println(ChocoUtil.pretty(s.getVar(vars)));
-			System.out.println(s.pretty());
+			LOGGER.info(ChocoUtil.pretty(s.getVar(vars)));
+			LOGGER.info(s.pretty());
 			s.setValIntSelector(new RandomIntValSelector(seed));
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed + 10));
 			s.solveAll();
-			System.out.println("" + s.getNbSolutions() + "?=" + nbsol);
+			LOGGER.info("" + s.getNbSolutions() + "?=" + nbsol);
 			assertEquals(s.getNbSolutions(), nbsol);
 		}
 	}
@@ -548,9 +554,9 @@ public class GlobalCardinalityTest {
 				}
 			}
 			if (isCorrect) {
-				for (int j = 0; j < tup.length; j++) {
-					occ[tup[j]]++;
-				}
+                for (int aTup : tup) {
+                    occ[aTup]++;
+                }
 				boolean isValid = true;
 				for (int i = 0; i < occ.length; i++) {
 					if (!(occ[i] >= min[i] && occ[i] <= max[i])) {
@@ -586,7 +592,7 @@ public class GlobalCardinalityTest {
 	@Test
 	public void testGCCEmilien() {
 		int n = 8;
-		System.out.println("Le probleme des " + n + " reines");
+		LOGGER.info("Le probleme des " + n + " reines");
 
 		CPModel nreine = new CPModel();
 
@@ -641,18 +647,19 @@ public class GlobalCardinalityTest {
 
 		if (s.getNbSolutions() > 0) {
 			assertTrue(false);
-			System.out.print("Solution : ");
+            StringBuffer st = new StringBuffer();
+			st.append("Solution : ");
 			for (IntegerVariable l : ligne) //foreach
 			{
-				System.out.print(s.getVar(l).getVal() + "/"); // la solution
+				st.append(MessageFormat.format("{0}/", s.getVar(l).getVal())); // la solution
 			}
-			System.out.println();
+			LOGGER.info(st.toString());
 		}
 
 
 		tps = System.currentTimeMillis() - tps;
-		int nbNode = ((NodeLimit) s.getSearchStrategy().limits.get(1)).getNbTot();
-		System.out.println("temps (en ms) : " + tps + " Noeud : " + nbNode + " Nombre de solutions : " + s.getNbSolutions());
+		int nbNode = s.getSearchStrategy().limits.get(1).getNbTot();
+		LOGGER.info("temps (en ms) : " + tps + " Noeud : " + nbNode + " Nombre de solutions : " + s.getNbSolutions());
 
 	}
 
@@ -685,11 +692,12 @@ public class GlobalCardinalityTest {
 			totnbsol += s2.getNbSolutions();
 			int aseertnbsol = assertNbSol(card, n, s);
 			if (s2.getNbSolutions() != aseertnbsol) {
-				System.out.println(s2.getNbSolutions() + " " + aseertnbsol);
+				LOGGER.info(s2.getNbSolutions() + " " + aseertnbsol);
+                StringBuffer st = new StringBuffer();
 				for (int i = 0; i < n; i++) {
-					System.out.print(" " + s.getVar(card[i]).getVal());
+					st.append(MessageFormat.format(" {0}", s.getVar(card[i]).getVal()));
 				}
-				System.out.println("");
+				LOGGER.info(st.toString());
 			}
 			assertEquals(s2.getNbSolutions(), aseertnbsol);
 		} while (s.nextSolution() == Boolean.TRUE);
@@ -732,7 +740,7 @@ public class GlobalCardinalityTest {
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed + 10));
 
 			s.solveAll();
-			System.out.println("" + s.getNbSolutions() + " nbnode " + s.getSearchStrategy().getNodeCount() + " time " + s.getSearchStrategy().getTimeCount());
+			LOGGER.info("" + s.getNbSolutions() + " nbnode " + s.getSearchStrategy().getNodeCount() + " time " + s.getSearchStrategy().getTimeCount());
 			assertEquals(s.getNbSolutions(), 3125);
 		}
 	}
@@ -753,7 +761,7 @@ public class GlobalCardinalityTest {
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed + 10));
 
 			s.solveAll();
-			System.out.println("" + s.getNbSolutions() + " nbnode " + s.getSearchStrategy().getNodeCount() + " time " + s.getSearchStrategy().getTimeCount());
+			LOGGER.info("" + s.getNbSolutions() + " nbnode " + s.getSearchStrategy().getNodeCount() + " time " + s.getSearchStrategy().getTimeCount());
 			assertEquals(s.getNbSolutions(), 3125);
 		}
 	}
@@ -775,7 +783,7 @@ public class GlobalCardinalityTest {
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed + 10));
 
 			s.solveAll();
-			System.out.println("" + s.getNbSolutions() + " nbnode " + s.getSearchStrategy().getNodeCount() + " time " + s.getSearchStrategy().getTimeCount());
+			LOGGER.info("" + s.getNbSolutions() + " nbnode " + s.getSearchStrategy().getNodeCount() + " time " + s.getSearchStrategy().getTimeCount());
 			assertEquals(s.getNbSolutions(), 2520);
 		}
 	}
@@ -797,7 +805,7 @@ public class GlobalCardinalityTest {
 
 		String arg = "31";
 		int clique_size = Integer.parseInt(arg);
-		System.out.println("Graph Coloring for " + clique_size
+		LOGGER.info("Graph Coloring for " + clique_size
 				+ " cliques. " + new Date());
 		int n = (clique_size % 2 > 0) ? clique_size + 1 : clique_size;
 		boolean redundant_constraint = true;
@@ -846,30 +854,30 @@ public class GlobalCardinalityTest {
 		s.setFirstSolution(true);
 		s.generateSearchStrategy();
 		s.launch();
-		System.out.println("nb choice points " + s.getSearchStrategy().getNodeCount());
+		LOGGER.info("nb choice points " + s.getSearchStrategy().getNodeCount());
 		assertTrue(s.getSearchStrategy().getNodeCount() <= 500);
-		if (false) {
-			System.out.println("no solution found");
-		} else {
+        if (true) {
 			//stop time
-			long executionTime = System.currentTimeMillis() - executionStart;
-			System.out.println("Execution time: " + executionTime + " msec");
+            long executionTime = System.currentTimeMillis() - executionStart;
+            LOGGER.info("Execution time: " + executionTime + " msec");
 
-			// print Solution
-			System.out.println("Solution:");
+            // print Solution
+            LOGGER.info("Solution:");
 
-			for (i = 0; i < n; i++) {
-				System.out.println("\nClique " + i + ":");
-				String str = new String();
-				for (j = 0; j < n - 1; j++) {
-					int node = f(i, j, n);
-					int color = s.getVar(vars[node]).getVal();
-					str = str + " " + node + "=" + color;
-				}
-				System.out.println(str);
-			}
-		}
-	}
+            for (i = 0; i < n; i++) {
+                LOGGER.info("\nClique " + i + ":");
+                String str = new String();
+                for (j = 0; j < n - 1; j++) {
+                    int node = f(i, j, n);
+                    int color = s.getVar(vars[node]).getVal();
+                    str = str + " " + node + "=" + color;
+                }
+                LOGGER.info(str);
+            }
+        } else {
+			LOGGER.info("no solution found");
+        }
+    }
 
 	@Test
 	public void testSatisfied() {
@@ -883,8 +891,8 @@ public class GlobalCardinalityTest {
 		pb.addConstraints(c1, c2);
 		CPSolver s = new CPSolver();
 		s.read(pb);
-		System.out.println(c1.pretty());
-		System.out.println(c2.pretty());
+		LOGGER.info(c1.pretty());
+		LOGGER.info(c2.pretty());
 		assertTrue(s.getCstr(c1).isSatisfied());
 		assertFalse(s.getCstr(c2).isSatisfied());
 	}
@@ -959,13 +967,13 @@ public class GlobalCardinalityTest {
         if(s.solve()){
             do{
                 for(int i = 0; i < 7; i++){
-                    System.out.println(s.getVar(guys[i]).getName()+" : "+ activities[s.getVar(guys[i]).getVal()]);
+                    LOGGER.info(s.getVar(guys[i]).getName()+" : "+ activities[s.getVar(guys[i]).getVal()]);
                 }
-                System.out.println("==============================");
+                LOGGER.info("==============================");
             }while(s.nextSolution());
             Assert.assertEquals("nb solution", 12, s.getNbSolutions());
         }else{
-            System.out.println("No solution");
+            LOGGER.info("No solution");
             Assert.fail("no solution");
         }
     }

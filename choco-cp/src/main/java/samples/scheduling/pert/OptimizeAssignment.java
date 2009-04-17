@@ -116,15 +116,15 @@ public class OptimizeAssignment extends DeterministicPert {
 			b.append('|');
 			b.append(printVariable(solver.getVar(vcosts[i])));
 			b.append("}");
-			Integer id = Integer.valueOf(solver.getVar(tasks[i]).getID());
+			Integer id = solver.getVar(tasks[i]).getID();
 			labels.put(id, new String(b));
 		}
 		//FIXME VizFactory.toDotty(solver.toDotty(solver.getNoStartEndSubgraph(),labels,Collections.EMPTY_MAP,true));
 	}
 
 	public void computeAll() {
-		System.out.println("\n%%%%%%%%%%%%%%% OPTIMIZATION PROBLEM %%%%%%%%%%%%%%%%%%%");
-		System.out.println("MIN Cmax SOLUTION");
+		LOGGER.info("\n%%%%%%%%%%%%%%% OPTIMIZATION PROBLEM %%%%%%%%%%%%%%%%%%%");
+		LOGGER.info("MIN Cmax SOLUTION");
 		model.remove(c);
         c = eq(costPerDay, 0);
         model.addConstraint(c);
@@ -133,11 +133,11 @@ public class OptimizeAssignment extends DeterministicPert {
 		int min = solver.getMakespan().getInf();
 		this.solver.post( solver.eq(solver.getMakespan(), min));
 		this.solver.minimize(false);
-		System.out.println(this);
-		System.out.println("MIN COST SOLUTION");
+		LOGGER.info(""+this);
+		LOGGER.info("MIN COST SOLUTION");
 		this.minimize();
 		int max=solver.getMakespanValue();
-		System.out.println(this);
+		LOGGER.info(""+this);
 		this.getCmaxFunction();
 		this.getParetoFront(min, max+1);
 	}
@@ -149,33 +149,33 @@ public class OptimizeAssignment extends DeterministicPert {
 		//CPSolver.setVerbosity(CPSolver.SOLUTION);
 		//solver.setTimeLimit(1*1000);
 		solver.minimize(false);
-		//System.out.println(this);
+		//LOGGER.info(this);
 		//solver.printRuntimeSatistics();
 	}
 
 	public void getCmaxFunction() {
-		System.out.println("Cmax = F(cost)");
-		System.out.println("#cost/day Cmax");
+		LOGGER.info("Cmax = F(cost)");
+		LOGGER.info("#cost/day Cmax");
 		for (int i = 0; i < 21; i++) {
             model.remove(c);
             c = eq(costPerDay, i);
             model.addConstraint(c);
 			this.minimize();
-			System.out.println(solver.getVar(costPerDay).getVal()+" "+solver.getMakespanValue());
+			LOGGER.info(solver.getVar(costPerDay).getVal()+" "+solver.getMakespanValue());
 		}
 
 	}
 
 	public void getParetoFront(int min,int max) {
-		System.out.println("\nPARETO FRONT");
-		System.out.println("Cmax objective");
+		LOGGER.info("\nPARETO FRONT");
+		LOGGER.info("Cmax objective");
 		this.costPerDay = constant(0);
 		for (int h = min; h < max; h++) {
 			solver =new CPSolver();
 			solver.read(model);
 			this.solver.post( solver.eq(solver.getMakespan(), h));
 			solver.minimize(false);
-			System.out.println(solver.getMakespanValue()+" "+solver.getOptimumValue());
+			LOGGER.info(solver.getMakespanValue()+" "+solver.getOptimumValue());
 		}
 	}
 

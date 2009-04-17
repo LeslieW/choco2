@@ -22,13 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.reified;
 
+import choco.Choco;
 import static choco.Choco.*;
-import static choco.Choco.ifThenElse;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -36,9 +37,14 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.Choco;
+import org.junit.After;
 import static org.junit.Assert.assertEquals;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import static java.text.MessageFormat.format;
+import java.util.logging.Logger;
 
 /**
  * J-CHOCO
@@ -50,6 +56,8 @@ import org.junit.*;
  * Created by: Guillaume on 30 juin 2004
  */
 public class ReifiedSearchTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	Model m;
 	Solver s;
@@ -81,16 +89,14 @@ public class ReifiedSearchTest {
             m.addConstraint(or(eq(mult((x), (y)), (z)),
 											  eq(mult((z), (y)), (x))));
 			s.read(m);
-			System.out.println(s.pretty());
+			LOGGER.info(s.pretty());
 
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));
 
 			s.solveAll();
-			if (nbexpectedsol == -1)
-				nbexpectedsol = s.getNbSolutions();
 
-			System.out.println("" + s.getNbSolutions());
+            LOGGER.info("" + s.getNbSolutions());
 
 			assertEquals(nbexpectedsol, s.getNbSolutions());
 
@@ -113,7 +119,7 @@ public class ReifiedSearchTest {
             m.addConstraint(or(eq(mult(abs(minus((x),(3))), (y)), (z)),
 											  eq(mult((z), (y)), abs((x)))));
 			s.read(m);
-			System.out.println(s.pretty());
+			LOGGER.info(s.pretty());
 
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));
@@ -122,7 +128,7 @@ public class ReifiedSearchTest {
 			if (nbexpectedsol == -1)
 				nbexpectedsol = s.getNbSolutions();
 
-			System.out.println("" + s.getNbSolutions());
+			LOGGER.info("" + s.getNbSolutions());
 
 			assertEquals(nbexpectedsol, s.getNbSolutions());
 
@@ -141,7 +147,7 @@ public class ReifiedSearchTest {
         m.addConstraint(or(lt(x, y), lt(y, x)));
 		m.addConstraint(or(lt(y, z), lt(z, y)));
 		s.read(m);
-		System.out.println(s.pretty());
+		LOGGER.info(s.pretty());
 		s.solveAll();
 
 		assertEquals(12, s.getNbSolutions());
@@ -164,9 +170,9 @@ public class ReifiedSearchTest {
 		m.addConstraint(e2);
 
 		s.read(m);
-		System.out.println(s.pretty());
+		LOGGER.info(s.pretty());
 		s.solveAll();
-		System.out.println("" + s.getNbSolutions());
+		LOGGER.info("" + s.getNbSolutions());
 		assertEquals(12, s.getNbSolutions());
 	}
 
@@ -181,7 +187,7 @@ public class ReifiedSearchTest {
 		m.addConstraint(or(lt((x), (y)), lt((y), (x))));
 		m.addConstraint(or(lt((y), (z)), lt((z), (y))));
 		s.read(m);
-		System.out.println(s.pretty());
+		LOGGER.info(s.pretty());
 		s.solveAll();
 
 		assertEquals(12, s.getNbSolutions());
@@ -217,7 +223,7 @@ public class ReifiedSearchTest {
 			if (nbexpectedsol == -1)
 				nbexpectedsol = s.getNbSolutions();
 
-			System.out.println("" + s.getNbSolutions());
+			LOGGER.info("" + s.getNbSolutions());
 
 			assertEquals(nbexpectedsol, s.getNbSolutions());
 		}
@@ -238,7 +244,7 @@ public class ReifiedSearchTest {
 			m.addConstraint(ifThenElse(lt((x), (y)), gt((y), (z)), FALSE));
 			s.read(m);
 
-			System.out.println(s.pretty());
+			LOGGER.info(s.pretty());
 
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));
@@ -248,7 +254,7 @@ public class ReifiedSearchTest {
 			if (nbexpectedsol == -1)
 				nbexpectedsol = s.getNbSolutions();
 
-			System.out.println("" + s.getNbSolutions());
+			LOGGER.info("" + s.getNbSolutions());
 
 			assertEquals(nbexpectedsol, s.getNbSolutions());
 		}
@@ -276,8 +282,8 @@ public class ReifiedSearchTest {
             s1.read(m1);
 			s2.read(m2);
 
-//			System.out.println(s1.pretty());
-//            System.out.println(s2.pretty());
+//			LOGGER.info(s1.pretty());
+//            LOGGER.info(s2.pretty());
 
             s1.setVarIntSelector(new RandomIntVarSelector(s1, seed));
             s1.setValIntSelector(new RandomIntValSelector(seed + 1));
@@ -312,7 +318,7 @@ public class ReifiedSearchTest {
         //e2.setDecomposeExp(true);
 		m.addConstraints(e1, e2);
 		s.read(m);
-		System.out.println(s.pretty());
+		LOGGER.info(s.pretty());
 
 		s.solveAll();
 
@@ -332,13 +338,11 @@ public class ReifiedSearchTest {
 
             m.addConstraint(ifOnlyIf(lt((x), (y)), lt((y), (z))));
 			s.read(m);
-			System.out.println(s.pretty());
+			LOGGER.info(s.pretty());
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));
 			s.solveAll();
-			if (nbexpectedsol == -1)
-				nbexpectedsol = s.getNbSolutions();
-			assertEquals(nbexpectedsol, s.getNbSolutions());
+            assertEquals(nbexpectedsol, s.getNbSolutions());
 		}
 	}
 
@@ -361,13 +365,11 @@ public class ReifiedSearchTest {
 			s.read(m);
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));
-			System.out.println(s.pretty());
+			LOGGER.info(s.pretty());
 
 			s.solveAll();
-			System.out.println("NBSOLUTION: " + s.getNbSolutions());
-			if (nbexpectedsol == -1)
-				nbexpectedsol = s.getNbSolutions();
-			assertEquals(nbexpectedsol, s.getNbSolutions());
+			LOGGER.info("NBSOLUTION: " + s.getNbSolutions());
+            assertEquals(nbexpectedsol, s.getNbSolutions());
 		}
 	}
 
@@ -381,7 +383,7 @@ public class ReifiedSearchTest {
 
         m.addConstraint(implies(leq((x), (y)), leq((x), (z))));
 		s.read(m);
-		System.out.println(s.pretty());
+		LOGGER.info(s.pretty());
 		s.solveAll();
 
 		assertEquals(7, s.getNbSolutions());
@@ -400,7 +402,7 @@ public class ReifiedSearchTest {
 
 		m.addConstraint(e1);
 		s.read(m);
-		System.out.println(s.pretty());
+		LOGGER.info(s.pretty());
 
 		s.solveAll();
 
@@ -417,7 +419,7 @@ public class ReifiedSearchTest {
 
         m.addConstraint(implies(lt((x), (2)), and(lt((x), (y)), lt((y), (z)))));
 		s.read(m);
-		System.out.println(s.pretty());
+		LOGGER.info(s.pretty());
 		s.solveAll();
 	}
 
@@ -434,7 +436,7 @@ public class ReifiedSearchTest {
 
 		m.addConstraint(e1);
 		s.read(m);
-		System.out.println(s.pretty());
+		LOGGER.info(s.pretty());
 
 		s.solveAll();
 	}
@@ -449,12 +451,12 @@ public class ReifiedSearchTest {
 
         m.addConstraint(or(lt((x), (y)), lt((x), (z)), lt((y), (z))));
 		s.read(m);
-		System.out.println(s.pretty());
+		LOGGER.info(s.pretty());
 		s.solve();
 		do {
-			System.out.println("x = " + s.getVar(x).getVal());
-			System.out.println("y = " + s.getVar(y).getVal());
-			System.out.println("z = " + s.getVar(z).getVal());
+			LOGGER.info("x = " + s.getVar(x).getVal());
+			LOGGER.info("y = " + s.getVar(y).getVal());
+			LOGGER.info("z = " + s.getVar(z).getVal());
 
 		} while (s.nextSolution());
 
@@ -473,13 +475,13 @@ public class ReifiedSearchTest {
         //e1.setDecomposeExp(true);
 		m.addConstraint(e1);
 		s.read(m);
-		System.out.println(s.pretty());
+		LOGGER.info(s.pretty());
 
 		s.solve();
 		do {
-			System.out.println("x = " + s.getVar(x).getVal());
-			System.out.println("y = " + s.getVar(y).getVal());
-			System.out.println("z = " + s.getVar(z).getVal());
+			LOGGER.info("x = " + s.getVar(x).getVal());
+			LOGGER.info("y = " + s.getVar(y).getVal());
+			LOGGER.info("z = " + s.getVar(z).getVal());
 
 		} while (s.nextSolution());
 
@@ -498,20 +500,24 @@ public class ReifiedSearchTest {
 		Constraint c = or(tab);
 		m.addConstraint(c);
 		s.read(m);
-		System.out.println(s.pretty());
+		LOGGER.info(s.pretty());
 		if (s.solve()) {
-			System.out.print("v[0] = [" + s.getVar(v[0][0]).getVal() + ", " + s.getVar(v[0][1]).getVal() + "] / ");
-			System.out.print("v[1] = [" + s.getVar(v[1][0]).getVal() + ", " + s.getVar(v[1][1]).getVal() + "] / ");
-			System.out.println("v[2] = [" + s.getVar(v[2][0]).getVal() + ", " + s.getVar(v[2][1]).getVal() + "] - > c");
-			//System.out.println(s.getCstr(c).isSatisfied() ? " satisfied." : " not satisfied!!!");
+            StringBuffer st = new StringBuffer();
+			st.append(format("v[0] = [{0}, {1}] / ", s.getVar(v[0][0]).getVal(), s.getVar(v[0][1]).getVal()));
+			st.append(format("v[1] = [{0}, {1}] / ", s.getVar(v[1][0]).getVal(), s.getVar(v[1][1]).getVal()));
+			st.append(format("v[2] = [{0}, {1}] - > c", s.getVar(v[2][0]).getVal(), s.getVar(v[2][1]).getVal()));
+            LOGGER.info(st.toString());
+			//LOGGER.info(s.getCstr(c).isSatisfied() ? " satisfied." : " not satisfied!!!");
 
 		}
 
 		while (s.nextSolution()) {
-			System.out.print("v[0] = [" + s.getVar(v[0][0]).getVal() + ", " + s.getVar(v[0][1]).getVal() + "] / ");
-			System.out.print("v[1] = [" + s.getVar(v[1][0]).getVal() + ", " + s.getVar(v[1][1]).getVal() + "] / ");
-			System.out.println("v[2] = [" + s.getVar(v[2][0]).getVal() + ", " + s.getVar(v[2][1]).getVal() + "] - > c");
-			//System.out.println(s.getCstr(c).isSatisfied() ? " satisfied." : "not satisfied!!!");
+			StringBuffer st = new StringBuffer();
+            st.append(format("v[0] = [{0}, {1}] / ", s.getVar(v[0][0]).getVal(), s.getVar(v[0][1]).getVal()));
+			st.append(format("v[1] = [{0}, {1}] / ", s.getVar(v[1][0]).getVal(), s.getVar(v[1][1]).getVal()));
+			st.append(format("v[2] = [{0}, {1}] - > c", s.getVar(v[2][0]).getVal(), s.getVar(v[2][1]).getVal()));
+			LOGGER.info(st.toString());
+            //LOGGER.info(s.getCstr(c).isSatisfied() ? " satisfied." : "not satisfied!!!");
 		}
 		assertEquals(37, s.getNbSolutions());
 
@@ -527,19 +533,23 @@ public class ReifiedSearchTest {
 		Constraint c = or(tab[0], tab[1]);
 		m.addConstraint(c);
 		s.read(m);
-		System.out.println(s.pretty());
-		//System.out.println(" " + s.getCstr(c).isSatisfied());
+		LOGGER.info(s.pretty());
+		//LOGGER.info(" " + s.getCstr(c).isSatisfied());
 		if (s.solve()) {
-			System.out.print("v[0] = [" + s.getVar(v[0][0]).getVal() + ", " + s.getVar(v[0][1]).getVal() + "] / ");
-			System.out.println("v[1] = [" + s.getVar(v[1][0]).getVal() + ", " + s.getVar(v[1][1]).getVal() + "] / ");
-			//System.out.println(s.getCstr(c).isSatisfied() ? " satisfied." : " not satisfied!!!");
+			StringBuffer st = new StringBuffer();
+            st.append(format("v[0] = [{0}, {1}] / ", s.getVar(v[0][0]).getVal(), s.getVar(v[0][1]).getVal()));
+			st.append(format("v[1] = [{0}, {1}] / ", s.getVar(v[1][0]).getVal(), s.getVar(v[1][1]).getVal()));
+			LOGGER.info(st.toString());
+            //LOGGER.info(s.getCstr(c).isSatisfied() ? " satisfied." : " not satisfied!!!");
 
 		}
 
 		while (s.nextSolution()) {
-			System.out.print("v[0] = [" + s.getVar(v[0][0]).getVal() + ", " + s.getVar(v[0][1]).getVal() + "] / ");
-			System.out.println("v[1] = [" + s.getVar(v[1][0]).getVal() + ", " + s.getVar(v[1][1]).getVal() + "] / ");
-			//System.out.println(s.getCstr(c).isSatisfied() ? " satisfied." : "not satisfied!!!");
+            StringBuffer st = new StringBuffer();
+			st.append(format("v[0] = [{0}, {1}] / ", s.getVar(v[0][0]).getVal(), s.getVar(v[0][1]).getVal()));
+			st.append(format("v[1] = [{0}, {1}] / ", s.getVar(v[1][0]).getVal(), s.getVar(v[1][1]).getVal()));
+			LOGGER.info(st.toString());
+            //LOGGER.info(s.getCstr(c).isSatisfied() ? " satisfied." : "not satisfied!!!");
 		}
 		assertEquals(7, s.getNbSolutions());
 
@@ -556,19 +566,23 @@ public class ReifiedSearchTest {
 		m.addConstraint(c);
 		m.setDefaultExpressionDecomposition(true);
 		s.read(m);
-		System.out.println(s.pretty());
-		//System.out.println(" " + s.getCstr(c).isSatisfied());
+		LOGGER.info(s.pretty());
+		//LOGGER.info(" " + s.getCstr(c).isSatisfied());
 		if (s.solve()) {
-			System.out.print("v[0] = [" + s.getVar(v[0][0]).getVal() + ", " + s.getVar(v[0][1]).getVal() + "] / ");
-			System.out.println("v[1] = [" + s.getVar(v[1][0]).getVal() + ", " + s.getVar(v[1][1]).getVal() + "] / ");
-			//System.out.println(s.getCstr(c).isSatisfied() ? " satisfied." : " not satisfied!!!");
+			StringBuffer st = new StringBuffer();
+            st.append(format("v[0] = [{0}, {1}] / ", s.getVar(v[0][0]).getVal(), s.getVar(v[0][1]).getVal()));
+			st.append(format("v[1] = [{0}, {1}] / ", s.getVar(v[1][0]).getVal(), s.getVar(v[1][1]).getVal()));
+			LOGGER.info(st.toString());
+            //LOGGER.info(s.getCstr(c).isSatisfied() ? " satisfied." : " not satisfied!!!");
 
 		}
 
 		while (s.nextSolution()) {
-			System.out.print("v[0] = [" + s.getVar(v[0][0]).getVal() + ", " + s.getVar(v[0][1]).getVal() + "] / ");
-			System.out.println("v[1] = [" + s.getVar(v[1][0]).getVal() + ", " + s.getVar(v[1][1]).getVal() + "] / ");
-			//System.out.println(s.getCstr(c).isSatisfied() ? " satisfied." : "not satisfied!!!");
+            StringBuffer st = new StringBuffer();
+			st.append(format("v[0] = [{0}, {1}] / ", s.getVar(v[0][0]).getVal(), s.getVar(v[0][1]).getVal()));
+			st.append(format("v[1] = [{0}, {1}] / ", s.getVar(v[1][0]).getVal(), s.getVar(v[1][1]).getVal()));
+            LOGGER.info(st.toString());
+			//LOGGER.info(s.getCstr(c).isSatisfied() ? " satisfied." : "not satisfied!!!");
 		}
 		assertEquals(7, s.getNbSolutions());
 
@@ -592,15 +606,13 @@ public class ReifiedSearchTest {
 					not(eq((x), (z)))));
 
 			s.read(m);
-			System.out.println(s.pretty());
+			LOGGER.info(s.pretty());
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));
 
 			s.solveAll();
 
-			if (nbexpectedsol == -1)
-				nbexpectedsol = s.getNbSolutions();
-			assertEquals(nbexpectedsol, s.getNbSolutions());
+            assertEquals(nbexpectedsol, s.getNbSolutions());
 		}
 	}
 
@@ -625,16 +637,14 @@ public class ReifiedSearchTest {
 			m.addConstraint(e1);
 
 			s.read(m);
-			System.out.println(s.pretty());
+			LOGGER.info(s.pretty());
 
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));
 
 			s.solveAll();
 
-			if (nbexpectedsol == -1)
-				nbexpectedsol = s.getNbSolutions();
-			assertEquals(nbexpectedsol, s.getNbSolutions());
+            assertEquals(nbexpectedsol, s.getNbSolutions());
 		}
 	}
 
@@ -656,12 +666,10 @@ public class ReifiedSearchTest {
 			s.read(m);
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));
-			System.out.println(s.pretty());
+			LOGGER.info(s.pretty());
 			s.solveAll();
 
-			if (nbexpectedsol == -1)
-				nbexpectedsol = s.getNbSolutions();
-			assertEquals(nbexpectedsol, s.getNbSolutions());
+            assertEquals(nbexpectedsol, s.getNbSolutions());
 		}
 	}
 
@@ -684,15 +692,13 @@ public class ReifiedSearchTest {
 
 			m.addConstraint(e1);
 			s.read(m);
-			System.out.println(s.pretty());
+			LOGGER.info(s.pretty());
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));
 
 			s.solveAll();
 
-			if (nbexpectedsol == -1)
-				nbexpectedsol = s.getNbSolutions();
-			assertEquals(nbexpectedsol, s.getNbSolutions());
+            assertEquals(nbexpectedsol, s.getNbSolutions());
 		}
 	}
 
@@ -730,12 +736,10 @@ public class ReifiedSearchTest {
 			s.read(m);
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));
-			System.out.println(s.pretty());
+			LOGGER.info(s.pretty());
 			s.solveAll();
 
-			if (nbexpectedsol == -1)
-				nbexpectedsol = s.getNbSolutions();
-			assertEquals(nbexpectedsol, s.getNbSolutions());
+            assertEquals(nbexpectedsol, s.getNbSolutions());
 		}
 	}
 
@@ -762,12 +766,10 @@ public class ReifiedSearchTest {
 			s.read(m);
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));
-			System.out.println(s.pretty());
+			LOGGER.info(s.pretty());
 			s.solveAll();
 
-			if (nbexpectedsol == -1)
-				nbexpectedsol = s.getNbSolutions();
-			assertEquals(nbexpectedsol, s.getNbSolutions());
+            assertEquals(nbexpectedsol, s.getNbSolutions());
 		}
 	}
 
@@ -797,12 +799,10 @@ public class ReifiedSearchTest {
 			s.read(m);
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));
-			System.out.println(s.pretty());
+			LOGGER.info(s.pretty());
 			s.solveAll();
 
-			if (nbexpectedsol == -1)
-				nbexpectedsol = s.getNbSolutions();
-			assertEquals(nbexpectedsol, s.getNbSolutions());
+            assertEquals(nbexpectedsol, s.getNbSolutions());
 		}
 	}
 
@@ -839,12 +839,10 @@ public class ReifiedSearchTest {
 			s.read(m);
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));
-			System.out.println(s.pretty());
+			LOGGER.info(s.pretty());
 			s.solveAll();
 
-			if (nbexpectedsol == -1)
-				nbexpectedsol = s.getNbSolutions();
-			assertEquals(nbexpectedsol, s.getNbSolutions());
+            assertEquals(nbexpectedsol, s.getNbSolutions());
 		}
 	}
 
@@ -853,7 +851,7 @@ public class ReifiedSearchTest {
 		int nbexpectedsol = -1; //initialize to -1 if number of solutions to hard to compute by hand
 
 		for (int seed = 0; seed < 10; seed++) {
-			System.out.println("seed " + seed);
+			LOGGER.info("seed " + seed);
 			m = new CPModel();
 			s = new CPSolver();
 			IntegerVariable x = makeIntVar("x", 1, 3);
@@ -875,15 +873,15 @@ public class ReifiedSearchTest {
 			LargeRelation lrela = s.makeLargeRelation(new int[4], max, p.getTuples(s), true);
 			//relationTupleAC(new IntegerVariable[]{x, y}, lrela);
 			s.post(s.relationTupleAC(p.getVars(), lrela));
-			System.out.println(s.pretty());
+			LOGGER.info(s.pretty());
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));
 
 			//s.solve();
-			//System.out.println(z + " " + w + " " + y + " " + x);
-			//System.out.println(isFeasible() + " " + c.pretty());
+			//LOGGER.info(z + " " + w + " " + y + " " + x);
+			//LOGGER.info(isFeasible() + " " + c.pretty());
 			s.solveAll();
-			System.out.println("" + s.getNbSolutions());
+			LOGGER.info("" + s.getNbSolutions());
 			if (nbexpectedsol == -1)
 				nbexpectedsol = s.getNbSolutions();
 			assertEquals(nbexpectedsol, s.getNbSolutions());
@@ -896,7 +894,7 @@ public class ReifiedSearchTest {
 		int nbexpectedsol = -1; //initialize to -1 if number of solutions to hard to compute by hand
 
 		for (int seed = 0; seed < 10; seed++) {
-			System.out.println("seed " + seed);
+			LOGGER.info("seed " + seed);
 			m = new CPModel();
 			s = new CPSolver();
 			IntegerVariable x = makeIntVar("x", 1, 3);
@@ -909,7 +907,7 @@ public class ReifiedSearchTest {
             //e1.setDecomposeExp(true);
 			m.addConstraint(e1);
 			s.read(m);
-			System.out.println(s.pretty());
+			LOGGER.info(s.pretty());
 			ExpressionSConstraint p = (ExpressionSConstraint) s.getCstr(e1);
 			p.setScope(s);
 			IntDomainVar[] vs = p.getVars();
@@ -925,10 +923,10 @@ public class ReifiedSearchTest {
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));
 
 			//s.solve();
-			//System.out.println(z + " " + w + " " + y + " " + x);
-			//System.out.println(isFeasible() + " " + c.pretty());
+			//LOGGER.info(z + " " + w + " " + y + " " + x);
+			//LOGGER.info(isFeasible() + " " + c.pretty());
 			s.solveAll();
-			System.out.println("" + s.getNbSolutions());
+			LOGGER.info("" + s.getNbSolutions());
 			if (nbexpectedsol == -1)
 				nbexpectedsol = s.getNbSolutions();
 			assertEquals(nbexpectedsol, s.getNbSolutions());
@@ -954,19 +952,19 @@ public class ReifiedSearchTest {
 		m.addConstraint(exp);
 
 		s.read(m);
-		System.out.println(s.pretty());
+		LOGGER.info(s.pretty());
 		try {
 			s.propagate();
-			System.out.println(s.getVar(z).pretty() + " " + s.getVar(w).pretty());
+			LOGGER.info(s.getVar(z).pretty() + " " + s.getVar(w).pretty());
 		} catch (
 				ContradictionException e) {
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			LOGGER.severe(e.getMessage());
 		}
 
 		s.solve();
 
-		System.out.println("" + s.isFeasible());
-		System.out.println(s.getVar(z).getVal() + " " + s.getVar(w).getVal());
+		LOGGER.info("" + s.isFeasible());
+		LOGGER.info(s.getVar(z).getVal() + " " + s.getVar(w).getVal());
 	}
 
 	@Test
@@ -988,19 +986,19 @@ public class ReifiedSearchTest {
 		m.addConstraint(exp);
 
 		s.read(m);
-		System.out.println(s.pretty());
+		LOGGER.info(s.pretty());
 		try {
 			s.propagate();
-			System.out.println(s.getVar(z).pretty() + " " + s.getVar(w).pretty());
+			LOGGER.info(s.getVar(z).pretty() + " " + s.getVar(w).pretty());
 		} catch (
 				ContradictionException e) {
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			LOGGER.severe(e.getMessage());
 		}
 
 		s.solve();
 
-		System.out.println("" + s.isFeasible());
-		System.out.println(s.getVar(z).getVal() + " " + s.getVar(w).getVal());
+		LOGGER.info("" + s.isFeasible());
+		LOGGER.info(s.getVar(z).getVal() + " " + s.getVar(w).getVal());
 	}
 
     @Test
@@ -1038,7 +1036,7 @@ public class ReifiedSearchTest {
                 s.setVarIntSelector(new RandomIntVarSelector(s, seed));
                 s.setValIntSelector(new RandomIntValSelector(seed + 1));
                 s.solveAll();
-                System.out.println("" + s.getNbSolutions());
+                LOGGER.info("" + s.getNbSolutions());
                 assertEquals(s.getNbSolutions(), 5);
 
             }

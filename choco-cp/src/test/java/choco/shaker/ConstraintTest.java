@@ -25,6 +25,7 @@ package choco.shaker;
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -37,6 +38,7 @@ import choco.shaker.tools.factory.VariableFactory;
 import org.junit.*;
 
 import java.util.Random;
+import java.util.logging.Logger;
 
 /*
 * User : charles
@@ -46,6 +48,8 @@ import java.util.Random;
 * Update : Choco 2.0.1
 */
 public class ConstraintTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     Model m;
     Constraint c;
@@ -184,14 +188,14 @@ public class ConstraintTest {
         int v;
         switch (event) {
             case 0: // INSTANTIATION
-                if(print)System.out.println(var.getName()+" = "+value);
+                if(print)LOGGER.info(var.getName()+" = "+value);
                 var.instantiate(value, -1);
                 break;
             case 1: // LOWER BOUND
                 if(value > var.getInf()){
                     v = value - var.getInf();
                     v = value - r.nextInt(v);
-                    if(print)System.out.println(var.getName()+" >= "+v);
+                    if(print)LOGGER.info(var.getName()+" >= "+v);
                     var.updateInf(v, -1);
                 }
                 break;
@@ -199,7 +203,7 @@ public class ConstraintTest {
                 if(value < var.getSup()){
                     v = var.getSup() - value;
                     v = value + r.nextInt(v);
-                    if(print)System.out.println(var.getName()+" <= "+v);
+                    if(print)LOGGER.info(var.getName()+" <= "+v);
                     var.updateSup(v, -1);
                 }
                 break;
@@ -209,7 +213,7 @@ public class ConstraintTest {
                     while (v == value) {
                         v = getRandomValue(var, r);
                     }
-                    if(print)System.out.println(var.getName()+" != "+v);
+                    if(print)LOGGER.info(var.getName()+" != "+v);
                     var.removeVal(v, -1);
                 }
                 break;
@@ -219,6 +223,7 @@ public class ConstraintTest {
     /**
      * Randomly create a tuple of value
      * @param sc
+     * @param r
      * @return
      */
     private int[] pickValues(AbstractIntSConstraint sc, Random r) {
@@ -226,7 +231,7 @@ public class ConstraintTest {
         for (int i = 0; i < tuple.length; i++) {
             IntDomainVar var = sc.getIntVar(i);
             tuple[i] = getRandomValue(var, r);
-            if(print)System.out.println(var.getName()+":"+tuple[i]);
+            if(print)LOGGER.info(var.getName()+":"+tuple[i]);
         }
         return tuple;
     }

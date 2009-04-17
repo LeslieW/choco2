@@ -69,8 +69,8 @@ public class HowOldAmI extends PatternExample{
 
     @Override
     public void prettyOut() {
-        System.out.println("Me :"+_s.getVar(me).getVal()+" years old");
-        System.out.println("Him :"+_s.getVar(him).getVal()+" years old");
+        LOGGER.info("Me :"+_s.getVar(me).getVal()+" years old");
+        LOGGER.info("Him :"+_s.getVar(him).getVal()+" years old");
     }
 
     public static void main(String[] args) {

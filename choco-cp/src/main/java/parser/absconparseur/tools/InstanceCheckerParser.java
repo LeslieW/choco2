@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.absconparseur.tools;
 
+import choco.kernel.common.logging.ChocoLogging;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -34,8 +35,11 @@ import parser.absconparseur.components.*;
 import parser.absconparseur.intension.EvaluationManager;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 public class InstanceCheckerParser {
+    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+
 	private InstanceCheckerEngine engine;
 
 	private String instanceName;
@@ -112,7 +116,7 @@ public class InstanceCheckerParser {
 		if (relationNames != null)
 			for (int i = 0; i < relationNames.length; i++)
 				if (!relationNames[i].equals(InstanceTokens.getRelationNameFor(i))) {
-					System.out.println(" the " + i + "th relation is called " + relationNames[i]);
+					LOGGER.info(" the " + i + "th relation is called " + relationNames[i]);
 					return false;
 				}
 		if (predicateNames != null) {
@@ -302,7 +306,7 @@ public class InstanceCheckerParser {
 		StringBuffer sb = new StringBuffer();
 		sb.append('(');
 		for (int i = 0; i < t.length; i++)
-			sb.append(t[i] + (i < t.length - 1 ? "," : ""));
+            sb.append(t[i]).append(i < t.length - 1 ? "," : "");
 		sb.append(')');
 		return sb.toString();
 	}
@@ -468,9 +472,9 @@ public class InstanceCheckerParser {
 		PVariable[] t = involvedVariablesInParameters.toArray(new PVariable[involvedVariablesInParameters.size()]);
 		if (t.length != scope.length)
 			throw new FormatException("The number of variables occuring in scope is different from the number of variables occuring in parameters of constraint " + name);
-		for (int i = 0; i < scope.length; i++)
-			if (searchIn(scope[i], t) == -1)
-				throw new FormatException("One variable of the scope of constraint " + name + " does not occur in parameters.");
+        for (PVariable aScope : scope)
+            if (searchIn(aScope, t) == -1)
+                throw new FormatException("One variable of the scope of constraint " + name + " does not occur in parameters.");
 		return t;
 	}
 
@@ -520,15 +524,15 @@ public class InstanceCheckerParser {
 			int position = searchIn(nextToken(name, st), scope);
 			if (position == -1)
 				throw new FormatException("Ill-formed parameters of constraint " + name);
-			// System.out.println(coeffToken + " " + position);
+			// LOGGER.info(coeffToken + " " + position);
 			coeffs[position] += parseInt("One coefficient " + token + " of the parameters of constraint " + name, coeffToken);
 			if (!nextToken(name, st).equals("}"))
 				throw new FormatException("One should find } as last token of a pair (coefficient, variable) in constraint " + name);
 			token = nextToken(name, st);
 		}
-		for (int i = 0; i < coeffs.length; i++)
-			if (coeffs[i] == 0)
-				throw new FormatException("One variable is not associated with a coefficient in constraint " + name);
+        for (int coeff : coeffs)
+            if (coeff == 0)
+                throw new FormatException("One variable is not associated with a coefficient in constraint " + name);
 		PredicateTokens.RelationalOperator operator = PredicateTokens.RelationalOperator.getRelationalOperatorFor(nodeList.item(1).getNodeName());
 		if (operator == null)
 			throw new FormatException("Relational operator in parameters of constraint " + name);
@@ -835,7 +839,7 @@ public class InstanceCheckerParser {
 				sumL += constraint.getMaximalCost();
 				sumD += constraint.getMaximalCost();
 			}
-			// System.out.println(sumL);
+			// LOGGER.info(sumL);
 			if (sumL != sumD || Double.isInfinite(sumD))
 				throw new FormatException("the instance may involve an overflow computation when considering the maximal cost of an instantiation");
 		}
@@ -949,8 +953,7 @@ public class InstanceCheckerParser {
 		int nbOldRelations = mapOfRelations.size();
 		String[] t = new String[nbOldRelations + newRelations.size()];
 
-		for (int i = 0; i < nbOldRelations; i++)
-			t[i] = relationNames[i];
+        System.arraycopy(relationNames, 0, t, 0, nbOldRelations);
 		Iterator<PRelation> it = newRelations.iterator();
 		for (int i = nbOldRelations; i < t.length; i++) {
 			PRelation relation = it.next();

@@ -88,8 +88,7 @@ public class MinSpanningTree extends AbstractLargeIntSConstraint {
             if (s[i].isInstantiated() && i != n-1) {
                 int j = s[i].getVal();
                 cost += dist[i][j].get();
-                //System.out.println(showSet(classes));
-                //System.out.print("fusion ("+i+","+j+") => ");
+                //LOGGER.info(showSet(classes));
                 Set<Integer> itree = new HashSet<Integer>();
                 Set<Integer> jtree = new HashSet<Integer>();
                 for (Set<Integer> set : classes) {
@@ -98,8 +97,8 @@ public class MinSpanningTree extends AbstractLargeIntSConstraint {
                 }
                 itree.addAll(jtree);
                 classes.remove(jtree);
-                //System.out.println(showSet(classes));
-                //System.out.println("---------");
+                //LOGGER.info(showSet(classes));
+                //LOGGER.info("---------");
             }
 
         }
@@ -123,8 +122,7 @@ public class MinSpanningTree extends AbstractLargeIntSConstraint {
                 }
                 if (j > -1) {
                     cost += ci;
-                    //System.out.println(showSet(classes));
-                    //System.out.print("fusion ("+i+","+j+") => ");
+                    //LOGGER.info(showSet(classes));
                     Set<Integer> itree = new HashSet<Integer>();
                     Set<Integer> jtree = new HashSet<Integer>();
                     for (Set<Integer> set : classes) {
@@ -133,8 +131,8 @@ public class MinSpanningTree extends AbstractLargeIntSConstraint {
                     }
                     itree.addAll(jtree);
                     classes.remove(jtree);
-                    //System.out.println(showSet(classes));
-                    //System.out.println("---------");
+                    //LOGGER.info(showSet(classes));
+                    //LOGGER.info("---------");
                 }
             }
         }
@@ -156,7 +154,7 @@ public class MinSpanningTree extends AbstractLargeIntSConstraint {
 
     public void propagate() throws ContradictionException {
         lowerBound.set(arpm() + dist[n - 1][0].get());
-        //System.out.println("lb = " + lowerBound.get());
+        //LOGGER.info("lb = " + lowerBound.get());
         if (lowerBound.get() > objective.getInf()) {
             objective.updateInf(lowerBound.get(),cIndices[n]);
         }

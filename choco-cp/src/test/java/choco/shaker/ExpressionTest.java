@@ -28,6 +28,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -38,6 +39,7 @@ import choco.shaker.tools.factory.VariableFactory;
 import org.junit.*;
 
 import java.util.Random;
+import java.util.logging.Logger;
 
 /*
 * User : charles
@@ -49,6 +51,8 @@ import java.util.Random;
 * Shaker of integer expressions
 */
 public class ExpressionTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     Model m;
     static Random random;
@@ -71,11 +75,11 @@ public class ExpressionTest {
         int i =0;
         while(i < 10000){
             seed = i++;
-            System.out.println("seed:"+seed);
+            LOGGER.info("seed:"+seed);
             try{
                 mainTest(seed, 5, 10, 3, true, true);
             }catch (UnsupportedOperationException e){
-                System.err.println(seed+" - "+e);
+                LOGGER.severe(seed+" - "+e);
             }
         }
     }
@@ -86,11 +90,11 @@ public class ExpressionTest {
         int i =0;
         while(i < 10000){
             seed = i++;
-            System.out.println("seed:"+seed);
+            LOGGER.info("seed:"+seed);
             try{
                 mainTest(seed, 5, 10, 3, true, false);
             }catch (UnsupportedOperationException e){
-                System.err.println(seed+" - "+e);
+                LOGGER.severe(seed+" - "+e);
             }
         }
     }
@@ -101,11 +105,11 @@ public class ExpressionTest {
         int i =0;
         while(i < 10000){
             seed = i++;
-            System.out.println("seed:"+seed);
+            LOGGER.info("seed:"+seed);
             try{
                 mainTest(seed, 5, 10, 5, false, true);
             }catch (UnsupportedOperationException e){
-                System.err.println(seed+" - "+e);
+                LOGGER.severe(seed+" - "+e);
             }
         }
     }
@@ -484,9 +488,9 @@ public class ExpressionTest {
                         )
                 )
         );
-        System.out.println(m.pretty());
+        LOGGER.info(m.pretty());
         for(int i = 0; i < m.getNbIntVars(); i++){
-            System.out.println(m.getIntVar(i).getOptions());
+            LOGGER.info(""+m.getIntVar(i).getOptions());
         }
         checker();
 
@@ -503,9 +507,9 @@ public class ExpressionTest {
         mf.includesOperators();
         mf.includesMetaconstraints();
         m = mf.model(r);
-        System.out.println(m.pretty());
+        LOGGER.info(m.pretty());
         for(int i = 0; i < m.getNbIntVars(); i++){
-            System.out.println(m.getIntVar(i).getOptions());
+            LOGGER.info(""+m.getIntVar(i).getOptions());
         }
         checker();
     }
@@ -647,13 +651,13 @@ public class ExpressionTest {
                         IntDomainVar v = ((IntDomainVar) decomposedSolver.getIntVar(i));
                         st.append(v.getName()).append(":").append(v.getVal()).append(" ");
                     }
-                    System.out.println(st.toString());
+                    LOGGER.info(st.toString());
                 }
             } while (decomposedSolver.nextSolution());
         }
 
         if(print){
-            System.out.println("=========");
+            LOGGER.info("=========");
         }
 
         undecomposedSolver.solve();
@@ -665,11 +669,11 @@ public class ExpressionTest {
                         IntDomainVar v = ((IntDomainVar) undecomposedSolver.getIntVar(i));
                         st.append(v.getName()).append(":").append(v.getVal()).append(" ");
                     }
-                    System.out.println(st.toString());
+                    LOGGER.info(st.toString());
                 }
             } while (undecomposedSolver.nextSolution());
         }
-        System.out.println(decomposedSolver.getNbSolutions()+":"+undecomposedSolver.getNbSolutions());
+        LOGGER.info(decomposedSolver.getNbSolutions()+":"+undecomposedSolver.getNbSolutions());
         Assert.assertEquals("Not same number of solutions", decomposedSolver.getNbSolutions(), undecomposedSolver.getNbSolutions());
     }
 

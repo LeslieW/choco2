@@ -27,6 +27,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -38,6 +39,8 @@ import org.junit.Test;
 import java.util.logging.Logger;
 
 public class TimesXYZTest {
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+
   private Logger logger = Logger.getLogger("choco.currentElement");
   private CPModel m;
     private CPSolver s;
@@ -95,9 +98,9 @@ public class TimesXYZTest {
       s.read(m);
       s.solve();
       do {
-//        /System.out.println("" + s.getVar(x).getVal() + "*" + s.getVar(y).getVal() + "=" + s.getVar(z).getVal());
+//        /LOGGER.info("" + s.getVar(x).getVal() + "*" + s.getVar(y).getVal() + "=" + s.getVar(z).getVal());
       } while (s.nextSolution() == Boolean.TRUE);
-      System.out.println("Nb solution : " + s.getNbSolutions());
+      LOGGER.info("Nb solution : " + s.getNbSolutions());
       assertEquals( s.getNbSolutions(), 6);
     }
   }
@@ -118,11 +121,11 @@ public class TimesXYZTest {
         s.read(m);
       s.solve();
       do {
-        //System.out.println("" + x.getVal() + "*" + y.getVal() + "=" +
+        //LOGGER.info("" + x.getVal() + "*" + y.getVal() + "=" +
         //    z.getVal());
         assertEquals(s.getVar(x).getVal() * s.getVar(y).getVal(), s.getVar(z).getVal());
       } while (s.nextSolution() == Boolean.TRUE);
-      //System.out.println("Nb solution : " + s.getNbSolutions());
+      //LOGGER.info("Nb solution : " + s.getNbSolutions());
       assertEquals(s.getNbSolutions(), 6);
     }
   }
@@ -130,7 +133,7 @@ public class TimesXYZTest {
     @Test
   public void test3() {
     for (int i = 0; i < 10; i++) {
-      System.out.println("test3-" + i);
+      LOGGER.info("test3-" + i);
       try {
           m=new CPModel();
           s= new CPSolver();
@@ -148,12 +151,12 @@ public class TimesXYZTest {
           s.read(m);
         s.solve();
         do {
-          //System.out.println("" + x.getVal() + "*" + y.getVal() + "=" + z.getVal());
+          //LOGGER.info("" + x.getVal() + "*" + y.getVal() + "=" + z.getVal());
           assertEquals(s.getVar(x).getVal() * s.getVar(y).getVal(), s.getVar(z).getVal());
         } while (s.nextSolution() == Boolean.TRUE);
         assertEquals(225, s.getNbSolutions()); // with 10,10,20
         //assertEquals(3993, s.getNbSolutions()); // with 100,100,200
-        //System.out.println("Nb solution : " + s.getNbSolutions());
+        //LOGGER.info("Nb solution : " + s.getNbSolutions());
       } catch (Exception e) {
         e.printStackTrace();
         assertTrue(false);
@@ -164,7 +167,7 @@ public class TimesXYZTest {
     @Test
     public void test3b() {
     for (int i = 0; i < 10; i++) {
-      System.out.println("test3-" + i);
+      LOGGER.info("test3-" + i);
       try {
          m=new CPModel();
           s= new CPSolver();
@@ -182,12 +185,12 @@ public class TimesXYZTest {
         s.read(m);
         s.solve();
         do {
-          //System.out.println("" + x.getVal() + "*" + y.getVal() + "=" + z.getVal());
+          //LOGGER.info("" + x.getVal() + "*" + y.getVal() + "=" + z.getVal());
           assertEquals(s.getVar(x).getVal() * s.getVar(y).getVal(), s.getVar(z).getVal());
         } while (s.nextSolution() == Boolean.TRUE);
         assertEquals(221, s.getNbSolutions()); // with 10,10,20,14
         //assertEquals(3967, s.getNbSolutions()); // with 100,100,200,144
-        //System.out.println("Nb solution : " + s.getNbSolutions());
+        //LOGGER.info("Nb solution : " + s.getNbSolutions());
       } catch (Exception e) {
         e.printStackTrace();
         assertTrue(false);
@@ -198,7 +201,7 @@ public class TimesXYZTest {
     @Test
   public void test3c() {
     for (int i = 0; i < 10; i++) {
-      System.out.println("test3-" + i);
+      LOGGER.info("test3-" + i);
       try {
         m=new CPModel();
           s= new CPSolver();
@@ -215,12 +218,12 @@ public class TimesXYZTest {
           s.read(m);
         s.solve();
         do {
-          //System.out.println("" + x.getVal() + "*" + y.getVal() + "=" + z.getVal());
+          //LOGGER.info("" + x.getVal() + "*" + y.getVal() + "=" + z.getVal());
           assertEquals(s.getVar(x).getVal() * s.getVar(y).getVal(), s.getVar(z).getVal());
         } while (s.nextSolution() == Boolean.TRUE);
         assertEquals(225, s.getNbSolutions()); // with 10,10,20
         //assertEquals(3993, s.getNbSolutions()); // with 100,100,200
-        //System.out.println("Nb solution : " + s.getNbSolutions());
+        //LOGGER.info("Nb solution : " + s.getNbSolutions());
       } catch (Exception e) {
         e.printStackTrace();
         assertTrue(false);

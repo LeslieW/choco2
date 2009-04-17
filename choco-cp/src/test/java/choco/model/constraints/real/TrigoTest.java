@@ -31,6 +31,7 @@ import choco.cp.solver.constraints.real.exp.RealSin;
 import choco.cp.solver.search.real.AssignInterval;
 import choco.cp.solver.search.real.CyclicRealVarSelector;
 import choco.cp.solver.search.real.RealIncreasingDomain;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.real.RealVariable;
 import choco.kernel.solver.constraints.SConstraint;
@@ -39,7 +40,11 @@ import choco.kernel.solver.variables.real.RealVar;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
+import java.util.logging.Logger;
+
 public class TrigoTest{
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     @Test
     public void test1() {
@@ -50,7 +55,7 @@ public class TrigoTest{
                 new RealCos(s, alpha),
                 new RealSin(s, alpha));
         SConstraint c = s.makeEquation(exp, s.cst(0.0));
-        System.out.println("c = " + c.pretty());
+        LOGGER.info("c = " + c.pretty());
         s.post(s.makeEquation(exp, s.cst(0.0)));
 
         boolean first = false;
@@ -74,7 +79,7 @@ public class TrigoTest{
 
         CPSolver s = new CPSolver();
         s.read(m);
-        System.out.println("eq = " + s.getCstr(exp).pretty());
+        LOGGER.info("eq = " + s.getCstr(exp).pretty());
 
         boolean first = false;
         s.setFirstSolution(first);

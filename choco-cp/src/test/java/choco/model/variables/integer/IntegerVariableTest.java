@@ -28,6 +28,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.cp.solver.variables.integer.IntervalIntDomain;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
@@ -38,15 +39,17 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
  * User: charles
  * Date: 13 juin 2008
  * Time: 12:51:54
- * To change this template use File | Settings | File Templates.
  */
 public class IntegerVariableTest {
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+
     private static HashMap<Integer, String> typeList = new HashMap();
 
     static {
@@ -59,7 +62,7 @@ public class IntegerVariableTest {
     @Test
     @Ignore
     public void nqueen() {
-        System.out.println("===================NQUEEN=====================");
+        LOGGER.info("===================NQUEEN=====================");
         //nbSol
         int[] sol = new int[13];
         sol[2] = 0;
@@ -70,7 +73,7 @@ public class IntegerVariableTest {
 
 
         for (int n = 2; n < 11; n += 2) {
-            System.out.println("=================== n = " + n + " =====================");
+            LOGGER.info("=================== n = " + n + " =====================");
             for (int type = 0; type < 4; type++) {
                 Model m = new CPModel();
                 IntegerVariable[] queens = new IntegerVariable[n];
@@ -87,11 +90,11 @@ public class IntegerVariableTest {
     @Test
     @Ignore
     public void alldifferent() {
-        System.out.println("===================ALLDIFFERENT=====================");
+        LOGGER.info("===================ALLDIFFERENT=====================");
         //nbSol
         int[] sol = new int[]{0, 1, 2, 6, 24, 120, 720, 5040, 40320};
         for (int n = 1; n < 9; n += 1) {
-            System.out.println("=================== n = " + n + " =====================");
+            LOGGER.info("=================== n = " + n + " =====================");
             // BEAWRE: we do not test the linked list domain for this problem, too much time consumer
             for (int type = 0; type < 3; type++) {
                 Model m = new CPModel();
@@ -107,10 +110,10 @@ public class IntegerVariableTest {
     @Test
     @Ignore
     public void boundalldifferent() {
-        System.out.println("===================BOUNDALLDIFFERENT=====================");
+        LOGGER.info("===================BOUNDALLDIFFERENT=====================");
 
         for (int n = 1000; n < 2001; n += 1000) {
-            System.out.println("=================== n = " + n + " =====================");
+            LOGGER.info("=================== n = " + n + " =====================");
             // BEAWRE: we do not test the linked list domain for this problem, too much time consumer
             for (int type = 0; type < 3; type++) {
                 Model m = new CPModel();
@@ -126,10 +129,10 @@ public class IntegerVariableTest {
     @Test
 //    @Ignore
     public void odd() {
-        System.out.println("===================ODD=====================");
+        LOGGER.info("===================ODD=====================");
 
         for (int n = 10; n < 10001; n *= 10) {
-            System.out.println("=================== n = " + n + " =====================");
+            LOGGER.info("=================== n = " + n + " =====================");
             // BEAWRE: we do not test the linked list domain for this problem, too much time consumer
             for (int type = 0; type < 3; type++) {
                 Model m = new CPModel();
@@ -204,7 +207,7 @@ public class IntegerVariableTest {
         int timeLimit = 10000;
         //s.setTimeLimit(timeLimit);
         s.solveAll();
-        System.out.println("-------------\n" + typeList.get(type) + ":");
+        LOGGER.info("-------------\n" + typeList.get(type) + ":");
         s.printRuntimeSatistics();
         Assert.assertEquals("nbSol incorrect", nbSol, s.getNbSolutions());
     }
@@ -220,7 +223,7 @@ public class IntegerVariableTest {
         //int timeLimit = 10000;
         //s.setTimeLimit(timeLimit);
         s.solveAll();
-        System.out.println("-------------\n" + typeList.get(type) + ":");
+        LOGGER.info("-------------\n" + typeList.get(type) + ":");
         s.printRuntimeSatistics();
         Assert.assertEquals("nbSol incorrect", nbSol, s.getNbSolutions());
 
@@ -237,7 +240,7 @@ public class IntegerVariableTest {
 //        int timeLimit = 10000;
 //        s.setTimeLimit(timeLimit);
         s.solve();
-        System.out.println("-------------\n" + typeList.get(type) + ":");
+        LOGGER.info("-------------\n" + typeList.get(type) + ":");
         s.printRuntimeSatistics();
 
     }
@@ -256,7 +259,7 @@ public class IntegerVariableTest {
         s.solve();
 
         Assert.assertEquals(s.getNbSolutions(), 0);
-        System.out.println("-------------\n" + typeList.get(type) + ":");
+        LOGGER.info("-------------\n" + typeList.get(type) + ":");
         s.printRuntimeSatistics();
 
     }

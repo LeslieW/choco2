@@ -82,9 +82,9 @@ public class Candles extends PatternExample{
         int sum = 0;
         for(int i = 0; i < 7; i++){
             sum += _s.getVar(vars[i]).getVal();
-            System.out.println("son#"+i+" : "+_s.getVar(vars[i]).getVal()+" years old");
+            LOGGER.info("son#"+i+" : "+_s.getVar(vars[i]).getVal()+" years old");
         }
-        System.out.println("Number of candles : "+ sum);
+        LOGGER.info("Number of candles : "+ sum);
     }
 
 

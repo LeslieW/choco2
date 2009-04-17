@@ -41,7 +41,6 @@ public class Toolkit {
 	};
 
 	public static int executeCommand(String completeCommand, PrintWriter out) {
-		// System.out.println("command = " + completeCommand);
 		try {
 			Process p = Runtime.getRuntime().exec(completeCommand);
 			if (out != null) {

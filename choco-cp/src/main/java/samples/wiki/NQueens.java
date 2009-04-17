@@ -47,7 +47,7 @@ public class NQueens {
 //        s.solve();
 //        int nbNode = s.getSearchStrategy().getNodeCount();
 //        int tps = s.getSearchStrategy().getTimeCount();
-//        System.out.println(n + " tps: " + tps + " Node:" + nbNode);
+//        LOGGER.info(n + " tps: " + tps + " Node:" + nbNode);
 //    }
 //
 //    public static void firstSteps() {
@@ -79,29 +79,29 @@ public class NQueens {
 //        sQueens.worldPush();
 //
 //        if (sQueens.solve() == Boolean.TRUE) {
-//            System.out.println("the model has at least one solution");
+//            LOGGER.info("the model has at least one solution");
 //        } else {
-//            System.out.println("the model has no solution");
+//            LOGGER.info("the model has no solution");
 //        }
 //
 //        sQueens.worldPopUntil(0);
 //        sQueens.worldPush();
 //
 //        sQueens.solveAll();
-//        System.out.println("the model has " + sQueens.getNbSolutions()
+//        LOGGER.info("the model has " + sQueens.getNbSolutions()
 //                + " solutions");
 //
 //        sQueens.worldPopUntil(0);
 //        sQueens.worldPush();
 //
 //        sQueens.solve();
-//        System.out.println("One solution is:");
+//        LOGGER.info("One solution is:");
 //        for (int i = 0; i < queens.length; i++) {
-//            System.out.println(sQueens.getVar(queens[i]) + " = " + sQueens.getVar(queens[i]).getVal());
+//            LOGGER.info(sQueens.getVar(queens[i]) + " = " + sQueens.getVar(queens[i]).getVal());
 //        }
 //
 //        for (int i = 0; i < mQueens.getNbIntVars(); i++) {
-//            System.out.println(mQueens.getIntVar(i) + " = "
+//            LOGGER.info(mQueens.getIntVar(i) + " = "
 //                    + ((IntDomainVar) mQueens.getIntVar(i)).getVal());
 //        }
 //
@@ -111,9 +111,9 @@ public class NQueens {
 //        int nbSol = 0;
 //        if (sQueens.solve() == Boolean.TRUE) {
 //            do {
-//                System.out.println("Solution " + ++nbSol);
+//                LOGGER.info("Solution " + ++nbSol);
 //                for (int i = 0; i < mQueens.getNbIntVars(); i++) {
-//                    System.out.println(mQueens.getIntVar(i) + " = "
+//                    LOGGER.info(mQueens.getIntVar(i) + " = "
 //                            + ((IntDomainVar) mQueens.getIntVar(i)).getVal());
 //                }
 //            } while (sQueens.nextSolution() == Boolean.TRUE);
@@ -124,9 +124,9 @@ public class NQueens {
 //
 //        sQueens.solveAll();
 //
-//        System.out.println("the current solution is: ");
+//        LOGGER.info("the current solution is: ");
 //        for (int i = 0; i < mQueens.getNbIntVars(); i++) {
-//            System.out.println(mQueens.getIntVar(i) + " = "
+//            LOGGER.info(mQueens.getIntVar(i) + " = "
 //                    + ((IntDomainVar) sQueens.getIntVar(i)).getVal());
 //        }
 //
@@ -135,9 +135,9 @@ public class NQueens {
 //                (Solution) sQueens.getSearchStrategy().solutions.get(1);
 //
 //
-//        System.out.println("the previous solution was: ");
+//        LOGGER.info("the previous solution was: ");
 //        for (int i = 0; i < mQueens.getNbIntVars(); i++) {
-//            System.out.println(mQueens.getIntVar(i) + " = "
+//            LOGGER.info(mQueens.getIntVar(i) + " = "
 //                    + previousSolution.getValue(i));
 //        }
 //    }

@@ -22,20 +22,18 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.seminar.socialgolfer;
 
-import static choco.Choco.eq;
-import static choco.Choco.lex;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.scalar;
-
-import java.util.Arrays;
-
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
+
+import java.util.Arrays;
+import java.util.logging.Logger;
 
 /*
  * Created by IntelliJ IDEA.
@@ -45,6 +43,8 @@ import choco.kernel.solver.Solver;
  *
  */
 public class ExSocialGolfer {
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+
     public int w; // number of weeks
     public int g; // number of groups
     public int s; // size of the groups
@@ -195,7 +195,7 @@ public class ExSocialGolfer {
                 }
                 semi += gj + ") ";
             }
-            System.out.println("" + semi);
+            LOGGER.info("" + semi);
         }
     }
 

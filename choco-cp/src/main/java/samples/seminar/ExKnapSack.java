@@ -26,9 +26,12 @@ import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
+
+import java.util.logging.Logger;
 
 /*
  * Created by IntelliJ IDEA.
@@ -38,6 +41,8 @@ import choco.kernel.solver.Solver;
  *
  */
 public class ExKnapSack {
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
     static IntegerVariable obj1;
     static IntegerVariable obj2;
@@ -73,10 +78,10 @@ public class ExKnapSack {
 
         s.solve();
 
-        System.out.println("obj1: " + s.getVar(obj1).getVal());
-        System.out.println("obj2: " + s.getVar(obj2).getVal());
-        System.out.println("obj3: " + s.getVar(obj3).getVal());
-        System.out.println("cost: " + s.getVar(c).getVal());
+        LOGGER.info("obj1: " + s.getVar(obj1).getVal());
+        LOGGER.info("obj2: " + s.getVar(obj2).getVal());
+        LOGGER.info("obj3: " + s.getVar(obj3).getVal());
+        LOGGER.info("cost: " + s.getVar(c).getVal());
     }
 
     public static void knapsacOPT() {
@@ -89,10 +94,10 @@ public class ExKnapSack {
 
         s.maximize(s.getVar(c), true);
 
-        System.out.println("obj1: " + s.getVar(obj1).getVal());
-        System.out.println("obj2: " + s.getVar(obj2).getVal());
-        System.out.println("obj3: " + s.getVar(obj3).getVal());
-        System.out.println("cost: " + s.getVar(c).getVal());
+        LOGGER.info("obj1: " + s.getVar(obj1).getVal());
+        LOGGER.info("obj2: " + s.getVar(obj2).getVal());
+        LOGGER.info("obj3: " + s.getVar(obj3).getVal());
+        LOGGER.info("cost: " + s.getVar(c).getVal());
     }
 
 
@@ -100,14 +105,14 @@ public class ExKnapSack {
         long t1 = System.currentTimeMillis();
         knapsacSAT();
         long t2 = System.currentTimeMillis();
-        System.out.println("time : "+ (t2-t1));
-        System.out.println("");
-        System.out.println("=============================================");
-        System.out.println("");
+        LOGGER.info("time : "+ (t2-t1));
+        LOGGER.info("");
+        LOGGER.info("=============================================");
+        LOGGER.info("");
         long t3 = System.currentTimeMillis();
         knapsacOPT();
         long t4 = System.currentTimeMillis();
-        System.out.println("time : "+ (t4-t3));
+        LOGGER.info("time : "+ (t4-t3));
     }
 
 }

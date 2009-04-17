@@ -22,11 +22,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.absconparseur.components;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 
 import static java.lang.Integer.parseInt;
+import java.util.logging.Logger;
 
 public abstract class PConstraint {
+
+    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
 
     private int index;
 

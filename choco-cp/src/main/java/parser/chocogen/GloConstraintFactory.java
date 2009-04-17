@@ -54,7 +54,6 @@ public class GloConstraintFactory extends ObjectFactory {
 			}
 		}
 
-		//System.out.println("arity: " + vars.length + " ds: " + maxdszise);
 		if (vars.length <= 3) {
 			return allDifferent("cp:clique", vars);
 		} else if (holes || (maxdszise <= 30 &&

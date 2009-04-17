@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.absconparseur.tools;
 
+import choco.kernel.common.logging.ChocoLogging;
 import org.w3c.dom.Document;
 import parser.absconparseur.InstanceTokens;
 import parser.absconparseur.XMLManager;
@@ -30,8 +31,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.util.logging.Logger;
 
 public class InstanceShuffler {
+
+    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
 
 	private File file;
 
@@ -53,7 +57,7 @@ public class InstanceShuffler {
 		String fileName = s.substring(0, position) + "_shf" + seed + ".xml";
 		File file = new File(fileName);
 		if (file.exists())
-			System.out.println(fileName + " exists ");
+			LOGGER.info(fileName + " exists ");
 		return new PrintWriter(new FileOutputStream(file)); // absoluteFileName));
 	}
 
@@ -66,28 +70,25 @@ public class InstanceShuffler {
 
 	public static void main(String[] args) throws Exception {
 		if (args.length != 3) {
-			System.out.println("InstanceShuffler " + InstanceParser.VERSION);
-			System.out.println("Usage: java ... InstanceShuffler <instanceFileName> <seed> <mode>");
-			System.out.println();
-			System.out.println("  <instanceFileName> must be the name of a file which contains the representation of a CSP instance in format XCSP 2.0");
-			System.out.println("  <seed> must be an integer that is used to shuffle variables and constraints");
-			System.out.println("  <mode> must be equel to 1 (only variables shuffled), 2 (only constraints shuffled) and 3 (both variables and constraints shuffled)");
-			System.out.println();
-			System.out.println("With this usage, InstanceShuffler shuffles the given instance and saves the result in a new file (by appending _shf<seed> to the prefix of the file name)");
-			System.out.println();
-			System.out.println("Exit code of instanceShuffler is as follows:");
-			System.out.println("  0 : no problem occurs and the new shuffled instance has been saved");
-			System.out.println("  2 : a problem occurs (file not found, ...)");
+			LOGGER.info("InstanceShuffler " + InstanceParser.VERSION);
+			LOGGER.info("Usage: java ... InstanceShuffler <instanceFileName> <seed> <mode>\n");
+			LOGGER.info("  <instanceFileName> must be the name of a file which contains the representation of a CSP instance in format XCSP 2.0");
+			LOGGER.info("  <seed> must be an integer that is used to shuffle variables and constraints");
+			LOGGER.info("  <mode> must be equel to 1 (only variables shuffled), 2 (only constraints shuffled) and 3 (both variables and constraints shuffled)\n");
+			LOGGER.info("With this usage, InstanceShuffler shuffles the given instance and saves the result in a new file (by appending _shf<seed> to the prefix of the file name)\n");
+			LOGGER.info("Exit code of instanceShuffler is as follows:");
+			LOGGER.info("  0 : no problem occurs and the new shuffled instance has been saved");
+			LOGGER.info("  2 : a problem occurs (file not found, ...)");
 			System.exit(0);
 		}
 		try {
 			File file = new File(args[0]);
 			if (file.isDirectory()) {
-				System.err.println("PROBLEM \t you must give the name of a file (and not the name of a directory)");
+				LOGGER.severe("PROBLEM \t you must give the name of a file (and not the name of a directory)");
 				System.exit(2);
 			}
 			if (!file.exists()) {
-				System.err.println("PROBLEM \t the file has not been found");
+				LOGGER.severe("PROBLEM \t the file has not been found");
 				System.exit(2);
 			}
 			InstanceShuffler instanceShuffler = new InstanceShuffler(file, Integer.parseInt(args[1]), Integer.parseInt(args[2]));
@@ -95,7 +96,7 @@ public class InstanceShuffler {
 			System.exit(0);
 
 		} catch (Throwable e) {
-			System.err.println("PROBLEM \t " + e.getMessage());
+			LOGGER.severe("PROBLEM \t " + e.getMessage());
 			System.exit(2);
 		}
 	}

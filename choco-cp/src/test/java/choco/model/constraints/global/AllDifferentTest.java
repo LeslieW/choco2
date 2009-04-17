@@ -25,7 +25,7 @@ package choco.model.constraints.global;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.limit.NodeLimit;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -36,13 +36,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
+import static java.text.MessageFormat.format;
+import java.util.logging.Logger;
+
 /**
  * Tests for the AllDifferent constraint.
  */
 public class AllDifferentTest{
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+
     @Test
     public void testDummy() {
-        System.out.println("Dummy AllDifferent currentElement...");
+        LOGGER.info("Dummy AllDifferent currentElement...");
         CPModel m = new CPModel();
         IntegerVariable a = makeIntVar("a", 1, 2);
         IntegerVariable b = makeIntVar("b", 1, 2);
@@ -90,7 +95,7 @@ public class AllDifferentTest{
         //s.setTimeLimit(30000);
         long tps = System.currentTimeMillis();
         s.solveAll();
-        System.out.println("tps nreines1 " + (System.currentTimeMillis() - tps) + " nbNode " + s.getNodeCount());
+        LOGGER.info(format("tps nreines1 {0} nbNode {1}", System.currentTimeMillis() - tps, s.getNodeCount()));
         assertEquals(92,s.getNbSolutions());
     }
      @Test
@@ -120,7 +125,7 @@ public class AllDifferentTest{
         //s.setTimeLimit(30000);
         long tps = System.currentTimeMillis();
         s.solveAll();
-        System.out.println("tps nreines2 " + (System.currentTimeMillis() - tps) + " nbNode " + ((NodeLimit) s.getSearchStrategy().limits.get(1)).getNbTot());
+        LOGGER.info(format("tps nreines2 {0} nbNode {1}", System.currentTimeMillis() - tps, s.getSearchStrategy().limits.get(1).getNbTot()));
         assertEquals(92,s.getNbSolutions());
     }
     @Test
@@ -153,12 +158,12 @@ public class AllDifferentTest{
         //s.setTimeLimit(30000);
         long tps = System.currentTimeMillis();
         s.solveAll();
-        System.out.println("tps nreines3 " + (System.currentTimeMillis() - tps) + " nbNode " + ((NodeLimit) s.getSearchStrategy().limits.get(1)).getNbTot());
+        LOGGER.info(format("tps nreines3 {0} nbNode {1}", System.currentTimeMillis() - tps, s.getSearchStrategy().limits.get(1).getNbTot()));
         assertEquals(92,s.getNbSolutions());
     }
    @Test
     public void testLatinSquare() {
-        System.out.println("Latin Square Test...");
+        LOGGER.info("Latin Square Test...");
         // Toutes les solutions de n=5 en 90 sec  (161280 solutions)
         final int n = 4;
         final int[] soluces = new int[]{1, 2, 12, 576, 161280};
@@ -191,11 +196,11 @@ public class AllDifferentTest{
         s.solve(true);
 
         assertEquals(soluces[n - 1], s.getNbSolutions());
-        System.out.println("LatinSquare Solutions : " + s.getNbSolutions());
+        LOGGER.info(format("LatinSquare Solutions : {0}", s.getNbSolutions()));
     }
     @Test
     public void testLatinSquare2() {
-        System.out.println("Latin Square Test...");
+        LOGGER.info("Latin Square Test...");
         // Toutes les solutions de n=5 en 90 sec  (161280 solutions)
         final int n = 4;
         final int[] soluces = new int[]{1, 2, 12, 576, 161280};
@@ -228,7 +233,7 @@ public class AllDifferentTest{
         s.solve(true);
 
         assertEquals(soluces[n - 1], s.getNbSolutions());
-        System.out.println("LatinSquare Solutions : " + s.getNbSolutions());
+        LOGGER.info(format("LatinSquare Solutions : {0}", s.getNbSolutions()));
     }
 
 

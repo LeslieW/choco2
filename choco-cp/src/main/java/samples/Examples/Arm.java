@@ -33,15 +33,20 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.real.CyclicRealVarSelector;
 import choco.cp.solver.search.real.RealIncreasingDomain;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.real.RealConstantVariable;
 import choco.kernel.model.variables.real.RealExpressionVariable;
 import choco.kernel.model.variables.real.RealVariable;
 
+import java.util.logging.Logger;
+
 /**
  * Samples in Elisa package.
  */
 public class Arm extends PatternExample{
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
     RealVariable a, b, alpha, beta, x, y, jr, ir;
 
@@ -96,24 +101,24 @@ public class Arm extends PatternExample{
 
     @Override
     public void prettyOut() {
-        System.out.println("ARM problem is:");
-        System.out.println(" y - ( a * sin(alpha) + b * sin(alpha - beta) ) = 0.0");
-        System.out.println(" x - ( a * cos(alpha) + b * cos(alpha - beta) ) = 0.0");
-        System.out.println(" a * cos(alpha) <= 10.0");
-        System.out.println(" b * sin(alpha) <= 8.0");
-        System.out.println(" (x - 8)² + (y - 4)² <= 4.0");
-        System.out.println(" alpha = PI/6");
-        System.out.println(" a - (ir * 2) = 0");
-        System.out.println(" b - (jr * 2) = 0");
-        System.out.println("\nWhere:");
-        System.out.println("a = "+ _s.getVar(a).getValue());
-        System.out.println("b = "+ _s.getVar(b).getValue());
-        System.out.println("alpha = "+ _s.getVar(alpha).getValue());
-        System.out.println("beta = "+ _s.getVar(beta).getValue());
-        System.out.println("x = "+ _s.getVar(x).getValue());
-        System.out.println("y = "+ _s.getVar(y).getValue());
-        System.out.println("ir = "+ _s.getVar(ir).getValue());
-        System.out.println("jr = "+ _s.getVar(jr).getValue());
+        LOGGER.info("ARM problem is:");
+        LOGGER.info(" y - ( a * sin(alpha) + b * sin(alpha - beta) ) = 0.0");
+        LOGGER.info(" x - ( a * cos(alpha) + b * cos(alpha - beta) ) = 0.0");
+        LOGGER.info(" a * cos(alpha) <= 10.0");
+        LOGGER.info(" b * sin(alpha) <= 8.0");
+        LOGGER.info(" (x - 8)² + (y - 4)² <= 4.0");
+        LOGGER.info(" alpha = PI/6");
+        LOGGER.info(" a - (ir * 2) = 0");
+        LOGGER.info(" b - (jr * 2) = 0");
+        LOGGER.info("\nWhere:");
+        LOGGER.info("a = "+ _s.getVar(a).getValue());
+        LOGGER.info("b = "+ _s.getVar(b).getValue());
+        LOGGER.info("alpha = "+ _s.getVar(alpha).getValue());
+        LOGGER.info("beta = "+ _s.getVar(beta).getValue());
+        LOGGER.info("x = "+ _s.getVar(x).getValue());
+        LOGGER.info("y = "+ _s.getVar(y).getValue());
+        LOGGER.info("ir = "+ _s.getVar(ir).getValue());
+        LOGGER.info("jr = "+ _s.getVar(jr).getValue());
     }
 
     public static void main(String[] args) {

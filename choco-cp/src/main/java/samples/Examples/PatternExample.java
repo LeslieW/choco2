@@ -22,8 +22,11 @@
  **************************************************/
 package samples.Examples;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.solver.Solver;
+
+import java.util.logging.Logger;
 
 /*
 * User : charles
@@ -33,6 +36,8 @@ import choco.kernel.solver.Solver;
 * Update : Choco 2.0.1
 */
 public abstract class PatternExample {
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
     public static Model _m;
 
@@ -56,8 +61,8 @@ public abstract class PatternExample {
         this.buildSolver();
         this.solve();
         this.prettyOut();
-        System.out.println("\n *********** ");
-        System.out.println("#sol : " + _s.getNbSolutions());
+        LOGGER.info("\n *********** ");
+        LOGGER.info("#sol : " + _s.getNbSolutions());
         _s.printRuntimeSatistics();
     }
 

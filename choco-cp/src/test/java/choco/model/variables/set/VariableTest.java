@@ -26,6 +26,7 @@ import choco.Choco;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -40,11 +41,11 @@ import org.junit.Test;
 import java.util.logging.Logger;
 
 public class VariableTest {
-	private Logger logger = Logger.getLogger("choco.currentElement");
+	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     @Test
     public void test1() {
-		logger.finer("test1");
+		LOGGER.finer("test1");
 		CPSolver s = new CPSolver();
 		SetVar x = s.createBoundSetVar("X", 1, 5);
 		try {
@@ -56,7 +57,7 @@ public class VariableTest {
 		IntIterator it = x.getDomain().getOpenDomainIterator();
 		while (it.hasNext()) {
 			int val = it.next();
-			System.out.println("" + val);
+			LOGGER.info("" + val);
 			assertTrue(val != 2);
 			assertTrue(val != 4);
 		}
@@ -67,7 +68,7 @@ public class VariableTest {
 		CPSolver s = new CPSolver();
 		SetVar set = s.createBoundSetVar("X", 1, 5);
 		boolean bool = true;
-		System.out.println("" + set.pretty());
+		LOGGER.info("" + set.pretty());
 		for (IntIterator it0 = set.getDomain().getEnveloppeIterator();
 		     it0.hasNext();) {
 			int x = it0.next();
@@ -80,7 +81,7 @@ public class VariableTest {
 
 			}
 		}
-		System.out.println("" + set.pretty());
+		LOGGER.info("" + set.pretty());
 		assertTrue(!set.isInDomainKernel(2));
 		assertTrue(!set.isInDomainKernel(4));
 	}
@@ -97,8 +98,8 @@ public class VariableTest {
         s.read(m);
         s.solve();
         do{
-            System.out.println(s.getVar(sv1).pretty());
-            System.out.println("---------------------");
+            LOGGER.info(s.getVar(sv1).pretty());
+            LOGGER.info("---------------------");
         }while(s.nextSolution());
         Assert.assertEquals("nb solution", 2, s.getNbSolutions());
     }

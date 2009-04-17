@@ -22,11 +22,16 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.seminar.tsp;
 
+import choco.kernel.common.logging.ChocoLogging;
+
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.logging.Logger;
 
 
 public class Generator {
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
     protected Random rand;
 
@@ -64,7 +69,7 @@ public class Generator {
                 } else {
                     if (hamPath[i] == j) dist[i][j] = 1;
                 }
-                //System.out.println("dist["+i+"]["+j+"] = "+dist[i][j]);
+                //LOGGER.info("dist["+i+"]["+j+"] = "+dist[i][j]);
             }
         }
         return dist;
@@ -74,7 +79,7 @@ public class Generator {
         for (int i = 0; i < n; i++) hamPath[i] = -1;
         ArrayList<Integer> dispo = new ArrayList<Integer>(n-2);
         for (int i = 1; i < n-1; i++) dispo.add(i);
-        //System.out.println(dispo.toString());
+        //LOGGER.info(dispo.toString());
         int next = 0;
         while(!dispo.isEmpty()) {
             hamPath[next] = dispo.remove(rand.nextInt(dispo.size()));
@@ -84,7 +89,7 @@ public class Generator {
             if (hamPath[i] == -1) hamPath[i] = n-1;
         }
         hamPath[n-1] = 0;
-        System.out.println(showHamPath());
+        LOGGER.info(showHamPath());
     }
 
     public String showHamPath() {

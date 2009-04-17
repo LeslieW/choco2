@@ -23,12 +23,16 @@
 package choco.model.variables.integer;
 
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import static java.text.MessageFormat.format;
+import java.util.logging.Logger;
 
 /*
 * User : charles
@@ -39,11 +43,12 @@ import org.junit.Test;
 */
 public class BooleanVariableTest {
 
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     @Test
     public void test1() throws ContradictionException {
         Solver s = new CPSolver();
-        IntDomainVar v1 = ((CPSolver)s).createBooleanVar("v");
+        IntDomainVar v1 = s.createBooleanVar("v");
         Assert.assertEquals("lower bound",0,v1.getInf());
         Assert.assertEquals("upper bound",1,v1.getSup());
         Assert.assertEquals("domain size",2,v1.getDomainSize());
@@ -182,8 +187,8 @@ public class BooleanVariableTest {
     private static int solve1(int type, int SIZE) throws ContradictionException {
         int K = 5;
         int time = 0;
-        IntDomainVar[] bool = null;
-        CPSolver s = null;
+        IntDomainVar[] bool;
+        CPSolver s;
         for(int k = 0; k < K; k++){
             s = new CPSolver();
 
@@ -218,7 +223,7 @@ public class BooleanVariableTest {
             int enu = solve1(1, val);
             System.gc();
             int boo = solve1(0, val);
-            System.out.println(enu +" > "+boo + " val:"+val);
+            LOGGER.info(format("{0} > {1} val:{2}", enu, boo, val));
             Assert.assertTrue("slower", enu>boo);
         }
     }

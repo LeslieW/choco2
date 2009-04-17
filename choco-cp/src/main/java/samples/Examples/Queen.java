@@ -29,6 +29,7 @@
 package samples.Examples;
 
 
+import choco.Choco;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -38,7 +39,8 @@ import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.memory.recomputation.EnvironmentRecomputation;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solution;
-import choco.Choco;
+
+import java.text.MessageFormat;
 
 public class Queen extends PatternExample {
 
@@ -89,37 +91,36 @@ public class Queen extends PatternExample {
 
 	@Override
 	public void prettyOut() {
-		System.out.println("feasible: " + _s.isFeasible());
-		System.out.println("nbSol: " + _s.getNbSolutions());
+		LOGGER.info("feasible: " + _s.isFeasible());
+		LOGGER.info("nbSol: " + _s.getNbSolutions());
 		if (_s.getEnvironment() instanceof EnvironmentRecomputation) {
-			System.out.println("nbSave: " + ((EnvironmentRecomputation) _s.getEnvironment()).getNbSaves());
+			LOGGER.info("nbSave: " + ((EnvironmentRecomputation) _s.getEnvironment()).getNbSaves());
 		}
 		// Display
 		// -------
 		StringBuffer ret = new StringBuffer();
 		ret.append("The queen's problem asks how to place n queens on an n x n chess board " +
 		"so that none of them can hit any other in one move.\n");
-		ret.append("Here n = " + n + "\n\n");
-		ret.append("The " + _s.getSearchStrategy().solutions.size() + " last solutions (among " +
-				_s.getNbSolutions() + " solutions) are:\n");
+		ret.append(MessageFormat.format("Here n = {0}\n\n", n));
+		ret.append(MessageFormat.format("The {0} last solutions (among {1} solutions) are:\n", _s.getSearchStrategy().solutions.size(), _s.getNbSolutions()));
 		String line = "+";
 		for (int i = 0; i < n; i++) {
 			line += "---+";
 		}
 		line += "\n";
 		for (int sol = 0; sol < _s.getSearchStrategy().solutions.size(); sol++) {
-			Solution solution = (Solution) _s.getSearchStrategy().solutions.get(sol);
+			Solution solution = _s.getSearchStrategy().solutions.get(sol);
 			ret.append(line);
 			for (int i = 0; i < n; i++) {
 				ret.append("|");
 				for (int j = 0; j < n; j++) {
 					ret.append((solution.getIntValue(i) == j + 1) ? " * |" : "   |");
 				}
-				ret.append("\n" + line);
+				ret.append(MessageFormat.format("\n{0}", line));
 			}
 			ret.append("\n\n\n");
 		}
-		System.out.println(ret.toString());
+		LOGGER.info(ret.toString());
 		_s.printRuntimeSatistics();
 	}
 

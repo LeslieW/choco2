@@ -31,6 +31,7 @@ import choco.cp.solver.constraints.global.geost.util.InputParser;
 import choco.cp.solver.constraints.global.geost.util.RandomProblemGenerator;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.geost.GeostObject;
@@ -43,10 +44,14 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.text.MessageFormat;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 
 public class GeostTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     int dim;
     int mode;
@@ -299,7 +304,7 @@ public class GeostTest {
         }
         for (int i = 0; i < obj2.size(); i++) {
             for (int d = 0; d < this.dim; d++) {
-                System.out.println("" + obj2.elementAt(i).getCoordinates()[d].getLowB() + "    " + obj2.elementAt(i).getCoordinates()[d].getUppB());
+                LOGGER.info("" + obj2.elementAt(i).getCoordinates()[d].getLowB() + "    " + obj2.elementAt(i).getCoordinates()[d].getUppB());
             }
 
         }
@@ -452,10 +457,11 @@ public class GeostTest {
 
         for (int i = 0; i < obj.size(); i++) {
             GeostObject o = obj.elementAt(i);
-            System.out.print("Object " + o.getObjectId() + ": ");
+            StringBuffer st = new StringBuffer();
+            st.append(MessageFormat.format("Object {0}: ", o.getObjectId()));
             for (int j = 0; j < dim; j++)
-                System.out.print(s.getVar(o.getCoordinates()[j]) + " ");
-            System.out.println();
+                st.append(MessageFormat.format("{0} ", s.getVar(o.getCoordinates()[j])));
+            LOGGER.info(st.toString());
         }
     }
 
@@ -544,6 +550,6 @@ public class GeostTest {
         Assert.assertSame("No solution expected", Boolean.FALSE, s.isFeasible());
 
 		// print the solution
-		System.out.println(s.pretty());
+		LOGGER.info(s.pretty());
 	}
 }

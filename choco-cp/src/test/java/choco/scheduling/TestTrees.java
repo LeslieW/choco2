@@ -22,36 +22,36 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.scheduling;
 
-import static choco.kernel.common.VizFactory.toDotty;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import choco.cp.solver.constraints.global.scheduling.trees.DisjTreeT;
 import choco.cp.solver.constraints.global.scheduling.trees.DisjTreeTL;
 import choco.cp.solver.constraints.global.scheduling.trees.IThetaLambdaTree;
 import choco.cp.solver.constraints.global.scheduling.trees.IThetaTree;
 import choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode;
 import choco.kernel.common.VizFactory;
+import static choco.kernel.common.VizFactory.toDotty;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.opres.graph.IBinaryNode;
 import choco.kernel.common.opres.graph.INodeLabel;
 import choco.kernel.common.opres.graph.ProperBinaryTree;
+import static junit.framework.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Logger;
 
 
 
 
 class DummyStatus implements INodeLabel {
 
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+
 	@Override
 	public void updateInternalNode(IBinaryNode node) {
-		System.out.println("update: "+node);
+		LOGGER.info("update: "+node);
 	}
 
 

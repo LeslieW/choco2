@@ -22,34 +22,24 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.scheduling;
 
-import static choco.Choco.endsBeforeBegin;
-import static choco.Choco.makeBooleanVar;
-import static choco.Choco.makeBooleanVarArray;
-import static choco.Choco.makeIntVarArray;
-import static choco.Choco.makeTaskVar;
-import static choco.Choco.makeTaskVarArray;
-import static choco.Choco.preceding;
-import static choco.Choco.startsAfterEnd;
-import static choco.Choco.startsBeforeBegin;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
-
-import org.junit.Ignore;
-import org.junit.Test;
-
-import samples.scheduling.pert.DeterministicPert;
 import choco.Choco;
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.scheduling.PrecedenceWithDelta;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import org.junit.Ignore;
+import org.junit.Test;
+import samples.scheduling.pert.DeterministicPert;
 
+import java.util.logging.Logger;
 
 
 /**
@@ -58,6 +48,8 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * @version 2.0.3</br>
  */
 public class TestPrecedences {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	public CPModel m;
 
@@ -82,7 +74,7 @@ public class TestPrecedences {
 		
 		for (CPSolver s : solvers) {
 			s.read(m);
-			//System.out.println(s.pretty());
+			//LOGGER.info(s.pretty());
 			s.setRandomSelectors(seed);
 		}
 		SchedUtilities.compare(nbSol, SchedUtilities.CHECK_NODES, label, solvers);
@@ -245,7 +237,7 @@ public class TestPrecedences {
 			cs.setVarIntSelector(new RandomIntVarSelector(cs,seed));
 			cs.setValIntSelector(new RandomIntValSelector(seed));
 			cs.solveAll();
-			System.out.println("" + cs.getNbSolutions() + " " + cs.getNodeCount() + " " + cs.getTimeCount());
+			LOGGER.info("" + cs.getNbSolutions() + " " + cs.getNodeCount() + " " + cs.getTimeCount());
 			assertTrue(cs.getNbSolutions() == 471696);
 		}
 	}

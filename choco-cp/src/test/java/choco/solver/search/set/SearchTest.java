@@ -29,6 +29,7 @@ import choco.cp.solver.search.set.MinDomSet;
 import choco.cp.solver.search.set.MinEnv;
 import choco.cp.solver.search.set.RandomSetValSelector;
 import choco.cp.solver.search.set.RandomSetVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -54,7 +55,7 @@ import java.util.logging.Logger;
 
 public class SearchTest {
 
-    private Logger logger = Logger.getLogger("choco.currentElement");
+    protected static final Logger LOGGER = ChocoLogging.getTestLogger();
     private Model m;
     private Solver s;
     private SetVariable x;
@@ -64,7 +65,7 @@ public class SearchTest {
 
     @Before
     public void setUp() {
-        logger.fine("EqualXC Testing...");
+        LOGGER.fine("EqualXC Testing...");
         m = new CPModel();
         s = new CPSolver();
     }
@@ -84,6 +85,7 @@ public class SearchTest {
      * taking their values between 1 and n, such that all the pairs included in two different triplets are different.
      * une solution pour n = 7 : [{1, 2, 3}, {2, 4, 5}, {3, 4, 6}, {1, 4, 7}, {1, 5, 6}, {2,6, 7}, {3, 5, 7}]
      * Il faut que n % 6 = 1 ou n % 6 = 3 pour n soit une valeur valide pour le pb
+     * @param p size
      */
     public void steinerSystem(int p) {
         //Logger.getLogger("choco.solver.search").setLevel(Level.FINEST);
@@ -108,11 +110,11 @@ public class SearchTest {
         s.setVarSetSelector(new MinDomSet(s, s.getVar(vars)));
         s.setValSetSelector(new MinEnv(s));
         s.solve();
-        System.out.println("NbSolution " + s.getNbSolutions());
-        Solution sol = (Solution) s.getSearchStrategy().solutions.get(0);
+        LOGGER.info("NbSolution " + s.getNbSolutions());
+        Solution sol = s.getSearchStrategy().solutions.get(0);
         s.restoreSolution(sol);
         for (int i = 0; i < n; i++) {
-            System.out.println("set[" + i + "]:" + s.getVar(vars[i]).pretty());
+            LOGGER.info("set[" + i + "]:" + s.getVar(vars[i]).pretty());
         }
         assertTrue(s.isFeasible());
     }
@@ -128,7 +130,7 @@ public class SearchTest {
         c1 = member(x, 3);
         c2 = member(x, 5);
         c3 = notMember(x, 2);
-        logger.finer("test1");
+        LOGGER.finer("test1");
         try {
             m.addConstraint(c1);
             m.addConstraint(c2);
@@ -166,11 +168,11 @@ public class SearchTest {
             s.solveAll();
 
 
-            System.out.println("Nb solution: " + s.getNbSolutions());
+            LOGGER.info("Nb solution: " + s.getNbSolutions());
 
-//			System.out.println("" + s1);
-//			System.out.println("" + x);
-//			System.out.println("" + y);
+//			LOGGER.info("" + s1);
+//			LOGGER.info("" + x);
+//			LOGGER.info("" + y);
 
 			assertTrue(19 == s.getNbSolutions());
 			//pb.getSolver().setVarSetSelector(new StaticSetVarOrder(new SetVar[]{x, y , s1}));
@@ -215,7 +217,7 @@ public class SearchTest {
         try {
 			s.propagate();
 		} catch (ContradictionException e) {
-			System.out.println("contradiction");
+			LOGGER.info("contradiction");
 		}
 
 		Iterator it = s.getIntConstraintIterator();
@@ -234,10 +236,8 @@ public class SearchTest {
 		SetVariable a = makeSetVar("a", 1, 6);
 		SetVariable b = makeSetVar("b", 1, 6);
         m.addVariables("cp:boundCard", object, a, b);
-        // It's the empty set.
-		SetVariable notype = makeSetVar(":no-type:", 1, 0);
 
-		// Fix tthe IntVar to value 1.
+        // Fix tthe IntVar to value 1.
 		IntegerVariable object1 = makeIntVar("object1", 1, 1);
         m.addVariable("cp:bound", object1);
 
@@ -278,9 +278,9 @@ public class SearchTest {
         try {
 			s.propagate();
 			if (s.solve()) {
-				System.out.println(s.solutionToString());
+				LOGGER.info(s.solutionToString());
 			}
-			System.out.println("isFeas: " + s.isFeasible());
+			LOGGER.info("isFeas: " + s.isFeasible());
 			s.printRuntimeSatistics();
 		} catch (ContradictionException e) {
 			e.printStackTrace();
@@ -297,10 +297,8 @@ public class SearchTest {
 		SetVariable b = makeSetVar("b", 1, 7);
 		SetVariable c = makeSetVar("c", 1, 7);
         m.addVariables("cp:boundCard", object, a, b, c);
-        // It's the empty set.
-		SetVariable notype = makeSetVar(":no-type:", 1, 0);
 
-		// Fix tthe IntVar to value 1.
+        // Fix tthe IntVar to value 1.
 		IntegerVariable object1 = makeIntVar("object1", 1, 1);
         m.addVariable("cp:bound", object1);
 
@@ -323,9 +321,9 @@ public class SearchTest {
         try {
 			s.propagate();
 			if (s.solve()) {
-				System.out.println(s.solutionToString());
+				LOGGER.info(s.solutionToString());
 			}
-			System.out.println("isFeas: " + s.isFeasible());
+			LOGGER.info("isFeas: " + s.isFeasible());
 			s.printRuntimeSatistics();
 		} catch (ContradictionException e) {
 			e.printStackTrace();

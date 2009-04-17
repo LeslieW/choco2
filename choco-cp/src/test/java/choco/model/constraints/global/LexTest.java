@@ -27,6 +27,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -34,16 +35,19 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import junit.framework.TestCase;
 import org.junit.Test;
-import org.junit.Assert;
+
+import java.text.MessageFormat;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
  * User: Hadrien
  * Date: 5 avr. 2006
  * Time: 08:42:43
- * To change this template use File | Settings | File Templates.
  */
 public class LexTest extends TestCase {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	@Test
 	public void testLessLexq() {
@@ -62,25 +66,10 @@ public class LexTest extends TestCase {
 			s.read(pb);
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
 			s.setValIntSelector(new RandomIntValSelector(seed));
-			s.solve();
-			do {
-//		        System.out.print("[");
-//		        for (int i = 0; i < vs1.length; i++) {
-//			        System.out.print("" + s.getVar(vs1[i]).getVal() + ((i == (vs1.length - 1)) ? "" : " "));
-//		        }
-//		        System.out.print("]");
-//		        System.out.print(" <=leq [");
-//		        for (int i = 0; i < vs1.length; i++) {
-//			        System.out.print("" + s.getVar(vs2[i]).getVal() + ((i == (vs2.length - 1)) ? "" : " "));
-//		        }
-//		        System.out.println("]");
-			} while (s.nextSolution() == Boolean.TRUE);
-			//s.solveAll();
+			s.solveAll();
 			int kpn = (int) Math.pow(k + 1, n1 / 2);
 			assertEquals(s.getNbSolutions(), (kpn * (kpn + 1) / 2));
-			//if (s.getNbSolutions() != kpn*(kpn + 1)/2 )
-			//throw new Error("nbSol " + s.getNbSolutions() + " should be " + (kpn*(kpn + 1)/2));
-			System.out.println("NbSol : " + s.getNbSolutions() + " =? " + (kpn * (kpn + 1) / 2));
+			LOGGER.info("NbSol : " + s.getNbSolutions() + " =? " + (kpn * (kpn + 1) / 2));
 		}
 	}
 
@@ -104,7 +93,7 @@ public class LexTest extends TestCase {
 			//s.setValIterator(new IncreasingTrace());
 			s.solveAll();
 			assertEquals(3240, s.getNbSolutions());
-			System.out.println("NbSol : " + s.getNbSolutions() + " =? 3240");
+			LOGGER.info("NbSol : " + s.getNbSolutions() + " =? 3240");
 		}
 	}
 
@@ -123,8 +112,8 @@ public class LexTest extends TestCase {
 			s.solve();
 
 			do {
-				System.out.print("u = [ " + s.getVar(u[0]).getVal() + " " + s.getVar(u[1]).getVal() + " " + s.getVar(u[2]).getVal() + " ] - ");
-				System.out.println("v = [ " + s.getVar(v[0]).getVal() + " " + s.getVar(v[1]).getVal() + " " + s.getVar(v[2]).getVal() + " ]");
+				LOGGER.info("u = [ " + s.getVar(u[0]).getVal() + " " + s.getVar(u[1]).getVal() + " " + s.getVar(u[2]).getVal() + " ] - "
+				+"v = [ " + s.getVar(v[0]).getVal() + " " + s.getVar(v[1]).getVal() + " " + s.getVar(v[2]).getVal() + " ]");
 			} while (s.nextSolution() == Boolean.TRUE);
 			assertEquals(78, s.getNbSolutions());
 		}
@@ -145,8 +134,8 @@ public class LexTest extends TestCase {
 		pb.addConstraints(c1, c2, c3, c4, c5, c6);
 		CPSolver s = new CPSolver();
 		s.read(pb);
-		System.out.println(c2.pretty());
-		System.out.println(c5.pretty());
+		LOGGER.info(c2.pretty());
+		LOGGER.info(c5.pretty());
 		assertTrue(s.getCstr(c1).isSatisfied());
 		assertFalse(s.getCstr(c2).isSatisfied());
 		assertFalse(s.getCstr(c3).isSatisfied());
@@ -181,19 +170,20 @@ public class LexTest extends TestCase {
 		}
 		s.solve();
 		do {
-		        System.out.print("[");
+		    StringBuffer st = new StringBuffer();
+            st.append("[");
 		        for (int i = 0; i < a.length; i++) {
-			        System.out.print("" + s.getVar(a[i]).getVal() + ((i == (a.length - 1)) ? "" : " "));
+			        st.append(MessageFormat.format("{0}{1}", s.getVar(a[i]).getVal(), (i == (a.length - 1)) ? "" : " "));
 		        }
-		        System.out.print("]");
-		        System.out.print(" < [");
+		        st.append("]");
+		        st.append(" < [");
 		        for (int i = 0; i < b.length; i++) {
-			        System.out.print("" + s.getVar(b[i]).getVal() + ((i == (b.length - 1)) ? "" : " "));
+			        st.append(MessageFormat.format("{0}{1}", s.getVar(b[i]).getVal(), (i == (b.length - 1)) ? "" : " "));
 		        }
-		        System.out.println("]");
+		        st.append("]");
+            LOGGER.info(st.toString());
 		} while (s.nextSolution() == Boolean.TRUE);
 
-		//System.out.println("" + s.getNbSolutions());
 		assertTrue(s.getNbSolutions() > 0);
 	}
 }

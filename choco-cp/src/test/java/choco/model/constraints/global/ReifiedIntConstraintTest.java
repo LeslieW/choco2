@@ -28,6 +28,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -37,14 +38,17 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.logging.Logger;
+
 /**
  * Created by IntelliJ IDEA.
  * User: charles
  * Date: 16 mai 2008
  * Time: 10:40:09
- * To change this template use File | Settings | File Templates.
  */
 public class ReifiedIntConstraintTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     Model m;
 
@@ -79,11 +83,8 @@ public class ReifiedIntConstraintTest {
 
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));
-			s.solve();
-			do {
-				//System.out.println(s.getVar(b) + " " + s.getVar(y) + " " + s.getVar(z));
-			} while(s.nextSolution() == Boolean.TRUE);
-			System.out.println(""+s.getNbSolutions());
+			s.solveAll();
+			LOGGER.info(""+s.getNbSolutions());
 			assertEquals(s.getNbSolutions(),100);
 		}
 	}
@@ -107,9 +108,9 @@ public class ReifiedIntConstraintTest {
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));
 			s.solve();
 			do {
-				System.out.println(s.getVar(b) + " " + s.getVar(y) + " " + s.getVar(z));
+				LOGGER.info(s.getVar(b) + " " + s.getVar(y) + " " + s.getVar(z));
 			} while(s.nextSolution() == Boolean.TRUE);
-			System.out.println(""+s.getNbSolutions());
+			LOGGER.info(""+s.getNbSolutions());
 			assertEquals(s.getNbSolutions(),100);
 		}
 	}

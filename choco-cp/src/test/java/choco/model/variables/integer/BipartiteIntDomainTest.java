@@ -8,6 +8,7 @@ import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.cp.solver.variables.integer.AbstractIntDomain;
 import choco.cp.solver.variables.integer.BipartiteIntDomain;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -32,7 +33,7 @@ import java.util.logging.Logger;
  **/
 public class BipartiteIntDomainTest {
 
-    private Logger logger = Logger.getLogger("choco.currentElement");
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
     private CPModel m;
     private IntegerVariable x, y;
     private CPSolver s;
@@ -40,7 +41,7 @@ public class BipartiteIntDomainTest {
 
     @Before
     public void setUp() {
-        logger.fine("BitSetIntDomain Testing...");
+        LOGGER.fine("BitSetIntDomain Testing...");
         m = new CPModel();
         x = makeIntVar("X", 1, 100,"cp:blist");
         y = makeIntVar("Y", 1, 15, "cp:blist");
@@ -61,32 +62,32 @@ public class BipartiteIntDomainTest {
 
     @Test
     public void test1() {
-        logger.finer("test1");
+        LOGGER.finer("test1");
         try {
             assertEquals(1, yDom.getInf());
             assertEquals(15, yDom.getSup());
             assertEquals(15, yDom.getSize());
-            logger.finest("First step passed");
+            LOGGER.finest("First step passed");
 
             s.getEnvironment().worldPush();
             yDom.removeVal(2, -1);
             assertEquals(1, yDom.getInf());
             assertEquals(15, yDom.getSup());
             assertEquals(14, yDom.getSize());
-            logger.finest("Second step passed");
+            LOGGER.finest("Second step passed");
 
             yDom.removeVal(1, -1);
             assertEquals(3, yDom.getInf());
             assertEquals(15, yDom.getSup());
             assertEquals(13, yDom.getSize());
-            logger.finest("Third step passed");
+            LOGGER.finest("Third step passed");
 
 
             s.worldPop();
             assertEquals(1, yDom.getInf());
             assertEquals(15, yDom.getSup());
             assertEquals(15, yDom.getSize());
-            logger.finest("Fourth step passed");
+            LOGGER.finest("Fourth step passed");
 
         } catch (ContradictionException e) {
             assertTrue(false);
@@ -96,30 +97,30 @@ public class BipartiteIntDomainTest {
 
     @Test
     public void test2() {
-        logger.finer("test2");
+        LOGGER.finer("test2");
         try {
             yDom.removeVal(10,-1);
             yDom.removeVal(12,-1);
             yDom.removeVal(14,-1);
             yDom.removeVal(13,-1);
             yDom.updateSup(14);
-            System.out.println("" + yDom.pretty());            
+            LOGGER.info("" + yDom.pretty());
             assertEquals(1, yDom.getInf());
             assertEquals(11, yDom.getSup());
             assertEquals(10, yDom.getSize());
-            logger.finest("First step passed");
+            LOGGER.finest("First step passed");
 
             yDom.updateInf(8);
             assertEquals(8, yDom.getInf());
             assertEquals(11, yDom.getSup());
             assertEquals(3, yDom.getSize());
-            logger.finest("Second step passed");
+            LOGGER.finest("Second step passed");
 
             yDom.removeVal(11, -1);
             assertEquals(8, yDom.getInf());
             assertEquals(9, yDom.getSup());
             assertEquals(2, yDom.getSize());
-            logger.finest("Third step passed");
+            LOGGER.finest("Third step passed");
         } catch (ContradictionException e) {
             assertTrue(false);
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
@@ -132,7 +133,7 @@ public class BipartiteIntDomainTest {
      */
     @Test
     public void test3() {
-        logger.finer("test3");
+        LOGGER.finer("test3");
         Set<Integer> expectedSet357 = new TreeSet<Integer>();
         expectedSet357.add(3);
         expectedSet357.add(5);
@@ -173,7 +174,7 @@ public class BipartiteIntDomainTest {
      */
     @Test
     public void test4() {
-        logger.finer("test2");
+        LOGGER.finer("test2");
         try {
         yDom.removeVal(10,-1);
         yDom.removeVal(12,-1);
@@ -251,7 +252,7 @@ public class BipartiteIntDomainTest {
    */
   @Test
   public void test6() {
-    logger.finer("test2");
+    LOGGER.finer("test2");
 
     yDom.freezeDeltaDomain();
     assertTrue(yDom.releaseDeltaDomain());
@@ -274,9 +275,9 @@ public class BipartiteIntDomainTest {
             s.worldPush();
             try {
                 v.remVal(i);
-                System.out.println("" + dom.pretty());
+                LOGGER.info("" + dom.pretty());
             } catch (ContradictionException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                LOGGER.severe(e.getMessage());
             }
 
             Assert.assertFalse("y remove "+i, yDom.contains(i));
@@ -360,7 +361,7 @@ public class BipartiteIntDomainTest {
     @Test
     public void queenBiplist() {
         for (int n = 4; n < 10; n++) {
-            logger.finer("n queens, binary model, n=" + n);
+            LOGGER.finer("n queens, binary model, n=" + n);
             m = new CPModel();
             s = new CPSolver();
             // create variables
@@ -379,7 +380,7 @@ public class BipartiteIntDomainTest {
             }
             s.read(m);
             s.solveAll();
-            System.out.println(n+": "+ s.getNbSolutions()+ " " + s.getTimeCount());
+            LOGGER.info(n+": "+ s.getNbSolutions()+ " " + s.getTimeCount());
             if (n >= 4) {
                 if (n <= 13) {
                     assertEquals(Boolean.TRUE, s.isFeasible());
@@ -414,7 +415,7 @@ public class BipartiteIntDomainTest {
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
             s.solveAll();
 
-            System.out.println("ExpectedSolutions 2 - nbSol " + s.getNbSolutions());
+            LOGGER.info("ExpectedSolutions 2 - nbSol " + s.getNbSolutions());
             assertEquals(2, s.getNbSolutions());
         }
      }
@@ -422,7 +423,7 @@ public class BipartiteIntDomainTest {
         @Test
     public void testAbs() {
         for (int i = 0; i <= 10; i++) {
-            System.out.println("seed " + i);
+            LOGGER.info("seed " + i);
             CPModel m = new CPModel();
             IntegerVariable x = makeIntVar("x", 1, 5, "cp:blist");
             IntegerVariable y = makeIntVar("y", -5, 5, "cp:blist");
@@ -433,18 +434,18 @@ public class BipartiteIntDomainTest {
             s.setValIntSelector(new RandomIntValSelector(i + 1));
             s.solve();
             do {
-                System.out.println("" + s.getVar(x).getVal() + "=abs(" + s.getVar(y).getVal() + ")");
+                LOGGER.info("" + s.getVar(x).getVal() + "=abs(" + s.getVar(y).getVal() + ")");
             } while (s.nextSolution() == Boolean.TRUE);
-            System.out.println("" + s.getSearchStrategy().getNodeCount());
+            LOGGER.info("" + s.getSearchStrategy().getNodeCount());
             assertEquals(10, s.getNbSolutions());
-            //System.out.println("Nb solution : " + pb.getSolver().getNbSolutions());
+            //LOGGER.info("Nb solution : " + pb.getSolver().getNbSolutions());
         }
     }
 
      @Test
     public void testBugNormalized() {
         for (int seed = 10; seed < 30; seed++) {
-            System.out.println("seed:" + seed);
+            LOGGER.info("seed:" + seed);
             CPModel m = new CPModel();
             m.setDefaultExpressionDecomposition(true);
             CPSolver s = new CPSolver();
@@ -490,22 +491,20 @@ public class BipartiteIntDomainTest {
             s.setValIntSelector(new RandomIntValSelector(seed));
             s.setGeometricRestart(1, 1.2);
             s.solve();
-            System.out.println("" + s.getNodeCount());
+            LOGGER.info("" + s.getNodeCount());
             Assert.assertTrue("Solution incorrecte", s.checkSolution(false));
         }
     }
 
 
     private Constraint predicat1(IntegerVariable v1, IntegerVariable v2, int v3, int v4, IntegerVariable v5) {
-        Constraint e = leq(plus(v1, ifThenElse(eq((v2), (0)), constant(v3), constant(v4))), v5);
         //e.setDecomposeExp(true);
-        return e;
+        return leq(plus(v1, ifThenElse(eq((v2), (0)), constant(v3), constant(v4))), v5);
     }
 
     private Constraint predicat2(IntegerVariable v0, IntegerVariable v1, IntegerVariable v2, int v3, int v4, IntegerVariable v5, IntegerVariable v6, IntegerVariable v7, int v8, int v9) {
-        Constraint e = or(or(leq(plus((v0),
-                ifThenElse(eq((v2), (0)), constant(v3), constant(v4))), (v5)), leq(plus((v5), ifThenElse(eq((v7), (0)), constant(v8), constant(v9))), (v0))), or(leq(plus((v1), ifThenElse(eq((v2), constant(0)), constant(v4), constant(v3))), (v6)), leq(plus((v6), ifThenElse(eq((v7), (0)), constant(v9), constant(v8))), (v1))));
         //e.setDecomposeExp(true);
-        return e;
+        return or(or(leq(plus((v0),
+                ifThenElse(eq((v2), (0)), constant(v3), constant(v4))), (v5)), leq(plus((v5), ifThenElse(eq((v7), (0)), constant(v8), constant(v9))), (v0))), or(leq(plus((v1), ifThenElse(eq((v2), constant(0)), constant(v4), constant(v3))), (v6)), leq(plus((v6), ifThenElse(eq((v7), (0)), constant(v9), constant(v8))), (v1))));
     }
 }

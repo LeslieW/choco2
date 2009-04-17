@@ -23,11 +23,15 @@
 package choco.solver;
 
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import static java.text.MessageFormat.format;
+import java.util.logging.Logger;
 
 /*
 * User : charles
@@ -38,10 +42,12 @@ import org.junit.Test;
 */
 public class SolverTest {
 
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+
     @Test
     @Ignore
     public void testCharge1(){
-        int cpt = 0;
+        int cpt;
 		int newcpt;
         int[] nbVar = new int[]{10, 100, 1000, 100000, 1000000};
         for(int i = 1; i < nbVar.length; i++) {
@@ -59,9 +65,11 @@ public class SolverTest {
 //                    assertTrue(newcpt <= cpt + 10000);
 //                }
             cpt = newcpt;
-            System.out.print("|" + ChocoUtil.pad("" + n, -9, " ") + " |");
-            System.out.print("|" + ChocoUtil.pad("" + (System.currentTimeMillis() - t), -5, " ") + " |");
-            System.out.println("|" + ChocoUtil.pad("" + cpt, -10, " ") + " |");
+            StringBuffer st = new StringBuffer();
+            st.append(format("|{0} |", ChocoUtil.pad("" + n, -9, " ")));
+            st.append(format("|{0} |", ChocoUtil.pad("" + (System.currentTimeMillis() - t), -5, " ")));
+            st.append(format("|{0} |", ChocoUtil.pad("" + cpt, -10, " ")));
+            LOGGER.info(st.toString());
         }
     }
 
@@ -76,7 +84,6 @@ public class SolverTest {
             Runtime.getRuntime().gc();
             long t = System.currentTimeMillis();
             int n = nbCstr[i];
-            int b = 10;
             Solver solver = new CPSolver();
             IntDomainVar v  = solver.createBoundIntVar("v", 1 ,10);
             for(int k = 0; k < n; k++){
@@ -87,9 +94,11 @@ public class SolverTest {
 //                    assertTrue(newcpt <= cpt + 10000);
 //                }
             cpt = newcpt;
-            System.out.print("|" + ChocoUtil.pad("" + n, -9, " ") + " |");
-            System.out.print("|" + ChocoUtil.pad("" + (System.currentTimeMillis() - t), -5, " ") + " |");
-            System.out.println("|" + ChocoUtil.pad("" + cpt, -10, " ") + " |");
+            StringBuffer st = new StringBuffer();
+            st.append(format("|{0} |", ChocoUtil.pad("" + n, -9, " ")));
+            st.append(format("|{0} |", ChocoUtil.pad("" + (System.currentTimeMillis() - t), -5, " ")));
+            st.append(format("|{0} |", ChocoUtil.pad("" + cpt, -10, " ")));
+            LOGGER.info(st.toString());
         }
     }
 

@@ -25,6 +25,7 @@ package choco.model.constraints.reified;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -45,7 +46,7 @@ import java.util.logging.Logger;
  */
 public class NegationTest {
 
-    private Logger logger = Logger.getLogger("choco.currentElement");
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
     private Model m;
     private Solver s;
     private IntegerVariable x;
@@ -59,7 +60,7 @@ public class NegationTest {
 
     @Before
     public void setUp() throws Exception {
-        logger.fine("choco.currentElement.reified.NegationTest Testing...");
+        LOGGER.fine("choco.currentElement.reified.NegationTest Testing...");
         m = new CPModel();
         s = new CPSolver();
         x = makeIntVar("X", 1, 10);
@@ -68,65 +69,59 @@ public class NegationTest {
 
     @Test
     public void test1() {
-        System.out.println("NegationTest.test1");
+        LOGGER.info("NegationTest.test1");
         Constraint c0 = geq((x), (3));
 
         Constraint not = not(c0);
-        System.out.println(not.pretty());
+        LOGGER.info(not.pretty());
         m.addConstraint(not);
         s.read(m);
-        System.out.println(s.getCstr(not).pretty());
+        LOGGER.info(s.getCstr(not).pretty());
         try {
             s.propagate();
         } catch (ContradictionException e) {
-            logger.severe("NegationTest() : Test1#propagate() "+e.getMessage());
+            LOGGER.severe("NegationTest() : Test1#propagate() "+e.getMessage());
             fail();
         }
          s.solve();
-        System.out.print(" Tests");
         if (s.isFeasible()) {
             do {
-                System.out.print(".");
                 assertTrue("x not instanciated", s.getVar(x).isInstantiated());
                 assertFalse("value of x not excepted", s.getVar(x).getVal() > 3);
             } while (s.nextSolution() == Boolean.TRUE);
         }
-        System.out.print(".");
         assertEquals("Nb solution unexcepted", s.getNbSolutions(), 2);
-        System.out.println("OK");
+        LOGGER.info("OK");
     }
 
     @Test
     public void test1Decomp() {
-        System.out.println("NegationTest.test1");
+        LOGGER.info("NegationTest.test1");
         Constraint c0 = geq((x), (3));
 
         m.setDefaultExpressionDecomposition(true);
 
         Constraint not = not(c0);
-        System.out.println(not.pretty());
+        LOGGER.info(not.pretty());
         m.addConstraint(not);
         s.read(m);
-        System.out.println(s.getCstr(not).pretty());
+        LOGGER.info(s.getCstr(not).pretty());
 
         try {
             s.propagate();
         } catch (ContradictionException e) {
-            logger.severe("NegationTest() : Test1#propagate() "+e.getMessage());
+            LOGGER.severe("NegationTest() : Test1#propagate() "+e.getMessage());
             fail();
         }
          s.solve();
-        System.out.print(" Tests");
         if (s.isFeasible()) {
             do {
-                System.out.print(".");
                 assertTrue("x not instanciated", s.getVar(x).isInstantiated());
                 assertFalse("value of x not excepted", s.getVar(x).getVal() > 3);
             } while (s.nextSolution() == Boolean.TRUE);
         }
-        System.out.print(".");
         assertEquals("Nb solution unexcepted", s.getNbSolutions(), 2);
-        System.out.println("OK");
+        LOGGER.info("OK");
     }
 
     @Test

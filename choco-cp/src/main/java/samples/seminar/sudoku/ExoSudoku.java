@@ -25,11 +25,14 @@ package samples.seminar.sudoku;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,6 +41,8 @@ import choco.kernel.solver.Solver;
  * Time: 09:31:10
  */
 public class ExoSudoku {
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
 	public static void sudokuSimple(int[][] instance, boolean onlyProp) {
 		int n = instance.length;
@@ -104,7 +109,7 @@ public class ExoSudoku {
 				s.propagate();
 				printGrid(rows, s);
 			} catch (ContradictionException e) {
-				System.out.println("pas de solutions");
+				LOGGER.info("pas de solutions");
 			}
 		}
 		// Second choice : find a solution 
@@ -174,7 +179,7 @@ public class ExoSudoku {
 				s.propagate();
 				printGrid(rows, s);
 			} catch (ContradictionException e) {
-				System.out.println("No solution");
+				LOGGER.info("No solution");
 			}
 		}
 		// Second choice : find a solution
@@ -186,8 +191,9 @@ public class ExoSudoku {
 
 	public static void printGrid(IntegerVariable[][] rows, Solver s) {
 		for (int i = 0; i < 9; i++) {
-			for (int j = 0; j < 9; j++) System.out.print(s.getVar(rows[i][j]).getVal() + " ");
-			System.out.println();
+            StringBuffer st = new StringBuffer();
+			for (int j = 0; j < 9; j++) st.append(s.getVar(rows[i][j]).getVal() + " ");
+			LOGGER.info(st.toString());
 		}
 	}
 
@@ -197,9 +203,9 @@ public class ExoSudoku {
 		int[][] instance1 = p.convert();
 		int[][] instance2 = p.convert();
 		sudokuSimple(instance1, false);
-		System.out.println("");
-		System.out.println("****************************************");
-		System.out.println("");
+		LOGGER.info("");
+		LOGGER.info("****************************************");
+		LOGGER.info("");
 		sudokuAdvanced(instance2, true);
 	}
 }

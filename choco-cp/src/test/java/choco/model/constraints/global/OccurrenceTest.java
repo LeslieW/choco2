@@ -23,34 +23,26 @@
 package choco.model.constraints.global;
 
 
-import static choco.Choco.eq;
-import static choco.Choco.feasTupleAC;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.makeIntVarArray;
-import static choco.Choco.occurrence;
-import static choco.Choco.plus;
-import static choco.Choco.scalar;
-import static choco.Choco.sum;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Logger;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
+import org.junit.After;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 // **************************************************
 // *                   J-CHOCO                      *
@@ -61,14 +53,14 @@ import choco.kernel.solver.ContradictionException;
 // **************************************************
 
 public class OccurrenceTest {
-    private Logger logger = Logger.getLogger("choco.currentElement");
+    protected static final Logger LOGGER = ChocoLogging.getTestLogger();
     private CPModel pb;
     private CPSolver s;
     private IntegerVariable x1, x2, x3, x4, x5, x6, x7, y1, x, y, n, m, xx;
 
     @Before
     public void setUp() {
-        logger.fine("Occurrence Testing...");
+        LOGGER.log(Level.FINE, "Occurrence Testing...");
         pb = new CPModel();
         x = makeIntVar("x", 0, 2);
         xx = makeIntVar("xx", 1, 1);
@@ -99,9 +91,9 @@ public class OccurrenceTest {
      */
     @Test
     public void test1() {
-        logger.finer("test1");
+        LOGGER.finer("test1");
         try {
-            pb.addConstraint(occurrence(3, y1, new IntegerVariable[]{x1, x2, x3, x4, x5, x6, x7})); // OccurenceEq
+            pb.addConstraint(occurrence(3, y1, x1, x2, x3, x4, x5, x6, x7)); // OccurenceEq
             // pb.getPropagationEngine().getLogger().setVerbosity(choco.model.ILogger.TALK);
             s.read(pb);
             s.getVar(x1).setVal(3);
@@ -119,10 +111,10 @@ public class OccurrenceTest {
 
     @Test
     public void test2() {
-        logger.finer("test2");
+        LOGGER.finer("test2");
         try {
-            pb.addConstraint(occurrence(3, y1, new IntegerVariable[]{x1, x2, x3}));
-            pb.addConstraint(occurrence(4, y1, new IntegerVariable[]{x1, x5, x4, x6}));
+            pb.addConstraint(occurrence(3, y1, x1, x2, x3));
+            pb.addConstraint(occurrence(4, y1, x1, x5, x4, x6));
             s.read(pb);
             s.getVar(x1).setVal(3);
             s.getVar(y1).setInf(3);
@@ -139,10 +131,10 @@ public class OccurrenceTest {
 
     @Test
     public void test3() {
-        logger.finer("test3 : first old choco currentElement");
+        LOGGER.finer("test3 : first old choco currentElement");
         try {
-            pb.addConstraint(occurrence(1, n, new IntegerVariable[]{x, y}));
-            pb.addConstraint(occurrence(2, m, new IntegerVariable[]{x, y}));
+            pb.addConstraint(occurrence(1, n, x, y));
+            pb.addConstraint(occurrence(2, m, x, y));
             // pb.getPropagationEngine().getLogger().setVerbosity(choco.model.ILogger.TALK);
             s.read(pb);
             s.propagate();
@@ -157,9 +149,9 @@ public class OccurrenceTest {
 
     @Test
     public void test4() {
-        logger.finer("test3 : third old choco currentElement");
+        LOGGER.finer("test3 : third old choco currentElement");
         try {
-            pb.addConstraint(occurrence(1, n, new IntegerVariable[]{xx, m}));
+            pb.addConstraint(occurrence(1, n, xx, m));
             // pb.getPropagationEngine().getLogger().setVerbosity(choo.model.ILogger.TALK);
             s.read(pb);
             s.propagate();
@@ -191,10 +183,11 @@ public class OccurrenceTest {
         s.read(pb);
         s.solve();
         do {
-            for (int i = 0; i < vs.length; i++) {
-                System.out.print(s.getVar(vs[i]).getVal() + " ");
+            StringBuffer st = new StringBuffer();
+            for (IntegerVariable v : vs) {
+                st.append(s.getVar(v).getVal()).append(" ");
             }
-            System.out.println("");
+            LOGGER.info(st.toString());
         } while (s.nextSolution() == Boolean.TRUE);
         assertEquals(2, s.getNbSolutions());
     }
@@ -202,16 +195,16 @@ public class OccurrenceTest {
     @Test
     public void testRandomProblems() {
         for (int bigseed = 0; bigseed < 5; bigseed++) {
-            int nbsol = 0, nbsol2 = 0;
+            int nbsol, nbsol2;
             //nb solutions of the gac constraint
             int realNbSol = randomOcc(-1, bigseed,true,1,true);
             //nb solutions of occurrence + enum
             nbsol = randomOcc(realNbSol, bigseed, true, 3, false);
             //b solutions of occurrences + bound
             nbsol2 = randomOcc(realNbSol, bigseed, false, 3, false);
-            System.out.println(nbsol + " " + nbsol2 + " " + realNbSol);
+            LOGGER.info(nbsol + " " + nbsol2 + " " + realNbSol);
             assertEquals(nbsol, nbsol2);
-            assertEquals(nbsol, realNbSol);            
+            assertEquals(nbsol, realNbSol);
         }
     }
 
@@ -233,9 +226,7 @@ public class OccurrenceTest {
             }
 
             List<IntegerVariable> lvs = new LinkedList<IntegerVariable>();
-            for (int i = 0; i < vars.length; i++) {
-                lvs.add(vars[i]);
-            }
+            lvs.addAll(Arrays.asList(vars));
 
             Random rand = new Random(seed);
             for (int i = 0; i < nbOcc; i++) {
@@ -264,9 +255,9 @@ public class OccurrenceTest {
             s.solveAll();
             if (nbsol == -1) {
                 nbsol = s.getNbSolutions();
-                System.out.println("GAC NBSOL : " + s.getNbSolutions() + " " + s.getNodeCount() + " " + s.getTimeCount());
+                LOGGER.info("GAC NBSOL : " + s.getNbSolutions() + " " + s.getNodeCount() + " " + s.getTimeCount());
             } else {
-                System.out.println(interseed + " NB solutions " + s.getNbSolutions() + " " + s.getNodeCount() + " " + s.getTimeCount());
+                LOGGER.info(interseed + " NB solutions " + s.getNbSolutions() + " " + s.getNodeCount() + " " + s.getTimeCount());
                 assertEquals(nbsol,s.getNbSolutions());
             }
 
@@ -276,10 +267,11 @@ public class OccurrenceTest {
 
     /**
      * generate a table to encode an occurrence constraint.
-     * @param vs
-     * @param ub
-     * @param val
-     * @return
+     * @param vs array of variables
+     * @param occ occurence variable
+     * @param val value
+     * @param ub upper bound
+     * @return Constraint
      */
     public Constraint getTableForOccurence(IntegerVariable[] vs, IntegerVariable occ, int val, int ub) {
         CPModel mod = new CPModel();

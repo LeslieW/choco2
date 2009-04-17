@@ -22,18 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.scheduling;
 
-import static org.junit.Assert.assertEquals;
-
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -50,6 +38,13 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.AbstractTask;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
+import static org.junit.Assert.assertEquals;
+
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -59,7 +54,6 @@ import choco.kernel.solver.variables.scheduling.ITask;
  */
 public final class SchedUtilities {
 
-	
 	public final static Logger LOGGER = ChocoLogging.getTestLogger();
 	
 	public final static Random RANDOM=new Random();
@@ -117,7 +111,6 @@ public final class SchedUtilities {
 		Choco.DEBUG=true;
 		solver.setLoggingMaxDepth(10000);
 		solver.setRandomSelectors();
-		//System.out.println(solver.pretty());
 		Boolean r=solver.solveAll();
 		message(label, "solve (random) : ", solver);
 		checkRandom(solver, r, nbsol, nbNodes, label);
@@ -150,6 +143,8 @@ public final class SchedUtilities {
 
 
 abstract class AbstractTestProblem {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	public CPModel model;
 
@@ -194,9 +189,6 @@ abstract class AbstractTestProblem {
 		solver.read(model);
 	}
 
-	/**
-	 * 
-	 */
 	protected abstract Constraint[] generateConstraints();
 
 	public void initializeModel() {
@@ -207,7 +199,7 @@ abstract class AbstractTestProblem {
 			rsc = cstr[0];
 			model.addConstraints(cstr);
 		}else {
-			System.err.println("no model constraint ?");
+			LOGGER.severe("no model constraint ?");
 		}
 
 	}

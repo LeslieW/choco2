@@ -29,6 +29,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.DomOverWDegBranching;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -39,7 +40,10 @@ import junit.framework.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import static java.lang.System.currentTimeMillis;
+import java.text.MessageFormat;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -49,6 +53,8 @@ import java.util.Iterator;
  * Test suite concerning Decision variables
  */
 public class ModelTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	@Test
 	public void testOnDecisionVariables() {
@@ -263,12 +269,12 @@ public class ModelTest {
 	@Test
 	@Ignore
 	public void testCharge1(){
-		int cpt = 0;
+		int cpt;
 		int newcpt;
 		int[] nbVar = new int[]{10, 100, 1000, 100000, 1000000};
 		for(int i = 1; i < nbVar.length; i++) {
 			Runtime.getRuntime().gc();
-			long t = System.currentTimeMillis();
+			long t = currentTimeMillis();
 			int n = nbVar[i];
 			int b = 100;
 			Model m = new CPModel();
@@ -279,9 +285,11 @@ public class ModelTest {
 			//                    assertTrue(newcpt <= cpt + 10000);
 			//                }
 			cpt = newcpt;
-			System.out.print("|" + ChocoUtil.pad("" + n, -9, " ") + " |");
-			System.out.print("|" + ChocoUtil.pad("" + (System.currentTimeMillis() - t), -5, " ") + " |");
-			System.out.println("|" + ChocoUtil.pad("" + cpt, -10, " ") + " |");
+            StringBuffer st = new StringBuffer();
+			st.append(MessageFormat.format("|{0} |", ChocoUtil.pad("" + n, -9, " ")));
+			st.append(MessageFormat.format("|{0} |", ChocoUtil.pad("" + (currentTimeMillis() - t), -5, " ")));
+			st.append(MessageFormat.format("|{0} |", ChocoUtil.pad("" + cpt, -10, " ")));
+            LOGGER.info(st.toString());
 		}
 	}
 
@@ -289,12 +297,12 @@ public class ModelTest {
 	@Test
 	@Ignore
 	public void testCharge2(){
-		int cpt = 0;
+		int cpt;
 		int newcpt;
 		int[] nbCstr = new int[]{10, 100, 1000, 100000, 1000000};
 		for(int i = 1; i < nbCstr.length; i++) {
 			Runtime.getRuntime().gc();
-			long t = System.currentTimeMillis();
+			long t = currentTimeMillis();
 			int n = nbCstr[i];
 			int b = 10;
 			Model m = new CPModel();
@@ -307,9 +315,11 @@ public class ModelTest {
 			//                    assertTrue(newcpt <= cpt + 10000);
 			//                }
 			cpt = newcpt;
-			System.out.print("|" + ChocoUtil.pad("" + n, -9, " ") + " |");
-			System.out.print("|" + ChocoUtil.pad("" + (System.currentTimeMillis() - t), -5, " ") + " |");
-			System.out.println("|" + ChocoUtil.pad("" + cpt, -10, " ") + " |");
+            StringBuffer st = new StringBuffer();
+			st.append(MessageFormat.format("|{0} |", ChocoUtil.pad("" + n, -9, " ")));
+			st.append(MessageFormat.format("|{0} |", ChocoUtil.pad("" + (currentTimeMillis() - t), -5, " ")));
+			st.append(MessageFormat.format("|{0} |", ChocoUtil.pad("" + cpt, -10, " ")));
+            LOGGER.info(st.toString());
 		}
 	}
 
@@ -317,14 +327,13 @@ public class ModelTest {
 	@Test
 	@Ignore
 	public void testCharge3(){
-		int cpt = 0;
+		int cpt;
 		int newcpt;
 		int[] domSize = new int[]{10, 100, 1000, 100000};
 		for(int i = 1; i < domSize.length; i++) {
 			Runtime.getRuntime().gc();
-			long t = System.currentTimeMillis();
+			long t = currentTimeMillis();
 			int n = domSize[i];
-			Model m = new CPModel();
 			IntegerVariable v = makeIntVar("v", 1, n);
 			for(int j=0; j < n; j+=2){
 				v.removeVal(j);
@@ -334,9 +343,11 @@ public class ModelTest {
 			//                    assertTrue(newcpt <= cpt + 10000);
 			//                }
 			cpt = newcpt;
-			System.out.print("|" + ChocoUtil.pad("" + n, -9, " ") + " |");
-			System.out.print("|" + ChocoUtil.pad("" + (System.currentTimeMillis() - t), -5, " ") + " |");
-			System.out.println("|" + ChocoUtil.pad("" + cpt, -10, " ") + " |");
+			StringBuffer st = new StringBuffer();
+            st.append(MessageFormat.format("|{0} |", ChocoUtil.pad("" + n, -9, " ")));
+			st.append(MessageFormat.format("|{0} |", ChocoUtil.pad("" + (currentTimeMillis() - t), -5, " ")));
+			st.append(MessageFormat.format("|{0} |", ChocoUtil.pad("" + cpt, -10, " ")));
+            LOGGER.info(st.toString());
 		}
 	}
 
@@ -346,7 +357,6 @@ public class ModelTest {
 		IntegerVariable v1 = makeIntVar("v1", 0, 10);
 		IntegerVariable v2 = makeIntVar("v2", 0, 10);
 		IntegerVariable v3 = makeIntVar("v3", 0, 10);
-		IntegerVariable v4 = makeIntVar("v4", 0, 10);
 
 		CPModel m1 = new CPModel();
 		CPModel m2 = new CPModel();
@@ -363,8 +373,8 @@ public class ModelTest {
 		s1.read(m1);
 		s2.read(m2);
 
-		System.out.println("" + s1.pretty());
-		System.out.println("" + s2.pretty());
+		LOGGER.info(MessageFormat.format("{0}", s1.pretty()));
+		LOGGER.info(MessageFormat.format("{0}", s2.pretty()));
 
 		s1.solveAll();
 		s2.solveAll();

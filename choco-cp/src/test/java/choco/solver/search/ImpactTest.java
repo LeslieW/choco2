@@ -28,7 +28,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.DomOverWDegBranching;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
-import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -36,14 +36,18 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
+import java.text.MessageFormat;
+import java.util.logging.Logger;
+
 /**
  * Created by IntelliJ IDEA.
  * User: GROCHART
  * Date: 17 mai 2008
  * Time: 12:36:46
- * To change this template use File | Settings | File Templates.
  */
 public class ImpactTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     @Test
     public void test1() {
@@ -138,14 +142,15 @@ public class ImpactTest {
         s.setFirstSolution(true);
         s.launch();
 
-        System.out.println(n + " Nb noeuds = " + s.getNodeCount());
-        System.out.println(n + " Temps = " + s.getTimeCount());
+        LOGGER.info(n + " Nb noeuds = " + s.getNodeCount());
+        LOGGER.info(n + " Temps = " + s.getTimeCount());
 
         for (int i = 0; i < n; i++) {
+            StringBuffer st = new StringBuffer();
             for (int j = 0; j < n; j++) {
-                System.out.print(((IntDomainVar) s.getIntVar(i * n + j)).getVal() + " ");
+                st.append(MessageFormat.format("{0} ", ((IntDomainVar) s.getIntVar(i * n + j)).getVal()));
             }
-            System.out.println("");
+            LOGGER.info(st.toString());
         }
 
         assertTrue(s.getNodeCount() < 5000);
@@ -186,17 +191,18 @@ public class ImpactTest {
         s.generateSearchStrategy();
         s.attachGoal(new DomOverWDegBranching(s, new IncreasingDomain()));
         s.launch();
-        System.out.println(n + " Nb noeuds = " + s.getNodeCount());
-        System.out.println(n + " Nb backs = " + s.getBackTrackCount());        
-        System.out.println(n + " Temps = " + s.getTimeCount());
+        LOGGER.info(n + " Nb noeuds = " + s.getNodeCount());
+        LOGGER.info(n + " Nb backs = " + s.getBackTrackCount());
+        LOGGER.info(n + " Temps = " + s.getTimeCount());
 
         for (int i = 0; i < n; i++) {
+            StringBuffer st = new StringBuffer();
             for (int j = 0; j < n; j++) {
-                System.out.print(((IntDomainVar) s.getIntVar(i * n + j)).getVal() + " ");
+                st.append(MessageFormat.format("{0} ", ((IntDomainVar) s.getIntVar(i * n + j)).getVal()));
             }
-            System.out.println("");
+            LOGGER.info(st.toString());
         }
-        System.out.println("" + s.getNodeCount());
+        LOGGER.info("" + s.getNodeCount());
         assertTrue(s.getNodeCount() < 5000);
     }
 }

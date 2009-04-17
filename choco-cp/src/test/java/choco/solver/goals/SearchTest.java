@@ -29,11 +29,14 @@ import choco.cp.solver.goals.choice.Generate;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
+
+import java.util.logging.Logger;
 
 
 /**
@@ -41,10 +44,10 @@ import org.junit.Test;
  * User: hcambaza
  * Date: 20 mars 2008
  * Time: 08:35:12
- * To change this template use File | Settings | File Templates.
  */
 public class SearchTest {
 
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     @Test
     public void testnode() {
@@ -89,7 +92,7 @@ public class SearchTest {
 	   s.solve();
 	   while (s.nextSolution()) {
 	   }
-	   System.out.println("Nb solutions = " + s.getNbSolutions());
+	   LOGGER.info("Nb solutions = " + s.getNbSolutions());
 
 	   s.printRuntimeSatistics();
 	   return s.getSearchStrategy().getNodeCount();

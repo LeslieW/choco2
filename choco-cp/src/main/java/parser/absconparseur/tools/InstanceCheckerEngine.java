@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.absconparseur.tools;
 
+import choco.kernel.common.logging.ChocoLogging;
 import org.w3c.dom.Document;
 import parser.absconparseur.InstanceTokens;
 import parser.absconparseur.XMLManager;
@@ -31,9 +32,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.util.logging.Logger;
 
 
 public class InstanceCheckerEngine extends Thread {
+
+    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+
 	public static final String DEFAULT_PREFIX = "inst";
 
 	private InstanceChecker checkerGraphic;
@@ -141,8 +146,8 @@ public class InstanceCheckerEngine extends Thread {
 		assert srcFile.getName().toLowerCase().endsWith("xml") || srcFile.getName().toLowerCase().endsWith("xml.bz2");
 
 		DocumentModifier translator = new DocumentModifier();
-		Document document = null;
-		InstanceCheckerParser problem = null;
+		Document document;
+		InstanceCheckerParser problem;
 
 		indicator.write("    loading XML document " + srcFile.getName() + "...");
 		if (srcFile.getName().toLowerCase().endsWith("xml.bz2")) {
@@ -182,7 +187,6 @@ public class InstanceCheckerEngine extends Thread {
 		indicator.write("    setting to canonical form...");
 		document = translator.setCanonicalFormOf(this, document, problem.hasCanonicalNames());
 		indicator.write("ok\n");
-		problem = null;
 
 		indicator.write("    saving " + getNameOfFileToSave(srcFile, containsPredicateBefore) + "...");
 		XMLManager.save(document, out, XMLManager.class.getResourceAsStream(InstanceTokens.INSTANCE_STYLESHEET_2_0));
@@ -196,7 +200,7 @@ public class InstanceCheckerEngine extends Thread {
 		// assert !srcFile.isDirectory();
 
 		if (!mustBeTreated(srcFile.getName())) {
-			System.out.println(srcFile.getAbsolutePath() + " ignored");
+			LOGGER.info(srcFile.getAbsolutePath() + " ignored");
 			counter3++;
 		} else {
 			indicator.write(srcFile.getName() + "\n");
@@ -215,14 +219,13 @@ public class InstanceCheckerEngine extends Thread {
 
 	private void operateDirectory(File dir) {
 		String[] list = dir.list();
-		for (int i = 0; i < list.length; i++)
-			operate(new File(dir, list[i]));
+        for (String aList : list) operate(new File(dir, aList));
 	}
 
 	private void operate(File file) {
 		if (finished)
 			return;
-		if (file.isDirectory() == false)
+		if (!file.isDirectory())
 			operateFile(file);
 		else
 			operateDirectory(file);
@@ -235,7 +238,7 @@ public class InstanceCheckerEngine extends Thread {
 			operate(srcDirectory);
 		} catch (OutOfMemoryError e) {
 			indicator.write(" OUT OF MEMORY ERROR - the program is going to be stopped");
-			System.out.println("OUT OF MEMORY ERROR - the program has been stopped");
+			LOGGER.info("OUT OF MEMORY ERROR - the program has been stopped");
 			System.exit(1);
 		}
 

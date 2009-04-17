@@ -26,19 +26,19 @@ import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
-import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.Solver;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import java.util.Random;
+import java.util.logging.Logger;
 
 /*
 * User : charles
@@ -48,6 +48,8 @@ import java.util.Random;
 * Update : Choco 2.0.1
 */
 public class ClausesTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 
     @Test
@@ -104,10 +106,10 @@ public class ClausesTest {
         s.setGeometricRestart(1, 1.1);
         s.setVarIntSelector(new StaticVarOrder(s.getVar(vars)));
         s.solve();
-        System.out.println(s.getVar(vars[0]) + " " + s.getVar(vars[1]) + " " + s.getVar(vars[2]));
+        LOGGER.info(s.getVar(vars[0]) + " " + s.getVar(vars[1]) + " " + s.getVar(vars[2]));
         s.addNogood(new IntDomainVar[]{s.getVar(vars[0]), s.getVar(vars[1])}, new IntDomainVar[]{});
         s.nextSolution();
-        System.out.println(s.getVar(vars[0]) + " " + s.getVar(vars[1]) + " " + s.getVar(vars[2]));
+        LOGGER.info(s.getVar(vars[0]) + " " + s.getVar(vars[1]) + " " + s.getVar(vars[2]));
 
         assertTrue(s.getVar(vars[0]).getVal() == 1 || s.getVar(vars[1]).getVal() == 1);
         //}
@@ -132,7 +134,7 @@ public class ClausesTest {
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
             s.setValIntSelector(new RandomIntValSelector(seed));
             s.solveAll();
-            System.out.println("" + s.getNbSolutions());
+            LOGGER.info("" + s.getNbSolutions());
             assertEquals(nbsol, s.getNbSolutions());
         }
     }
@@ -176,7 +178,7 @@ public class ClausesTest {
             //int nbct = 15000;//rand.nextInt(2000) + 500;
 
             for (int seed2 = 0; seed2 < 5; seed2++) {
-                System.out.println("seed " + seed1);
+                LOGGER.info("seed " + seed1);
                 int nbnode = solveNBSOL(seed2, nbvar, nbct, false);
                 int nbnode2 = solveNBSOL(seed2, nbvar, nbct, true);
                 assertEquals(nbnode, nbnode2);
@@ -208,13 +210,13 @@ public class ClausesTest {
             } else {
                 int cpt = 0;
                 Constraint[] largeor = new Constraint[poss1 + neg1];
-                for (int j = 0; j < poslit.length; j++) {
-                    largeor[cpt] = eq(poslit[j], 1);
-                    cpt ++;
+                for (IntegerVariable aPoslit : poslit) {
+                    largeor[cpt] = eq(aPoslit, 1);
+                    cpt++;
                 }
-                for (int j = 0; j < neglit.length; j++) {
-                    largeor[cpt] = eq(neglit[j], 0);
-                    cpt ++;
+                for (IntegerVariable aNeglit : neglit) {
+                    largeor[cpt] = eq(aNeglit, 0);
+                    cpt++;
                 }
                 mod.addConstraint(or(largeor));
             }
@@ -224,7 +226,7 @@ public class ClausesTest {
         s.setVarIntSelector(new RandomIntVarSelector(s, seed));
         s.setValIntSelector(new RandomIntValSelector(seed));
         s.solve();
-        System.out.println(seed + " : T= " + s.getTimeCount() + " N= " + s.getNodeCount());
+        LOGGER.info(seed + " : T= " + s.getTimeCount() + " N= " + s.getNodeCount());
         return s.getNodeCount();
 
     }

@@ -27,6 +27,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
 import choco.cp.solver.search.task.SetTimes;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.common.util.TaskComparators;
 import choco.kernel.model.constraints.Constraint;
@@ -35,12 +36,15 @@ import choco.kernel.solver.variables.scheduling.ITask;
 
 import java.util.Comparator;
 import java.util.Random;
+import java.util.logging.Logger;
 
 /**
  * @author Arnaud Malapert
  *
  */
 public class OpenShopExample {
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
 	public static int MAX_DURATION=200;
 
@@ -72,7 +76,7 @@ public class OpenShopExample {
 
 
 	public void generateInstance() {
-		System.out.println("generate a new random open shop instance");
+		LOGGER.info("generate a new random open shop instance");
 		for (int i = 0; i < durations.length; i++) {
 			for (int j = 0; j < durations[i].length; j++) {
 				durations[i][j]=rnd.nextInt(MAX_DURATION);
@@ -93,7 +97,7 @@ public class OpenShopExample {
 		model.addConstraints(jobs);
 		model.addConstraints(machines);
 		//model.addConstraint(Scheduling.pert());
-		//System.out.println(model.pretty());
+		//LOGGER.info(model.pretty());
 	}
 
 

@@ -23,6 +23,7 @@
 package parser.absconparseur.intension;
 
 
+import choco.kernel.common.logging.ChocoLogging;
 import parser.absconparseur.InstanceTokens;
 import parser.absconparseur.ReflectionManager;
 import parser.absconparseur.Toolkit;
@@ -40,8 +41,13 @@ import parser.absconparseur.intension.terminal.VariableEvaluator;
 import parser.absconparseur.intension.types.BooleanType;
 import parser.absconparseur.intension.types.IntegerType;
 
+import java.text.MessageFormat;
+import java.util.logging.Logger;
+
 
 public class EvaluationManager {
+    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+
 	protected String[] universalPostfixExpression;
 
 	protected Evaluator[] evaluators;
@@ -66,7 +72,7 @@ public class EvaluationManager {
 	private Evaluator buildEvaluator(String token) {
 		Long l = Toolkit.parseLong(token);
 		if (l != null)
-			return new LongEvaluator(l.longValue());
+			return new LongEvaluator(l);
 		if (token.startsWith(InstanceTokens.PARAMETER_PREFIX))
 			return new VariableEvaluator(this, Integer.parseInt(token.substring(InstanceTokens.PARAMETER_PREFIX.length())));
 		return (Evaluator) ReflectionManager.getInstanceOf(Evaluator.getClassOf(token));
@@ -81,10 +87,8 @@ public class EvaluationManager {
 
 	// Reste a faire pour IF
 	protected void dealWithShortCircuits() {
-		boolean useShortCircuits = true; // TODO
-		if (!useShortCircuits)
-			return;
-		shortCircuits = new int[evaluators.length];
+		boolean useShortCircuits; // TODO
+        shortCircuits = new int[evaluators.length];
 		useShortCircuits = false;
 
 		for (int i = 0; i < evaluators.length - 1; i++) {
@@ -108,7 +112,7 @@ public class EvaluationManager {
 				shortCircuits[i] = -j - 1;
 				useShortCircuits = true;
 			}
-			// System.out.println(" i= " + i + " j = " + j);
+			// LOGGER.info(" i= " + i + " j = " + j);
 		}
 		if (!useShortCircuits)
 			shortCircuits = null;
@@ -136,7 +140,8 @@ public class EvaluationManager {
 
 	/**
 	 * Determine if the predicate (recorded under the form a postfix expression) is satisfied with respect to the given tuple.
-	 */
+     * @param values
+     */
 	public final boolean checkValues(int[] values) {
 		this.currentValues = values;
 		Evaluator.resetTop();
@@ -154,8 +159,7 @@ public class EvaluationManager {
 
 	public boolean controlArityOfEvaluators() {
 		int nbStackedElements = 0;
-		for (int i = 0; i < evaluators.length; i++)
-			nbStackedElements += 1 - evaluators[i].getArity();
+        for (Evaluator evaluator : evaluators) nbStackedElements += 1 - evaluator.getArity();
 		return nbStackedElements == 1;
 	}
 
@@ -165,7 +169,7 @@ public class EvaluationManager {
 		boolean[] booleanTypes = new boolean[evaluators.length];
 		int top = -1;
 		for (Evaluator evaluator : evaluators) {
-			// System.out.println(evaluators[i].getClass().getName());
+			// LOGGER.info(evaluators[i].getClass().getName());
 			if (evaluator instanceof ArithmeticEvaluator) {
 				if (evaluator instanceof IfEvaluator) {
 					if (!booleanTypes[top] || booleanTypes[top - 1] || booleanTypes[top - 2])
@@ -204,7 +208,7 @@ public class EvaluationManager {
 				continue;
 			if (evaluators[i - 1] instanceof VariableEvaluator && !variables[((VariableEvaluator) evaluators[i - 1]).getPosition()].getDomain().contains(0))
 				continue;
-			//System.out.println(evaluators[i - 1]);
+			//LOGGER.info(evaluators[i - 1]);
 			return false;
 		}
 		return true;
@@ -216,89 +220,86 @@ public class EvaluationManager {
 		double[] dstack = new double[evaluators.length];
 		int top = -1;
 
-		// System.out.println("d = " + Math.pow(Integer.MAX_VALUE,Integer.MAX_VALUE) + " max " + Integer.MAX_VALUE);
-		for (int i = 0; i < evaluators.length; i++) {
-			Evaluator evaluator = evaluators[i];
-			if (evaluator instanceof LongEvaluator) {
-				top++;
-				// lstack[top] = Math.abs(((LongEvaluator) evaluator).getValue());
-				lstack[top] = (int) Math.abs(((LongEvaluator) evaluator).getValue());
-				dstack[top] = Math.abs(((LongEvaluator) evaluator).getValue());
-			} else if (evaluator instanceof VariableEvaluator) {
-				top++;
-				int[] values = variables[((VariableEvaluator) evaluator).getPosition()].getDomain().getValues();
-				int maxAbsoluteValue = Math.max(Math.abs(values[0]), Math.abs(values[values.length - 1]));
-				lstack[top] = maxAbsoluteValue;
-				dstack[top] = maxAbsoluteValue;
-			} else if (evaluator instanceof TrueEvaluator) {
-				top++;
-				lstack[top] = 1;
-				dstack[top] = 1;
-			} else if (evaluator instanceof FalseEvaluator) {
-				top++;
-				lstack[top] = 0;
-				dstack[top] = 0;
-			} else if (evaluator instanceof AbsEvaluator)
-				;
-			else if (evaluator instanceof AddEvaluator) {
-				top--;
-				lstack[top] = lstack[top + 1] + lstack[top];
-				dstack[top] = dstack[top + 1] + dstack[top];
-			} else if (evaluator instanceof DivEvaluator) {
-				top--;
-			} else if (evaluator instanceof IfEvaluator) {
-				top -= 2;
-				lstack[top] = Math.max(lstack[top + 1], lstack[top]);
-				dstack[top] = Math.max(dstack[top + 1], dstack[top]);
-			} else if (evaluator instanceof MaxEvaluator) {
-				top--;
-				lstack[top] = Math.max(lstack[top + 1], lstack[top]);
-				dstack[top] = Math.max(dstack[top + 1], dstack[top]);
-			} else if (evaluator instanceof MinEvaluator) {
-				top--;
-				lstack[top] = Math.min(lstack[top + 1], lstack[top]);
-				dstack[top] = Math.min(dstack[top + 1], dstack[top]);
-			} else if (evaluator instanceof ModEvaluator) {
-				top--;
-			} else if (evaluator instanceof MulEvaluator) {
-				top--;
-				lstack[top] = lstack[top + 1] * lstack[top];
-				dstack[top] = dstack[top + 1] * dstack[top];
-			} else if (evaluator instanceof NegEvaluator)
-				;
-			else if (evaluator instanceof PowEvaluator) {
-				top--;
-				// lstack[top] = (long) Math.pow(lstack[top + 1], lstack[top]);
-				lstack[top] = (int) Math.pow(lstack[top + 1], lstack[top]);
-				dstack[top] = Math.pow(dstack[top + 1], dstack[top]);
-			} else if (evaluator instanceof SubEvaluator) {
-				top--;
-				lstack[top] = lstack[top + 1] + lstack[top];
-				dstack[top] = dstack[top + 1] + dstack[top];
-			} else if (evaluator instanceof NotEvaluator) {
-				lstack[top] = 1;
-				dstack[top] = 1;
-			} else if (evaluator instanceof LogicalEvaluator) {
-				top--;
-				lstack[top] = 1;
-				dstack[top] = 1;
-			} else if (evaluator instanceof RelationalEvaluator) {
-				top--;
-				lstack[top] = 1;
-				dstack[top] = 1;
-			} else
-				throw new IllegalArgumentException();
-			if (lstack[top] != dstack[top] || Double.isInfinite(dstack[top]))
-				return false;
-		}
-		// System.out.println(" topL = " + topL + " topD = " + topD + "max = " + lstack[1]);
+		// LOGGER.info("d = " + Math.pow(Integer.MAX_VALUE,Integer.MAX_VALUE) + " max " + Integer.MAX_VALUE);
+        for (Evaluator evaluator : evaluators) {
+            if (evaluator instanceof LongEvaluator) {
+                top++;
+                // lstack[top] = Math.abs(((LongEvaluator) evaluator).getValue());
+                lstack[top] = (int) Math.abs(((LongEvaluator) evaluator).getValue());
+                dstack[top] = Math.abs(((LongEvaluator) evaluator).getValue());
+            } else if (evaluator instanceof VariableEvaluator) {
+                top++;
+                int[] values = variables[((VariableEvaluator) evaluator).getPosition()].getDomain().getValues();
+                int maxAbsoluteValue = Math.max(Math.abs(values[0]), Math.abs(values[values.length - 1]));
+                lstack[top] = maxAbsoluteValue;
+                dstack[top] = maxAbsoluteValue;
+            } else if (evaluator instanceof TrueEvaluator) {
+                top++;
+                lstack[top] = 1;
+                dstack[top] = 1;
+            } else if (evaluator instanceof FalseEvaluator) {
+                top++;
+                lstack[top] = 0;
+                dstack[top] = 0;
+            }/*else if (evaluator instanceof AbsEvaluator)*/
+            else if (evaluator instanceof AddEvaluator) {
+                top--;
+                lstack[top] = lstack[top + 1] + lstack[top];
+                dstack[top] = dstack[top + 1] + dstack[top];
+            } else if (evaluator instanceof DivEvaluator) {
+                top--;
+            } else if (evaluator instanceof IfEvaluator) {
+                top -= 2;
+                lstack[top] = Math.max(lstack[top + 1], lstack[top]);
+                dstack[top] = Math.max(dstack[top + 1], dstack[top]);
+            } else if (evaluator instanceof MaxEvaluator) {
+                top--;
+                lstack[top] = Math.max(lstack[top + 1], lstack[top]);
+                dstack[top] = Math.max(dstack[top + 1], dstack[top]);
+            } else if (evaluator instanceof MinEvaluator) {
+                top--;
+                lstack[top] = Math.min(lstack[top + 1], lstack[top]);
+                dstack[top] = Math.min(dstack[top + 1], dstack[top]);
+            } else if (evaluator instanceof ModEvaluator) {
+                top--;
+            } else if (evaluator instanceof MulEvaluator) {
+                top--;
+                lstack[top] = lstack[top + 1] * lstack[top];
+                dstack[top] = dstack[top + 1] * dstack[top];
+            } /*else if (evaluator instanceof NegEvaluator)*/
+            else if (evaluator instanceof PowEvaluator) {
+                top--;
+                // lstack[top] = (long) Math.pow(lstack[top + 1], lstack[top]);
+                lstack[top] = (int) Math.pow(lstack[top + 1], lstack[top]);
+                dstack[top] = Math.pow(dstack[top + 1], dstack[top]);
+            } else if (evaluator instanceof SubEvaluator) {
+                top--;
+                lstack[top] = lstack[top + 1] + lstack[top];
+                dstack[top] = dstack[top + 1] + dstack[top];
+            } else if (evaluator instanceof NotEvaluator) {
+                lstack[top] = 1;
+                dstack[top] = 1;
+            } else if (evaluator instanceof LogicalEvaluator) {
+                top--;
+                lstack[top] = 1;
+                dstack[top] = 1;
+            } else if (evaluator instanceof RelationalEvaluator) {
+                top--;
+                lstack[top] = 1;
+                dstack[top] = 1;
+            } else
+                throw new IllegalArgumentException();
+            if (lstack[top] != dstack[top] || Double.isInfinite(dstack[top]))
+                return false;
+        }
+		// LOGGER.info(" topL = " + topL + " topD = " + topD + "max = " + lstack[1]);
 		return true;
 	}
 	
 	public void display() {
-		for (int i=0; i<evaluators.length;i++)
-			System.out.print(evaluators[i] + " ");
-		System.out.println();
+        StringBuffer st = new StringBuffer();
+        for (Evaluator evaluator : evaluators) st.append(MessageFormat.format("{0} ", evaluator));
+		LOGGER.info(st.toString());
 	}
 	
 	

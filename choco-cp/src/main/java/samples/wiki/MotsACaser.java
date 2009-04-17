@@ -168,14 +168,15 @@ public class MotsACaser {
 //
 //    public void printSol(IntDomainVar[][] vs) {
 //        for (int i = 0; i < vs.length; i++) {
+//            StringBuffer st = new StringBuffer();
 //            for (int j = 0; j < vs[0].length; j++) {
 //                if (vs[i][j] == null) {
-//                    System.out.print("* ");
+//                    st.append("* ");
 //                } else if(!vs[i][j].isInstantiated()) {
-//                    System.out.print("? ");
-//                } else System.out.print(numberToletters[vs[i][j].getVal()] + " ");
+//                    st.append("? ");
+//                } else st.append(numberToletters[vs[i][j].getVal()] + " ");
 //            }
-//            System.out.println("");
+//            LOGGER.info(st.toString());
 //        }
 //    }
 //

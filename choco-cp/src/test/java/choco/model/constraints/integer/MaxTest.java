@@ -27,6 +27,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.MathUtil;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -39,15 +40,19 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import static java.text.MessageFormat.format;
 import java.util.Random;
+import java.util.logging.Logger;
+
 /**
  * Created by IntelliJ IDEA.
  * User: grochart
  * Date: 17 janv. 2007
  * Time: 14:44:10
- * To change this template use File | Settings | File Templates.
  */
 public class MaxTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	private CPModel m;
 	private CPSolver s;
@@ -79,12 +84,12 @@ public class MaxTest {
 			s.setValIntSelector(new RandomIntValSelector(i + 1));
 			s.solve();
 			do {
-				/*System.out.println("" + x.getVal() + "=max(" + y.getVal() + "," +
+				/*LOGGER.info("" + x.getVal() + "=max(" + y.getVal() + "," +
                 z.getVal()+")");*/
 			} while (s.nextSolution() == Boolean.TRUE);
-			System.out.println("" + s.getSearchStrategy().getNodeCount());
+			LOGGER.info("" + s.getSearchStrategy().getNodeCount());
 			assertEquals(125, s.getNbSolutions());
-			//System.out.println("Nb solution : " + s.getNbSolutions());
+			//LOGGER.info("Nb solution : " + s.getNbSolutions());
 		}
 	}
 
@@ -106,12 +111,12 @@ public class MaxTest {
 			s.read(m);
 			s.solve();
 			do {
-				//System.out.println("" + x.getVal() + "=max(" + y.getVal() + "," +
+				//LOGGER.info("" + x.getVal() + "=max(" + y.getVal() + "," +
 				//�    z.getVal()+")");
 			} while (s.nextSolution() == Boolean.TRUE);
-			System.out.println("" + s.getSearchStrategy().getNodeCount());
+			LOGGER.info("" + s.getSearchStrategy().getNodeCount());
 			assertEquals(125, s.getNbSolutions());
-			//System.out.println("Nb solution : " + s.getNbSolutions());
+			//LOGGER.info("Nb solution : " + s.getNbSolutions());
 		}
 	}
 
@@ -130,12 +135,12 @@ public class MaxTest {
 			s.read(m);
 			s.solve();
 			do {
-				//System.out.println("" + x.getVal() + "=max(" + y.getVal() + "," +
+				//LOGGER.info("" + x.getVal() + "=max(" + y.getVal() + "," +
 				//�    z.getVal()+")");
 			} while (s.nextSolution() == Boolean.TRUE);
-			System.out.println("" + s.getSearchStrategy().getNodeCount());
+			LOGGER.info("" + s.getSearchStrategy().getNodeCount());
 			assertEquals(25, s.getNbSolutions());
-			//System.out.println("Nb solution : " + s.getNbSolutions());
+			//LOGGER.info("Nb solution : " + s.getNbSolutions());
 		}
 	}
 
@@ -165,11 +170,11 @@ public class MaxTest {
 			s.read(m);
 			s.solve();
 			do {
-				/*System.out.println("" + x.getVal() + "=max(" + y.getVal() + "," +
+				/*LOGGER.info("" + x.getVal() + "=max(" + y.getVal() + "," +
                 z.getVal()+")");*/
 			} while (s.nextSolution() == Boolean.TRUE);
 			assertEquals(25, s.getNbSolutions());
-			//System.out.println("Nb solution : " + s.getNbSolutions());
+			//LOGGER.info("Nb solution : " + s.getNbSolutions());
 		}
 	}
 
@@ -186,10 +191,10 @@ public class MaxTest {
 		} catch (ContradictionException e) {
 			e.printStackTrace();
 		}
-		System.out.println("max " + s.getVar(max).getDomain().pretty());
-		System.out.println("y " + s.getVar(y).getDomain().pretty());
-		System.out.println("z " + s.getVar(z).getDomain().pretty());
-		System.out.println(!s.getVar(y).canBeInstantiatedTo(3));
+		LOGGER.info(format("max {0}", s.getVar(max).getDomain().pretty()));
+		LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
+		LOGGER.info(format("z {0}", s.getVar(z).getDomain().pretty()));
+		LOGGER.info(format("{0}", !s.getVar(y).canBeInstantiatedTo(3)));
 		assertTrue(!s.getVar(y).canBeInstantiatedTo(3));
 	}
 
@@ -206,10 +211,10 @@ public class MaxTest {
 		} catch (ContradictionException e) {
 			e.printStackTrace();
 		}
-		System.out.println("max " + s.getVar(max).getDomain().pretty());
-		System.out.println("y " + s.getVar(y).getDomain().pretty());
-		System.out.println("z " + s.getVar(z).getDomain().pretty());
-		System.out.println(s.getVar(z).canBeInstantiatedTo(3) && s.getVar(max).canBeInstantiatedTo(3));
+		LOGGER.info(format("max {0}", s.getVar(max).getDomain().pretty()));
+		LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
+		LOGGER.info(format("z {0}", s.getVar(z).getDomain().pretty()));
+		LOGGER.info(format("{0}", s.getVar(z).canBeInstantiatedTo(3) && s.getVar(max).canBeInstantiatedTo(3)));
 		assertTrue(s.getVar(z).canBeInstantiatedTo(3) && s.getVar(max).canBeInstantiatedTo(3));
 	}
 
@@ -226,10 +231,10 @@ public class MaxTest {
 		} catch (ContradictionException e) {
 			e.printStackTrace();
 		}
-		System.out.println("max " + s.getVar(max).getDomain().pretty());
-		System.out.println("y " + s.getVar(y).getDomain().pretty());
-		System.out.println("z " + s.getVar(z).getDomain().pretty());
-		System.out.println(s.getVar(y).canBeInstantiatedTo(3) && s.getVar(z).canBeInstantiatedTo(3));
+		LOGGER.info(format("max {0}", s.getVar(max).getDomain().pretty()));
+		LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
+		LOGGER.info(format("z {0}", s.getVar(z).getDomain().pretty()));
+		LOGGER.info(format("{0}", s.getVar(y).canBeInstantiatedTo(3) && s.getVar(z).canBeInstantiatedTo(3)));
 		assertTrue(s.getVar(y).canBeInstantiatedTo(3) && s.getVar(z).canBeInstantiatedTo(3));
 	}
 
@@ -245,10 +250,10 @@ public class MaxTest {
 		} catch (ContradictionException e) {
 			e.printStackTrace();
 		}
-		System.out.println("max " + s.getVar(max).getDomain().pretty());
-		System.out.println("y " + s.getVar(y).getDomain().pretty());
-		System.out.println("z " + s.getVar(z).getDomain().pretty());
-		System.out.println(s.getVar(max).getDomain().getSize() == 3);
+		LOGGER.info(format("max {0}", s.getVar(max).getDomain().pretty()));
+		LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
+		LOGGER.info(format("z {0}", s.getVar(z).getDomain().pretty()));
+		LOGGER.info(format("{0}", s.getVar(max).getDomain().getSize() == 3));
 		assertTrue(s.getVar(max).getDomain().getSize() == 3);
 	}
 
@@ -266,10 +271,10 @@ public class MaxTest {
 		} catch (ContradictionException e) {
 			e.printStackTrace();
 		}
-		System.out.println("max " + s.getVar(max).getDomain().pretty());
-		System.out.println("y " + s.getVar(y).getDomain().pretty());
-		System.out.println("z " + s.getVar(z).getDomain().pretty());
-		System.out.println(s.getVar(max).getDomain().getSize() == 3);
+		LOGGER.info(format("max {0}", s.getVar(max).getDomain().pretty()));
+		LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
+		LOGGER.info(format("z {0}", s.getVar(z).getDomain().pretty()));
+		LOGGER.info(format("{0}", s.getVar(max).getDomain().getSize() == 3));
 		assertEquals(s.getVar(max).getDomain().getSize(),3);
 		assertEquals(s.getVar(z).getDomainSize(),3);
 	}
@@ -296,11 +301,11 @@ public class MaxTest {
 			s.setVarIntSelector(new RandomIntVarSelector(s, i));
 
 
-			//System.out.println("Choco Solutions");
+			//LOGGER.info("Choco Solutions");
 			int nbSolution = 0;
 			if (s.solve() == Boolean.TRUE) {
 				do {
-					//System.out.println("Max(" + ((IntegerVariable) chocoCSP.getIntVar(0)).getVal() + ", " + ((IntegerVariable) chocoCSP.getIntVar(1)).getVal() + ") = " + ((IntegerVariable) chocoCSP.getIntVar(2)).getVal());
+					//LOGGER.info("Max(" + ((IntegerVariable) chocoCSP.getIntVar(0)).getVal() + ", " + ((IntegerVariable) chocoCSP.getIntVar(1)).getVal() + ") = " + ((IntegerVariable) chocoCSP.getIntVar(2)).getVal());
 					nbSolution++;
 				} while (s.nextSolution() == Boolean.TRUE);
 			}
@@ -330,11 +335,11 @@ public class MaxTest {
 			s.setVarIntSelector(new RandomIntVarSelector(s, i));
 
 
-			//System.out.println("Choco Solutions");
+			//LOGGER.info("Choco Solutions");
 			int nbSolution = 0;
 			if (s.solve() == Boolean.TRUE) {
 				do {
-					//System.out.println("Max(" + ((IntegerVariable) chocoCSP.getIntVar(0)).getVal() + ", " + ((IntegerVariable) chocoCSP.getIntVar(1)).getVal() + ") = " + ((IntegerVariable) chocoCSP.getIntVar(2)).getVal());
+					//LOGGER.info("Max(" + ((IntegerVariable) chocoCSP.getIntVar(0)).getVal() + ", " + ((IntegerVariable) chocoCSP.getIntVar(1)).getVal() + ") = " + ((IntegerVariable) chocoCSP.getIntVar(2)).getVal());
 					nbSolution++;
 				} while (s.nextSolution() == Boolean.TRUE);
 			}
@@ -353,7 +358,7 @@ public class MaxTest {
 	}
 
 	protected static void testAll(boolean minOrMax,int nbIter, int nbVars,int domSize, boolean bounded) {
-		System.out.println("%%%%%%% TEST MIN/MAX %%%%%%%%%%%%%%");
+		LOGGER.info("%%%%%%% TEST MIN/MAX %%%%%%%%%%%%%%");
 		CPModel m = new CPModel();
 		SetVariable set  = makeSetVar("set", 0, nbVars-1);
 		IntegerVariable[] vars = makeIntVarArray("v",nbVars,1, domSize);
@@ -376,7 +381,7 @@ public class MaxTest {
 			int nbSets = MathUtil.combinaison(nbVars, k);
 			int nbAssign = (int) Math.pow(domSize, k==0 ? nbVars+1 : nbVars);
 			sum += nbSets*nbAssign;
-			System.out.println("NB solutions : "+sum);
+			LOGGER.info("NB solutions : "+sum);
 			for (int i = 0; i < nbIter; i++) {
 				CPSolver s = new CPSolver();
 				s.read(m);
@@ -426,7 +431,7 @@ public class MaxTest {
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        System.out.println("max " + s.getVar(max).getDomain().pretty());
+        LOGGER.info("max " + s.getVar(max).getDomain().pretty());
         assertTrue(s.getVar(max).getDomain().getSize() == 3);
     }
 }

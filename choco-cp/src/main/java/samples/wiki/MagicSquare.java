@@ -25,16 +25,21 @@ package samples.wiki;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 
+import java.util.logging.Logger;
+
 
 public class MagicSquare {
 
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+
     public static void main(String[] args) {
         int n = 4;
-        System.out.println("Magic Square Model with n = " + n);
+        LOGGER.info("Magic Square Model with n = " + n);
 
         Model m = new CPModel();
         Solver s = new CPSolver();
@@ -70,16 +75,17 @@ public class MagicSquare {
         }
         s.read(m);
         s.solve();
-        //System.out.println("" + pretty());
+        //LOGGER.info("" + pretty());
         for (int i = 0; i < n; i++) {
+            StringBuffer st = new StringBuffer();
             for (int j = 0; j < n; j++) {
-                System.out.print("" + s.getVar(vars[i * n + j]).getVal());
-                if (s.getVar(vars[i * n + j]).getVal() > 9) System.out.print(" ");
-                else System.out.print("  ");
+                st.append("" + s.getVar(vars[i * n + j]).getVal());
+                if (s.getVar(vars[i * n + j]).getVal() > 9) st.append(" ");
+                else st.append("  ");
             }
-            System.out.println("");
+            LOGGER.info(st.toString());
         }
-        System.out.println("NB_NODE: " + s.getSearchStrategy().getNodeCount());
+        LOGGER.info("NB_NODE: " + s.getSearchStrategy().getNodeCount());
         
     }
 

@@ -23,10 +23,13 @@
 package choco.memory;
 
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.IStateBinaryTree;
 import choco.kernel.memory.trailing.StoredBinaryTree;
 import choco.kernel.solver.Solver;
 import org.junit.Test;
+
+import java.util.logging.Logger;
 
 /*
 * User : charles
@@ -36,6 +39,8 @@ import org.junit.Test;
 * Update : Choco 2.0.1
 */
 public class StoredBinaryTreeTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     @Test
     public void test0() {
@@ -48,9 +53,9 @@ public class StoredBinaryTreeTest {
         t.remove(5);
         t.remove(10);
         t.remove(100);
-        System.out.println(t);
+        LOGGER.info(""+t);
 
         IStateBinaryTree.Node n = t.prevNode(0);
-        System.out.println(n);
+        LOGGER.info(""+n);
     }
 }

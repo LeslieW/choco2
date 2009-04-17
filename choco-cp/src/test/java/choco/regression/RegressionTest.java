@@ -26,6 +26,7 @@ package choco.regression;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -39,16 +40,19 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import java.util.Iterator;
+import java.util.logging.Logger;
+
 /**
  * @author grochart
  */
 public class RegressionTest {
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
   // 03/01/2006: number of constraints was not correctly maintained !
   // bug reported by R�mi Coletta
     @Test
   public void testNbConstraints() {
-    System.out.println("Regression currentElement: 03/01/2006 - Remi Coletta");
+    LOGGER.info("Regression currentElement: 03/01/2006 - Remi Coletta");
 
     CPModel m = new CPModel();
     Solver s = new CPSolver();
@@ -84,7 +88,7 @@ public class RegressionTest {
 
     @Test
   public void testIsFeasible() {
-    System.out.println("Regression currentElement: 27/01/2006");
+    LOGGER.info("Regression currentElement: 27/01/2006");
 
     Model m = new CPModel();
     Solver s = new CPSolver();
@@ -101,7 +105,7 @@ public class RegressionTest {
     s.solve();
     // On place la contrainte (x1 == x2)
     assertEquals(true, s.isFeasible() != null);
-    assertEquals(false, s.isFeasible().booleanValue());
+    assertEquals(false, s.isFeasible());
 
   }
 
@@ -109,13 +113,13 @@ public class RegressionTest {
     @Test
     public void run(){
         for(int i = 0; i < 10; i++){
-            System.out.println("i:"+i);
+            LOGGER.info("i:"+i);
             this.constraintsIterator();
         }
     }
 
   public void constraintsIterator() {
-        System.out.println("Regression currentElement: 27/01/2006 - iterator");
+        LOGGER.info("Regression currentElement: 27/01/2006 - iterator");
     Model m = new CPModel();
     Solver s = new CPSolver();
     IntegerVariable x = makeIntVar("X", 1, 5);
@@ -142,7 +146,7 @@ public class RegressionTest {
   }
 
     /*public void testMult() {
-      System.out.println("Regression currentElement: 27/01/2006");
+      LOGGER.info("Regression currentElement: 27/01/2006");
 
       Model pb = new Model();
       IntegerVariable v = pb.makeIntVar("x1", 0, 2);
@@ -158,10 +162,10 @@ public class RegressionTest {
     public void testCleanState() {
         String[] type = new String[]{"cp:enum", "cp:bound", "cp:btree", "cp:link"};
 
-        for(int i = 0; i < type.length; i++){
+        for (String aType : type) {
 
             Model m = new CPModel();
-            IntegerVariable v = makeIntVar("v", 1, 2, type[i]);
+            IntegerVariable v = makeIntVar("v", 1, 2, aType);
             m.addConstraint(geq(v, 1));
             Solver s = new CPSolver();
             s.read(m);

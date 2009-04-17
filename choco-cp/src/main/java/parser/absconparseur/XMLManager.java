@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.absconparseur;
 
+import choco.kernel.common.logging.ChocoLogging;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -38,16 +39,20 @@ import javax.xml.validation.SchemaFactory;
 import java.io.*;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.logging.Logger;
 
 public class XMLManager {
+    
+    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+
 	private static boolean useStyleSheet = true; // true; // TODO //true; //false; // true // a style sheet can seriously degrade performances
 
 	static class ErrorHandler extends DefaultHandler {
 		private MessageFormat message = new MessageFormat("({0}: {1}, {2}): {3}");
 
 		private void print(SAXParseException x) {
-			String msg = message.format(new Object[] { x.getSystemId(), Integer.valueOf(x.getLineNumber()), Integer.valueOf(x.getColumnNumber()), x.getMessage() });
-			System.out.println(msg);
+			String msg = message.format(new Object[] { x.getSystemId(), x.getLineNumber(), x.getColumnNumber(), x.getMessage() });
+			LOGGER.info(msg);
 		}
 
 		public void warning(SAXParseException x) {
@@ -67,8 +72,8 @@ public class XMLManager {
 	private static void dealWithException(Exception e) {
 		if (e instanceof SAXParseException) {
 			SAXParseException ee = (SAXParseException) e;
-			System.out.println("\n** Parsing error" + ", line " + ee.getLineNumber() + ", uri " + ee.getSystemId());
-			System.out.println("   " + ee.getMessage());
+			LOGGER.info("\n** Parsing error" + ", line " + ee.getLineNumber() + ", uri " + ee.getSystemId());
+			LOGGER.info("   " + ee.getMessage());
 			Exception x = (ee.getException() == null ? ee : ee.getException());
 			x.printStackTrace();
 		} else if (e instanceof SAXException) {
@@ -77,16 +82,16 @@ public class XMLManager {
 			x.printStackTrace();
 		} else if (e instanceof TransformerConfigurationException) {
 			TransformerConfigurationException ee = (TransformerConfigurationException) e;
-			System.out.println("\n** Transformer Factory error\n" + e.getMessage());
+			LOGGER.info("\n** Transformer Factory error\n" + e.getMessage());
 			Throwable x = (ee.getException() == null ? ee : ee.getException());
 			x.printStackTrace();
 		} else if (e instanceof TransformerException) {
 			TransformerException ee = (TransformerException) e;
-			System.out.println("\n** Transformation error" + e.getMessage());
+			LOGGER.info("\n** Transformation error" + e.getMessage());
 			Throwable x = (ee.getException() == null ? ee : ee.getException());
 			x.printStackTrace();
 		} else {
-			System.out.println(e);
+			LOGGER.info(MessageFormat.format("{0}", e));
 			e.printStackTrace();
 		}
 		System.exit(1);
@@ -121,8 +126,7 @@ public class XMLManager {
 			}
 			DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 			documentBuilder.setErrorHandler(new ErrorHandler());
-			Document document = documentBuilder.parse(is);
-			return document;
+            return documentBuilder.parse(is);
 		} catch (Exception e) {
 			dealWithException(e);
 			return null;
@@ -133,7 +137,7 @@ public class XMLManager {
 		try {
 			return load(new FileInputStream(file), schemaUrl);
 		} catch (FileNotFoundException e) {
-			System.out.println("File " + file.getName() + " does not exist");
+			LOGGER.info("File " + file.getName() + " does not exist");
 			System.exit(1);
 			return null;
 		}
@@ -158,7 +162,7 @@ public class XMLManager {
 				return document;
 
 			} catch (Exception e) {
-				System.out.println("Problem with " + fileName);
+				LOGGER.info("Problem with " + fileName);
 				System.exit(1);
 				return null;
 			}
@@ -229,7 +233,7 @@ public class XMLManager {
 	}
 
 	public static Node getChildElement(Document document, String elementName, int index) {
-		NodeList list = (NodeList) document.getElementsByTagName(elementName);
+		NodeList list = document.getElementsByTagName(elementName);
 		return list.item(index);
 	}
 
@@ -244,14 +248,14 @@ public class XMLManager {
 		for (int i = 0; i < map.getLength(); i++) {
 			Attr attribut = (Attr) map.item(i);
 			values[i] = attribut.getValue();
-			System.out.println(attribut.getName() + " = " + values[i]);
+			LOGGER.info(attribut.getName() + " = " + values[i]);
 		}
 		return values;
 	}
 
 	public static void displayElement(Document document, String elementName) {
 		Node node = document.getElementsByTagName(elementName).item(0);
-		NodeList list = (NodeList) node.getChildNodes();
+		NodeList list = node.getChildNodes();
 		for (int i = 0; i < list.getLength(); i++) {
 			Element element = (Element) list.item(i);
 			displayAttributes(element);

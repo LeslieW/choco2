@@ -25,6 +25,7 @@ package choco.model.constraints.reified;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -45,7 +46,7 @@ import java.util.logging.Logger;
  */
 public class BinaryDisjunctionTest {
 
-    private Logger logger = Logger.getLogger("choco.currentElement");
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
     private CPModel m;
     private Solver s;
     private IntegerVariable x;
@@ -59,7 +60,7 @@ public class BinaryDisjunctionTest {
 
     @Before
     public void setUp() throws Exception {
-        logger.fine("choco.currentElement.reified.BinaryDisjunctionTest Testing...");
+        LOGGER.fine("choco.currentElement.reified.BinaryDisjunctionTest Testing...");
         m = new CPModel();
         s = new CPSolver();
         x = makeIntVar("X", 1, 10);
@@ -67,67 +68,61 @@ public class BinaryDisjunctionTest {
 
     @Test
     public void test1() {
-        System.out.println("BinaryDisjunctionTest.test1");
+        LOGGER.info("BinaryDisjunctionTest.test1");
         Constraint c0 = leq((x), (3));
         Constraint c1 = geq((x), (9));
 
         Constraint or = or(c0, c1);
-        System.out.println(or.pretty());
+        LOGGER.info(or.pretty());
         m.addConstraint(or);
         s.read(m);
-        System.out.println(s.getCstr(or).pretty());
+        LOGGER.info(s.getCstr(or).pretty());
 
         try {
             s.propagate();
         } catch (ContradictionException e) {
-            logger.severe("BinaryDisjunctionTest() : Test1#propagate() " + e.getMessage());
+            LOGGER.severe("BinaryDisjunctionTest() : Test1#propagate() " + e.getMessage());
             fail();
         }
         s.solve();
-        System.out.print(" Tests");
         if (s.isFeasible()) {
             do {
-                System.out.print(".");                
                 assertTrue("x not instanciated", s.getVar(x).isInstantiated());
                 assertFalse("value of x not excepted", s.getVar(x).getVal() > 3 && s.getVar(x).getVal() < 9);
             } while (s.nextSolution() == Boolean.TRUE);
         }
-        System.out.print(".");
         assertEquals("Nb solution unexcepted", s.getNbSolutions(), 5);
-        System.out.println("OK");
+        LOGGER.info("OK");
 
     }
 
     @Test
     public void test1Decomp() {
-        System.out.println("BinaryDisjunctionTest.test1");
+        LOGGER.info("BinaryDisjunctionTest.test1");
         Constraint c0 = leq((x), (3));
         Constraint c1 = geq((x), (9));
 
         m.setDefaultExpressionDecomposition(true);
         Constraint or = or(c0, c1);
-        System.out.println(or.pretty());
+        LOGGER.info(or.pretty());
         m.addConstraint(or);
         s.read(m);
-        System.out.println(s.getCstr(or).pretty());
+        LOGGER.info(s.getCstr(or).pretty());
         try {
             s.propagate();
         } catch (ContradictionException e) {
-            logger.severe("BinaryDisjunctionTest() : Test1#propagate() " + e.getMessage());
+            LOGGER.severe("BinaryDisjunctionTest() : Test1#propagate() " + e.getMessage());
             fail();
         }
         s.solve();
-        System.out.print(" Tests");
         if (s.isFeasible()) {
             do {
-                System.out.print(".");
                 assertTrue("x not instanciated", s.getVar(x).isInstantiated());
                 assertFalse("value of x not excepted", s.getVar(x).getVal() > 3 && s.getVar(x).getVal() < 9);
             } while (s.nextSolution() == Boolean.TRUE);
         }
-        System.out.print(".");
         assertEquals("Nb solution unexcepted", s.getNbSolutions(), 5);
-        System.out.println("OK");
+        LOGGER.info("OK");
 
     }
 }

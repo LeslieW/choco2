@@ -23,20 +23,23 @@
 package choco.model.constraints;
 
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import junit.framework.Assert;
 import org.junit.Test;
 
+import java.util.logging.Logger;
+
 /**
  * Created by IntelliJ IDEA.
  * User: charles
  * Date: 23 sept. 2008
  * Time: 14:56:33
- * To change this template use File | Settings | File Templates.
  */
 public class ConstraintTest {
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     @Test
     /**
@@ -54,7 +57,7 @@ public class ConstraintTest {
         s.eraseConstraint(c2);
         s.eraseConstraint(c3);
         try{
-            System.out.println(s.pretty());
+            LOGGER.info(s.pretty());
         }catch (Exception e){
             Assert.fail();
         }

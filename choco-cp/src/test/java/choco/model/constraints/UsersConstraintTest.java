@@ -28,6 +28,7 @@ import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.matching.AllDifferent;
 import choco.cp.solver.constraints.integer.EqualXYC;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
@@ -41,6 +42,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import java.util.HashSet;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -50,6 +52,8 @@ import java.util.HashSet;
  * To change this template use File | Settings | File Templates.
  */
 public class UsersConstraintTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     public static class MyConstraintEqualManager extends IntConstraintManager {
         public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
@@ -67,7 +71,7 @@ public class UsersConstraintTest {
     @Test
     public void equalXYCTest() {
         for (int i = 2; i < 20; i++) {
-            System.out.println("i = " + i);
+            LOGGER.info("i = " + i);
             Model mod1 = new CPModel();
             Model mod2 = new CPModel();
             Solver s1 = new CPSolver();
@@ -101,8 +105,8 @@ public class UsersConstraintTest {
             s2.solveAll();
             long t3 = System.currentTimeMillis();
 
-            System.out.println("solver1:" + (t2 - t1));
-            System.out.println("solver2:" + (t3 - t2));
+            LOGGER.info("solver1:" + (t2 - t1));
+            LOGGER.info("solver2:" + (t3 - t2));
 
             assertTrue(s1.getNbSolutions() == s2.getNbSolutions());
         }
@@ -125,7 +129,7 @@ public class UsersConstraintTest {
             Model mod2 = new CPModel();
             Solver s1 = new CPSolver();
             Solver s2 = new CPSolver();
-            System.out.println("n = " + n);
+            LOGGER.info("n = " + n);
             //Model declaration
             // Variables
             IntegerVariable[] vars = makeIntVarArray("v", n, 0, n);
@@ -149,8 +153,8 @@ public class UsersConstraintTest {
             s2.solveAll();
             long t3 = System.currentTimeMillis();
 
-            System.out.println("solver1:" + (t2 - t1));
-            System.out.println("solver2:" + (t3 - t2));
+            LOGGER.info("solver1:" + (t2 - t1));
+            LOGGER.info("solver2:" + (t3 - t2));
             
             assertTrue(s1.getNbSolutions() == s2.getNbSolutions());
         }

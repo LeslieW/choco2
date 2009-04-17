@@ -22,25 +22,18 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.common;
 
-import static choco.cp.solver.SettingType.ADDITIONAL_RULES;
-import static choco.cp.solver.SettingType.DETECTABLE_PRECEDENCE;
-import static choco.cp.solver.SettingType.EDGE_FINDING_D;
-import static choco.cp.solver.SettingType.FILL_BIN;
-import static choco.kernel.common.util.MathUtil.combinaison;
-import static choco.kernel.common.util.MathUtil.factoriel;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
-
-import org.junit.Test;
-
+import static choco.cp.solver.SettingType.*;
 import choco.cp.solver.constraints.BitFlags;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.common.util.IPermutation;
+import static choco.kernel.common.util.MathUtil.combinaison;
+import static choco.kernel.common.util.MathUtil.factoriel;
+import static org.junit.Assert.*;
+import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.logging.Logger;
 
 
 /**
@@ -49,6 +42,8 @@ import choco.kernel.common.util.IPermutation;
  * @version 2.0.1</br>
  */
 public class TestSortingTool {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	public final static int[] IDENTITY = {1,2,3,4,5,6,7,8};
 
@@ -72,7 +67,7 @@ public class TestSortingTool {
 		for (int i = 0; i < original.length; i++) {
 			assertEquals("pi ° pi-1",i,st.getOriginalIndex(st.getPermutationIndex(i)));
 		}
-		System.out.println(st);
+		LOGGER.info(""+st);
 	}
 
 	@Test

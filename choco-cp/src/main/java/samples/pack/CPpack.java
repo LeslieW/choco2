@@ -32,6 +32,7 @@ import choco.cp.solver.search.integer.branching.PackDynRemovals;
 import choco.cp.solver.search.integer.valselector.BestFit;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.opres.pack.AbstractHeurisic1BP;
 import choco.kernel.common.opres.pack.BestFit1BP;
 import choco.kernel.common.opres.pack.LowerBoundFactory;
@@ -43,6 +44,7 @@ import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.integer.ValSelector;
 
 import java.util.Arrays;
+import java.util.logging.Logger;
 
 /**
  * @author Arnaud Malapert</br>
@@ -50,6 +52,8 @@ import java.util.Arrays;
  * @version 2.0.1</br>
  */
 public class CPpack {
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
 	/////////// CONFIGURATION //////////////////
 
@@ -112,7 +116,7 @@ public class CPpack {
 		msg.append(" bins\nCapacity=").append(capacity).append("\nnbItems=").append(sizes.length);
 		msg.append("\nitems= ").append(Arrays.toString(sizes));
 		msg.append('\n');
-		System.out.println(msg);
+		LOGGER.info(msg.toString());
 	}
 
 
@@ -188,18 +192,18 @@ public class CPpack {
 		displayMessage(); // pretty printing
 		iub=computeHeuristicSolution();
 		ilb=computeLowerBound();
-		System.out.println("ILB="+ilb+" IUB="+iub);
+		LOGGER.info("ILB="+ilb+" IUB="+iub);
 		if(iub==ilb) {
-			System.out.println("heuristic solution is optimal");
+			LOGGER.info("heuristic solution is optimal");
 			return iub;
 		}else {
-			System.out.println("need search phase");
+			LOGGER.info("need search phase");
 			initializeModel();
-			//System.out.println(model.pretty());
+			//LOGGER.info(model.pretty());
 			solver=generateSearchStrategy();
 			solver.launch();
 			fub=analyze();
-			System.out.println("objective="+fub+"\n\n");
+			LOGGER.info("objective="+fub+"\n\n");
 			return fub;
 		}
 	}
@@ -212,17 +216,17 @@ public class CPpack {
 		//Analyze
 		solver.printRuntimeSatistics();
 		if(solver.isFeasible()==Boolean.TRUE) {
-			System.out.println(solver.solutionToString()+"\n");
+			LOGGER.info(solver.solutionToString()+"\n");
 			if(solver.isEncounteredLimit()) {
-				System.out.println("improve heuristic solution but a limit was attempted.\nLimit: "+solver.getEncounteredLimit());
-			}else {System.out.println("improve heuristic solution and prove optimality");}
+				LOGGER.info("improve heuristic solution but a limit was attempted.\nLimit: "+solver.getEncounteredLimit());
+			}else {LOGGER.info("improve heuristic solution and prove optimality");}
 			return solver.getVar(modeler.nbNonEmpty).getVal();
 		}else if (solver.isFeasible()==Boolean.FALSE){
-			System.out.println("do not improve solution but prove optimality for heuristic solution");
+			LOGGER.info("do not improve solution but prove optimality for heuristic solution");
 		}else if(solver.isEncounteredLimit()) {
-			System.out.println("do not improve solution (limit  attempted).\nLimit: "+solver.getEncounteredLimit());
+			LOGGER.info("do not improve solution (limit  attempted).\nLimit: "+solver.getEncounteredLimit());
 		}else {
-			System.err.println("error occured during search");
+			LOGGER.severe("error occured during search");
 		}
 		return iub;
 	}

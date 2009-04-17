@@ -23,18 +23,23 @@
 package parser.absconparseur.intension;
 
 
+import choco.kernel.common.logging.ChocoLogging;
 import parser.absconparseur.ReflectionManager;
 import parser.absconparseur.Toolkit;
 import parser.absconparseur.intension.types.*;
 
 import java.lang.reflect.Modifier;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 
 public abstract class Evaluator {
+
+    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
 
 	private static Map<String, Class> classMap;
 
@@ -55,7 +60,7 @@ public abstract class Evaluator {
 			String className = Toolkit.getRelativeClassNameOf(clazz);
 			String evaluatorToken = className.substring(0, 1).toLowerCase() + className.substring(1, className.lastIndexOf("Evaluator"));
 
-			// System.out.println("evaluatorToken = " + evaluatorToken + " absoluteClassName = " + clazz.getName());
+			// LOGGER.info("evaluatorToken = " + evaluatorToken + " absoluteClassName = " + clazz.getName());
 			classMap.put(evaluatorToken, clazz);
 
 			int arity = -1;
@@ -76,10 +81,10 @@ public abstract class Evaluator {
 					associativeSet.add(evaluatorToken);
 				
 			} catch (Exception e) {
-				System.out.println(e);
+				LOGGER.info(MessageFormat.format("{0}", e));
 				System.exit(1);
 			}
-			// System.out.println("evaluatorToken = " + evaluatorToken + " arity = " + arity);
+			// LOGGER.info("evaluatorToken = " + evaluatorToken + " arity = " + arity);
 			arityMap.put(evaluatorToken, arity);
 		}
 	}
@@ -133,7 +138,7 @@ public abstract class Evaluator {
 		String s = "";
 		for (int i = 0; i <= top; i++)
 			s += stack[i] + " ";
-		System.out.println(s);
+		LOGGER.info(s);
 	}
 
 

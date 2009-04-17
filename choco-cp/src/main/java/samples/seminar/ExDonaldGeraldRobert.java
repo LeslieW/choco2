@@ -25,11 +25,14 @@ package samples.seminar;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+
+import java.util.logging.Logger;
 
 /*
  * Created by IntelliJ IDEA.
@@ -39,6 +42,8 @@ import choco.kernel.solver.Solver;
  *
  */
 public class ExDonaldGeraldRobert {
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
     public static IntegerVariable _donald = null;
     public static IntegerVariable _gerald = null;
@@ -93,7 +98,7 @@ public class ExDonaldGeraldRobert {
         // Add constraint name sum
         model.addConstraint(eq(plus(_donald, _gerald), _robert));
         // Add constraint of all different letters.
-        model.addConstraint(allDifferent(new IntegerVariable[]{_d, _o, _n, _a, _l, _g, _e, _r, _b, _t}));
+        model.addConstraint(allDifferent(_d, _o, _n, _a, _l, _g, _e, _r, _b, _t));
         return model;
     }
 
@@ -108,9 +113,9 @@ public class ExDonaldGeraldRobert {
         s.solve();
 
         // Print name value
-        System.out.println("donald = " + s.getVar(_donald).getVal());
-        System.out.println("gerald = " + s.getVar(_gerald).getVal());
-        System.out.println("robert = " + s.getVar(_robert).getVal());
+        LOGGER.info("donald = " + s.getVar(_donald).getVal());
+        LOGGER.info("gerald = " + s.getVar(_gerald).getVal());
+        LOGGER.info("robert = " + s.getVar(_robert).getVal());
     }
 
     public static Model modelIt2() {
@@ -147,7 +152,7 @@ public class ExDonaldGeraldRobert {
 //      model.addConstraint(eq(d, 5));   // if you add a clue ... propagation is enougth
 
         // Add constraint of all different letters.
-        model.addConstraint(allDifferent(new IntegerVariable[]{_d, _o, _n, _a, _l, _g, _e, _r, _b, _t}));
+        model.addConstraint(allDifferent(_d, _o, _n, _a, _l, _g, _e, _r, _b, _t));
         return model;
     }
 
@@ -160,27 +165,27 @@ public class ExDonaldGeraldRobert {
         try {
             s.propagate();
         } catch (ContradictionException excep) {
-            System.out.println("No solution");
+            LOGGER.info("No solution");
         }
 
         // Then solve it
         s.solve();
 
         // Print name value
-        System.out.println("donald = " + s.getVar(_d).getVal()+s.getVar(_o).getVal()+s.getVar(_n).getVal()+s.getVar(_a).getVal()+s.getVar(_l).getVal()+s.getVar(_d).getVal());
-        System.out.println("gerald = " + s.getVar(_g).getVal()+s.getVar(_e).getVal()+s.getVar(_r).getVal()+s.getVar(_a).getVal()+s.getVar(_l).getVal()+s.getVar(_d).getVal());
-        System.out.println("robert = " + s.getVar(_r).getVal()+s.getVar(_o).getVal()+s.getVar(_b).getVal()+s.getVar(_e).getVal()+s.getVar(_r).getVal()+s.getVar(_t).getVal());
-        System.out.println(s.getNbSolutions()+" solution(s)");
+        LOGGER.info("donald = " + s.getVar(_d).getVal()+s.getVar(_o).getVal()+s.getVar(_n).getVal()+s.getVar(_a).getVal()+s.getVar(_l).getVal()+s.getVar(_d).getVal());
+        LOGGER.info("gerald = " + s.getVar(_g).getVal()+s.getVar(_e).getVal()+s.getVar(_r).getVal()+s.getVar(_a).getVal()+s.getVar(_l).getVal()+s.getVar(_d).getVal());
+        LOGGER.info("robert = " + s.getVar(_r).getVal()+s.getVar(_o).getVal()+s.getVar(_b).getVal()+s.getVar(_e).getVal()+s.getVar(_r).getVal()+s.getVar(_t).getVal());
+        LOGGER.info(s.getNbSolutions()+" solution(s)");
         s.printRuntimeSatistics();
     }
 
 
     public static void main(String[] args) {
-        System.out.println("Model 1 :");
-        System.out.println("=========");
+        LOGGER.info("Model 1 :");
+        LOGGER.info("=========");
         solveIt1(modelIt1());
-        System.out.println("\nModel 2 :");
-        System.out.println("=========");
+        LOGGER.info("\nModel 2 :");
+        LOGGER.info("=========");
         solveIt2(modelIt2());
     }
 }

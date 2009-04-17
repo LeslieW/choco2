@@ -25,6 +25,7 @@ package choco.model.constraints.reified;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -45,7 +46,7 @@ import java.util.logging.Logger;
  */
 public class BinaryConjunctionTest {
 
-    private Logger logger = Logger.getLogger("choco.currentElement");
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
     private CPModel m;
     private Solver s;
     private IntegerVariable x;
@@ -59,7 +60,7 @@ public class BinaryConjunctionTest {
 
     @Before
     public void setUp() throws Exception {
-        logger.fine("choco.currentElement.reified.BinaryDisjunctionTest Testing...");
+        LOGGER.fine("choco.currentElement.reified.BinaryDisjunctionTest Testing...");
         m = new CPModel();
         s = new CPSolver();
 
@@ -67,7 +68,7 @@ public class BinaryConjunctionTest {
 
     @Test
     public void testBound(){
-        System.out.println("BinaryConjunctionTest.testEnum");
+        LOGGER.info("BinaryConjunctionTest.testEnum");
         x = makeIntVar("X", 1, 10);
         m.addVariable("cp:bound", x);
         test();
@@ -75,14 +76,14 @@ public class BinaryConjunctionTest {
 
     @Test
     public void testEnum(){
-        System.out.println("BinaryConjunctionTest.testBound");
+        LOGGER.info("BinaryConjunctionTest.testBound");
         x = makeIntVar("X", 1, 10);
         test();
     }
 
      @Test
     public void testBoundDecomp(){
-        System.out.println("BinaryConjunctionTest.testEnum");
+        LOGGER.info("BinaryConjunctionTest.testEnum");
         x = makeIntVar("X", 1, 10);
          m.addVariable("cp:bound", x);
          m.setDefaultExpressionDecomposition(true);
@@ -91,42 +92,37 @@ public class BinaryConjunctionTest {
 
     @Test
     public void testEnumDecomp(){
-        System.out.println("BinaryConjunctionTest.testBound");
+        LOGGER.info("BinaryConjunctionTest.testBound");
         x = makeIntVar("X", 1, 10);
         m.setDefaultExpressionDecomposition(true);
         test();
     }
 
     public void test() {
-        Constraint c0 = geq(x, 3);
-        Constraint c1 = leq(x, 9);
-
         //Constraint and = and(c0, c1);
 	    Constraint and = and(geq((x),(3)),leq((x),(9)));
-        System.out.println(and.pretty());
+        LOGGER.info(and.pretty());
         m.addConstraint(and);
         s.read(m);
-        System.out.println(s.getCstr(and).pretty());
+        LOGGER.info(s.getCstr(and).pretty());
 	    //s.post(and);
 
         try {
             s.propagate();
         } catch (ContradictionException e) {
-            logger.severe("BinaryDisjunctionTest() : Test1#propagate() " + e.getMessage());
+            LOGGER.severe("BinaryDisjunctionTest() : Test1#propagate() " + e.getMessage());
             fail();
         }
         s.solve();
-        System.out.print(" Tests");
+        StringBuffer st = new StringBuffer();
         if (s.isFeasible()) {
             do {
-                System.out.print(".");
                 assertTrue("x not instanciated", s.getVar(x).isInstantiated());
                 assertTrue("value of x not excepted", s.getVar(x).getVal() > 2 && s.getVar(x).getVal() < 10);
             } while (s.nextSolution() == Boolean.TRUE);
         }
-        System.out.print(".");
         assertEquals("Nb solution unexcepted", s.getNbSolutions(), 7);
-        System.out.println("OK");
+        LOGGER.info("OK");
 
     }
 }

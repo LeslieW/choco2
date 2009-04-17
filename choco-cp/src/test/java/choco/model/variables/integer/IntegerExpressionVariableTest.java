@@ -24,12 +24,13 @@ package choco.model.variables.integer;
 
 import choco.Choco;
 import static choco.Choco.makeIntVar;
+import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.*;
-import choco.cp.model.CPModel;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.model.Model;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -39,15 +40,17 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Random;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
  * User: charles
  * Date: 23 oct. 2008
  * Time: 10:29:09
- * To change this template use File | Settings | File Templates.
  */
 public class IntegerExpressionVariableTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     private int[] computeBound(){
         Random r = new Random();
@@ -81,7 +84,7 @@ public class IntegerExpressionVariableTest {
             try {
                 solver.propagate();
             } catch (ContradictionException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                LOGGER.severe(e.getMessage());
             }
             Assert.assertEquals("lower bound", y1.getInf(), abs.getLowB());
             Assert.assertEquals("upper bound", y1.getSup(), abs.getUppB());
@@ -105,7 +108,7 @@ public class IntegerExpressionVariableTest {
             try {
                 solver.propagate();
             } catch (ContradictionException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                LOGGER.severe(e.getMessage());
             }
             Assert.assertEquals("lower bound", y1.getInf(), neg0.getLowB());
             Assert.assertEquals("upper bound", y1.getSup(), neg0.getUppB());
@@ -132,7 +135,7 @@ public class IntegerExpressionVariableTest {
             try {
                 p.propagate();
             } catch (ContradictionException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                LOGGER.severe(e.getMessage());
             }
             Assert.assertEquals("lower bound", z.getInf(), max.getLowB());
             Assert.assertEquals("upper bound", z.getSup(), max.getUppB());
@@ -159,7 +162,7 @@ public class IntegerExpressionVariableTest {
             try {
                 p.propagate();
             } catch (ContradictionException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                LOGGER.severe(e.getMessage());
             }
             Assert.assertEquals("lower bound", z.getInf(), min.getLowB());
             Assert.assertEquals("upper bound", z.getSup(), min.getUppB());
@@ -186,7 +189,7 @@ public class IntegerExpressionVariableTest {
             try {
                 p.propagate();
             } catch (ContradictionException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                LOGGER.severe(e.getMessage());
             }
             Assert.assertEquals("lower bound", z.getInf(), minus0.getLowB());
             Assert.assertEquals("upper bound", z.getSup(), minus0.getUppB());
@@ -213,7 +216,7 @@ public class IntegerExpressionVariableTest {
             try {
                 p.propagate();
             } catch (ContradictionException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                LOGGER.severe(e.getMessage());
             }
             Assert.assertEquals("lower bound", z.getInf(), mult0.getLowB());
             Assert.assertEquals("upper bound", z.getSup(), mult0.getUppB());
@@ -240,7 +243,7 @@ public class IntegerExpressionVariableTest {
             try {
                 p.propagate();
             } catch (ContradictionException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                LOGGER.severe(e.getMessage());
             }
             Assert.assertEquals("lower bound", z.getInf(), plus0.getLowB());
             Assert.assertEquals("upper bound", z.getSup(), plus0.getUppB());
@@ -272,7 +275,7 @@ public class IntegerExpressionVariableTest {
             try {
                 p.propagate();
             } catch (ContradictionException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                LOGGER.severe(e.getMessage());
             }
             Assert.assertEquals("lower bound", z.getInf(), power.getLowB());
             Assert.assertEquals("upper bound", z.getSup(), power.getUppB());
@@ -300,7 +303,7 @@ public class IntegerExpressionVariableTest {
             try {
                 p.propagate();
             } catch (ContradictionException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                LOGGER.severe(e.getMessage());
             }
             Assert.assertEquals("lower bound", z.getInf(), mod0.getLowB());
             Assert.assertEquals("upper bound", z.getSup(), mod0.getUppB());
@@ -319,7 +322,7 @@ public class IntegerExpressionVariableTest {
         m.addConstraint(Choco.eq(z, Choco.plus(x, Choco.max(y, a))));
 //m.setDefaultExpressionDecomposition(true);
         s.read(m);
-        System.out.println(s.pretty());
+        LOGGER.info(s.pretty());
 
         s.solve();
         Assert.assertEquals(s.isFeasible(),true);
@@ -355,7 +358,7 @@ public class IntegerExpressionVariableTest {
             try {
                 p.propagate();
             } catch (ContradictionException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                LOGGER.severe(e.getMessage());
             }
             Assert.assertEquals("lower bound", w.getInf(), plus0.getLowB());
             Assert.assertEquals("upper bound", w.getSup(), plus0.getUppB());
@@ -386,7 +389,7 @@ public class IntegerExpressionVariableTest {
             try {
                 p.propagate();
             } catch (ContradictionException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                LOGGER.severe(e.getMessage());
             }
             Assert.assertEquals("lower bound", w.getInf(), plus0.getLowB());
             Assert.assertEquals("upper bound", w.getSup(), plus0.getUppB());

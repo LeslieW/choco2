@@ -31,6 +31,7 @@ package samples;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -39,57 +40,50 @@ import java.util.logging.Logger;
 
 public class Zebra {
 
-	private static Model model;
-	private static CPSolver solver;
-	private static IntegerVariable green, blue, yellow, ivory, red;
-	private static IntegerVariable diplomat, painter, sculptor, doctor, violinist;
-	private static IntegerVariable norwegian, english, japanese, spaniard, italian;
-	private static IntegerVariable wine, milk, coffee, water, tea;
-	private static IntegerVariable fox, snail, horse, dog, zebra;
-	private static IntegerVariable[] colors, trades, nationalities, drinks, pets;
-	private static IntegerVariable[][] arrays;
+	protected final static Logger LOGGER = ChocoLogging.getModelLogger();
+    private static CPSolver solver;
 
-	private static void propagateDecision(IntegerVariable v,int value) throws ContradictionException {
-		System.out.println(v.pretty()+" = "+value);
+    private static void propagateDecision(IntegerVariable v,int value) throws ContradictionException {
+		LOGGER.info(v.pretty()+" = "+value);
 		solver.getVar(v).setVal(value);
 		solver.propagate();
-		System.out.println(solver.solutionToString());
+		LOGGER.info(solver.solutionToString());
 	}
 
 	public static void main(String args[]) {
-		System.out.println("Zebra Testing...");
-		model = new CPModel();
-		green = makeIntVar("green", 1, 5);
-		blue = makeIntVar("blue", 1, 5);
-		yellow = makeIntVar("yellow", 1, 5);
-		ivory = makeIntVar("ivory", 1, 5);
-		red = makeIntVar("red", 1, 5);
-		diplomat = makeIntVar("diplomat", 1, 5);
-		painter = makeIntVar("painter", 1, 5);
-		sculptor = makeIntVar("sculptor", 1, 5);
-		doctor = makeIntVar("doctor", 1, 5);
-		violinist = makeIntVar("violinist", 1, 5);
-		norwegian = makeIntVar("norwegian", 1, 5);
-		english = makeIntVar("english", 1, 5);
-		japanese = makeIntVar("japanese", 1, 5);
-		spaniard = makeIntVar("spaniard", 1, 5);
-		italian = makeIntVar("italian", 1, 5);
-		wine = makeIntVar("wine", 1, 5);
-		milk = makeIntVar("milk", 1, 5);
-		coffee = makeIntVar("coffee", 1, 5);
-		water = makeIntVar("water", 1, 5);
-		tea = makeIntVar("tea", 1, 5);
-		fox = makeIntVar("fox", 1, 5);
-		snail = makeIntVar("snail", 1, 5);
-		horse = makeIntVar("horse", 1, 5);
-		dog = makeIntVar("dog", 1, 5);
-		zebra = makeIntVar("zebra", 1, 5);
-		colors = new IntegerVariable[]{green, blue, yellow, ivory, red};
-		trades = new IntegerVariable[]{diplomat, painter, sculptor, doctor, violinist};
-		nationalities = new IntegerVariable[]{norwegian, english, japanese, spaniard, italian};
-		drinks = new IntegerVariable[]{wine, milk, coffee, water, tea};
-		pets = new IntegerVariable[]{fox, snail, horse, dog, zebra};
-		arrays = new IntegerVariable[][]{colors, trades, nationalities, drinks, pets};
+		LOGGER.fine("Zebra Testing...");
+        Model model = new CPModel();
+        IntegerVariable green = makeIntVar("green", 1, 5);
+        IntegerVariable blue = makeIntVar("blue", 1, 5);
+        IntegerVariable yellow = makeIntVar("yellow", 1, 5);
+        IntegerVariable ivory = makeIntVar("ivory", 1, 5);
+        IntegerVariable red = makeIntVar("red", 1, 5);
+        IntegerVariable diplomat = makeIntVar("diplomat", 1, 5);
+        IntegerVariable painter = makeIntVar("painter", 1, 5);
+        IntegerVariable sculptor = makeIntVar("sculptor", 1, 5);
+        IntegerVariable doctor = makeIntVar("doctor", 1, 5);
+        IntegerVariable violinist = makeIntVar("violinist", 1, 5);
+        IntegerVariable norwegian = makeIntVar("norwegian", 1, 5);
+        IntegerVariable english = makeIntVar("english", 1, 5);
+        IntegerVariable japanese = makeIntVar("japanese", 1, 5);
+        IntegerVariable spaniard = makeIntVar("spaniard", 1, 5);
+        IntegerVariable italian = makeIntVar("italian", 1, 5);
+        IntegerVariable wine = makeIntVar("wine", 1, 5);
+        IntegerVariable milk = makeIntVar("milk", 1, 5);
+        IntegerVariable coffee = makeIntVar("coffee", 1, 5);
+        IntegerVariable water = makeIntVar("water", 1, 5);
+        IntegerVariable tea = makeIntVar("tea", 1, 5);
+        IntegerVariable fox = makeIntVar("fox", 1, 5);
+        IntegerVariable snail = makeIntVar("snail", 1, 5);
+        IntegerVariable horse = makeIntVar("horse", 1, 5);
+        IntegerVariable dog = makeIntVar("dog", 1, 5);
+        IntegerVariable zebra = makeIntVar("zebra", 1, 5);
+        IntegerVariable[] colors = new IntegerVariable[]{green, blue, yellow, ivory, red};
+        IntegerVariable[] trades = new IntegerVariable[]{diplomat, painter, sculptor, doctor, violinist};
+        IntegerVariable[] nationalities = new IntegerVariable[]{norwegian, english, japanese, spaniard, italian};
+        IntegerVariable[] drinks = new IntegerVariable[]{wine, milk, coffee, water, tea};
+        IntegerVariable[] pets = new IntegerVariable[]{fox, snail, horse, dog, zebra};
+        IntegerVariable[][] arrays = new IntegerVariable[][]{colors, trades, nationalities, drinks, pets};
 
 		for (int a = 0; a < 5; a++) {
 			for (int i = 0; i < 4; i++) {
@@ -127,8 +121,8 @@ public class Zebra {
 			propagateDecision(english, 3);
 			propagateDecision(tea, 2);
 		} catch (ContradictionException e) {
-			System.out.println("find a contradiction !");
+			LOGGER.info("find a contradiction !");
 		}
-		System.out.println(solver.pretty());
+		LOGGER.info(solver.pretty());
 	}
 }

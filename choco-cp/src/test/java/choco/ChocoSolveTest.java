@@ -25,6 +25,7 @@ package choco;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -37,6 +38,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.logging.Logger;
+
 /**
  * Created by IntelliJ IDEA.
  * User: guillaume
@@ -46,13 +49,14 @@ import org.junit.Test;
  */
 
 public class ChocoSolveTest {
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+
     private Model m;
     private Solver s;
     private IntegerVariable x;
     private IntegerVariable y;
     private IntegerVariable z;
     private Propagator Ap;
-    private Propagator Bp;
     private Constraint A;
     private Constraint B;
 
@@ -86,7 +90,6 @@ public class ChocoSolveTest {
         m.addConstraint(B);
         s.read(m);
         Ap = (Propagator)s.getCstr(A);
-        Bp = (Propagator)s.getCstr(B);
         Ap.setPassive();
         Ap.setActive();
         try {
@@ -94,9 +97,9 @@ public class ChocoSolveTest {
         } catch (ContradictionException e) {
             assertTrue(false);
         }
-        System.out.println("X : " + s.getVar(x).getInf() + " - > " + s.getVar(x).getSup());
-        System.out.println("Y : " + s.getVar(y).getInf() + " - > " + s.getVar(y).getSup());
-        System.out.println("Z : " + s.getVar(z).getInf() + " - > " + s.getVar(z).getSup());
+        LOGGER.info("X : " + s.getVar(x).getInf() + " - > " + s.getVar(x).getSup());
+        LOGGER.info("Y : " + s.getVar(y).getInf() + " - > " + s.getVar(y).getSup());
+        LOGGER.info("Z : " + s.getVar(z).getInf() + " - > " + s.getVar(z).getSup());
         assertEquals(3, s.getVar(x).getInf());
         assertEquals(5, s.getVar(x).getSup());
         assertEquals(2, s.getVar(y).getInf());
@@ -110,13 +113,13 @@ public class ChocoSolveTest {
         } catch (ContradictionException e) {
             assertTrue(false);
         }
-        System.out.println("X : " + s.getVar(x).getInf() + " - > " + s.getVar(x).getSup());
+        LOGGER.info("X : " + s.getVar(x).getInf() + " - > " + s.getVar(x).getSup());
         assertEquals(4, s.getVar(x).getInf());
         assertEquals(5, s.getVar(x).getSup());
-        System.out.println("Y : " + s.getVar(y).getInf() + " - > " + s.getVar(y).getSup());
+        LOGGER.info("Y : " + s.getVar(y).getInf() + " - > " + s.getVar(y).getSup());
         assertEquals(3, s.getVar(y).getInf());
         assertEquals(4, s.getVar(y).getSup());
-        System.out.println("Z : " + s.getVar(z).getInf() + " - > " + s.getVar(z).getSup());
+        LOGGER.info("Z : " + s.getVar(z).getInf() + " - > " + s.getVar(z).getSup());
         assertEquals(2, s.getVar(z).getInf());
         assertEquals(2, s.getVar(z).getSup());
 
@@ -126,13 +129,13 @@ public class ChocoSolveTest {
         } catch (ContradictionException e) {
             assertTrue(false);
         }
-        System.out.println("X : " + s.getVar(x).getInf() + " - > " + s.getVar(x).getSup());
+        LOGGER.info("X : " + s.getVar(x).getInf() + " - > " + s.getVar(x).getSup());
         assertEquals(4, s.getVar(x).getInf());
         assertEquals(4, s.getVar(x).getSup());
-        System.out.println("Y : " + s.getVar(y).getInf() + " - > " + s.getVar(y).getSup());
+        LOGGER.info("Y : " + s.getVar(y).getInf() + " - > " + s.getVar(y).getSup());
         assertEquals(3, s.getVar(y).getInf());
         assertEquals(3, s.getVar(y).getSup());
-        System.out.println("Z : " + s.getVar(z).getInf() + " - > " + s.getVar(z).getSup());
+        LOGGER.info("Z : " + s.getVar(z).getInf() + " - > " + s.getVar(z).getSup());
         assertEquals(2, s.getVar(z).getInf());
         assertEquals(2, s.getVar(z).getSup());
     }
@@ -150,13 +153,13 @@ public class ChocoSolveTest {
         } catch (ContradictionException e) {
             assertTrue(false);
         }
-        System.out.println("X : " + s.getVar(x).getInf() + " - > " + s.getVar(x).getSup());
+        LOGGER.info("X : " + s.getVar(x).getInf() + " - > " + s.getVar(x).getSup());
         assertEquals(1, s.getVar(x).getInf());
         assertEquals(5, s.getVar(x).getSup());
-        System.out.println("Y : " + s.getVar(y).getInf() + " - > " + s.getVar(y).getSup());
+        LOGGER.info("Y : " + s.getVar(y).getInf() + " - > " + s.getVar(y).getSup());
         assertEquals(2, s.getVar(y).getInf());
         assertEquals(5, s.getVar(y).getSup());
-        System.out.println("Z : " + s.getVar(z).getInf() + " - > " + s.getVar(z).getSup());
+        LOGGER.info("Z : " + s.getVar(z).getInf() + " - > " + s.getVar(z).getSup());
         assertEquals(1, s.getVar(z).getInf());
         assertEquals(4, s.getVar(z).getSup());
     }

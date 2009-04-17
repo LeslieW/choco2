@@ -22,6 +22,7 @@
  **************************************************/
 package parser;
 
+import choco.kernel.common.logging.ChocoLogging;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /*
 * User : charles
@@ -42,6 +44,8 @@ import java.util.Properties;
 * Update : Choco 2.0.1
 */
 public class FlatZincTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     Properties properties = new Properties();
     String[] args = new String[6];
@@ -69,7 +73,7 @@ public class FlatZincTest {
         try {
             fzm.generate(args);
         } catch (Exception e) {
-            System.err.println(e.toString());
+            LOGGER.severe(e.toString());
             Assert.fail();
         }
     }
@@ -88,13 +92,13 @@ public class FlatZincTest {
         String data = args[3];
         if(directory.isDirectory()){
             File[] files  = directory.listFiles(new DZNFilter());
-            for(int f = 0; f < files.length; f++){
+            for (File file : files) {
                 FlatZincModel fzm = new FlatZincModel();
-                args[3] = data +"/"+files[f].getName();
+                args[3] = data + "/" + file.getName();
                 try {
                     fzm.generate(args);
                 } catch (Exception e) {
-                    System.err.println(e.toString());
+                    LOGGER.severe(e.toString());
                     System.exit(-1);
 //                    Assert.fail();
                 }
