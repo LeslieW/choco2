@@ -55,7 +55,7 @@ public class NegManager implements ExpressionManager {
             }
         }
         if(Choco.DEBUG){
-            System.err.println("Could not found an implementation for NegManager !");
+            LOGGER.severe("Could not found an implementation for NegManager !");
             System.exit(-1);
         }
         return null;

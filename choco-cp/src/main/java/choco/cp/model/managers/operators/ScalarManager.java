@@ -56,7 +56,7 @@ public class ScalarManager implements ExpressionManager {
             return new ScalarNode(scalarNodes, coeffs);
         }
         if(Choco.DEBUG){
-            System.err.println("Could not found an implementation for ScalarManager !");
+            LOGGER.severe("Could not found an implementation for ScalarManager !");
             System.exit(-1);
         }
         return null;

@@ -53,7 +53,7 @@ public class IsNotIncludedManager extends SetConstraintManager {
       return new IsNotIncluded(solver.getVar((SetVariable)vars[0]), solver.getVar((SetVariable)vars[1]));
     }
     if (Choco.DEBUG) {
-      System.err.println("Could not found an implementation of isnotincluded !");
+      LOGGER.severe("Could not found an implementation of isnotincluded !");
     }
     return null;
   }

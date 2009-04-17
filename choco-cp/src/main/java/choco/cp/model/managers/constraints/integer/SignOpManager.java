@@ -28,8 +28,8 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.SignOp;
 import choco.cp.solver.constraints.reified.leaves.bool.OppSignNode;
 import choco.cp.solver.constraints.reified.leaves.bool.SameSignNode;
-import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ComponentConstraint;
+import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -63,7 +63,7 @@ public class SignOpManager extends IntConstraintManager {
           (parameters == Boolean.TRUE) ? true : false);
     }
     if (Choco.DEBUG) {
-      System.err.println("Could not found an implementation of samesign or oppositesign (signop constraint) !");
+      LOGGER.severe("Could not found an implementation of samesign or oppositesign (signop constraint) !");
     }
     return null;
   }

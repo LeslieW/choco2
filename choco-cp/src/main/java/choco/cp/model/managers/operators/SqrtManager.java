@@ -55,7 +55,7 @@ public class SqrtManager implements ExpressionManager {
             }
         }
         if(Choco.DEBUG){
-            System.err.println("Could not found an implementation for SqrtManager !");
+            LOGGER.severe("Could not found an implementation for SqrtManager !");
             System.exit(-1);
         }
         return null;

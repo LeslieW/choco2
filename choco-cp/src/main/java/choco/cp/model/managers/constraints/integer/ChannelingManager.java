@@ -87,7 +87,7 @@ public class ChannelingManager extends IntConstraintManager {
             }
         }
         if(Choco.DEBUG){
-            System.err.println("Could not found an implementation of channeling !");
+            LOGGER.severe("Could not found an implementation of channeling !");
         }
 
 

@@ -59,7 +59,7 @@ public class LexChainManager extends IntConstraintManager {
             }
         }
         if(Choco.DEBUG){
-            System.err.println("Could not found an implementation of lexChain !");
+            LOGGER.severe("Could not found an implementation of lexChain !");
         }
 
         return null;

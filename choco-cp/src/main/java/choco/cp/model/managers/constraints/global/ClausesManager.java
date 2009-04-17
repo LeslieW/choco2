@@ -67,7 +67,7 @@ public class ClausesManager extends IntConstraintManager{
             return cs;
         }
         if (Choco.DEBUG) {
-            System.err.println("Could not found an implementation of Clauses manager !");
+            LOGGER.severe("Could not found an implementation of Clauses manager !");
         }
         return null;
     }

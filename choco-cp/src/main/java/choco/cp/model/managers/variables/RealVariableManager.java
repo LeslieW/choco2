@@ -69,7 +69,7 @@ public class RealVariableManager implements VariableManager {
             return s;
         }
         if (Choco.DEBUG) {
-            System.err.println("Count not found implementation for RealVariable !");
+            LOGGER.severe("Count not found implementation for RealVariable !");
             System.exit(-1);
         }
         return null;

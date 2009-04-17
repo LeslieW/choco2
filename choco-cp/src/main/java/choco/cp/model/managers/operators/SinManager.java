@@ -83,7 +83,7 @@ public class SinManager extends RealConstraintManager{
             }
         }
         if(Choco.DEBUG){
-            System.err.println("Could not found an implementation for SinManager !");
+            LOGGER.severe("Could not found an implementation for SinManager !");
             System.exit(-1);
         }
         return null;

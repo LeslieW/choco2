@@ -58,7 +58,7 @@ public class LeximinManager extends IntConstraintManager {
       }
     }
     if (Choco.DEBUG) {
-      System.err.println("Could not found an implementation in " + this.getClass() + " !");
+      LOGGER.severe("Could not found an implementation in " + this.getClass() + " !");
     }
     return null;
   }

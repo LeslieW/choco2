@@ -78,7 +78,7 @@ public class PowerManager extends RealConstraintManager implements ExpressionMan
             }
         }
         if(Choco.DEBUG){
-            System.err.println("Could not found an implementation for PowManager !");
+            LOGGER.severe("Could not found an implementation for PowManager !");
             System.exit(-1);
         }
         return null;
@@ -101,7 +101,7 @@ public class PowerManager extends RealConstraintManager implements ExpressionMan
             }
         }
         if(Choco.DEBUG){
-            System.err.println("Could not found an implementation for PowManager !");
+            LOGGER.severe("Could not found an implementation for PowManager !");
             System.exit(-1);
         }
         return null;

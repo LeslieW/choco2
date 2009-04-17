@@ -53,7 +53,7 @@ public class SumManager implements ExpressionManager {
             return new ScalarNode(nodes);
         }
         if(Choco.DEBUG){
-            System.err.println("Could not found an implementation for SumManager !");
+            LOGGER.severe("Could not found an implementation for SumManager !");
             System.exit(-1);
         }
         return null;

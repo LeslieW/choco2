@@ -60,7 +60,7 @@ public class CostRegularManager extends IntConstraintManager {
                 }
                 catch (Exception e)
                 {
-                    System.err.println("Invalid parameters in costregular manager");
+                    LOGGER.severe("Invalid parameters in costregular manager");
                     return null;
                 }
                 return CostRegular.make(vs,z,auto,csts);

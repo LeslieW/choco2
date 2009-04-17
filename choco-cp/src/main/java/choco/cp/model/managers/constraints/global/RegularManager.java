@@ -73,7 +73,7 @@ public class RegularManager extends IntConstraintManager {
             }
         }
         if (Choco.DEBUG) {
-            System.err.println("Could not found an implementation of regular !");
+            LOGGER.severe("Could not found an implementation of regular !");
         }
         return null;
     }

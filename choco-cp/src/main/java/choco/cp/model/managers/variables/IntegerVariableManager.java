@@ -121,7 +121,7 @@ public class IntegerVariableManager implements VariableManager {
             return v;
         }
         if (Choco.DEBUG) {
-            System.err.println("Count not found implementation for IntegerVariable !");
+            LOGGER.severe("Count not found implementation for IntegerVariable !");
             System.exit(-1);
         }
         return null;

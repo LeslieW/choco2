@@ -148,7 +148,7 @@ public class StretchPathManager extends IntConstraintManager {
             }
         }
         if (Choco.DEBUG) {
-            System.err.println("Could not found an implementation of stretchPath !");
+            LOGGER.severe("Could not found an implementation of stretchPath !");
         }
         return null;
     }
