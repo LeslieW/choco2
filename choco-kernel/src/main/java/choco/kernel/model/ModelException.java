@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model;
 
+import choco.kernel.common.logging.ChocoLogging;
+
 /**
  * @author Arnaud Malapert
  *
@@ -39,6 +41,7 @@ public class ModelException extends RuntimeException {
 	 */
 	public ModelException(String message) {
 		super(message);
+		ChocoLogging.flushLogs();
 	}
 
 	/**
@@ -46,6 +49,7 @@ public class ModelException extends RuntimeException {
 	 */
 	public ModelException(Throwable cause) {
 		super(cause);
+		ChocoLogging.flushLogs();
 	}
 
 	/**
@@ -54,6 +58,7 @@ public class ModelException extends RuntimeException {
 	 */
 	public ModelException(String message, Throwable cause) {
 		super(message, cause);
+		ChocoLogging.flushLogs();
 	}
 
 }

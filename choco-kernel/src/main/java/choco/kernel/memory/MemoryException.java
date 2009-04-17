@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory;
 
+import choco.kernel.common.logging.ChocoLogging;
+
 /**
  * @author Arnaud Malapert
  *
@@ -38,6 +40,7 @@ public class MemoryException extends RuntimeException {
 	 */
 	public MemoryException(String message) {
 		super(message);
+		ChocoLogging.flushLogs();
 	}
 
 	/**
@@ -45,6 +48,7 @@ public class MemoryException extends RuntimeException {
 	 */
 	public MemoryException(Throwable cause) {
 		super(cause);
+		ChocoLogging.flushLogs();
 	}
 
 	/**
@@ -53,6 +57,7 @@ public class MemoryException extends RuntimeException {
 	 */
 	public MemoryException(String message, Throwable cause) {
 		super(message, cause);
+		ChocoLogging.flushLogs();
 	}
 
 }

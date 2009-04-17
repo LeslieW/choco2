@@ -193,8 +193,19 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 	/**
 	 * we use  targetBound data structures for the optimization cuts
 	 */
+	@Override
 	public void postDynamicCut() throws ContradictionException {
 		postTargetBound();
 		//model.propagate();
 	}
+
+	@Override
+	public void endTreeSearch() {
+		if (LOGGER.isLoggable(Level.INFO)) {
+			LOGGER.log(Level.INFO, "{1} => {2}", new Object[]{-1, doMaximize ? "maximize" : "minimize", objective});
+		}
+		super.endTreeSearch();
+	}
+	
+	
 }
