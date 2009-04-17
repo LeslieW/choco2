@@ -487,19 +487,6 @@ public class CostRegular extends AbstractLargeIntSConstraint
         }
 
     }
-    /*
-        private void printLayer(HashMap<Integer,State> layer[])
-        {
-            for (int i = 0 ; i < layer.length ; i++) {
-                HashMap<Integer, State> aLayer = layer[i];
-                for (Integer k : aLayer.keySet()) {
-                    System.out.print("LAYER : "+i+"  ");
-                    System.out.println(aLayer.get(k));
-                }
-            }
-        }
-    */
-
 
     /**
      * Print all Arcs from the source to the sink
@@ -512,18 +499,20 @@ public class CostRegular extends AbstractLargeIntSConstraint
     protected void printAll(State s) {
         @SuppressWarnings("unchecked")
         HashSet<Arc>[] map = new HashSet[vars.length+1];
-        System.out.println(puit);
-        System.out.println(size[0]);
+        StringBuffer st = new StringBuffer();
+        st.append(puit).append("\n");
+        st.append(size[0]).append("\n");
         for (int i = 0 ; i < map.length ; i++)
             map[i] = new HashSet<Arc>();
         printAll(s,map);
         for (int i = 0 ; i < map.length ; i++)
         {
-            System.out.println("");
-            System.out.println("VAR = "+ i+"  AT WORLD : "+vars[0].getSolver().getEnvironment().getWorldIndex());
+            st.append("\n");
+            st.append("VAR = ").append(i).append("  AT WORLD : ").append(vars[0].getSolver().getEnvironment().getWorldIndex()).append("\n");
             for (Object a : map[i])
-                System.out.println(a);
+                st.append(a).append("\n");
         }
+        LOGGER.info(st.toString());
     }
 
     protected void printAll(State s, HashSet<Arc>[] map)

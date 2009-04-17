@@ -125,7 +125,7 @@ public class RegularI extends AbstractLargeIntSConstraint
 
         this.automaton = auto;
         this.nbNodes = automaton.size();
-       // System.out.println("nbNodes : "+nbNodes);
+
 
         this.start = new int[vars.length];
         this.size = new int[vars.length];
@@ -771,7 +771,6 @@ public class RegularI extends AbstractLargeIntSConstraint
 
         public DLList(int size)
         {
-            //System.out.println("nbCreated : "+(++nbDLL));
             succ = new int[size];
             pred = new int[size];
             Arrays.fill(succ,Integer.MIN_VALUE);
@@ -958,11 +957,8 @@ public class RegularI extends AbstractLargeIntSConstraint
 //        RegularI constraint = new RegularI(x,a);
 //        Automaton op = a.opposite();
 //        Automaton min = op.minimize();
-//        System.out.println(a);
-//        System.out.println(min);
 //
 //        //int[] word = new int[]{3,2,2,2,2,3,7};
-//       // System.out.println(a.run(word)+" "+op.run(word)+" "+min.run(word));
 //
 //        RegularI opposite = new RegularI(y,min);
 //
@@ -970,13 +966,7 @@ public class RegularI extends AbstractLargeIntSConstraint
 //        pb.post(opposite);
 //
 //        pb.solve();
-//        for (IntDomainVar xi : x)
-//            System.out.print(xi.getVal());
-//        System.out.println("");
 //
-//        for (IntDomainVar yi : y)
-//            System.out.print(yi.getVal());
-//        System.out.println("");
 //    }
 
 
