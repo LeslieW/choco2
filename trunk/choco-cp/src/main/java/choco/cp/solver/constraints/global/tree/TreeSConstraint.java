@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.tree;
 
-import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.tree.deduction.DeductionsAdvisor;
 import choco.cp.solver.constraints.global.tree.filtering.FilteringAdvisor;
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.TreeParameters;
@@ -34,6 +33,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.logging.Level;
 
 
 /**
@@ -56,7 +56,7 @@ public class TreeSConstraint extends AbstractLargeIntSConstraint {
     /**
      * boolean for debug and show a trace of the execution
      */
-    protected boolean affiche = false;
+    protected final static boolean AFFICHE = false;
 
     /**
      * Choco problem embedding the tree constraint
@@ -112,19 +112,19 @@ public class TreeSConstraint extends AbstractLargeIntSConstraint {
      * @throws ContradictionException
      */
     public void awake() throws ContradictionException {
-        if (affiche) {
-        	System.out.println("*********************************");
+        if (AFFICHE) {
+        	LOGGER.log(Level.INFO, "*********************************");
             structure.getInputGraph().showGlobal();
-            System.out.println("-------------------------");
+            LOGGER.log(Level.INFO, "-------------------------");
             structure.getPrecs().showPrecGraph();
-            System.out.println("-------------------------");
+            LOGGER.log(Level.INFO, "-------------------------");
             structure.getDoms().showDoms(0);
         }
         this.solver = tree.getSolver();
         this.nbNodes = tree.getNbNodes();
         this.structure = new StructuresAdvisor(this.solver, tree);
-        this.deduction = new DeductionsAdvisor(this.solver, tree, this.structure, this.affiche);
-        this.filtering = new FilteringAdvisor(this.solver, this, this.tree, this.structure, this.affiche);
+        this.deduction = new DeductionsAdvisor(this.solver, tree, this.structure, AFFICHE);
+        this.filtering = new FilteringAdvisor(this.solver, this, this.tree, this.structure, AFFICHE);
     }
 
     /**
@@ -135,10 +135,10 @@ public class TreeSConstraint extends AbstractLargeIntSConstraint {
      * @throws ContradictionException
      */
     public void propagate() throws ContradictionException {
-        if (affiche) {
+        if (AFFICHE) {
         	ChocoLogging.flushLogs();
-        	System.out.println("=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=");
-            System.out.println("propagate " + solver.getEnvironment().getWorldIndex());
+        	LOGGER.log(Level.INFO, "=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=");
+            LOGGER.log(Level.INFO, "propagate {0}", solver.getEnvironment().getWorldIndex());
         }
         boolean update;
         do {
@@ -148,7 +148,7 @@ public class TreeSConstraint extends AbstractLargeIntSConstraint {
             update = deduction.applyDeduction();
             // feasibility
             if (!deduction.isCompatible()) {
-                if (affiche) System.out.println("\t update fail()");
+                if (AFFICHE) LOGGER.log(Level.INFO, "\t update fail()");
                 update = false;
                 this.fail();
             } else {
@@ -156,9 +156,9 @@ public class TreeSConstraint extends AbstractLargeIntSConstraint {
                 update = filtering.applyFiltering() || update;
             }
         } while (update);
-        if (affiche) {
-        	ChocoLogging.flushLogs();
-            System.out.println("=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=");
+        if (AFFICHE) {
+            LOGGER.log(Level.INFO, "=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=");
+            ChocoLogging.flushLogs();
         }
     }
 
@@ -172,7 +172,7 @@ public class TreeSConstraint extends AbstractLargeIntSConstraint {
     public void awakeOnInst(int idx) throws ContradictionException {
         // events over successor variables
         if ((2 < idx) && (idx < nbNodes + 3)) {
-            if (affiche) System.out.println("awakeOnInst");
+            if (AFFICHE) LOGGER.log(Level.INFO, "awakeOnInst");
             structure.getInputGraph().updateOnInst(idx - 3);
         }
         this.constAwake(false);
@@ -188,7 +188,7 @@ public class TreeSConstraint extends AbstractLargeIntSConstraint {
     public void awakeOnInf(int idx) throws ContradictionException {
         // events over successor variables
         if ((2 < idx) && (idx < nbNodes + 3)) {
-            if (affiche) System.out.println("awakeOnInf");
+            if (AFFICHE) LOGGER.log(Level.INFO, "awakeOnInf");
             structure.getInputGraph().updateOnInf(idx - 3);
         }
         this.constAwake(false);
@@ -204,7 +204,7 @@ public class TreeSConstraint extends AbstractLargeIntSConstraint {
     public void awakeOnSup(int idx) throws ContradictionException {
         // events over successor variables
         if ((2 < idx) && (idx < nbNodes + 3)) {
-            if (affiche) System.out.println("awakeOnSup");
+            if (AFFICHE) LOGGER.log(Level.INFO, "awakeOnSup");
             structure.getInputGraph().updateOnSup(idx - 3);
         }
         this.constAwake(false);
@@ -220,7 +220,7 @@ public class TreeSConstraint extends AbstractLargeIntSConstraint {
     public void awakeOnBounds(int idx) throws ContradictionException {
         // events over successor variables
         if ((2 < idx) && (idx < nbNodes + 3)) {
-            if (affiche) System.out.println("awakeOnBounds");
+            if (AFFICHE) LOGGER.log(Level.INFO, "awakeOnBounds");
             structure.getInputGraph().updateOnBounds(idx - 3);
         }
         this.constAwake(false);
@@ -237,7 +237,7 @@ public class TreeSConstraint extends AbstractLargeIntSConstraint {
     public void awakeOnRem(int idx, int i) throws ContradictionException {
         // events over successor variables
         if ((2 < idx) && (idx < nbNodes + 3)) {
-            if (affiche) System.out.println("awakeOnRem");
+            if (AFFICHE) LOGGER.log(Level.INFO, "awakeOnRem");
             structure.getInputGraph().updateOnRem(idx - 3, i);
         }
         this.constAwake(false);
@@ -254,7 +254,7 @@ public class TreeSConstraint extends AbstractLargeIntSConstraint {
     public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
         // events over successor variables
         if ((2 < idx) && (idx < nbNodes + 3)) {
-            if (affiche) System.out.println("awakeOnRemovals");
+            if (AFFICHE) LOGGER.log(Level.INFO, "awakeOnRemovals");
             structure.getInputGraph().updateOnRemovals(idx - 3, deltaDomain);
         }
         this.constAwake(false);

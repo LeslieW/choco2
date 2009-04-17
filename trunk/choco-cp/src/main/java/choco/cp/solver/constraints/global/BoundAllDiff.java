@@ -263,13 +263,9 @@ public class BoundAllDiff extends AbstractLargeIntSConstraint {
     @Override
 	public void propagate() throws ContradictionException {
         if (infBoundModified || supBoundModified) {
-            //System.out.println("Sort it !");
             sortIt();
-            //System.out.println("Filter lower !");
             filterLower();
-            //System.out.println("Filter upper");
             filterUpper();
-            //System.out.println("Finished !");
             infBoundModified = false;
             supBoundModified = false;
         }

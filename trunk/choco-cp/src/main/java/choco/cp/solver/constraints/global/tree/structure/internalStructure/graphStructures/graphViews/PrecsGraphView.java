@@ -22,30 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews;
 
-/* ************************************************
- *           _       _                            *
- *          |  �(..)  |                           *
- *          |_  J||L _|       Choco-Solver.net    *
- *                                                *
- *     Choco is a java library for constraint     *
- *     satisfaction problems (CSP), constraint    *
- *     programming (CP) and explanation-based     *
- *     constraint solving (e-CP). It is built     *
- *     on a event-based propagation mechanism     *
- *     with backtrackable structures.             *
- *                                                *
- *     Choco is an open-source software,          *
- *     distributed under a BSD licence            *
- *     and hosted by sourceforge.net              *
- *                                                *
- *     + website : http://choco.emn.fr            *
- *     + support : choco@emn.fr                   *
- *                                                *
- *     Copyright (C) F. Laburthe,                 *
- *                   N. Jussien   1999-2008       *
- **************************************************/
-
-import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.Node;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.trailing.StoredBitSet;
@@ -54,8 +30,11 @@ import choco.kernel.solver.Solver;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class PrecsGraphView {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     /**
      * boolean for debug and show a trace of the execution
@@ -116,31 +95,31 @@ public class PrecsGraphView {
     public boolean addPrec(int u, int v) {
         if (affiche) {
         	ChocoLogging.flushLogs();
-            System.out.println("============= Add Incr�mental : (" + u + "," + v + ") ================");
+            LOGGER.info("============= Add Incr�mental : (" + u + "," + v + ") ================");
             precs.showGraph("precs");
-            System.out.println("---------------");
+            LOGGER.info("---------------");
             precs.showAllDesc("tcPrecs");
-            System.out.println("**********************");
+            LOGGER.info("**********************");
         }
         boolean res = false;
         if (u != v) {
             if (!precs.getDescendants(u).get(v)) {
                 if (affiche)
-                    System.out.println("\t\t(" + u + "," + v + ") est ajoute dans Gp!");
+                    LOGGER.info("\t\t(" + u + "," + v + ") est ajoute dans Gp!");
                 precs.addArc(u, v);
                 // transitive reduction become the current view of the precedence graph
                 this.precsGraph = this.precs.getTrGraph();
                 res = true;
             } else {
-                if (affiche) System.out.println("\t\t(" + u + "," + v + ") a deja ete ajoute dans Gp");
+                if (affiche) LOGGER.info("\t\t(" + u + "," + v + ") a deja ete ajoute dans Gp");
                 res = false;
             }
         }
         if (affiche) {
             precs.showGraph("precs");
-            System.out.println("---------------");
+            LOGGER.info("---------------");
             precs.showAllDesc("tcPrecs");
-            System.out.println("============= END Add Incr�mental ================");
+            LOGGER.info("============= END Add Incr�mental ================");
         }
         return res;
     }

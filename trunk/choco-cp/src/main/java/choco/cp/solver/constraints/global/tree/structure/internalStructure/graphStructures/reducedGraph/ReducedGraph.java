@@ -22,39 +22,20 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.reducedGraph;
 
-/* ************************************************
- *           _       _                            *
- *          |  �(..)  |                           *
- *          |_  J||L _|       Choco-Solver.net    *
- *                                                *
- *     Choco is a java library for constraint     *
- *     satisfaction problems (CSP), constraint    *
- *     programming (CP) and explanation-based     *
- *     constraint solving (e-CP). It is built     *
- *     on a event-based propagation mechanism     *
- *     with backtrackable structures.             *
- *                                                *
- *     Choco is an open-source software,          *
- *     distributed under a BSD licence            *
- *     and hosted by sourceforge.net              *
- *                                                *
- *     + website : http://choco.emn.fr            *
- *     + support : choco@emn.fr                   *
- *                                                *
- *     Copyright (C) F. Laburthe,                 *
- *                   N. Jussien   1999-2008       *
- **************************************************/
-
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.StoredBitSetGraph;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.trailing.StoredBitSet;
 import choco.kernel.solver.Solver;
 
 import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 
 public class ReducedGraph {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     protected boolean affiche = false;
 
@@ -74,6 +55,9 @@ public class ReducedGraph {
 
     /**
      * Constructor
+     * @param solver
+     * @param graph
+     * @param graph
      */
     public ReducedGraph(Solver solver, StoredBitSetGraph graph) {
         this.solver = solver;
@@ -117,42 +101,42 @@ public class ReducedGraph {
         // recalcul des cfc
         CFC.removeAllElements();
         // debut du traitement
-        if (affiche) System.out.println("====> Premier DFS:");
+        if (affiche) LOGGER.info("====> Premier DFS:");
         for (int v = 0; v < nbVertices; v++) {
             if (prefix[v] == 0) {
-                if (affiche) System.out.println("    On entre par " + v);
+                if (affiche) LOGGER.info("    On entre par " + v);
                 listSuffix = dfs_suffix(v);
             }
         }
-        if (affiche) System.out.println("Fin du premier DFS <====");
+        if (affiche) LOGGER.info("Fin du premier DFS <====");
         // mise a jour des structures
         razStruct();
         // inversion de la matrice CGA
         Vector invCGA = inverse();
-        if (affiche) System.out.println("====> Second DFS (inverse):");
+        if (affiche) LOGGER.info("====> Second DFS (inverse):");
         while (listSuffix.size() != 0) {
             int v = listSuffix.removeLast();
             if (prefix[v] == 0) {
                 numComp++;
-                if (affiche) System.out.println("    On entre par " + v);
+                if (affiche) LOGGER.info("    On entre par " + v);
                 dfs_mark(v, invCGA);
             }
         }
-        if (affiche) System.out.println("Fin du second DFS <====");
+        if (affiche) LOGGER.info("Fin du second DFS <====");
         // le tableau composante contient la liste des cfc, on effectue un traitement pour le mettre sous forme d'un vector
         for (int i = 0; i < numComp + 1; i++) {
             StoredBitSet contain = new StoredBitSet(solver.getEnvironment(), nbVertices);
             boolean add = false;
             for (int j = 0; j < nbVertices; j++) {
                 if (composante[j] == i) {
-                    if (affiche) System.out.println(j + " est dans la composante " + i);
+                    if (affiche) LOGGER.info(j + " est dans la composante " + i);
                     add = true;
                     contain.set(j, true);
                 }
             }
             if (add) CFC.addElement(contain);
         }
-        if (affiche) System.out.println("nbre de cfc = " + CFC.size());
+        if (affiche) LOGGER.info("nbre de cfc = " + CFC.size());
         buildCFCgraph();
     }
 
@@ -196,10 +180,10 @@ public class ReducedGraph {
     // DFS sur CGAPoss
     public LinkedList<Integer> dfs_suffix(int v) {
         prefix[v] = time++;
-        if (affiche) System.out.println("       On visite " + v);
+        if (affiche) LOGGER.info("       On visite " + v);
         StoredBitSet dom = graph.getSuccessors(v);
         for (int j = dom.nextSetBit(0); j >= 0; j = dom.nextSetBit(j + 1)) {
-            if (affiche) System.out.println("              on voudrait visiter " + j);
+            if (affiche) LOGGER.info("              on voudrait visiter " + j);
             if (prefix[j] == 0) dfs_suffix(j);
         }
         listSuffix.offer(v);
@@ -209,7 +193,7 @@ public class ReducedGraph {
     // DFS sur invCGA
     public void dfs_mark(int v, Vector invCGA) {
         prefix[v] = time++;
-        if (affiche) System.out.println("       On visite " + v);
+        if (affiche) LOGGER.info("       On visite " + v);
         if (composante[v] == -1) composante[v] = numComp;
         BitSet listPossSucc = (BitSet) invCGA.elementAt(v);
         for (int j = listPossSucc.nextSetBit(0); j >= 0; j = listPossSucc.nextSetBit(j + 1)) {

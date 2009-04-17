@@ -36,6 +36,8 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractTernIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.logging.Level;
+
 /**
  *
  * Let b be a boolean variables; x0, x1 be two integer variables and k1, k2 two integers.
@@ -203,12 +205,11 @@ public class PrecedenceDisjoint extends AbstractTernIntSConstraint {
 
 		  s.solve();
 		  do {
-		    //System.out.println(s.getVar(z).getVal() + " " + s.getVar(x).getVal() + " " + s.getVar(y).getVal());			  
 		  } while (s.nextSolution() == Boolean.TRUE);
 		  if (s.getNbSolutions() != 30) {
 			  throw new Error("wrong number of solutions " + s.getNbSolutions());
 		  }
-		  System.out.println("Nb solution : " + s.getNbSolutions() + " " + s.getNodeCount());
+		  LOGGER.log(Level.INFO, "Nb solution : {0} {1}", new Object[]{s.getNbSolutions(), s.getNodeCount()});
 
 		  //assertEquals( s.getNbSolutions(), 14);
 		}

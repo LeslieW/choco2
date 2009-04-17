@@ -106,7 +106,6 @@ public class GAC2001LargeSConstraint extends CspLargeSConstraint {
      * @throws ContradictionException
      */
     public void initializeSupports(int indexVar) throws ContradictionException {
-//		System.out.print("Initialize supports" + vars[indexVar].pretty() + " ... ");
         int[] currentSupport;
         IntDomain dom = vars[indexVar].getDomain();
         int val;
@@ -124,7 +123,6 @@ public class GAC2001LargeSConstraint extends CspLargeSConstraint {
     // updates the support for all values in the domain of variable
     // and remove unsupported values for variable
     public void reviseVar(int indexVar) throws ContradictionException {
-//		System.out.print("reviseVar" + vars[indexVar].pretty() + " ... ");
         int[] currentSupport;
         IntDomain dom = vars[indexVar].getDomain();
         int val;
@@ -136,8 +134,6 @@ public class GAC2001LargeSConstraint extends CspLargeSConstraint {
                     vars[indexVar].removeVal(val, cIndices[indexVar]);
                 }
             }
-
-//		System.out.println(" OK ");
     }
 
     // Store Last(x_i, val) = support

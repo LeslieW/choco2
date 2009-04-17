@@ -25,12 +25,17 @@
 // -------------------------------------
 
 package choco.cp.solver.preprocessor.graph;
-import java.util.Random; // main de test
+import choco.kernel.common.logging.ChocoLogging;
+
+import java.util.Random;
+import java.util.logging.Logger; // main de test
 
 /**
  * 	Algorithme de Bron and Kerbosch 197 to find maxumum cliques
  */
 public class MaxCliques {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
 	private ArrayGraph graph; 
 	private int[][]  cliques;
@@ -189,7 +194,7 @@ public class MaxCliques {
 	}
 	
 	public static ArrayGraph generateGraph(int n, int m, int seed, double start) {
-		System.out.print("Generating graph... "); 
+		LOGGER.info("Generating graph... "); 
 		ArrayGraph g = new ArrayGraph(n); 	
 		if(m>n*(n+1)/2) {
 			m = n*(n+1)/2; 
@@ -204,7 +209,7 @@ public class MaxCliques {
 	    	}
 	    	g.addEdge(v1,v2);
 	    }	
-	    System.out.println("done " + "(" + (System.currentTimeMillis()-start) + " ms).\n"); 
+	    LOGGER.info("done " + "(" + (System.currentTimeMillis()-start) + " ms).\n");
 	    System.out.flush();
 	    return g;
 	}
@@ -213,15 +218,15 @@ public class MaxCliques {
 		double start = System.currentTimeMillis();	
 		ArrayGraph g = generateGraph(n,m,seed,start); 
 	    MaxCliques myCliques = new MaxCliques(g);
-	    System.out.println("cliques : \n" + display(myCliques.getMaxCliques()));
-	    System.out.println("Total time : " + (System.currentTimeMillis()-start) + " ms.\n"); 
+	    LOGGER.info("cliques : \n" + display(myCliques.getMaxCliques()));
+	    LOGGER.info("Total time : " + (System.currentTimeMillis()-start) + " ms.\n");
 	    if(n<=16) { 
-	    	System.out.println(g); 
+	    	LOGGER.info(g.toString());
 	    }
 	}
 	
 	public static void testEmptyGraph241108() {
-		System.out.println("Graph without edges");
+		LOGGER.info("Graph without edges");
 		test(6,0,1986);
 	}
 	

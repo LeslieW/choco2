@@ -22,9 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global;
 
+import choco.kernel.common.util.DisposableIntIterator;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.common.util.IntList;
-import choco.kernel.common.util.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomain;
@@ -34,6 +34,7 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Enforce the number of identical values wihtin a list of variables to
@@ -107,7 +108,7 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
         BitSet allowedDomain = allowvalues.get(v.getInf() + cste, v.getSup() + cste + 1);
         int newInf = allowedDomain.nextSetBit(0) + offset;
         int newSup = allowedDomain.length() + offset;
-        if (debug) System.out.println(db + " updateInf " + newInf + " of " + v);
+        if (debug) LOGGER.log(Level.INFO, "{0} updateInf {1} of {2}", new Object[]{db, newInf, v});
         v.updateInf(newInf, -1);
         v.updateSup(newSup, -1);
         if (v.hasEnumeratedDomain()) {
@@ -116,7 +117,7 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
             while(it.hasNext()) {
               int val = it.next();
               if (!allowedDomain.get(val - offset)) {
-                  if (debug) System.out.println("2 remove value " + val + " from " + v);
+                  if (debug) LOGGER.log(Level.INFO, "2 remove value {0} from {1}", new Object[]{val, v});
                   v.removeVal(val, -1);
               }
             }
@@ -318,24 +319,24 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
     }
 
     public void awakeOnInf(int idx) throws ContradictionException {
-        if (debug) System.out.println("inf " + vars[idx] + " to " + vars[idx].getInf());
+        if (debug) LOGGER.log(Level.INFO, "inf {0} to {1}", new Object[]{vars[idx], vars[idx].getInf()});
         constAwake(false);
     }
 
     public void awakeOnInst(int idx) throws ContradictionException {
-        if (debug) System.out.println("instantiate " + vars[idx] + " to " + vars[idx].getVal());
+        if (debug) LOGGER.log(Level.INFO, "instantiate {0} to {1}", new Object[]{vars[idx], vars[idx].getVal()});
         constAwake(false);
     }
 
     public void awakeOnSup(int idx) throws ContradictionException {
-        if (debug) System.out.println("sup " + vars[idx] + " to " + vars[idx].getSup());
+        if (debug) LOGGER.log(Level.INFO, "sup {0} to {1}", new Object[]{vars[idx], vars[idx].getSup()});
         constAwake(false);
     }
 
     public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
         if (debug) {
             while (deltaDomain.hasNext()) {
-                System.out.println("remove from " + vars[idx] + " value " + deltaDomain.next());
+                LOGGER.log(Level.INFO, "remove from {0} value {1}", new Object[]{vars[idx], deltaDomain.next()});
             }
         }
         constAwake(false);

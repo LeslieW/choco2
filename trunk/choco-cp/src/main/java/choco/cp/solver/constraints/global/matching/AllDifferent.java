@@ -49,8 +49,6 @@ public class AllDifferent extends AbstractBipartiteMatching implements IntSConst
     maxValue = Integer.MIN_VALUE;
     for (int i = 0; i < vars.length; i++) {
       IntDomainVar var = vars[i];
-      //System.out.println("inf = " + var.getInf());
-      //System.out.println("sup = " + var.getSup());
       minValue = Math.min(var.getInf(), minValue);
       maxValue = Math.max(var.getSup(), maxValue);
     }
@@ -89,8 +87,6 @@ public class AllDifferent extends AbstractBipartiteMatching implements IntSConst
     int minValue = Integer.MAX_VALUE, maxValue = Integer.MIN_VALUE;
     for (int i = 0; i < vars.length; i++) {
       IntDomainVar var = vars[i];
-      //System.out.println("inf = " + var.getInf());
-      //System.out.println("sup = " + var.getSup());
       minValue = Math.min(var.getInf(), minValue);
       maxValue = Math.max(var.getSup(), maxValue);
     }

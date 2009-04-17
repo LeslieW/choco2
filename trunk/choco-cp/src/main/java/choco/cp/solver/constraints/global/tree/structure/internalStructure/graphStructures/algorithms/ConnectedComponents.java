@@ -22,37 +22,17 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.algorithms;
 
-/* ************************************************
- *           _       _                            *
- *          |  �(..)  |                           *
- *          |_  J||L _|       Choco-Solver.net    *
- *                                                *
- *     Choco is a java library for constraint     *
- *     satisfaction problems (CSP), constraint    *
- *     programming (CP) and explanation-based     *
- *     constraint solving (e-CP). It is built     *
- *     on a event-based propagation mechanism     *
- *     with backtrackable structures.             *
- *                                                *
- *     Choco is an open-source software,          *
- *     distributed under a BSD licence            *
- *     and hosted by sourceforge.net              *
- *                                                *
- *     + website : http://choco.emn.fr            *
- *     + support : choco@emn.fr                   *
- *                                                *
- *     Copyright (C) F. Laburthe,                 *
- *                   N. Jussien   1999-2008       *
- **************************************************/
-
-
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.trailing.StoredBitSet;
 import choco.kernel.solver.Solver;
 
 import java.util.BitSet;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 public class ConnectedComponents {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     protected boolean affiche;
 
@@ -90,15 +70,13 @@ public class ConnectedComponents {
     private void showGraph() {
         for (int i = 0; i < nbNodes; i++) {
             StoredBitSet contain = graph[i];
-            System.out.print("sure[" + i + "] = "+contain.toString());
-            System.out.println("");
+            LOGGER.info("sure[" + i + "] = "+contain.toString());
         }
         for (int i = 0; i < nbNodes; i++) {
             BitSet contain = undirected[i];
-            System.out.print("undirected[" + i + "] = "+contain.toString());
-            System.out.println("");
+            LOGGER.info("undirected[" + i + "] = "+contain.toString());
         }
-        System.out.println("**************************");
+        LOGGER.info("**************************");
     }
 
     private void getUndirectedGraph() {
@@ -118,15 +96,14 @@ public class ConnectedComponents {
         update();
         /*if (affiche) {
             showGraph();
-            System.out.println("----------------");
+            LOGGER.info("----------------");
         }*/
         for (int i = 0; i < nbNodes; i++) color[i] = 0;
         int u = existsUnVisited();
         while (u != -1) {
             reached.set(u,true);
-            if (affiche) System.out.print("cc[" + u + "] = ");
+            if (affiche) LOGGER.info("cc[" + u + "] = ");
             dfsVisit(u);
-            if (affiche) System.out.println("");
             StoredBitSet toModif = cc.remove(u);
             toModif.clear();
             for (int j = reached.nextSetBit(0); j >= 0; j = reached.nextSetBit(j + 1)) toModif.set(j,true);
@@ -136,7 +113,7 @@ public class ConnectedComponents {
             u = existsUnVisited();
             nbCC++;
         }
-        if (affiche) System.out.println("----------------");
+        if (affiche) LOGGER.info("----------------");
     }
 
     private void convertToStored(Vector<BitSet> vb) {
@@ -149,7 +126,7 @@ public class ConnectedComponents {
     }
 
     private void dfsVisit(int u) {
-        if (affiche) System.out.print(u + " ");
+        if (affiche) LOGGER.info(u + " ");
         color[u] = 1;
         reached.set(u, true);
         BitSet adj = undirected[u];

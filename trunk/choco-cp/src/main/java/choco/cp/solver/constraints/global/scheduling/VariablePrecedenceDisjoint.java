@@ -1,18 +1,18 @@
 package choco.cp.solver.constraints.global.scheduling;
 
-import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import static choco.Choco.makeIntVar;
+import choco.cp.model.CPModel;
+import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
+import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
-import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
-import choco.cp.model.CPModel;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.geq;
-import choco.Choco;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.logging.Level;
 
 /**
  *  Let b be a boolean variables; x0, x1 be two integer variables and k1, k2 two integers.
@@ -200,14 +200,12 @@ public class VariablePrecedenceDisjoint extends AbstractLargeIntSConstraint {
 
 		  s.solve();
 		  do {
-		    //System.out.println(s.getVar(z).getVal() + " " + s.getVar(x).getVal() + " " + s.getVar(y).getVal());
-
           } while (s.nextSolution() == Boolean.TRUE);
 
            if (s.getNbSolutions() != 1392) {
 			  throw new Error("wrong number of solutions " + s.getNbSolutions());
 		  }
-		  System.out.println("Nb solution : " + s.getNbSolutions() + " " + s.getNodeCount());
+		  LOGGER.log(Level.INFO, "Nb solution : {0} {1}" , new Object[]{s.getNbSolutions(), s.getNodeCount()});
 
 		  //assertEquals( s.getNbSolutions(), 14);
 		}

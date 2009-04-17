@@ -23,8 +23,6 @@
 package choco.cp.solver.constraints.global.scheduling;
 
 
-
-import gnu.trove.TIntArrayList;
 import choco.kernel.common.opres.graph.DagDTC;
 import choco.kernel.common.opres.graph.GraphDTC;
 import choco.kernel.memory.IEnvironment;
@@ -37,6 +35,7 @@ import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.global.scheduling.IPrecedenceNetwork;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+import gnu.trove.TIntArrayList;
 
 public class PertSConstraint extends AbstractResourceSConstraint implements IPrecedenceNetwork {
 
@@ -181,12 +180,12 @@ public class PertSConstraint extends AbstractResourceSConstraint implements IPre
 			break;
 		}
 		case GraphDTC.EXISTING : {
-			if(initialWorld) {System.err.println("duplicate precedence posting");}
+			if(initialWorld) {LOGGER.severe("duplicate precedence posting");}
 			else {throw new SolverException("cant add duplicate static precedence during search");}
 			break;
 		}
 		case GraphDTC.TRANSITIVE : {
-			if(initialWorld) {System.err.println("transitive static precedence not added");}
+			if(initialWorld) {LOGGER.severe("transitive static precedence not added");}
 			else {throw new SolverException("cant add static transitive precedence during search");}
 			break;
 		}

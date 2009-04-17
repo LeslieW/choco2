@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.real;
 
-import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.real.AbstractLargeRealSConstraint;
@@ -34,7 +33,7 @@ import choco.kernel.solver.variables.real.RealVar;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * A basic constraint using HC4 algorithm for filtering values with respect to a mathematical equation.
@@ -90,14 +89,14 @@ public class Equation extends AbstractLargeRealSConstraint {
 
   public void addBoxedVar(RealVar var) {
     if (nbBoxedVars == boxedVars.length) {
-      ChocoLogging.getPropagationLogger().severe("Cannot box more variables than variables involved in the constraint !!");
+      LOGGER.log(Level.SEVERE, "Cannot box more variables than variables involved in the constraint !!");
       return;
     }
     List wx = new ArrayList();
     List wox = new ArrayList();
     this.exp.isolate(var, wx, wox);
     if (wx.size() == 0) {
-    	ChocoLogging.getPropagationLogger().severe("Cannot box variables not involved in the constraint !!");
+      LOGGER.log(Level.SEVERE, "Cannot box variables not involved in the constraint !!");
       return;
     }
     boxedVars[nbBoxedVars] = var;

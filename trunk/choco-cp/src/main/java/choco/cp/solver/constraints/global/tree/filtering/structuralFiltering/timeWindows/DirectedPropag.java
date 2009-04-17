@@ -23,10 +23,10 @@
 package choco.cp.solver.constraints.global.tree.filtering.structuralFiltering.timeWindows;
 
 
-
 import choco.cp.solver.constraints.global.tree.filtering.RemovalsAdvisor;
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.Node;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.VarGraphView;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.trailing.StoredBitSet;
 import choco.kernel.solver.ContradictionException;
@@ -34,8 +34,11 @@ import choco.kernel.solver.ContradictionException;
 import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.logging.Logger;
 
 public class DirectedPropag {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     /**
      * boolean that allow to display debug mode for this propagator
@@ -117,6 +120,7 @@ public class DirectedPropag {
      * filtering methods that update the time windows of each node according to the travel time matrix and the graph
      * <p/>
      * * @throws ContradictionException
+     * @throws choco.kernel.solver.ContradictionException
      */
     public void applyTWfiltering() throws ContradictionException {
         updateInf();
@@ -135,11 +139,10 @@ public class DirectedPropag {
             for (int j = maybe[i].nextSetBit(0); j >= 0; j = maybe[i].nextSetBit(j + 1)) {
                 if (nodes[i].getTimeWindow().getInf() + travelTime[i][j].get() > nodes[j].getTimeWindow().getSup()) {//o[i].getInf() + travelTime[i][j].get() > o[j].getSup()) {
                     if (debugRem) {
-                        System.out.println("-------------------------------------------------------------------");
-                        System.out.println("Update[applyGraphFiltering] : twPropagation.TWConstraint for nodes " + i);
-                        System.out.print("\tremove arc (" + i + "," + j + ") from Gmaybe : ");
-                        System.out.println(nodes[i].getTimeWindow().getInf() + "+" + travelTime[i][j] + " > " + nodes[j].getTimeWindow().getSup());
-                        System.out.println("-------------------------------------------------------------------");
+                        LOGGER.info("-------------------------------------------------------------------");
+                        LOGGER.info("Update[applyGraphFiltering] : twPropagation.TWConstraint for nodes " + i);
+                        LOGGER.info("\tremove arc (" + i + "," + j + ") from Gmaybe : "+nodes[i].getTimeWindow().getInf() + "+" + travelTime[i][j] + " > " + nodes[j].getTimeWindow().getSup());
+                        LOGGER.info("-------------------------------------------------------------------");
                     }
                     int[] arc = {i, j};
                     propagateStruct.addRemoval(arc);
@@ -198,10 +201,10 @@ public class DirectedPropag {
                 }
                 if ((newMax < nodes[i].getTimeWindow().getSup()) && update) {
                     if (debugRem) {
-                        System.out.println("-------------------------------------------------------------------");
-                        System.out.println("Update[updateByPotentialSucc] : twPropagation.TWConstraint for nodes " + i);
-                        System.out.println("\t max start " + i + " = " + nodes[i].getTimeWindow().getSup() + " devient " + newMax);
-                        System.out.println("-------------------------------------------------------------------");
+                        LOGGER.info("-------------------------------------------------------------------");
+                        LOGGER.info("Update[updateByPotentialSucc] : twPropagation.TWConstraint for nodes " + i);
+                        LOGGER.info("\t max start " + i + " = " + nodes[i].getTimeWindow().getSup() + " devient " + newMax);
+                        LOGGER.info("-------------------------------------------------------------------");
                     }
                     propagateStruct.setMaxStart(i, newMax);
                 }
@@ -223,10 +226,10 @@ public class DirectedPropag {
                 }
                 if ((newMin > nodes[j].getTimeWindow().getInf()) && update) {
                     if (debugRem) {
-                        System.out.println("-------------------------------------------------------------------");
-                        System.out.println("Update[updateByPotentialPred] : twPropagation.TWConstraint for nodes " + j);
-                        System.out.println("\t min start " + j + " = " + nodes[j].getTimeWindow().getInf() + " devient " + newMin);
-                        System.out.println("-------------------------------------------------------------------");
+                        LOGGER.info("-------------------------------------------------------------------");
+                        LOGGER.info("Update[updateByPotentialPred] : twPropagation.TWConstraint for nodes " + j);
+                        LOGGER.info("\t min start " + j + " = " + nodes[j].getTimeWindow().getInf() + " devient " + newMin);
+                        LOGGER.info("-------------------------------------------------------------------");
                     }
                     propagateStruct.setMaxStart(j, newMin);
                 }

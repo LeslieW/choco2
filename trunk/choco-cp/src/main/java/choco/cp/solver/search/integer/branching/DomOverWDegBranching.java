@@ -185,7 +185,6 @@ public class DomOverWDegBranching extends AbstractLargeIntBranching implements P
                 idx = c.next();
                 AbstractSConstraint cstr = (AbstractSConstraint) v.getConstraint(idx);
                 if (cstr.getNbVarNotInst() > 1) {
-                    //System.out.println("" + cstr);
                     weight += ((DomOverWDegBranchingConstraintExtension) cstr.getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure + cstr.getFineDegree(v.getVarIndex(idx));
                 }
             }

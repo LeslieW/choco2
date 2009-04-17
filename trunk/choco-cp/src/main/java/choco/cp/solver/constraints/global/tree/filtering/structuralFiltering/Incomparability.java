@@ -23,14 +23,14 @@
 package choco.cp.solver.constraints.global.tree.filtering.structuralFiltering;
 
 
-
 import choco.cp.solver.constraints.global.tree.filtering.AbstractPropagator;
+import choco.kernel.common.util.DisposableIntIterator;
 import choco.kernel.memory.trailing.StoredBitSet;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomain;
-import choco.kernel.common.util.DisposableIntIterator;
 
 import java.util.BitSet;
+
 
 public class Incomparability extends AbstractPropagator {
 
@@ -51,7 +51,7 @@ public class Incomparability extends AbstractPropagator {
                 for (int v = I_u.nextSetBit(0); v >= 0; v = I_u.nextSetBit(v + 1)) {
                     if (D_w.get(v)) {
                         if (affiche)
-                            System.out.println("Violation incomp : inc(" + u + "," + v + ") VS desc_" + w + " = " + D_w.toString());
+                            LOGGER.info("Violation incomp : inc(" + u + "," + v + ") VS desc_" + w + " = " + D_w.toString());
                         return false;
                     }
                 }
@@ -90,14 +90,14 @@ public class Incomparability extends AbstractPropagator {
                 if (nodes[i].getSuccessors().canBeInstantiatedTo(i)) {
                     if (nodes[i].getIncomparableNodes().cardinality() != 0) {
                         if (affiche)
-                            System.out.println("1- filterAccordingToNtree(): l'arc (" + i + "," + i + ") est impossible");
+                            LOGGER.info("1- filterAccordingToNtree(): l'arc (" + i + "," + i + ") est impossible");
                         int[] arc = {i, i};
                         propagateStruct.addRemoval(arc);
                     } else {
                         for (int j = 0; j < nbVertices; j++) {
                             if (nodes[j].getIncomparableNodes().get(i)) {
                                 if (affiche)
-                                    System.out.println("2- filterAccordingToNtree(): l'arc (" + i + "," + i + ") est impossible");
+                                    LOGGER.info("2- filterAccordingToNtree(): l'arc (" + i + "," + i + ") est impossible");
                                 int[] arc = {i, i};
                                 propagateStruct.addRemoval(arc);
                             }
@@ -122,13 +122,13 @@ public class Incomparability extends AbstractPropagator {
             for (int u_d = Dr_u.nextSetBit(0); u_d >= 0; u_d = Dr_u.nextSetBit(u_d + 1)) {
                 if (v_a < u_d && nodes[v_a].getIncomparableNodes().get(u_d)) {
                     if (affiche)
-                        System.out.println("1- filteringAccordingToPrecsAndIncs(): l'arc (" + u + "," + v + ") est impossible");
+                        LOGGER.info("1- filteringAccordingToPrecsAndIncs(): l'arc (" + u + "," + v + ") est impossible");
                     propagateStruct.addRemoval(arc);
                     return;
                 }
                 if (u_d < v_a && nodes[u_d].getIncomparableNodes().get(v_a)) {
                     if (affiche)
-                        System.out.println("2- filteringAccordingToPrecsAndIncs(): l'arc (" + u + "," + v + ") est impossible");
+                        LOGGER.info("2- filteringAccordingToPrecsAndIncs(): l'arc (" + u + "," + v + ") est impossible");
                     propagateStruct.addRemoval(arc);
                     return;
                 }
@@ -138,13 +138,13 @@ public class Incomparability extends AbstractPropagator {
             for (int v_d = D_v.nextSetBit(0); v_d >= 0; v_d = D_v.nextSetBit(v_d + 1)) {
                 if (u_a < v_d && nodes[u_a].getIncomparableNodes().get(v_d)) {
                     if (affiche)
-                        System.out.println("3- filteringAccordingToPrecsAndIncs(): l'arc (" + u + "," + v + ") est impossible");
+                        LOGGER.info("3- filteringAccordingToPrecsAndIncs(): l'arc (" + u + "," + v + ") est impossible");
                     propagateStruct.addRemoval(arc);
                     return;
                 }
                 if (v_d < u_a && nodes[v_d].getIncomparableNodes().get(u_a)) {
                     if (affiche)
-                        System.out.println("4- filteringAccordingToPrecsAndIncs(): l'arc (" + u + "," + v + ") est impossible");
+                        LOGGER.info("4- filteringAccordingToPrecsAndIncs(): l'arc (" + u + "," + v + ") est impossible");
                     propagateStruct.addRemoval(arc);
                     return;
                 }

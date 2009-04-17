@@ -26,6 +26,7 @@ package choco.cp.solver.constraints.global.geost.util;
 import choco.cp.solver.constraints.global.geost.Constants;
 import choco.cp.solver.constraints.global.geost.Setup;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Obj;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.geost.ShiftedBox;
 
 import java.io.BufferedWriter;
@@ -34,6 +35,8 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class provides a function that writes a certain solution (after solving and getting a solution) 
@@ -41,6 +44,9 @@ import java.util.Vector;
  * The ouput file is written in a folder specified in the VRML_OUTPUT_FOLDER variable in the global.Constants class.
  */
 public class VRMLwriter {
+
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
 	public static final String VRML_OUTPUT_FOLDER = "";
 
@@ -56,7 +62,7 @@ public class VRMLwriter {
 	    try 
 	    {
 	   		BufferedWriter out = new BufferedWriter(new FileWriter(str));
-	        System.out.println("writing the VRML to : " + str);
+	        LOGGER.log(Level.INFO, "writing the VRML to : {0}",  str);
 			Iterator itr;
 			itr = s.objects.keySet().iterator();
 			int ObjectIterationNb = 0;
@@ -215,12 +221,12 @@ public class VRMLwriter {
 				out.close();
 			}
 			else 
-				System.err.println("Dimension is not 2 nor 3 therefore no VRML file was written.");
+				LOGGER.severe("Dimension is not 2 nor 3 therefore no VRML file was written.");
 			
 			
 	    }
 	    catch (IOException e) {
-	    	System.out.println("ERROR; Couldn't write VRML file");
+	    	LOGGER.log(Level.SEVERE, "ERROR; Couldn't write VRML file");
 	    }
 
 

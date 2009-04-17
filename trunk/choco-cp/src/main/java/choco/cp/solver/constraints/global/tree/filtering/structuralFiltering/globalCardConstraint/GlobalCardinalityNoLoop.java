@@ -69,8 +69,7 @@ public class GlobalCardinalityNoLoop extends AbstractBipartFlow {
         if (val >= graph.length) {
             if (inputGraph.getGlobal().getSuccessors(i).get(val)) {
                 if (affiche) {
-                    System.out.print("\t"+solver.getEnvironment().getWorldIndex());
-                    System.out.println(" --> 1-GCC: suppression de l'arc (" + index[i] + "," + val + ")");
+                    LOGGER.info("\t"+solver.getEnvironment().getWorldIndex()+" --> 1-GCC: suppression de l'arc (" + index[i] + "," + val + ")");
                 }
                 int[] arc = {index[i], val};
                 rem.addRemoval(arc);
@@ -78,8 +77,7 @@ public class GlobalCardinalityNoLoop extends AbstractBipartFlow {
         } else {
             if (inputGraph.getGlobal().getSuccessors(index[i]).get(val)) {
                 if (affiche) {
-                    System.out.print("\t"+solver.getEnvironment().getWorldIndex());
-                    System.out.println(" --> 2-GCC: suppression de l'arc (" + index[i] + "," + val + ")");
+                    LOGGER.info("\t"+solver.getEnvironment().getWorldIndex()+" --> 2-GCC: suppression de l'arc (" + index[i] + "," + val + ")");
                 }
                 int[] arc = {index[i], val};
                 rem.addRemoval(arc);
@@ -95,6 +93,9 @@ public class GlobalCardinalityNoLoop extends AbstractBipartFlow {
      * discovering that an edge is no longer valid, and posting this event
      * to the constraint solver: since we are already achieving GAC consistency
      * in one single loop.
+     * @param rem
+     * @return
+     * @throws choco.kernel.solver.ContradictionException
      */
     public boolean applyGCC(RemovalsAdvisor rem) throws ContradictionException {
         for (int i = 0; i < nbRightVertices; i++) {
@@ -103,7 +104,7 @@ public class GlobalCardinalityNoLoop extends AbstractBipartFlow {
                 if (graph[j].get(i)) nbUsed++;
             }
             if ((nbUsed < minFlow[i]) || !struct.getDegree().isCompatibleDegree()) {
-                if (affiche) System.out.println("nbUsed = " + nbUsed + " VS minFlow[" + i + "] = " + minFlow[i] + " ==> ECHEC");
+                if (affiche) LOGGER.info("nbUsed = " + nbUsed + " VS minFlow[" + i + "] = " + minFlow[i] + " ==> ECHEC");
                 return false;
             }
         }

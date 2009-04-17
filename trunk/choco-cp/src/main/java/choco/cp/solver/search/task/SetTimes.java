@@ -35,11 +35,15 @@ import choco.kernel.solver.search.task.TaskSelector;
 import choco.kernel.solver.search.task.TaskVarSelector;
 import choco.kernel.solver.variables.scheduling.ITask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+import gnu.trove.TObjectIntHashMap;
 
-import java.util.*;
-import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.List;
+
 /**
- * @author Arnaud Malapert</br> 
+ * @author Arnaud Malapert</br>
  * @since 25 janv. 2009 version 2.0.3</br>
  * @version 2.0.3</br>
  */
@@ -59,7 +63,7 @@ class SetTimesNode implements IPretty {
 		lastSelected = null;
 	}
 
-	
+
 	public final void setLastSelected(TaskVar lastSelected) {
 		this.lastSelected = lastSelected;
 	}
@@ -142,13 +146,12 @@ public class SetTimes extends AbstractLargeIntBranching {
 	protected final List<TaskVar> tasksL;
 
 	/** map of index*/
-	protected final Map<TaskVar, Integer> taskIndexM;
-	//TODO try to avoid boxing (use int instead)
-	
+	protected final TObjectIntHashMap<TaskVar> taskIndexM;
+
 	/** select a task. */
 	protected final TaskVarSelector selector;
-	
-	
+
+
 	public SetTimes(final Solver solver, final List<TaskVar> tasks, final Comparator<ITask> comparator, final boolean randomized) {
 		this(solver, tasks, randomized ? new RandomizedTaskSelector(comparator) : new TaskSelector(comparator));
 	}
@@ -157,12 +160,13 @@ public class SetTimes extends AbstractLargeIntBranching {
 	 * The Constructor.
 	 *
 	 * @param selector the heuristic
-	 * @param tasks the selectables
+	 * @param solver based solver
+     * @param tasks the selectables
 	 */
 	public SetTimes(final Solver solver, final List<TaskVar> tasks, final TaskVarSelector selector) {
 		super();
 		this.tasksL=new ArrayList<TaskVar>(tasks);
-		taskIndexM=new HashMap<TaskVar, Integer>(tasksL.size());
+		taskIndexM=new TObjectIntHashMap<TaskVar>(tasksL.size());
 		this.selector=selector;
 		final IEnvironment env=solver.getEnvironment();
 		select=(StoredBitSet) env.makeBitSet(tasks.size());
@@ -290,8 +294,8 @@ public class SetTimes extends AbstractLargeIntBranching {
 		flags[idx].set(t.getEST());
 	}
 
-	
-	
+
+
 	@Override
 	protected String getLogMessage() {
 		return getLogMessageWithBranch();

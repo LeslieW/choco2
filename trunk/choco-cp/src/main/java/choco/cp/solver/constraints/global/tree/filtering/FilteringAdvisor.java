@@ -23,7 +23,6 @@
 package choco.cp.solver.constraints.global.tree.filtering;
 
 
-
 import choco.cp.solver.constraints.global.tree.TreeSConstraint;
 import choco.cp.solver.constraints.global.tree.filtering.costFiltering.Cost;
 import choco.cp.solver.constraints.global.tree.filtering.structuralFiltering.Incomparability;
@@ -35,13 +34,17 @@ import choco.cp.solver.constraints.global.tree.filtering.structuralFiltering.tre
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.TreeParameters;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.StructuresAdvisor;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.costStrutures.CostStructure;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.logging.Logger;
 
 public class FilteringAdvisor {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     /**
      * boolean for debug and show a trace of the execution
@@ -180,7 +183,7 @@ public class FilteringAdvisor {
         // specific case of the gcc filtering algorithm
         if (struct.isUpdateDegree()) {
             if (!propagateGlobalCard.applyGCC(propagateStruct)) {
-                if (affiche) System.out.println("ECHEC => Degree propagation");
+                if (affiche) LOGGER.info("ECHEC => Degree propagation");
                 treeConst.fail();
             }
         }
@@ -191,7 +194,7 @@ public class FilteringAdvisor {
             // apply the filtering rules of the current propagator
             if (current.feasibility()) current.filter();
             else {
-                if (affiche) System.out.println("ECHEC => " + current.getTypePropag());
+                if (affiche) LOGGER.info("ECHEC => " + current.getTypePropag());
                 treeConst.fail();
             }
         }

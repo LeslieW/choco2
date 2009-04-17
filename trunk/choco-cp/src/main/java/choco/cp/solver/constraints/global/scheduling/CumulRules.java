@@ -186,7 +186,6 @@ public class CumulRules implements ICumulRules {
 
 	public void slowTaskIntervals() throws ContradictionException {
 		int endI = Integer.MIN_VALUE;
-		//System.out.println(ChocoUtil.pretty(tasksLY));
 		for (IRTask i : tasksLY) {
 			if(endI != i.getTaskVar().getLCT()) {
 				endI = i.getTaskVar().getLCT(); // D is the end of this interval
@@ -229,7 +228,6 @@ public class CumulRules implements ICumulRules {
 			for (IRTask i : tasksLY) {
 				//VizFactory.toDotty(thetatree);
 				thetatree.insertInTheta(i);
-				//System.out.println(i.getTaskVar().pretty());
 				if (thetatree.getEnergy() >  maxCapa * i.getTaskVar().getLCT()) {
 					rsc.fail();
 				}
@@ -304,10 +302,8 @@ public class CumulRules implements ICumulRules {
 				final TaskVar x = crx.getTaskVar();
 				final int j = crx.getTaskIndex();
 				final long ex = crx.getMinConsumption();
-				//System.out.println("E[" + y + "," + x + "] = " + E[j] + " vs " + capaMax * (getLE(y) - getES(x)));
 				CEF = Math.max(CEF, E[j] - rsc.getMaxCapacity() * (y.getLCT() - x.getEST()));
 				if (CEF + ex > 0 && x.getLCT() > y.getLCT()) {
-					//System.out.println("update " + x + " to " + R[Sc.get(getHeight(x).getInf())][y]);
 					if (!taskheights[j].dyncomputation) { //lazy edge finding
 						calcR_start(taskheights[j]);
 						taskheights[j].dyncomputation = true;
@@ -399,10 +395,8 @@ public class CumulRules implements ICumulRules {
 				final TaskVar x = crx.getTaskVar();
 				final int j = crx.getTaskIndex();
 				final long ex = crx.getMinConsumption();
-				//System.out.println("E[" + y + "," + x + "] = " + E[j] + " vs " + capaMax * (getLE(y) - getES(x)));
 				CEF = Math.max(CEF, E[j] - rsc.getMaxCapacity() * (x.getLCT() - y.getEST()));
 				if (CEF + ex > 0 && x.getEST() < y.getEST()) {
-					//System.out.println("update " + x + " to " + R[Sc.get(getHeight(x).getInf())][y]);
 					if (!taskheights[j].dyncomputation) { //lazy edge finding
 						calcR_end(taskheights[j]);
 						taskheights[j].dyncomputation = true;

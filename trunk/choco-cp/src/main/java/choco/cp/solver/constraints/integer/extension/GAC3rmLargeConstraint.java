@@ -24,8 +24,8 @@ package choco.cp.solver.constraints.integer.extension;
 
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.IntIterator;
 import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.IntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.variables.integer.IntDomain;
@@ -92,7 +92,6 @@ public class GAC3rmLargeConstraint extends CspLargeSConstraint {
      * @throws ContradictionException
      */
     public void initializeSupports(int indexVar) throws ContradictionException {
-//		System.out.print("Initialize supports" + vars[indexVar].pretty() + " ... ");
         int[] currentSupport;
         IntDomain dom = vars[indexVar].getDomain();
         int val;
@@ -134,7 +133,6 @@ public class GAC3rmLargeConstraint extends CspLargeSConstraint {
     // updates the support for all values in the domain of variable
     // and remove unsupported values for variable
     public void reviseVar(int indexVar) throws ContradictionException {
-//		System.out.print("reviseVar" + vars[indexVar].pretty() + " ... ");
         int[] currentSupport;
         IntDomain dom = vars[indexVar].getDomain();
         int val;
@@ -179,7 +177,6 @@ public class GAC3rmLargeConstraint extends CspLargeSConstraint {
                 vars[indexVar].updateSup(val, cIndices[indexVar]);
             }
         }
-//		System.out.println(" OK ");
     }
 
     // Store Last(x_i, val) = support

@@ -6,6 +6,7 @@ import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntIntHashMap;
 
+import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -42,7 +43,7 @@ public class  ClauseStore extends AbstractLargeIntSConstraint {
         voc.init(vars);
     }
 
-    public ClauseStore(IntDomainVar[] vars, LinkedList listclause, Lits voc) {
+    public ClauseStore(IntDomainVar[] vars, LinkedList<WLClause> listclause, Lits voc) {
         super(vars);
         solver = vars[0].getSolver();
         this.voc = voc;
@@ -116,13 +117,13 @@ public class  ClauseStore extends AbstractLargeIntSConstraint {
     public int[] computeLits(IntDomainVar[] plit,IntDomainVar[] nlit) {
         int[] lits = new int[plit.length + nlit.length];
         int cpt = 0;
-        for (int i = 0; i < plit.length; i++) {
-            int lit = findIndex(plit[i]);
+        for (IntDomainVar aPlit : plit) {
+            int lit = findIndex(aPlit);
             lits[cpt] = lit;
             cpt++;
         }
-        for (int i = 0; i < nlit.length; i++) {
-            int lit = findIndex(nlit[i]);
+        for (IntDomainVar aNlit : nlit) {
+            int lit = findIndex(aNlit);
             lits[cpt] = -lit;
             cpt++;
         }
@@ -237,9 +238,8 @@ public class  ClauseStore extends AbstractLargeIntSConstraint {
     }
 
     public void printClauses() {
-        for (Iterator<WLClause> iterator = listclause.iterator(); iterator.hasNext();) {
-            WLClause wlClause = iterator.next();
-            System.out.println("" + wlClause);
+        for (WLClause wlClause : listclause) {
+            LOGGER.info(MessageFormat.format("{0}", wlClause));
         }
     }
 }

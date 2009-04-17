@@ -121,10 +121,8 @@ public class BoundGcc extends BoundGccVar {
 				(l.sum(maxsorted[getNbVars() - 1].var.getSup() + 1, l.maxValue()) > 0)) {
 			this.fail();
 		}
-		//System.out.println("Filter lower !");
 		filterLowerMax();
 		filterLowerMin();
-		//System.out.println("Filter upper");
 		filterUpperMax();
 		filterUpperMin();        
     }

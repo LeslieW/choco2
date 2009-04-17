@@ -87,7 +87,6 @@ public class SetNotEq extends AbstractBinSetSConstraint {
 				while (it1.hasNext()) {
 					int val = it1.next();
 					if (!otherVar.isInDomainKernel(val)) {
-						//System.out.println("add " + val + " : " + instvar + " " + otherVar);
 						otherVar.addToKernel(val, idx);
 					}
 				}
@@ -97,7 +96,6 @@ public class SetNotEq extends AbstractBinSetSConstraint {
 				while (it1.hasNext()) {
 					int val = it1.next();
 					if (!otherVar.isInDomainKernel(val)) {
-						//System.out.println("rem " + val + " : " + instvar + " " + otherVar);
 						otherVar.remFromEnveloppe(val, idx);
 					}
 				}

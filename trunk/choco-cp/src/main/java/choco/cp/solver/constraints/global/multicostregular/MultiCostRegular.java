@@ -39,6 +39,7 @@ import gnu.trove.TIntHashSet;
 import gnu.trove.TObjectIntHashMap;
 
 import java.util.Iterator;
+import java.util.logging.Level;
 
 
 /**
@@ -574,11 +575,14 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
         }
         if (!pi.run(word))
         {
-            System.err.println("Word is not accepted by the automaton");
-            System.err.print("{"+word[0]);
-            for (int i = 1 ; i < word.length ;i++)
-                System.err.print(","+word[i]);
-            System.err.println("}");
+            LOGGER.severe("Word is not accepted by the automaton");
+            StringBuffer st = new StringBuffer("{");
+            st.append(word[0]);
+            for (int i = 1 ; i < word.length ;i++){
+                st.append(","+word[i]);
+            }
+            st.append("}");
+            LOGGER.severe(st.toString());
 
             return false;
         }
@@ -589,23 +593,11 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
             {
                 cost+= costs[i][word[i]][k];
             }
-            if (k == 0)
-            {
-                if (cost != z[0].getVal())
-                {
-                    System.err.println("cost: "+cost+" != z:"+z[0].getVal());
-                    return false;
-                }
-            }
-            else
-            {
                 if (cost != z[k].getVal())
                 {
-                    System.err.println("cost: "+cost+" != z["+k+"] :"+z[k].getVal());
+                    LOGGER.log(Level.SEVERE, "cost: {0} != z[{1}]: {2}", new Object[]{cost, k, z[k].getVal()});
                     return false;
                 }
-            }
-
         }
         return true;
 
@@ -832,11 +824,11 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
         this.slp = this.graph.getPF();
         if(DEBUG)
         {
-            System.out.println("NB OF EDGES IN GRAPH : "+this.graph.getActiveOut().cardinality());
+            LOGGER.log(Level.INFO, "NB OF EDGES IN GRAPH : {0}",this.graph.getActiveOut().cardinality());
             int nbNode = 0 ;
             for (int i = 0 ; i <  this.graph.getNbLayers() ; i++)
                 nbNode+=this.graph.getLayer(i).length;
-            System.out.println("NB Of NODES IN GRAPH : "+nbNode);
+            LOGGER.log(Level.INFO, "NB Of NODES IN GRAPH : {0}", nbNode);
         }
         prefilter();
         propagate();
@@ -850,11 +842,11 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
         this.modifiedBound[1] = true;
         this.computeSharpBounds();
         if (toRemove.size() > 0)
-            System.out.println("PB");
+            LOGGER.log(Level.INFO, "PB");
         if (DEBUG && !this.check())
         {
             System.out.flush();
-            System.err.println("ACCEPTED INSTANTIATION DOES NOT COMPLY WITH CHECKER");
+            LOGGER.severe("ACCEPTED INSTANTIATION DOES NOT COMPLY WITH CHECKER");
             System.exit(1);
             this.fail();
         }

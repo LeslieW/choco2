@@ -63,7 +63,7 @@ public class Precedences extends AbstractPropagator {
         if (!res) {
             int v = m - 1;
             if (affiche) {
-                System.out.println("2- Violation hasse: pour " + v + " dans V, les " +
+                LOGGER.info("2- Violation hasse: pour " + v + " dans V, les " +
                         precs.showDesc(v) + " ne sont pas dans les " + inputGraph.getGlobal().showDesc(v, "G"));
             }
             return false;
@@ -74,7 +74,7 @@ public class Precedences extends AbstractPropagator {
             if (inputGraph.getSure().getSuccessors(i).get(i)) {
                 // any fixed potential root is a sink in the precedence graph
                 if (!precs.getSinkNodes().get(i)) {
-                    if (affiche) System.out.println("3- Violation hasse");
+                    if (affiche) LOGGER.info("3- Violation hasse");
                     return false;
                 }
             }
@@ -96,16 +96,16 @@ public class Precedences extends AbstractPropagator {
                 int[] arc = {i, j};
                 if (i != j) {
                     if (affiche)
-                        System.out.println("test arc (" + i + "," + j + ") ");
+                        LOGGER.info("test arc (" + i + "," + j + ") ");
                     if (!isCompatible(arc)) {
                         if (affiche)
-                            System.out.println("Precedences-0: suppression de l'arc (" + i + "," + j + ")");
+                            LOGGER.info("Precedences-0: suppression de l'arc (" + i + "," + j + ")");
                         propagateStruct.addRemoval(arc);
                     }
                 } else {
                     if (precs.getSuccessors(i).cardinality() > 0) {
                         if (affiche)
-                            System.out.println("Precedences-1: suppression de l'arc (" + i + "," + j + ")");
+                            LOGGER.info("Precedences-1: suppression de l'arc (" + i + "," + j + ")");
                         propagateStruct.addRemoval(arc);
                     }
                 }
@@ -120,22 +120,22 @@ public class Precedences extends AbstractPropagator {
                 if (i != j) {
                     BitSet desc_j = inputGraph.getGlobal().getDescendants(j).copyToBitSet();
                     if (affiche) {
-                        System.out.println("Pdesc_" + i + " = " + desc_i.toString());
-                        System.out.println("Mdesc_" + j + " = " + desc_j.toString());
+                        LOGGER.info("Pdesc_" + i + " = " + desc_i.toString());
+                        LOGGER.info("Mdesc_" + j + " = " + desc_j.toString());
                     }
                     desc_j.and(desc_i);
                     desc_j.set(i, false);
                     if (affiche)
-                        System.out.println("inter = " + desc_i.toString());
+                        LOGGER.info("inter = " + desc_i.toString());
                     if (desc_j.cardinality() < desc_i.cardinality() - 1) {
                         if (affiche) {
-                            System.out.println("inter[" + i + "," + j + "] = " + desc_j.toString());
-                            System.out.println("Precedences-2: suppression de l'arc (" + i + "," + j + ")");
+                            LOGGER.info("inter[" + i + "," + j + "] = " + desc_j.toString());
+                            LOGGER.info("Precedences-2: suppression de l'arc (" + i + "," + j + ")");
                         }
                         int[] arc = {i, j};
                         propagateStruct.addRemoval(arc);
                     }
-                    if (affiche) System.out.println("------------------------------");
+                    if (affiche) LOGGER.info("------------------------------");
                 }
             }
         }
@@ -143,7 +143,7 @@ public class Precedences extends AbstractPropagator {
         StoredBitSet roots = inputGraph.getPotentialRoots();
         for (int i = roots.nextSetBit(0); i >= 0; i = roots.nextSetBit(i + 1)) {
             if (!precs.getSinkNodes().get(i)) {
-                if (affiche) System.out.println("Precedences-3: suppression boucle sur " + i);
+                if (affiche) LOGGER.info("Precedences-3: suppression boucle sur " + i);
                 int[] arc = {i, i};
                 propagateStruct.addRemoval(arc);
             }
@@ -195,7 +195,7 @@ public class Precedences extends AbstractPropagator {
                 start = i;
             }
             if (start == -1 || currentSRC == -1) {
-                System.out.println("PROBLEME: treeConstraint.filtering.structuralFiltering.precedences.Precedences (line 209)");
+                LOGGER.info("PROBLEME: treeConstraint.filtering.structuralFiltering.precedences.Precedences (line 209)");
                 return;
             }
             // start a first DFS
@@ -226,7 +226,7 @@ public class Precedences extends AbstractPropagator {
                     for (int j = succ_i.nextSetBit(0); j >= 0; j = succ_i.nextSetBit(j + 1)) {
                         if (contain_v.get(j) && !propagateStruct.getGraphRem()[i].get(j)) {
                             if (affiche)
-                                System.out.println("Precedences-5: suppression de l'arc (" + i + "," + j + ")");
+                                LOGGER.info("Precedences-5: suppression de l'arc (" + i + "," + j + ")");
                             int[] arc = {i, j};
                             propagateStruct.addRemoval(arc);
                         }
@@ -264,7 +264,7 @@ public class Precedences extends AbstractPropagator {
         int oldmax = tree.getNtree().getSup();
         if (oldmax > maxtree && tree.getNtree().getSup() > maxtree) {
             if (affiche)
-                System.out.println("Precedences: updateSup ntree = " + tree.getNtree().getSup() + " ==> " + maxtree);
+                LOGGER.info("Precedences: updateSup ntree = " + tree.getNtree().getSup() + " ==> " + maxtree);
             propagateStruct.setMaxNtree(maxtree);
         }
     }
@@ -281,26 +281,26 @@ public class Precedences extends AbstractPropagator {
         int src = arc[0];
         int dest = arc[1];
         if (src == dest) {
-            if (affiche) System.out.println("\t(" + src + "," + dest + ") incompatible dans Gp");
+            if (affiche) LOGGER.info("\t(" + src + "," + dest + ") incompatible dans Gp");
             return false;
         }
         // first DFS checks the arc to add does not create a circuit in the precedence graph
         BitSet desc_1 = precs.getDescendants(dest);
         if (affiche)
-            System.out.println("desc_" + dest + " = " + desc_1.toString());
+            LOGGER.info("desc_" + dest + " = " + desc_1.toString());
         if (desc_1.get(src)) cycle = true;
         if (!cycle) {
             // second dfs checks the arc to add is not transitive in the precedence graph
             BitSet desc_2 = precs.getDescendants(src);
             if (desc_2.get(dest) && !precs.getSuccessors(src).get(dest)) {
                 if (affiche)
-                    System.out.println("\ttransitif");
+                    LOGGER.info("\ttransitif");
                 transitive = true;
             }
             return !transitive;
         } else {
             if (affiche) 
-                System.out.println("\tcycle");
+                LOGGER.info("\tcycle");
             return false;
         }
     }

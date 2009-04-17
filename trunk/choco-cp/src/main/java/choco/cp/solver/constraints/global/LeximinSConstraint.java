@@ -23,13 +23,15 @@
 package choco.cp.solver.constraints.global;
 
 
+import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.integer.IntVar;
-import choco.cp.solver.variables.integer.IntVarEvent;
+
+import java.util.logging.Level;
 
 /**
   * <code>SemiLeximinConstraint</code> is a constraint that ensures
@@ -176,6 +178,7 @@ public class LeximinSConstraint extends AbstractLargeIntSConstraint {
 
     /**
      * This methods updates the vectors used by the gac algorithm.
+     * @param idx indice
      */
     private void updateVectors(int idx) {
         int oldValue, newValue, i;
@@ -183,9 +186,7 @@ public class LeximinSConstraint extends AbstractLargeIntSConstraint {
             oldValue = this.floorx[idx].get();
             newValue = super.vars[idx].getInf();
             this.floorx[idx].set(newValue);
-            for (i = 0; this.sortedFloorx[i].get() < oldValue; i++) {
-				;
-			}
+            for (i = 0; this.sortedFloorx[i].get() < oldValue; i++) {}
             int j;
             for (j = i + 1; (j < this.n) && (this.sortedFloorx[j].get() < newValue); j++) {
                 this.sortedFloorx[j - 1].set(this.sortedFloorx[j].get());
@@ -195,9 +196,7 @@ public class LeximinSConstraint extends AbstractLargeIntSConstraint {
             oldValue = this.ceily[idx - n].get();
             newValue = super.vars[idx].getSup();
             this.ceily[idx - n].set(newValue);
-            for (i = this.n - 1; this.sortedCeily[i].get() > oldValue; i--) {
-				;
-			}
+            for (i = this.n - 1; this.sortedCeily[i].get() > oldValue; i--) {}
             int j;
             for (j = i - 1; (j >= 0) && (this.sortedCeily[j].get() > newValue); j--) {
                 this.sortedCeily[j + 1].set(this.sortedCeily[j].get());
@@ -226,7 +225,7 @@ public class LeximinSConstraint extends AbstractLargeIntSConstraint {
             this.epsilon.set(i, false);
         }
         if (verbose) {
-            System.out.println("l = " + l + " / u = " + u);
+            LOGGER.log(Level.INFO, "l = {0} / u = {1}", new Object[]{l, u});
         }
         while (this.alpha.get() <= u && currentOccX == currentOccY) {
             this.alpha.set(this.alpha.get() + 1); // Increase alpha by one.
@@ -241,8 +240,8 @@ public class LeximinSConstraint extends AbstractLargeIntSConstraint {
                 currentY++;
             } // Read sortedCeily array in order to compute occY
             if (verbose) {
-                System.out.println("cX = " + currentX + " / cOX = " + currentOccX);
-                System.out.println("cY = " + currentY + " / cOY = " + currentOccY);
+                LOGGER.log(Level.INFO, "cX = {0} / cOX = {1}", new Object[]{currentX, currentOccX});
+                LOGGER.log(Level.INFO, "cY = {0} / cOY = {1}", new Object[]{currentY, currentOccY});
             }
         }
 
@@ -426,8 +425,6 @@ public class LeximinSConstraint extends AbstractLargeIntSConstraint {
      */
     @Override
 	public void propagate() throws ContradictionException {
-        //System.out.println("propagate.");
-        //this.generateVectors();
         this.setPointersAndFlags();
         this.gac();
     }
@@ -562,46 +559,46 @@ public String pretty() {
      */
 
     public void printOccVectors() {
-        System.out.print("x = [");
+        StringBuffer st = new StringBuffer("x = [");
         for (int i = 0; i < this.sortedFloorx.length; i++) {
-            System.out.print(" " + super.vars[i].pretty());
+            st.append(" ").append(super.vars[i].pretty());
         }
-        System.out.print(" ]\n");
-        System.out.print("y = [");
+        st.append(" ]\n");
+        st.append("y = [");
         for (int i = 0; i < this.sortedCeily.length; i++) {
-            System.out.print(" " + super.vars[n + i].pretty());
+            st.append(" ").append(super.vars[n + i].pretty());
         }
-        System.out.print(" ]\n");
-        System.out.print("sortedFloor(x) = [");
-        for (int i = 0; i < this.sortedFloorx.length; i++) {
-            System.out.print(" " + this.sortedFloorx[i].get());
+        st.append(" ]\n");
+        st.append("sortedFloor(x) = [");
+        for (IStateInt aSortedFloorx : this.sortedFloorx) {
+            st.append(" ").append(aSortedFloorx.get());
         }
-        System.out.print(" ]\n");
-        System.out.print("sortedCeil(y) = [");
-        for (int i = 0; i < this.sortedCeily.length; i++) {
-            System.out.print(" " + this.sortedCeily[i].get());
+        st.append(" ]\n");
+        st.append("sortedCeil(y) = [");
+        for (IStateInt aSortedCeily : this.sortedCeily) {
+            st.append(" ").append(aSortedCeily.get());
         }
-        System.out.print(" ]\n");
-        System.out.print("floor(x) = [");
-        for (int i = 0; i < this.floorx.length; i++) {
-            System.out.print(" " + this.floorx[i].get());
+        st.append(" ]\n");
+        st.append("floor(x) = [");
+        for (IStateInt aFloorx : this.floorx) {
+            st.append(" ").append(aFloorx.get());
         }
-        System.out.print(" ]\n");
-        System.out.print("ceil(y) = [");
-        for (int i = 0; i < this.ceily.length; i++) {
-            System.out.print(" " + this.ceily[i].get());
+        st.append(" ]\n");
+        st.append("ceil(y) = [");
+        for (IStateInt aCeily : this.ceily) {
+            st.append(" ").append(aCeily.get());
         }
-        System.out.print(" ]\n");
-        System.out.println("alpha = " + this.alpha.get());
-        System.out.println("beta = " + this.beta.get());
-        System.out.println("gamma = " + this.gamma.get());
-        System.out.println("delta = " + this.delta.get());
-        System.out.print("epsilon = [");
+        st.append(" ]\n");
+        st.append("alpha = ").append(this.alpha.get()).append("\n");
+        st.append("beta = ").append(this.beta.get()).append("\n");
+        st.append("gamma = ").append(this.gamma.get()).append("\n");
+        st.append("delta = ").append(this.delta.get()).append("\n");
+        st.append("epsilon = [");
         for (int i = 0; i < 4; i++) {
-            System.out.print(" " + this.epsilon.get(i));
+            st.append(" ").append(this.epsilon.get(i));
         }
-        System.out.print(" ]\n");
-
+        st.append(" ]\n");
+        LOGGER.log(Level.INFO, st.toString());
     }
 
 

@@ -39,6 +39,7 @@ import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * Created by IntelliJ IDEA.
@@ -310,7 +311,7 @@ public class Regular extends AbstractLargeIntSConstraint {
      */
     public void prune(int i, int val) throws ContradictionException {
         if (DEBUG && vars[i].canBeInstantiatedTo(val))
-            System.out.println("on retire " + (val) + " de " + vars[i]);
+            LOGGER.log(Level.INFO, "remove {0} from {1}", new Object[]{val, vars[i]});
         vars[i].removeVal(val, cIndices[i]);
     }
 
@@ -358,7 +359,6 @@ public class Regular extends AbstractLargeIntSConstraint {
                     if (vars[i - 1].canBeInstantiatedTo(realval)) {
                         StoredIndexedBipartiteSet supports = getQij(i - 1, realval);
                         supports.remove(pst);
-                        //System.out.println("support already removed for"+ vars[i-1] + " val " + realval +  " " + ctIdx);
                         if (supports.isEmpty()) {
                             prune(i - 1, realval);
                         }
@@ -398,7 +398,7 @@ public class Regular extends AbstractLargeIntSConstraint {
 
 
     public void awakeOnRem(int idx, int x) throws ContradictionException {
-        if (DEBUG) System.out.println("----------------On recoit " + vars[idx] + " != " + x + " ");
+        if (DEBUG) LOGGER.log(Level.INFO, "----------------On recoit {0} != {1}", new Object[]{vars[idx], x});
         if (INCREMENTAL) {// && domaincopy[idx].get(x - offset[idx])) {
 
             propagateRemoval(idx, x);
@@ -756,7 +756,7 @@ public class Regular extends AbstractLargeIntSConstraint {
 //
 //    public void prune(boolean init, int i, int val) throws ContradictionException {
 //        if (DEBUG && vars[i].canBeInstantiatedTo(val))
-//            System.out.println("on retire " + (val) + " de " + vars[i]);
+//            LOGGER.log(Level.INFO, "on retire " + (val) + " de " + vars[i]);
 //        vars[i].removeVal(val, cIndices[i]);
 //    }
 //
@@ -804,7 +804,6 @@ public class Regular extends AbstractLargeIntSConstraint {
 //                if (vars[i - 1].canBeInstantiatedTo(realval)) {
 //                    IStateVector supports = getQij(i - 1, realval);
 //                    remove(supports, pst);
-//                    //System.out.println("support already removed for"+ vars[i-1] + " val " + realval +  " " + ctIdx);
 //                    if (supports.isEmpty()) {
 //                        prune(false, i - 1, realval);
 //                    }
@@ -844,7 +843,7 @@ public class Regular extends AbstractLargeIntSConstraint {
 //
 //
 //    public void awakeOnRem(int idx, int x) throws ContradictionException {
-//        if (DEBUG) System.out.println("----------------On recoit " + vars[idx] + " != " + x + " ");
+//        if (DEBUG) LOGGER.log(Level.INFO, "----------------On recoit " + vars[idx] + " != " + x + " ");
 //        if (INCREMENTAL) {// && domaincopy[idx].get(x - offset[idx])) {
 //
 //            propagateRemoval(idx, x);
@@ -853,7 +852,7 @@ public class Regular extends AbstractLargeIntSConstraint {
 //
 //    public void awakeOnSup(int idx) throws ContradictionException {
 //        if (DEBUG)
-//            System.out.println("----------------On recoit sup(" + vars[idx] + ") est " + vars[idx].getSup() + " ");
+//            LOGGER.log(Level.INFO, "----------------On recoit sup(" + vars[idx] + ") est " + vars[idx].getSup() + " ");
 //        if (INCREMENTAL) {
 //
 //        } else constAwake(false);
@@ -861,7 +860,7 @@ public class Regular extends AbstractLargeIntSConstraint {
 //
 //    public void awakeOnInf(int idx) throws ContradictionException {
 //        if (DEBUG)
-//            System.out.println("----------------On recoit inf(" + vars[idx] + ") est " + vars[idx].getSup() + " ");
+//            LOGGER.log(Level.INFO, "----------------On recoit inf(" + vars[idx] + ") est " + vars[idx].getSup() + " ");
 //        if (INCREMENTAL) {
 //            //filter(idx);
 //        } else constAwake(false);
@@ -869,8 +868,8 @@ public class Regular extends AbstractLargeIntSConstraint {
 //
 //
 //    public void awakeOnInst(int idx) throws ContradictionException {
-//        if (DEBUG) System.out.println("----------------On recoit " + vars[idx] + " inst ");
-//        //if (ALLSOLRANDOM) System.out.println("----------------On recoit "+ vars[idx] + " inst ");
+//        if (DEBUG) LOGGER.log(Level.INFO, "----------------On recoit " + vars[idx] + " inst ");
+//        //if (ALLSOLRANDOM) LOGGER.log(Level.INFO, "----------------On recoit "+ vars[idx] + " inst ");
 //        if (INCREMENTAL) {
 //
 //        } else this.constAwake(false);
@@ -1006,8 +1005,8 @@ public class Regular extends AbstractLargeIntSConstraint {
 //        //pb.getSolver().setValIterator(new auto.chocoauto.heuristic.IncreasingTrace());
 //        pb.solve();
 //        do {
-//            System.out.println(v1 + ":" + v1.getVal() + " - " + v2 + ":" + v2.getVal() + " - " + v3 + ":" + v3.getVal());
+//            LOGGER.log(Level.INFO, v1 + ":" + v1.getVal() + " - " + v2 + ":" + v2.getVal() + " - " + v3 + ":" + v3.getVal());
 //        } while (pb.nextSolution() == Boolean.TRUE);
-//        //System.out.println(pb.getSolver().getNbSolutions());
+//        //LOGGER.log(Level.INFO, pb.getSolver().getNbSolutions());
 //    }
 }

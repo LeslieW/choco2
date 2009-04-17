@@ -24,6 +24,7 @@ package choco.cp.solver.constraints.global.geost.util;
 
 import choco.Choco;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Shape;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.geost.GeostObject;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -32,12 +33,17 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class parses a text file that describes the problem to be solved. While parsing it creates the choco problem, the objects, shapes and shifted boxes and stores them locally to this class. 
  * Then to create the environment that the constraint uses all we need to do is call global.Setup.createEnvironment(parser) and give it this object as an argument.
  */
 public class InputParser {
+
+    protected static final Logger LOGGER = ChocoLogging.getSolverLogger();
+
 
     public static class GeostProblem{
         public int[][] objects;
@@ -120,7 +126,7 @@ public class InputParser {
 		}
 		catch(Exception e)
 		{
-			System.err.println( "Unable to open data file: " + this.path + "\n" + e);
+			LOGGER.log(Level.SEVERE, "Unable to open data file: {0}\n{1}", new Object[]{this.path, e});
 			e.printStackTrace();	
 			return false;
 		}
@@ -136,7 +142,6 @@ public class InputParser {
 			if (str.equals("Objects") || str.equals("Shapes") || str.equals("ShiftedBoxes"))
 			{
 				mode = str;
-				//System.out.println(mode);
 				str = bin.readLine();
 			}
  
@@ -160,13 +165,11 @@ public class InputParser {
 			        {
 			        	case 1:
 			        		id =Integer.valueOf(temp);
-			        		//System.out.print(temp + " ");
 			        		break;
 			        	case 2:
 			        		String temp2 = st.nextToken();
 			        		tokenNb++;
 			        		shape = Choco.makeIntVar("sid_"+indice, Integer.valueOf(temp).intValue(), Integer.valueOf(temp2).intValue());
-			        		//System.out.print(temp + " " + temp2 + " ");
 			        		break;
 			        }
 			        
@@ -180,13 +183,11 @@ public class InputParser {
 			        			if(j==0)
 			        			{
 			        				lowerBound = Integer.valueOf(temp).intValue();
-				        			//System.out.print(temp + " ");
-			        			}
+                                }
 			        			if(j==1)
 			        			{
 			        				upperBound = Integer.valueOf(temp).intValue();
-				        			//System.out.print(temp + " ");
-			        			}
+                                }
 			        			if(st.hasMoreTokens())
 			        			{
 			        				temp = st.nextToken();
@@ -206,12 +207,10 @@ public class InputParser {
 			        			if(j==0)
 			        			{
 			        				lowerBound = Integer.valueOf(temp).intValue();
-				        			//System.out.print(temp + " ");
 			        			}
 			        			if(j==1)
 			        			{
 			        				upperBound = Integer.valueOf(temp).intValue();
-				        			//System.out.print(temp + " ");
 			        			}
 			        			if(st.hasMoreTokens())
 			        			{
@@ -236,7 +235,6 @@ public class InputParser {
 			        
 			    }
                 GeostObject o = new GeostObject(this.dim, id, shape, coord, start, duration, end);
-                //System.out.println("");
 	        	obj.add(o);	
 			}
 			
@@ -245,7 +243,6 @@ public class InputParser {
 				Shape s = new Shape();
 				temp = st.nextToken();
 			    s.setShapeId(Integer.valueOf(temp).intValue());
-			    //System.out.println(temp + " ");
 			    sh.add(s);
 			}
 			
@@ -259,7 +256,6 @@ public class InputParser {
 			        if (tokenNb == 1)
 			        {
 			        	s.setShapeId(Integer.valueOf(temp).intValue());
-			        	//System.out.print(temp + " ");
 			        }
 			        
 			        if (tokenNb > 1 && tokenNb <= this.dim + 1)
@@ -268,7 +264,6 @@ public class InputParser {
 			        	for(int i = 0; i < this.dim; i++)
 			        	{
 			        		off[i] = Integer.valueOf(temp).intValue();
-			        		//System.out.print(temp + " ");
 			        		if (i != this.dim - 1)
 			        		{
 			        			temp = st.nextToken();
@@ -285,7 +280,6 @@ public class InputParser {
 			        	for(int i = 0; i < this.dim; i++)
 			        	{
 			        		size[i] = Integer.valueOf(temp).intValue();
-			        		//System.out.print(temp + " ");
 			        		if (i != this.dim - 1)
 			        		{
 			        			temp = st.nextToken();
@@ -296,7 +290,6 @@ public class InputParser {
 			        	s.setSize(size);
 			        }
 			    }
-				//System.out.println("");
 			    sb.add(s);
 			    
 			    }

@@ -24,36 +24,16 @@ package choco.cp.solver.constraints.global.tree.structure.internalStructure.cost
 
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.TreeParameters;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.VarGraphView;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.trailing.StoredBitSet;
 import choco.kernel.solver.Solver;
 
-/* ************************************************
- *           _       _                            *
- *          |  �(..)  |                           *
- *          |_  J||L _|       Choco-Solver.net    *
- *                                                *
- *     Choco is a java library for constraint     *
- *     satisfaction problems (CSP), constraint    *
- *     programming (CP) and explanation-based     *
- *     constraint solving (e-CP). It is built     *
- *     on a event-based propagation mechanism     *
- *     with backtrackable structures.             *
- *                                                *
- *     Choco is an open-source software,          *
- *     distributed under a BSD licence            *
- *     and hosted by sourceforge.net              *
- *                                                *
- *     + website : http://choco.emn.fr            *
- *     + support : choco@emn.fr                   *
- *                                                *
- *     Copyright (C) F. Laburthe,                 *
- *                   N. Jussien   1999-2008       *
- **************************************************/
-
-
+import java.util.logging.Logger;
 
 public class CostStructure {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     /**
      * boolean for debug and show a trace of the execution
@@ -150,13 +130,13 @@ public class CostStructure {
         StoredBitSet[] vertFromNumGt = inputGraph.getSure().getVertFromNumCC();
         if (affichecosts) {
             for (int i = 0; i < nbNodes; i++) {
-                System.out.println("cc_" + i + " = " + vertFromNumGt[i].toString());
+                LOGGER.info("cc_" + i + " = " + vertFromNumGt[i].toString());
             }
-            System.out.println("- - - - - - - - - - - -");
+            LOGGER.info("- - - - - - - - - - - -");
             for (int i = 0; i < nbNodes; i++) {
-                System.out.println("gt[" + i + "] = " + inputGraph.getSure().getSuccessors(i));
+                LOGGER.info("gt[" + i + "] = " + inputGraph.getSure().getSuccessors(i));
             }
-            System.out.println("-------------------------------");
+            LOGGER.info("-------------------------------");
         }
         int[] connexComponentCosts = new int[nbNodes];
         int sinkOf = -1;
@@ -177,16 +157,16 @@ public class CostStructure {
                 if (sinkOf == -1) sinkOf = vertFromNumGt[i].nextSetBit(0);
                 deltaCost[i].set(getMinOutGoingArc(sinkOf));
                 if (affichecosts) {
-                    System.out.println("\t\tconnexCompCosts[" + i + "] = " + connexComponentCosts[i]);
-                    System.out.println("\t\tdeltaCosts[" + i + "] = " + deltaCost[i].get());
+                    LOGGER.info("\t\tconnexCompCosts[" + i + "] = " + connexComponentCosts[i]);
+                    LOGGER.info("\t\tdeltaCosts[" + i + "] = " + deltaCost[i].get());
                 }
                 total = total + connexComponentCosts[i] + deltaCost[i].get();
             }
         }
         forestCost.set(total);
         if (affichecosts) {
-            System.out.println("total cost = " + forestCost.get());
-            System.out.println("-------------------------------");
+            LOGGER.info("total cost = " + forestCost.get());
+            LOGGER.info("-------------------------------");
         }
     }
 

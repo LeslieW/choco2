@@ -52,7 +52,7 @@ public class ScalarNode extends INode implements ArithmNode {
         this.coeffs = coeffs;
         if (Choco.DEBUG) {
             if (subt.length != coeffs.length) {
-                System.err.println("There should be as many coeffs than variables in a sum/scalar !");
+                LOGGER.severe("There should be as many coeffs than variables in a sum/scalar !");
                 System.exit(-1);
             }
         }
