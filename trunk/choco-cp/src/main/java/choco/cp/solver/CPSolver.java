@@ -68,7 +68,6 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.common.util.IntIterator;
-import choco.kernel.common.util.LightFormatter;
 import choco.kernel.common.util.UtilAlgo;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
