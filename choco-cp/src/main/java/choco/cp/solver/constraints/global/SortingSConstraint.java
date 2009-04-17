@@ -456,10 +456,7 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
         int i;
         for (i = 0; i < n && x[i] == y[i]; i++) {
         }
-        if (i == n) {
-			return true;
-		}
-        return false;
+        return i == n;
     }
 
     public void printVectors() {
@@ -471,7 +468,7 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
         st.append(")");
         st.append("y = ( ");
         for (IntDomainVar aY : y) {
-            st.append("[" + aY.getInf() + "," + aY.getSup() + "] ");
+            st.append("[").append(aY.getInf()).append(",").append(aY.getSup()).append("] ");
         }
         st.append(")");
         LOGGER.info(st.toString());
