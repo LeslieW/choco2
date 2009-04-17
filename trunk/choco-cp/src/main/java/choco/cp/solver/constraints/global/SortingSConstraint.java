@@ -328,6 +328,7 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
             this.recupStack[0] = node;
             this.recupStack[1] = node;
             this.recupStack[2] = this.x[this.f[node]].getSup();
+            this.mergeStack(node);
             i = 0;
             while (xyGraph[node][i] != -1) {
                 if (dfsNodes[xyGraph[node][i]] == 0) {
