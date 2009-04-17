@@ -27,6 +27,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -34,18 +35,19 @@ import choco.kernel.solver.ContradictionException;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
  * User: hcambaza
  * Date: 24-Jan-2007
  * Time: 19:31:59
- * To change this template use File | Settings | File Templates.
  */
 public class NValueTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     @Test
     public void testSolve1() {
@@ -59,17 +61,9 @@ public class NValueTest {
             s.read(pb);
             s.setVarIntSelector(new RandomIntVarSelector(s, k));
             s.setValIntSelector(new RandomIntValSelector(k + 1));
-            s.solve();
-            if (s.isFeasible()) {
-                do {
-                    //for (int i = 0; i < n; i++) {
-                    //    System.out.print("" + vars[i].getVal());
-                    //}
-                    //System.out.println("");
-                } while (s.nextSolution() == Boolean.TRUE);
-            }
-            System.out.println("noeud : " + s.getSearchStrategy().getNodeCount());
-            System.out.println("temps : " + s.getSearchStrategy().getTimeCount());
+            s.solveAll();
+            LOGGER.info("noeud : " + s.getSearchStrategy().getNodeCount());
+            LOGGER.info("temps : " + s.getSearchStrategy().getTimeCount());
             assertEquals(s.getNbSolutions(),93);
         }
     }
@@ -89,8 +83,8 @@ public class NValueTest {
             s.setVarIntSelector(new RandomIntVarSelector(s, k));
             s.setValIntSelector(new RandomIntValSelector(k + 1));
             s.solveAll();
-            System.out.println("noeud : " + s.getSearchStrategy().getNodeCount());
-            System.out.println("temps : " + s.getSearchStrategy().getTimeCount());
+            LOGGER.info("noeud : " + s.getSearchStrategy().getNodeCount());
+            LOGGER.info("temps : " + s.getSearchStrategy().getTimeCount());
             assertEquals(s.getNbSolutions(),93);
         }
 
@@ -104,7 +98,7 @@ public class NValueTest {
      * @return la liste des positions des reines.
      */
     public List dominationQueen(int n, int val) {
-        System.out.println("domination queen Q" + n + ":" + val);
+        LOGGER.info("domination queen Q" + n + ":" + val);
         Model pb = new CPModel();
         IntegerVariable[] vars = new IntegerVariable[n * n];
         //une variable par case avec pour domaine la reine qui l attaque. (les reines
@@ -126,7 +120,7 @@ public class NValueTest {
                     for (int l = 1; l <= n; l++) {
                         if (!(k == i || l == j || Math.abs(i - k) == Math.abs(j - l))) {
                             try {
-                                //System.out.println("remove from " + (n * (i - 1) + j - 1) + " value " + ((k - 1) * n + l));
+                                //LOGGER.info("remove from " + (n * (i - 1) + j - 1) + " value " + ((k - 1) * n + l));
                                 s.getVar(vars[n * (i - 1) + j - 1]).remVal((k - 1) * n + l);
                             } catch (ContradictionException e) {
                                 e.printStackTrace();
@@ -140,18 +134,18 @@ public class NValueTest {
         s.addConstraint(atMostNValue(vars, v));
         //s.setTimeLimit(30000);
         s.solve();
-        System.out.println("noeud : " + s.getSearchStrategy().getNodeCount());
-        System.out.println("temps : " + s.getSearchStrategy().getTimeCount());
-        List values = new LinkedList();
+        LOGGER.info("noeud : " + s.getSearchStrategy().getNodeCount());
+        LOGGER.info("temps : " + s.getSearchStrategy().getTimeCount());
+        List<Integer> values = new LinkedList<Integer>();
         if (s.isFeasible()) {
         for (int i = 0; i < n*n; i++) {
             if (!values.contains(s.getVar(vars[i]).getVal()))
                 values.add(s.getVar(vars[i]).getVal());
         }
-        for (Iterator iterator = values.iterator(); iterator.hasNext();) {
-            System.out.println("" + iterator.next());
-        }
-        } else System.out.println("pas de solution");
+            for (Object value : values) {
+                LOGGER.info("" + value);
+            }
+        } else LOGGER.info("pas de solution");
         return values;
     }
 
@@ -188,7 +182,7 @@ public class NValueTest {
         pb.addConstraints(c1, c2);
         CPSolver s = new CPSolver();
         s.read(pb);
-        System.out.println(c1.pretty());
+        LOGGER.info(c1.pretty());
         assertTrue(s.getCstr(c1).isSatisfied());
         assertFalse(s.getCstr(c2).isSatisfied());
     }

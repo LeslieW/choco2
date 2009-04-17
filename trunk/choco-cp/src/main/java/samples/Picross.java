@@ -87,6 +87,7 @@ public class Picross extends CPModel {
      * Create a new nanogram
      * @param consRows The constraint on the rows
      * @param consCols The constraint on the columns
+     * @param s
      */
 
     public Picross(int[][] consRows,int[][] consCols, Solver s) {
@@ -140,7 +141,7 @@ public class Picross extends CPModel {
                     regexp += "0+";
                 }
             }
-            System.out.println(regexp);
+            LOGGER.info(regexp);
             dfas[idx++] = new DFA(regexp,X);
         }
 
@@ -157,7 +158,7 @@ public class Picross extends CPModel {
                     regexp += "0+";
                 }
             }
-            System.out.println(regexp);
+            LOGGER.info(regexp);
             dfas[idx++] = new DFA(regexp,Y);
         }
 
@@ -321,7 +322,7 @@ public class Picross extends CPModel {
         s.solve();
 
 
-        System.out.println(p);
+        LOGGER.info(""+p);
 
         p.showSolution();
 

@@ -28,7 +28,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
-import choco.cp.solver.search.limit.NodeLimit;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -43,7 +43,12 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.*;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -53,6 +58,7 @@ import java.util.*;
  * To change this template use File | Settings | File Templates.
  */
 public class RegularTest {
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     CPModel m;
     CPSolver s;
@@ -93,12 +99,12 @@ public class RegularTest {
         s.solve();
         if (s.isFeasible()) {
             do {
-                System.out.println(v1 + " " + v2 + " " + v3);
-                System.out.println(v2 + " " + v5 + " " + v6);
+                LOGGER.info(v1 + " " + v2 + " " + v3);
+                LOGGER.info(v2 + " " + v5 + " " + v6);
 
             } while (s.nextSolution() == Boolean.TRUE);
         }
-        System.out.println("ExpectedSolutions 1 - nbSol " + s.getNbSolutions());
+        LOGGER.info("ExpectedSolutions 1 - nbSol " + s.getNbSolutions());
         assertEquals(1, s.getNbSolutions());
     }
 
@@ -124,7 +130,7 @@ public class RegularTest {
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
             s.solveAll();
 
-            System.out.println("ExpectedSolutions 2 - nbSol " + s.getNbSolutions());
+            LOGGER.info("ExpectedSolutions 2 - nbSol " + s.getNbSolutions());
             assertEquals(2, s.getNbSolutions());
         }
     }
@@ -157,9 +163,7 @@ public class RegularTest {
             tuples.add(new int[]{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 4000});
 
             IntegerVariable[] vars = new IntegerVariable[11];
-            for (int i = 0; i < bvars.length; i++) {
-                vars[i]= bvars[i];
-            }
+            System.arraycopy(bvars, 0, vars, 0, bvars.length);
             vars[10] = charge;
             // post the constraint
             m.addConstraint(regular(vars, tuples));
@@ -169,7 +173,7 @@ public class RegularTest {
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
             s.solveAll();
 
-            System.out.println("ExpectedSolutions 14 - nbSol " + s.getNbSolutions());
+            LOGGER.info("ExpectedSolutions 14 - nbSol " + s.getNbSolutions());
             assertEquals(14, s.getNbSolutions());
         }
     }
@@ -193,7 +197,7 @@ public class RegularTest {
         s.read(m);
         s.solveAll();
 
-        System.out.println("ExpectedSolutions 60 - nbSol " + s.getNbSolutions());
+        LOGGER.info("ExpectedSolutions 60 - nbSol " + s.getNbSolutions());
         assertEquals(60, s.getNbSolutions());
     }
 
@@ -217,7 +221,7 @@ public class RegularTest {
 
         s.solveAll();
 
-        System.out.println("ExpectedSolutions 61 - nbSol " + s.getNbSolutions());
+        LOGGER.info("ExpectedSolutions 61 - nbSol " + s.getNbSolutions());
         assertEquals(61, s.getNbSolutions());
     }
 
@@ -240,7 +244,7 @@ public class RegularTest {
         s.setValIntSelector(new RandomIntValSelector(130));
         s.setVarIntSelector(new RandomIntVarSelector(s, 176));
         s.solveAll();
-        System.out.println("ExpectedSolutions 4 - nbSol " + s.getNbSolutions());
+        LOGGER.info("ExpectedSolutions 4 - nbSol " + s.getNbSolutions());
         assertEquals(4, s.getNbSolutions());
     }
 
@@ -260,7 +264,7 @@ public class RegularTest {
         m.addConstraint(regular(new IntegerVariable[]{v1, v2, v3}, tuples));
         s.read(m);
         s.solveAll();
-        System.out.println("ExpectedSolutions 3 - nbSol " + s.getNbSolutions());
+        LOGGER.info("ExpectedSolutions 3 - nbSol " + s.getNbSolutions());
         assertEquals(3, s.getNbSolutions());
     }
 
@@ -288,7 +292,7 @@ public class RegularTest {
         s.setValIntSelector(new RandomIntValSelector(122));
         s.setVarIntSelector(new RandomIntVarSelector(s, 10));
         s.solveAll();
-        System.out.println("ExpectedSolutions 16 - nbSol " + s.getNbSolutions());
+        LOGGER.info("ExpectedSolutions 16 - nbSol " + s.getNbSolutions());
         assertEquals(16, s.getNbSolutions());
     }
 
@@ -317,7 +321,7 @@ public class RegularTest {
         m.addConstraint(regular(auto, vars));
         s.read(m);
         s.solveAll();
-        System.out.println("ExpectedSolutions 16 - nbSol " + s.getNbSolutions());
+        LOGGER.info("ExpectedSolutions 16 - nbSol " + s.getNbSolutions());
         assertEquals(6, s.getNbSolutions());
     }
 
@@ -348,7 +352,7 @@ public class RegularTest {
         m.addConstraint(regular(auto, vars));
         s.read(m);
         s.solveAll();
-        System.out.println("ExpectedSolutions 5 - nbSol " + s.getNbSolutions());
+        LOGGER.info("ExpectedSolutions 5 - nbSol " + s.getNbSolutions());
         assertEquals(5, s.getNbSolutions());
     }
 
@@ -369,10 +373,11 @@ public class RegularTest {
         s.solve();
         if (s.isFeasible()) {
             do {
-                for (int i = 0; i < vars.length; i++) {
-                    System.out.print(s.getVar(vars[i]).getVal());
+                StringBuffer st = new StringBuffer();
+                for (IntegerVariable var : vars) {
+                    st.append(s.getVar(var).getVal());
                 }
-                System.out.println("");
+                LOGGER.info(st.toString());
             } while (s.nextSolution() == Boolean.TRUE);
         }
         assertEquals(12, s.getNbSolutions());
@@ -392,11 +397,12 @@ public class RegularTest {
         s.solve();
         if (s.isFeasible()) {
             do {
-                System.out.print("Solution: ");
-                for (int i = 0; i < vars.length; i++) {
-                    System.out.print(s.getVar(vars[i]).getVal());
+                StringBuffer st = new StringBuffer();
+                st.append("Solution: ");
+                for (IntegerVariable var : vars) {
+                    st.append(s.getVar(var).getVal());
                 }
-                System.out.println("");
+                LOGGER.info(st.toString());
             } while (s.nextSolution() == Boolean.TRUE);
         }
         assertEquals(4, s.getNbSolutions());
@@ -416,11 +422,12 @@ public class RegularTest {
         s.solve();
         if (s.isFeasible()) {
             do {
-                System.out.print("Solution: ");
+                StringBuffer st = new StringBuffer();
+                st.append("Solution: ");
                 for (IntegerVariable var : vars) {
-                    System.out.print(ChocoUtil.pad(s.getVar(var).getVal() + "", 4, " "));
+                    st.append(ChocoUtil.pad(s.getVar(var).getVal() + "", 4, " "));
                 }
-                System.out.println("");
+                LOGGER.info(st.toString());
             } while (s.nextSolution() == Boolean.TRUE);
         }
         assertEquals(4, s.getNbSolutions());
@@ -452,6 +459,8 @@ public class RegularTest {
     /**
      * Ajoute � l'automate tous les tuples de taille n contenant au moins
      * 2 valeurs identiques. => l'automate encode un alldifferent
+     * @param tuples
+     * @param n
      */
 
     public void genereAlldiffAutom(List<int[]> tuples, int n) {
@@ -480,6 +489,8 @@ public class RegularTest {
     /**
      * Ajoute � l'automate tous les tuples associ�s
      * aux diagonales d'un �chiquer de taille n
+     * @param tuples
+     * @param n
      */
     public void genereLeftTuples(List<int[]> tuples, int n) {
         int[] tuple = new int[n];
@@ -515,19 +526,21 @@ public class RegularTest {
                 }
             }
         }
-        //System.out.println("Nombre :  " + nbNogood);
+        //LOGGER.info("Nombre :  " + nbNogood);
     }
 
     public static void afficheNogood(int[] noGood) {
-        for (int i = 0; i < noGood.length; i++) {
-            System.out.print(" " + noGood[i]);
+        StringBuffer st = new StringBuffer();
+        for (int aNoGood : noGood) {
+            st.append(MessageFormat.format(" {0}", aNoGood));
         }
-        System.out.println();
+        LOGGER.info(st.toString());
     }
 
     /**
      * Construit une contrainte contenant tous les tuples
      * interdits des n-reines et v�rifie le nombre de solutions
+     * @param n
      */
     public void nQueen(int n) {
         IntegerVariable[] reines = new IntegerVariable[n];
@@ -552,14 +565,14 @@ public class RegularTest {
         s.solveAll();
 
         int nbsolution = s.getNbSolutions();
-        int nbNode = ((NodeLimit) s.getSearchStrategy().limits.get(1)).getNbTot();
-        System.out.println("TestsAutomate test7(" + n + " reines) : " + nbsolution + " nodes " + nbNode + " tps " + (System.currentTimeMillis() - tps));
+        int nbNode = s.getSearchStrategy().limits.get(1).getNbTot();
+        LOGGER.info("TestsAutomate test7(" + n + " reines) : " + nbsolution + " nodes " + nbNode + " tps " + (System.currentTimeMillis() - tps));
         assertEquals(NBSols[n - 1], nbsolution);
 
     }
 
     public Constraint makeKnapsack(CPSolver s, int[] coefs, IntegerVariable[] vars, IntegerVariable charge) {
-        Constraint knap = null;
+        Constraint knap;
         int n = vars.length + 1;
         //nodes[i] : la liste des noeuds du graphe a la couche i
         ArrayList<Node>[] nodes = new ArrayList[n + 1];
@@ -572,8 +585,8 @@ public class RegularTest {
         for (int i = 1; i < n; i++) {
             nodes[i] = new ArrayList<Node>();
             transitions[i - 1] = new ArrayList<Transition>();
-            for (Iterator it = nodes[i - 1].iterator(); it.hasNext();) {
-                Node pnode = (Node) it.next();
+            for (Object o : nodes[i - 1]) {
+                Node pnode = (Node) o;
                 int cidx = pnode.idx;
                 int cb = pnode.b;
                 if (s.getVar(vars[i - 1]).canBeInstantiatedTo(0)) {
@@ -600,15 +613,14 @@ public class RegularTest {
             }
         }
         transitions[n - 1] = new ArrayList<Transition>();
-        for (Iterator it = nodes[n - 1].iterator(); it.hasNext();) {
-            Node lnode = (Node) it.next();
+        for (Object o : nodes[n - 1]) {
+            Node lnode = (Node) o;
             transitions[n - 1].add(new Transition(lnode.idx, lnode.b, nodeIdx));
         }
         List<Transition> t = new LinkedList<Transition>();
-        for (int i = 0; i < transitions.length; i++) {
-            ArrayList<Transition> transition = transitions[i];
-            for (Iterator<Transition> it = transition.iterator(); it.hasNext();) {
-                t.add(it.next());
+        for (ArrayList<Transition> transition : transitions) {
+            for (Transition aTransition : transition) {
+                t.add(aTransition);
             }
         }
 
@@ -618,17 +630,14 @@ public class RegularTest {
         DFA auto = new DFA(t, fs, n);
         // post the constraint
         IntegerVariable[] vs = new IntegerVariable[n];
-        for (int i = 0; i < n - 1; i++) {
-            vs[i] = vars[i];
-        }
+        System.arraycopy(vars, 0, vs, 0, n - 1);
         vs[n - 1] = charge;
         knap = regular(auto, vs);
         return knap;
     }
 
     public Node isNodeAlreadyAvailable(ArrayList<Node> lnode, int c) {
-        for (Iterator<Node> it = lnode.iterator(); it.hasNext();) {
-            Node node = it.next();
+        for (Node node : lnode) {
             if (node.b == c) {
                 return node;
             }
@@ -669,7 +678,7 @@ public class RegularTest {
             long tps = System.currentTimeMillis();
             //Constraint knapsack = Choco.eq(Choco.scalar(coefs,bvars),charge);
             Constraint knapsack = makeKnapsack(s, coefs, bvars, charge);
-            System.out.println("tps construction " + (System.currentTimeMillis() - tps));
+            LOGGER.info("tps construction " + (System.currentTimeMillis() - tps));
             m.addConstraint(knapsack);
             tps = System.currentTimeMillis();
             s.read(m);
@@ -677,23 +686,16 @@ public class RegularTest {
             s.setValIntSelector(new RandomIntValSelector(seed));
             s.solve();
             do {
-                System.out.print("tuples.add(new int[]{");
-                for (int i = 0; i < bvars.length; i++) {
-                    System.out.print("" + s.getVar(bvars[i]).getVal() + ",");
+                StringBuffer st = new StringBuffer();
+                st.append("tuples.add(new int[]{");
+                for (IntegerVariable bvar : bvars) {
+                    st.append(MessageFormat.format("{0},", s.getVar(bvar).getVal()));
                 }
-                System.out.println("" + s.getVar(charge).getVal() + "}");
+                LOGGER.info(MessageFormat.format("{0}}", st.toString() + s.getVar(charge).getVal()));
             } while (s.nextSolution() == Boolean.TRUE);
-            System.out.println("tps resolution " + (System.currentTimeMillis() - tps));
-            /*if (pb.isFeasible()) {
-             do {
-                 for (int i = 0; i < n; i++) {
-                     System.out.print(coefs[i] + "*" + bvars[i].getVal() + " ");
-                 }
-                 System.out.println(" = " + charge.getVal());
-             } while (pb.nextSolution() == Boolean.TRUE);
-         } else System.out.println("no solution");*/
+            LOGGER.info("tps resolution " + (System.currentTimeMillis() - tps));
             assertEquals(s.getNbSolutions(), 14);
-            System.out.println("" + s.getNbSolutions());
+            LOGGER.info("" + s.getNbSolutions());
         }
     }
 
@@ -701,7 +703,7 @@ public class RegularTest {
     @Test
     public void testAnotherRegexp() {
         for (int k = 0; k < 10; k++) {
-            System.out.println("*************************" + k);
+            LOGGER.info("*************************" + k);
             Model m = new CPModel();
             Solver s = new CPSolver();
             int longueur = 10;
@@ -721,15 +723,15 @@ public class RegularTest {
 
                 do {
                     int port = 0;
-                    System.out.println("------------Solution---------");
+                    LOGGER.info("------------Solution---------");
                     for (int i = 0; i < s.getNbIntVars(); i++) {
                         int valPort = ((IntDomainVar) s.getIntVar(i))
                                 .getVal();
                         double mult = Math.pow(10, s.getNbIntVars()
                                 - 1 - i);
                         port += valPort * mult;
-                        System.err.println("au tour " + tour + " port = " + port + ", valPort = " + valPort + ", mult =" + mult);
-                        System.out.println("" + s.getIntVar(i) + " = " + ((IntDomainVar) (s.getIntVar(i))).getVal());
+                        LOGGER.severe("au tour " + tour + " port = " + port + ", valPort = " + valPort + ", mult =" + mult);
+                        LOGGER.info("" + s.getIntVar(i) + " = " + ((IntDomainVar) (s.getIntVar(i))).getVal());
                     }
                     tour++;
                 } while (s.nextSolution() == Boolean.TRUE && tour < longueur);
@@ -763,17 +765,18 @@ public class RegularTest {
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
             s.setValIntSelector(new RandomIntValSelector(seed));
             s.solveAll();
-            System.out.println("" + s.getNbSolutions() + "," + nbsol[seed]);
+            LOGGER.info("" + s.getNbSolutions() + "," + nbsol[seed]);
             assertEquals(nbsol[seed], s.getNbSolutions());
         }
         time = (int) System.currentTimeMillis() - time;
-        System.out.println("time " + time);
+        LOGGER.info("time " + time);
     }
 
     int[] nbsol2 = new int[]{15, 0, 25, 100, 3, 5, 45, 0, 250, 0, 0, 0, 20};
 
     @Test
     public void testAnotherKnapsack2() {
+        StringBuffer st = new StringBuffer();
         for (int seed = 0; seed < nbsol2.length; seed++) {
             CPModel m = new CPModel();
             CPSolver s = new CPSolver();
@@ -794,9 +797,10 @@ public class RegularTest {
 
             s.read(m);
             s.solveAll();
-            System.out.print("" + s.getNbSolutions() + ",");
+            st.append(MessageFormat.format("{0},", s.getNbSolutions()));
             assertEquals(nbsol2[seed], s.getNbSolutions());
         }
+        LOGGER.info(st.toString());
     }
 
 

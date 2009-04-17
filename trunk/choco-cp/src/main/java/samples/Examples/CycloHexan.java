@@ -44,6 +44,8 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.real.RealInterval;
 import choco.kernel.solver.variables.real.RealIntervalConstant;
 
+import java.text.MessageFormat;
+import static java.text.MessageFormat.format;
 import java.util.List;
 
 public class CycloHexan extends PatternExample {
@@ -116,15 +118,15 @@ public class CycloHexan extends PatternExample {
                 " x^2 * (1 + y^2) + y * (y - 24 * x) = -13 \n" +
                 " z^2 * (1 + x^2) + x * (x - 24 * z) = -13 \n" +
                 "It has been taken from the Elisa project (LINA) examples. \n \n");
-        st.append(solutions.size() + " solutions : \n");
-        for (int i = 0; i < solutions.size(); i++) {
-            Solution solution = (Solution) solutions.get(i);
+        st.append(MessageFormat.format("{0} solutions : \n", solutions.size()));
+        for (Object solution1 : solutions) {
+            Solution solution = (Solution) solution1;
             for (int v = 0; v < _m.getNbRealVars(); v++) {
-                st.append("var nb " + v + " in " + solution.getRealValue(v) + "\n");
+                st.append(format("var nb {0} in {1}\n", v, solution.getRealValue(v)));
             }
             st.append("\n");
         }
-        System.out.println(st.toString());
+        LOGGER.info(st.toString());
     }
 
     private static void packSolutions(Solver solver, Model m) {

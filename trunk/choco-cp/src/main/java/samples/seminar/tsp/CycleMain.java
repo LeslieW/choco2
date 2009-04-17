@@ -25,6 +25,7 @@ package samples.seminar.tsp;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
@@ -34,8 +35,11 @@ import choco.kernel.solver.Solver;
 import gnu.trove.TIntArrayList;
 
 import java.util.Random;
+import java.util.logging.Logger;
 
 public class CycleMain {
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
     public static int maxValue = 100000;
 
@@ -72,7 +76,7 @@ public class CycleMain {
             int maxDist = 100;
             Random r = new Random();
             int seed = r.nextInt();
-            System.out.println("seed = " + seed);
+            LOGGER.info("seed = " + seed);
             matrix = randomInstance(seed, n, maxDist);
         }
         // default random
@@ -93,7 +97,7 @@ public class CycleMain {
         solver.setValIntSelector(new MyValSelector(solver.getVar(objective),
                 solver.getVar(vars), matrix, 0, n - 1));
         solver.setLoggingMaxDepth(50);
-        System.out.println("debut de la resolution");
+        LOGGER.info("debut de la resolution");
         switch (type) {
         case PROPAGATE:
             try {
@@ -112,7 +116,7 @@ public class CycleMain {
             solver.minimize(solver.getVar(objective), true);
             break;
         }
-        System.out.println("==========================");
+        LOGGER.info("==========================");
     }
 
     public void hamiltonianCylceProblem(boolean tsp) {

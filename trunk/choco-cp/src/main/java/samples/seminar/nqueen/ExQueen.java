@@ -22,20 +22,17 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.seminar.nqueen;
 
-import static choco.Choco.allDifferent;
-import static choco.Choco.eq;
-import static choco.Choco.inverseChanneling;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.minus;
-import static choco.Choco.neq;
-import static choco.Choco.plus;
 import choco.Choco;
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
+
+import java.util.logging.Logger;
 
 
 /*
@@ -46,6 +43,8 @@ import choco.kernel.solver.Solver;
  *
  */
 public class ExQueen {
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
 	public static void nQueensNaif(int n) {
 		Model m = new CPModel();
@@ -275,41 +274,41 @@ public class ExQueen {
 	public static void main(String[] args) {
 		int nbQueens = 20;
 
-		System.out.println("************* Nqueens naif *************");
+		LOGGER.info("************* Nqueens naif *************");
 		nQueensNaif(nbQueens); // (1)
-		System.out.println("");
-		System.out.println("****************************************");
-		System.out.println("");
+		LOGGER.info("");
+		LOGGER.info("****************************************");
+		LOGGER.info("");
 
-		System.out.println("*********** Nqueens alldiff ************");
+		LOGGER.info("*********** Nqueens alldiff ************");
 		nQueensAlldiff(nbQueens); // (2)
-		System.out.println("");
-		System.out.println("****************************************");
-		System.out.println("");
+		LOGGER.info("");
+		LOGGER.info("****************************************");
+		LOGGER.info("");
 
-		System.out.println("******* Nqueens naif redondant *********");
+		LOGGER.info("******* Nqueens naif redondant *********");
 		nQueensNaifRed(nbQueens); // (3)
-		System.out.println("");
-		System.out.println("****************************************");
-		System.out.println("");
+		LOGGER.info("");
+		LOGGER.info("****************************************");
+		LOGGER.info("");
 
-		System.out.println("****** Nqueens alldiff redondant *******");
+		LOGGER.info("****** Nqueens alldiff redondant *******");
 		nQueensAlldiffRed(nbQueens); // (4)
-		System.out.println("");
-		System.out.println("****************************************");
-		System.out.println("");
+		LOGGER.info("");
+		LOGGER.info("****************************************");
+		LOGGER.info("");
 
-		System.out.println("***** Nqueens naif redondant heur ******");
+		LOGGER.info("***** Nqueens naif redondant heur ******");
 		heuristicNqueensNaifRed(nbQueens); // (5)
-		System.out.println("");
-		System.out.println("****************************************");
-		System.out.println("");
+		LOGGER.info("");
+		LOGGER.info("****************************************");
+		LOGGER.info("");
 
-		System.out.println("**** Nqueens alldiff redondant heur ****");
+		LOGGER.info("**** Nqueens alldiff redondant heur ****");
 		heuristicNqueensAlldiffRed(nbQueens);  // (6)
-		System.out.println("");
-		System.out.println("****************************************");
-		System.out.println("");
+		LOGGER.info("");
+		LOGGER.info("****************************************");
+		LOGGER.info("");
 	}
 
 }

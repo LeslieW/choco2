@@ -22,26 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.variables;
 
-import static choco.Choco.constant;
-import static choco.Choco.makeIntVarArray;
-import static choco.Choco.makeSetVar;
-import static choco.Choco.makeSetVarArray;
-import static choco.Choco.neq;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-
-import java.util.Iterator;
-import java.util.List;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import choco.Choco;
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -50,24 +36,34 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import static junit.framework.Assert.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import static java.text.MessageFormat.format;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * @author Arnaud Malapert
  *
  */
 public class VariablesTest {
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	private CPModel model;
 
 	private void test(Variable toRemove,int nbVars) {
-		System.out.println(model.pretty()+"\n");
+		LOGGER.info(model.pretty()+"\n");
 		model.removeVariable(toRemove);
 		test(0, nbVars);
 		
 	}
 	
 	private void test(Constraint toRemove, int nbConstraints, int nbConstants, int nbVars) {
-		System.out.println(model.pretty()+"\n");
+		LOGGER.info(model.pretty()+"\n");
 		model.removeConstraint(toRemove);
 		test(nbConstraints, nbVars);
 		assertEquals("nb constants",nbConstants, model.getNbConstantVars());
@@ -75,7 +71,7 @@ public class VariablesTest {
 	}
 	
 	private void test(int nbConstraints, int nbVars) {
-		System.out.println(model.pretty()+"\n");
+		LOGGER.info(model.pretty()+"\n");
 		assertEquals("nb remaining constraints",nbConstraints, model.getNbConstraints());
 		assertEquals("nb remaining variables ",nbVars, model.getNbTotVars());
 	}
@@ -166,7 +162,7 @@ public class VariablesTest {
 		CPSolver solver = new CPSolver();
 		solver.read(m);
 		List<IntDomainVar> l =solver.getIntDecisionVars();
-		System.out.println(l);
+		LOGGER.info(format("{0}", l));
 		assertEquals("only one int decision var",1,l.size());
 		assertEquals("number of integer constants",2,solver.getNbIntConstants());
 		assertTrue("check decision var",l.contains(solver.getVar(s2.getCard())));

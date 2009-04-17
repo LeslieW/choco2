@@ -28,11 +28,15 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.cp.solver.search.limit.NodeLimit;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
+
+import static java.text.MessageFormat.format;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -42,6 +46,8 @@ import org.junit.Test;
  * To change this template use File | Settings | File Templates.
  */
 public class AbsTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     @Test
     public void testPropagAbs1() {
@@ -60,9 +66,9 @@ public class AbsTest {
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        System.out.println("x " + s.getVar(x).getDomain().pretty());
-        System.out.println("y " + s.getVar(y).getDomain().pretty());
-        System.out.println(!s.getVar(x).canBeInstantiatedTo(3));
+        LOGGER.info(format("x {0}", s.getVar(x).getDomain().pretty()));
+        LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
+        LOGGER.info(format("{0}", !s.getVar(x).canBeInstantiatedTo(3)));
         assertTrue(!s.getVar(x).canBeInstantiatedTo(3));
         assertTrue(!s.getVar(y).canBeInstantiatedTo(0));
         assertTrue(!s.getVar(y).canBeInstantiatedTo(1));
@@ -82,10 +88,10 @@ public class AbsTest {
 		m.addConstraint(neq(v0, v1));
 		CPSolver s = new CPSolver();
 		s.read(m);
-		System.out.println(s.pretty());
+		LOGGER.info(s.pretty());
 		s.solveAll();
 		int nbNode = ((NodeLimit) s.getSearchStrategy().limits.get(1)).getNbTot();
-		System.out.println("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
+		LOGGER.info("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
 		assertEquals(110,s.getNbSolutions());
 
 	}
@@ -109,9 +115,9 @@ public class AbsTest {
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        System.out.println("x " + s.getVar(x).getDomain().pretty());
-        System.out.println("y " + s.getVar(y).getDomain().pretty());
-        System.out.println(!s.getVar(x).canBeInstantiatedTo(3));
+        LOGGER.info(format("x {0}", s.getVar(x).getDomain().pretty()));
+        LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
+        LOGGER.info(format("{0}", !s.getVar(x).canBeInstantiatedTo(3)));
         assertTrue(!s.getVar(x).canBeInstantiatedTo(3));
         assertTrue(!s.getVar(y).canBeInstantiatedTo(0));
         assertTrue(!s.getVar(y).canBeInstantiatedTo(1));
@@ -133,9 +139,9 @@ public class AbsTest {
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        System.out.println("x " + s.getVar(x).getDomain().pretty());
-        System.out.println("y " + s.getVar(y).getDomain().pretty());
-        System.out.println(!s.getVar(x).canBeInstantiatedTo(3));
+        LOGGER.info(format("x {0}", s.getVar(x).getDomain().pretty()));
+        LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
+        LOGGER.info(format("{0}", !s.getVar(x).canBeInstantiatedTo(3)));
         assertTrue(!s.getVar(y).canBeInstantiatedTo(3));
         assertTrue(!s.getVar(y).canBeInstantiatedTo(-3));
         assertTrue(!s.getVar(y).canBeInstantiatedTo(4));
@@ -160,8 +166,8 @@ public class AbsTest {
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        System.out.println("x " + s.getVar(x).getDomain().pretty());
-        System.out.println("y " + s.getVar(y).getDomain().pretty());
+        LOGGER.info("x " + s.getVar(x).getDomain().pretty());
+        LOGGER.info("y " + s.getVar(y).getDomain().pretty());
         for (int i = 0; i < 6; i++) {
             assertTrue(!s.getVar(y).canBeInstantiatedTo(-i));
             assertTrue(!s.getVar(y).canBeInstantiatedTo(i));
@@ -181,11 +187,11 @@ public class AbsTest {
             s.setValIntSelector(new RandomIntValSelector(i + 1));
             s.solve();
             do {
-                System.out.println("" + s.getVar(x).getVal() + "=abs(" + s.getVar(y).getVal() + ")");
+                LOGGER.info("" + s.getVar(x).getVal() + "=abs(" + s.getVar(y).getVal() + ")");
             } while (s.nextSolution() == Boolean.TRUE);
-            System.out.println("" + s.getSearchStrategy().getNodeCount());
+            LOGGER.info("" + s.getSearchStrategy().getNodeCount());
             assertEquals(10, s.getNbSolutions());
-            //System.out.println("Nb solution : " + pb.getSolver().getNbSolutions());
+            //LOGGER.info("Nb solution : " + pb.getSolver().getNbSolutions());
         }
     }
 
@@ -203,11 +209,11 @@ public class AbsTest {
             s.setValIntSelector(new RandomIntValSelector(i + 1));
             s.solve();
             do {
-                System.out.println("" + s.getVar(x).getVal() + "=abs(" + s.getVar(y).getVal() + ")");
+                LOGGER.info("" + s.getVar(x).getVal() + "=abs(" + s.getVar(y).getVal() + ")");
             } while (s.nextSolution() == Boolean.TRUE);
-            System.out.println("" + s.getSearchStrategy().getNodeCount());
+            LOGGER.info("" + s.getSearchStrategy().getNodeCount());
             assertEquals(10, s.getNbSolutions());
-            //System.out.println("Nb solution : " + pb.getSolver().getNbSolutions());
+            //LOGGER.info("Nb solution : " + pb.getSolver().getNbSolutions());
         }
     }
 
@@ -225,11 +231,11 @@ public class AbsTest {
             s.setValIntSelector(new RandomIntValSelector(i + 1));
             s.solve();
             do {
-                System.out.println("" + s.getVar(x).getVal() + "=abs(" + s.getVar(y).getVal() + ")");
+                LOGGER.info("" + s.getVar(x).getVal() + "=abs(" + s.getVar(y).getVal() + ")");
             } while (s.nextSolution() == Boolean.TRUE);
-            //System.out.println("" + pb.getSolver().getSearchStrategy().getNodeCount());
+            //LOGGER.info("" + pb.getSolver().getSearchStrategy().getNodeCount());
             assertEquals(12, s.getNbSolutions());
-            //System.out.println("Nb solution : " + pb.getSolver().getNbSolutions());
+            //LOGGER.info("Nb solution : " + pb.getSolver().getNbSolutions());
         }
     }
 }

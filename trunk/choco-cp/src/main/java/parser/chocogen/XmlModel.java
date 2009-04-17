@@ -23,12 +23,6 @@
 package parser.chocogen;
 
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.logging.Logger;
-
-import parser.absconparseur.tools.InstanceParser;
-import parser.absconparseur.tools.SolutionChecker;
 import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.integer.extension.ValidityChecker;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
@@ -37,17 +31,25 @@ import choco.cp.solver.search.integer.varselector.DomOverDynDeg;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solver;
+import parser.absconparseur.tools.InstanceParser;
+import parser.absconparseur.tools.SolutionChecker;
+
+import java.io.File;
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.logging.Logger;
 
 /**
  * User:    charles
  * Date:    19 août 2008
- * 
+ *
  * A class to provide facilities for loading and solving
  * CSP described in the xml format of the 2008 competition
  **/
 public class XmlModel {
 
-	protected final static Logger LOGGER = ChocoLogging.getModelLogger();
+    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+
     //heuristics
     private static final int DOMOVERDEG = 0;
     private static final int DOMOVERWDEG = 1;
@@ -195,8 +197,7 @@ public class XmlModel {
      */
     public void solveDirectory(File dossiers) {
         File listingDonneesEntree[] = dossiers.listFiles();
-        for (int file = 0; file < listingDonneesEntree.length; file++) {
-            File fichier = listingDonneesEntree[file];
+        for (File fichier : listingDonneesEntree) {
             if (fichier.isFile()) {
                 solveFile(fichier);
             } else if (fichier.isDirectory()) {
@@ -216,8 +217,8 @@ public class XmlModel {
     public InstanceParser load(File fichier) throws Exception, Error {
        try {
             if (verb > 0) {
-                System.out.println("========================================================");
-                System.out.println("Traitement de :" + fichier.getName());
+                LOGGER.info("========================================================");
+                LOGGER.info("Traitement de :" + fichier.getName());
             }
             // Parse the xml and get the abscon representation of the problem
             time[0] = System.currentTimeMillis();
@@ -250,7 +251,7 @@ public class XmlModel {
         chocofact.createVariables();
         chocofact.createRelations();
         chocofact.createConstraints(forceExp);
-        
+
         return m;
     }
 
@@ -260,21 +261,21 @@ public class XmlModel {
      * @param model
      * @throws Exception
      * @throws Error
+     * @return
      */
     public PreProcessCPSolver solve(CPModel model) throws Exception, Error {
 
         PreProcessCPSolver s = new PreProcessCPSolver();
         s.read(model);
         if (verb > 0) {
-            System.out.print("solve...");
-            System.out.println("dim:[nbv:" + s.getNbIntVars() + "][nbc:" + s.getNbIntConstraints() + "][nbconstants:" + s.getNbConstants() + "]");
+            LOGGER.info(MessageFormat.format("solve...dim:[nbv:{0}][nbc:{1}][nbconstants:{2}]", s.getNbIntVars(), s.getNbIntConstraints(), s.getNbConstants()));
         }
 
         time[2] = System.currentTimeMillis();
         s.setTimeLimit(timelimit * 1000);
         s.monitorBackTrackLimit(true);
 
-        if (verb > 1) System.out.println(s.pretty());
+        if (verb > 1) LOGGER.info(s.pretty());
 
         isFeasible = true;
         //do the initial propagation to decide to do restarts or not
@@ -313,7 +314,7 @@ public class XmlModel {
 
         if (forcerestart != null) {
             if (forcerestart) {
-               s.setGeometricRestart(base,growth); 
+               s.setGeometricRestart(base,growth);
             }
         } else {
             if (s.restartMode) {
@@ -322,7 +323,7 @@ public class XmlModel {
         }
 
         //s.setLoggingMaxDepth(200);
-        if (isFeasible != false && (cheuri == IMPACT || s.rootNodeSingleton(initialisationtime))) {
+        if (isFeasible && (cheuri == IMPACT || s.rootNodeSingleton(initialisationtime))) {
                 s.solve();
             isFeasible = s.isFeasible();
             nbnode = s.getSearchStrategy().getNodeCount();
@@ -330,7 +331,7 @@ public class XmlModel {
         } else {
             isFeasible = false;
         }
-        return s;        
+        return s;
     }
 
     /**
@@ -344,7 +345,7 @@ public class XmlModel {
     public void postAnalyze(File fichier, InstanceParser parser, PreProcessCPSolver s) throws Exception, Error {
         //CPSolver.flushLogs();
         time[3] = System.currentTimeMillis();
-        //System.out.println("" + isFeasible);
+        //LOGGER.info("" + isFeasible);
         //Output in a format for internal competition
         if (isFeasible==Boolean.TRUE && !checkEverythingIsInstantiated(parser, s)) {
             isFeasible = null;
@@ -353,13 +354,13 @@ public class XmlModel {
         String res = "c ";
         if (isFeasible == null) {
             res += "TIMEOUT";
-            System.out.println("s UNKNOWN");
-        } else if (isFeasible == false) {
+            LOGGER.info("s UNKNOWN");
+        } else if (!isFeasible) {
             res += "UNSAT";
-            System.out.println("s UNSATISFIABLE");
+            LOGGER.info("s UNSATISFIABLE");
         } else {
             res += "SAT";
-            System.out.println("s SATISFIABLE");
+            LOGGER.info("s SATISFIABLE");
             String sol = "v ";
             values[0] = fichier.getPath();
             for (int i = 0; i < parser.getVariables().length; i++) {
@@ -370,7 +371,7 @@ public class XmlModel {
                 }
                 sol += values[i + 1] + " ";
             }
-            System.out.println(sol);
+            LOGGER.info(sol);
         }
         double rtime = (double) (time[3] - time[0]) / 1000D;
         res += " " + rtime + " TIME     ";
@@ -380,20 +381,20 @@ public class XmlModel {
         res += " " + (time[3] - time[2]) + " RES      ";
         res += " " + s.restartMode + " RESTART      ";
         res += " " + cheuri + " HEURISTIC      ";
-        System.out.println("d AC " + ac);
-        System.out.println("d RUNTIME " + rtime);
-        System.out.println("d NODES " + nbnode);
-        System.out.println("d NODES/s " + Math.round((double) nbnode / rtime));
-        System.out.println("d BACKTRACKS " + nbback);
-        System.out.println("d BACKTRACKS/s " + Math.round((double) nbback / rtime));
-        System.out.println("d CHECKS " + ValidityChecker.nbCheck);
-        System.out.println("d CHECKS/s " + Math.round((double) ValidityChecker.nbCheck / rtime));
+        LOGGER.info("d AC " + ac);
+        LOGGER.info("d RUNTIME " + rtime);
+        LOGGER.info("d NODES " + nbnode);
+        LOGGER.info("d NODES/s " + Math.round((double) nbnode / rtime));
+        LOGGER.info("d BACKTRACKS " + nbback);
+        LOGGER.info("d BACKTRACKS/s " + Math.round((double) nbback / rtime));
+        LOGGER.info("d CHECKS " + ValidityChecker.nbCheck);
+        LOGGER.info("d CHECKS/s " + Math.round((double) ValidityChecker.nbCheck / rtime));
 
         ValidityChecker.nbCheck = 0;
 
-        System.out.println("" + res);
+        LOGGER.info("" + res);
         if (verb > 0) {
-//TODO : update the checker (this one is not correct with element, we need the last version)          
+//TODO : update the checker (this one is not correct with element, we need the last version)
            if (s.isFeasible()==Boolean.TRUE)
                 SolutionChecker.main(values);
 //Checking the solution with choco is also giving weird results...
@@ -437,7 +438,7 @@ public class XmlModel {
                 if (!s.getVar(parser.getVariables()[i].getChocovar()).isInstantiated()){
                     return false;
                 }
-            } catch (NullPointerException e) {
+            } catch (NullPointerException ignored) {
             }
         }
         return true;
@@ -461,12 +462,12 @@ public class XmlModel {
             xs.postAnalyze(instance, parser, s);
 
             //use a blackbox solver or a standart CP solver
-            //and perform the search by yourself          
+            //and perform the search by yourself
 //            BlackBoxCPSolver s = new BlackBoxCPSolver();
 //            CPSolver s = new CPSolver();
 //            s.read(model);
 //            s.solve();
-//            System.out.println(s.pretty());
+//            LOGGER.info(s.pretty());
 //            s.printRuntimeSatistics();
 
         } catch (Exception e) {

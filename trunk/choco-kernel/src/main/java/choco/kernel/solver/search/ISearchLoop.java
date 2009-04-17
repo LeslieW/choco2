@@ -22,6 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.search;
 
+import choco.kernel.common.logging.ChocoLogging;
+
+import java.util.logging.Logger;
+
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,6 +35,7 @@ package choco.kernel.solver.search;
  */
 public interface ISearchLoop {
 
+    final static Logger LOGGER = ChocoLogging.getSearchLogger();
 	
 	Boolean run();
 

@@ -1,20 +1,12 @@
 package samples.Examples;
 
-import static choco.Choco.eq;
-import static choco.Choco.makeBooleanVar;
-import static choco.Choco.makeBooleanVarArray;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.minus;
-import static choco.Choco.neq;
-import static choco.Choco.reifiedIntConstraint;
-import static choco.Choco.sum;
-
-import java.util.Arrays;
-import java.util.Random;
-
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.variables.integer.IntegerVariable;
+
+import java.util.Arrays;
+import java.util.Random;
 
 /**
  * Let consider a set of N boolean variables and a binary constraint network (eq or neq).
@@ -96,7 +88,7 @@ public class MinimumEdgeDeletion extends PatternExample {
 			}
 		}
 		_m.addConstraint( eq( minus(cpt, sum(pairVars)), deletion));
-		//System.out.println(_m.pretty());
+		//LOGGER.info(_m.pretty());
 	}
 
 	@Override
@@ -110,9 +102,9 @@ public class MinimumEdgeDeletion extends PatternExample {
 
 	@Override
 	public void prettyOut() {
-		System.out.println("pairs: "+Arrays.toString(_s.getVar(pairVars)));
-		System.out.println("nbDeletions= "+ _s.getOptimumValue());
-		System.out.println("bool vars: "+Arrays.toString(_s.getVar(boolVars)));
+		LOGGER.info("pairs: "+Arrays.toString(_s.getVar(pairVars)));
+		LOGGER.info("nbDeletions= "+ _s.getOptimumValue());
+		LOGGER.info("bool vars: "+Arrays.toString(_s.getVar(boolVars)));
 	}
 
 	@Override

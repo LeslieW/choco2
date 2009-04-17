@@ -33,6 +33,7 @@ import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.cp.solver.search.limit.BackTrackLimit;
 import choco.cp.solver.search.limit.FailLimit;
 import choco.cp.solver.search.restart.RestartStrategy;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -41,15 +42,17 @@ import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
+import java.util.logging.Logger;
+
 /**
  * Created by IntelliJ IDEA.
  * User: hcambaza
  * Date: 11 avr. 2008
  * Time: 18:26:25
- * To change this template use File | Settings | File Templates.
  */
 public class HeuristicTest {
 
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
   @Test
   public void testDomWdeg() {
@@ -57,7 +60,7 @@ public class HeuristicTest {
     int nb2 = testHeuristic(1);
     int nb3 = testHeuristic(2);
     testHeuristic(3);
-    System.out.println(nb1 + " " + nb2 + " " + nb3);
+    LOGGER.info(nb1 + " " + nb2 + " " + nb3);
     assertTrue(nb1 >= nb2);
   }
 
@@ -94,7 +97,7 @@ public class HeuristicTest {
             double mult = 1.5;
 
             public boolean shouldRestart(AbstractGlobalSearchStrategy search) {
-              boolean shouldRestart =  (((AbstractGlobalSearchLimit) search.limits.get(1)).getNb() >= nodesLimit);
+              boolean shouldRestart =  (search.limits.get(1).getNb() >= nodesLimit);
               if (shouldRestart) {
 				nodesLimit *= mult;
 			}
@@ -104,13 +107,13 @@ public class HeuristicTest {
     }
 
     s.launch();
-    assertTrue(!s.isFeasible().booleanValue());
+    assertTrue(!s.isFeasible());
     int nb = s.getSearchStrategy().getNodeCount();
     long delta = System.currentTimeMillis() - start;
-    System.out.println(nb + " nodes in " + delta + " ms");
+    LOGGER.info(nb + " nodes in " + delta + " ms");
     for (int i = 0; i < s.getSearchStrategy().limits.size(); i++) {
       AbstractGlobalSearchLimit abstractGlobalSearchLimit = s.getSearchStrategy().limits.get(i);
-      System.out.println(abstractGlobalSearchLimit.toString());
+      LOGGER.info(abstractGlobalSearchLimit.toString());
     }
     return nb;
   }

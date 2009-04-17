@@ -27,12 +27,14 @@ import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.VizFactory;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.logging.Logger;
 
 
 /**
@@ -46,6 +48,8 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Update : 2.0.1
  */
 public class DeterministicPert {
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
 	protected static final int[] ILOG_DURATIONS={7,3,8,3,1,2,1,2,1,1};
 
@@ -132,20 +136,20 @@ public class DeterministicPert {
 		try {
 			solver.propagate();
 		} catch (ContradictionException e) {
-			System.out.println("infeasible pert problem");
+			LOGGER.info("infeasible pert problem");
 			e.printStackTrace();
 		}
 		try {
 			//then we instantiate the makespan variable and compute slack times
-			IntDomainVar e =(IntDomainVar) solver.getMakespan();
-			System.out.println(e.pretty());
+			IntDomainVar e = solver.getMakespan();
+			LOGGER.info(e.pretty());
 			e.instantiate(e.getInf(), VarEvent.NOCAUSE);
 			solver.propagate();
-			System.out.println("\nCRITICAL PATH METHOD");
-			//System.out.println(solver.pretty());
-			//System.out.println(this);
+			LOGGER.info("\nCRITICAL PATH METHOD");
+			//LOGGER.info(solver.pretty());
+			//LOGGER.info(this);
 		} catch (ContradictionException e) {
-			System.err.println("ERROR : problem should be feasible.");
+			LOGGER.severe("ERROR : problem should be feasible.");
 			e.printStackTrace();
 		}
 	}
@@ -164,7 +168,7 @@ public class DeterministicPert {
 		return solver.getNbSolutions();
 	}
 
-	protected final static IntegerVariable[] createDurationVariables(int[][] durations) {
+	protected static IntegerVariable[] createDurationVariables(int[][] durations) {
 		IntegerVariable[] vars = new IntegerVariable[NB_TASKS];
 		for (int i = 0; i < vars.length; i++) {
 			vars[i] = makeIntVar("p-"+i, durations[i]);
@@ -188,14 +192,14 @@ public class DeterministicPert {
 
 
 	public void generateDottyFile() {
-		System.err.println("not yet implemented");
+		LOGGER.severe("not yet implemented");
 		//FIXME VizFactory.toDotty(solver);
 	}
 
 	@Override
 	public String toString() {
 		StringBuffer buffer=new StringBuffer();
-		buffer.append("Cmax=").append( ( (IntDomainVar) solver.getMakespan()).getVal());
+		buffer.append("Cmax=").append( solver.getMakespan().getVal());
 		buffer.append('\n');
 		for (int i = 0; i < tasks.length; i++) {
 			buffer.append(toString(i));
@@ -208,7 +212,7 @@ public class DeterministicPert {
 		DeterministicPert example=new DeterministicPert(28);
 		example.criticalPathMethod();
 		//example.generateDottyFile();
-		System.err.println(example.solveAll());
+		LOGGER.severe(""+example.solveAll());
 	//	ProbabilisticPert example1=new ProbabilisticPert(500,ProbabilisticPert.addExpectedTime(ProbabilisticPert.EXAMPLE_DURATIONS));
 	//	example1.computeAllCPM();
 	//	example1.generateDottyFile();

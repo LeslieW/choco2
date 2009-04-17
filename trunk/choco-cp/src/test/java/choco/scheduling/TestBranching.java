@@ -23,9 +23,12 @@
 package choco.scheduling;
 
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import junit.framework.Assert;
 import org.junit.Test;
 import samples.scheduling.OpenShopExample;
+
+import java.util.logging.Logger;
 
 /**
  * @author Arnaud Malapert
@@ -33,7 +36,7 @@ import samples.scheduling.OpenShopExample;
  */
 public class TestBranching {
 
-
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	public final static int NB_TESTS=4;
 
@@ -45,7 +48,7 @@ public class TestBranching {
 		for (int i = 0; i < solvers.length; i++) {
 			CPSolver s=solvers[i];
 			s.generateSearchStrategy();
-			//System.out.println(s.pretty());
+			//LOGGER.info(s.pretty());
 			s.launch();
 			if(! s.isEncounteredLimit()) {
 				if(obj==-1) { obj =s.getOptimumValue().intValue();}
@@ -54,9 +57,9 @@ public class TestBranching {
 			SchedUtilities.message("solver "+i, s.getOptimumValue(), s);
 		}
 		//check
-		if(n==0) {System.err.println("no optimal found");}
+		if(n==0) {LOGGER.severe("no optimal found");}
 		else {
-			if(n==1) {System.err.println("only one optimal solution");}
+			if(n==1) {LOGGER.severe("only one optimal solution");}
 			for (int i = 0; i < solvers.length; i++) {
 				if(solvers[i].isEncounteredLimit()) {
 					Assert.assertTrue("solver "+i, solvers[i].getOptimumValue().intValue() >= obj );
@@ -65,7 +68,7 @@ public class TestBranching {
 				}
 			}
 		}
-		System.out.println("optimum found: "+n+"/"+solvers.length);
+		LOGGER.info("optimum found: "+n+"/"+solvers.length);
 	}
 
 

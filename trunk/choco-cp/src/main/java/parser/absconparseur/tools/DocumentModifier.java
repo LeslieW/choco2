@@ -132,7 +132,7 @@ public class DocumentModifier {
 		presentationElement.setAttribute(InstanceTokens.FORMAT, InstanceTokens.XCSP_2_0);
 		logic.spot();
 
-		// System.out.println("can " + canonicalNames);
+		// LOGGER.info("can " + canonicalNames);
 
 		if (canonicalNames)
 			return document;
@@ -226,7 +226,7 @@ public class DocumentModifier {
 					String newParameter = InstanceTokens.getParameterNameFor(cpt++);
 					parametersMap.put(oldParameter, newParameter);
 					formalParameters.add(oldParameter);
-					// System.out.println("old = " + oldParameter + " new = " + newParameter);
+					// LOGGER.info("old = " + oldParameter + " new = " + newParameter);
 					newFormalParameters += " " + newParameter;
 				}
 
@@ -234,13 +234,13 @@ public class DocumentModifier {
 
 				String[] t = PredicateManager.buildUniversalPostfixExpression(functional.getTextContent().trim(), formalParameters.toArray(new String[formalParameters.size()]));
 				String s2 = PredicateManager.buildFunctionalExpression(t);
-				// System.out.println("s1 = " + s1 + " s2 = " + s2);
+				// LOGGER.info("s1 = " + s1 + " s2 = " + s2);
 
 				// String canonicalExpression = "";
 				// st = new StringTokenizer(functional.getTextContent(), "(), ");
 				// while (st.hasMoreTokens()) {
 				// String token = st.nextToken();
-				// System.out.println("token = " + token + " belong = " + parametersMap.containsKey(token));
+				// LOGGER.info("token = " + token + " belong = " + parametersMap.containsKey(token));
 				//
 				// if (parametersMap.containsKey(token))
 				// canonicalExpression += " " + parametersMap.get(token);
@@ -257,7 +257,7 @@ public class DocumentModifier {
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Element element = (Element) nodeList.item(i);
 
-			// System.out.println(" constraint " + i);
+			// LOGGER.info(" constraint " + i);
 			String name = element.getAttribute(InstanceTokens.NAME);
 			String canonicalName = InstanceTokens.getConstraintNameFor(i);
 			if (!name.equals(canonicalName))

@@ -27,6 +27,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.set.RandomSetValSelector;
 import choco.cp.solver.search.set.RandomSetVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.set.SetVariable;
@@ -38,6 +39,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.logging.Logger;
+
 /**
  * Created by IntelliJ IDEA.
  * User: charles
@@ -46,12 +49,13 @@ import org.junit.Test;
  */
 public class SetUnionTest {
 
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 	Model m;
 	Solver s;
 
 	@After
 	public void tearDown() throws Exception {
-		System.out.printf(s.pretty());
+		LOGGER.info(s.pretty());
 		s = null;
 		m = null;
 	}

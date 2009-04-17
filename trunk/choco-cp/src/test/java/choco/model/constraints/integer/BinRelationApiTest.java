@@ -25,6 +25,7 @@ package choco.model.constraints.integer;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.constraints.SConstraint;
@@ -50,16 +51,17 @@ import java.util.logging.Logger;
 
 public class BinRelationApiTest {
 
-	private Logger logger = Logger.getLogger("choco.currentElement");
+	protected static final Logger LOGGER = ChocoLogging.getTestLogger();
 	private CPModel m;
 	private CPSolver s;
-	private IntegerVariable v1, v2, v3, v4;
+	private IntegerVariable v1, v2, v3;
 	boolean[][] matrice1, matrice2;
-	ArrayList couples1, couples2;
+	ArrayList<int[]> couples1;
+    ArrayList<int[]> couples2;
 
 	@Before
 	public void setUp() {
-		logger.fine("BitSetIntDomain Testing...");
+		LOGGER.fine("BitSetIntDomain Testing...");
 		m = new CPModel();
 		s = new CPSolver();
 		//v4 = makeIntVar("v4", 3, 8);
@@ -68,8 +70,8 @@ public class BinRelationApiTest {
 				{true, false, true, false},
 				{false, false, false, false},
 				{true, true, true, false}};
-		couples1 = new ArrayList();
-		couples1 = new ArrayList();
+		couples1 = new ArrayList<int[]>();
+		couples1 = new ArrayList<int[]>();
 		couples1.add(new int[]{1, 2});
 		couples1.add(new int[]{1, 3});
 		couples1.add(new int[]{1, 4});
@@ -83,7 +85,7 @@ public class BinRelationApiTest {
 				{true, false, false, false},
 				{false, false, true, false},
 				{false, true, false, false}};
-		couples2 = new ArrayList();
+		couples2 = new ArrayList<int[]>();
 		couples2.add(new int[]{1, 2});
 		couples2.add(new int[]{1, 3});
 		couples2.add(new int[]{2, 1});
@@ -97,7 +99,6 @@ public class BinRelationApiTest {
 		v1 = null;
 		v2 = null;
 		v3 = null;
-		v4 = null;
 		m = null;
 		matrice1 = null;
 		matrice2 = null;
@@ -218,9 +219,9 @@ public class BinRelationApiTest {
 		m.addConstraint(feasPairAC("cp:ac2001",v1, v2, matrice2));
 		s.read(m);
 		s.solve();
-		System.out.println("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
+		LOGGER.info("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
 		while (s.nextSolution() == Boolean.TRUE) {
-			System.out.println("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
+			LOGGER.info("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
 		}
 		assertEquals(5, s.getNbSolutions());
 	}
@@ -229,11 +230,11 @@ public class BinRelationApiTest {
 	public void test3FeasAc2001() {
 		v1 = makeIntVar("v1", 0, 4);
 		v2 = makeIntVar("v2", 0, 2);
-		ArrayList feasTuple = new ArrayList();
+		ArrayList<int[]> feasTuple = new ArrayList<int[]>();
 		feasTuple.add(new int[]{1, 1}); // x*y = 1
 		feasTuple.add(new int[]{4, 2}); // x*y = 1
 		Constraint c = feasPairAC("cp:ac2001",v1, v2, feasTuple);
-		System.out.println("c = " + c.pretty());
+		LOGGER.info("c = " + c.pretty());
 		m.addConstraint(c);
 		s.read(m);
 		try {
@@ -243,7 +244,7 @@ public class BinRelationApiTest {
 		}
 		s.solve();
 		do {
-			System.out.println("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
+			LOGGER.info("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
 		} while (s.nextSolution() == Boolean.TRUE);
 		assertEquals(2, s.getNbSolutions());
 	}
@@ -255,9 +256,9 @@ public class BinRelationApiTest {
 		m.addConstraint(feasPairAC("cp:ac32",v1, v2, matrice2));
 		s.read(m);
 		s.solve();
-		System.out.println("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
+		LOGGER.info("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
 		while (s.nextSolution() == Boolean.TRUE) {
-			System.out.println("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
+			LOGGER.info("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
 		}
 		assertEquals(5, s.getNbSolutions());
 	}
@@ -269,9 +270,9 @@ public class BinRelationApiTest {
 		m.addConstraint(feasPairAC("cp:ac322",v1, v2, matrice2));
 		s.read(m);
 		s.solve();
-		System.out.println("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
+		LOGGER.info("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
 		while (s.nextSolution() == Boolean.TRUE) {
-			System.out.println("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
+			LOGGER.info("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
 		}
 		assertEquals(5, s.getNbSolutions());
 	}

@@ -25,9 +25,12 @@ package samples.Examples;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
+
+import java.util.logging.Logger;
 
 /*
 * Created by IntelliJ IDEA.
@@ -37,6 +40,8 @@ import choco.kernel.solver.Solver;
 *
 */
 public class WolfGoatCabbage1 extends PatternExample {
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
     static int numberOfStates = 8;
     static WGC_State[] states;
@@ -83,18 +88,19 @@ public class WolfGoatCabbage1 extends PatternExample {
     }
 
     private static void printStateTransitions() {
-        System.out.print("\n\n"+(_s.isFeasible() ? "S" : "Not s") + "olved in " + states.length + " states: ");
+        StringBuffer st = new StringBuffer();
+        st.append("\n\n"+(_s.isFeasible() ? "S" : "Not s") + "olved in " + states.length + " states: ");
         for (int j = 0; j < states.length; j++) {
             if (j > 0) {
                 if (states[j - 1].isInstantiated(_s)
                         || states[j].isInstantiated(_s)
                         || !states[j - 1].canTransitionTo(states[j]))
-                    System.out.print(" -/-> ");
-                else System.out.print(" --> ");
+                    st.append(" -/-> ");
+                else st.append(" --> ");
             }
-            System.out.print(states[j].toString(_s));
+            st.append(states[j].toString(_s));
         }
-        System.out.println();
+        LOGGER.info(st.toString());
     }
 
     private static class WGC_State {

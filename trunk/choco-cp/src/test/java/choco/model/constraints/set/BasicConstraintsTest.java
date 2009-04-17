@@ -26,6 +26,7 @@ import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.set.*;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -38,6 +39,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import static java.text.MessageFormat.format;
 import java.util.logging.Logger;
 // **************************************************
 // *                   J-CHOCO                      *
@@ -48,7 +50,7 @@ import java.util.logging.Logger;
 // **************************************************
 
 public class BasicConstraintsTest {
-    private Logger logger = Logger.getLogger("choco.currentElement");
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
     private Model m;
     private Solver s;
     private SetVariable x;
@@ -62,7 +64,7 @@ public class BasicConstraintsTest {
 
     @Before
     public void setUp() {
-        logger.fine("EqualXC Testing...");
+        LOGGER.fine("EqualXC Testing...");
         m = new CPModel();
         s = new CPSolver();
         x = makeSetVar("X", 1, 5);
@@ -89,7 +91,7 @@ public class BasicConstraintsTest {
      */
     @Test
     public void test1() {
-        logger.finer("test1");
+        LOGGER.finer("test1");
         c1 = member(x, 3);
         c2 = member(x, 5);
         c3 = notMember(x, 2);
@@ -105,8 +107,8 @@ public class BasicConstraintsTest {
         assertTrue(s.getVar(x).isInDomainKernel(3));
         assertTrue(s.getVar(x).isInDomainKernel(5));
         assertTrue(!s.getVar(x).isInDomainKernel(2));
-        System.out.println("[BasicConstraintTests,test1] x : " + x.pretty());
-        logger.finest("domains OK after first propagate");
+        LOGGER.info("[BasicConstraintTests,test1] x : " + x.pretty());
+        LOGGER.finest("domains OK after first propagate");
     }
 
     /**
@@ -114,7 +116,7 @@ public class BasicConstraintsTest {
      */
     @Test
     public void test2() {
-        logger.finer("test2");
+        LOGGER.finer("test2");
         iv = makeIntVar("iv", 1, 5);
         c1 = member(x, 3);
         c2 = member(x, 5);
@@ -134,9 +136,9 @@ public class BasicConstraintsTest {
         assertTrue(s.getVar(x).isInDomainKernel(3));
         assertTrue(s.getVar(x).isInDomainKernel(5));
         assertTrue(!s.getVar(x).isInDomainKernel(2));
-        System.out.println("[BasicConstraintTests,test2] x : " + x.pretty());
-        System.out.println("[BasicConstraintTests,test2] iv : " + iv.pretty());
-        logger.finest("domains OK after first propagate");
+        LOGGER.info("[BasicConstraintTests,test2] x : " + x.pretty());
+        LOGGER.info("[BasicConstraintTests,test2] iv : " + iv.pretty());
+        LOGGER.finest("domains OK after first propagate");
         s.setFirstSolution(false);
         s.generateSearchStrategy();
         s.addGoal(new AssignSetVar(new MinDomSet(s), new MinEnv(s)));
@@ -150,7 +152,7 @@ public class BasicConstraintsTest {
      */
     @Test
     public void test3() {
-        logger.finer("test3");
+        LOGGER.finer("test3");
         iv = makeIntVar("iv", 1, 5);
         c1 = member(x, 3);
         c2 = member(x, 5);
@@ -166,16 +168,16 @@ public class BasicConstraintsTest {
         } catch (ContradictionException e) {
             assertTrue(false);
         }
-        System.out.println("[BasicConstraintTests,test1] x : " + s.getVar(x).pretty());
-        System.out.println("[BasicConstraintTests,test1] iv : " + s.getVar(iv).pretty());
+        LOGGER.info("[BasicConstraintTests,test1] x : " + s.getVar(x).pretty());
+        LOGGER.info("[BasicConstraintTests,test1] iv : " + s.getVar(iv).pretty());
         assertTrue(!s.getVar(iv).canBeInstantiatedTo(3));
         assertTrue(!s.getVar(iv).canBeInstantiatedTo(5));
         assertTrue(s.getVar(x).isInDomainKernel(3));
         assertTrue(s.getVar(x).isInDomainKernel(5));
         assertTrue(!s.getVar(x).isInDomainKernel(2));
-        System.out.println("[BasicConstraintTests,test3] x : " + s.getVar(x).pretty());
-        System.out.println("[BasicConstraintTests,test3] iv : " + s.getVar(iv).pretty());
-        logger.finest("domains OK after first propagate");
+        LOGGER.info("[BasicConstraintTests,test3] x : " + s.getVar(x).pretty());
+        LOGGER.info("[BasicConstraintTests,test3] iv : " + s.getVar(iv).pretty());
+        LOGGER.finest("domains OK after first propagate");
         s.setFirstSolution(false);
         s.generateSearchStrategy();
         s.addGoal(new AssignSetVar(new MinDomSet(s), new MinEnv(s)));
@@ -192,7 +194,7 @@ public class BasicConstraintsTest {
         for (int i = 0; i < 20; i++) {
             m = new CPModel();
             s = new CPSolver();
-            logger.finer("test4");
+            LOGGER.finer("test4");
             x = makeSetVar("X", 1, 5);
             iv = makeIntVar("iv", 2, 3);
             c1 = member(x, 3);
@@ -212,11 +214,12 @@ public class BasicConstraintsTest {
 //        s.launch();
             s.solve();
             do {
-                System.out.print("x = " + s.getVar(x).pretty());
-                System.out.println(", iv = " +
-                        s.getVar(iv).pretty());
+                StringBuffer st = new StringBuffer();
+                st.append(format("x = {0}", s.getVar(x).pretty()));
+                st.append(format(", iv = {0}", s.getVar(iv).pretty()));
+                LOGGER.info(st.toString());
             } while (s.nextSolution());
-            System.out.println("Nb solution: " + s.getNbSolutions());
+            LOGGER.info("Nb solution: " + s.getNbSolutions());
             assertEquals(10, s.getNbSolutions());
         }
     }
@@ -230,8 +233,8 @@ public class BasicConstraintsTest {
         s.read(m);
         s.solve();
             do{
-                System.out.println("x = " + s.getVar(x).pretty());
-                System.out.println("iv = " + s.getVar(iv).pretty());
+                LOGGER.info("x = " + s.getVar(x).pretty());
+                LOGGER.info("iv = " + s.getVar(iv).pretty());
             }while(s.nextSolution());
         assertEquals(s.getNbSolutions(),2);
 
@@ -241,8 +244,8 @@ public class BasicConstraintsTest {
         s.read(m);
         s.solve();
             do{
-                System.out.println("x = " + s.getVar(x).pretty());
-                System.out.println("iv = " + s.getVar(iv).pretty());
+                LOGGER.info("x = " + s.getVar(x).pretty());
+                LOGGER.info("iv = " + s.getVar(iv).pretty());
             }while(s.nextSolution());
         assertEquals(s.getNbSolutions(),3);
 
@@ -252,8 +255,8 @@ public class BasicConstraintsTest {
         s.read(m);
         s.solve();
             do{
-                System.out.println("x = " + s.getVar(x).pretty());
-                System.out.println("iv = " + s.getVar(iv).pretty());
+                LOGGER.info("x = " + s.getVar(x).pretty());
+                LOGGER.info("iv = " + s.getVar(iv).pretty());
             }while(s.nextSolution());
         assertEquals(s.getNbSolutions(),3);
 
@@ -266,7 +269,7 @@ public class BasicConstraintsTest {
     @Test
     public void test5() {
         for (int i = 0; i < 20; i++) {
-            logger.finer("test5");
+            LOGGER.finer("test5");
             m = new CPModel();
             s = new CPSolver();
             x = makeSetVar("X", 1, 3);
@@ -285,8 +288,8 @@ public class BasicConstraintsTest {
             s.setValSetSelector(new RandomSetValSelector(i + 1));
             s.solve();
             do{
-                System.out.println("x = " + s.getVar(x).pretty());
-                System.out.println("iv = " + s.getVar(iv).pretty());
+                LOGGER.info("x = " + s.getVar(x).pretty());
+                LOGGER.info("iv = " + s.getVar(iv).pretty());
             }while(s.nextSolution());
 
             assertEquals(3, s.getNbSolutions());
@@ -299,7 +302,7 @@ public class BasicConstraintsTest {
     @Test
     public void test6() {
         for (int i = 0; i < 20; i++) {
-            logger.finer("test6");
+            LOGGER.finer("test6");
             m = new CPModel();
             s = new CPSolver();
             x = makeSetVar("X", 1, 3);
@@ -319,10 +322,10 @@ public class BasicConstraintsTest {
             s.solve();
             do{
 
-                System.out.println("x = " + s.getVar(x).pretty());
-                System.out.println("iv = " + s.getVar(iv).pretty());
+                LOGGER.info("x = " + s.getVar(x).pretty());
+                LOGGER.info("iv = " + s.getVar(iv).pretty());
             }while(s.nextSolution());
-            System.out.println("Nb solution: " + s.getNbSolutions());
+            LOGGER.info("Nb solution: " + s.getNbSolutions());
             assertEquals(7, s.getNbSolutions());
         }
     }
@@ -335,7 +338,7 @@ public class BasicConstraintsTest {
     @Test
     public void test7() {
         for (int i = 0; i < 20; i++) {
-            logger.finer("test7");
+            LOGGER.finer("test7");
             m = new CPModel();
             s = new CPSolver();
             x = makeSetVar("X", 1, 3);
@@ -351,7 +354,7 @@ public class BasicConstraintsTest {
             s.setVarSetSelector(new RandomSetVarSelector(s, i));
             s.setValSetSelector(new RandomSetValSelector(i + 1));
             s.solveAll();
-            System.out.println("nbSol " + s.getNbSolutions());
+            LOGGER.info("nbSol " + s.getNbSolutions());
             assertEquals(27, s.getNbSolutions());
         }
     }
@@ -362,7 +365,7 @@ public class BasicConstraintsTest {
     @Test
     public void test8() {
         for (int i = 0; i < 20; i++) {
-        logger.finer("test8");
+        LOGGER.finer("test8");
             m = new CPModel();
             s = new CPSolver();
         x = makeSetVar("X", 1, 3);
@@ -381,7 +384,7 @@ public class BasicConstraintsTest {
        s.setVarSetSelector(new RandomSetVarSelector(s, i));
             s.setValSetSelector(new RandomSetValSelector(i + 1));
             s.solveAll();
-        System.out.println("nbSol " + s.getNbSolutions());
+        LOGGER.info("nbSol " + s.getNbSolutions());
         assertEquals(48, s.getNbSolutions());
         }
     }
@@ -391,7 +394,7 @@ public class BasicConstraintsTest {
 	 */
     @Test
     public void test9() {
-		logger.finer("test9");
+		LOGGER.finer("test9");
 		m = new CPModel();
 		x = makeSetVar("X", 1, 3);
 		m.addConstraint(geqCard(x,2));
@@ -418,7 +421,7 @@ public class BasicConstraintsTest {
 	}
 
 	public void cardtest10(boolean cardr) {
-		logger.finer("test10");
+		LOGGER.finer("test10");
 		m = new CPModel();
 		x = makeSetVar("X", 0, 5);
 		y = makeSetVar("Y", 0, 5);
@@ -434,7 +437,7 @@ public class BasicConstraintsTest {
 		try {
 			s.propagate();
 		} catch (ContradictionException e) {
-            System.out.println("The contradiction is seen only if cardr is set to true");
+            LOGGER.info("The contradiction is seen only if cardr is set to true");
             contr = true;
 		}
 		assertTrue(cardr == contr);

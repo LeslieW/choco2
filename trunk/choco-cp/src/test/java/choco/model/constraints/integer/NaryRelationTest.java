@@ -22,27 +22,27 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.integer;
 
+import choco.Choco;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.constraints.integer.extension.TuplesTest;
-import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.propagation.Propagator;
-import choco.Choco;
 import org.junit.After;
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Assert;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.logging.Logger;
 // **************************************************
 // *                   J-CHOCO                      *
 // *   Copyright (C) F. Laburthe, 1999-2003         *
@@ -52,6 +52,8 @@ import java.util.Iterator;
 // **************************************************
 
 public class NaryRelationTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	private CPModel m;
 	private CPSolver s;
@@ -145,13 +147,13 @@ public class NaryRelationTest {
 		IntegerVariable x = makeIntVar("x", 1, 5);
 		IntegerVariable y = makeIntVar("y", 1, 5);
 		IntegerVariable z = makeIntVar("z", 1, 5);
-		ArrayList forbiddenTuples = new ArrayList();
+		ArrayList<int[]> forbiddenTuples = new ArrayList<int[]>();
 		forbiddenTuples.add(new int[]{1, 1, 1});
 		forbiddenTuples.add(new int[]{2, 2, 2});
 		forbiddenTuples.add(new int[]{3, 3, 3});
 		forbiddenTuples.add(new int[]{4, 4, 4});
 		forbiddenTuples.add(new int[]{5, 5, 5});
-		m.addConstraint(infeasTupleFC(forbiddenTuples, new IntegerVariable[]{x, y, z}));
+		m.addConstraint(infeasTupleFC(forbiddenTuples, x, y, z));
 		s.read(m);
 		s.solveAll();
 		assertEquals(120, s.getNbSolutions());
@@ -163,13 +165,13 @@ public class NaryRelationTest {
 		IntegerVariable x = makeIntVar("x", 1, 5);
 		IntegerVariable y = makeIntVar("y", 1, 5);
 		IntegerVariable z = makeIntVar("z", 1, 5);
-		ArrayList forbiddenTuples = new ArrayList();
+		ArrayList<int[]> forbiddenTuples = new ArrayList<int[]>();
 		forbiddenTuples.add(new int[]{1, 1, 1});
 		forbiddenTuples.add(new int[]{2, 2, 2});
 		forbiddenTuples.add(new int[]{3, 3, 3});
 		forbiddenTuples.add(new int[]{4, 4, 4});
 		forbiddenTuples.add(new int[]{5, 5, 5});
-		m.addConstraint(infeasTupleAC(forbiddenTuples, new IntegerVariable[]{x, y, z}));
+		m.addConstraint(infeasTupleAC(forbiddenTuples, x, y, z));
 		s.read(m);
 		s.solveAll();
 		assertEquals(120, s.getNbSolutions());
@@ -182,7 +184,7 @@ public class NaryRelationTest {
 		IntegerVariable y = makeIntVar("y", 1, 5);
 		IntegerVariable z = makeIntVar("z", 1, 5);
 		IntegerVariable w = makeIntVar("w", 1, 5);
-		ArrayList allowedTuples = new ArrayList();
+		ArrayList<int[]> allowedTuples = new ArrayList<int[]>();
 		allowedTuples.add(new int[]{1, 1, 1});
 		allowedTuples.add(new int[]{2, 2, 2});
 		allowedTuples.add(new int[]{3, 3, 3});
@@ -205,7 +207,7 @@ public class NaryRelationTest {
 		IntegerVariable y = makeIntVar("y", 1, 5);
 		IntegerVariable z = makeIntVar("z", 1, 5);
 		IntegerVariable w = makeIntVar("w", 1, 5);
-		ArrayList allowedTuples = new ArrayList();
+		ArrayList<int[]> allowedTuples = new ArrayList<int[]>();
 		allowedTuples.add(new int[]{1, 1, 1});
 		allowedTuples.add(new int[]{2, 2, 2});
 		allowedTuples.add(new int[]{3, 3, 3});
@@ -228,7 +230,7 @@ public class NaryRelationTest {
         IntegerVariable y = makeIntVar("y", 1, 5);
         IntegerVariable z = makeIntVar("z", 1, 5);
         IntegerVariable w = makeIntVar("w", 1, 5);
-        ArrayList allowedTuples = new ArrayList();
+        ArrayList<int[]> allowedTuples = new ArrayList<int[]>();
         allowedTuples.add(new int[]{1, 1, 1});
         allowedTuples.add(new int[]{2, 2, 2});
         allowedTuples.add(new int[]{3, 3, 3});
@@ -252,11 +254,11 @@ public class NaryRelationTest {
 		IntegerVariable x = makeIntVar("x", 1, 5);
 		IntegerVariable y = makeIntVar("y", 1, 5);
 		IntegerVariable z = makeIntVar("z", 1, 5);
-		ArrayList forbiddenTuples = new ArrayList();
+		ArrayList<int[]> forbiddenTuples = new ArrayList<int[]>();
 		forbiddenTuples.add(new int[]{1, 1, 1});
 		forbiddenTuples.add(new int[]{2, 2, 2});
 		forbiddenTuples.add(new int[]{2, 5, 3});
-		m.addConstraint(infeasTupleFC(forbiddenTuples, new IntegerVariable[]{x, y, z}));
+		m.addConstraint(infeasTupleFC(forbiddenTuples, x, y, z));
 		s.read(m);
 		s.solveAll();
 		assertEquals(122, s.getNbSolutions());
@@ -268,11 +270,11 @@ public class NaryRelationTest {
 		IntegerVariable x = makeIntVar("x", 1, 5);
 		IntegerVariable y = makeIntVar("y", 1, 5);
 		IntegerVariable z = makeIntVar("z", 1, 5);
-		ArrayList forbiddenTuples = new ArrayList();
+		ArrayList<int[]> forbiddenTuples = new ArrayList<int[]>();
 		forbiddenTuples.add(new int[]{1, 1, 1});
 		forbiddenTuples.add(new int[]{2, 2, 2});
 		forbiddenTuples.add(new int[]{2, 5, 3});
-		m.addConstraint(infeasTupleAC(forbiddenTuples, new IntegerVariable[]{x, y, z}));
+		m.addConstraint(infeasTupleAC(forbiddenTuples, x, y, z));
 		s.read(m);
 		s.solveAll();
 		assertEquals(122, s.getNbSolutions());
@@ -283,14 +285,14 @@ public class NaryRelationTest {
 
 		IntegerVariable v1 = makeIntVar("v1", 0, 2);
 		IntegerVariable v2 = makeIntVar("v2", 0, 4);
-		ArrayList feasTuple = new ArrayList();
+		ArrayList<int[]> feasTuple = new ArrayList<int[]>();
 		feasTuple.add(new int[]{1, 1}); // x*y = 1
 		feasTuple.add(new int[]{2, 4}); // x*y = 1
-		m.addConstraint(feasTupleFC(feasTuple, new IntegerVariable[]{v1, v2}));
+		m.addConstraint(feasTupleFC(feasTuple, v1, v2));
 		s.read(m);
 		s.solve();
 		do {
-			System.out.println("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
+			LOGGER.info("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
 		} while (s.nextSolution() == Boolean.TRUE);
 		assertEquals(2, s.getNbSolutions());
 	}
@@ -300,14 +302,14 @@ public class NaryRelationTest {
 
 		IntegerVariable v1 = makeIntVar("v1", 0, 2);
 		IntegerVariable v2 = makeIntVar("v2", 0, 4);
-		ArrayList feasTuple = new ArrayList();
+		ArrayList<int[]> feasTuple = new ArrayList<int[]>();
 		feasTuple.add(new int[]{1, 1}); // x*y = 1
 		feasTuple.add(new int[]{2, 4}); // x*y = 1
-		m.addConstraint(feasTupleAC(feasTuple, new IntegerVariable[]{v1, v2}));
+		m.addConstraint(feasTupleAC(feasTuple, v1, v2));
 		s.read(m);
 		s.solve();
 		do {
-			System.out.println("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
+			LOGGER.info("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
 		} while (s.nextSolution() == Boolean.TRUE);
 		assertEquals(2, s.getNbSolutions());
 	}
@@ -317,14 +319,14 @@ public class NaryRelationTest {
 
 		IntegerVariable v1 = makeIntVar("v1", 0, 2);
 		IntegerVariable v2 = makeIntVar("v2", 0, 4);
-		ArrayList feasTuple = new ArrayList();
+		ArrayList<int[]> feasTuple = new ArrayList<int[]>();
 		feasTuple.add(new int[]{1, 1}); // x*y = 1
 		feasTuple.add(new int[]{2, 4}); // x*y = 1
-		m.addConstraint(feasTupleAC("cp:ac2001",feasTuple, new IntegerVariable[]{v1, v2}));
+		m.addConstraint(feasTupleAC("cp:ac2001",feasTuple, v1, v2));
 		s.read(m);
 		s.solve();
 		do {
-			System.out.println("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
+			LOGGER.info("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
 		} while (s.nextSolution() == Boolean.TRUE);
 		assertEquals(2, s.getNbSolutions());
 	}
@@ -334,14 +336,14 @@ public class NaryRelationTest {
 
 		IntegerVariable v1 = makeIntVar("v1", 0, 2);
 		IntegerVariable v2 = makeIntVar("v2", 0, 4);
-		ArrayList feasTuple = new ArrayList();
+		ArrayList<int[]> feasTuple = new ArrayList<int[]>();
 		feasTuple.add(new int[]{1, 1}); // x*y = 1
 		feasTuple.add(new int[]{2, 4}); // x*y = 1
-		m.addConstraint(feasTupleAC("cp:ac2008",feasTuple, new IntegerVariable[]{v1, v2}));
+		m.addConstraint(feasTupleAC("cp:ac2008",feasTuple, v1, v2));
 		s.read(m);
 		s.solve();
 		do {
-			System.out.println("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
+			LOGGER.info("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
 		} while (s.nextSolution() == Boolean.TRUE);
 		assertEquals(2, s.getNbSolutions());
 	}
@@ -352,7 +354,7 @@ public class NaryRelationTest {
 		IntegerVariable x = makeIntVar("x", 1, 5);
 		IntegerVariable y = makeIntVar("y", 1, 5);
 		IntegerVariable z = makeIntVar("z", 1, 5);
-		ArrayList forbiddenTuples = new ArrayList();
+		ArrayList<int[]> forbiddenTuples = new ArrayList<int[]>();
 		int cpt = 0;
 		for (int i = 1; i <= 5; i++) {
 			for (int j = 1; j <= 5; j++) {
@@ -368,7 +370,7 @@ public class NaryRelationTest {
 				}
 			}
 		}
-		m.addConstraint(infeasTupleFC(forbiddenTuples, new IntegerVariable[]{x, y, z}));
+		m.addConstraint(infeasTupleFC(forbiddenTuples, x, y, z));
 		s.read(m);
 		s.solveAll();
 		assertEquals(5, s.getNbSolutions());
@@ -380,13 +382,13 @@ public class NaryRelationTest {
 		IntegerVariable x = makeIntVar("x", 1, 5);
 		IntegerVariable y = makeIntVar("y", 1, 5);
 		IntegerVariable z = makeIntVar("z", 1, 5);
-		ArrayList goodTuples = new ArrayList();
+		ArrayList<int[]> goodTuples = new ArrayList<int[]>();
 		goodTuples.add(new int[]{1, 1, 1});
 		goodTuples.add(new int[]{2, 2, 2});
 		goodTuples.add(new int[]{3, 3, 3});
 		goodTuples.add(new int[]{4, 4, 4});
 		goodTuples.add(new int[]{5, 5, 5});
-		m.addConstraint(feasTupleFC(goodTuples, new IntegerVariable[]{x, y, z}));
+		m.addConstraint(feasTupleFC(goodTuples, x, y, z));
 		s.read(m);
 		s.solveAll();
 		assertEquals(5, s.getNbSolutions());
@@ -406,9 +408,9 @@ public class NaryRelationTest {
 		IntegerVariable x = makeIntVar("x", 1, 12);
 		IntegerVariable y = makeIntVar("y", 1, 12);
 		IntegerVariable z = makeIntVar("z", 1, 12);
-		ArrayList forbiddenTuplesProduct = new ArrayList();
-		ArrayList forbiddenTuplesAine = new ArrayList();
-		ArrayList symetryTuples = new ArrayList();
+		ArrayList<int[]> forbiddenTuplesProduct = new ArrayList<int[]>();
+		ArrayList<int[]> forbiddenTuplesAine = new ArrayList<int[]>();
+		ArrayList<int[]> symetryTuples = new ArrayList<int[]>();
 		for (int i = 1; i <= 12; i++) {
 			for (int j = 1; j <= 12; j++) {
 				for (int k = 1; k <= 12; k++) {
@@ -427,19 +429,19 @@ public class NaryRelationTest {
 		}
 
 		m.addConstraint(eq(sum(new IntegerVariable[]{x, y, z}), 13));
-		m.addConstraint(infeasTupleFC(forbiddenTuplesProduct, new IntegerVariable[]{x, y, z}));
-		m.addConstraint(infeasTupleFC(forbiddenTuplesAine, new IntegerVariable[]{x, y, z}));
-		m.addConstraint(infeasTupleFC(symetryTuples, new IntegerVariable[]{x, y, z}));
+		m.addConstraint(infeasTupleFC(forbiddenTuplesProduct, x, y, z));
+		m.addConstraint(infeasTupleFC(forbiddenTuplesAine, x, y, z));
+		m.addConstraint(infeasTupleFC(symetryTuples, x, y, z));
 		s.read(m);
 		s.solveAll();
-		System.out.println("x " + s.getVar(x).getVal() + " y " + s.getVar(y).getVal() + " z " + s.getVar(z).getVal());
+		LOGGER.info("x " + s.getVar(x).getVal() + " y " + s.getVar(y).getVal() + " z " + s.getVar(z).getVal());
 		assertEquals(1, s.getNbSolutions());
 		assertEquals(2, s.getVar(x).getVal());
 		assertEquals(2, s.getVar(y).getVal());
 		assertEquals(9, s.getVar(z).getVal());
 	}
 
-	private void genereCst(ArrayList tuples, int n) {
+	private void genereCst(ArrayList<int[]> tuples, int n) {
 		int[] tuple = new int[n];
 		int k = 0;
 		for (int i = 0; i < n; i++)
@@ -485,7 +487,7 @@ public class NaryRelationTest {
         m.addConstraint(regular(v, tuples));
 		s.read(m);
 		Boolean b = s.solve();
-		assertEquals(true, b.booleanValue());
+		assertEquals(true, b);
 		assertEquals(0, s.getVar(v[0]).getVal());
 		assertEquals(1, s.getVar(v[1]).getVal());
 		assertEquals(1, s.getVar(v[2]).getVal());
@@ -515,7 +517,7 @@ public class NaryRelationTest {
 			diag2[i] = makeIntVar("diag2-" + i, -n, 2 * n);
 		}
 		//Tests contraintes N-aires
-		ArrayList tuples = new ArrayList();
+		ArrayList<int[]> tuples = new ArrayList<int[]>();
 		genereCst(tuples, n);
 		m.addConstraint(infeasTupleFC(tuples, reines));
 //      m.addConstraint(infeasTuple(reines, tuples, 2001)); TODO: que voulait dire le parametre 2001 ?
@@ -555,7 +557,7 @@ public class NaryRelationTest {
 			diag2[i] = makeIntVar("diag2-" + i, -n, 2 * n);
 		}
 		//Tests contraintes N-aires
-		ArrayList tuples = new ArrayList();
+		ArrayList<int[]> tuples = new ArrayList<int[]>();
 		genereCst(tuples, n);
 		m.addConstraint(infeasTupleAC(tuples, reines));
 //       m.addConstraint(infeasTuple(reines, tuples, 2001)); TODO: que voulait dire le parametre 2001 ?
@@ -597,20 +599,20 @@ public class NaryRelationTest {
 		//-----Constraint0
 		tuples = new ArrayList<int[]>();
 		tuples.add(new int[]{1});
-		cons[id] = feasTupleFC(tuples, new IntegerVariable[]{vars[3]});
+		cons[id] = feasTupleFC(tuples, vars[3]);
 		m.addConstraint(cons[id++]);
 
 		//-----Constraint1
 		tuples = new ArrayList<int[]>();
 		tuples.add(new int[]{6, 7});
-		cons[id] = feasTupleFC(tuples, new IntegerVariable[]{vars[2], vars[4]});
+		cons[id] = feasTupleFC(tuples, vars[2], vars[4]);
 		m.addConstraint(cons[id++]);
 
 		//-----Constraint2
 		tuples = new ArrayList<int[]>();
 		tuples.add(new int[]{3});
 		tuples.add(new int[]{4});
-		cons[id] = feasTupleFC(tuples, new IntegerVariable[]{vars[2]});
+		cons[id] = feasTupleFC(tuples, vars[2]);
 		m.addConstraint(cons[id++]);
 
 		//-----Constraint3
@@ -619,19 +621,19 @@ public class NaryRelationTest {
 		tuples.add(new int[]{8, 1});
 		tuples.add(new int[]{6, 5});
 		tuples.add(new int[]{1, 5});
-		cons[id] = feasTupleFC(tuples, new IntegerVariable[]{vars[4], vars[1]});
-		m.addConstraint(cons[id++]);
+		cons[id] = feasTupleFC(tuples, vars[4], vars[1]);
+		m.addConstraint(cons[id]);
 
 		//-----Now get solutions
-		System.out.println("Choco Solutions");
+		LOGGER.info("Choco Solutions");
 		s.read(m);
 		s.solveAll();
 		assertTrue(s.isFeasible() == Boolean.FALSE);
 	}
 
-	private ArrayList tables4() {
+	private ArrayList<int[]> tables4() {
 		int[] tuple = new int[5];
-		ArrayList tuples = new ArrayList();
+		ArrayList<int[]> tuples = new ArrayList<int[]>();
 		for (int i = 1; i <= 5; i++) {
 			tuple[0] = i;
 			for (int j = 1; j <= 5; j++) {
@@ -677,14 +679,12 @@ public class NaryRelationTest {
 			s = new CPSolver();
 			//int n = Integer.parseInt(args[0]);
 			int n = 5;
-			int sizeDomain = n;
-			int nbVar = n;
-			IntegerVariable[] reines = new IntegerVariable[nbVar];
+            IntegerVariable[] reines = new IntegerVariable[n];
 			IntegerVariable[] diag1 = new IntegerVariable[n];
 			IntegerVariable[] diag2 = new IntegerVariable[n];
 
-			for (int i = 0; i < nbVar; i++) {
-				reines[i] = makeIntVar("reine-" + i, 1, sizeDomain);
+			for (int i = 0; i < n; i++) {
+				reines[i] = makeIntVar("reine-" + i, 1, n);
 				diag1[i] = makeIntVar("diag1-" + i, -n, 2 * n);
 				diag2[i] = makeIntVar("diag2-" + i, -n, 2 * n);
 			}
@@ -705,13 +705,14 @@ public class NaryRelationTest {
 			s.setValIntSelector(new RandomIntValSelector(seed + 120));
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed + 3));
 			s.read(m);
-			System.out.println("Choco Solutions");
+			LOGGER.info("Choco Solutions");
 			if (s.solve() == Boolean.TRUE) {
 				do {
+                    StringBuffer st = new StringBuffer();
 					for (int i = 0; i < m.getNbIntVars(); i++) {
-						System.out.print(((IntegerVariable) m.getIntVar(i)) + ", ");
+						st.append(MessageFormat.format("{0}, ", m.getIntVar(i)));
 					}
-					System.out.println();
+					LOGGER.info(st.toString());
 				} while (s.nextSolution() == Boolean.TRUE);
 			}
 			assertEquals(s.getNbSolutions(), 10);
@@ -729,7 +730,7 @@ public class NaryRelationTest {
         CPSolver s = new CPSolver();
         s.read(m);
 
-        System.out.println("" + s.pretty());
+        LOGGER.info("" + s.pretty());
         try {
 
             s.propagate();
@@ -737,7 +738,7 @@ public class NaryRelationTest {
             s.worldPush();
             s.post(s.eq(s.getVar(x), 1));
             s.propagate();
-            System.out.println(s.varsToString());
+            LOGGER.info(s.varsToString());
 
             s.worldPop();
             s.post(s.eq(s.getVar(x), 1));

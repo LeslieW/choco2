@@ -68,6 +68,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 public class U2planning extends PatternExample{
 
 
+
 	public static class Person {
 		String name;
 		int rate;
@@ -147,7 +148,7 @@ public class U2planning extends PatternExample{
 
     @Override
     public void prettyOut() {
-        System.out.println(_s.pretty());
+        LOGGER.info(_s.pretty());
     }
 
 

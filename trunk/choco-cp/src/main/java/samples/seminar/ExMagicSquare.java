@@ -25,18 +25,25 @@ package samples.seminar;
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-/* 
- * Created by IntelliJ IDEA.
- * User: charles
- * Date: 29 mai 2008
- * Since : Choco 2.0.0
- *
- */
+
+import java.text.MessageFormat;
+import java.util.logging.Logger;
+
+/*
+* Created by IntelliJ IDEA.
+* User: charles
+* Date: 29 mai 2008
+* Since : Choco 2.0.0
+*
+*/
 public class ExMagicSquare {
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
     public static void main(String[] args) {
         // Constant declaration
@@ -104,10 +111,11 @@ public class ExMagicSquare {
         s.solve();
 // Print of the solution
         for (int i = 0; i < n; i++) {
+            StringBuffer st = new StringBuffer();
             for (int j = 0; j < n; j++) {
-                System.out.print(s.getVar(var[i][j]).getVal() + " ");
+                st.append(MessageFormat.format("{0} ", s.getVar(var[i][j]).getVal()));
             }
-            System.out.println("");
+            LOGGER.info(st.toString());
         }
     }
 

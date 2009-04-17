@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.absconparseur.tools;
 
+import choco.kernel.common.logging.ChocoLogging;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -33,6 +34,7 @@ import parser.absconparseur.XMLManager;
 import parser.absconparseur.components.*;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * This class corresponds to a Java parser that uses DOM (Document Object Model) to parse CSP and WCSP instances in format "XCSP 2.1". <br>
@@ -42,6 +44,9 @@ import java.util.*;
  * @version 2.1.1
  */
 public class InstanceParser {
+
+    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+    
 	public static final String VERSION = "version 2.1.2 (March 30, 2008)";
 
 	private Document document;
@@ -167,7 +172,7 @@ public class InstanceParser {
 		type = type.length() == 0 || type.equals("?") ? InstanceTokens.CSP : type;
 		format = presentationElement.getAttribute(InstanceTokens.FORMAT.trim());
 		if (displayInstance)
-			System.out.println("Instance with maxConstraintArity=" + maxConstraintArity + " type=" + type + " format=" + format);
+			LOGGER.info("Instance with maxConstraintArity=" + maxConstraintArity + " type=" + type + " format=" + format);
 		s = presentationElement.getAttribute(InstanceTokens.NB_SOLUTIONS).trim();
 		satisfiable = s.length() == 0 || s.equals("?") ? "unknown" : s.equals("0") ? "false" : "true";
 		s = presentationElement.getAttribute(InstanceTokens.MIN_VIOLATED_CONSTRAINTS).trim();
@@ -206,14 +211,14 @@ public class InstanceParser {
 		mapOfDomains = new HashMap<String, PDomain>();
 		nbDomains = Integer.parseInt(domainsElement.getAttribute(InstanceTokens.NB_DOMAINS));
 		if (displayInstance)
-			System.out.println("=> " + nbDomains + " domains");
+			LOGGER.info("=> " + nbDomains + " domains");
 
 		NodeList nodeList = domainsElement.getElementsByTagName(InstanceTokens.DOMAIN);
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			PDomain domain = parseDomain((Element) nodeList.item(i));
 			mapOfDomains.put(domain.getName(), domain);
 			if (displayInstance)
-				System.out.println(domain);
+				LOGGER.info(""+domain);
 		}
 	}
 
@@ -227,7 +232,7 @@ public class InstanceParser {
 		mapOfVariables = new HashMap<String, PVariable>();
 		int nbVariables = Integer.parseInt(variablesElement.getAttribute(InstanceTokens.NB_VARIABLES));
 		if (displayInstance)
-			System.out.println("=> " + nbVariables + " variables");
+			LOGGER.info("=> " + nbVariables + " variables");
 
 		variables = new PVariable[nbVariables];
 		NodeList nodeList = variablesElement.getElementsByTagName(InstanceTokens.VARIABLE);
@@ -236,7 +241,7 @@ public class InstanceParser {
 			mapOfVariables.put(variable.getName(), variable);
 			variables[i] = variable;
 			if (displayInstance)
-				System.out.println(variable);
+				LOGGER.info(""+variable);
 		}
 	}
 
@@ -293,14 +298,14 @@ public class InstanceParser {
 			return;
 		int nbRelations = Integer.parseInt(relationsElement.getAttribute(InstanceTokens.NB_RELATIONS));
 		if (displayInstance)
-			System.out.println("=> " + nbRelations + " relations");
+			LOGGER.info("=> " + nbRelations + " relations");
 
 		NodeList nodeList = relationsElement.getElementsByTagName(InstanceTokens.RELATION);
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			PRelation relation = parseRelation((Element) nodeList.item(i));
 			mapOfRelations.put(relation.getName(), relation);
 			if (displayInstance)
-				System.out.println(relation);
+				LOGGER.info(""+relation);
 		}
 	}
 
@@ -318,14 +323,14 @@ public class InstanceParser {
 			return;
 		int nbPredicates = Integer.parseInt(predicatesElement.getAttribute(InstanceTokens.NB_PREDICATES));
 		if (displayInstance)
-			System.out.println("=> " + nbPredicates + " predicates");
+			LOGGER.info("=> " + nbPredicates + " predicates");
 
 		NodeList nodeList = predicatesElement.getElementsByTagName(InstanceTokens.PREDICATE);
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			PPredicate predicate = parsePredicate((Element) nodeList.item(i));
 			mapOfPredicates.put(predicate.getName(), predicate);
 			if (displayInstance)
-				System.out.println(predicate);
+				LOGGER.info(""+predicate);
 		}
 	}
 
@@ -453,7 +458,7 @@ public class InstanceParser {
 		if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.CUMULATIVE)))
 			return parseCumulativeConstraint(name, scope, parameters);
 
-		System.out.println("Problem with the reference " + reference);
+		LOGGER.info("Problem with the reference " + reference);
 		return null;
 	}
 
@@ -461,14 +466,15 @@ public class InstanceParser {
 		mapOfConstraints = new HashMap<String, PConstraint>();
 		int nbConstraints = Integer.parseInt(constraintsElement.getAttribute(InstanceTokens.NB_CONSTRAINTS));
 		if (displayInstance) {
-			System.out.print("=> " + nbConstraints + " constraints");
+            StringBuffer st = new StringBuffer();
+			st.append("=> " + nbConstraints + " constraints");
 			if (type.equals(InstanceTokens.WCSP)) {
 				int maximalCost = Integer.parseInt(constraintsElement.getAttribute(InstanceTokens.MAXIMAL_COST));
 				String s = constraintsElement.getAttribute(InstanceTokens.INITIAL_COST);
 				int initialCost = s.equals("") ? 0 : Integer.parseInt(s);
-				System.out.print(" maximalCost=" + maximalCost + " initialCost=" + initialCost);
+				st.append(" maximalCost=" + maximalCost + " initialCost=" + initialCost);
 			}
-			System.out.println();
+			LOGGER.info(st.toString());
 		}
 
 		NodeList nodeList = constraintsElement.getElementsByTagName(InstanceTokens.CONSTRAINT);
@@ -476,7 +482,7 @@ public class InstanceParser {
 			PConstraint constraint = parseConstraint((Element) nodeList.item(i));
 			mapOfConstraints.put(constraint.getName(), constraint);
 			if (displayInstance)
-				System.out.println(constraint);
+				LOGGER.info(""+constraint);
 		}
 	}
 
@@ -497,8 +503,8 @@ public class InstanceParser {
 
 	public static void main(String[] args) {
 		if (args.length != 1) {
-			System.out.println("InstanceParser " + VERSION);
-			System.out.println("Usage : java ... InstanceParser <instanceName>");
+			LOGGER.info("InstanceParser " + VERSION);
+			LOGGER.info("Usage : java ... InstanceParser <instanceName>");
 			System.exit(1);
 		}
 

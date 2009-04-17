@@ -120,7 +120,6 @@ public class ReflectionManager {
 			if ((c.getModifiers() & requiredModifiers) == requiredModifiers && (c.getModifiers() & forbiddenModifiers) == 0 && rootClass.isAssignableFrom(c)) {
 				// if (!Modifier.isAbstract(c.getModifiers()) && rootClass.isAssignableFrom(c))
 				list.add(c);
-				// System.out.println("Class = " + c.getName());
 			}
 		} catch (ClassNotFoundException e) {
 			(e.getCause() == null ? e : e.getCause()).printStackTrace();
@@ -233,7 +232,6 @@ public class ReflectionManager {
 	public static Field getFirstFieldOfWithType(Class cl, Class<?> targetClass) {
 		Field[] fields = cl.getDeclaredFields();
 		for (int i = 0; i < fields.length; i++) {
-			// System.out.println("filed = " + fields[i]);
 			if (targetClass.isAssignableFrom(fields[i].getType()))
 				return fields[i];
 		}
@@ -337,16 +335,11 @@ public class ReflectionManager {
 		while (enumeration.hasMoreElements()) {
 			String name = ((ZipEntry) enumeration.nextElement()).getName();
 
-			// System.out.println("name = " + name);
-
 			if (!name.startsWith(basicDirectory))
 				continue;
 
 			if (!name.substring(name.lastIndexOf('/') + 1).equals(className))
 				continue;
-
-			// System.out.println("found for " + jarName + " " + basicDirectory + " " + className + " : " + name);
-
 			return replaceAll(name.substring(0, name.lastIndexOf(".")), JAR_SEPARATOR_CHAR, '.');
 		}
 		return null;
@@ -362,7 +355,6 @@ public class ReflectionManager {
 		StringTokenizer st = new StringTokenizer(System.getProperty("java.class.path", "."), File.pathSeparator);
 		while (st.hasMoreTokens()) {
 			String classPathToken = st.nextToken();
-			// System.out.println("token = " + classPathToken);
 			if (classPathToken.endsWith(".jar")) {
 				String basicDirectory = replaceAll(basicPackage, '.', JAR_SEPARATOR_CHAR); // in jar '/' is always the class separator
 				String path = searchClassInJar(classPathToken, basicDirectory, className + ".class");
@@ -396,16 +388,11 @@ public class ReflectionManager {
 		Method[] methods = new Method[classes.length];
 		for (int i = 0; i < methods.length; i++) {
 			methods[i] = searchMethod(classes[i], methodName, modifiers);
-			// if (methods[i] == null)
-			// System.out.println("Missing method " + methodName + " in " + classes[i].getName());
-			// throw new MissingImplementationException("Missing method " + methodName + " in " + classes[i].getName());
-
 		}
 		return methods;
 	}
 
 	public static Constructor searchFirstConstructor(Class clazz, int modifiers) {
-		// System.out.println("class=" + clazz.getName() + " " + clazz.getConstructors().length);
 		Constructor[] constructors = clazz.getConstructors();
 		Constructor constructor = null;
 		for (int i = 0; i < constructors.length; i++) {
@@ -536,12 +523,4 @@ public class ReflectionManager {
 		}
 	}
 
-	// public static void main(String[] args) throws ClassNotFoundException {
-	// Class[] classes = searchClassesInheritingFrom(Constraint.class, Modifier.PUBLIC, Modifier.ABSTRACT);
-	// Method[] methods = searchMethods(classes, "getPredicateExpression", Modifier.STATIC);
-	// Constructor[] constructors = Reflector.searchFirstConstructors(classes, Modifier.PUBLIC);
-	// for (int i = 0; i < classes.length; i++) {
-	// System.out.println(classes[i].getName() + "\n with method " + methods[i] + "\n constructor " + constructors[i]);
-	// }
-	// }
 }

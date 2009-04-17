@@ -22,14 +22,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.integer;
 
+import choco.Choco;
 import static choco.Choco.makeIntVar;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.GreaterOrEqualXYC;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.Choco;
 import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -47,7 +48,7 @@ import java.util.logging.Logger;
 /* File choco.currentElement.search.GreaterOrEqualXYCTest.java, last modified by Francois 11 sept. 2003 00:36:20 */
 
 public class GreaterOrEqualXYCTest {
-    private Logger logger = Logger.getLogger("choco.currentElement");
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
     private CPModel m;
     private CPSolver s;
     private IntegerVariable x;
@@ -58,7 +59,7 @@ public class GreaterOrEqualXYCTest {
 
     @Before
     public void setUp() {
-        logger.fine("GreaterOrEqualXYCTest Testing...");
+        LOGGER.fine("GreaterOrEqualXYCTest Testing...");
         m = new CPModel();
         s = new CPSolver();
         x = makeIntVar("X", 1, 5);
@@ -83,7 +84,7 @@ public class GreaterOrEqualXYCTest {
 
     @Test
     public void test1() {
-        logger.finer("test1");
+        LOGGER.finer("test1");
         try {
             s.post(c1);
             s.post(c2);
@@ -96,7 +97,7 @@ public class GreaterOrEqualXYCTest {
             assertEquals(5, s.getVar(x).getSup());
             assertEquals(4, s.getVar(y).getSup());
             assertEquals(2, s.getVar(z).getSup());
-            logger.finest("domains OK after first propagate");
+            LOGGER.finest("domains OK after first propagate");
             s.getVar(z).setVal(2);
             s.propagate();
             assertTrue(s.getVar(x).isInstantiated());
@@ -112,7 +113,7 @@ public class GreaterOrEqualXYCTest {
 
      @Test
     public void test2() {
-        logger.finer("test2");
+        LOGGER.finer("test2");
         CPModel model = new CPModel();
         CPSolver solver = new CPSolver();
         IntegerVariable x = makeIntVar("x",0,20);
@@ -123,7 +124,7 @@ public class GreaterOrEqualXYCTest {
         try {
              solver.propagate();
         } catch (ContradictionException e) {
-            System.out.println("contradiction");
+            LOGGER.info("contradiction");
             assertTrue(true);
             return;
         }

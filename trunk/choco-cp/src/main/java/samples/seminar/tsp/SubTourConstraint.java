@@ -102,7 +102,7 @@ public class SubTourConstraint extends AbstractLargeIntSConstraint {
                 } while (q.isEmpty());
             }
         }
-        if (debug) System.out.println(this.showInPath());
+        if (debug) LOGGER.info(this.showInPath());
         // on fait un parcours du graphe depuis le sommet fin d'index n-1 et on met a jour end
         reached.clear();
         q = new LinkedList<Integer>();
@@ -125,7 +125,7 @@ public class SubTourConstraint extends AbstractLargeIntSConstraint {
                 } while (q.isEmpty());
             }
         }
-        if (debug) System.out.println(this.showEnds());
+        if (debug) LOGGER.info(this.showEnds());
         // on recupere le chemin sur partant de 0
         BitSet mainPath = new BitSet(n);
         q = new LinkedList<Integer>();
@@ -142,7 +142,7 @@ public class SubTourConstraint extends AbstractLargeIntSConstraint {
         for (int u = 0; u < n; u++) {
             for (int v = inPath[u].nextSetBit(0); v >= 0; v = inPath[u].nextSetBit(v + 1)) {
                 if (s[u].canBeInstantiatedTo(v)) {
-                    if (filter) System.out.println("1- rem (" + u + "," + v + ")");
+                    if (filter) LOGGER.info("1- rem (" + u + "," + v + ")");
                     s[u].removeVal(v, cIndices[v]);
                 }
             }
@@ -153,7 +153,7 @@ public class SubTourConstraint extends AbstractLargeIntSConstraint {
                 for (int v = mainPath.nextSetBit(0); v >= 0; v = mainPath.nextSetBit(v + 1)) {
                     if (end[u].get() != n-1) {
                         if (s[end[u].get()].canBeInstantiatedTo(v)) {
-                            if (filter) System.out.println("2- rem (" + end[u].get() + "," + v + ")");
+                            if (filter) LOGGER.info("2- rem (" + end[u].get() + "," + v + ")");
                             s[end[u].get()].removeVal(v, cIndices[end[u].get()]);
                         }
                     }
@@ -172,14 +172,14 @@ public class SubTourConstraint extends AbstractLargeIntSConstraint {
             for (int w = inPath[u].nextSetBit(0); w >= 0; w = inPath[u].nextSetBit(w + 1)) {
                 inPath[v].set(w, true);
             }
-            if (debug) System.out.println(this.showInPath());
+            if (debug) LOGGER.info(this.showInPath());
             // on met a jour end[u]
             end[u].set(end[v].get());
-            if (debug) System.out.println(this.showEnds());
+            if (debug) LOGGER.info(this.showEnds());
             // filtrage : on interdit tout arc de end[v] vers un sommet w de inPath[u]
             for (int w = inPath[u].nextSetBit(0); w >= 0; w = inPath[u].nextSetBit(w + 1)) {
                 if ((end[v].get() != n-1 || w != 0) &&  s[end[v].get()].canBeInstantiatedTo(w)) {
-                    if (filter) System.out.println("3- rem (" + end[v].get() + "," + w + ")");
+                    if (filter) LOGGER.info("3- rem (" + end[v].get() + "," + w + ")");
                     s[end[v].get()].removeVal(w, cIndices[end[v].get()]);
                 }
             }

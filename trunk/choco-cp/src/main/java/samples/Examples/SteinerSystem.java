@@ -37,6 +37,8 @@ import choco.cp.solver.search.set.MinEnv;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solution;
 
+import static java.text.MessageFormat.format;
+
 public class SteinerSystem extends PatternExample{
 
     /**
@@ -110,11 +112,11 @@ public class SteinerSystem extends PatternExample{
             " such that all the pairs included in two different triplets are different. " +
             " see http://mathworld.wolfram.com/SteinerTripleSystem.html \n \n");
 
-        s.append("A solution for n = " + p + "\n" + "\n");
+        s.append(format("A solution for n = {0}\n\n", p));
         for (int i = 0; i < n; i++) {
-          s.append("set[" + i + "]:" + vars[i].pretty() + "\n");
+          s.append(format("set[{0}]:{1}\n", i, vars[i].pretty()));
         }
-        System.out.println(s.toString());
+        LOGGER.info(s.toString());
 
     }
 

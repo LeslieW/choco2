@@ -39,6 +39,7 @@ import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.cp.solver.search.restart.GeometricalRestart;
 import choco.cp.solver.search.restart.LubyRestart;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -53,6 +54,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import static java.text.MessageFormat.format;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -60,7 +62,7 @@ import java.util.Random;
 import java.util.logging.Logger;
 
 public class SolveTest {
-	private Logger logger = Logger.getLogger("choco.currentElement");
+	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 	private Model m;
 	private Solver s;
 	private IntegerVariable x;
@@ -68,7 +70,7 @@ public class SolveTest {
 
 	@Before
 	public void setUp() {
-		logger.fine("StoredInt Testing...");
+		LOGGER.fine("StoredInt Testing...");
 		m = new CPModel();
 		s = new CPSolver();
 		x = makeIntVar("X", 0, 5);
@@ -95,8 +97,7 @@ public class SolveTest {
 		int nb = 0;
 		while (nb < 20) {
 			Runtime.getRuntime().gc();
-			System.out.printf("In Use: %d\n",
-					(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
+			LOGGER.info(format("In Use:{0}\n", Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()));
 			newcpt = (int) Runtime.getRuntime().totalMemory() - (int) Runtime.getRuntime().freeMemory();
 			if (cpt != 0) {
 				assertTrue(newcpt <= cpt + 10000);
@@ -116,7 +117,7 @@ public class SolveTest {
 	 */
 	@Test
 	public void test1() {
-		logger.finer("test1");
+		LOGGER.finer("test1");
 		m.addConstraint(eq(x, 2));
 		m.addConstraint(eq(x, 3));
 		s.read(m);
@@ -130,7 +131,7 @@ public class SolveTest {
 	 */
 	@Test
 	public void test2() {
-		logger.finer("test2");
+		LOGGER.finer("test2");
 		m.addConstraint(eq(x, 2));
 		m.addConstraint(eq(y, 1));
 		s.read(m);
@@ -144,7 +145,7 @@ public class SolveTest {
 	 */
 	@Test
 	public void test3() {
-		logger.finer("test3");
+		LOGGER.finer("test3");
 		m.addVariable(x);
 		m.addConstraint(eq(y, 1));
 		s.read(m);
@@ -158,7 +159,7 @@ public class SolveTest {
 	 */
 	@Test
 	public void test4() {
-		logger.finer("test4");
+		LOGGER.finer("test4");
 		m.addVariables(x, y);
 		s.read(m);
 		s.solve(true);
@@ -171,7 +172,7 @@ public class SolveTest {
 	 */
 	@Test
 	public void test5() {
-		logger.finer("test5");
+		LOGGER.finer("test5");
 		m.addVariables(x, y);
 		s.read(m);
 		s.solve();
@@ -188,7 +189,7 @@ public class SolveTest {
 	 */
 	@Test
 	public void test6() {
-		logger.finer("tesT6");
+		LOGGER.finer("tesT6");
 		Constraint c = eq(y, 1);
 		s.worldPush();
 		m.addConstraint(c);
@@ -239,11 +240,11 @@ public class SolveTest {
 			s.read(m);
 			s.solveAll();
 			if (s.getNbSolutions() > 0) {
-				//System.out.println("Nb Solution = " + m.getSolver().getNbSolutions());
+				StringBuffer st = new StringBuffer();
 				for (int i = 0; i < n; i++) {
-					System.out.print(s.getVar(vars[i]).getVal() + " ");
+					st.append(format("{0} ", s.getVar(vars[i]).getVal()));
 				}
-				System.out.println();
+				LOGGER.info(st.toString());
 			}
 			if (FAILPB == j) {
 				assertEquals(s.getNbSolutions(), 0);
@@ -275,12 +276,12 @@ public class SolveTest {
 
 		s.attachGoal(new AssignVar(new MinDomain(s), new IncreasingDomain()));
 		s.solve(false);
-		System.out.println(m.pretty());
+		LOGGER.info(m.pretty());
 
 		int time = s.getSearchStrategy().getTimeCount();
 		int nds = s.getSearchStrategy().getNodeCount();
 		assertEquals(nds, 3);
-		System.out.println(" time: " + time + " nodes: " + nds);
+		LOGGER.info(" time: " + time + " nodes: " + nds);
 	}
 
 	@Test
@@ -326,25 +327,27 @@ public class SolveTest {
 					s.getVar(charge).setVal(22000);
 				}
 			} catch (ContradictionException e) {
-				e.printStackTrace();
+				LOGGER.severe(e.getMessage());
 			}
 
 			if (s.getVar(charge).isInstantiated()) {
-				System.out.print("Charge FIXED : ");
-				s.solve();
-			} else {
-				s.maximize(s.getVar(charge), true);
-			}
+                s.solve();
+            } else {
+                s.maximize(s.getVar(charge), true);
+            }
 
-			if (s.isFeasible()) {
-				do {
-					for (int i = 0; i < n; i++) {
-						System.out.print(coefs[i] + "*" + s.getVar(bvars[i]).getVal() + " ");
+            if (s.isFeasible()) {
+                do {
+                    StringBuffer st = new StringBuffer();
+                    st.append("Charge FIXED : ");
+                    for (int i = 0; i < n; i++) {
+						st.append(format("{0}*{1} ", coefs[i], s.getVar(bvars[i]).getVal()));
 					}
-					System.out.println(" = " + s.getVar(charge).getVal());
+					st.append(format(" = {0}", s.getVar(charge).getVal()));
+                    LOGGER.info(st.toString());
 				} while (s.nextSolution() == Boolean.TRUE);
 			} else {
-				System.out.println("no solution");
+				LOGGER.info("no solution");
 			}
 
 			//retour a un etat propre
@@ -388,10 +391,10 @@ public class SolveTest {
 		s.read(m);
 		s.setValIntIterator(new DecreasingDomain());
 		s.maximize(s.getVar(c), true);
-		System.out.println("obj1: " + s.getVar(obj1).getVal());
-		System.out.println("obj2: " + s.getVar(obj2).getVal());
-		System.out.println("obj3: " + s.getVar(obj3).getVal());
-		System.out.println("cost: " + s.getVar(c).getVal());
+		LOGGER.info("obj1: " + s.getVar(obj1).getVal());
+		LOGGER.info("obj2: " + s.getVar(obj2).getVal());
+		LOGGER.info("obj3: " + s.getVar(obj3).getVal());
+		LOGGER.info("cost: " + s.getVar(c).getVal());
 
 	}
 
@@ -413,7 +416,7 @@ public class SolveTest {
 	private void checkRestart(GeometricalRestart r,double factor,int[] expected) {
 		r.setGeometricalFactor(factor);
 		int[] computed = r.getExample(expected.length);
-		System.out.println("check Restart sequence: "+Arrays.toString(computed));
+		LOGGER.info("check Restart sequence: "+Arrays.toString(computed));
 		assertArrayEquals(expected, computed);
 	}
 
@@ -488,15 +491,17 @@ public class SolveTest {
         s.solve();
         if (s.isFeasible()) {
             do {
+                StringBuffer st = new StringBuffer();
                 for (int i = 0; i < n; i++) {
-                    System.out.print(s.getVar(vars[i]).getVal());
+                    st.append(s.getVar(vars[i]).getVal());
                 }
-                System.out.println(" " + s.getVar(obj).getVal());
+                st.append(format(" {0}", s.getVar(obj).getVal()));
+                LOGGER.info(st.toString());
             } while (s.nextSolution());
         }
 
         //6- Print the number of solution found
-        System.out.println("Nb_sol : " + s.getNbSolutions());
+        LOGGER.info("Nb_sol : " + s.getNbSolutions());
         assertEquals(s.getNbSolutions(), 5);       
     }
 
@@ -707,10 +712,10 @@ public class SolveTest {
         CPSolver s = new CPSolver();
 
         s.read(m);
-        System.out.println("" + s.pretty());
+        LOGGER.info("" + s.pretty());
 
         s.solve();
-        //System.out.println("" + s.isFeasible());
+        //LOGGER.info("" + s.isFeasible());
         s.printRuntimeSatistics();
         assertTrue(s.isFeasible());
     }

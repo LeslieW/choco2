@@ -77,20 +77,20 @@ public class SendMoreMoney extends PatternExample {
     @Override
     public void solve() {
         try {
-            System.out.println("PROPAGATION");
+            LOGGER.info("PROPAGATION");
             _s.propagate();
             this.prettyOut();
-        } catch (ContradictionException e) {
+        } catch (ContradictionException ignored) {
         }
-        System.out.println("RESOLUTION");
+        LOGGER.info("RESOLUTION");
         _s.solve();
     }
 
     @Override
     public void prettyOut() {
-        System.out.println(ChocoUtil.pretty(_s.getVar(SEND)));
-        System.out.println(" + " + ChocoUtil.pretty(_s.getVar(SEND)));
-        System.out.println(" = " + ChocoUtil.pretty(_s.getVar(SEND)));
+        LOGGER.info(ChocoUtil.pretty(_s.getVar(SEND)));
+        LOGGER.info(" + " + ChocoUtil.pretty(_s.getVar(SEND)));
+        LOGGER.info(" = " + ChocoUtil.pretty(_s.getVar(SEND)));
     }
 
     public static void main(String[] args) {

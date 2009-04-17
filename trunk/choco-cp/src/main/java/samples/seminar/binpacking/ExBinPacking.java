@@ -28,11 +28,14 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 
+import static java.text.MessageFormat.format;
 import java.util.Random;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -41,6 +44,8 @@ import java.util.Random;
  * Time: 07:42:16
  */
 public class ExBinPacking {
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
     public int[] getRandomPackingPb(int nbObj, int capa, int seed) {
         Random rand = new Random(seed);
@@ -53,9 +58,9 @@ public class ExBinPacking {
 
     public void afficheInst(int[] instance) {
         for (int j = 0; j < instance.length; j++) {
-            System.out.println("Bin " + j + ": " + instance[j]);
+            LOGGER.info("Bin " + j + ": " + instance[j]);
         }
-        System.out.println("");
+        LOGGER.info("");
     }
 
     public int computeLB(int[] instance, int capa) {
@@ -81,7 +86,7 @@ public class ExBinPacking {
         int nbBin = computeLB(instance, capaBin);
 
         while (keepSolving) {
-            System.out.print("------------------------" + nbBin + " bins");
+            LOGGER.info("------------------------" + nbBin + " bins");
             Model m = new CPModel();
             IntegerVariable[][] vs = new IntegerVariable[n][nbBin];
             IntegerVariable[] vars = new IntegerVariable[n * nbBin];
@@ -118,15 +123,17 @@ public class ExBinPacking {
             // Print of solution
             if (s.isFeasible() == Boolean.TRUE) {
                 for (int j = 0; j < nbBin; j++) {
-                    System.out.print("Bin " + j + ": ");
+                    StringBuffer st = new StringBuffer();
+                    st.append("Bin " + j + ": ");
                     int load = 0;
                     for (int i = 0; i < n; i++) {
                         if (s.getVar(vs[i][j]).isInstantiatedTo(1)) {
-                            System.out.print(i + " ");
+                            st.append(i + " ");
                             load += instance[i];
                         }
                     }
-                    System.out.println(" - load " + load + " = " + s.getVar(sumBin[j]).getVal());
+                    st.append(" - load " + load + " = " + s.getVar(sumBin[j]).getVal());
+                    LOGGER.info(st.toString());
                 }
                 keepSolving = false;
             }
@@ -173,28 +180,30 @@ public class ExBinPacking {
         s.monitorFailLimit(false);
         s.setVarIntSelector(new StaticVarOrder(s.getVar(branchvars)));
         s.minimize(s.getVar(obj), false);
-        System.out.println("------------------------ " + (s.getVar(obj).getVal() + 1) + " bins");
+        LOGGER.info("------------------------ " + (s.getVar(obj).getVal() + 1) + " bins");
         if (s.isFeasible() == Boolean.TRUE) {
             for (int j = 0; j <= s.getVar(obj).getVal(); j++) {
-                System.out.print("Bin " + j + ": ");
+                StringBuffer st = new StringBuffer();
+                st.append(format("Bin {0}: ", j));
                 int load = 0;
                 for (int i = 0; i < n; i++) {
                     if (s.getVar(debut[i]).isInstantiatedTo(j)) {
-                        System.out.print(i + " ");
+                        st.append(format("{0} ", i));
                         load += instance[i];
                     }
                 }
-                System.out.println(" - load " + load);
+                st.append(format(" - load {0}", load));
+                LOGGER.info(st.toString());
             }
         }
     }
 
     public static void main(String[] args) {
         ExBinPacking tp2 = new ExBinPacking();
-        System.out.println("************** Modèle Booléen **************");
+        LOGGER.info("************** Modèle Booléen **************");
         tp2.binPacking1(10, 13, 1);
-        System.out.println("");
-        System.out.println("************** Modèle Cumulatif ***************");
+        LOGGER.info("");
+        LOGGER.info("************** Modèle Cumulatif ***************");
         tp2.binPacking2(10, 13, 1);
     }
 }

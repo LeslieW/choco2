@@ -22,6 +22,7 @@
  **************************************************/
 package parser;
 
+import choco.kernel.common.logging.ChocoLogging;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -34,6 +35,7 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.security.Permission;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /*
 * User : charles
@@ -43,6 +45,8 @@ import java.util.Properties;
 * Update : Choco 2.0.1
 */
 public class ResolutionTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     Properties properties = new Properties();
     String[] args = new String[12];
@@ -79,7 +83,7 @@ public class ResolutionTest {
             try {
                 xm.generate(args);
             } catch (Exception e) {
-                System.err.println(e.toString());
+                LOGGER.severe(e.toString());
                 Assert.fail();
             }
             System.setSecurityManager(new NoExitSecurityManager());
@@ -87,13 +91,13 @@ public class ResolutionTest {
                 if(xm.isFeasible()==Boolean.TRUE)
                     SolutionChecker.main(xm.getValues());
             }catch (ExitException e){
-                System.err.println(e.toString());
+                LOGGER.severe(e.toString());
                 Assert.fail();
             }finally {
                 System.setSecurityManager(null);
             }
             int builtime = Integer.valueOf((String) properties.get("pb."+i+".buildtime"));
-            System.out.println(xm.getBuildTime()  + " > " + builtime + "?" + " for " + "pb."+i);
+            LOGGER.info(xm.getBuildTime()  + " > " + builtime + "?" + " for " + "pb."+i);
             Assert.assertTrue("too much time spending in building problem...", xm.getBuildTime() < builtime);
         }
     }
@@ -108,7 +112,7 @@ public class ResolutionTest {
             try {
                 xm.generate(args);
             } catch (Exception e) {
-                System.err.println(e.toString());
+                LOGGER.severe(e.toString());
                 Assert.fail();
             }
             if (nbNodes == -1) {
@@ -116,7 +120,6 @@ public class ResolutionTest {
             } else {
                 Assert.assertEquals("not same number of nodes", nbNodes, xm.getNbNodes());
             }
-
         }
     }
 
@@ -129,7 +132,7 @@ public class ResolutionTest {
         try {
             xm.generate(args);
         } catch (Exception e) {
-            System.err.println(e.toString());
+            LOGGER.severe(e.toString());
             Assert.fail();
         }
     }

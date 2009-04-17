@@ -22,7 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples;
 
+import choco.kernel.common.logging.ChocoLogging;
+
 import javax.swing.*;
+import java.util.logging.Logger;
 
 // *********************************************
 // *                   J-CHOCO                 *
@@ -32,6 +35,8 @@ import javax.swing.*;
 // *********************************************
 
 public class DemoApplet extends JApplet {
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+
   @Override
 public void init() {
     //Execute a job on the event-dispatching thread:
@@ -44,7 +49,7 @@ public void init() {
         }
       });
     } catch (Exception e) {
-      System.err.println("createGUI didn't successfully complete");
+      LOGGER.severe("createGUI didn't successfully complete");
     }
   }
 

@@ -61,10 +61,6 @@ public class DocumentShuffler {
 			values[j] = values[size - i - 1];
 			nbValues--;
 		}
-		// System.out.print("Permutation = ");
-		// for (int i = 0; i < t.length; i++)
-		// System.out.print(t[i] + " ");
-		// System.out.println();
 		return t;
 	}
 
@@ -131,7 +127,7 @@ public class DocumentShuffler {
 			Element parameters = XMLManager.getElementByTagNameFrom(element, InstanceTokens.PARAMETERS, 0);
 			if (parameters != null) {
 				String canonicalExpression = "";
-				//System.out.println("before " + parameters.getTextContent());
+				//LOGGER.info("before " + parameters.getTextContent());
 				StringTokenizer st = new StringTokenizer(parameters.getTextContent());
 				while (st.hasMoreTokens()) {
 					String token = st.nextToken();
@@ -140,7 +136,7 @@ public class DocumentShuffler {
 					else
 						canonicalExpression += " " + token;
 				}
-				//System.out.println("after " + canonicalExpression);
+				//LOGGER.info("after " + canonicalExpression);
 				
 				parameters.setTextContent(canonicalExpression.trim());
 			}

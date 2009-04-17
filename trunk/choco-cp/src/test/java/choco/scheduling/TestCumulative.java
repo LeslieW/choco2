@@ -22,33 +22,27 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.scheduling;
 
-import static choco.Choco.constant;
-import static choco.Choco.constantArray;
-import static choco.Choco.cumulativeMax;
-import static choco.Choco.makeTaskVar;
-import static choco.cp.solver.SettingType.EXTRACT_DISJ;
-import static choco.cp.solver.SettingType.TASK_INTERVAL;
-import static choco.cp.solver.SettingType.TASK_INTERVAL_SLOW;
-import static choco.cp.solver.SettingType.VHM_CEF_ALGO_N2K;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import java.util.Arrays;
-
-import org.junit.Ignore;
-import org.junit.Test;
-
 import choco.Choco;
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import static choco.cp.solver.SettingType.*;
 import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.constraints.global.scheduling.Cumulative;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.MathUtil;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.logging.Logger;
 
 
 class CumulProblem extends AbstractTestProblem {
@@ -102,6 +96,8 @@ class CumulProblem extends AbstractTestProblem {
  */
 public class TestCumulative {
 
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+
 	public final static int NB_TEST=15;
 
 	public final static BitFlags SETTINGS=new BitFlags();
@@ -117,7 +113,7 @@ public class TestCumulative {
 		SETTINGS.set(TASK_INTERVAL);
 		cp.generateSolver();
 		cp.solver.setRandomSelectors(seed);
-		System.out.println("compare Task intervals algorithms");
+		LOGGER.info("compare Task intervals algorithms");
 		SchedUtilities.compare(nbSol, nbNodes,"TI", s1, cp.solver);
 	}
 
@@ -160,7 +156,7 @@ public class TestCumulative {
 		for (CumulProblem pb : pbs) {
 			pb.setCapacity(capa);
 			pb.setHorizon(horizon);
-			this.launchAllRules(pb, nbSols,nbNodes);
+			launchAllRules(pb, nbSols,nbNodes);
 		}
 	}
 
@@ -324,7 +320,8 @@ public class TestCumulative {
 
 	/**
 	 *  0 nodes with taskIntervals, 836 otherwise
-	 */
+     * @throws choco.kernel.solver.ContradictionException
+     */
 	@Test(expected=ContradictionException.class)
 	public void test7TaskInterval() throws ContradictionException {
 		int n = 10;
@@ -350,7 +347,8 @@ public class TestCumulative {
 
 	/**
 	 * Example found page 59 of the book : Constraint Based Scheduling
-	 */
+     * @throws choco.kernel.solver.ContradictionException
+     */
 	@Test
 	public void testPropagEdgeFindingStarting() throws ContradictionException {
 		int[] p = new int[]{11, 6, 5, 5};
@@ -371,7 +369,8 @@ public class TestCumulative {
 
 	/**
 	 * Ending date version of Example found page 59 of the book : Constraint Based Scheduling
-	 */
+     * @throws choco.kernel.solver.ContradictionException
+     */
 	@Test
 	public void testPropagEdgeFindingEnding() throws ContradictionException {
 		int[] p = new int[]{11, 6, 5, 5};
@@ -416,7 +415,8 @@ public class TestCumulative {
 	 * Pascal example to show that nuijten is incomplete
 	 * NOTE : edge finding is not needed to do the deduction that Nuitjen is missing !!!
 	 *
-	 */
+     * @throws choco.kernel.solver.ContradictionException
+     */
 	@Test
 	public void testEdgeFinding() throws ContradictionException  {
 		int[] d = new int[]{65, 1, 2, 2, 2};
@@ -454,7 +454,7 @@ public class TestCumulative {
 		CPSolver s = new CPSolver();
 		s.setHorizon(6);
 		s.read(m);
-		System.out.println(s.pretty());
+		LOGGER.info(s.pretty());
 		Cumulative cstr = (Cumulative) s.getCstr(mcstr);
 		cstr.getRules().initializeEdgeFindingData();
 		cstr.getRules().initializeEdgeFindingStart();
@@ -471,7 +471,7 @@ public class TestCumulative {
 				cstr.getRules().taskIntervals();
 				fail("Task Interval");
 			} catch (ContradictionException e1) {
-				System.out.println("Task Intervals algorithms are eequivalent");
+				LOGGER.info("Task Intervals algorithms are eequivalent");
 			}
 		}
 
@@ -492,7 +492,7 @@ public class TestCumulative {
 			cpt+=2;
 			nbSols *= MathUtil.combinaison(cpt, 2);
 		}
-		//System.out.println(nbSols);
+		//LOGGER.info(nbSols);
 		launchAllRules(pb, nbTests, nbSols, -1, true);
 		if(all) {
 			pb.setHorizon(size+1);

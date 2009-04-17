@@ -33,6 +33,7 @@ package choco.model.constraints.integer;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import org.junit.After;
@@ -43,14 +44,14 @@ import org.junit.Test;
 import java.util.logging.Logger;
 
 public class IntLinCombTest {
-    private Logger logger = Logger.getLogger("choco.currentElement");
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
     private CPModel m;
     private CPSolver s;
     private IntegerVariable x1, x2, x3, x4, x5, x6, x7, y1, y2;
 
     @Before
     public void setUp() {
-        logger.fine("IntLinComb Testing...");
+        LOGGER.fine("IntLinComb Testing...");
         m = new CPModel();
         s = new CPSolver();
         x1 = makeIntVar("X1", 0, 10);
@@ -87,7 +88,7 @@ public class IntLinCombTest {
      */
     @Test
     public void test1() {
-        logger.finer("test1");
+        LOGGER.finer("test1");
         try {
             m.addConstraint(eq(scalar(new int[]{3, 7, 9, -1}, new IntegerVariable[]{x1, x2, x3, y1}), 68));
             m.addConstraint(eq(scalar(new int[]{5, 2, 8, -1}, new IntegerVariable[]{x1, x2, x3, y1}), 44));
@@ -115,7 +116,7 @@ public class IntLinCombTest {
      */
     @Test
     public void test2() {
-        logger.finer("test2");
+        LOGGER.finer("test2");
         try {
             m.addConstraint(eq(plus(plus(plus(mult(3, x1), mult(7, x2)), mult(9, x3)), mult(-1, y1)), 68));
             m.addConstraint(eq(plus(plus(plus(mult(5, x1), mult(2, x2)), mult(8, x3)), mult(-1, y1)), 44));
@@ -143,7 +144,7 @@ public class IntLinCombTest {
      */
     @Test
     public void test3() {
-        logger.finer("test3");
+        LOGGER.finer("test3");
         try {
         	m.addConstraint("cp:decomp", eq(scalar(new int[]{1, 3, 5, -1}, new IntegerVariable[]{x1, x2, x3, y1}), 23));
             m.addConstraint("cp:decomp", eq(scalar(new int[]{2, 10, 1, -1}, new IntegerVariable[]{x1, x2, x3, y2}), 14));
@@ -318,7 +319,7 @@ public class IntLinCombTest {
         s.read(m);
         s.solve();
         assertEquals(1, s.getVar(a).getVal());
-        System.out.println("Variable " + a + " = " + s.getVar(a).getVal());
+        LOGGER.info("Variable " + a + " = " + s.getVar(a).getVal());
     }
 
 
@@ -334,7 +335,6 @@ public class IntLinCombTest {
 
     @Test
     public void test7() {
-        CPModel myProb = new CPModel();
         IntegerVariable[] a = makeIntVarArray("a", 4, 0, 4);
         int[] zeroCoef = new int[4];
         m.addConstraint(geq(scalar(a, zeroCoef), 2));
@@ -347,7 +347,6 @@ public class IntLinCombTest {
 
     @Test
     public void test8() {
-        CPModel myProb = new CPModel();
         IntegerVariable[] a = makeIntVarArray("a", 4, 0, 4);
         int[] zeroCoef = new int[4];
         m.addConstraint(geq(scalar(a, zeroCoef), -2));
@@ -359,7 +358,6 @@ public class IntLinCombTest {
 
     @Test
     public void test9() {
-        CPModel myProb = new CPModel();
         IntegerVariable[] a = makeIntVarArray("a", 4, 0, 4);
         int[] zeroCoef = new int[4];
         m.addConstraint(eq(scalar(a, zeroCoef), 0));

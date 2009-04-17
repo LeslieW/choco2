@@ -25,6 +25,7 @@ package choco.scheduling;
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.TaskComparators;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -34,14 +35,16 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 
 public class TestTask {
 
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	private List<SimpleTask> tasksL;
 
-	public final static List<SimpleTask> getExample() {
+	public static List<SimpleTask> getExample() {
 		List<SimpleTask> tasksL=new ArrayList<SimpleTask>();
 		tasksL.add(new SimpleTask(0,23,5));
 		tasksL.add(new SimpleTask(4,26,6));
@@ -64,7 +67,7 @@ public class TestTask {
 
 	@Test
 	public void testTasksComparator() {
-		System.out.println(tasksL);
+		LOGGER.info(""+tasksL);
 		Collections.sort(tasksL,TaskComparators.makeEarliestStartingTimeCmp());
 		testSort(new int[] {0,2,3,1,4});
 		Collections.sort(tasksL,TaskComparators.makeEarliestCompletionTimeCmp());
@@ -86,7 +89,7 @@ public class TestTask {
 		m.addVariables(t1,t2, t3);
 		CPSolver solver =new CPSolver();
 		solver.read(m);
-		System.out.println(solver.pretty());
+		LOGGER.info(solver.pretty());
 		assertEquals(4, solver.getIntDecisionVars().size());
 		assertEquals(3, solver.getNbTaskVars());
 		assertEquals(2, solver.getTaskDecisionVars().size());

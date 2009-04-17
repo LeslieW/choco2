@@ -28,6 +28,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -36,14 +37,17 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.logging.Logger;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Narendra Jussien
  * Date: 18 mai 2005
  * Time: 16:29:42
- * To change this template use File | Settings | File Templates.
  */
 public class ElementTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	CPModel m;
 	CPSolver s;
@@ -71,10 +75,10 @@ public class ElementTest {
 		s.read(m);
 		s.solve();
 		do {
-			System.out.println("index = " + s.getVar(index).getVal());
-			System.out.println("value = " + s.getVar(var).getVal());
+			LOGGER.info("index = " + s.getVar(index).getVal());
+			LOGGER.info("value = " + s.getVar(var).getVal());
 			assertEquals(s.getVar(var).getVal(), values[s.getVar(index).getVal()]);
-		} while (s.nextSolution().booleanValue());
+		} while (s.nextSolution());
 
 		assertEquals(5, s.getNbSolutions());
 	}
@@ -89,10 +93,10 @@ public class ElementTest {
 		s.read(m);
 		s.solve();
 		do {
-			System.out.println("index = " + s.getVar(index).getVal());
-			System.out.println("value = " + s.getVar(var).getVal());
+			LOGGER.info("index = " + s.getVar(index).getVal());
+			LOGGER.info("value = " + s.getVar(var).getVal());
 			assertEquals(s.getVar(var).getVal(), values[s.getVar(index).getVal()]);
-		} while (s.nextSolution().booleanValue());
+		} while (s.nextSolution());
 
 		assertEquals(3, s.getNbSolutions());
 	}
@@ -163,7 +167,7 @@ public class ElementTest {
 		int n = 2;
 		IntegerVariable[] vars = new IntegerVariable[n];
 		for (int idx = 0; idx < n; idx++) {
-			vars[idx] = makeIntVar("t" + idx, 0 + 3 * idx, 2 + 3 * idx);
+			vars[idx] = makeIntVar("t" + idx, 3 * idx, 2 + 3 * idx);
 		}
 		IntegerVariable index = makeIntVar("index", -3, 15);
 		IntegerVariable var = makeIntVar("value", -25, 20);
@@ -220,7 +224,7 @@ public class ElementTest {
 		s = new CPSolver();		
 		IntegerVariable[] vars = new IntegerVariable[n];
 		for (int idx = 0; idx < n; idx++) {
-			vars[idx] = makeIntVar("t" + idx, 0 + 3 * idx, 2 + 3 * idx);
+			vars[idx] = makeIntVar("t" + idx, 3 * idx, 2 + 3 * idx);
 		}
 		IntegerVariable index = makeIntVar("index", -3, n + 15);
 		IntegerVariable var = makeIntVar("value", -25, 4 * n + 20);
@@ -263,7 +267,7 @@ public class ElementTest {
 			IntegerVariable index2 = makeIntVar("index2", -3, 10);
 			IntegerVariable var = makeIntVar("value", -20, 20);
 			Constraint c = nth(index1, index2, values, var);
-			System.out.println("posted constraint = " + c.pretty());
+			LOGGER.info("posted constraint = " + c.pretty());
 			m.addConstraint(c);
 			s.setVarIntSelector(new RandomIntVarSelector(s, i));
 			s.setValIntSelector(new RandomIntValSelector(i + 1));
@@ -312,7 +316,7 @@ public class ElementTest {
 			s.read(m);
 			s.solveAll();
 			int nbSol = s.getNbSolutions();
-			//System.out.println("nbsol " + nbSol);
+			//LOGGER.info("nbsol " + nbSol);
 			assertEquals(nbSol, 360);
 		}
 
@@ -324,7 +328,6 @@ public class ElementTest {
 			m = new CPModel();
 			s = new CPSolver();			
 			IntegerVariable X = makeIntVar("X", 0, 5);
-			IntegerVariable Y = makeIntVar("Y", 3, 7);
 			IntegerVariable Z = makeIntVar("Z", 5, 8);
 			IntegerVariable I = makeIntVar("index", -5, 12);
 			IntegerVariable V = makeIntVar("V", -3, 20);
@@ -334,7 +337,7 @@ public class ElementTest {
 			s.read(m);
 			s.solveAll();
 			int nbSol = s.getNbSolutions();
-			//System.out.println("nbsol " + nbSol);
+			//LOGGER.info("nbsol " + nbSol);
 			assertEquals(nbSol,624);
 		}
 	}
@@ -345,7 +348,6 @@ public class ElementTest {
 			m = new CPModel();
 			s = new CPSolver();			
 			IntegerVariable X = makeIntVar("X", 0, 5);
-			IntegerVariable Y = makeIntVar("Y", 3, 7);
 			IntegerVariable Z = makeIntVar("Z", 5, 8);
 			IntegerVariable I = makeIntVar("index", -5, 12);
 			IntegerVariable V = makeIntVar("V", -3, 20);
@@ -355,7 +357,7 @@ public class ElementTest {
 			s.read(m);
 			s.solveAll();
 			int nbSol = s.getNbSolutions();
-			//System.out.println("nbsol " + nbSol);
+			//LOGGER.info("nbsol " + nbSol);
 			assertEquals(nbSol,72);
 		}
 

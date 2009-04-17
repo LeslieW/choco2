@@ -26,10 +26,13 @@ import choco.Choco;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 
 import java.util.Random;
+import java.util.logging.Logger;
+
 /**
  *
  * n planes must land on a landing strip.
@@ -42,6 +45,8 @@ import java.util.Random;
  *
  */
 public class AirPlaneLanding {
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
 	public final static Random RND=new Random(1);
 
@@ -138,8 +143,8 @@ public class AirPlaneLanding {
 		solver = new CPSolver();
 		solver.setHorizon(horizon);
 		solver.read(model);
-		System.out.println(model.pretty());
-		System.out.println(solver.pretty());
+		LOGGER.info(model.pretty());
+		LOGGER.info(solver.pretty());
 		//TODO add (find !) a good search strategy
 		solver.minimize(false);
 		solver.printRuntimeSatistics();
@@ -149,7 +154,7 @@ public class AirPlaneLanding {
 		int n = 5;
 		AirPlaneLanding apl = generateInstanceSmall(n);
 		apl.createModel();
-		System.out.println(apl.model.pretty());
+		LOGGER.info(apl.model.pretty());
 		apl.createSolver();
 
 	}

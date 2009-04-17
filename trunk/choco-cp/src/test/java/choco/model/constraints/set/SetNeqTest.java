@@ -28,6 +28,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.set.RandomSetValSelector;
 import choco.cp.solver.search.set.RandomSetVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
@@ -36,21 +37,24 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.logging.Logger;
+
 /**
  * Created by IntelliJ IDEA.
  * User: charles
  * Date: 23 avr. 2008
  * Time: 14:28:12
- * To change this template use File | Settings | File Templates.
  */
 public class SetNeqTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     Model m;
     Solver s;
 
     @After
     public void tearDown() throws Exception {
-        System.out.printf(s.pretty());
+        LOGGER.info(s.pretty());
         s = null;
         m = null;
     }
@@ -76,11 +80,11 @@ public class SetNeqTest {
             //CPSolver.setVerbosity(CPSolver.PROPAGATION);
             s.solve();
             do{
- //               System.out.println("v1 = " + s.getVar(v1));
- //               System.out.println("v2 = " + s.getVar(v2));
-//                System.out.println("======================");
+ //               LOGGER.info("v1 = " + s.getVar(v1));
+ //               LOGGER.info("v2 = " + s.getVar(v2));
+//                LOGGER.info("======================");
             } while(s.nextSolution());
-            System.out.println("nb solution: " + s.getNbSolutions());
+            LOGGER.info("nb solution: " + s.getNbSolutions());
 
             //CPSolver.flushLogs();
 

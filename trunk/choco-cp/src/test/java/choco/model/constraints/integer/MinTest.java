@@ -27,6 +27,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import static choco.model.constraints.integer.MaxTest.testAll;
@@ -36,6 +37,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import static java.text.MessageFormat.format;
+import java.util.logging.Logger;
+
 /**
  * Created by IntelliJ IDEA.
  * User: hcambaza
@@ -44,6 +48,8 @@ import org.junit.Test;
  * To change this template use File | Settings | File Templates.
  */
 public class MinTest{
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     private CPModel m;
     private CPSolver s;
@@ -75,12 +81,12 @@ public class MinTest{
             s.read(m);
             s.solve();
             do {
-                /*System.out.println("" + x.getVal() + "=max(" + y.getVal() + "," +
+                /*LOGGER.info("" + x.getVal() + "=max(" + y.getVal() + "," +
                 z.getVal()+")");*/
             } while (s.nextSolution() == Boolean.TRUE);
-            System.out.println("" + s.getSearchStrategy().getNodeCount());
+            LOGGER.info("" + s.getSearchStrategy().getNodeCount());
             assertEquals(125, s.getNbSolutions());
-            //System.out.println("Nb solution : " + s.getNbSolutions());
+            //LOGGER.info("Nb solution : " + s.getNbSolutions());
         }
     }
 
@@ -100,12 +106,12 @@ public class MinTest{
             s.read(m);
             s.solve();
             do {
-                //System.out.println("" + x.getVal() + "=max(" + y.getVal() + "," +
+                //LOGGER.info("" + x.getVal() + "=max(" + y.getVal() + "," +
                 //�    z.getVal()+")");
             } while (s.nextSolution() == Boolean.TRUE);
-            System.out.println("" + s.getSearchStrategy().getNodeCount());
+            LOGGER.info("" + s.getSearchStrategy().getNodeCount());
             assertEquals(125, s.getNbSolutions());
-            //System.out.println("Nb solution : " + s.getNbSolutions());
+            //LOGGER.info("Nb solution : " + s.getNbSolutions());
         }
     }
 
@@ -123,10 +129,10 @@ public class MinTest{
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        System.out.println("min " + s.getVar(min).getDomain().pretty());
-        System.out.println("y " + s.getVar(y).getDomain().pretty());
-        System.out.println("z " + s.getVar(z).getDomain().pretty());
-        System.out.println(!s.getVar(y).canBeInstantiatedTo(3));
+        LOGGER.info(format("min {0}", s.getVar(min).getDomain().pretty()));
+        LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
+        LOGGER.info(format("z {0}", s.getVar(z).getDomain().pretty()));
+        LOGGER.info(format("{0}", !s.getVar(y).canBeInstantiatedTo(3)));
         assertTrue(!s.getVar(y).canBeInstantiatedTo(3));
     }
 
@@ -144,10 +150,10 @@ public class MinTest{
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        System.out.println("min " + s.getVar(min).getDomain().pretty());
-        System.out.println("y " + s.getVar(y).getDomain().pretty());
-        System.out.println("z " + s.getVar(z).getDomain().pretty());
-        System.out.println(s.getVar(z).canBeInstantiatedTo(3) && s.getVar(min).canBeInstantiatedTo(3));
+        LOGGER.info(format("min {0}", s.getVar(min).getDomain().pretty()));
+        LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
+        LOGGER.info(format("z {0}", s.getVar(z).getDomain().pretty()));
+        LOGGER.info(format("{0}", s.getVar(z).canBeInstantiatedTo(3) && s.getVar(min).canBeInstantiatedTo(3)));
         assertTrue(s.getVar(z).canBeInstantiatedTo(3) && s.getVar(min).canBeInstantiatedTo(3));
     }
 
@@ -164,10 +170,10 @@ public class MinTest{
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        System.out.println("min " + s.getVar(min).getDomain().pretty());
-        System.out.println("y " + s.getVar(y).getDomain().pretty());
-        System.out.println("z " + s.getVar(z).getDomain().pretty());
-        System.out.println(s.getVar(y).canBeInstantiatedTo(3) && s.getVar(z).canBeInstantiatedTo(3));
+        LOGGER.info(format("min {0}", s.getVar(min).getDomain().pretty()));
+        LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
+        LOGGER.info(format("z {0}", s.getVar(z).getDomain().pretty()));
+        LOGGER.info(format("{0}", s.getVar(y).canBeInstantiatedTo(3) && s.getVar(z).canBeInstantiatedTo(3)));
         assertTrue(s.getVar(y).canBeInstantiatedTo(3) && s.getVar(z).canBeInstantiatedTo(3));
     }
 
@@ -183,10 +189,10 @@ public class MinTest{
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        System.out.println("min " + s.getVar(min).getDomain().pretty());
-        System.out.println("y " + s.getVar(y).getDomain().pretty());
-        System.out.println("z " + s.getVar(z).getDomain().pretty());
-        System.out.println(s.getVar(min).getDomain().getSize() == 3);
+        LOGGER.info(format("min {0}", s.getVar(min).getDomain().pretty()));
+        LOGGER.info(format("y {0}", s.getVar(y).getDomain().pretty()));
+        LOGGER.info(format("z {0}", s.getVar(z).getDomain().pretty()));
+        LOGGER.info(format("{0}", s.getVar(min).getDomain().getSize() == 3));
         assertTrue(s.getVar(min).getDomain().getSize() == 3);
     }
 
@@ -210,11 +216,11 @@ public class MinTest{
             s.setValIntSelector(new RandomIntValSelector(100 + i));
             s.setVarIntSelector(new RandomIntVarSelector(s, 101 + i));
 
-            //System.out.println("Choco Solutions");
+            //LOGGER.info("Choco Solutions");
             int nbSolution = 0;
             if (s.solve() == Boolean.TRUE) {
                 do {
-                    //System.out.println("Min(" + ((IntegerVariable) chocoCSP.getIntVar(0)).getVal() + ", " + ((IntegerVariable) chocoCSP.getIntVar(1)).getVal() + ") = " + ((IntegerVariable) chocoCSP.getIntVar(2)).getVal());
+                    //LOGGER.info("Min(" + ((IntegerVariable) chocoCSP.getIntVar(0)).getVal() + ", " + ((IntegerVariable) chocoCSP.getIntVar(1)).getVal() + ") = " + ((IntegerVariable) chocoCSP.getIntVar(2)).getVal());
                     nbSolution++;
                 } while (s.nextSolution() == Boolean.TRUE);
             }
@@ -243,11 +249,11 @@ public class MinTest{
             s.setVarIntSelector(new RandomIntVarSelector(s, i));
 
 
-            //System.out.println("Choco Solutions");
+            //LOGGER.info("Choco Solutions");
             int nbSolution = 0;
             if (s.solve() == Boolean.TRUE) {
                 do {
-                    //System.out.println("Max(" + ((IntegerVariable) chocoCSP.getIntVar(0)).getVal() + ", " + ((IntegerVariable) chocoCSP.getIntVar(1)).getVal() + ") = " + ((IntegerVariable) chocoCSP.getIntVar(2)).getVal());
+                    //LOGGER.info("Max(" + ((IntegerVariable) chocoCSP.getIntVar(0)).getVal() + ", " + ((IntegerVariable) chocoCSP.getIntVar(1)).getVal() + ") = " + ((IntegerVariable) chocoCSP.getIntVar(2)).getVal());
                     nbSolution++;
                 } while (s.nextSolution() == Boolean.TRUE);
             }
@@ -276,7 +282,7 @@ public class MinTest{
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
-        System.out.println("min " + s.getVar(min).getDomain().pretty());
+        LOGGER.info("min " + s.getVar(min).getDomain().pretty());
         assertTrue(s.getVar(min).getDomain().getSize() == 3);
     }
 

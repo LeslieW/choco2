@@ -130,7 +130,7 @@ public class ScalarAtMost extends AbstractLargeIntSConstraint {
 
     @Override
 	public void awakeOnInst(int idx) throws ContradictionException {
-        //System.out.println("awake on " + vars[idx] + " to " + vars[idx].getVal());
+        //LOGGER.info("awake on " + vars[idx] + " to " + vars[idx].getVal());
         if (idx < n) {         // paire (idx, idx + n)
            updateDataStructure(idx);
         } else if (idx >= n) { // paire (idx - n, idx)
@@ -164,7 +164,7 @@ public class ScalarAtMost extends AbstractLargeIntSConstraint {
             s.solveAll();
 
             int nbthsol = Cnk(n, k) * (int) Math.pow(3, n - k);
-            System.out.println("NbSol : " + s.getNbSolutions() + " The " + nbthsol);
+            LOGGER.info("NbSol : " + s.getNbSolutions() + " The " + nbthsol);
         }
     }
 
@@ -186,7 +186,7 @@ public class ScalarAtMost extends AbstractLargeIntSConstraint {
     }
 
     public void propagateEq(int i) throws ContradictionException {
-         //System.out.println(this + " instantiate " + vars[i + n] + " et " + vars[i] + " a 1");
+         //LOGGER.info(this + " instantiate " + vars[i + n] + " et " + vars[i] + " a 1");
          vars[i + n].instantiate(1, cIndices[i + n]);
          vars[i].instantiate(1, cIndices[i]);
      }

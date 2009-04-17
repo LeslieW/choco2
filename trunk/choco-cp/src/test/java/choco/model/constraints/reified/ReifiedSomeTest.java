@@ -53,9 +53,11 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.*;
 import static org.junit.Assert.*;
 
+import static java.text.MessageFormat.format;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -65,6 +67,7 @@ import java.util.Random;
  */
 public class ReifiedSomeTest {
 
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     Model m;
     Solver s;
@@ -86,7 +89,6 @@ public class ReifiedSomeTest {
         r2 = null;
         s1 = null;
         s2 = null;
-        System.out.println();
     }
 
     @Before
@@ -99,11 +101,11 @@ public class ReifiedSomeTest {
 
     @Test
     public void test1() {
-        System.out.println("ReifiedSomeTest.test1");
+        LOGGER.info("ReifiedSomeTest.test1");
         i1 = makeIntVar("i1", 1, 2);
         m.addConstraint(ifOnlyIf(eq((i1), (1)), eq((i1), (2))));
         s.read(m);
-        System.out.println(s.pretty());
+        LOGGER.info(s.pretty());
         s.solve();
         assertTrue("Solution found : unexpected", !s.isFeasible());
 
@@ -111,7 +113,7 @@ public class ReifiedSomeTest {
 
     @Test
     public void test1Decomp() {
-        System.out.println("ReifiedSomeTest.test1Decomp");
+        LOGGER.info("ReifiedSomeTest.test1Decomp");
         i1 = makeIntVar("i1", 1, 2);
         Constraint e = ifOnlyIf(eq((i1), (1)), eq((i1), (2)));
         //e.setDecomposeExp(true);
@@ -124,7 +126,7 @@ public class ReifiedSomeTest {
 
     @Test
     public void test2() {
-        System.out.println("ReifiedSomeTest.test2");
+        LOGGER.info("ReifiedSomeTest.test2");
         i1 = makeIntVar("i1", 1, 3);
         m.addConstraint(implies(eq((i1), (1)), eq((i1), (2))));
         s.read(m);
@@ -135,7 +137,7 @@ public class ReifiedSomeTest {
 
     @Test
     public void test2Decomp() {
-        System.out.println("ReifiedSomeTest.test2");
+        LOGGER.info("ReifiedSomeTest.test2");
         i1 = makeIntVar("i1", 1, 3);
         m.setDefaultExpressionDecomposition(true);
         m.addConstraint(implies(eq((i1), (1)), eq((i1), (2))));
@@ -148,7 +150,7 @@ public class ReifiedSomeTest {
     @Test
     @Ignore
     public void test3() {
-        System.out.println("ReifiedSomeTest.test3");
+        LOGGER.info("ReifiedSomeTest.test3");
         r1 = makeRealVar("r1", 1, 3);
         r2 = makeRealVar("r2", 1, 3);
         m.addConstraint(ifOnlyIf(geq(r1, 2.1), leq(r2, 2)));
@@ -161,7 +163,7 @@ public class ReifiedSomeTest {
     @Test
     @Ignore
     public void test4() {
-        System.out.println("ReifiedSomeTest.test4");
+        LOGGER.info("ReifiedSomeTest.test4");
         r1 = makeRealVar("r1", 1, 3);
         r2 = makeRealVar("r2", 1, 3);
         //m.addConstraint(implies(geq(r1, 2.1), leq(r2, 2)));
@@ -174,7 +176,7 @@ public class ReifiedSomeTest {
     @Test
     @Ignore
     public void test5() {
-        System.out.println("ReifiedSomeTest.test5");
+        LOGGER.info("ReifiedSomeTest.test5");
         s1 = makeSetVar("s1", 1, 3);
         s2 = makeSetVar("s2", 1, 3);
         //m.addConstraint(ifOnlyIf(member(s1, 1), member(s2, 1)));
@@ -187,7 +189,7 @@ public class ReifiedSomeTest {
     @Test
     @Ignore
     public void test6() {
-        System.out.println("ReifiedSomeTest.test6");
+        LOGGER.info("ReifiedSomeTest.test6");
         s1 = makeSetVar("s1", 1, 3);
         s2 = makeSetVar("s2", 1, 3);
         //m.addConstraint(implies(member(s1, 1), member(s2, 1)));
@@ -199,7 +201,7 @@ public class ReifiedSomeTest {
     @Test
     @Ignore
     public void test7() {
-        System.out.println("ReifiedSomeTest.test7");
+        LOGGER.info("ReifiedSomeTest.test7");
         i1 = makeIntVar("i1", 1, 3);
         m.addVariable("cp:bound", i1);
         r2 = makeRealVar("r2", 1, 3);
@@ -213,7 +215,7 @@ public class ReifiedSomeTest {
     @Test
     @Ignore
     public void test8() {
-        System.out.println("ReifiedSomeTest.test8");
+        LOGGER.info("ReifiedSomeTest.test8");
         i1 = makeIntVar("i1", 1, 3);
         m.addVariable("cp:bound", i1);
         s2 = makeSetVar("s2", 1, 3);
@@ -227,7 +229,7 @@ public class ReifiedSomeTest {
     @Test
     @Ignore
     public void test9() {
-        System.out.println("ReifiedSomeTest.test9");
+        LOGGER.info("ReifiedSomeTest.test9");
         r1 = makeRealVar("r1", 1, 3);
         s2 = makeSetVar("s2", 1, 3);
         //m.addConstraint(implies(geq(r1, 2.1), member(s2, 1)));
@@ -239,7 +241,7 @@ public class ReifiedSomeTest {
 
     @Test
     public void test10() {
-        System.out.println("ReifiedSomeTest.test10");
+        LOGGER.info("ReifiedSomeTest.test10");
         i1 = makeIntVar("i1", 1, 3);
         i2 = makeIntVar("i2", 1, 3);
         IntegerVariable V3 = makeIntVar("V3", 1, 3);
@@ -262,17 +264,17 @@ public class ReifiedSomeTest {
         m.addConstraint(or(c1, c2, c3));
         s.read(m);
         s.solve();
-        System.out.println("i1 = " + s.getVar(i1).pretty());
-        System.out.println("i2 = " + s.getVar(i2).pretty());
-        System.out.println("i3 = " + s.getVar(V3).pretty());
-        System.out.println(s.isFeasible());
+        LOGGER.info("i1 = " + s.getVar(i1).pretty());
+        LOGGER.info("i2 = " + s.getVar(i2).pretty());
+        LOGGER.info("i3 = " + s.getVar(V3).pretty());
+        LOGGER.info(""+s.isFeasible());
         assertTrue("Solution found : unexpected", s.isFeasible());
 
     }
 
     @Test
     public void test10Decomp() {
-        System.out.println("ReifiedSomeTest.test10");
+        LOGGER.info("ReifiedSomeTest.test10");
         i1 = makeIntVar("i1", 1, 3);
         i2 = makeIntVar("i2", 1, 3);
         IntegerVariable V3 = makeIntVar("V3", 1, 3);
@@ -296,10 +298,10 @@ public class ReifiedSomeTest {
         m.addConstraint(or(c1, c2, c3));
         s.read(m);
         s.solve();
-        System.out.println("i1 = " + s.getVar(i1).pretty());
-        System.out.println("i2 = " + s.getVar(i2).pretty());
-        System.out.println("i3 = " + s.getVar(V3).pretty());
-        System.out.println(s.isFeasible());
+        LOGGER.info("i1 = " + s.getVar(i1).pretty());
+        LOGGER.info("i2 = " + s.getVar(i2).pretty());
+        LOGGER.info("i3 = " + s.getVar(V3).pretty());
+        LOGGER.info(""+s.isFeasible());
         assertTrue("Solution found : unexpected", s.isFeasible());
 
     }
@@ -315,7 +317,7 @@ public class ReifiedSomeTest {
             e.printStackTrace();
         }
         assertEquals(s.getVar(x).getSup(), 9);
-        System.out.println(s.pretty());
+        LOGGER.info(s.pretty());
     }
 
     @Test
@@ -333,7 +335,7 @@ public class ReifiedSomeTest {
         m.addConstraint(C3);
         s.read(m);
         s.solve(false);
-        System.out.println(s.pretty());
+        LOGGER.info(s.pretty());
     }
 
     @Test
@@ -352,13 +354,12 @@ public class ReifiedSomeTest {
         m.addConstraint(C3);
         s.read(m);
         s.solve(false);
-        System.out.println(s.pretty());
+        LOGGER.info(s.pretty());
     }
 
     @Test
     public void testBugMaurice1a() {
         int tMax = 10;
-        CPModel pb = new CPModel();
         IntegerVariable S = makeIntVar("S", 0, tMax);
         m.addVariable("cp:bound", S);
         int p = 4;
@@ -383,11 +384,12 @@ public class ReifiedSomeTest {
             int nbSolution = 0;
             do {
                 nbSolution++;
-                System.out.print("S = " + s.getVar(S).getVal() + "   \t");
+                StringBuffer st = new StringBuffer();
+                st.append(format("S = {0}   \t", s.getVar(S).getVal()));
                 for (IntegerVariable intVar : y) {
-                    System.out.print(intVar + " = " + s.getVar(intVar).getVal() + "   ");
+                    st.append(format("{0} = {1}   ", intVar, s.getVar(intVar).getVal()));
                 }
-                System.out.println("");
+                LOGGER.info(st.toString());
             } while (s.nextSolution());
             assertEquals(11, nbSolution);
         } catch (ContradictionException e) {
@@ -398,7 +400,6 @@ public class ReifiedSomeTest {
     @Test
     public void testBugMaurice1aDecomp() {
         int tMax = 10;
-        CPModel pb = new CPModel();
         IntegerVariable S = makeIntVar("S", 0, tMax);
         m.addVariable("cp:bound", S);
         int p = 4;
@@ -424,11 +425,12 @@ public class ReifiedSomeTest {
             int nbSolution = 0;
             do {
                 nbSolution++;
-                System.out.print("S = " + s.getVar(S).getVal() + "   \t");
+                StringBuffer st = new StringBuffer();
+                st.append(format("S = {0}   \t", s.getVar(S).getVal()));
                 for (IntegerVariable intVar : y) {
-                    System.out.print(intVar + " = " + s.getVar(intVar).getVal() + "   ");
+                    st.append(format("{0} = {1}   ", intVar, s.getVar(intVar).getVal()));
                 }
-                System.out.println("");
+                LOGGER.info(st.toString());
             } while (s.nextSolution());
             assertEquals(11, nbSolution);
         } catch (ContradictionException e) {
@@ -439,7 +441,6 @@ public class ReifiedSomeTest {
     @Test
     public void testBugMaurice1b() {
         int tMax = 10;
-        CPModel pb = new CPModel();
         IntegerVariable S = makeIntVar("S", 0, tMax);
         m.addVariable("cp:bound", S);
         int p = 4;
@@ -463,11 +464,12 @@ public class ReifiedSomeTest {
             int nbSolution = 0;
             do {
                 nbSolution++;
-                System.out.print("S = " + s.getVar(S).getVal() + "   \t");
+                StringBuffer st = new StringBuffer();
+                st.append(format("S = {0}   \t", s.getVar(S).getVal()));
                 for (IntegerVariable intVar : y) {
-                    System.out.print(intVar + " = " + s.getVar(intVar).getVal() + "   ");
+                    st.append(format("{0} = {1}   ", intVar, s.getVar(intVar).getVal()));
                 }
-                System.out.println("");
+                LOGGER.info(st.toString());
             } while (s.nextSolution());
             assertEquals(11, nbSolution);
         } catch (ContradictionException e) {
@@ -478,7 +480,6 @@ public class ReifiedSomeTest {
     @Test
     public void testBugMaurice1bDecomp() {
         int tMax = 10;
-        CPModel pb = new CPModel();
         IntegerVariable S = makeIntVar("S", 0, tMax);
         m.addVariable("cp:bound", S);
         int p = 4;
@@ -503,11 +504,12 @@ public class ReifiedSomeTest {
             int nbSolution = 0;
             do {
                 nbSolution++;
-                System.out.print("S = " + s.getVar(S).getVal() + "   \t");
+                StringBuffer st = new StringBuffer();
+                st.append(format("S = {0}   \t", s.getVar(S).getVal()));
                 for (IntegerVariable intVar : y) {
-                    System.out.print(intVar + " = " + s.getVar(intVar).getVal() + "   ");
+                    st.append(format("{0} = {1}   ", intVar, s.getVar(intVar).getVal()));
                 }
-                System.out.println("");
+                LOGGER.info(st.toString());
             } while (s.nextSolution());
             assertEquals(11, nbSolution);
         } catch (ContradictionException e) {
@@ -538,11 +540,12 @@ public class ReifiedSomeTest {
             int nbSolution = 0;
             do {
                 nbSolution++;
-                System.out.print("S = " + s.getVar(S).getVal() + "   \t");
+                StringBuffer st = new StringBuffer();
+                st.append(format("S = {0}   \t", s.getVar(S).getVal()));
                 for (IntegerVariable intVar : y) {
-                    System.out.print(intVar + " = " + s.getVar(intVar).getVal() + "   ");
+                    st.append(format("{0} = {1}   ", intVar, s.getVar(intVar).getVal()));
                 }
-                System.out.println("");
+                LOGGER.info(st.toString());
             } while (s.nextSolution());
             assertEquals(11, nbSolution);
         } catch (ContradictionException e) {
@@ -574,11 +577,12 @@ public class ReifiedSomeTest {
             int nbSolution = 0;
             do {
                 nbSolution++;
-                System.out.print("S = " + s.getVar(S).getVal() + "   \t");
+                StringBuffer st = new StringBuffer();
+                st.append(format("S = {0}   \t", s.getVar(S).getVal()));
                 for (IntegerVariable intVar : y) {
-                    System.out.print(intVar + " = " + s.getVar(intVar).getVal() + "   ");
+                    st.append(format("{0} = {1}   ", intVar, s.getVar(intVar).getVal()));
                 }
-                System.out.println("");
+                LOGGER.info(st.toString());
             } while (s.nextSolution());
             assertEquals(11, nbSolution);
         } catch (ContradictionException e) {
@@ -635,7 +639,7 @@ public class ReifiedSomeTest {
         IntegerConstantVariable copd = constant("Chronic Obstructive Lung Disease", 1);
         IntegerConstantVariable verapamil = constant("Verapamil", 0);
 
-        HashMap cardioConstraints = new HashMap();
+        HashMap<Constraint, String> cardioConstraints = new HashMap<Constraint, String>();
 
         /*ArrayList infeasTuple = new ArrayList();
                   infeasTuple.add(new int[]{1, 1});
@@ -659,15 +663,15 @@ public class ReifiedSomeTest {
         s.solve();
 
         if (s.getNbSolutions() > 0) {
-            System.out.println("Prescription Acceptable");
+            LOGGER.info("Prescription Acceptable");
         } else {
-            System.out.println("Prescription Unacceptable");
+            LOGGER.info("Prescription Unacceptable");
             Iterator it = s.getIntConstraintIterator();
             while (it.hasNext()) {
                 SConstraint c = (SConstraint) it.next();
-                //System.out.println(""  + c);
+                //LOGGER.info(""  + c);
                 if (!c.isSatisfied()) {
-                    System.out.println("Failed: " + cardioConstraints.get(c));
+                    LOGGER.info(format("Failed: {0}", cardioConstraints.get(c)));
                 }
             }
         }
@@ -694,7 +698,7 @@ public class ReifiedSomeTest {
             s.setValIntSelector(new RandomIntValSelector(seed + 1));
 
             s.solveAll();
-            System.out.println("" + s.getNbSolutions());
+            LOGGER.info("" + s.getNbSolutions());
             assertTrue(s.getNbSolutions() == 1024);
         }
 
@@ -703,7 +707,7 @@ public class ReifiedSomeTest {
     @Test
     public void testBugNormalized() {
         for (int seed = 0; seed < 10; seed++) {
-            System.out.println("seed:" + seed);
+            LOGGER.info("seed:" + seed);
             CPModel m = new CPModel();
             m.setDefaultExpressionDecomposition(true);
             CPSolver s = new CPSolver();
@@ -771,29 +775,27 @@ public class ReifiedSomeTest {
             s.setValIntSelector(new RandomIntValSelector(seed));
             s.setGeometricRestart(30, 1.1);
             s.solve();
-            System.out.println("" + s.getNodeCount());
+            LOGGER.info(format("{0}", s.getNodeCount()));
             Assert.assertTrue("Solution incorrecte", s.checkSolution(false));
         }
     }
 
 
     private Constraint predicat1(IntegerVariable v1, IntegerVariable v2, int v3, int v4, IntegerVariable v5) {
-        Constraint e = leq(plus(v1, ifThenElse(eq((v2), (0)), constant(v3), constant(v4))), v5);
         //e.setDecomposeExp(true);
-        return e;
+        return leq(plus(v1, ifThenElse(eq((v2), (0)), constant(v3), constant(v4))), v5);
     }
 
     private Constraint predicat2(IntegerVariable v0, IntegerVariable v1, IntegerVariable v2, int v3, int v4, IntegerVariable v5, IntegerVariable v6, IntegerVariable v7, int v8, int v9) {
-        Constraint e = or(or(leq(plus((v0),
-                ifThenElse(eq((v2), (0)), constant(v3), constant(v4))), (v5)), leq(plus((v5), ifThenElse(eq((v7), (0)), constant(v8), constant(v9))), (v0))), or(leq(plus((v1), ifThenElse(eq((v2), constant(0)), constant(v4), constant(v3))), (v6)), leq(plus((v6), ifThenElse(eq((v7), (0)), constant(v9), constant(v8))), (v1))));
         //e.setDecomposeExp(true);
-        return e;
+        return or(or(leq(plus((v0),
+                ifThenElse(eq((v2), (0)), constant(v3), constant(v4))), (v5)), leq(plus((v5), ifThenElse(eq((v7), (0)), constant(v8), constant(v9))), (v0))), or(leq(plus((v1), ifThenElse(eq((v2), constant(0)), constant(v4), constant(v3))), (v6)), leq(plus((v6), ifThenElse(eq((v7), (0)), constant(v9), constant(v8))), (v1))));
     }
 
     @Test
     public void deterministicOnRCPSP() {
         for (int seed = 0; seed < 20; seed++) {
-            System.out.println("seed:" + seed);
+            LOGGER.info(format("seed:{0}", seed));
             CPModel m = new CPModel();
             m.setDefaultExpressionDecomposition(true);
             CPSolver s = new CPSolver();
@@ -851,8 +853,7 @@ public class ReifiedSomeTest {
     }
 
     private Constraint predicat3(IntegerVariable v0, int v1, IntegerVariable v2) {
-        Constraint e = leq(plus((v0), (v1)), (v2));
-        return e;
+        return leq(plus((v0), (v1)), (v2));
     }
 
     @Test
@@ -894,8 +895,8 @@ public class ReifiedSomeTest {
         // Math check
         double dist2 = Math.sqrt((xb - xa) * (xb - xa) + (yb - ya) * (yb - ya));
         int roundDist2 = (int) Math.round(dist2);
-        System.out.println("Choco: " + s.getVar(dist).getVal());
-        System.out.println("Math: " + roundDist2 + " (" + dist2 + ")");
+        LOGGER.info("Choco: " + s.getVar(dist).getVal());
+        LOGGER.info("Math: " + roundDist2 + " (" + dist2 + ")");
         assertEquals("square value", s.getVar(dist).getVal(), roundDist2);
         assertEquals("square nb sol", s.getNbSolutions(), 1);
     }
@@ -926,7 +927,7 @@ public class ReifiedSomeTest {
 //            m.addConstraint(not(distanceEQ(v0, v1, v2, 0)));
 //            s.read(m);
 //            s.solveAll();
-//            System.out.println("" + s.getNbSolutions());
+//            LOGGER.info("" + s.getNbSolutions());
 //            assertEquals(2400, s.getNbSolutions());
 //        }
 //    }
@@ -975,7 +976,7 @@ public class ReifiedSomeTest {
 
         ConstraintType[] types = {EQ, NEQ, GEQ, LEQ, GT, LT};
         for (int seed = 0; seed < 20; seed++) {
-            System.out.println(seed);
+            LOGGER.info(format("{0}", seed));
             CPModel m = new CPModel();
             CPSolver s = new CPSolver();
 
@@ -1061,7 +1062,7 @@ public class ReifiedSomeTest {
 
         ConstraintType[] types = {EQ, NEQ, GEQ, LEQ, GT, LT};
         for (int seed = 0; seed < 200; seed++) {
-            System.out.println(seed);
+            LOGGER.info(format("{0}", seed));
             CPModel m = new CPModel();
             CPSolver s = new CPSolver();
 
@@ -1168,10 +1169,10 @@ public class ReifiedSomeTest {
 
             solver.setVarIntSelector(new RandomIntVarSelector(solver, decVars, seed));
             solver.setValIntSelector(new RandomIntValSelector());
-            System.out.println("solve nbv: " + solver.getNbIntVars() + " nbc: " + solver.getNbIntConstraints());
+            LOGGER.info("solve nbv: " + solver.getNbIntVars() + " nbc: " + solver.getNbIntConstraints());
             solver.solveAll();
             Assert.assertEquals(solver.getNbSolutions(), 1166);
-            System.out.println(" " + solver.getNbSolutions() + " " + solver.getTimeCount() + " " + solver.getNodeCount());
+            LOGGER.info(" " + solver.getNbSolutions() + " " + solver.getTimeCount() + " " + solver.getNodeCount());
         }
     }
 
@@ -1199,10 +1200,10 @@ public class ReifiedSomeTest {
             solver.read(model);
             solver.setVarIntSelector(new RandomIntVarSelector(solver, seed));
             solver.setValIntSelector(new RandomIntValSelector());
-            System.out.println("solve nbv: " + solver.getNbIntVars() + " nbc: " + solver.getNbIntConstraints());
+            LOGGER.info("solve nbv: " + solver.getNbIntVars() + " nbc: " + solver.getNbIntConstraints());
             solver.solveAll();
             Assert.assertEquals(solver.getNbSolutions(), 57513);
-            System.out.println(" " + solver.getNbSolutions() + " " + solver.getTimeCount());
+            LOGGER.info(" " + solver.getNbSolutions() + " " + solver.getTimeCount());
         }
     }
 
@@ -1240,7 +1241,7 @@ public class ReifiedSomeTest {
 
             solver.solveAll();
             Assert.assertEquals(solver.getNbSolutions(), 29018);
-            System.out.println(" " + solver.getNbSolutions() + " " + solver.getTimeCount());
+            LOGGER.info(" " + solver.getNbSolutions() + " " + solver.getTimeCount());
         }
     }
 
@@ -1299,7 +1300,7 @@ public class ReifiedSomeTest {
 
         s.read(m);
         s.solveAll();
-        System.out.println(s.pretty());
+        LOGGER.info(s.pretty());
         Assert.assertEquals("nb solutions", 11, s.getNbSolutions());
     }
 
@@ -1316,7 +1317,7 @@ public class ReifiedSomeTest {
 
         s.read(m);
         s.solveAll();
-        System.out.println(s.pretty());
+        LOGGER.info(s.pretty());
         Assert.assertEquals("nb solutions", 48, s.getNbSolutions());
     }
 
@@ -1333,7 +1334,7 @@ public class ReifiedSomeTest {
 
         s.read(m);
         s.solveAll();
-        System.out.println(s.pretty());
+        LOGGER.info(s.pretty());
         Assert.assertEquals("nb solutions", 110, s.getNbSolutions());
     }
 
@@ -1352,7 +1353,6 @@ public class ReifiedSomeTest {
         }
 
         IntegerExpressionVariable y = min(x);
-        IntegerExpressionVariable z = max(x);
 
         IntegerExpressionVariable w = ifThenElse(leq(y, 5), constant(1), constant(0));
         Constraint t = ifThenElse(Choco.TRUE, Choco.TRUE, Choco.FALSE);
@@ -1385,9 +1385,9 @@ public class ReifiedSomeTest {
             s.setValIntSelector(new RandomIntValSelector());
 
             s.solveAll();
-            //System.out.println(s.getNbSolutions() + " ");
+            //LOGGER.info(s.getNbSolutions() + " ");
             Assert.assertEquals("nb de solutions", 28, s.getNbSolutions());
-            //System.out.println(s.getVar(h) + " " + s.getVar(x) + " " + s.getVar(y) + " " + s.getVar(z));
+            //LOGGER.info(s.getVar(h) + " " + s.getVar(x) + " " + s.getVar(y) + " " + s.getVar(z));
 
         }
 
@@ -1411,9 +1411,9 @@ public class ReifiedSomeTest {
             s.setValIntSelector(new RandomIntValSelector());
 
             s.solveAll();
-            System.out.println(s.getNbSolutions() + " ");
+            LOGGER.info(s.getNbSolutions() + " ");
             Assert.assertEquals("nb de solutions", 6144, s.getNbSolutions());
-            //System.out.println(s.getVar(h) + " " + s.getVar(x) + " " + s.getVar(y) + " " + s.getVar(z));
+            //LOGGER.info(s.getVar(h) + " " + s.getVar(x) + " " + s.getVar(y) + " " + s.getVar(z));
 
         }
 
@@ -1437,7 +1437,7 @@ public class ReifiedSomeTest {
             s.setValIntSelector(new RandomIntValSelector());
 
             s.solveAll();
-            System.out.println(s.getNbSolutions() + " " + s.getNodeCount());
+            LOGGER.info(s.getNbSolutions() + " " + s.getNodeCount());
             
             Assert.assertEquals("nb de solutions", 6144, s.getNbSolutions());
         }
@@ -1462,7 +1462,7 @@ public class ReifiedSomeTest {
             s.setValIntSelector(new RandomIntValSelector());
 
             s.solveAll();
-            System.out.println(s.getNbSolutions() + " " + s.getNodeCount());
+            LOGGER.info(s.getNbSolutions() + " " + s.getNodeCount());
 
             Assert.assertEquals("nb de solutions", 9216, s.getNbSolutions());
         }
@@ -1487,7 +1487,7 @@ public class ReifiedSomeTest {
             s.setValIntSelector(new RandomIntValSelector());
 
             s.solveAll();
-            System.out.println(s.getNbSolutions() + " " + s.getNodeCount());
+            LOGGER.info(s.getNbSolutions() + " " + s.getNodeCount());
 
             Assert.assertEquals("nb de solutions", 6144, s.getNbSolutions());
         }
@@ -1498,7 +1498,6 @@ public class ReifiedSomeTest {
     public void testIsEntailedSameSignOp() {
         for (int seed = 0; seed < 5; seed++) {
 
-            int n = 4;
             CPModel m = new CPModel();
             m.setDefaultExpressionDecomposition(true);
             CPSolver s = new CPSolver();
@@ -1513,7 +1512,7 @@ public class ReifiedSomeTest {
             s.setValIntSelector(new RandomIntValSelector());
 
             s.solveAll();
-            System.out.println(s.getNbSolutions() + " " + s.getNodeCount());
+            LOGGER.info(s.getNbSolutions() + " " + s.getNodeCount());
 
             Assert.assertEquals("nb de solutions", 16, s.getNbSolutions());
         }
@@ -1524,7 +1523,6 @@ public class ReifiedSomeTest {
     public void testIsEntailedSignOp() {
         for (int seed = 0; seed < 5; seed++) {
 
-            int n = 4;
             CPModel m = new CPModel();
             m.setDefaultExpressionDecomposition(true);
             CPSolver s = new CPSolver();
@@ -1539,7 +1537,7 @@ public class ReifiedSomeTest {
             s.setValIntSelector(new RandomIntValSelector());
 
             s.solveAll();
-            System.out.println(s.getNbSolutions() + " " + s.getNodeCount());
+            LOGGER.info(s.getNbSolutions() + " " + s.getNodeCount());
 
             Assert.assertEquals("nb de solutions", 11, s.getNbSolutions());
         }
@@ -1562,7 +1560,7 @@ public class ReifiedSomeTest {
       CPSolver s = new CPSolver();
       s.read(m);
       s.solveAll();
-        System.out.println("" + s.getNbSolutions());
+        LOGGER.info("" + s.getNbSolutions());
       Assert.assertEquals("nb de solutions", 2, s.getNbSolutions());
   }
 
@@ -1636,7 +1634,7 @@ public class ReifiedSomeTest {
              s.setValIntSelector(new RandomIntValSelector());
 
              s.solveAll();
-             System.out.println("" + s.getNbSolutions());
+             LOGGER.info("" + s.getNbSolutions());
              Assert.assertEquals("nb de solutions", 23, s.getNbSolutions()); 
          }
      }

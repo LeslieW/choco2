@@ -28,6 +28,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.set.RandomSetValSelector;
 import choco.cp.solver.search.set.RandomSetVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
@@ -37,14 +38,18 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.logging.Logger;
+
 /**
  * Created by IntelliJ IDEA.
  * User: charles
  * Date: 23 avr. 2008
  * Time: 14:27:02
- * To change this template use File | Settings | File Templates.
  */
 public class SetIsIncludedTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+
     Model m;
     Solver s;
 
@@ -74,7 +79,7 @@ public class SetIsIncludedTest {
 			s.setVarSetSelector(new RandomSetVarSelector(s, seed));
             s.setValSetSelector(new RandomSetValSelector(seed+1));
             s.solveAll();
-			System.out.println(" " + s.getNbSolutions());
+			LOGGER.info(" " + s.getNbSolutions());
 
 			assertTrue(144 == s.getNbSolutions());
 		}

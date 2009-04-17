@@ -47,11 +47,7 @@ public class Distance extends PatternExample{
 
     @Override
     public void setUp(Object paramaters) {
-        if(paramaters instanceof Boolean){
-            ceil = (Boolean)paramaters;
-        }else{
-            ceil = false;
-        }
+        ceil = paramaters instanceof Boolean && (Boolean) paramaters;
     }
 
     @Override
@@ -88,12 +84,12 @@ public class Distance extends PatternExample{
 
     @Override
     public void prettyOut() {
-        System.out.println("maximize distantce between "+ChocoUtil.pretty(x[0],y[0],x[1],y[1]));
-        System.out.println("maximal distance = 10,63");
-        System.out.println(" d = sqrt( (x0-x1)^2 + (y0-y1)^2 ) "+(ceil?"-- ceil":"--floor"));
-        System.out.println("x = ["+_s.getVar(x[0]).getVal()+","+_s.getVar(x[1]).getVal()+"]");
-        System.out.println("y = ["+_s.getVar(y[0]).getVal()+","+_s.getVar(y[1]).getVal()+"]");
-        System.out.println("d = " + _s.getVar(d).getVal());
+        LOGGER.info("maximize distantce between "+ChocoUtil.pretty(x[0],y[0],x[1],y[1]));
+        LOGGER.info("maximal distance = 10,63");
+        LOGGER.info(" d = sqrt( (x0-x1)^2 + (y0-y1)^2 ) "+(ceil?"-- ceil":"--floor"));
+        LOGGER.info("x = ["+_s.getVar(x[0]).getVal()+","+_s.getVar(x[1]).getVal()+"]");
+        LOGGER.info("y = ["+_s.getVar(y[0]).getVal()+","+_s.getVar(y[1]).getVal()+"]");
+        LOGGER.info("d = " + _s.getVar(d).getVal());
     }
 
 	private IntegerExpressionVariable power2(IntegerExpressionVariable v) {

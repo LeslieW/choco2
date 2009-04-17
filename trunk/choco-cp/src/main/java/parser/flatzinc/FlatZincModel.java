@@ -23,11 +23,13 @@
 package parser.flatzinc;
 
 import choco.cp.model.CPModel;
+import choco.kernel.common.logging.ChocoLogging;
 import parser.flatzinc.reader.DataReader;
 import parser.flatzinc.reader.ModelReader;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 /*
 * User : charles
@@ -37,6 +39,8 @@ import java.util.HashMap;
 * Update : Choco 2.0.1
 */
 public class FlatZincModel {
+
+    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
 
     static boolean verb;
     static long[] time = new long[3];
@@ -125,9 +129,9 @@ public class FlatZincModel {
     public CPModel loadAndParse(File modelF, File dataF) throws Exception, Error {
        try {
             if (verb) {
-                System.out.println("========================================================");
-                System.out.println("Traitement de : " + modelF.getName());
-                System.out.println("Données : "+ dataF.getName());
+                LOGGER.info("========================================================");
+                LOGGER.info("Traitement de : " + modelF.getName());
+                LOGGER.info("Données : "+ dataF.getName());
             }
             // Parse the xml and get the abscon representation of the problem
             time[0] = System.currentTimeMillis();
@@ -140,7 +144,7 @@ public class FlatZincModel {
         } catch (Error er) {
             er.printStackTrace();
         }finally {
-           System.out.println("========================================================");
+           LOGGER.info("========================================================");
        }
         return null;
     }

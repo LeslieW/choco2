@@ -1,16 +1,21 @@
 package samples.scheduling;
 
-import gnu.trove.TIntArrayList;
-import samples.Examples.PatternExample;
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
+import gnu.trove.TIntArrayList;
+import samples.Examples.PatternExample;
+
+import java.util.logging.Logger;
 
 public class RehearsalProblem extends PatternExample {
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
 	public final static int[] CSPLIB_DURATIONS = {2, 4, 1, 3, 3, 2, 5, 7, 6};
 
@@ -130,8 +135,8 @@ public class RehearsalProblem extends PatternExample {
 
 	@Override
 	public void prettyOut() {
-		System.out.println(_s.getVar(totalWaitingTime));
-		System.out.println(ChocoUtil.pretty(_s.getVar(musicPieces)));
+		LOGGER.info(""+_s.getVar(totalWaitingTime));
+		LOGGER.info(ChocoUtil.pretty(_s.getVar(musicPieces)));
 
 	}
 

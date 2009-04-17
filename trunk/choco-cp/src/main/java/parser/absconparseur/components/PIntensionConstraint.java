@@ -113,7 +113,7 @@ public class PIntensionConstraint extends PConstraint {
 	}
 
 	public boolean isGuaranteedToBeOverflowFree() {
-		// System.out.println("cons " + name);
+		// LOGGER.info("cons " + name);
 		EvaluationManager evaluationManager = new EvaluationManager(universalPostfixExpression);
 		return evaluationManager.isGuaranteedToBeOverflowFree(scope);
 	}

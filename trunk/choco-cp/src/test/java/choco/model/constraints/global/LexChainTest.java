@@ -38,6 +38,7 @@ import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.valselector.MaxVal;
 import choco.cp.solver.search.integer.valselector.MidVal;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
@@ -47,11 +48,13 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import static java.lang.System.arraycopy;
-import static java.lang.System.out;
+import java.text.MessageFormat;
 import java.util.Random;
+import java.util.logging.Logger;
 
 public class LexChainTest {
 
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     @Test
     public void lexChainTest1(){
@@ -75,8 +78,6 @@ public class LexChainTest {
 
     @Test
     public void lexChainTest2(){
-        Model m = new CPModel();
-        Solver s = new CPSolver();
 
         IntegerVariable[] ar1 = makeIntVarArray("v1", 1, 0, 10);
         IntegerVariable[] ar2 = makeIntVarArray("v2", 3, -1, 9);
@@ -107,52 +108,49 @@ public class LexChainTest {
         int j = 0;
 
         do {
-            out.print("{");
-            for (int i = 0; i < array1.length; i++) {
-                out.print(" " + s.getVar(array1[i]).getVal());
+            StringBuffer st = new StringBuffer();
+            st.append("{");
+            for (IntegerVariable anArray1 : array1) {
+                st.append(MessageFormat.format(" {0}", s.getVar(anArray1).getVal()));
             }
 
-            out.print("}" + "   " + string + "  ");
+            st.append(MessageFormat.format("}   {0}  ", string));
 
-            out.print("{");
-            for (int i = 0; i < array2.length; i++) {
-                out.print(" " + s.getVar(array2[i]).getVal());
+            st.append("{");
+            for (IntegerVariable anArray2 : array2) {
+                st.append(MessageFormat.format(" {0}", s.getVar(anArray2).getVal()));
             }
 
             if (variables.length == 0) {
-                out.print("}");
+                st.append("}");
             } else {
-                out.print("}" + "   " + string + "  ");
+                st.append(MessageFormat.format("}   {0}  ", string));
 
             }
 
 
             for (IntegerVariable[] array : variables) {
                 ++j;
-                out.print("{");
+                st.append("{");
                 for (IntegerVariable v : array) {
-                    out.print(" " + s.getVar(v).getVal());
+                    st.append(MessageFormat.format(" {0}", s.getVar(v).getVal()));
                 }
                 if (j != variables.length) {
-                    out.print("}" + "   " + string + "  " + j);
+                    st.append(MessageFormat.format("}   {0}  {1}", string, j));
                 } else {
                     j = 0;
-                    out.println("}");
+                    st.append("}");
                 }
-
-
             }
-
-
-            out.println();
+            LOGGER.info(st.toString());
 
             ++numberOfSolutions;
 
         } while (s.nextSolution() == Boolean.TRUE);
 
 
-        out.println("Number of solutions " + numberOfSolutions);
-        out.println("*********************************************************************************");
+        LOGGER.info("Number of solutions " + numberOfSolutions);
+        LOGGER.info("*********************************************************************************");
 
         return numberOfSolutions;
 
@@ -161,7 +159,7 @@ public class LexChainTest {
 
     public static void compareDiffStrategy(IntegerVariable[][] array, IntegerVariable[][] variableVector) {
 
-        out.println("\n\n\n**********************Comparing lex_chian on different strategy********************* \n\n\n");
+        LOGGER.info("\n\n\n**********************Comparing lex_chain on different strategy********************* \n\n\n");
         Model model = new CPModel();
 
         Solver[] solver = new Solver[5];                    // error SOlver [] solver ;
@@ -207,7 +205,7 @@ public class LexChainTest {
         Assert.assertEquals("Not same number of solution", solver[0].getNbSolutions(), solver[1].getNbSolutions());
         Assert.assertEquals("Not same number of solution", solver[1].getNbSolutions(), solver[2].getNbSolutions());
 
-        out.println("**********************Comparing lex_chain on different strategy*********************\n\n\n ");
+        LOGGER.info("**********************Comparing lex_chain on different strategy*********************\n\n\n ");
     }
 
 

@@ -26,6 +26,7 @@ package samples.pack;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
@@ -33,7 +34,7 @@ import choco.kernel.solver.Solver;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.util.logging.Logger;
 
 
 /**
@@ -43,7 +44,7 @@ import java.util.Arrays;
  * @version 2.0.1</br>
  */
 public class RackConfiguration {
-
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
 	public final RackConfigurationData data;
 
@@ -141,7 +142,7 @@ public class RackConfiguration {
 
 	public void print() {
 		for (int i = 0; i < data.nbRacks; i++) {
-			System.out.println(solver.getVar(rackTypes[i]).pretty()+" --> "+solver.getVar(plugged[i]).pretty());
+			LOGGER.info(solver.getVar(rackTypes[i]).pretty()+" --> "+solver.getVar(plugged[i]).pretty());
 		}
 	}
 
@@ -150,7 +151,7 @@ public class RackConfiguration {
 				new int[]{75,50,40,20},new int[]{1,2,4,10});
 		RackConfiguration pb = new RackConfiguration(data);
 		pb.createModel();
-		System.out.println(pb.model.pretty());
+		LOGGER.info(pb.model.pretty());
 		pb.solve();
 		pb.print();
 	}

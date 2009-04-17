@@ -22,18 +22,19 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.scheduling;
 
-import java.util.Arrays;
-
-import org.junit.Test;
-
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.logging.Logger;
 
 /**
  * @author Arnaud Malapert</br>
@@ -41,6 +42,8 @@ import choco.kernel.model.variables.scheduling.TaskVariable;
  * @version 2.0.3</br>
  */
 class AltDisjProblem extends DisjProblem {
+
+
 
 	protected IntegerVariable[] usages;
 
@@ -101,6 +104,8 @@ class AltCumulProblem extends CumulProblem {
  */
 public class TestAlternativeResources {
 
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+
 	protected void testAltDisjunctive(int nbTests, int[] durations, int makespan, int type) {
 		int nbSols = solveDisjSubProblems(durations, makespan, type);
 		AltDisjProblem pb = new AltDisjProblem(durations, type);
@@ -143,18 +148,14 @@ public class TestAlternativeResources {
 
 	}
 
-	private final static int[][] createHeightSubsets(int[] tasks, int type) {
+	private static int[][] createHeightSubsets(int[] tasks, int type) {
 		final int n = tasks.length;
 		switch (type) {
 		case 1: {
 			int[][] subsets = new int[n][n - type];
 			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < i; j++) {
-					subsets[i][j] = tasks[j];
-				}
-				for (int j = i + 1; j < n; j++) {
-					subsets[i][j - 1] = tasks[j];
-				}
+                System.arraycopy(tasks, 0, subsets[i], 0, i);
+                System.arraycopy(tasks, i + 1, subsets[i], i + 1 - 1, n - (i + 1));
 			}
 			return subsets;
 		}
@@ -180,18 +181,14 @@ public class TestAlternativeResources {
 		}
 	}
 
-	private final static TaskVariable[][] createTaskSubsets(TaskVariable[] tasks, int type) {
+	private static TaskVariable[][] createTaskSubsets(TaskVariable[] tasks, int type) {
 		final int n = tasks.length;
 		switch (type) {
 		case 1: {
 			TaskVariable[][] subsets = new TaskVariable[n][n - type];
 			for (int i = 0; i < n; i++) {
-				for (int j = 0; j < i; j++) {
-					subsets[i][j] = tasks[j];
-				}
-				for (int j = i + 1; j < n; j++) {
-					subsets[i][j - 1] = tasks[j];
-				}
+                System.arraycopy(tasks, 0, subsets[i], 0, i);
+                System.arraycopy(tasks, i + 1, subsets[i], i + 1 - 1, n - (i + 1));
 			}
 			return subsets;
 		}
@@ -231,7 +228,7 @@ public class TestAlternativeResources {
 			solver.read(m);
 			solver.solveAll();
 			int subNbSols = solver.getNbSolutions() * factors[i];
-			System.out.println("Nb sols reduced subproblem " + i + ": "
+			LOGGER.info("Nb sols reduced subproblem " + i + ": "
 					+ factors[i] + " x " + solver.getNbSolutions() + " = "
 					+ subNbSols);
 			// The eliminated task could be anywhere in the schedule
@@ -255,7 +252,7 @@ public class TestAlternativeResources {
 			solver.read(m);
 			solver.solveAll();
 			int subNbSols = solver.getNbSolutions() * factors[i];
-			System.out.println("Nb sols reduced subproblem " + i + ": "
+			LOGGER.info("Nb sols reduced subproblem " + i + ": "
 					+ factors[i] + " x " + solver.getNbSolutions() + " = "
 					+ subNbSols);
 			// The eliminated task could be anywhere in the schedule

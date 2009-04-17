@@ -84,7 +84,7 @@ public class PCumulative extends PGlobalConstraint {
 		}
 
 		public void displayEvaluations() {
-			System.out.println(originValue + " " + durationValue + " " + endValue + " " + heightValue);
+			LOGGER.info(originValue + " " + durationValue + " " + endValue + " " + heightValue);
 			
 		}
 
@@ -133,7 +133,7 @@ public class PCumulative extends PGlobalConstraint {
 						heightSum += tasks[j].heightValue;
 				}
 				if (heightSum > limit) {
-					//System.out.println(" i = " + i + " time = " + period);
+					//LOGGER.info(" i = " + i + " time = " + period);
 					return 1;
 				}
 			}

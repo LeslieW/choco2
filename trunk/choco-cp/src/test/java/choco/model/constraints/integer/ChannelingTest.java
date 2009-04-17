@@ -25,6 +25,7 @@ package choco.model.constraints.integer;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import org.junit.After;
@@ -33,14 +34,17 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.logging.Logger;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Hadrien
  * Date: 13 oct. 2005
  * Time: 12:37:51
- * To change this template use File | Settings | File Templates.
  */
 public class ChannelingTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     CPModel m;
     CPSolver s;
@@ -79,7 +83,7 @@ public class ChannelingTest {
     m.addConstraint(eq(plus(y1, y2), z));
     s.read(m);
     s.maximize(s.getVar(z), false);
-    System.out.println(s.getVar(x1).getVal() + " " + s.getVar(x2).getVal() + " " + s.getVar(z).getVal());
+    LOGGER.info(s.getVar(x1).getVal() + " " + s.getVar(x2).getVal() + " " + s.getVar(z).getVal());
     assertEquals(4, s.getVar(x1).getVal());
     assertEquals(1, s.getVar(x2).getVal());
     assertEquals(2, s.getVar(z).getVal());
@@ -88,7 +92,6 @@ public class ChannelingTest {
     @Test
   public void test3() {
     int n = 5;
-    CPModel pb = new CPModel();
     IntegerVariable[] x = new IntegerVariable[n];
     IntegerVariable[] y = new IntegerVariable[n];
     for (int i = 0; i < n; i++) {
@@ -100,7 +103,7 @@ public class ChannelingTest {
         s.solve();
     do {
       for (int i = 0; i < n; i++) {
-        //System.out.println("" + x[i] + ":" + x[i].getVal() + " <=> " + y[x[i].getVal()] + ":" + y[x[i].getVal()].getVal());
+        //LOGGER.info("" + x[i] + ":" + x[i].getVal() + " <=> " + y[x[i].getVal()] + ":" + y[x[i].getVal()].getVal());
         assertTrue(s.getVar(y[s.getVar(x[i]).getVal()]).getVal() == i);
       }
     } while (s.nextSolution() == Boolean.TRUE);
@@ -111,7 +114,6 @@ public class ChannelingTest {
   public void test4() {
     int n = 5;
     int lb = 7;
-    CPModel pb = new CPModel();
     IntegerVariable[] x = new IntegerVariable[n];
     IntegerVariable[] y = new IntegerVariable[n];
     for (int i = 0; i < n; i++) {
@@ -123,7 +125,7 @@ public class ChannelingTest {
     s.solve();
     do {
       for (int i = 0; i < n; i++) {
-        //System.out.println("" + x[i] + ":" + x[i].getVal() + " <=> " + y[x[i].getVal() - lb] + ":" + y[x[i].getVal() - lb].getVal());
+        //LOGGER.info("" + x[i] + ":" + x[i].getVal() + " <=> " + y[x[i].getVal() - lb] + ":" + y[x[i].getVal() - lb].getVal());
         assertTrue(s.getVar(y[s.getVar(x[i]).getVal() - lb]).getVal() == (i + lb));
       }
     } while (s.nextSolution() == Boolean.TRUE);

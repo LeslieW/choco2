@@ -25,11 +25,13 @@ package choco.model.constraints.integer;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 // **************************************************
 // *                   J-CHOCO                      *
@@ -40,6 +42,8 @@ import java.util.ArrayList;
 // **************************************************
 
 public class BinRelationSearchTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
   public static int nbQueensSolution[] = {0, 0, 0, 0, 2, 10, 4, 40, 92, 352, 724, 2680, 14200, 73712};
 
@@ -89,24 +93,18 @@ public class BinRelationSearchTest {
       for (int j = i + 1; j < n; j++) {
         int k = j - i;
         if (nary)
-            m.addConstraint(feasTupleAC(tuples, new IntegerVariable[]{queens[i], queens[j]}));
+            m.addConstraint(feasTupleAC(tuples, queens[i], queens[j]));
 	    else m.addConstraint(feasPairAC("cp:ac" + ac, queens[i], queens[j], matriceNeq));
         boolean[][] matriceNeqDec1 = new boolean[n][n];
         for (int z = 0; z < n; z++)
           for (int w = 0; w < n; w++) {
-            if (z == (w - k))
-              matriceNeqDec1[z][w] = false;
-            else
-              matriceNeqDec1[z][w] = true;
+              matriceNeqDec1[z][w] = z != (w - k);
           }
         m.addConstraint(feasPairAC("cp:ac" + ac,queens[i], queens[j], matriceNeqDec1));   // pb.plus(queens[j], k)
         boolean[][] matriceNeqDec2 = new boolean[n][n];
         for (int z = 0; z < n; z++)
           for (int w = 0; w < n; w++) {
-            if (z == (w + k))
-              matriceNeqDec2[z][w] = false;
-            else
-              matriceNeqDec2[z][w] = true;
+              matriceNeqDec2[z][w] = z != (w + k);
           }
         m.addConstraint(feasPairAC("cp:ac" + ac,queens[i], queens[j], matriceNeqDec2));  // pb.minus(queens[j], k)
       }
@@ -117,6 +115,6 @@ public class BinRelationSearchTest {
       s.solveAll();
       time = System.currentTimeMillis() - time;
     assertEquals(nbQueensSolution[n], s.getNbSolutions());
-    System.out.println("nb SolTh : " + nbQueensSolution[n] + " nb SolReal : " + s.getNbSolutions()+ " in " + (int) time + " ms with ac " + ac);
+    LOGGER.info("nb SolTh : " + nbQueensSolution[n] + " nb SolReal : " + s.getNbSolutions()+ " in " + (int) time + " ms with ac " + ac);
   }
 }

@@ -27,7 +27,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
-import choco.cp.solver.search.limit.NodeLimit;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -40,15 +40,17 @@ import org.junit.Test;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
  * User: hcambaza
  * Date: 23 f�vr. 2007
  * Time: 16:00:01
- * To change this template use File | Settings | File Templates.
  */
 public class DistanceTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	CPModel m;
 	CPSolver s;
@@ -84,11 +86,11 @@ public class DistanceTest {
 			try {
 				s.propagate();
 			} catch (ContradictionException e) {
-				e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+				LOGGER.info(e.getMessage());
 			}
 			s.solveAll();
-			int nbNode = ((NodeLimit) s.getSearchStrategy().limits.get(1)).getNbTot();
-			System.out.println("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
+			int nbNode = s.getSearchStrategy().limits.get(1).getNbTot();
+			LOGGER.info("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
 			assertEquals(s.getNbSolutions(), 4);
 		}
 	}
@@ -113,11 +115,11 @@ public class DistanceTest {
 			try {
 				s.propagate();
 			} catch (ContradictionException e) {
-				e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+				LOGGER.info(e.getMessage());
 			}
 			s.solveAll();
-			int nbNode = ((NodeLimit) s.getSearchStrategy().limits.get(1)).getNbTot();
-			System.out.println("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
+			int nbNode = s.getSearchStrategy().limits.get(1).getNbTot();
+			LOGGER.info("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
 			assertEquals(s.getNbSolutions(), 12147);
 		}
 	}
@@ -141,11 +143,11 @@ public class DistanceTest {
 			try {
 				s.propagate();
 			} catch (ContradictionException e) {
-				e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+				LOGGER.info(e.getMessage());
 			}
 			s.solveAll();
-			int nbNode = ((NodeLimit) s.getSearchStrategy().limits.get(1)).getNbTot();
-			System.out.println("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
+			int nbNode = s.getSearchStrategy().limits.get(1).getNbTot();
+			LOGGER.info("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
 			assertEquals(s.getNbSolutions(), 4);
 		}
 	}
@@ -170,11 +172,11 @@ public class DistanceTest {
 			try {
 				s.propagate();
 			} catch (ContradictionException e) {
-				e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+				LOGGER.info(e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
 			}
 			s.solveAll();
-			int nbNode = ((NodeLimit) s.getSearchStrategy().limits.get(1)).getNbTot();
-			System.out.println("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
+			int nbNode = s.getSearchStrategy().limits.get(1).getNbTot();
+			LOGGER.info("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
 			assertEquals(s.getNbSolutions(), 4);
 		}
 	}
@@ -194,11 +196,11 @@ public class DistanceTest {
 			try {
 				s.propagate();
 			} catch (ContradictionException e) {
-				e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+				LOGGER.info(e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
 			}
 			s.solveAll();
-			int nbNode = ((NodeLimit) s.getSearchStrategy().limits.get(1)).getNbTot();
-			System.out.println("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
+			int nbNode = s.getSearchStrategy().limits.get(1).getNbTot();
+			LOGGER.info("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
 			assertEquals(s.getNbSolutions(), 6);
 		}
 	}
@@ -219,11 +221,11 @@ public class DistanceTest {
 			try {
 				s.propagate();
 			} catch (ContradictionException e) {
-				e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+				LOGGER.info(e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
 			}
 			s.solveAll();
-			int nbNode = ((NodeLimit) s.getSearchStrategy().limits.get(1)).getNbTot();
-			System.out.println("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
+			int nbNode = s.getSearchStrategy().limits.get(1).getNbTot();
+			LOGGER.info("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
 			assertEquals(s.getNbSolutions(), 6);
 		}
 	}
@@ -243,11 +245,11 @@ public class DistanceTest {
 			try {
 				s.propagate();
 			} catch (ContradictionException e) {
-				e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+				LOGGER.info(e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
 			}
 			s.solveAll();
-			int nbNode = ((NodeLimit) s.getSearchStrategy().limits.get(1)).getNbTot();
-			System.out.println("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
+			int nbNode = s.getSearchStrategy().limits.get(1).getNbTot();
+			LOGGER.info("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
 			assertEquals(s.getNbSolutions(), 31);
 			assertEquals(nbNodeFromRegulatModel(seed), nbNode);
 		}
@@ -273,11 +275,11 @@ public class DistanceTest {
 		try {
 			s.propagate();
 		} catch (ContradictionException e) {
-			e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+			LOGGER.info(e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
 		}
 		s.solveAll();
-		//System.out.println("solutions regular : " + s.getNbSolutions());
-		return ((NodeLimit) s.getSearchStrategy().limits.get(1)).getNbTot();
+		//LOGGER.info("solutions regular : " + s.getNbSolutions());
+		return s.getSearchStrategy().limits.get(1).getNbTot();
 	}
 
 	//********************************************************************//
@@ -313,7 +315,7 @@ public class DistanceTest {
 		try {
 			s.propagate();
 		} catch (ContradictionException e) {
-			e.printStackTrace();
+			LOGGER.info(e.getMessage());
 			assertTrue(false);
 		}
 		assertEquals(-1, s.getVar(v2).getInf());
@@ -356,7 +358,7 @@ public class DistanceTest {
 		assertEquals(4, s.getVar(v0).getInf());
 		assertEquals(6, s.getVar(v1).getSup());
 		s.solve();
-		System.out.println("" + s.pretty());
+		LOGGER.info("" + s.pretty());
 	}
 
 
@@ -408,7 +410,7 @@ public class DistanceTest {
 		} catch (ContradictionException e) {
 			assertTrue(false);
 		}
-		System.out.println("" + v1.pretty());
+		LOGGER.info("" + v1.pretty());
 		assertTrue(!s.getVar(v1).canBeInstantiatedTo(0));
 		assertTrue(!s.getVar(v1).canBeInstantiatedTo(1));
 		assertTrue(!s.getVar(v1).canBeInstantiatedTo(-1));
@@ -452,7 +454,7 @@ public class DistanceTest {
 			s.setValIntSelector(new RandomIntValSelector(seed));
 
 			s.solveAll();
-			System.out.println("nbsol " + s.getNbSolutions());
+			LOGGER.info("nbsol " + s.getNbSolutions());
 			assertEquals(getNbSolByDecomp(0), s.getNbSolutions());
 		}
 	}
@@ -474,7 +476,7 @@ public class DistanceTest {
 			s.setValIntSelector(new RandomIntValSelector(seed));
 
 			s.solveAll();
-			System.out.println("nbsol " + s.getNbSolutions());
+			LOGGER.info("nbsol " + s.getNbSolutions());
 			assertEquals(getNbSolByDecomp(1), s.getNbSolutions());
 		}
 	}
@@ -496,7 +498,7 @@ public class DistanceTest {
 			s.setValIntSelector(new RandomIntValSelector(seed));
 
 			s.solveAll();
-			System.out.println("nbsol " + s.getNbSolutions());
+			LOGGER.info("nbsol " + s.getNbSolutions());
 			assertEquals(getNbSolByDecomp(2), s.getNbSolutions());
 		}
 	}

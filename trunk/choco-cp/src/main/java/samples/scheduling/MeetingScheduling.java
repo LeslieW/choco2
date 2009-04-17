@@ -26,8 +26,11 @@ import choco.Choco;
 import static choco.Choco.neq;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.scheduling.TaskVariable;
+
+import java.util.logging.Logger;
 
 
 /**
@@ -38,6 +41,8 @@ import choco.kernel.model.variables.scheduling.TaskVariable;
  * A simple example 
  */
 public class MeetingScheduling {
+
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
     protected int nbP;          // number of proposals
     protected int nbE;          // number of evaluators
@@ -111,9 +116,9 @@ public class MeetingScheduling {
         //print solution
         if(solver.isFeasible()) {
         for (int i = 0; i < nbP; i++) {
-            System.out.println("P" + i + ": " + solver.getVar(proposals[i]));
+            LOGGER.info("P" + i + ": " + solver.getVar(proposals[i]));
         }
-        } else System.out.println("no solution");
+        } else LOGGER.info("no solution");
     }
 
 

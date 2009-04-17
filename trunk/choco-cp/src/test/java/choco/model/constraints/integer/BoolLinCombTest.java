@@ -28,6 +28,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.IntLinComb;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.UtilAlgo;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -43,15 +44,18 @@ import org.junit.Test;
 
 import java.util.Iterator;
 import java.util.Random;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
  * User: Hadrien
  * Date: 31 oct. 2006
  * Time: 15:07:46
- * To change this template use File | Settings | File Templates.
  */
 public class BoolLinCombTest {
+
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+
     CPModel m;
     CPSolver s;
 
@@ -90,7 +94,6 @@ public class BoolLinCombTest {
 
     @Test
     public void test00() {
-        CPModel p = new CPModel();
         IntegerVariable[] vars = makeIntVarArray("x", 2, 0, 1);
 		IntegerVariable sum = makeIntVar("s", 0, 5);
         Constraint prop = leq(scalar(new int[]{3,1}, new IntegerVariable[]{vars[0],vars[1]}),sum);
@@ -126,7 +129,7 @@ public class BoolLinCombTest {
 
     @Test
     public void test1() {
-        System.out.println("Test EQ  **************************** ");
+        LOGGER.info("Test EQ  **************************** ");
         for (int i = 1; i < 16; i++) {
             testBothLinCombVer(i, IntLinComb.EQ, 100);
         }
@@ -134,7 +137,7 @@ public class BoolLinCombTest {
 
     @Test
     public void test2() {
-        System.out.println("Test GT  **************************** ");
+        LOGGER.info("Test GT  **************************** ");
         for (int i = 1; i < 10; i++) {
             testBothLinCombVer(i, IntLinComb.GEQ, 101);
         }
@@ -142,7 +145,7 @@ public class BoolLinCombTest {
 
     @Test
     public void test3() {
-        System.out.println("Test LEQ  **************************** ");
+        LOGGER.info("Test LEQ  **************************** ");
         for (int i = 1; i < 13; i++) {
             testBothLinCombVer(i, IntLinComb.LEQ, 102);
         }
@@ -150,7 +153,7 @@ public class BoolLinCombTest {
 
 	@Test
 	public void test1S() {
-	    System.out.println("Test EQ  **************************** ");
+	    LOGGER.info("Test EQ  **************************** ");
 	    for (int i = 1; i < 16; i++) {
 	        testBothSumCombVer(i, IntLinComb.EQ, 100);
 	    }
@@ -158,7 +161,7 @@ public class BoolLinCombTest {
 
 	@Test
 	public void test2S() {
-	    System.out.println("Test GT  **************************** ");
+	    LOGGER.info("Test GT  **************************** ");
 	    for (int i = 1; i < 10; i++) {
 	        testBothSumCombVer(i, IntLinComb.GEQ, 101);
 	    }
@@ -166,7 +169,7 @@ public class BoolLinCombTest {
 
 	@Test
 	public void test3S() {
-	    System.out.println("Test LEQ  **************************** ");
+	    LOGGER.info("Test LEQ  **************************** ");
 	    for (int i = 1; i < 13; i++) {
 	        testBothSumCombVer(i, IntLinComb.LEQ, 102);
 	    }
@@ -234,7 +237,7 @@ public class BoolLinCombTest {
         s.solveAll();
         nbNodes = s.getSearchStrategy().getNodeCount();
         nbSol = s.getNbSolutions();
-        System.out.println("n:" + n + " op:" + op + " ver:" + optimized + " nbSol " + nbSol + " nbNode " + nbNodes + " tps " + s.getSearchStrategy().getTimeCount());
+        LOGGER.info("n:" + n + " op:" + op + " ver:" + optimized + " nbSol " + nbSol + " nbNode " + nbNodes + " tps " + s.getSearchStrategy().getTimeCount());
     }
 
 	private void testSumComb(int n, int op, boolean optimized, int seed) {
@@ -276,7 +279,7 @@ public class BoolLinCombTest {
 	      s.solveAll();
 	      nbNodes = s.getSearchStrategy().getNodeCount();
 	      nbSol = s.getNbSolutions();
-	      System.out.println("n:" + n + " op:" + op + " ver:" + optimized + " nbSol " + nbSol + " nbNode " + nbNodes + " tps " + s.getSearchStrategy().getTimeCount());
+	      LOGGER.info("n:" + n + " op:" + op + " ver:" + optimized + " nbSol " + nbSol + " nbNode " + nbNodes + " tps " + s.getSearchStrategy().getTimeCount());
 	  }
 
 

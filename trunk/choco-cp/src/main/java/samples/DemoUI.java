@@ -28,6 +28,8 @@
 // **************************************************
 package samples;
 
+import choco.kernel.common.logging.ChocoLogging;
+
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
@@ -36,12 +38,17 @@ import java.awt.event.MouseEvent;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.logging.Logger;
 
 /**
  * Main class for the demo
  */
 public class DemoUI {
+    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+
   public JList list;
   public JTextPane result, code;
   int demoNb;
@@ -101,7 +108,7 @@ public class DemoUI {
       try {
         Thread th = new Thread() {
           public void run() {
-            String ret = "";
+            String ret;
 
             try {
               Class demoClass =
@@ -110,7 +117,7 @@ public class DemoUI {
               Object demoObject = demoClass.newInstance();
               Method demoMethod =
                   demoClass.getMethod("demo", new Class[]{});
-              Object demoReturn = demoMethod.invoke(demoObject, new Object[]{});
+              Object demoReturn = demoMethod.invoke(demoObject);
               ret = (String) demoReturn;
             } catch (ClassNotFoundException e) {
               ret = "Class not found !";
@@ -125,10 +132,10 @@ public class DemoUI {
               Throwable t = e;
               while (t != null) {
                 Object[] traces = t.getStackTrace();
-                for (int i = 0; i < traces.length; i++) {
-                  ret += traces[i] + "\n";
-                }
-                System.out.println(t.toString() + "\n");
+                  for (Object trace : traces) {
+                      ret += trace + "\n";
+                  }
+                LOGGER.info(t.toString() + "\n");
                 t = t.getCause();
               }
             }
@@ -139,7 +146,7 @@ public class DemoUI {
         };
         th.start();
       } catch (Exception e) {
-        System.err.println("Solving error !");
+        LOGGER.severe("Solving error !");
       }
     }
   }
@@ -147,7 +154,7 @@ public class DemoUI {
   public void updateCode() {
     int nb = list.getSelectedIndex();
     StringBuffer buf = new StringBuffer();
-    buf.append("Code of " + demos[nb] + ".java.\n\n");
+    buf.append(MessageFormat.format("Code of {0}.java.\n\n", demos[nb]));
     InputStream in = this.getClass().getResourceAsStream("/src/samples/" + demos[nb] + ".java");
     if (in != null) {
       Reader reader = new BufferedReader(new InputStreamReader(in));
@@ -158,7 +165,7 @@ public class DemoUI {
         }
         reader.close();
       } catch (IOException e) {
-        System.out.println("IO exception in DemoUI : " + e.getStackTrace());
+        LOGGER.info("IO exception in DemoUI : " + Arrays.toString(e.getStackTrace()));
       }
     } else {
       buf.append("Source code not found !");
@@ -168,7 +175,7 @@ public class DemoUI {
   }
 
   static class MyDocument extends DefaultStyledDocument {
-    private Hashtable keywords;
+    private Hashtable<String, Object> keywords;
 
     DefaultStyledDocument doc;
     MutableAttributeSet normal;
@@ -192,7 +199,7 @@ public class DemoUI {
       StyleConstants.setForeground(quote, new Color(54, 150, 54));
       StyleConstants.setBold(quote, true);
       Object dummyObject = new Object();
-      keywords = new Hashtable();
+      keywords = new Hashtable<String, Object>();
       keywords.put("abstract", dummyObject);
       keywords.put("boolean", dummyObject);
       keywords.put("break", dummyObject);
@@ -252,7 +259,6 @@ public class DemoUI {
       keywords.put("void", dummyObject);
       keywords.put("volatile", dummyObject);
       keywords.put("while", dummyObject);
-      Object dummyObject1 = new Object();
     }
 
     public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
@@ -321,17 +327,17 @@ public class DemoUI {
 
     private boolean isDelimiter(String character) {
       String operands = ";:{}()[]+-/%<=>!&|^~*";
-      if (Character.isWhitespace(character.charAt(0)) || operands.indexOf(character) != -1) return true; else return false;
+        return Character.isWhitespace(character.charAt(0)) || operands.indexOf(character) != -1;
     }
 
     private boolean isQuoteDelimiter(String character) {
       String quoteDelimiters = "\"'";
-      if (quoteDelimiters.indexOf(character) == -1) return false; else return true;
+        return quoteDelimiters.indexOf(character) != -1;
     }
 
     private boolean isKeyword(String token) {
       Object o = keywords.get(token);
-      return o == null ? false : true;
+      return o != null;
     }
 
     private int getQuoteToken(String content, int startOffset, int endOffset) {
@@ -348,7 +354,7 @@ public class DemoUI {
       if ((index == -1) || (index > endOffset)) endOfQuote = endOffset; else endOfQuote = index;
       doc.setCharacterAttributes(startOffset, endOfQuote - startOffset + 1, quote, false);
       //String token = content.substring(startOffset, endOfQuote + 1);
-      //System.out.println( "quote: " + token );
+      //LOGGER.info( "quote: " + token );
       return endOfQuote + 1;
     }
 
@@ -359,7 +365,7 @@ public class DemoUI {
         endOfToken++;
       }
       String token = content.substring(startOffset, endOfToken);
-      //System.out.println( "found: " + token );
+      //LOGGER.info( "found: " + token );
       if (isKeyword(token)) doc.setCharacterAttributes(startOffset, endOfToken - startOffset, keyword, false);
       //if (isimpclasses1(token)) doc.setCharacterAttributes(startOffset, endOfToken - startOffset, impclasses1, false);
       return endOfToken + 1;

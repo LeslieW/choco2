@@ -22,23 +22,18 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.scheduling;
 
-import static choco.cp.solver.SettingType.DEFAULT_FILTERING;
-import static choco.cp.solver.SettingType.DETECTABLE_PRECEDENCE;
-import static choco.cp.solver.SettingType.EDGE_FINDING_D;
-import static choco.cp.solver.SettingType.NF_NL;
-import static choco.cp.solver.SettingType.OVERLOAD_CHECKING;
-import static choco.cp.solver.SettingType.VILIM_FILTERING;
-
-import org.junit.Test;
-
 import choco.Choco;
 import choco.cp.solver.CPSolver;
+import static choco.cp.solver.SettingType.*;
 import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.constraints.global.scheduling.Disjunctive;
 import choco.cp.solver.constraints.global.scheduling.Disjunctive.Rule;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import org.junit.Test;
 
+import java.util.logging.Logger;
 
 
 class DisjProblem extends AbstractTestProblem {
@@ -91,13 +86,15 @@ class DisjProblem extends AbstractTestProblem {
  */
 public class TestDisjunctive {
 
+    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+
 	public final static BitFlags SETTINGS = new BitFlags();
 
 	public final static int NB_TESTS = 4;
 
 	protected static void solveAll(DisjProblem dp, final int nbSol) {
 		dp.generateSolver();
-		//System.out.println(dp.solver.pretty());
+		//LOGGER.info(dp.solver.pretty());
 		SchedUtilities.solveRandom(dp.solver, nbSol, -1, "disj " + SETTINGS.toSettingsLabels());
 		//Utilities.solveTotOrder(apc.createProblem(),nbSol,-1,"disj Total Order "+apc.DisjSettings.toString());
 	}
@@ -178,24 +175,24 @@ public class TestDisjunctive {
 
 	@Test
 	public void gotToBeFactoriel() {
-		System.out.println("warning : be patient");
+		LOGGER.info("warning : be patient");
 		int[] sizes = {3, 4, 5};
 		int[] horizon = {30,25, 15};
 		DisjProblem[] pb={new DisjProblem()};
 		//pb[1].forbidInt=true;
 		//DisjProblem[] pb={new DisjSchedProblem()};
-		for (int k = 0; k < pb.length; k++) {
-			//pb[k].forbidInt=true;
-			for (int i = 0; i < horizon.length; i++) {
-				pb[k].setHorizon(horizon[i]);
-				System.out.println(pb[k].horizon);
-				for (int j = 0; j < sizes.length; j++) {
-					System.out.println("sizes=" + sizes[j]);
-					pb[k].setRandomProblem(sizes[j]);
-					launchAllRules(pb[k], Math.max(NB_TESTS/2,1), factorielle(sizes[j]));
-				}
-			}
-		}
+        for (DisjProblem aPb : pb) {
+            //pb[k].forbidInt=true;
+            for (int aHorizon : horizon) {
+                aPb.setHorizon(aHorizon);
+                LOGGER.info("" + aPb.horizon);
+                for (int size : sizes) {
+                    LOGGER.info("sizes=" + size);
+                    aPb.setRandomProblem(size);
+                    launchAllRules(aPb, Math.max(NB_TESTS / 2, 1), factorielle(size));
+                }
+            }
+        }
 	}
 
 
@@ -231,7 +228,7 @@ public class TestDisjunctive {
 
 
 
-	public final static int factorielle(final int n) {
+	public static int factorielle(final int n) {
 		if (n > 1) {
 			return n * factorielle(n - 1);
 		} else {
