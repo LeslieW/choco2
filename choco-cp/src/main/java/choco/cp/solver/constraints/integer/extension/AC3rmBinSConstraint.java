@@ -59,8 +59,6 @@ public class AC3rmBinSConstraint extends CspBinSConstraint {
 		super(x0, x1, relation);
 		v0Domain = (AbstractIntDomain) v0.getDomain();
 		v1Domain = (AbstractIntDomain) v1.getDomain();
-		//init();
-		//System.out.println("" + cardprod);
 	}
 
     public int getFilteredEventMask(int idx) {
@@ -276,7 +274,6 @@ public class AC3rmBinSConstraint extends CspBinSConstraint {
 	}
 
 	public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
-        //System.out.println((idx == 0 ? v0 : v1) + " != ?");
 		revise(idx);
 	}
 

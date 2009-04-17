@@ -26,6 +26,7 @@ package choco.cp.solver.constraints.global.tree.filtering.structuralFiltering.ti
 import choco.cp.solver.constraints.global.tree.filtering.RemovalsAdvisor;
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.Node;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.PrecsGraphView;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.trailing.StoredBitSet;
 import choco.kernel.solver.ContradictionException;
@@ -33,8 +34,11 @@ import choco.kernel.solver.ContradictionException;
 import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.logging.Logger;
 
 public class OrderedGraphPropag {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     /**
      * boolean that allow to display debug mode for this propagator
@@ -161,10 +165,10 @@ public class OrderedGraphPropag {
         Queue<Integer> queue = new LinkedList<Integer>();
         for (int i = sink.nextSetBit(0); i >= 0; i = sink.nextSetBit(i + 1)) queue.offer(i);
         if (debugRem) {
-            System.out.println("======= sink ==============");
+            LOGGER.info("======= sink ==============");
             affichePrec();
-            System.out.println("" + queue.toString());
-            System.out.println("==========================");
+            LOGGER.info("" + queue.toString());
+            LOGGER.info("==========================");
         }
         while (!queue.isEmpty()) {
             int j = queue.poll();
@@ -191,32 +195,34 @@ public class OrderedGraphPropag {
         int newMax = maxStartSucc - newSum;
         if (nodes[i].getTimeWindow().getSup() > newMax) {
             if (debugRem) {
-                System.out.println("-------------------------------------------------------------------");
-                System.out.println("Update[propagateBestDescSet] : twPropagation.TWConstraint for nodes " + i);
-                System.out.println("\t max start " + i + " = " + nodes[i].getTimeWindow().getSup() + " devient " + newMax);
-                System.out.println("-------------------------------------------------------------------");
+                LOGGER.info("-------------------------------------------------------------------");
+                LOGGER.info("Update[propagateBestDescSet] : twPropagation.TWConstraint for nodes " + i);
+                LOGGER.info("\t max start " + i + " = " + nodes[i].getTimeWindow().getSup() + " devient " + newMax);
+                LOGGER.info("-------------------------------------------------------------------");
             }
             propagateStruct.setMaxStart(i,newMax);
         }
     }
 
     public void afficheMinTravelTime() {
+        StringBuffer st = new StringBuffer();
         for (int i = 0; i < nbNodes; i++) {
-            System.out.print("prec[" + i + "] = ");
+            st.append("prec[" + i + "] = ");
             for (int j = precs.getSuccessors(i).nextSetBit(0); j >= 0; j = precs.getSuccessors(i).nextSetBit(j + 1)) {
-                System.out.print(j + " (" + minTravelTime[i][j] + "),");
+                st.append(j + " (" + minTravelTime[i][j] + "),");
             }
-            System.out.println("");
+            LOGGER.info(st.toString());
         }
     }
 
     private void affichePrec() {
+        StringBuffer st = new StringBuffer();
         for (int i = 0; i < nbNodes; i++) {
-            System.out.print("prec[" + i + "] = ");
+            st.append("prec[" + i + "] = ");
             for (int j = precs.getSuccessors(i).nextSetBit(0); j >= 0; j = precs.getSuccessors(i).nextSetBit(j + 1)) {
-                System.out.print(j + " ");
+                st.append(j + " ");
             }
-            System.out.println("");
+            LOGGER.info(st.toString());
         }
     }
 

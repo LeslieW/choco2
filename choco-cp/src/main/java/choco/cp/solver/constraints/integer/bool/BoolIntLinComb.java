@@ -382,7 +382,6 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 	@Override
 	public void awakeOnInst(int idx) throws ContradictionException {
 
-		//System.out.println("inst " + vars[idx] + " to val " + vars[idx].getVal()); // + "[" + lb.get() + " -- " + ub.get() + "]" + " =  [" + vars[cste].getInf() + " -- " + vars[cste].getSup() + "]");
 		if (idx < cste) {
 			int i = vars[idx].getVal();
 			//if (!initCopy.get(idx)) {

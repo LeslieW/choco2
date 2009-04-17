@@ -64,18 +64,18 @@ public class Nproper extends AbstractPropagator {
     public boolean feasibility() throws ContradictionException {
         // update the upper bound of nproper according to ntree
         if (tree.getNtree().getSup() < tree.getNproper().getSup()) {
-            if (affiche) System.out.println("1-NProper: updateSup nProper = " + tree.getNproper().getSup() + " ==> " + tree.getNtree().getSup());
+            if (affiche) LOGGER.info("1-NProper: updateSup nProper = " + tree.getNproper().getSup() + " ==> " + tree.getNtree().getSup());
             propagateStruct.setMaxNProper(tree.getNtree().getSup());
         }
         // update the lower bound of nproper according to ntree
         if (tree.getNtree().getInf() < tree.getNproper().getInf()) {
-            if (affiche) System.out.println("1-NProper: updateInf nProper = " + tree.getNproper().getInf() + " ==> " + tree.getNtree().getInf());
+            if (affiche) LOGGER.info("1-NProper: updateInf nProper = " + tree.getNproper().getInf() + " ==> " + tree.getNtree().getInf());
             propagateStruct.setMinNProper(tree.getNtree().getInf());
         }
         // update the lower bound of nproper according to the evaluated lower bound
         lowerBd = getLowerBound();
         if (lowerBd > tree.getNproper().getInf()) {
-            if (affiche) System.out.println("2-NProper: updateInf nProper = " + tree.getNproper().getInf() + " ==> " + lowerBd);
+            if (affiche) LOGGER.info("2-NProper: updateInf nProper = " + tree.getNproper().getInf() + " ==> " + lowerBd);
             propagateStruct.setMinNProper(lowerBd);
         }
 
@@ -83,7 +83,7 @@ public class Nproper extends AbstractPropagator {
         StoredBitSet potentialRoots = inputGraph.getPotentialRoots();
         upperBd = getUpperBound(potentialRoots);
         if (upperBd < tree.getNproper().getSup()) {
-            if (affiche) System.out.println("2-NProper: updateSup nProper = " + tree.getNproper().getSup() + " ==> " + upperBd);
+            if (affiche) LOGGER.info("2-NProper: updateSup nProper = " + tree.getNproper().getSup() + " ==> " + upperBd);
             propagateStruct.setMaxNProper(upperBd);
         }
         Vector<StoredBitSet> setcc = inputGraph.getSure().getSetCC();
@@ -92,7 +92,7 @@ public class Nproper extends AbstractPropagator {
             if (aSetcc.cardinality() > 1) nprop_build++;
         }
         if (nprop_build < lowerBd) {
-            if (affiche) System.out.println("nprop_build = " + nprop_build + " VS nProper.getSup = " + lowerBd);
+            if (affiche) LOGGER.info("nprop_build = " + nprop_build + " VS nProper.getSup = " + lowerBd);
             return false;
         } else {
             return true;
@@ -140,7 +140,7 @@ public class Nproper extends AbstractPropagator {
                         while (it.hasNext()) {
                             int j = it.next();
                             if (j != i && var.canBeInstantiatedTo(j)) {
-                                if (affiche) System.out.println("1-1 NProper: suppression arc (" + i + "," + j + ")");
+                                if (affiche) LOGGER.info("1-1 NProper: suppression arc (" + i + "," + j + ")");
                                 int[] arc = {i, j};
                                 propagateStruct.addRemoval(arc);
                             }
@@ -148,7 +148,7 @@ public class Nproper extends AbstractPropagator {
                         // no node reach the node i
                         for (int j = 0; j < nbVertices; j++) {
                             if (j != i && nodes[j].getSuccessors().canBeInstantiatedTo(i)) {
-                                if (affiche) System.out.println("1-2 NProper: suppression arc (" + j + "," + i + ")");
+                                if (affiche) LOGGER.info("1-2 NProper: suppression arc (" + j + "," + i + ")");
                                 int[] arc = {j, i};
                                 propagateStruct.addRemoval(arc);
                             }
@@ -168,7 +168,7 @@ public class Nproper extends AbstractPropagator {
                 while (it.hasNext()) {
                     int j = it.next();
                     if (j != i && var.canBeInstantiatedTo(j)) {
-                        if (affiche) System.out.println("2- NProper: suppression arc (" + i + "," + j + ")");
+                        if (affiche) LOGGER.info("2- NProper: suppression arc (" + i + "," + j + ")");
                         int[] arc = {i, j};
                         propagateStruct.addRemoval(arc);
                     }

@@ -63,7 +63,6 @@ public class CpuTimeLimit extends AbstractGlobalSearchLimit {
 	private boolean check() {
 		long c=thd.getCurrentThreadCpuTime();
 		nb= (int) ( (c-nanostart) /1E6) ; //nano second -> ms
-		//System.out.println(nb);
 		return ((nb + nbTot) < nbMax);
 	}
 

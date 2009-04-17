@@ -35,7 +35,6 @@ import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -156,7 +155,6 @@ public class GoalSearchSolver extends AbstractGlobalSearchStrategy {
                 stop = true;
               } else {
                 if (g instanceof ChoicePoint) {
-                  //logger.log(Level.FINE, "point de choix " + g, new Object[]{0, null, " pop ", 0});
                   //newTreeNode();
                   currentChoice = (ChoicePoint) g;
                   currentChoiceIndex = 0;
@@ -166,8 +164,6 @@ public class GoalSearchSolver extends AbstractGlobalSearchStrategy {
                     if(LOGGER.isLoggable(Level.INFO)) {LOGGER.log(Level.INFO, "generate {1} pop", new Object[]{0, g.pretty()});}
                     newTreeNode();
                   }
-                 // Logger.getLogger("i_want_to_use_this_old_version_of_choco.search.branching").log(Level.FINE, "execute " + g.pretty(), new Object[]{0, null, " pop ", 0});
-                  //logger.log(Level.FINE, "autre goal " + g, new Object[]{0, null, " pop ", 0});
                   Goal newG = g.execute(this.getSolver());
                   this.getSolver().propagate();
                   if (newG != null) pushGoal(newG);

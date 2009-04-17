@@ -21,10 +21,10 @@
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.tree.deduction;
-
 import choco.kernel.memory.trailing.StoredBitSet;
 
 import java.util.BitSet;
+import java.util.logging.Level;
 
 
 public class IncompGraphDeduction extends AbstractDeduction {
@@ -57,13 +57,13 @@ public class IncompGraphDeduction extends AbstractDeduction {
                     for (int k = inc.nextSetBit(0); k >= 0; k = inc.nextSetBit(k + 1)) {
                         if (j < k && !incomp.getSuccessors(j).get(k)) {
                             if (affiche)
-                                System.out.println("11- updateIncFromInst(): on ajoute (" + j + "," + k + ")");
+                                LOGGER.log(Level.INFO, "11- updateIncFromInst(): on ajoute ({0}, {1})", new Object[]{j,k});
                             update = true;
                             incomp.addArc(j,k);
                         }
                         if (k < j && !incomp.getSuccessors(k).get(j)) {
                             if (affiche)
-                                System.out.println("12- updateIncFromInst(): on ajoute (" + k + "," + j + ")");
+                                LOGGER.log(Level.INFO, "12- updateIncFromInst(): on ajoute ({0}, {1})", new Object[]{k, j});
                             update = true;
                             incomp.addArc(k,j);
                         }
@@ -90,13 +90,13 @@ public class IncompGraphDeduction extends AbstractDeduction {
                         for (int v_a = A_v.nextSetBit(0); v_a >= 0; v_a = A_v.nextSetBit(v_a + 1)) {
                             if (u_a < v_a && !incomp.getSuccessors(u_a).get(v_a)) {
                                 if (affiche)
-                                    System.out.println("1- updateIncFromRemoval(): on ajoute (" + u_a + "," + v_a + ")");
+                                    LOGGER.log(Level.INFO, "1- updateIncFromRemoval(): on ajoute ({0}, {1})", new Object[]{u_a, v_a});
                                 update = true;
                                 incomp.addArc(u_a,v_a);
                             }
                             if (v_a < u_a && !incomp.getSuccessors(v_a).get(u_a)) {
                                 if (affiche)
-                                    System.out.println("2- updateIncFromRemoval(): on ajoute (" + v_a + "," + u_a + ")");
+                                    LOGGER.log(Level.INFO, "2- updateIncFromRemoval(): on ajoute ({0}, {1})", new Object[]{v_a, u_a});
                                 update = true;
                                 incomp.addArc(v_a,u_a);
                             }
@@ -107,25 +107,25 @@ public class IncompGraphDeduction extends AbstractDeduction {
                             if (u_a != u && incomp.getSuccessors(v_d).get(u_a)) {
                                 if (u < v_d && !incomp.getSuccessors(u).get(v_d)) {
                                     if (affiche)
-                                        System.out.println("3- updateIncFromRemoval(): on ajoute (" + u + "," + v_d + ")");
+                                        LOGGER.log(Level.INFO, "3- updateIncFromRemoval(): on ajoute ({0}, {1})", new Object[]{u, v_d});
                                     update = true;
                                     incomp.addArc(u,v_d);
                                 }
                                 if (v_d < u && !incomp.getSuccessors(v_d).get(u)) {
                                     if (affiche)
-                                        System.out.println("4- updateIncFromRemoval(): on ajoute (" + v_d + "," + u + ")");
+                                        LOGGER.log(Level.INFO, "4- updateIncFromRemoval(): on ajoute ({0}, {1})", new Object[]{v_d, u});
                                     update = true;
                                     incomp.addArc(v_d,u);
                                 }
                                 if (v < u_a && !incomp.getSuccessors(v).get(u_a)) {
                                     if (affiche)
-                                        System.out.println("5- updateIncFromRemoval(): on ajoute (" + v + "," + u_a + ")");
+                                        LOGGER.log(Level.INFO, "5- updateIncFromRemoval(): on ajoute ({0}, {1})", new Object[]{v, u_a});
                                     update = true;
                                     incomp.addArc(v,u_a);
                                 }
                                 if (u_a < v && !incomp.getSuccessors(u_a).get(v)) {
                                     if (affiche)
-                                        System.out.println("6- updateIncFromRemoval(): on ajoute (" + u_a + "," + v + ")");
+                                        LOGGER.log(Level.INFO, "6- updateIncFromRemoval(): on ajoute ({0}, {1})", new Object[]{u_a, v });
                                     update = true;
                                     incomp.addArc(u_a,v);
                                 }

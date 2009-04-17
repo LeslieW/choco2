@@ -31,13 +31,17 @@ import choco.cp.solver.constraints.global.tree.structure.internalStructure.graph
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.PrecsGraphView;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.StoredBitSetGraph;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.VarGraphView;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 
 public abstract class AbstractPropagator {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     /**
      * Choco solver embedding the tree constraint
@@ -138,7 +142,7 @@ public abstract class AbstractPropagator {
      */
     public boolean applyConstraint() throws ContradictionException, IOException {
         if (!feasibility()) {
-            if (affiche) System.out.println("==> Fail() on feasibility() test");
+            if (affiche) LOGGER.info("==> Fail() on feasibility() test");
             return false;
         } else {
             filter();

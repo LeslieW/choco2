@@ -32,10 +32,12 @@ import choco.cp.solver.constraints.global.geost.geometricPrim.Obj;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Region;
 import choco.cp.solver.constraints.global.geost.internalConstraints.InternalConstraint;
 import choco.cp.solver.constraints.global.geost.internalConstraints.Outbox;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.geost.ShiftedBox;
 
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 
 /**
@@ -43,6 +45,9 @@ import java.util.Vector;
  * should be able to create the corresponding FRAME and generate the corresponding internal constraints. 
  */
 public class ExternalLayer {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
+
 
 	Constants cst;
 	Setup stp;
@@ -80,8 +85,7 @@ public class ExternalLayer {
 			result = InitFrameExternalConstraintForVisible((Visible) ectr, oIDs);
 			break;
 		default:
-			System.err
-					.println("A call to InitFrameExternalConstraint with incorrect ectr parameter");
+			LOGGER.severe("A call to InitFrameExternalConstraint with incorrect ectr parameter");
 			result = null;
 		}
 		return result;
@@ -109,7 +113,7 @@ public class ExternalLayer {
 			result = GenInternalCtrsForVisible((Visible) ectr, o);
 			break;
 		default:
-			System.err.println("A call to InitFrameExternalConstraint with incorrect ectr parameter");
+			LOGGER.severe("A call to InitFrameExternalConstraint with incorrect ectr parameter");
 			result = null;
 		}
 		return result;

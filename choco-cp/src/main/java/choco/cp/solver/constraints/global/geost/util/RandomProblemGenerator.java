@@ -24,6 +24,7 @@ package choco.cp.solver.constraints.global.geost.util;
 
 import choco.Choco;
 import choco.cp.model.CPModel;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.geost.GeostObject;
 import choco.kernel.model.variables.geost.ShiftedBox;
@@ -31,9 +32,12 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 
 import java.util.Random;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class RandomProblemGenerator {
-	
+	protected final static Logger LOGGER  = ChocoLogging.getSolverLogger();
+
 	private Vector<GeostObject> objects;
 	private Vector<ShiftedBox> sBoxes;
 	private Model m;
@@ -64,7 +68,7 @@ public class RandomProblemGenerator {
 	{
 		if(nbOfShapes > nbOfShiftedBoxes)
 		{
-			System.out.println("The number of shifted boxes should be greater or equal to the number of shapes");
+			LOGGER.log(Level.INFO, "The number of shifted boxes should be greater or equal to the number of shapes");
 			return;
 		}
 		

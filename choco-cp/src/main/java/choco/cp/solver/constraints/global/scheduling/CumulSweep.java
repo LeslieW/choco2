@@ -22,18 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-
-import choco.cp.solver.CPSolver;
-import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+
+import java.util.*;
 
 
 /**
@@ -177,7 +170,6 @@ public class CumulSweep implements ICumulSweep {
 			initializeSweep();
 			int d = events.getFirst().getDate(); // get first date
 			final ListIterator<Event> it = events.listIterator(); // about to iterate on events
-			//System.out.println(ChocoUtil.pretty(rsc.taskvars));
 			while (it.hasNext()) {
 				final Event evt = it.next();  // get next event
 				//----- pruning event

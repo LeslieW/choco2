@@ -22,40 +22,20 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.tree.structure.internalStructure.degreeStructure;
 
-/* ************************************************
- *           _       _                            *
- *          |  �(..)  |                           *
- *          |_  J||L _|       Choco-Solver.net    *
- *                                                *
- *     Choco is a java library for constraint     *
- *     satisfaction problems (CSP), constraint    *
- *     programming (CP) and explanation-based     *
- *     constraint solving (e-CP). It is built     *
- *     on a event-based propagation mechanism     *
- *     with backtrackable structures.             *
- *                                                *
- *     Choco is an open-source software,          *
- *     distributed under a BSD licence            *
- *     and hosted by sourceforge.net              *
- *                                                *
- *     + website : http://choco.emn.fr            *
- *     + support : choco@emn.fr                   *
- *                                                *
- *     Copyright (C) F. Laburthe,                 *
- *                   N. Jussien   1999-2008       *
- **************************************************/
-
-
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.TreeParameters;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.VarGraphView;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.trailing.StoredBitSet;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.BitSet;
+import java.util.logging.Logger;
 
 
 public class DegreeStructure {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     /**
      * boolean for debug and show a trace of the execution
@@ -250,15 +230,15 @@ public class DegreeStructure {
 			}
         }
         if (affiche) {
-            System.out.println("*********************************");
+            LOGGER.info("*********************************");
             for (int i = 0; i < nbVertices + 1; i++) {
-                System.out.println("deg[" + i + "] = [" + low[i] + "," + up[i] + "]");
+                LOGGER.info("deg[" + i + "] = [" + low[i] + "," + up[i] + "]");
             }
-            System.out.println("------------------------------------------");
+            LOGGER.info("------------------------------------------");
             for (int i = 0; i < nbVertices; i++) {
-                System.out.println("gcc[" + i + "] = " + gccVars[i].toString());
+                LOGGER.info("gcc[" + i + "] = " + gccVars[i].toString());
             }
-            System.out.println("*********************************");
+            LOGGER.info("*********************************");
         }
     }
 

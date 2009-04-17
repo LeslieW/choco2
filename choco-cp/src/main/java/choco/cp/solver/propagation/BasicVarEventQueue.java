@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.propagation;
 
+
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.propagation.PropagationEvent;
 import choco.kernel.solver.propagation.VarEventQueue;
@@ -29,7 +30,6 @@ import choco.kernel.solver.propagation.VarEventQueue;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /*
  * Created by IntelliJ IDEA.
@@ -63,7 +63,7 @@ public class BasicVarEventQueue implements VarEventQueue {
 	/**
 	 * Propagates some events: in fact all the events of the queue, since there
 	 * are the most important events.
-	 * 
+	 *
 	 * @throws choco.kernel.solver.ContradictionException
 	 */
 	public void propagateSomeEvents() throws ContradictionException {
@@ -80,7 +80,7 @@ public class BasicVarEventQueue implements VarEventQueue {
 
 	/**
 	 * Propagates one single event from the queue (usefull for tracing)
-	 * 
+	 *
 	 * @throws choco.kernel.solver.ContradictionException
 	 */
 	public void propagateOneEvent() throws ContradictionException {

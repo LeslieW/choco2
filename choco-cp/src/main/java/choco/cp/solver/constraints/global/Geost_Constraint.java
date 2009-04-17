@@ -170,7 +170,7 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 	}
 
 	public boolean isSatisfied() {
-        boolean b = false;
+        boolean b;
         s.worldPushDuringPropagation();
         try {
             b = geometricKernel.FilterCtrs(cst.getDIM(), oIDs,
@@ -184,33 +184,26 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 
 
 	public void propagate() throws ContradictionException {
-		//System.out.println("propagate is called");
 		filter();
 	}
 
 	public void awake() throws ContradictionException {
 		this.constAwake(false);
-		//filter();
 	}
 
 
 	public void awakeOnInst(int idx) throws ContradictionException {
 		this.constAwake(false);
-		//filter();
 	}
 
 
 
 	public void awakeOnInf(int idx) throws ContradictionException {
-		//System.out.println("awakeOnInf is called." );
 		this.constAwake(false);
-		//filter();
 	}
 
 	public void awakeOnSup(int idx) throws ContradictionException {
-		//System.out.println("awakeOnSup is called.");
 		this.constAwake(false);
-		//filter();
 	}
 
     public void awakeOnBounds(int varIndex) throws ContradictionException {
@@ -219,15 +212,11 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 	 }
 
     public void awakeOnRem(int idx, int x) throws ContradictionException {
-		//System.out.println("awakeOnRem is called");
 		this.constAwake(false);
-		//filter();
 	 }
 
 	public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
-		//System.out.println("awakeOnRemovals is called");
 		this.constAwake(false);
-		//filter();
 	}
 
 

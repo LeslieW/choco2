@@ -29,6 +29,8 @@ import choco.kernel.solver.variables.real.RealIntervalConstant;
 import choco.kernel.solver.variables.real.RealMath;
 import choco.kernel.solver.variables.real.RealVar;
 
+import java.util.logging.Level;
+
 /**
  * J-CHOCO
  * Copyright (C) F. Laburthe, 1999-2003
@@ -105,6 +107,7 @@ public abstract class AbstractRealOptimize extends AbstractGlobalSearchStrategy 
 
   /**
    * the target for the objective function: we are searching for a solution at least as good as this (tentative bound)
+   * @return double
    */
   public double getObjectiveTarget() {
     if (doMaximize) {
@@ -132,7 +135,7 @@ public abstract class AbstractRealOptimize extends AbstractGlobalSearchStrategy 
     solver.setFeasible(Boolean.TRUE);
     //nbSolutions = nbSolutions + 1;
     // trace(SVIEW,"... solution with ~A:~S [~S]\n",obj.name,objval,a.limits),  // v1.011 <thb>
-    LOGGER.info("... solution with cost " + objective + ":" + objective.getValue());
+    LOGGER.log(Level.INFO, "... solution with cost {0} : {1}", new Object[]{objective, objective.getValue()});
     setBound();
     setTargetBound();
     super.recordSolution();
@@ -183,6 +186,7 @@ public abstract class AbstractRealOptimize extends AbstractGlobalSearchStrategy 
 
   /**
    * propagating the optimization cuts from the new target bounds
+   * @throws choco.kernel.solver.ContradictionException
    */
   public void postTargetBound() throws ContradictionException {
     if (doMaximize) {

@@ -26,7 +26,7 @@ package choco.cp.solver.constraints.global.tree.deduction;
 import choco.kernel.memory.trailing.StoredBitSet;
 
 import java.util.BitSet;
-
+import java.util.logging.Level;
 public class OrderedGraphDeduction extends AbstractDeduction {
 
     public OrderedGraphDeduction(Object[] params) {
@@ -58,7 +58,7 @@ public class OrderedGraphDeduction extends AbstractDeduction {
                     int[] arc = {i, j};
                     if (isCompatible(arc)) {
                         if (affiche)
-                            System.out.println("0- ajout de l'arc: (" + i + "," + j + ") dans Gprec");
+                            LOGGER.log(Level.INFO, "0- ajout de l'arc: ({0}, {1}) dans Gprec", new Object[]{i,j});
                         addInStruct(arc);
                     }
                 }
@@ -86,7 +86,7 @@ public class OrderedGraphDeduction extends AbstractDeduction {
                     if (isCompatible(arc)) {
                         if (i != dest) {
                             if (affiche)
-                                System.out.println("1- ajout de l'arc: (" + i + "," + dest + ") dans Gp");
+                                LOGGER.log(Level.INFO, "1- ajout de l'arc: ({0},{1}) dans Gp", new Object[]{i, dest});
                             addInStruct(arc);
                         }
                     }
@@ -98,7 +98,7 @@ public class OrderedGraphDeduction extends AbstractDeduction {
                             int[] arc = {i, dest};
                             if (isCompatible(arc)) {
                                 if (affiche)
-                                    System.out.println("2- ajout de l'arc: (" + i + "," + dest + ") dans Gp");
+                                    LOGGER.log(Level.INFO, "2- ajout de l'arc: ({0},{1}) dans Gp", new Object[]{i, dest});
                                 addInStruct(arc);
                             }
                         }
@@ -135,7 +135,7 @@ public class OrderedGraphDeduction extends AbstractDeduction {
                         if (lfi != j && !iToLfi.get(j)) {
                             if (isCompatible(arc)) {
                                 if (affiche)
-                                    System.out.println("Struct[updatePred()]: (" + i + "," + j + ") ==> (" + lfi + "," + j + ")");
+                                    LOGGER.log(Level.INFO, "Struct[updatePred()]: ({0},{1}) ==> ({2},{3})", new Object[]{i, j, lfi, j});
                                 addInStruct(arc);
                             }
                         }
@@ -156,23 +156,33 @@ public class OrderedGraphDeduction extends AbstractDeduction {
                 if (j != i) {
                     for (int k = dominators[i][j].nextSetBit(0); k >= 0; k = dominators[i][j].nextSetBit(k + 1)) {
                         if (i != k && !precs.getDescendants(i).get(k)) {
-                            if (affiche) System.out.println("(" + i + " -> " + k + ") -> " + j);
+                            if (affiche) {
+                                LOGGER.log(Level.INFO, "({0} -> {1}) -> {2}", new Object[]{i, k, j});
+                            }
                             int[] arc1 = {i, k};
-                            if (affiche) System.out.println("\ttry (" + i + "," + k + ") in Gp");
+                            if (affiche){
+                                LOGGER.log(Level.INFO, "\ttry ({0}, {1}) in Gp", new Object[]{i, k});
+                            }
                             if (isCompatible(arc1)) {
                                 addInStruct(arc1);
-                                if (affiche)
-                                    System.out.println("\t\t1- ajoute: (" + i + "," + k + ") dans Gp");
+                                if (affiche){
+                                    LOGGER.log(Level.INFO, "\t\t1- ajoute : ({0},{1}) dans Gp", new Object[]{i, k});
+                                }
                             }
                         }
                         if (k != j && !precs.getDescendants(k).get(j)) {
-                            if (affiche) System.out.println("" + i + " -> (" + k + " -> " + j + ")");
+                            if (affiche) {
+                                LOGGER.log(Level.INFO, "{0} -> ({1},{2})", new Object[]{i,k,j});
+                            }
                             int[] arc2 = {k, j};
-                            if (affiche) System.out.println("\ttry (" + k + "," + j + ") in Gp");
+                            if (affiche){
+                                LOGGER.log(Level.INFO, "\ttry ({0},{1}) in Gp", new Object[]{k,j});
+                            }
                             if (isCompatible(arc2)) {
                                 addInStruct(arc2);
-                                if (affiche)
-                                    System.out.println("\t\t2- ajoute: (" + k + "," + j + ") dans Gp");
+                                if (affiche){
+                                    LOGGER.log(Level.INFO, "\t\t2- ajoute: ({0},{1}) dans Gp", new Object[]{k,j});
+                                }
                             }
                         }
                     }
@@ -204,7 +214,7 @@ public class OrderedGraphDeduction extends AbstractDeduction {
                                 if (isCompatible(arc) && w != v) {
                                     if (A_w.cardinality() > 0) {
                                         if (affiche)
-                                            System.out.println("Structure[updatePrecsWithIncs()]: (" + w + "," + v + ") dans Gp");
+                                            LOGGER.log(Level.INFO, "Structure[updatePrecsWithIncs()]: ({0},{1}) dans Gp", new Object[]{w,v});
                                         addInStruct(arc);
                                     }
                                 }
@@ -230,7 +240,7 @@ public class OrderedGraphDeduction extends AbstractDeduction {
         if (src == dest) {
             compatible = false;
             if (affiche)
-                System.out.println("\t\t1- (" + src + "," + dest + ") incompatible dans Gp");
+                LOGGER.log(Level.INFO, "\t\t1- ({0},{1}) incompatible dans Gp", new Object[]{src, dest});
             return false;
         }
         // A first dfs that checks the arc to add does not create a circuit in the precedence graph
@@ -241,18 +251,18 @@ public class OrderedGraphDeduction extends AbstractDeduction {
             BitSet desc_2 = precs.getDescendants(src);
             if (desc_2.get(dest) && !precs.getSuccessors(src).get(dest)) {
                 if (affiche)
-                    System.out.println("\t\t(" + src + "," + dest + ") incompatible dans Gp => transitif");
+                    LOGGER.log(Level.INFO, "\t\t({0},{1}) incompatible dans Gp => transitif", new Object[]{src, dest});
                 transitive = true;
             }
             return !transitive;
         } else {
             if (affiche) {
-                System.out.println("\t\t----------------------------");
-                System.out.println("\t\tprec(" + src + "," + dest + ") => cycle");
+                LOGGER.info("\t\t----------------------------");
+                LOGGER.info("\t\tprec(" + src + "," + dest + ") => cycle");
                 precs.showAllDesc();
-                System.out.println("\t\tD_" + dest + "(Gp) = " + desc_1.toString());
-                System.out.println("\t\t(" + src + "," + dest + ") incompatible dans Gp => cycle");
-                System.out.println("\t\t----------------------------");
+                LOGGER.info("\t\tD_" + dest + "(Gp) = " + desc_1.toString());
+                LOGGER.info("\t\t(" + src + "," + dest + ") incompatible dans Gp => cycle");
+                LOGGER.info("\t\t----------------------------");
             }
             compatible = false;
             return false;
@@ -287,7 +297,7 @@ public class OrderedGraphDeduction extends AbstractDeduction {
                     if (isCompatible(arc)) {
                         addInStruct(arc);
                         if (affiche)
-                            System.out.println("2- Pickup: ajout de l'arc (" + src + "," + dest + ") dans Gp");
+                            LOGGER.log(Level.INFO, "2- Pickup: ajout de l'arc ({0},{1}) dans Gp", new Object[]{src, dest});
                         pickup.set(dest, false);
                     }
                 }
@@ -303,7 +313,7 @@ public class OrderedGraphDeduction extends AbstractDeduction {
                             if (isCompatible(arc)) {
                                 addInStruct(arc);
                                 if (affiche)
-                                    System.out.println("4- Pickup: ajout de l'arc (" + src + "," + succ + ") dans Gp");
+                                    LOGGER.log(Level.INFO, "4- Pickup: ajout de l'arc ({0},{1}) dans Gp", new Object[]{src, succ});
                                 pickup.set(succ, false);
                             }
                         }
@@ -318,7 +328,7 @@ public class OrderedGraphDeduction extends AbstractDeduction {
                     if (isCompatible(arc)) {
                         addInStruct(arc);
                         if (affiche)
-                            System.out.println("6- Pickup: ajout de l'arc (" + src + "," + dest + ") dans Gp");
+                            LOGGER.log(Level.INFO, "6- Pickup: ajout de l'arc ({0},{1}) dans Gp", new Object[]{src, dest});
                         pickup.set(dest, false);
                     }
                 }

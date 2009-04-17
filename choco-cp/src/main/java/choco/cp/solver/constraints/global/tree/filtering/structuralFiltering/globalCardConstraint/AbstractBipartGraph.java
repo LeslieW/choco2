@@ -25,13 +25,17 @@ package choco.cp.solver.constraints.global.tree.filtering.structuralFiltering.gl
 import choco.cp.solver.constraints.global.tree.filtering.RemovalsAdvisor;
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.TreeParameters;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.StructuresAdvisor;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.BitSet;
+import java.util.logging.Logger;
 
 public abstract class AbstractBipartGraph {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     // slots storing the graph as a matching
     protected int nbLeftVertices, nbRightVertices, nbVertices;

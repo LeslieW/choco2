@@ -22,14 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.pack;
 
-import static choco.cp.solver.SettingType.ADDITIONAL_RULES;
-import static choco.cp.solver.SettingType.DYNAMIC_LB;
-import static choco.cp.solver.SettingType.FILL_BIN;
-
-import java.awt.Point;
-import java.util.Arrays;
-import java.util.BitSet;
-
+import static choco.cp.solver.SettingType.*;
 import choco.cp.solver.constraints.BitFlags;
 import choco.kernel.common.opres.AbstractNoSum;
 import choco.kernel.common.opres.pack.AbstractHeurisic1BP;
@@ -44,6 +37,10 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
+
+import java.awt.*;
+import java.util.Arrays;
+import java.util.BitSet;
 
 
 /**
@@ -122,7 +119,6 @@ public class PackFiltering {
 		nbItems=sizes.length;
 		loadSum = new SumDataStruct(loads,computeTotalSize());
 		this.flags = flags;
-		//System.out.println(flags +" "+flags.toSettingsLabels());
 	}
 
 	

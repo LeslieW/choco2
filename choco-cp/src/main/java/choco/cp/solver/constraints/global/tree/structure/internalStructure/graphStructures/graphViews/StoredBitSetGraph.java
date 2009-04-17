@@ -22,44 +22,25 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews;
 
-/* ************************************************
- *           _       _                            *
- *          |  �(..)  |                           *
- *          |_  J||L _|       Choco-Solver.net    *
- *                                                *
- *     Choco is a java library for constraint     *
- *     satisfaction problems (CSP), constraint    *
- *     programming (CP) and explanation-based     *
- *     constraint solving (e-CP). It is built     *
- *     on a event-based propagation mechanism     *
- *     with backtrackable structures.             *
- *                                                *
- *     Choco is an open-source software,          *
- *     distributed under a BSD licence            *
- *     and hosted by sourceforge.net              *
- *                                                *
- *     + website : http://choco.emn.fr            *
- *     + support : choco@emn.fr                   *
- *                                                *
- *     Copyright (C) F. Laburthe,                 *
- *                   N. Jussien   1999-2008       *
- **************************************************/
-
-
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.algorithms.ConnectedComponents;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.trailing.StoredBitSet;
 import choco.kernel.solver.Solver;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Stack;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 /**
  * the core class that allow to represent a graph and a set of properties that can be dynamically maintained.
  */
 public class StoredBitSetGraph {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     /**
      * list of graph properties that can be maintained for a given graph
@@ -409,10 +390,9 @@ public class StoredBitSetGraph {
     private void showCC() {
         for (int i = 0; i < setCC.size(); i++) {
             StoredBitSet contain = setCC.elementAt(i);
-            System.out.print("cc(" + i + ") = " + contain.toString());
-            System.out.println("");
+            LOGGER.info("cc(" + i + ") = " + contain.toString());
         }
-        System.out.println("*-*-*-*-*-*-*-*-*-*-*-*-*");
+        LOGGER.info("*-*-*-*-*-*-*-*-*-*-*-*-*");
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////
@@ -704,51 +684,56 @@ public class StoredBitSetGraph {
 
     public void showAllDesc(String type) {
         for (int i = 0; i < nbNodes; i++) {
-            System.out.print(type + "" + i + ":=");
+            StringBuffer st = new StringBuffer();
+            st.append(type).append("").append(i).append(":=");
             for (int j = tcGraph[i].nextSetBit(0); j >= 0; j = tcGraph[i].nextSetBit(j + 1)) {
-                System.out.print(" " + j);
+                st.append(" ").append(j);
             }
-            System.out.println("");
+            LOGGER.info(st.toString());
         }
     }
 
     public void showGraph(String type) {
         for (int i = 0; i < nbNodes; i++) {
-            System.out.print(type + "" + i + ":=");
+            StringBuffer st = new StringBuffer();
+            st.append(type).append("").append(i).append(":=");
             for (int j = graph[i].nextSetBit(0); j >= 0; j = graph[i].nextSetBit(j + 1)) {
-                System.out.print(" " + j);
+                st.append(MessageFormat.format(" {0}", j));
             }
-            System.out.println("");
+            LOGGER.info(st.toString());
         }
     }
 
     public void affiche() {
-        System.out.println("************ Graph **************");
+        LOGGER.info("************ Graph **************");
+        StringBuffer st = new StringBuffer();
         for (int i = 0; i < nbNodes; i++) {
-            System.out.print("graph[" + i + "] = ");
-            for (int j = graph[i].nextSetBit(0); j >= 0; j = graph[i].nextSetBit(j + 1)) System.out.print(j + " ");
-            System.out.println("");
+            st.append("graph[").append(i).append("] = ");
+            for (int j = graph[i].nextSetBit(0); j >= 0; j = graph[i].nextSetBit(j + 1)) st.append(j).append(" ");
         }
-        System.out.println("*********************************");
+        LOGGER.info(st.toString());
+        LOGGER.info("*********************************");
         if (params.contains(Maintain.TRANSITIVE_CLOSURE)) {
-            System.out.println("************ TC Graph **************");
+            LOGGER.info("************ TC Graph **************");
+            st = new StringBuffer();
             for (int i = 0; i < nbNodes; i++) {
-                System.out.print("TCgraph[" + i + "] = ");
+                st.append("TCgraph[").append(i).append("] = ");
                 for (int j = tcGraph[i].nextSetBit(0); j >= 0; j = tcGraph[i].nextSetBit(j + 1))
-                    System.out.print(j + " ");
-                System.out.println("");
+                    st.append(j).append(" ");
             }
-            System.out.println("*********************************");
+            LOGGER.info(st.toString());
+            LOGGER.info("*********************************");
         }
         if (params.contains(Maintain.TRANSITIVE_REDUCTION)) {
-            System.out.println("************ TR Graph **************");
+            LOGGER.info("************ TR Graph **************");
+            st = new StringBuffer();
             for (int i = 0; i < nbNodes; i++) {
-                System.out.print("TRgraph[" + i + "] = ");
+                st.append("TRgraph[").append(i).append("] = ");
                 for (int j = trGraph[i].nextSetBit(0); j >= 0; j = trGraph[i].nextSetBit(j + 1))
-                    System.out.print(j + " ");
-                System.out.println("");
+                    st.append(j).append(" ");
             }
-            System.out.println("*********************************");
+            LOGGER.info(st.toString());
+            LOGGER.info("*********************************");
         }
     }
 }

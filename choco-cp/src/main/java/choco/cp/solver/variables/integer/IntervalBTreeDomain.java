@@ -149,7 +149,6 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
      * @return the new lower bound
      */
     public int updateInf(int x) {
-        //System.out.println(this.pretty()+"u_i:"+x);
         for (int i = this.getInf() ; i < x ; i++)
         {
             this.remove(i);
@@ -164,7 +163,6 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
      * @return the new greater bound
      */
     public int updateSup(int x) {
-        //System.out.println(this.pretty()+"u_s:"+x);
         for (int i = this.getSup() ; i > x ; i--)
         {
             this.remove(i);
@@ -187,7 +185,6 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
      * @return true if removal is a success, false otherwise
      */
     public boolean remove(int x) {
-        //System.out.println(this.pretty()+"rem:"+x);
         boolean b = btree.remove(x);
         if (b){
             removeIndex(x);
@@ -211,7 +208,6 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
      * @param x integer value
      */
     public void restrict(int x) {
-        //System.out.println(this.pretty()+"res:"+x);
         IStateBinaryTree.Node current = btree.getRoot();
         while (current.leftNode != null)
         {

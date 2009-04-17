@@ -550,18 +550,14 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         // This is not an optimization since
         // filterLower{Min,Max} and
         // filterUpper{Min,Max} do not check for this case.
-        //System.out.println(l.maxValue());
         if ((l.sum(l.minValue(), minsorted[0].var.getInf() - 1) > 0) ||
             (l.sum(maxsorted[nbVars - 1].var.getSup() + 1, l.maxValue()) > 0)) {
             this.fail();
         }
-        //System.out.println("Filter lower !");
         filterLowerMax();
         filterLowerMin();
-        //System.out.println("Filter upper");
         filterUpperMax();
         filterUpperMin();
-        //System.out.println("Finished !");
     }
 
 

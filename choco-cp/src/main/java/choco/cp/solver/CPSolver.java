@@ -119,12 +119,9 @@ import choco.kernel.visu.IVisu;
 import gnu.trove.TIntObjectHashMap;
 
 import java.lang.reflect.Array;
-import java.security.AccessControlException;
 import java.util.*;
-import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.StreamHandler;
 
 /**
  * This class serves both as a factory and as a handler for
@@ -1952,7 +1949,6 @@ public class CPSolver implements Solver {
 	 * @param exp
 	 */
 	protected void decisionOnExpression(ExpressionSConstraint exp) {
-		// System.out.println("" + cardProd);
 		Boolean decomp = exp.isDecomposeExp();
 		if (decomp != null) {
 			if (decomp && exp.checkDecompositionIsPossible()) {

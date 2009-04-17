@@ -78,7 +78,7 @@ public class Tree extends AbstractPropagator {
         if (C1) {
             // each sink scc contains at least one potential root
             int nb = 0;
-            if (affiche) System.out.println("|SinkSCC| = " + sink.cardinality() + " -VS- |cfc| = " + cfc.size());
+            if (affiche) LOGGER.info("|SinkSCC| = " + sink.cardinality() + " -VS- |cfc| = " + cfc.size());
             for (int i = sink.nextSetBit(0); i >= 0; i = sink.nextSetBit(i + 1)) {
                 boolean loop = false;
                 StoredBitSet cont = cfc.elementAt(i);
@@ -91,12 +91,12 @@ public class Tree extends AbstractPropagator {
                 return true;
             } else {
                 if (affiche)
-                    System.out.println("1- tree: violation de la contrainte tree");
+                    LOGGER.info("1- tree: violation de la contrainte tree");
                 return false;
             }
         } else {
             if (affiche)
-                System.out.println("2- tree: violation de la contrainte tree");
+                LOGGER.info("2- tree: violation de la contrainte tree");
             return false;
         }
     }
@@ -117,12 +117,12 @@ public class Tree extends AbstractPropagator {
         // update lower and upper bounds of ntree
         if (tree.getNtree().getSup() > maxtree) {
             if (affiche)
-                System.out.println("treeConstraint.filtering.structuralFiltering.tree.Tree: updateSup ntree = " + tree.getNtree().getSup() + " ==> " + maxtree);
+                LOGGER.info("treeConstraint.filtering.structuralFiltering.tree.Tree: updateSup ntree = " + tree.getNtree().getSup() + " ==> " + maxtree);
             propagateStruct.setMaxNtree(maxtree);
         }
         if (tree.getNtree().getInf() < mintree) {
             if (affiche)
-                System.out.println("treeConstraint.filtering.structuralFiltering.tree.Tree: updateInf ntree = " + tree.getNtree().getInf() + " ==> " + mintree);
+                LOGGER.info("treeConstraint.filtering.structuralFiltering.tree.Tree: updateInf ntree = " + tree.getNtree().getInf() + " ==> " + mintree);
             propagateStruct.setMinNtree(mintree);
         }
         // detect a sink scc with one single potential root
@@ -153,7 +153,7 @@ public class Tree extends AbstractPropagator {
                 while (toRem[j] != -1) {
                     if (nodes[name].getSuccessors().canBeInstantiatedTo(toRem[j])) {
                         if (affiche)
-                            System.out.println("1- treeConstraint.filtering.structuralFiltering.tree.Tree: suppression arc (" + name + "," + toRem[j] + ")");
+                            LOGGER.info("1- treeConstraint.filtering.structuralFiltering.tree.Tree: suppression arc (" + name + "," + toRem[j] + ")");
                         int[] arc = {name, toRem[j]};
                         propagateStruct.addRemoval(arc);
                     }
@@ -189,7 +189,7 @@ public class Tree extends AbstractPropagator {
                     while (toRem[j] != -1) {
                         if (var.canBeInstantiatedTo(toRem[j])) {
                             if (affiche)
-                                System.out.println("2- treeConstraint.filtering.structuralFiltering.tree.Tree: suppression arc (" + m + "," + toRem[j] + ")");
+                                LOGGER.info("2- treeConstraint.filtering.structuralFiltering.tree.Tree: suppression arc (" + m + "," + toRem[j] + ")");
                             int[] arc = {m, toRem[j]};
                             propagateStruct.addRemoval(arc);
                         }
@@ -219,7 +219,7 @@ public class Tree extends AbstractPropagator {
                     for (int j = cont.nextSetBit(0); j >= 0; j = cont.nextSetBit(j + 1)) {
                         if (nodes[j].getSuccessors().canBeInstantiatedTo(j) && !nodes[j].getSuccessors().isInstantiatedTo(j)) {
                             if (affiche)
-                                System.out.println("3- treeConstraint.filtering.structuralFiltering.tree.Tree: suppression boucle sur " + j);
+                                LOGGER.info("3- treeConstraint.filtering.structuralFiltering.tree.Tree: suppression boucle sur " + j);
                             int[] arc = {j, j};
                             propagateStruct.addRemoval(arc);
                         }
@@ -230,7 +230,7 @@ public class Tree extends AbstractPropagator {
             for (int m = 0; m < nbVertices; m++) {
                 if (nodes[m].getSuccessors().isInstantiatedTo(m) && m != name) {
                     if (affiche)
-                        System.out.println("4- treeConstraint.filtering.structuralFiltering.tree.Tree: suppression boucle sur " + m);
+                        LOGGER.info("4- treeConstraint.filtering.structuralFiltering.tree.Tree: suppression boucle sur " + m);
                     int[] arc = {m, m};
                     propagateStruct.addRemoval(arc);
                 }
@@ -262,7 +262,7 @@ public class Tree extends AbstractPropagator {
                     int r = it.next();
                     if (cont.get(r) && r != j && var.canBeInstantiatedTo(r)) {
                         if (affiche)
-                            System.out.println("5- treeConstraint.filtering.structuralFiltering.tree.Tree: suppression (" + j + "," + r + ")");
+                            LOGGER.info("5- treeConstraint.filtering.structuralFiltering.tree.Tree: suppression (" + j + "," + r + ")");
                         int[] arc = {j, r};
                         propagateStruct.addRemoval(arc);
                     }
@@ -294,7 +294,7 @@ public class Tree extends AbstractPropagator {
             unreached.xor(reached);
             for (int i = unreached.nextSetBit(0); i >= 0; i = unreached.nextSetBit(i + 1)) {
                 if (nodes[p].getSuccessors().canBeInstantiatedTo(i)) {
-                    if (affiche) System.out.println("6- Tree: suppression arc (" + p + "," + i + ")");
+                    if (affiche) LOGGER.info("6- Tree: suppression arc (" + p + "," + i + ")");
                     int[] arc = {p, i};
                     propagateStruct.addRemoval(arc);
                 }

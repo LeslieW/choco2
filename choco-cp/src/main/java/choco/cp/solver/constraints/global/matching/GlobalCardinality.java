@@ -183,8 +183,6 @@ public class GlobalCardinality extends AbstractBipartiteFlow implements IntSCons
    * @param idx variable index
    */
   public void awakeOnInst(int idx) throws ContradictionException {
-    //System.out.println(this);
-    //System.out.println(this.pretty());
     setMatch(idx, vars[idx].getVal() - minValue);
     constAwake(false);
   }

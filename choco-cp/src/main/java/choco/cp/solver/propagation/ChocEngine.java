@@ -35,7 +35,6 @@ import choco.kernel.solver.variables.set.SetVar;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Implementation of an {@link choco.kernel.solver.propagation.AbstractPropagationEngine} for Choco.
@@ -80,6 +79,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 
   /**
    * Constructs a new engine by initializing the var queues.
+   * @param solver Solver master
    */
 
   public ChocEngine(Solver solver) {
@@ -168,8 +168,8 @@ public class ChocEngine extends AbstractPropagationEngine {
   /**
    * Posts an lower bound event for a real variable.
    *
-   * @param v
-   * @param idx
+   * @param v the real variable
+   * @param idx indice of the constraint that change the lower bound
    */
   public void postUpdateInf(RealVar v, int idx) {
     postEvent(v, idx, RealVarEvent.INCINF);
@@ -178,8 +178,8 @@ public class ChocEngine extends AbstractPropagationEngine {
   /**
    * Posts an upper bound event for a real variable
    *
-   * @param v
-   * @param idx
+   * @param v real variable
+   * @param idx indice of the constraint that change the bound
    */
   public void postUpdateSup(RealVar v, int idx) {
     postEvent(v, idx, RealVarEvent.DECSUP);
@@ -259,7 +259,7 @@ public class ChocEngine extends AbstractPropagationEngine {
    * Registers an event in the queue. It should be called before using the queue to add
    * the var in the available events of the queue.
    *
-   * @param event
+   * @param event the event to register
    */
 
   public void registerEvent(ConstraintEvent event) {
@@ -278,12 +278,10 @@ public class ChocEngine extends AbstractPropagationEngine {
 
     /**
      * Set Var Event Queues
-     * @param veqs
+     * @param veqs array of variable event queues
      */
     public void setVarEventQueues(VarEventQueue[] veqs) {
-        for(int i = 0; i < varEventQueue.length; i++ ){
-            varEventQueue[i] = veqs[i];
-        }
+        System.arraycopy(veqs, 0, varEventQueue, 0, varEventQueue.length);
     }
 
     public void setVarEventQueues(int eventQueueType){
@@ -301,13 +299,11 @@ public class ChocEngine extends AbstractPropagationEngine {
     }
 
     /**
-     * Set Var Event Queues
-     * @param ceqs
+     * Set constraint Event Queues
+     * @param ceqs arrays of constraint event queues
      */
     public void setConstraintEventQueues(ConstraintEventQueue[] ceqs) {
-        for(int i = 0; i < constEventQueues.length; i++ ){
-            constEventQueues[i] = ceqs[i];
-        }
+        System.arraycopy(ceqs, 0, constEventQueues, 0, constEventQueues.length);
     }
 
 
@@ -356,6 +352,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 
   /**
    * Returns the next constraint var queue from which an event should be propagated.
+   * @return Event queue
    */
 
   public EventQueue getNextActiveConstraintEventQueue() {
@@ -394,6 +391,8 @@ public class ChocEngine extends AbstractPropagationEngine {
   /**
    * getter without side effect:
    * returns the i-ht pending event (without popping any event from the queues)
+   * @param idx indice of the event
+   * @return a propagation event
    */
   public PropagationEvent getPendingEvent(int idx) {
       int varsSize = 0;
@@ -406,7 +405,7 @@ public class ChocEngine extends AbstractPropagationEngine {
               return varEventQueue[i].get(idx);
           }
       }
-      EventQueue q = null;
+      EventQueue q;
       int size = varsSize;
       int qidx = 0;
       do {
@@ -450,8 +449,8 @@ public class ChocEngine extends AbstractPropagationEngine {
     for (int i = 0; i < nbiv; i++) {
       IntVarEvent evt = (IntVarEvent) solver.getIntVar(i).getEvent();
       if (!(evt.getReleased())) {
-        LOGGER.log(Level.SEVERE, "var event non released {0}", evt);
-        new Exception().printStackTrace();
+        LOGGER.log(Level.SEVERE, "var event non released {0}", evt.toString());
+//        new Exception().printStackTrace();
         ok = false;
       }
     }
@@ -459,8 +458,8 @@ public class ChocEngine extends AbstractPropagationEngine {
     for (int i = 0; i < nbsv; i++) {
       SetVarEvent evt = (SetVarEvent) solver.getSetVar(i).getEvent();
       if (!(evt.getReleased())) {
-    	  LOGGER.log(Level.SEVERE, "var event non released {0}", evt);
-        new Exception().printStackTrace();
+        LOGGER.log(Level.SEVERE, "var event non released {0}", evt.toString());
+//        new Exception().printStackTrace();
         ok = false;
       }
     }

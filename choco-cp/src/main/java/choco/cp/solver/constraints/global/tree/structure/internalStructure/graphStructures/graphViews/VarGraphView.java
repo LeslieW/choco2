@@ -22,40 +22,21 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews;
 
-/* ************************************************
- *           _       _                            *
- *          |  �(..)  |                           *
- *          |_  J||L _|       Choco-Solver.net    *
- *                                                *
- *     Choco is a java library for constraint     *
- *     satisfaction problems (CSP), constraint    *
- *     programming (CP) and explanation-based     *
- *     constraint solving (e-CP). It is built     *
- *     on a event-based propagation mechanism     *
- *     with backtrackable structures.             *
- *                                                *
- *     Choco is an open-source software,          *
- *     distributed under a BSD licence            *
- *     and hosted by sourceforge.net              *
- *                                                *
- *     + website : http://choco.emn.fr            *
- *     + support : choco@emn.fr                   *
- *                                                *
- *     Copyright (C) F. Laburthe,                 *
- *                   N. Jussien   1999-2008       *
- **************************************************/
-
-
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.reducedGraph.ReducedGraph;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.memory.trailing.StoredBitSet;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class VarGraphView {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     /**
      * boolean for debug and show a trace of the execution
@@ -338,31 +319,34 @@ public class VarGraphView {
 
     public void showSure() {
         for (int i = 0; i < nbNodes; i++) {
-            System.out.print("sure[" + i + "] = ");
+            StringBuffer st = new StringBuffer();
+            st.append("sure[").append(i).append("] = ");
             for (int j = sure.getGraph()[i].nextSetBit(0); j >= 0; j = sure.getGraph()[i].nextSetBit(j + 1)) {
-                System.out.print(j + " ");
+                st.append(j).append(" ");
             }
-            System.out.println("");
+            LOGGER.info(st.toString());
         }
     }
 
     public void showMaybe() {
         for (int i = 0; i < nbNodes; i++) {
-            System.out.print("maybe[" + i + "] = ");
+            StringBuffer st = new StringBuffer();
+            st.append("maybe[").append(i).append("] = ");
             for (int j = maybe.getGraph()[i].nextSetBit(0); j >= 0; j = maybe.getGraph()[i].nextSetBit(j + 1)) {
-                System.out.print(j + " ");
+                st.append(j).append(" ");
             }
-            System.out.println("");
+            LOGGER.info(st.toString());
         }
     }
 
     public void showGlobal() {
         for (int i = 0; i < nbNodes; i++) {
-            System.out.print("v" + i + ":= ");
+            StringBuffer st = new StringBuffer();
+            st.append(MessageFormat.format("v{0}:= ", i));
             for (int j = global.getGraph()[i].nextSetBit(0); j >= 0; j = global.getGraph()[i].nextSetBit(j + 1)) {
-                System.out.print(j + " ");
+                st.append(MessageFormat.format("{0} ", j));
             }
-            System.out.println("");
+            LOGGER.info(st.toString());
         }
     }
 }

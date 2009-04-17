@@ -22,31 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.algorithms;
 
-/* ************************************************
- *           _       _                            *
- *          |  °(..)  |                           *
- *          |_  J||L _|       Choco-Solver.net    *
- *                                                *
- *     Choco is a java library for constraint     *
- *     satisfaction problems (CSP), constraint    *
- *     programming (CP) and explanation-based     *
- *     constraint solving (e-CP). It is built     *
- *     on a event-based propagation mechanism     *
- *     with backtrackable structures.             *
- *                                                *
- *     Choco is an open-source software,          *
- *     distributed under a BSD licence            *
- *     and hosted by sourceforge.net              *
- *                                                *
- *     + website : http://choco.emn.fr            *
- *     + support : choco@emn.fr                   *
- *                                                *
- *     Copyright (C) F. Laburthe,                 *
- *                   N. Jussien   1999-2008       *
- **************************************************/
-
-
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.StoredBitSetGraph;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.trailing.StoredBitSet;
@@ -54,8 +31,11 @@ import choco.kernel.memory.trailing.StoredBitSet;
 import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 public class RestrictedSCC {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     protected boolean affiche = false;
     protected boolean debug = false;
@@ -128,61 +108,62 @@ public class RestrictedSCC {
      */
     public Vector getRestrictedSCC() {
         // debut du traitement
-        if (debug) System.out.print("on verifie que " + sap + " peut etre un paf...");
-        if (affiche || debug) System.out.println("====> Premier DFS:");
+        if (debug) LOGGER.info("on verifie que " + sap + " peut etre un paf...");
+        if (affiche || debug) LOGGER.info("====> Premier DFS:");
         for (int v = 0; v < contain.cardinality(); v++) {
             if (contain.get(v)) {
                 if (prefix[v] == 0 && v != sap) {
-                    if (debug) System.out.println(" On entre par " + v);
+                    if (debug) LOGGER.info(" On entre par " + v);
                     listSuffix = restrictDFS_suffix(v, v);
                 }
             }
         }
-        if (affiche || debug) System.out.println("Fin du premier DFS <====");
+        if (affiche || debug) LOGGER.info("Fin du premier DFS <====");
         if (canBeSAP) {
-            if (debug) System.out.println(" oui!!!");
+            if (debug) LOGGER.info(" oui!!!");
             // mise a jour des structures
             razStruct();
             // inversion de la matrice CGA
             Vector invCGA = inverse();
             if (affiche) {
-                System.out.println("==== Calcul des cfc : le graphe invCGA ====");
+                LOGGER.info("==== Calcul des cfc : le graphe invCGA ====");
                 for (int i = 0; i < invCGA.size(); i++) {
                     BitSet s = (BitSet) invCGA.elementAt(i);
-                    System.out.print("cga[" + i + "] = ");
+                    StringBuffer st = new StringBuffer();
+                    st.append("cga[").append(i).append("] = ");
                     for (int j = s.nextSetBit(0); j >= 0; j = s.nextSetBit(j + 1)) {
-                        System.out.print(j + " ");
+                        st.append(j).append(" ");
                     }
-                    System.out.println("");
+                    LOGGER.info(st.toString());
                 }
             }
-            if (affiche || debug) System.out.println("====> Second DFS (invers�):");
+            if (affiche || debug) LOGGER.info("====> Second DFS (invers�):");
             while (listSuffix.size() != 0) {
                 int v = listSuffix.removeLast();
                 if (contain.get(v) && prefix[v] == 0 && v != sap) {
                     numComp++;
-                    if (affiche) System.out.println("    On entre par " + v);
+                    if (affiche) LOGGER.info("    On entre par " + v);
                     restrictDFS_mark(v, invCGA);
                 }
             }
-            if (affiche || debug) System.out.println("Fin du second DFS <====");
+            if (affiche || debug) LOGGER.info("Fin du second DFS <====");
             // le tableau composante contient la liste des cfc, on effectue un traitement pour le mettre sous forme d'un vector
             for (int i = 0; i < numComp + 1; i++) {
                 BitSet cont = new BitSet(nbVertices);
                 boolean add = false;
                 for (int j = 0; j < contain.cardinality(); j++) {
                     if (contain.get(j) && composante[j] == i) {
-                        if (affiche) System.out.println(j + " est dans la composante " + i);
+                        if (affiche) LOGGER.info(j + " est dans la composante " + i);
                         add = true;
                         cont.set(j, true);
                     }
                 }
                 if (add) CFC.addElement(cont);
             }
-            if (affiche) System.out.println("nbre de cfc = " + CFC.size());
+            if (affiche) LOGGER.info("nbre de cfc = " + CFC.size());
             return CFC;
         } else {
-            if (debug) System.out.println(" non!!!");
+            if (debug) LOGGER.info(" non!!!");
             // recalcul des cfc's
             CFC.removeAllElements();
             CFC.addElement(null);
@@ -195,7 +176,7 @@ public class RestrictedSCC {
         reached.set(v, true);
         time++;
         prefix[v] = time;
-        if (debug) System.out.println("\t On visite " + v + " au temps " + time + " (i.e., prefix[" + v + "] = " + prefix[v] + ")");
+        if (debug) LOGGER.info("\t On visite " + v + " au temps " + time + " (i.e., prefix[" + v + "] = " + prefix[v] + ")");
         minReached[v] = prefix[v];
         revPrefix[prefix[v]] = v;
         StoredBitSet dom = graph.getSuccessors(v);
@@ -203,30 +184,30 @@ public class RestrictedSCC {
             if (contain.get(j) && j != sap && j != v) {
                 if (prefix[j] > 0 && minReached[j] < minReached[v]) {
                     minReached[v] = minReached[j];
-                    if (debug) System.out.println("\t\t le plus petit sommet, d�ja parcouru, atteignable depuis " + v + " ==> " + revPrefix[minReached[v]]);
+                    if (debug) LOGGER.info("\t\t le plus petit sommet, d�ja parcouru, atteignable depuis " + v + " ==> " + revPrefix[minReached[v]]);
                 }
                 if (prefix[j] == 0) {
-                    if (debug) System.out.println("\t\t prefix[" + j + "] = " + prefix[j] + " => appel sur " + j);
+                    if (debug) LOGGER.info("\t\t prefix[" + j + "] = " + prefix[j] + " => appel sur " + j);
                     restrictDFS_suffix(j, origin);
                 }
             }
         }
         if (!firstLeaf) {
-            if (debug) System.out.println("\t on est sur la premi�re feuille (" + v + ") on teste...");
+            if (debug) LOGGER.info("\t on est sur la premi�re feuille (" + v + ") on teste...");
             firstLeaf = true;
             // on sait que tout sommet de la cfc\{sap} peut-�tre atteint
             if (reached.cardinality() == nbToReach) {
                 // on v�rifie que cfc\{sap} reste une cfc
                 if (v != sap && minReached[v] != prefix[origin]) {
-                    if (debug) System.out.println("\t\t la feuille " + v + " ne peut pas atteindre l'origine " + origin + " => " + sap + " peut etre un paf");
+                    if (debug) LOGGER.info("\t\t la feuille " + v + " ne peut pas atteindre l'origine " + origin + " => " + sap + " peut etre un paf");
                     canBeSAP = true; // v peut �tre un sap
                 }
                 if (!canBeSAP) { // v ne peut pas �tre un sap
-                    if (debug) System.out.println("\t\t le sommet " + sap + " ne peut pas �tre un paf");
+                    if (debug) LOGGER.info("\t\t le sommet " + sap + " ne peut pas �tre un paf");
                     return listSuffix;
                 }
             } else {
-                if (debug) System.out.println("\t\t tous les sommets de contain vivants n'ont pas �t� atteint => " + sap + " peut etre un paf");
+                if (debug) LOGGER.info("\t\t tous les sommets de contain vivants n'ont pas �t� atteint => " + sap + " peut etre un paf");
                 canBeSAP = true; // v peut �tre un sap
             }
         }
@@ -237,7 +218,7 @@ public class RestrictedSCC {
     // DFS restreint sur invCGA
     public BitSet restrictDFS_mark(int v, Vector invCGA) {
         prefix[v] = time++;
-        if (affiche) System.out.println("       On visite " + v);
+        if (affiche) LOGGER.info("       On visite " + v);
         if (composante[v] == -1) composante[v] = numComp;
         BitSet listPossSucc = (BitSet) invCGA.elementAt(v);
         for (int j = listPossSucc.nextSetBit(0); j >= 0; j = listPossSucc.nextSetBit(j + 1)) {

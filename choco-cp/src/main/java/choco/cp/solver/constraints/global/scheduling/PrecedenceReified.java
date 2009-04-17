@@ -34,6 +34,8 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractTernIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.logging.Level;
+
 /*
  * Created by IntelliJ IDEA.
  * User: hcambaza
@@ -189,12 +191,11 @@ public class PrecedenceReified extends AbstractTernIntSConstraint {
 
 		  s.solve();
 		  do {
-		    //System.out.println(s.getVar(z).getVal() + " " + s.getVar(x).getVal() + " " + s.getVar(y).getVal());
 		  } while (s.nextSolution() == Boolean.TRUE);
 		  if (s.getNbSolutions() != 100) {
 			  throw new Error("wrong number of solutions " + s.getNbSolutions());
 		  }
-		  System.out.println("Nb solution : " + s.getNbSolutions());
+		  LOGGER.log(Level.INFO, "Nb solution : " ,  s.getNbSolutions());
 
 		  //assertEquals( s.getNbSolutions(), 14);
 		}

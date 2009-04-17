@@ -70,15 +70,15 @@ public class OptimizeWithRestarts extends AbstractOptimize {
       AbstractGlobalSearchLimit lim = (AbstractGlobalSearchLimit) limits.get(i);
       lim.reset(false);
     }
-    if (logger.isLoggable(Level.SEVERE)) {
+    if (LOGGER.isLoggable(Level.SEVERE)) {
       if (model.feasible == Boolean.TRUE) { // <hca> bug quand feasible est � null
-        logger.log(Level.SEVERE, "solve => " + new Integer(nbSolutions) + " solutions");
+        LOGGER.log(Level.SEVERE, "solve => " + new Integer(nbSolutions) + " solutions");
       } else {
-        logger.severe("solve => no solution");
+        LOGGER.severe("solve => no solution");
       }
       for (int i = 0; i < limits.size(); i++) {
         AbstractGlobalSearchLimit lim = (AbstractGlobalSearchLimit) limits.get(i);
-        logger.severe(lim.pretty());
+        LOGGER.severe(lim.pretty());
       }
     }
     popTraceUntil(baseWorld + 1);
@@ -107,15 +107,15 @@ public class OptimizeWithRestarts extends AbstractOptimize {
       AbstractGlobalSearchLimit lim = (AbstractGlobalSearchLimit) limits.get(i);
       lim.reset(false);
     }
-    /*if (logger.isLoggable(Level.SEVERE)) {
+    /*if (LOGGER.isLoggable(Level.SEVERE)) {
       if (model.feasible == Boolean.TRUE) { // <hca> bug quand feasible est � null
-        logger.log(Level.SEVERE, "solve => " + new Integer(nbSolutions) + " solutions");
+        LOGGER.log(Level.SEVERE, "solve => " + new Integer(nbSolutions) + " solutions");
       } else {
-        logger.severe("solve => no solution");
+        LOGGER.severe("solve => no solution");
       }
       for (int i = 0; i < limits.size(); i++) {
         AbstractGlobalSearchLimit lim = (AbstractGlobalSearchLimit) limits.get(i);
-        logger.severe(lim.pretty());
+        LOGGER.severe(lim.pretty());
       }
     }*/
     popTraceUntil(baseWorld + 1);

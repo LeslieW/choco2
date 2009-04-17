@@ -30,8 +30,6 @@ import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.search.integer.VarValPairSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.logging.Level;
-
 /**
  * A class for branching schemes that consider two branches: - one assigning a
  * value to an IntVar (X == v) - and the other forbidding this assignment (X !=
@@ -78,8 +76,8 @@ public class AssignOrForbidIntVarVal extends AbstractBinIntBranching {
 	protected final String getLogMessage() {
 		return getLogMessageWithBranch();
 	}
-	
-	
+
+
 
 	@Override
 	protected Object getValueLogParameter(Object x, int branch) {

@@ -173,7 +173,7 @@ public class BitSetIntDomain extends AbstractIntDomain implements IBitSetIntDoma
         int newi = x - offset;  // index of the new lower bound
         for (int i = inf.get() - offset; i < newi; i = contents.nextSetBit(i + 1)) {
             assert(contents.get(i));
-            //logger.severe("Bug in BitSetIntDomain.updateInf ?");
+            //LOGGER.severe("Bug in BitSetIntDomain.updateInf ?");
             removeIndex(i);
         }
         inf.set(contents.nextSetBit(newi) + offset);
@@ -190,7 +190,7 @@ public class BitSetIntDomain extends AbstractIntDomain implements IBitSetIntDoma
         int newi = x - offset;  // index of the new lower bound
         for (int i = sup.get() - offset; i > newi; i = contents.prevSetBit(i - 1)) {
                 assert(contents.get(i));
-                //logger.severe("Bug in BitSetIntDomain.updateSup ?");
+                //LOGGER.severe("Bug in BitSetIntDomain.updateSup ?");
                 removeIndex(i);
         }
         sup.set(contents.prevSetBit(newi) + offset);
@@ -222,12 +222,12 @@ public class BitSetIntDomain extends AbstractIntDomain implements IBitSetIntDoma
 
     private void removeIndex(int i) {
         assert(i != firstIndexToBePropagated);
-        //logger.severe("Bug in BitSetIntDomain.removeIndex ?");
+        //LOGGER.severe("Bug in BitSetIntDomain.removeIndex ?");
         contents.clear(i);
         chain[i] = firstIndexToBePropagated;
         firstIndexToBePropagated = i;
         assert(!contents.get(i)) ;
-        //logger.severe("Bug in BitSetIntDomain.removeIndex ?");
+        //LOGGER.severe("Bug in BitSetIntDomain.removeIndex ?");
         size.add(-1);
     }
 

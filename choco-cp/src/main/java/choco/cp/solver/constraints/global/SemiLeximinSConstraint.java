@@ -28,6 +28,8 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.logging.Level;
+
 /**
  * <code>SemiLeximinConstraint</code> is a constraint that ensures
  * the leximin ordering between one vector of variables and one of integers.
@@ -111,6 +113,7 @@ public class SemiLeximinSConstraint extends AbstractLargeIntSConstraint {
 
     /**
      * This methods updates the vectors used by the gac algorithm.
+     * @param idx indice
      */
     //    public synchronized void updateVectors(int idx) {
     public void updateVectors(int idx) {
@@ -163,7 +166,7 @@ public class SemiLeximinSConstraint extends AbstractLargeIntSConstraint {
             this.epsilon.set(i, false);
         }
         if (verbose) {
-            System.out.println("l = " + l + " / u = " + u);
+            LOGGER.log(Level.INFO, "l = {0} / u = {1}", new Object[]{l, u});
         }
         while (this.alpha.get() <= u && currentOccX == currentOccY) {
             this.alpha.set(this.alpha.get() + 1); // Increase alpha by one.
@@ -178,8 +181,8 @@ public class SemiLeximinSConstraint extends AbstractLargeIntSConstraint {
                 currentY++;
             } // Read sortedCeily array in order to compute occY
             if (verbose) {
-                System.out.println("cX = " + currentX + " / cOX = " + currentOccX);
-                System.out.println("cY = " + currentY + " / cOY = " + currentOccY);
+                LOGGER.log(Level.INFO, "cX = {0} / cOX = {1}", new Object[]{currentX, currentOccX});
+                LOGGER.log(Level.INFO, "cY = {0} / cOY = ", new Object[]{currentY, currentOccY});
             }
         }
 
@@ -342,8 +345,6 @@ public class SemiLeximinSConstraint extends AbstractLargeIntSConstraint {
     //public synchronized void propagate() throws ContradictionException
     @Override
 	public void propagate() throws ContradictionException {
-        //System.out.println("propagate.");
-        //this.generateVectors();
         this.setPointersAndFlags();
         this.gac();
     }
@@ -429,10 +430,7 @@ public class SemiLeximinSConstraint extends AbstractLargeIntSConstraint {
         int i;
         for (i = 0; i < n && x[i] == y[i].getVal(); i++) {
         }
-        if (i == n || x[i] > y[i].getVal()) {
-			return false;
-		}
-        return true;
+        return !(i == n || x[i] > y[i].getVal());
     }
 
   /**
@@ -480,40 +478,41 @@ public String pretty() {
      */
 
     public void printOccVectors() {
-        System.out.print("x = [");
-        for (int i = 0; i < this.x.length; i++) {
-            System.out.print(" " + x[i]);
+        StringBuffer st = new StringBuffer();
+        st.append("x = [");
+        for (int aX : this.x) {
+            st.append(" ").append(aX);
         }
-        System.out.print(" ]\n");
-        System.out.print("y = [");
+        st.append(" ]\n");
+        st.append("y = [");
         for (int i = 0; i < this.sortedCeily.length; i++) {
-            System.out.print(" " + super.vars[i].pretty());
+            st.append(" ").append(super.vars[i].pretty());
         }
-        System.out.print(" ]\n");
-        System.out.print("sortedFloor(x) = [");
-        for (int i = 0; i < this.x.length; i++) {
-            System.out.print(" " + this.x[i]);
+        st.append(" ]\n");
+        st.append("sortedFloor(x) = [");
+        for (int aX : this.x) {
+            st.append(" ").append(aX);
         }
-        System.out.print(" ]\n");
-        System.out.print("sortedCeil(y) = [");
-        for (int i = 0; i < this.sortedCeily.length; i++) {
-            System.out.print(" " + this.sortedCeily[i].get());
+        st.append(" ]\n");
+        st.append("sortedCeil(y) = [");
+        for (IStateInt aSortedCeily : this.sortedCeily) {
+            st.append(" ").append(aSortedCeily.get());
         }
-        System.out.print(" ]\n");
-        System.out.print("ceil(y) = [");
-        for (int i = 0; i < this.ceily.length; i++) {
-            System.out.print(" " + this.ceily[i].get());
+        st.append(" ]\n");
+        st.append("ceil(y) = [");
+        for (IStateInt aCeily : this.ceily) {
+            st.append(" ").append(aCeily.get());
         }
-        System.out.print(" ]\n");
-        System.out.println("alpha = " + this.alpha.get());
-        System.out.println("beta = " + this.beta.get());
-        System.out.println("gamma = " + this.gamma.get());
-        System.out.println("delta = " + this.delta.get());
-        System.out.print("epsilon = [");
+        st.append(" ]\n");
+        st.append("alpha = ").append(this.alpha.get()).append("\n");
+        st.append("beta = ").append(this.beta.get()).append("\n");
+        st.append("gamma = ").append(this.gamma.get()).append("\n");
+        st.append("delta = ").append(this.delta.get()).append("\n");
+        st.append("epsilon = [");
         for (int i = 0; i < 4; i++) {
-            System.out.print(" " + this.epsilon.get(i));
+            st.append(" ").append(this.epsilon.get(i));
         }
-        System.out.print(" ]\n");
+        st.append(" ]\n");
 
     }
 

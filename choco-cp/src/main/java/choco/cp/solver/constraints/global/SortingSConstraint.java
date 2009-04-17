@@ -299,7 +299,6 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
             this.sccNumbers[i] = currentSccNumber;
         }
         this.s2.pop();
-        //System.out.println(" " + "-" + "\t" + this.s1 + "\t" + this.s2 + "    complete component");
     }
 
     private void dfsVisit2(int node) {
@@ -309,7 +308,6 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
             this.s1.push(node);
             this.s2.push(node, node, x[f[node]].getSup());
             i = 0;
-            //System.out.println(" " + node + "\t" + this.s1 + "\t" + this.s2 + "    start component");
             while (xyGraph[node][i] != -1) {
                 if (dfsNodes[xyGraph[node][i]] == 0) {
                     this.dfsVisit2(xyGraph[node][i]);
@@ -324,19 +322,12 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
                 }
                 this.sccNumbers[i] = currentSccNumber;
                 this.s2.pop();
-                //System.out.println(" " + node + "\t" + this.s1 + "\t" + this.s2 + "    complete component");
                 currentSccNumber++;
             }
             this.s1.push(node);
             this.recupStack[0] = node;
             this.recupStack[1] = node;
             this.recupStack[2] = this.x[this.f[node]].getSup();
-            if (this.mergeStack(node)) {
-                //System.out.println(" " + node + "\t" + this.s1 + "\t" + this.s2 + "    merge");
-            } else {
-                //System.out.println(" " + node + "\t" + this.s1 + "\t" + this.s2 + "    start component");
-            }
-
             i = 0;
             while (xyGraph[node][i] != -1) {
                 if (dfsNodes[xyGraph[node][i]] == 0) {
@@ -471,16 +462,18 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
     }
 
     public void printVectors() {
-        System.out.print("x = ( ");
-        for (int i = 0; i < x.length; i++) {
-            System.out.print("[" + x[i].getInf() + "," + x[i].getSup() + "] ");
+        StringBuffer st = new StringBuffer();
+        st.append("x = ( ");
+        for (IntDomainVar aX : x) {
+            st.append("[").append(aX.getInf()).append(", ").append(aX.getSup()).append("]");
         }
-        System.out.println(")");
-        System.out.print("y = ( ");
-        for (int i = 0; i < y.length; i++) {
-            System.out.print("[" + y[i].getInf() + "," + y[i].getSup() + "] ");
+        st.append(")");
+        st.append("y = ( ");
+        for (IntDomainVar aY : y) {
+            st.append("[" + aY.getInf() + "," + aY.getSup() + "] ");
         }
-        System.out.println(")");
+        st.append(")");
+        LOGGER.info(st.toString());
     }
 
   @Override

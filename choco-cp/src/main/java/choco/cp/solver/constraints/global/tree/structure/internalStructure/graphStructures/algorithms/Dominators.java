@@ -22,37 +22,17 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.algorithms;
 
-/* ************************************************
- *           _       _                            *
- *          |  �(..)  |                           *
- *          |_  J||L _|       Choco-Solver.net    *
- *                                                *
- *     Choco is a java library for constraint     *
- *     satisfaction problems (CSP), constraint    *
- *     programming (CP) and explanation-based     *
- *     constraint solving (e-CP). It is built     *
- *     on a event-based propagation mechanism     *
- *     with backtrackable structures.             *
- *                                                *
- *     Choco is an open-source software,          *
- *     distributed under a BSD licence            *
- *     and hosted by sourceforge.net              *
- *                                                *
- *     + website : http://choco.emn.fr            *
- *     + support : choco@emn.fr                   *
- *                                                *
- *     Copyright (C) F. Laburthe,                 *
- *                   N. Jussien   1999-2008       *
- **************************************************/
-
-
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.PrecsGraphView;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.VarGraphView;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.trailing.StoredBitSet;
 
 import java.util.BitSet;
+import java.util.logging.Logger;
 
 public class Dominators {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     protected int nbVertices;
     protected VarGraphView graph;
@@ -104,14 +84,14 @@ public class Dominators {
             this.postOrder[i] = -1;
             this.revPostOrder[i] = -1;
         }
-        if (affiche) System.out.println("source = " + source);
+        if (affiche) LOGGER.info("source = " + source);
         computePostOrder(source);
         if (affiche) {
-            System.out.println("-----------------------------");
+            LOGGER.info("-----------------------------");
             for (int i = 0; i < revPostOrder.length; i++) {
-                System.out.println("revPostOrder[" + i + "] = " + revPostOrder[i]);
+                LOGGER.info("revPostOrder[" + i + "] = " + revPostOrder[i]);
             }
-            System.out.println("-----------------------------");
+            LOGGER.info("-----------------------------");
         }
     }
 
@@ -134,13 +114,13 @@ public class Dominators {
         BitSet computed = new BitSet(nbVertices);
         while (changed) {
             changed = false;
-            if (affiche) System.out.println("une boucle: ");
+            if (affiche) LOGGER.info("une boucle: ");
             for (int i = nbVertices - 1; i > -1; i--) {
                 int node = revPostOrder[i];
-                if (affiche) System.out.println("au temps " + i + " on a visite " + node);
+                if (affiche) LOGGER.info("au temps " + i + " on a visite " + node);
                 if (node > -1) {
                     if (affiche)
-                        System.out.println("\t On cherche les dominants de " + node + " par rapport � " + source + ": ");
+                        LOGGER.info("\t On cherche les dominants de " + node + " par rapport � " + source + ": ");
                     computed.set(node, true);
                     BitSet newSet = new BitSet(nbVertices);
                     // at the begin, node is dominator of node
@@ -156,14 +136,14 @@ public class Dominators {
                     StoredBitSet preds = graph.getGlobal().getPredecessors(node);
                     boolean atLeastOne = false;
                     boolean atLeastOneComp = false;
-                    if (affiche) System.out.print("\t\t au moins un pred pour " + node + "? ");
+                    if (affiche) LOGGER.info("\t\t au moins un pred pour " + node + "? ");
                     for (int j = preds.nextSetBit(0); j >= 0; j = preds.nextSetBit(j + 1)) {
                         if (j != node) {
-                            if (affiche) System.out.print("oui");
+                            if (affiche) LOGGER.info("oui");
                             atLeastOne = true;
                             if (computed.get(j)) {
                                 if (affiche)
-                                    System.out.print("[update with dom[" + j + "]=" + currentDoms[source][j] + "] ");
+                                    LOGGER.info("[update with dom[" + j + "]=" + currentDoms[source][j] + "] ");
                                 intersect.and(currentDoms[source][j]);
                                 atLeastOneComp = true;
                             }
@@ -171,15 +151,15 @@ public class Dominators {
                     }
                     if (!atLeastOne) {
                         // add the previous dominators of node in newSet
-                        if (affiche) System.out.print("non");
+                        if (affiche) LOGGER.info("non");
                         for (int j = previous.nextSetBit(0); j >= 0; j = previous.nextSetBit(j + 1)) {
                             if (j != node) newSet.set(j, false);
                         }
                     } else {
                         if (atLeastOneComp) newSet.or(intersect);
                     }
-                    if (affiche) System.out.println("");
-                    if (affiche) System.out.println("\t\t candidats = " + newSet.toString());
+                    if (affiche) LOGGER.info("");
+                    if (affiche) LOGGER.info("\t\t candidats = " + newSet.toString());
                     for (int j = previous.nextSetBit(0); j >= 0; j = previous.nextSetBit(j + 1)) {
                         if (!newSet.get(j)) changed = true;
                     }
@@ -189,21 +169,20 @@ public class Dominators {
                     // if the initial set of dominators of node is modified according to newSet, then dominator[source][node] is updated
                     if (changed) {
                         if (affiche)
-                            System.out.print("\t\t dominants de " + node + " par rapport � " + source + " = " + newSet.toString());
+                            LOGGER.info("\t\t dominants de " + node + " par rapport � " + source + " = " + newSet.toString());
                         currentDoms[source][node] = newSet;
                         /*for (int j = 0; j < nbVertices; j++) {
                             if (newSet.get(j)) {
-                                if (affiche) System.out.print(j + " ");
                                 currentDoms[source][node].set(j, true);
                             } else {
                                 currentDoms[source][node].set(j, false);
                             }
                         }*/
-                        if (affiche) System.out.println("");
+                        if (affiche) LOGGER.info("");
                     }
                 }
             }
-            if (affiche) System.out.println("------------------------------------------------------------");
+            if (affiche) LOGGER.info("------------------------------------------------------------");
         }
         return currentDoms;
     }

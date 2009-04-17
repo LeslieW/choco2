@@ -139,7 +139,7 @@ public class RealOptimizeWithRestarts extends AbstractRealOptimize {
             foundSolution = true;
           }
         } catch (ContradictionException e) {
-          logger.fine("boff :(");
+          LOGGER.fine("boff :(");
         }
         endTreeSearch();
         if (!foundSolution) {
@@ -155,8 +155,8 @@ public class RealOptimizeWithRestarts extends AbstractRealOptimize {
     }
     for (int i = 0; i < limits.size(); i++) {
       AbstractGlobalSearchLimit lim = (AbstractGlobalSearchLimit) limits.get(i);
-      if (logger.isLoggable(Level.SEVERE))
-        logger.severe(lim.pretty());
+      if (LOGGER.isLoggable(Level.SEVERE))
+        LOGGER.severe(lim.pretty());
     }
   } */
 }

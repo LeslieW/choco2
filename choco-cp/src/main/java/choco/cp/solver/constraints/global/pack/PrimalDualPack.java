@@ -22,12 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.pack;
 
-import java.awt.Point;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
-import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.BitFlags;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
@@ -38,6 +32,11 @@ import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.set.AbstractLargeSetIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
+
+import java.awt.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * <b>{@link PrimalDualPack} which maintains a primal-dual packing domain.</b><br>
@@ -193,7 +192,7 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 	public void updateNbNonEmpty(Point bounds) throws ContradictionException {
 		final int idx = ivars.length-1;
 		//		if(bounds.x>ivars[idx].getSup()) {
-		//			System.err.println("fail");
+		//			LOGGER.severe("fail");
 		//		}
 		ivars[idx].updateInf(bounds.x, int_cIndices[idx]);
 		ivars[idx].updateSup(bounds.y, int_cIndices[idx]);

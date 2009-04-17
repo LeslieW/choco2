@@ -23,19 +23,22 @@
 package choco.cp.solver.constraints.global.tree.filtering;
 
 
-
 import choco.cp.solver.constraints.global.tree.TreeSConstraint;
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.Node;
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.TreeParameters;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.StructuresAdvisor;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.trailing.StoredBitSet;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.BitSet;
+import java.util.logging.Logger;
 
 public class RemovalsAdvisor {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     /**
      * boolean for debug and show a trace of the execution
@@ -234,12 +237,12 @@ public class RemovalsAdvisor {
                 if (var_i.canBeInstantiatedTo(j)) {
                     filter = true;
                     if (afficheRemovals)
-                        System.out.println("1-Removals: suppression effective de l'arc (" + i + "," + j + ")");
+                        LOGGER.info("1-Removals: suppression effective de l'arc (" + i + "," + j + ")");
                     var_i.removeVal(j, treeConst.cIndices[i + 3]);
                 }
                 if (var_i.isInstantiatedTo(j) && i != j) {
                     if (afficheRemovals)
-                        System.out.println("1-Removals: suppression de l'arc (" + i + "," + j + ") qui est instancie => FAIL");
+                        LOGGER.info("1-Removals: suppression de l'arc (" + i + "," + j + ") qui est instancie => FAIL");
                     var_i.removeVal(j, treeConst.cIndices[i + 3]);
                     compatible = false;
                 }
@@ -249,14 +252,14 @@ public class RemovalsAdvisor {
                 IntDomainVar var_j = nodes[j].getSuccessors();
                 if (var_j.canBeInstantiatedTo(i) && j != i) {
                     if (afficheRemovals)
-                        System.out.println("2-Removals: suppression de l'arc (" + j + "," + i + ")");
+                        LOGGER.info("2-Removals: suppression de l'arc (" + j + "," + i + ")");
                     var_j.removeVal(i, treeConst.cIndices[j + 3]);
                     filter = true;
                 }
                 if (var_j.isInstantiated()) {
                     if (var_j.isInstantiatedTo(i) && i != j) {
                         if (afficheRemovals)
-                            System.out.println("2-Removals: suppression de l'arc (" + j + "," + i + ") qui est instancie => FAIL");
+                            LOGGER.info("2-Removals: suppression de l'arc (" + j + "," + i + ") qui est instancie => FAIL");
                         var_j.removeVal(i, treeConst.cIndices[j + 3]);
                         compatible = false;
                     }

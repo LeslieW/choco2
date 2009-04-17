@@ -28,9 +28,9 @@ import choco.kernel.solver.propagation.PropagationEvent;
 
 import java.util.Stack;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
+
  * Created by IntelliJ IDEA. User: GROCHART Date: 3 juin 2008 Time: 19:54:13 To
  * change this template use File | Settings | File Templates.
  */
@@ -59,7 +59,7 @@ public class VarEventStack implements EventQueue {
 	/**
 	 * Propagates some events: in fact all the events of the queue, since there
 	 * are the most important events.
-	 * 
+	 *
 	 * @throws choco.kernel.solver.ContradictionException
 	 */
 	public void propagateSomeEvents() throws ContradictionException {
@@ -76,12 +76,12 @@ public class VarEventStack implements EventQueue {
 
 	/**
 	 * Propagates one single event from the queue (usefull for tracing)
-	 * 
+	 *
 	 * @throws choco.kernel.solver.ContradictionException
 	 */
 	public void propagateOneEvent() throws ContradictionException {
 		if (queue.size() != 0) {
-			//PropagationEvent evt = 
+			//PropagationEvent evt =
 				popEvent();
 			// in case the propagation of the event is not complete
 			// the event will be pushed right back onto the queue

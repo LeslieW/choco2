@@ -29,9 +29,14 @@ import choco.cp.solver.constraints.global.tree.structure.internalStructure.graph
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.PrecsGraphView;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.StoredBitSetGraph;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.VarGraphView;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solver;
 
+import java.util.logging.Logger;
+
 public abstract class AbstractDeduction {
+
+    protected final static Logger LOGGER  = ChocoLogging.getSolverLogger();
 
     protected boolean affiche = true;
 

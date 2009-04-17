@@ -31,8 +31,10 @@ import choco.cp.solver.constraints.global.geost.internalConstraints.AvoidHoles;
 import choco.cp.solver.constraints.global.geost.internalConstraints.Inbox;
 import choco.cp.solver.constraints.global.geost.internalConstraints.InternalConstraint;
 import choco.cp.solver.constraints.global.geost.internalConstraints.Outbox;
+import choco.kernel.common.logging.ChocoLogging;
 
 import java.util.Vector;
+import java.util.logging.Logger;
 
 
 /**
@@ -40,6 +42,8 @@ import java.util.Vector;
  * some Internal Constraint ictr
  */
 public class IntermediateLayer {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
 	/**
 	 * Creates an IntermediateLayer instance. Actually this class just provides functionality so
@@ -70,7 +74,7 @@ public class IntermediateLayer {
 			case Constants.AVOID_HOLES:
 				result = LexInFeasibleForAvoidHoles((AvoidHoles)ictr, minLex, d, k, o);
 				break;
-			default: System.err.println("A call to LexFeasible with incorrect ictrID parameter");
+			default: LOGGER.severe("A call to LexFeasible with incorrect ictrID parameter");
 		}
 		return result;
 	}
@@ -100,7 +104,7 @@ public class IntermediateLayer {
 			case Constants.AVOID_HOLES:
 				result = IsFeasibleForAvoidHoles((AvoidHoles)ictr, min, d, k, o, c);
 				break;
-			default: System.err.println("A call to IsFeasible with incorrect ictrID parameter");
+			default: LOGGER.severe("A call to IsFeasible with incorrect ictrID parameter");
 		}
 		return result;
 	}
@@ -125,7 +129,7 @@ public class IntermediateLayer {
 			case Constants.AVOID_HOLES:
 				result = CardInfeasibleForAvoidHoles((AvoidHoles)ictr, k, o);
 				break;
-			default: System.err.println("A call to CardInfeasible with incorrect ictr parameter");
+			default: LOGGER.severe("A call to CardInfeasible with incorrect ictr parameter");
 		}
 		return result;
 	}

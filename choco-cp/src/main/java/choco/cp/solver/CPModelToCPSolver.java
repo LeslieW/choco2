@@ -25,6 +25,7 @@ package choco.cp.solver;
 import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.cp.solver.preprocessor.detectors.ExpressionDetector;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.*;
 import choco.kernel.model.variables.*;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
@@ -46,6 +47,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 /**
  * ***********************************************
@@ -78,6 +80,8 @@ import java.util.Iterator;
  * It is separeted into 2 big parts: variables transposition and constraints transposition.
  */
 public class CPModelToCPSolver {
+
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
 	protected CPSolver cpsolver;
 
@@ -202,16 +206,16 @@ public class CPModelToCPSolver {
 				try {
 					componentClass = Class.forName(vv.getComponentClass());
 				} catch (ClassNotFoundException e) {
-					System.err.println("Component class could not be found: " + vv.getComponentClass());
+					LOGGER.severe("Component class could not be found: " + vv.getComponentClass());
 					System.exit(-1);
 				}
 				try {
 					vm = (VariableManager) componentClass.newInstance();
 				} catch (InstantiationException e) {
-					System.err.println("Component class could not be instantiated: " + vv.getComponentClass());
+					LOGGER.severe("Component class could not be instantiated: " + vv.getComponentClass());
 					System.exit(-1);
 				} catch (IllegalAccessException e) {
-					System.err.println("Component class could not be accessed: " + vv.getComponentClass());
+					LOGGER.severe("Component class could not be accessed: " + vv.getComponentClass());
 					System.exit(-1);
 				}
 				variableManagers.put(vv.getComponentClass(), vm);

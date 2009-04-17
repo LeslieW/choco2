@@ -22,38 +22,18 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.dominatorTrees;
 
-/* ************************************************
- *           _       _                            *
- *          |  �(..)  |                           *
- *          |_  J||L _|       Choco-Solver.net    *
- *                                                *
- *     Choco is a java library for constraint     *
- *     satisfaction problems (CSP), constraint    *
- *     programming (CP) and explanation-based     *
- *     constraint solving (e-CP). It is built     *
- *     on a event-based propagation mechanism     *
- *     with backtrackable structures.             *
- *                                                *
- *     Choco is an open-source software,          *
- *     distributed under a BSD licence            *
- *     and hosted by sourceforge.net              *
- *                                                *
- *     + website : http://choco.emn.fr            *
- *     + support : choco@emn.fr                   *
- *                                                *
- *     Copyright (C) F. Laburthe,                 *
- *                   N. Jussien   1999-2008       *
- **************************************************/
-
-
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.algorithms.Dominators;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.PrecsGraphView;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.VarGraphView;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solver;
 
 import java.util.BitSet;
+import java.util.logging.Logger;
 
 public class DominatorView {
+
+     protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     // le solveur choco
     protected Solver solver;
@@ -101,7 +81,6 @@ public class DominatorView {
 
     private void updateDoms(BitSet[][] newDoms) {
         update = false;
-        //System.out.println("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
         for (int i = 0; i < nbNodes; i++) {
             for (int j = 0; j < nbNodes; j++) {
                 for (int k = newDoms[i][j].nextSetBit(0); k >= 0; k = newDoms[i][j].nextSetBit(k + 1)) {
@@ -119,7 +98,6 @@ public class DominatorView {
             }
             //showDoms(i,nbNodes-1);
         }
-        //System.out.println("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-");
     }
 
     /*public StoredJavaBitSet[][] getDominators() {
@@ -140,6 +118,6 @@ public class DominatorView {
     }
 
     public void showDoms(int i, int j) {
-        System.out.println("dom[" + i + "][" + j + "] = "+dominators[i][j].toString());
+        LOGGER.info("dom[" + i + "][" + j + "] = "+dominators[i][j].toString());
     }
 }

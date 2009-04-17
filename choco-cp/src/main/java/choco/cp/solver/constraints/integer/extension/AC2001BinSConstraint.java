@@ -102,9 +102,7 @@ public class AC2001BinSConstraint extends CspBinSConstraint {
         boolean found = false;
         int support = currentSupport0[x - offset0].get();
         int max2 = v1.getSup();
-        //System.out.println("max2 " + max2);
         while (!found && support < max2) {
-            //System.out.println(" " + support);
             support = v1.getDomain().getNextValue(support);
             if (relation.isConsistent(x, support)) found = true;
         }

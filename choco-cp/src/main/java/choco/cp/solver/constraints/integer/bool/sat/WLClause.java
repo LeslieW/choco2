@@ -56,8 +56,6 @@ public class WLClause {
 
         // ajoute la clause a la liste des clauses controles.
         if (voc.isFalsified(lits[1])) { // if none, propagate lits[0]
-//            System.out.println("lits0 " + voc.boolvars[lits[0] > 0 ? lits[0] : -lits[0]]);
-//            System.out.println("propagate from register " + voc.boolvars[lits[1] > 0 ? lits[1] : -lits[1]]);
             updateDomain();
         }
         if (voc.isFree(lits[0]) && voc.isFree(lits[1])) {
@@ -104,10 +102,8 @@ public class WLClause {
 
     public void updateDomain() throws ContradictionException {
         if (lits[0] > 0) {
-  //         System.out.println("Clause "+ this+" instantiate " + voc.boolvars[lits[0]] + " to 1");
             voc.boolvars[lits[0]].instantiate(1, -1);//propagator.cIndices[lits[0] - 1]);
         } else {
-  //         System.out.println("Clause "+ this+" instantiate " + voc.boolvars[-lits[0]] + " to 0");
             voc.boolvars[-lits[0]].instantiate(0, -1);//propagator.cIndices[-lits[0] - 1]);
         }
     }

@@ -22,21 +22,26 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.multicostregular.structure;
 
+import choco.cp.solver.constraints.global.multicostregular.algo.PathFinder;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateIntVector;
+import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.IntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
-import choco.cp.solver.constraints.global.multicostregular.algo.PathFinder;
+import gnu.trove.TIntHashSet;
+import gnu.trove.TIntIterator;
+import gnu.trove.TIntObjectHashMap;
+import gnu.trove.TIntObjectIterator;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
-
-import gnu.trove.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -46,6 +51,7 @@ import gnu.trove.*;
  */
 public class LayeredGraph {
 
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
     /**
      * Reusable iterator over all active arcs
@@ -382,7 +388,7 @@ public class LayeredGraph {
             this.outIterator = null;
         }
 
-        System.out.println("NBEDGES IN LAYERED GRAPH : "+sortOut.size());
+        LOGGER.log(Level.INFO, "NBEDGES IN LAYERED GRAPH : {0}", sortOut.size());
         this.initialFilter();
 
         this.pathFinder = new PathFinder(this);
@@ -580,7 +586,7 @@ public class LayeredGraph {
         }
         else
         {
-            System.err.println("SHOULD NOT BE HERE ARC IS BEING REMOVED TWICE");
+            LOGGER.severe("SHOULD NOT BE HERE ARC IS BEING REMOVED TWICE");
         }
 
     }
