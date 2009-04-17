@@ -23,19 +23,20 @@
 package parser.chocogen;
 
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.logging.Logger;
+
+import parser.absconparseur.tools.InstanceParser;
+import parser.absconparseur.tools.SolutionChecker;
 import choco.cp.model.CPModel;
-import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.extension.ValidityChecker;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.DomOverDynDeg;
 import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solver;
-import parser.absconparseur.tools.InstanceParser;
-import parser.absconparseur.tools.SolutionChecker;
-
-import java.io.File;
-import java.util.HashMap;
 
 /**
  * User:    charles
@@ -46,6 +47,7 @@ import java.util.HashMap;
  **/
 public class XmlModel {
 
+	protected final static Logger LOGGER = ChocoLogging.getModelLogger();
     //heuristics
     private static final int DOMOVERDEG = 0;
     private static final int DOMOVERWDEG = 1;
