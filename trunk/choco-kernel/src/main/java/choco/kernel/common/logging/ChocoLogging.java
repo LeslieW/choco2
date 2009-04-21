@@ -239,7 +239,7 @@ public final class ChocoLogging {
 
 	
 	/**
-	 * remove handlers and write error logs into a file
+	 * remove handlers and write error logs into a file (warning and severe message)
 	 * @param file the error log file
 	 * @return the error stream
 	 */
@@ -419,7 +419,7 @@ public final class ChocoLogging {
 			break;
 		}
 		case SEARCH: {
-			setPattern(Level.FINE);
+			setPattern(Level.FINEST);
 			setLevel(Level.INFO, getBranchingLogger()); //ouput search logs (branching)
 			break;
 		}

@@ -59,7 +59,7 @@ public class PackDynRemovals extends AssignVar {
 			}
 		}
 	}
-	public void fail() throws ContradictionException {
+	public final void fail() throws ContradictionException {
 		manager.solver.getPropagationEngine().raiseContradiction(this, ContradictionException.UNKNOWN);
 	}
 
