@@ -65,9 +65,6 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 		}
 	}
 
-	protected final int getConstraintIntIdx(int idx) {
-		return getConstraintIdx(VARS_OFFSET+1);
-	}
 
 	protected final boolean isInKernel(int idx) {
 		return svars[SET_INDEX].isInDomainKernel(idx);
@@ -90,25 +87,25 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 	}
 
 	protected final boolean updateBoundInf(int val) throws ContradictionException {
-		return ivars[BOUND_INDEX].updateInf(val, this.getConstraintIntIdx(BOUND_INDEX));
+		return ivars[BOUND_INDEX].updateInf(val, int_cIndices[BOUND_INDEX]);
 	}
 
 	protected final boolean updateBoundSup(int val) throws ContradictionException {
-		return ivars[BOUND_INDEX].updateSup(val, this.getConstraintIntIdx(BOUND_INDEX));
+		return ivars[BOUND_INDEX].updateSup(val, int_cIndices[BOUND_INDEX]);
 	}
 
 	protected abstract boolean removeFromEnv(int idx) throws ContradictionException;
 
 	protected final boolean removeGreaterFromEnv(int idx, int maxValue) throws ContradictionException {
 		if(ivars[VARS_OFFSET+idx].getInf()>maxValue) {
-			return this.svars[SET_INDEX].remFromEnveloppe(idx, getConstraintIdx(SET_INDEX));
+			return this.svars[SET_INDEX].remFromEnveloppe(idx, set_cIndices[SET_INDEX]);
 		}
 		return false;
 	}
 
 	protected final boolean removeLowerFromEnv(int idx, int minValue) throws ContradictionException {
 		if(ivars[VARS_OFFSET+idx].getSup() < minValue ) {
-			return this.svars[SET_INDEX].remFromEnveloppe(idx, getConstraintIdx(SET_INDEX));
+			return this.svars[SET_INDEX].remFromEnveloppe(idx, set_cIndices[SET_INDEX]);
 		}
 		return false;
 	}
@@ -238,11 +235,11 @@ public class MaxOfASet extends AbstractBoundOfASet {
 			if (this.indexOfMaximumVariable.get() == -1) {
 				updateIndexOfMaximumVariables();
 			}
-			int idx = this.indexOfMaximumVariable.get();
+			final int idx = this.indexOfMaximumVariable.get();
 			if (idx != -1) {
 				update = svars[SET_INDEX].addToKernel(idx-1, getConstraintIdx(SET_INDEX));
 				updateBoundInf(ivars[idx].getInf());
-				ivars[idx].updateInf(ivars[BOUND_INDEX].getInf(),getConstraintIntIdx(idx));
+				ivars[idx].updateInf(ivars[BOUND_INDEX].getInf(), int_cIndices[idx]);
 			}
 		}
 		return update;
@@ -280,7 +277,7 @@ public class MaxOfASet extends AbstractBoundOfASet {
 		IntIterator iter= svars[SET_INDEX].getDomain().getKernelIterator();
 		while(iter.hasNext()) {
 			final int i = VARS_OFFSET+iter.next();
-			ivars[i].updateSup(maxValue, this.getConstraintIntIdx(i));
+			ivars[i].updateSup(maxValue, int_cIndices[i]);
 		}
 	}
 
