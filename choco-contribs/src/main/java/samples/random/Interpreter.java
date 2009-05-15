@@ -17,7 +17,7 @@ public class Interpreter {
 
     public static void main(String[] arg) throws IOException {
         final BufferedReader fr = new BufferedReader(new InputStreamReader(
-                Interpreter.class.getResource("data2003015ac").openStream()));
+                Interpreter.class.getResource(arg[0]).openStream()));
 
         final Matcher tghtM = Pattern.compile("(" + fl + ")\\ tightness")
                 .matcher("");
