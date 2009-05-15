@@ -1,8 +1,8 @@
 package samples.random;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,8 +16,7 @@ public class Interpreter {
     }
 
     public static void main(String[] arg) throws IOException {
-        final BufferedReader fr = new BufferedReader(new InputStreamReader(
-                Interpreter.class.getResource(arg[0]).openStream()));
+        final BufferedReader fr = new BufferedReader(new FileReader(arg[0]));
 
         final Matcher tghtM = Pattern.compile("(" + fl + ")\\ tightness")
                 .matcher("");
