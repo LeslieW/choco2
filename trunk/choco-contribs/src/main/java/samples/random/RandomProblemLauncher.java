@@ -1,7 +1,8 @@
 package samples.random;
 
-import static java.text.MessageFormat.format;
 import static java.lang.System.out;
+import static java.text.MessageFormat.format;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,7 +12,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -21,7 +21,6 @@ import choco.cp.solver.constraints.strong.StrongConsistencyManager;
 import choco.cp.solver.constraints.strong.maxrpcrm.MaxRPCrm;
 import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
 import choco.cp.solver.search.integer.valselector.MinVal;
-import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraintWithSubConstraints;
 import choco.kernel.model.constraints.Constraint;
@@ -31,7 +30,7 @@ import choco.kernel.solver.Solver;
 
 public class RandomProblemLauncher {
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    // protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
     private static int NBINSTANCES = -1;
 
