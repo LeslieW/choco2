@@ -657,12 +657,7 @@ public class TestCumulative {
             System.out.println("error, no contradiction expected at this stage");
         }
 
-        s.attachGoal(new AssignVar(new StaticVarOrder(s.getVar(bool)), new DecreasingDomain()));
-        s.addGoal(new AssignVar(new MinDomain(s, s.getVar(starts)), new IncreasingDomain()));
-        s.setMinimizationObjective(s.getVar(obj));
-        s.generateSearchStrategy();
-        s.launch();
-        
+        s.maximize(s.getVar(obj),false);
         System.out.println("Objective : " + (s.getVar(obj).getVal() - 3));
         for (int i = 3; i < starts.length; i++) {
             if (s.getVar(height[i]).getVal() != 0)
