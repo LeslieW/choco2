@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.common.util;
 
+import java.awt.Point;
+
 
 /**
  * various mathematics utilities. The functions do not exist in the basic math package Math.*
@@ -93,6 +95,18 @@ public final class MathUtil {
 			if(values[i] < min) {min = values[i];}
 		}
 		return min;
+	}
+	
+	public static Point bounds(int[] values) {
+		if(values == null || values.length == 0) {return new Point(Integer.MAX_VALUE, Integer.MIN_VALUE);}
+		else {
+			final Point b = new Point(values[0], values[0]);
+			for (int i = 1; i < values.length; i++) {
+			if(values[i] < b.x) {b.x= values[i];}
+			else if(values[i] > b.y) {b.y= values[i];}
+		}
+		return b;
+		}
 	}
 
 }

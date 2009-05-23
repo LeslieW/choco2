@@ -154,20 +154,21 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 	@Override
 	public boolean pack(int item, int bin) throws ContradictionException {
 		boolean res = svars[bin].addToKernel(item, set_cIndices[bin]);
-		if(bins[item].isInstantiated()) {
-			ChocoLogging.flushLogs();
-			throw new SolverException("Internal error : "+bins[item].pretty()+" should not be instantiated");
-		}
-		final IntIterator iter = bins[item].getDomain().getIterator();
-		//remove from other env
-		while(iter.hasNext()) {
-			final int b= iter.next();
-			if(bin!=b) {
-				res |= svars[b].remFromEnveloppe(item, set_cIndices[b]);
+		if(bins[item].canBeInstantiatedTo(bin)) {
+			final IntIterator iter = bins[item].getDomain().getIterator();
+			//remove from other env
+			while(iter.hasNext()) {
+				final int b= iter.next();
+				if(bin!=b) {
+					res |= svars[b].remFromEnveloppe(item, set_cIndices[b]);
+				}
 			}
+			res |= bins[item].instantiate(bin, getItemCindice(item));	
+		}else {
+			LOGGER.warning("should not raise a contradiction here.");
+			this.fail();
 		}
-
-		return bins[item].instantiate(bin, getItemCindice(item)) || res;
+		return res;
 	}
 
 	@Override
