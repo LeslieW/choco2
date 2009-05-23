@@ -4,6 +4,7 @@ import choco.kernel.common.logging.ChocoLogging;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.DefaultFontMapper;
 import com.lowagie.text.pdf.FontMapper;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfTemplate;
@@ -39,6 +40,13 @@ public final class PdfExport {
 		OutputStream out = new BufferedOutputStream(new FileOutputStream(file));
 		writeChartAsPDF(out, chart, width, height, mapper);
 		out.close();
+	}
+	
+	public static void saveChartAsPDF(File file,
+			JFreeChart chart,
+			int width,
+			int height) throws IOException {
+		saveChartAsPDF(file, chart, width, height, new DefaultFontMapper());
 	}
 	/**
 	 * Writes a chart to an output stream in PDF format.

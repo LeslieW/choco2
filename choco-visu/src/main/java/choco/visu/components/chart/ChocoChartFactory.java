@@ -2,6 +2,7 @@ package choco.visu.components.chart;
 
 import static choco.visu.components.chart.ChocoDatasetFactory.createPackDataset;
 import static choco.visu.components.chart.ChocoDatasetFactory.createSolutionCategoryDataset;
+import static choco.visu.components.chart.ChocoDatasetFactory.createTaskCollection;
 import static choco.visu.components.chart.ChocoDatasetFactory.createUnaryRscTaskCollection;
 
 import java.awt.Color;
@@ -68,10 +69,12 @@ import choco.visu.components.chart.dataset.MyXYTaskDataset;
 import choco.visu.components.chart.labels.CumulTaskToolTipGenerator;
 import choco.visu.components.chart.labels.TaskLabelGenerator;
 import choco.visu.components.chart.labels.TaskToolTipGenerator;
-import choco.visu.components.chart.renderer.MyTaskKeyXYBarRenderer;
+import choco.visu.components.chart.renderer.MyXYBarRenderer;
+import choco.visu.components.chart.renderer.MyXYBarRenderer.ResourceRenderer;
 
 public final class ChocoChartFactory {
 
+	
 	public final static ChartTheme CHOCO_THEME= createChocoChartTheme();
 
 	public final static DateFormat INTEGER_DATE_FORMAT = new IntegerDateFormat();
@@ -266,13 +269,13 @@ public final class ChocoChartFactory {
 	//		return createUnaryRscChart(title, dataset, true, false, null);
 	//	}
 
-
-	public static JFreeChart createUnaryRscChart(String title, Solver scheduler, boolean taskColor) {
+	
+	public static JFreeChart createUnaryRscChart(String title, Solver scheduler, ResourceRenderer type) {
 		final TaskSeriesCollection coll = createUnaryRscTaskCollection(scheduler);
 		final MyXYTaskDataset dataset = new MyXYTaskDataset(coll);
 		dataset.setTransposed(true);
 		dataset.setInverted(false);
-		return createUnaryRscChart(title, dataset, true, taskColor, null);
+		return createUnaryRscChart(title, dataset, true, false, type, null);
 
 	}
 
@@ -303,15 +306,15 @@ public final class ChocoChartFactory {
 	//		throw new UnsupportedOperationException("regression");
 	//	}
 
-	public static JFreeChart createUnaryRscChart(String title,MyXYTaskDataset dataset,boolean intDate, boolean taskColor, String[] rscAxisLabels) {
+	public static JFreeChart createUnaryRscChart(String title,MyXYTaskDataset dataset,boolean intDate, boolean legend, ResourceRenderer type, String[] rscAxisLabels) {
 		JFreeChart chart = ChartFactory.createXYBarChart(title,
 				"Date/Time", true, "Resources", dataset, PlotOrientation.VERTICAL,
-				!taskColor, false, false);
+				legend, false, false);
 
 		XYPlot plot = chart.getXYPlot();
 		generateAxis(dataset, plot, rscAxisLabels,intDate);
 		//Renderer
-		XYBarRenderer renderer = taskColor ? new MyTaskKeyXYBarRenderer() : new XYBarRenderer();
+		XYBarRenderer renderer = new MyXYBarRenderer(type);
 		renderer.setBaseItemLabelGenerator(new TaskLabelGenerator("{0}"));
 		renderer.setBaseToolTipGenerator(new TaskToolTipGenerator("{0}: {1} -> {3}"));
 		renderer.setBasePositiveItemLabelPosition(new ItemLabelPosition(ItemLabelAnchor.CENTER, TextAnchor.BOTTOM_CENTER,TextAnchor.CENTER, 0.0), true);
@@ -339,7 +342,6 @@ public final class ChocoChartFactory {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static JFreeChart createCumulativeChart(String title, ICumulativeResource<TaskVar> cumul, boolean legend) {
 		if(cumul.hasOnlyPosisiveHeights()) {
 			return createCumulativeChart(title, ChocoDatasetFactory.createCumulativeDataset(cumul),

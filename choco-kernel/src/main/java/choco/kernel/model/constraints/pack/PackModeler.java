@@ -265,7 +265,7 @@ public class PackModeler {
 	}
 
 	public void packAll(Model model) {
-		packAll(model, true, true);
+		packAll(model, false, false);
 	}
 
 	/**

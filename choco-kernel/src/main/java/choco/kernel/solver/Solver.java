@@ -413,7 +413,11 @@ public interface Solver extends IPretty {
      */
 	public int getNbTaskVars();
 
-
+	/**
+	 * Returns the number of variables modelling boolean.
+	 * @return the number of boolean variables.
+	 */
+	public int getNbBooleanVars();
     /**
      * Set the precision of the search for a real model.
      * @param precision the new precision

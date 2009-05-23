@@ -100,6 +100,15 @@ public final class ChocoDatasetFactory {
 		}
 		return c;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static TaskSeriesCollection createTaskCollection(Solver s, Constraint... resources) {
+		TaskSeriesCollection c = new TaskSeriesCollection();
+		for (Constraint rsc : resources) {
+			c.add(createTaskSeries((IResource<TaskVar>) s.getCstr(rsc)));
+		}
+		return c;
+	}
 
 	@SuppressWarnings("unchecked")
 	public static TaskSeriesCollection createUnaryRscTaskCollection(Solver s) {

@@ -5,13 +5,13 @@ import choco.kernel.common.IDotty;
 public abstract class AbstractTask implements ITask, IDotty {
 
 	protected final int id;
-	
+
 	/**
 	 * A name may be associated to each variable.
 	 */
 	protected final String name;
-	
-	
+
+
 	public AbstractTask(int id, String name) {
 		super();
 		this.id = id;
@@ -24,7 +24,7 @@ public abstract class AbstractTask implements ITask, IDotty {
 		return id;
 	}
 
-	
+
 	@Override
 	public final String getName() {
 		return name;
@@ -33,9 +33,9 @@ public abstract class AbstractTask implements ITask, IDotty {
 
 	@Override
 	public final int getSlack() {
-		return getECT() - getLST();
+		return getLST()-getEST();
 	}
-	
+
 	@Override
 	public final double getCentroid() {
 		return ( (double) (getECT()+getLST()) )/2;
@@ -46,16 +46,16 @@ public abstract class AbstractTask implements ITask, IDotty {
 	public final boolean hasCompulsoryPart() {
 		return getECT() > getLST();
 	}
-	
+
 	protected final String format(int lb, int ub) {
 		return lb == ub ? String.valueOf(lb) : lb + ".."+ub ;	
 	}
-	
-	
+
+
 	//*****************************************************************//
 	//*******************  output functions (graph, string) **********//
 	//***************************************************************//
-	
+
 	/**
 	 * convert a task into .dot format.
 	 * @param label  information appended to the default label
@@ -110,12 +110,12 @@ public abstract class AbstractTask implements ITask, IDotty {
 		b.append(format(getECT(), getLCT())).append("]");
 		return new String(b);
 	}
-	
-	
+
+
 	@Override
 	public String toString() {
 		return getName()+"["+getEST()+", "+getLCT()+"]";
 	}
-	
-	
+
+
 }

@@ -42,6 +42,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /* History:
  * 2008-04-23 : Creation : dom / wdeg needs to be a branching not just an heuristic to allow to deal with
@@ -52,307 +54,340 @@ import java.util.Random;
  * at the beginning !!
  */
 public class DomOverWDegBranching extends AbstractLargeIntBranching implements PropagationEngineListener {
-    protected static final int ABSTRACTCONTRAINT_EXTENSION =
-            AbstractSConstraint.getAbstractSConstraintExtensionNumber("choco.cp.cpsolver.search.integer.varselector.DomOverWDeg");
+	protected static final int ABSTRACTCONTRAINT_EXTENSION =
+		AbstractSConstraint.getAbstractSConstraintExtensionNumber("choco.cp.cpsolver.search.integer.varselector.DomOverWDeg");
 
-    protected static final class DomOverWDegBranchingConstraintExtension {
-        protected int nbFailure = 0;
+	protected static final class DomOverWDegBranchingConstraintExtension {
+		protected int nbFailure = 0;
 
-        public int getSumWeights() {
-            return nbFailure;
-        }
+		public int getSumWeights() {
+			return nbFailure;
+		}
 
-        public void addFailure() {
-            nbFailure++;
-        }
-    }
+		public void addFailure() {
+			nbFailure++;
+		}
+	}
 
-    protected static final int ABSTRACTVAR_EXTENSION =
-            AbstractVar.getAbstractVarExtensionNumber("choco.cp.cpsolver.search.integer.varselector.DomOverWDeg");
+	protected static final int ABSTRACTVAR_EXTENSION =
+		AbstractVar.getAbstractVarExtensionNumber("choco.cp.cpsolver.search.integer.varselector.DomOverWDeg");
 
-    protected static final class DomOverWDegBranchingVarExtension {
-        protected int sum_weighted = 0;
+	protected static final class DomOverWDegBranchingVarExtension {
+		protected int sum_weighted = 0;
 
-        public int getSumWeights() {
-            return sum_weighted;
-        }
+		public int getSumWeights() {
+			return sum_weighted;
+		}
 
-        public void addWeight(int w) {
-            sum_weighted += w;
-        }
-    }
+		public void addWeight(int w) {
+			sum_weighted += w;
+		}
+	}
 
-    // Les variables parmis lesquelles on veut brancher !
-    private IntVar[] _vars;
+	// Les variables parmis lesquelles on veut brancher !
+	private IntVar[] _vars;
 
-    // L'heuristique pour le svaleurs
-    private ValIterator _valIterator;
+	// L'heuristique pour le svaleurs
+	private ValIterator _valIterator;
 
-    // L'heuristique pour le svaleurs
-    private ValSelector _valSelector;
+	// L'heuristique pour le svaleurs
+	private ValSelector _valSelector;
 
-    // Le solveur
-    private Solver _solver;
+	// Le solveur
+	private Solver _solver;
 
-    //a reference to a random object when random ties are wanted
-    protected Random randomBreakTies;
+	//a reference to a random object when random ties are wanted
+	protected Random randomBreakTies;
 
+	private AbstractSConstraint reuseCstr;
 
-    private AbstractSConstraint reuseCstr;
+	// Le constructeur avec :
+	// * le solver pour fournir les variables
+	// * l'heuristique de valeurs pour instantier une valeur
+	public DomOverWDegBranching(Solver s, ValIterator valHeuri, IntVar[] vars) {
+		_solver = s;
 
-    // Le constructeur avec :
-    // * le solver pour fournir les variables
-    // * l'heuristique de valeurs pour instantier une valeur
-    public DomOverWDegBranching(Solver s, ValIterator valHeuri, IntVar[] vars) {
-        _solver = s;
+		for (Iterator iter = s.getIntConstraintIterator(); iter.hasNext();) {
+			AbstractSConstraint c = (AbstractSConstraint) iter.next();
+			c.setExtension(ABSTRACTCONTRAINT_EXTENSION, new DomOverWDegBranchingConstraintExtension());
+		}
+		for (int i = 0; i < s.getNbIntVars(); i++) {
+			IntVar v = s.getIntVar(i);
+			((AbstractVar) v).setExtension(ABSTRACTVAR_EXTENSION, new DomOverWDegBranchingVarExtension());
+		}
 
-        for (Iterator iter = s.getIntConstraintIterator(); iter.hasNext();) {
-            AbstractSConstraint c = (AbstractSConstraint) iter.next();
-            c.setExtension(ABSTRACTCONTRAINT_EXTENSION, new DomOverWDegBranchingConstraintExtension());
-        }
-        for (int i = 0; i < s.getNbIntVars(); i++) {
-            IntVar v = s.getIntVar(i);
-            ((AbstractVar) v).setExtension(ABSTRACTVAR_EXTENSION, new DomOverWDegBranchingVarExtension());
-        }
+		for (Iterator it = s.getIntConstantSet().iterator(); it.hasNext();) {
+			int val = (Integer) it.next();
+			Var v = s.getIntConstant(val);
+			((AbstractVar) v).setExtension(ABSTRACTVAR_EXTENSION, new DomOverWDegBranchingVarExtension());
+		}
 
-        for (Iterator it = s.getIntConstantSet().iterator(); it.hasNext();) {
-            int val = (Integer) it.next();
-            Var v = s.getIntConstant(val);
-            ((AbstractVar) v).setExtension(ABSTRACTVAR_EXTENSION, new DomOverWDegBranchingVarExtension());
-        }
+		s.getPropagationEngine().addPropagationEngineListener(this);
+		// On sauvegarde l'heuristique
+		_valIterator = valHeuri;
+		_vars = vars;
+	}
 
-        s.getPropagationEngine().addPropagationEngineListener(this);
-
-        // On sauvegarde l'heuristique
-        _valIterator = valHeuri;
-        _vars = vars;
-    }
-
-    public DomOverWDegBranching(Solver s, ValIterator valHeuri) {
-        this(s, valHeuri, buildVars(s));
-    }
+	public DomOverWDegBranching(Solver s, ValIterator valHeuri) {
+		this(s, valHeuri, buildVars(s));
+	}
 
 
-    public DomOverWDegBranching(Solver s, ValSelector valHeuri, IntVar[] vars) {
-        _solver = s;
+	public DomOverWDegBranching(Solver s, ValSelector valHeuri, IntVar[] vars) {
+		_solver = s;
 
-        for (Iterator iter = s.getIntConstraintIterator(); iter.hasNext();) {
-            AbstractSConstraint c = (AbstractSConstraint) iter.next();
-            c.setExtension(ABSTRACTCONTRAINT_EXTENSION, new DomOverWDegBranchingConstraintExtension());
-        }
-        for (int i = 0; i < s.getNbIntVars(); i++) {
-            IntVar v = s.getIntVar(i);
-            ((AbstractVar) v).setExtension(ABSTRACTVAR_EXTENSION, new DomOverWDegBranchingVarExtension());
-        }
+		for (Iterator iter = s.getIntConstraintIterator(); iter.hasNext();) {
+			AbstractSConstraint c = (AbstractSConstraint) iter.next();
+			c.setExtension(ABSTRACTCONTRAINT_EXTENSION, new DomOverWDegBranchingConstraintExtension());
+		}
+		for (int i = 0; i < s.getNbIntVars(); i++) {
+			IntVar v = s.getIntVar(i);
+			((AbstractVar) v).setExtension(ABSTRACTVAR_EXTENSION, new DomOverWDegBranchingVarExtension());
+		}
 
-        for (Iterator it = s.getIntConstantSet().iterator(); it.hasNext();) {
-            int val = (Integer) it.next();
-            Var v = s.getIntConstant(val);
-            ((AbstractVar) v).setExtension(ABSTRACTVAR_EXTENSION, new DomOverWDegBranchingVarExtension());
-        }
+		for (Iterator it = s.getIntConstantSet().iterator(); it.hasNext();) {
+			int val = (Integer) it.next();
+			Var v = s.getIntConstant(val);
+			((AbstractVar) v).setExtension(ABSTRACTVAR_EXTENSION, new DomOverWDegBranchingVarExtension());
+		}
 
-        s.getPropagationEngine().addPropagationEngineListener(this);
+		s.getPropagationEngine().addPropagationEngineListener(this);
 
-        // On sauvegarde l'heuristique
-        _valSelector = valHeuri;
-        _vars = vars;
-    }
+		// On sauvegarde l'heuristique
+		_valSelector = valHeuri;
+		_vars = vars;
+	}
 
-    public DomOverWDegBranching(Solver s, ValSelector valHeuri) {
-        this(s, valHeuri, buildVars(s));
-    }
+	public DomOverWDegBranching(Solver s, ValSelector valHeuri) {
+		this(s, valHeuri, buildVars(s));
+	}
 
-    private static IntVar[] buildVars(Solver s) {
-        IntVar[] vars = new IntVar[s.getNbIntVars()];
-        for (int i = 0; i < vars.length; i++) {
-            vars[i] = s.getIntVar(i);
-        }
-        return vars;
-    }
+	private static IntVar[] buildVars(Solver s) {
+		IntVar[] vars = new IntVar[s.getNbIntVars()];
+		for (int i = 0; i < vars.length; i++) {
+			vars[i] = s.getIntVar(i);
+		}
+		return vars;
+	}
 
 
-    public void initBranching() {
-        int nb_variables = _vars.length;
-        for (int variable_idx = 0; variable_idx < nb_variables; variable_idx++) {
-            // On ajoute la variable et le poids
-            IntVar v = _vars[variable_idx];// = _solver.getIntVar(variable_idx);
+	public void initBranching() {
+		int nb_variables = _vars.length;
+		for (int variable_idx = 0; variable_idx < nb_variables; variable_idx++) {
+			// On ajoute la variable et le poids
+			IntVar v = _vars[variable_idx];// = _solver.getIntVar(variable_idx);
 
-            // Pour etre sur, on verifie toutes les contraintes... au cas ou une d'entre elle serait deja instanti�e !!
-            int weight = 0;
-            IntIterator c = v.getIndexVector().getIndexIterator();
-            int idx = 0;
-            while (c.hasNext()) {
-                idx = c.next();
-                AbstractSConstraint cstr = (AbstractSConstraint) v.getConstraint(idx);
-                if (cstr.getNbVarNotInst() > 1) {
-                    weight += ((DomOverWDegBranchingConstraintExtension) cstr.getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure + cstr.getFineDegree(v.getVarIndex(idx));
-                }
-            }
-            ((DomOverWDegBranchingVarExtension) ((AbstractVar) v).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted = weight;
-        }
-    }
+			// Pour etre sur, on verifie toutes les contraintes... au cas ou une d'entre elle serait deja instanti�e !!
+			int weight = 0;
+			IntIterator c = v.getIndexVector().getIndexIterator();
+			int idx = 0;
+			while (c.hasNext()) {
+				idx = c.next();
+				AbstractSConstraint cstr = (AbstractSConstraint) v.getConstraint(idx);
+				if (cstr.getNbVarNotInst() > 1) {
+					weight += ((DomOverWDegBranchingConstraintExtension) cstr.getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure + cstr.getFineDegree(v.getVarIndex(idx));
+				}
+			}
+			((DomOverWDegBranchingVarExtension) ((AbstractVar) v).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted = weight;
+		}
+	}
 
-    public void initConstraintForBranching(SConstraint c) {
-        ((AbstractSConstraint) c).setExtension(ABSTRACTCONTRAINT_EXTENSION, new DomOverWDegBranchingConstraintExtension());
-    }
+	public void initConstraintForBranching(SConstraint c) {
+		((AbstractSConstraint) c).setExtension(ABSTRACTCONTRAINT_EXTENSION, new DomOverWDegBranchingConstraintExtension());
+	}
 
-    public void setBranchingVars(IntVar[] vs) {
-        _vars = vs;
-    }
+	public void setBranchingVars(IntVar[] vs) {
+		_vars = vs;
+	}
 
-    public void setRandomVarTies(int seed) {
-        randomBreakTies = new Random(seed);
-    }
+	public void setRandomVarTies(int seed) {
+		randomBreakTies = new Random(seed);
+	}
 
-    public Object selectBranchingObject() throws ContradictionException {
-        int previous_Size = -1;
-        int previous_Weight = -1;
-        IntVar previous_Variable = null;
-        if (randomBreakTies == null) {
-            for (int i = 0; i < _vars.length; i++) {
-                IntDomainVar var = (IntDomainVar) _vars[i];
-                if (var.isInstantiated()) continue;
-                else/* (!var.isInstantiated()) */{
-                    if (previous_Variable == null) {
-                        previous_Variable = var;
-                        previous_Size = var.getDomainSize();
-                        previous_Weight = ((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted;
-                    } else {
-                        if (((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted
-                                * previous_Size - previous_Weight * var.getDomainSize() > 0) {
-                            previous_Variable = var;
-                            previous_Size = var.getDomainSize();
-                            previous_Weight = ((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted;
-                        }
-                    }
-                }
-            }
-            return previous_Variable;
-        } else {
-            //redondant code with previous case, really ugly.
-            List<IntDomainVar> lvs = new LinkedList<IntDomainVar>();
-            for (int i = 0; i < _vars.length; i++) {
-                IntDomainVar var = (IntDomainVar) _vars[i];
-                if (var.isInstantiated()) continue;
-                else{ //if (!var.isInstantiated()) {
-                    if (previous_Variable == null) {
-                        previous_Variable = var;
-                        previous_Size = var.getDomainSize();
-                        previous_Weight = ((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted;
-                        lvs.add(var);
-                    } else {
-                        int note = ((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted
-                                * previous_Size - previous_Weight * var.getDomainSize();
-                        if (note > 0) {
-                            lvs.clear();
-                            lvs.add(var);
-                            previous_Size = var.getDomainSize();
-                            previous_Weight = ((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted;
-                        } else if (note >= 0) {
-                            lvs.add(var);
-                        }
+	public Object selectBranchingObject() throws ContradictionException {
+		int previous_Size = -1;
+		int previous_Weight = -1;
+		IntVar previous_Variable = null;
+		if (randomBreakTies == null) {
+			for (int i = 0; i < _vars.length; i++) {
+				IntDomainVar var = (IntDomainVar) _vars[i];
+				if (var.isInstantiated()) continue;
+				else/* (!var.isInstantiated()) */{
+					if (previous_Variable == null) {
+						previous_Variable = var;
+						previous_Size = var.getDomainSize();
+						previous_Weight = ((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted;
+					} else {
+						if (((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted
+								* previous_Size - previous_Weight * var.getDomainSize() > 0) {
+							previous_Variable = var;
+							previous_Size = var.getDomainSize();
+							previous_Weight = ((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted;
+						}
+					}
+				}
+			}
+			return previous_Variable;
+		} else {
+			//redondant code with previous case, really ugly.
+			List<IntDomainVar> lvs = new LinkedList<IntDomainVar>();
+			for (int i = 0; i < _vars.length; i++) {
+				IntDomainVar var = (IntDomainVar) _vars[i];
+				if (var.isInstantiated()) continue;
+				else{ //if (!var.isInstantiated()) {
+					if (previous_Variable == null) {
+						previous_Variable = var;
+						previous_Size = var.getDomainSize();
+						previous_Weight = ((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted;
+						lvs.add(var);
+					} else {
+						int note = ((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted
+						* previous_Size - previous_Weight * var.getDomainSize();
+						if (note > 0) {
+							lvs.clear();
+							lvs.add(var);
+							previous_Size = var.getDomainSize();
+							previous_Weight = ((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted;
+						} else if (note >= 0) {
+							lvs.add(var);
+						}
 
-                    }
-                }
-            }
-            if (lvs.size() == 0) return null;
-            return lvs.get(randomBreakTies.nextInt(lvs.size()));
-        }
-    }
+					}
+				}
+			}
+			if (lvs.size() == 0) return null;
+			return lvs.get(randomBreakTies.nextInt(lvs.size()));
+		}
+	}
 
-    public int getFirstBranch(Object x) {
-        IntDomainVar v = (IntDomainVar) x;
-        for (Iterator iter = v.getConstraintsIterator(); iter.hasNext();) {
-            reuseCstr = (AbstractSConstraint) iter.next();
-            if (SConstraintType.INTEGER.equals(reuseCstr.getConstraintType())) {
-                if (reuseCstr.getNbVarNotInst() == 2) {
-                    for (int k = 0; k < reuseCstr.getNbVars(); k++) {
-                        AbstractVar var = (AbstractVar) ((AbstractIntSConstraint) reuseCstr).getIntVar(k);
-                        if (var != v && !var.isInstantiated()) {
-                            ((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted -=
-                                    ((DomOverWDegBranchingConstraintExtension) reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure;
-                        }
-                    }
-                }
-            }
-        }
-        if (_valIterator != null) {
-            return _valIterator.getFirstVal((IntDomainVar) x);
-        } else {
-            return _valSelector.getBestVal((IntDomainVar) x);
-        }
-    }
+	public int getFirstBranch(Object x) {
+		IntDomainVar v = (IntDomainVar) x;
+		for (Iterator iter = v.getConstraintsIterator(); iter.hasNext();) {
+			reuseCstr = (AbstractSConstraint) iter.next();
+			if (SConstraintType.INTEGER.equals(reuseCstr.getConstraintType())) {
+				if (reuseCstr.getNbVarNotInst() == 2) {
+					for (int k = 0; k < reuseCstr.getNbVars(); k++) {
+						AbstractVar var = (AbstractVar) ((AbstractIntSConstraint) reuseCstr).getIntVar(k);
+						if (var != v && !var.isInstantiated()) {
+							((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted -=
+								((DomOverWDegBranchingConstraintExtension) reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure;
+						}
+					}
+				}
+			}
+		}
+		if (_valIterator != null) {
+			return _valIterator.getFirstVal((IntDomainVar) x);
+		} else {
+			return _valSelector.getBestVal((IntDomainVar) x);
+		}
+	}
 
-    public int getNextBranch(Object x, int i) {
-        if (_valIterator != null) {
-            return _valIterator.getNextVal((IntDomainVar) x, i);
-        } else {
-            return _valSelector.getBestVal((IntDomainVar) x);
-        }
-    }
+	public int getNextBranch(Object x, int i) {
+		if (_valIterator != null) {
+			return _valIterator.getNextVal((IntDomainVar) x, i);
+		} else {
+			return _valSelector.getBestVal((IntDomainVar) x);
+		}
+	}
 
-    public boolean finishedBranching(Object x, int i) {
-        if (_valIterator != null) {
-            boolean finished = !_valIterator.hasNextVal((IntDomainVar) x, i);
-            if (finished) {
-                IntDomainVar v = (IntDomainVar) x;
-                for (Iterator iter = v.getConstraintsIterator(); iter.hasNext();) {
-                    reuseCstr = (AbstractSConstraint) iter.next();
-                    if (SConstraintType.INTEGER.equals(reuseCstr.getConstraintType())) {
-                        if (reuseCstr.getNbVarNotInst() == 2) {
-                            for (int k = 0; k < reuseCstr.getNbVars(); k++) {
-                                AbstractVar var = (AbstractVar) ((AbstractIntSConstraint) reuseCstr).getIntVar(k);
-                                if (var != v && !var.isInstantiated()) {
-                                    ((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted +=
-                                            ((DomOverWDegBranchingConstraintExtension) reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return finished;
-        } else {
-            //return _valSelector.getBestVal((IntDomainVar) x) == null;
-            return false;
-        }
-    }
+	public boolean finishedBranching(Object x, int i) {
+		if (_valIterator != null) {
+			boolean finished = !_valIterator.hasNextVal((IntDomainVar) x, i);
+			if (finished) {
+				IntDomainVar v = (IntDomainVar) x;
+				for (Iterator iter = v.getConstraintsIterator(); iter.hasNext();) {
+					reuseCstr = (AbstractSConstraint) iter.next();
+					if (SConstraintType.INTEGER.equals(reuseCstr.getConstraintType())) {
+						if (reuseCstr.getNbVarNotInst() == 2) {
+							for (int k = 0; k < reuseCstr.getNbVars(); k++) {
+								AbstractVar var = (AbstractVar) ((AbstractIntSConstraint) reuseCstr).getIntVar(k);
+								if (var != v && !var.isInstantiated()) {
+									((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted +=
+										((DomOverWDegBranchingConstraintExtension) reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure;
+								}
+							}
+						}
+					}
+				}
+			}
+			return finished;
+		} else {
+			//return _valSelector.getBestVal((IntDomainVar) x) == null;
+			return false;
+		}
+	}
 
-    public void goDownBranch(Object x, int i) throws ContradictionException {
-        super.goDownBranch(x, i);
-        IntDomainVar v = (IntDomainVar) x;
-        v.setVal(i);
-    }
+	public void goDownBranch(Object x, int i) throws ContradictionException {
+		super.goDownBranch(x, i);
+		IntDomainVar v = (IntDomainVar) x;
+		v.setVal(i);
+	}
 
-    public void goUpBranch(Object x, int i) throws ContradictionException {
-        super.goUpBranch(x, i);
-        //IntDomainVar v = (IntDomainVar) x;
-        //v.remVal(i);     // On le retire !! mais attention pas de selector pour les variables du coup !!!!
-    }
+	public void goUpBranch(Object x, int i) throws ContradictionException {
+		super.goUpBranch(x, i);
+		//IntDomainVar v = (IntDomainVar) x;
+		//v.remVal(i);     // On le retire !! mais attention pas de selector pour les variables du coup !!!!
+	}
 
-    public void contradictionOccured(ContradictionException e) {
-        Object cause = e.getContradictionCause();
-        if (cause != null && e.getContraditionType() == ContradictionException.CONSTRAINT) {
-            reuseCstr = (AbstractSConstraint) cause;
-            if (SConstraintType.INTEGER.equals(reuseCstr.getConstraintType())) {
-                try {
-                    ((DomOverWDegBranchingConstraintExtension) reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure++;
-                } catch (NullPointerException npe) {
-                    // If there was a postCut, the extension has not been generated at the Branching creation
-                    reuseCstr.setExtension(ABSTRACTCONTRAINT_EXTENSION, new DomOverWDegBranchingConstraintExtension());
-                    ((DomOverWDegBranchingConstraintExtension) reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure++;
-                }
-                for (int k = 0; k < reuseCstr.getNbVars(); k++) {
-                    AbstractVar var = (AbstractVar) ((AbstractIntSConstraint) reuseCstr).getIntVar(k);
-                    DomOverWDegBranchingVarExtension extens = (DomOverWDegBranchingVarExtension) var.getExtension(ABSTRACTVAR_EXTENSION);
-                    extens.sum_weighted++;
-                }
-            }
-        }
-    }
+	public void contradictionOccured(ContradictionException e) {
+		Object cause = e.getContradictionCause();
+		if (cause != null && e.getContraditionType() == ContradictionException.CONSTRAINT) {
+			reuseCstr = (AbstractSConstraint) cause;
+			if (SConstraintType.INTEGER.equals(reuseCstr.getConstraintType())) {
+				try {
+					((DomOverWDegBranchingConstraintExtension) reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure++;
+				} catch (NullPointerException npe) {
+					// If there was a postCut, the extension has not been generated at the Branching creation
+					reuseCstr.setExtension(ABSTRACTCONTRAINT_EXTENSION, new DomOverWDegBranchingConstraintExtension());
+					((DomOverWDegBranchingConstraintExtension) reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure++;
+				}
+				for (int k = 0; k < reuseCstr.getNbVars(); k++) {
+					AbstractVar var = (AbstractVar) ((AbstractIntSConstraint) reuseCstr).getIntVar(k);
+					DomOverWDegBranchingVarExtension extens = (DomOverWDegBranchingVarExtension) var.getExtension(ABSTRACTVAR_EXTENSION);
+					extens.sum_weighted++;
+				}
+			}
+		}
+	}
 
-    // Ca sert à rien mais bon, c'est plus joli :)
-    public String getDecisionLogMsg(int branchIndex) {
-        return "==";
-    }
+	protected final void appendConstraint( StringBuilder b, SConstraint c) {
+		final AbstractSConstraint cstr = (AbstractSConstraint) c;
+		b.append("w=").append( ( (DomOverWDegBranchingConstraintExtension) cstr.getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure);
+		b.append("\t").append(cstr.pretty());
+		b.append('\n');
+	}
+
+	protected final void appendVariable( StringBuilder b, Var v) {
+		AbstractVar var = (AbstractVar) v;
+		b.append("w=").append( ( (DomOverWDegBranchingVarExtension) var.getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted);
+		b.append("\t").append(var.pretty());
+		b.append('\n');
+	}
+	
+	public final void logWeights(Logger logger, Level level) {
+		if(logger.isLoggable(level)) {
+			final StringBuilder b = new StringBuilder();
+			b.append("===> Display DomWDeg weights\n");
+			b.append("\n###\tConstraints\t###\n");
+			for (Iterator<SConstraint> iter = _solver.getIntConstraintIterator(); iter.hasNext();) {
+				appendConstraint(b, iter.next());
+			}
+			b.append("\n###\tVariables\t###\n");
+			for (int i = 0; i < _solver.getNbIntVars(); i++) {
+				appendVariable(b, _solver.getIntVar(i));
+			}
+			b.append("\n###\tConstants\t###\n");
+			for (Iterator<Integer> it = _solver.getIntConstantSet().iterator(); it.hasNext();) {
+				appendVariable(b, _solver.getIntConstant(it.next()));
+			}
+			b.append("<=== End Display DomWDeg weights\n");
+			logger.log(level, new String(b));
+		}
+	}
+	
+	// Ca sert à rien mais bon, c'est plus joli :)
+	public String getDecisionLogMsg(int branchIndex) {
+		return "==";
+	}
 }
