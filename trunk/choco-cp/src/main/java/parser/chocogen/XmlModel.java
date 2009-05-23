@@ -166,7 +166,7 @@ public class XmlModel {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        ChocoLogging.flushLogs();
     }
 
     /**

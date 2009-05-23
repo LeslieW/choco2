@@ -2488,7 +2488,7 @@ public class CPSolver implements Solver {
 			if (Choco.DEBUG) {
                 if (nogoodStore != null)
                     nogoodStore.setPassive();
-                CPSolver.flushLogs();
+                ChocoLogging.flushLogs();
 				propagate();
                 if (nogoodStore != null)
                     nogoodStore.setActive();

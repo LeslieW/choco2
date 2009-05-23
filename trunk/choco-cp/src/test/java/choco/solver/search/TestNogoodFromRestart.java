@@ -3,27 +3,31 @@
  */
 package choco.solver.search;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import samples.Examples.MinimumEdgeDeletion;
+import samples.Examples.PatternExample;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.SearchLoopWithNogoodFromRestart;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.Test;
-import samples.Examples.MinimumEdgeDeletion;
-import samples.Examples.PatternExample;
-
-import java.util.logging.Logger;
 
 
 public class TestNogoodFromRestart {
 
-    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	@Before
 	public void init() {
+		//ChocoLogging.getTestLogger().setLevel(Level.INFO);
 		Choco.DEBUG=true;
 	}
 
@@ -31,7 +35,7 @@ public class TestNogoodFromRestart {
 
 	private final static CPSolver [] SOLVERS = new CPSolver[3];
 
-	
+
 	public void testMED(Object parametersMED) {
 		MED.setUp(parametersMED);
 		MED.buildModel();
@@ -39,8 +43,8 @@ public class TestNogoodFromRestart {
 		//DFS
 		MED.buildSolver();
 		SOLVERS[cpt] = (CPSolver) PatternExample._s;
-	
-		
+
+
 		//Restart + nogood + Dom over WDEG
 		cpt++;
 		MED.buildSolver();
@@ -49,7 +53,7 @@ public class TestNogoodFromRestart {
 		SOLVERS[cpt].generateSearchStrategy();
 		AbstractGlobalSearchStrategy strat = SOLVERS[cpt].getSearchStrategy();
 		strat.setSearchLoop(new SearchLoopWithNogoodFromRestart(strat, SOLVERS[cpt].getRestartStrategy()));
-		
+
 		//Restart + nogood + Random search
 		cpt++;
 		MED.buildSolver();
@@ -62,12 +66,11 @@ public class TestNogoodFromRestart {
 		compare("Min. Edge. Del.", SOLVERS);
 	}
 
-	
+
 	public static void compare(String label ,Solver... solvers) {
 		Choco.DEBUG = true;
 		for (int i = 0; i < solvers.length; i++) {
 			final Solver s=solvers[i];
-			//CPSolver.setVerbosity(CPSolver.SEARCH);
 			s.setLoggingMaxDepth(100);
 			s.launch();
 			LOGGER.info(s.solutionToString());
@@ -80,13 +83,15 @@ public class TestNogoodFromRestart {
 	}
 
 	public static void repmessage(String header,String label,Boolean r,Solver solver) {
-		StringBuilder buffer=new StringBuilder();
-		if( ! header.isEmpty() ) {
-			buffer.append(header).append("\t");
+		if(LOGGER.isLoggable(Level.INFO)) {
+			StringBuilder buffer=new StringBuilder();
+			if( ! header.isEmpty() ) {
+				buffer.append(header).append("\t");
+			}
+			buffer.append(label).append(' ').append(r).append(" ; nb Sol. ").append(solver.getNbSolutions());
+			buffer.append(" ; ").append(solver.getTimeCount()).append("ms ; ").append(solver.getNodeCount()).append(" node(s)");
+			LOGGER.info(buffer.toString());
 		}
-		buffer.append(label).append(' ').append(r).append(" ; nb Sol. ").append(solver.getNbSolutions());
-		buffer.append(" ; ").append(solver.getTimeCount()).append("ms ; ").append(solver.getNodeCount()).append(" node(s)");
-		LOGGER.info(buffer.toString());
 	}
 
 
@@ -103,9 +108,9 @@ public class TestNogoodFromRestart {
 	@Test
 	public void testMED() {
 		testMED(new Object[]{9,0.6,6});
-		
+
 	}
-	
+
 	@Test
 	public void testManyMED() {
 		for (double p = 0.4; p < 1; p+=0.1) {
@@ -113,7 +118,7 @@ public class TestNogoodFromRestart {
 			testMED(new Object[]{10,p});
 		}
 	}
-	
+
 	@Test
 	public void testLargeMED() {
 		testMED(new Object[]{15,0.4});

@@ -109,10 +109,10 @@ class NoGoodRecorder {
 	public void handleTrace(final IntBranchingTrace trace) {
 		final IntDomainVar bvar = getBranchingVar(trace);
 		if(bvar==null) {
-			System.err.println("warning: not a integer variable");
+			LOGGER.info("reset nogood recording: not a integer variable");
 			reset();
 		}else if( ! bvar.getDomain().isBoolean()) {
-			System.err.println("warning: not a boolean variable");
+			LOGGER.info("reset nogood recording: not a boolean variable");
 			reset();
 		}else {
 			//binary node
