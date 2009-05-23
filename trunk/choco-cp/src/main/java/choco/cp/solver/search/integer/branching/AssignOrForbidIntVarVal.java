@@ -52,13 +52,12 @@ public class AssignOrForbidIntVarVal extends AbstractBinIntBranching {
 		this.pairHeuristic = pairh;
 	}
 
+	@Override
 	public String getDecisionLogMsg(int branchIndex) {
-		if (branchIndex == 0) {
-			return "==";
-		}
-		return "!=";
+		return branchIndex == 0 ? "==" : "!=";
 	}
 
+	@Override
 	public void goDownBranch(Object x, int i) throws ContradictionException {
 		super.goDownBranch(x, i);
 		IntVarValPair p = (IntVarValPair) x;

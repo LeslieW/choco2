@@ -38,7 +38,7 @@ import choco.kernel.solver.variables.real.RealVar;
 public class AssignInterval extends AbstractIntBranching implements IntBranching {
 	protected RealVarSelector varSelector;
 	protected ValIterator valIterator;
-	String[] LOG_DECISION_MSG = new String[]{"in first half of", "in second half of"};
+	protected final String[] LOG_DECISION_MSG = new String[]{"in first half of", "in second half of"};
 
 	public AssignInterval(RealVarSelector varSelector, ValIterator valIterator) {
 		this.varSelector = varSelector;
@@ -94,6 +94,7 @@ public class AssignInterval extends AbstractIntBranching implements IntBranching
     return nodeSuccess;
   }*/
 
+	@Override
 	public void goDownBranch(Object x, int i) throws ContradictionException {
 		super.goDownBranch(x, i);
 		if (i == 1) {
@@ -107,6 +108,7 @@ public class AssignInterval extends AbstractIntBranching implements IntBranching
 		}
 	}
 
+	@Override
 	public void goUpBranch(Object x, int i) throws ContradictionException {
 		super.goUpBranch(x, i);
 	}
@@ -135,6 +137,7 @@ public class AssignInterval extends AbstractIntBranching implements IntBranching
 		return ((Var) x).getName();
 	}
 
+	@Override
 	public String getDecisionLogMsg(int i) {
 		if (i == 1) return LOG_DECISION_MSG[0];
 		else if (i == 2) return LOG_DECISION_MSG[1];

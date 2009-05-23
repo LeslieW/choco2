@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.branching;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -190,6 +191,7 @@ public class DomOverWDegBranching extends AbstractLargeIntBranching implements P
 			}
 			((DomOverWDegBranchingVarExtension) ((AbstractVar) v).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted = weight;
 		}
+		//logWeights(ChocoLogging.getChocoLogger(), Level.INFO);
 	}
 
 	public void initConstraintForBranching(SConstraint c) {
@@ -386,8 +388,4 @@ public class DomOverWDegBranching extends AbstractLargeIntBranching implements P
 		}
 	}
 	
-	// Ca sert à rien mais bon, c'est plus joli :)
-	public String getDecisionLogMsg(int branchIndex) {
-		return "==";
-	}
 }
