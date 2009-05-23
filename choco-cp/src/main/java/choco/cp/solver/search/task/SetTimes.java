@@ -140,8 +140,6 @@ public class SetTimes extends AbstractLargeIntBranching {
 	/** The subset of non selectable tasks. */
 	protected final StoredBitSet nselect;
 
-
-
 	/** The tasks list. */
 	protected final List<TaskVar> tasksL;
 
@@ -177,12 +175,6 @@ public class SetTimes extends AbstractLargeIntBranching {
 			flags[i]=env.makeInt();
 			taskIndexM.put(this.tasksL.get(i), i);
 		}
-		LOG_DECISION_MSG=new String[]{"=="};
-	}
-
-	@Override
-	public String getDecisionLogMsg(final int branchIndex) {
-		return LOG_DECISION_MSG[0];
 	}
 
 	/**

@@ -38,29 +38,31 @@ import choco.kernel.solver.variables.set.SetVar;
 
 public class AssignSetVar extends AbstractSetBranching {
 
-  SetVarSelector varselector;
-  SetValSelector valselector;
-  String[] LOG_DECISION_MSG = new String[]{"contains ", "contains not "};
+	SetVarSelector varselector;
+	SetValSelector valselector;
+	String[] LOG_DECISION_MSG = new String[]{"contains ", "contains not "};
 
-  public AssignSetVar(SetVarSelector varselect, SetValSelector valselect) {
-    varselector = varselect;
-    valselector = valselect;
-  }
+	public AssignSetVar(SetVarSelector varselect, SetValSelector valselect) {
+		varselector = varselect;
+		valselector = valselect;
+	}
 
-  public Object selectBranchingObject() throws ContradictionException {
-    Object x = varselector.selectSetVar();
-    if (x == null) return null;
-    return new Object[]{x, valselector.getBestVal((SetVar) x)};
-  }
+	public Object selectBranchingObject() throws ContradictionException {
+		Object x = varselector.selectSetVar();
+		if (x == null) return null;
+		return new Object[]{x, valselector.getBestVal((SetVar) x)};
+	}
 
-  public int getFirstBranch(Object x) {
-    return 1;
-  }
+	@Override
+	public int getFirstBranch(Object x) {
+		return 1;
+	}
 
-  public String getDecisionLogMsg(int i) {
-    if (i == 1) return LOG_DECISION_MSG[0];
-    else if (i == 2) return LOG_DECISION_MSG[1];
-    else return "";
-  }
+	@Override
+	public String getDecisionLogMsg(int i) {
+		if (i == 1) return LOG_DECISION_MSG[0];
+		else if (i == 2) return LOG_DECISION_MSG[1];
+		else return "";
+	}
 
 }

@@ -188,6 +188,7 @@ public class ImpactBasedBranching extends AbstractLargeIntBranching {
 		return ((IntDomainVar) x).getDomainSize() == 0;
 	}
 
+	@Override
 	public void goDownBranch(Object x, int i) throws ContradictionException {
 		logDownBranch(x, i);
 		IntDomainVar y = (IntDomainVar) x;
@@ -203,15 +204,11 @@ public class ImpactBasedBranching extends AbstractLargeIntBranching {
 		_ibs.doAfterPropagDownBranch(x, i);
 	}
 
+	@Override
 	public void goUpBranch(Object x, int i) throws ContradictionException {
 		super.goUpBranch(x, i);
 		IntDomainVarImpl y = (IntDomainVarImpl) x;
 		y.remVal(i);
-	}
-
-	// Ca sert � rien mais bon, c'est plus joli :)
-	public String getDecisionLogMsg(int branchIndex) {
-		return "==";
 	}
 
 

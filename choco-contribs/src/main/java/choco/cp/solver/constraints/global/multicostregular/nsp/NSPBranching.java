@@ -22,12 +22,6 @@ public class NSPBranching extends AbstractLargeIntBranching {
         this.valselec = valselec;
     }
 
-
-    public String getDecisionLogMsg(int branchIndex) {
-        return LOG_DECISION_MSG[0];
-
-    }
-
     public int getFirstBranch(Object x) {
         return valselec.getBestVal((IntDomainVar)x);
     }

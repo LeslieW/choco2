@@ -22,10 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.branch;
 
-import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.constraints.SConstraint;
-
-import java.util.logging.Logger;
+import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 
 public abstract class AbstractBranching {
   /**
@@ -42,9 +40,10 @@ public abstract class AbstractBranching {
 
   public final static String LOG_DOWN_MSG = "down branch ";
   public final static String LOG_UP_MSG = "up branch ";
-  public String[] LOG_DECISION_MSG = {""};
+  public final static String LOG_DECISION_MSG_ASSIGN = "==";
+  
 
-  public void setSolver(AbstractGlobalSearchStrategy s) {
+  public final void setSolver(AbstractGlobalSearchStrategy s) {
     manager = s;
   }
 
@@ -52,7 +51,7 @@ public abstract class AbstractBranching {
    * Gets the next branching.
    * @return the next branching
    */
-  public AbstractBranching getNextBranching() {
+  public final AbstractBranching getNextBranching() {
     return nextBranching;
   }
 
@@ -60,7 +59,7 @@ public abstract class AbstractBranching {
    * Sets the next branching.
    * @param nextBranching the next branching
    */
-  public void setNextBranching(AbstractBranching nextBranching) {
+  public final void setNextBranching(AbstractBranching nextBranching) {
     this.nextBranching = nextBranching;
   }
 

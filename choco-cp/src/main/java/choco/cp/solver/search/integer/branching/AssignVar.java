@@ -71,14 +71,16 @@ public class AssignVar extends AbstractLargeIntBranching {
     return wrapper.getNextBranch(x, i);
   }
 
-  public void goDownBranch(Object x, int i) throws ContradictionException {
+  @Override
+public void goDownBranch(Object x, int i) throws ContradictionException {
     super.goDownBranch(x, i);
     IntDomainVarImpl y = (IntDomainVarImpl) x;
     y.setVal(i);
     //manager.model.propagate();
   }
 
-  public void goUpBranch(Object x, int i) throws ContradictionException {
+  @Override
+public void goUpBranch(Object x, int i) throws ContradictionException {
     super.goUpBranch(x, i);
     IntDomainVarImpl y = (IntDomainVarImpl) x;
     y.remVal(i);
@@ -121,7 +123,4 @@ public class AssignVar extends AbstractLargeIntBranching {
     }
   }
 
-  public String getDecisionLogMsg(int branchIndex) {
-    return LOG_DECISION_MSG[0];
-  }
 }
