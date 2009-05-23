@@ -2348,13 +2348,13 @@ public class Choco{
 
 	@Deprecated
 	public static Constraint cumulative(TaskVariable[] tasks, int[] heights, int capa, String... options) {
-		return cumulative(null, tasks, constantArray(heights), null, constant(capa),null, null,options);
+		return cumulative(null, tasks, constantArray(heights), null, constant(0),constant(capa), null,options);
 	}
 
 	@Deprecated
 	public static Constraint cumulative(String name, IntegerVariable[] starts, IntegerVariable[] ends, IntegerVariable[] durations, IntegerVariable[] heights, IntegerVariable capa, String... options) {
 		final TaskVariable[] tasks = makeTaskVarArray("t", starts, ends, durations);
-		return cumulative(name, tasks, heights, capa, null, options);
+		return cumulative(name, tasks, heights, constant(0), capa, options);
 
 	}
 	@Deprecated
@@ -2363,7 +2363,7 @@ public class Choco{
         for(int i = 0; i < starts.length; i++){
             t[i] = makeTaskVar("", starts[i], ends[i], durations[i]);
         }
-        return cumulative(null, t, heights, capa, null, options);
+        return cumulative(null, t, heights, constant(0), capa, options);
 	}
 	@Deprecated
 	public static Constraint cumulative(IntegerVariable[] starts, IntegerVariable[] ends, IntegerVariable[] durations, int[] heights, int capa, String... options) {
@@ -2371,7 +2371,7 @@ public class Choco{
         for(int i = 0; i < starts.length; i++){
             t[i] = makeTaskVar("", starts[i], ends[i], durations[i]);
         }
-        return cumulative(null, t, constantArray(heights), constant(capa), null, options);
+        return cumulative(null, t, constantArray(heights), constant(0), constant(capa), options);
 	}
 	@Deprecated
 	public static Constraint cumulative(IntegerVariable[] starts, IntegerVariable[] durations, IntegerVariable[] heights, IntegerVariable capa, String... options) {
@@ -2379,7 +2379,7 @@ public class Choco{
         for(int i = 0; i < starts.length; i++){
             t[i] = makeTaskVar("", starts[i], durations[i]);
         }
-        return cumulative(null, t, heights, capa, null, options);
+        return cumulative(null, t, heights, constant(0),capa, options);
 	}
 
 
