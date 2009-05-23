@@ -36,6 +36,7 @@ import choco.kernel.solver.variables.scheduling.ITask;
 
 import java.util.Comparator;
 import java.util.Random;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -76,7 +77,7 @@ public class OpenShopExample {
 
 
 	public void generateInstance() {
-		LOGGER.info("generate a new random open shop instance");
+		LOGGER.log(Level.INFO,"generate a new open shop instance {0}x{0}",n);
 		for (int i = 0; i < durations.length; i++) {
 			for (int j = 0; j < durations[i].length; j++) {
 				durations[i][j]=rnd.nextInt(MAX_DURATION);

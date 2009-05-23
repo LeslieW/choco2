@@ -23,10 +23,14 @@
 package samples.Examples;
 
 import static choco.Choco.*;
+
+import java.util.Arrays;
+
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
+import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.model.variables.integer.IntegerVariable;
 
 /**
@@ -83,7 +87,7 @@ public class GolombRuler extends PatternExample {
 
     @Override
     public void prettyOut() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        LOGGER.info(Arrays.toString(_s.getVar(ticks)));
     }
 
     private void breakSymmetries() {
@@ -110,13 +114,13 @@ public class GolombRuler extends PatternExample {
 
 
 	public static void main(String[] args) {
-		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
-		//new GolombRuler().execute(new Object[]{5,11, true});
-		//new GolombRuler().execute(new Object[]{6,17, true});
+		//ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+		new GolombRuler().execute(new Object[]{5,11, true});
+		new GolombRuler().execute(new Object[]{6,17, true});
 		//new GolombRuler().execute(new Object[]{7,25, true});
 		//new GolombRuler().execute(new Object[]{8,34, true});
 		//new GolombRuler().execute(new Object[]{9,44, true});
-		new GolombRuler().execute(new Object[]{10,55, true});
+		//new GolombRuler().execute(new Object[]{10,55, true});
 		//new GolombRuler().execute(new Object[]{11,72, true});
 		ChocoLogging.flushLogs();
 	}

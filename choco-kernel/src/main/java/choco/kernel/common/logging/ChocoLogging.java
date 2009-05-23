@@ -67,7 +67,7 @@ public final class ChocoLogging {
 		getLogger("choco.kernel.memory"),
 		getLogger("choco.api"),
 		getLogger("choco.api.model"),
-        getLogger("choco.api.solver"),
+		getLogger("choco.api.solver"),
 		getLogger("choco.api.parser"),
 		getLogger("choco.dev.debug"),	
 		getLogger("choco.dev.test"),
@@ -80,7 +80,7 @@ public final class ChocoLogging {
 			setLevel(Level.ALL, DEFAULT_HANDLER, DETAILED_HANDLER, SEARCH_DEFAULT_HANDLER);
 			setLevel(Level.WARNING, ERROR_HANDLER, SEARCH_ERROR_HANDLER);
 			setDefaultHandler();
-			setVerbosity(Verbosity.SILENT);
+			setVerbosity(Verbosity.DEFAULT);
 		} catch (AccessControlException e) {
 			// Do nothing if this is an applet !
 			// TODO: see how to make it work with an applet !
@@ -125,7 +125,7 @@ public final class ChocoLogging {
 		return CHOCO_LOGGERS[5];
 	}
 
-		
+
 	public static Logger getAPILogger() {
 		return CHOCO_LOGGERS[6];
 	}
@@ -134,7 +134,7 @@ public final class ChocoLogging {
 		return CHOCO_LOGGERS[7];
 	}
 
-    public static Logger getSolverLogger() {
+	public static Logger getSolverLogger() {
 		return CHOCO_LOGGERS[8];
 	}
 
@@ -154,7 +154,7 @@ public final class ChocoLogging {
 	public static Logger getUserLogger() {
 		return CHOCO_LOGGERS[12];
 	}
-	
+
 	public static Logger getSamplesLogger() {
 		return CHOCO_LOGGERS[13];
 	}
@@ -168,7 +168,7 @@ public final class ChocoLogging {
 		return SEARCH_FORMATTER;
 	}
 
-	
+
 	public static void flushLog(Logger logger) {
 		for (Handler h : logger.getHandlers()) {
 			h.flush();
@@ -237,7 +237,7 @@ public final class ChocoLogging {
 		return handlers;
 	}
 
-	
+
 	/**
 	 * remove handlers and write error logs into a file (warning and severe message)
 	 * @param file the error log file
@@ -262,7 +262,7 @@ public final class ChocoLogging {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * remove handlers and write logs into a file
 	 * @param file the log file
@@ -271,7 +271,7 @@ public final class ChocoLogging {
 	public static OutputStream setFileHandler(File file) {
 		return setFileHandler(file, Level.ALL);
 	}
-	
+
 	/**
 	 * remove handlers and write logs with a given level into a file 
 	 * @param file the log file
@@ -385,15 +385,16 @@ public final class ChocoLogging {
 		}
 	}
 
-	
+
 	private static void setPattern(Level solLevel) {
 		setLevel(Level.WARNING, getBranchingLogger(), getPropagationLogger(), getMemoryLogger(),
-				getParserLogger(), getDebugLogger(), getTestLogger());
-		setLevel(Level.INFO, getAPILogger(), getModelLogger(), getSamplesLogger(), getUserLogger(), getSolverLogger());
+				getDebugLogger(), getTestLogger());
+		setLevel(Level.INFO, getAPILogger(), getModelLogger(), getSolverLogger(),
+				getParserLogger(),getSamplesLogger(), getUserLogger());
 		setLevel(solLevel, getChocoLogger(), getKernelLogger(),getSearchLogger());
 	}
-	
-	
+
+
 	/**
 	 * set the choco verbosity level
 	 * @param verbosity the new verbosity level
@@ -409,7 +410,11 @@ public final class ChocoLogging {
 			setLevel(Level.OFF, getDebugLogger());
 			break;
 		}
-
+		case DEFAULT: {
+			setPattern(Level.WARNING); //output only infos not related with the search as samples, parser and user logs
+			setLevel(Level.OFF, getDebugLogger());
+			break;
+		}
 		case VERBOSE: {
 			setPattern(Level.INFO); //output only number of solutions and statistics
 			break;
@@ -434,9 +439,9 @@ public final class ChocoLogging {
 			for (Logger logger : CHOCO_LOGGERS) {
 				logger.setLevel(Level.FINEST);
 				//modify also handlers
-//				for (Handler h : logger.getHandlers()) {
-//					h.setLevel(Level.FINEST);
-//				}
+				//				for (Handler h : logger.getHandlers()) {
+				//					h.setLevel(Level.FINEST);
+				//				}
 			}
 			break;
 		}

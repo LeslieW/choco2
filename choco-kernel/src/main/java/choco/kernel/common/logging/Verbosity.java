@@ -36,7 +36,9 @@ public enum Verbosity {
 	OFF(Integer.MIN_VALUE),
 	/** display only severe messages*/
 	SILENT(0), 
-	/** display warning messages and short solving logs*/
+	/** display warning messages and some info messages (non related to the search)*/
+	DEFAULT(50), 
+	/** display short solving logs*/
 	VERBOSE(100), 
 	/** display all solutions found*/
 	SOLUTION(200), 
