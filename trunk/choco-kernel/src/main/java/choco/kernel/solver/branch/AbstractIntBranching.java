@@ -52,7 +52,6 @@ public abstract class AbstractIntBranching extends AbstractBranching implements 
 	}
 
 
-
 	@Override
 	public String getDecisionLogMsg(int branchIndex) {
 		return LOG_DECISION_MSG_ASSIGN;
