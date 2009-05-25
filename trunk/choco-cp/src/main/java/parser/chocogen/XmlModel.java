@@ -29,7 +29,10 @@ import choco.cp.solver.preprocessor.PreProcessCPSolver;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.DomOverDynDeg;
 import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.cp.solver.search.SearchLoopWithNogoodFromRestart;
+import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.Solver;
 import parser.absconparseur.tools.InstanceParser;
 import parser.absconparseur.tools.SolutionChecker;
@@ -57,6 +60,8 @@ public class XmlModel {
     private static final int VERSATILE = 3;
     private static final int SIMPLE = 4;
     private static int heuristic = 0; // DOMOVERDEG by default
+
+    private static int seed;
 
     //algo d'ac : 2001 ou 32 ou 2008
     private static int ac = 32;
@@ -156,6 +161,9 @@ public class XmlModel {
         }
         if (options.containsKey("-saclim")) {
             initialisationtime = Integer.parseInt(options.get("-saclim")) * 1000;
+        }
+        if (options.containsKey("-seed")) {
+            seed = Integer.parseInt(options.get("-seed"));
         }
         try {
             if (dossier.isFile()) {
@@ -324,7 +332,14 @@ public class XmlModel {
 
         //s.setLoggingMaxDepth(200);
         if (isFeasible && (cheuri == IMPACT || s.rootNodeSingleton(initialisationtime))) {
-                s.solve();
+//<hca> je verifierai cette option a la fin
+//            if (s.restartMode || forcerestart) {
+//                s.generateSearchStrategy();
+//                s.getSearchStrategy().setSearchLoop(new SearchLoopWithNogoodFromRestart(s.getSearchStrategy(),s.getRestartStrategy()));
+//                s.launch();
+//
+//            } else s.solve();
+            s.solve();
             isFeasible = s.isFeasible();
             nbnode = s.getSearchStrategy().getNodeCount();
             nbback = s.getBackTrackCount();
@@ -402,6 +417,7 @@ public class XmlModel {
 //                    throw new Error("solution incorrect");
 //                };
         }
+        ChocoLogging.flushLogs();        
     }
 
     public long getParseTime(){
