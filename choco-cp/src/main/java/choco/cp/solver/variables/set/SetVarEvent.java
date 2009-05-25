@@ -110,8 +110,9 @@ public class SetVarEvent extends VarEvent<SetVarImpl> {
    * @return true if the event has been fully propagated (and can thus be discarded), false otherwise
    * @throws choco.kernel.solver.ContradictionException
    */
-  public boolean propagateEvent() throws ContradictionException {
-	  LOGGER.log(Level.FINER, "propagate {0}", this);
+  @Override
+public boolean propagateEvent() throws ContradictionException {
+	  if(LOGGER.isLoggable(Level.FINER)) {LOGGER.log(Level.FINER, "propagate {0}", this);}
     // first, mark event
     int evtType = eventType;
     int evtCause = cause;

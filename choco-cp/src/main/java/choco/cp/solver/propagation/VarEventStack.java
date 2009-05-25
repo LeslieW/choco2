@@ -97,7 +97,7 @@ public class VarEventStack implements EventQueue {
 	public PropagationEvent popEvent() {
 		PropagationEvent event = queue.pop();
 		lastPopped = event;
-		LOGGER.log(Level.FINEST, "just popped {0}", event);
+		if(LOGGER.isLoggable(Level.FINEST)) {LOGGER.log(Level.FINEST, "just popped {0}", event);}
 		return event;
 	}
 

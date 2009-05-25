@@ -69,7 +69,7 @@ public class BasicVarEventQueue implements VarEventQueue {
 	public void propagateSomeEvents() throws ContradictionException {
 		while (queue.size() != 0) {
 			PropagationEvent evt = popEvent();
-            evt.propagateEvent();
+			evt.propagateEvent();
 			// in case the propagation of the event is not complete
 			// the event will be pushed right back onto the queue
 			/*
@@ -101,7 +101,9 @@ public class BasicVarEventQueue implements VarEventQueue {
 	public PropagationEvent popEvent() {
 		PropagationEvent event = queue.poll();
 		lastPopped = event;
-		LOGGER.log(Level.FINEST, "just popped {0}", event);
+		if(LOGGER.isLoggable(Level.FINEST)) {
+			LOGGER.log(Level.FINEST, "just popped {0}", event);
+		}
 		return event;
 	}
 

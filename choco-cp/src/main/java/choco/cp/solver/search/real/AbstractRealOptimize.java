@@ -135,7 +135,7 @@ public abstract class AbstractRealOptimize extends AbstractGlobalSearchStrategy 
     solver.setFeasible(Boolean.TRUE);
     //nbSolutions = nbSolutions + 1;
     // trace(SVIEW,"... solution with ~A:~S [~S]\n",obj.name,objval,a.limits),  // v1.011 <thb>
-    LOGGER.log(Level.INFO, "... solution with cost {0} : {1}", new Object[]{objective, objective.getValue()});
+    if(LOGGER.isLoggable(Level.INFO)) {LOGGER.log(Level.INFO, "... solution with cost {0} : {1}", new Object[]{objective, objective.getValue()});}
     setBound();
     setTargetBound();
     super.recordSolution();

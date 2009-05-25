@@ -842,7 +842,7 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
         this.modifiedBound[1] = true;
         this.computeSharpBounds();
         if (toRemove.size() > 0)
-            LOGGER.log(Level.INFO, "PB");
+            LOGGER.info("PB");
         if (DEBUG && !this.check())
         {
             System.out.flush();
