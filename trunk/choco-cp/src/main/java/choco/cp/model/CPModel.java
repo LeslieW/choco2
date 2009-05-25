@@ -152,7 +152,7 @@ public class CPModel implements Model {
             InputStream is = getClass().getResourceAsStream( "/application.properties" );
             properties.load(is);
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Could not open application.properties");
+            LOGGER.severe("Could not open application.properties");
         }
     }
 
@@ -907,7 +907,7 @@ public class CPModel implements Model {
             while (it.hasNext()) {
                 Variable v = it.next();
                 if (v == null) {
-                    LOGGER.log(Level.SEVERE, "Adding null variable in the model !");
+                    LOGGER.severe("Adding null variable in the model !");
                 }
                 addVariable(v);
                 if (v.getVariableType() != VariableType.CONSTANT_INTEGER

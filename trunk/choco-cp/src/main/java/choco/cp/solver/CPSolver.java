@@ -2503,7 +2503,7 @@ public class CPSolver implements Solver {
 				// }
 			}
 		} catch (ContradictionException e) {
-			LOGGER.log(Level.SEVERE, "BUG in restoring solution !!");
+			LOGGER.severe("BUG in restoring solution !!");
 			throw (new SolverException("Restored solution not consistent !!"));
 			// TODO : � voir comment g�rer les erreurs en g�n�ral
 		}

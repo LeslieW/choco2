@@ -68,7 +68,7 @@ public class RandomProblemGenerator {
 	{
 		if(nbOfShapes > nbOfShiftedBoxes)
 		{
-			LOGGER.log(Level.INFO, "The number of shifted boxes should be greater or equal to the number of shapes");
+			LOGGER.info("The number of shifted boxes should be greater or equal to the number of shapes");
 			return;
 		}
 		

@@ -336,7 +336,7 @@ public class StoredBinaryTree implements IStateBinaryTree {
                 else current = current.rightNode;
             }
             else          {
-                LOGGER.severe("GFROS PB");
+                LOGGER.severe("GROS PB");
                 done = true;
             }
         }

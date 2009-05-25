@@ -88,25 +88,14 @@ public class Cumulative extends AbstractCumulativeSConstraint  {
 	 * @throws ContradictionException
 	 */
 	public final void filter() throws ContradictionException {
-		if (LOGGER.isLoggable(Level.FINE)) {
-			LOGGER.log(Level.FINE, "========= Filtering on resource {0} ========", this);
-			LOGGER.fine("Initial state for resource ");
-			LOGGER.fine(toString());
-		}
 		noFixPoint = true;
 		final boolean hasTaskInterval = flags.or(TASK_INTERVAL, VHM_CEF_ALGO_N2K, VILIM_CEF_ALGO, TASK_INTERVAL_SLOW) ;
 		final boolean hasEdgeFinding = flags.or(VHM_CEF_ALGO_N2K, VILIM_CEF_ALGO) ;
 		if( hasTaskInterval) { checkRulesRequirement();}
 		while (noFixPoint) {  // apply the sweep process until saturation
 			noFixPoint = false;
-			if (LOGGER.isLoggable(Level.FINE)) {
-				LOGGER.log(Level.FINE, "------ Start sweep for resource {0} ------", this);
-			}
 			noFixPoint |= cumulSweep.sweep();
 			if ( hasTaskInterval) {
-				if (LOGGER.isLoggable(Level.FINE)) {
-					LOGGER.log(Level.FINE, "------ Energetic for resource {0} ------", this);
-				}
 				//initial sorting of the tasks
 				cumulRules.initializeEdgeFindingStart();
 				//1-) Ensure first E-feasability, also called overload checking (Vilim)
@@ -140,10 +129,6 @@ public class Cumulative extends AbstractCumulativeSConstraint  {
 						noFixPoint |= cumulRules.vilimEndEF();    //O(n^2 \times k)
 					} else if (flags.contains(VHM_CEF_ALGO_N2K)) {
 						noFixPoint |= cumulRules.calcEF_end();    // in O(n^2 \times k)
-					}
-
-					if (LOGGER.isLoggable(Level.FINE)) {
-						LOGGER.log(Level.FINE, "------ Energetic  filtering done {0} ------", this);
 					}
 				}
 			}

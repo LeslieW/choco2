@@ -164,7 +164,7 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
    * @throws ContradictionException
    */
   public boolean propagateEvent() throws ContradictionException {
-	  LOGGER.log(Level.FINER, "propagate {0}", this);
+	  if(LOGGER.isLoggable(Level.FINER)) {LOGGER.log(Level.FINER, "propagate {0}", this);}
     // first, mark event
     int evtType = eventType;
     int evtCause = cause;

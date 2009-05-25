@@ -139,7 +139,7 @@ public class ChocEngine extends AbstractPropagationEngine {
       // no priority anymore
       //varEventQueue.updatePriority(event);
     }
-    LOGGER.log(Level.FINEST, "posted Event {0}", event);
+    //LOGGER.log(Level.FINEST, "posted Event {0}", event);
   }
 
   /**

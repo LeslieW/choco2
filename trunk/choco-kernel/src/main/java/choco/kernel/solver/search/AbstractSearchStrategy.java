@@ -30,6 +30,7 @@ import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.set.SetVar;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -124,8 +125,9 @@ public abstract class AbstractSearchStrategy {
 	 * showing information about the last solution
 	 */
 	public void showSolution() {
-		LOGGER.info(solver.pretty());
-		// TODO
+		if(LOGGER.isLoggable(Level.INFO)) {
+			LOGGER.info(solver.pretty());
+		}
 	}
 
 	public void storeSolution(Solution sol) {

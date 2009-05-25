@@ -371,7 +371,9 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 * Print all statistics
 	 */
 	public void printRuntimeStatistics() {
-		LOGGER.info(runtimeStatistics());
+		if(LOGGER.isLoggable(Level.INFO)) {
+			LOGGER.info(runtimeStatistics());
+		}
 	}
 
 	public String runtimeStatistics() {

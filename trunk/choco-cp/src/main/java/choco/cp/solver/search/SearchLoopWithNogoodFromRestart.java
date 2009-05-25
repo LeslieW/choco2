@@ -97,7 +97,7 @@ class NoGoodRecorder {
 	}
 
 
-	protected IntDomainVar getBranchingVar(IntBranchingTrace trace) {
+	protected IntDomainVar getBranchingVar(final IntBranchingTrace trace) {
 		if(trace.getBranchingObject() instanceof IntDomainVar) {
 			return (IntDomainVar) trace.getBranchingObject();
 		}else if(trace.getBranchingObject() instanceof IntVarValPair) {
