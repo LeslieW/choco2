@@ -64,6 +64,7 @@ public abstract class PatternExample {
         LOGGER.info("\n *********** ");
         LOGGER.info("#sol : " + _s.getNbSolutions());
         _s.printRuntimeSatistics();
+        ChocoLogging.flushLogs();
     }
 
 }
