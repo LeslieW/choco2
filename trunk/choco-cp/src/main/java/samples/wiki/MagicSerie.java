@@ -2,6 +2,7 @@ package samples.wiki;
 
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.common.logging.ChocoLogging;
 
@@ -18,7 +19,7 @@ public class MagicSerie {
 
 
     public static void main(String[] args) {
-        int n = 100;
+        int n = 5;
 
         LOGGER.info("Magic Serie Model with n = " + n);
 
@@ -40,12 +41,15 @@ public class MagicSerie {
         pb.addConstraint(eq(scalar(coeff2, vs2), n)); // contrainte redondante 2
         CPSolver s = new CPSolver();
         s.read(pb);
+        s.monitorBackTrackLimit(true);
+        s.setVarIntSelector(new MinDomain(s,s.getVar(vs)));
         s.solve();
         for (int i = 0; i < vs.length; i++) {    // affichage de la solution
             LOGGER.info(("" + i + ": " + s.getVar(vs[i]).getVal()));
         }
         LOGGER.info("NB_NODE: " + s.getSearchStrategy().getNodeCount());
-        LOGGER.info("TIME: " + s.getSearchStrategy().getTimeCount());        
+        LOGGER.info("BACKT: " + s.getSearchStrategy().getBackTrackCount());
+        LOGGER.info("TIME: " + s.getSearchStrategy().getTimeCount());
         ChocoLogging.flushLogs();
     }
 
