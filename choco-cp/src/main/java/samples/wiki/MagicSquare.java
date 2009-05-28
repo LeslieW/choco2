@@ -25,6 +25,7 @@ package samples.wiki;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -38,7 +39,7 @@ public class MagicSquare {
     protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
 
     public static void main(String[] args) {
-        int n = 4;
+        int n = 7;
         LOGGER.info("Magic Square Model with n = " + n);
 
         Model m = new CPModel();
@@ -47,19 +48,13 @@ public class MagicSquare {
         IntegerVariable[] vars = new IntegerVariable[n * n];
         for (int i = 0; i < n; i++)
             for (int j = 0; j < n; j++) {
-                vars[i * n + j] = makeIntVar("C" + i + "_" + j, 1, n * n);
+                vars[i * n + j] = makeIntVar("C" + i + "_" + j, 1, n * n, "cp:bound");
             }
         IntegerVariable sum = makeIntVar("S", 1, n * n * (n * n + 1) / 2);
 
         m.addConstraint(eq(sum, n * (n * n + 1) / 2));
-        for (int i = 0; i < n * n; i++)
-            for (int j = 0; j < i; j++)
-                m.addConstraint(neq(vars[i], vars[j]));
+        m.addConstraint("cp:bc",allDifferent(vars));
 
-        int[] coeffs = new int[n];
-        for (int i = 0; i < n; i++) {
-            coeffs[i] = 1;
-        }
 
         for (int i = 0; i < n; i++) {
             IntegerVariable[] col = new IntegerVariable[n];
@@ -70,10 +65,14 @@ public class MagicSquare {
                 row[j] = vars[j * n + i];
             }
 
-            m.addConstraint(eq(scalar(coeffs, row), sum));
-            m.addConstraint(eq(scalar(coeffs, col), sum));
+            m.addConstraint(eq(sum(row), sum));
+            m.addConstraint(eq(sum(col), sum));
         }
+
         s.read(m);
+        s.monitorBackTrackLimit(true);
+        s.setVarIntSelector(new MinDomain(s,s.getVar(vars)));
+
         s.solve();
         //LOGGER.info("" + pretty());
         for (int i = 0; i < n; i++) {
@@ -85,8 +84,10 @@ public class MagicSquare {
             }
             LOGGER.info(st.toString());
         }
+        LOGGER.info("BACK: " + s.getSearchStrategy().getBackTrackCount());  
         LOGGER.info("NB_NODE: " + s.getSearchStrategy().getNodeCount());
-        
+        LOGGER.info("TIME: " + s.getSearchStrategy().getTimeCount());
+        ChocoLogging.flushLogs();
     }
 
 }
