@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -69,13 +70,13 @@ public final class VizFactory {
 				}
 				fw.write("\n}");
 				fw.close();
-				created(f);
+				LOGGER.log(Level.INFO,"creation {0} [ok]", f);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			return f;
 		}else {
-			VizFactory.error("no object to draw");
+			LOGGER.warning("no object to draw");
 			return null;
 		}
 	}
@@ -96,7 +97,7 @@ public final class VizFactory {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		created(f);
+		LOGGER.log(Level.INFO,"creation {0} [ok]", f);
 		return f;
 	}
 	/**
@@ -124,24 +125,16 @@ public final class VizFactory {
 	//********* Utils *******************************************//
 	//****************************************************************//
 
-	protected static void error(String message) {
-		LOGGER.severe(message);
-	}
+	
 
-	protected static void info(String message) {
-		LOGGER.info(message);
-	}
-
-	protected static void created(File f) {
-		info("creation "+f.getAbsolutePath()+" [ok]");
-	}
+	
 
 	public static File createTempFile(final String name, final String suffix) {
 		File f=null;
 		try {
 			f= File.createTempFile(name+"_",suffix);
 		} catch (IOException e) {
-			VizFactory.error("can't create temporary file");
+			LOGGER.severe("can't create temporary file");
 			e.printStackTrace();
 		}
 		return f;

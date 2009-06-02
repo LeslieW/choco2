@@ -34,12 +34,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
 public abstract class Evaluator {
 
-    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+	protected final static Logger LOGGER = ChocoLogging.getParserLogger();
 
 	private static Map<String, Class> classMap;
 
@@ -48,13 +49,13 @@ public abstract class Evaluator {
 	private static Set<String> symmetricSet;
 
 	private static Set<String> associativeSet;
-	
+
 	static {
 		classMap = new HashMap<String, Class>();
 		arityMap = new HashMap<String, Integer>();
 		symmetricSet = new HashSet<String>();
 		associativeSet = new HashSet<String>();
-		
+
 		Class[] classes = ReflectionManager.searchClassesInheritingFrom(Evaluator.class, Modifier.PUBLIC, Modifier.ABSTRACT);
 		for (Class clazz : classes) {
 			String className = Toolkit.getRelativeClassNameOf(clazz);
@@ -79,7 +80,7 @@ public abstract class Evaluator {
 					symmetricSet.add(evaluatorToken);
 				if (AssociativeType.class.isAssignableFrom(clazz))
 					associativeSet.add(evaluatorToken);
-				
+
 			} catch (Exception e) {
 				LOGGER.info(MessageFormat.format("{0}", e));
 				System.exit(1);
@@ -97,7 +98,7 @@ public abstract class Evaluator {
 		Integer i = arityMap.get(evaluatorToken);
 		return i == null ? -1 : i;
 	}
-	
+
 	public static boolean isSymmetric(String evaluatorToken) {
 		return symmetricSet.contains(evaluatorToken);
 	}
@@ -135,10 +136,12 @@ public abstract class Evaluator {
 	}
 
 	public static void displayStack() {
-		String s = "";
-		for (int i = 0; i <= top; i++)
-			s += stack[i] + " ";
-		LOGGER.info(s);
+		if(LOGGER.isLoggable(Level.INFO)) {
+			String s = "";
+			for (int i = 0; i <= top; i++)
+				s += stack[i] + " ";
+			LOGGER.info(s);
+		}
 	}
 
 

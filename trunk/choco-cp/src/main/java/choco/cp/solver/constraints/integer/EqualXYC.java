@@ -80,22 +80,23 @@ public class EqualXYC extends AbstractBinIntSConstraint {
     return super.clone();
   }
 
+///!\  Logging statements decrease performances
   /**
    * The one and only propagation method, using foward checking
    */
 
   public void propagate() throws ContradictionException {
-    if (LOGGER.isLoggable(Level.FINEST))
-    {LOGGER.log(Level.FINEST,"INF({0) >= INF({1}) + {2} = {3}", new Object[]{v0.toString(), v1.toString(), cste, v1.getInf() + cste});}
+//    if (LOGGER.isLoggable(Level.FINEST))
+//    {LOGGER.log(Level.FINEST,"INF({0) >= INF({1}) + {2} = {3}", new Object[]{v0.toString(), v1.toString(), cste, v1.getInf() + cste});}
     v0.updateInf(v1.getInf() + cste, cIdx0);
-    if (LOGGER.isLoggable(Level.FINEST))
-    {LOGGER.log(Level.FINEST,"SUP({0}) <= SUP({1}) + {2} = {3}", new Object[]{v0.toString(), v1.toString(), cste, (v1.getSup() + cste)});}
+//    if (LOGGER.isLoggable(Level.FINEST))
+//    {LOGGER.log(Level.FINEST,"SUP({0}) <= SUP({1}) + {2} = {3}", new Object[]{v0.toString(), v1.toString(), cste, (v1.getSup() + cste)});}
     v0.updateSup(v1.getSup() + cste, cIdx0);
-    if (LOGGER.isLoggable(Level.FINEST))
-    {LOGGER.log(Level.FINEST,"INF({0}) >= INF({1}) - {2} = {3}", new Object[]{v1.toString(), v0.toString(), cste , (v0.getInf() - cste)});}
+//    if (LOGGER.isLoggable(Level.FINEST))
+//    {LOGGER.log(Level.FINEST,"INF({0}) >= INF({1}) - {2} = {3}", new Object[]{v1.toString(), v0.toString(), cste , (v0.getInf() - cste)});}
     v1.updateInf(v0.getInf() - cste, cIdx1);
-    if (LOGGER.isLoggable(Level.FINEST))
-    {LOGGER.log(Level.FINEST,"SUP({0}) <= SUP({1}) - {2} = {3}", new Object[]{v1.toString(), v0.toString(), cste, (v0.getSup() - cste)});}
+//    if (LOGGER.isLoggable(Level.FINEST))
+//    {LOGGER.log(Level.FINEST,"SUP({0}) <= SUP({1}) - {2} = {3}", new Object[]{v1.toString(), v0.toString(), cste, (v0.getSup() - cste)});}
     v1.updateSup(v0.getSup() - cste, cIdx1);
 
     // ensure that, in case of enumerated domains, holes are also propagated
@@ -105,8 +106,8 @@ public class EqualXYC extends AbstractBinIntSConstraint {
         while (it.hasNext()) {
             int val0 = it.next();
             if (!(v1.canBeInstantiatedTo(val0 - cste))) {
-                if (LOGGER.isLoggable(Level.FINEST))
-                {LOGGER.log(Level.FINEST,"{0} = {1} + {2} != {3}", new Object[]{v0.toString(), v1.toString(), cste , val0});}
+//                if (LOGGER.isLoggable(Level.FINEST))
+//                {LOGGER.log(Level.FINEST,"{0} = {1} + {2} != {3}", new Object[]{v0.toString(), v1.toString(), cste , val0});}
                 v0.removeVal(val0, cIdx0);
             }
         }
@@ -117,8 +118,8 @@ public class EqualXYC extends AbstractBinIntSConstraint {
         while (it.hasNext()) {
             int val1 = it.next();
             if (!(v0.canBeInstantiatedTo(val1 + cste))) {
-                if (LOGGER.isLoggable(Level.FINEST))
-                {LOGGER.log(Level.FINEST,"{0} = {1} - {2} != {3}", new Object[]{v1.toString(), v0.toString(), cste, val1});}
+//                if (LOGGER.isLoggable(Level.FINEST))
+//                {LOGGER.log(Level.FINEST,"{0} = {1} - {2} != {3}", new Object[]{v1.toString(), v0.toString(), cste, val1});}
                 v1.removeVal(val1, cIdx1);
             }
         }
@@ -129,36 +130,36 @@ public class EqualXYC extends AbstractBinIntSConstraint {
 
   public void awakeOnInf(int idx) throws ContradictionException {
     if (idx == 0) {
-      if (LOGGER.isLoggable(Level.FINEST))
-      {LOGGER.log(Level.FINEST,"INF({0}) >= INF({1}) - {2} = {3}", new Object[]{v1.toString(), v0.toString(), cste , (v0.getInf() - cste)});}
+//      if (LOGGER.isLoggable(Level.FINEST))
+//      {LOGGER.log(Level.FINEST,"INF({0}) >= INF({1}) - {2} = {3}", new Object[]{v1.toString(), v0.toString(), cste , (v0.getInf() - cste)});}
       v1.updateInf(v0.getInf() - cste, cIdx1);
     } else {
-      if (LOGGER.isLoggable(Level.FINEST))
-      {LOGGER.log(Level.FINEST,"INF({0}) >= INF({1}) - {2} = {3}", new Object[]{v0.toString(), v1.toString(), cste, (v1.getInf() + cste)});}
+//      if (LOGGER.isLoggable(Level.FINEST))
+//      {LOGGER.log(Level.FINEST,"INF({0}) >= INF({1}) - {2} = {3}", new Object[]{v0.toString(), v1.toString(), cste, (v1.getInf() + cste)});}
       v0.updateInf(v1.getInf() + cste, cIdx0);
     }
   }
 
   public void awakeOnSup(int idx) throws ContradictionException {
     if (idx == 0) {
-      if (LOGGER.isLoggable(Level.FINEST))
-      {LOGGER.log(Level.FINEST,"SUP({0}) <= SUP({1}) - {2} = {3}", new Object[]{v1.toString(), v0.toString(), cste, (v0.getSup() - cste)});}
+//      if (LOGGER.isLoggable(Level.FINEST))
+//      {LOGGER.log(Level.FINEST,"SUP({0}) <= SUP({1}) - {2} = {3}", new Object[]{v1.toString(), v0.toString(), cste, (v0.getSup() - cste)});}
       v1.updateSup(v0.getSup() - cste, cIdx1);
     } else {
-      if (LOGGER.isLoggable(Level.FINEST))
-      {LOGGER.log(Level.FINEST,"SUP({0}) <= SUP({1}) + {2}  = {3}", new Object[]{v0.toString(), v1.toString(), cste, (v1.getSup() + cste)});}
+//      if (LOGGER.isLoggable(Level.FINEST))
+//      {LOGGER.log(Level.FINEST,"SUP({0}) <= SUP({1}) + {2}  = {3}", new Object[]{v0.toString(), v1.toString(), cste, (v1.getSup() + cste)});}
       v0.updateSup(v1.getSup() + cste, cIdx0);
     }
   }
 
   public void awakeOnInst(int idx) throws ContradictionException {
     if (idx == 0) {
-      if (LOGGER.isLoggable(Level.FINEST))
-      {LOGGER.log(Level.FINEST, "{0} = {1} - {2} = {3}", new Object[]{v1.toString(), v0.toString(), cste, (v0.getVal() - cste)});}
+//      if (LOGGER.isLoggable(Level.FINEST))
+//      {LOGGER.log(Level.FINEST, "{0} = {1} - {2} = {3}", new Object[]{v1.toString(), v0.toString(), cste, (v0.getVal() - cste)});}
       v1.instantiate(v0.getVal() - cste, cIdx1);
     } else {
-      if (LOGGER.isLoggable(Level.FINEST))
-      {LOGGER.log(Level.FINEST, "{0} = {1} + {2} = {3}", new Object[]{v0.toString(), v1.toString(), cste, (v1.getVal() + cste)});}
+//      if (LOGGER.isLoggable(Level.FINEST))
+//      {LOGGER.log(Level.FINEST, "{0} = {1} + {2} = {3}", new Object[]{v0.toString(), v1.toString(), cste, (v1.getVal() + cste)});}
       v0.instantiate(v1.getVal() + cste, cIdx0);
     }
   }
@@ -166,13 +167,13 @@ public class EqualXYC extends AbstractBinIntSConstraint {
 
   public void awakeOnRem(int idx, int x) throws ContradictionException {
     if (idx == 0) {
-      if (LOGGER.isLoggable(Level.FINEST))
-      {LOGGER.log(Level.FINEST,"{0} = {1} - {2} != {3}", new Object[]{v1.toString(), v0.toString(), cste, (x - cste)});}
+//      if (LOGGER.isLoggable(Level.FINEST))
+//      {LOGGER.log(Level.FINEST,"{0} = {1} - {2} != {3}", new Object[]{v1.toString(), v0.toString(), cste, (x - cste)});}
       v1.removeVal(x - cste, cIdx1);
     } else {
       assert(idx == 1);
-      if (LOGGER.isLoggable(Level.FINEST))
-      {LOGGER.log(Level.FINEST, "{0} = {1} + {2} != {3}", new Object[]{v0.toString(), v1.toString(), cste, (x + cste)});}
+//      if (LOGGER.isLoggable(Level.FINEST))
+//      {LOGGER.log(Level.FINEST, "{0} = {1} + {2} != {3}", new Object[]{v0.toString(), v1.toString(), cste, (x + cste)});}
       v0.removeVal(x + cste, cIdx0);
     }
   }

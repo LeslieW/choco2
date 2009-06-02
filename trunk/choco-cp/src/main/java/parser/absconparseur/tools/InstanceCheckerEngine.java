@@ -22,17 +22,20 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.absconparseur.tools;
 
-import choco.kernel.common.logging.ChocoLogging;
-import org.w3c.dom.Document;
-import parser.absconparseur.InstanceTokens;
-import parser.absconparseur.XMLManager;
-
-import javax.swing.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.JOptionPane;
+
+import org.w3c.dom.Document;
+
+import parser.absconparseur.InstanceTokens;
+import parser.absconparseur.XMLManager;
+import choco.kernel.common.logging.ChocoLogging;
 
 
 public class InstanceCheckerEngine extends Thread {
@@ -200,7 +203,7 @@ public class InstanceCheckerEngine extends Thread {
 		// assert !srcFile.isDirectory();
 
 		if (!mustBeTreated(srcFile.getName())) {
-			LOGGER.info(srcFile.getAbsolutePath() + " ignored");
+			LOGGER.log(Level.INFO, "{0} ignored", srcFile);
 			counter3++;
 		} else {
 			indicator.write(srcFile.getName() + "\n");
@@ -238,7 +241,7 @@ public class InstanceCheckerEngine extends Thread {
 			operate(srcDirectory);
 		} catch (OutOfMemoryError e) {
 			indicator.write(" OUT OF MEMORY ERROR - the program is going to be stopped");
-			LOGGER.info("OUT OF MEMORY ERROR - the program has been stopped");
+			LOGGER.log(Level.SEVERE, "OUT OF MEMORY ERROR - the program has been stopped", e);
 			System.exit(1);
 		}
 

@@ -97,7 +97,8 @@ public class VarEventStack implements EventQueue {
 	public PropagationEvent popEvent() {
 		PropagationEvent event = queue.pop();
 		lastPopped = event;
-		if(LOGGER.isLoggable(Level.FINEST)) {LOGGER.log(Level.FINEST, "just popped {0}", event);}
+		//Logging statements really decrease performance
+		//if(LOGGER.isLoggable(Level.FINEST)) {LOGGER.log(Level.FINEST, "just popped {0}", event);}
 		return event;
 	}
 

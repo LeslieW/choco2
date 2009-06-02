@@ -34,6 +34,7 @@ import parser.absconparseur.XMLManager;
 import parser.absconparseur.components.*;
 
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -296,16 +297,14 @@ public class InstanceParser {
 		mapOfRelations = new HashMap<String, PRelation>();
 		if (relationsElement == null)
 			return;
-		int nbRelations = Integer.parseInt(relationsElement.getAttribute(InstanceTokens.NB_RELATIONS));
 		if (displayInstance)
-			LOGGER.info("=> " + nbRelations + " relations");
-
+			LOGGER.log(Level.INFO, "=> {0} nbRelations", relationsElement.getAttribute(InstanceTokens.NB_RELATIONS));
 		NodeList nodeList = relationsElement.getElementsByTagName(InstanceTokens.RELATION);
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			PRelation relation = parseRelation((Element) nodeList.item(i));
 			mapOfRelations.put(relation.getName(), relation);
 			if (displayInstance)
-				LOGGER.info(""+relation);
+				LOGGER.log(Level.INFO, "{0}", relation);
 		}
 	}
 
@@ -323,14 +322,14 @@ public class InstanceParser {
 			return;
 		int nbPredicates = Integer.parseInt(predicatesElement.getAttribute(InstanceTokens.NB_PREDICATES));
 		if (displayInstance)
-			LOGGER.info("=> " + nbPredicates + " predicates");
+			LOGGER.log(Level.INFO, "=> {0} predicates", nbPredicates);
 
 		NodeList nodeList = predicatesElement.getElementsByTagName(InstanceTokens.PREDICATE);
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			PPredicate predicate = parsePredicate((Element) nodeList.item(i));
 			mapOfPredicates.put(predicate.getName(), predicate);
 			if (displayInstance)
-				LOGGER.info(""+predicate);
+				LOGGER.log(Level.INFO, "{0}", predicate);
 		}
 	}
 
@@ -458,14 +457,14 @@ public class InstanceParser {
 		if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.CUMULATIVE)))
 			return parseCumulativeConstraint(name, scope, parameters);
 
-		LOGGER.info("Problem with the reference " + reference);
+		LOGGER.log(Level.WARNING, "Problem with the reference", reference);
 		return null;
 	}
 
 	private void parseConstraints(Element constraintsElement) {
 		mapOfConstraints = new HashMap<String, PConstraint>();
 		int nbConstraints = Integer.parseInt(constraintsElement.getAttribute(InstanceTokens.NB_CONSTRAINTS));
-		if (displayInstance) {
+		if (displayInstance && LOGGER.isLoggable(Level.INFO)) {
             StringBuffer st = new StringBuffer();
 			st.append("=> " + nbConstraints + " constraints");
 			if (type.equals(InstanceTokens.WCSP)) {
@@ -482,7 +481,7 @@ public class InstanceParser {
 			PConstraint constraint = parseConstraint((Element) nodeList.item(i));
 			mapOfConstraints.put(constraint.getName(), constraint);
 			if (displayInstance)
-				LOGGER.info(""+constraint);
+				LOGGER.log(Level.INFO,"{0}",constraint);
 		}
 	}
 
@@ -503,8 +502,7 @@ public class InstanceParser {
 
 	public static void main(String[] args) {
 		if (args.length != 1) {
-			LOGGER.info("InstanceParser " + VERSION);
-			LOGGER.info("Usage : java ... InstanceParser <instanceName>");
+			LOGGER.log(Level.INFO, "InstanceParser {0}\nUsage : java ... InstanceParser <instanceName>", VERSION);
 			System.exit(1);
 		}
 

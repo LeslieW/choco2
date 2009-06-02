@@ -66,55 +66,56 @@ public class NotEqualXYC extends AbstractBinIntSConstraint {
         // return 0x0B;
     }
 
+ // /!\  Logging statements decrease performances
     /**
      * The one and only propagation method, using foward checking
      */
 
     public void propagate() throws ContradictionException {
         if (v0.isInstantiated()) {
-            if (LOGGER.isLoggable(Level.FINEST))
-            {LOGGER.log(Level.FINEST, "VAL({0}) != VAL({1}) - {2}", new Object[]{v1.toString(), v0.toString(),this.cste});}
+//            if (LOGGER.isLoggable(Level.FINEST))
+//            {LOGGER.log(Level.FINEST, "VAL({0}) != VAL({1}) - {2}", new Object[]{v1.toString(), v0.toString(),this.cste});}
             v1.removeVal(v0.getVal() - this.cste, this.cIdx1);
         } else if (v1.isInstantiated()) {
-            if (LOGGER.isLoggable(Level.FINEST))
-            {LOGGER.log(Level.FINEST, "VAL({0}) != VAL({1}) + {2}", new Object[]{v0.toString(), v1.toString(), this.cste});}
+//            if (LOGGER.isLoggable(Level.FINEST))
+//            {LOGGER.log(Level.FINEST, "VAL({0}) != VAL({1}) + {2}", new Object[]{v0.toString(), v1.toString(), this.cste});}
             v0.removeVal(v1.getVal() + this.cste, this.cIdx0);
         }
     }
 
     public void awakeOnInf(int idx) throws ContradictionException {
         if (v0.isInstantiated()) {
-            if (LOGGER.isLoggable(Level.FINEST))
-            {LOGGER.log(Level.FINEST, "VAL({0} != VAL({1}) - {2}", new Object[]{v1.toString(), v0.toString(), this.cste});}
+//            if (LOGGER.isLoggable(Level.FINEST))
+//            {LOGGER.log(Level.FINEST, "VAL({0} != VAL({1}) - {2}", new Object[]{v1.toString(), v0.toString(), this.cste});}
             v1.removeVal(v0.getVal() - this.cste, this.cIdx1);
         } else if (v1.isInstantiated()) {
-            if (LOGGER.isLoggable(Level.FINEST))
-            {LOGGER.log(Level.FINEST, "VAL({0} != VAL({1}) + {2}", new Object[]{v0.toString(), v1.toString(), this.cste});}
+//            if (LOGGER.isLoggable(Level.FINEST))
+//            {LOGGER.log(Level.FINEST, "VAL({0} != VAL({1}) + {2}", new Object[]{v0.toString(), v1.toString(), this.cste});}
             v0.removeVal(v1.getVal() + this.cste, this.cIdx0);
         }
     }
 
     public void awakeOnSup(int idx) throws ContradictionException {
         if (v0.isInstantiated()) {
-            if (LOGGER.isLoggable(Level.FINEST))
-            {LOGGER.log(Level.FINEST, "VAL({0}) != VAL({1}) - {2}", new Object[]{v1.toString(), v0.toString(), this.cste});}
+//            if (LOGGER.isLoggable(Level.FINEST))
+//            {LOGGER.log(Level.FINEST, "VAL({0}) != VAL({1}) - {2}", new Object[]{v1.toString(), v0.toString(), this.cste});}
             v1.removeVal(v0.getVal() - this.cste, this.cIdx1);
         } else if (v1.isInstantiated()) {
-            if (LOGGER.isLoggable(Level.FINEST))
-            {LOGGER.log(Level.FINEST, "VAL({0}) != VAL({1}) + {2}", new Object[]{v0.toString(), v1.toString(), this.cste});}
+//            if (LOGGER.isLoggable(Level.FINEST))
+//            {LOGGER.log(Level.FINEST, "VAL({0}) != VAL({1}) + {2}", new Object[]{v0.toString(), v1.toString(), this.cste});}
             v0.removeVal(v1.getVal() + this.cste, this.cIdx0);
         }
     }
 
     public void awakeOnInst(int idx) throws ContradictionException {
         if (idx == 0) {
-            if (LOGGER.isLoggable(Level.FINEST))
-            {LOGGER.log(Level.FINEST, "VAL({0}) != VAL({1}) - {2}", new Object[]{v1.toString(), v0.toString(), this.cste});}
+//            if (LOGGER.isLoggable(Level.FINEST))
+//            {LOGGER.log(Level.FINEST, "VAL({0}) != VAL({1}) - {2}", new Object[]{v1.toString(), v0.toString(), this.cste});}
             v1.removeVal(v0.getVal() - this.cste, this.cIdx1);
         } else {
             assert (idx == 1);
-            if (LOGGER.isLoggable(Level.FINEST))
-            {LOGGER.log(Level.FINEST, "VAL({0}) != VAL({1}) + {2}", new Object[]{v0.toString(), v1.toString(),this.cste});}
+//            if (LOGGER.isLoggable(Level.FINEST))
+//            {LOGGER.log(Level.FINEST, "VAL({0}) != VAL({1}) + {2}", new Object[]{v0.toString(), v1.toString(),this.cste});}
             v0.removeVal(v1.getVal() + this.cste, this.cIdx0);
         }
     }

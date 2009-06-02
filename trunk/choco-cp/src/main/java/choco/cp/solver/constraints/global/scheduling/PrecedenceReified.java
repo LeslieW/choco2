@@ -195,7 +195,7 @@ public class PrecedenceReified extends AbstractTernIntSConstraint {
 		  if (s.getNbSolutions() != 100) {
 			  throw new Error("wrong number of solutions " + s.getNbSolutions());
 		  }
-		  LOGGER.log(Level.INFO, "Nb solution : " ,  s.getNbSolutions());
+		  LOGGER.log(Level.INFO, "Nb solution : {0}" ,  s.getNbSolutions());
 
 		  //assertEquals( s.getNbSolutions(), 14);
 		}

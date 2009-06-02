@@ -41,158 +41,159 @@ import java.util.logging.Level;
  */
 public class SetVarEvent extends VarEvent<SetVarImpl> {
 
-  /**
-   * Constants for the <i>eventType</i> bitvector: index of bit for events on SetVars
-   */
-  public static final int REMENV = 0;
-  public static final int ADDKER = 1;
-  public static final int INSTSET = 2;
+	/**
+	 * Constants for the <i>eventType</i> bitvector: index of bit for events on SetVars
+	 */
+	public static final int REMENV = 0;
+	public static final int ADDKER = 1;
+	public static final int INSTSET = 2;
 
-  public static final int ENVEVENT = 1;
-  public static final int KEREVENT = 2;
-  public static final int BOUNDSEVENT = 3;
-  public static final int INSTSETEVENT = 4;
+	public static final int ENVEVENT = 1;
+	public static final int KEREVENT = 2;
+	public static final int BOUNDSEVENT = 3;
+	public static final int INSTSETEVENT = 4;
 
-  public SetVarEvent(SetVarImpl var) {
-    super(var);
-    eventType = EMPTYEVENT;
-  }
+	public SetVarEvent(SetVarImpl var) {
+		super(var);
+		eventType = EMPTYEVENT;
+	}
 
-  /**
-   * useful for debugging
-   */
-  public String toString() {
-    return ("VarEvt(" + modifiedVar.toString() + ")[" + eventType + ":"
-        + ((eventType & ENVEVENT) != 0 ? "E" : "")
-        + ((eventType & KEREVENT) != 0 ? "K" : "")
-        + ((eventType & INSTSETEVENT) != 0 ? "X" : "")
-        + "]");
-  }
+	/**
+	 * useful for debugging
+	 */
+	public String toString() {
+		return ("VarEvt(" + modifiedVar.toString() + ")[" + eventType + ":"
+				+ ((eventType & ENVEVENT) != 0 ? "E" : "")
+				+ ((eventType & KEREVENT) != 0 ? "K" : "")
+				+ ((eventType & INSTSETEVENT) != 0 ? "X" : "")
+				+ "]");
+	}
 
-  /**
-   * Clears the var: delegates to the basic events.
-   */
-  public void clear() {
-    this.eventType = EMPTYEVENT;
-    (modifiedVar.getDomain()).getEnveloppeDomain().clearDeltaDomain();
-    (modifiedVar.getDomain()).getKernelDomain().clearDeltaDomain();
-  }
+	/**
+	 * Clears the var: delegates to the basic events.
+	 */
+	public void clear() {
+		this.eventType = EMPTYEVENT;
+		(modifiedVar.getDomain()).getEnveloppeDomain().clearDeltaDomain();
+		(modifiedVar.getDomain()).getKernelDomain().clearDeltaDomain();
+	}
 
 
-  protected void freeze() {
-    (modifiedVar.getDomain()).getEnveloppeDomain().freezeDeltaDomain();
-    (modifiedVar.getDomain()).getKernelDomain().freezeDeltaDomain();
-    cause = NOEVENT;
-    eventType = 0;
-  }
+	protected void freeze() {
+		(modifiedVar.getDomain()).getEnveloppeDomain().freezeDeltaDomain();
+		(modifiedVar.getDomain()).getKernelDomain().freezeDeltaDomain();
+		cause = NOEVENT;
+		eventType = 0;
+	}
 
-  protected boolean release() {
-    return modifiedVar.getDomain().getEnveloppeDomain().releaseDeltaDomain() &&
-        modifiedVar.getDomain().getKernelDomain().releaseDeltaDomain();
-  }
+	protected boolean release() {
+		return modifiedVar.getDomain().getEnveloppeDomain().releaseDeltaDomain() &&
+		modifiedVar.getDomain().getKernelDomain().releaseDeltaDomain();
+	}
 
-  public boolean getReleased() {
-    return (modifiedVar.getDomain()).getEnveloppeDomain().getReleasedDeltaDomain() &&
-        (modifiedVar.getDomain()).getKernelDomain().getReleasedDeltaDomain();
-  }
+	public boolean getReleased() {
+		return (modifiedVar.getDomain()).getEnveloppeDomain().getReleasedDeltaDomain() &&
+		(modifiedVar.getDomain()).getKernelDomain().getReleasedDeltaDomain();
+	}
 
-  public IntIterator getEnvEventIterator() {
-    return ( modifiedVar.getDomain()).getEnveloppeDomain().getDeltaIterator();
-  }
+	public IntIterator getEnvEventIterator() {
+		return ( modifiedVar.getDomain()).getEnveloppeDomain().getDeltaIterator();
+	}
 
-  public IntIterator getKerEventIterator() {
-    return (modifiedVar.getDomain()).getKernelDomain().getDeltaIterator();
-  }
+	public IntIterator getKerEventIterator() {
+		return (modifiedVar.getDomain()).getKernelDomain().getDeltaIterator();
+	}
 
-  /**
-   * Propagates the event through calls to the propagation engine.
-   *
-   * @return true if the event has been fully propagated (and can thus be discarded), false otherwise
-   * @throws choco.kernel.solver.ContradictionException
-   */
-  @Override
-public boolean propagateEvent() throws ContradictionException {
-	  if(LOGGER.isLoggable(Level.FINER)) {LOGGER.log(Level.FINER, "propagate {0}", this);}
-    // first, mark event
-    int evtType = eventType;
-    int evtCause = cause;
-    freeze();
+	/**
+	 * Propagates the event through calls to the propagation engine.
+	 *
+	 * @return true if the event has been fully propagated (and can thus be discarded), false otherwise
+	 * @throws choco.kernel.solver.ContradictionException
+	 */
+	@Override
+	public boolean propagateEvent() throws ContradictionException {
+		// /!\  Logging statements really decrease performance
+		//if(LOGGER.isLoggable(Level.FINER)) {LOGGER.log(Level.FINER, "propagate {0}", this);}
+		// first, mark event
+		int evtType = eventType;
+		int evtCause = cause;
+		freeze();
 
-    if (evtType >= INSTSETEVENT)
-      propagateInstEvent(evtCause);
-    else if (evtType <= BOUNDSEVENT) {
-      if (evtType == ENVEVENT)
-        propagateEnveloppeEvents(evtCause);
-      else if (evtType == KEREVENT)
-        propagateKernelEvents(evtCause);
-      else if (evtType == BOUNDSEVENT) {
-        propagateKernelEvents(evtCause);
-        propagateEnveloppeEvents(evtCause);
-      }
-    }
+		if (evtType >= INSTSETEVENT)
+			propagateInstEvent(evtCause);
+		else if (evtType <= BOUNDSEVENT) {
+			if (evtType == ENVEVENT)
+				propagateEnveloppeEvents(evtCause);
+			else if (evtType == KEREVENT)
+				propagateKernelEvents(evtCause);
+			else if (evtType == BOUNDSEVENT) {
+				propagateKernelEvents(evtCause);
+				propagateEnveloppeEvents(evtCause);
+			}
+		}
 
-    // last, release event
-    return release();
-  }
+		// last, release event
+		return release();
+	}
 
-  /**
-   * Propagates the instantiation event
-   */
-  public void propagateInstEvent(int evtCause) throws ContradictionException {
-    SetVar v = getModifiedVar();
-    PartiallyStoredVector constraints = v.getConstraintVector();
-    PartiallyStoredIntVector indices = v.getIndexVector();
+	/**
+	 * Propagates the instantiation event
+	 */
+	public void propagateInstEvent(int evtCause) throws ContradictionException {
+		SetVar v = getModifiedVar();
+		PartiallyStoredVector constraints = v.getConstraintVector();
+		PartiallyStoredIntVector indices = v.getIndexVector();
 
-    for (IntIterator cit = constraints.getIndexIterator(); cit.hasNext();) {
-      int idx = cit.next();
-      if (idx != evtCause) {
-        SetSConstraint c = (SetSConstraint) constraints.get(idx);
-        if (c.isActive()) {
-          int i = indices.get(idx);
-          c.awakeOnInst(i);
-        }
-      }
-    }
-  }
+		for (IntIterator cit = constraints.getIndexIterator(); cit.hasNext();) {
+			int idx = cit.next();
+			if (idx != evtCause) {
+				SetSConstraint c = (SetSConstraint) constraints.get(idx);
+				if (c.isActive()) {
+					int i = indices.get(idx);
+					c.awakeOnInst(i);
+				}
+			}
+		}
+	}
 
-  /**
-   * Propagates a set of value removals
-   */
-  public void propagateKernelEvents(int evtCause) throws ContradictionException {
-    SetVar v = getModifiedVar();
-    PartiallyStoredVector constraints = v.getConstraintVector();
-    PartiallyStoredIntVector indices = v.getIndexVector();
+	/**
+	 * Propagates a set of value removals
+	 */
+	public void propagateKernelEvents(int evtCause) throws ContradictionException {
+		SetVar v = getModifiedVar();
+		PartiallyStoredVector constraints = v.getConstraintVector();
+		PartiallyStoredIntVector indices = v.getIndexVector();
 
-    for (IntIterator cit = constraints.getIndexIterator(); cit.hasNext();) {
-      int idx = cit.next();
-      if (idx != evtCause) {
-        SetSConstraint c = (SetSConstraint) constraints.get(idx);
-        if (c.isActive()) {
-          int i = indices.get(idx);
-          c.awakeOnkerAdditions(i, this.getKerEventIterator());
-        }
-      }
-    }
-  }
+		for (IntIterator cit = constraints.getIndexIterator(); cit.hasNext();) {
+			int idx = cit.next();
+			if (idx != evtCause) {
+				SetSConstraint c = (SetSConstraint) constraints.get(idx);
+				if (c.isActive()) {
+					int i = indices.get(idx);
+					c.awakeOnkerAdditions(i, this.getKerEventIterator());
+				}
+			}
+		}
+	}
 
-  /**
-   * Propagates a set of value removals
-   */
-  public void propagateEnveloppeEvents(int evtCause) throws ContradictionException {
-    SetVar v = getModifiedVar();
-    PartiallyStoredVector constraints = v.getConstraintVector();
-    PartiallyStoredIntVector indices = v.getIndexVector();
+	/**
+	 * Propagates a set of value removals
+	 */
+	public void propagateEnveloppeEvents(int evtCause) throws ContradictionException {
+		SetVar v = getModifiedVar();
+		PartiallyStoredVector constraints = v.getConstraintVector();
+		PartiallyStoredIntVector indices = v.getIndexVector();
 
-    for (IntIterator cit = constraints.getIndexIterator(); cit.hasNext();) {
-      int idx = cit.next();
-      if (idx != evtCause) {
-        SetSConstraint c = (SetSConstraint) constraints.get(idx);
-        if (c.isActive()) {
-          int i = indices.get(idx);
-          c.awakeOnEnvRemovals(i, this.getEnvEventIterator());
-        }
-      }
-    }
-  }
+		for (IntIterator cit = constraints.getIndexIterator(); cit.hasNext();) {
+			int idx = cit.next();
+			if (idx != evtCause) {
+				SetSConstraint c = (SetSConstraint) constraints.get(idx);
+				if (c.isActive()) {
+					int i = indices.get(idx);
+					c.awakeOnEnvRemovals(i, this.getEnvEventIterator());
+				}
+			}
+		}
+	}
 
 }

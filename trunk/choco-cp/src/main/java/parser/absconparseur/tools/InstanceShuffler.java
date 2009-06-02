@@ -31,6 +31,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.text.MessageFormat;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class InstanceShuffler {
@@ -57,7 +59,7 @@ public class InstanceShuffler {
 		String fileName = s.substring(0, position) + "_shf" + seed + ".xml";
 		File file = new File(fileName);
 		if (file.exists())
-			LOGGER.info(fileName + " exists ");
+			LOGGER.log(Level.INFO,"{0} exists", file);
 		return new PrintWriter(new FileOutputStream(file)); // absoluteFileName));
 	}
 
@@ -69,16 +71,18 @@ public class InstanceShuffler {
 	}
 
 	public static void main(String[] args) throws Exception {
-		if (args.length != 3) {
-			LOGGER.info("InstanceShuffler " + InstanceParser.VERSION);
-			LOGGER.info("Usage: java ... InstanceShuffler <instanceFileName> <seed> <mode>\n");
-			LOGGER.info("  <instanceFileName> must be the name of a file which contains the representation of a CSP instance in format XCSP 2.0");
-			LOGGER.info("  <seed> must be an integer that is used to shuffle variables and constraints");
-			LOGGER.info("  <mode> must be equel to 1 (only variables shuffled), 2 (only constraints shuffled) and 3 (both variables and constraints shuffled)\n");
-			LOGGER.info("With this usage, InstanceShuffler shuffles the given instance and saves the result in a new file (by appending _shf<seed> to the prefix of the file name)\n");
-			LOGGER.info("Exit code of instanceShuffler is as follows:");
-			LOGGER.info("  0 : no problem occurs and the new shuffled instance has been saved");
-			LOGGER.info("  2 : a problem occurs (file not found, ...)");
+		if (args.length != 3 && LOGGER.isLoggable(Level.INFO)) {
+			StringBuilder b = new StringBuilder();
+			b.append("InstanceShuffler " + InstanceParser.VERSION);
+			b.append("Usage: java ... InstanceShuffler <instanceFileName> <seed> <mode>\n");
+			b.append("  <instanceFileName> must be the name of a file which contains the representation of a CSP instance in format XCSP 2.0");
+			b.append("  <seed> must be an integer that is used to shuffle variables and constraints");
+			b.append("  <mode> must be equel to 1 (only variables shuffled), 2 (only constraints shuffled) and 3 (both variables and constraints shuffled)\n");
+			b.append("With this usage, InstanceShuffler shuffles the given instance and saves the result in a new file (by appending _shf<seed> to the prefix of the file name)\n");
+			b.append("Exit code of instanceShuffler is as follows:");
+			b.append("  0 : no problem occurs and the new shuffled instance has been saved");
+			b.append("  2 : a problem occurs (file not found, ...)");
+			LOGGER.log(Level.INFO, "{0}", b);
 			System.exit(0);
 		}
 		try {
@@ -96,7 +100,7 @@ public class InstanceShuffler {
 			System.exit(0);
 
 		} catch (Throwable e) {
-			LOGGER.severe("PROBLEM \t " + e.getMessage());
+			LOGGER.log(Level.SEVERE, "PROBLEM", e);
 			System.exit(2);
 		}
 	}

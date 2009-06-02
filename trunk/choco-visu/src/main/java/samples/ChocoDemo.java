@@ -1,5 +1,22 @@
 package samples;
 
+import static choco.visu.components.chart.ChocoChartFactory.createCumulativeChart;
+import static choco.visu.components.chart.ChocoChartFactory.createDeviationLineChart;
+
+import java.awt.Dimension;
+import java.awt.LayoutManager;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.xy.YIntervalSeries;
+import org.jfree.data.xy.YIntervalSeriesCollection;
+import org.jfree.ui.ApplicationFrame;
+import org.jfree.ui.RefineryUtilities;
+
+import samples.pack.BinPackingExample;
+import samples.pack.CPpack;
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -9,19 +26,6 @@ import choco.kernel.model.constraints.pack.PackModeler;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.visu.components.chart.ChocoChartFactory;
-import static choco.visu.components.chart.ChocoChartFactory.createCumulativeChart;
-import static choco.visu.components.chart.ChocoChartFactory.createDeviationLineChart;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.xy.YIntervalSeries;
-import org.jfree.data.xy.YIntervalSeriesCollection;
-import org.jfree.ui.ApplicationFrame;
-import org.jfree.ui.RefineryUtilities;
-import samples.pack.BinPackingExample;
-import samples.pack.CPpack;
-
-import java.awt.*;
-import java.util.logging.Logger;
 
 public final class ChocoDemo {
 
@@ -82,7 +86,7 @@ public final class ChocoDemo {
 		s.read(model);
 		s.solve();
 		s.printRuntimeSatistics();
-		LOGGER.info(s.solutionToString());
+		if(LOGGER.isLoggable(Level.INFO)) LOGGER.info(s.solutionToString());
 		final String title = "Cumulative Resource Example";
 		demo(title,createCumulativeChart(title, s, rsc, true));
 		
@@ -129,10 +133,10 @@ public final class ChocoDemo {
 	}
 
 	public static void main(String[] args) {
-		//packDemo1();
+		packDemo1();
 		//packDemo2();
 		//unaryDemo();
 		//deviationDemo();
-		cumulativeDemo();
+		//cumulativeDemo();
 	}
 }

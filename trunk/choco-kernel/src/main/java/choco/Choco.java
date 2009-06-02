@@ -22,14 +22,26 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco;
 
+import static choco.kernel.common.util.UtilAlgo.append;
+import static java.lang.System.arraycopy;
+import gnu.trove.TIntArrayList;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
+import java.util.logging.Logger;
+
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.common.util.UtilAlgo;
-import static choco.kernel.common.util.UtilAlgo.append;
-import static choco.kernel.common.util.UtilAlgo.appendAndCast;
 import choco.kernel.model.ModelException;
-import choco.kernel.model.constraints.*;
+import choco.kernel.model.constraints.ComponentConstraint;
+import choco.kernel.model.constraints.ComponentConstraintWithSubConstraints;
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.ConstraintType;
+import choco.kernel.model.constraints.MetaConstraint;
+import choco.kernel.model.constraints.MetaTaskConstraint;
 import choco.kernel.model.constraints.automaton.DFA;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.model.constraints.pack.PackModeler;
@@ -53,14 +65,14 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.model.variables.tree.TreeParametersObject;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.global.scheduling.RscData;
-import choco.kernel.solver.constraints.integer.extension.*;
-import gnu.trove.TIntArrayList;
-
-import static java.lang.System.arraycopy;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Vector;
-import java.util.logging.Logger;
+import choco.kernel.solver.constraints.integer.extension.BinRelation;
+import choco.kernel.solver.constraints.integer.extension.CouplesBitSetTable;
+import choco.kernel.solver.constraints.integer.extension.CouplesTable;
+import choco.kernel.solver.constraints.integer.extension.ExtensionalBinRelation;
+import choco.kernel.solver.constraints.integer.extension.IterTuplesTable;
+import choco.kernel.solver.constraints.integer.extension.LargeRelation;
+import choco.kernel.solver.constraints.integer.extension.TuplesList;
+import choco.kernel.solver.constraints.integer.extension.TuplesTable;
 
 /**
  * Created by IntelliJ IDEA.
@@ -2295,7 +2307,7 @@ public class Choco{
 	public static Constraint cumulative(String name, TaskVariable[] tasks, IntegerVariable[] heights, IntegerVariable[] usages, IntegerVariable consumption, IntegerVariable capacity, IntegerVariable uppBound, String... options) {
 		if(tasks.length == heights.length && consumption!= null && capacity!=null) {
 			RscData param = new RscData(name, tasks, usages, uppBound);
-			final Variable[] vars= appendAndCast(Variable.class, tasks, heights, usages, new Variable[]{consumption, capacity}, uppBound == null ? null : new Variable[]{uppBound});
+			final Variable[] vars=  UtilAlgo.<Variable>append(tasks, heights, usages, new Variable[]{consumption, capacity}, uppBound == null ? null : new Variable[]{uppBound});
 			final ComponentConstraint c=new ComponentConstraint(ConstraintType.CUMULATIVE, param,vars);
 			c.addOptions(options);
 			return c;
@@ -2453,7 +2465,7 @@ public class Choco{
 	 */
 	public static Constraint disjunctive(String name, TaskVariable[] tasks,IntegerVariable[] usages, IntegerVariable uppBound, String... options) {
 		RscData param = new RscData(name, tasks, usages, uppBound);
-		Variable[] vars = uppBound==null ? appendAndCast(Variable.class, (Variable[]) tasks, usages) :  appendAndCast(Variable.class, tasks, usages, new Variable[]{ uppBound});
+		Variable[] vars = uppBound==null ? UtilAlgo.<Variable>append((Variable[]) tasks, usages) :   UtilAlgo.<Variable>append(tasks, usages, new Variable[]{ uppBound});
 		final ComponentConstraint c=new ComponentConstraint(ConstraintType.DISJUNCTIVE, param,vars);
 		c.addOptions(options);
 		return c;

@@ -236,7 +236,7 @@ public class ViewIntDomainVarImpl extends IntDomainVarImpl{
    */
 
   public boolean updateInf(int x, int idx) throws ContradictionException {
-          logOnInf(x);
+          //logOnInf(x);
           return domain.updateInf(computeValue(x, false), idx);
   }
 
@@ -251,7 +251,7 @@ public class ViewIntDomainVarImpl extends IntDomainVarImpl{
    */
 
   public boolean updateSup(int x, int idx) throws ContradictionException {
-          logOnSup(x);
+          //logOnSup(x);
           return domain.updateSup(computeValue(x, true), idx);
   }
 
@@ -271,7 +271,7 @@ public class ViewIntDomainVarImpl extends IntDomainVarImpl{
    */
 
   public boolean removeVal(int x, int idx) throws ContradictionException {
-      logOnRem(x);
+      //logOnRem(x);
       return domain.removeVal(computeValue(x, true), idx);
   }
 
@@ -287,7 +287,7 @@ public class ViewIntDomainVarImpl extends IntDomainVarImpl{
    */
 
   public boolean removeInterval(int a, int b, int idx) throws ContradictionException {
-      logOnRemInt(a, b);
+      //logOnRemInt(a, b);
 	  return domain.removeInterval(computeValue(a, false), computeValue(b, true), idx);
   }
 
@@ -301,7 +301,7 @@ public class ViewIntDomainVarImpl extends IntDomainVarImpl{
    */
 
   public boolean instantiate(int x, int idx) throws ContradictionException {
-     logOnInst(x);
+     //logOnInst(x);
       return domain.instantiate(computeValue(x, false), idx);
   }
 

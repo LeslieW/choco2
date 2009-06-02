@@ -291,7 +291,9 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	 * @return 0 if none found, otherwise the end of the path
 	 */
 	public int findAlternatingPath() {
-		LOGGER.log(Level.INFO, "Search for an augmenting path to grow matching above {0} nodes", this.matchingSize);
+		////////////////////////////////DEBUG ONLY ///////////////////////////
+		//Logging statements really decrease performance
+		//LOGGER.log(Level.INFO, "Search for an augmenting path to grow matching above {0} nodes", this.matchingSize);
 		int eopath = -1;
 		int n = this.nbLeftVertices;
 		this.queue.init();
@@ -307,7 +309,7 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 		}
 		while (this.queue.getSize() > 0) {
 			int x = this.queue.pop();
-			LOGGER.log(Level.FINE, "FIFO: pop {0}", x);
+			//LOGGER.log(Level.FINE, "FIFO: pop {0}", x);
 			if (x >= n) { // if the dequeued vertex is in V1
 				x -= n;
 				boolean shouldBreak = false;
@@ -315,7 +317,7 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 				for (int i = 0; i < yy.length; i++) { // For each value y in mayInverseMatch(x)
 					int y = yy[i];
 					if (this.mayGrowFlowBetween(x, y) && !this.queue.onceInQueue(y)) {
-						if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "{0}.{1} [vs. {2}]", new Object[]{y, x, this.match(y)});
+						//if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "{0}.{1} [vs. {2}]", new Object[]{y, x, this.match(y)});
 						this.left2rightArc[y] = x;
 						if (this.mayGrowFlowToSink(y)) {
 							eopath = y;
@@ -333,13 +335,13 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 				// assert (y >= 0)
 				// assert (this.mayDiminishFlowBetween(y,x))
 				if (!this.queue.onceInQueue(y + n)) {
-					if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "{0} # {1}", new Object[]{x, y});
+					//if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "{0} # {1}", new Object[]{x, y});
 					this.right2leftArc[y] = x;
 					this.queue.push(y + n);
 				}
 			}
 		}
-		 LOGGER.log(Level.INFO, "Found an alternating path ending in {0} (-1 if none).", eopath);
+		//LOGGER.log(Level.INFO, "Found an alternating path ending in {0} (-1 if none).", eopath);
 		return eopath;
 	}
 
@@ -352,15 +354,15 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	public void augment(int x) {
 		int y = this.left2rightArc[x];
 		while (!this.mayGrowFlowFromSource(y)) {
-			if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Add {0}.{1}", new Object[]{x,y});
+			//if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Add {0}.{1}", new Object[]{x,y});
 			this.putRefMatch(x, y);
 			x = this.right2leftArc[y];
-			if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Rem {0}.{1}", new Object[]{x,y});
+			//if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Rem {0}.{1}", new Object[]{x,y});
 			assert(this.match(x) == y);
 			y = this.left2rightArc[x];
 			assert(y >= 0);
 		}
-		if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Add {0}.{1}", new Object[]{x,y});
+		//if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Add {0}.{1}", new Object[]{x,y});
 		this.putRefMatch(x, y);
 		this.increaseMatchingSize(y);
 	}
@@ -375,24 +377,28 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 		int n1 = this.nbLeftVertices;
 
 		if (this.matchingSize.get() < n1) {
-			LOGGER.log(Level.INFO, "Current flow of size: {0}", this.matchingSize.get());
+			//LOGGER.log(Level.INFO, "Current flow of size: {0}", this.matchingSize.get());
 			while (eopath >= 0) {
 				this.augment(eopath);
 				eopath = this.findAlternatingPath();
 			}
 			if (this.matchingSize.get() < n1) {
 				// assert exist i, 0 <= i < n1, this.match(i) == 0
-				LOGGER.info("There exists no perfect matching.");
+				//LOGGER.info("There exists no perfect matching.");
 				this.fail();
-			} else {
-				if (LOGGER.isLoggable(Level.INFO)) {
-					LOGGER.log(Level.INFO, "Found a perfect metching (size: {0}).", this.matchingSize.get());
-					for (int i = 0; i < this.nbLeftVertices; i++) {
-						LOGGER.log(Level.INFO, "Match {0} with {1}", new Object[]{i, this.match(i)});
-					}
-					// TODO CheckFlow ...
-				}
-			}
+			} 
+			////////////////////////////////DEBUG ONLY ///////////////////////////
+			//Logging statements really decrease performance
+			//			else {
+			//				if (LOGGER.isLoggable(Level.INFO)) {
+			//					LOGGER.log(Level.INFO, "Found a perfect metching (size: {0}).", this.matchingSize.get());
+			//					for (int i = 0; i < this.nbLeftVertices; i++) {
+			//						LOGGER.log(Level.INFO, "Match {0} with {1}", new Object[]{i, this.match(i)});
+			//					}
+			//					// TODO CheckFlow ...
+			//				}
+			//			}
+			//////////////////////////////////////////////////////////////////////////////////
 		}
 	}
 
@@ -581,6 +587,30 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 
 		int nkept = 0, ndiscard = 0;
 
+		////////////////////////////////DEBUG ONLY ///////////////////////////
+		//Logging statements really decrease performance
+		// TODO : voir pour rendre plus efficace les explications !!
+		//		for (int i = 0; i < this.nbLeftVertices; i++) {
+		//			int[] jj = this.mayMatch(i);
+		//			for (int k = 0; k < jj.length; k++) {
+		//				int j = jj[k];
+		//				if (this.match(i) != j) {
+		//					if (this.component[i] != this.component[j + this.nbLeftVertices]) {
+		//						ndiscard++;
+		//						if (LOGGER.isLoggable(Level.FINER)) LOGGER.log(Level.FINER, "discarded : {0} -> {1}", new Object[]{i,j});
+		//						this.deleteEdgeAndPublish(i, j);
+		//					} else {
+		//						if (LOGGER.isLoggable(Level.FINER)) LOGGER.log(Level.FINER, "kept : {0} -> {1}", new Object[]{i,j});
+		//						nkept++;
+		//					}
+		//				}
+		//			}
+		//		}
+		//		
+		//		if (LOGGER.isLoggable(Level.FINE))
+		//			LOGGER.log(Level.FINE, "SCC decomposition: {0} edges kept, {1} discarded.", new Object[]{nkept, ndiscard});
+		//////////////////////////////////////////////////////////////////////////////////
+
 		// TODO : voir pour rendre plus efficace les explications !!
 		for (int i = 0; i < this.nbLeftVertices; i++) {
 			int[] jj = this.mayMatch(i);
@@ -589,26 +619,25 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 				if (this.match(i) != j) {
 					if (this.component[i] != this.component[j + this.nbLeftVertices]) {
 						ndiscard++;
-						if (LOGGER.isLoggable(Level.FINER)) LOGGER.log(Level.FINER, "discarded : {0} -> {1}", new Object[]{i,j});
 						this.deleteEdgeAndPublish(i, j);
 					} else {
-						if (LOGGER.isLoggable(Level.FINER)) LOGGER.log(Level.FINER, "kept : {0} -> {1}", new Object[]{i,j});
 						nkept++;
 					}
 				}
 			}
 		}
-		if (LOGGER.isLoggable(Level.FINE))
-			LOGGER.log(Level.FINE, "SCC decomposition: {0} edges kept, {1} discarded.", new Object[]{nkept, ndiscard});
 	}
 
 	public void refreshSCC() {
 		this.firstPassDFS();
 		this.secondPassDFS();
-		if (LOGGER.isLoggable(Level.FINE))
-			for (int i = 0; i < this.nbVertices; i++) {
-				LOGGER.log(Level.FINE, "Vertex {0} belong to comp {1}", new Object[]{i ,this.component[i]});
-			}
+		////////////////////////////////DEBUG ONLY ///////////////////////////
+		//Logging statements really decrease performance
+		//		if (LOGGER.isLoggable(Level.FINE))
+		//			for (int i = 0; i < this.nbVertices; i++) {
+		//				LOGGER.log(Level.FINE, "Vertex {0} belong to comp {1}", new Object[]{i ,this.component[i]});
+		//			}
+		//////////////////////////////////////////////////////////////////////////////////
 	}
 
 	/**
@@ -617,22 +646,24 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	 * @throws choco.kernel.solver.ContradictionException
 	 */
 	public void propagate() throws ContradictionException {
-		LOGGER.finer("Propagate...");
 		this.removeUselessEdges();
 	}
 
+	@Override
 	public int getPriority() {
 		return 2;
 	}
 
 	public void prettyPrintForDebug() {
-		for(int i = 0; i < nbLeftVertices; i++) {
-			LOGGER.info(MessageFormat.format("{0}: {1}[{2}]", vars[i].pretty(), refMatch.get(i), component[i]));
+		if(LOGGER.isLoggable(Level.INFO)) {
+			for(int i = 0; i < nbLeftVertices; i++) {
+				LOGGER.info(MessageFormat.format("{0}: {1}[{2}]", vars[i].pretty(), refMatch.get(i), component[i]));
+			}
+			for(int i = 0; i < nbRightVertices; i++) {
+				LOGGER.info(MessageFormat.format("val({0}): [{1}]", i, component[i + nbLeftVertices]));
+			}
+			LOGGER.info(MessageFormat.format("Matching size = {0}/{1}", matchingSize.get(), nbLeftVertices));
 		}
-		for(int i = 0; i < nbRightVertices; i++) {
-			LOGGER.info(MessageFormat.format("val({0}): [{1}]", i, component[i + nbLeftVertices]));
-		}
-		LOGGER.info(MessageFormat.format("Matching size = {0}/{1}", matchingSize.get(), nbLeftVertices));
 
 	}
 
