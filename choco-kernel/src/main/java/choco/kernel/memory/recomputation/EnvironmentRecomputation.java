@@ -150,7 +150,7 @@ public class EnvironmentRecomputation extends AbstractEnvironment {
                             trace.ctx.getBranching().goUpBranch(trace.ctx.getBranchingObject(),trace.ctx.getBranchIndex());
 
                     } catch (ContradictionException e) {
-                        LOGGER.info("bizarre");
+                        LOGGER.info("worldPop raised a contradiction (recomputation)");
                     }
                 }
             }

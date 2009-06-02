@@ -196,7 +196,8 @@ public abstract class AbstractBipartiteFlow extends AbstractBipartiteGraph {
 	 * @return
 	 */
 	public int findAlternatingPath() {
-		LOGGER.log(Level.INFO, "Search for an augmenting path to grow matching above {0} nodes", this.matchingSize);
+		// /!\  Logging statements really decrease performance
+		//LOGGER.log(Level.INFO, "Search for an augmenting path to grow matching above {0} nodes", this.matchingSize);
 		int eopath = -1;
 		int n = this.nbLeftVertices;
 		int m = this.nbRightVertices;
@@ -213,7 +214,7 @@ public abstract class AbstractBipartiteFlow extends AbstractBipartiteGraph {
 			this.compatibleFlow = false;
 		while (this.queue.getSize() > 0) {
 			int x = this.queue.pop();
-			LOGGER.log(Level.FINE, "FIFO: pop {0}", x);
+			//LOGGER.log(Level.FINE, "FIFO: pop {0}", x);
 			if (x >= n && x < m + n) {
 				x -= n;
 				boolean shouldBreak = false;
@@ -221,7 +222,7 @@ public abstract class AbstractBipartiteFlow extends AbstractBipartiteGraph {
 				for (int i = 0; i < yy.length; i++) { // For each value y in mayInverseMatch(x)
 					int y = yy[i];
 					if (this.mayGrowFlowBetween(x, y) && !this.queue.onceInQueue(y)) {
-						if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "{0}.{1} [vs. {2}]", new Object[]{y, x, this.match(y)});
+						//if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "{0}.{1} [vs. {2}]", new Object[]{y, x, this.match(y)});
 						this.left2rightArc[y] = x;
 						if (this.mayGrowFlowToSink(y)) {
 							eopath = y;
@@ -245,7 +246,7 @@ public abstract class AbstractBipartiteFlow extends AbstractBipartiteGraph {
 				// assert (y >= 0)
 				// assert (this.mayDiminishFlowBetween(y,x))
 				if (!this.queue.onceInQueue(y + n)) {
-					if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "{0} # {1}", new Object[]{x, y});
+					//if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "{0} # {1}", new Object[]{x, y});
 					this.right2leftArc[y] = x;
 					this.queue.push(y + n);
 				}
@@ -258,7 +259,7 @@ public abstract class AbstractBipartiteFlow extends AbstractBipartiteGraph {
 				}
 			}
 		}
-		 LOGGER.log(Level.INFO, "Found an alternating path ending in {0} (-1 if none).", eopath);
+		//LOGGER.log(Level.INFO, "Found an alternating path ending in {0} (-1 if none).", eopath);
 		return eopath;
 	}
 
@@ -268,14 +269,15 @@ public abstract class AbstractBipartiteFlow extends AbstractBipartiteGraph {
 	 * @param x left extremity of one of the matching arc
 	 */
 	public void augment(int x) {
+		// /!\  Logging statements really decrease performance
 		int y = this.left2rightArc[x];
 		// TODO not in ice claire
 		if (this.compatibleFlow) {
 			while (!this.mayGrowFlowFromSource(y)) {
-				if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Add {0}.{1}", new Object[]{x,y});
+				//if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Add {0}.{1}", new Object[]{x,y});
 				this.putRefMatch(x, y);
 				x = this.right2leftArc[y];
-				if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Rem {0}.{1}", new Object[]{x,y});
+				//if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Rem {0}.{1}", new Object[]{x,y});
 				//assert (this.match(x) == y);
 				y = this.left2rightArc[x];
 				//assert (y >= 0);
@@ -284,7 +286,7 @@ public abstract class AbstractBipartiteFlow extends AbstractBipartiteGraph {
 			int n = this.nbLeftVertices;
 			int m = this.nbRightVertices;
 			while (!this.mustGrowFlowFromSource(y)) {
-				if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Add {0}.{1}", new Object[]{x,y});
+				//if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Add {0}.{1}", new Object[]{x,y});
 				this.putRefMatch(x, y);
 				x = this.right2leftArc[y];
 				if (x == n) {
@@ -294,21 +296,21 @@ public abstract class AbstractBipartiteFlow extends AbstractBipartiteGraph {
 					this.decreaseMatchingSize(y);
 					x = this.right2leftArc[y];
 				}
-				if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Rem {0}.{1}", new Object[]{x,y});
+				//if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Rem {0}.{1}", new Object[]{x,y});
 				//assert (this.match(x) == y);
 				y = this.left2rightArc[x];
 				//assert (y >= 0);
 			}
 		}
-		if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "[Matching]Add {0}.{1}", new Object[]{x,y});
+		//if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "[Matching]Add {0}.{1}", new Object[]{x,y});
 		this.putRefMatch(x, y);
 		this.increaseMatchingSize(y);
 
-		if (LOGGER.isLoggable(Level.FINE)) {
-			for (int i = 0; i < this.nbRightVertices; i++) {
-				LOGGER.log(Level.FINE, "Flow between {0} and source: {1}", new Object[]{i, flow.get(i)});
-			}
-		}
+		//		if (LOGGER.isLoggable(Level.FINE)) {
+		//			for (int i = 0; i < this.nbRightVertices; i++) {
+		//				LOGGER.log(Level.FINE, "Flow between {0} and source: {1}", new Object[]{i, flow.get(i)});
+		//			}
+		//		}
 	}
 
 	protected void removeUselessEdges() throws ContradictionException {

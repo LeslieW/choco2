@@ -65,7 +65,7 @@ public class SearchLoopWithNogoodFromRestart extends SearchLoopWithRestart {
 
 
 
-class NoGoodRecorder {
+final class NoGoodRecorder {
 
     protected final static Logger LOGGER = ChocoLogging.getSearchLogger();
 
@@ -108,6 +108,7 @@ class NoGoodRecorder {
 
 	public void handleTrace(final IntBranchingTrace trace) {
 		final IntDomainVar bvar = getBranchingVar(trace);
+		// nogood is reset because we can nt record quality is decreased : 
 		if(bvar==null) {
 			LOGGER.info("reset nogood recording: not a integer variable");
 			reset();
@@ -150,14 +151,11 @@ class NoGoodRecorder {
 			//copy involved nogood
 			System.arraycopy(positiveLiterals, tail.posLitsOffset, posLits, 0, sp);
 			System.arraycopy(negativeLiterals, tail.negLitsOffset, negLits, 0, sn);
-			if(Choco.DEBUG) {
-				LOGGER.info(Arrays.toString(posLits)+" "+Arrays.toString(negLits));
-			}
 			scheduler.addNogood(posLits, negLits);
 		}
 	}
 
-	private static class NoGoodTail {
+	private final static class NoGoodTail {
 
 		public final IntDomainVar tail;
 

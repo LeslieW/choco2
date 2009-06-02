@@ -80,6 +80,7 @@ public class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
         this.awakeOnSup(0);
     }
 
+ // /!\  Logging statements decrease performances
     /**
      * Propagation when a minimal bound of a variable was modified.
      *
@@ -91,8 +92,8 @@ public class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
     public void awakeOnInf(int idx) throws ContradictionException {
 
         if (idx == 1) {
-            if (LOGGER.isLoggable(Level.FINEST))
-            {LOGGER.log(Level.FINEST, "INF({0}) >= INF({1}) + {2}", new Object[]{v0.toString(), v1.toString(), this.cste});}
+//            if (LOGGER.isLoggable(Level.FINEST))
+//            {LOGGER.log(Level.FINEST, "INF({0}) >= INF({1}) + {2}", new Object[]{v0.toString(), v1.toString(), this.cste});}
             v0.updateInf(v1.getInf() + this.cste, this.cIdx0);
         } else if (v0.getInf() >= v1.getSup() + this.cste)
             this.setEntailed();
@@ -109,8 +110,8 @@ public class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
 
     public void awakeOnSup(int idx) throws ContradictionException {
         if (idx == 0) {
-            if (LOGGER.isLoggable(Level.FINEST))
-            {LOGGER.log(Level.FINEST, "SUP({0}) <= SUP({1}) - {2}", new Object[]{v1.toString(), v0.toString(), this.cste});}
+//            if (LOGGER.isLoggable(Level.FINEST))
+//            {LOGGER.log(Level.FINEST, "SUP({0}) <= SUP({1}) - {2}", new Object[]{v1.toString(), v0.toString(), this.cste});}
             v1.updateSup(v0.getSup() - this.cste, this.cIdx1);
         } else if (v0.getInf() >= v1.getSup() + this.cste)
             this.setEntailed();
@@ -127,12 +128,12 @@ public class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
 
     public void awakeOnInst(int idx) throws ContradictionException {
         if (idx == 0) {
-            if (LOGGER.isLoggable(Level.FINEST))
-            {LOGGER.log(Level.FINEST, "SUP({0}) <= SUP({1}) - {2}", new Object[]{v1.toString(), v0.toString(), this.cste});}
+//            if (LOGGER.isLoggable(Level.FINEST))
+//            {LOGGER.log(Level.FINEST, "SUP({0}) <= SUP({1}) - {2}", new Object[]{v1.toString(), v0.toString(), this.cste});}
             v1.updateSup(v0.getSup() - this.cste, this.cIdx1);
         } else if (idx == 1) {
-            if (LOGGER.isLoggable(Level.FINEST))
-            {LOGGER.log(Level.FINEST, "INF({0}) >= INF({1}) + {2}", new Object[]{v0.toString(), v1.toString(), this.cste});}
+//            if (LOGGER.isLoggable(Level.FINEST))
+//            {LOGGER.log(Level.FINEST, "INF({0}) >= INF({1}) + {2}", new Object[]{v0.toString(), v1.toString(), this.cste});}
             v0.updateInf(v1.getInf() + this.cste, this.cIdx0);
         }
         if (v0.getInf() >= v1.getSup() + this.cste)

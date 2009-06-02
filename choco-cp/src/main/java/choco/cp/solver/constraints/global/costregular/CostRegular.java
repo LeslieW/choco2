@@ -34,6 +34,7 @@ import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * Created by IntelliJ IDEA.
@@ -497,7 +498,8 @@ public class CostRegular extends AbstractLargeIntSConstraint
     }
 
     protected void printAll(State s) {
-        @SuppressWarnings("unchecked")
+       if(LOGGER.isLoggable(Level.INFO)) {
+    	@SuppressWarnings("unchecked")
         HashSet<Arc>[] map = new HashSet[vars.length+1];
         StringBuffer st = new StringBuffer();
         st.append(puit).append("\n");
@@ -513,6 +515,7 @@ public class CostRegular extends AbstractLargeIntSConstraint
                 st.append(a).append("\n");
         }
         LOGGER.info(st.toString());
+       }
     }
 
     protected void printAll(State s, HashSet<Arc>[] map)

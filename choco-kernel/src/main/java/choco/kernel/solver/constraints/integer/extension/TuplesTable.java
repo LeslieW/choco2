@@ -69,7 +69,7 @@ public class TuplesTable extends ConsistencyRelation implements LargeRelation {
     }
 
     if(totalSize/8 > 50*1024*1024)
-        LOGGER.info("Tuples requiered over 50Mo of memory...");
+        LOGGER.warning("Tuples requiered over 50Mo of memory...");
 
 
     if (totalSize < 0)

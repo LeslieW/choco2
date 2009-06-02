@@ -33,11 +33,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.text.MessageFormat;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class InstanceChecker extends JFrame {
 
-    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+	protected final static Logger LOGGER = ChocoLogging.getParserLogger();
 
 	private static final long serialVersionUID = -3961722178499026262L;
 
@@ -384,7 +386,7 @@ public class InstanceChecker extends JFrame {
 				file = file.getAbsoluteFile();
 				final File srcDirectory = new File(file.getPath());
 
-                final int arg = Integer.parseInt(args[1]);
+				final int arg = Integer.parseInt(args[1]);
 				final boolean competitionControl = (arg == 2);
 
 				final InstanceChecker.CHECKING_MODE mode = InstanceChecker.CHECKING_MODE.getOperatorFor(arg);
@@ -399,11 +401,11 @@ public class InstanceChecker extends JFrame {
 				try {
 					coder.treat(file);
 				} catch (final Exception e) {
-					LOGGER.info("ERROR \t the instance is not valid: " + e.getMessage());
+					LOGGER.log(Level.SEVERE,"\t the instance is not valid: ", e);
 					// e.printStackTrace();
 					System.exit(1);
 				}
-				LOGGER.info("OK \t (the instance is valid" + (arg != 3 ? ")" : " - including additional rules of the 2008 competition of CSP solvers)"));
+				LOGGER.log(Level.INFO, "OK \t The instance is valid {0} including additional rules of the 2008 competition of CSP solvers)", (arg != 3 ? "- not " : "- " ));
 				System.exit(0);
 			} catch (final Throwable e) {
 				LOGGER.severe("PROBLEM \t " + e.getMessage());
@@ -414,21 +416,26 @@ public class InstanceChecker extends JFrame {
 		if (args.length == 1 && args[0].toLowerCase().equals("gui"))
 			new InstanceChecker();
 		else {
-			LOGGER.info("InstanceChecker " + InstanceParser.VERSION);
-			LOGGER.info("Usage 1 : java ... InstanceChecker gui");
-			LOGGER.info("Usage 2 : java ... InstanceChecker <instanceFileName> <mode> {<overwrite>}");
-			LOGGER.info("With Usage 1, InstanceChecker displays a graphical user interface (gui)");
-			LOGGER.info("With Usage 2, you run a simple command line:");
-			LOGGER.info("  with mode = 1, you can check the validity of the given instance");
-			LOGGER.info("  with mode = 2, you can check the validity of the given instance (including additional rules of the 2008 competition of CSP solvers)");
-			LOGGER.info("  with mode = 3, you can check (not including additional 2008 competition rules) and convert the given instance into canonical form");
-			LOGGER.info("  with mode = 4, you can check (not including additional 2008 competition rules) and convert the given instance into canonical extensional form");
-			LOGGER.info("NB: with mode = 3 and mode = 4, you can indicate (set 'y' to overwrite) that you want to overwrite the given instance\n");
-			LOGGER.info("Exit code of instanceChecker (with usage 2) is as follows:");
-			LOGGER.info("  0 : no problem occurs and the instance is valid");
-			LOGGER.info("  1 : the instance is not valid");
-			LOGGER.info("  2 : a problem occurs (file not found, ...)");
-			System.exit(0);
+			if(LOGGER.isLoggable(Level.INFO)) {
+				final StringBuilder b = new StringBuilder();
+				b.append("InstanceChecker ").append(InstanceParser.VERSION);
+				b.append("Usage 1 : java ... InstanceChecker gui");
+				b.append("Usage 2 : java ... InstanceChecker <instanceFileName> <mode> {<overwrite>}");
+				b.append("With Usage 1, InstanceChecker displays a graphical user interface (gui)");
+				b.append("With Usage 2, you run a simple command line:");
+				b.append("  with mode = 1, you can check the validity of the given instance");
+				b.append("  with mode = 2, you can check the validity of the given instance (including additional rules of the 2008 competition of CSP solvers)");
+				b.append("  with mode = 3, you can check (not including additional 2008 competition rules) and convert the given instance into canonical form");
+				b.append("  with mode = 4, you can check (not including additional 2008 competition rules) and convert the given instance into canonical extensional form");
+				b.append("NB: with mode = 3 and mode = 4, you can indicate (set 'y' to overwrite) that you want to overwrite the given instance\n");
+				b.append("Exit code of instanceChecker (with usage 2) is as follows:");
+				b.append("  0 : no problem occurs and the instance is valid");
+				b.append("  1 : the instance is not valid");
+				b.append("  2 : a problem occurs (file not found, ...)");
+				LOGGER.info( new String(b));
+				System.exit(0);
+			}
+
 		}
 	}
 }

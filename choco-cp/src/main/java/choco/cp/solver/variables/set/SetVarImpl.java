@@ -205,20 +205,14 @@ public class SetVarImpl extends AbstractVar implements SetVar {
 	}
 
 	public boolean addToKernel(int x, int idx) throws ContradictionException {
-		if (LOGGER.isLoggable(Level.FINEST))
-			LOGGER.log(Level.FINEST, "KER({0}): {1}", new Object[]{this, x});
 		return domain.addToKernel(x, idx);
 	}
 
 	public boolean remFromEnveloppe(int x, int idx) throws ContradictionException {
-		if (LOGGER.isLoggable(Level.FINEST))
-			LOGGER.log(Level.FINEST, "ENV({0}): {1}", new Object[]{this, x}); 
 		return domain.remFromEnveloppe(x, idx);
 	}
 
 	public boolean instantiate(int[] x, int idx) throws ContradictionException {
-		if (LOGGER.isLoggable(Level.FINEST))
-			LOGGER.log(Level.FINEST, "INST({0}): {1}", new Object[]{this, Arrays.toString(x)}); 
 		return domain.instantiate(x, idx);
 	}
 

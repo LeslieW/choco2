@@ -40,6 +40,7 @@ import parser.absconparseur.tools.SolutionChecker;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.HashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -225,8 +226,7 @@ public class XmlModel {
     public InstanceParser load(File fichier) throws Exception, Error {
        try {
             if (verb > 0) {
-                LOGGER.info("========================================================");
-                LOGGER.info("Traitement de :" + fichier.getName());
+            	LOGGER.log(Level.INFO, "========================================================\nTraitement de :{0}",fichier.getName());
             }
             // Parse the xml and get the abscon representation of the problem
             time[0] = System.currentTimeMillis();

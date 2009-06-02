@@ -101,9 +101,12 @@ public class BasicVarEventQueue implements VarEventQueue {
 	public PropagationEvent popEvent() {
 		PropagationEvent event = queue.poll();
 		lastPopped = event;
-		if(LOGGER.isLoggable(Level.FINEST)) {
-			LOGGER.log(Level.FINEST, "just popped {0}", event);
-		}
+		////////////////////////////////DEBUG ONLY ///////////////////////////
+		//Logging statements really decrease performance
+		//		if(LOGGER.isLoggable(Level.FINEST)) {
+		//			LOGGER.log(Level.FINEST, "just popped {0}", event);
+		//		}
+		//////////////////////////////////////////////////////////////////////////////////
 		return event;
 	}
 

@@ -26,9 +26,6 @@ import static choco.cp.solver.variables.integer.IntVarEvent.DECSUPbitvector;
 import static choco.cp.solver.variables.integer.IntVarEvent.INCINFbitvector;
 import static choco.cp.solver.variables.integer.IntVarEvent.INSTINTbitvector;
 import static choco.cp.solver.variables.integer.IntVarEvent.REMVALbitvector;
-
-import java.util.logging.Level;
-
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
@@ -428,7 +425,6 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 	 */
 
 	public boolean updateInf(int x, int idx) throws ContradictionException {
-		logOnInf(x);
 		return domain.updateInf(x, idx);
 	}
 
@@ -443,7 +439,6 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 	 */
 
 	public boolean updateSup(int x, int idx) throws ContradictionException {
-		logOnSup(x); 
 		return domain.updateSup(x, idx);
 	}
 
@@ -463,7 +458,6 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 	 */
 
 	public boolean removeVal(int x, int idx) throws ContradictionException {
-		logOnRem(x); 
 		return domain.removeVal(x, idx);
 	}
 
@@ -479,7 +473,6 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 	 */
 
 	public boolean removeInterval(int a, int b, int idx) throws ContradictionException {
-		logOnRemInt(a, b); 
 		return domain.removeInterval(a, b, idx);
 	}
 
@@ -493,11 +486,11 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 	 */
 
 	public boolean instantiate(int x, int idx) throws ContradictionException {
-		logOnInst(x);
 		return domain.instantiate(x, idx);
 	}
 
 
+	@Override
 	public final void fail() throws ContradictionException {
 		solver.getPropagationEngine().raiseContradiction(this, ContradictionException.DOMAIN);
 	}
@@ -541,6 +534,7 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 	 *
 	 * @return a String representation of the variable
 	 */
+	@Override
 	public String toString() {
 		return (super.toString() + ":" + (isInstantiated() ? getVal() : "?"));
 	}
@@ -562,33 +556,5 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 		this.solver = solver;
 	}
 
-	//*****************************************************************//
-	//*******************  Logging  ********************************//
-	//***************************************************************//
-
-	protected final void logOnInst(final int x) {
-		if (LOGGER.isLoggable(Level.FINEST))
-			LOGGER.log(Level.FINEST, "INST({0}): {1}", new Object[]{this, x}); 
-	}
-
-	protected final void logOnRem(final int x) {
-		if (LOGGER.isLoggable(Level.FINEST))
-			LOGGER.log(Level.FINEST, "REM({0}): {1}", new Object[]{this, x}); 
-	}
-
-	protected final void logOnInf(final int x) {
-		if (LOGGER.isLoggable(Level.FINEST))
-			LOGGER.log(Level.FINEST, "INF({0}): {1} -> {2}", new Object[]{this, this.getInf(), x});  
-	}
-
-	protected final void logOnSup(final int x) {
-		if (LOGGER.isLoggable(Level.FINEST))
-			LOGGER.log(Level.FINEST, "SUP({0}): {1} -> {2}", new Object[]{this, this.getSup(), x});  
-	}
-
-	protected final void logOnRemInt(final int a, final int b) {
-		if (LOGGER.isLoggable(Level.FINEST))
-			LOGGER.log(Level.FINEST, "REMINT({0}): [{1}, {2}]", new Object[]{this, a,b});   
-	}
 
 }

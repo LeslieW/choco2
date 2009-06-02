@@ -73,6 +73,7 @@ public class LessOrEqualXC extends AbstractUnIntSConstraint {
     return this.v0 + " <= " + cste;
   }
 
+///!\  Logging statements decrease performances
   /**
    * The one and only propagation method. <br>
    * Note that after the first propagation, the constraint is set passive
@@ -80,8 +81,8 @@ public class LessOrEqualXC extends AbstractUnIntSConstraint {
    */
 
   public void propagate() throws ContradictionException {
-    if (LOGGER.isLoggable(Level.FINEST))
-    {LOGGER.log(Level.FINEST, "VAL({0}) <= {1}", new Object[]{v0.toString(), this.cste});}
+//    if (LOGGER.isLoggable(Level.FINEST))
+//    {LOGGER.log(Level.FINEST, "VAL({0}) <= {1}", new Object[]{v0.toString(), this.cste});}
     v0.updateSup(this.cste, this.cIdx0);
     this.setEntailed();
   }
@@ -89,8 +90,8 @@ public class LessOrEqualXC extends AbstractUnIntSConstraint {
 
   public void awakeOnInst(int idx) throws ContradictionException {
     assert(idx == 0);
-    if (LOGGER.isLoggable(Level.FINEST))
-    {LOGGER.log(Level.FINEST, "VAL({0} <= {1}", new Object[]{v0.toString(),this.cste});}
+//    if (LOGGER.isLoggable(Level.FINEST))
+//    {LOGGER.log(Level.FINEST, "VAL({0} <= {1}", new Object[]{v0.toString(),this.cste});}
     if (v0.getVal() > this.cste)
       this.fail();
   }

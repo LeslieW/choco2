@@ -200,7 +200,7 @@ public final class ChocoUtil {
 	public static <T> int length(final T[]... arrays) {
 		int length=0;
 		for (T[] array : arrays) {
-			length+=array.length;
+			if(array != null) length+=array.length;
 		}
 		return length;
 	}

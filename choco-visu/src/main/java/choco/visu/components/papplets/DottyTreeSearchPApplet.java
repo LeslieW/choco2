@@ -210,7 +210,7 @@ public final class DottyTreeSearchPApplet extends AChocoPApplet {
                 throw new SolverException("Cannot write into the graph file - " + e.getMessage());
             }
         } else {
-            LOGGER.info("TOO MANY NODES :  the dot file will not be generated!");
+            LOGGER.warning("TOO MANY NODES :  the dot file will not be generated!");
         }
 
     }

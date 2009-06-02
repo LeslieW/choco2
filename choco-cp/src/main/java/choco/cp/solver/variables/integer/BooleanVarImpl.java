@@ -169,7 +169,7 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      */
 
     public boolean updateInf(int x, int idx) throws ContradictionException {
-    	logOnInf(x);
+    	//logOnInf(x);
     	if(x > 0){
             return booldomain.instantiate(x, idx);
         }
@@ -187,7 +187,7 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      */
 
     public boolean updateSup(int x, int idx) throws ContradictionException {
-    	logOnSup(x); 
+    	//logOnSup(x); 
     	if(x < 1){
             return booldomain.instantiate(x, idx);
         }
@@ -210,7 +210,7 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      */
 
     public boolean removeVal(int x, int idx) throws ContradictionException {
-    	logOnRem(x); 
+    	//logOnRem(x); 
     	if (x == 0)
             return booldomain.instantiate(1,idx);
         else if (x == 1)
@@ -230,7 +230,7 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      */
 
     public boolean removeInterval(int a, int b, int idx) throws ContradictionException {
-    	logOnRemInt(a, b);
+    	//logOnRemInt(a, b);
     	return booldomain.removeInterval(a, b, idx);
     }
 
@@ -244,7 +244,7 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      */
 
     public boolean instantiate(int x, int idx) throws ContradictionException {
-    	logOnInst(x);
+    	//logOnInst(x);
     	return booldomain.instantiate(x, idx);
     }
 

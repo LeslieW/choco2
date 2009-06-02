@@ -37,130 +37,131 @@ import java.util.logging.Level;
  * An event for real interval variable modifications.
  */
 public class RealVarEvent extends VarEvent<RealVarImpl> {
-  public static final int INCINF = 0;
-  public static final int DECSUP = 1;
+	public static final int INCINF = 0;
+	public static final int DECSUP = 1;
 
-  public final static int EMPTYEVENT = 0;
-  public final static int BOUNDSEVENT = 3;
-  public final static int INFEVENT = 1;
-  public final static int SUPEVENT = 2;
+	public final static int EMPTYEVENT = 0;
+	public final static int BOUNDSEVENT = 3;
+	public final static int INFEVENT = 1;
+	public final static int SUPEVENT = 2;
 
-  public RealVarEvent(RealVarImpl var) {
-    super(var);
-  }
+	public RealVarEvent(RealVarImpl var) {
+		super(var);
+	}
 
-  public String toString() {
-    return ("VarEvt(" + modifiedVar.toString() + ")[" + eventType + ":"
-        + ((eventType & INFEVENT) != 0 ? "I" : "")
-        + ((eventType & SUPEVENT) != 0 ? "S" : "")
-        + "]");
-  }
+	public String toString() {
+		return ("VarEvt(" + modifiedVar.toString() + ")[" + eventType + ":"
+				+ ((eventType & INFEVENT) != 0 ? "I" : "")
+				+ ((eventType & SUPEVENT) != 0 ? "S" : "")
+				+ "]");
+	}
 
-  public void clear() {
-    this.eventType = EMPTYEVENT;
-    modifiedVar.getDomain().clearDeltaDomain();
-  }
+	public void clear() {
+		this.eventType = EMPTYEVENT;
+		modifiedVar.getDomain().clearDeltaDomain();
+	}
 
-  protected boolean release() {
-    return modifiedVar.getDomain().releaseDeltaDomain();
-  }
+	protected boolean release() {
+		return modifiedVar.getDomain().releaseDeltaDomain();
+	}
 
-  protected void freeze() {
-    modifiedVar.getDomain().freezeDeltaDomain();
-    cause = NOEVENT;
-    eventType = 0;
-  }
+	protected void freeze() {
+		modifiedVar.getDomain().freezeDeltaDomain();
+		cause = NOEVENT;
+		eventType = 0;
+	}
 
-  public boolean getReleased() {
-    return modifiedVar.getDomain().getReleasedDeltaDomain();
-  }
+	public boolean getReleased() {
+		return modifiedVar.getDomain().getReleasedDeltaDomain();
+	}
 
-  public boolean propagateEvent() throws ContradictionException {
-	  if(LOGGER.isLoggable(Level.FINER)) LOGGER.log(Level.FINER,"propagate {0}", this);
-    // first, mark event
-    int evtType = eventType;
-    int evtCause = cause;
-    freeze();
+	public boolean propagateEvent() throws ContradictionException {
+		//Logging statements really decrease performance 
+		//if(LOGGER.isLoggable(Level.FINER)) LOGGER.log(Level.FINER,"propagate {0}", this);
+		// first, mark event
+		int evtType = eventType;
+		int evtCause = cause;
+		freeze();
 
-    if (evtType <= BOUNDSEVENT) {     // only two first bits (bounds) are on
-      if (evtType == INFEVENT)
-        propagateInfEvent(evtCause);
-      else if (evtType == SUPEVENT)
-        propagateSupEvent(evtCause);
-      else if (evtType == BOUNDSEVENT) {
-        propagateBoundsEvent(evtCause);
-      }
-    }
-    // last, release event
-    return release();
-  }
+		if (evtType <= BOUNDSEVENT) {     // only two first bits (bounds) are on
+			if (evtType == INFEVENT)
+				propagateInfEvent(evtCause);
+			else if (evtType == SUPEVENT)
+				propagateSupEvent(evtCause);
+			else if (evtType == BOUNDSEVENT) {
+				propagateBoundsEvent(evtCause);
+			}
+		}
+		// last, release event
+		return release();
+	}
 
-  /**
-   * Propagates the update to the upper bound
-   */
-  public void propagateSupEvent(int evtCause) throws ContradictionException {
-    RealVar v = getModifiedVar();
-    PartiallyStoredVector constraints = v.getConstraintVector();
-    PartiallyStoredIntVector indices = v.getIndexVector();
+	/**
+	 * Propagates the update to the upper bound
+	 */
+	public void propagateSupEvent(int evtCause) throws ContradictionException {
+		RealVar v = getModifiedVar();
+		PartiallyStoredVector constraints = v.getConstraintVector();
+		PartiallyStoredIntVector indices = v.getIndexVector();
 
-    for (IntIterator cit = constraints.getIndexIterator(); cit.hasNext();) {
-      int idx = cit.next();
-      if (idx != evtCause) {
-        RealVarEventListener c = (RealVarEventListener) constraints.get(idx);
-        if (c.isActive()) {
-          int i = indices.get(idx);
-          c.awakeOnSup(i);
-        }
-      }
-    }
-  }
+		for (IntIterator cit = constraints.getIndexIterator(); cit.hasNext();) {
+			int idx = cit.next();
+			if (idx != evtCause) {
+				RealVarEventListener c = (RealVarEventListener) constraints.get(idx);
+				if (c.isActive()) {
+					int i = indices.get(idx);
+					c.awakeOnSup(i);
+				}
+			}
+		}
+	}
 
-  /**
-   * Propagates the update to the lower bound
-   */
-  public void propagateInfEvent(int evtCause) throws ContradictionException {
-	RealVar v = getModifiedVar();
-    PartiallyStoredVector constraints = v.getConstraintVector();
-    PartiallyStoredIntVector indices = v.getIndexVector();
+	/**
+	 * Propagates the update to the lower bound
+	 */
+	public void propagateInfEvent(int evtCause) throws ContradictionException {
+		RealVar v = getModifiedVar();
+		PartiallyStoredVector constraints = v.getConstraintVector();
+		PartiallyStoredIntVector indices = v.getIndexVector();
 
-    for (IntIterator cit = constraints.getIndexIterator(); cit.hasNext();) {
-      int idx = cit.next();
-      if (idx != evtCause) {
-        RealVarEventListener c = (RealVarEventListener) constraints.get(idx);
-        if (c.isActive()) {
-          int i = indices.get(idx);
-          c.awakeOnInf(i);
-        }
-      }
-    }
-  }
+		for (IntIterator cit = constraints.getIndexIterator(); cit.hasNext();) {
+			int idx = cit.next();
+			if (idx != evtCause) {
+				RealVarEventListener c = (RealVarEventListener) constraints.get(idx);
+				if (c.isActive()) {
+					int i = indices.get(idx);
+					c.awakeOnInf(i);
+				}
+			}
+		}
+	}
 
-  /**
-   * Propagates the update to the domain lower and upper bounds
-   */
-  public void propagateBoundsEvent(int evtCause) throws ContradictionException {
-	RealVar v = getModifiedVar();
-    PartiallyStoredVector constraints = v.getConstraintVector();
-    PartiallyStoredIntVector indices = v.getIndexVector();
+	/**
+	 * Propagates the update to the domain lower and upper bounds
+	 */
+	public void propagateBoundsEvent(int evtCause) throws ContradictionException {
+		RealVar v = getModifiedVar();
+		PartiallyStoredVector constraints = v.getConstraintVector();
+		PartiallyStoredIntVector indices = v.getIndexVector();
 
-    for (IntIterator cit = constraints.getIndexIterator(); cit.hasNext();) {
-      int idx = cit.next();
-      if (idx != evtCause) {
-        RealVarEventListener c = (RealVarEventListener) constraints.get(idx);
-        if (c.isActive()) {
-          int i = indices.get(idx);
-          c.awakeOnInf(i);
-          c.awakeOnSup(i);
-        }
-      }
-    }
+		for (IntIterator cit = constraints.getIndexIterator(); cit.hasNext();) {
+			int idx = cit.next();
+			if (idx != evtCause) {
+				RealVarEventListener c = (RealVarEventListener) constraints.get(idx);
+				if (c.isActive()) {
+					int i = indices.get(idx);
+					c.awakeOnInf(i);
+					c.awakeOnSup(i);
+				}
+			}
+		}
 
-  }
+	}
 
-  /**
-   * Retrieves the event type
-   */
-  public int getEventType() { /// TODO : dans VarEvent !
-    return eventType;
-  }
+	/**
+	 * Retrieves the event type
+	 */
+	public int getEventType() { /// TODO : dans VarEvent !
+		return eventType;
+	}
 }

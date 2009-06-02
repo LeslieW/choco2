@@ -24,6 +24,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.util.Iterator;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ChocoChartPanel extends JPanel implements TreeSelectionListener {
@@ -72,7 +73,7 @@ public class ChocoChartPanel extends JPanel implements TreeSelectionListener {
 		tree.addTreeSelectionListener(this);
 
 		if (playWithLineStyle) {
-			LOGGER.info("line style = " + lineStyle);
+			LOGGER.log(Level.INFO,"line style = {0}", lineStyle);
 			tree.putClientProperty("JTree.lineStyle", lineStyle);
 		}
 

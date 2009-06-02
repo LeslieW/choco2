@@ -194,29 +194,29 @@ public final class StoredIntVector implements IStateIntVector {
 		worldStamps[newsize - 1] = environment.getWorldIndex();
 	}
 
-    /**
-     * Removes an int.
-     *
-     * @param i The search to remove.
-     */
-    @Override
-    public void remove(int i) {
-        System.arraycopy(elementData, i, elementData, i+1, size.get());
-        System.arraycopy(worldStamps, i, worldStamps, i+1, size.get());
+	/**
+	 * Removes an int.
+	 *
+	 * @param i The search to remove.
+	 */
+	@Override
+	public void remove(int i) {
+		System.arraycopy(elementData, i, elementData, i+1, size.get());
+		System.arraycopy(worldStamps, i, worldStamps, i+1, size.get());
 
-//        for(int j = i; j < size.get()-1; j++){
-//            elementData[j] = elementData[j+1];
-//            worldStamps[j] = worldStamps[j+1];
-//        }
-        int newsize = size.get() - 1;
-        if (newsize >= 0)
-        size.set(newsize);
-    }
+		//        for(int j = i; j < size.get()-1; j++){
+		//            elementData[j] = elementData[j+1];
+		//            worldStamps[j] = worldStamps[j+1];
+		//        }
+		int newsize = size.get() - 1;
+		if (newsize >= 0)
+			size.set(newsize);
+	}
 
-    /**
-   * removes the search at the end of the vector.
-   * does nothing when called on an empty vector
-   */
+	/**
+	 * removes the search at the end of the vector.
+	 * does nothing when called on an empty vector
+	 */
 
 	public void removeLast() {
 		int newsize = size.get() - 1;
@@ -247,8 +247,9 @@ public final class StoredIntVector implements IStateIntVector {
 			int oldValue = elementData[index];
 			if (val != oldValue) {
 				int oldStamp = this.worldStamps[index];
-				if (LOGGER.isLoggable(Level.FINEST))
-					  LOGGER.log(Level.FINEST, "W:{0} @{1} ts:{2}", new Object[]{ environment.getWorldIndex(), index,this.worldStamps[index]});
+				// /!\  Logging statements really decrease performances
+				//				if (LOGGER.isLoggable(Level.FINEST))
+				//					  LOGGER.log(Level.FINEST, "W:{0} @{1} ts:{2}", new Object[]{ environment.getWorldIndex(), index,this.worldStamps[index]});
 				if (oldStamp < environment.getWorldIndex()) {
 					trail.savePreviousState(this, index, oldValue, oldStamp);
 					worldStamps[index] = environment.getWorldIndex();

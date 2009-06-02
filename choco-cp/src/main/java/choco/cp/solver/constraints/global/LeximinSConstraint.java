@@ -71,7 +71,7 @@ public class LeximinSConstraint extends AbstractLargeIntSConstraint {
 	private int minimum;
 	private int n;
 
-	public boolean verbose = false;
+	private static final boolean VERBOSE = false;
 
 	/**
 	 * Creates a new <code>LeximinConstraint</code> instance.
@@ -224,7 +224,7 @@ public class LeximinSConstraint extends AbstractLargeIntSConstraint {
 		for (int i = 0; i < 4; i++) {
 			this.epsilon.set(i, false);
 		}
-		if (verbose) {
+		if (VERBOSE) {
 			LOGGER.log(Level.INFO, "l = {0} / u = {1}", new Object[]{l, u});
 		}
 		while (this.alpha.get() <= u && currentOccX == currentOccY) {
@@ -239,7 +239,7 @@ public class LeximinSConstraint extends AbstractLargeIntSConstraint {
 				currentOccY++;
 				currentY++;
 			} // Read sortedCeily array in order to compute occY
-			if (verbose) {
+			if (VERBOSE) {
 				LOGGER.log(Level.INFO, "cX = {0} / cOX = {1}", new Object[]{currentX, currentOccX});
 				LOGGER.log(Level.INFO, "cY = {0} / cOY = {1}", new Object[]{currentY, currentOccY});
 			}

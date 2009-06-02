@@ -35,6 +35,7 @@ import parser.absconparseur.components.*;
 import parser.absconparseur.intension.EvaluationManager;
 
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class InstanceCheckerParser {
@@ -116,7 +117,7 @@ public class InstanceCheckerParser {
 		if (relationNames != null)
 			for (int i = 0; i < relationNames.length; i++)
 				if (!relationNames[i].equals(InstanceTokens.getRelationNameFor(i))) {
-					LOGGER.info(" the " + i + "th relation is called " + relationNames[i]);
+					LOGGER.log(Level.INFO, " the {0}th relation is called {1}", new Object[]{Integer.valueOf(i), relationNames[i]});
 					return false;
 				}
 		if (predicateNames != null) {

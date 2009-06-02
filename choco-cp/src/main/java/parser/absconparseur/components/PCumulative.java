@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.absconparseur.components;
 
+import java.util.logging.Level;
+
 public class PCumulative extends PGlobalConstraint {
 	private Task[] tasks;
 
@@ -83,9 +85,10 @@ public class PCumulative extends PGlobalConstraint {
 			return 0;
 		}
 
-		public void displayEvaluations() {
-			LOGGER.info(originValue + " " + durationValue + " " + endValue + " " + heightValue);
-			
+		public final void displayEvaluations() {
+			if(LOGGER.isLoggable(Level.INFO)) {
+			LOGGER.log(Level.INFO, "{0} {1} {2} {3}", new Object[]{originValue, durationValue , endValue,heightValue});
+			}
 		}
 
         public Object getOrigin() {

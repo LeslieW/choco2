@@ -210,7 +210,6 @@ public class MaxCliques {
 	    	g.addEdge(v1,v2);
 	    }	
 	    LOGGER.info("done " + "(" + (System.currentTimeMillis()-start) + " ms).\n");
-	    System.out.flush();
 	    return g;
 	}
 	
