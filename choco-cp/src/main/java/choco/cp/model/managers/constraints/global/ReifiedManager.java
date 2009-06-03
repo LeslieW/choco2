@@ -61,11 +61,11 @@ public class ReifiedManager extends IntConstraintManager {
                 if (c.getOptions().contains("cp:decomp")) {
                     decomp = true;
                 }
-                SConstraint ct = ((CPSolver)solver).makeSConstraint(c, decomp);
-                if(!(ct instanceof AbstractIntSConstraint)){
+                SConstraint[] ct = ((CPSolver)solver).makeSConstraintAndOpposite(c, decomp);
+                if(!(ct[0] instanceof AbstractIntSConstraint && ct[1] instanceof AbstractIntSConstraint)){
                     throw new UnsupportedOperationException("reifiedIntConstraint cannot be used without IntConstraint");
                 }
-                return new ReifiedIntSConstraint(solver.getVar((IntegerVariable)variables[0]), (AbstractIntSConstraint)ct);
+                return new ReifiedIntSConstraint(solver.getVar((IntegerVariable)variables[0]), (AbstractIntSConstraint)ct[0], (AbstractIntSConstraint)ct[1]);
             }else{
                 Constraint c = constraints[0];
                 Constraint oppc = constraints[1];

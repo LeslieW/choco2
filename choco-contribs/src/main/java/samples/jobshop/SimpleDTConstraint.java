@@ -114,7 +114,23 @@ public class SimpleDTConstraint extends AbstractBinIntSConstraint implements
                     durations[1]);
         }
 
+        /**
+         * Build a constraint and its opposite for the given solver and "model variables"
+         *
+         * @param solver
+         * @param variables
+         * @param parameters
+         * @param options
+         * @return array of 2 SConstraint object, the constraint and its opposite
+         */
         @Override
+        public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+            SConstraint c = makeConstraint(solver, variables, parameters, options);
+            SConstraint opp = c.opposite();
+            return new SConstraint[]{c, opp};
+        }
+
+            @Override
         public INode makeNode(Solver solver, Constraint[] cstrs,
                 IntegerExpressionVariable[] vars) {
             // TODO Auto-generated method stub

@@ -26,8 +26,10 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang.ArrayUtils;
 
 /*
  * Created by IntelliJ IDEA.
@@ -163,23 +165,15 @@ public class UtilAlgo {
 		}
 	}
 
-	public static <T> ArrayList<T> toList(T[] array){
-		if(array.length>0){
-			ArrayList<T> list = new ArrayList(array.length);
-			for(int i = 0; i < array.length; i++){
-				list.add(i, array[i]);
-			}
-			return list;
-		}else return null;
-	}
+    public static <T> List<T> toList(T[] array){
+        return Arrays.asList(array);
+    }
 
-	public static <T> T[] toArray(Class c, ArrayList<T> list){
-		if(list.size()>0){
-			T[] array = (T[])Array.newInstance(c, list.size());
-			return list.toArray(array);
-		}else
-			return null;
-	}
+    public static <T> T[] toArray(Class c, List<T> list){
+//        T[] array = (T[])Array.newInstance(c, list.size());
+//        return list.toArray(array);
+        return list.toArray((T[])Array.newInstance(c, list.size()));
+    }
 
 	public static <T> T[] toArray(ArrayList<T> list){
 		return toArray(list.get(0).getClass(), list);

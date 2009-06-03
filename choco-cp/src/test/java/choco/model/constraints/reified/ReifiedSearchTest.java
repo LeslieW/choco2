@@ -29,7 +29,10 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -37,14 +40,12 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import org.junit.After;
 import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 
 import static java.text.MessageFormat.format;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * J-CHOCO
@@ -1041,4 +1042,289 @@ public class ReifiedSearchTest {
 
             }
         }
+
+
+    @Test
+    public void testReifiedWithOppositeMin() {
+        try {
+            ChocoLogging.setVerbosity(Verbosity.OFF);
+            ChocoLogging.getTestLogger().setLevel(Level.INFO);
+            int n = 3;
+            int m = 2;
+            IntegerVariable bo = Choco.makeBooleanVar("bo");
+            IntegerVariable X = Choco.makeIntVar("cible", 0, n);
+            IntegerVariable[] vars = Choco.makeIntVarArray("vars", m, 0, n);
+            Constraint c = Choco.min(vars, X);
+
+            Model m1 = new CPModel();
+            m1.addConstraint(reifiedIntConstraint(bo, c));
+            m1.setDefaultExpressionDecomposition(true);
+            Solver s1 = new CPSolver();
+            s1.read(m1);
+            s1.setVarIntSelector(new MinDomain(s1));
+            s1.setValIntIterator(new IncreasingDomain());
+            s1.solve();
+            if(s1.isFeasible()){
+                do{
+                    StringBuffer st = new StringBuffer();
+                    for(int i =0; i < s1.getNbIntVars(); i++){
+                        st.append(s1.getIntVar(i).getName()).append(":")
+                                .append(((IntDomainVar)s1.getIntVar(i)).getVal())
+                                .append(" ");
+                    }
+//                    st.append(s1.getVar(bo)).append(" - ");
+//                    st.append(s1.getVar(X).getVal()).append(" de : {");
+//                    st.append(s1.getVar(vars[0]).getVal());
+//                    for(int i = 1; i< m; i ++){
+//                        st.append(",").append(s1.getVar(vars[i]).getVal());
+//                    }
+//                    st.append("}");
+                    LOGGER.log(Level.INFO, st.toString());
+                }while(s1.nextSolution());
+            }
+            LOGGER.info(s1.runtimeSatistics());
+            LOGGER.log(Level.INFO, "------------");
+
+            Model m2  = new CPModel();
+            IntegerVariable Y = Choco.makeIntVar("oppcible", 0, n);
+            Constraint c2 = min(vars, Y);
+            m2.addConstraint(c2);
+            m2.addConstraints(reifiedIntConstraint(bo, eq(X,Y), neq(X,Y)));
+            Solver s2 = new CPSolver();
+            s2.read(m2);
+            s2.setVarIntSelector(new MinDomain(s2));
+            s2.setValIntIterator(new IncreasingDomain());
+            s2.solve();
+            if(s2.isFeasible()){
+                do{
+                    StringBuffer st = new StringBuffer();
+                    for(int i =0; i < s2.getNbIntVars(); i++){
+                        st.append(s2.getIntVar(i).getName()).append(":")
+                                .append(((IntDomainVar)s2.getIntVar(i)).getVal())
+                                .append(" ");
+                    }
+
+//                    st.append(s2.getVar(bo)).append(" - ");
+//                    st.append(s2.getVar(X).getVal()).append(" (");
+//                    st.append(s2.getVar(Y).getVal()).append(") de : {");
+//                    st.append(s2.getVar(vars[0]).getVal());
+//                    for(int i = 1; i< m; i ++){
+//                        st.append(",").append(s2.getVar(vars[i]).getVal());
+//                    }
+//                    st.append("}");
+                    LOGGER.log(Level.INFO, st.toString());
+//                    Assert.assertEquals(s2.getVar(Y).getVal(), Math.min(s2.getVar(vars[0]).getVal(), s2.getVar(vars[1]).getVal()));
+                }while(s2.nextSolution());
+            }
+
+            LOGGER.info(s2.runtimeSatistics());
+            Assert.assertEquals("number of solution", s1.getNbSolutions(), s2.getNbSolutions());
+        } finally {
+            ChocoLogging.flushLogs();
+        }
+    }
+
+     @Test
+    public void testNot() {
+        try {
+            ChocoLogging.setVerbosity(Verbosity.OFF);
+            ChocoLogging.getTestLogger().setLevel(Level.INFO);
+            int n = 3;
+            int m = 2;
+            IntegerVariable X = Choco.makeIntVar("cible", 0, n);
+            IntegerVariable[] vars = Choco.makeIntVarArray("vars", m, 0, n);
+            Constraint c = Choco.min(vars, X);
+
+            Model m1 = new CPModel();
+            m1.addConstraint(not(c));
+            m1.setDefaultExpressionDecomposition(false);
+            Solver s1 = new CPSolver();
+            s1.read(m1);
+            s1.setVarIntSelector(new MinDomain(s1));
+            s1.setValIntIterator(new IncreasingDomain());
+            s1.solve();
+            if(s1.isFeasible()){
+                do{
+                    StringBuffer st = new StringBuffer();
+                    for(int i =0; i < s1.getNbIntVars(); i++){
+                        st.append(s1.getIntVar(i).getName()).append(":")
+                                .append(((IntDomainVar)s1.getIntVar(i)).getVal())
+                                .append(" ");
+                    }
+//                    st.append(s1.getVar(X).getVal()).append(" de : {");
+//                    st.append(s1.getVar(vars[0]).getVal());
+//                    for(int i = 1; i< m; i ++){
+//                        st.append(",").append(s1.getVar(vars[i]).getVal());
+//                    }
+//                    st.append("}");
+                    LOGGER.log(Level.INFO, st.toString());
+                }while(s1.nextSolution());
+            }
+            LOGGER.info(s1.runtimeSatistics());
+            LOGGER.log(Level.INFO, "------------");
+
+        } finally {
+            ChocoLogging.flushLogs();
+        }
+    }
+
+    @Test
+    public void testReifiedWithOppositeOccurrence() {
+        try {
+            ChocoLogging.setVerbosity(Verbosity.OFF);
+            ChocoLogging.getTestLogger().setLevel(Level.INFO);
+            int n = 3;
+            int m = 2;
+            IntegerVariable bo = Choco.makeBooleanVar("bo");
+            IntegerVariable X = Choco.makeIntVar("cible", 0, n);
+            IntegerVariable[] vars = Choco.makeIntVarArray("vars", m, 0, n);
+            Constraint c = Choco.occurrence(2, X, vars);
+
+            Model m1 = new CPModel();
+            m1.addConstraint(reifiedIntConstraint(bo, c));
+            m1.setDefaultExpressionDecomposition(true);
+            Solver s1 = new CPSolver();
+            s1.read(m1);
+            s1.setVarIntSelector(new MinDomain(s1));
+            s1.setValIntIterator(new IncreasingDomain());
+            s1.solve();
+            if(s1.isFeasible()){
+                do{
+                    StringBuffer st = new StringBuffer();
+                    for(int i =0; i < s1.getNbIntVars(); i++){
+                        st.append(s1.getIntVar(i).getName()).append(":")
+                                .append(((IntDomainVar)s1.getIntVar(i)).getVal())
+                                .append(" ");
+                    }
+//                    st.append(s1.getVar(bo)).append(" - ");
+//                    st.append(s1.getVar(X).getVal()).append(" de : {");
+//                    st.append(s1.getVar(vars[0]).getVal());
+//                    for(int i = 1; i< m; i ++){
+//                        st.append(",").append(s1.getVar(vars[i]).getVal());
+//                    }
+//                    st.append("}");
+                    LOGGER.log(Level.INFO, st.toString());
+                }while(s1.nextSolution());
+            }
+            LOGGER.info(s1.runtimeSatistics());
+            LOGGER.log(Level.INFO, "------------");
+
+            Model m2  = new CPModel();
+            IntegerVariable Y = Choco.makeIntVar("oppcible", 0, n);
+            Constraint c2 = occurrence(2, Y, vars);
+            m2.addConstraint(c2);
+            m2.addConstraints(reifiedIntConstraint(bo, eq(X,Y), neq(X,Y)));
+            Solver s2 = new CPSolver();
+            s2.read(m2);
+            s2.setVarIntSelector(new MinDomain(s2));
+            s2.setValIntIterator(new IncreasingDomain());
+            s2.solve();
+            if(s2.isFeasible()){
+                do{
+                    StringBuffer st = new StringBuffer();
+                    for(int i =0; i < s2.getNbIntVars(); i++){
+                        st.append(s2.getIntVar(i).getName()).append(":")
+                                .append(((IntDomainVar)s2.getIntVar(i)).getVal())
+                                .append(" ");
+                    }
+
+//                    st.append(s2.getVar(bo)).append(" - ");
+//                    st.append(s2.getVar(X).getVal()).append(" (");
+//                    st.append(s2.getVar(Y).getVal()).append(") de : {");
+//                    st.append(s2.getVar(vars[0]).getVal());
+//                    for(int i = 1; i< m; i ++){
+//                        st.append(",").append(s2.getVar(vars[i]).getVal());
+//                    }
+//                    st.append("}");
+                    LOGGER.log(Level.INFO, st.toString());
+//                    Assert.assertEquals(s2.getVar(Y).getVal(), Math.min(s2.getVar(vars[0]).getVal(), s2.getVar(vars[1]).getVal()));
+                }while(s2.nextSolution());
+            }
+
+            LOGGER.info(s2.runtimeSatistics());
+            Assert.assertEquals("number of solution", s1.getNbSolutions(), s2.getNbSolutions());
+        } finally {
+            ChocoLogging.flushLogs();
+        }
+    }
+
+    @Test
+    public void testReifiedWithOppositeDistance() {
+        try {
+            ChocoLogging.setVerbosity(Verbosity.OFF);
+            ChocoLogging.getTestLogger().setLevel(Level.INFO);
+            int n = 3;
+            int m = 2;
+            IntegerVariable bo = Choco.makeBooleanVar("bo");
+            IntegerVariable X = Choco.makeIntVar("cible", 0, n);
+            IntegerVariable[] vars = Choco.makeIntVarArray("vars", m, 0, n);
+            Constraint c = Choco.distanceEQ(vars[0], vars[1], X);
+
+            Model m1 = new CPModel();
+            m1.addConstraint(reifiedIntConstraint(bo, c));
+            m1.setDefaultExpressionDecomposition(true);
+            Solver s1 = new CPSolver();
+            s1.read(m1);
+            s1.setVarIntSelector(new MinDomain(s1));
+            s1.setValIntIterator(new IncreasingDomain());
+            s1.solve();
+            if(s1.isFeasible()){
+                do{
+                    StringBuffer st = new StringBuffer();
+                    for(int i =0; i < s1.getNbIntVars(); i++){
+                        st.append(s1.getIntVar(i).getName()).append(":")
+                                .append(((IntDomainVar)s1.getIntVar(i)).getVal())
+                                .append(" ");
+                    }
+//                    st.append(s1.getVar(bo)).append(" - ");
+//                    st.append(s1.getVar(X).getVal()).append(" de : {");
+//                    st.append(s1.getVar(vars[0]).getVal());
+//                    for(int i = 1; i< m; i ++){
+//                        st.append(",").append(s1.getVar(vars[i]).getVal());
+//                    }
+//                    st.append("}");
+                    LOGGER.log(Level.INFO, st.toString());
+                }while(s1.nextSolution());
+            }
+            LOGGER.info(s1.runtimeSatistics());
+            LOGGER.log(Level.INFO, "------------");
+
+            Model m2  = new CPModel();
+            IntegerVariable Y = Choco.makeIntVar("oppcible", 0, n);
+            Constraint c2 = Choco.distanceEQ(vars[0], vars[1], Y);
+            m2.addConstraint(c2);
+            m2.addConstraints(reifiedIntConstraint(bo, eq(X,Y), neq(X,Y)));
+            Solver s2 = new CPSolver();
+            s2.read(m2);
+            s2.setVarIntSelector(new MinDomain(s2));
+            s2.setValIntIterator(new IncreasingDomain());
+            s2.solve();
+            if(s2.isFeasible()){
+                do{
+                    StringBuffer st = new StringBuffer();
+                    for(int i =0; i < s2.getNbIntVars(); i++){
+                        st.append(s2.getIntVar(i).getName()).append(":")
+                                .append(((IntDomainVar)s2.getIntVar(i)).getVal())
+                                .append(" ");
+                    }
+
+//                    st.append(s2.getVar(bo)).append(" - ");
+//                    st.append(s2.getVar(X).getVal()).append(" (");
+//                    st.append(s2.getVar(Y).getVal()).append(") de : {");
+//                    st.append(s2.getVar(vars[0]).getVal());
+//                    for(int i = 1; i< m; i ++){
+//                        st.append(",").append(s2.getVar(vars[i]).getVal());
+//                    }
+//                    st.append("}");
+                    LOGGER.log(Level.INFO, st.toString());
+//                    Assert.assertEquals(s2.getVar(Y).getVal(), Math.min(s2.getVar(vars[0]).getVal(), s2.getVar(vars[1]).getVal()));
+                }while(s2.nextSolution());
+            }
+
+            LOGGER.info(s2.runtimeSatistics());
+            Assert.assertEquals("number of solution", s1.getNbSolutions(), s2.getNbSolutions());
+        } finally {
+            ChocoLogging.flushLogs();
+        }
+    }
 }

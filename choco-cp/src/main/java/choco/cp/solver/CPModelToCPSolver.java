@@ -341,6 +341,31 @@ public class CPModelToCPSolver {
 		return readModelConstraint(ic, false);
 	}
 
+    public SConstraint[] makeSConstraintAndOpposite(Constraint ic, Boolean decomp) {
+		SConstraint[] cs = new SConstraint[2];
+        if (ic instanceof MetaConstraint) {
+			cs[0] =  createMetaConstraint(ic, decomp);
+            cs[1] = cs[0].opposite();
+            return cs;
+		}
+
+		if (ic instanceof ComponentConstraint) {
+			if (!ic.getConstraintType().equals(ConstraintType.REIFIEDINTCONSTRAINT) &&
+					!allSimpleVariable(ic.getVariables())) {
+				cs[0] =  createMetaConstraint(ic, decomp);
+                cs[1] = cs[0].opposite();
+                return cs;
+			}
+			ComponentConstraint cc = (ComponentConstraint) ic;
+			ConstraintManager cm = cc.getCm();
+			return cm.makeConstraintAndOpposite(cpsolver, cc.getVariables(), cc.getParameters(), cc.getOptions());
+		}
+		return null;
+	}
+
+	public SConstraint[] makeSConstraintAndOpposite(Constraint ic) {
+		return makeSConstraintAndOpposite(ic, false);
+	}
 
 	protected SConstraint readModelConstraint(Constraint ic, Boolean decomp) {
 

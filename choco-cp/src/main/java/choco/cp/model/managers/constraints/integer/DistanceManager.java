@@ -31,6 +31,7 @@ import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.constraints.SConstraint;
 
 import java.util.HashSet;
@@ -71,6 +72,53 @@ public class DistanceManager extends IntConstraintManager {
                                 type);
                     }
                 }
+            }
+        }
+        if (Choco.DEBUG) {
+            LOGGER.severe("Could not found an implementation of distance !");
+        }
+        return null;
+    }
+
+    /**
+     * Build a constraint and its opposite for the given solver and "model variables"
+     *
+     * @param solver
+     * @param variables
+     * @param parameters
+     * @param options
+     * @return array of 2 SConstraint object, the constraint and its opposite
+     */
+    @Override
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+        SConstraint[] cs = new SConstraint[2];
+        if (solver instanceof CPSolver) {
+            if (parameters instanceof Integer) {
+                int type = (Integer) parameters;
+                if (variables.length == 3) {
+                    return super.makeConstraintAndOpposite(solver, variables, parameters, options);
+                } else {
+                    IntDomainVar Y;
+                    final IntDomainVar X = solver.getVar((IntegerVariable) variables[2]);
+                    // Introduces a intermediary variable
+                    if(X.hasBooleanDomain()){
+                        Y = solver.createBooleanVar("Y_opp");
+                    }else if(X.hasEnumeratedDomain()){
+                        Y = solver.createEnumIntVar("Y_opp", X.getInf(), X.getSup());
+                    }else{
+                        Y = solver.createBoundIntVar("Y_opp", X.getInf(), X.getSup());
+                    }
+                    if (type != NEQ) {
+                        solver.post(new DistanceXYZ(solver.getVar((IntegerVariable) variables[0]),
+                                solver.getVar((IntegerVariable) variables[1]),
+                                Y,
+                                ((IntegerConstantVariable) variables[3]).getValue(),
+                                type));
+                    }
+                    cs[0] = solver.eq(Y, X);
+                    cs[1] = solver.neq(Y, X);
+                }
+                return cs;
             }
         }
         if (Choco.DEBUG) {

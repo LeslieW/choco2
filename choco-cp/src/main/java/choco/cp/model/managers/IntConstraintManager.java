@@ -28,8 +28,10 @@ import choco.cp.solver.constraints.reified.leaves.ConstraintLeaf;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintManager;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
+import choco.kernel.model.variables.Variable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.INode;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashSet;
@@ -88,5 +90,21 @@ public abstract class IntConstraintManager implements ConstraintManager {
      */
     public INode makeNode(Solver solver, Constraint[] cstrs, IntegerExpressionVariable[] vars) {
         return new ConstraintLeaf(((CPSolver)solver).makeSConstraint(cstrs[0]), null);
+    }
+
+    /**
+     * Build a constraint and its opposite for the given solver and "model variables"
+     *
+     * @param solver
+     * @param variables
+     * @param parameters
+     * @param options
+     * @return array of 2 SConstraint object, the constraint and its opposite
+     */
+    @Override
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+        SConstraint c = makeConstraint(solver, variables, parameters, options);
+        SConstraint opp = c.opposite();
+        return new SConstraint[]{c, opp};
     }
 }

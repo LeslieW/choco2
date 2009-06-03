@@ -42,6 +42,16 @@ public interface ConstraintManager extends ExpressionManager{
     public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options);
 
     /**
+     * Build a constraint and its opposite for the given solver and "model variables"
+     * @param solver
+     * @param variables
+     * @param parameters
+     * @param options
+     * @return array of 2 SConstraint object, the constraint and its opposite
+     */
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, HashSet<String> options);
+
+    /**
      * @param options : the set of options on the constraint (Typically the level of consistency)
      * @return a list of domains accepted by the constraint and sorted
      *         by order of preference
