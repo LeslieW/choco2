@@ -37,15 +37,15 @@ import java.util.List;
 
 public class PRelation {
 
-	private String name;
+	protected String name;
 
-	private int arity;
+	protected int nbTuples;
 
-	private int nbTuples;
+	protected int arity;
 
-	private String semantics;
+	protected String semantics;
 
-	private int[][] tuples;
+	protected int[][] tuples;
 
 	private List<int[]> ltuples;
 
@@ -60,7 +60,7 @@ public class PRelation {
 	 * defaultCost = Integer.MAX_VALUE if defaultCost is infinity
 	 */
 	private int defaultCost;
-	
+
 	/**
 	 * The max of all weights values and deafultCost. It is 1 for an ordinary relation.
 	 */
@@ -162,22 +162,20 @@ public class PRelation {
 	}
 
 	public boolean checkEqInCouples() {
-		for (Iterator<int[]> it = ltuples.iterator(); it.hasNext();) {
-			int[] t = it.next();
-			if (t[0] != t[1]) {
-				return false;
-			}
-		}
+        for (int[] t : ltuples) {
+            if (t[0] != t[1]) {
+                return false;
+            }
+        }
 		return true;
 	}
 
 	public boolean checkNeqInCouples() {
-		for (Iterator<int[]> it = ltuples.iterator(); it.hasNext();) {
-			int[] t = it.next();
-			if (t[0] == t[1]) {
-				return false;
-			}
-		}
+        for (int[] t : ltuples) {
+            if (t[0] == t[1]) {
+                return false;
+            }
+        }
 		return true;
 	}
 
@@ -185,9 +183,7 @@ public class PRelation {
 		if (ltuples != null) return ltuples;
 		else {
 			ltuples = new LinkedList<int[]>();
-			for (int i = 0; i < tuples.length; i++) {
-				ltuples.add(tuples[i]);
-			}
+            ltuples.addAll(Arrays.asList(tuples));
 			tuples = null;
 		}
 		return ltuples;
@@ -208,7 +204,7 @@ public class PRelation {
 	public int getMaximalCost() {
 		return maximalCost;
 	}
-	
+
 	public PRelation(String name, int arity, int nbTuples, String semantics, int[][] tuples, int[] weights, int defaultCost) {
 		this.name = name;
 		this.arity = arity;
@@ -224,8 +220,9 @@ public class PRelation {
 			for (int w : weights)
 				if (w > maximalCost)
 					maximalCost=w;
-		}
+    }
         this.index = Integer.parseInt(name.substring(1,name.length()));
+        Arrays.sort(tuples,Toolkit.lexicographicComparator);
     }
 
 	public PRelation(String name, int arity, int nbTuples, String semantics, int[][] tuples) {
@@ -243,7 +240,7 @@ public class PRelation {
 
 	public String toString() {
 		int displayLimit = 5;
-		String s = "  relation " + name + " with arity=" + arity + ", semantics=" + semantics + ", nbTuples=" + nbTuples + ", defaultCost=" + defaultCost + " : ";
+		String s = "  relation " + name + " with arity=" + arity + ", semantics=" + semantics + ", nbTuples=" + nbTuples + " : ";
 		for (int i = 0; i < Math.min(nbTuples, displayLimit); i++) {
 			s += "(";
 			for (int j = 0; j < arity; j++)
@@ -285,5 +282,5 @@ public class PRelation {
 
     public int hashCode() {
         return index;
-    }
+}
 }

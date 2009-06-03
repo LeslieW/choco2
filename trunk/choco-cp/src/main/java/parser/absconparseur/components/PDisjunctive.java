@@ -22,17 +22,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.absconparseur.components;
 
-public class PCumulative extends PGlobalConstraint {
+
+public class PDisjunctive extends PGlobalConstraint {
 	private Task[] tasks;
 
-	private int limit;
-
-	public PCumulative(String name, PVariable[] scope, Task[] tasks, int limit) {
+	public PDisjunctive(String name, PVariable[] scope, Task[] tasks) {
 		super(name, scope);
 		this.tasks = tasks;
 		for (Task task : tasks)
-			task.setVariablePositions(scope); 
-		this.limit = limit;
+			task.setVariablePositions(scope);
 	}
 
 	public long computeCostOf(int[] tuple) {
@@ -41,29 +39,15 @@ public class PCumulative extends PGlobalConstraint {
 				return 1;
 			//task.displayEvaluations();
 		}
-		for (int i = 0; i < tasks.length; i++) {
-			for (int period = tasks[i].getOriginValue(); period < tasks[i].getEndValue(); period++) {
-				int heightSum = tasks[i].getHeightValue();
-				for (int j = i + 1; j < tasks.length; j++) {
-					if (period >= tasks[j].getOriginValue() && period < tasks[j].getEndValue())
-						heightSum += tasks[j].getHeightValue();
-				}
-				if (heightSum > limit) {
-					//LOGGER.info(" i = " + i + " time = " + period);
-					return 1;
-				}
-			}
-		}
 		return 0;
 	}
 
 	public String toString() {
-		String s = super.toString() + " : cumulative\n\t";
+		String s = super.toString() + " : disjunctive\n\t";
         for (Task task : tasks) {
-            s += "  [origin=" + computeStringRepresentationOf(task.getOrigin()) + " " + "duration=" + computeStringRepresentationOf(task.getDuration()) + " ";
-            s += "end=" + computeStringRepresentationOf(task.getEnd()) + " " + "height=" + computeStringRepresentationOf(task.getHeight()) + "]\n\t";
+            s += "  [origin=" + computeStringRepresentationOf(task.getOrigin()) + " " + "duration=" + computeStringRepresentationOf(task.getDuration())  + "]\n\t";
         }
-		s += "nbTasks=" + tasks.length + " limit=" + limit;
+		s += "nbTasks=" + tasks.length;
 		return s;
 	}
 
@@ -73,9 +57,5 @@ public class PCumulative extends PGlobalConstraint {
 
     public void setTasks(Task[] tasks) {
         this.tasks = tasks;
-    }
-
-    public int getLimit() {
-        return limit;
     }
 }

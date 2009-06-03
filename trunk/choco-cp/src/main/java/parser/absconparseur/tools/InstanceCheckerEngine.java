@@ -149,8 +149,8 @@ public class InstanceCheckerEngine extends Thread {
 		assert srcFile.getName().toLowerCase().endsWith("xml") || srcFile.getName().toLowerCase().endsWith("xml.bz2");
 
 		DocumentModifier translator = new DocumentModifier();
-		Document document;
-		InstanceCheckerParser problem;
+		Document document = null;
+		InstanceCheckerParser problem = null;
 
 		indicator.write("    loading XML document " + srcFile.getName() + "...");
 		if (srcFile.getName().toLowerCase().endsWith("xml.bz2")) {
@@ -173,7 +173,7 @@ public class InstanceCheckerEngine extends Thread {
 		if (mode == InstanceChecker.CHECKING_MODE.VALIDATION)
 			return;
 
-		boolean containsPredicateBefore = problem.getPredicatesMap().size() > 0;
+		boolean containsPredicateBefore = problem.getPredicatesMap().size() > 0 || problem.getFunctionsMap().size() > 0;
 		PrintWriter out = buildPrintWriterFor(srcFile, containsPredicateBefore);
 
 		// TODO mixer ce qui suit avec la gestion forma canonique
@@ -188,11 +188,12 @@ public class InstanceCheckerEngine extends Thread {
 		}
 
 		indicator.write("    setting to canonical form...");
-		document = translator.setCanonicalFormOf(this, document, problem.hasCanonicalNames());
+		document = translator.setCanonicalFormOf(this, document, problem.hasCanonicalNames(),problem.getMaxConstraintRAity());
 		indicator.write("ok\n");
+		problem = null;
 
 		indicator.write("    saving " + getNameOfFileToSave(srcFile, containsPredicateBefore) + "...");
-		XMLManager.save(document, out, XMLManager.class.getResourceAsStream(InstanceTokens.INSTANCE_STYLESHEET_2_0));
+		XMLManager.save(document, out, XMLManager.class.getResourceAsStream(InstanceTokens.INSTANCE_STYLESHEET_2_1));
 		indicator.write("ok\n");
 
 		out.close();
@@ -222,13 +223,14 @@ public class InstanceCheckerEngine extends Thread {
 
 	private void operateDirectory(File dir) {
 		String[] list = dir.list();
-        for (String aList : list) operate(new File(dir, aList));
+		for (int i = 0; i < list.length; i++)
+			operate(new File(dir, list[i]));
 	}
 
 	private void operate(File file) {
 		if (finished)
 			return;
-		if (!file.isDirectory())
+		if (file.isDirectory() == false)
 			operateFile(file);
 		else
 			operateDirectory(file);

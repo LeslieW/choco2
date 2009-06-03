@@ -28,6 +28,7 @@ import org.w3c.dom.NodeList;
 import parser.absconparseur.InstanceTokens;
 import parser.absconparseur.XMLManager;
 import parser.absconparseur.components.PRelation;
+import parser.absconparseur.components.PSoftRelation;
 import parser.absconparseur.intension.PredicateManager;
 
 import java.util.*;
@@ -59,6 +60,10 @@ public class DocumentModifier {
 	}
 
 	public Document modifyDocumentFrom(InstanceCheckerEngine logic, Document document, InstanceCheckerParser problem) {
+		Element functionsElement = XMLManager.getElementByTagNameFrom(document.getDocumentElement(), InstanceTokens.FUNCTIONS, 0);
+		if (functionsElement != null)
+			document.getDocumentElement().removeChild(functionsElement);
+
 		Element predicatesElement = XMLManager.getElementByTagNameFrom(document.getDocumentElement(), InstanceTokens.PREDICATES, 0);
 		if (predicatesElement != null)
 			document.getDocumentElement().removeChild(predicatesElement);
@@ -69,7 +74,7 @@ public class DocumentModifier {
 			Element element = (Element) nodeList.item(i);
 
 			String reference = element.getAttribute(InstanceTokens.REFERENCE);
-			if (problem.getPredicatesMap().containsKey(reference)) {
+			if (problem.getFunctionsMap().containsKey(reference) || problem.getPredicatesMap().containsKey(reference)) {
 				Element parameters = XMLManager.getElementByTagNameFrom(element, InstanceTokens.PARAMETERS, 0);
 				element.removeChild(parameters);
 				String name = element.getAttribute(InstanceTokens.NAME);
@@ -92,6 +97,9 @@ public class DocumentModifier {
 			relationElement.setAttribute(InstanceTokens.ARITY, relation.getArity() + "");
 			relationElement.setAttribute(InstanceTokens.NB_TUPLES, relation.getTuples().length + "");
 			relationElement.setAttribute(InstanceTokens.SEMANTICS, relation.getSemantics());
+			if (relation instanceof PSoftRelation)
+				relationElement.setAttribute(InstanceTokens.DEFAULT_COST, ((PSoftRelation)relation).getDefaultCost()+ "");
+			
 			relationElement.setTextContent(relation.getStringListOfTuples());
 			relationsElement.appendChild(relationElement);
 			if (cpt % 10 == 0)
@@ -123,13 +131,14 @@ public class DocumentModifier {
 		return sb.toString();
 	}
 
-	public Document setCanonicalFormOf(InstanceCheckerEngine logic, Document document, boolean canonicalNames) {
+	public Document setCanonicalFormOf(InstanceCheckerEngine logic, Document document, boolean canonicalNames, int maxConstraintArity) {
 		Element presentationElement = XMLManager.getFirstElementByTagNameFromRoot(document, InstanceTokens.PRESENTATION);
-		presentationElement.setAttribute(InstanceTokens.NAME, "?");
+		presentationElement.removeAttribute(InstanceTokens.NAME);
 		presentationElement.removeAttribute(InstanceTokens.NB_SOLUTIONS);
 		presentationElement.removeAttribute(InstanceTokens.SOLUTION);
 		presentationElement.setTextContent("");
-		presentationElement.setAttribute(InstanceTokens.FORMAT, InstanceTokens.XCSP_2_0);
+		presentationElement.setAttribute(InstanceTokens.MAX_CONSTRAINT_ARITY, maxConstraintArity + "");
+		presentationElement.setAttribute(InstanceTokens.FORMAT, InstanceTokens.XCSP_2_1);
 		logic.spot();
 
 		// LOGGER.info("can " + canonicalNames);
@@ -185,6 +194,54 @@ public class DocumentModifier {
 			}
 		}
 		logic.spot();
+
+			// A ELIMINER
+			// preds.setAttribute(XMLInstanceRepresentation.NB_PREDICATES,"1");
+		Map<String, String> functionsMap = new HashMap<String, String>();
+		Element funcs = XMLManager.getFirstElementByTagNameFromRoot(document, InstanceTokens.FUNCTIONS);
+
+		if (funcs != null) {
+
+			nodeList = funcs.getElementsByTagName(InstanceTokens.FUNCTION);
+			for (int i = 0; i < nodeList.getLength(); i++) {
+				Element element = (Element) nodeList.item(i);
+				String name = element.getAttribute(InstanceTokens.NAME);
+				String canonicalName = InstanceTokens.getFunctionNameFor(i);
+				if (!name.equals(canonicalName))
+					element.setAttribute(InstanceTokens.NAME, canonicalName);
+				functionsMap.put(name, canonicalName);// To put in any case
+
+				Element parameters = XMLManager.getElementByTagNameFrom(element, InstanceTokens.PARAMETERS, 0);
+				Element expression = XMLManager.getElementByTagNameFrom(element, InstanceTokens.EXPRESSION, 0);
+				Element functional = XMLManager.getElementByTagNameFrom(expression, InstanceTokens.FUNCTIONAL, 0);
+
+				Map<String, String> parametersMap = new HashMap<String, String>();
+				String oldFormalParameters = parameters.getTextContent();
+				String newFormalParameters = "";
+
+				List<String> formalParameters = new ArrayList<String>();
+				StringTokenizer st = new StringTokenizer(oldFormalParameters);
+				int cpt = 0;
+				while (st.hasMoreTokens()) {
+					newFormalParameters += " " + st.nextToken(); // type is int and not used
+					String oldParameter = st.nextToken();
+					String newParameter = InstanceTokens.getParameterNameFor(cpt++);
+					parametersMap.put(oldParameter, newParameter);
+					formalParameters.add(oldParameter);
+					// LOGGER.info("old = " + oldParameter + " new = " + newParameter);
+					newFormalParameters += " " + newParameter;
+				}
+
+				parameters.setTextContent(newFormalParameters.trim());
+
+				String[] t = PredicateManager.buildUniversalPostfixExpression(functional.getTextContent().trim(), formalParameters.toArray(new String[formalParameters.size()]));
+				String s2 = PredicateManager.buildFunctionalExpression(t);
+				functional.setTextContent(s2.trim());
+			}
+		}
+		logic.spot();
+				
+		
 		Map<String, String> predicatesMap = new HashMap<String, String>();
 		Element preds = XMLManager.getFirstElementByTagNameFromRoot(document, InstanceTokens.PREDICATES);
 
@@ -226,7 +283,7 @@ public class DocumentModifier {
 					String newParameter = InstanceTokens.getParameterNameFor(cpt++);
 					parametersMap.put(oldParameter, newParameter);
 					formalParameters.add(oldParameter);
-					// LOGGER.info("old = " + oldParameter + " new = " + newParameter);
+					// System.out.println("old = " + oldParameter + " new = " + newParameter);
 					newFormalParameters += " " + newParameter;
 				}
 
@@ -271,6 +328,24 @@ public class DocumentModifier {
 			String reference = element.getAttribute(InstanceTokens.REFERENCE);
 			if (relationsMap.containsKey(reference))
 				element.setAttribute(InstanceTokens.REFERENCE, relationsMap.get(reference));
+			else if (functionsMap.containsKey(reference)) {
+				element.setAttribute(InstanceTokens.REFERENCE, functionsMap.get(reference));
+
+				if (variablesMap.size() > 0) {
+					Element parameters = XMLManager.getElementByTagNameFrom(element, InstanceTokens.PARAMETERS, 0);
+					String canonicalExpression = "";
+					StringTokenizer st = new StringTokenizer(parameters.getTextContent());
+					while (st.hasMoreTokens()) {
+						String token = st.nextToken();
+						String newToken = variablesMap.get(token);
+						if (newToken != null)
+							canonicalExpression += " " + newToken;
+						else
+							canonicalExpression += " " + token;
+					}
+					parameters.setTextContent(canonicalExpression.trim());
+				}
+			}
 			else if (predicatesMap.containsKey(reference)) {
 				element.setAttribute(InstanceTokens.REFERENCE, predicatesMap.get(reference));
 

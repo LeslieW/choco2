@@ -36,6 +36,7 @@ import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.Solver;
 import parser.absconparseur.tools.InstanceParser;
 import parser.absconparseur.tools.SolutionChecker;
+import parser.absconparseur.tools.UnsupportedConstraintException;
 
 import java.io.File;
 import java.text.MessageFormat;
@@ -178,7 +179,7 @@ public class XmlModel {
         ChocoLogging.flushLogs();
     }
 
-    /**
+    /**                                                      ei
      * Solve the csp given by file "fichier"
      * @param fichier
      */
@@ -191,7 +192,10 @@ public class XmlModel {
                 CPModel model = buildModel(parser);
                 PreProcessCPSolver s = solve(model);
                 postAnalyze(fichier, parser, s);
-            } catch (Exception e) {
+            }catch (UnsupportedConstraintException ex){
+                LOGGER.info("s UNSUPPORTED");
+                ChocoLogging.flushLogs();
+            }catch (Exception e) {
                 e.printStackTrace();
             } catch (Error e) {
                 e.printStackTrace();
@@ -235,6 +239,8 @@ public class XmlModel {
             parser.parse(false);
             time[1] = System.currentTimeMillis();
             return parser;
+        } catch (UnsupportedConstraintException ex) {
+            throw ex;
         } catch (Exception ex) {
             ex.printStackTrace();
         } catch (Error er) {
@@ -363,24 +369,26 @@ public class XmlModel {
         time[3] = System.currentTimeMillis();
         //LOGGER.info("" + isFeasible);
         //Output in a format for internal competition
-        if (isFeasible==Boolean.TRUE && !checkEverythingIsInstantiated(parser, s)) {
+        if (isFeasible==Boolean.TRUE
+                && (!checkEverythingIsInstantiated(parser, s)
+                || s.checkSolution(false)!=Boolean.TRUE)) {
             isFeasible = null;
         }
         values = new String[parser.getVariables().length + 1];
-        String res = "c ";
+        StringBuffer res = new StringBuffer("c ");
         if (isFeasible == null) {
-            res += "TIMEOUT";
+            res.append("TIMEOUT");
             LOGGER.info("s UNKNOWN");
         } else if (!isFeasible) {
-            res += "UNSAT";
+            res.append("UNSAT");
             LOGGER.info("s UNSATISFIABLE");
         } else {
             if (!s.checkSolution(false)) {
                 //Check the solution with choco                
-                res += "WRONGSOL?";
+                res.append("WRONGSOL?");
                 LOGGER.info("s UNKNOWN");
             } else {
-                res += "SAT";
+                res.append("SAT");
                 LOGGER.info("s SATISFIABLE");
                 String sol = "v ";
                 values[0] = fichier.getPath();
@@ -396,13 +404,13 @@ public class XmlModel {
             }
         }
         double rtime = (double) (time[3] - time[0]) / 1000D;
-        res += " " + rtime + " TIME     ";
-        res += " " + nbnode + " NDS   ";
-        res += " " + (time[1] - time[0]) + " PARSTIME     ";
-        res += " " + (time[2] - time[1]) + " BUILDPB      ";
-        res += " " + (time[3] - time[2]) + " RES      ";
-        res += " " + s.restartMode + " RESTART      ";
-        res += " " + cheuri + " HEURISTIC      ";
+        res.append(" ").append(rtime).append(" TIME     ");
+        res.append(" ").append(nbnode).append(" NDS   ");
+        res.append(" ").append(time[1] - time[0]).append(" PARSTIME     ");
+        res.append(" ").append(time[2] - time[1]).append(" BUILDPB      ");
+        res.append(" ").append(time[3] - time[2]).append(" RES      ");
+        res.append(" ").append(s.restartMode).append(" RESTART      ");
+        res.append(" ").append(cheuri).append(" HEURISTIC      ");
         LOGGER.info("d AC " + ac);
         LOGGER.info("d RUNTIME " + rtime);
         LOGGER.info("d NODES " + nbnode);

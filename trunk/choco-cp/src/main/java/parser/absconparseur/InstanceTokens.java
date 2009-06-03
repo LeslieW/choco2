@@ -146,6 +146,14 @@ public class InstanceTokens {
 
 	// predicates
 
+	public static final String FUNCTIONS = "functions";
+
+	public static final String NB_FUNCTIONS = "nbFunctions";
+
+	public static final String FUNCTION = "function";
+
+	// predicates
+
 	public static final String PREDICATES = "predicates";
 
 	public static final String NB_PREDICATES = "nbPredicates";
@@ -173,6 +181,17 @@ public class InstanceTokens {
 	public static final String CUMULATIVE = "cumulative";
 
 	public static final String ELEMENT = "element";
+
+    public static final String DISJUNCTIVE = "disjunctive";
+
+    public static final String LEXLESS = "lexLess";
+
+    public static final String LEXLESSEQ = "lexLessEq";
+
+    public static final String NVALUE = "nValue";
+
+    public static final String GLOBALCARDINALITY = "globalCardinality";    
+
 
 	public static final String NIL = "nil";
 
@@ -214,6 +233,8 @@ public class InstanceTokens {
 
 	public static final String RELATION_PREFIX = "R";
 
+	public static final String FUNCTION_PREFIX = "F";
+
 	public static final String PREDICATE_PREFIX = "P";
 
 	public static final String CONSTRAINT_PREFIX = "C";
@@ -232,6 +253,10 @@ public class InstanceTokens {
 		return RELATION_PREFIX + id;
 	}
 
+	public static String getFunctionNameFor(int id) {
+		return FUNCTION_PREFIX + id;
+	}
+	
 	public static String getPredicateNameFor(int id) {
 		return PREDICATE_PREFIX + id;
 	}
@@ -243,4 +268,8 @@ public class InstanceTokens {
 	public static String getParameterNameFor(int id) {
 		return PARAMETER_PREFIX + id;
 	}
+
+	public static boolean isCanonicalName(String prefix, String name) {
+		return name.startsWith(prefix) && Toolkit.isInteger(name.substring(prefix.length()));
+}
 }

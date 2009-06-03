@@ -56,7 +56,7 @@ public class PExtensionConstraint extends PConstraint {
 		return relation.getMaximalCost();
 	}
 	
-	public int computeCostOf(int[] tuple) {
+	public long computeCostOf(int[] tuple) {
 		return relation.computeCostOf(tuple);
 	}
 

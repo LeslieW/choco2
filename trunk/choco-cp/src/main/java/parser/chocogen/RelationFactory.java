@@ -186,8 +186,8 @@ public class RelationFactory extends ObjectFactory {
     public XmlClause makeClause(int[] cl, int valtest) {
         int nbposv = 0;
         int nbnegv = 0;
-        for (int i = 0; i < cl.length; i++) {
-            if (cl[i] == valtest) nbposv++;
+        for (int aCl : cl) {
+            if (aCl == valtest) nbposv++;
             else nbnegv++;
         }
         int[] poslit = new int[nbposv];
@@ -215,16 +215,15 @@ public class RelationFactory extends ObjectFactory {
 	public double getCartesianProduct(PRelation prel) {
 		double cartprod = 1D;
 		int[] nbvalues = new int[prel.getArity()];
-		for (Iterator<PExtensionConstraint> iterator = extlist.get(prel).iterator(); iterator.hasNext();) {
-			PExtensionConstraint ct = iterator.next();
-			PVariable[] vs = ct.getScope();
-			for (int i = 0; i < vs.length; i++) {
-				nbvalues[i] = Math.max(vs[i].getDomain().getNbValues(), nbvalues[i]);
-			}
-		}
-		for (int i = 0; i <nbvalues.length; i++) {
-			cartprod *= nbvalues[i];
-		}
+        for (PExtensionConstraint ct : extlist.get(prel)) {
+            PVariable[] vs = ct.getScope();
+            for (int i = 0; i < vs.length; i++) {
+                nbvalues[i] = Math.max(vs[i].getDomain().getNbValues(), nbvalues[i]);
+            }
+        }
+        for (int nbvalue : nbvalues) {
+            cartprod *= nbvalue;
+        }
 		return cartprod;
 	}
 
@@ -239,10 +238,10 @@ public class RelationFactory extends ObjectFactory {
 		for (Iterator<PExtensionConstraint> iterator = extlist.get(prel).iterator(); iterator.hasNext();) {
 			PExtensionConstraint ct = iterator.next();
 			PVariable[] vs = ct.getScope();
-			for (int i = 0; i < vs.length; i++) {
-				if (vs[i].getDomain().getMinValue() < 0 ||
-                    vs[i].getDomain().getMaxValue() > 1)
-                return false;
+            for (PVariable v : vs) {
+                if (v.getDomain().getMinValue() < 0 ||
+                        v.getDomain().getMaxValue() > 1)
+                    return false;
             }
 		}
 		return true;
@@ -258,16 +257,15 @@ public class RelationFactory extends ObjectFactory {
 	public int[] getMin(PRelation prel) {
 		int[] min = new int[prel.getArity()];
 		Arrays.fill(min, Integer.MAX_VALUE);
-		for (Iterator<PExtensionConstraint> iterator = extlist.get(prel).iterator(); iterator.hasNext();) {
-			PExtensionConstraint ct = iterator.next();
-			PVariable[] vs = ct.getScope();
-			for (int i = 0; i < vs.length; i++) {
-				PVariable v = vs[i];
-				if (v.getDomain().getMinValue() < min[i]) {
-					min[i] = v.getDomain().getMinValue();
-				}
-			}
-		}
+        for (PExtensionConstraint ct : extlist.get(prel)) {
+            PVariable[] vs = ct.getScope();
+            for (int i = 0; i < vs.length; i++) {
+                PVariable v = vs[i];
+                if (v.getDomain().getMinValue() < min[i]) {
+                    min[i] = v.getDomain().getMinValue();
+                }
+            }
+        }
 		return min;
 
 	}
@@ -282,18 +280,17 @@ public class RelationFactory extends ObjectFactory {
 	public int[] getMax(PRelation prel) {
 		int[] max = new int[prel.getArity()];
 		Arrays.fill(max, Integer.MIN_VALUE);
-		for (Iterator<PExtensionConstraint> iterator = extlist.get(prel).iterator(); iterator.hasNext();) {
-			PExtensionConstraint ct = iterator.next();
-			if (ct.getRelation() == prel) {
-				PVariable[] vs = ct.getScope();
-				for (int i = 0; i < vs.length; i++) {
-					PVariable v = vs[i];
-					if (v.getDomain().getMaxValue() > max[i]) {
-						max[i] = v.getDomain().getMaxValue();
-					}
-				}
-			}
-		}
+        for (PExtensionConstraint ct : extlist.get(prel)) {
+            if (ct.getRelation() == prel) {
+                PVariable[] vs = ct.getScope();
+                for (int i = 0; i < vs.length; i++) {
+                    PVariable v = vs[i];
+                    if (v.getDomain().getMaxValue() > max[i]) {
+                        max[i] = v.getDomain().getMaxValue();
+                    }
+                }
+            }
+        }
 		return max;
 	}
 

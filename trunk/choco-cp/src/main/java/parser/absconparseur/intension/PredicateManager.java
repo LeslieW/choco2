@@ -102,7 +102,7 @@ public class PredicateManager {
 		for (int i = 0; i < effectiveParameters.length; i++) {
 			String token = st.nextToken();
 			if (!Toolkit.isInteger(token)) {
-				int position = Toolkit.searchIn(token, variableNames);
+				int position = Toolkit.searchFirstStringOccurrenceIn(token, variableNames);
 				if (position == -1)
 					throw new IllegalArgumentException();
 				token = InstanceTokens.getParameterNameFor(position);
@@ -112,11 +112,11 @@ public class PredicateManager {
 		return effectiveParameters;
 	}
 
-	public static String buildUniversalPostfixExpression(StringTokenizer st, String[] formalParameters, boolean[] found) {
+	private static String buildUniversalPostfixExpression(StringTokenizer st, String[] formalParameters, boolean[] found) {
 		String token = st.nextToken();
 		if (Toolkit.isInteger(token))
 			return token;
-		int position = Toolkit.searchIn(token, formalParameters);
+		int position = Toolkit.searchFirstStringOccurrenceIn(token, formalParameters);
 		if (position != -1) {
 			found[position] = true;
 			return InstanceTokens.getParameterNameFor(position);
@@ -134,7 +134,7 @@ public class PredicateManager {
 		String postfixExpression = buildUniversalPostfixExpression(st, formalParameters, found);
 		for (int i = 0; i < found.length; i++)
 			if (!found[i])
-				throw new IllegalArgumentException("One formal parameter not found in the given expression");
+				throw new IllegalArgumentException("Formal parameter " + i + " not found in the given expression");
 		st = new StringTokenizer(postfixExpression);
 		String[] tokens = new String[st.countTokens()];
 		for (int i = 0; i < tokens.length; i++)

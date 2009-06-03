@@ -252,7 +252,7 @@ public final class XMLManager {
 		public static void deleteChildElement(Document document, String elementName, int index) {
 			Element element = (Element) document.getElementsByTagName(elementName).item(0);
 			element.removeChild(getChildElement(document, elementName, index));
-		}
+	}
 
 		public static String[] displayAttributes(Element element) {
 			NamedNodeMap map = element.getAttributes();
@@ -265,13 +265,13 @@ public final class XMLManager {
 			return values;
 		}
 
-		public static void displayElement(Document document, String elementName) {
-			Node node = document.getElementsByTagName(elementName).item(0);
-			NodeList list = node.getChildNodes();
-			for (int i = 0; i < list.getLength(); i++) {
-				Element element = (Element) list.item(i);
-				displayAttributes(element);
-			}
+	public static void displayElement(Document document, String elementName) {
+		Node node = document.getElementsByTagName(elementName).item(0);
+		NodeList list = node.getChildNodes();
+		for (int i = 0; i < list.getLength(); i++) {
+			Element element = (Element) list.item(i);
+			displayAttributes(element);
+		}
 		}
 
 	}
