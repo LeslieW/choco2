@@ -346,7 +346,7 @@ public class XmlModel {
 //
 //            } else s.solve();
             s.solve();
-            
+
             isFeasible = s.isFeasible();
             nbnode = s.getSearchStrategy().getNodeCount();
             nbback = s.getBackTrackCount();
@@ -370,8 +370,8 @@ public class XmlModel {
         //LOGGER.info("" + isFeasible);
         //Output in a format for internal competition
         if (isFeasible==Boolean.TRUE
-                && (!checkEverythingIsInstantiated(parser, s)
-                || s.checkSolution(false)!=Boolean.TRUE)) {
+                && (!checkEverythingIsInstantiated(parser, s))) {
+               // || s.checkSolution(false)!=Boolean.TRUE)) {
             isFeasible = null;
         }
         values = new String[parser.getVariables().length + 1];
@@ -384,7 +384,7 @@ public class XmlModel {
             LOGGER.info("s UNSATISFIABLE");
         } else {
             if (!s.checkSolution(false)) {
-                //Check the solution with choco                
+                //Check the solution with choco
                 res.append("WRONGSOL?");
                 LOGGER.info("s UNKNOWN");
             } else {
