@@ -28,6 +28,7 @@ import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.automaton.DFA;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.constraints.integer.extension.LargeRelation;
+import choco.kernel.solver.constraints.integer.extension.TuplesTable;
 import choco.Choco;
 import parser.absconparseur.components.PConstraint;
 import parser.absconparseur.components.PExtensionConstraint;
@@ -114,7 +115,10 @@ public class ExtConstraintFactory extends ObjectFactory {
                     LargeRelation lrel = prel.getLrel();
                     DFA dfa = prel.getDfa();
                     if (lrel != null) {
-                        extct[0] = relationTupleAC("cp:ac" + XmlModel.getAcAlgo(), intvars, prel.getLrel());
+                        if (prel.getLrel() instanceof TuplesTable)
+                            extct[0] = relationTupleAC("cp:ac32", intvars, prel.getLrel());
+                        else
+                            extct[0] = relationTupleAC("cp:ac" + XmlModel.getAcAlgo(), intvars, prel.getLrel());
                     } else {
                         extct[0] = regular(dfa, intvars);
                     }
