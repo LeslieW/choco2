@@ -340,6 +340,7 @@ public class XmlModel {
 //
 //            } else s.solve();
             s.solve();
+            
             isFeasible = s.isFeasible();
             nbnode = s.getSearchStrategy().getNodeCount();
             nbback = s.getBackTrackCount();
@@ -374,19 +375,25 @@ public class XmlModel {
             res += "UNSAT";
             LOGGER.info("s UNSATISFIABLE");
         } else {
-            res += "SAT";
-            LOGGER.info("s SATISFIABLE");
-            String sol = "v ";
-            values[0] = fichier.getPath();
-            for (int i = 0; i < parser.getVariables().length; i++) {
-                try {
-                    values[i + 1] = "" + s.getVar(parser.getVariables()[i].getChocovar()).getVal();
-                } catch (NullPointerException e) {
-                    values[i + 1] = "" + parser.getVariables()[i].getChocovar().getLowB();
+            if (!s.checkSolution(false)) {
+                //Check the solution with choco                
+                res += "WRONGSOL?";
+                LOGGER.info("s UNKNOWN");
+            } else {
+                res += "SAT";
+                LOGGER.info("s SATISFIABLE");
+                String sol = "v ";
+                values[0] = fichier.getPath();
+                for (int i = 0; i < parser.getVariables().length; i++) {
+                    try {
+                        values[i + 1] = "" + s.getVar(parser.getVariables()[i].getChocovar()).getVal();
+                    } catch (NullPointerException e) {
+                        values[i + 1] = "" + parser.getVariables()[i].getChocovar().getLowB();
+                    }
+                    sol += values[i + 1] + " ";
                 }
-                sol += values[i + 1] + " ";
+                LOGGER.info(sol);
             }
-            LOGGER.info(sol);
         }
         double rtime = (double) (time[3] - time[0]) / 1000D;
         res += " " + rtime + " TIME     ";
@@ -409,13 +416,9 @@ public class XmlModel {
 
         LOGGER.info("" + res);
         if (verb > 0) {
-//TODO : update the checker (this one is not correct with element, we need the last version)
-           if (s.isFeasible()==Boolean.TRUE)
-                SolutionChecker.main(values);
-//Checking the solution with choco is also giving weird results...
-//                if (!s.checkSolution(false)) {
-//                    throw new Error("solution incorrect");
-//                };
+           if (s.isFeasible()==Boolean.TRUE) {
+              //  SolutionChecker.main(values);
+           }
         }
         ChocoLogging.flushLogs();        
     }

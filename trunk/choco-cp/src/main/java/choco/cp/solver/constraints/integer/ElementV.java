@@ -84,7 +84,7 @@ public class ElementV extends AbstractLargeIntSConstraint {
   }
 
   public boolean isSatisfied(int[] tuple) {
-    return tuple[tuple[vars.length - 2]] == tuple[vars.length - 1]; //getValueVar().getVal());
+    return tuple[tuple[vars.length - 2] + cste] == tuple[vars.length - 1]; //getValueVar().getVal());
   }
 
   protected void updateValueFromIndex() throws ContradictionException {

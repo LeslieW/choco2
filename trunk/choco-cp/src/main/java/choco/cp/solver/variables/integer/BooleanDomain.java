@@ -89,7 +89,7 @@ public class BooleanDomain extends AbstractIntDomain {
      *
      * @return the value IF the variable is instantiated
      */
-    public int getValueIfInst() {
+    public final int getValueIfInst() {
         return value;
     }
 
@@ -97,14 +97,14 @@ public class BooleanDomain extends AbstractIntDomain {
     /**
      * @return true if the boolean is instantiated
      */
-    public boolean isInstantiated() {
+    public final boolean isInstantiated() {
         return !notInstanciated.contain(offset);
     }
 
     /**
      * Returns the minimal present value.
      */
-    public int getInf() {
+    public final int getInf() {
         if (!notInstanciated.contain(offset)) {
             return getValueIfInst();
         }
@@ -115,7 +115,7 @@ public class BooleanDomain extends AbstractIntDomain {
     /**
      * Returns the maximal present value.
      */
-    public int getSup() {
+    public final int getSup() {
         if (!notInstanciated.contain(offset)) {
             return getValueIfInst();
         }
@@ -167,7 +167,7 @@ public class BooleanDomain extends AbstractIntDomain {
      * Removes all the value but the specified one.
      */
 
-    public void restrict(int x) {
+    public final void restrict(int x) {
         notInstanciated.remove(offset);
         value = x;
     }
@@ -176,7 +176,7 @@ public class BooleanDomain extends AbstractIntDomain {
      * Returns the current size of the domain.
      */
 
-    public int getSize() {
+    public final int getSize() {
         return (notInstanciated.contain(offset)?2:1);
     }
 
@@ -241,7 +241,7 @@ public class BooleanDomain extends AbstractIntDomain {
      * Returns the value preceding <code>x</code>
      */
 
-    public int getPrevValue(int x) {
+    public final int getPrevValue(int x) {
         if(x > getSup())return getSup();
         if(x > getInf())return getInf();
         return Integer.MIN_VALUE;
@@ -252,7 +252,7 @@ public class BooleanDomain extends AbstractIntDomain {
      * Checks if the value has a following value.
      */
 
-    public boolean hasNextValue(int x) {
+    public final boolean hasNextValue(int x) {
         return (x < getSup());
     }
 
@@ -261,7 +261,7 @@ public class BooleanDomain extends AbstractIntDomain {
      * Checks if the value has a preceding value.
      */
 
-    public boolean hasPrevValue(int x) {
+    public final boolean hasPrevValue(int x) {
         return (x > getInf());
     }
 
@@ -270,7 +270,7 @@ public class BooleanDomain extends AbstractIntDomain {
      * Returns a value randomly choosed in the domain.
      */
 
-    public int getRandomValue() {
+    public final int getRandomValue() {
         if (!notInstanciated.contain(offset)) {
             return getValueIfInst();
         } else {
@@ -402,7 +402,7 @@ public class BooleanDomain extends AbstractIntDomain {
      * @throws ContradictionException contradiction exception
      */
 
-    public boolean removeVal(int x, int idx) throws ContradictionException {
+    public final boolean removeVal(int x, int idx) throws ContradictionException {
         if (_removeVal(x, idx)) {
             solver.getPropagationEngine().postInstInt(variable, idx);
             return true;
@@ -421,7 +421,7 @@ public class BooleanDomain extends AbstractIntDomain {
      * @throws ContradictionException contradiction exception
      */
 
-    public boolean instantiate(int x, int idx) throws ContradictionException {
+    public final boolean instantiate(int x, int idx) throws ContradictionException {
         if (_instantiate(x, idx)) {
             solver.getPropagationEngine().postInstInt(variable, idx);
             return true;
@@ -429,7 +429,7 @@ public class BooleanDomain extends AbstractIntDomain {
             return false;
     }
 
-    public void failOnIndex(int idx) throws ContradictionException {
+    private final void failOnIndex(int idx) throws ContradictionException {
         if (idx == -1)
             this.getSolver().getPropagationEngine().raiseContradiction(this.variable, ContradictionException.VARIABLE);
         else
@@ -447,7 +447,7 @@ public class BooleanDomain extends AbstractIntDomain {
      *          contradiction exception
      */
     @Override
-       protected boolean _instantiate(int x, int idx) throws ContradictionException {
+       protected final boolean _instantiate(int x, int idx) throws ContradictionException {
         if (!notInstanciated.contain(offset)) {
             if (value != x) {
                 failOnIndex(idx);
@@ -475,7 +475,7 @@ public class BooleanDomain extends AbstractIntDomain {
      *          contradiction exception
      */
     @Override
-    protected boolean _updateInf(int x, int idx) throws ContradictionException {
+    protected final boolean _updateInf(int x, int idx) throws ContradictionException {
         if (isInstantiated()) {
            if (getValueIfInst() < x) {
             failOnIndex(idx);
@@ -504,7 +504,7 @@ public class BooleanDomain extends AbstractIntDomain {
       *          contradiction exception
       */
      @Override
-     protected boolean _updateSup(int x, int idx) throws ContradictionException {
+     protected final boolean _updateSup(int x, int idx) throws ContradictionException {
          if (isInstantiated()) {
             if (getValueIfInst() > x) {
              failOnIndex(idx);
@@ -534,7 +534,7 @@ public class BooleanDomain extends AbstractIntDomain {
       *          contradiction excpetion
       */
      @Override
-     protected boolean _removeVal(int x, int idx) throws ContradictionException {
+     protected final boolean _removeVal(int x, int idx) throws ContradictionException {
         if (isInstantiated()) {
             if (getValueIfInst() == x) {
              failOnIndex(idx);
@@ -556,11 +556,11 @@ public class BooleanDomain extends AbstractIntDomain {
          return false;
      }
 
-     public StoredIndexedBipartiteSet getStoredList() {
+     public final StoredIndexedBipartiteSet getStoredList() {
          return notInstanciated;
      }
 
-     public int getOffset() {
+     public final int getOffset() {
          return offset;
      }
 }

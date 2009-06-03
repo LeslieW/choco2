@@ -39,6 +39,8 @@ import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.memory.recomputation.EnvironmentRecomputation;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solution;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 
 import java.text.MessageFormat;
 
@@ -87,7 +89,7 @@ public class Queen extends PatternExample {
 	@Override
 	public void solve() {
 		_s.solve();
-	}
+    }
 
 	@Override
 	public void prettyOut() {

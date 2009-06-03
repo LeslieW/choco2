@@ -71,28 +71,6 @@ public class ChocoFactory {
 	}
 
 
-//	/**
-//	 * @return Restart Search loop
-//	 */
-//	public SearchLoopWithRestart getSearchLoopWithRestart(CPSolver s) {
-//		s.getSearchStrategy().limits.add(new FailLimit(s.getSearchStrategy(), Integer.MAX_VALUE));
-//		return new SearchLoopWithRestart(s.getSearchStrategy(),
-//				new SearchLoopWithRestart.RestartStrategy() {
-//					int failLimit = Math.min(Math.max(s.getNbIntVars(), 200), 400);
-//					double mult = 1.4d;
-//
-//					public boolean shouldRestart(AbstractGlobalSearchStrategy search) {
-//						boolean shouldRestart = ((search.limits.get(2)).getNb() >= failLimit);
-//						if (shouldRestart) {
-//							failLimit *= mult;
-//						}
-//						return shouldRestart;
-//					}
-//				});
-//	}
-
-
-
 //******************************************************************//
 //***************** Factories **************************************//
 //******************************************************************//
