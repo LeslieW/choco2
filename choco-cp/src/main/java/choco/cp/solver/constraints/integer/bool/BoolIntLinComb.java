@@ -176,22 +176,22 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 	public class SimpleRightMemberBounds extends RightMemberBounds {
 
 		@Override
-		public int getInfRight() {
+		public final int getInfRight() {
 			return varCste.getInf();
 		}
 
 		@Override
-		public int getSupRight() {
+		public final int getSupRight() {
 			return varCste.getSup();
 		}
 
 		@Override
-		public int getNewInfForObj() {
+		public final int getNewInfForObj() {
 			return lb.get();
 		}
 
 		@Override
-		public int getNewSupForObj() {
+		public final int getNewSupForObj() {
 			return ub.get();
 		}
 
@@ -212,7 +212,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 	 * ********************************************************************
 	 */
 
-	public void updateUbLbOnInst(int idx, int i) {
+	public final void updateUbLbOnInst(int idx, int i) {
 		if (sCoeffs[idx] < 0) {
 			if (i == 1) {
 				ub.add(sCoeffs[idx]);
@@ -228,7 +228,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 		}
 	}
 
-	public void lookForNewMaxPosCoeff() {
+	public final void lookForNewMaxPosCoeff() {
 		int i = maxPosCoeff.get() - 1;
 		while (i >= nbNegCoef && vars[i].isInstantiated()) {
 			i--;
@@ -236,7 +236,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 		maxPosCoeff.set(i);
 	}
 
-	public void lookForNewMaxNegCoeff() {
+	public final void lookForNewMaxNegCoeff() {
 		int i = maxNegCoeff.get() + 1;
 		while (i < nbNegCoef && vars[i].isInstantiated()) {
 			i++;
@@ -246,25 +246,23 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 
 	/************************************************************************/
 	/************** Main methods for filtering ******************************/
-	/**
-	 * ********************************************************************
-	 */
+	/************************************************************************/
 
-	public boolean updateForGEQ() throws ContradictionException {
+	public final boolean updateForGEQ() throws ContradictionException {
 		boolean change = false;
 		change |= filterPosCoeffUb();
 		change |= filterNegCoeffUb();
 		return change;
 	}
 
-	public boolean updateForLEQ() throws ContradictionException {
+	public final boolean updateForLEQ() throws ContradictionException {
 		boolean change = false;
 		change |= filterPosCoeffLb();
 		change |= filterNegCoeffLb();
 		return change;
 	}
 
-	public void fixPointOnEQ() throws ContradictionException {
+	public final void fixPointOnEQ() throws ContradictionException {
 		boolean fixpoint = true;
 		while (fixpoint) {
 			fixpoint = false;
@@ -277,9 +275,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 
 	/* ***********************************************************************/
 	/* ************* filtering based on the upperbound of the expression *****/
-	/*
-	 * ********************************************************************
-	 */
+	/* ***********************************************************************/
 
 	public boolean filterNegCoeffUb() throws ContradictionException {
 		boolean change = false;
@@ -325,11 +321,9 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 
 	/************************************************************************/
 	/************** filtering based on the lower bound of the expression ****/
-	/**
-	 * ********************************************************************
-	 */
+	/************************************************************************/
 
-	public boolean filterPosCoeffLb() throws ContradictionException {
+	public final boolean filterPosCoeffLb() throws ContradictionException {
 		boolean change = false;
 		int cpt = maxPosCoeff.get();
 		while (cpt >= nbNegCoef && vars[cpt].isInstantiated()) {
@@ -352,7 +346,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 	/**
 	 * enforce variables that would otherwise make the upper bound unreachable
 	 */
-	public boolean filterNegCoeffLb() throws ContradictionException {
+	public final boolean filterNegCoeffLb() throws ContradictionException {
 		boolean change = false;
 		int cpt = maxNegCoeff.get();
 		while (cpt < nbNegCoef && vars[cpt].isInstantiated()) {
@@ -374,9 +368,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 
 	/************************************************************************/
 	/************** React on event of the constraint ************************/
-	/**
-	 * ********************************************************************
-	 */
+	/************************************************************************/
 
 
 	@Override
@@ -566,7 +558,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 		updateForLEQ();
 	}
 
-	public void initUb() {
+	public final void initUb() {
 		int upb = addcste;
 		for (int i = 0; i < sCoeffs.length; i++) {
 			if (sCoeffs[i] > 0) {
@@ -576,7 +568,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 		ub.set(upb);
 	}
 
-	public void initlb() {
+	public final void initlb() {
 		int lpb = addcste;
 		for (int i = 0; i < sCoeffs.length; i++) {
 			if (sCoeffs[i] < 0) {
@@ -781,7 +773,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 	 *
 	 * @return the new upper bound value
 	 */
-	protected int computeUbFromScratch() {
+	protected final int computeUbFromScratch() {
 		int s = addcste;
 		int i;
 		for (i = 0; i < nbNegCoef; i++) {
@@ -798,7 +790,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 	 *
 	 * @return the new lower bound value
 	 */
-	protected int computeLbFromScratch() {
+	protected final int computeLbFromScratch() {
 		int s = addcste;
 		int i;
 		for (i = 0; i < nbNegCoef; i++) {

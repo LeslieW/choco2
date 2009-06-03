@@ -31,7 +31,7 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      * Checks if the variable is instantiated to a specific value.
      */
 
-    public boolean isInstantiatedTo(int x) {
+    public final boolean isInstantiatedTo(final int x) {
       if (booldomain.isInstantiated()) {
         return x == booldomain.getValueIfInst();
       }
@@ -51,7 +51,7 @@ public class BooleanVarImpl extends IntDomainVarImpl {
     /**
      * Checks if a value is still in the domain.
      */
-    public boolean canBeInstantiatedTo(int x) {
+    public final boolean canBeInstantiatedTo(int x) {
         if (booldomain.isInstantiated()) {
             return x == booldomain.getValueIfInst();
         }
@@ -63,7 +63,7 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      * Checks if a value is still in the domain assuming that x
      * is 0 or 1
      */
-    public boolean fastCanBeInstantiatedTo(int x) {
+    public final boolean fastCanBeInstantiatedTo(int x) {
         if (booldomain.isInstantiated()) {
             return x == booldomain.getValueIfInst();
         }
@@ -81,14 +81,14 @@ public class BooleanVarImpl extends IntDomainVarImpl {
     /**
      * Gets the domain size.
      */
-    public int getDomainSize() {
+    public final int getDomainSize() {
       return booldomain.getSize();
     }
 
     /**
      * Checks if it can be equals to another variable.
      */
-    public boolean canBeEqualTo(IntDomainVar x) {
+    public final boolean canBeEqualTo(IntDomainVar x) {
       if (booldomain.isInstantiated()) {
           return x.canBeInstantiatedTo(booldomain.getValueIfInst());
       } else {
@@ -96,7 +96,7 @@ public class BooleanVarImpl extends IntDomainVarImpl {
       }
     }
 
-    public IntDomain getDomain() {
+    public final IntDomain getDomain() {
         return booldomain;    //To change body of overridden methods use File | Settings | File Templates.
     }
 
@@ -107,7 +107,7 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      * @param sortedValList The value array.
      * @param nVals         The number of interesting value in this array.
      */
-    public boolean canBeInstantiatedIn(int[] sortedValList, int nVals) {
+    public final boolean canBeInstantiatedIn(final int[] sortedValList, int nVals) {
         if (getInf() <= sortedValList[nVals - 1]) {
             if (getSup() >= sortedValList[0]) {
                 if (booldomain.isInstantiated()) {
@@ -144,7 +144,7 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      * Gets the next value in the domain.
      */
 
-    public int getNextDomainValue(int currentv) {
+    public final int getNextDomainValue(int currentv) {
         return booldomain.getNextValue(currentv);
     }
 
@@ -153,7 +153,7 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      * Gets the previous value in the domain.
      */
 
-    public int getPrevDomainValue(int currentv) {
+    public final int getPrevDomainValue(int currentv) {
     	return booldomain.getPrevValue(currentv);
     }
 
@@ -243,7 +243,7 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      *            variable) responsible for the update
      */
 
-    public boolean instantiate(int x, int idx) throws ContradictionException {
+    public final boolean instantiate(int x, int idx) throws ContradictionException {
     	//logOnInst(x);
     	return booldomain.instantiate(x, idx);
     }
@@ -253,7 +253,7 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      * Gets the minimal value of the variable.
      */
 
-    public int getInf() {
+    public final int getInf() {
         if (booldomain.isInstantiated())
             return booldomain.getValueIfInst();
         else return 0;
@@ -264,7 +264,7 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      * Gets the maximal value of the variable.
      */
 
-    public int getSup() {
+    public final int getSup() {
         if (booldomain.isInstantiated())
             return booldomain.getValueIfInst();
         else return 1;
@@ -275,14 +275,14 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      * Gets the value of the variable if instantiated.
      */
 
-    public int getVal() {
+    public final int getVal() {
       return booldomain.getValueIfInst();
     }
 
     /**
      * @deprecated replaced by getVal
      */
-    public int getValue() {
+    public final int getValue() {
       return booldomain.getValueIfInst();
     }
 

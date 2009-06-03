@@ -30,6 +30,7 @@ import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.cp.solver.variables.integer.IntVarEvent;
 
 public class Occurrence extends AbstractLargeIntSConstraint {
     /**
@@ -49,6 +50,7 @@ public class Occurrence extends AbstractLargeIntSConstraint {
     //initial domain.
     public IntDomainVar[] relevantVar;
 
+    public int nbListVars;
     /**
      * Constructor,
      * API: should be used through the Model.createOccurrence API
@@ -77,7 +79,7 @@ public class Occurrence extends AbstractLargeIntSConstraint {
         this.cste = occval;
         this.constrainOnInfNumber = onInf;
         this.constrainOnSupNumber = onSup;
-
+        this.nbListVars = vars.length - 1;
         IEnvironment envi = vars[0].getSolver().getEnvironment();
         this.solver = vars[0].getSolver();
         nbPossible = envi.makeInt(0);
@@ -99,29 +101,32 @@ public class Occurrence extends AbstractLargeIntSConstraint {
         }
     }
 
+   public int getFilteredEventMask(int idx) {
+       if (idx == vars.length - 1)
+            return IntVarEvent.BOUNDSbitvector;
+       else return IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
+    }
+
   public void awakeOnInf(int idx) throws ContradictionException {
-    int nbVars = vars.length - 1;
-    if (idx == nbVars)
+      //assumption : we only get the bounds events on the occurrence variable
       checkNbPossible();
   }
 
   public void awakeOnSup(int idx) throws ContradictionException {
-      int nbVars = vars.length - 1;
-      if (idx == nbVars)
-        checkNbSure();
+      //assumption : we only get the bounds events on the occurrence variable
+      checkNbSure();
   }
 
     public void awakeOnInst(int idx) throws ContradictionException {
-        int nbVars = vars.length - 1;
-        if (idx < nbVars && vars[idx].getVal() == cste) {
+        //assumption : we only get the inst events on all variables except the occurrence variable
+        if (vars[idx].getVal() == cste) {
             nbSure.add(1);
             checkNbSure();
         }
     }
 
     public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
-        int nbVars = vars.length - 1;
-        if (idx < nbVars) {
+        //assumption : we only get the inst events on all variables except the occurrence variable
             while (deltaDomain.hasNext()) {
                 int x = deltaDomain.next();
                 if (x == cste) {
@@ -129,7 +134,6 @@ public class Occurrence extends AbstractLargeIntSConstraint {
                 }
             }
             checkNbPossible();
-        }
     }
 
     public boolean isSatisfied(int[] tuple) {
@@ -148,10 +152,9 @@ public class Occurrence extends AbstractLargeIntSConstraint {
 
 
     public void checkNbPossible() throws ContradictionException {
-        int nbVars = vars.length - 1;
         if (constrainOnInfNumber) {
-            vars[nbVars].updateSup(nbPossible.get(), cIndices[nbVars]);
-            if (vars[nbVars].getInf() == nbPossible.get()) {
+            vars[nbListVars].updateSup(nbPossible.get(), cIndices[nbListVars]);
+            if (vars[nbListVars].getInf() == nbPossible.get()) {
                 for (IntDomainVar aRelevantVar : relevantVar) {
                     if (aRelevantVar.getDomain().contains(cste) && !aRelevantVar.isInstantiated()) {
                         //nbSure.add(1); // must be dealed by the event listener not here !!
@@ -163,10 +166,9 @@ public class Occurrence extends AbstractLargeIntSConstraint {
     }
 
     public void checkNbSure() throws ContradictionException {
-        int nbVars = vars.length - 1;
         if (constrainOnSupNumber) {
-            vars[nbVars].updateInf(nbSure.get(), cIndices[nbVars]);
-            if (vars[nbVars].getSup() == nbSure.get()) {
+            vars[nbListVars].updateInf(nbSure.get(), cIndices[nbListVars]);
+            if (vars[nbListVars].getSup() == nbSure.get()) {
                 for (IntDomainVar aRelevantVar : relevantVar) {
                     if (aRelevantVar.getDomain().contains(cste) && !aRelevantVar.isInstantiated()) {
                         //nbPossible.add(-1);
@@ -183,9 +185,8 @@ public class Occurrence extends AbstractLargeIntSConstraint {
     }
 
     public void propagate() throws ContradictionException {
-        int nbVars = vars.length - 1;
         int nbSure = 0, nbPossible = 0;
-        for (int i = 0; i < (nbVars); i++) {
+        for (int i = 0; i < (nbListVars); i++) {
             if (vars[i].canBeInstantiatedTo(cste)) {
                 nbPossible++;
                 if (vars[i].isInstantiatedTo(cste)) {
@@ -201,11 +202,10 @@ public class Occurrence extends AbstractLargeIntSConstraint {
     }
 
     public void awake() throws ContradictionException {
-        int nbVars = vars.length;
         nbSure.set(0);
         nbPossible.set(0);
         int cpt = 0;
-        for (int i = 0; i < (nbVars - 1); i++) {
+        for (int i = 0; i < nbListVars; i++) {
             if (vars[i].canBeInstantiatedTo(cste)) {
                 nbPossible.add(1);
                 cpt++;
@@ -216,19 +216,18 @@ public class Occurrence extends AbstractLargeIntSConstraint {
         }
         relevantVar = new IntDomainVar[cpt];
         cpt = 0;
-        for (int i = 0; i < (nbVars - 1); i++) {
+        for (int i = 0; i < nbListVars; i++) {
             if (vars[i].canBeInstantiatedTo(cste)) {
                 relevantVar[cpt] = vars[i];            
                 cpt++;
             }
         }
-        if (constrainOnInfNumber) vars[nbVars - 1].updateSup(nbVars - 1, cIndices[nbVars - 1]);
-        if (constrainOnSupNumber) vars[nbVars - 1].updateInf(0, cIndices[nbVars - 1]);
+        if (constrainOnInfNumber) vars[nbListVars].updateSup(nbListVars, cIndices[nbListVars]);
+        if (constrainOnSupNumber) vars[nbListVars].updateInf(0, cIndices[nbListVars]);
         filter();
     }
 
     public Boolean isEntailed() {
-        int nbVars = vars.length - 1;
         int nbPos = 0;
         int nbSur = 0;
         for (int i = 0; i < relevantVar.length; i++) {
@@ -239,23 +238,23 @@ public class Occurrence extends AbstractLargeIntSConstraint {
             }
         }
         if (constrainOnInfNumber & constrainOnSupNumber) {
-          if (vars[nbVars].isInstantiated()) {
-             if (nbPos == nbSur && nbPos == vars[nbVars].getVal())
+          if (vars[nbListVars].isInstantiated()) {
+             if (nbPos == nbSur && nbPos == vars[nbListVars].getVal())
                 return Boolean.TRUE;
           } else {
-              if (nbPos < vars[nbVars].getInf() ||
-                  nbSur > vars[nbVars].getSup())
+              if (nbPos < vars[nbListVars].getInf() ||
+                  nbSur > vars[nbListVars].getSup())
                 return Boolean.FALSE;
           }
         } else if (constrainOnInfNumber) {
-           if (nbPos >= vars[nbVars].getSup())
+           if (nbPos >= vars[nbListVars].getSup())
             return Boolean.TRUE;
-           if (nbPos < vars[nbVars].getInf())
+           if (nbPos < vars[nbListVars].getInf())
             return Boolean.FALSE;
         } else {
-            if (nbPos <= vars[nbVars].getInf())
+            if (nbPos <= vars[nbListVars].getInf())
              return Boolean.TRUE;
-            if (nbPos > vars[nbVars].getSup())
+            if (nbPos > vars[nbListVars].getSup())
              return Boolean.FALSE;
         }
         return null;

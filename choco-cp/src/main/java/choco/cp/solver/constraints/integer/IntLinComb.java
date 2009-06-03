@@ -315,7 +315,7 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
 	 * The fix point is reached individually for each rule in one function call
 	 * but this call may break the stability condition for the other rule
 	 * (in which case the second rule infers new information from the fresh
-	 * inferences made by the first rule).
+	 * inferences made by the first rule) .
 	 * The algorithm oscilates between both rules until
 	 * a global fix point is reached.
 	 * @param startWithLB whether LB must be the first rule applied
