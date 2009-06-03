@@ -24,13 +24,18 @@ package choco.cp.model.managers.constraints.expressions;
 
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.constraints.reified.leaves.bool.NotNode;
+import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
+import choco.cp.solver.CPSolver;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.MetaConstraint;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
+import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.reified.INode;
+import choco.Choco;
 
 import java.util.HashSet;
 
@@ -50,6 +55,21 @@ public class NotManager extends IntConstraintManager {
      * @return
      */
     public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+        if(solver instanceof CPSolver){
+            Constraint[] constraints = (Constraint[])((Object[])parameters)[1];
+            if(constraints.length == 1){
+                Constraint c = constraints[0];
+                boolean decomp = false;
+                if (c.getOptions().contains("cp:decomp")) {
+                    decomp = true;
+                }
+                SConstraint[] ct = ((CPSolver)solver).makeSConstraintAndOpposite(c, decomp);
+                return ct[1];
+            }
+        }
+        if (Choco.DEBUG) {
+            throw new RuntimeException("Could not found an implementation of Not !");
+        }
         return null;
     }
 

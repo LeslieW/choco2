@@ -24,9 +24,11 @@ package choco.cp.model.managers;
 
 import choco.kernel.model.constraints.ConstraintManager;
 import choco.kernel.model.variables.VariableType;
+import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.real.RealExpressionVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.real.RealExp;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.real.RealVar;
 
 import java.util.HashSet;
@@ -68,5 +70,21 @@ public abstract class RealConstraintManager implements ConstraintManager {
             return ((RealConstraintManager)rev.getRcm()).makeRealExpression(s, rev.getVariables());
         }
         return null;
+    }
+
+    /**
+     * Build a constraint and its opposite for the given solver and "model variables"
+     *
+     * @param solver
+     * @param variables
+     * @param parameters
+     * @param options
+     * @return array of 2 SConstraint object, the constraint and its opposite
+     */
+    @Override
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+        SConstraint c = makeConstraint(solver, variables, parameters, options);
+        SConstraint opp = c.opposite();
+        return new SConstraint[]{c, opp};
     }
 }

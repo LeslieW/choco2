@@ -34,7 +34,8 @@ public enum Limit {
     TIME("limit.time","millis."),
     FAIL("limit.fail","fails"),
     BACKTRACK("limit.backtrack","backtracks"),
-    CPU_TIME("limit.cputime","millis. (cpu time)");
+    CPU_TIME("limit.cputime","millis. (cpu time)"),
+    SOLUTION("limit.solution", "first solutions");
 
     private final String property;
 

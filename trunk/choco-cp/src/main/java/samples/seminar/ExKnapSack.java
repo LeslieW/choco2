@@ -113,6 +113,7 @@ public class ExKnapSack {
         knapsacOPT();
         long t4 = System.currentTimeMillis();
         LOGGER.info("time : "+ (t4-t3));
+        ChocoLogging.flushLogs();
     }
 
 }

@@ -124,6 +124,22 @@ public class StrongConsistencyManager implements ConstraintManager {
         }
     }
 
+    /**
+     * Build a constraint and its opposite for the given solver and "model variables"
+     *
+     * @param solver
+     * @param variables
+     * @param parameters
+     * @param options
+     * @return array of 2 SConstraint object, the constraint and its opposite
+     */
+    @Override
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+        SConstraint c = makeConstraint(solver, variables, parameters, options);
+        SConstraint opp = c.opposite();
+        return new SConstraint[]{c, opp};
+    }
+
     protected ExpressionSConstraint createMetaConstraint(Constraint ic,
             Solver cpsolver) {
         ExpressionSConstraint c = new ExpressionSConstraint(buildBoolNode(ic,

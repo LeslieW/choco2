@@ -533,6 +533,14 @@ public class CPSolver implements Solver {
 		return mod2sol.makeSConstraint(mc, b);
 	}
 
+    public SConstraint[] makeSConstraintAndOpposite(Constraint mc) {
+		return mod2sol.makeSConstraintAndOpposite(mc);
+	}
+
+	public SConstraint[] makeSConstraintAndOpposite(Constraint mc, boolean b) {
+		return mod2sol.makeSConstraintAndOpposite(mc, b);
+	}
+
 	public void addConstraint(Constraint... tabic) {
 		Constraint ic;
 		for (int i = 0; i < tabic.length; i++) {

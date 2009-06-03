@@ -28,8 +28,9 @@ import static choco.kernel.common.util.UtilAlgo.toArray;
 import static choco.kernel.common.util.UtilAlgo.toList;
 import choco.kernel.model.variables.Variable;
 
-import java.util.ArrayList;
-import java.util.Properties;
+import java.util.*;
+
+import org.apache.commons.lang.ArrayUtils;
 
 /*
 * User : charles
@@ -46,22 +47,22 @@ public class ComponentConstraintWithSubConstraints extends ComponentConstraint{
     public ComponentConstraintWithSubConstraints(ConstraintType constraintType, Variable[] variables,
                                                  Object params, Constraint... constraints) {
         super(constraintType, params, variables);
-        this.constraints = toList(constraints);
-        this.listVars = new ArrayList(toList(variables));
+        this.constraints = new ArrayList<Constraint>(toList(constraints));
+        this.listVars = new ArrayList<Variable>(toList(variables));
     }
 
     public ComponentConstraintWithSubConstraints(String componentClassName, Variable[] variables,
                                                  Object params, Constraint... constraints) {
         super(componentClassName, appendParameters(params, constraints), variables);
-        this.constraints = toList(constraints);
-        this.listVars = new ArrayList(toList(variables));
+        this.constraints = new ArrayList<Constraint>(toList(constraints));
+        this.listVars = new ArrayList<Variable>(toList(variables));
     }
 
     public ComponentConstraintWithSubConstraints(Class componentClass, Variable[] variables,
                                                  Object params, Constraint... constraints) {
         super(componentClass, appendParameters(params, constraints), variables);
-        this.constraints = toList(constraints);
-        this.listVars = new ArrayList(toList(variables));
+        this.constraints = new ArrayList<Constraint>(toList(constraints));
+        this.listVars = new ArrayList<Variable>(toList(variables));
     }
 
     public <V extends Variable> void addElements(V[] vars, Constraint[] cstrs){
