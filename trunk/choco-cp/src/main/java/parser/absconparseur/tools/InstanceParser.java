@@ -212,7 +212,7 @@ public class InstanceParser {
 		mapOfDomains = new HashMap<String, PDomain>();
 		nbDomains = Integer.parseInt(domainsElement.getAttribute(InstanceTokens.NB_DOMAINS));
 		if (displayInstance)
-			LOGGER.info("=> " + nbDomains + " domains");
+			LOGGER.log(Level.INFO, "=> {0} domains",nbDomains);
 
 		NodeList nodeList = domainsElement.getElementsByTagName(InstanceTokens.DOMAIN);
 		for (int i = 0; i < nodeList.getLength(); i++) {

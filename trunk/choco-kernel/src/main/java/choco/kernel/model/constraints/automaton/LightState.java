@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  */
 public class LightState implements IndexedObject {
 
-    protected final static Logger LOGGER = ChocoLogging.getKernelLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     // Identifier of the state
     protected int idx;

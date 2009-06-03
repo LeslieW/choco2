@@ -124,6 +124,7 @@ public class SearchLoopWithRestart extends SearchLoop {
 			while (!stop) {
 				if ( checkRestartMoveMask(searchStrategy.nextMove) && 
 						restartStrategy.shouldRestart(searchStrategy)) {
+					LOGGER.finest("=== restarting ...");
 					stop = restart(ctx);
 					if (!stop) {
 						restartLimit = true;

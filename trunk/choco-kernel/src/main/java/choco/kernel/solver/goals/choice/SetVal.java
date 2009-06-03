@@ -23,14 +23,14 @@
 package choco.kernel.solver.goals.choice;
 
 
+import java.util.logging.Level;
+
+import choco.kernel.common.logging.WorldFormatter;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.AbstractBranching;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -40,29 +40,28 @@ import java.util.logging.Logger;
  * To change this template use File | Settings | File Templates.
  */
 public class SetVal implements Goal {
- 
 
-  protected IntDomainVar var;
-  protected int val;
 
-  public SetVal(IntDomainVar var, int val) {
-    this.var = var;
-    this.val = val;
-  }
+	protected IntDomainVar var;
+	protected int val;
 
-  public String pretty() {
-    return var.pretty() + " <= " + val;
-  }
+	public SetVal(IntDomainVar var, int val) {
+		this.var = var;
+		this.val = val;
+	}
 
-  public Goal execute(Solver s) throws ContradictionException {
-    if (LOGGER.isLoggable(Level.FINE)) {
-			int n = s.getEnvironment().getWorldIndex();
-			if (n <= s.getSearchStrategy().getLoggingMaxDepth()) {
-				LOGGER.log(Level.FINE, AbstractBranching.LOG_DOWN_MSG,
-						new Object[]{new Integer(n), var, " == ", new Integer(val)});
+	public String pretty() {
+		return var.pretty() + " <= " + val;
+	}
+
+	public Goal execute(Solver s) throws ContradictionException {
+		if (LOGGER.isLoggable(Level.INFO)) {
+			final WorldFormatter wl = new WorldFormatter(s);
+			if ( wl.isLoggable(s)) {
+				LOGGER.log(Level.INFO, "{0} {1} {2} {3} {4}", new Object[]{wl, AbstractBranching.LOG_DOWN_MSG, var, " == ", val});
 			}
 		}
-    var.setVal(val);
-    return null;
-  }
+		var.setVal(val);
+		return null;
+	}
 }

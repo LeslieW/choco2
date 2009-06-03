@@ -82,7 +82,7 @@ public abstract class Evaluator {
 					associativeSet.add(evaluatorToken);
 
 			} catch (Exception e) {
-				LOGGER.info(MessageFormat.format("{0}", e));
+				LOGGER.log(Level.SEVERE,"fatal error", e);
 				System.exit(1);
 			}
 			// LOGGER.info("evaluatorToken = " + evaluatorToken + " arity = " + arity);
@@ -137,10 +137,10 @@ public abstract class Evaluator {
 
 	public static void displayStack() {
 		if(LOGGER.isLoggable(Level.INFO)) {
-			String s = "";
+			StringBuilder s = new StringBuilder();
 			for (int i = 0; i <= top; i++)
-				s += stack[i] + " ";
-			LOGGER.info(s);
+				s.append(stack[i]).append(" ");
+			LOGGER.info(new String(s));
 		}
 	}
 

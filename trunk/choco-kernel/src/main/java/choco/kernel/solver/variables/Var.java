@@ -49,7 +49,7 @@ public interface Var extends IPretty, IIndex {
 	/**
 	 * Reference to an object for logging trace statements related to IntDomainVar (using the java.util.logging package)
 	 */
-	public final static Logger LOGGER = ChocoLogging.getPropagationLogger();
+	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	/**
 	 * Retrieves the model of the entity.

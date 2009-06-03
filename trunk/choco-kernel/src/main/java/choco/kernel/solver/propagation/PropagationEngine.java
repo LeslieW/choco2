@@ -37,7 +37,7 @@ import choco.kernel.solver.variables.set.SetVar;
  */
 public interface PropagationEngine {
 
-	public final static Logger LOGGER = ChocoLogging.getPropagationLogger();
+	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	/**
 	 * Raising a contradiction with a cause.

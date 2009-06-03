@@ -37,7 +37,7 @@ public interface EventQueue {
 	/**
 	 * Reference to the root Logger, an object for logging trace statements related to propagation events (using the java.util.logging package)
 	 */
-	public final static Logger LOGGER = ChocoLogging.getPropagationLogger();
+	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	/**
 	 * Checks if the queue is empty.

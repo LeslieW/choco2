@@ -22,18 +22,19 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.absconparseur.tools;
 
-import choco.kernel.common.logging.ChocoLogging;
-import parser.absconparseur.InstanceTokens;
-import parser.absconparseur.components.PConstraint;
-import parser.absconparseur.components.PVariable;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import parser.absconparseur.InstanceTokens;
+import parser.absconparseur.components.PConstraint;
+import parser.absconparseur.components.PVariable;
+import choco.kernel.common.logging.ChocoLogging;
 
 /**
  * @author christophe lecoutre
@@ -163,7 +164,7 @@ public class SolutionChecker {
 
 		int invalidPosition = isSolutionValid(solution);
 		if (invalidPosition != -1) {
-			LOGGER.info("ERROR \t The given solution is not valid as the " + invalidPosition + "th value of the solution is not present in the domain of the associated variable");
+			LOGGER.log(Level.SEVERE,"ERROR \t The given solution is not valid as the {0}th value of the solution is not present in the domain of the associated variable",invalidPosition);
 			System.exit(1);
 		}
 
@@ -187,7 +188,7 @@ public class SolutionChecker {
 		String s1 = "\t nbVariables " + parser.getVariables().length + "  nbConstraints " + parser.getMapOfConstraints().size();
 		String s2 = "\t maxConstraintArity " + parser.getMaxConstraintArity() + "  nbExtensionConstraints " + parser.getNbExtensionConstraints() + "  nbIntensionConstraints "
 				+ parser.getNbIntensionConstraints() + "  nbGlobalConstraints " + parser.getNbGlobalConstraints();
-		LOGGER.info(s0 + s1 + s2);
+		LOGGER.log(Level.INFO, "{0} {1} {2}",new Object[]{s0, s1, s2});
 		System.exit(0);
 	}
 

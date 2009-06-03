@@ -38,7 +38,7 @@ import choco.kernel.common.logging.ChocoLogging;
  */
 public class PriorityQueue {
   
-	protected final static Logger LOGGER = ChocoLogging.getKernelLogger();
+	protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
   /**
    * The number of available priority levels.

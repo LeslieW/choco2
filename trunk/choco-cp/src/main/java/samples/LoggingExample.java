@@ -20,42 +20,29 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.common.logging;
+package samples;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import samples.Examples.Queen;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
+
+public final class LoggingExample  {
 
 
-
-/**
- * This enum defines choco verbosity level.
- * @author Arnaud Malapert</br> 
- * @since 16 avr. 2009 version 2.1.0</br>
- * @version 2.1.0</br>
- */
-public enum Verbosity {
-	
-	/** disable logging*/
-	OFF(Integer.MIN_VALUE),
-	/** display only severe messages*/
-	SILENT(0), 
-	/** display warning messages and some info messages (non related to the search)*/
-	DEFAULT(50), 
-	/** display short solving logs*/
-	VERBOSE(100), 
-	/** display all solutions found*/
-	SOLUTION(200), 
-	/** display the search tree */
-	SEARCH(300) , 
-	/** display all logs*/
-	FINEST(Integer.MAX_VALUE);
-	
-	private final int levelValue;
-	
-	
-	private Verbosity(int levelValue) {
-		this.levelValue = levelValue;
+	public static void main(String[] args) {
+		for (Verbosity v : Verbosity.values()) {
+			ChocoLogging.flushLogs();
+			ChocoLogging.setVerbosity(v);
+			ChocoLogging.getSamplesLogger().log(Level.SEVERE,"verbosity: {0}",v);
+			new Queen().execute(5);
+			for (Logger logger : ChocoLogging.CHOCO_LOGGERS) {
+				final Level l = logger.getLevel();
+				logger.log(l, "{1}: {2}", new Object[]{-1, logger.getName(), l});
+			}
+		}
 	}
 
-
-	public int intValue() {
-		return levelValue;
-	}
 }

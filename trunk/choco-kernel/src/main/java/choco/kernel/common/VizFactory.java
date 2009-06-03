@@ -32,13 +32,10 @@ import java.text.MessageFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * @author Arnaud Malapert : arnaud(dot)malapert(at)emn(dot)fr
- *
- */
+
 public final class VizFactory {
 
-    protected final static Logger LOGGER = ChocoLogging.getKernelLogger();
+    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
 
 	/**
 	 * empty constructor

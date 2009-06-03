@@ -22,53 +22,56 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.common.logging;
 
-import java.util.logging.LogRecord;
-
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 
 
-
-/**
- * @author Arnaud Malapert</br> 
- * @since 16 avr. 2009 version 2.1.0</br>
- * @version 2.1.0</br>
- */
-public final class SearchFormatter extends AbstractFormatter {
+public final class WorldFormatter{
 
 	/**
 	 * prefixes for log statements (visualize search depth)
 	 */
-	private final static String[] logPrefix = { "", ".", "..", "...", "....",
+	private final static String[] LOG_PREFIX = { "", ".", "..", "...", "....",
 		".....", "......", ".......", "........", ".........", ".........." };
+	
+	
+	private final int worldIndex;
+	
+	private final int delta;
+		
+	public WorldFormatter(AbstractGlobalSearchStrategy strategy) {
+		this(strategy, 0);
+	}
+	
+	public WorldFormatter(Solver solver, int delta) {
+		this(solver.getSearchStrategy(), delta);
+	}
+	
+	public WorldFormatter(Solver solver) {
+		this(solver.getSearchStrategy(), 0);
+	}
+	
+	public WorldFormatter(AbstractGlobalSearchStrategy strategy, int delta) {
+		this.worldIndex = strategy.getSolver().getEnvironment().getWorldIndex();
+		this.delta = delta;
+	}
 
-	private final static String getLogPrefix(int n) {
-		return logPrefix[n % (logPrefix.length)];
+	public boolean isLoggable(AbstractGlobalSearchStrategy strategy) {
+		return worldIndex <= strategy.getLoggingMaxDepth();
+	}
+	
+	public boolean isLoggable(Solver solver) {
+		return isLoggable(solver.getSearchStrategy());
+	}
+
+	public int getWorldIndex() {
+		return worldIndex;
 	}
 
 	@Override
-	public synchronized String format(LogRecord record) {
-		StringBuilder sb = new StringBuilder();
-		int depth =-2;
-		if(record.getParameters() != null) {
-			if (record.getParameters()[0] instanceof Integer) {
-				depth = (Integer) record.getParameters()[0];
-			}else if(record.getParameters()[0] instanceof Solver) {
-				depth = ( (Solver) record.getParameters()[0]).getEnvironment().getWorldIndex();
-			}
-		}
-		if(depth>=0) {
-			sb.append(getLogPrefix(depth));
-			sb.append("[").append(depth).append("] ");
-		}else if(depth == -1) {
-			sb.append("=== ");
-		}else {
-			sb.append("[?] ");
-		}
-		setWarningSign(record, sb);
-		sb.append(formatMessage(record));			
-		sb.append(lineSeparator);
-		return sb.toString();
+	public String toString() {
+		final int tmp = worldIndex + delta;
+		return LOG_PREFIX[tmp % (LOG_PREFIX.length)]+"["+tmp+"]";
 	}
 }
-
 

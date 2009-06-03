@@ -22,7 +22,16 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.solver.goals;
 
-import static choco.Choco.*;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.minus;
+import static choco.Choco.neq;
+import static choco.Choco.plus;
+import static org.junit.Assert.assertTrue;
+
+import java.util.logging.Logger;
+
+import org.junit.Test;
+
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.goals.choice.Generate;
@@ -33,10 +42,6 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
-
-import java.util.logging.Logger;
 
 
 /**
@@ -46,56 +51,57 @@ import java.util.logging.Logger;
  * Time: 08:35:12
  */
 public class SearchTest {
+	
+	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
-    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+	@Test
+	public void testnode() {
+		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
+		int n1 = testNQueens(true);
+		int n2 = testNQueens(false);
+		assertTrue(n1 == n2);
+	}
 
-    @Test
-    public void testnode() {
-	   int n1 = testNQueens(true);
-	   int n2 = testNQueens(false);
-	   assertTrue(n1 == n2);
-	 }
+	//return the number of nodes needed to solve the problem
+	private int testNQueens(boolean withgoal) {
+		int NB_REINES = 8;
 
-     //return the number of nodes needed to solve the problem
-	 private int testNQueens(boolean withgoal) {
-	   int NB_REINES = 8;
-
-	   Model m = new CPModel();
+		Model m = new CPModel();
 
 
-	   IntegerVariable[] vars = new IntegerVariable[NB_REINES];
-	   for (int i = 0; i < NB_REINES; i++) {
-	     vars[i] = makeIntVar("x" + i, 0, NB_REINES - 1);
-	   }
+		IntegerVariable[] vars = new IntegerVariable[NB_REINES];
+		for (int i = 0; i < NB_REINES; i++) {
+			vars[i] = makeIntVar("x" + i, 0, NB_REINES - 1);
+		}
 
-	   for (int i = 0; i < NB_REINES; i++) {
-	     for (int j = i + 1; j < NB_REINES; j++) {
-	       m.addConstraint(neq(vars[i], vars[j]));
-	     }                                                                                             
-	   }
+		for (int i = 0; i < NB_REINES; i++) {
+			for (int j = i + 1; j < NB_REINES; j++) {
+				m.addConstraint(neq(vars[i], vars[j]));
+			}                                                                                             
+		}
 
-	   for (int i = 0; i < NB_REINES; i++) {
-	     for (int j = i + 1; j < NB_REINES; j++) {
-	       int k = j - i;
-	       m.addConstraint(neq(vars[i], plus(vars[j], k)));
-	       m.addConstraint(neq(vars[i], minus(vars[j], k)));
-	     }
-	   }
+		for (int i = 0; i < NB_REINES; i++) {
+			for (int j = i + 1; j < NB_REINES; j++) {
+				int k = j - i;
+				m.addConstraint(neq(vars[i], plus(vars[j], k)));
+				m.addConstraint(neq(vars[i], minus(vars[j], k)));
+			}
+		}
 
-        Solver s = new CPSolver();
-        s.read(m);
-         s.attachGoal(new AssignVar(new MinDomain(s), new IncreasingDomain()));
-       if (withgoal) {
-	     s.setIlogGoal(new Generate(s.getVar(vars)));
-	   }
+		Solver s = new CPSolver();
+		s.read(m);
+		s.attachGoal(new AssignVar(new MinDomain(s), new IncreasingDomain()));
+		if (withgoal) {
+			s.setIlogGoal(new Generate(s.getVar(vars)));
+		}
 
-	   s.solve();
-	   while (s.nextSolution()) {
-	   }
-	   LOGGER.info("Nb solutions = " + s.getNbSolutions());
+		s.solve();
+		while (s.nextSolution()) {
+		}
+		LOGGER.info("Nb solutions = " + s.getNbSolutions());
 
-	   s.printRuntimeSatistics();
-	   return s.getSearchStrategy().getNodeCount();
-	 }
+		s.printRuntimeSatistics();
+		return s.getSearchStrategy().getNodeCount();
+	}
 
 }

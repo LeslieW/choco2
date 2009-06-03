@@ -33,7 +33,7 @@ import choco.kernel.common.util.DisposableIntIterator;
  */
 public interface IStateIntVector {
 
-	public final static Logger LOGGER = ChocoLogging.getMemoryLogger();
+	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
   /**
    * Minimal capacity of a vector
    */

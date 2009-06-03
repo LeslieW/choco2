@@ -38,7 +38,7 @@ import java.util.logging.Logger;
 @Deprecated // see trove4j librairy
 public abstract class AbstractIntCollection implements IntCollection {
 
-    protected final static Logger LOGGER = ChocoLogging.getKernelLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     protected AbstractIntCollection() {
     }

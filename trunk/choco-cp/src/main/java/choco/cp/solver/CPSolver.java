@@ -2543,7 +2543,7 @@ public class CPSolver implements Solver {
 		case SEARCH:
 			ChocoLogging.setVerbosity(Verbosity.SEARCH);break;
 		case PROPAGATION:
-			ChocoLogging.setVerbosity(Verbosity.DEBUG);	break;
+			ChocoLogging.setVerbosity(Verbosity.FINEST);	break;
 		case FINEST:
 			ChocoLogging.setVerbosity(Verbosity.FINEST);break;
 		case SILENT:

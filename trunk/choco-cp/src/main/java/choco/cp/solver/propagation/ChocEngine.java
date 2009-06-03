@@ -450,7 +450,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 		for (int i = 0; i < nbiv; i++) {
 			IntVarEvent evt = (IntVarEvent) solver.getIntVar(i).getEvent();
 			if (!(evt.getReleased())) {
-				LOGGER.log(Level.SEVERE, "var event non released {0}", evt.toString());
+				LOGGER.log(Level.SEVERE, "var event non released {0}", evt);
 				//        new Exception().printStackTrace();
 				ok = false;
 			}
@@ -459,7 +459,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 		for (int i = 0; i < nbsv; i++) {
 			SetVarEvent evt = (SetVarEvent) solver.getSetVar(i).getEvent();
 			if (!(evt.getReleased())) {
-				LOGGER.log(Level.SEVERE, "var event non released {0}", evt.toString());
+				LOGGER.log(Level.SEVERE, "var event non released {0}", evt);
 				//        new Exception().printStackTrace();
 				ok = false;
 			}

@@ -42,7 +42,7 @@ public class BipartiteSet<E> {
    * Reference to an object for logging trace statements related to util (using the java.util.logging package)
    */
 
-  protected final static Logger LOGGER = ChocoLogging.getKernelLogger();
+  protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
   /**
    * Contains all the objects in the two parts of the set.

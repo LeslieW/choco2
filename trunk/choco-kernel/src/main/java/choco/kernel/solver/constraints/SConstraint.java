@@ -35,8 +35,7 @@ public interface SConstraint extends Cloneable,IPretty {
 	/**
 	 * Reference to an object for logging trace statements related to constraints over integers (using the java.util.logging package)
 	 */
-
-	public final static Logger LOGGER = ChocoLogging.getPropagationLogger();
+	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 
 	/**
