@@ -25,6 +25,7 @@ package choco.solver.search;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -44,14 +45,14 @@ import java.util.logging.Logger;
 // **************************************************
 
 public class OptimizeTest {
-    private Logger logger = Logger.getLogger("choco.currentElement");
+	private final static Logger LOGGER = ChocoLogging.getTestLogger();
     private Model m;
     private Solver s;
     private IntegerVariable v1, v2, v3, obj;
 
     @Before
     public void setUp() {
-        logger.fine("StoredInt Testing...");
+        LOGGER.fine("StoredInt Testing...");
         m = new CPModel();
         s = new CPSolver();
         obj = makeIntVar("objectif", -10, 1000);
@@ -78,7 +79,7 @@ public class OptimizeTest {
      */
     @Test
     public void test1() {
-        logger.finer("test1");
+        LOGGER.finer("test1");
         assertEquals(Boolean.TRUE, s.maximize(s.getVar(obj), false));
         assertTrue(s.getNbSolutions() == 32);
         assertEquals(s.getOptimumValue().intValue(), 30);
@@ -89,7 +90,7 @@ public class OptimizeTest {
      */
     @Test
     public void test2() {
-        logger.finer("test2");
+        LOGGER.finer("test2");
         assertEquals(Boolean.TRUE, s.maximize(s.getVar(obj), true));
         assertTrue(s.getNbSolutions() == 32);
         assertEquals(s.getOptimumValue().intValue(), 30);

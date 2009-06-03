@@ -34,6 +34,7 @@ import static choco.Choco.lt;
 import static choco.Choco.makeIntVar;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -46,7 +47,7 @@ import org.junit.Test;
 import java.util.logging.Logger;
 
 public class LessThanCXTest {
-  private Logger logger = Logger.getLogger("choco.currentElement");
+	private final static Logger LOGGER = ChocoLogging.getTestLogger();
   private CPModel m;
   private CPSolver s;
   private IntegerVariable x;
@@ -56,7 +57,7 @@ public class LessThanCXTest {
 
     @Before
   public void setUp() {
-    logger.fine("GreaterOrEqualXCTest Testing...");
+    LOGGER.fine("GreaterOrEqualXCTest Testing...");
     m = new CPModel();
     s = new CPSolver();
     x = makeIntVar("X", 1, 5);
@@ -78,7 +79,7 @@ public class LessThanCXTest {
 
     @Test
   public void test1() {
-    logger.finer("test1");
+    LOGGER.finer("test1");
     try {
       m.addConstraints(c1, c2);
       s.read(m);
@@ -87,7 +88,7 @@ public class LessThanCXTest {
       assertFalse(s.getVar(y).isInstantiated());
       assertEquals(1, s.getVar(x).getInf());
       assertEquals(1, s.getVar(y).getInf());
-      logger.finest("domains OK after first propagate");
+      LOGGER.finest("domains OK after first propagate");
       assertTrue(((AbstractSConstraint)s.getCstr(c1)).isConsistent());
       assertTrue(((AbstractSConstraint)s.getCstr(c2)).isConsistent());
     } catch (ContradictionException e) {

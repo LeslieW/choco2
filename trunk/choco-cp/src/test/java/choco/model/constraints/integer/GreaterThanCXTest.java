@@ -26,6 +26,7 @@ import static choco.Choco.gt;
 import static choco.Choco.makeIntVar;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -48,7 +49,7 @@ import java.util.logging.Logger;
 /* File choco.currentElement.search.LessOrEqualXC.java, last modified by Francois 11 sept. 2003 00:46:25 */
 
 public class GreaterThanCXTest {
-  private static Logger logger = Logger.getLogger("choco.currentElement");
+  private static Logger logger = ChocoLogging.getTestLogger();
   private CPModel m;
     private CPSolver s;
   private IntegerVariable x;

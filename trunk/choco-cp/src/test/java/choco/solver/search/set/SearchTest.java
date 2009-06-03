@@ -88,8 +88,7 @@ public class SearchTest {
      * @param p size
      */
     public void steinerSystem(int p) {
-        //Logger.getLogger("choco.solver.search").setLevel(Level.FINEST);
-        int n = p * (p - 1) / 6;
+    	int n = p * (p - 1) / 6;
         SetVariable[] vars = new SetVariable[n];
         SetVariable[] intersect = new SetVariable[n * n];
         for (int i = 0; i < n; i++)

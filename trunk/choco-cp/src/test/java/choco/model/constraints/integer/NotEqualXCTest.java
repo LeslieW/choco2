@@ -26,6 +26,7 @@ import static choco.Choco.makeIntVar;
 import static choco.Choco.neq;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -47,7 +48,7 @@ import java.util.logging.Logger;
 
 
 public class NotEqualXCTest  {
-  private static Logger logger = Logger.getLogger("choco.currentElement");
+	private final static Logger LOGGER = ChocoLogging.getTestLogger();
   private CPModel m;
     private CPSolver s;
   private IntegerVariable x;
@@ -57,7 +58,7 @@ public class NotEqualXCTest  {
 
     @Before
   public void setUp() {
-    logger.fine("NotEqualXC Testing...");
+    LOGGER.fine("NotEqualXC Testing...");
     m = new CPModel();
         s = new CPSolver();
     x = makeIntVar("X", 1, 5);
@@ -79,7 +80,7 @@ public class NotEqualXCTest  {
 
     @Test
   public void test1() {
-    logger.finer("test1");
+    LOGGER.finer("test1");
     try {
       m.addConstraints(c1, c2);
         s.read(m);

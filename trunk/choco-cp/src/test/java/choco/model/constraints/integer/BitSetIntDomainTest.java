@@ -35,6 +35,7 @@ import static choco.Choco.makeIntVar;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.AbstractIntDomain;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -52,7 +53,7 @@ import java.util.logging.Logger;
  * a class implementing tests for backtrackable search
  */
 public class BitSetIntDomainTest {
-    private Logger logger = Logger.getLogger("choco.currentElement");
+    private Logger logger = ChocoLogging.getTestLogger();
     private CPModel m;
     private IntegerVariable x, y;
     private CPSolver s;

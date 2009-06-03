@@ -27,6 +27,7 @@ import static choco.Choco.eq;
 import static choco.Choco.makeIntVar;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -41,7 +42,7 @@ import java.util.logging.Logger;
  * a class implementing tests for backtrackable search
  */
 public class EqualXCTest {
-  private Logger logger = Logger.getLogger("choco.currentElement");
+	private final static Logger LOGGER = ChocoLogging.getTestLogger();
   private CPModel m;
   private CPSolver s;
   private IntegerVariable x;
@@ -53,7 +54,7 @@ public class EqualXCTest {
 
     @Before
   public void setUp() {
-    logger.fine("EqualXC Testing...");
+    LOGGER.fine("EqualXC Testing...");
     m = new CPModel();
         s = new CPSolver();
     x = makeIntVar("X", 1, 5);
@@ -78,7 +79,7 @@ public class EqualXCTest {
 
     @Test
   public void test1() {
-    logger.finer("test1");
+    LOGGER.finer("test1");
     try {
       m.addConstraints(c1, c2);
         s.read(m);
@@ -90,7 +91,7 @@ public class EqualXCTest {
     assertTrue(s.getVar(y).isInstantiated());
     assertEquals(1, s.getVar(x).getVal());
     assertEquals(2, s.getVar(y).getVal());
-    logger.finest("domains OK after first propagate");
+    LOGGER.finest("domains OK after first propagate");
         s.addConstraint(c3);
     assertFalse(s.getCstr(c3).isSatisfied());
   }

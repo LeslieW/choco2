@@ -181,7 +181,6 @@ public class SolveTest {
 		s.printRuntimeSatistics();
 		assertEquals(s.isFeasible(), Boolean.TRUE);
 		assertEquals(s.getNbSolutions(), 12);
-		//Logger.getLogger("choco").getHandlers()[0].flush();
 	}
 
 	/**
@@ -201,7 +200,6 @@ public class SolveTest {
 		}
 		s.worldPop();
 		m.addConstraint(c);
-		//Logger.getLogger("choco").getHandlers()[0].flush();
 	}
 
 	@Test
@@ -258,7 +256,6 @@ public class SolveTest {
                             ct.delete();
                             ct2.delete();
                           } */
-			//Logger.getLogger("choco").getHandlers()[0].flush();
 		}
 
 	}

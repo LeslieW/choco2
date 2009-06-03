@@ -35,6 +35,7 @@ import choco.cp.solver.constraints.integer.EqualXYC;
 import choco.cp.solver.propagation.ChocEngine;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.memory.PartiallyStoredVector;
 import choco.kernel.solver.ContradictionException;
@@ -52,7 +53,7 @@ import java.util.HashSet;
 import java.util.logging.Logger;
 
 public class IntVarEventTest  {
-  private Logger logger = Logger.getLogger("choco.currentElement");
+	private final static Logger LOGGER = ChocoLogging.getTestLogger();
   private Solver s;
   private ChocEngine pe;
   private IntDomainVarImpl x;
@@ -87,7 +88,7 @@ public class IntVarEventTest  {
 
     @Before
   public void setUp() {
-    logger.fine("IntVarEvent Testing...");
+    LOGGER.fine("IntVarEvent Testing...");
     s = new CPSolver();
     pe = (ChocEngine) s.getPropagationEngine();
     x = (IntDomainVarImpl) ((CPSolver)s).createIntVar("X",1, 0, 100);

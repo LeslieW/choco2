@@ -27,6 +27,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.cp.solver.variables.integer.IntervalIntDomain;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -50,7 +51,7 @@ import java.util.logging.Logger;
 // Last Contributor:   $Author: menana $
 
 public class IntervalIntDomainTest{
-  private Logger logger = Logger.getLogger("choco.currentElement");
+	private final static Logger LOGGER = ChocoLogging.getTestLogger();
   private Model m;
   private Solver s;
   private IntegerVariable x, y;
@@ -58,7 +59,7 @@ public class IntervalIntDomainTest{
 
     @Before
   public void setUp() {
-    logger.fine("BitSetIntDomain Testing...");
+    LOGGER.fine("BitSetIntDomain Testing...");
     m = new CPModel();
     x = makeIntVar("X", 1, 100);
     y = makeIntVar("Y", 1, 15);
@@ -82,12 +83,12 @@ public class IntervalIntDomainTest{
    */
   @Test
   public void test1() {
-    logger.finer("test1");
+    LOGGER.finer("test1");
 
     assertEquals(1, yDom.getInf());
     assertEquals(15, yDom.getSup());
     assertEquals(15, yDom.getSize());
-    logger.finest("First step passed");
+    LOGGER.finest("First step passed");
 
     s.worldPush();
     yDom.updateInf(2);
@@ -95,7 +96,7 @@ public class IntervalIntDomainTest{
     assertEquals(3, yDom.getInf());
     assertEquals(15, yDom.getSup());
     assertEquals(13, yDom.getSize());
-    logger.finest("Second step passed");
+    LOGGER.finest("Second step passed");
 
     s.worldPush();
     yDom.updateSup(13);
@@ -103,7 +104,7 @@ public class IntervalIntDomainTest{
     assertEquals(4, yDom.getInf());
     assertEquals(13, yDom.getSup());
     assertEquals(10, yDom.getSize());
-    logger.finest("Third step passed");
+    LOGGER.finest("Third step passed");
 
     s.worldPop();
     assertEquals(3, yDom.getInf());
@@ -121,7 +122,7 @@ public class IntervalIntDomainTest{
    */
   @Test
   public void test2() {
-    logger.finer("test2");
+    LOGGER.finer("test2");
 
       s.getVar(y).getEvent().addPropagatedEvents(IntVarEvent.BOUNDSbitvector);
     yDom.freezeDeltaDomain();
@@ -142,7 +143,7 @@ public class IntervalIntDomainTest{
    */
   @Test
   public void test3() {
-    logger.finer("test2");
+    LOGGER.finer("test2");
 
     yDom.freezeDeltaDomain();
     assertTrue(yDom.releaseDeltaDomain());
