@@ -26,6 +26,7 @@ import static choco.Choco.geq;
 import static choco.Choco.makeIntVar;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -48,7 +49,7 @@ import java.util.logging.Logger;
 /* File choco.currentElement.search.LessOrEqualXC.java, last modified by Francois 11 sept. 2003 00:46:25 */
 
 public class GreaterOrEqualCXTest {
-  private static Logger logger = Logger.getLogger("choco.currentElement");
+  private final static Logger LOGGER = ChocoLogging.getTestLogger();
   private CPModel m;
     private CPSolver s;
   private IntegerVariable x;
@@ -59,7 +60,7 @@ public class GreaterOrEqualCXTest {
 
     @Before
   public void setUp() {
-    logger.finer("LessOrEqualXC Testing...");
+    LOGGER.finer("LessOrEqualXC Testing...");
     m = new CPModel();
         s = new CPSolver();
     x = makeIntVar("X", 1, 5);
@@ -82,7 +83,7 @@ public class GreaterOrEqualCXTest {
 
     @Test
   public void test1() {
-    logger.finer("test1");
+    LOGGER.finer("test1");
     try {
       m.addConstraints(c1, c2);
         s.read(m);
@@ -94,7 +95,7 @@ public class GreaterOrEqualCXTest {
     assertFalse(s.getVar(y).isInstantiated());
     assertEquals(1, s.getVar(x).getSup());
     assertEquals(2, s.getVar(y).getSup());
-    logger.finest("domains OK after first propagate");
+    LOGGER.finest("domains OK after first propagate");
     assertTrue(s.getCstr(c1).isSatisfied());
     assertEquals(((Propagator) s.getCstr(c2)).isEntailed(), Boolean.TRUE);
   }

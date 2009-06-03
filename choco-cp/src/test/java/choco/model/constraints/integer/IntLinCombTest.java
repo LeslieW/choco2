@@ -203,16 +203,7 @@ public class IntLinCombTest {
             assertEquals(42, s.getVar(y2).getSup());
             s.getVar(x2).setInf(4);
             s.propagate();
-/*
-      Logger.getLogger("choco").setLevel(Level.FINEST);
-      Logger.getLogger("choco.var").setLevel(Level.FINEST);
-      Logger.getLogger("choco.solver.search").setLevel(Level.FINEST);
-      Logger.getLogger("choco.solver.search.IntegerVariable").setLevel(Level.FINEST);
-      Logger.getLogger("choco.currentElement").setLevel(Level.FINEST);
-      Logger.getLogger("choco.currentElement.search").setLevel(Level.FINEST);
-      Logger.getLogger("choco.currentElement.search.IntLinCombTest").setLevel(Level.FINEST);
-      s.propagate();
-*/
+
             assertTrue(s.getVar(x1).isInstantiated());
             assertTrue(s.getVar(x2).isInstantiated());
             assertTrue(s.getVar(x3).isInstantiated());

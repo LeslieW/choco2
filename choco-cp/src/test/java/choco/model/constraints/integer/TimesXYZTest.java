@@ -41,14 +41,13 @@ import java.util.logging.Logger;
 public class TimesXYZTest {
     protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
-  private Logger logger = Logger.getLogger("choco.currentElement");
-  private CPModel m;
+    private CPModel m;
     private CPSolver s;
   private IntegerVariable x, y, z;
 
     @Before
   public void setUp() {
-    logger.fine("choco.currentElement.bool.TimesXYZTest Testing...");
+    LOGGER.fine("choco.currentElement.bool.TimesXYZTest Testing...");
     m = new CPModel();
     s = new CPSolver();
   }
@@ -64,7 +63,7 @@ public class TimesXYZTest {
 
     @Test
   public void test1() {
-    logger.finer("test1");
+    LOGGER.finer("test1");
     x = makeIntVar("x", -7, 12);
     y = makeIntVar("y", 3, 5);
     z = makeIntVar("z", 22, 59);
@@ -88,7 +87,7 @@ public class TimesXYZTest {
     for (int i = 0; i < 10; i++) {
       m = new CPModel();
       s = new CPSolver();
-      logger.finer("test2");
+      LOGGER.finer("test2");
       x = makeIntVar("x", 1, 2);
       y = makeIntVar("y", 3, 5);
       z = makeIntVar("z", 3, 10);
@@ -110,7 +109,7 @@ public class TimesXYZTest {
     for (int i = 0; i < 10; i++) {
       m = new CPModel();
       s = new CPSolver();
-      logger.finer("test2");
+      LOGGER.finer("test2");
       x = makeIntVar("x", 1, 2);
       y = makeIntVar("y", 3, 5);
       z = makeIntVar("z", 3, 10);

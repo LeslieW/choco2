@@ -25,6 +25,7 @@ package choco.solver.search;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -50,14 +51,14 @@ import java.util.logging.Logger;
 public class QueensTest {
     public static int nbQueensSolution[] = {0, 0, 0, 0, 2, 10, 4, 40, 92, 352, 724, 2680, 14200, 73712};
     public static final boolean LINKED = false;
-    private Logger logger = Logger.getLogger("choco.currentElement");
+    private final static Logger LOGGER = ChocoLogging.getTestLogger();
     private Model m;
     private Solver s;
     private IntegerVariable[] queens;
 
     @Before
     public void setUp() {
-        logger.fine("Queens Testing...");
+        LOGGER.fine("Queens Testing...");
         m = new CPModel();
         s = new CPSolver();
     }
@@ -74,7 +75,7 @@ public class QueensTest {
     }
 
     private void queen0(int n) {
-        logger.finer("n queens, binary model, n=" + n);
+        LOGGER.finer("n queens, binary model, n=" + n);
         // create variables
         queens = new IntegerVariable[n];
         for (int i = 0; i < n; i++) {

@@ -25,6 +25,7 @@ package choco.solver.search;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -46,7 +47,7 @@ import java.util.logging.Logger;
 /* File choco.currentElement.search.ZebraTest.java, last modified by flaburthe 16 janv. 2004 14:57:02 */
 
 public class ZebraTest {
-  private static Logger logger = Logger.getLogger("choco.currentElement");
+	private final static Logger LOGGER = ChocoLogging.getTestLogger();
   private Model m;
     private Solver s;
   private IntegerVariable green, blue, yellow, ivory, red;
@@ -59,7 +60,7 @@ public class ZebraTest {
 
     @Before
   public void setUp() {
-    logger.fine("Zebra Testing...");
+    LOGGER.fine("Zebra Testing...");
     m = new CPModel();
         s = new CPSolver();
     green = makeIntVar("green", 1, 5);
