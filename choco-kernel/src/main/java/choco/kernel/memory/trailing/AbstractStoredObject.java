@@ -9,8 +9,7 @@ public class AbstractStoredObject {
 	/**
 	 * Reference to an object for logging trace statements related memory & backtrack (using the java.util.logging package)
 	 */
-
-	protected final static Logger LOGGER = ChocoLogging.getMemoryLogger();
+	protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	/**
 	 * The current {@link EnvironmentTrailing}.

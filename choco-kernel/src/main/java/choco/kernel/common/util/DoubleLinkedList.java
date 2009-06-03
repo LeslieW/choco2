@@ -35,7 +35,7 @@ import java.util.logging.Logger;
  */
 public class DoubleLinkedList implements IntIterator {
 
-	protected final static Logger LOGGER = ChocoLogging.getKernelLogger();
+	protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	/**
 	 *   Successors table

@@ -23,14 +23,14 @@
 package choco.kernel.solver.goals.choice;
 
 
+import java.util.logging.Level;
+
+import choco.kernel.common.logging.WorldFormatter;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.branch.AbstractIntBranching;
+import choco.kernel.solver.branch.AbstractBranching;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -54,10 +54,10 @@ public class RemoveVal implements Goal {
   }
 
   public Goal execute(Solver s) throws ContradictionException {
-    if (LOGGER.isLoggable(Level.FINE)) {
-		  int n = s.getEnvironment().getWorldIndex();
-		  if (n <= s.getSearchStrategy().getLoggingMaxDepth()) {
-		    LOGGER.log(Level.FINE, AbstractIntBranching.LOG_UP_MSG, new Object[]{new Integer(n + 1), var, " != ", new Integer(val)});
+    if (LOGGER.isLoggable(Level.INFO)) {
+    	final WorldFormatter wl = new WorldFormatter(s);
+		if ( wl.isLoggable(s)) {
+		    LOGGER.log(Level.INFO, "{0} {1} {2} {3} {4}", new Object[]{wl, AbstractBranching.LOG_DOWN_MSG, var, " != ", val});
 		  }
 		}
     var.remVal(val);

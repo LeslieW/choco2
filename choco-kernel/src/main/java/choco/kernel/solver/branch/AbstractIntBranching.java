@@ -24,6 +24,7 @@ package choco.kernel.solver.branch;
 
 import java.util.logging.Level;
 
+import choco.kernel.common.logging.WorldFormatter;
 import choco.kernel.solver.ContradictionException;
 
 /**
@@ -31,9 +32,9 @@ import choco.kernel.solver.ContradictionException;
  */
 public abstract class AbstractIntBranching extends AbstractBranching implements IntBranching {
 
-	private final String LOG_MSG_FORMAT = "{1} {2} {3} {4}";
+	private static final String LOG_MSG_FORMAT = "{0} {1} {2} {3} {4}";
 	
-	private final String LOG_MSG_FORMAT_WITH_BRANCH = "{1} {2} {3} {4} branch {5}";
+	private static final String LOG_MSG_FORMAT_WITH_BRANCH = "{0} {1} {2} {3} {4} branch {5}";
 	
 	public void goDownBranch(Object x, int i) throws ContradictionException {
 		logDownBranch(x, i);
@@ -82,18 +83,18 @@ public abstract class AbstractIntBranching extends AbstractBranching implements 
 
 	protected final void logDownBranch(final Object x, final int i) {
 		if (LOGGER.isLoggable(Level.INFO)) {
-			final int n = manager.solver.getEnvironment().getWorldIndex();
-			if (n <= manager.getLoggingMaxDepth()) {
-				LOGGER.log(Level.INFO, getLogMessage(), new Object[]{n, LOG_DOWN_MSG, getVariableLogParameter(x), getDecisionLogMsg(i), getValueLogParameter(x,i), Integer.valueOf(i)});
+			final WorldFormatter wl = new WorldFormatter(manager);
+			if ( wl.isLoggable(manager)) {
+				LOGGER.log(Level.INFO, getLogMessage(), new Object[]{wl, LOG_DOWN_MSG, getVariableLogParameter(x), getDecisionLogMsg(i), getValueLogParameter(x,i), Integer.valueOf(i)});
 			}
 		}
 	}
 
 	protected final void logUpBranch(final Object x, final int i) {
 		if (LOGGER.isLoggable(Level.INFO)) {
-			int n = manager.solver.getEnvironment().getWorldIndex();
-			if (n <= manager.getLoggingMaxDepth()) {
-				LOGGER.log(Level.INFO, getLogMessage(), new Object[]{n + 1, LOG_UP_MSG, getVariableLogParameter(x), getDecisionLogMsg(i), getValueLogParameter(x,i), Integer.valueOf(i)});
+			final WorldFormatter wl = new WorldFormatter(manager, 1);
+			if ( wl.isLoggable(manager)) {
+				LOGGER.log(Level.INFO, getLogMessage(), new Object[]{wl, LOG_UP_MSG, getVariableLogParameter(x), getDecisionLogMsg(i), getValueLogParameter(x,i), Integer.valueOf(i)});
 			}
 		}
 	}

@@ -85,7 +85,7 @@ import choco.kernel.solver.constraints.integer.extension.TuplesTable;
  */
 public class Choco{
 
-	protected final static Logger LOGGER = ChocoLogging.getAPILogger();
+	protected final static Logger LOGGER = ChocoLogging.getModelLogger();
 
 	public static boolean DEBUG = false;
 

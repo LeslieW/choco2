@@ -201,8 +201,8 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 
 	@Override
 	public void endTreeSearch() {
-		if (LOGGER.isLoggable(Level.INFO)) {
-			LOGGER.log(Level.INFO, "{1} => {2}", new Object[]{-1, doMaximize ? "maximize" : "minimize", objective});
+		if (LOGGER.isLoggable(Level.CONFIG)) {
+			LOGGER.log(Level.CONFIG, "{1} => {2}", new Object[]{-1, doMaximize ? "maximize" : "minimize", objective});
 		}
 		super.endTreeSearch();
 	}

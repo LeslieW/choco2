@@ -55,7 +55,7 @@ public interface IEnvironment {
 	/**
 	 * Reference to an object for logging trace statements related memory & backtrack (using the java.util.logging package)
 	 */
-	final static Logger LOGGER = ChocoLogging.getMemoryLogger();
+	final static Logger LOGGER = ChocoLogging.getEngineLogger();
 	
 	/**
      * Index of the Environment using trailing

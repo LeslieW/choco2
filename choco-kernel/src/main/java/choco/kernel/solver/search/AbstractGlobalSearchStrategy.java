@@ -238,8 +238,8 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 * called before a new search tree is explored
 	 */
 	public void endTreeSearch() {
-		if (LOGGER.isLoggable(Level.INFO)) {
-			LOGGER.log(Level.INFO, "solve => {1} solutions\n\twith {2}", new Object[]{-1, Integer.valueOf(nbSolutions), runtimeStatistics()});
+		if (LOGGER.isLoggable(Level.CONFIG)) {
+			LOGGER.log(Level.CONFIG, "=== solve => {0} solutions\n\twith {1}", new Object[]{Integer.valueOf(nbSolutions), runtimeStatistics()});
 		}
 	}
 
@@ -294,8 +294,8 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 				if  (this.limits.size() > 0) {
 					sb.append("\n\twith ").append(runtimeStatistics());
 				}
-				if  (LOGGER.isLoggable(Level.FINEST)) {sb.append("\n\t").append(solver.solutionToString());}
-				LOGGER.log(Level.FINE, new String(sb), -1 );
+				LOGGER.log(Level.FINE, "=== {0}",sb);	
+				if (LOGGER.isLoggable(Level.FINER)) {LOGGER.log(Level.FINER,"\t{0}", solver.solutionToString());}
 			}
 			if (maxNbSolutionStored > 0) {
 				super.recordSolution();

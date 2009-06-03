@@ -34,7 +34,6 @@ import choco.kernel.common.logging.ChocoLogging;
  */
 public interface IStateVector<E> {
 	
-	public final static Logger LOGGER = ChocoLogging.getMemoryLogger();
     /**
    * Minimal capacity of a vector
      */

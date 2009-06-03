@@ -149,7 +149,7 @@ public final class XMLManager {
 			try {
 				return load(new FileInputStream(file), schemaUrl);
 			} catch (FileNotFoundException e) {
-				LOGGER.info("File " + file.getName() + " does not exist");
+				LOGGER.log(Level.INFO, "File {0} does not exist", file);
 				System.exit(1);
 				return null;
 			}
@@ -174,7 +174,7 @@ public final class XMLManager {
 					return document;
 
 				} catch (Exception e) {
-					LOGGER.info("Problem with " + fileName);
+					LOGGER.log(Level.INFO, "Problem with {0}", fileName);
 					System.exit(1);
 					return null;
 				}

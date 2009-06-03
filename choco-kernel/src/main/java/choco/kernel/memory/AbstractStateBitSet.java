@@ -30,5 +30,6 @@ import java.util.logging.Logger;
  * Implementation of all state ints.
  */
 public abstract class AbstractStateBitSet implements IStateBitSet {
-    protected final static Logger LOGGER = ChocoLogging.getMemoryLogger();
+	
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 }

@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 
 public abstract class ConsistencyRelation implements Cloneable {
 
-    protected final static Logger LOGGER = ChocoLogging.getKernelLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
   protected boolean feasible;
 

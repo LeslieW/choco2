@@ -36,7 +36,7 @@ import choco.kernel.common.util.IntIterator;
 */
 public interface SetSubDomain {
 
-	public static final Logger LOGGER = ChocoLogging.getPropagationLogger();
+	public static final Logger LOGGER = ChocoLogging.getEngineLogger();
 	
     public boolean contains(int val);
 

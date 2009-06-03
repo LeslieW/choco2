@@ -161,7 +161,7 @@ public class GoalSearchSolver extends AbstractGlobalSearchStrategy {
                   nextMove = DOWN_BRANCH;
                 } else {
                   if (g instanceof Generate) {
-                    if(LOGGER.isLoggable(Level.INFO)) {LOGGER.log(Level.INFO, "generate {1} pop", new Object[]{0, g.pretty()});}
+                    if(LOGGER.isLoggable(Level.FINEST)) {LOGGER.log(Level.FINEST, "[GOAL] generate {0} pop", g.pretty());}
                     newTreeNode();
                   }
                   Goal newG = g.execute(this.getSolver());
@@ -171,7 +171,7 @@ public class GoalSearchSolver extends AbstractGlobalSearchStrategy {
               }
             }
           } catch (ContradictionException e) {
-            LOGGER.log(Level.INFO, "contradiction", 0);
+            LOGGER.finest("[GOAL] contradiction");
             nextMove = UP_BRANCH;
           }
           break;

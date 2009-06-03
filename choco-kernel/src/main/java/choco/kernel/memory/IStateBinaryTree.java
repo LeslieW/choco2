@@ -38,9 +38,8 @@ import java.util.logging.Logger;
  */
 public interface IStateBinaryTree {
 
-    final static Logger LOGGER = ChocoLogging.getMemoryLogger();
-
-    /**
+	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
+	/**
      * static integer representing an operation over a binary tree
      * INF, a lower bound of an interval has been modified
      */

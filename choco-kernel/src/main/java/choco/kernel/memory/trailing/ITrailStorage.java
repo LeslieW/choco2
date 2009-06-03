@@ -39,7 +39,7 @@ public interface ITrailStorage {
 	/**
 	 * Reference to an object for logging trace statements related memory & backtrack (using the java.util.logging package)
 	 */
-	final static Logger LOGGER = ChocoLogging.getMemoryLogger();
+	final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	/**
 	 * Moving up to the next world.

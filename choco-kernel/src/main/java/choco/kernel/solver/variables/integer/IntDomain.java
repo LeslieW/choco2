@@ -33,7 +33,7 @@ import choco.kernel.solver.variables.Domain;
  */
 public interface IntDomain extends Domain {
 
-	public final static Logger LOGGER = ChocoLogging.getPropagationLogger();
+	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
 	/**
 	 * Retrieve an getIterator for traversing the sequence of values contained in the domain
 	 */

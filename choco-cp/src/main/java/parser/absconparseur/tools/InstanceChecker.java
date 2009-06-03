@@ -78,7 +78,7 @@ public class InstanceChecker extends JFrame {
 				return CANONICAL;
 			if (mode == 4)
 				return EXTENSIONAL;
-			LOGGER.info("ERROR \t the mode is not correct");
+			LOGGER.severe("ERROR \t the mode is not correct");
 			System.exit(1);
 			return null;
 		}

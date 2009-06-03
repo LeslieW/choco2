@@ -28,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.security.AccessControlException;
 import java.util.logging.*;
+
 import static java.util.logging.Logger.getLogger;
 
 
@@ -45,40 +46,36 @@ public final class ChocoLogging {
 
 	public final static Formatter DETAILED_FORMATTER = new DetailedFormatter();
 
-	public final static Formatter SEARCH_FORMATTER = new SearchFormatter();
-
 	public final static Handler DEFAULT_HANDLER = new StreamHandler(System.out, LIGHT_FORMATTER);
 
 	public final static Handler DETAILED_HANDLER = new StreamHandler(System.out, DETAILED_FORMATTER);
 
 	public final static Handler ERROR_HANDLER = new StreamHandler(System.err, DETAILED_FORMATTER);
 
-	private final static Handler SEARCH_DEFAULT_HANDLER = new StreamHandler(System.out, SEARCH_FORMATTER);
-
-	private final static Handler SEARCH_ERROR_HANDLER = new StreamHandler(System.err, SEARCH_FORMATTER);	
-
 
 	public final static Logger[] CHOCO_LOGGERS = new Logger[] {
 		getLogger("choco"),
+
 		getLogger("choco.kernel"),
 		getLogger("choco.kernel.search"),
 		getLogger("choco.kernel.search.branching"),
-		getLogger("choco.kernel.propagation"),
-		getLogger("choco.kernel.memory"),
+		getLogger("choco.kernel.engine"),
+
 		getLogger("choco.api"),
 		getLogger("choco.api.model"),
 		getLogger("choco.api.solver"),
 		getLogger("choco.api.parser"),
-		getLogger("choco.dev.debug"),	
-		getLogger("choco.dev.test"),
+
 		getLogger("choco.user"),
-		getLogger("choco.samples"),
+		getLogger("choco.user.samples"),
+
+		getLogger("choco.test"),
 	};
 
 	static {
 		try {
-			setLevel(Level.ALL, DEFAULT_HANDLER, DETAILED_HANDLER, SEARCH_DEFAULT_HANDLER);
-			setLevel(Level.WARNING, ERROR_HANDLER, SEARCH_ERROR_HANDLER);
+			setLevel(Level.ALL, DEFAULT_HANDLER, DETAILED_HANDLER);
+			setLevel(Level.WARNING, ERROR_HANDLER);
 			setDefaultHandler();
 			setVerbosity(Verbosity.DEFAULT);
 		} catch (AccessControlException e) {
@@ -99,12 +96,12 @@ public final class ChocoLogging {
 	public static Logger makeUserLogger(String suffix) {
 		return Logger.getLogger("choco.user."+suffix);
 	}
-
-	public static Logger getChocoLogger() {
+	
+	protected static Logger getChocoLogger() {
 		return CHOCO_LOGGERS[0];
 	}
 
-	public static Logger getKernelLogger() {
+	protected static Logger getKernelLogger() {
 		return CHOCO_LOGGERS[1];
 	}
 
@@ -116,57 +113,42 @@ public final class ChocoLogging {
 		return CHOCO_LOGGERS[3];
 	}
 
-	public static Logger getPropagationLogger() {
+	public static Logger getEngineLogger() {
 		return CHOCO_LOGGERS[4];
 	}
 
-
-	public static Logger getMemoryLogger() {
+	protected static Logger getAPILogger() {
 		return CHOCO_LOGGERS[5];
 	}
 
-
-	public static Logger getAPILogger() {
+	public static Logger getModelLogger() {
 		return CHOCO_LOGGERS[6];
 	}
 
-	public static Logger getModelLogger() {
+	public static Logger getSolverLogger() {
 		return CHOCO_LOGGERS[7];
 	}
 
-	public static Logger getSolverLogger() {
+	public static Logger getParserLogger() {
 		return CHOCO_LOGGERS[8];
 	}
 
-	public static Logger getParserLogger() {
+
+	public static Logger getUserLogger() {
 		return CHOCO_LOGGERS[9];
 	}
 
-
-	public static Logger getDebugLogger() {
+	public static Logger getSamplesLogger() {
 		return CHOCO_LOGGERS[10];
 	}
 
 	public static Logger getTestLogger() {
 		return CHOCO_LOGGERS[11];
 	}
-
-	public static Logger getUserLogger() {
-		return CHOCO_LOGGERS[12];
-	}
-
-	public static Logger getSamplesLogger() {
-		return CHOCO_LOGGERS[13];
-	}
-
 	public static Formatter getDefaultFormatter() {
 		return LIGHT_FORMATTER;
 	}
 
-
-	public static Formatter getDefaultSearchFormatter() {
-		return SEARCH_FORMATTER;
-	}
 
 
 	public static void flushLog(Logger logger) {
@@ -207,16 +189,6 @@ public final class ChocoLogging {
 		log.setUseParentHandlers(false);
 		log.addHandler(DEFAULT_HANDLER);
 		log.addHandler(ERROR_HANDLER);
-		//search handlers
-		log = getSearchLogger();
-		log.setUseParentHandlers(false);
-		log.addHandler(SEARCH_DEFAULT_HANDLER);
-		log.addHandler(SEARCH_ERROR_HANDLER);
-		//debug handlers
-		log = getDebugLogger();
-		log.setUseParentHandlers(false);
-		log.addHandler(DETAILED_HANDLER);
-		log.addHandler(ERROR_HANDLER);
 	}
 
 
@@ -227,16 +199,21 @@ public final class ChocoLogging {
 
 	}
 
-	private static Handler[] createHandlers( OutputStream stream, Level level) {
-		Handler[] handlers = new Handler[] {
-				new StreamHandler(stream, LIGHT_FORMATTER),
-				new StreamHandler(stream, DETAILED_FORMATTER),
-				new StreamHandler(stream, SEARCH_FORMATTER)
-		};
-		setLevel(level, handlers);
-		return handlers;
+	public static OutputStream setFileHandler(File file, Level level, Formatter formatter) {
+		try {
+			final OutputStream stream = new FileOutputStream(file);
+			Handler handler = new StreamHandler(stream, formatter);
+			handler.setLevel(level);
+			clearHandlers();
+			Logger log = getChocoLogger();
+			log.setUseParentHandlers(false);
+			log.addHandler(handler);
+			return stream;
+		} catch (FileNotFoundException e) {
+			getChocoLogger().log(Level.SEVERE, "cant create stream", e);
+		}
+		return null;
 	}
-
 
 	/**
 	 * remove handlers and write error logs into a file (warning and severe message)
@@ -244,23 +221,7 @@ public final class ChocoLogging {
 	 * @return the error stream
 	 */
 	public static OutputStream setErrorFileHandler(File file) {
-		try {
-			final OutputStream stream = new FileOutputStream(file);
-			final Handler[] h = createHandlers(stream, Level.WARNING);
-			clearHandlers();
-
-			Logger log = getChocoLogger();
-			log.setUseParentHandlers(false);
-			log.addHandler(h[1]);
-			//search 	
-			log = getSearchLogger();
-			log.setUseParentHandlers(false);
-			log.addHandler(h[2]);
-			return stream;
-		} catch (FileNotFoundException e) {
-			getChocoLogger().log(Level.SEVERE, "cant create stream", e);
-		}
-		return null;
+		return setFileHandler(file, Level.WARNING, DETAILED_FORMATTER);
 	}
 
 	/**
@@ -269,40 +230,8 @@ public final class ChocoLogging {
 	 * @return the log stream
 	 */
 	public static OutputStream setFileHandler(File file) {
-		return setFileHandler(file, Level.ALL);
+		return setFileHandler(file, Level.ALL, LIGHT_FORMATTER);
 	}
-
-	/**
-	 * remove handlers and write logs with a given level into a file 
-	 * @param file the log file
-	 * @param level the minimal logging level for this handler
-	 * @return the log stream
-	 */
-	public static OutputStream setFileHandler(File file, Level level) {
-		try {
-			final OutputStream stream = new FileOutputStream(file);
-			final Handler[] h = createHandlers(stream, level);
-
-			clearHandlers();
-
-			Logger log = getChocoLogger();
-			log.setUseParentHandlers(false);
-			log.addHandler(h[0]);
-			//debug
-			log = getDebugLogger();
-			log.setUseParentHandlers(false);
-			log.addHandler(h[1]);
-			//search 
-			log = getSearchLogger();
-			log.setUseParentHandlers(false);
-			log.addHandler(h[2]);
-			return stream;
-		} catch (FileNotFoundException e) {
-			getChocoLogger().log(Level.SEVERE, "cant create stream", e);
-		}
-		return null;
-	}
-
 
 
 	/**
@@ -323,26 +252,25 @@ public final class ChocoLogging {
 		}
 	}
 
+	public static OutputStream addFileHandler(File file, Level level, Formatter formatter) {
+		try {
+			final OutputStream stream = new FileOutputStream(file);
+			Handler handler = new StreamHandler(stream, formatter);
+			handler.setLevel(level);
+			addHandler(handler,CHOCO_LOGGERS);
+			return stream;
+		} catch (FileNotFoundException e) {
+			getChocoLogger().log(Level.SEVERE, "cant create stream", e);
+		}
+		return null;
+	}
 	/**
 	 * add a new handler whichs receive error logs
 	 * @param file the error log file
 	 * @return the error stream
 	 */
 	public static OutputStream addErrorFileHandler(File file) {
-		try {
-			final OutputStream stream = new FileOutputStream(file);
-			final Handler[] h = createHandlers(stream, Level.WARNING);
-			getChocoLogger().addHandler(h[1]);
-			getSearchLogger().addHandler(h[2]);
-			addHandler(h[2], getBranchingLogger());
-			//others
-			addHandler(h[1], getKernelLogger(), getPropagationLogger(), getMemoryLogger(), 
-					getAPILogger(), getParserLogger(), getModelLogger(), getUserLogger(), getTestLogger());
-			return stream;
-		} catch (FileNotFoundException e) {
-			getChocoLogger().log(Level.SEVERE, "cant create stream", e);
-		}
-		return null;
+		return addFileHandler(file, Level.WARNING, DETAILED_FORMATTER);
 	}
 
 	/**
@@ -351,32 +279,8 @@ public final class ChocoLogging {
 	 * @return the stream
 	 */
 	public static OutputStream addFileHandler(File file) {
-		return addFileHandler(file, Level.ALL);
+		return addFileHandler(file, Level.ALL, LIGHT_FORMATTER);
 	}
-
-	/**
-	 * add a new handler whichs receive logs with a minimal level
-	 * @param file the log file
-	 * @return the stream
-	 */
-	public static OutputStream addFileHandler(File file, Level level) {
-		try {
-			final OutputStream stream = new FileOutputStream(file);
-			final Handler[] h = createHandlers(stream, level);
-			getChocoLogger().addHandler(h[0]);
-			getDebugLogger().addHandler(h[1]);
-			getSearchLogger().addHandler(h[2]);
-			addHandler(h[2], getBranchingLogger());
-			//others
-			addHandler(h[0], getKernelLogger(), getPropagationLogger(), getMemoryLogger(), 
-					getAPILogger(), getParserLogger(), getModelLogger(), getUserLogger(), getTestLogger());
-			return stream;
-		} catch (FileNotFoundException e) {
-			getChocoLogger().log(Level.SEVERE, "cant create stream", e);
-		}
-		return null;
-	}
-
 
 
 	public static void setLevel(Level level, Logger... loggers) {
@@ -386,14 +290,16 @@ public final class ChocoLogging {
 	}
 
 
-	private static void setPattern(Level solLevel) {
-		setLevel(Level.WARNING, getBranchingLogger(), getPropagationLogger(), getMemoryLogger(),
-				getDebugLogger(), getTestLogger());
-		setLevel(Level.INFO, getAPILogger(), getModelLogger(), getSolverLogger(),
-				getParserLogger(),getSamplesLogger(), getUserLogger());
-		setLevel(solLevel, getChocoLogger(), getKernelLogger(),getSearchLogger());
+	private static void setCommon() {
+		setLevel(Level.FINEST, getChocoLogger(),getKernelLogger(),getAPILogger());
+		setLevel(Level.WARNING, getBranchingLogger(), getTestLogger(), getEngineLogger());
+		setLevel(Level.INFO, 
+				getSearchLogger(), 
+				getUserLogger(), getSamplesLogger(), 
+				getAPILogger(),getModelLogger(),getSolverLogger(),getParserLogger()
+		);
 	}
-
+	
 
 	/**
 	 * set the choco verbosity level
@@ -401,59 +307,36 @@ public final class ChocoLogging {
 	 */
 	public static void setVerbosity(Verbosity verbosity) {
 		switch(verbosity) {
-		case OFF: {
-			setLevel(Level.OFF, CHOCO_LOGGERS);
-			break;
-		}
-		case SILENT: {
-			setLevel(Level.SEVERE, CHOCO_LOGGERS);
-			setLevel(Level.OFF, getDebugLogger());
-			break;
-		}
+		case OFF: setLevel(Level.OFF, CHOCO_LOGGERS);break;
+		case SILENT: setLevel(Level.SEVERE, CHOCO_LOGGERS);break;
 		case DEFAULT: {
-			setPattern(Level.WARNING); //output only infos not related with the search as samples, parser and user logs
-			setLevel(Level.OFF, getDebugLogger());
+			setCommon();
+			setLevel(Level.WARNING,getModelLogger(), getSolverLogger());
 			break;
 		}
 		case VERBOSE: {
-			setPattern(Level.INFO); //output only number of solutions and statistics
+			setCommon();
+			setLevel(Level.CONFIG,getSearchLogger());
 			break;
 		}
 		case SOLUTION: { 
-			setPattern(Level.FINEST); //output all solutions
+			setCommon();
+			setLevel(Level.FINER,getSearchLogger());
 			break;
 		}
 		case SEARCH: {
-			setPattern(Level.FINEST);
-			setLevel(Level.INFO, getBranchingLogger()); //ouput search logs (branching)
+			setCommon();
+			setLevel(Level.FINEST,getSearchLogger());
+			setLevel(Level.INFO,getBranchingLogger());
 			break;
 		}
-		case DEBUG: {
-			setPattern(Level.FINEST); 
-			setLevel(Level.FINEST, 
-					getBranchingLogger(), getPropagationLogger(), getMemoryLogger(),  //ouput search, propgation and memory logs
-					getParserLogger(), getAPILogger(), getUserLogger(), getSolverLogger(), getModelLogger()); //output model logs
-			break;
-		}
-		case FINEST: {
-			for (Logger logger : CHOCO_LOGGERS) {
-				logger.setLevel(Level.FINEST);
-				//modify also handlers
-				//				for (Handler h : logger.getHandlers()) {
-				//					h.setLevel(Level.FINEST);
-				//				}
-			}
-			break;
-		}
+		case FINEST: setLevel(Level.FINEST, CHOCO_LOGGERS);break;
 		default: {
-			getChocoLogger().log(Level.WARNING,"cant set logger verbosity: ${0}",verbosity);
-		}
+			getAPILogger().log(Level.WARNING,"cant set logger verbosity: ${0}\n Set default verbosity.",verbosity);
+			setVerbosity(Verbosity.DEFAULT);
 		}
 
-
+		}
 	}
-
-
-
 
 }
