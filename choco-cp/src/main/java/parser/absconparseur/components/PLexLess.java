@@ -22,27 +22,40 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.absconparseur.components;
 
-import parser.absconparseur.Toolkit;
+import gnu.trove.TIntIntHashMap;
 
-public abstract class PGlobalConstraint extends PConstraint {
-	public PGlobalConstraint(String name, PVariable[] scope) {
+import java.util.HashMap;
+
+
+public class PLexLess extends PGlobalConstraint {
+
+    public Object[] table;
+    private int[] tablePositionsInScope;
+    public int offset; // offset of variables and values/noccurrences
+
+    public PLexLess(String name, PVariable[] scope, Object[] table, int offset) {
 		super(name, scope);
+        this.table = table;
+        tablePositionsInScope = computeObjectPositionsInScope(table);
+        this.offset = offset;
 	}
 
-	protected int[] computeObjectPositionsInScope(Object[] objects) {
-		int[] t = new int[objects.length];
-		for (int i = 0; i < objects.length; i++)
-			t[i] = Toolkit.searchFirstObjectOccurrenceIn(objects[i], scope);
-		return t;
+	public long computeCostOf(int[] tuple) {
+        for(int v = 0;  v < offset; v++){
+            Object o1 = table[v];
+            int r1 = (o1 instanceof Integer ? (Integer) o1 : tuple[tablePositionsInScope[v]]);
+            Object o2 = table[v+offset];
+            int r2 = (o2 instanceof Integer ? (Integer) o2 : tuple[tablePositionsInScope[v+offset]]);
+            if(r1<r2){
+                return 0;
+            }else if(r1>r2){
+                return 1;
+            }
+        }
+		return 1;
 	}
 
-	// object is either an Integer, a PVariable or null
-	protected String computeStringRepresentationOf(Object object) {
-		if (object == null)
-			return "nil";
-		if (object instanceof PVariable)
-			return ((PVariable) object).getName();
-		return object.toString();
+	public String toString() {
+		return super.toString() + " : lexLess";
 	}
-
 }

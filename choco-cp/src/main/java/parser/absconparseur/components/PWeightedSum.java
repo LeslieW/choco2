@@ -51,7 +51,7 @@ public class PWeightedSum extends PGlobalConstraint {
 		return limit;
 	}
 
-	public int computeCostOf(int[] tuple) {
+	public long computeCostOf(int[] tuple) {
 		int sum = 0;
 		for (int i = 0; i < coeffs.length; i++)
 			sum += coeffs[i] * tuple[i];

@@ -73,7 +73,7 @@ public abstract class PConstraint {
 	 * For CSP, returns 0 is the constraint is satified and 1 if the constraint is violated. <br>
 	 * For WCSP, returns the cost for the given tuple.
 	 */
-	public abstract int computeCostOf(int[] tuple);
+	public abstract long computeCostOf(int[] tuple);
 
 	public String toString() {
 		String s = "  constraint " + name + " with arity = " + scope.length + ", scope = ";

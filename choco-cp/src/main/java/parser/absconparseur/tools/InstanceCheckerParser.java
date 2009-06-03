@@ -57,15 +57,21 @@ public class InstanceCheckerParser {
 
 	private Map<String, PRelation> mapOfRelations;
 
+	private Map<String, PFunction> mapOfFunctions;
+
 	private Map<String, PPredicate> mapOfPredicates;
 
 	private Map<String, PConstraint> mapOfConstraints;
+
+	private int maxConstraintArity;
 
 	private String[] domainNames;
 
 	private String[] variableNames;
 
 	private String[] relationNames;
+
+	private String[] functionNames;
 
 	private String[] predicateNames;
 
@@ -74,6 +80,10 @@ public class InstanceCheckerParser {
 	private boolean competitionControl = false;
 
 	//private int maximalCost;
+
+	public int getMaxConstraintRAity() {
+		return maxConstraintArity;
+	}
 
 	private List<PRelation> newRelations;
 
@@ -99,6 +109,10 @@ public class InstanceCheckerParser {
 		return mapOfRelations;
 	}
 
+	public Map<String, PFunction> getFunctionsMap() {
+		return mapOfFunctions;
+	}
+
 	public Map<String, PPredicate> getPredicatesMap() {
 		return mapOfPredicates;
 	}
@@ -119,6 +133,17 @@ public class InstanceCheckerParser {
 				if (!relationNames[i].equals(InstanceTokens.getRelationNameFor(i))) {
 					LOGGER.log(Level.INFO, " the {0}th relation is called {1}", new Object[]{Integer.valueOf(i), relationNames[i]});
 					return false;
+				}
+		if (functionNames != null) {
+			for (int i = 0; i < functionNames.length; i++)
+				if (!functionNames[i].equals(InstanceTokens.getFunctionNameFor(i)))
+					return false;
+			for (PFunction function : mapOfFunctions.values()) {
+				String[] formalParameters = function.getFormalParameters();
+				for (int i = 0; i < formalParameters.length; i++)
+					if (!formalParameters[i].equals(InstanceTokens.getParameterNameFor(i)))
+						return false;
+			}
 				}
 		if (predicateNames != null) {
 			for (int i = 0; i < predicateNames.length; i++)
@@ -314,13 +339,13 @@ public class InstanceCheckerParser {
 
 	private int[] weights;
 
-	private int[][] parseTuples(String name, int nbTuples, int arity, String semantics, String s) throws FormatException {
+	private int[][] parseTuples(String name, int nbTuples, int arity, String semantics, String textContent) throws FormatException {
 		int[][] tuples = new int[nbTuples][arity];
 		if (semantics.equals(InstanceTokens.SOFT))
 			weights = new int[nbTuples];
 		int currentCost = -2;
 
-		StringTokenizer st1 = new StringTokenizer(s, InstanceTokens.TUPLES_SEPARATOR);
+		StringTokenizer st1 = new StringTokenizer(textContent, InstanceTokens.TUPLES_SEPARATOR);
 		int i = 0;
 		while (st1.hasMoreTokens() && i < nbTuples) {
 			StringTokenizer st2 = new StringTokenizer(st1.nextToken().trim());
@@ -368,7 +393,7 @@ public class InstanceCheckerParser {
 		if (semantics.equals(InstanceTokens.SOFT)) {
 			String s = relationElement.getAttribute(InstanceTokens.DEFAULT_COST);
 			int defaultCost = s.equals(InstanceTokens.INFINITY) ? Integer.MAX_VALUE : parsePositiveInt("pb with defaultCost " + s + " of relation " + name, s);
-			return new PRelation(name, arity, nbTuples, semantics, tuples, weights, defaultCost);
+			return new PSoftRelation(name, arity, nbTuples, semantics, tuples, weights, defaultCost);
 		} else
 			return new PRelation(name, arity, nbTuples, semantics, tuples);
 	}
@@ -392,6 +417,54 @@ public class InstanceCheckerParser {
 		}
 	}
 
+	private PFunction parseFunction(Element functionElement) throws FormatException {
+		String name = functionElement.getAttribute(InstanceTokens.NAME);
+		checkAndRecord(name, "function");
+
+		Element parameters = XMLManager.getElementByTagNameFrom(functionElement, InstanceTokens.PARAMETERS, 0);
+		if (parameters == null)
+			throw new FormatException("Missing parameters child element in function " + name);
+		Element expression = XMLManager.getElementByTagNameFrom(functionElement, InstanceTokens.EXPRESSION, 0);
+		if (expression == null)
+			throw new FormatException("Missing expression child element in function " + name);
+		Element functional = XMLManager.getElementByTagNameFrom(expression, InstanceTokens.FUNCTIONAL, 0);
+		if (functional == null)
+			throw new FormatException("Missing functional child element in function " + name);
+		try {
+			PFunction function = new PFunction(name, parameters.getTextContent(), functional.getTextContent());
+			if (function.getFormalParameters() == null)
+				throw new FormatException("Function " + name + " involves twice a formal parameter ");
+			EvaluationManager evaluationManager = new EvaluationManager(function.getUniversalPostfixExpression());
+			if (!evaluationManager.controlArityOfEvaluators() || !evaluationManager.controlTypeOfEvaluators(false))
+				throw new FormatException("ill-formed expression " + functional.getTextContent() + " of function " + name);
+			return function;
+		} catch (Exception e) {
+			throw new FormatException("ill-formed expression " + functional.getTextContent() + " of function " + name);
+		}
+	}
+
+	private void parseFunctions(Element functionsElement) throws FormatException {
+		mapOfFunctions = new HashMap<String, PFunction>();
+		if (functionsElement == null) {
+			functionNames = new String[0];
+			return;
+		}
+		if (!type.equals(InstanceTokens.WCSP))
+			throw new FormatException("There is a function in the instance but the type is not declared as WCSP");
+
+		int nbFunctions = parsePositiveInt(InstanceTokens.NB_FUNCTIONS + " of element functions ", functionsElement.getAttribute(InstanceTokens.NB_FUNCTIONS));
+		functionNames = new String[nbFunctions];
+
+		NodeList nodeList = functionsElement.getElementsByTagName(InstanceTokens.FUNCTION);
+		if (nbFunctions != nodeList.getLength())
+			throw new FormatException("the value of nbFunctions does not correspond to the number of functions");
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			PFunction function = parseFunction((Element) nodeList.item(i));
+			mapOfFunctions.put(function.getName(), function);
+			functionNames[i] = function.getName();
+		}
+	}
+
 	private PPredicate parsePredicate(Element predicateElement) throws FormatException {
 		String name = predicateElement.getAttribute(InstanceTokens.NAME);
 		checkAndRecord(name, "predicate");
@@ -410,7 +483,7 @@ public class InstanceCheckerParser {
 			if (predicate.getFormalParameters() == null)
 				throw new FormatException("Predicate " + name + " involves twice a formal parameter ");
 			EvaluationManager evaluationManager = new EvaluationManager(predicate.getUniversalPostfixExpression());
-			if (!evaluationManager.controlArityOfEvaluators() || !evaluationManager.controlTypeOfEvaluators())
+			if (!evaluationManager.controlArityOfEvaluators() || !evaluationManager.controlTypeOfEvaluators(true))
 				throw new FormatException("ill-formed expression " + functional.getTextContent() + " of predicate " + name);
 			return predicate;
 		} catch (Exception e) {
@@ -462,27 +535,19 @@ public class InstanceCheckerParser {
 				throw new FormatException("The variable " + variables[i].getName() + " does not occur in the list of effective parameters of constraint " + name);
 	}
 
-	private int searchIn(PVariable v, PVariable[] variables) {
-		for (int i = 0; i < variables.length; i++)
-			if (variables[i] == v)
-				return i;
-		return -1;
-	}
-
-	private PVariable[] controlInvolvedVariablesWrtScope(List<PVariable> involvedVariablesInParameters, PVariable[] scope, String name) throws FormatException {
-		PVariable[] t = involvedVariablesInParameters.toArray(new PVariable[involvedVariablesInParameters.size()]);
-		if (t.length != scope.length)
+	private void controlInvolvedVariablesWrtScope(Set<PVariable> involvedVariablesInParameters, PVariable[] scope, String name) throws FormatException {
+		if (involvedVariablesInParameters.size() != scope.length)
 			throw new FormatException("The number of variables occuring in scope is different from the number of variables occuring in parameters of constraint " + name);
-        for (PVariable aScope : scope)
-            if (searchIn(aScope, t) == -1)
+		for (int i = 0; i < scope.length; i++)
+			if (!involvedVariablesInParameters.contains(scope[i]))
                 throw new FormatException("One variable of the scope of constraint " + name + " does not occur in parameters.");
-		return t;
 	}
 
 	private PConstraint parseElementConstraint(String name, PVariable[] scope, Element parameters) throws FormatException {
 		StringTokenizer st = new StringTokenizer(Toolkit.insertWhitespaceAround(parameters.getTextContent(), InstanceTokens.BRACKETS));
-		List<PVariable> involvedVariablesInParameters = new ArrayList<PVariable>();
+		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>();
 		PVariable index = mapOfVariables.get(nextToken(name, st)); // index is necessarily a variable
+
 		involvedVariablesInParameters.add(index);
 		if (!nextToken(name, st).equals("["))
 			throw new FormatException("One should find [ as second token of the parameters of constraint " + name);
@@ -506,6 +571,10 @@ public class InstanceCheckerParser {
 		if (st.hasMoreTokens())
 			throw new FormatException("Too many tokens in the parameters of constraint " + name);
 		controlInvolvedVariablesWrtScope(involvedVariablesInParameters, scope, name);
+
+		if (!index.getDomain().controlValueRanging(1, table.size()))
+			throw new FormatException("The domain of variable index not valid in constraint " + name);
+
 		return new PElement(name, scope, index, table.toArray(new Object[table.size()]), value);
 	}
 
@@ -560,9 +629,9 @@ public class InstanceCheckerParser {
 		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters));
 		if (!nextToken(name, st).equals("["))
 			throw new FormatException("One should find [ as first token of the parameters of constraint " + name);
-		List<PVariable> involvedVariablesInParameters = new ArrayList<PVariable>();
+		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>();
 		String token = nextToken(name, st);
-		List<PCumulative.Task> tasks = new ArrayList<PCumulative.Task>();
+		List<Task> tasks = new ArrayList<Task>();
 		while (!token.equals("]")) {
 			if (!token.equals("{"))
 				throw new FormatException("One should find { as first token of a task definition in constraint " + name);
@@ -595,14 +664,187 @@ public class InstanceCheckerParser {
 				throw new FormatException("One should find } as last token of a task definition in constraint " + name);
 			if (origin == null && duration == null || origin == null && end == null || duration == null && end == null)
 				throw new FormatException("Only one field may be absent in {origin,duration,end} in a task definition of constraint " + name);
-			tasks.add(new PCumulative.Task(origin, duration, end, height));
+			tasks.add(new Task(origin, duration, end, height));
 			token = nextToken(name, st);
 		}
 		controlInvolvedVariablesWrtScope(involvedVariablesInParameters, involvedVariables, name);
 		int limit = parseInt("limit value for cumulative constraint " + name, nextToken(name, st));
 		if (st.hasMoreTokens())
 			throw new FormatException("Too many tokens in the parameters of constraint " + name);
-		return new PCumulative(name, involvedVariables, tasks.toArray(new PCumulative.Task[tasks.size()]), limit);
+		return new PCumulative(name, involvedVariables, tasks.toArray(new Task[tasks.size()]), limit);
+	}
+
+    private PConstraint parseDisjunctiveConstraint(String name, PVariable[] involvedVariables, Element parameters) throws FormatException {
+		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters));
+		if (!nextToken(name, st).equals("["))
+			throw new FormatException("One should find [ as first token of the parameters of constraint " + name);
+		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>();
+		String token = nextToken(name, st);
+		List<Task> tasks = new ArrayList<Task>();
+		while (!token.equals("]")) {
+			if (!token.equals("{"))
+				throw new FormatException("One should find { as first token of a task definition in constraint " + name);
+			token = nextToken(name, st);
+			Object origin = mapOfVariables.get(token);
+			if (origin == null)
+				origin = token.equals(InstanceTokens.NIL) ? null : parseInt("origin field " + token + " in the parameters of constraint " + name, token);
+			else
+				involvedVariablesInParameters.add((PVariable) origin);
+			token = nextToken(name, st);
+			Object duration = mapOfVariables.get(token);
+			if (duration == null)
+				duration = token.equals(InstanceTokens.NIL) ? null : parseInt("duration field " + token + " in the parameters of constraint " + name, token);
+			else
+				involvedVariablesInParameters.add((PVariable) duration);
+			token = nextToken(name, st);
+			if (!token.equals("}"))
+				throw new FormatException("One should find } as last token of a task definition in constraint " + name);
+			if (origin == null || duration == null)
+				throw new FormatException("Only one field may be absent in {origin,duration} in a task definition of constraint " + name);
+            tasks.add(new Task(origin, duration, null, 1));
+			token = nextToken(name, st);
+		}
+		controlInvolvedVariablesWrtScope(involvedVariablesInParameters, involvedVariables, name);
+		if (st.hasMoreTokens())
+			throw new FormatException("Too many tokens in the parameters of constraint " + name);
+		return new PDisjunctive(name, involvedVariables, tasks.toArray(new Task[tasks.size()]));
+	}
+
+    private PConstraint parseGlobalCardinalityConstraint(String name, PVariable[] involvedVariables, Element parameters) throws FormatException {
+		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters));
+		if (!nextToken(name, st).equals("["))
+			throw new FormatException("One should find [ as first token of the parameters of constraint " + name);
+		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>();
+		String token = nextToken(name, st);
+        List<Object> table = new ArrayList<Object>();
+        while (!token.equals("]")) {
+			token = nextToken(name, st);
+			Object var = mapOfVariables.get(token);
+            if (var == null)
+                var = parseInt("Pb with the value token in parameters of constraint GCC " + name, token);
+            else
+                involvedVariablesInParameters.add((PVariable) var);
+            table.add(var);
+			token = nextToken(name, st);
+			if (var == null)
+				throw new FormatException("Only one field may be absent in {variable} in constraint " + name);
+			token = nextToken(name, st);
+		}
+        int nbVars = table.size();
+		while (!token.equals("]")) {
+			if (!token.equals("{"))
+				throw new FormatException("One should find { as first token of a value definition in constraint " + name);
+			token = nextToken(name, st);
+            Integer val = parseInt("value for GCC constraint " + name, nextToken(name, st));
+            table.add(val);
+			token = nextToken(name, st);
+			Object noccurrence = mapOfVariables.get(token);
+			if (noccurrence == null)
+				noccurrence = token.equals(InstanceTokens.NIL) ? null : parseInt("noccurence field " + token + " in the parameters of constraint " + name, token);
+			else
+				involvedVariablesInParameters.add((PVariable) noccurrence);
+            table.add(noccurrence);
+			token = nextToken(name, st);
+			if (!token.equals("}"))
+				throw new FormatException("One should find } as last token of a value definition in constraint " + name);
+			if (val == null || noccurrence == null)
+				throw new FormatException("Only one field may be absent in {val,noccurrence} in a value definition of constraint " + name);
+			token = nextToken(name, st);
+		}
+		controlInvolvedVariablesWrtScope(involvedVariablesInParameters, involvedVariables, name);
+		if (st.hasMoreTokens())
+			throw new FormatException("Too many tokens in the parameters of constraint " + name);
+		return new PGlobalCardinality(name, involvedVariables,
+                table.toArray(new Object[table.size()]),
+                nbVars);
+	}
+
+    private PConstraint parseLexLessConstraint(String name, PVariable[] involvedVariables, Element parameters) throws FormatException {
+		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters));
+		if (!nextToken(name, st).equals("["))
+			throw new FormatException("One should find [ as first token of the parameters of constraint " + name);
+		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>();
+		String token = nextToken(name, st);
+        List<Object> table = new ArrayList<Object>();
+        while (!token.equals("]")) {
+			token = nextToken(name, st);
+			Object var = mapOfVariables.get(token);
+            if (var == null)
+                var = parseInt("Pb with the value token in parameters of constraint LexLess " + name, token);
+            else
+                involvedVariablesInParameters.add((PVariable) var);
+            table.add(var);
+			token = nextToken(name, st);
+			if (var == null)
+				throw new FormatException("Only one field may be absent in constraint " + name);
+			token = nextToken(name, st);
+		}
+        int nbVars = table.size();
+        token = nextToken(name, st);
+        while (!token.equals("]")) {
+			token = nextToken(name, st);
+			Object var = mapOfVariables.get(token);
+            if (var == null)
+                var = parseInt("Pb with the value token in parameters of constraint LexLess " + name, token);
+            else
+                involvedVariablesInParameters.add((PVariable) var);
+            table.add(var);
+			token = nextToken(name, st);
+			if (var == null)
+				throw new FormatException("Only one field may be absent in constraint " + name);
+			token = nextToken(name, st);
+		}
+        controlInvolvedVariablesWrtScope(involvedVariablesInParameters, involvedVariables, name);
+        if (st.hasMoreTokens()) {
+            throw new FormatException("Too many tokens in the parameters of constraint " + name);
+        }
+		return new PLexLess(name, involvedVariables,
+                table.toArray(new Object[table.size()]),
+                nbVars);
+	}
+
+    private PConstraint parseLexLessEqConstraint(String name, PVariable[] involvedVariables, Element parameters) throws FormatException {
+		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters));
+		if (!nextToken(name, st).equals("["))
+			throw new FormatException("One should find [ as first token of the parameters of constraint " + name);
+		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>();
+		String token = nextToken(name, st);
+        List<Object> table = new ArrayList<Object>();
+        while (!token.equals("]")) {
+			token = nextToken(name, st);
+			Object var = mapOfVariables.get(token);
+            if (var == null)
+                var = parseInt("Pb with the value token in parameters of constraint LexLess " + name, token);
+            else
+                involvedVariablesInParameters.add((PVariable) var);
+            table.add(var);
+			token = nextToken(name, st);
+			if (var == null)
+				throw new FormatException("Only one field may be absent in constraint " + name);
+			token = nextToken(name, st);
+		}
+        int nbVars = table.size();
+        token = nextToken(name, st);
+        while (!token.equals("]")) {
+			token = nextToken(name, st);
+			Object var = mapOfVariables.get(token);
+            if (var == null)
+                var = parseInt("Pb with the value token in parameters of constraint LexLess " + name, token);
+            else
+                involvedVariablesInParameters.add((PVariable) var);
+            table.add(var);
+			token = nextToken(name, st);
+			if (var == null)
+				throw new FormatException("Only one field may be absent in constraint " + name);
+			token = nextToken(name, st);
+		}
+        controlInvolvedVariablesWrtScope(involvedVariablesInParameters, involvedVariables, name);
+        if (st.hasMoreTokens()) {
+            throw new FormatException("Too many tokens in the parameters of constraint " + name);
+        }
+		return new PLexLessEq(name, involvedVariables,
+                table.toArray(new Object[table.size()]),
+                nbVars);
 	}
 
 	private PConstraint parseConstraint(Element constraintElement) throws FormatException {
@@ -637,9 +879,21 @@ public class InstanceCheckerParser {
 		}
 
 		if (mapOfRelations.containsKey(reference)) {
+			if (constraintElement.getElementsByTagName(InstanceTokens.PARAMETERS).item(0) != null)
+				throw new FormatException("No parameters expected for the constraint " + name + " defined in extension.");
+
 			if (arity != mapOfRelations.get(reference).getArity())
 				throw new FormatException("The arity of constraint " + name + " does not correspond to the arity of the referenced relation.");
 			return new PExtensionConstraint(name, involvedVariables, mapOfRelations.get(reference));
+		}
+
+		if (mapOfFunctions.containsKey(reference)) {
+			Element parameters = (Element) constraintElement.getElementsByTagName(InstanceTokens.PARAMETERS).item(0);
+			String[] effectiveParameters = Toolkit.buildTokensFromString(parameters.getTextContent());
+			if (effectiveParameters.length != mapOfFunctions.get(reference).getFormalParameters().length)
+				throw new FormatException("The number of effective parameters of constraint " + name + " does not correspond to the number of formal parameters of the referenced function.");
+			checkEffectiveParameters(name, involvedVariables, effectiveParameters);
+			return new PIntensionConstraint(name, involvedVariables, mapOfFunctions.get(reference), parameters.getTextContent());
 		}
 
 		if (mapOfPredicates.containsKey(reference)) {
@@ -662,6 +916,18 @@ public class InstanceCheckerParser {
 		if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.CUMULATIVE)))
 			return parseCumulativeConstraint(name, involvedVariables, parameters);
 
+        if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.DISJUNCTIVE)))
+            return parseDisjunctiveConstraint(name, involvedVariables, parameters);
+        if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.GLOBALCARDINALITY)))
+            return parseGlobalCardinalityConstraint(name, involvedVariables, parameters);
+        if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.LEXLESS)))
+			return parseLexLessConstraint(name, involvedVariables, parameters);
+        if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.LEXLESSEQ)))
+			return parseLexLessEqConstraint(name, involvedVariables, parameters);
+//        if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.NVALUE)))
+//			return parseNValueConstraint(name, involvedVariables, parameters);
+
+
 		throw new FormatException("There is an unknown reference " + reference + " for constraint " + name);
 	}
 
@@ -676,10 +942,13 @@ public class InstanceCheckerParser {
 		NodeList nodeList = constraintsElement.getElementsByTagName(InstanceTokens.CONSTRAINT);
 		if (nbConstraints != nodeList.getLength())
 			throw new FormatException("the value of nbConstraints does not correspond to the number of constraints which is " + nodeList.getLength());
+		maxConstraintArity = -1;
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			PConstraint constraint = parseConstraint((Element) nodeList.item(i));
 			mapOfConstraints.put(constraint.getName(), constraint);
 			constraintNames[i] = constraint.getName();
+			if (constraint.getArity() > maxConstraintArity)
+				maxConstraintArity = constraint.getArity();
 		}
 
 		if (type.equals(InstanceTokens.WCSP)) {
@@ -693,14 +962,6 @@ public class InstanceCheckerParser {
 				// if (competitionControl && (initialCost != 0 || maximalCost == Integer.MAX_VALUE))
 				throw new FormatException("InitialCost or maximalCost does not respect restrictions of the 2008 competition");
 
-			for (PRelation relation : mapOfRelations.values()) {
-				int max = relation.getDefaultCost();
-				for (int w : relation.getWeights())
-					if (w > max)
-						max = w;
-				if (max > maximalCost)
-					throw new FormatException("A tuple (or defaultCost) in relation " + relation.getName() + " has a cost strictly greater than maximalCost");
-			}
 		}
 	}
 
@@ -732,6 +993,8 @@ public class InstanceCheckerParser {
 		parseVariables(XMLManager.getFirstElementByTagNameFromRoot(document, InstanceTokens.VARIABLES));
 		logic.spot();
 		parseRelations(XMLManager.getFirstElementByTagNameFromRoot(document, InstanceTokens.RELATIONS));
+		logic.spot();
+		parseFunctions(XMLManager.getFirstElementByTagNameFromRoot(document, InstanceTokens.FUNCTIONS));
 		logic.spot();
 		parsePredicates(XMLManager.getFirstElementByTagNameFromRoot(document, InstanceTokens.PREDICATES));
 		logic.spot();
@@ -781,7 +1044,7 @@ public class InstanceCheckerParser {
 
 	private boolean isPredicateReferenced(PPredicate predicate) {
 		for (PConstraint constraint : mapOfConstraints.values())
-			if (constraint instanceof PIntensionConstraint && ((PIntensionConstraint) constraint).getPredicate() == predicate)
+			if (constraint instanceof PIntensionConstraint && ((PIntensionConstraint) constraint).getFunction() == predicate)
 				return true;
 		return false;
 	}
@@ -858,7 +1121,7 @@ public class InstanceCheckerParser {
 		checkValidityOfConstraints();
 	}
 
-	private boolean b; // int nbTuples; // if negative then nbConflcits else if positive then nbSupports ; +1 is always added to avoid 0
+	private String semantics;
 
 	private int[][] buildTuplesOf(PConstraint constraint, String[] canonicalPredicate) {
 		int[][] values = new int[constraint.getArity()][];
@@ -870,30 +1133,92 @@ public class InstanceCheckerParser {
 
 		EvaluationManager evaluationManager = new EvaluationManager(canonicalPredicate);
 
-		LexicographicIterator li = new LexicographicIterator(values);
-		int[] tuple = li.getFirstTuple();
+		LexicographicIterator lexicographicIterator = new LexicographicIterator(values);
+		int[] tuple = lexicographicIterator.getFirstTuple();
 		while (tuple != null) {
-			if (evaluationManager.checkValues(tuple))
+			if (evaluationManager.evaluate(tuple) == 1)
 				supports.add(tuple.clone());
 			else
 				conflicts.add(tuple.clone());
-			tuple = li.getNextTupleAfter(tuple);
+			tuple = lexicographicIterator.getNextTupleAfter(tuple);
 		}
 
 		if (supports.size() <= conflicts.size()) {
-			b = true;
+			semantics = InstanceTokens.SUPPORTS;
 			return supports.toArray(new int[0][0]);
 		}
-		b = false;
+		semantics = InstanceTokens.CONFLICTS;
 		return conflicts.toArray(new int[0][0]);
 	}
 
 	private PRelation getSimilarRelation(int arity, int nbTuples, String semantics, int[][] tuples) {
 		for (PRelation relation : mapOfRelations.values())
-			if (relation.isSimilarTo(arity, nbTuples, semantics, tuples))
+			if (!(relation instanceof PSoftRelation) && relation.isSimilarTo(arity, nbTuples, semantics, tuples))
 				return relation;
 		for (PRelation relation : newRelations)
-			if (relation.isSimilarTo(arity, nbTuples, semantics, tuples))
+			if (!(relation instanceof PSoftRelation) && relation.isSimilarTo(arity, nbTuples, semantics, tuples))
+				return relation;
+		return null;
+	}
+
+	private int defaultCost;
+
+	private int[][] buildSoftTuplesOf(PConstraint constraint, String[] canonicalPredicate) throws FormatException {
+		int[][] values = new int[constraint.getArity()][];
+		double size = 1;
+		for (int i = 0; i < values.length; i++) {
+			values[i] = constraint.getScope()[i].getDomain().getValues();
+			size *= values[i].length;
+		}
+		if (size > 100000)
+			throw new FormatException("the constraint " + constraint.getName() + " is too difficult to translate (more than 100000 tuples to consider)");
+
+		int[][] tuples = new int[(int) size][];
+		weights = new int[(int) size];
+		Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+
+		EvaluationManager evaluationManager = new EvaluationManager(canonicalPredicate);
+
+		LexicographicIterator lexicographicIterator = new LexicographicIterator(values);
+		int[] tuple = lexicographicIterator.getFirstTuple();
+		int cnt = 0;
+		defaultCost = -1;
+		int defaultCostCnt = -1;
+		while (tuple != null) {
+			int weight = (int) (evaluationManager.evaluate(tuple));
+			tuples[cnt] = tuple.clone();
+			weights[cnt] = weight;
+			Integer i = map.get(weight);
+			if (i == null)
+				i = 0;
+			map.put(weight, i + 1);
+			if (i + 1 > defaultCostCnt) {
+				defaultCost = weight;
+				defaultCostCnt = i + 1;
+			}
+			tuple = lexicographicIterator.getNextTupleAfter(tuple);
+			cnt++;
+		}
+		int[][] t = new int[(int) size - defaultCostCnt][];
+		int[] w = new int[(int) size - defaultCostCnt];
+		cnt = 0;
+		for (int i = 0; i < tuples.length; i++) {
+			if (weights[i] == defaultCost)
+				continue;
+			t[cnt] = tuples[i];
+			w[cnt] = weights[i];
+			cnt++;
+		}
+		weights = w;
+		return t;
+	}
+
+	private PRelation getSimilarSoftRelation(int arity, int nbTuples, String semantics, int[][] tuples, int[] weights, int defaultCost) {
+		for (PRelation relation : mapOfRelations.values())
+			if (relation instanceof PSoftRelation && ((PSoftRelation) relation).isSimilarTo(arity, nbTuples, semantics, tuples, weights, defaultCost))
+				return relation;
+		for (PRelation relation : newRelations)
+			if (relation instanceof PSoftRelation && ((PSoftRelation) relation).isSimilarTo(arity, nbTuples, semantics, tuples, weights, defaultCost))
 				return relation;
 		return null;
 	}
@@ -905,13 +1230,30 @@ public class InstanceCheckerParser {
 	}
 
 	private int convert(PIntensionConstraint constraint, int limit) throws FormatException {
-		int[][] tuples = buildTuplesOf(constraint, constraint.getUniversalPostfixExpression());
-		String semantics = (b ? InstanceTokens.SUPPORTS : InstanceTokens.CONFLICTS);
+		int arity = constraint.getArity();
+		if (!(constraint.getFunction() instanceof PPredicate)) {
+			int[][] tuples = buildSoftTuplesOf(constraint, constraint.getUniversalPostfixExpression());
+			String semantics = InstanceTokens.SOFT;
 
-		PRelation relation = getSimilarRelation(constraint.getArity(), tuples.length, semantics, tuples);
+			PRelation relation = getSimilarSoftRelation(arity, tuples.length, semantics, tuples, weights, defaultCost);
 		if (relation == null) {
 			limit = getRelationNameFrom(limit);
-			relation = new PRelation(InstanceTokens.getRelationNameFor(limit), constraint.getArity(), tuples.length, semantics, tuples);
+				relation = new PSoftRelation(InstanceTokens.getRelationNameFor(limit), arity, tuples.length, semantics, tuples, weights, defaultCost);
+			newRelations.add(relation);
+			limit++;
+		}
+		constraintsToNewRelations.put(constraint.getName(), relation.getName());
+		PExtensionConstraint c = new PExtensionConstraint(constraint.getName(), constraint.getScope(), relation);
+		mapOfConstraints.put(c.getName(), c);
+		// constraint.setRelation(relation);
+		return limit;
+	}
+
+		int[][] tuples = buildTuplesOf(constraint, constraint.getUniversalPostfixExpression());
+		PRelation relation = getSimilarRelation(arity, tuples.length, semantics, tuples);
+		if (relation == null) {
+			limit = getRelationNameFrom(limit);
+			relation = new PRelation(InstanceTokens.getRelationNameFor(limit), arity, tuples.length, semantics, tuples);
 			newRelations.add(relation);
 			limit++;
 		}
@@ -923,7 +1265,7 @@ public class InstanceCheckerParser {
 	}
 
 	public void convertToExtension() throws FormatException {
-		if (mapOfPredicates.size() == 0)
+		if (mapOfFunctions.size() == 0 && mapOfPredicates.size() == 0)
 			return;
 
 		newRelations = new ArrayList<PRelation>();
@@ -948,13 +1290,16 @@ public class InstanceCheckerParser {
 	}
 
 	public void updateStructures() {
+		mapOfFunctions.clear();
+		functionNames = new String[0];
 		mapOfPredicates.clear();
 		predicateNames = new String[0];
 
 		int nbOldRelations = mapOfRelations.size();
 		String[] t = new String[nbOldRelations + newRelations.size()];
 
-        System.arraycopy(relationNames, 0, t, 0, nbOldRelations);
+		for (int i = 0; i < nbOldRelations; i++)
+			t[i] = relationNames[i];
 		Iterator<PRelation> it = newRelations.iterator();
 		for (int i = nbOldRelations; i < t.length; i++) {
 			PRelation relation = it.next();

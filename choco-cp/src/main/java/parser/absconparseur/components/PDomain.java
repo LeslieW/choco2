@@ -84,8 +84,7 @@ public class PDomain {
 		return Math.max(Math.abs(values[0]), Math.abs(values[values.length - 1]));
 	}
 
-	public PDomain(String
-			name, int[] values) {
+	public PDomain(String name, int[] values) {
 		this.name = name;
 		this.values = values;
         this.index = Integer.parseInt(name.substring(1));
@@ -129,6 +128,13 @@ public class PDomain {
 		else
 			sb.append(previousValue);
 		return sb.toString();
+	}
+
+	public boolean controlValueRanging(int min, int max) {
+		for (int v : values)
+			if (v < min || v > max)
+				return false;
+		return true;
 	}
 
     public int hashCode() {

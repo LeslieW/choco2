@@ -169,9 +169,9 @@ public class SolutionChecker {
 		}
 
 		List<String> list = new LinkedList<String>();
-		int sum = 0;
+		long sum = 0;
 		for (PConstraint constraint : parser.getMapOfConstraints().values()) {
-			int cost = constraint.computeCostOf(buildTupleFor(constraint, solution));
+			long cost = constraint.computeCostOf(buildTupleFor(constraint, solution));
 			if (cost > 0)
 				list.add(constraint.getName());
 			sum += cost;

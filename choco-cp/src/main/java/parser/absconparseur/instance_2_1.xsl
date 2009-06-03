@@ -108,6 +108,26 @@
   </relation>
 </xsl:template>
 
+<xsl:template match="functions">
+  <xsl:text>&cr;</xsl:text>
+  <functions> 
+    <xsl:attribute name="nbFunctions"><xsl:value-of select="@nbFunctions"/></xsl:attribute>
+    <xsl:apply-templates select="function"/>
+    <xsl:text>&cr;</xsl:text>
+  </functions>
+  <xsl:text>&cr;</xsl:text>
+</xsl:template>
+
+<xsl:template match="function">
+  <xsl:text>&cr;</xsl:text>
+  <function>
+    <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
+     <xsl:apply-templates select="parameters"/> 
+     <xsl:apply-templates select="expression"/> 
+    <xsl:text>&cr;</xsl:text>
+  </function>
+</xsl:template>
+
 <xsl:template match="predicates">
   <xsl:text>&cr;</xsl:text>
   <predicates> 
@@ -117,7 +137,6 @@
   </predicates>
   <xsl:text>&cr;</xsl:text>
 </xsl:template>
-
 
 <xsl:template match="predicate">
   <xsl:text>&cr;</xsl:text>

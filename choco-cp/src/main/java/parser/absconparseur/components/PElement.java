@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.absconparseur.components;
 
+import parser.absconparseur.Toolkit;
+
 public class PElement extends PGlobalConstraint {
 	private PVariable index;
 
@@ -29,26 +31,26 @@ public class PElement extends PGlobalConstraint {
 
 	private Object value;
 
+	private int offset=1; // by default, indexing starts from 1
+
 	private int indexPositionInScope;
 
 	private int[] tablePositionsInScope;
 	
 	private int valuePositionInScope;
 
-	
 	public PElement(String name, PVariable[] scope, PVariable indexVariable, Object[] table, Object value) {
 		super(name, scope);
 		this.index = indexVariable;
 		this.table = table;
 		this.value = value;
-		indexPositionInScope = getPositionInScope(indexVariable);
+		indexPositionInScope = Toolkit.searchFirstObjectOccurrenceIn(indexVariable, scope);
 		tablePositionsInScope = computeObjectPositionsInScope(table);
-		valuePositionInScope = computeObjectPositionInScope(value);
+		valuePositionInScope = Toolkit.searchFirstObjectOccurrenceIn(value, scope);
 	}
 
-
-	public int computeCostOf(int[] tuple) {
-		int indexInTable = tuple[indexPositionInScope];
+	public long computeCostOf(int[] tuple) {
+		int indexInTable = tuple[indexPositionInScope]-offset;
 		Object object = table[indexInTable];
 		int result = (object instanceof Integer ? (Integer) object : tuple[tablePositionsInScope[indexInTable]]);
 		boolean satisfied = result == (value instanceof Integer ? (Integer) value : tuple[valuePositionInScope]);

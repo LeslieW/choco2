@@ -22,13 +22,18 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.chocogen;
 
-import static choco.Choco.*;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
+import static choco.Choco.*;
+import static choco.Choco.disjunctive;
 import parser.absconparseur.components.*;
 import parser.absconparseur.tools.InstanceParser;
+import gnu.trove.TIntIntHashMap;
+import gnu.trove.TIntObjectHashMap;
+
+import java.util.Arrays;
 
 /**
  * The factory for global constraints
@@ -43,16 +48,16 @@ public class GloConstraintFactory extends ObjectFactory {
 		int maxdszise = 0;
 		boolean holes = false;
 		int nbnoninstvar = 0;
-		for (int i = 0; i < vars.length; i++) {
-			int span = vars[i].getUppB() - vars[i].getLowB() + 1;
-			if (vars[i].getDomainSize() > maxdszise) {
-				maxdszise = vars[i].getDomainSize();
-			}
-			if (vars[i].getDomainSize() > 1) nbnoninstvar++;
-			if (ChocoFactory.ratioHole * span > vars[i].getDomainSize()) {
-				holes = true;
-			}
-		}
+        for (IntegerVariable var : vars) {
+            int span = var.getUppB() - var.getLowB() + 1;
+            if (var.getDomainSize() > maxdszise) {
+                maxdszise = var.getDomainSize();
+            }
+            if (var.getDomainSize() > 1) nbnoninstvar++;
+            if (ChocoFactory.ratioHole * span > var.getDomainSize()) {
+                holes = true;
+            }
+        }
 
 		if (vars.length <= 3) {
 			return allDifferent("cp:clique", vars);
@@ -61,6 +66,41 @@ public class GloConstraintFactory extends ObjectFactory {
 			return allDifferent("cp:ac", vars);
 		} else
 			return allDifferent("cp:bc", vars);
+	}
+
+    public static Constraint buildGcc(IntegerVariable[] vars, Integer[] values, IntegerVariable[] noccurrences) {
+		int maxdszise = 0;
+		boolean holes = false;
+		int nbnoninstvar = 0;
+        int[] low = new int[noccurrences.length];
+        int[] up =  new int[noccurrences.length];
+        boolean constant = true;
+        int noc = 0;
+        while(constant && noc < noccurrences.length){
+            constant &= noccurrences[noc].isConstant();
+            low[noc] = noccurrences[noc].getLowB();
+            up[noc] = noccurrences[noc++].getUppB();
+        }
+        if(constant){
+            for (IntegerVariable var : vars) {
+                int span = var.getUppB() - var.getLowB() + 1;
+                if (var.getDomainSize() > maxdszise) {
+                    maxdszise = var.getDomainSize();
+                }
+                if (var.getDomainSize() > 1) nbnoninstvar++;
+                if (ChocoFactory.ratioHole * span > var.getDomainSize()) {
+                    holes = true;
+                }
+            }
+            if (holes || (maxdszise <= 30 &&
+                    (vars.length <= 10 || (nbnoninstvar < vars.length && nbnoninstvar < 20)))) {
+                return globalCardinality("cp:ac", vars, values[0], values[values.length-1], low, up);
+            }else{
+                return globalCardinality("cp:bc", vars, values[0], values[values.length-1], low, up);
+            }
+        }
+        else
+			return globalCardinality(vars, values[0], values[values.length-1], noccurrences);
 	}
 
 	public Constraint[] makeGlobalConstraint(PGlobalConstraint pgc) {
@@ -81,7 +121,7 @@ public class GloConstraintFactory extends ObjectFactory {
                 IntegerVariable end;
 				int duration;
 				for (int i = 0; i < n; i++) {
-					PCumulative.Task t = pc.getTasks()[i];
+					Task t = pc.getTasks()[i];
 					start = ((PVariable) t.getOrigin()).getChocovar();
 					duration = (Integer) t.getDuration();
                     if (t.getEnd() == null) {
@@ -99,7 +139,7 @@ public class GloConstraintFactory extends ObjectFactory {
             IntegerVariable end;
 			int[] heights = new int[n];
 			for (int i = 0; i < n; i++) {
-				PCumulative.Task t = pc.getTasks()[i];
+				Task t = pc.getTasks()[i];
                 start = ((PVariable) t.getOrigin()).getChocovar();
                 duration = constant("dur_" + i, (Integer) t.getDuration());
                 heights[i] = (Integer) t.getHeight();
@@ -160,6 +200,108 @@ public class GloConstraintFactory extends ObjectFactory {
 					return new Constraint[]{neq(scalar(coef, vars), pws.getLimit())};
 			}
 		}
+        if(pgc instanceof PDisjunctive){
+            PDisjunctive pd = (PDisjunctive)pgc;
+            int n = pd.getTasks().length;
+            TaskVariable[] tasks = new TaskVariable[n];
+            IntegerVariable start, duration, end;
+			for (int i = 0; i < n; i++) {
+                Task t = pd.getTasks()[i];
+                if(t.getOrigin() instanceof PVariable){
+                    start = ((PVariable) t.getOrigin()).getChocovar();
+                }else {
+                    start = constant((Integer)t.getOrigin());
+                }
+                if(t.getDuration() instanceof PVariable){
+                    duration = ((PVariable) t.getDuration()).getChocovar();
+                }else {
+                    duration = constant((Integer)t.getDuration());
+                }
+                end = makeIntVar("end_" + i, start.getLowB() + duration.getLowB(), start.getUppB() + duration.getUppB());
+
+                tasks[i] = new TaskVariable("t", start, end, duration);
+            }
+            return new Constraint[]{disjunctive(tasks)};
+        }
+        if(pgc instanceof PGlobalCardinality){
+            PGlobalCardinality pgcc = (PGlobalCardinality)pgc;
+            IntegerVariable[] vars = new IntegerVariable[pgcc.offset];
+            int min = Integer.MAX_VALUE;
+            int max = Integer.MIN_VALUE;
+            for(int v = 0; v < pgcc.offset; v++){
+                if(pgcc.table[v] instanceof PVariable){
+                    vars[v] = ((PVariable)pgcc.table[v]).getChocovar();
+                }else{
+                    vars[v] = constant((Integer)pgcc.table[v]);
+                }
+                min = Math.min(min, vars[v].getLowB());
+                max = Math.max(max, vars[v].getUppB());
+            }
+            TIntObjectHashMap counts = new TIntObjectHashMap();
+            for(int i = pgcc.offset; i < pgcc.table.length; i+=2){
+                counts.put((Integer)pgcc.table[i], pgcc.table[i+1]);
+            }
+
+            IntegerVariable[] noccurrences = new IntegerVariable[max-min+1];
+            Integer[] values = new Integer[max-min+1];
+            for(int i = min; i <= max; i++){
+                values[i-min] = i;
+                if(counts.containsKey(i)){
+                    if(counts.get(i) instanceof PVariable){
+                        noccurrences[i-min] = ((PVariable)counts.get(i)).getChocovar();
+                    }else{
+                        noccurrences[i-min] = constant((Integer)counts.get(i));    
+                    }
+                }else{
+                    noccurrences[i-min] = constant(0);
+                }
+            }
+            return new Constraint[]{buildGcc(vars, values, noccurrences)};
+        }
+        if(pgc instanceof PLexLess){
+            PLexLess pll = (PLexLess)pgc;
+            IntegerVariable[] vars1 = new IntegerVariable[pll.offset];
+            IntegerVariable[] vars2 = new IntegerVariable[pll.table.length - pll.offset];
+            for(int i = 0; i < pll.table.length; i++){
+                Object v = pll.table[i];
+                if(i < pll.offset){
+                    if(v instanceof PVariable){
+                        vars1[i] = ((PVariable)v).getChocovar();
+                    }else{
+                        vars1[i] = constant((Integer)v);
+                    }
+                }else{
+                    if(v instanceof PVariable){
+                        vars2[i - pll.offset] = ((PVariable)v).getChocovar();
+                    }else{
+                        vars1[i - pll.offset] = constant((Integer)v);
+                    }
+                }
+            }
+            return new Constraint[]{lex(vars1, vars2)};
+        }
+        if(pgc instanceof PLexLessEq){
+            PLexLessEq plle = (PLexLessEq)pgc;
+            IntegerVariable[] vars1 = new IntegerVariable[plle.offset];
+            IntegerVariable[] vars2 = new IntegerVariable[plle.table.length - plle.offset];
+            for(int i = 0; i < plle.table.length; i++){
+                Object v = plle.table[i];
+                if(i < plle.offset){
+                    if(v instanceof PVariable){
+                        vars1[i] = ((PVariable)v).getChocovar();
+                    }else{
+                        vars1[i] = constant((Integer)v);
+                    }
+                }else{
+                    if(v instanceof PVariable){
+                        vars2[i - plle.offset] = ((PVariable)v).getChocovar();
+                    }else{
+                        vars1[i - plle.offset] = constant((Integer)v);
+                    }
+                }
+            }
+            return new Constraint[]{lexeq(vars1, vars2)};
+        }
 		throw new Error("Unknown global constraint");
 	}
 

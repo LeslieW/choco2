@@ -27,7 +27,7 @@ import parser.absconparseur.intension.PredicateManager;
 
 import static java.lang.Integer.parseInt;
 
-public class PPredicate { 
+public class PPredicate  extends PFunction {
 
 	private String name;
 
@@ -52,21 +52,13 @@ public class PPredicate {
 	}
 
 	public PPredicate(String name, String formalParametersExpression, String functionalExpression) {
+		super(name, formalParametersExpression, functionalExpression);		
 		this.name = name;
 		this.formalParameters =  PredicateManager.extractFormalParameters(formalParametersExpression,true);
 		this.functionalExpression = functionalExpression.trim();
 		this.unversalPostfixExpression = PredicateManager.buildUniversalPostfixExpression(functionalExpression, formalParameters);
         this.index = parseInt(name.substring(1).replaceAll("_", "00"));
     }
-
-    public PPredicate(String name, String[] formalParametersExpression, String functionalExpression) {
-		this.name = name;
-		this.formalParameters =  formalParametersExpression;
-		this.functionalExpression = functionalExpression.trim();
-		this.unversalPostfixExpression = PredicateManager.buildUniversalPostfixExpression(functionalExpression, formalParameters);
-        this.index = parseInt(name.substring(1).replaceAll("_", "000"));
-    }
-
 
     public void setFormalParameters(String[] formalParameters) {
         this.formalParameters = formalParameters;

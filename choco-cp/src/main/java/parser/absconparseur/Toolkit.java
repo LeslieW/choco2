@@ -72,15 +72,26 @@ public class Toolkit {
 		return "used = " + df.format(rt.totalMemory() - rt.freeMemory()) + " free = " + rt.freeMemory() + " total = " + rt.totalMemory() + " max = " + rt.maxMemory();
 	}
 
+	public static int[] buildArrayWithOnlyValue(int length, int value) {
+		int[] t = new int[length];
+		Arrays.fill(t, value);
+		return t;
+	}
 	
-	
-	public static int[] buildArrayWithIncrementalValues(int length) {
+	public static int[] buildIntArrayWithIncrementalValues(int length,int startingValue) {
 		int[] t = new int[length];
 		for (int i = 0; i < t.length; i++)
-			t[i] = i;
+			t[i] = startingValue++;
 		return t;
 	}
 
+	public static boolean isArrayOnlyContaining(int[] t, int value) {
+		for (int i = 0; i < t.length; i++) {
+			if (t[i] != value)
+				return false;
+		}
+		return true;
+	}
 	
 	public static int countNbOccurences(int[] t, int value) {
 		int cpt = 0;
@@ -89,8 +100,6 @@ public class Toolkit {
 				cpt++;
 		return cpt;
 	}
-
-	
 	
 	public static void copy(String srcFileName, String dstFileName) {
 		try {
@@ -245,9 +254,16 @@ public class Toolkit {
 			dstSupport[i] = srcSupport[i];
 	}
 
-	public static int searchIn(String s, String[] t) {
+	public static int searchFirstStringOccurrenceIn(String s, String[] t) {
 		for (int i = 0; i < t.length; i++)
 			if (t[i].equals(s))
+				return i;
+		return -1;
+	}
+	
+	public static int searchFirstObjectOccurrenceIn(Object object, Object[] objects) {
+		for (int i = 0; i < objects.length; i++)
+			if (object == objects[i])
 				return i;
 		return -1;
 	}
@@ -272,7 +288,6 @@ public class Toolkit {
 		return sb.toString();
 	}
 	
-	
 	public static String[] buildTokensFromString(String s) {
 		StringTokenizer st = new StringTokenizer(s);
 		String[] tokens = new String[st.countTokens()];
@@ -280,8 +295,6 @@ public class Toolkit {
 			tokens[i] = st.nextToken();
 		return tokens;
 	}
-	
-	
 	
 	/**
 	 * Returns a string built from the given first one by inserting (if necessary) a whitespace before and after each occurence of a character of the second one.
