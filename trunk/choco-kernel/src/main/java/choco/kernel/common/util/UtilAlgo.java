@@ -26,10 +26,10 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 
 import java.lang.reflect.Array;
+import static java.lang.reflect.Array.*;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.ArrayUtils;
 
 /*
  * Created by IntelliJ IDEA.
@@ -45,6 +45,8 @@ public class UtilAlgo {
 	 * to a table of integers.
 	 * @param a : the integer table to be sorted
 	 * @param vs : the intvar table to be sorted according a
+     * @param left
+     * @param right
 	 */
 	public static void quicksort(int[] a, IntDomainVar[] vs, int left, int right) {
 		if (right <= left) {
@@ -60,7 +62,7 @@ public class UtilAlgo {
 		int j = right;
 		while (true) {
 			while (a[++i] < a[right]) {
-				;                               // a[right] acts as sentinel
+                // a[right] acts as sentinel
 			}
 			while (a[right] < a[--j]) {
 				if (j == left) {
@@ -95,7 +97,7 @@ public class UtilAlgo {
 	public static <T> T[] append(T[]... toAppend)
 	{
 		int total = ChocoUtil.length(toAppend);
-		T[] ret = (T[]) Array.newInstance(toAppend.getClass().getComponentType().getComponentType(),total);
+		T[] ret = (T[]) newInstance(toAppend.getClass().getComponentType().getComponentType(),total);
 		int pos = 0 ;
 		for (T[] tab : toAppend) {
 			if(tab != null) {
@@ -111,7 +113,9 @@ public class UtilAlgo {
 
 	/**
 	 * Reverse a table of integer and variables (use for api on linear combination)
-	 */
+     * @param tab array of integer to reverse
+     * @param vs array of variables to reverse
+     */
 	public static void reverse(int[] tab, IntDomainVar[] vs) {
 		int[] revtab = new int[tab.length];
 		IntDomainVar[] revvs = new IntDomainVar[vs.length];
@@ -127,7 +131,8 @@ public class UtilAlgo {
 
 	/**
 	 * Reverse all signs of the a given int table.
-	 */
+     * @param tab array to inverse
+     */
 	public static void inverseSign(int[] tab) {
 		for (int i = 0; i < tab.length; i++) {
 			tab[i] = - tab[i];
@@ -158,7 +163,7 @@ public class UtilAlgo {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> void permutation(int[] permutation,T[] tab) {
-		T[] tmp= (T[]) Array.newInstance(tab[0].getClass(),tab.length);
+		T[] tmp= (T[]) newInstance(tab[0].getClass(),tab.length);
 		System.arraycopy(tab, 0, tmp, 0, tab.length);
 		for (int i = 0; i < tab.length; i++) {
 			tab[i]=tmp[permutation[i]];
@@ -172,7 +177,7 @@ public class UtilAlgo {
     public static <T> T[] toArray(Class c, List<T> list){
 //        T[] array = (T[])Array.newInstance(c, list.size());
 //        return list.toArray(array);
-        return list.toArray((T[])Array.newInstance(c, list.size()));
+        return list.toArray((T[]) newInstance(c, list.size()));
     }
 
 	public static <T> T[] toArray(ArrayList<T> list){
@@ -181,10 +186,10 @@ public class UtilAlgo {
 
 	public static <T> T[][] transpose(T[][] matrix)
 	{
-		T[][] ret = (T[][]) Array.newInstance(matrix.getClass().getComponentType(),matrix[0].length);
+		T[][] ret = (T[][]) newInstance(matrix.getClass().getComponentType(),matrix[0].length);
 		for (int i  = 0 ; i < ret.length ;i++)
 		{
-			ret[i] = (T[]) Array.newInstance(matrix[0].getClass().getComponentType(),matrix.length);
+			ret[i] = (T[]) newInstance(matrix[0].getClass().getComponentType(),matrix.length);
 		}
 
 		for (int i = 0 ; i < matrix.length ; i++)
@@ -199,7 +204,7 @@ public class UtilAlgo {
 	{
 		int sz = 0;
 		for (T[] t : matrix) sz+=t.length;
-		T[] ret = (T[]) Array.newInstance(matrix[0].getClass().getComponentType(),sz);
+		T[] ret = (T[]) newInstance(matrix[0].getClass().getComponentType(),sz);
 		int k = 0 ;
 		for (T[] ta : matrix)
 		{

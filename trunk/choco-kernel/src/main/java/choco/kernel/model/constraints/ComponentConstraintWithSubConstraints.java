@@ -30,8 +30,6 @@ import choco.kernel.model.variables.Variable;
 
 import java.util.*;
 
-import org.apache.commons.lang.ArrayUtils;
-
 /*
 * User : charles
 * Mail : cprudhom(a)emn.fr
@@ -73,10 +71,10 @@ public class ComponentConstraintWithSubConstraints extends ComponentConstraint{
 
 
     private <V extends Variable> void recordIndexes(V[] vars){
-        for(int i = 0; i < vars.length; i++){
-            if(!listVars.contains(vars[i])){
-                listVars.add(vars[i]);
-                variables = UtilAlgo.append(variables, new Variable[]{vars[i]});
+        for (V var : vars) {
+            if (!listVars.contains(var)) {
+                listVars.add(var);
+                variables = UtilAlgo.append(variables, new Variable[]{var});
             }
         }
     }
@@ -100,15 +98,14 @@ public class ComponentConstraintWithSubConstraints extends ComponentConstraint{
         return appendParameters(parameters, toArray(Constraint.class, constraints));
     }
 
-    private final static Object appendParameters(Object parameters, Constraint... constraints){
+    private static Object appendParameters(Object parameters, Constraint... constraints){
         return new Object[]{parameters, constraints};
     }
 
 
     public final void findManager(Properties propertiesFile) {
         super.findManager(propertiesFile);
-        for (int i = 0; i < constraints.size(); i++) {
-            Constraint constraint = constraints.get(i);
+        for (Constraint constraint : constraints) {
             constraint.findManager(propertiesFile);
         }
     }
