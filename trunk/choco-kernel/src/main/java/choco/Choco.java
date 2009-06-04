@@ -2078,8 +2078,34 @@ public class Choco{
 		return c;
 	}
 
-	private static void globalCardinalityTest(IntegerVariable[] vars, int min, int max, int[] low, int[] up){
-		if (low.length != up.length) {
+    private static int getMinOfLowB(IntegerVariable[] vars) {
+        int minval = Integer.MAX_VALUE;
+        for (int i = 0; i < vars.length; i++) {
+            if (vars[i].getLowB() < minval)
+                minval = vars[i].getLowB();
+        }
+        return minval;
+    }
+
+    private static int getMaxOfUppB(IntegerVariable[] vars) {
+        int maxval = Integer.MIN_VALUE;
+        for (int i = 0; i < vars.length; i++) {
+            if (vars[i].getUppB() > maxval)
+                maxval = vars[i].getUppB();
+        }
+        return maxval;
+    }
+
+    private static void globalCardinalityTest(IntegerVariable[] vars, int min, int max, int[] low, int[] up){
+        int minval = getMinOfLowB(vars);
+        int maxval = getMaxOfUppB(vars);
+        if (minval != min) {
+            throw new ModelException("globalCardinality : the min value should be " + minval + " you entered " + min);
+        }
+        if (maxval != max) {
+            throw new ModelException("globalCardinality : the max value should be " + maxval + " you entered " + max);
+        }
+        if (low.length != up.length) {
 			throw new ModelException("globalCardinality : low and up do not have same size");
 		}
 		if (low.length != max - min + 1) {
@@ -2127,7 +2153,7 @@ public class Choco{
 
 	public static Constraint globalCardinality(IntegerVariable[] vars, int min, int max, int[] low, int[] up) {
 		globalCardinalityTest(vars, min, max, low, up);
-		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY, new Object[]{ConstraintType.GLOBALCARDINALITYMAX, min, max, low, up}, vars);
+		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY, new Object[]{ConstraintType.GLOBALCARDINALITYMAX, getMinOfLowB(vars), getMaxOfUppB(vars), low, up}, vars);
 	}
 
 	/**
@@ -2167,43 +2193,65 @@ public class Choco{
 	}
 
 	/**
-	 * Global cardinality : Given an array of variables vars such that their domains are subsets of
-	 * [1, n], the constraint ensures that the number of occurences
-	 * of the value i among the variables is between low[i - 1] and up[i - 1]. Note that the length
-	 * of low and up should be exactly n.
+	 * Concerns GCC and boundGCC
 	 * <p/>
-	 * TODO: min/max automatic computation
-     * @param vars list of variables
-     * @param low array of lower occurence
-     * @param up array of upper occurence
-     * @return Constraint
-	 */
-
-	public static Constraint globalCardinality(IntegerVariable[] vars, int[] low, int[] up) {
-		globalCardinalityTest(vars, 1, low.length, low, up);
-		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY, new Object[]{ConstraintType.GLOBALCARDINALITY, low, up}, vars);
-	}
-
-	/**
-	 * Global cardinality : Given an array of variables vars such that their domains are subsets of
-	 * [1, n], the constraint ensures that the number of occurences
-	 * of the value i among the variables is between low[i - 1] and up[i - 1]. Note that the length
-	 * of low and up should be exactly n.
+	 * Global cardinality : Given an array of variables vars, the constraint ensures that the number of occurences
+	 * of the value i among the variables is between low[i - min] and up[i - min]. Note that the length
+	 * of low and up should be max - min + 1. (min is the minimal value over all variables,
+	 * and max the maximal value over all variables)
+	 * <p/>
+	 * Bound Global cardinality : Given an array of variables vars, the constraint ensures that the number of occurences
+	 * of the value i among the variables is between low[i - min] and up[i - min]. Note that the length
+	 * of low and up should be max - min + 1. (min is the minimal value over all variables,
+	 * and max the maximal value over all variables)
+	 * Use the propagator of :
+	 * C.-G. Quimper, P. van Beek, A. Lopez-Ortiz, A. Golynski, and S.B. Sadjad.
+	 * An efficient bounds consistency algorithm for the global cardinality constraint.
+	 * CP-2003.
 	 * <p/>
 	 * Available options are:
 	 * <ul>
 	 * <i>cp:ac for Regin impelmentation</i>
 	 * <i>cp:bc for bound consistency</i>
 	 * </ul>
+     * @param vars list of variables
+     * @param low array of lower occurence
+     * @param up array of upper occurence
+     * @return Constraint
+     */
+	public static Constraint globalCardinality(IntegerVariable[] vars, int[] low, int[] up) {
+		globalCardinalityTest(vars, getMinOfLowB(vars), getMaxOfUppB(vars), low, up);
+		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY, new Object[]{ConstraintType.GLOBALCARDINALITY, low, up}, vars);
+	}
+
+	/**
+     * Concerns GCC and boundGCC
 	 * <p/>
-	 * TODO: min/max automatic computation
+	 * Global cardinality : Given an array of variables vars, the constraint ensures that the number of occurences
+	 * of the value i among the variables is between low[i - min] and up[i - min]. Note that the length
+	 * of low and up should be max - min + 1. (min is the minimal value over all variables,
+	 * and max the maximal value over all variables)
+	 * <p/>
+	 * Bound Global cardinality : Given an array of variables vars, the constraint ensures that the number of occurences
+	 * of the value i among the variables is between low[i - min] and up[i - min]. Note that the length
+	 * of low and up should be max - min + 1. (min is the minimal value over all variables,
+	 * and max the maximal value over all variables)
+	 * Use the propagator of :
+	 * C.-G. Quimper, P. van Beek, A. Lopez-Ortiz, A. Golynski, and S.B. Sadjad.
+	 * An efficient bounds consistency algorithm for the global cardinality constraint.
+	 * CP-2003.
+	 * <p/>
+	 * Available options are:
+	 * <ul>
+	 * <i>cp:ac for Regin impelmentation</i>
+	 * <i>cp:bc for bound consistency</i>
+	 * </ul>
      * @param options options of the constraint
      * @param vars list of variables
      * @param low array of lower occurence
      * @param up array of upper occurence
      * @return Constraint
-	 */
-
+     */
 	public static Constraint globalCardinality(String options, IntegerVariable[] vars, int[] low, int[] up) {
 		Constraint c = globalCardinality(vars, low, up);
 		c.addOption(options);
@@ -3378,7 +3426,7 @@ public class Choco{
 	public static Constraint or(Constraint... n) {
 		if(n.length == 0) return TRUE;
 		if (n.length == 1)
-			return n[0];   
+			return n[0];
 		else return new MetaConstraint<Constraint>(ConstraintType.OR, n);
 	}
 
