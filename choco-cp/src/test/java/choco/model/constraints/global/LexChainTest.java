@@ -194,10 +194,10 @@ public class LexChainTest {
 
 //        out.println(" number of solutions of lexChain - increasing domain & maxVal is  = " + solver[0].getNbSolutions());
 //        out.print("increasing domain & maxVal   ");
-        solver[0].printRuntimeSatistics();
+//        solver[0].printRuntimeSatistics();
 //        out.println(" number of solutions of lexChain - decreasing domain & random selector is  = " + solver[1].getNbSolutions());
 //        out.print("decreasing domain & random selector   ");
-        solver[1].printRuntimeSatistics();
+//       solver[1].printRuntimeSatistics();
 
 //        out.println(" number of solutions of lexChain - increasing  domain &  mid Value is  = " + solver[1].getNbSolutions());
 //        out.print("increasing  domain & mid Value   ");

@@ -28,7 +28,7 @@ import choco.kernel.solver.branch.IntBranching;
  * A class for keeping a trace of the search algorithm, through an IntBranching
  * (storing the current branching object, as well as the label of the current branch)
  */
-public class IntBranchingTrace {
+public final class IntBranchingTrace {
   private IntBranching branching;
   private Object branchingObject;
   private int branchIndex;
@@ -69,5 +69,10 @@ public class IntBranchingTrace {
     branchingObject = null;
     branchIndex = -999;
   }
+  
+  @Override
+	public String toString() {
+	  return branchingObject +" branch "+branchIndex;
+	}
 
 }

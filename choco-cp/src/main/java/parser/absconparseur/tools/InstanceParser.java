@@ -423,7 +423,7 @@ private PFunction parseFunction(Element functionElement) {
 	private PConstraint parseCumulativeConstraint(String name, PVariable[] scope, Element parameters) {
 		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters), InstanceTokens.WHITE_SPACE + "{}");
 		st.nextToken(); // token '[' skipped
-		List<Task> tasks = new ArrayList<Task>();
+		List<PTask> tasks = new ArrayList<PTask>();
 		String token = st.nextToken();
 		while (!token.equals("]")) {
 			Object origin = mapOfVariables.get(token);
@@ -441,18 +441,18 @@ private PFunction parseFunction(Element functionElement) {
 			Object height = mapOfVariables.get(token);
 			if (height == null)
 				height = Integer.parseInt(token);
-			tasks.add(new Task(origin, duration, end, height));
+			tasks.add(new PTask(origin, duration, end, height));
 			token = st.nextToken();
 		}
 		int limit = Integer.parseInt(st.nextToken());
-		return new PCumulative(name, scope, tasks.toArray(new Task[tasks.size()]), limit);
+		return new PCumulative(name, scope, tasks.toArray(new PTask[tasks.size()]), limit);
 	}
 
 
     private PConstraint parseDisjunctiveConstraint(String name, PVariable[] scope, Element parameters) {
 		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters), InstanceTokens.WHITE_SPACE + "{}");
 		st.nextToken(); // token '[' skipped
-		List<Task> tasks = new ArrayList<Task>();
+		List<PTask> tasks = new ArrayList<PTask>();
 		String token = st.nextToken();
 		while (!token.equals("]")) {
 			Object origin = mapOfVariables.get(token);
@@ -462,10 +462,10 @@ private PFunction parseFunction(Element functionElement) {
 			Object duration = mapOfVariables.get(token);
 			if (duration == null)
 				duration = token.equals(InstanceTokens.NIL) ? null : Integer.parseInt(token);
-			tasks.add(new Task(origin, duration, null, 1));
+			tasks.add(new PTask(origin, duration, null, 1));
 			token = st.nextToken();
 		}
-		return new PDisjunctive(name, scope, tasks.toArray(new Task[tasks.size()]));
+		return new PDisjunctive(name, scope, tasks.toArray(new PTask[tasks.size()]));
 	}
 
 

@@ -95,7 +95,7 @@ public class SearchLoopWithRecomputation extends SearchLoop {
 
     @Override
     public void upBranch() {
-        if (searchStrategy.currentTraceIndex < 0) {
+        if (searchStrategy.isTraceEmpty()) {
             stop = true;
         } else {
             try {

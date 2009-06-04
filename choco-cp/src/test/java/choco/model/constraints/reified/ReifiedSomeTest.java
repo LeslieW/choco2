@@ -96,7 +96,6 @@ public class ReifiedSomeTest {
         m = new CPModel();
         m.setPrecision(0.1);
         s = new CPSolver();
-        //CPSolver.setVerbosity(CPSolver.PROPAGATION);
     }
 
     @Test

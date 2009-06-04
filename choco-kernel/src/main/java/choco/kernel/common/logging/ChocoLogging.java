@@ -301,6 +301,18 @@ public final class ChocoLogging {
 	}
 	
 
+	public static void setOnlyParserLogger(Level level) {
+		setVerbosity(Verbosity.SILENT);
+		setLevel(Level.FINEST, getChocoLogger(),getAPILogger());
+		getParserLogger().setLevel(level);
+	}
+	
+	public static void setOnlyTestLogger(Level level) {
+		setVerbosity(Verbosity.SILENT);
+		setLevel(Level.FINEST, getChocoLogger(),getKernelLogger());
+		getParserLogger().setLevel(level);
+	}
+	
 	/**
 	 * set the choco verbosity level
 	 * @param verbosity the new verbosity level

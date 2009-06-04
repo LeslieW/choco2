@@ -122,7 +122,6 @@ public class GolombRuler extends PatternExample {
 		//new GolombRuler().execute(new Object[]{9,44, true});
 		//new GolombRuler().execute(new Object[]{10,55, true});
 		//new GolombRuler().execute(new Object[]{11,72, true});
-		ChocoLogging.flushLogs();
 	}
 
 }

@@ -121,7 +121,7 @@ public class GloConstraintFactory extends ObjectFactory {
                 IntegerVariable end;
 				int duration;
 				for (int i = 0; i < n; i++) {
-					Task t = pc.getTasks()[i];
+					PTask t = pc.getTasks()[i];
 					start = ((PVariable) t.getOrigin()).getChocovar();
 					duration = (Integer) t.getDuration();
                     if (t.getEnd() == null) {
@@ -139,7 +139,7 @@ public class GloConstraintFactory extends ObjectFactory {
             IntegerVariable end;
 			int[] heights = new int[n];
 			for (int i = 0; i < n; i++) {
-				Task t = pc.getTasks()[i];
+				PTask t = pc.getTasks()[i];
                 start = ((PVariable) t.getOrigin()).getChocovar();
                 duration = constant("dur_" + i, (Integer) t.getDuration());
                 heights[i] = (Integer) t.getHeight();
@@ -206,7 +206,7 @@ public class GloConstraintFactory extends ObjectFactory {
             TaskVariable[] tasks = new TaskVariable[n];
             IntegerVariable start, duration, end;
 			for (int i = 0; i < n; i++) {
-                Task t = pd.getTasks()[i];
+                PTask t = pd.getTasks()[i];
                 if(t.getOrigin() instanceof PVariable){
                     start = ((PVariable) t.getOrigin()).getChocovar();
                 }else {

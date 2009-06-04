@@ -43,6 +43,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.common.util.MathUtil;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
@@ -163,17 +164,6 @@ public class PackTest {
 
 
 
-	private final static int[] oneToN(int n) {
-		int[] r=new int[n];
-		for (int i = 0; i < n; i++) {
-			r[i]=n-i;
-		}
-		return r;
-	}
-
-
-
-
 
 
 	@Test(expected=ModelException.class)
@@ -197,7 +187,7 @@ public class PackTest {
 	public void binForTwo() {
 		for (int i = MIN_ITEMS; i < MAX_ITEMS; i=i+2) {
 			int nbBins=(i+1)/2;
-			initializeModels(oneToN(i), nbBins, i+1);
+			initializeModels(ChocoUtil.oneToN(i), nbBins, i+1);
 			testAll( (int) MathUtil.factoriel(nbBins));
 		}
 	}

@@ -37,6 +37,9 @@ public class SearchLoopWithNogoodFromRestart extends SearchLoopWithRestart {
 		super(searchStrategy, restartStrategy);
 		recorder = new NoGoodRecorder((CPSolver) searchStrategy.getSolver());
 		super.setRestartMoveMask(AbstractGlobalSearchStrategy.OPEN_NODE);
+
+		searchStrategy.setLoggingMaxDepth(1000);
+
 	}
 
 
@@ -53,8 +56,8 @@ public class SearchLoopWithNogoodFromRestart extends SearchLoopWithRestart {
 	protected void restoreRootNode(IntBranchingTrace ctx) {
 		recorder.reset();
 		recorder.handleTrace(ctx);
-		while (searchStrategy.currentTraceIndex > searchStrategy.baseWorld) {
-			recorder.handleTrace(searchStrategy.popTrace());
+		while ( (ctx = searchStrategy.popTrace() ) != null ) {
+			recorder.handleTrace(ctx);
 		}
 		searchStrategy.solver.worldPopUntil(searchStrategy.baseWorld + 1);
 		recorder.generateNogoods();  //succeed
@@ -67,7 +70,7 @@ public class SearchLoopWithNogoodFromRestart extends SearchLoopWithRestart {
 
 final class NoGoodRecorder {
 
-    protected final static Logger LOGGER = ChocoLogging.getSearchLogger();
+	protected final static Logger LOGGER = ChocoLogging.getSearchLogger();
 
 	protected final CPSolver scheduler;
 
@@ -110,10 +113,10 @@ final class NoGoodRecorder {
 		final IntDomainVar bvar = getBranchingVar(trace);
 		// nogood is reset because we can nt record quality is decreased : 
 		if(bvar==null) {
-			LOGGER.fine("reset nogood recording: not a integer variable");
+			LOGGER.finest("reset nogood recording: not a integer variable");
 			reset();
 		}else if( ! bvar.getDomain().isBoolean()) {
-			LOGGER.fine("reset nogood recording: not a boolean variable");
+			LOGGER.finest("reset nogood recording: not a boolean variable");
 			reset();
 		}else {
 			//binary node
@@ -151,6 +154,9 @@ final class NoGoodRecorder {
 			//copy involved nogood
 			System.arraycopy(positiveLiterals, tail.posLitsOffset, posLits, 0, sp);
 			System.arraycopy(negativeLiterals, tail.negLitsOffset, negLits, 0, sn);
+			//			LOGGER.finest("Pos "+Arrays.toString(posLits));
+			//			LOGGER.finest("Neg "+Arrays.toString(negLits));
+			//			ChocoLogging.flushLogs();
 			scheduler.addNogood(posLits, negLits);
 		}
 	}
@@ -169,6 +175,10 @@ final class NoGoodRecorder {
 			this.posLitsOffset = nbPosLits;
 			this.negLitsOffset = nbNegLits;
 		}
-	}
 
+		@Override
+		public String toString() {
+			return this.tail +"("+posLitsOffset+", "+negLitsOffset+")";
+		}
+	}
 }

@@ -35,7 +35,7 @@ import java.util.logging.Logger;
 
 public final class VizFactory {
 
-    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
 
 	/**
 	 * empty constructor

@@ -128,7 +128,7 @@ public class SearchLoop implements ISearchLoop {
     }
 
     public void upBranch() {
-        if (searchStrategy.currentTraceIndex < 0) {
+        if (searchStrategy.isTraceEmpty()) {
             stop = true;
         } else {
             try {

@@ -22,21 +22,51 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.absconparseur.tools;
 
-import choco.kernel.common.logging.ChocoLogging;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
 import parser.absconparseur.InstanceTokens;
 import parser.absconparseur.PredicateTokens;
 import parser.absconparseur.Toolkit;
 import parser.absconparseur.XMLManager;
-import parser.absconparseur.components.*;
+import parser.absconparseur.components.PAllDifferent;
+import parser.absconparseur.components.PConstraint;
+import parser.absconparseur.components.PCumulative;
+import parser.absconparseur.components.PDisjunctive;
+import parser.absconparseur.components.PDomain;
+import parser.absconparseur.components.PElement;
+import parser.absconparseur.components.PExtensionConstraint;
+import parser.absconparseur.components.PFunction;
+import parser.absconparseur.components.PGlobalCardinality;
+import parser.absconparseur.components.PIntensionConstraint;
+import parser.absconparseur.components.PLexLess;
+import parser.absconparseur.components.PLexLessEq;
+import parser.absconparseur.components.PPredicate;
+import parser.absconparseur.components.PRelation;
+import parser.absconparseur.components.PSoftRelation;
+import parser.absconparseur.components.PVariable;
+import parser.absconparseur.components.PWeightedSum;
+import parser.absconparseur.components.PTask;
 import parser.absconparseur.intension.EvaluationManager;
+import choco.kernel.common.logging.ChocoLogging;
 
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+
+
 
 public class InstanceCheckerParser {
     protected final static Logger LOGGER = ChocoLogging.getParserLogger();
@@ -631,7 +661,7 @@ public class InstanceCheckerParser {
 			throw new FormatException("One should find [ as first token of the parameters of constraint " + name);
 		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>();
 		String token = nextToken(name, st);
-		List<Task> tasks = new ArrayList<Task>();
+		List<PTask> tasks = new ArrayList<PTask>();
 		while (!token.equals("]")) {
 			if (!token.equals("{"))
 				throw new FormatException("One should find { as first token of a task definition in constraint " + name);
@@ -664,14 +694,14 @@ public class InstanceCheckerParser {
 				throw new FormatException("One should find } as last token of a task definition in constraint " + name);
 			if (origin == null && duration == null || origin == null && end == null || duration == null && end == null)
 				throw new FormatException("Only one field may be absent in {origin,duration,end} in a task definition of constraint " + name);
-			tasks.add(new Task(origin, duration, end, height));
+			tasks.add(new PTask(origin, duration, end, height));
 			token = nextToken(name, st);
 		}
 		controlInvolvedVariablesWrtScope(involvedVariablesInParameters, involvedVariables, name);
 		int limit = parseInt("limit value for cumulative constraint " + name, nextToken(name, st));
 		if (st.hasMoreTokens())
 			throw new FormatException("Too many tokens in the parameters of constraint " + name);
-		return new PCumulative(name, involvedVariables, tasks.toArray(new Task[tasks.size()]), limit);
+		return new PCumulative(name, involvedVariables, tasks.toArray(new PTask[tasks.size()]), limit);
 	}
 
     private PConstraint parseDisjunctiveConstraint(String name, PVariable[] involvedVariables, Element parameters) throws FormatException {
@@ -680,7 +710,7 @@ public class InstanceCheckerParser {
 			throw new FormatException("One should find [ as first token of the parameters of constraint " + name);
 		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>();
 		String token = nextToken(name, st);
-		List<Task> tasks = new ArrayList<Task>();
+		List<PTask> tasks = new ArrayList<PTask>();
 		while (!token.equals("]")) {
 			if (!token.equals("{"))
 				throw new FormatException("One should find { as first token of a task definition in constraint " + name);
@@ -701,13 +731,13 @@ public class InstanceCheckerParser {
 				throw new FormatException("One should find } as last token of a task definition in constraint " + name);
 			if (origin == null || duration == null)
 				throw new FormatException("Only one field may be absent in {origin,duration} in a task definition of constraint " + name);
-            tasks.add(new Task(origin, duration, null, 1));
+            tasks.add(new PTask(origin, duration, null, 1));
 			token = nextToken(name, st);
 		}
 		controlInvolvedVariablesWrtScope(involvedVariablesInParameters, involvedVariables, name);
 		if (st.hasMoreTokens())
 			throw new FormatException("Too many tokens in the parameters of constraint " + name);
-		return new PDisjunctive(name, involvedVariables, tasks.toArray(new Task[tasks.size()]));
+		return new PDisjunctive(name, involvedVariables, tasks.toArray(new PTask[tasks.size()]));
 	}
 
     private PConstraint parseGlobalCardinalityConstraint(String name, PVariable[] involvedVariables, Element parameters) throws FormatException {

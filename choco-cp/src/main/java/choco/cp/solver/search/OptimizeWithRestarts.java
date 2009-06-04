@@ -118,7 +118,7 @@ public class OptimizeWithRestarts extends AbstractOptimize {
         LOGGER.severe(lim.pretty());
       }
     }*/
-    popTraceUntil(baseWorld + 1);
+    clearTrace();
     solver.worldPopUntil(baseWorld + 1);
   }
 
@@ -190,8 +190,7 @@ public class OptimizeWithRestarts extends AbstractOptimize {
     try {
       newLoop();
       nextMove = INIT_SEARCH;
-      traceStack.clear();
-      currentTraceIndex = -1;
+      clearTrace();
       bool = super.nextSolution();
     } catch (ContradictionException e) {
       bool = Boolean.FALSE;

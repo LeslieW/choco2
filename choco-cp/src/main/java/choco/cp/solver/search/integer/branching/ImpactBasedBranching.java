@@ -309,7 +309,7 @@ public class ImpactBasedBranching extends AbstractLargeIntBranching {
 							}
 							if ((System.currentTimeMillis() - tps) > timelimit) {
 								_branching._solver.worldPop();
-								_branching._solver.getSearchStrategy().traceStack = new ArrayList();
+								_branching._solver.getSearchStrategy().clearTrace();
 								((CPSolver) _branching._solver).resetSearchStrategy();
 								return true;
 							}
@@ -322,7 +322,7 @@ public class ImpactBasedBranching extends AbstractLargeIntBranching {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			_branching._solver.getSearchStrategy().traceStack = new ArrayList();
+			_branching._solver.getSearchStrategy().clearTrace();
 			((CPSolver) _branching._solver).resetSearchStrategy();
             }
             return true;

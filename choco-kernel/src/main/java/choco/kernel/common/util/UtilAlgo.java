@@ -22,13 +22,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.common.util;
 
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import static java.lang.reflect.Array.newInstance;
 
-import java.lang.reflect.Array;
-import static java.lang.reflect.Array.*;
-import java.util.*;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+
 
 
 /*
