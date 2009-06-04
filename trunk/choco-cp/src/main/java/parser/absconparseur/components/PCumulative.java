@@ -23,20 +23,20 @@
 package parser.absconparseur.components;
 
 public class PCumulative extends PGlobalConstraint {
-	private Task[] tasks;
+	private PTask[] tasks;
 
 	private int limit;
 
-	public PCumulative(String name, PVariable[] scope, Task[] tasks, int limit) {
+	public PCumulative(String name, PVariable[] scope, PTask[] tasks, int limit) {
 		super(name, scope);
 		this.tasks = tasks;
-		for (Task task : tasks)
+		for (PTask task : tasks)
 			task.setVariablePositions(scope); 
 		this.limit = limit;
 	}
 
 	public long computeCostOf(int[] tuple) {
-		for (Task task : tasks) {
+		for (PTask task : tasks) {
 			if (task.evaluate(tuple) == 1)
 				return 1;
 			//task.displayEvaluations();
@@ -59,7 +59,7 @@ public class PCumulative extends PGlobalConstraint {
 
 	public String toString() {
 		String s = super.toString() + " : cumulative\n\t";
-        for (Task task : tasks) {
+        for (PTask task : tasks) {
             s += "  [origin=" + computeStringRepresentationOf(task.getOrigin()) + " " + "duration=" + computeStringRepresentationOf(task.getDuration()) + " ";
             s += "end=" + computeStringRepresentationOf(task.getEnd()) + " " + "height=" + computeStringRepresentationOf(task.getHeight()) + "]\n\t";
         }
@@ -67,11 +67,11 @@ public class PCumulative extends PGlobalConstraint {
 		return s;
 	}
 
-    public Task[] getTasks() {
+    public PTask[] getTasks() {
         return tasks;
 }
 
-    public void setTasks(Task[] tasks) {
+    public void setTasks(PTask[] tasks) {
         this.tasks = tasks;
     }
 

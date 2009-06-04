@@ -24,17 +24,17 @@ package parser.absconparseur.components;
 
 
 public class PDisjunctive extends PGlobalConstraint {
-	private Task[] tasks;
+	private PTask[] tasks;
 
-	public PDisjunctive(String name, PVariable[] scope, Task[] tasks) {
+	public PDisjunctive(String name, PVariable[] scope, PTask[] tasks) {
 		super(name, scope);
 		this.tasks = tasks;
-		for (Task task : tasks)
+		for (PTask task : tasks)
 			task.setVariablePositions(scope);
 	}
 
 	public long computeCostOf(int[] tuple) {
-		for (Task task : tasks) {
+		for (PTask task : tasks) {
 			if (task.evaluate(tuple) == 1)
 				return 1;
 			//task.displayEvaluations();
@@ -44,18 +44,18 @@ public class PDisjunctive extends PGlobalConstraint {
 
 	public String toString() {
 		String s = super.toString() + " : disjunctive\n\t";
-        for (Task task : tasks) {
+        for (PTask task : tasks) {
             s += "  [origin=" + computeStringRepresentationOf(task.getOrigin()) + " " + "duration=" + computeStringRepresentationOf(task.getDuration())  + "]\n\t";
         }
 		s += "nbTasks=" + tasks.length;
 		return s;
 	}
 
-    public Task[] getTasks() {
+    public PTask[] getTasks() {
         return tasks;
 }
 
-    public void setTasks(Task[] tasks) {
+    public void setTasks(PTask[] tasks) {
         this.tasks = tasks;
     }
 }

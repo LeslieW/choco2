@@ -2,7 +2,7 @@ package parser.absconparseur.components;
 
 import parser.absconparseur.Toolkit;
 
-public class Task {
+public class PTask {
 	private Object origin; // may be null if absent, an Integer or a Variable
 
 	private int originPositionInScope;
@@ -59,7 +59,7 @@ public class Task {
 		return heightValue;
 	}
 
-	public Task(Object origin, Object duration, Object end, Object height) {
+	public PTask(Object origin, Object duration, Object end, Object height) {
 		this.origin = origin;
 		this.duration = duration;
 		this.end = end;

@@ -55,14 +55,14 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	public static final int DOWN_BRANCH = 1 << 2;
 
 	/**
-	 * a data structure storing the stack of choice contexts (for incremental search explorations)
-	 */
-	public ArrayList<IntBranchingTrace> traceStack = null;
-
-	/**
 	 * index of the current trace in the stack
 	 */
-	public int currentTraceIndex = -1;
+	protected int currentTraceIndex = -1;
+	
+	/**
+	 * a data structure storing the stack of choice contexts (for incremental search explorations)
+	 */
+	protected IntBranchingTrace[] traceStack;
 
 	/**
 	 * search controller: a flag storing the next move in the search tree
@@ -125,8 +125,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	protected AbstractGlobalSearchStrategy(Solver solver) {
 		this.solver = solver;
 		limits = new ArrayList<AbstractGlobalSearchLimit>();
-		traceStack = new ArrayList<IntBranchingTrace>();
-		currentTraceIndex = -1;
+		traceStack = new IntBranchingTrace[solver.getNbBooleanVars() + solver.getNbIntVars() + solver.getNbSetVars()];
 		nextMove = INIT_SEARCH;
 	}
 
@@ -320,50 +319,64 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	public void postDynamicCut() throws ContradictionException {
 	}
 
-
-	public IntBranchingTrace pushTrace() {
+	
+	public final IntBranchingTrace pushTrace() {
 		currentTraceIndex++;
-		IntBranchingTrace nextTrace;
-		if (currentTraceIndex > traceStack.size() - 1) {
-			nextTrace = new IntBranchingTrace();
-			traceStack.add(nextTrace);
-		} else {
-			nextTrace = traceStack.get(currentTraceIndex);
-			nextTrace.clear();
+		if (currentTraceIndex >= traceStack.length) {
+			//ensure capacity
+			 int newCapacity = (traceStack.length * 3)/2 + 1;
+			 IntBranchingTrace[] tmp = new IntBranchingTrace[newCapacity];
+			 System.arraycopy(traceStack, 0, tmp, 0, traceStack.length);
+			 traceStack = tmp;
+			 traceStack[currentTraceIndex] = new IntBranchingTrace(); //create trace 
+		}else if (traceStack[currentTraceIndex] == null) {
+			traceStack[currentTraceIndex] = new IntBranchingTrace();  //create trace
+		}else {
+			traceStack[currentTraceIndex].clear(); //reset old trace
 		}
-		return nextTrace;
+		 return traceStack[currentTraceIndex];
 	}
 
-	public IntBranchingTrace popTrace() {
+	public final boolean isTraceEmpty() {
+		return currentTraceIndex < 0;
+	}
+	
+	public final IntBranchingTrace getTrace(int index) {
+		return traceStack[index];
+	}
+	
+	public final int getTraceSize() {
+		return currentTraceIndex+1;
+	}
+	
+	public final IntBranchingTrace popTrace() {
 		if (currentTraceIndex <= 0) {
 			currentTraceIndex = -1;
 			return null;
 		} else {
 			currentTraceIndex--;
-			return traceStack.get(currentTraceIndex);
+			return traceStack[currentTraceIndex];
 		}
 	}
 
-	public IntBranchingTrace topTrace() {
-		if (currentTraceIndex < 0) {
-			return null;
-		} else {
-			return traceStack.get(currentTraceIndex);
-		}
+	public final IntBranchingTrace topTrace() {
+		return isTraceEmpty() ? null : traceStack[currentTraceIndex];
 	}
-
-	public void popTraceUntil(int targetWorld) {
-		while (currentTraceIndex > targetWorld) {
-			popTrace();
-		}
-
-		/*int deltaWorld = (solver.getEnvironment().getWorldIndex() - targetWorld);
-    if (deltaWorld > 0) {
-      if (currentTraceIndex - deltaWorld < -1)
-        LOGGER.severe("bizarre");
-      currentTraceIndex = currentTraceIndex - deltaWorld;
-    }*/
+	
+	public final void clearTrace() {
+		currentTraceIndex = -1;
 	}
+	
+//	public final void popTraceUntil(int targetWorld) {
+//		clearTrace();
+//
+//		/*int deltaWorld = (solver.getEnvironment().getWorldIndex() - targetWorld);
+//    if (deltaWorld > 0) {
+//      if (currentTraceIndex - deltaWorld < -1)
+//        LOGGER.severe("bizarre");
+//      currentTraceIndex = currentTraceIndex - deltaWorld;
+//    }*/
+//	}
 
 
 

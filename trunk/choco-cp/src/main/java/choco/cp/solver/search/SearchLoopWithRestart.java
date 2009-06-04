@@ -78,7 +78,7 @@ public class SearchLoopWithRestart extends SearchLoop {
 
 
 	protected void restoreRootNode(IntBranchingTrace ctx) {
-		searchStrategy.popTraceUntil(searchStrategy.baseWorld + 1);
+		searchStrategy.clearTrace();
 		searchStrategy.solver.worldPopUntil(searchStrategy.baseWorld + 1);
         ((CPSolver) searchStrategy.getSolver()).initNogoodBase();
     }
@@ -92,13 +92,13 @@ public class SearchLoopWithRestart extends SearchLoop {
 	protected boolean restart(IntBranchingTrace ctx) {
 		//ne restart que dans les OpenNode et les up car finishedbranching ?
 		if (searchStrategy.nextMove == AbstractGlobalSearchStrategy.UP_BRANCH
-				&& searchStrategy.currentTraceIndex < 0) {
+				&& searchStrategy.isTraceEmpty()) {
 			return true;
 		} else {
 			restoreRootNode(ctx);
 			searchStrategy.nextMove = AbstractGlobalSearchStrategy.OPEN_NODE;
 			ctx.setBranching(searchStrategy.mainGoal);
-			searchStrategy.currentTraceIndex = -1;
+			searchStrategy.clearTrace();
 			try {
 				searchStrategy.postDynamicCut();
 				searchStrategy.solver.propagate();

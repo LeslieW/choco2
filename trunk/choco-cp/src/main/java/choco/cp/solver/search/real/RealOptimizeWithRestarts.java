@@ -77,7 +77,7 @@ public class RealOptimizeWithRestarts extends AbstractRealOptimize {
       AbstractGlobalSearchLimit lim = (AbstractGlobalSearchLimit) limits.get(i);
       lim.reset(false);
     }
-    popTraceUntil(baseWorld);
+    clearTrace();
     solver.worldPopUntil(baseWorld);
   }
 
