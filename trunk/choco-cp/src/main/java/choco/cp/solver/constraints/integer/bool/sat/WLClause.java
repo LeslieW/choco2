@@ -61,7 +61,7 @@ public class WLClause {
         if (voc.isFree(lits[0]) && voc.isFree(lits[1])) {
             isreg = true;
             voc.watch(lits[0], this);
-            voc.watch(lits[1], this);        
+            voc.watch(lits[1], this);
         }
         return isreg;
     }
