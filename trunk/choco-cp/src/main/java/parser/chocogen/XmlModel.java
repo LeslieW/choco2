@@ -339,13 +339,13 @@ public class XmlModel {
         //s.setLoggingMaxDepth(200);
         if (isFeasible && (cheuri == IMPACT || s.rootNodeSingleton(initialisationtime))) {
 //<hca> je verifierai cette option a la fin
-//            if (s.restartMode || forcerestart) {
-//                s.generateSearchStrategy();
-//                s.getSearchStrategy().setSearchLoop(new SearchLoopWithNogoodFromRestart(s.getSearchStrategy(),s.getRestartStrategy()));
-//                s.launch();
-//
-//            } else s.solve();
-            s.solve();
+            if (s.restartMode || forcerestart) {
+                s.generateSearchStrategy();
+                s.getSearchStrategy().setSearchLoop(new SearchLoopWithNogoodFromRestart(s.getSearchStrategy(),s.getRestartStrategy()));
+                s.launch();
+
+            } else s.solve();
+//            s.solve();
 
             isFeasible = s.isFeasible();
             nbnode = s.getSearchStrategy().getNodeCount();
@@ -425,7 +425,7 @@ public class XmlModel {
         LOGGER.info("" + res);
         if (verb > 0) {
            if (s.isFeasible()==Boolean.TRUE) {
-              //  SolutionChecker.main(values);
+               SolutionChecker.main(values);
            }
         }
         ChocoLogging.flushLogs();        
