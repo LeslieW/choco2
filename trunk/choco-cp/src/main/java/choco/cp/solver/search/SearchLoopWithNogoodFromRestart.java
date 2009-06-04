@@ -110,10 +110,10 @@ final class NoGoodRecorder {
 		final IntDomainVar bvar = getBranchingVar(trace);
 		// nogood is reset because we can nt record quality is decreased : 
 		if(bvar==null) {
-			LOGGER.info("reset nogood recording: not a integer variable");
+			LOGGER.fine("reset nogood recording: not a integer variable");
 			reset();
 		}else if( ! bvar.getDomain().isBoolean()) {
-			LOGGER.info("reset nogood recording: not a boolean variable");
+			LOGGER.fine("reset nogood recording: not a boolean variable");
 			reset();
 		}else {
 			//binary node
