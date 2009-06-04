@@ -47,10 +47,10 @@ import java.util.logging.Logger;
 /**
  * User:    charles
  * Date:    19 août 2008
- *
+ * <p/>
  * A class to provide facilities for loading and solving
  * CSP described in the xml format of the 2008 competition
- **/
+ */
 public class XmlModel {
 
     protected final static Logger LOGGER = ChocoLogging.getParserLogger();
@@ -117,7 +117,7 @@ public class XmlModel {
      * @throws Exception
      */
     public void generate(String[] args) throws Exception {
-    	//ChocoLogging.setVerbosity(Verbosity.SEARCH);
+        //ChocoLogging.setVerbosity(Verbosity.SEARCH);
         HashMap<String, String> options = new HashMap<String, String>();
         for (int i = 0; i < args.length; i++) {
             String arg = args[i++];
@@ -179,23 +179,25 @@ public class XmlModel {
         ChocoLogging.flushLogs();
     }
 
-    /**                                                      ei
+    /**
+     * ei
      * Solve the csp given by file "fichier"
+     *
      * @param fichier
      */
     public void solveFile(File fichier) {
         init();
         if (fichier.getName().endsWith(".xml")
-        		|| fichier.getName().endsWith(".xml.bz2")) {
+                || fichier.getName().endsWith(".xml.bz2")) {
             try {
                 InstanceParser parser = load(fichier);
                 CPModel model = buildModel(parser);
                 PreProcessCPSolver s = solve(model);
                 postAnalyze(fichier, parser, s);
-            }catch (UnsupportedConstraintException ex){
+            } catch (UnsupportedConstraintException ex) {
                 LOGGER.info("s UNSUPPORTED");
                 ChocoLogging.flushLogs();
-            }catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             } catch (Error e) {
                 e.printStackTrace();
@@ -206,6 +208,7 @@ public class XmlModel {
     /**
      * Solve all the csps contained in the corresponding directory :
      * dossiers
+     *
      * @param dossiers : the directory where instances are stored
      */
     public void solveDirectory(File dossiers) {
@@ -222,15 +225,16 @@ public class XmlModel {
     /**
      * Parse the xml and return the parser object (Christophe parser) which
      * can be used to access variables, constraints, etc...
+     *
      * @param fichier
      * @return A parser object containing the description of the problem
      * @throws Exception
      * @throws Error
      */
     public InstanceParser load(File fichier) throws Exception, Error {
-       try {
+        try {
             if (verb > 0) {
-            	LOGGER.log(Level.INFO, "========================================================\nTraitement de :{0}",fichier.getName());
+                LOGGER.log(Level.INFO, "========================================================\nTraitement de :{0}", fichier.getName());
             }
             // Parse the xml and get the abscon representation of the problem
             time[0] = System.currentTimeMillis();
@@ -252,6 +256,7 @@ public class XmlModel {
 
     /**
      * Building the Model and solver
+     *
      * @param parser
      * @return
      * @throws Exception
@@ -272,10 +277,11 @@ public class XmlModel {
 
     /**
      * Solving process
+     *
      * @param model
+     * @return
      * @throws Exception
      * @throws Error
-     * @return
      */
     public PreProcessCPSolver solve(CPModel model) throws Exception, Error {
 
@@ -328,7 +334,7 @@ public class XmlModel {
 
         if (forcerestart != null) {
             if (forcerestart) {
-               s.setGeometricRestart(base,growth);
+                s.setGeometricRestart(base, growth);
             }
         } else {
             if (s.restartMode) {
@@ -341,7 +347,7 @@ public class XmlModel {
 //<hca> je verifierai cette option a la fin
             if (s.restartMode || forcerestart) {
                 s.generateSearchStrategy();
-                s.getSearchStrategy().setSearchLoop(new SearchLoopWithNogoodFromRestart(s.getSearchStrategy(),s.getRestartStrategy()));
+                s.getSearchStrategy().setSearchLoop(new SearchLoopWithNogoodFromRestart(s.getSearchStrategy(), s.getRestartStrategy()));
                 s.launch();
 
             } else s.solve();
@@ -358,6 +364,7 @@ public class XmlModel {
 
     /**
      * Output in the standart console a set of statistics on the search
+     *
      * @param fichier
      * @param parser
      * @param s
@@ -369,9 +376,9 @@ public class XmlModel {
         time[3] = System.currentTimeMillis();
         //LOGGER.info("" + isFeasible);
         //Output in a format for internal competition
-        if (isFeasible==Boolean.TRUE
+        if (isFeasible == Boolean.TRUE
                 && (!checkEverythingIsInstantiated(parser, s))) {
-               // || s.checkSolution(false)!=Boolean.TRUE)) {
+            // || s.checkSolution(false)!=Boolean.TRUE)) {
             isFeasible = null;
         }
         values = new String[parser.getVariables().length + 1];
@@ -383,25 +390,25 @@ public class XmlModel {
             res.append("UNSAT");
             LOGGER.info("s UNSATISFIABLE");
         } else {
-            if (!s.checkSolution(false)) {
-                //Check the solution with choco
-                res.append("WRONGSOL?");
-                LOGGER.info("s UNKNOWN");
-            } else {
-                res.append("SAT");
-                LOGGER.info("s SATISFIABLE");
-                String sol = "v ";
-                values[0] = fichier.getPath();
-                for (int i = 0; i < parser.getVariables().length; i++) {
-                    try {
-                        values[i + 1] = "" + s.getVar(parser.getVariables()[i].getChocovar()).getVal();
-                    } catch (NullPointerException e) {
-                        values[i + 1] = "" + parser.getVariables()[i].getChocovar().getLowB();
-                    }
-                    sol += values[i + 1] + " ";
+//            if (!s.checkSolution(false)) {
+//                //Check the solution with choco
+//                res.append("WRONGSOL?");
+//                LOGGER.info("s UNKNOWN");
+//            } else {
+            res.append("SAT");
+            LOGGER.info("s SATISFIABLE");
+            String sol = "v ";
+            values[0] = fichier.getPath();
+            for (int i = 0; i < parser.getVariables().length; i++) {
+                try {
+                    values[i + 1] = "" + s.getVar(parser.getVariables()[i].getChocovar()).getVal();
+                } catch (NullPointerException e) {
+                    values[i + 1] = "" + parser.getVariables()[i].getChocovar().getLowB();
                 }
-                LOGGER.info(sol);
+                sol += values[i + 1] + " ";
             }
+            LOGGER.info(sol);
+            //}
         }
         double rtime = (double) (time[3] - time[0]) / 1000D;
         res.append(" ").append(rtime).append(" TIME     ");
@@ -424,45 +431,45 @@ public class XmlModel {
 
         LOGGER.info("" + res);
         if (verb > 0) {
-           if (s.isFeasible()==Boolean.TRUE) {
-               SolutionChecker.main(values);
-           }
+            if (s.isFeasible() == Boolean.TRUE) {
+                SolutionChecker.main(values);
+            }
         }
-        ChocoLogging.flushLogs();        
+        ChocoLogging.flushLogs();
     }
 
-    public long getParseTime(){
+    public long getParseTime() {
         return (time[1] - time[0]);
     }
 
-    public long getBuildTime(){
+    public long getBuildTime() {
         return (time[2] - time[1]);
     }
 
-    public long getResTime(){
+    public long getResTime() {
         return (time[3] - time[2]);
     }
 
-    public long getFullTime(){
+    public long getFullTime() {
         return (time[3] - time[0]);
     }
 
-    public int getNbNodes(){
+    public int getNbNodes() {
         return nbnode;
     }
 
-    public Boolean isFeasible(){
+    public Boolean isFeasible() {
         return isFeasible;
     }
 
-    public String[] getValues(){
+    public String[] getValues() {
         return values;
     }
 
     public boolean checkEverythingIsInstantiated(InstanceParser parser, Solver s) {
         for (int i = 0; i < parser.getVariables().length; i++) {
             try {
-                if (!s.getVar(parser.getVariables()[i].getChocovar()).isInstantiated()){
+                if (!s.getVar(parser.getVariables()[i].getChocovar()).isInstantiated()) {
                     return false;
                 }
             } catch (NullPointerException ignored) {
