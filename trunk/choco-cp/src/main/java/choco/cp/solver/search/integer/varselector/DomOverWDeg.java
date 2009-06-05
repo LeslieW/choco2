@@ -27,6 +27,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraintType;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.PropagationEngineListener;
 import choco.kernel.solver.search.integer.DoubleHeuristicIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -67,7 +68,11 @@ public class DomOverWDeg extends DoubleHeuristicIntVarSelector implements Propag
 		solver.getPropagationEngine().addPropagationEngineListener(this);
 	}
 
-	public double getHeuristic(IntDomainVar v) {
+    public void initConstraintForBranching(SConstraint c) {
+        ((AbstractSConstraint) c).setExtension(ABSTRACTCONTRAINT_EXTENSION, new DomOverWDegConstraintExtension());        
+    }
+
+    public double getHeuristic(IntDomainVar v) {
 		int dsize = v.getDomainSize();
 		int weight = 0;
 		// Calcul du poids:
