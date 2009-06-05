@@ -23,7 +23,9 @@
 package choco.cp.solver.search.integer.branching;
 
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
+import choco.cp.solver.search.integer.varselector.DomOverWDeg;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.branch.AbstractLargeIntBranching;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.integer.ValIterator;
@@ -123,4 +125,9 @@ public void goUpBranch(Object x, int i) throws ContradictionException {
     }
   }
 
+  public void initConstraintForBranching(SConstraint c) {
+    if (varHeuristic instanceof DomOverWDeg) {
+        ((DomOverWDeg) varHeuristic).initConstraintForBranching(c);
+    }
+  }
 }
