@@ -29,6 +29,7 @@ import choco.cp.solver.preprocessor.PreProcessCPSolver;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.DomOverDynDeg;
 import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.SearchLoopWithNogoodFromRestart;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -83,6 +84,8 @@ public class XmlModel {
 
     //initialization timelimit (for impact) in ms
     public int initialisationtime = 60000; //60
+
+    public boolean randvalh = false;
 
     //temporary data
     private Boolean isFeasible = null;
@@ -166,6 +169,9 @@ public class XmlModel {
         }
         if (options.containsKey("-seed")) {
             seed = Integer.parseInt(options.get("-seed"));
+        }
+        if (options.containsKey("-randval")) {
+           randvalh = true;
         }
         try {
             if (dossier.isFile()) {
@@ -302,6 +308,7 @@ public class XmlModel {
         if (!s.initialPropagation()) {
             isFeasible = false;
         } else {
+            if (randvalh) s.setRandomValueOrdering(seed);
             cheuri = heuristic;
             //set the search
             switch (cheuri) {
@@ -310,12 +317,7 @@ public class XmlModel {
                     cheuri = s.getBBSearch().determineHeuristic(s);
                     break;
                 case DOMOVERDEG:
-                    DomOverDynDeg dodd = new DomOverDynDeg(s);
-                    s.setVarIntSelector(dodd);
-                    s.setValIntIterator(new IncreasingDomain());
-                    //s.setValIntSelector(new RandomIntValSelector());
-                    break;
-                    //isFeasible = s.setDomOverDeg(s); break;
+                    isFeasible = s.setDomOverDeg(s); break;
                 case DOMOVERWDEG:
                     isFeasible = s.setDomOverWeg(s, initialisationtime);
                     //((DomOverWDegBranching) s.tempGoal).setRandomVarTies(seed);
@@ -326,7 +328,9 @@ public class XmlModel {
                     break;
                 case SIMPLE:
                     s.setVarIntSelector(new MinDomain(s));
-                    s.setValIntIterator(new IncreasingDomain());
+                    if (randvalh)
+                        s.setValIntSelector(new RandomIntValSelector(seed));
+                    else s.setValIntIterator(new IncreasingDomain());
                 default:
                     break;
             }
@@ -344,7 +348,6 @@ public class XmlModel {
 
         //s.setLoggingMaxDepth(200);
         if (isFeasible && (cheuri == IMPACT || s.rootNodeSingleton(initialisationtime))) {
-//<hca> je verifierai cette option a la fin
             if (s.restartMode || forcerestart) {
                 s.generateSearchStrategy();
                 s.getSearchStrategy().setSearchLoop(new SearchLoopWithNogoodFromRestart(s.getSearchStrategy(), s.getRestartStrategy()));
@@ -418,6 +421,7 @@ public class XmlModel {
         res.append(" ").append(time[3] - time[2]).append(" RES      ");
         res.append(" ").append(s.restartMode).append(" RESTART      ");
         res.append(" ").append(cheuri).append(" HEURISTIC      ");
+        res.append(" ").append(randvalh).append(" RANDVAL      ");
         LOGGER.info("d AC " + ac);
         LOGGER.info("d RUNTIME " + rtime);
         LOGGER.info("d NODES " + nbnode);
