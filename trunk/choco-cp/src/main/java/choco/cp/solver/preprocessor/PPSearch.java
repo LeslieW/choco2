@@ -38,6 +38,9 @@ import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.DomOverDynDeg;
 import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.cp.solver.search.integer.varselector.DomOverWDeg;
+import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.AbstractVar;
@@ -59,8 +62,19 @@ public class PPSearch {
 
     protected CPModel mod;
 
+    /**
+     * Enforce a random value ordering
+     */
+    protected boolean randval = false;
+    protected int randvalseed = 0;
+
     public void setModel(CPModel m) {
         this.mod = m;
+    }
+
+    public void setRandomValueHeuristic(int seed) {
+        randval = true;
+        randvalseed = seed;
     }
 
     public boolean isNaryExtensional() {
@@ -109,7 +123,9 @@ public class PPSearch {
      */
     public boolean setDomOverDeg(CPSolver s) {
         s.setVarIntSelector(new DomOverDynDeg(s));
-        s.setValIntIterator(new IncreasingDomain());
+        if (randval)
+            s.setValIntSelector(new RandomIntValSelector(randvalseed));
+        else s.setValIntIterator(new IncreasingDomain());
         return true;
     }
 
@@ -124,27 +140,38 @@ public class PPSearch {
             //when there is a single constraint domOverWdeg makes no sense
             return setImpact(s, inittime);
         } else {
-            if (isScheduling()) {
-                if (!isMixedScheduling()) { //pure scheduling
-                    DomOverWDegBranching dwd = new DomOverWDegBranching(s, new IncreasingDomain());
-                    dwd.setBranchingVars(getBooleanVars(s));
-                    s.attachGoal(dwd);
-                    AssignVar dwd2 = new AssignVar(new MinDomain(s, getOtherVars(s)), new IncreasingDomain());
-                    s.addGoal(dwd2);
-                } else {                    //side constraints added
-                    DomOverWDegBranching dwd = new DomOverWDegBranching(s, new IncreasingDomain());
-                    dwd.setBranchingVars(concat(getBooleanVars(s), getOtherVars(s)));
+            if (randval) {
+                if (isScheduling()) {
+                    if (!isMixedScheduling()) { //pure scheduling
+                        AssignVar dwd = new AssignVar(new DomOverWDeg(s,getBooleanVars(s)),new RandomIntValSelector(randvalseed));
+                        s.attachGoal(dwd);
+                        AssignVar dwd2 = new AssignVar(new MinDomain(s, getOtherVars(s)), new IncreasingDomain());
+                        s.addGoal(dwd2);
+                    } else {                    //side constraints added
+                        AssignVar dwd = new AssignVar(new DomOverWDeg(s,concat(getBooleanVars(s), getOtherVars(s))),new RandomIntValSelector(randvalseed));
+                        s.attachGoal(dwd);
+                    }
+                } else {                        //general case
+                    AssignVar dwd = new AssignVar(new DomOverWDeg(s),new RandomIntValSelector(randvalseed));
                     s.attachGoal(dwd);
                 }
-//            } else if (isReified()) { //some constraints are reified (decide them before the rest)
-//                DomOverWDegBranching dwd = new DomOverWDegBranching(s, new IncreasingDomain());
-//                dwd.setBranchingVars(getBooleanVars(s));
-//                s.attachGoal(dwd);
-//                AssignVar dwd2 = new AssignVar(new MinDomain(s, getOtherVars(s)), new IncreasingDomain());
-//                s.addGoal(dwd2);
-            } else {                        //general case
-                DomOverWDegBranching dwd = new DomOverWDegBranching(s, new IncreasingDomain());
-                s.attachGoal(dwd);
+            } else {
+                if (isScheduling()) {
+                    if (!isMixedScheduling()) { //pure scheduling
+                        DomOverWDegBranching dwd = new DomOverWDegBranching(s, new IncreasingDomain());
+                        dwd.setBranchingVars(getBooleanVars(s));
+                        s.attachGoal(dwd);
+                        AssignVar dwd2 = new AssignVar(new MinDomain(s, getOtherVars(s)), new IncreasingDomain());
+                        s.addGoal(dwd2);
+                    } else {                    //side constraints added
+                        DomOverWDegBranching dwd = new DomOverWDegBranching(s, new IncreasingDomain());
+                        dwd.setBranchingVars(concat(getBooleanVars(s), getOtherVars(s)));
+                        s.attachGoal(dwd);
+                    }
+                } else {                        //general case
+                    DomOverWDegBranching dwd = new DomOverWDegBranching(s, new IncreasingDomain());
+                    s.attachGoal(dwd);
+                }
             }
             return true;
         }
@@ -167,23 +194,19 @@ public class PPSearch {
                 if (!ibb.getImpactStrategy().initImpacts(initialisationtime))
                     return false;
                 s.attachGoal(ibb);
+                if (randval) ibb.setRandomValueChoice(randvalseed);
                 AssignVar dwd2 = new AssignVar(new MinDomain(s, ovs), new IncreasingDomain());
                 s.addGoal(dwd2);
             } else {                    //side constraints added
                 ibb = new ImpactBasedBranching(s, concat(getBooleanVars(s), getOtherVars(s)));
+                if (randval) ibb.setRandomValueChoice(randvalseed);
                 if (!ibb.getImpactStrategy().initImpacts(initialisationtime))
                     return false;
                 s.attachGoal(ibb);
             }
-//        } else if (isReified()) { //some constraints are reified (decide them before the rest)
-//            ibb = new ImpactBasedBranching(s, bvs);
-//            if (!ibb.getImpactStrategy().initImpacts(initialisationtime))
-//                return false;
-//            s.attachGoal(ibb);
-//            AssignVar dwd2 = new AssignVar(new MinDomain(s, ovs), new IncreasingDomain());
-//            s.addGoal(dwd2);
         } else {                        //general case
             ibb = new ImpactBasedBranching(s);
+            if (randval) ibb.setRandomValueChoice(randvalseed);
             if (!ibb.getImpactStrategy().initImpacts(initialisationtime))
                 return false;
             s.attachGoal(ibb);

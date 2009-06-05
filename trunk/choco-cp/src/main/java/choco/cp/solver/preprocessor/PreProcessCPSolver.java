@@ -143,6 +143,10 @@ public class PreProcessCPSolver extends CPSolver {
         options.add("bb:breaksym");
     }
 
+    public void setRandomValueOrdering(int seed) {
+        ppsearch.setRandomValueHeuristic(seed);
+    }
+
     /**
      * Add an index to the variables to be able to map them easily
      * to nodes of the constraint graph
