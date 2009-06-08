@@ -31,6 +31,8 @@ import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.cp.solver.search.integer.branching.AssignVar;
+import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.model.Model;

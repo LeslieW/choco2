@@ -205,4 +205,47 @@ public class ImpactTest {
         LOGGER.info("" + s.getNodeCount());
         assertTrue(s.getNodeCount() < 5000);
     }
+
+    public static void main(String[] args) {
+        int n = 7;
+        Model m = new CPModel();
+        m.setDefaultExpressionDecomposition(true);
+        IntegerVariable[] vars = Choco.makeIntVarArray("C", n * n, 1, n * n);
+        m.addVariables("cp:enum", vars);
+
+        IntegerVariable sum = Choco.makeIntVar("sum", 1, n * n * (n * n + 1) / 2);
+        m.addVariable("cp:clique", sum);
+
+        m.addConstraint("cp:bc", Choco.allDifferent(vars));
+        for (int i = 0; i < n; i++) {
+            IntegerVariable[] col = new IntegerVariable[n];
+            IntegerVariable[] row = new IntegerVariable[n];
+
+            for (int j = 0; j < n; j++) {
+                col[j] = vars[i * n + j];
+                row[j] = vars[j * n + i];
+            }
+
+            m.addConstraint(Choco.eq(Choco.sum(col), sum));
+            m.addConstraint(Choco.eq(Choco.sum(row), sum));
+        }
+
+        m.addConstraint(Choco.eq(sum, n * (n * n + 1) / 2));
+
+        CPSolver s = new CPSolver();
+        s.read(m);
+        s.monitorBackTrackLimit(true);
+        s.solve();
+        System.out.println(n + " Nb noeuds = " + s.getNodeCount());
+        System.out.println(n + " Temps = " + s.getTimeCount());
+        System.out.println(n + " back = " + s.getBackTrackCount());
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                System.out.print(((IntDomainVar) s.getIntVar(i * n + j)).getVal() + " ");
+            }
+            System.out.println("");
+        }
+    }
+
 }
