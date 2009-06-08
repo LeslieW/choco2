@@ -72,6 +72,8 @@ public class XmlModel {
     //perform singleton consistency step or not
     private static boolean singleton = false;
 
+    private static boolean ngFromRestart = false;
+
     //force to restart or not
     private static Boolean forcerestart = null;
     private static int base = 10;
@@ -172,6 +174,9 @@ public class XmlModel {
         }
         if (options.containsKey("-randval")) {
            randvalh = true;
+        }
+        if (options.containsKey("-ngfres")) {
+           ngFromRestart = true;
         }
         try {
             if (dossier.isFile()) {
@@ -348,7 +353,7 @@ public class XmlModel {
 
         //s.setLoggingMaxDepth(200);
         if (isFeasible && (cheuri == IMPACT || s.rootNodeSingleton(initialisationtime))) {
-            if (s.restartMode || forcerestart) {
+            if (ngFromRestart && (s.restartMode || forcerestart)) {
                 s.generateSearchStrategy();
                 s.getSearchStrategy().setSearchLoop(new SearchLoopWithNogoodFromRestart(s.getSearchStrategy(), s.getRestartStrategy()));
                 s.launch();

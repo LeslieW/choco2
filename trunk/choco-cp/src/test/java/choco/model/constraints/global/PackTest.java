@@ -36,6 +36,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.junit.Test;
+import org.junit.Ignore;
 
 import choco.Choco;
 import choco.cp.model.CPModel;
@@ -288,7 +289,7 @@ public class PackTest {
 		}while(last.isFeasible() && ub>0);
 	}
 
-	@Test
+	@Ignore
 	public void testRandomProblems() {
 		for (int i = 0; i < NB_RND_TESTS; i++) {
 			initializeRandom(RND_NB_ITEMS,RND_PB_CAPA);
