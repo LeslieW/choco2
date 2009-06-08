@@ -33,6 +33,7 @@ import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.shaker.tools.factory.CPModelFactory;
 import choco.shaker.tools.factory.VariableFactory;
@@ -604,6 +605,104 @@ public class ExpressionTest {
         checker();
     }
 
+    @Test
+    public void testExpression23() {
+        m  = new CPModel();
+        IntegerVariable[] v = new IntegerVariable[5];
+        v[0] = Choco.makeIntVar("v1", 0, 7);
+        v[1] = Choco.makeBooleanVar("b2");
+
+        m.addConstraint(
+                oppositeSign(
+                        abs(
+                                scalar(
+                                        new int[]{2},
+                                        new IntegerVariable[]{v[0]}
+                                )
+                        ),
+                        max(
+                                new IntegerExpressionVariable[]{
+                                        abs(
+                                            neg(
+                                                    v[1]
+                                            )
+                                    )
+                                }
+                        )
+                )
+        );
+        checker();
+    }
+
+    @Test
+    public void testExpression24() {
+        m  = new CPModel();
+        seed = 1104;
+        IntegerVariable[] v = new IntegerVariable[5];
+        v[0] = Choco.makeIntVar("v1", 1, 7, "cp:btree");
+        v[1] = Choco.makeIntVar("v2", 0, 3, "cp:enum");
+        v[2] = Choco.makeBooleanVar("b3");
+        v[3] = Choco.makeIntVar("v4", -3, 6, "cp:blist");
+        v[4] = Choco.makeIntVar("v1", -5, 4, "cp:btree");
+
+        m.addConstraint(
+                neq(
+                        minus(
+                                plus(
+                                        min(new IntegerVariable[]{v[0], v[1], v[2], v[3]}),
+                                        abs(v[4])
+                                ),
+                                neg(
+                                        scalar(
+                                                new int[]{10}, new IntegerVariable[]{v[3]}
+                                        )
+                                )
+                        ),
+                        abs(
+                                scalar(new int[]{3,6,5}, new IntegerVariable[]{v[3], v[4], v[2]})
+                        )
+                )
+                
+        );
+        checker();
+    }
+
+    @Test
+    public void testExpression25() {
+        m  = new CPModel();
+        IntegerVariable[] v = new IntegerVariable[5];
+        v[0] = Choco.makeIntVar("v1", -9, 0);
+        v[1] = Choco.makeIntVar("v2", 0, 3);
+        v[2] = Choco.makeIntVar("v3", -1, 5);
+        v[3] = Choco.makeIntVar("v4", -4, 2);
+        v[4] = Choco.makeBooleanVar("b5");
+
+        m.addConstraint(
+                or(
+                        gt(
+                                scalar(
+                                        new int[]{3,9},
+                                        new IntegerVariable[]{v[0], v[2]}
+                                ),
+                                sum(v[2], v[3])
+                        ),
+                        FALSE,
+                        eq(
+                                neg(
+                                        abs(
+                                                sum(v[4], v[4], v[4])
+                                        )
+                                ),
+                                max(
+                                        new IntegerExpressionVariable[]{sum(v[3], v[2])}
+                                )
+                        )
+                )
+
+        );
+        checker();
+    }
+
 
     private void mainTest(int seed, int bounds, int dsize, int depth, boolean includesOp, boolean includesMC){
         Random r = new Random(seed);
@@ -644,7 +743,9 @@ public class ExpressionTest {
 
         decomposedSolver.solve();
         if (decomposedSolver.isFeasible()) {
+
             do {
+                Assert.assertEquals("decomposedSolver.isSatisfied()",Boolean.TRUE, decomposedSolver.checkSolution(false));
                 if(print){
                     st = new StringBuffer();
                     for (int i = 0; i < 4; i++) {
@@ -664,6 +765,7 @@ public class ExpressionTest {
         if (undecomposedSolver.isFeasible()) {
             do {
                 if(print){
+                    Assert.assertEquals("undecomposedSolver.isSatisfied()",Boolean.TRUE, undecomposedSolver.checkSolution(false));
                     st = new StringBuffer();
                     for (int i = 0; i < undecomposedSolver.getNbIntVars(); i++) {
                         IntDomainVar v = ((IntDomainVar) undecomposedSolver.getIntVar(i));
@@ -673,7 +775,6 @@ public class ExpressionTest {
                 }
             } while (undecomposedSolver.nextSolution());
         }
-        LOGGER.info(decomposedSolver.getNbSolutions()+":"+undecomposedSolver.getNbSolutions());
         Assert.assertEquals("Not same number of solutions", decomposedSolver.getNbSolutions(), undecomposedSolver.getNbSolutions());
     }
 

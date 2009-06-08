@@ -2241,18 +2241,14 @@ public class CPSolver implements Solver {
 		Boolean isSolution = true;
 		StringBuffer st = new StringBuffer("~~~~~SOLUTION CHECKER~~~~~")
 		.append("\n");
-		if (printAll) {
-			st.append("(check wether every constraints define isSatisfied())")
-			.append("\n");
-		}
+        st.append("(check wether every constraints define isSatisfied())")
+            .append("\n");
 		// Check variable
 		Iterator<SConstraint> ctit = this.getIntConstraintIterator();
 		while (ctit.hasNext()) {
 			SConstraint c = ctit.next();
 			if (c.isSatisfied()) {
-				if (printAll) {
-					st.append(c.pretty()).append(" - ok").append("\n");
-				}
+                st.append(c.pretty()).append(" - ok").append("\n");
 			} else {
 				st.append("WARNINNG - ").append(c.pretty()).append(" - ko")
 				.append("\n");
@@ -2268,7 +2264,7 @@ public class CPSolver implements Solver {
 		}
 
 		st.append("\n").append("~~~~~~~~~~~~~~~~~~~~~~~~~~").append("\n");
-		LOGGER.log(Level.FINE, st.toString());
+		if(printAll)LOGGER.log(Level.FINE, st.toString());
 		return isSolution;
 	}
 
