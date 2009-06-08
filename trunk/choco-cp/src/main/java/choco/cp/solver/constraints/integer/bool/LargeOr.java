@@ -152,7 +152,7 @@ public class LargeOr extends AbstractLargeIntSConstraint {
     }
 
     public boolean isSatisfied(int[] tuple) {
-        for (int i = 1; i < tuple.length; i++) {
+        for (int i = 0; i < tuple.length; i++) {
             if (tuple[i] == 1) return true;
         }
         return false;

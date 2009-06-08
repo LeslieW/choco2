@@ -304,7 +304,7 @@ public class Absolute extends AbstractBinIntSConstraint {
 	 */
 
 	public boolean isSatisfied(int[] tuple) {
-		return Math.abs(tuple[0]) == tuple[1];
+		return Math.abs(tuple[1]) == tuple[0];
 	}
 
 	/**
