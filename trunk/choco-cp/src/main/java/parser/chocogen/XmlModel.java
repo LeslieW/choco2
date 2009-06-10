@@ -275,7 +275,7 @@ public class XmlModel {
      */
     public CPModel buildModel(InstanceParser parser) throws Exception, Error {
         boolean forceExp = false; //force all expressions to be handeled by arc consistency
-
+        ChocoLogging.setOnlyParserLogger(Level.INFO);
         CPModel m = new CPModel();
         ChocoFactory chocofact = new ChocoFactory(parser, m);
         chocofact.createVariables();
