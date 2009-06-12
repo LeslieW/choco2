@@ -137,7 +137,7 @@ public class IntegerVariable extends IntegerExpressionVariable {
                     }else
                     if(it.hasNext()){
                         c = it.next();
-                        if(Boolean.TRUE.equals(c.alreadyIn(m.getIndex()))){
+                        if(Boolean.TRUE.equals(m.contains(c))){
                             return true;
                         }
                     }else{

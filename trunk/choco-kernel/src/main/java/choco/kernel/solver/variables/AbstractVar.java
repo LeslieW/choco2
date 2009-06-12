@@ -57,7 +57,7 @@ public abstract class AbstractVar implements Var {
 	protected String name;
 
 
-	private int index = -1;
+	private long index;
 
 	/**
 	 * The variable var associated to this variable.
@@ -130,29 +130,18 @@ public abstract class AbstractVar implements Var {
 		return HashCoding.hashCodeMe(new Object[]{index});
 	}
 
-	/**
-	 * Unique index of an object in the master object
-	 * (Different from hashCode, can change from one execution to another one)
-	 *
-	 * @return
-	 */
-	@Override
-	public int getIndexIn(int masterIndex) {
-		return index;
-	}
+    /**
+     * Unique index
+     * (Different from hashCode, can change from one execution to another one)
+     *
+     * @return the indice of the objet
+     */
+    @Override
+    public long getIndice() {
+        return index;
+    }
 
-	/**
-	 * Attribute the value of the index
-	 *
-	 * @param ind
-	 */
-	@Override
-	public void setIndexIn(int masterInd, int ind) {
-		index = ind;
-	}
-
-
-	/**
+    /**
 	 * Adds a new extension.
 	 * @param extensionNumber should use the number returned by getAbstractSConstraintExtensionNumber
 	 * @param extension the extension to store to add some algorithm specific data
@@ -333,8 +322,6 @@ public abstract class AbstractVar implements Var {
 		}
 		cstIter.dispose();
 	}
-
-
 
 
 }

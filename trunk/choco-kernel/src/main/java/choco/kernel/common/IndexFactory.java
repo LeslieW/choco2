@@ -33,18 +33,18 @@ package choco.kernel.common;
 */
 public class IndexFactory {
 
-    public int index = 33;
+    public long index = 33;
 
     /**
      * Return a unique index
      * @return
      */
-    public final int getIndex(){
+    public final long getIndex(){
         return ++index;
     }
 
 
-    public static int base = (int)System.currentTimeMillis();
+    public static long base = System.currentTimeMillis();
 
     /**
      * STATIC = STRONGLY JVM DEPENDANT!!
@@ -54,7 +54,7 @@ public class IndexFactory {
      * Return a unique id
      * @return
      */
-    public static synchronized int getId(){
+    public static synchronized long getId(){
         return ++base;
     }
 

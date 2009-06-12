@@ -79,23 +79,4 @@ public interface Variable extends IPretty, IIndex, IOptions {
      * @param properties
      */
     public void findManager(Properties properties);
-
-    /**
-     * Return wether a variable has been added to a model
-     * @param modelIndex
-     * @return
-     */
-    public Boolean alreadyIn(int modelIndex);
-
-    /**
-     * Record the adition of the variable to the model
-     * @param modelIndex
-     */
-    public void addModelIndex(int modelIndex);
-
-    /**
-     * Remove the adition of the variable to the model
-     * @param modelIndex
-     */
-    public void remModelIndex(int modelIndex);
 }

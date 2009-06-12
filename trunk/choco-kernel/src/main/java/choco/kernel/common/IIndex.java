@@ -36,18 +36,12 @@ package choco.kernel.common;
 * Index can change from one execution to another one. HashCode should not!
 */
 public interface IIndex {
-
+    
     /**
-     * Unique index of an object in the master object
+     * Unique index 
      * (Different from hashCode, can change from one execution to another one) 
-     * @return
+     * @return the indice of the objet
      */
-    public int getIndexIn(int masterIndex);
-
-    /**
-     * Attribute the value of the index
-     * @param ind
-     */
-    public void setIndexIn(int masterInd, int ind);
+    public long getIndice();
 
 }

@@ -131,26 +131,26 @@ public class CPModelToCPSolver {
 		Iterator it = model.getIntVarIterator();
 		while (it.hasNext()) {
 			i = (IntegerVariable) it.next();
-			if (!cpsolver.mapvariables.containsKey(i.getIndexIn(model.getIndex()))) {
-				cpsolver.mapvariables.put(i.getIndexIn(model.getIndex()), readModelVariable(i));
+			if (!cpsolver.mapvariables.containsKey(i.getIndice())) {
+				cpsolver.mapvariables.put(i.getIndice(), readModelVariable(i));
 			}
 		}
 		//2- RealVariable
 		it = model.getRealVarIterator();
 		while (it.hasNext()) {
 			r = (RealVariable) it.next();
-			if (!cpsolver.mapvariables.containsKey(r.getIndexIn(model.getIndex()))) {
-				cpsolver.mapvariables.put(r.getIndexIn(model.getIndex()), readModelVariable(r));
+			if (!cpsolver.mapvariables.containsKey(r.getIndice())) {
+				cpsolver.mapvariables.put(r.getIndice(), readModelVariable(r));
 			}
 		}
 		//3- SetVariable
 		it = model.getSetVarIterator();
 		while (it.hasNext()) {
 			s = (SetVariable) it.next();
-			if (!cpsolver.mapvariables.containsKey(s.getIndexIn(model.getIndex()))) {
+			if (!cpsolver.mapvariables.containsKey(s.getIndice())) {
 				SetVar setVar = (SetVar) readModelVariable(s);
-				cpsolver.mapvariables.put(s.getIndexIn(model.getIndex()), setVar);
-				cpsolver.mapvariables.put(s.getCard().getIndexIn(model.getIndex()), setVar.getCard());
+				cpsolver.mapvariables.put(s.getIndice(), setVar);
+				cpsolver.mapvariables.put(s.getCard().getIndice(), setVar.getCard());
 				checkOptions(s.getCard(), setVar.getCard());
 			}
 		}
@@ -158,24 +158,24 @@ public class CPModelToCPSolver {
 		it = model.getConstVarIterator();
 		while (it.hasNext()) {
 			v = (Variable) it.next();
-			if (!cpsolver.mapvariables.containsKey(v.getIndexIn(model.getIndex()))) {
+			if (!cpsolver.mapvariables.containsKey(v.getIndice())) {
 				switch (v.getVariableType()) {
 				case CONSTANT_INTEGER:
 					ci = (IntegerConstantVariable) v;
-					if (!cpsolver.mapvariables.containsKey(ci.getIndexIn(model.getIndex()))) {
-						cpsolver.mapvariables.put(ci.getIndexIn(model.getIndex()), readModelVariable(ci));
+					if (!cpsolver.mapvariables.containsKey(ci.getIndice())) {
+						cpsolver.mapvariables.put(ci.getIndice(), readModelVariable(ci));
 					}
 					break;
 				case CONSTANT_DOUBLE:
 					cr = (RealConstantVariable) v;
-					if (!cpsolver.mapvariables.containsKey(cr.getIndexIn(model.getIndex()))) {
-						cpsolver.mapvariables.put(cr.getIndexIn(model.getIndex()), readModelVariable(cr));
+					if (!cpsolver.mapvariables.containsKey(cr.getIndice())) {
+						cpsolver.mapvariables.put(cr.getIndice(), readModelVariable(cr));
 					}
 					break;
 				case CONSTANT_SET:
 					cs = (SetConstantVariable) v;
-					if (!cpsolver.mapvariables.containsKey(cs.getIndexIn(model.getIndex()))) {
-						cpsolver.mapvariables.put(cs.getIndexIn(model.getIndex()), readModelVariable(cs));
+					if (!cpsolver.mapvariables.containsKey(cs.getIndice())) {
+						cpsolver.mapvariables.put(cs.getIndice(), readModelVariable(cs));
 					}
 					break;
 				}
@@ -185,8 +185,8 @@ public class CPModelToCPSolver {
 		it = model.getMultipleVarIterator();
 		while (it.hasNext()) {
 			mv = (MultipleVariables) it.next();
-			if (!cpsolver.mapvariables.containsKey(mv.getIndexIn(model.getIndex()))) {
-				cpsolver.mapvariables.put(mv.getIndexIn(model.getIndex()), readModelVariable(mv));
+			if (!cpsolver.mapvariables.containsKey(mv.getIndice())) {
+				cpsolver.mapvariables.put(mv.getIndice(), readModelVariable(mv));
 			}
 		}
 		cpsolver.setPrecision(model.getPrecision());
@@ -310,14 +310,13 @@ public class CPModelToCPSolver {
 		Iterator<Constraint> it = model.getConstraintIterator();
 		while (it.hasNext()) {
 			ic = it.next();
-            int ind = ic.getIndexIn(model.getIndex());
-			if (!cpsolver.mapconstraints.containsKey(ind)) {
+			if (!cpsolver.mapconstraints.containsKey(ic.getIndice())) {
 				if (ic.getOptions().contains("cp:decomp")) {
 					decomp = true;
 				}
 				c = readModelConstraint(ic, decomp);
 				cpsolver.post(c);
-				cpsolver.mapconstraints.put(ind, c);
+				cpsolver.mapconstraints.put(ic.getIndice(), c);
 			}
 		}
 		cpsolver.postRedundantTaskConstraints();
@@ -325,10 +324,9 @@ public class CPModelToCPSolver {
 	}
 
 	public void readConstraint(Constraint ic, Boolean decomp) {
-        int ind = ic.getIndexIn(cpsolver.getModel().getIndex());
-		if (!cpsolver.mapconstraints.containsKey(ind)) {
+		if (!cpsolver.mapconstraints.containsKey(ic.getIndice())) {
 			SConstraint c = readModelConstraint(ic, decomp);
-			cpsolver.mapconstraints.put(ind, c);
+			cpsolver.mapconstraints.put(ic.getIndice(), c);
 			cpsolver.post(c);
 		}
 	}
@@ -408,29 +406,29 @@ public class CPModelToCPSolver {
 		return true;
 	}
 
-	private IntDomainVar[] integerVariableToIntDomainVar(int modelInd, Variable[] tab) {
-		return integerVariableToIntDomainVar(modelInd, tab, tab.length);
+	private IntDomainVar[] integerVariableToIntDomainVar(Variable[] tab) {
+		return integerVariableToIntDomainVar(tab, tab.length);
 	}
 
-	private IntDomainVar[] integerVariableToIntDomainVar(int modelInd, Variable[] tab, int n) {
+	private IntDomainVar[] integerVariableToIntDomainVar(Variable[] tab, int n) {
 		IntDomainVar[] newTab = new IntDomainVar[n];
 		for (int i = 0; i < n; i++) {
-			newTab[i] = (IntDomainVar) cpsolver.mapvariables.get(tab[i].getIndexIn(modelInd));
+			newTab[i] = (IntDomainVar) cpsolver.mapvariables.get(tab[i].getIndice());
 		}
 		return newTab;
 	}
 
-	private IntDomainVar[][] integerVariableToIntDomainVar(int modelInd,Variable[][] tab, int n) {
+	private IntDomainVar[][] integerVariableToIntDomainVar(Variable[][] tab, int n) {
 		IntDomainVar[][] newTab = new IntDomainVar[n][];
 		for (int i = 0; i < n; i++) {
-			newTab[i] = integerVariableToIntDomainVar(modelInd, tab[i]);
+			newTab[i] = integerVariableToIntDomainVar(tab[i]);
 		}
 		return newTab;
 	}
 
 
-	protected IntDomainVar[][] integerVariableToIntDomainVar(int modelInd,Variable[][] tab) {
-		return integerVariableToIntDomainVar(modelInd, tab, tab.length);
+	protected IntDomainVar[][] integerVariableToIntDomainVar(Variable[][] tab) {
+		return integerVariableToIntDomainVar(tab, tab.length);
 	}
 
 

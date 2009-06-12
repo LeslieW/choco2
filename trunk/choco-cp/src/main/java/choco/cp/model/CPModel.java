@@ -23,10 +23,9 @@
 
 package choco.cp.model;
 
-import choco.kernel.common.IndexFactory;
+import choco.kernel.common.DeterministicIndicedList;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.ChocoUtil;
-import static choco.kernel.common.util.ChocoUtil.getImmutableIterator;
 import choco.kernel.model.IOptions;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
@@ -46,14 +45,14 @@ import choco.kernel.model.variables.set.SetExpressionVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.integer.IntVar;
-import gnu.trove.TIntHashSet;
-import gnu.trove.TIntObjectHashMap;
-import gnu.trove.TIntObjectIterator;
+import gnu.trove.TLongHashSet;
+import gnu.trove.TLongIntHashMap;
+import gnu.trove.TLongIntIterator;
+import gnu.trove.TLongObjectIterator;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -75,40 +74,40 @@ public class CPModel implements Model {
     protected double reduction = 0.99;
 
     /**
-     * All the constraints of the model.
+     * All the constraint of the model
      */
-    protected TIntObjectHashMap<Constraint> constraints;
+    protected DeterministicIndicedList<Constraint> constraints;
 
     /**
      * All the search intVars in the model.
      */
-    protected List<IntegerVariable> intVars;
+    protected DeterministicIndicedList<IntegerVariable> intVars;
 
     protected int nbBoolVar;
     /**
      * All the set intVars in the model.
      */
-    protected List<SetVariable> setVars;
+    protected DeterministicIndicedList<SetVariable> setVars;
     /**
      * All the float vars in the model.
      */
-    protected List<RealVariable> floatVars;
+    protected DeterministicIndicedList<RealVariable> floatVars;
 
     /**
      * All the constant vars in the model
      */
-    protected List<Variable> constantVars;
+    protected DeterministicIndicedList<Variable> constantVars;
     /**
      * All the search intVars in the model.
      */
-    protected List<IntegerExpressionVariable> expVars;
+    protected DeterministicIndicedList<IntegerExpressionVariable> expVars;
 
-    protected List<MultipleVariables> storedMultipleVariables;
+    protected DeterministicIndicedList<MultipleVariables> storedMultipleVariables;
 
     /**
      * Map that gives for type of contraints, a list of contraints of that type
      */
-    private EnumMap<ConstraintType, TIntObjectHashMap<Constraint>> constraintsByType;
+    private EnumMap<ConstraintType, TLongIntHashMap> constraintsByType;
 
     /**
      * The variable modelling the objective function
@@ -119,7 +118,6 @@ public class CPModel implements Model {
      */
     protected boolean doMaximize;
 
-    protected final int index;
     /**
      * Decomposed expression
      */
@@ -127,26 +125,40 @@ public class CPModel implements Model {
 
     protected ComponentConstraintWithSubConstraints clausesStore = null;
 
-    protected final IndexFactory indexfactory;
-
     /**
      * Properties file
      */
     public final Properties properties;
 
+    /**
+     * Constructor.
+     * Create srtuctures for a model of constraint programming.
+     */
     public CPModel() {
-        intVars = new ArrayList<IntegerVariable>();
-        setVars = new ArrayList<SetVariable>();
-        floatVars = new ArrayList<RealVariable>();
-        constantVars = new ArrayList<Variable>();
-        expVars = new ArrayList<IntegerExpressionVariable>();
-        storedMultipleVariables = new ArrayList<MultipleVariables>(0);
-        constraints = new TIntObjectHashMap<Constraint>();
-        // Index of CPModel can be compute statically
-        index = IndexFactory.getId();
-        // Index of CPModel has to be compute dynamically
-        indexfactory = new IndexFactory();
-    constraintsByType = new EnumMap<ConstraintType, TIntObjectHashMap<Constraint>>(ConstraintType.class);
+        this(32,32,32,32,32,32,32);
+    }
+
+    /**
+     * Constructor.
+     * Create srtuctures for a model of constraint programming.
+     * @param nbCstrs estimated number of constraints
+     * @param nbIntVars estimated number of integer variables
+     * @param nbSetVars estimated number of set variables
+     * @param nbRealVars estimated number of real variables
+     * @param nbCsts estimated number of constants
+     * @param nbExpVars estimated number of expression variables
+     * @param nbMultVars estimated number of multiples variables
+     */
+    public CPModel(int nbCstrs, int nbIntVars, int nbSetVars, int nbRealVars, int nbCsts, int nbExpVars, int nbMultVars){
+        intVars = new DeterministicIndicedList<IntegerVariable>(IntegerVariable.class, nbIntVars);
+        setVars = new DeterministicIndicedList<SetVariable>(SetVariable.class, nbSetVars);
+        floatVars = new DeterministicIndicedList<RealVariable>(RealVariable.class, nbRealVars);
+        constantVars = new DeterministicIndicedList<Variable>(Variable.class, nbCsts);
+        expVars = new DeterministicIndicedList<IntegerExpressionVariable>(IntegerExpressionVariable.class, nbExpVars);
+        storedMultipleVariables = new DeterministicIndicedList<MultipleVariables>(MultipleVariables.class, nbMultVars);
+        constraints = new DeterministicIndicedList<Constraint>(Constraint.class, nbCstrs);
+
+        constraintsByType = new EnumMap<ConstraintType, TLongIntHashMap>(ConstraintType.class);
         properties = new Properties();
         try {
             InputStream is = getClass().getResourceAsStream( "/application.properties" );
@@ -154,16 +166,6 @@ public class CPModel implements Model {
         } catch (IOException e) {
             LOGGER.severe("Could not open application.properties");
         }
-    }
-
-    /**
-     * Return the index of the Model
-     *
-     * @return int
-     */
-    @Override
-    public int getIndex() {
-        return index;
     }
 
     public String pretty() {
@@ -175,59 +177,30 @@ public class CPModel implements Model {
 
     public String varsToString() {
         StringBuffer buf = new StringBuffer("==== VARIABLES ====\n");
-        for (IntegerVariable intVar : intVars) {
-            buf.append(intVar.pretty()).append("\n");
-        }
-        for (RealVariable floatVar : floatVars) {
-            buf.append(floatVar.pretty()).append('\n');
-        }
-        for (SetVariable setVar : setVars) {
-            buf.append(setVar.pretty()).append("\n");
-        }
-        for (Variable constantVar : constantVars) {
-            buf.append(constantVar.pretty()).append("\n");
-        }
+        buf.append(ChocoUtil.prettyOnePerLine(intVars.iterator()));
+        buf.append(ChocoUtil.prettyOnePerLine(floatVars.iterator()));
+        buf.append(ChocoUtil.prettyOnePerLine(setVars.iterator()));
+        buf.append(ChocoUtil.prettyOnePerLine(constantVars.iterator()));
+
         buf.append("==== MULTIPLE VARIABLES ====\n");
-        buf.append(ChocoUtil.prettyOnePerLine(storedMultipleVariables));
+        buf.append(ChocoUtil.prettyOnePerLine(storedMultipleVariables.iterator()));
+
         return new String(buf);
     }
 
     public String constraintsToString() {
         StringBuffer buf = new StringBuffer("==== CONSTRAINTS ====\n");
-        TIntObjectIterator<Constraint> it = constraints.iterator();
-        while (it.hasNext()) {
-            it.advance();
-            Constraint c = it.value();
-            buf.append(c.pretty());
-            buf.append("\n");
-        }
+        buf.append(ChocoUtil.prettyOnePerLine(constraints.iterator()));
         return new String(buf);
     }
 
 
     public String solutionToString() {
         StringBuffer buf = new StringBuffer();
-        for (int i = 0; i < getNbIntVars(); i++) {
-            IntegerVariable v = getIntVar(i);
-            buf.append(v.toString());
-            buf.append(", ");
-        }
-        for (int j = 0; j < getNbRealVars(); j++) {
-            RealVariable v = getRealVar(j);
-            buf.append(v.toString());
-            buf.append(", ");
-        }
-
-        for (int k = 0; k < getNbSetVars(); k++) {
-            SetVariable v = getSetVar(k);
-            buf.append(v.toString());
-            buf.append(", ");
-        }
-        for (int k = 0; k < getNbConstantVars(); k++) {
-            IntegerConstantVariable v = getConstantVar(k);
-            buf.append(v.toString());
-            buf.append(", ");
-        }
+        buf.append(ChocoUtil.prettyOnePerLine(intVars.iterator()));
+        buf.append(ChocoUtil.prettyOnePerLine(floatVars.iterator()));
+        buf.append(ChocoUtil.prettyOnePerLine(setVars.iterator()));
+        buf.append(ChocoUtil.prettyOnePerLine(constantVars.iterator()));
         return new String(buf);
     }
 
@@ -367,7 +340,7 @@ public class CPModel implements Model {
      * @return the total number of constraints in the model
      */
     public final int getNbConstraints() {
-        return this.constraints.size();
+        return constraints.size();
     }
 
 
@@ -378,7 +351,8 @@ public class CPModel implements Model {
      * @param i index of the constraint in the model
      */
     public final Constraint getConstraint(int i) {
-        return (Constraint)constraints.getValues()[i];
+//        return (Constraint)constraints.getValues()[i];
+        return constraints.get(i);
     }
 
     /**
@@ -401,21 +375,67 @@ public class CPModel implements Model {
      */
     @Override
     public Iterator<Constraint> getConstraintIterator() {
-        return new TroveIterator(constraints.iterator());
+//        return new TroveIterator(constraints.iterator());
+        return constraints.iterator();
     }
 
 
     public Iterator<Constraint> getConstraintByType(ConstraintType t) {
-        TIntObjectHashMap<Constraint> hs = constraintsByType.get(t);
+        final TLongIntHashMap hs = constraintsByType.get(t);
         if (hs != null) {
-            return new TroveIterator(hs.iterator());
+            return new Iterator<Constraint>(){
+                TLongIntIterator it = hs.iterator();
+                /**
+                 * Returns <tt>true</tt> if the iteration has more elements. (In other
+                 * words, returns <tt>true</tt> if <tt>next</tt> would return an element
+                 * rather than throwing an exception.)
+                 *
+                 * @return <tt>true</tt> if the iterator has more elements.
+                 */
+                @Override
+                public boolean hasNext() {
+                    return it.hasNext();
+                }
+
+                /**
+                 * Returns the next element in the iteration.
+                 *
+                 * @return the next element in the iteration.
+                 * @throws java.util.NoSuchElementException
+                 *          iteration has no more elements.
+                 */
+                @Override
+                public Constraint next() {
+                    it.advance();
+                    return constraints.get(it.value());
+                }
+
+                /**
+                 * Removes from the underlying collection the last element returned by the
+                 * iterator (optional operation).  This method can be called only once per
+                 * call to <tt>next</tt>.  The behavior of an iterator is unspecified if
+                 * the underlying collection is modified while the iteration is in
+                 * progress in any way other than by calling this method.
+                 *
+                 * @throws UnsupportedOperationException if the <tt>remove</tt>
+                 *                                       operation is not supported by this Iterator.
+                 * @throws IllegalStateException         if the <tt>next</tt> method has not
+                 *                                       yet been called, or the <tt>remove</tt> method has already
+                 *                                       been called after the last call to the <tt>next</tt>
+                 *                                       method.
+                 */
+                @Override
+                public void remove() {
+                    //To change body of implemented methods use File | Settings | File Templates.
+                }
+            };
         } else {
 		}
         return new EmptyIterator();
     }
 
     public int getNbConstraintByType(ConstraintType t) {
-        TIntObjectHashMap<Constraint> hs = constraintsByType.get(t);
+        TLongIntHashMap hs = constraintsByType.get(t);
         if (hs != null) {
 			return hs.size();
 		} else {
@@ -429,15 +449,6 @@ public class CPModel implements Model {
             anElement.addOption(option);
         }
     }
-
-    protected <E extends Variable> void addVariable(E v, List<E> vars) {
-        if (!v.alreadyIn(this.index)) {
-            vars.add(v);
-            v.addModelIndex(this.index);
-            v.setIndexIn(this.index, indexfactory.getIndex());
-        }
-    }
-
 
     /**
      * Add a variable to the model
@@ -555,27 +566,33 @@ public class CPModel implements Model {
                     if (((IntegerVariable) v).isBoolean()) {
                         nbBoolVar++;
                     }
-                    addVariable((IntegerVariable) v, intVars);
+                    //addVariable((IntegerVariable) v, intVars);
+                    intVars.add((IntegerVariable)v);
                     break;
                 case SET:
-                    addVariable((SetVariable) v, setVars);
+//                    addVariable((SetVariable) v, setVars);
+                    setVars.add((SetVariable) v);
                     addVariable(options, ((SetVariable) v).getCard());
                     break;
                 case REAL:
-                    addVariable((RealVariable) v, floatVars);
+//                    addVariable((RealVariable) v, floatVars);
+                    floatVars.add((RealVariable) v);
                     break;
                 case CONSTANT_INTEGER:
                     // It is necessary to detect boolean variable as soon as possible
                     if (((IntegerConstantVariable) v).isBoolean()) {
                         nbBoolVar++;
                     }
-                    addVariable(v, constantVars);
+//                    addVariable(v, constantVars);
+                    constantVars.add(v);
                     break;
                 case CONSTANT_DOUBLE:
-                    addVariable(v, constantVars);
+//                    addVariable(v, constantVars);
+                    constantVars.add(v);
                     break;
                 case CONSTANT_SET:
-                    addVariable(v, constantVars);
+//                    addVariable(v, constantVars);
+                    constantVars.add(v);
                     addVariable(options, ((SetVariable) v).getCard());
                     break;
                 case INTEGER_EXPRESSION:
@@ -607,8 +624,6 @@ public class CPModel implements Model {
                     }
                     if (mv.isStored()
                             && !storedMultipleVariables.contains(mv)) {
-                        mv.addModelIndex(this.index);
-                        mv.setIndexIn(this.index, indexfactory.getIndex());
                         storedMultipleVariables.add(mv);
                     }
                     break;
@@ -627,9 +642,8 @@ public class CPModel implements Model {
     }
 
     @Deprecated
-    protected <E extends Variable> void removeVariable(E v, List<E> vars) {
+    protected <E extends Variable> void removeVariable(E v, DeterministicIndicedList<E> vars) {
             vars.remove(v);
-            v.remModelIndex(this.index);
             Iterator<Constraint> it = v.getConstraintIterator(this);
             while (it.hasNext()) {
                 Constraint c = it.next();
@@ -692,16 +706,15 @@ public class CPModel implements Model {
             default:
                 throw new ModelException("unknown variable type :" + v.getVariableType());
         }
-        v.remModelIndex(this.index);
     }
 
     public void remove(Object ob) {
         Constraint c;
         Variable v;
         // Liste des contraintes à supprimer
-        TIntHashSet conSet = new TIntHashSet();
+        TLongHashSet conSet = new TLongHashSet();
         // Liste des variables à supprimer
-        TIntHashSet varSet  = new TIntHashSet();
+        TLongHashSet varSet  = new TLongHashSet();
 
         // Liste des contraintes à supprimer
         Queue<Constraint> conQueue  = new ArrayDeque<Constraint>();
@@ -711,8 +724,8 @@ public class CPModel implements Model {
         if(ob instanceof Constraint){
             c = (Constraint)ob;
             conQueue.add(c);
-            c.removedFrom(index);
-            constraints.remove(c.getIndexIn(this.index));
+            constraints.remove(c);
+
         }else if(ob instanceof Variable){
             v = (Variable)ob;
             varQueue.add(v);
@@ -727,25 +740,24 @@ public class CPModel implements Model {
                 while(itv.hasNext()){
                     v= itv.next();
                     v.removeConstraint(c);
-                    if(v.getNbConstraint(this) == 0 && !varSet.contains(v.getIndexIn(this.index))){
+                    if(v.getNbConstraint(this) == 0 && !varSet.contains(v.getIndice())){
                         remVariable(v);
                         varQueue.add(v);
                     }
                 }
-                conSet.add(c.getIndexIn(this.index));
+                conSet.add(c.getIndice());
             }
             if(!varQueue.isEmpty()){
                 v = varQueue.remove();
                 itc= v.getConstraintIterator(this);
                 while(itc.hasNext()){
                     c = itc.next();
-                    if(!conSet.contains(c.getIndexIn(this.index))){
+                    if(!conSet.contains(c.getIndice())){
                         conQueue.add(c);
-                        c.removedFrom(index);
-                        constraints.remove(c.getIndexIn(this.index));
+                        constraints.remove(c);
                     }
                 }
-                varSet.add(v.getIndexIn(this.index));
+                varSet.add(v.getIndice());
             }
         }
     }
@@ -798,12 +810,12 @@ public class CPModel implements Model {
      * @param c the constraint to add
      */
     private void updateConstraintByType(ConstraintType t, Constraint c) {
-        TIntObjectHashMap<Constraint> hs = constraintsByType.get(t);
+        TLongIntHashMap hs = constraintsByType.get(t);
         if (hs == null) {
-            hs = new TIntObjectHashMap<Constraint>();
+            hs = new TLongIntHashMap();
         }
-        if(!hs.containsKey(c.getIndexIn(this.index))){
-            hs.put(c.getIndexIn(this.index), c);
+        if(!hs.containsKey(c.getIndice())){
+            hs.put(c.getIndice(), constraints.get(c));
         }
         constraintsByType.put(t, hs);
     }
@@ -894,10 +906,8 @@ public class CPModel implements Model {
                     storeClauses((ComponentConstraint) c);
                     break;
                 default:
-                    if (!c.alreadyIn(this.index)) {
-                        c.addedTo(this.index);
-                        c.setIndexIn(this.index, indexfactory.getIndex());
-                        constraints.put(c.getIndexIn(this.index), c);
+                    if (!constraints.contains(c)) {
+                        constraints.add(c);
                     }
                     break;
             }
@@ -926,37 +936,36 @@ public class CPModel implements Model {
         if(clausesStore==null){
             clausesStore = new ComponentConstraintWithSubConstraints(ConstraintType.CLAUSES, clause.getVariables(), null, clause);
             clausesStore.findManager(properties);
-            clausesStore.addedTo(this.index);
-            clausesStore.setIndexIn(this.index, indexfactory.getIndex());
-            constraints.put(clausesStore.getIndexIn(this.index), clausesStore);
+            constraints.add(clausesStore);
+
         }else{
             clausesStore.addElements(clause.getVariables(), new Constraint[]{clause});
         }
     }
 
 
-    public ListIterator<IntegerVariable> getIntVarIterator() {
-        return getImmutableIterator(intVars);
+    public Iterator<IntegerVariable> getIntVarIterator() {
+        return intVars.iterator();
     }
 
-    public ListIterator<RealVariable> getRealVarIterator() {
-        return getImmutableIterator(floatVars);
+    public Iterator<RealVariable> getRealVarIterator() {
+        return floatVars.iterator();
     }
 
-    public ListIterator<SetVariable> getSetVarIterator() {
-        return getImmutableIterator(setVars);
+    public Iterator<SetVariable> getSetVarIterator() {
+        return setVars.iterator();
     }
 
-    public ListIterator<Variable> getConstVarIterator() {
-        return getImmutableIterator(constantVars);
+    public Iterator<Variable> getConstVarIterator() {
+        return constantVars.iterator();
     }
 
-    public ListIterator<IntegerExpressionVariable> getExprVarIterator() {
-        return getImmutableIterator(expVars);
+    public Iterator<IntegerExpressionVariable> getExprVarIterator() {
+        return expVars.iterator();
     }
 
-    public ListIterator<MultipleVariables> getMultipleVarIterator() {
-        return getImmutableIterator(storedMultipleVariables);
+    public Iterator<MultipleVariables> getMultipleVarIterator() {
+        return storedMultipleVariables.iterator();
     }
 
     static class EmptyIterator implements Iterator<Constraint> {
@@ -973,9 +982,9 @@ public class CPModel implements Model {
     }
   }
     static class TroveIterator implements Iterator<Constraint>{
-        private TIntObjectIterator<Constraint> iterator;
+        private TLongObjectIterator<Constraint> iterator;
 
-        TroveIterator(TIntObjectIterator<Constraint> tit) {
+        TroveIterator(TLongObjectIterator<Constraint> tit) {
             this.iterator = tit;
         }
 
@@ -996,4 +1005,8 @@ public class CPModel implements Model {
         }
     }
 
+
+    public boolean contains(Constraint c){
+        return constraints.contains(c);
+    }
 }

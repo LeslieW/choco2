@@ -77,15 +77,4 @@ public interface Constraint extends IPretty, IIndex, IOptions {
      * @param properties
      */
     public void findManager(Properties properties);
-
-    /**
-     * Return wether a variable has been added to a model
-     * @param modelIndex
-     * @return
-     */
-    public Boolean alreadyIn(int modelIndex);
-
-    public void addedTo(int modelIndex);
-
-    public void removedFrom(int modelIndex);
 }

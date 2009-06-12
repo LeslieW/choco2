@@ -27,7 +27,7 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.TIntArrayList;
+import gnu.trove.TLongArrayList;
 
 import java.util.HashSet;
 import java.util.logging.Logger;
@@ -130,18 +130,18 @@ public abstract class INode implements IPretty {
      * @return
      */
     public IntDomainVar[] union(IntDomainVar[] t1, IntDomainVar[] t2) {
-        TIntArrayList indexes = new TIntArrayList();
+        TLongArrayList indexes = new TLongArrayList();
         IntDomainVar[] unionset = new IntDomainVar[(t1==null?0:t1.length)+(t2==null?0:t2.length)];
         int indice = 0;
         for (int i = 0; t1 != null && i < t1.length; i++) {
-            if (t1[i]!=null && !indexes.contains(t1[i].getIndexIn(0))) {
-                indexes.add(t1[i].getIndexIn(0));
+            if (t1[i]!=null && !indexes.contains(t1[i].getIndice())) {
+                indexes.add(t1[i].getIndice());
                 unionset[indice++] = t1[i];
             }
         }
         for (int i = 0; t2 != null && i < t2.length; i++) {
-            if (t2[i]!=null && !indexes.contains(t2[i].getIndexIn(0))) {
-                indexes.add(t2[i].getIndexIn(0));
+            if (t2[i]!=null && !indexes.contains(t2[i].getIndice())) {
+                indexes.add(t2[i].getIndice());
                 unionset[indice++] = t2[i];
             }
         }

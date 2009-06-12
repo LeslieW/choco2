@@ -34,18 +34,18 @@ import choco.kernel.model.variables.*;
  */
 public class IntegerExpressionVariable extends ComponentVariable implements IntBoundedVariable {
 
-    private int lowB;
-    private int uppB;
+    private int lowB = Integer.MAX_VALUE;
+    private int uppB = Integer.MIN_VALUE;
 
 
     public IntegerExpressionVariable(Object parameters, Operator operator, VariableType type, IntegerExpressionVariable... variables) {
 		super(type, operator,parameters, "", variables);
-        init();
+//        init();
 	}
 
     public IntegerExpressionVariable(Object parameters, String operator, VariableType type, IntegerExpressionVariable... variables) {
 		super(type, operator,parameters, "", variables);
-        init();
+//        init();
 	}
 
     public IntegerExpressionVariable(Object parameters, Class operator, VariableType type, IntegerExpressionVariable... variables) {
@@ -58,7 +58,7 @@ public class IntegerExpressionVariable extends ComponentVariable implements IntB
 
     public IntegerExpressionVariable(Object parameters, String operator, IntegerExpressionVariable... variables) {
 		super(VariableType.INTEGER_EXPRESSION, operator,parameters, "", variables);
-        init();
+//        init();
 	}
 
     public IntegerExpressionVariable(Object parameters, Class operator, IntegerExpressionVariable... variables) {
@@ -80,6 +80,7 @@ public class IntegerExpressionVariable extends ComponentVariable implements IntB
 	}
 
     public int getLowB() {
+        if(lowB == Integer.MAX_VALUE)init();
         return lowB;
     }
 
@@ -88,6 +89,7 @@ public class IntegerExpressionVariable extends ComponentVariable implements IntB
     }
 
     public int getUppB() {
+        if(uppB == Integer.MIN_VALUE)init();
         return uppB;
     }
 
@@ -200,8 +202,7 @@ public class IntegerExpressionVariable extends ComponentVariable implements IntB
                 vals[3] = Integer.MAX_VALUE;
         }
         int[] bounds = new int[]{Integer.MAX_VALUE, Integer.MIN_VALUE};
-        for (int k = 0; k < vals.length; k++) {
-            int val = vals[k];
+        for (int val : vals) {
             bounds[0] = Math.min(bounds[0], val);
             bounds[1] = Math.max(bounds[1], val);
         }
@@ -226,11 +227,10 @@ public class IntegerExpressionVariable extends ComponentVariable implements IntB
                 vals[3] = s1 + s2;
                 i1 = Integer.MAX_VALUE;
                 s1 = Integer.MIN_VALUE;
-                for (int k = 0; k < vals.length; k++) {
-                    int val = vals[k];
-                    i1 = Math.min(i1, val);
-                    s1 = Math.max(s1, val);
-                }
+                    for (int val : vals) {
+                        i1 = Math.min(i1, val);
+                        s1 = Math.max(s1, val);
+                    }
                 i++;
             }while(i < cste);
                 break;
@@ -244,20 +244,19 @@ public class IntegerExpressionVariable extends ComponentVariable implements IntB
                 vals[3] = s1 + s2;
                 i1 = Integer.MAX_VALUE;
                 s1 = Integer.MIN_VALUE;
-                for (int k = 0; k < vals.length; k++) {
-                    int val = vals[k];
-                    i1 = Math.min(i1, val);
-                    s1 = Math.max(s1, val);
-                }
+                    for (int val : vals) {
+                        i1 = Math.min(i1, val);
+                        s1 = Math.max(s1, val);
+                    }
                 i++;
             }while(i < variables.length);
                 break;
             case MAX:
                 i1 = Integer.MIN_VALUE;
                 s1 = Integer.MIN_VALUE;
-                for(int j = 0;  j < variables.length; j++){
-                    int i2 = ((IntegerExpressionVariable) variables[j]).getLowB();
-                    int s2 = ((IntegerExpressionVariable) variables[j]).getUppB();
+                for (ComponentVariable variable : variables) {
+                    int i2 = ((IntegerExpressionVariable) variable).getLowB();
+                    int s2 = ((IntegerExpressionVariable) variable).getUppB();
                     i1 = Math.max(i1, i2);
                     s1 = Math.max(s1, s2);
                 }
@@ -265,9 +264,9 @@ public class IntegerExpressionVariable extends ComponentVariable implements IntB
             case MIN:
                 i1 = Integer.MAX_VALUE;
                 s1 = Integer.MAX_VALUE;
-                for(int j = 0;  j < variables.length; j++){
-                    int i2 = ((IntegerExpressionVariable) variables[j]).getLowB();
-                    int s2 = ((IntegerExpressionVariable) variables[j]).getUppB();
+                for (ComponentVariable variable : variables) {
+                    int i2 = ((IntegerExpressionVariable) variable).getLowB();
+                    int s2 = ((IntegerExpressionVariable) variable).getUppB();
                     i1 = Math.min(i1, i2);
                     s1 = Math.min(s1, s2);
                 }

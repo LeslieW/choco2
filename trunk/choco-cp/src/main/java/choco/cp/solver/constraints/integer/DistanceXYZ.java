@@ -174,18 +174,17 @@ public class DistanceXYZ extends AbstractTernIntSConstraint {
 	public void filterFixPoint() throws ContradictionException {
 		boolean change = true;
 		while (change) {
-			change = false;
 			if (operator == EQ) {
-			   change |= filterFromXYtoLBZ();
+			   change = filterFromXYtoLBZ();
 			   change |= filterFromXYtoUBZ();
 			   change |= filterEQFromXZToY();
 			   change |= filterEQFromYZToX();
 			} else if (operator == LT) {
-				change |= filterFromXYtoLBZ();
+				change = filterFromXYtoLBZ();
 				change |= filterLTFromXZtoY();
 				change |= filterLTFromYZtoX();
 			} else { //GT
-				change |= filterFromXYtoUBZ();
+				change = filterFromXYtoUBZ();
 				change |= filterGTFromXZtoY();
 				change |= filterGTFromYZtoX();
 			}

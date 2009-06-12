@@ -33,7 +33,6 @@ import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.shaker.tools.factory.CPModelFactory;
 import choco.shaker.tools.factory.VariableFactory;
@@ -81,6 +80,8 @@ public class ExpressionTest {
                 mainTest(seed, 5, 10, 3, true, true);
             }catch (UnsupportedOperationException e){
                 LOGGER.severe(seed+" - "+e);
+            }catch (Exception e){
+                Assert.fail("seed:"+seed+" => "+e);
             }
         }
     }
@@ -498,7 +499,7 @@ public class ExpressionTest {
         Random r = new Random(5140);
         CPModelFactory mf = new CPModelFactory();
 
-        mf.bounds(5);
+        mf.limits(5);
         mf.depth(3);
         mf.uses(VariableFactory.V.ENUMVAR, VariableFactory.V.BOUNDVAR,
                 VariableFactory.V.BLISTVAR, VariableFactory.V.BTREEVAR,
@@ -703,12 +704,11 @@ public class ExpressionTest {
         checker();
     }
 
-
-    private void mainTest(int seed, int bounds, int dsize, int depth, boolean includesOp, boolean includesMC){
+    private void buildModel(int seed, int bounds, int dsize, int depth, boolean includesOp, boolean includesMC){
         Random r = new Random(seed);
         CPModelFactory mf = new CPModelFactory();
 
-        mf.bounds(bounds);
+        mf.limits(bounds);
         mf.depth(depth);
         mf.domain(dsize);
         mf.uses(VariableFactory.V.ENUMVAR, VariableFactory.V.BOUNDVAR,
@@ -719,6 +719,11 @@ public class ExpressionTest {
         if(includesOp)mf.includesOperators();
         if(includesMC)mf.includesMetaconstraints();
         m = mf.model(r);
+    }
+
+
+    private void mainTest(int seed, int bounds, int dsize, int depth, boolean includesOp, boolean includesMC){
+        buildModel(seed, bounds, dsize, depth, includesOp, includesMC);
         checker();
     }
 

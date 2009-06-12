@@ -23,20 +23,28 @@
 package choco.shaker;
 
 import choco.Choco;
+import static choco.Choco.distanceEQ;
+import static choco.Choco.reifiedIntConstraint;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.DeterministicIndicedList;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
-import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.shaker.tools.factory.CPModelFactory;
+import choco.shaker.tools.factory.MetaConstraintFactory;
+import choco.shaker.tools.factory.OperatorFactory;
 import choco.shaker.tools.factory.VariableFactory;
 import org.junit.*;
 
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -52,7 +60,6 @@ public class ConstraintTest {
     protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     Model m;
-    Constraint c;
     Solver s;
     static Random random;
     int seed;
@@ -62,7 +69,6 @@ public class ConstraintTest {
     public void before(){
         m = new CPModel();
         s = new CPSolver();
-        c = null;
         random = new Random();
     }
 
@@ -70,96 +76,130 @@ public class ConstraintTest {
     public void after(){
         m = null;
         s = null;
-        c = null;
-    }
-
-
-    @Test
-    public void testConstraint1(){
-        IntegerVariable[] v = new IntegerVariable[5];
-        v[0] = Choco.makeIntVar("v1", -8, 1,"cp:enum");
-        v[1] = Choco.makeIntVar("v2", -4, 1,"cp:enum");
-        v[2] = Choco.makeIntVar("v3", 2, 4,"cp:btree");
-        v[3] = Choco.makeBooleanVar("v4");
-        v[4] = Choco.constant("v5", 7);
-
-        m.addConstraint(Choco.allDifferent(v));
-        s.read(m);
-        s.worldPush();
-        try {
-            s.propagate();
-            s.getVar(v[1]).updateSup(0, -1);
-            s.propagate();
-            s.getVar(v[2]).updateInf(3, -1);
-            s.propagate();
-            s.getVar(v[1]).instantiate(0,-1);
-            s.propagate();
-        } catch (ContradictionException e) {
-            Assert.fail("erreur");
-        }
     }
 
 
     @Test
     @Ignore
-    public void test1() {
+    public void testConstraint() {
 
 //        print = true;
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 24; i < 1000; i++) {
             seed = i;
+            System.out.println("seed:"+seed);
             Random r = new Random(seed);
             CPModelFactory mf = new CPModelFactory();
 
-            mf.bounds(10);
+            mf.limits(10);
             mf.depth(0);
             mf.uses(VariableFactory.V.ENUMVAR, VariableFactory.V.BOUNDVAR,
                     VariableFactory.V.BLISTVAR, VariableFactory.V.BTREEVAR,
                     VariableFactory.V.LINKVAR, VariableFactory.V.BOOLVAR,
                     VariableFactory.V.CST);
-//            mf.uses(ConstraintFactory.C.ALLDIFFERENT);
+            mf.uses(MetaConstraintFactory.MC.NONE);
+            mf.uses(OperatorFactory.O.NONE);
             m = mf.model(r);
-            c = m.getConstraint(0);
-//            IntIterator it = m.getIntConstraintIterator();
-//            c = (Constraint)it.next();
+            try{
             checker(r);
+            }catch (UnsupportedOperationException e){
+                LOGGER.severe(MessageFormat.format("seed:{0} : {1}", seed, e.getMessage()));
+            }
         }
     }
 
+
+    @Test
+    public void test1(){
+        m  = new CPModel();
+        IntegerVariable[] vars = new IntegerVariable[4];
+        vars[0] = Choco.makeBooleanVar("b1");
+        vars[1] = Choco.makeBooleanVar("b2");
+        vars[2] = Choco.makeIntVar("v3", 4,6, "cp:enum");
+        vars[3] = Choco.makeIntVar("v4", 9,9, "cp:enum");
+
+        m.addConstraint(reifiedIntConstraint(vars[0], distanceEQ(vars[1], vars[2], vars[3], -2)));
+
+        checker(new Random(37));
+    }
+
+
+    /**
+     * Generate s tuple and check if this tuple satifies or not the problem.
+     * Then, shake and check CHOCO to ensure it leads to the correct conclusion (solution or not).
+     * @param r
+     */
     private void checker(Random r) {
         s = new CPSolver();
         s.read(m);
-        AbstractIntSConstraint sc = (AbstractIntSConstraint)s.getCstr(c);
-        int[] values = pickValues(sc, r);
-        boolean satisfied = sc.isSatisfied(values);
-        // If the constraint is satisfied with this tuple,
+
+        DeterministicIndicedList<IntDomainVar> vars = new DeterministicIndicedList<IntDomainVar>(IntDomainVar.class, s.getNbIntVars());
+        ArrayList<AbstractIntSConstraint> cstrs = new ArrayList<AbstractIntSConstraint>(s.getNbIntConstraints());
+        init(vars);
+
+        // Simule an instanciation of eeach variable
+        int[] values = pickValues(vars, r);
+        boolean satisfied = satisifies(vars, cstrs, values);
+
+        // If the constraints are satisfied with this tuple,
         // we ensure that CHOCO find this solution
         if(satisfied){
-            while(!sc.isCompletelyInstantiated()) {
+            goesToSolution(vars, cstrs, values, r);
+        }else
+        // We ensure CHOCO goes to a fail
+        {
+            goesToFail(vars, cstrs, values, r);
+        }
+    }
+
+
+
+    /**
+     * Generate random events that lead to instanciation based on values array
+     * and propagate them to ensure CHOCO finds a solution
+     * @param vars
+     * @param cstrs
+     * @param values
+     * @param r
+     */
+    private void goesToSolution(DeterministicIndicedList<IntDomainVar> vars, ArrayList<AbstractIntSConstraint> cstrs,
+                         int[] values, Random r) {
+        while(!fullyInstanciated(vars)) {
                 try {
+                    AbstractIntSConstraint sc = cstrs.get(r.nextInt(cstrs.size()));
                     int v = r.nextInt(sc.getNbVars());
-                    generateEvent((IntDomainVar)sc.getVar(v), values[v], r);
+                    generateEvent((IntDomainVar)sc.getVar(v), values[vars.get((IntDomainVar)sc.getVar(v))], r);
                     s.propagate();
-                    stillInstanciable(sc, values);
+                    stillInstanciable(vars, values);
                 } catch (ContradictionException e) {
                     Assert.fail("(seed:" + seed + ") unexpected behaviour in propagation...\n"+e.getMessage()+"\n" + s.pretty());
                 }
             }
-            Assert.assertEquals("(seed:"+seed+") not satisfied", true, sc.isSatisfied());
-        }else
-        // We ensure CHOCO goes to a fail
-        {
-            int loop = 10;
+            Assert.assertEquals("(seed:"+seed+") not satisfied", true, s.checkSolution(false));
+    }
+
+    /**
+     * Generate random events taht lead to instanciation based on values array
+     * and propagate them to ensure CHOCO does not find a solution
+     * @param vars
+     * @param cstrs
+     * @param values
+     * @param r
+     */
+    private void goesToFail(DeterministicIndicedList<IntDomainVar> vars, ArrayList<AbstractIntSConstraint> cstrs,
+                         int[] values, Random r) {
+        int loop = 10;
             while(loop>0) {
                 s.worldPush();
-                int subloop = sc.getNbVarNotInst()*10;
+                int subloop = vars.size()*10;
                 while(subloop>0){
                     try {
+                        AbstractIntSConstraint sc = cstrs.get(r.nextInt(cstrs.size()));
                         int v = r.nextInt(sc.getNbVars());
-                        generateEvent((IntDomainVar)sc.getVar(v), values[v], r);
+                        generateEvent((IntDomainVar)sc.getVar(v), values[vars.get((IntDomainVar)sc.getVar(v))], r);
                         s.propagate();
-                        stillInstanciable(sc, values);
-                        if(sc.isCompletelyInstantiated()){
-                            if(sc.isSatisfied()){
+                        stillInstanciable(vars, values);
+                        if(fullyInstanciated(vars)){
+                            if(s.checkSolution(false)){
                                     Assert.fail("(seed:" + seed + ") satisfied...\n" + s.pretty());
                             }
                         }
@@ -172,17 +212,90 @@ public class ConstraintTest {
                 loop--;
                 s.worldPop();
             }
-        }
-    }
-
-    private void stillInstanciable(AbstractIntSConstraint sc, int[] values) throws ContradictionException{
-        for (int i = 0; i < sc.getNbVars(); i++) {
-            IntDomainVar var = sc.getIntVar(i);
-            if(!var.canBeInstantiatedTo(values[i]))throw new ContradictionException("stillInstanciable", -1);
-        }
     }
 
 
+    /**
+     * Initialise structure
+     * @param vars
+     * @return
+     */
+    private void init(DeterministicIndicedList<IntDomainVar> vars){
+        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        while(it.hasNext()){
+            SConstraint c = it.next();
+            for(int v = 0; v < c.getNbVars(); v++){
+                IntDomainVar var = (IntDomainVar)c.getVar(v);
+                vars.add(var);
+            }
+        }
+    }
+
+    /**
+     *  Determine whether the tuple generated staisfies the constraints
+     * @param vars
+     * @param cstrs
+     * @param values
+     * @return
+     */
+    private boolean satisifies(DeterministicIndicedList<IntDomainVar> vars, ArrayList<AbstractIntSConstraint> cstrs,
+                           int[] values){
+        // Check if constraints are satisfied
+        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        boolean satisfied = true;
+        while(it.hasNext()){
+            AbstractIntSConstraint c = (AbstractIntSConstraint)it.next();
+            cstrs.add(c);
+            int[] tuple = new int[c.getNbVars()];
+            for(int i = 0; i < c.getNbVars(); i++){
+                tuple[i] = values[vars.get((IntDomainVar)c.getVar(i))];
+            }
+            satisfied &= c.isSatisfied(tuple);
+        }
+        return satisfied;
+    }
+
+
+    /**
+     * Check wether at least one variable can be instanciated to the decided value anymore
+     * @param vars
+     * @param values
+     * @throws ContradictionException
+     */
+    private void stillInstanciable(DeterministicIndicedList<IntDomainVar> vars, int[] values) throws ContradictionException{
+        Iterator<IntDomainVar> itv = vars.iterator();
+        IntDomainVar v;
+        while(itv.hasNext()){
+            v = itv.next();
+            if(!v.canBeInstantiatedTo(values[vars.get(v)])){
+                throw new ContradictionException("stillInstanciable", -1);
+            }
+        }
+    }
+
+
+    /**
+     * Check wether every variables of the solver are instanciated
+     * @param vars
+     * @return
+     */
+    private boolean fullyInstanciated(DeterministicIndicedList<IntDomainVar> vars){
+        Iterator<IntDomainVar> itv = vars.iterator();
+        while(itv.hasNext()){
+            if(!itv.next().isInstantiated()){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Generate an event based on the variables of the solver
+     * @param var
+     * @param value
+     * @param r
+     * @throws ContradictionException
+     */
     private void generateEvent(IntDomainVar var, int value, Random r) throws ContradictionException {
         int event = r.nextInt(4);
         int v;
@@ -222,14 +335,14 @@ public class ConstraintTest {
 
     /**
      * Randomly create a tuple of value
-     * @param sc
+     * @param vars
      * @param r
      * @return
      */
-    private int[] pickValues(AbstractIntSConstraint sc, Random r) {
-        int[] tuple = new int[sc.getNbVars()];
+    private int[] pickValues(DeterministicIndicedList<IntDomainVar> vars, Random r) {
+        int[] tuple = new int[vars.size()];
         for (int i = 0; i < tuple.length; i++) {
-            IntDomainVar var = sc.getIntVar(i);
+            IntDomainVar var = vars.get(i);
             tuple[i] = getRandomValue(var, r);
             if(print)LOGGER.info(var.getName()+":"+tuple[i]);
         }
