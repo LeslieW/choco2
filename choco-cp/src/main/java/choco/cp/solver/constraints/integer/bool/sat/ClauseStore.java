@@ -4,9 +4,8 @@ import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.TIntIntHashMap;
+import gnu.trove.TLongIntHashMap;
 
-import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -33,7 +32,7 @@ public class  ClauseStore extends AbstractLargeIntSConstraint {
 	protected LinkedList<IntDomainVar> instToOne;
 	protected LinkedList<IntDomainVar> instToZero;
 
-	private final TIntIntHashMap indexes;
+	private final TLongIntHashMap indexes;
 
 	protected int[] fineDegree;
 	/**
@@ -53,9 +52,9 @@ public class  ClauseStore extends AbstractLargeIntSConstraint {
 		instToOne = new LinkedList<IntDomainVar>();
 		instToZero = new LinkedList<IntDomainVar>();
 		fineDegree = new int[vars.length];
-		indexes = new TIntIntHashMap(vars.length);
+		indexes = new TLongIntHashMap(vars.length);
 		for(int v = 0; v < vars.length; v++){
-			indexes.put(vars[v].getIndexIn(0), v);
+			indexes.put(vars[v].getIndice(), v);
 		}
 	}
 
@@ -162,7 +161,7 @@ public class  ClauseStore extends AbstractLargeIntSConstraint {
 	}
 
 	public int findIndex(IntDomainVar v) {
-		return indexes.get(v.getIndexIn(0))+1;
+		return indexes.get(v.getIndice())+1;
 	}
 
 	public void addDynamicClause(IntDomainVar[] positivelits,IntDomainVar[] negativelits) {

@@ -364,7 +364,7 @@ public class ModelTest {
 		m1.addConstraint(eq(v1, v2));
 		m1.addConstraint(neq(v2, v3));
 
-		Constraint ct = m1.getConstraint(1);
+		Constraint ct = m1.getConstraint(0);
 		m2.addConstraint(ct);
 
 		CPSolver s1 = new CPSolver();

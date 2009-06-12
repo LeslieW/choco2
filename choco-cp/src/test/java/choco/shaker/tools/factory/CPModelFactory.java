@@ -113,8 +113,8 @@ public class CPModelFactory {
      * Limit the number of variables created to nb
      * @param nb max number of created variables
      */
-    public void bounds(int nb){
-        vf.bounds(nb);
+    public void limits(int nb){
+        vf.limits(nb);
     }
 
     /**

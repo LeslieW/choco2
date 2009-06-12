@@ -23,6 +23,7 @@
 package choco.kernel.model.constraints;
 
 import choco.kernel.common.HashCoding;
+import choco.kernel.common.IndexFactory;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.Variable;
@@ -30,9 +31,8 @@ import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.TIntArrayList;
-import gnu.trove.TIntIntHashMap;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
@@ -45,9 +45,7 @@ public abstract class AbstractConstraint implements Constraint, Comparable {
 
     protected ConstraintType type;
     protected HashSet<String> options = new HashSet<String>();
-    private TIntArrayList modelIndexes;
-
-    private TIntIntHashMap indexes;
+    long indice;
 
     //null by default until it has been loaded
     protected String manager;
@@ -57,16 +55,14 @@ public abstract class AbstractConstraint implements Constraint, Comparable {
     public AbstractConstraint(final ConstraintType type) {
         super();
         this.type = type;
-        this.modelIndexes = new TIntArrayList();
-        indexes = new TIntIntHashMap();
+        indice = IndexFactory.getId();
     }
 
     public AbstractConstraint(final String consMan) {
         super();
         this.type = ConstraintType.NONE;
         this.manager = consMan;
-        this.modelIndexes = new TIntArrayList();
-        indexes = new TIntIntHashMap();
+        indice = IndexFactory.getId();
     }
 
     public HashSet<String> getOptions() {
@@ -75,47 +71,30 @@ public abstract class AbstractConstraint implements Constraint, Comparable {
 
     @Override
     public int hashCode() {
-        return HashCoding.hashCodeMe(new Object[]{indexes});
+        return HashCoding.hashCodeMe(new Object[]{this});
     }
 
     /**
-     * Unique index of an object in the master object
+     * Unique index
      * (Different from hashCode, can change from one execution to another one)
      *
-     * @return
+     * @return the indice of the objet
      */
     @Override
-    public int getIndexIn(int masterIndex) {
-        if(indexes.containsKey(masterIndex)){
-            return indexes.get(masterIndex);
-        }
-        return -1;
+    public long getIndice() {
+        return indice;
     }
-
-    /**
-     * Attribute the value of the index
-     *
-     * @param ind
-     */
-    @Override
-    public void setIndexIn(int masterInd, int ind) {
-        indexes.put(masterInd, ind);
-    }
-
 
     public void addOption(String opts) {
         if (opts != null && !"".equals(opts)) {
             String[] optionsStrings = opts.split(" ");
-            for (int j = 0; j < optionsStrings.length; j++) {
-                String optionsString = optionsStrings[j];
-                options.add(optionsString);
-            }
+            options.addAll(Arrays.asList(optionsStrings));
         }
     }
 
     public void addOptions(String[] options) {
-		for(int o = 0; o < options.length; o++){
-            this.addOption(options[o]);
+        for (String option : options) {
+            this.addOption(option);
         }
 	}
 
@@ -183,8 +162,8 @@ public abstract class AbstractConstraint implements Constraint, Comparable {
         }
         IntegerVariable[] vars = new IntegerVariable[vs.size()];
         int cpt = 0;
-        for (Iterator<IntegerVariable> iterator = vs.iterator(); iterator.hasNext();) {
-            vars[cpt++] = iterator.next();
+        for (IntegerVariable v : vs) {
+            vars[cpt++] = v;
 
         }
         return vars;
@@ -285,30 +264,6 @@ public abstract class AbstractConstraint implements Constraint, Comparable {
         return null;
     }
 
-
-     @Override
-    public void addedTo(int modelIndex) {
-        modelIndexes.add(modelIndex);
-    }
-
-    @Override
-    public void removedFrom(int modelIndex) {
-        int ind = modelIndexes.indexOf(modelIndex);
-        if(ind>-1){
-            modelIndexes.remove(ind);
-        }
-    }
-
-    /**
-     * Return wether a variable has been added to a model
-     *
-     * @param modelIndex
-     * @return
-     */
-    @Override
-    public Boolean alreadyIn(int modelIndex) {
-        return modelIndexes.contains(modelIndex);
-    }
 
     /**
      * Compares this object with the specified object for order.  Returns a

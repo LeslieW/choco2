@@ -42,7 +42,7 @@ public class RealIntervalConstant implements RealConstant {
   protected final double inf;
   protected final double sup;
 
-    private int index = -1;
+    private long index;
 
     Solver solver;
 
@@ -67,26 +67,15 @@ public class RealIntervalConstant implements RealConstant {
 	}
 
     /**
-     * Unique index of an object in the master object
+     * Unique index
      * (Different from hashCode, can change from one execution to another one)
      *
-     * @return
+     * @return the indice of the objet
      */
     @Override
-    public int getIndexIn(int masterIndex) {
+    public long getIndice() {
         return index;
     }
-
-    /**
-     * Attribute the value of the index
-     *
-     * @param ind
-     */
-    @Override
-    public void setIndexIn(int masterInd, int ind) {
-        index = ind;
-    }
-
 
     public double getInf() {
     return inf;

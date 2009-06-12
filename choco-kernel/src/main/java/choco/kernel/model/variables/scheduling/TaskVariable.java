@@ -101,8 +101,8 @@ public class TaskVariable extends MultipleVariables implements IComponentVariabl
 
 	public void setHook(int hook) {
 		if (this.hook !=  NO_HOOK) {
-			new ModelException("hook already used");
-		} else if(hook == NO_HOOK){new ModelException("invalid hook value:"+hook);}
+			throw new ModelException("hook already used");
+		} else if(hook == NO_HOOK){throw new ModelException("invalid hook value:"+hook);}
 		else {this.hook = hook;}
 	}
 

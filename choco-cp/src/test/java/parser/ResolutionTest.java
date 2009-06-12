@@ -49,7 +49,7 @@ public class ResolutionTest {
     protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     Properties properties = new Properties();
-    String[] args = new String[12];
+    String[] args = new String[24];
 
     @Before
     public void before() throws IOException, URISyntaxException {
@@ -68,6 +68,18 @@ public class ResolutionTest {
         args[9] = properties.getProperty("csp.verb");
         args[10] = "-time";
         args[11] = properties.getProperty("csp.time");
+        args[12] = "-randval";
+        args[13] = properties.getProperty("csp.randval");
+        args[14] = "-rest";
+        args[15] = properties.getProperty("csp.rest");
+        args[16] = "-rb";
+        args[17] = properties.getProperty("csp.rb");
+        args[18] = "-rg";
+        args[19] = properties.getProperty("csp.rg");
+        args[20] = "-saclim";
+        args[21] = properties.getProperty("csp.saclim");
+        args[22] = "-seed";
+        args[23] = properties.getProperty("csp.seed");
     }
 
 
@@ -135,7 +147,7 @@ public class ResolutionTest {
             LOGGER.severe(e.toString());
             Assert.fail();
         }
-    }
+            }
 
 
     //***************************************************************************************

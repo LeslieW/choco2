@@ -30,7 +30,6 @@ import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.variables.integer.IntegerVariable;
 
 import java.util.Iterator;
-import java.util.ListIterator;
 
 /**
  * Simple symetry detection.
@@ -67,7 +66,7 @@ public class SymBreaking {
      * @return boolean
      */
     public boolean checkOnlyOneDomain(CPModel m) {
-        ListIterator<IntegerVariable> it = m.getIntVarIterator();
+        Iterator<IntegerVariable> it = m.getIntVarIterator();
         if (it.hasNext()) {
             IntegerVariable v = it.next();
             int lb = v.getLowB();

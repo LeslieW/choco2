@@ -50,7 +50,7 @@ public class VariableFactory {
      * specify the maximum number of created variables
      */
     int maxcreation=30;
-    int dsize = 10;
+    public int dsize = 10;
 
     public enum V {
         BOOLVAR, CST, ENUMVAR, BOUNDVAR, BTREEVAR, BLISTVAR, LINKVAR, UNBOUNDED
@@ -70,7 +70,7 @@ public class VariableFactory {
      * Set a maximum number of created variables
      * @param n the maximum number of created variables
      */
-    public void bounds(int n){
+    public void limits(int n){
         maxcreation = n;
     }
 
@@ -142,35 +142,35 @@ public class VariableFactory {
                 var = Choco.makeBooleanVar("b_"+id);
                 break;
             case ENUMVAR:
-                upp = r.nextInt(10);
-                low = upp - r.nextInt(10);
+                upp = r.nextInt(dsize);
+                low = upp - r.nextInt(dsize);
                 var = Choco.makeIntVar("v_"+id, low, upp, "cp:enum");
                 break;
             case BOUNDVAR:
-                upp = r.nextInt(10);
-                low = upp - r.nextInt(10);
+                upp = r.nextInt(dsize);
+                low = upp - r.nextInt(dsize);
                 var = Choco.makeIntVar("v_"+id, low, upp, "cp:bound");
                 break;
             case BTREEVAR:
-                upp = r.nextInt(10);
-                low = upp - r.nextInt(10);
+                upp = r.nextInt(dsize);
+                low = upp - r.nextInt(dsize);
                 var = Choco.makeIntVar("v_"+id, low, upp, "cp:btree");
                 break;
             case BLISTVAR:
-                upp = r.nextInt(10);
-                low = upp - r.nextInt(10);
+                upp = r.nextInt(dsize);
+                low = upp - r.nextInt(dsize);
                 var = Choco.makeIntVar("v_"+id, low, upp, "cp:blist");
                 break;
             case LINKVAR:
-                upp = r.nextInt(10);
-                low = upp - r.nextInt(10);
+                upp = r.nextInt(dsize);
+                low = upp - r.nextInt(dsize);
                 var = Choco.makeIntVar("v_"+id, low, upp, "cp:link");
                 break;
             case UNBOUNDED:
                 var = Choco.makeIntVar("v_"+id);
                 break;
             case CST:
-                int val = r.nextInt(10);
+                int val = r.nextInt(dsize)-dsize/2;
                 var = Choco.constant("c_"+id, val);
                 break;
         }

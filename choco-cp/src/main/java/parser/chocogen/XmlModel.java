@@ -26,14 +26,11 @@ package parser.chocogen;
 import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.integer.extension.ValidityChecker;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
-import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
-import choco.cp.solver.search.integer.varselector.DomOverDynDeg;
-import choco.cp.solver.search.integer.varselector.MinDomain;
-import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.SearchLoopWithNogoodFromRestart;
-import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
+import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
+import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.Solver;
 import parser.absconparseur.tools.InstanceParser;
 import parser.absconparseur.tools.SolutionChecker;
@@ -94,7 +91,7 @@ public class XmlModel {
     private int cheuri;
     private int nbnode = 0;
     private int nbback = 0;
-    private static long[] time = new long[4];
+    private static long[] time = new long[5];
     private static String[] values;
 
 
@@ -107,7 +104,7 @@ public class XmlModel {
     }
 
     public void init() {
-        time = new long[4];
+        time = new long[5];
         isFeasible = null;
         nbback = 0;
         nbnode = 0;
@@ -276,12 +273,12 @@ public class XmlModel {
     public CPModel buildModel(InstanceParser parser) throws Exception, Error {
         boolean forceExp = false; //force all expressions to be handeled by arc consistency
         ChocoLogging.setOnlyParserLogger(Level.INFO);
-        CPModel m = new CPModel();
+        CPModel m = new CPModel(parser.getMapOfConstraints().size(), parser.getNbVariables(), 50, 0, 100, 100, 100);
         ChocoFactory chocofact = new ChocoFactory(parser, m);
         chocofact.createVariables();
         chocofact.createRelations();
         chocofact.createConstraints(forceExp);
-
+        time[2] = System.currentTimeMillis();
         return m;
     }
 
@@ -302,7 +299,7 @@ public class XmlModel {
             LOGGER.info(MessageFormat.format("solve...dim:[nbv:{0}][nbc:{1}][nbconstants:{2}]", s.getNbIntVars(), s.getNbIntConstraints(), s.getNbConstants()));
         }
 
-        time[2] = System.currentTimeMillis();
+        time[3] = System.currentTimeMillis();
         s.setTimeLimit(timelimit * 1000);
         s.monitorBackTrackLimit(true);
 
@@ -381,12 +378,12 @@ public class XmlModel {
      */
     public void postAnalyze(File fichier, InstanceParser parser, PreProcessCPSolver s) throws Exception, Error {
         //CPSolver.flushLogs();
-        time[3] = System.currentTimeMillis();
+        time[4] = System.currentTimeMillis();
         //LOGGER.info("" + isFeasible);
         //Output in a format for internal competition
         if (isFeasible == Boolean.TRUE
-                && (!checkEverythingIsInstantiated(parser, s))) {
-            // || s.checkSolution(false)!=Boolean.TRUE)) {
+                && (!checkEverythingIsInstantiated(parser, s))//) {
+             || s.checkSolution(false)!=Boolean.TRUE) {
             isFeasible = null;
         }
         values = new String[parser.getVariables().length + 1];
@@ -418,12 +415,13 @@ public class XmlModel {
             LOGGER.info(sol);
             //}
         }
-        double rtime = (double) (time[3] - time[0]) / 1000D;
+        double rtime = (double) (time[4] - time[0]) / 1000D;
         res.append(" ").append(rtime).append(" TIME     ");
         res.append(" ").append(nbnode).append(" NDS   ");
         res.append(" ").append(time[1] - time[0]).append(" PARSTIME     ");
         res.append(" ").append(time[2] - time[1]).append(" BUILDPB      ");
-        res.append(" ").append(time[3] - time[2]).append(" RES      ");
+        res.append(" ").append(time[3] - time[2]).append(" CONFIG       ");
+        res.append(" ").append(time[4] - time[3]).append(" RES      ");
         res.append(" ").append(s.restartMode).append(" RESTART      ");
         res.append(" ").append(cheuri).append(" HEURISTIC      ");
         res.append(" ").append(randvalh).append(" RANDVAL      ");
@@ -455,12 +453,16 @@ public class XmlModel {
         return (time[2] - time[1]);
     }
 
-    public long getResTime() {
+    public long getConfTime() {
         return (time[3] - time[2]);
     }
 
+    public long getResTime() {
+        return (time[4] - time[3]);
+    }
+
     public long getFullTime() {
-        return (time[3] - time[0]);
+        return (time[4] - time[0]);
     }
 
     public int getNbNodes() {

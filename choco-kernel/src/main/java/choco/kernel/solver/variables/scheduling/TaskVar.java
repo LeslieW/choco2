@@ -3,8 +3,6 @@
  */
 package choco.kernel.solver.variables.scheduling;
 
-import java.util.Iterator;
-
 import choco.kernel.common.IIndex;
 import choco.kernel.common.util.DisposableIntIterator;
 import choco.kernel.common.util.IntIterator;
@@ -20,6 +18,8 @@ import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.Iterator;
 
 /**
  * @author Arnaud Malapert</br> 
@@ -40,7 +40,7 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 
 	protected final IntDomainVar duration;
 
-    private int index = -1;
+    private long index;
 	/**
 	 * The list of constraints (listeners) observing the variable.
 	 */
@@ -79,18 +79,8 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
      * @return
      */
     @Override
-    public int getIndexIn(int masterIndex) {
+    public long getIndice() {
         return index;
-    }
-
-    /**
-     * Attribute the value of the index
-     *
-     * @param ind
-     */
-    @Override
-    public void setIndexIn(int masterInd, int ind) {
-        index = ind;
     }
 
     //*****************************************************************//

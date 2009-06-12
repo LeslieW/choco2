@@ -39,13 +39,6 @@ import java.util.Iterator;
 public interface Model extends IPretty {
 
     /**
-     * Return the index of the Model
-     * @return int
-     */
-    public int getIndex();
-
-
-    /**
      * Retrieves the index of an IntDomainVar
      * @param c Solver variable
      * @return the indexe of the solver variable in the model.
@@ -419,5 +412,8 @@ public interface Model extends IPretty {
      * @param decomposedExp the new default expression decomposition
      */
     public void setDefaultExpressionDecomposition(Boolean decomposedExp);
+
+
+    public boolean contains(Constraint c);
 
 }

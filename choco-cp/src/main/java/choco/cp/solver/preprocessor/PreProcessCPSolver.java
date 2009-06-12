@@ -314,7 +314,7 @@ public class PreProcessCPSolver extends CPSolver {
         List<Constraint> neqToAdd = new LinkedList<Constraint>();
         while (it.hasNext()) {
             Constraint ic = it.next();
-            if (!this.mapconstraints.containsKey(ic.getIndexIn(m.getIndex())) && isAValidExpression(ic)) {
+            if (!this.mapconstraints.containsKey(ic.getIndice()) && isAValidExpression(ic)) {
                 ExpressionSConstraint c = new ExpressionSConstraint(getMod2Sol().buildNode(ic));
                 c.setScope(this);
                 getMod2Sol().storeExpressionSConstraint(ic, c);
@@ -422,7 +422,7 @@ public class PreProcessCPSolver extends CPSolver {
                 int idxa = (Integer) ((IntegerVariable)v1).getHook();
                 int idxb = (Integer) ((IntegerVariable)v2).getHook();
                 eqGraph.addEdge(idxa,idxb);
-                this.mapconstraints.put(c.getIndexIn(m.getIndex()), null);
+                this.mapconstraints.put(c.getIndice(), null);
             }
         }
         if(eqGraph.nbEdges> 0){
@@ -471,7 +471,7 @@ public class PreProcessCPSolver extends CPSolver {
                     vtmp.findManager(model.properties);
                     var[col] = (IntDomainVar)mod2sol.readModelVariable(vtmp);
                 }
-                this.mapvariables.put(v.getIndexIn(model.getIndex()), var[col]);
+                this.mapvariables.put(v.getIndice(), var[col]);
             }
         }
     }

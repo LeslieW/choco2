@@ -45,7 +45,7 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
     protected String name;
     protected Operator operator;
     protected ComponentVariable[] variables;
-    protected final ArrayList<Constraint> constraints=new ArrayList<Constraint>();
+    protected final ArrayList<Constraint> constraints=new ArrayList<Constraint>(1);
 
     //null by default until it has been loaded
     protected VariableManager vm;
@@ -184,7 +184,7 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
                     }else
                     if(it.hasNext()){
                         c = it.next();
-                        if(Boolean.TRUE.equals(c.alreadyIn(m.getIndex()))){
+                        if(Boolean.TRUE.equals(m.contains(c))){
                             return true;
                         }
                     }else
@@ -242,7 +242,7 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
         int sum = 0;
         if (variables == null) {
             for(Constraint c: constraints){
-                if(Boolean.TRUE.equals(c.alreadyIn(m.getIndex()))){
+                if(Boolean.TRUE.equals(m.contains(c))){
                     sum++;
                 }
             }

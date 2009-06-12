@@ -42,10 +42,19 @@ public class ConstraintFactory {
 
 
     public enum C {
-        /*ALLDIFFERENT, */EQ, FALSE, GEQ, GT, LEQ, LT, NEQ, REIFIEDINTCONSTRAINT_1,
+        ALLDIFFERENT, BALLDIFFERENT, /*GCC_1, GCC_2, BGCC_1, BGCC_2, BGCC_3,
+        CUMULATIVE_1, CUMULATIVE_2, CUMULATIVE_3, CUMULATIVE_4, CUMULATIVE_5,
+        CUMULATIVE_6, CUMULATIVE_7, CUMULATIVE_8, CUMULATIVE_9,
+        DIJUNCTIVE_1,  DIJUNCTIVE_2, DIJUNCTIVE_3, DIJUNCTIVE_4,  DIJUNCTIVE_5,
+        ELEMENT_1, ELEMENT_2, ELEMENT_3, ELEMENT_4, ELEMENT_5,
+        DISJUNCTIVE,*/ LEXLESS, LEXLESSEQ,
+        DISTANCE_EQ_1, DISTANCE_EQ_2, DISTANCE_EQ_3, DISTANCE_NEQ,
+        DISTANCE_GT_1, DISTANCE_GT_2, DISTANCE_GT_3, DISTANCE_LT_1, DISTANCE_LT_2, DISTANCE_LT_3,
+        MIN_1, MIN_2, MIN_3, MIN_4, MAX_1, MAX_2, MAX_3, MAX_4,
+
+        EQ, FALSE, GEQ, GT, LEQ, LT, NEQ, REIFIEDINTCONSTRAINT_1,
         REIFIEDINTCONSTRAINT_2, SIGNOPP, SAMESIGN, TRUE
     }
-    ;
 
     /**
      * Declare factory dependencies
@@ -56,7 +65,7 @@ public class ConstraintFactory {
         this.vf = vf;
     }
 
-    public ArrayList<C> scope = new ArrayList();
+    public ArrayList<C> scope = new ArrayList<C>();
 
 
     /**
@@ -101,8 +110,30 @@ public class ConstraintFactory {
      */
     public Constraint make(C c, Random r) {
         switch (c) {
-//            case ALLDIFFERENT:
-//                return Choco.allDifferent(of.make(7, r));
+            case ALLDIFFERENT:
+                return Choco.allDifferent( "cp:ac", of.make(7, r));
+            case BALLDIFFERENT:
+                return Choco.allDifferent( "cp:bc", of.make(7, r));
+            case DISTANCE_EQ_1:
+                return Choco.distanceEQ(vf.make(r), vf.make(r), r.nextInt(vf.dsize)-vf.dsize/2);
+            case DISTANCE_EQ_2:
+                return Choco.distanceEQ(vf.make(r), vf.make(r), vf.make(r));
+            case DISTANCE_EQ_3:
+                return Choco.distanceEQ(vf.make(r), vf.make(r), vf.make(r), r.nextInt(vf.dsize)-vf.dsize/2);
+            case DISTANCE_GT_1:
+                return Choco.distanceGT(vf.make(r), vf.make(r), r.nextInt(vf.dsize)-vf.dsize/2);
+            case DISTANCE_GT_2:
+                return Choco.distanceGT(vf.make(r), vf.make(r), vf.make(r));
+            case DISTANCE_GT_3:
+                return Choco.distanceGT(vf.make(r), vf.make(r), vf.make(r), r.nextInt(vf.dsize)-vf.dsize/2);
+            case DISTANCE_LT_1:
+                return Choco.distanceLT(vf.make(r), vf.make(r), r.nextInt(vf.dsize)-vf.dsize/2);
+            case DISTANCE_LT_2:
+                return Choco.distanceLT(vf.make(r), vf.make(r), vf.make(r));
+            case DISTANCE_LT_3:
+                return Choco.distanceLT(vf.make(r), vf.make(r), vf.make(r), r.nextInt(vf.dsize)-vf.dsize/2);
+            case DISTANCE_NEQ:
+                return Choco.distanceNEQ(vf.make(r), vf.make(r), r.nextInt(vf.dsize)-vf.dsize/2);
             case EQ:
                 return Choco.eq(of.make(r), of.make(r));
             case FALSE:
@@ -113,8 +144,28 @@ public class ConstraintFactory {
                 return Choco.gt(of.make(r), of.make(r));
             case LEQ:
                 return Choco.leq(of.make(r), of.make(r));
+            case LEXLESS:
+                return Choco.lex(of.make(5, r), of.make(5, r));
+            case LEXLESSEQ:
+                return Choco.lexeq(of.make(5, r), of.make(5, r));
             case LT:
                 return Choco.lt(of.make(r), of.make(r));
+            case MAX_1:
+                return Choco.max(vf.make(7, r), vf.make(r));
+            case MAX_2:
+                return Choco.max(vf.make(r), vf.make(r), vf.make(r));
+            case MAX_3:
+                return Choco.max(r.nextInt(vf.dsize)-vf.dsize/2, vf.make(r), vf.make(r));
+            case MAX_4:
+                return Choco.max(vf.make(r), r.nextInt(vf.dsize)-vf.dsize/2, vf.make(r));
+            case MIN_1:
+                return Choco.min(vf.make(7, r), vf.make(r));
+            case MIN_2:
+                return Choco.min(vf.make(r), vf.make(r), vf.make(r));
+            case MIN_3:
+                return Choco.min(r.nextInt(vf.dsize)-vf.dsize/2, vf.make(r), vf.make(r));
+            case MIN_4:
+                return Choco.min(vf.make(r), r.nextInt(vf.dsize)-vf.dsize/2, vf.make(r));
             case NEQ:
                 return Choco.neq(of.make(r), of.make(r));
             case REIFIEDINTCONSTRAINT_1:

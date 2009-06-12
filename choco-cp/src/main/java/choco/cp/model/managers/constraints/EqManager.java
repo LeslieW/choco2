@@ -447,7 +447,7 @@ public class EqManager extends IntConstraintManager {
                 t1 = (RealVar)s.getVar(v1);
                 switch (tv2) {
                     case CONSTANT_DOUBLE:
-                        cst = new RealIntervalConstant(NEG, v1.getLowB());
+                        cst = new RealIntervalConstant(NEG, v2.getLowB());
                         return s.makeEquation(t1, cst);
                     case REAL:
                         t2 = (RealVar)s.getVar(v2);
@@ -460,7 +460,7 @@ public class EqManager extends IntConstraintManager {
                 t1 = ((RealConstraintManager)v1.getRcm()).makeRealExpression(s, v1.getVariables());
                 switch (tv2) {
                     case CONSTANT_DOUBLE:
-                        cst = new RealIntervalConstant(NEG, v1.getLowB());
+                        cst = new RealIntervalConstant(NEG, v2.getLowB());
                         return s.makeEquation(t1, cst);
                     case REAL:
                         t2 = (RealExp)s.getVar(v2);

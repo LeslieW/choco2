@@ -28,7 +28,7 @@ import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.BoolNode;
-import gnu.trove.TIntObjectHashMap;
+import gnu.trove.TLongObjectHashMap;
 
 /* 
  * Created by IntelliJ IDEA.
@@ -45,16 +45,16 @@ public class PPModelToCPSolver extends CPModelToCPSolver {
      * a model constraint.
      */
     //This could be implemented as a hook on constraint ?
-    protected TIntObjectHashMap<ExpressionSConstraint> knownExpressionCts;
+    protected TLongObjectHashMap<ExpressionSConstraint> knownExpressionCts;
 
     public PPModelToCPSolver(CPSolver cpsolver) {
         super(cpsolver);
-        knownExpressionCts = new TIntObjectHashMap<ExpressionSConstraint>();
+        knownExpressionCts = new TLongObjectHashMap<ExpressionSConstraint>();
     }
 
 
     public void storeExpressionSConstraint(Constraint c, ExpressionSConstraint ic) {
-        knownExpressionCts.put(c.getIndexIn(cpsolver.getModel().getIndex()),ic);
+        knownExpressionCts.put(c.getIndice(),ic);
     }
 
     /**
@@ -73,7 +73,7 @@ public class PPModelToCPSolver extends CPModelToCPSolver {
      * @return
      */
     protected SConstraint createMetaConstraint(Constraint ic, Boolean decomp) {
-        ExpressionSConstraint c = knownExpressionCts.get(ic.getIndexIn(cpsolver.getModel().getIndex()));
+        ExpressionSConstraint c = knownExpressionCts.get(ic.getIndice());
         if (c == null) {
             c = new ExpressionSConstraint(super.buildBoolNode(ic));
         }

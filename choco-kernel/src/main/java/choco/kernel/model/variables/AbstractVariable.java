@@ -23,11 +23,10 @@
 package choco.kernel.model.variables;
 
 import choco.kernel.common.HashCoding;
-import gnu.trove.TIntArrayList;
-import gnu.trove.TIntIntHashMap;
+import choco.kernel.common.IndexFactory;
 
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 
 
 /**
@@ -43,13 +42,11 @@ public abstract class AbstractVariable implements Variable, Comparable{
     protected int hashCode;
 	protected HashSet<String> options = new HashSet<String>();
     protected Variable[] listVars;
-    protected TIntArrayList modelIndexes;
-    private TIntIntHashMap indexes;
+    protected final long indice;
 
 	public AbstractVariable(VariableType type) {
 		this.type = type;
-        modelIndexes = new TIntArrayList(1);
-        indexes = new TIntIntHashMap();
+        indice = IndexFactory.getId();
 	}
 
 	public HashSet<String> getOptions(){
@@ -59,25 +56,21 @@ public abstract class AbstractVariable implements Variable, Comparable{
     public void addOption(String opts) {
 		if (opts != null && !"".equals(opts)) {
 			String[] optionsStrings = opts.split(" ");
-			for (int j = 0; j < optionsStrings.length; j++) {
-				String optionsString = optionsStrings[j];
-				options.add(optionsString);
-			}
+            options.addAll(Arrays.asList(optionsStrings));
 		}
 	}
 
     public void addOptions(String[] options) {
-		for(int o = 0; o < options.length; o++){
-            this.addOption(options[o]);
+        for (String option : options) {
+            this.addOption(option);
         }
 	}
 
 
     public void addOptions(HashSet<String> tOptions){
         if(tOptions != null){
-            Iterator<String> it = tOptions.iterator();
-            while(it.hasNext()){
-                this.addOption(it.next());
+            for (String tOption : tOptions) {
+                this.addOption(tOption);
             }
         }
     }
@@ -102,67 +95,19 @@ public abstract class AbstractVariable implements Variable, Comparable{
 
 	@Override
 	public int hashCode() {
-		return HashCoding.hashCodeMe(new Object[]{indexes});
+		return HashCoding.hashCodeMe(new Object[]{this});
 	}
 
+
     /**
-     * Unique index of an object in the master object
+     * Unique index
      * (Different from hashCode, can change from one execution to another one)
      *
-     * @return
+     * @return the indice of the objet
      */
     @Override
-    public int getIndexIn(int masterIndex) {
-        if(indexes.containsKey(masterIndex)){
-            return indexes.get(masterIndex);
-        }
-        return -1;
-    }
-
-    /**
-     * Attribute the value of the index
-     *
-     * @param ind
-     */
-    @Override
-    public void setIndexIn(int masterInd, int ind) {
-        indexes.put(masterInd, ind);
-    }
-
-    /**
-     * Return wether a variable has been added to a model
-     *
-     * @param modelIndex
-     * @return
-     */
-    @Override
-    public Boolean alreadyIn(int modelIndex) {
-        return modelIndexes.contains(modelIndex);
-    }
-
-    /**
-     * Record the adition of the variable to the model
-     *
-     * @param modelIndex
-     */
-    @Override
-    public void addModelIndex(int modelIndex) {
-        if(!modelIndexes.contains(modelIndex)){
-            modelIndexes.add(modelIndex);
-        }
-    }
-
-    /**
-     * Remove the adition of the variable to the model
-     *
-     * @param modelIndex
-     */
-    @Override
-    public void remModelIndex(int modelIndex) {
-        int ind = modelIndexes.indexOf(modelIndex);
-        if(ind > -1){
-            modelIndexes.remove(ind);
-        }
+    public long getIndice() {
+        return indice;
     }
 
     /**

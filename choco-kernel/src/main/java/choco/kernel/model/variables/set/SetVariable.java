@@ -122,7 +122,7 @@ public class SetVariable extends SetExpressionVariable{
                     }else
                     if(it.hasNext()){
                         c = it.next();
-                        if(Boolean.TRUE.equals(c.alreadyIn(m.getIndex()))){
+                        if(Boolean.TRUE.equals(m.contains(c))){
                             return true;
                         }
                     }else{

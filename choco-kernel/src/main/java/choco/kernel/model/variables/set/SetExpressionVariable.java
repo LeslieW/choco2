@@ -66,7 +66,7 @@ public class SetExpressionVariable extends ComponentVariable implements IntBound
         this.uppB = uppB;
     }
 
-        private void computeBounds(){
+    private void computeBounds(){
         lowB = Integer.MAX_VALUE;
         uppB = Integer.MIN_VALUE;
         if (operator.equals(Operator.SUM)||operator.equals(Operator.SCALAR)){
@@ -115,10 +115,9 @@ public class SetExpressionVariable extends ComponentVariable implements IntBound
                 vals[3] = Integer.MAX_VALUE;
         }
         int[] bounds = new int[]{Integer.MAX_VALUE, Integer.MIN_VALUE};
-        for (int k = 0; k < vals.length; k++) {
-            int val = vals[k];
-            bounds[0] = Math.min(bounds[0],val);
-            bounds[1] = Math.max(bounds[1],val);
+        for (int val : vals) {
+            bounds[0] = Math.min(bounds[0], val);
+            bounds[1] = Math.max(bounds[1], val);
         }
         return bounds;
     }
