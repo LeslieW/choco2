@@ -63,6 +63,7 @@ public class ImpactBasedBranching extends AbstractLargeIntBranching {
 	}
 
 	public ImpactBasedBranching(Solver solver, IntDomainVar[] vars, AbstractImpactStrategy ibs) {
+		super();
 		_solver = solver;
 		_vars = vars;
 		for (IntDomainVar var : _vars) {
@@ -277,6 +278,7 @@ public class ImpactBasedBranching extends AbstractLargeIntBranching {
 			if (timelimit != 0) {
             long tps = System.currentTimeMillis();
 			_branching._solver.generateSearchStrategy();
+			_branching.setSolver(_branching._solver.getSearchStrategy());
 			try {
 				_branching._solver.propagate();
 				_branching._solver.worldPush();

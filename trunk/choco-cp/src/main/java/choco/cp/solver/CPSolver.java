@@ -1087,8 +1087,8 @@ public class CPSolver implements Solver {
 						rs.setFailLimit(l);
 					}
 				}
-				strategy.setSearchLoop(new SearchLoopWithRestart(strategy,
-						restartS));
+				strategy.setSearchLoop( isRecordingNogoodFromRestart() ? 
+						new SearchLoopWithNogoodFromRestart(strategy, restartS) : new SearchLoopWithRestart(strategy,restartS)) ;
 			}
 		}
 	}

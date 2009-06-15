@@ -3,7 +3,7 @@ package choco.cp.solver.search.task;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.ITask;
 
-public class StoredPrecedence {
+public final class StoredPrecedence {
 
 	public final ITask t1;
 
@@ -30,5 +30,8 @@ public class StoredPrecedence {
 		return direction;
 	}
 	
+	public final int getDomMesure() {
+		return t1.getSlack() + t2.getSlack() + 2;
+	}
 	
 }

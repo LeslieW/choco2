@@ -83,6 +83,7 @@ public class PrecedenceStore implements IPrecedenceStore {
 	private static class ReifiedCounter implements TObjectProcedure<StoredPrecedence> {
 
 		public int count = 0;
+		
 		@Override
 		public boolean execute(StoredPrecedence arg0) {
 			if(!arg0.direction.isInstantiated()) {count++;}
