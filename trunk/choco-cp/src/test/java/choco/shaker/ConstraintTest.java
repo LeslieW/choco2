@@ -46,6 +46,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /*
@@ -84,9 +85,13 @@ public class ConstraintTest {
     public void testConstraint() {
 
 //        print = true;
-        for (int i = 24; i < 1000; i++) {
+        LOGGER.setLevel(Level.OFF);
+        int mainLoop = 200000;
+        int subLoop = 1000;
+        int sl = 0;
+        for (int i = 0; i < mainLoop; i++) {
             seed = i;
-            System.out.println("seed:"+seed);
+            System.out.println(seed);
             Random r = new Random(seed);
             CPModelFactory mf = new CPModelFactory();
 
@@ -100,9 +105,21 @@ public class ConstraintTest {
             mf.uses(OperatorFactory.O.NONE);
             m = mf.model(r);
             try{
-            checker(r);
+                sl = 0;
+                while(sl < subLoop){
+                    sl++;
+                    checker(r);
+                }
             }catch (UnsupportedOperationException e){
-                LOGGER.severe(MessageFormat.format("seed:{0} : {1}", seed, e.getMessage()));
+                LOGGER.severe(MessageFormat.format("seed:{0}({1}) : {2}", seed, sl, e.getMessage()));
+            }catch (Exception e){
+                System.out.println(MessageFormat.format("seed:{0}({1}) : {2}", seed, sl, e.getMessage()));
+                e.printStackTrace();
+                Assert.fail();
+            }catch (AssertionError e){
+                System.out.println(MessageFormat.format("seed:{0}({1}) : {2}", seed, sl, e.getMessage()));
+                e.printStackTrace();
+                Assert.fail();
             }
         }
     }
@@ -122,6 +139,160 @@ public class ConstraintTest {
         checker(new Random(37));
     }
 
+    @Test
+    public void test2(){
+        m  = new CPModel();
+        IntegerVariable[] vars = new IntegerVariable[10];
+        vars[0] = Choco.makeIntVar("v1", 1, 1);
+        vars[1] = Choco.makeIntVar("v2", -2, 2);
+        vars[2] = Choco.makeIntVar("v3", 8, 8);
+        vars[3] = Choco.makeIntVar("v4", -5, -1);
+        vars[4] = Choco.makeIntVar("v5", -3, -3);
+        vars[5] = Choco.makeBooleanVar("b6");
+        vars[6] = Choco.makeIntVar("v7", 3, 3);
+        vars[7] = Choco.makeIntVar("v8", 2, 3);
+        vars[8] = Choco.makeBooleanVar("b9");
+        vars[9] = Choco.makeIntVar("v10", 2, 4);
+
+        m.addConstraint(Choco.lexeq(new IntegerVariable[]{vars[0], vars[1], vars[2], vars[3], vars[4]},
+                new IntegerVariable[]{vars[5], vars[6], vars[7], vars[8], vars[9]}));
+
+        checker(new Random(50));
+    }
+
+    @Test
+    public void test3(){
+        m  = new CPModel();
+        IntegerVariable[] vars = new IntegerVariable[2];
+        vars[0] = Choco.makeIntVar("v1", 2, 2);
+        vars[1] = Choco.makeBooleanVar("b2");
+
+        m.addConstraint(Choco.distanceNEQ(vars[0], vars[1], -2));
+
+        checker(new Random(94));
+    }
+
+    @Test
+    public void test4(){
+        m  = new CPModel();
+        IntegerVariable[] vars = new IntegerVariable[5];
+        vars[0] = Choco.makeBooleanVar("b1");
+        vars[1] = Choco.makeIntVar("v2", 3,3);
+        vars[2] = Choco.makeIntVar("v3", -1,1, "cp:blist");
+        vars[3] = Choco.makeBooleanVar("b4");
+        vars[4] = Choco.makeBooleanVar("b5");
+
+        m.addConstraint(Choco.reifiedIntConstraint(
+                vars[0],
+                Choco.oppositeSign(vars[1], vars[2]),
+                Choco.distanceEQ(vars[3], vars[4], 0)
+        )
+        );
+
+        checker(new Random(4098));
+    }
+
+
+    @Test
+    public void test5(){
+        m  = new CPModel();
+        IntegerVariable[] vars = new IntegerVariable[5];
+        vars[0] = Choco.makeIntVar("v1", -1, -1);
+        vars[1] = Choco.makeIntVar("v2", 0, 1);
+        vars[2] = Choco.makeIntVar("v3", -3, 5);
+        vars[3] = Choco.makeIntVar("v4", -2, -2);
+        vars[4] = Choco.makeIntVar("v5", -4, 2);
+
+        int low[] = new int[]{0,0,2,0,0,0,3,0,0,0};
+        int up[] = new int[]{5,5,5,5,5,5,5,5,5,5};
+
+        m.addConstraint(Choco.globalCardinality("cp:bc",vars, low, up));
+
+        checker(new Random(14106));
+    }
+
+    @Test
+//    @Ignore
+    public void test6(){
+        m  = new CPModel();
+        IntegerVariable[] vars = new IntegerVariable[5];
+        vars[0] = Choco.makeIntVar("v1", -3, -3);
+        vars[1] = Choco.makeIntVar("v2", -2, 3);
+        vars[2] = Choco.makeIntVar("v3", 1, 3);
+        vars[3] = Choco.makeIntVar("v4", 2, 2);
+        vars[4] = Choco.makeIntVar("v5", 0, 1);
+
+        int low[] = new int[]{2,0,0,0,0,1,2};
+        int up[] = new int[]{5,4,0,0,0,1,5};
+
+        m.addConstraint(Choco.globalCardinality("cp:bc",vars, low, up));
+
+        checker(new Random(0));
+    }
+
+
+    @Test
+    public void test7(){
+        m  = new CPModel();
+        IntegerVariable[] vars = new IntegerVariable[10];
+        vars[0] = Choco.makeIntVar("v1", 0, 1);
+        vars[1] = Choco.makeIntVar("v2", 0, 9);
+        vars[2] = Choco.makeIntVar("v3", -4, 2);
+        vars[3] = Choco.makeIntVar("v4", -4, 2);
+        vars[4] = Choco.makeIntVar("v5", 4, 8);
+        vars[5] = Choco.makeIntVar("v6", 0, 1);
+        vars[6] = Choco.makeIntVar("v7", -5, 1);
+        vars[7] = Choco.makeIntVar("v8", -4, 5);
+        vars[8] = Choco.makeIntVar("v9", 0, 0);
+        vars[9] = Choco.makeIntVar("v10", -7, 2);
+
+        m.addConstraint(Choco.reifiedIntConstraint(
+                vars[0],
+                Choco.allDifferent(vars[1], vars[2], vars[3], vars[4], vars[5], vars[6], vars[7]),
+                Choco.oppositeSign(vars[8], vars[9])
+                ));
+
+        checker(new Random(0));
+    }
+
+    @Test
+    public void test9(){
+        m  = new CPModel();
+        IntegerVariable[] vars = new IntegerVariable[10];
+        vars[0] = Choco.makeIntVar("v1", -1, 3);
+        vars[1] = Choco.makeIntVar("v2", 1, 1);
+        vars[2] = Choco.makeIntVar("v3", 4, 4);
+        vars[3] = Choco.makeIntVar("v4", 3, 3);
+        vars[4] = Choco.makeIntVar("v5", 2, 9);
+        vars[5] = Choco.makeIntVar("v6", 4, 4);
+        vars[6] = Choco.makeIntVar("v7", 0, 1);
+        vars[7] = Choco.makeIntVar("v8", 0, 1);
+
+        m.addConstraint(Choco.reifiedIntConstraint(
+                vars[7],
+                Choco.globalCardinality(new IntegerVariable[]{vars[0], vars[1], vars[2], vars[3], vars[4]},
+                        new int[]{0,5,0,0,0,0,0,0,0,0,0}, new int[]{5,5,2,5,5,5,5,5,5,5,5}) ,
+                Choco.gt(vars[5], vars[6])
+                ));
+
+        checker(new Random(4096));
+    }
+
+    @Test
+    public void test10(){
+        m  = new CPModel();
+        IntegerVariable[] vars = new IntegerVariable[10];
+        vars[0] = Choco.makeIntVar("v1", 0, 1);
+        vars[1] = Choco.makeIntVar("v2", 3, 8);
+
+        m.addConstraint(Choco.reifiedIntConstraint(
+                vars[0],
+                Choco.neq(vars[1], 4),
+                Choco.eq(vars[1], 4)
+                ));
+
+        checker(new Random(4099));
+    }
 
     /**
      * Generate s tuple and check if this tuple satifies or not the problem.
@@ -165,10 +336,11 @@ public class ConstraintTest {
                          int[] values, Random r) {
         while(!fullyInstanciated(vars)) {
                 try {
+                    // Propagate before generation of event to get first propagation
+                    s.propagate();
                     AbstractIntSConstraint sc = cstrs.get(r.nextInt(cstrs.size()));
                     int v = r.nextInt(sc.getNbVars());
                     generateEvent((IntDomainVar)sc.getVar(v), values[vars.get((IntDomainVar)sc.getVar(v))], r);
-                    s.propagate();
                     stillInstanciable(vars, values);
                 } catch (ContradictionException e) {
                     Assert.fail("(seed:" + seed + ") unexpected behaviour in propagation...\n"+e.getMessage()+"\n" + s.pretty());
@@ -193,10 +365,11 @@ public class ConstraintTest {
                 int subloop = vars.size()*10;
                 while(subloop>0){
                     try {
+                        // Propagate before generation of event to get first propagation
+                        s.propagate();
                         AbstractIntSConstraint sc = cstrs.get(r.nextInt(cstrs.size()));
                         int v = r.nextInt(sc.getNbVars());
                         generateEvent((IntDomainVar)sc.getVar(v), values[vars.get((IntDomainVar)sc.getVar(v))], r);
-                        s.propagate();
                         stillInstanciable(vars, values);
                         if(fullyInstanciated(vars)){
                             if(s.checkSolution(false)){

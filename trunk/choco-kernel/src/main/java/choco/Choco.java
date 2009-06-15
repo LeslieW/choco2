@@ -22,26 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco;
 
-import static choco.kernel.common.util.UtilAlgo.append;
-import static java.lang.System.arraycopy;
-import gnu.trove.TIntArrayList;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Vector;
-import java.util.logging.Logger;
-
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.common.util.UtilAlgo;
+import static choco.kernel.common.util.UtilAlgo.append;
 import choco.kernel.model.ModelException;
-import choco.kernel.model.constraints.ComponentConstraint;
-import choco.kernel.model.constraints.ComponentConstraintWithSubConstraints;
-import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.ConstraintType;
-import choco.kernel.model.constraints.MetaConstraint;
-import choco.kernel.model.constraints.MetaTaskConstraint;
+import choco.kernel.model.constraints.*;
 import choco.kernel.model.constraints.automaton.DFA;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.model.constraints.pack.PackModeler;
@@ -65,14 +52,14 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.model.variables.tree.TreeParametersObject;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.global.scheduling.RscData;
-import choco.kernel.solver.constraints.integer.extension.BinRelation;
-import choco.kernel.solver.constraints.integer.extension.CouplesBitSetTable;
-import choco.kernel.solver.constraints.integer.extension.CouplesTable;
-import choco.kernel.solver.constraints.integer.extension.ExtensionalBinRelation;
-import choco.kernel.solver.constraints.integer.extension.IterTuplesTable;
-import choco.kernel.solver.constraints.integer.extension.LargeRelation;
-import choco.kernel.solver.constraints.integer.extension.TuplesList;
-import choco.kernel.solver.constraints.integer.extension.TuplesTable;
+import choco.kernel.solver.constraints.integer.extension.*;
+import gnu.trove.TIntArrayList;
+
+import static java.lang.System.arraycopy;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -2080,18 +2067,18 @@ public class Choco{
 
     private static int getMinOfLowB(IntegerVariable[] vars) {
         int minval = Integer.MAX_VALUE;
-        for (int i = 0; i < vars.length; i++) {
-            if (vars[i].getLowB() < minval)
-                minval = vars[i].getLowB();
+        for (IntegerVariable var : vars) {
+            if (var.getLowB() < minval)
+                minval = var.getLowB();
         }
         return minval;
     }
 
     private static int getMaxOfUppB(IntegerVariable[] vars) {
         int maxval = Integer.MIN_VALUE;
-        for (int i = 0; i < vars.length; i++) {
-            if (vars[i].getUppB() > maxval)
-                maxval = vars[i].getUppB();
+        for (IntegerVariable var : vars) {
+            if (var.getUppB() > maxval)
+                maxval = var.getUppB();
         }
         return maxval;
     }
@@ -2149,11 +2136,14 @@ public class Choco{
      * @param low array of lower occurence
      * @param up array of upper occurence
      * @return Constraint
+     * @deprecated
+     * @see Choco#globalCardinality(IntegerVariable[] vars, int[] low, int[] up)
      */
 
 	public static Constraint globalCardinality(IntegerVariable[] vars, int min, int max, int[] low, int[] up) {
 		globalCardinalityTest(vars, min, max, low, up);
-		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY, new Object[]{ConstraintType.GLOBALCARDINALITYMAX, getMinOfLowB(vars), getMaxOfUppB(vars), low, up}, vars);
+		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY,
+                new Object[]{ConstraintType.GLOBALCARDINALITYMAX, min, max, low, up}, vars);
 	}
 
 	/**
@@ -2185,9 +2175,12 @@ public class Choco{
      * @param low array of lower occurence
      * @param up array of upper occurence
      * @return Constraint
+     * @deprecated
+     * @see Choco#globalCardinality(String options, IntegerVariable[] vars, int[] low, int[] up)
      */
 	public static Constraint globalCardinality(String options, IntegerVariable[] vars, int min, int max, int[] low, int[] up) {
-		Constraint c = globalCardinality(vars, min, max, low, up);
+		@SuppressWarnings({"deprecation"})
+        Constraint c = globalCardinality(vars, min, max, low, up);
 		c.addOption(options);
 		return c;
 	}
@@ -2220,11 +2213,14 @@ public class Choco{
      * @return Constraint
      */
 	public static Constraint globalCardinality(IntegerVariable[] vars, int[] low, int[] up) {
-		globalCardinalityTest(vars, getMinOfLowB(vars), getMaxOfUppB(vars), low, up);
-		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY, new Object[]{ConstraintType.GLOBALCARDINALITY, low, up}, vars);
+        int min  = getMinOfLowB(vars);
+        int max = getMaxOfUppB(vars);
+        globalCardinalityTest(vars, min, max, low, up);
+		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY,
+                new Object[]{ConstraintType.GLOBALCARDINALITYMAX, min, max, low, up}, vars);
 	}
 
-	/**
+    /**
      * Concerns GCC and boundGCC
 	 * <p/>
 	 * Global cardinality : Given an array of variables vars, the constraint ensures that the number of occurences
@@ -2274,6 +2270,8 @@ public class Choco{
      * @param max maximum allowed value
      * @param card array of cardinality variables
      * @return Constraint
+     * @deprecated
+     * @see Choco#globalCardinality(IntegerVariable[] vars, IntegerVariable[] card)
 	 */
 	public static Constraint globalCardinality(IntegerVariable[] vars, int min, int max, IntegerVariable[] card) {
 		int n = vars.length;
@@ -2281,6 +2279,29 @@ public class Choco{
 		arraycopy(vars, 0, variables, 0, n);
 		arraycopy(card, 0, variables, n, card.length);
 		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY, new Object[]{ConstraintType.GLOBALCARDINALITYVAR, min, max, n}, variables);
+	}
+
+    /**
+	 * * Bound Global cardinality : Given an array of variables vars, an array of variables card to represent the cardinalities, the constraint ensures that the number of occurences
+	 * of the value i among the variables is equal to card[i].
+	 * this constraint enforces :
+	 * - Bound Consistency over vars regarding the lower and upper bounds of cards
+	 * - maintain the upperbound of card by counting the number of variables in which each value
+	 * can occur
+	 * - maintain the lowerbound of card by counting the number of variables instantiated to a value
+	 * - enforce card[0] + ... + card[m] = n (n = the number of variables, m = number of values)
+     *
+     * @param vars list of variables
+     * @param card array of cardinality variables
+     * @return Constraint
+	 */
+	public static Constraint globalCardinality(IntegerVariable[] vars, IntegerVariable[] card) {
+		int n = vars.length;
+		IntegerVariable[] variables = new IntegerVariable[vars.length + card.length];
+		arraycopy(vars, 0, variables, 0, n);
+		arraycopy(card, 0, variables, n, card.length);
+		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY,
+                new Object[]{ConstraintType.GLOBALCARDINALITYVAR, getMinOfLowB(vars), getMaxOfUppB(vars), n}, variables);
 	}
 
 	/**
@@ -2355,7 +2376,7 @@ public class Choco{
 	public static Constraint cumulative(String name, TaskVariable[] tasks, IntegerVariable[] heights, IntegerVariable[] usages, IntegerVariable consumption, IntegerVariable capacity, IntegerVariable uppBound, String... options) {
 		if(tasks.length == heights.length && consumption!= null && capacity!=null) {
 			RscData param = new RscData(name, tasks, usages, uppBound);
-			final Variable[] vars=  UtilAlgo.<Variable>append(tasks, heights, usages, new Variable[]{consumption, capacity}, uppBound == null ? null : new Variable[]{uppBound});
+			final Variable[] vars=  UtilAlgo.append(tasks, heights, usages, new Variable[]{consumption, capacity}, uppBound == null ? null : new Variable[]{uppBound});
 			final ComponentConstraint c=new ComponentConstraint(ConstraintType.CUMULATIVE, param,vars);
 			c.addOptions(options);
 			return c;
@@ -2513,7 +2534,7 @@ public class Choco{
 	 */
 	public static Constraint disjunctive(String name, TaskVariable[] tasks,IntegerVariable[] usages, IntegerVariable uppBound, String... options) {
 		RscData param = new RscData(name, tasks, usages, uppBound);
-		Variable[] vars = uppBound==null ? UtilAlgo.<Variable>append((Variable[]) tasks, usages) :   UtilAlgo.<Variable>append(tasks, usages, new Variable[]{ uppBound});
+		Variable[] vars = uppBound==null ? UtilAlgo.append((Variable[]) tasks, usages) :   UtilAlgo.append(tasks, usages, new Variable[]{ uppBound});
 		final ComponentConstraint c=new ComponentConstraint(ConstraintType.DISJUNCTIVE, param,vars);
 		c.addOptions(options);
 		return c;

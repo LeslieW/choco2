@@ -33,6 +33,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import org.junit.After;
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
@@ -537,6 +538,108 @@ public class DistanceTest {
 		s.solveAll();
 		return s.getNbSolutions();
 	}
+
+    @Test
+    public void testEQ(){
+        Model m1 = new CPModel();
+        IntegerVariable x = makeIntVar("x", 2, 10);
+        IntegerVariable y = makeIntVar("y", 2, 10);
+
+        m1.addConstraint(distanceEQ(x,y,-2));
+
+        Model m2 = new CPModel();
+        m2.addConstraint(eq(abs(minus(x,y)), -2));
+
+        Solver s1 = new CPSolver();
+        s1.read(m1);
+
+        Solver s2 = new CPSolver();
+        s2.read(m2);
+
+        s1.solveAll();
+        s2.solveAll();
+
+        Assert.assertEquals("nb sol", s1.getNbSolutions(), s2.getNbSolutions());
+    }
+
+    @Test
+    public void testNEQ(){
+        Model m1 = new CPModel();
+        IntegerVariable x = makeIntVar("x", 2, 4);
+        IntegerVariable y = makeIntVar("y", 2, 4);
+
+        m1.addConstraint(distanceNEQ(x,y,-2));
+
+        Model m2 = new CPModel();
+        m2.addConstraint(neq(abs(minus(x,y)), -2));
+
+        Solver s1 = new CPSolver();
+        s1.read(m1);
+
+        Solver s2 = new CPSolver();
+        s2.read(m2);
+
+//        s1.solveAll();
+//        s2.solveAll();
+        s1.solve();
+        do{
+            System.out.println("x:"+s1.getVar(x).getVal()+" y:"+s1.getVar(y).getVal());
+        }while(s1.nextSolution());
+        System.out.println("=======");
+
+        s2.solve();
+        do{
+            System.out.println("x:"+s2.getVar(x).getVal()+" y:"+s2.getVar(y).getVal());
+        }while(s2.nextSolution());
+
+        Assert.assertEquals("nb sol", s1.getNbSolutions(), s2.getNbSolutions());
+    }
+
+    @Test
+    public void testGT(){
+        Model m1 = new CPModel();
+        IntegerVariable x = makeIntVar("x", 2, 10);
+        IntegerVariable y = makeIntVar("y", 2, 10);
+
+        m1.addConstraint(distanceGT(x,y,-2));
+
+        Model m2 = new CPModel();
+        m2.addConstraint(gt(abs(minus(x,y)),-2));
+
+        Solver s1 = new CPSolver();
+        s1.read(m1);
+
+        Solver s2 = new CPSolver();
+        s2.read(m2);
+
+        s1.solveAll();
+        s2.solveAll();
+
+        Assert.assertEquals("nb sol", s1.getNbSolutions(), s2.getNbSolutions());
+    }
+
+    @Test
+    public void testLT(){
+        Model m1 = new CPModel();
+        IntegerVariable x = makeIntVar("x", 2, 10);
+        IntegerVariable y = makeIntVar("y", 2, 10);
+
+        m1.addConstraint(distanceLT(x,y,-2));
+
+        Model m2 = new CPModel();
+        m2.addConstraint(lt(abs(minus(x,y)), -2));
+
+        Solver s1 = new CPSolver();
+        s1.read(m1);
+
+        Solver s2 = new CPSolver();
+        s2.read(m2);
+
+        s1.solveAll();
+        s2.solveAll();
+
+        Assert.assertEquals("nb sol", s1.getNbSolutions(), s2.getNbSolutions());
+    }
 
 }
 

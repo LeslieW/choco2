@@ -113,24 +113,32 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
      * In case of a GT
      */
     public void filterGT() throws ContradictionException {
-        int lbv0 = v1.getSup() - cste;
-        int ubv0 = v1.getInf() + cste;
-        // remove interval [lbv0, ubv0] from domain of v0
-        v0.removeInterval(lbv0, ubv0, cIdx0);
-        int lbv1 = v0.getSup() - cste;
-        int ubv1 = v0.getInf() + cste;
-        // remove interval [lbv1, ubv1] from domain of v1
-        v1.removeInterval(lbv1, ubv1, cIdx1);
+        if(cste>=0){
+            int lbv0 = v1.getSup() - cste;
+            int ubv0 = v1.getInf() + cste;
+            // remove interval [lbv0, ubv0] from domain of v0
+            v0.removeInterval(lbv0, ubv0, cIdx0);
+            int lbv1 = v0.getSup() - cste;
+            int ubv1 = v0.getInf() + cste;
+            // remove interval [lbv1, ubv1] from domain of v1
+            v1.removeInterval(lbv1, ubv1, cIdx1);
+        }else{
+            this.setEntailed();
+        }
     }
 
     /**
      * In case of a GT, due to a modification on vv0 domain
      */
     public void filterGTonVar(IntDomainVar vv0, IntDomainVar vv1, int idx) throws ContradictionException {
-        int lbv0 = vv0.getSup() - cste;
-        int ubv0 = vv0.getInf() + cste;
-        // remove interval [lbv0, ubv0] from domain of v0
-        vv1.removeInterval(lbv0, ubv0, idx);
+        if(cste>=0){
+            int lbv0 = vv0.getSup() - cste;
+            int ubv0 = vv0.getInf() + cste;
+            // remove interval [lbv0, ubv0] from domain of v0
+            vv1.removeInterval(lbv0, ubv0, idx);
+        }else{
+            this.setEntailed();
+        }
     }
 
     /**
@@ -217,22 +225,43 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
     }
 
 	public void filterNeq() throws ContradictionException {
-		 if (v0.isInstantiated()) {
-			 v1.removeVal(v0.getVal() + cste,cIdx1);
-			 v1.removeVal(v0.getVal() - cste,cIdx1);
-		 }
-		 if (v1.isInstantiated()) {
-			 v0.removeVal(v1.getVal() + cste,cIdx0);
-			 v0.removeVal(v1.getVal() - cste,cIdx0);
-		 }
+        if(cste>=0){
+            if (v0.isInstantiated()) {
+                 v1.removeVal(v0.getVal() + cste,cIdx1);
+                 v1.removeVal(v0.getVal() - cste,cIdx1);
+             }
+             if (v1.isInstantiated()) {
+                 v0.removeVal(v1.getVal() + cste,cIdx0);
+                 v0.removeVal(v1.getVal() - cste,cIdx0);
+             }
+        }else{
+            this.setEntailed();
+        }
 	}
 
 //*************************************************************//
 //        API on events                                        //
 //*************************************************************//
 
+    /**
+     * Default initial propagation: full constraint re-propagation.
+     */
+    @Override
+    public void awake() throws ContradictionException {
+        //cste < 0, and |v0-v1| always >= 0
+        if(cste < 0){
+            switch(operator){
+                case EQ: case LT:
+                    this.fail();
+                    break;
+                case NEQ: case GT:
+                    this.setEntailed();
+                    break;
+            }
+        }
+    }
 
-     @Override
+    @Override
 	public void propagate() throws ContradictionException {
         if (operator == EQ) {
             if (v0.hasEnumeratedDomain()) {
