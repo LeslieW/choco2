@@ -59,7 +59,7 @@ public class TestTask {
 		this.tasksL=getExample();
 	}
 
-	private void testSort(int[] order) {
+	private final void testSort(int[] order) {
 		for (int i = 0; i < order.length; i++) {
 			assertEquals("sort : ",order[i],tasksL.get(i).getID());
 		}

@@ -119,7 +119,7 @@ public class XmlModel {
      * @throws Exception
      */
     public void generate(String[] args) throws Exception {
-        //ChocoLogging.setVerbosity(Verbosity.SEARCH);
+        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         HashMap<String, String> options = new HashMap<String, String>();
         for (int i = 0; i < args.length; i++) {
             String arg = args[i++];
@@ -351,8 +351,9 @@ public class XmlModel {
         //s.setLoggingMaxDepth(200);
         if (isFeasible && (cheuri == IMPACT || s.rootNodeSingleton(initialisationtime))) {
             if (ngFromRestart && (s.restartMode || forcerestart)) {
-                s.generateSearchStrategy();
-                s.getSearchStrategy().setSearchLoop(new SearchLoopWithNogoodFromRestart(s.getSearchStrategy(), s.getRestartStrategy()));
+            	s.setRecordNogoodFromRestart(true);
+            	s.generateSearchStrategy();
+                //s.getSearchStrategy().setSearchLoop(new SearchLoopWithNogoodFromRestart(s.getSearchStrategy(), s.getRestartStrategy()));
                 s.launch();
 
             } else s.solve();
