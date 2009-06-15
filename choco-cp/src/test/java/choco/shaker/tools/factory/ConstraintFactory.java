@@ -24,8 +24,10 @@ package choco.shaker.tools.factory;
 
 import choco.Choco;
 import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.variables.integer.IntegerVariable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 /*
@@ -42,18 +44,24 @@ public class ConstraintFactory {
 
 
     public enum C {
-        ALLDIFFERENT, BALLDIFFERENT, /*GCC_1, GCC_2, BGCC_1, BGCC_2, BGCC_3,
-        CUMULATIVE_1, CUMULATIVE_2, CUMULATIVE_3, CUMULATIVE_4, CUMULATIVE_5,
-        CUMULATIVE_6, CUMULATIVE_7, CUMULATIVE_8, CUMULATIVE_9,
-        DIJUNCTIVE_1,  DIJUNCTIVE_2, DIJUNCTIVE_3, DIJUNCTIVE_4,  DIJUNCTIVE_5,
-        ELEMENT_1, ELEMENT_2, ELEMENT_3, ELEMENT_4, ELEMENT_5,
-        DISJUNCTIVE,*/ LEXLESS, LEXLESSEQ,
-        DISTANCE_EQ_1, DISTANCE_EQ_2, DISTANCE_EQ_3, DISTANCE_NEQ,
-        DISTANCE_GT_1, DISTANCE_GT_2, DISTANCE_GT_3, DISTANCE_LT_1, DISTANCE_LT_2, DISTANCE_LT_3,
-        MIN_1, MIN_2, MIN_3, MIN_4, MAX_1, MAX_2, MAX_3, MAX_4,
-
-        EQ, FALSE, GEQ, GT, LEQ, LT, NEQ, REIFIEDINTCONSTRAINT_1,
-        REIFIEDINTCONSTRAINT_2, SIGNOPP, SAMESIGN, TRUE
+        ALLDIFFERENT, BALLDIFFERENT,
+        GCC,
+        BGCC_1, //BGCC_2, BGCC_3,
+//        CUMULATIVE_1, CUMULATIVE_2, CUMULATIVE_3, CUMULATIVE_4, CUMULATIVE_5,
+//        CUMULATIVE_6, CUMULATIVE_7, CUMULATIVE_8, CUMULATIVE_9,
+//        DIJUNCTIVE_1,  DIJUNCTIVE_2, DIJUNCTIVE_3, DIJUNCTIVE_4,  DIJUNCTIVE_5,
+//        ELEMENT_1, ELEMENT_2, ELEMENT_3, ELEMENT_4, ELEMENT_5,
+        LEXLESS, LEXLESSEQ,
+        DISTANCE_EQ_1, DISTANCE_EQ_2, DISTANCE_EQ_3,
+        DISTANCE_NEQ,
+        DISTANCE_GT_1, DISTANCE_GT_2, DISTANCE_GT_3,
+        DISTANCE_LT_1, DISTANCE_LT_2, DISTANCE_LT_3,
+        MIN_1, MIN_2, MIN_3, MIN_4,
+        MAX_1, MAX_2, MAX_3, MAX_4,
+        EQ, GEQ, GT, LEQ, LT, NEQ,
+        REIFIEDINTCONSTRAINT_1, REIFIEDINTCONSTRAINT_2,
+        SIGNOPP, SAMESIGN,
+        TRUE, FALSE
     }
 
     /**
@@ -104,9 +112,9 @@ public class ConstraintFactory {
 
     /**
      * Make a specific constraint
-     * @param c
-     * @param r
-     * @return
+     * @param c type of constraint
+     * @param r Random
+     * @return a constraint
      */
     public Constraint make(C c, Random r) {
         switch (c) {
@@ -114,6 +122,8 @@ public class ConstraintFactory {
                 return Choco.allDifferent( "cp:ac", of.make(7, r));
             case BALLDIFFERENT:
                 return Choco.allDifferent( "cp:bc", of.make(7, r));
+            case BGCC_1:
+                return makeGcc1(r, "cp:bc");
             case DISTANCE_EQ_1:
                 return Choco.distanceEQ(vf.make(r), vf.make(r), r.nextInt(vf.dsize)-vf.dsize/2);
             case DISTANCE_EQ_2:
@@ -138,6 +148,8 @@ public class ConstraintFactory {
                 return Choco.eq(of.make(r), of.make(r));
             case FALSE:
                 return Choco.FALSE;
+            case GCC:
+                return makeGcc1(r, "cp:ac");
             case GEQ:
                 return Choco.geq(of.make(r), of.make(r));
             case GT:
@@ -182,12 +194,68 @@ public class ConstraintFactory {
         return null;
     }
 
+    /**
+     * Create a globalcardinality constraint of type 1
+     * @param r Random
+     * @param option "cp:ac" or "cp:bc"
+     * @return gcc
+     */
+    private Constraint makeGcc1(Random r, String option) {
+        IntegerVariable[] vars = vf.make(5, r);
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for(IntegerVariable v : vars){
+            min = Math.min(min, v.getLowB());
+            max = Math.max(max, v.getUppB());
+        }
+        int[] low = new int[max-min+1];
+        int[] up = new int[max-min+1];
+
+        Arrays.fill(low, 0);
+        Arrays.fill(up, vars.length);
+
+        // Fill low array with value that do not exceed n
+        int n = vars.length;
+        while(n>0){
+            int i = next(low, 0, r);
+            int v = r.nextInt(n+1);
+            low[i] = v;
+            n-= v;
+        }
+        n = vars.length;
+        while(n>0){
+            int i = next(up, vars.length, r);
+            int v = Math.max(low[i], r.nextInt(n+1));
+            up[i] = v;
+            n-= v;
+        }
+//        if(minMax){
+//            return Choco.globalCardinality(option, vars, min, max, low, up);
+//        }
+        return Choco.globalCardinality(option, vars, low, up);
+    }
+
+
+    /**
+     * Retrieve the next value in an array, where the cell is different from diffn
+     * @param vals array of values
+     * @param diffn the value to avoid
+     * @param r Random
+     * @return the next int value
+     */
+    private int next(int[] vals, int diffn, Random r){
+        int i = r.nextInt(vals.length);
+        while(vals[i]!=diffn){
+            i = r.nextInt(vals.length);
+        }
+        return i;
+    }
 
     /**
      * Make an array of constraints
-     * @param nb
-     * @param r
-     * @return
+     * @param nb number of constraints to create
+     * @param r Random
+     * @return array of constraints
      */
     public Constraint[] make(int nb, Random r) {
         Constraint[] cs = new Constraint[nb];
@@ -199,9 +267,10 @@ public class ConstraintFactory {
 
     /**
      * Make an array of specific constraints
-     * @param nb
-     * @param r
-     * @return
+     * @param nb number of constraints to create
+     * @param c type of constraint to create
+     * @param r Random
+     * @return array of specific constraint
      */
     public Constraint[] make(int nb, C c, Random r) {
         Constraint[] cs = new Constraint[nb];

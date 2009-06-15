@@ -260,7 +260,9 @@ public class Lex extends AbstractLargeIntSConstraint {
 			int yi = tuple[i + n];
 			if (xi < yi) {
 				return true;
-			}
+			}else if(xi>yi){
+                return false;
+            }//else xi == yi
 		}
 		if (strict) {
 			return false;

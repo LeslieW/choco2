@@ -176,6 +176,21 @@ public class BoundGcc extends BoundGccVar {
     }
 
     @Override
+    public boolean isSatisfied(int[] tuple) {
+        int[] occurrences = new int[this.range];
+        for (int i = 0; i < nbVars; i++) {
+            occurrences[tuple[i] - this.offset]++;
+        }
+        for (int i = 0; i < occurrences.length; i++) {
+            int occurrence = occurrences[i];
+            if ((this.minOccurrences[i] > occurrence) || (occurrence > this.maxOccurrences[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
     public String pretty() {
         StringBuilder sb = new StringBuilder();
         sb.append("BoundGcc({");

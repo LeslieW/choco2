@@ -254,10 +254,14 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
             }
             return cons.isSatisfied(tupleCons);
         } else {
+            for (int i = 0; i < tupleCons.length; i++) {
+                tupleCons[i] = tuple[scopeCons[i]];
+            }
             for (int i = 0; i < tupleOCons.length; i++) {
                 tupleOCons[i] = tuple[scopeOCons[i]];
             }
-            return oppositeCons.isSatisfied(tupleOCons);
+            return !cons.isSatisfied(tupleCons)
+                && oppositeCons.isSatisfied(tupleOCons);
         }
     }
 }
