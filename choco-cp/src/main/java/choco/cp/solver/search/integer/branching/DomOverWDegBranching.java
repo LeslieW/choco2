@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.branching;
 
-import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -129,7 +128,15 @@ public class DomOverWDegBranching extends AbstractLargeIntBranching implements P
 		_vars = vars;
 	}
 
-	public DomOverWDegBranching(Solver s, ValIterator valHeuri) {
+    /**
+     * Define action to do just before a deletion.
+     */
+    @Override
+    public void safeDelete() {
+        _solver.getPropagationEngine().removePropagationEngineListener(this);
+    }
+
+    public DomOverWDegBranching(Solver s, ValIterator valHeuri) {
 		this(s, valHeuri, buildVars(s));
 	}
 
@@ -322,8 +329,8 @@ public class DomOverWDegBranching extends AbstractLargeIntBranching implements P
 
 	public void goDownBranch(Object x, int i) throws ContradictionException {
 		super.goDownBranch(x, i);
-		IntDomainVar v = (IntDomainVar) x;
-		v.setVal(i);
+        IntDomainVar v = (IntDomainVar) x;
+        v.setVal(i);
 	}
 
 	public void goUpBranch(Object x, int i) throws ContradictionException {

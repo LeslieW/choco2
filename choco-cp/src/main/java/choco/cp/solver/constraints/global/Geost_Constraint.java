@@ -188,7 +188,9 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 	}
 
 	public void awake() throws ContradictionException {
-		this.constAwake(false);
+		//this.constAwake(false);
+        // the initial propagation should be done
+        filter();
 	}
 
 

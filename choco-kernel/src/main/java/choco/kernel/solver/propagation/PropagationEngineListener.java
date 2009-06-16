@@ -31,4 +31,9 @@ import choco.kernel.solver.ContradictionException;
  */
 public interface PropagationEngineListener {
   void contradictionOccured(ContradictionException e);
+
+    /**
+     * Define action to do just before a deletion.
+     */
+    void safeDelete();
 }

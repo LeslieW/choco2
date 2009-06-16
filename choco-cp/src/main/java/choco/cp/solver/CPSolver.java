@@ -973,7 +973,12 @@ public class CPSolver implements Solver {
 		if (strategy == null) {
 			tempGoal = branching;
 		} else {
-			AbstractIntBranching br = branching;
+            // To remove properly the listener from the Propagation engine
+            if(strategy.mainGoal!=null
+                    && strategy.mainGoal instanceof PropagationEngineListener){
+                ((PropagationEngineListener)strategy.mainGoal).safeDelete();
+            }
+            AbstractIntBranching br = branching;
 			while (br != null) {
 				br.setSolver(strategy);
 				br = (AbstractIntBranching) br.getNextBranching();
@@ -1255,6 +1260,10 @@ public class CPSolver implements Solver {
      * @see choco.cp.solver.CPSolver#attachGoal(choco.kernel.solver.branch.AbstractIntBranching)
 	 */
 	public void setVarIntSelector(VarSelector varSelector) {
+        // To remove properly the listener from the Propagation engine
+        if(this.varIntSelector!=null && this.varIntSelector instanceof PropagationEngineListener){
+            ((PropagationEngineListener)this.varIntSelector).safeDelete();
+        }
 		this.varIntSelector = varSelector;
 		IntDomainVar[] vars = ((AbstractIntVarSelector) varSelector).getVars();
 		if (vars != null) {
@@ -1288,9 +1297,9 @@ public class CPSolver implements Solver {
      * @see choco.cp.solver.CPSolver#addGoal(choco.kernel.solver.branch.AbstractIntBranching)
      * @see choco.cp.solver.CPSolver#attachGoal(choco.kernel.solver.branch.AbstractIntBranching)
 	 */
-	public void setVarSetSelector(SetVarSelector setVarIntSelector) {
-		this.varSetSelector = setVarIntSelector;
-		SetVar[] vars = ((AbstractSetVarSelector) setVarIntSelector).getVars();
+	public void setVarSetSelector(SetVarSelector setVarSelector) {
+		this.varSetSelector = setVarSelector;
+		SetVar[] vars = ((AbstractSetVarSelector) setVarSelector).getVars();
 		if (vars != null) {
             setDecisionVars.clear();
 			for (int i = 0; i < vars.length; i++) {
@@ -1299,7 +1308,7 @@ public class CPSolver implements Solver {
         } else if(!setDecisionVars.isEmpty()){
             vars = new SetVar[setDecisionVars.size()];
             intDecisionVars.toArray(vars);
-            ((AbstractSetVarSelector) setVarIntSelector).setVars(vars);
+            ((AbstractSetVarSelector) setVarSelector).setVars(vars);
 		} else {
 			setDecisionVars.addAll(setVars);
 		}

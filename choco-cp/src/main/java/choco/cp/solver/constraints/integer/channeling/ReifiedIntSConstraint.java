@@ -235,8 +235,8 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
     }
 
     //temporary data to store tuples
-    private int[] tupleCons;
-    private int[] tupleOCons;
+    int[] tupleCons;
+    int[] tupleOCons;
 
     /**
      * TEMPORARY: if not overriden by the constraint, throws an error
@@ -248,20 +248,17 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
      */
     public boolean isSatisfied(int[] tuple) {
         int val = tuple[0];
+        for (int i = 0; i < tupleCons.length; i++) {
+            tupleCons[i] = tuple[scopeCons[i]];
+        }
         if (val == 1) {
-            for (int i = 0; i < tupleCons.length; i++) {
-                tupleCons[i] = tuple[scopeCons[i]];
-            }
             return cons.isSatisfied(tupleCons);
         } else {
-            for (int i = 0; i < tupleCons.length; i++) {
-                tupleCons[i] = tuple[scopeCons[i]];
-            }
             for (int i = 0; i < tupleOCons.length; i++) {
                 tupleOCons[i] = tuple[scopeOCons[i]];
             }
             return !cons.isSatisfied(tupleCons)
-                && oppositeCons.isSatisfied(tupleOCons);
+            && oppositeCons.isSatisfied(tupleOCons);
         }
     }
 }

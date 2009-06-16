@@ -37,6 +37,14 @@ public class FailLimit extends AbstractGlobalSearchLimit implements PropagationE
     theStrategy.getSolver().getPropagationEngine().addPropagationEngineListener(this);
   }
 
+    /**
+     * Define action to do just before a deletion.
+     */
+    @Override
+    public void safeDelete() {
+        strategy.getSolver().getPropagationEngine().removePropagationEngineListener(this);
+    }
+
   public boolean newNode(AbstractGlobalSearchStrategy strategy) {
     return ((nb + nbTot) < nbMax);
   }

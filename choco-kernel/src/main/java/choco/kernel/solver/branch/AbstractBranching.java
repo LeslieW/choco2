@@ -83,7 +83,7 @@ public abstract class AbstractBranching {
      * this method is used to build the data structure in the branching for
      * the given constraint. This is used when the constraint was not present
      * at the initialization of the branching, for example a cut 
-     * @param s
+     * @param c constraint
      */
   public void initConstraintForBranching(SConstraint c) {
     //nothing to do by default
