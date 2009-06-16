@@ -70,6 +70,14 @@ public class DomOverWDegRPC extends DoubleHeuristicIntVarSelector implements
         solver.getPropagationEngine().addPropagationEngineListener(this);
     }
 
+    /**
+     * Define action to do just before a deletion.
+     */
+    @Override
+    public void safeDelete() {
+        solver.getPropagationEngine().removePropagationEngineListener(this);
+    }
+
     public double getHeuristic(IntDomainVar v) {
         int dsize = v.getDomainSize();
         int weight = 0;
