@@ -95,12 +95,22 @@ public class BoundGcc extends BoundGccVar {
                     filterBCOnRem(val);
             }
         }
+        if (directInconsistentCount())
+            this.fail();
         propagate();
 
-  }
+    }
 
+    public boolean directInconsistentCount() {
+        for (int i = 0; i < range; i++) {
+            if (val_maxOcc[i].get() < minOccurrences[i] ||
+                val_minOcc[i].get() > maxOccurrences[i])
+                return true;
+        }
+        return false;
+    }
 
-	@Override
+    @Override
 	public void propagate() throws ContradictionException {
 		sortIt();
 
@@ -110,6 +120,7 @@ public class BoundGcc extends BoundGccVar {
         assert(l.maxValue() == u.maxValue());
         assert(l.minValue() <= minsorted[0].var.getInf());
         assert(maxsorted[nbVars-1].var.getSup() <= u.maxValue());
+        assert(!directInconsistentCount());
         // Checks if there are values that must be assigned before the
         // smallest interval or after the last interval. If this is
         // the case, there is no solution to the problem

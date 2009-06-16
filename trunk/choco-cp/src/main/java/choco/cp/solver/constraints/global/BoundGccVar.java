@@ -109,6 +109,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
                       int lastDomainValue) {
         int range = lastDomainValue - firstDomainValue + 1;
         this.nbVars = n;
+        this.solver = vars[0].getSolver();
         t = new int[2 * n + 2];
         d = new int[2 * n + 2];
         h = new int[2 * n + 2];
@@ -130,6 +131,12 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         this.offset = firstDomainValue;
         this.firstValue = firstDomainValue;
         this.range = range;
+        val_maxOcc = new IStateInt[range];
+        val_minOcc = new IStateInt[range];
+        for (int i = 0; i < range; i++) {
+            val_maxOcc[i] = solver.getEnvironment().makeInt(0);
+            val_minOcc[i] = solver.getEnvironment().makeInt(0);
+        }        
     }
 
     public int getMaxOcc(int i) {
@@ -490,12 +497,8 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
 
     }
 
-    public void initBackDataStruct() {
-        val_maxOcc = new IStateInt[range];
-        val_minOcc = new IStateInt[range];
+    public void initBackDataStruct() throws ContradictionException {
         for (int i = 0; i < range; i++) {
-            val_maxOcc[i] = solver.getEnvironment().makeInt(0);
-            val_minOcc[i] = solver.getEnvironment().makeInt(0);
             for (int j = 0; j < nbVars; j++) {
                 if (vars[j].canBeInstantiatedTo(i + offset)) {
                     val_maxOcc[i].add(1);
@@ -516,7 +519,18 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
                 filterBCOnInst(vars[i].getVal());
             }
         }
+        if (directInconsistentCount())
+           this.fail();
         propagate();
+    }
+
+    public boolean directInconsistentCount() {
+        for (int i = 0; i < range; i++) {
+           if(val_maxOcc[i].get() < card[i].getInf() ||
+              val_minOcc[i].get() > card[i].getSup())
+                return true;
+        }
+        return false;
     }
 
     public void dynamicInitOfPartialSum() {
@@ -543,6 +557,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         assert(l.maxValue() == u.maxValue());
         assert(l.minValue() <= minsorted[0].var.getInf());
         assert(maxsorted[nbVars-1].var.getSup() <= u.maxValue());
+        assert(!directInconsistentCount());
 
         // Checks if there are values that must be assigned before the
         // smallest interval or after the last interval. If this is
