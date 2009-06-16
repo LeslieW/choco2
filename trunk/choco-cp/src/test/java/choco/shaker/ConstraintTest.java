@@ -212,7 +212,7 @@ public class ConstraintTest {
     }
 
     @Test
-//    @Ignore
+    @Ignore
     public void test6(){
         m  = new CPModel();
         IntegerVariable[] vars = new IntegerVariable[5];

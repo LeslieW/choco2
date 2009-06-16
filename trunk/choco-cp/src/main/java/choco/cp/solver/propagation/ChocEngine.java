@@ -312,7 +312,17 @@ public class ChocEngine extends AbstractPropagationEngine {
 		propagationEngineListeners.add(listener);
 	}
 
-	ContradictionException e  = new ContradictionException(null,0);
+    /**
+     * Removes a old listener from the propagation engine
+     *
+     * @param listener removal listener
+     */
+    @Override
+    public void removePropagationEngineListener(PropagationEngineListener listener) {
+        propagationEngineListeners.remove(listener);
+    }
+
+    ContradictionException e  = new ContradictionException(null,0);
 	/**
 	 * Throws a contradiction with the specified cause.
 	 *

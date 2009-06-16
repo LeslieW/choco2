@@ -1256,7 +1256,7 @@ public class ReifiedSomeTest {
 
         s.read(m);
         s.solveAll();
-        Assert.assertEquals("nb solutions", 11, s.getNbSolutions());
+        Assert.assertEquals("nb solutions", 21, s.getNbSolutions());
     }
 
 

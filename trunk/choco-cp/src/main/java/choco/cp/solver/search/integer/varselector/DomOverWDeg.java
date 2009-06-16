@@ -26,8 +26,8 @@ import choco.kernel.common.util.IntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
-import choco.kernel.solver.constraints.SConstraintType;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.SConstraintType;
 import choco.kernel.solver.propagation.PropagationEngineListener;
 import choco.kernel.solver.search.integer.DoubleHeuristicIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -67,6 +67,14 @@ public class DomOverWDeg extends DoubleHeuristicIntVarSelector implements Propag
 		}
 		solver.getPropagationEngine().addPropagationEngineListener(this);
 	}
+
+    /**
+     * Define action to do just before a deletion.
+     */
+    @Override
+    public void safeDelete() {
+        solver.getPropagationEngine().removePropagationEngineListener(this);
+    }
 
     public void initConstraintForBranching(SConstraint c) {
         ((AbstractSConstraint) c).setExtension(ABSTRACTCONTRAINT_EXTENSION, new DomOverWDegConstraintExtension());        

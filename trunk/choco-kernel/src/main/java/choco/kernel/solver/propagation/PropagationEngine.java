@@ -23,14 +23,14 @@
 
 package choco.kernel.solver.propagation;
 
-import java.util.logging.Logger;
-
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.set.SetVar;
+
+import java.util.logging.Logger;
 
 /**
  * An interface for all implementations of propagation engines.
@@ -133,6 +133,12 @@ public interface PropagationEngine {
 	 * @param listener a new listener
 	 */
 	void addPropagationEngineListener(PropagationEngineListener listener);
+
+    /**
+     * Removes a old listener from the propagation engine
+     * @param listener removal listener
+     */
+    void removePropagationEngineListener(PropagationEngineListener listener);
 
 	EventQueue getQueue(ConstraintEvent csvt);
 }
