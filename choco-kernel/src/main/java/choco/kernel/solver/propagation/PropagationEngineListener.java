@@ -30,8 +30,8 @@ import choco.kernel.solver.ContradictionException;
  *                 In this first implementation, only contradictions are thrown !
  */
 public interface PropagationEngineListener {
-  void contradictionOccured(ContradictionException e);
-
+  
+	void contradictionOccured(ContradictionException e);
     /**
      * Define action to do just before a deletion.
      */

@@ -41,7 +41,7 @@ public class PrecedenceStore implements IPrecedenceStore {
 
 	}
 
-
+	
 	@Override
 	public boolean isReified(ITask t1, ITask t2) {
 		final StoredPrecedence prec = getStoredPrecedence(t1, t2);
@@ -49,7 +49,7 @@ public class PrecedenceStore implements IPrecedenceStore {
 		return ! prec.direction.isInstantiated();
 	}
 
-
+	
 
 	@Override
 	public boolean containsReifiedPrecedence() {
