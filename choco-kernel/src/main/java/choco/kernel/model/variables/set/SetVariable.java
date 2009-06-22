@@ -54,7 +54,8 @@ public class SetVariable extends SetExpressionVariable{
     }
 
     public SetVariable(String name, VariableType type, int[] values, IntegerVariable card) {
-		super(new Object[]{values, card}, Operator.NONE, type, null);
+        //noinspection NullArgumentToVariableArgMethod
+        super(new Object[]{values, card}, Operator.NONE, type, null);
 		this.name = name;
 		this.values = new int[values.length];
         System.arraycopy(values, 0, this.values, 0, values.length);

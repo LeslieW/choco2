@@ -23,14 +23,12 @@
 package choco.cp.solver.variables.set;
 
 import choco.kernel.common.util.IntIterator;
-import choco.kernel.memory.PartiallyStoredIntVector;
-import choco.kernel.memory.PartiallyStoredVector;
+import choco.kernel.memory.structure.PartiallyStoredIntVector;
+import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.SetSConstraint;
 import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.set.SetVar;
-
-import java.util.logging.Level;
 
 /*
  * Created by IntelliJ IDEA.

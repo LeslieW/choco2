@@ -23,8 +23,8 @@
 package choco.kernel.solver.variables.real;
 
 import choco.kernel.common.HashCoding;
-import choco.kernel.memory.PartiallyStoredIntVector;
-import choco.kernel.memory.PartiallyStoredVector;
+import choco.kernel.memory.structure.PartiallyStoredIntVector;
+import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -73,7 +73,7 @@ public class RealIntervalConstant implements RealConstant {
      * @return the indice of the objet
      */
     @Override
-    public long getIndice() {
+    public long getIndex() {
         return index;
     }
 
@@ -265,5 +265,17 @@ public class RealIntervalConstant implements RealConstant {
     @Override
     public RealInterval getValue() {
         return this;
+    }
+
+    /**
+     * Update the constraint state
+     *
+     * @param vidx  index of the variable in the constraint
+     * @param cidx  constraint idx
+     * @param c     the constraint
+     * @param state new state (active/passive)
+     */
+    @Override
+    public void updateConstraintState(int vidx, int cidx, SConstraint c, boolean state) {
     }
 }

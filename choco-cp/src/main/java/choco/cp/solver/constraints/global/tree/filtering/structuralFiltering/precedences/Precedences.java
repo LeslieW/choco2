@@ -24,7 +24,7 @@ package choco.cp.solver.constraints.global.tree.filtering.structuralFiltering.pr
 
 
 import choco.cp.solver.constraints.global.tree.filtering.AbstractPropagator;
-import choco.kernel.memory.trailing.StoredBitSet;
+import choco.kernel.memory.IStateBitSet;
 import choco.kernel.solver.ContradictionException;
 
 import java.util.BitSet;
@@ -54,7 +54,7 @@ public class Precedences extends AbstractPropagator {
         boolean res = true;
         while (m < nbVertices && res) {
             BitSet desc = precs.getDescendants(m);
-            StoredBitSet desc_m = inputGraph.getGlobal().getDescendants(m);
+            IStateBitSet desc_m = inputGraph.getGlobal().getDescendants(m);
             for (int i = desc.nextSetBit(0); i >= 0; i = desc.nextSetBit(i + 1)) {
                 if (!desc_m.get(i)) res = false;
             }
@@ -91,7 +91,7 @@ public class Precedences extends AbstractPropagator {
     public void filter() throws ContradictionException {
         // Analyze each potential arc (u,v) according to the precedence constraints
         for (int i = 0; i < nbVertices; i++) {
-            StoredBitSet possible = inputGraph.getMaybe().getSuccessors(i);
+            IStateBitSet possible = inputGraph.getMaybe().getSuccessors(i);
             for (int j = possible.nextSetBit(0); j >= 0; j = possible.nextSetBit(j + 1)) {
                 int[] arc = {i, j};
                 if (i != j) {
@@ -114,7 +114,7 @@ public class Precedences extends AbstractPropagator {
         // all the mandatory descendants desc_i of a node i belong to the potential descendants
         // desc_j of a succesor j of i in the graph 
         for (int i = 0; i < nbVertices; i++) {
-            StoredBitSet succ_i = inputGraph.getGlobal().getSuccessors(i);
+            IStateBitSet succ_i = inputGraph.getGlobal().getSuccessors(i);
             BitSet desc_i = precs.getDescendants(i);
             for (int j = succ_i.nextSetBit(0); j >= 0; j = succ_i.nextSetBit(j + 1)) {
                 if (i != j) {
@@ -140,7 +140,7 @@ public class Precedences extends AbstractPropagator {
             }
         }
         // remove all the potential roots which are not a sink node in the precedence graph
-        StoredBitSet roots = inputGraph.getPotentialRoots();
+        IStateBitSet roots = inputGraph.getPotentialRoots();
         for (int i = roots.nextSetBit(0); i >= 0; i = roots.nextSetBit(i + 1)) {
             if (!precs.getSinkNodes().get(i)) {
                 if (affiche) LOGGER.info("Precedences-3: suppression boucle sur " + i);
@@ -161,9 +161,9 @@ public class Precedences extends AbstractPropagator {
             }
         }
         // a topological sort of the precedence graph
-        Vector<StoredBitSet> CFC = inputGraph.getReducedGraph().getCFC();
+        Vector<IStateBitSet> CFC = inputGraph.getReducedGraph().getCFC();
         TopologicSort ts = new TopologicSort(inputGraph.getReducedGraph().getCFCgraph());
-        StoredBitSet[] reducedGraph = inputGraph.getReducedGraph().getCFCgraph();
+        IStateBitSet[] reducedGraph = inputGraph.getReducedGraph().getCFCgraph();
         int[] numTable = ts.sort();
         // record the nodes of the graph that belong to a node of the reduced graph. NB: indeed, a reduced node is
         // a scc of the graph.
@@ -219,10 +219,10 @@ public class Precedences extends AbstractPropagator {
         // restore the set of arcs in the graph corresponding to an arc in the reduced graph
         for (int u = 0; u < falseReducedGraph.length; u++) {
             for (int v = falseReducedGraph[u].nextSetBit(0); v >= 0; v = falseReducedGraph[u].nextSetBit(v + 1)) {
-                StoredBitSet contain_u = CFC.elementAt(u);
-                StoredBitSet contain_v = CFC.elementAt(v);
+                IStateBitSet contain_u = CFC.elementAt(u);
+                IStateBitSet contain_v = CFC.elementAt(v);
                 for (int i = contain_u.nextSetBit(0); i >= 0; i = contain_u.nextSetBit(i + 1)) {
-                    StoredBitSet succ_i = inputGraph.getGlobal().getSuccessors(i);
+                    IStateBitSet succ_i = inputGraph.getGlobal().getSuccessors(i);
                     for (int j = succ_i.nextSetBit(0); j >= 0; j = succ_i.nextSetBit(j + 1)) {
                         if (contain_v.get(j) && !propagateStruct.getGraphRem()[i].get(j)) {
                             if (affiche)
@@ -238,19 +238,19 @@ public class Precedences extends AbstractPropagator {
         BitSet[] undirectedHasse = new BitSet[nbVertices];
         for (int i = 0; i < nbVertices; i++) undirectedHasse[i] = new BitSet(nbVertices);
         for (int i = 0; i < nbVertices; i++) {
-            StoredBitSet u = precs.getSuccessors(i);
+            IStateBitSet u = precs.getSuccessors(i);
             for (int j = u.nextSetBit(0); j >= 0; j = u.nextSetBit(j + 1)) {
                 undirectedHasse[i].set(j, true);
                 undirectedHasse[j].set(i, true);
             }
         }
-        StoredBitSet[] vertFromNum = precs.getVertFromNumCC();
+        IStateBitSet[] vertFromNum = precs.getVertFromNumCC();
         BitSet out = new BitSet(vertFromNum.length);
         for (int i = 0; i < vertFromNum.length; i++) {
-            StoredBitSet vertices = vertFromNum[i];
+            IStateBitSet vertices = vertFromNum[i];
             boolean exists = false;
             for (int j = vertices.nextSetBit(0); j >= 0; j = vertices.nextSetBit(j + 1)) {
-                StoredBitSet succ = precs.getSuccessors(j);
+                IStateBitSet succ = precs.getSuccessors(j);
                 boolean b = true;
                 for (int k = succ.nextSetBit(0); k >= 0; k = succ.nextSetBit(k + 1)) {
                     if (vertices.get(k)) b = false;
@@ -305,7 +305,7 @@ public class Precedences extends AbstractPropagator {
         }
     }
 
-    private int[] DFS(int start, StoredBitSet[] graph, int[] sortLVL, BitSet[] marked, int origin) {
+    private int[] DFS(int start, IStateBitSet[] graph, int[] sortLVL, BitSet[] marked, int origin) {
         int cpt = 0;
         int[] numPre = new int[graph.length];
         for (int i = 0; i < numPre.length; i++) numPre[i] = -1;
@@ -317,7 +317,7 @@ public class Precedences extends AbstractPropagator {
             int current = toVisit.poll();
             numPre[current] = cpt;
             cpt++;
-            StoredBitSet succ = graph[current];
+            IStateBitSet succ = graph[current];
             // record the nodes of low level in the topological sort
             BitSet minlvl = new BitSet(graph.length);
             int lvl = graph.length;

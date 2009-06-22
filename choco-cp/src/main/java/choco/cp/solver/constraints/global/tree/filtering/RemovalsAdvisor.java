@@ -28,7 +28,7 @@ import choco.cp.solver.constraints.global.tree.structure.inputStructure.Node;
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.TreeParameters;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.StructuresAdvisor;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.memory.trailing.StoredBitSet;
+import choco.kernel.memory.IStateBitSet;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -200,7 +200,7 @@ public class RemovalsAdvisor {
      * @throws choco.kernel.solver.ContradictionException
      */
     public void startRemovals() throws ContradictionException {
-        StoredBitSet[] trueGraph = struct.getInputGraph().getSure().getGraph();
+        IStateBitSet[] trueGraph = struct.getInputGraph().getSure().getGraph();
         if (updateNtree && maxtree < treeParams.getNtree().getSup()) {
             filter = true;
             treeParams.getNtree().updateSup(maxtree, treeConst.cIndices[0]);

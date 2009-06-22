@@ -20,15 +20,18 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.memory;
+package choco.kernel.memory.structure;
 
 import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.IStateInt;
+import choco.kernel.memory.IStateIntVector;
 
 /**
  * A class that implements a vector of integers with two states (one current and one single historical state)
  * TODO: implement all those darn methods
  */
-public class TwoStateIntVector implements IStateIntVector {
+public class TwoStatesIntVector implements IStateIntVector {
 
 
   /**
@@ -68,10 +71,10 @@ public class TwoStateIntVector implements IStateIntVector {
    * @param initialSize  the initial size of the vector
    * @param initialValue the initial value for all entries of the vector
    */
-  public TwoStateIntVector(IEnvironment env, int initialSize, int initialValue) {
+  public TwoStatesIntVector(IEnvironment env, int initialSize, int initialValue) {
   }
 
-  /**
+    /**
    * Returns the current size of the stored search vector.
    */
 

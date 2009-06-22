@@ -47,14 +47,16 @@ public class IntegerVariable extends IntegerExpressionVariable {
     protected Object hook;
 
     public IntegerVariable(String name, VariableType type, int binf, int bsup) {
-		super(new int[]{binf, bsup}, Operator.NONE, type, null);
+        //noinspection NullArgumentToVariableArgMethod
+        super(new int[]{binf, bsup}, Operator.NONE, type, null);
 		this.name = name;
 		this.setLowB(binf);
 		this.setUppB(bsup);
 	}
 
 	public IntegerVariable(String name, VariableType type, int[] values) {
-		super(values, Operator.NONE, type, null);
+        //noinspection NullArgumentToVariableArgMethod
+        super(values, Operator.NONE, type, null);
 		this.name = name;
 		this.values = new int[values.length];
         System.arraycopy(values, 0, this.values, 0, values.length);

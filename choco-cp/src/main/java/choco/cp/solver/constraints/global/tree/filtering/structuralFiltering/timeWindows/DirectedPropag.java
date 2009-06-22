@@ -27,8 +27,8 @@ import choco.cp.solver.constraints.global.tree.filtering.RemovalsAdvisor;
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.Node;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.VarGraphView;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.trailing.StoredBitSet;
 import choco.kernel.solver.ContradictionException;
 
 import java.util.BitSet;
@@ -58,32 +58,32 @@ public class DirectedPropag {
     /**
      * graph of the required arcs
      */
-    protected StoredBitSet[] sure;
+    protected IStateBitSet[] sure;
 
     /**
      * reverse graph of the required arcs
      */
-    protected StoredBitSet[] revSure;
+    protected IStateBitSet[] revSure;
 
     /**
      * the set of source nodes in the graph
      */
-    protected StoredBitSet src;
+    protected IStateBitSet src;
 
     /**
      * the set of sink nodes in the graph
      */
-    protected StoredBitSet sink;
+    protected IStateBitSet sink;
 
     /**
      * graph of the potential arcs
      */
-    protected StoredBitSet[] maybe;
+    protected IStateBitSet[] maybe;
 
     /**
      * reverse graph of the potential arcs
      */
-    protected StoredBitSet[] revMaybe;
+    protected IStateBitSet[] revMaybe;
 
     /**
      * travel time matrix

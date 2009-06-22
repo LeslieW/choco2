@@ -25,7 +25,7 @@ package choco.cp.solver.constraints.global.tree.structure.internalStructure.grap
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.PrecsGraphView;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.VarGraphView;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.memory.trailing.StoredBitSet;
+import choco.kernel.memory.IStateBitSet;
 
 import java.util.BitSet;
 import java.util.logging.Logger;
@@ -133,7 +133,7 @@ public class Dominators {
                     tmp.and(precs.getDescendants(source));
                     intersect.or(tmp);
                     // on met jour par rapport � chaque pred de node dans le graphe
-                    StoredBitSet preds = graph.getGlobal().getPredecessors(node);
+                    IStateBitSet preds = graph.getGlobal().getPredecessors(node);
                     boolean atLeastOne = false;
                     boolean atLeastOneComp = false;
                     if (affiche) LOGGER.info("\t\t au moins un pred pour " + node + "? ");
@@ -198,7 +198,7 @@ public class Dominators {
     public void getPostOrder(int u) {
         color[u] = 1;
         visited.set(u, true);
-        StoredBitSet succ = graph.getGlobal().getSuccessors(u);
+        IStateBitSet succ = graph.getGlobal().getSuccessors(u);
         for (int k = succ.nextSetBit(0); k >= 0; k = succ.nextSetBit(k + 1)) {
             if (color[k] == 0) getPostOrder(k);
         }

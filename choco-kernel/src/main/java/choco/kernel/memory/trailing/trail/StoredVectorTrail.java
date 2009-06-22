@@ -20,26 +20,30 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.memory.trailing;
+
+package choco.kernel.memory.trailing.trail;
+
+import choco.kernel.memory.trailing.EnvironmentTrailing;
+import choco.kernel.memory.trailing.StoredVector;
 
 
 /**
  * Implements a trail with the history of all the stored search vectors.
  */
-public class StoredIntVectorTrail implements ITrailStorage {
+public class StoredVectorTrail implements ITrailStorage {
 
 	/**
 	 * The current environment.
 	 */
 
-	private EnvironmentTrailing environment;
+	private final EnvironmentTrailing environment;
 
 
 	/**
 	 * All the stored search vectors.
 	 */
 
-	private StoredIntVector[] vectorStack;
+	private StoredVector<?>[] vectorStack;
 
 
 	/**
@@ -53,7 +57,7 @@ public class StoredIntVectorTrail implements ITrailStorage {
 	 * Previous values of the stored vector elements.
 	 */
 
-	private int[] valueStack;
+	private Object[] valueStack;
 
 
 	/**
@@ -80,19 +84,19 @@ public class StoredIntVectorTrail implements ITrailStorage {
 	 */
 	private int maxUpdates = 0;
 
-	
+
 	/**
 	 * Constructs a trail for the specified environment with the
 	 * specified numbers of updates and worlds.
 	 */
 
-	public StoredIntVectorTrail(EnvironmentTrailing env, int nUpdates, int nWorlds) {
+	public StoredVectorTrail(EnvironmentTrailing env, int nUpdates, int nWorlds) {
 		this.environment = env;
 		this.currentLevel = 0;
 		maxUpdates = nUpdates;
-		this.vectorStack = new StoredIntVector[nUpdates];
+		this.vectorStack = new StoredVector[nUpdates];
 		this.indexStack = new int[nUpdates];
-		this.valueStack = new int[nUpdates];
+		this.valueStack = new Object[nUpdates];
 		this.stampStack = new int[nUpdates];
 		this.worldStartLevels = new int[nWorlds];
 	}
@@ -102,7 +106,7 @@ public class StoredIntVectorTrail implements ITrailStorage {
 	 * Reacts on the modification of an element in a stored search vector.
 	 */
 
-	public void savePreviousState(StoredIntVector vect, int index, int oldValue, int oldStamp) {
+	public void savePreviousState(StoredVector<?> vect, int index, Object oldValue, int oldStamp) {
 		this.vectorStack[currentLevel] = vect;
 		this.indexStack[currentLevel] = index;
 		this.stampStack[currentLevel] = oldStamp;
@@ -115,11 +119,11 @@ public class StoredIntVectorTrail implements ITrailStorage {
 	private void resizeUpdateCapacity() {
 		final int newCapacity = ((maxUpdates * 3) / 2);
 		// first, copy the stack of variables
-		final StoredIntVector[] tmp1 = new StoredIntVector[newCapacity];
+		final StoredVector<?>[] tmp1 = new StoredVector<?>[newCapacity];
 		System.arraycopy(vectorStack, 0, tmp1, 0, vectorStack.length);
 		vectorStack = tmp1;
 		// then, copy the stack of former values
-		final int[] tmp2 = new int[newCapacity];
+		final Object[] tmp2 = new Object[newCapacity];
 		System.arraycopy(valueStack, 0, tmp2, 0, valueStack.length);
 		valueStack = tmp2;
 		// then, copy the stack of world stamps
@@ -157,7 +161,7 @@ public class StoredIntVectorTrail implements ITrailStorage {
 	public void worldPop() {
 		while (currentLevel > worldStartLevels[this.environment.getWorldIndex()]) {
 			currentLevel--;
-			StoredIntVector v = vectorStack[currentLevel];
+			final StoredVector<?> v = vectorStack[currentLevel];
 			v._set(indexStack[currentLevel], valueStack[currentLevel], stampStack[currentLevel]);
 		}
 	}
@@ -173,14 +177,14 @@ public class StoredIntVectorTrail implements ITrailStorage {
 		//   updates of the committed world are scanned:
 		//     if their stamp is the previous one (merged with the current one) -> remove the update (garbage collecting this position for the next update)
 		//     otherwise update the worldStamp
-		int startLevel = worldStartLevels[environment.getWorldIndex()];
-		int prevWorld = environment.getWorldIndex() - 1;
+		final int startLevel = worldStartLevels[environment.getWorldIndex()];
+		final int prevWorld = environment.getWorldIndex() - 1;
 		int writeIdx = startLevel;
 		for (int level = startLevel; level < currentLevel; level++) {
-			StoredIntVector var = vectorStack[level];
-			int idx = indexStack[level];
-			int val = valueStack[level];
-			int stamp = stampStack[level];
+			final StoredVector<?> var = vectorStack[level];
+			final int idx = indexStack[level];
+			final Object val = valueStack[level];
+			final int stamp = stampStack[level];
 			var.worldStamps[idx] = prevWorld;// update the stamp of the variable (current stamp refers to a world that no longer exists)
 			if (stamp != prevWorld) {
 				// shift the update if needed

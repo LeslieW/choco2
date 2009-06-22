@@ -23,9 +23,7 @@
 package choco.cp.solver.constraints.global.tree.structure.inputStructure;
 
 
-
-
-import choco.kernel.memory.trailing.StoredBitSet;
+import choco.kernel.memory.IStateBitSet;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -58,17 +56,17 @@ public class Node {
     /**
      * the set of mandatory successors of the current node
      */
-    protected StoredBitSet mandatorySuccessors;
+    protected IStateBitSet mandatorySuccessors;
 
     /**
      * the set of potential mandatory successors of the current node
      */
-    protected StoredBitSet condSuccessors;
+    protected IStateBitSet condSuccessors;
 
     /**
      * the set of incomparable nodes with the current node
      */
-    protected StoredBitSet incomparableNodes;
+    protected IStateBitSet incomparableNodes;
 
     /**
      * constructor: build a node and its associated attributes
@@ -90,17 +88,17 @@ public class Node {
         this.inDegree = inDegree;
         this.timeWindow = timeWindow;
 
-        this.mandatorySuccessors = new StoredBitSet(solver.getEnvironment(), nbNodes);
+        this.mandatorySuccessors = solver.getEnvironment().makeBitSet(nbNodes);
         BitSet prec = graphs.get(1)[idx];
         for (int i = prec.nextSetBit(0); i >= 0; i = prec.nextSetBit(i + 1)) {
             this.mandatorySuccessors.set(i,true);
         }
-        this.condSuccessors = new StoredBitSet(solver.getEnvironment(), nbNodes);
+        this.condSuccessors = solver.getEnvironment().makeBitSet(nbNodes);
         BitSet condSucc = graphs.get(2)[idx];
         for (int i = condSucc.nextSetBit(0); i >= 0; i = condSucc.nextSetBit(i + 1)) {
             this.condSuccessors.set(i,true);
         }
-        this.incomparableNodes = new StoredBitSet(solver.getEnvironment(), nbNodes);
+        this.incomparableNodes = solver.getEnvironment().makeBitSet(nbNodes);
         BitSet inc = graphs.get(3)[idx];
         for (int i = inc.nextSetBit(0); i >= 0; i = inc.nextSetBit(i + 1)) {
             this.incomparableNodes.set(i,true);
@@ -128,17 +126,17 @@ public class Node {
         for (int i = 0; i < nbNodes; i++) {
             if (!graphs.get(0)[idx].get(i)) this.successors.remVal(i);
         }
-        this.mandatorySuccessors = new StoredBitSet(solver.getEnvironment(), nbNodes);
+        this.mandatorySuccessors = solver.getEnvironment().makeBitSet(nbNodes);
         BitSet prec = graphs.get(1)[idx];
         for (int i = prec.nextSetBit(0); i >= 0; i = prec.nextSetBit(i + 1)) {
             this.mandatorySuccessors.set(i,true);
         }
-        this.condSuccessors = new StoredBitSet(solver.getEnvironment(), nbNodes);
+        this.condSuccessors = solver.getEnvironment().makeBitSet(nbNodes);
         BitSet condSucc = graphs.get(2)[idx];
         for (int i = condSucc.nextSetBit(0); i >= 0; i = condSucc.nextSetBit(i + 1)) {
             this.condSuccessors.set(i,true);
         }
-        this.incomparableNodes = new StoredBitSet(solver.getEnvironment(), nbNodes);
+        this.incomparableNodes = solver.getEnvironment().makeBitSet(nbNodes);
         BitSet inc = graphs.get(3)[idx];
         for (int i = inc.nextSetBit(0); i >= 0; i = inc.nextSetBit(i + 1)) {
             this.incomparableNodes.set(i,true);
@@ -163,15 +161,15 @@ public class Node {
         return timeWindow;
     }
 
-    public StoredBitSet getMandatorySuccessors() {
+    public IStateBitSet getMandatorySuccessors() {
         return mandatorySuccessors;
     }
 
-    public StoredBitSet getCondSuccessors() {
+    public IStateBitSet getCondSuccessors() {
         return condSuccessors;
     }
 
-    public StoredBitSet getIncomparableNodes() {
+    public IStateBitSet getIncomparableNodes() {
         return incomparableNodes;
     }
 }

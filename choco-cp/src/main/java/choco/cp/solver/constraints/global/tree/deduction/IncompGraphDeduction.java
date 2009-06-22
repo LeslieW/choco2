@@ -21,7 +21,8 @@
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.tree.deduction;
-import choco.kernel.memory.trailing.StoredBitSet;
+
+import choco.kernel.memory.IStateBitSet;
 
 import java.util.BitSet;
 import java.util.logging.Level;
@@ -47,13 +48,13 @@ public class IncompGraphDeduction extends AbstractDeduction {
      * update incomparability constraints according to the required arcs involved in the graph
      */
     private void updateIncFromInst() {
-        StoredBitSet[] trueGraph = inputGraph.getSure().getGraph();
+        IStateBitSet[] trueGraph = inputGraph.getSure().getGraph();
         for (int i = 0; i < nbVertices; i++) {
             for (int j = trueGraph[i].nextSetBit(0); j >= 0; j = trueGraph[i].nextSetBit(j + 1)) {
-                StoredBitSet inc_i = incomp.getSuccessors(i);
-                StoredBitSet A_j = inputGraph.getGlobal().getAncestors(j);
+                IStateBitSet inc_i = incomp.getSuccessors(i);
+                IStateBitSet A_j = inputGraph.getGlobal().getAncestors(j);
                 if (i != j) {
-                    StoredBitSet inc = substractBitSet(inc_i, A_j);
+                    IStateBitSet inc = substractBitSet(inc_i, A_j);
                     for (int k = inc.nextSetBit(0); k >= 0; k = inc.nextSetBit(k + 1)) {
                         if (j < k && !incomp.getSuccessors(j).get(k)) {
                             if (affiche)
@@ -81,7 +82,7 @@ public class IncompGraphDeduction extends AbstractDeduction {
         for (int u = 0; u < nbVertices; u++) {
             BitSet A_u = precs.getAncestors(u);
             A_u.set(u,true);
-            StoredBitSet inc_u = incomp.getSuccessors(u);
+            IStateBitSet inc_u = incomp.getSuccessors(u);
             if (inc_u.cardinality() > 0) {
                 for (int u_a = A_u.nextSetBit(0); u_a >= 0; u_a = A_u.nextSetBit(u_a + 1)) {
                     for (int v = inc_u.nextSetBit(0); v >= 0; v = inc_u.nextSetBit(v + 1)) {
@@ -143,8 +144,8 @@ public class IncompGraphDeduction extends AbstractDeduction {
      * @param b     a backtrackable bitset
      * @return   a backtrackable bitset which is the difference between a and b
      */
-    private StoredBitSet substractBitSet(StoredBitSet a, StoredBitSet b) {
-        StoredBitSet res = (StoredBitSet) a.clone();
+    private IStateBitSet substractBitSet(IStateBitSet a, IStateBitSet b) {
+        IStateBitSet res = a.copy();
         res.and(b);
         res.xor(a);
         return res;

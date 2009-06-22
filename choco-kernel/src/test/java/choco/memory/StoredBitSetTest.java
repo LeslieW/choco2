@@ -23,8 +23,8 @@
 package choco.memory;
 
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
-import choco.kernel.memory.trailing.StoredBitSet;
 import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -41,8 +41,8 @@ import java.util.logging.Logger;
 public class StoredBitSetTest {
 	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
   private EnvironmentTrailing env;
-  private StoredBitSet bSetA;
-  private StoredBitSet bSetB;
+  private IStateBitSet bSetA;
+  private IStateBitSet bSetB;
 
   /**
    * Makes the representedBy fiels public via an accessor for currentElement purpose.
@@ -62,8 +62,8 @@ public class StoredBitSetTest {
     LOGGER.fine("StoredBitSetTest Testing...");
 
     env = new EnvironmentTrailing();
-    bSetA = new StoredBitSet(env, 5);
-    bSetB = new StoredBitSet(env, 33);
+    bSetA = env.makeBitSet(5);
+    bSetB = env.makeBitSet(33);
   }
 
     @After

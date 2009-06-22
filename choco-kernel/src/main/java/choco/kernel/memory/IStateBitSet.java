@@ -24,6 +24,8 @@ package choco.kernel.memory;
 
 import choco.kernel.common.util.IntIterator;
 
+import java.util.BitSet;
+
 /**
  * Created by IntelliJ IDEA.
  * User: julien
@@ -101,6 +103,10 @@ public interface IStateBitSet {
     int prevSetBit(int fromIndex);
 
     int capacity();
+
+    IStateBitSet copy();
+
+    BitSet copyToBitSet();
 
 
     void or (IStateBitSet other);

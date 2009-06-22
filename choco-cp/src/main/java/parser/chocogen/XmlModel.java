@@ -26,7 +26,6 @@ package parser.chocogen;
 import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.integer.extension.ValidityChecker;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
-import choco.cp.solver.search.SearchLoopWithNogoodFromRestart;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.MinDomain;
@@ -383,8 +382,8 @@ public class XmlModel {
         //LOGGER.info("" + isFeasible);
         //Output in a format for internal competition
         if (isFeasible == Boolean.TRUE
-                && (!checkEverythingIsInstantiated(parser, s))//) {
-             || s.checkSolution(false)!=Boolean.TRUE) {
+                && (!checkEverythingIsInstantiated(parser, s))) {
+            // || s.checkSolution(false)!=Boolean.TRUE)) {
             isFeasible = null;
         }
         values = new String[parser.getVariables().length + 1];

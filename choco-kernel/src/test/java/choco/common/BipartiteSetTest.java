@@ -23,7 +23,6 @@
 package choco.common;
 
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.BipartiteSet;
 import org.junit.After;
 import static org.junit.Assert.*;

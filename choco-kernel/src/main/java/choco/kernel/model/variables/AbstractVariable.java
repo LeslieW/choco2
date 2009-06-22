@@ -106,7 +106,7 @@ public abstract class AbstractVariable implements Variable, Comparable{
      * @return the indice of the objet
      */
     @Override
-    public long getIndice() {
+    public long getIndex() {
         return indice;
     }
 

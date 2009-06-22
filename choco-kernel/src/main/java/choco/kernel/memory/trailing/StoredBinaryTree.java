@@ -48,6 +48,7 @@ package choco.kernel.memory.trailing;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBinaryTree;
+import choco.kernel.memory.trailing.trail.StoredBinaryTreeTrail;
 
 import java.io.BufferedWriter;
 import java.io.File;

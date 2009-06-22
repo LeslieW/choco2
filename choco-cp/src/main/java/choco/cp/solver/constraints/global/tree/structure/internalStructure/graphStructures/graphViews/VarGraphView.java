@@ -25,7 +25,7 @@ package choco.cp.solver.constraints.global.tree.structure.internalStructure.grap
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.reducedGraph.ReducedGraph;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
-import choco.kernel.memory.trailing.StoredBitSet;
+import choco.kernel.memory.IStateBitSet;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -91,17 +91,17 @@ public class VarGraphView {
     /**
      * backtrackable bitset matrix representing the graph to partition
      */
-    protected StoredBitSet[] globalGraph;
+    protected IStateBitSet[] globalGraph;
 
     /**
      * backtrackable bitset matrix representing the required graph
      */
-    protected StoredBitSet[] sureGraph;
+    protected IStateBitSet[] sureGraph;
 
     /**
      * backtrackable bitset matrix representing the potential graph
      */
-    protected StoredBitSet[] maybeGraph;
+    protected IStateBitSet[] maybeGraph;
 
     /**
      * reduced graph structure associated with global
@@ -111,7 +111,7 @@ public class VarGraphView {
     /**
      * backtrackable bitset that store the potential roots involved in global
      */
-    protected StoredBitSet potentialRoots;
+    protected IStateBitSet potentialRoots;
 
     /**
      * Constructor of the graph view
@@ -123,13 +123,13 @@ public class VarGraphView {
         this.solver = solver;
         this.s = vars;
         this.nbNodes = vars.length;
-        this.globalGraph = new StoredBitSet[nbNodes];
-        this.sureGraph = new StoredBitSet[nbNodes];
-        this.maybeGraph = new StoredBitSet[nbNodes];
+        this.globalGraph = new IStateBitSet[nbNodes];
+        this.sureGraph = new IStateBitSet[nbNodes];
+        this.maybeGraph = new IStateBitSet[nbNodes];
         for (int i = 0; i < nbNodes; i++) {
-            globalGraph[i] = new StoredBitSet(solver.getEnvironment(), nbNodes);
-            sureGraph[i] = new StoredBitSet(solver.getEnvironment(), nbNodes);
-            maybeGraph[i] = new StoredBitSet(solver.getEnvironment(), nbNodes);
+            globalGraph[i] = solver.getEnvironment().makeBitSet(nbNodes);
+            sureGraph[i] = solver.getEnvironment().makeBitSet(nbNodes);
+            maybeGraph[i] = solver.getEnvironment().makeBitSet(nbNodes);
         }
 
         initGraphs();
@@ -148,7 +148,7 @@ public class VarGraphView {
         // initialize the reduced graph
         this.reducedGraph = new ReducedGraph(solver, global);
         // compute potential roots
-        this.potentialRoots = new StoredBitSet(solver.getEnvironment(), nbNodes);
+        this.potentialRoots = solver.getEnvironment().makeBitSet(nbNodes);
         for (int i = 0; i < nbNodes; i++) {
             if (globalGraph[i].get(i)) potentialRoots.set(i, true);
         }
@@ -309,7 +309,7 @@ public class VarGraphView {
         return maybe;
     }
 
-    public StoredBitSet getPotentialRoots() {
+    public IStateBitSet getPotentialRoots() {
         return potentialRoots;
     }
 

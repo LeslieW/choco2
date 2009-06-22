@@ -23,6 +23,7 @@
 package choco.kernel.memory.trailing;
 
 import choco.kernel.memory.IStateDouble;
+import choco.kernel.memory.trailing.trail.StoredDoubleTrail;
 
 
 /**
@@ -41,7 +42,7 @@ public final class StoredDouble extends AbstractStoredObject implements IStateDo
 
 
 	/**
-	 * The current {@link StoredIntTrail}.
+	 * The current {@link choco.kernel.memory.trailing.trail.StoredIntTrail}.
 	 */
 	private final StoredDoubleTrail trail;
 
@@ -89,7 +90,7 @@ public final class StoredDouble extends AbstractStoredObject implements IStateDo
 	 * @param wstamp the stamp of the world in which the update is performed
 	 */
 
-	void _set(final double y, final int wstamp) {
+    public void _set(final double y, final int wstamp) {
 		currentValue = y;
 		worldStamp = wstamp;
 	}

@@ -24,6 +24,7 @@ package choco.kernel.memory;
 
 import choco.kernel.common.logging.ChocoLogging;
 
+import java.util.BitSet;
 import java.util.logging.Logger;
 
 /**
@@ -32,4 +33,10 @@ import java.util.logging.Logger;
 public abstract class AbstractStateBitSet implements IStateBitSet {
 	
     protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
+
+    public BitSet copyToBitSet() {
+        BitSet view = new BitSet(this.size());
+        for (int i = this.nextSetBit(0); i >= 0; i = this.nextSetBit(i + 1)) view.set(i,true);
+        return view;
+    }
 }

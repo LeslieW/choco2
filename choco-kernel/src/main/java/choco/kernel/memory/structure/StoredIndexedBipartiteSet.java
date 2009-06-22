@@ -20,12 +20,13 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.memory.trailing;
+package choco.kernel.memory.structure;
 
 import choco.kernel.common.util.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.IStateIntVector;
+import choco.kernel.memory.trailing.IndexedObject;
 import choco.kernel.solver.SolverException;
 
 import java.util.ArrayList;
@@ -113,7 +114,7 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
         }
     }
 
-    protected void buildList(IEnvironment environment, int[] values) {
+    public void buildList(IEnvironment environment, int[] values) {
         this.list = values;
         int maxElt = 0;
         for (int i = 0; i < values.length; i++) {
@@ -144,7 +145,7 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
      * Increase the number of value watched.
      * BEWARE: be sure your are correctly calling this method.
      * It deletes everything already declared
-     * @param gap
+     * @param gap the gap the reach the expected size
      */
     public void increaseSize(int gap){
         int l = list.length;

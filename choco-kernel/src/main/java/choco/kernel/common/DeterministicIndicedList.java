@@ -84,10 +84,10 @@ public class DeterministicIndicedList<O extends IIndex>{
      * @param object
      */
     public void add(O object){
-        if(!indices.containsKey(object.getIndice())){
+        if(!indices.containsKey(object.getIndex())){
             ensureCapacity();
             objects[last] = object;
-            indices.put(object.getIndice(), last++);
+            indices.put(object.getIndex(), last++);
         }
     }
 
@@ -110,16 +110,18 @@ public class DeterministicIndicedList<O extends IIndex>{
      * We just swap the last object and the removed object 
      * @param object to remove
      */
-    public void remove(O object){
-        if(indices.containsKey(object.getIndice())){
-            int ind = indices.get(object.getIndice());
-            indices.remove(object.getIndice());
+    public int remove(O object){
+        if(indices.containsKey(object.getIndex())){
+            int ind = indices.get(object.getIndex());
+            indices.remove(object.getIndex());
             if(last > 0 && ind < last-1){
                 objects[ind] = objects[last-1];
-                indices.adjustValue(objects[ind].getIndice(), -last+ind+1);
+                indices.adjustValue(objects[ind].getIndex(), -last+ind+1);
             }
             objects[--last] = null;
+            return ind;
         }
+        return -1;
     }
 
     /**
@@ -128,7 +130,7 @@ public class DeterministicIndicedList<O extends IIndex>{
      * @return
      */
     public boolean contains(O object){
-        return indices.containsKey(object.getIndice());
+        return indices.containsKey(object.getIndex());
     }
 
     /**
@@ -154,7 +156,16 @@ public class DeterministicIndicedList<O extends IIndex>{
      * @return its position
      */
     public int get(O object){
-        return indices.get(object.getIndice());
+        return indices.get(object.getIndex());
+    }
+
+
+    public O getLast(){
+        if(last>0){
+            return objects[last-1];
+        }else{
+            return null;
+        }
     }
 
     /**

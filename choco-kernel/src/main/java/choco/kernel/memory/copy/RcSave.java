@@ -48,12 +48,11 @@ public class RcSave implements RecomputableElement {
     private Map<Integer,int[][]> saveIntVector;
     private Map<Integer,boolean[]> saveBool;
     private Map<Integer,BitSet[]> saveBitSet;
-//
-//    private Vector<int []> saveInt;
-//    private Vector<Object[][]> saveVector;
-//    private Vector<int[][]> saveIntVector;
-//    private Vector<boolean[]> saveBool;
-//    private Vector<BitSet[]> saveBitSet;
+    private Map<Integer,long []> saveLong;
+    private Map<Integer,double []> saveDouble;
+    private Map<Integer,Object []> saveObject;
+
+
 
 
 
@@ -69,14 +68,9 @@ public class RcSave implements RecomputableElement {
         saveIntVector = new HashMap<Integer,int[][]>();
         saveBool = new HashMap<Integer,boolean[]>();
         saveBitSet = new HashMap<Integer,BitSet[]>();
-
-//
-//        saveInt = new Vector<int []>();
-//        saveVector = new Vector<Object[][]>();
-//        saveIntVector = new Vector<int[][]>();
-//        saveBool = new Vector<boolean[]>();
-//        saveBitSet = new Vector<BitSet[]>();
-
+        saveLong = new HashMap<Integer, long[]>();
+        saveDouble = new HashMap<Integer, double[]>();
+        saveObject = new HashMap<Integer, Object[]>();
     }
 
 
@@ -90,7 +84,6 @@ public class RcSave implements RecomputableElement {
             tmpbool[i] = ((RcBool) currentElement[BOOL][i]).deepCopy();
         }
         saveBool.put(worldIndex,tmpbool);
-//        saveBool.add(worldIndex,tmpbool);
 
         int [] tmpint = new int [currentElement[INT].length];
         i = 0;
@@ -98,7 +91,6 @@ public class RcSave implements RecomputableElement {
             tmpint[i] = ((RcInt) currentElement[INT][i]).deepCopy();
         }
         saveInt.put(worldIndex,tmpint);
-//        saveInt.add(worldIndex,tmpint);
 
         Object[][] tmpvec = new Object[currentElement[VECTOR].length][];
         i = 0;
@@ -109,7 +101,6 @@ public class RcSave implements RecomputableElement {
                 tmpvec[i] = ((RcVector) currentElement[VECTOR][i]).deepCopy();
         }
         saveVector.put(worldIndex,tmpvec);
-//        saveVector.add(worldIndex,tmpvec);
 
         int[][] tmpintvec = new int [currentElement[INTVECTOR].length][];
         i = 0;
@@ -120,7 +111,6 @@ public class RcSave implements RecomputableElement {
                 tmpintvec[i] = ((RcIntVector) currentElement[INTVECTOR][i]).deepCopy();
         }
         saveIntVector.put(worldIndex,tmpintvec);
-//        saveIntVector.add(worldIndex,tmpintvec);
 
         BitSet[] tmpbitset = new BitSet[currentElement[BITSET].length];
         for (i = 0 ;i < currentElement[BITSET].length ; i++) {
@@ -130,7 +120,29 @@ public class RcSave implements RecomputableElement {
                 tmpbitset[i] = (java.util.BitSet) ((RcBitSet) currentElement[BITSET][i]).getBitSet().clone();
         }
         saveBitSet.put(worldIndex,tmpbitset);
-//        saveBitSet.add(worldIndex,tmpbitset);
+
+        long [] tmplong = new long [currentElement[LONG].length];
+        i = 0;
+        for (i = 0; i < currentElement[LONG].length ; i++ ) {
+            tmplong[i] = ((RcLong) currentElement[LONG][i]).deepCopy();
+        }
+        saveLong.put(worldIndex,tmplong);
+
+        double[] tmpdouble = new double [currentElement[DOUBLE].length];
+        i = 0;
+        for (i = 0; i < currentElement[DOUBLE].length ; i++ ) {
+            tmpdouble[i] = ((RcDouble) currentElement[DOUBLE][i]).deepCopy();
+        }
+        saveDouble.put(worldIndex,tmpdouble);
+
+        Object[] tmpobject = new Object[currentElement[OBJECT].length];
+        for (i = 0 ;i < currentElement[OBJECT].length ; i++) {
+            if (worldIndex != 0 && lastSavedWorldIndex >= (currentElement[OBJECT][i]).getTimeStamp() )
+                tmpobject[i] = saveObject.get(lastSavedWorldIndex)[i];
+            else
+                tmpobject[i] = ((RcObject) currentElement[OBJECT][i]).deepCopy();
+        }
+        saveObject.put(worldIndex,tmpobject);
 
 
         lastSavedWorldIndex = worldIndex;
@@ -144,6 +156,9 @@ public class RcSave implements RecomputableElement {
         Object[][] tmpvec = saveVector.get(worldIndex);
         int[][] tmpintvec = saveIntVector.get(worldIndex);
         java.util.BitSet[] tmpbitset = saveBitSet.get(worldIndex);
+        long[] tmplong = saveLong.get(worldIndex);
+        double[] tmpdouble = saveDouble.get(worldIndex);
+        Object[] tmpobject = saveObject.get(worldIndex);
         //saveVector.remove(worldIndex);
 
         for (int i = 0 ; i < tmpbool.length ; i++)
@@ -156,6 +171,12 @@ public class RcSave implements RecomputableElement {
             ((RcIntVector) currentElement[INTVECTOR][i])._set(tmpintvec[i]);
         for (int i = 0 ; i < tmpbitset.length ; i++)
             ((RcBitSet) currentElement[BITSET][i])._set(tmpbitset[i]);
+        for (int i = 0 ; i < tmplong.length ; i++)
+            ((RcLong) currentElement[LONG][i]).set(tmplong[i]);
+        for (int i = 0 ; i < tmpdouble.length ; i++)
+            ((RcDouble) currentElement[DOUBLE][i]).set(tmpdouble[i]);
+        for (int i = 0 ; i < tmpobject.length ; i++)
+            ((RcObject) currentElement[OBJECT][i]).set(tmpobject[i]);
 
         if (worldIndex == 0)
             clearMaps();
@@ -172,17 +193,11 @@ public class RcSave implements RecomputableElement {
         saveIntVector.remove(worldIndex);
         saveBool.remove(worldIndex);
         saveBitSet.remove(worldIndex);
+        saveLong.remove(worldIndex);
+        saveDouble.remove(worldIndex);
+        saveObject.remove(worldIndex);
     }
 
-/*    public void removeLast() {
-        int last = saveInt.size() -1 ;
-        saveInt.removeElementAt(last);
-        saveVector.removeElementAt(last);
-        saveIntVector.removeElementAt(last);
-        saveBool.removeElementAt(last);
-        saveBitSet.removeElementAt(last);
-
-    } */
 
     private void clearMaps() {
         saveInt.clear();
@@ -190,6 +205,9 @@ public class RcSave implements RecomputableElement {
         saveIntVector.clear();
         saveBool.clear();
         saveBitSet.clear();
+        saveLong.clear();
+        saveDouble.clear();
+        saveObject.clear();
     }
 
 

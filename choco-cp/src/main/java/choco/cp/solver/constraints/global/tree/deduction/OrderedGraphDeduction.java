@@ -23,7 +23,7 @@
 package choco.cp.solver.constraints.global.tree.deduction;
 
 
-import choco.kernel.memory.trailing.StoredBitSet;
+import choco.kernel.memory.IStateBitSet;
 
 import java.util.BitSet;
 import java.util.logging.Level;
@@ -71,12 +71,12 @@ public class OrderedGraphDeduction extends AbstractDeduction {
      */
     private void addPrecsFromGraph() {
         for (int i = 0; i < nbVertices; i++) {
-            StoredBitSet prec = precs.getSuccessors(i);
+            IStateBitSet prec = precs.getSuccessors(i);
             // node i is not yet fixed and cannot be instantiated to a loop on itself
             if (!inputGraph.isFixedSucc(i) && !inputGraph.getPotentialRoots().get(i)) {
                 BitSet common = new BitSet(nbVertices);
                 common.set(0, nbVertices, true);
-                StoredBitSet maybeSucc = inputGraph.getMaybe().getSuccessors(i);
+                IStateBitSet maybeSucc = inputGraph.getMaybe().getSuccessors(i);
                 for (int j = maybeSucc.nextSetBit(0); j >= 0; j = maybeSucc.nextSetBit(j + 1)) {
                     if (j != i) common.and(precs.getDescendants(j));
                 }
@@ -115,7 +115,7 @@ public class OrderedGraphDeduction extends AbstractDeduction {
      */
     private void updatePrecs() {
         for (int i = 0; i < nbVertices; i++) {
-            StoredBitSet mandSucc = precs.getSuccessors(i);
+            IStateBitSet mandSucc = precs.getSuccessors(i);
             if (mandSucc.cardinality() > 1) {
                 // the descendants of node i restricted to the required arcs: the last node reached is recorded
                 BitSet iToLfi = new BitSet(nbVertices);
@@ -204,7 +204,7 @@ public class OrderedGraphDeduction extends AbstractDeduction {
                     BitSet A_v = precs.getAncestors(v);
                     A_v.set(v, false);
                     for (int u_a = A_u.nextSetBit(0); u_a >= 0; u_a = A_u.nextSetBit(u_a + 1)) {
-                        StoredBitSet inc_ua = incomp.getSuccessors(u_a);
+                        IStateBitSet inc_ua = incomp.getSuccessors(u_a);
                         for (int w = inc_ua.nextSetBit(0); w >= 0; w = inc_ua.nextSetBit(w + 1)) {
                             if (!precs.getSuccessors(w).get(v)) {
                                 BitSet A_w = precs.getAncestors(w);
@@ -288,8 +288,8 @@ public class OrderedGraphDeduction extends AbstractDeduction {
      */
     private void updatePrecsWithCondPrecs() {
         for (int src = 0; src < nbVertices; src++) {
-            StoredBitSet prec = precs.getSuccessors(src);
-            StoredBitSet pickup = condPrecs.getSuccessors(src);
+            IStateBitSet prec = precs.getSuccessors(src);
+            IStateBitSet pickup = condPrecs.getSuccessors(src);
             // if (src,k) belongs to the precedences then, (src,dest) is added in the precedence constraints
             if (prec.cardinality() > 0) {
                 for (int dest = pickup.nextSetBit(0); dest >= 0; dest = pickup.nextSetBit(dest + 1)) {

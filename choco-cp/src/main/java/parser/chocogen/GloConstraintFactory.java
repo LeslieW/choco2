@@ -22,18 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.chocogen;
 
+import static choco.Choco.*;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
-import static choco.Choco.*;
-import static choco.Choco.disjunctive;
+import gnu.trove.TIntObjectHashMap;
 import parser.absconparseur.components.*;
 import parser.absconparseur.tools.InstanceParser;
-import gnu.trove.TIntIntHashMap;
-import gnu.trove.TIntObjectHashMap;
-
-import java.util.Arrays;
 
 /**
  * The factory for global constraints
@@ -94,13 +90,13 @@ public class GloConstraintFactory extends ObjectFactory {
             }
             if (holes || (maxdszise <= 30 &&
                     (vars.length <= 10 || (nbnoninstvar < vars.length && nbnoninstvar < 20)))) {
-                return globalCardinality("cp:ac", vars, values[0], values[values.length-1], low, up);
+                return globalCardinality("cp:ac", vars, low, up);
             }else{
-                return globalCardinality("cp:bc", vars, values[0], values[values.length-1], low, up);
+                return globalCardinality("cp:bc", vars, low, up);
             }
         }
         else
-			return globalCardinality(vars, values[0], values[values.length-1], noccurrences);
+			return globalCardinality(vars, noccurrences);
 	}
 
 	public Constraint[] makeGlobalConstraint(PGlobalConstraint pgc) {

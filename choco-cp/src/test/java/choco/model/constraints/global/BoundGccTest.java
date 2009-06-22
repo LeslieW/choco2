@@ -56,8 +56,8 @@ public class BoundGccTest {
     IntegerVariable v2 = makeIntVar("v2", 1, 1);
     IntegerVariable v3 = makeIntVar("v3", 2, 2);
     IntegerVariable v4 = makeIntVar("v4", 2, 2);
-    Constraint c1 = globalCardinality(new IntegerVariable[]{v1, v2, v3, v4}, 1, 2, new int[]{1, 1}, new int[]{2, 2});
-    Constraint c2 = globalCardinality(new IntegerVariable[]{v1, v2, v3, v4}, 1, 2, new int[]{1, 1}, new int[]{1, 3});
+    Constraint c1 = globalCardinality(new IntegerVariable[]{v1, v2, v3, v4}, new int[]{1, 1}, new int[]{2, 2});
+    Constraint c2 = globalCardinality(new IntegerVariable[]{v1, v2, v3, v4}, new int[]{1, 1}, new int[]{1, 3});
     LOGGER.info(c1.pretty());
     LOGGER.info(c2.pretty());
     m.addConstraints("cp:bc", c1, c2);
@@ -77,8 +77,8 @@ public class BoundGccTest {
     IntegerVariable v4 = makeIntVar("v4", 2, 2);
     IntegerVariable x = makeIntVar("x", 2, 2);
     IntegerVariable y = makeIntVar("y", 1, 1);
-    Constraint c1 = globalCardinality(new IntegerVariable[]{v1, v2, v3}, 1, 2, new IntegerVariable[]{x, y});
-    Constraint c2 = globalCardinality(new IntegerVariable[]{v1, v3, v4}, 1, 2, new IntegerVariable[]{x, y});
+    Constraint c1 = globalCardinality(new IntegerVariable[]{v1, v2, v3}, new IntegerVariable[]{x, y});
+    Constraint c2 = globalCardinality(new IntegerVariable[]{v1, v3, v4}, new IntegerVariable[]{x, y});
     LOGGER.info(c1.pretty());
     LOGGER.info(c2.pretty());
         m.addConstraints(c1, c2);
@@ -111,7 +111,7 @@ public class BoundGccTest {
         IntegerVariable[] vars = makeIntVarArray("vars", nbVariable, 1, nbValue);
         IntegerVariable[] card = makeIntVarArray("card", nbValue, 0, nbVariable);
 
-        m.addConstraint(Choco.globalCardinality(vars, 1, nbValue, card));
+        m.addConstraint(Choco.globalCardinality(vars, card));
         s.read(m);
         s.solveAll();
     }
@@ -126,7 +126,7 @@ public class BoundGccTest {
         IntegerVariable[] vars = makeIntVarArray("vars", 6, 0, 3);
         IntegerVariable[] card = makeIntVarArray("card", 4, 0, 6);
 
-        m.addConstraint(Choco.globalCardinality(vars, 0, 3, card));
+        m.addConstraint(Choco.globalCardinality(vars, card));
 
         m.addConstraint(eq(vars[0], 0));
         m.addConstraint(eq(vars[1], 1));
@@ -148,7 +148,7 @@ public class BoundGccTest {
         IntegerVariable[] vars = makeIntVarArray("vars", 2, 0, 1);
         IntegerVariable[] card = makeIntVarArray("card", 2, 0, 2);
 
-        m.addConstraint(Choco.globalCardinality(vars, 0, 1, card));
+        m.addConstraint(Choco.globalCardinality(vars, card));
 
         m.addConstraint(eq(vars[0], 0));
         m.addConstraint(eq(vars[1], 1));

@@ -23,13 +23,14 @@
 package choco.kernel.common.util;
 
 import choco.IPretty;
+import choco.kernel.common.IIndex;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
-
 import gnu.trove.TIntArrayList;
+import gnu.trove.TLongHashSet;
 
-import java.lang.reflect.Array;
+import static java.lang.reflect.Array.newInstance;
 import java.util.*;
 
 
@@ -138,7 +139,7 @@ public final class ChocoUtil {
 
 	@SuppressWarnings("unchecked")
 	public static <E> Iterator<E> iterator(final List<E>... lists) {
-		Iterator<E>[] iters= (Iterator<E>[]) Array.newInstance(Iterator.class, lists.length);
+		Iterator<E>[] iters= (Iterator<E>[]) newInstance(Iterator.class, lists.length);
 		for (int i = 0; i < lists.length; i++) {
 			iters[i]= getImmutableIterator(lists[i]);
 		}
@@ -157,7 +158,7 @@ public final class ChocoUtil {
 
 	@SuppressWarnings("unchecked")
 	public static <E> Iterator<E> append(final E[]... arrays) {
-		Iterator<E>[] iters= (Iterator<E>[]) Array.newInstance(Iterator.class, arrays.length);
+		Iterator<E>[] iters= (Iterator<E>[]) newInstance(Iterator.class, arrays.length);
 		for (int i = 0; i < arrays.length; i++) {
 			iters[i]=iterator(arrays[i]);
 		}
@@ -188,7 +189,7 @@ public final class ChocoUtil {
 	public static <T> T[] getColumn(final T[][] array, final int column) {
 		if(array != null && array.length> 0 
 				&&  column>=0 && array[0].length > column) {
-			T[] res = (T[]) Array.newInstance(array[0][column].getClass(), array.length);
+			T[] res = (T[]) newInstance(array[0][column].getClass(), array.length);
 			for (int i = 0; i < array.length; i++) {
 				res[i] = array[i][column];
 			}
@@ -286,25 +287,26 @@ public final class ChocoUtil {
 		return values.toNativeArray();
 	}
 
-	public static <V> V[] getNonRedundantObjects(Class classe, V[] all) {
-		V[] a = all.clone();
-		Arrays.sort(a);
-		//Remove duplicated one
-		V[] c = (V[]) Array.newInstance(classe, a.length);
-		int ind = 0;
-		V previous = null;
-		for (int i = 0; i < a.length; i++) {
-			if (!a[i].equals(previous)) {
-				previous = a[i];
-				c[ind++] = previous;
-			}
-		}
-		if(ind != a.length){
-			a = (V[]) Array.newInstance(classe, ind);
-			System.arraycopy(c, 0, a, 0, ind);
-		}
-		c = null;
-		return a;
+
+    private static TLongHashSet hs = new TLongHashSet();
+    private static ArrayList<Object> c = new ArrayList<Object>();
+
+    @SuppressWarnings({"unchecked"})
+	public static <V extends IIndex> V[] getNonRedundantObjects(Class classe, V[] all) {
+        hs.clear();
+        c.clear();
+        for(V v : all){
+            if(!hs.contains(v.getIndex())){
+                c.add(v);
+                hs.add(v.getIndex());
+            }
+        }
+        if(c.size() != all.length){
+            V[] a = (V[]) newInstance(classe, c.size());
+            c.toArray(a);
+            return a;
+        }
+        return all;
 	}
 
 	//****************************************************************//
@@ -358,7 +360,7 @@ public final class ChocoUtil {
 		final LinkedList<T> tmpl = new LinkedList<T>(set);
 		if(tmpl.isEmpty()) {return null;}
 		else {
-			T[] tmpa = (T[]) Array.newInstance(tmpl.getFirst().getClass(),tmpl.size());
+			T[] tmpa = (T[]) newInstance(tmpl.getFirst().getClass(),tmpl.size());
 			tmpl.toArray(tmpa);
 			Arrays.sort(tmpa);
 			return tmpa;

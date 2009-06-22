@@ -24,8 +24,8 @@ package choco.cp.solver.constraints.global.tree.filtering.costFiltering;
 
 import choco.cp.solver.constraints.global.tree.filtering.AbstractPropagator;
 import choco.kernel.common.util.IntIterator;
+import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.trailing.StoredBitSet;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -70,7 +70,7 @@ public class Cost extends AbstractPropagator {
      * @throws ContradictionException
      */
     public void filter() throws ContradictionException {
-        StoredBitSet[] numFromVertGt = struct.getInputGraph().getSure().getNumFromVertCC();
+        IStateBitSet[] numFromVertGt = struct.getInputGraph().getSure().getNumFromVertCC();
         IStateInt[] deltaCosts = costStruct.getDeltaCost();
         /*
         * (i,j) be a maybe arc, cc_i the component of i, if cost(i,j) + total - delta(cc_i) > objective,

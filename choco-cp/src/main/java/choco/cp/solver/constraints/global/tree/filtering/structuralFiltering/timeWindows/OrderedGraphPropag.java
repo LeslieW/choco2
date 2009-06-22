@@ -27,8 +27,8 @@ import choco.cp.solver.constraints.global.tree.filtering.RemovalsAdvisor;
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.Node;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.PrecsGraphView;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.trailing.StoredBitSet;
 import choco.kernel.solver.ContradictionException;
 
 import java.util.BitSet;
@@ -63,12 +63,12 @@ public class OrderedGraphPropag {
     /**
      * the set of source nodes in the precedence graph
      */
-    protected StoredBitSet src;
+    protected IStateBitSet src;
 
     /**
      * the set of sink nodes in the precedence graph
      */
-    protected StoredBitSet sink;
+    protected IStateBitSet sink;
 
     /**
      * travel time matrix

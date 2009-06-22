@@ -22,6 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory;
 
+import choco.kernel.memory.structure.*;
+import choco.kernel.memory.trailing.IndexedObject;
+
+import java.util.ArrayList;
+import java.util.Collection;
+
 /**
  * Super class of all environments !
  */
@@ -77,4 +83,71 @@ public abstract class AbstractEnvironment implements IEnvironment {
     public final int getNextOffset() {
         return nextOffset;
     }
+
+    @SuppressWarnings({"unchecked"})
+    public <E> StoredBipartiteList makeStoredBipartiteList(Collection<E> coll){
+        return new StoredBipartiteList(this, coll);
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public <E> StoredBipartiteList makeStoredBipartiteList2(E[] elm){
+        return new StoredBipartiteList(this, elm);
+    }
+
+    public IStateIntVector makeBipartiteIntList(int[] entries) {
+		return new StoredIntBipartiteList(this,entries);
+	}
+
+    public IStateIntVector makeBipartiteSet(int[] entries) {
+		return new StoredIndexedBipartiteSet(this,entries);
+	}
+
+	public IStateIntVector makeBipartiteSet(int nbEntries) {
+		return new StoredIndexedBipartiteSet(this,nbEntries);
+	}
+
+	public IStateIntVector makeBipartiteSet(IndexedObject[] entries) {
+		return new StoredIndexedBipartiteSet(this,entries);
+	}
+
+	public IStateIntVector makeBipartiteSet(ArrayList<IndexedObject> entries) {
+		return new StoredIndexedBipartiteSet(this,entries);
+	}
+
+    public <T> PartiallyStoredVector<T> makePartiallyStoredVector() {
+        return new PartiallyStoredVector<T>(this);
+    }
+
+    public PartiallyStoredIntVector makePartiallyStoredIntVector() {
+        return new PartiallyStoredIntVector(this);
+    }
+
+    public PartiallyStoredBitSet makePartiallyStoredBitSet(){
+        return new PartiallyStoredBitSet(this);
+    }
+
+    public TwoStatesIntVector makeTwoStateIntVector(int initialSize, int initialValue){
+        return new TwoStatesIntVector(this, initialSize, initialValue);
+    }
+
+    public TwoStatesPartiallyStoredIntVector makeTwoStatesPartiallyStoredIntVector(){
+        return new TwoStatesPartiallyStoredIntVector(this);
+    }
+
+    public IntInterval makeIntInterval(int inf, int sup){
+        return new IntInterval(this, inf, sup);
+    }
+
+   /**
+	 * Increase the size of the shared bi partite set,
+	 * it HAS to be called before the end of the environment creation
+	 * BEWARE: be sure you are correctly calling this method
+	 *
+	 * @param gap the gap the reach the expected size
+	 */
+	@Override
+	public void increaseSizeOfSharedBipartiteSet(int gap) {
+		((StoredIndexedBipartiteSet)currentBitSet).increaseSize(gap);
+	}
+
 }

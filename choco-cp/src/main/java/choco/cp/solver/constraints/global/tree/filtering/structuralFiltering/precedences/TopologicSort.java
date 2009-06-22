@@ -23,7 +23,7 @@
 package choco.cp.solver.constraints.global.tree.filtering.structuralFiltering.precedences;
 
 
-import choco.kernel.memory.trailing.StoredBitSet;
+import choco.kernel.memory.IStateBitSet;
 
 import java.util.BitSet;
 
@@ -34,7 +34,7 @@ public class TopologicSort {
     protected int[] numTable;
     protected BitSet sorted;
 
-    public TopologicSort(StoredBitSet[] rgs) {
+    public TopologicSort(IStateBitSet[] rgs) {
         this.RGS = new BitSet[rgs.length];
         for (int i = 0; i < rgs.length; i++) {
             RGS[i] = rgs[i].copyToBitSet();

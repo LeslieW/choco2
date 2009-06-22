@@ -21,11 +21,11 @@
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 
-package choco.kernel.memory.trailing;
-
-import java.util.logging.Logger;
+package choco.kernel.memory.trailing.trail;
 
 import choco.kernel.common.logging.ChocoLogging;
+
+import java.util.logging.Logger;
 
 /**
  * An interface for classes implementing trails of modifications to objects.

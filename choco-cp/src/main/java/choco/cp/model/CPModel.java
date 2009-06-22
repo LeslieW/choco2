@@ -45,9 +45,9 @@ import choco.kernel.model.variables.set.SetExpressionVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.integer.IntVar;
+import gnu.trove.TIntHashSet;
+import gnu.trove.TIntIterator;
 import gnu.trove.TLongHashSet;
-import gnu.trove.TLongIntHashMap;
-import gnu.trove.TLongIntIterator;
 import gnu.trove.TLongObjectIterator;
 
 import java.io.IOException;
@@ -107,7 +107,7 @@ public class CPModel implements Model {
     /**
      * Map that gives for type of contraints, a list of contraints of that type
      */
-    private EnumMap<ConstraintType, TLongIntHashMap> constraintsByType;
+    private EnumMap<ConstraintType, TIntHashSet> constraintsByType;
 
     /**
      * The variable modelling the objective function
@@ -158,7 +158,7 @@ public class CPModel implements Model {
         storedMultipleVariables = new DeterministicIndicedList<MultipleVariables>(MultipleVariables.class, nbMultVars);
         constraints = new DeterministicIndicedList<Constraint>(Constraint.class, nbCstrs);
 
-        constraintsByType = new EnumMap<ConstraintType, TLongIntHashMap>(ConstraintType.class);
+        constraintsByType = new EnumMap<ConstraintType, TIntHashSet>(ConstraintType.class);
         properties = new Properties();
         try {
             InputStream is = getClass().getResourceAsStream( "/application.properties" );
@@ -381,10 +381,10 @@ public class CPModel implements Model {
 
 
     public Iterator<Constraint> getConstraintByType(ConstraintType t) {
-        final TLongIntHashMap hs = constraintsByType.get(t);
+        final TIntHashSet hs = constraintsByType.get(t);
         if (hs != null) {
             return new Iterator<Constraint>(){
-                TLongIntIterator it = hs.iterator();
+                TIntIterator it = hs.iterator();
                 /**
                  * Returns <tt>true</tt> if the iteration has more elements. (In other
                  * words, returns <tt>true</tt> if <tt>next</tt> would return an element
@@ -406,8 +406,7 @@ public class CPModel implements Model {
                  */
                 @Override
                 public Constraint next() {
-                    it.advance();
-                    return constraints.get(it.value());
+                    return constraints.get(it.next());
                 }
 
                 /**
@@ -435,7 +434,7 @@ public class CPModel implements Model {
     }
 
     public int getNbConstraintByType(ConstraintType t) {
-        TLongIntHashMap hs = constraintsByType.get(t);
+        TIntHashSet hs = constraintsByType.get(t);
         if (hs != null) {
 			return hs.size();
 		} else {
@@ -724,8 +723,15 @@ public class CPModel implements Model {
         if(ob instanceof Constraint){
             c = (Constraint)ob;
             conQueue.add(c);
-            constraints.remove(c);
-
+            Constraint clast = constraints.getLast();
+            int id = constraints.remove(c);
+            TIntHashSet hs = constraintsByType.get(c.getConstraintType());
+            hs.remove(id);
+            if(id!=-1 && clast!=null && c.getIndex()!= clast.getIndex()){
+                hs = constraintsByType.get(clast.getConstraintType());
+                hs.remove(constraints.size());
+                hs.add(id);
+            }
         }else if(ob instanceof Variable){
             v = (Variable)ob;
             varQueue.add(v);
@@ -740,24 +746,32 @@ public class CPModel implements Model {
                 while(itv.hasNext()){
                     v= itv.next();
                     v.removeConstraint(c);
-                    if(v.getNbConstraint(this) == 0 && !varSet.contains(v.getIndice())){
+                    if(v.getNbConstraint(this) == 0 && !varSet.contains(v.getIndex())){
                         remVariable(v);
                         varQueue.add(v);
                     }
                 }
-                conSet.add(c.getIndice());
+                conSet.add(c.getIndex());
             }
             if(!varQueue.isEmpty()){
                 v = varQueue.remove();
                 itc= v.getConstraintIterator(this);
                 while(itc.hasNext()){
                     c = itc.next();
-                    if(!conSet.contains(c.getIndice())){
+                    if(!conSet.contains(c.getIndex())){
                         conQueue.add(c);
-                        constraints.remove(c);
+                        Constraint clast = constraints.getLast();
+                        int id = constraints.remove(c);
+                        TIntHashSet hs = constraintsByType.get(c.getConstraintType());
+                        hs.remove(id);
+                        if(id!=-1 && clast!=null && c.getIndex()!= clast.getIndex()){
+                            hs = constraintsByType.get(clast.getConstraintType());
+                            hs.remove(constraints.size());
+                            hs.add(id);
+                        }
                     }
                 }
-                varSet.add(v.getIndice());
+                varSet.add(v.getIndex());
             }
         }
     }
@@ -810,12 +824,13 @@ public class CPModel implements Model {
      * @param c the constraint to add
      */
     private void updateConstraintByType(ConstraintType t, Constraint c) {
-        TLongIntHashMap hs = constraintsByType.get(t);
+        TIntHashSet hs = constraintsByType.get(t);
         if (hs == null) {
-            hs = new TLongIntHashMap();
+            hs = new TIntHashSet();
         }
-        if(!hs.containsKey(c.getIndice())){
-            hs.put(c.getIndice(), constraints.get(c));
+        int id = constraints.get(c);
+        if(!hs.contains(id)){
+            hs.add(id);
         }
         constraintsByType.put(t, hs);
     }

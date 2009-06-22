@@ -24,46 +24,45 @@ package choco.kernel.memory.copy;
 
 
 import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.IStateInt;
+import choco.kernel.memory.IStateDouble;
 
-/* 
+/*
  * Created by IntelliJ IDEA.
  * User: Julien
  * Date: 29 mars 2007
  * Since : Choco 2.0.0
  *
  */
-public class RcInt implements IStateInt, RecomputableElement {
+public class RcDouble implements IStateDouble, RecomputableElement {
 
     private final EnvironmentCopying environment;
-    private int currentValue;
+    private double currentValue;
     private int timeStamp;
 
-    public RcInt(EnvironmentCopying env) {
-        this(env,UNKNOWN_INT);
+    public RcDouble(EnvironmentCopying env) {
+        this(env,Double.MAX_VALUE);
     }
 
-    public RcInt(EnvironmentCopying env, int i ) {
+    public RcDouble(EnvironmentCopying env, double i ) {
         environment = env;
         currentValue= i;
         environment.add(this);
         timeStamp = environment.getWorldIndex();
     }
 
-    
+
     @Override
-	public void add(int delta) {
-		set(currentValue + delta);		
+	public void add(double delta) {
+		set(currentValue + delta);
 	}
 
 	@Override
-	public int get() {
+	public double get() {
 		return currentValue;
 	}
 
-	public void set(int y) {
-        //if (y != currentValue)
-            currentValue = y;
+	public void set(double y) {
+        currentValue = y;
         timeStamp = environment.getWorldIndex();
     }
 
@@ -74,7 +73,7 @@ public class RcInt implements IStateInt, RecomputableElement {
 	 * @param wstamp the stamp of the world in which the update is performed
 	 */
 
-	protected void _set(final int y, final int wstamp) {
+	protected void _set(final double y, final int wstamp) {
 		currentValue = y;
 		timeStamp = wstamp;
 	}
@@ -83,20 +82,20 @@ public class RcInt implements IStateInt, RecomputableElement {
         return environment;
     }
 
-    public int deepCopy() {
+    public double deepCopy() {
         return currentValue;
     }
 
-    
+
 
     public int getType() {
-        return INT;
+        return DOUBLE;
     }
 
     public int getTimeStamp() {
         return timeStamp;
     }
-    
+
     @Override
 	public String toString() {
 		return String.valueOf(currentValue);

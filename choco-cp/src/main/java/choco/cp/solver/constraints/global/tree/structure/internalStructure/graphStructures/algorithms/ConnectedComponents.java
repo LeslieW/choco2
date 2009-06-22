@@ -23,7 +23,7 @@
 package choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.algorithms;
 
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.memory.trailing.StoredBitSet;
+import choco.kernel.memory.IStateBitSet;
 import choco.kernel.solver.Solver;
 
 import java.util.BitSet;
@@ -38,18 +38,18 @@ public class ConnectedComponents {
 
     protected Solver solver;
 
-    protected StoredBitSet[] graph;
+    protected IStateBitSet[] graph;
 
     protected int nbNodes;
     protected BitSet[] undirected;
-    protected Vector<StoredBitSet> cc;
+    protected Vector<IStateBitSet> cc;
     protected int nbCC;
 
     protected int[] color;
     protected BitSet reached;
 
-    public ConnectedComponents(Solver solver, int nbNodes, StoredBitSet[] graph,
-                               Vector<StoredBitSet> cc) {
+    public ConnectedComponents(Solver solver, int nbNodes, IStateBitSet[] graph,
+                               Vector<IStateBitSet> cc) {
         this.solver = solver;
         this.nbNodes = nbNodes;
         this.graph = graph;
@@ -69,7 +69,7 @@ public class ConnectedComponents {
 
     private void showGraph() {
         for (int i = 0; i < nbNodes; i++) {
-            StoredBitSet contain = graph[i];
+            IStateBitSet contain = graph[i];
             LOGGER.info("sure[" + i + "] = "+contain.toString());
         }
         for (int i = 0; i < nbNodes; i++) {
@@ -104,7 +104,7 @@ public class ConnectedComponents {
             reached.set(u,true);
             if (affiche) LOGGER.info("cc[" + u + "] = ");
             dfsVisit(u);
-            StoredBitSet toModif = cc.remove(u);
+            IStateBitSet toModif = cc.remove(u);
             toModif.clear();
             for (int j = reached.nextSetBit(0); j >= 0; j = reached.nextSetBit(j + 1)) toModif.set(j,true);
             cc.insertElementAt(toModif, u);
@@ -119,7 +119,7 @@ public class ConnectedComponents {
     private void convertToStored(Vector<BitSet> vb) {
         for (int i = 0; i < nbNodes; i++) {
             BitSet b = vb.elementAt(i);
-            StoredBitSet c = cc.elementAt(i);
+            IStateBitSet c = cc.elementAt(i);
             c.clear();
             for (int j = b.nextSetBit(0); j >= 0; j = b.nextSetBit(j + 1)) c.set(j,true);
         }

@@ -25,7 +25,7 @@ package choco.cp.solver.constraints.global.tree.filtering.structuralFiltering;
 
 import choco.cp.solver.constraints.global.tree.filtering.AbstractPropagator;
 import choco.kernel.common.util.DisposableIntIterator;
-import choco.kernel.memory.trailing.StoredBitSet;
+import choco.kernel.memory.IStateBitSet;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomain;
 
@@ -43,11 +43,11 @@ public class Incomparability extends AbstractPropagator {
     }
 
     public boolean feasibility() {
-        StoredBitSet sources = precs.getSrcNodes();
+        IStateBitSet sources = precs.getSrcNodes();
         for (int w = sources.nextSetBit(0); w >= 0; w = sources.nextSetBit(w + 1)) {
             BitSet D_w = precs.getDescendants(w);
             for (int u = D_w.nextSetBit(0); u >= 0; u = D_w.nextSetBit(u + 1)) {
-                StoredBitSet I_u = nodes[u].getIncomparableNodes();
+                IStateBitSet I_u = nodes[u].getIncomparableNodes();
                 for (int v = I_u.nextSetBit(0); v >= 0; v = I_u.nextSetBit(v + 1)) {
                     if (D_w.get(v)) {
                         if (affiche)

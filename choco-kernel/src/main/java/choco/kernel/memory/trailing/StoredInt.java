@@ -23,6 +23,7 @@
 package choco.kernel.memory.trailing;
 
 import choco.kernel.memory.IStateInt;
+import choco.kernel.memory.trailing.trail.StoredIntTrail;
 
 
 /**
@@ -93,7 +94,7 @@ public class StoredInt extends AbstractStoredObject implements IStateInt {
 	 * @param wstamp the stamp of the world in which the update is performed
 	 */
 
-	protected void _set(final int y, final int wstamp) {
+    public void _set(final int y, final int wstamp) {
 		currentValue = y;
 		worldStamp = wstamp;
 	}

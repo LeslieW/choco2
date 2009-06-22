@@ -24,7 +24,7 @@ package choco.cp.solver.constraints.global.tree.structure.internalStructure.grap
 
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.Node;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.memory.trailing.StoredBitSet;
+import choco.kernel.memory.IStateBitSet;
 import choco.kernel.solver.Solver;
 
 import java.util.ArrayList;
@@ -64,7 +64,7 @@ public class PrecsGraphView {
     /**
      * backtrackable bitset matrix representing the precedence graph
      */
-    protected StoredBitSet[] precsGraph;
+    protected IStateBitSet[] precsGraph;
 
     /**
      * 
@@ -79,7 +79,7 @@ public class PrecsGraphView {
         this.precsParams.add(StoredBitSetGraph.Maintain.TRANSITIVE_CLOSURE);
         this.precsParams.add(StoredBitSetGraph.Maintain.TRANSITIVE_REDUCTION);
         this.precsParams.add(StoredBitSetGraph.Maintain.CONNECTED_COMP);
-        this.precsGraph = new StoredBitSet[nbNodes];
+        this.precsGraph = new IStateBitSet[nbNodes];
         for (int i = 0; i < nbNodes; i++) this.precsGraph[i] = nodes[i].getMandatorySuccessors();
         // create the precedence graph associated with the precedence constraints
         this.precs = new StoredBitSetGraph(solver, this.precsGraph, this.precsParams, false);
@@ -128,11 +128,11 @@ public class PrecsGraphView {
         return precs;
     }
 
-    public StoredBitSet getSuccessors(int i) {
+    public IStateBitSet getSuccessors(int i) {
         return precs.getSuccessors(i);
     }
 
-    public StoredBitSet getPredecessors(int i) {
+    public IStateBitSet getPredecessors(int i) {
         return precs.getPredecessors(i);
     }
 
@@ -144,19 +144,19 @@ public class PrecsGraphView {
         return hardCopy(precs.getAncestors(i));
     }
 
-    public StoredBitSet getSinkNodes() {
+    public IStateBitSet getSinkNodes() {
         return precs.getSinkNodes();
     }
 
-    public StoredBitSet getSrcNodes() {
+    public IStateBitSet getSrcNodes() {
         return precs.getSrcNodes();
     }
 
-    public StoredBitSet[] getVertFromNumCC() {
+    public IStateBitSet[] getVertFromNumCC() {
         return precs.getVertFromNumCC();
     }
 
-    public StoredBitSet[] getNumFromVertCC() {
+    public IStateBitSet[] getNumFromVertCC() {
         return precs.getNumFromVertCC();
     }
 
@@ -172,7 +172,7 @@ public class PrecsGraphView {
         precs.showAllDesc("descPrecs");
     }
 
-    private BitSet hardCopy(StoredBitSet b) {
+    private BitSet hardCopy(IStateBitSet b) {
         BitSet bs = new BitSet(nbNodes);
         for (int i = b.nextSetBit(0); i >= 0; i = b.nextSetBit(i + 1)) {
             bs.set(i, true);

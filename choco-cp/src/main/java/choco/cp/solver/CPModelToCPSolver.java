@@ -131,26 +131,26 @@ public class CPModelToCPSolver {
 		Iterator it = model.getIntVarIterator();
 		while (it.hasNext()) {
 			i = (IntegerVariable) it.next();
-			if (!cpsolver.mapvariables.containsKey(i.getIndice())) {
-				cpsolver.mapvariables.put(i.getIndice(), readModelVariable(i));
+			if (!cpsolver.mapvariables.containsKey(i.getIndex())) {
+				cpsolver.mapvariables.put(i.getIndex(), readModelVariable(i));
 			}
 		}
 		//2- RealVariable
 		it = model.getRealVarIterator();
 		while (it.hasNext()) {
 			r = (RealVariable) it.next();
-			if (!cpsolver.mapvariables.containsKey(r.getIndice())) {
-				cpsolver.mapvariables.put(r.getIndice(), readModelVariable(r));
+			if (!cpsolver.mapvariables.containsKey(r.getIndex())) {
+				cpsolver.mapvariables.put(r.getIndex(), readModelVariable(r));
 			}
 		}
 		//3- SetVariable
 		it = model.getSetVarIterator();
 		while (it.hasNext()) {
 			s = (SetVariable) it.next();
-			if (!cpsolver.mapvariables.containsKey(s.getIndice())) {
+			if (!cpsolver.mapvariables.containsKey(s.getIndex())) {
 				SetVar setVar = (SetVar) readModelVariable(s);
-				cpsolver.mapvariables.put(s.getIndice(), setVar);
-				cpsolver.mapvariables.put(s.getCard().getIndice(), setVar.getCard());
+				cpsolver.mapvariables.put(s.getIndex(), setVar);
+				cpsolver.mapvariables.put(s.getCard().getIndex(), setVar.getCard());
 				checkOptions(s.getCard(), setVar.getCard());
 			}
 		}
@@ -158,24 +158,24 @@ public class CPModelToCPSolver {
 		it = model.getConstVarIterator();
 		while (it.hasNext()) {
 			v = (Variable) it.next();
-			if (!cpsolver.mapvariables.containsKey(v.getIndice())) {
+			if (!cpsolver.mapvariables.containsKey(v.getIndex())) {
 				switch (v.getVariableType()) {
 				case CONSTANT_INTEGER:
 					ci = (IntegerConstantVariable) v;
-					if (!cpsolver.mapvariables.containsKey(ci.getIndice())) {
-						cpsolver.mapvariables.put(ci.getIndice(), readModelVariable(ci));
+					if (!cpsolver.mapvariables.containsKey(ci.getIndex())) {
+						cpsolver.mapvariables.put(ci.getIndex(), readModelVariable(ci));
 					}
 					break;
 				case CONSTANT_DOUBLE:
 					cr = (RealConstantVariable) v;
-					if (!cpsolver.mapvariables.containsKey(cr.getIndice())) {
-						cpsolver.mapvariables.put(cr.getIndice(), readModelVariable(cr));
+					if (!cpsolver.mapvariables.containsKey(cr.getIndex())) {
+						cpsolver.mapvariables.put(cr.getIndex(), readModelVariable(cr));
 					}
 					break;
 				case CONSTANT_SET:
 					cs = (SetConstantVariable) v;
-					if (!cpsolver.mapvariables.containsKey(cs.getIndice())) {
-						cpsolver.mapvariables.put(cs.getIndice(), readModelVariable(cs));
+					if (!cpsolver.mapvariables.containsKey(cs.getIndex())) {
+						cpsolver.mapvariables.put(cs.getIndex(), readModelVariable(cs));
 					}
 					break;
 				}
@@ -185,8 +185,8 @@ public class CPModelToCPSolver {
 		it = model.getMultipleVarIterator();
 		while (it.hasNext()) {
 			mv = (MultipleVariables) it.next();
-			if (!cpsolver.mapvariables.containsKey(mv.getIndice())) {
-				cpsolver.mapvariables.put(mv.getIndice(), readModelVariable(mv));
+			if (!cpsolver.mapvariables.containsKey(mv.getIndex())) {
+				cpsolver.mapvariables.put(mv.getIndex(), readModelVariable(mv));
 			}
 		}
 		cpsolver.setPrecision(model.getPrecision());
@@ -310,13 +310,13 @@ public class CPModelToCPSolver {
 		Iterator<Constraint> it = model.getConstraintIterator();
 		while (it.hasNext()) {
 			ic = it.next();
-			if (!cpsolver.mapconstraints.containsKey(ic.getIndice())) {
+			if (!cpsolver.mapconstraints.containsKey(ic.getIndex())) {
 				if (ic.getOptions().contains("cp:decomp")) {
 					decomp = true;
 				}
 				c = readModelConstraint(ic, decomp);
 				cpsolver.post(c);
-				cpsolver.mapconstraints.put(ic.getIndice(), c);
+				cpsolver.mapconstraints.put(ic.getIndex(), c);
 			}
 		}
 		cpsolver.postRedundantTaskConstraints();
@@ -324,9 +324,9 @@ public class CPModelToCPSolver {
 	}
 
 	public void readConstraint(Constraint ic, Boolean decomp) {
-		if (!cpsolver.mapconstraints.containsKey(ic.getIndice())) {
+		if (!cpsolver.mapconstraints.containsKey(ic.getIndex())) {
 			SConstraint c = readModelConstraint(ic, decomp);
-			cpsolver.mapconstraints.put(ic.getIndice(), c);
+			cpsolver.mapconstraints.put(ic.getIndex(), c);
 			cpsolver.post(c);
 		}
 	}
@@ -413,7 +413,7 @@ public class CPModelToCPSolver {
 	private IntDomainVar[] integerVariableToIntDomainVar(Variable[] tab, int n) {
 		IntDomainVar[] newTab = new IntDomainVar[n];
 		for (int i = 0; i < n; i++) {
-			newTab[i] = (IntDomainVar) cpsolver.mapvariables.get(tab[i].getIndice());
+			newTab[i] = (IntDomainVar) cpsolver.mapvariables.get(tab[i].getIndex());
 		}
 		return newTab;
 	}

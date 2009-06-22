@@ -25,7 +25,7 @@ package choco.cp.solver.constraints.global.tree.structure.internalStructure.degr
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.TreeParameters;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.VarGraphView;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.memory.trailing.StoredBitSet;
+import choco.kernel.memory.IStateBitSet;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -120,7 +120,7 @@ public class DegreeStructure {
         for (int i = 0; i < nbVertices; i++) {
             // +1 comes from the modeling of state "potential loop" in the network
             BitSet succ = new BitSet(nbVertices + 1);
-            StoredBitSet next_i = graph.getGlobal().getSuccessors(i);
+            IStateBitSet next_i = graph.getGlobal().getSuccessors(i);
             for (int j = next_i.nextSetBit(0); j >= 0; j = next_i.nextSetBit(j + 1)) {
                 if (j != i) {
 					succ.set(j, true);
@@ -207,8 +207,8 @@ public class DegreeStructure {
         for (int i = 0; i < nbVertices; i++) {
             int nbused_i;
             int nbpotused_i;
-            StoredBitSet maybePred_i = graph.getMaybe().getPredecessors(i);
-            StoredBitSet surePred_i = graph.getSure().getPredecessors(i);
+            IStateBitSet maybePred_i = graph.getMaybe().getPredecessors(i);
+            IStateBitSet surePred_i = graph.getSure().getPredecessors(i);
             if (surePred_i.get(i)) {
 				nbused_i = surePred_i.cardinality() - 1;
 			} else {
@@ -251,8 +251,8 @@ public class DegreeStructure {
             usedByInst[i] = 0;
         }
         for (int i = 0; i < nbVertices; i++) {
-            StoredBitSet pred_i = graph.getGlobal().getPredecessors(i);
-            StoredBitSet surePred_i = graph.getSure().getPredecessors(i);
+            IStateBitSet pred_i = graph.getGlobal().getPredecessors(i);
+            IStateBitSet surePred_i = graph.getSure().getPredecessors(i);
             if (pred_i.get(i)) {
                 canBeUsed[i] += pred_i.cardinality() - 1;
                 canBeUsed[nbVertices]++;
@@ -311,8 +311,8 @@ public class DegreeStructure {
 		}
         int decal = 0;
         for (int i = 0; i < nbVertices; i++) {
-            StoredBitSet maybeSucc_i = graph.getMaybe().getSuccessors(i);
-            StoredBitSet sureSucc_i = graph.getSure().getSuccessors(i);
+            IStateBitSet maybeSucc_i = graph.getMaybe().getSuccessors(i);
+            IStateBitSet sureSucc_i = graph.getSure().getSuccessors(i);
             for (int j = maybeSucc_i.nextSetBit(0); j >= 0; j = maybeSucc_i.nextSetBit(j + 1)) {
                 if (i != j) {
 					gccVars[i - decal].set(j, true);

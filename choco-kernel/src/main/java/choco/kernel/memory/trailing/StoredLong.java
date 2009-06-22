@@ -23,6 +23,7 @@
 package choco.kernel.memory.trailing;
 
 import choco.kernel.memory.IStateLong;
+import choco.kernel.memory.trailing.trail.StoredLongTrail;
 
 public final class StoredLong extends AbstractStoredObject implements IStateLong {
 
@@ -30,7 +31,7 @@ public final class StoredLong extends AbstractStoredObject implements IStateLong
 	private long currentValue;
 
 	/**
-	 * The current {@link StoredIntTrail}.
+	 * The current {@link choco.kernel.memory.trailing.trail.StoredIntTrail}.
 	 */
 
 	private final StoredLongTrail trail;
@@ -88,7 +89,7 @@ public final class StoredLong extends AbstractStoredObject implements IStateLong
 	 * @param wstamp the stamp of the world in which the update is performed
 	 */
 
-	void _set(final long y, final int wstamp) {
+    public void _set(final long y, final int wstamp) {
 		currentValue = y;
 		worldStamp = wstamp;
 	}

@@ -29,6 +29,13 @@ package choco.kernel.memory;
  * Time: 10:24:12
  */
 public interface IStateLong {
+
+    /**
+   * Value for an unknown integer.
+   */
+
+  long UNKNOWN_LONG = Long.MAX_VALUE;
+
     /**
    * Returns the current value.
      */

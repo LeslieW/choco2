@@ -23,6 +23,7 @@
 package choco.kernel.memory.trailing;
 
 import choco.kernel.memory.IStateBool;
+import choco.kernel.memory.trailing.trail.StoredBoolTrail;
 
 
 /**
@@ -38,7 +39,7 @@ public final class StoredBool extends AbstractStoredObject implements IStateBool
 
 
   /**
-   * The current {@link StoredIntTrail}.
+   * The current {@link choco.kernel.memory.trailing.trail.StoredIntTrail}.
    */
 
   private final StoredBoolTrail trail;
@@ -87,7 +88,7 @@ public final class StoredBool extends AbstractStoredObject implements IStateBool
    * @param wstamp the stamp of the world in which the update is performed
    */
 
-  void _set(final boolean b, final int wstamp) {
+  public void _set(final boolean b, final int wstamp) {
     currentValue = b;
     worldStamp = wstamp;
   }

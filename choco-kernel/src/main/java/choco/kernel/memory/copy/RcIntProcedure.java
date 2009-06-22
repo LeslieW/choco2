@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * *
+/* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -20,70 +20,31 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.common.util.intutil;
+package choco.kernel.memory.copy;
 
-import java.util.Collection;
-import java.util.Set;
+import choco.kernel.memory.IStateIntProcedure;
 
 /**
- * Created by IntelliJ IDEA.
- * User: julien
- * Mail: julien.menana{at}emn.fr
- * Date: Dec 12, 2008
- * Time: 1:12:37 PM
+ * A stored integer with an associated transition procedure.
+ * When the value changes during backtracking, the procedure is applied.
+ * @author Arnaud Malapert</br>
+ * @since 2 mars 2009 version 2.0.3</br>
+ * @version 2.0.3</br>
  */
-@Deprecated // see trove4j librairy
-public interface IntMap<V> {
+public final class RcIntProcedure extends RcInt {
 
-    int size();
+	private final IStateIntProcedure procedure;
 
+	public RcIntProcedure(EnvironmentCopying env, IStateIntProcedure procedure, int i) {
+		super(env, i);
+		this.procedure = procedure;
+	}
 
-    boolean isEmpty();
-
-
-    boolean containsKey(int key);
-
-    boolean containsValue(Object value);
-
-
-    V get(int key);
-
-
-    V put(int key, V value);
+	@Override
+	protected void _set(int y, int wstamp) {
+		procedure.apply(get(), y);
+		super._set(y, wstamp);
+	}
 
 
-    V remove(int key);
-
-
-
-    void putAll(IntMap<? extends V> m);
-
-
-    void clear();
-
-
-
-    IntSet keySet();
-
-    Collection<V> values();
-
-
-    Set<Entry<V>> entrySet();
-
-    interface Entry<V> {
-
-	int getKey();
-
-	V getValue();
-
-	V setValue(V value);
-
-	boolean equals(Object o);
-
-	int hashCode();
-    }
-
-    boolean equals(Object o);
-
-    int hashCode();
 }

@@ -20,7 +20,7 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.memory.trailing;
+package choco.kernel.memory.structure;
 
 import choco.kernel.common.util.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;

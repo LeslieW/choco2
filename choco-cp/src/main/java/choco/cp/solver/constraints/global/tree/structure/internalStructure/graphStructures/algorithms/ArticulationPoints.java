@@ -25,7 +25,6 @@ package choco.cp.solver.constraints.global.tree.structure.internalStructure.grap
 
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.StoredBitSetGraph;
 import choco.kernel.memory.IStateBitSet;
-import choco.kernel.memory.trailing.StoredBitSet;
 
 import java.util.BitSet;
 
@@ -51,7 +50,7 @@ public class ArticulationPoints {
         undirected = new BitSet[nbVertices];
         for (int i = 0; i < undirected.length; i++) undirected[i] = new BitSet(nbVertices);
         for (int v = 0; v < nbVertices; v++) {
-            StoredBitSet dom = graph.getSuccessors(v);
+            IStateBitSet dom = graph.getSuccessors(v);
             for (int j = dom.nextSetBit(0); j >= 0; j = dom.nextSetBit(j + 1)) {
                 if (v != j) {
                     undirected[v].set(j, true);

@@ -1,8 +1,8 @@
 package choco.kernel.memory.trailing;
 
-import java.util.logging.Logger;
-
 import choco.kernel.common.logging.ChocoLogging;
+
+import java.util.logging.Logger;
 
 public class AbstractStoredObject {
 
@@ -21,7 +21,7 @@ public class AbstractStoredObject {
 	/**
 	 * The last world the search was moidified in.
 	 */
-	protected int worldStamp;
+    public int worldStamp;
 
 
 

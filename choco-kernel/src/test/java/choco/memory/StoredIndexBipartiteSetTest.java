@@ -23,8 +23,8 @@
 package choco.memory;
 
 import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
-import choco.kernel.memory.trailing.StoredIndexedBipartiteSet;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

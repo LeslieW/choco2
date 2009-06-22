@@ -25,8 +25,8 @@ package choco.cp.solver.constraints.global.tree.structure.internalStructure.grap
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.algorithms.ConnectedComponents;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
+import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.trailing.StoredBitSet;
 import choco.kernel.solver.Solver;
 
 import java.text.MessageFormat;
@@ -77,52 +77,52 @@ public class StoredBitSetGraph {
     /**
      * backtrackable bitset matrix representing the graph
      */
-    protected StoredBitSet[] graph;
+    protected IStateBitSet[] graph;
 
     /**
      * backtrackable bitset matrix representing the reverse graph
      */
-    protected StoredBitSet[] revGraph;
+    protected IStateBitSet[] revGraph;
 
     /**
      * backtrackable bitset matrix representing the transitive closure of the graph
      */
-    protected StoredBitSet[] tcGraph;
+    protected IStateBitSet[] tcGraph;
 
     /**
      * backtrackable bitset matrix representing the reverse transitive closure of the graph
      */
-    protected StoredBitSet[] revTcGraph;
+    protected IStateBitSet[] revTcGraph;
 
     protected boolean needUpdate;
 
     /**
      * backtrackable bitset matrix representing the transitive reduction of the graph
      */
-    protected StoredBitSet[] trGraph;
+    protected IStateBitSet[] trGraph;
     
     /**
      * backtrackable bitset matrix representing the reverse transitive reduction of the graph
      */
-    protected StoredBitSet[] revTrGraph;
+    protected IStateBitSet[] revTrGraph;
 
     /**
      * backtrackable bitset that store the source nodes of the graph
      */
-    protected StoredBitSet srcNodes;
+    protected IStateBitSet srcNodes;
 
     /**
      * backtrackable bitset that store the sink nodes of the graph
      */
-    protected StoredBitSet sinkNodes;
+    protected IStateBitSet sinkNodes;
 
     /**
      * connected component structure associated with the graph
      */
     protected ConnectedComponents cc;
-    protected Vector<StoredBitSet> setCC;
-    protected StoredBitSet[] vertFromNumCC;
-    protected StoredBitSet[] numFromVertCC;
+    protected Vector<IStateBitSet> setCC;
+    protected IStateBitSet[] vertFromNumCC;
+    protected IStateBitSet[] numFromVertCC;
 
     /**
      * backtrackable integer recording the current number of connected components
@@ -134,7 +134,7 @@ public class StoredBitSetGraph {
      */
     protected boolean affiche;
 
-    public StoredBitSetGraph(Solver solver, StoredBitSet[] graph, List<Maintain> params, boolean affiche) {
+    public StoredBitSetGraph(Solver solver, IStateBitSet[] graph, List<Maintain> params, boolean affiche) {
         this.solver = solver;
         this.graph = graph;
         this.params = params;
@@ -144,20 +144,20 @@ public class StoredBitSetGraph {
         this.dfsTree = new int[nbNodes];
         for (int k = 0; k < nbNodes; k++) dfsTree[k] = -1;
         // initialize the set of source and sink nodes of the graph
-        this.srcNodes = new StoredBitSet(solver.getEnvironment(), nbNodes);
-        this.sinkNodes = new StoredBitSet(solver.getEnvironment(), nbNodes);
+        this.srcNodes = solver.getEnvironment().makeBitSet(nbNodes);
+        this.sinkNodes = solver.getEnvironment().makeBitSet(nbNodes);
         // initialize the required graph associated with the initial one
-        this.revGraph = new StoredBitSet[nbNodes];
+        this.revGraph = new IStateBitSet[nbNodes];
         if (params.contains(Maintain.TRANSITIVE_CLOSURE)) {
-            this.tcGraph = new StoredBitSet[nbNodes];
-            this.revTcGraph = new StoredBitSet[nbNodes];
+            this.tcGraph = new IStateBitSet[nbNodes];
+            this.revTcGraph = new IStateBitSet[nbNodes];
         } else {
             this.tcGraph = null;
             this.revTcGraph = null;
         }
         if (params.contains(Maintain.TRANSITIVE_REDUCTION)) {
-            this.trGraph = new StoredBitSet[nbNodes];
-            this.revTrGraph = new StoredBitSet[nbNodes];
+            this.trGraph = new IStateBitSet[nbNodes];
+            this.revTrGraph = new IStateBitSet[nbNodes];
         } else {
             this.trGraph = null;
             this.revTrGraph = null;
@@ -176,13 +176,13 @@ public class StoredBitSetGraph {
     }
 
     private void initCCstruct() {
-        this.setCC = new Vector<StoredBitSet>(this.nbNodes);
-        this.vertFromNumCC = new StoredBitSet[this.nbNodes];
-        this.numFromVertCC = new StoredBitSet[this.nbNodes];
+        this.setCC = new Vector<IStateBitSet>(this.nbNodes);
+        this.vertFromNumCC = new IStateBitSet[this.nbNodes];
+        this.numFromVertCC = new IStateBitSet[this.nbNodes];
         for (int i = 0; i < this.nbNodes; i++) {
-            this.setCC.add(new StoredBitSet(this.solver.getEnvironment(), this.nbNodes));
-            this.vertFromNumCC[i] = new StoredBitSet(this.solver.getEnvironment(), this.nbNodes);
-            this.numFromVertCC[i] = new StoredBitSet(this.solver.getEnvironment(), this.nbNodes);
+            this.setCC.add(this.solver.getEnvironment().makeBitSet(this.nbNodes));
+            this.vertFromNumCC[i] = this.solver.getEnvironment().makeBitSet(this.nbNodes);
+            this.numFromVertCC[i] = this.solver.getEnvironment().makeBitSet(this.nbNodes);
         }
         this.nbCC = this.solver.getEnvironment().makeInt(0);
         this.cc = new ConnectedComponents(this.solver, this.nbNodes, this.graph, this.setCC);
@@ -190,14 +190,14 @@ public class StoredBitSetGraph {
 
     private void initAllGraphs() {
         for (int i = 0; i < nbNodes; i++) {
-            this.revGraph[i] = new StoredBitSet(solver.getEnvironment(), nbNodes);
+            this.revGraph[i] = solver.getEnvironment().makeBitSet(nbNodes);
             if (params.contains(Maintain.TRANSITIVE_CLOSURE)) {
-                this.tcGraph[i] = new StoredBitSet(solver.getEnvironment(), nbNodes);
-                this.revTcGraph[i] = new StoredBitSet(solver.getEnvironment(), nbNodes);
+                this.tcGraph[i] = solver.getEnvironment().makeBitSet(nbNodes);
+                this.revTcGraph[i] = solver.getEnvironment().makeBitSet(nbNodes);
             }
             if (params.contains(Maintain.TRANSITIVE_REDUCTION)) {
-                this.trGraph[i] = new StoredBitSet(solver.getEnvironment(), nbNodes);
-                this.revTrGraph[i] = new StoredBitSet(solver.getEnvironment(), nbNodes);
+                this.trGraph[i] = solver.getEnvironment().makeBitSet(nbNodes);
+                this.revTrGraph[i] = solver.getEnvironment().makeBitSet(nbNodes);
             }
         }
     }
@@ -260,11 +260,11 @@ public class StoredBitSetGraph {
     private void remIncreTC(int i, int j) {
         if (i != j) {
             // reachable nodes from node i in the graph
-            StoredBitSet tempDesc = getDesc(i, j, graph);
+            IStateBitSet tempDesc = getDesc(i, j, graph);
             if (needUpdate) {
                 tcGraph[i] = tempDesc;
                 // compute all the reachble nodes from each ancestor of i in graph
-                StoredBitSet updateAnc = new StoredBitSet(solver.getEnvironment(), nbNodes);
+                IStateBitSet updateAnc = solver.getEnvironment().makeBitSet(nbNodes);
                 for (int k = revTcGraph[i].nextSetBit(0); k >= 0; k = revTcGraph[i].nextSetBit(k + 1)) {
                     if (!updateAnc.get(k)) {
                         tempDesc = getDesc(k, j, graph);
@@ -275,7 +275,7 @@ public class StoredBitSetGraph {
                 // compute the nodes reachable from j in the reverse graph
                 revTcGraph[j] = getDesc(j, i, revGraph);
                 // compute all the nodes reachable from each descendant of j in the reverse graph
-                StoredBitSet updateDesc = new StoredBitSet(solver.getEnvironment(), nbNodes);
+                IStateBitSet updateDesc = solver.getEnvironment().makeBitSet(nbNodes);
                 for (int k = tcGraph[j].nextSetBit(0); k >= 0; k = tcGraph[j].nextSetBit(k + 1)) {
                     if (!updateDesc.get(k)) {
                         tempDesc = getDesc(k, i, revGraph);
@@ -287,11 +287,11 @@ public class StoredBitSetGraph {
         }
     }
 
-    private StoredBitSet getDesc(int i, int j, StoredBitSet[] graph) {
+    private IStateBitSet getDesc(int i, int j, IStateBitSet[] graph) {
         // retrieve the set of reachable nodes from i in the graph
         needUpdate = true;
         Stack<Integer> stack = new Stack<Integer>();
-        StoredBitSet reached = new StoredBitSet(solver.getEnvironment(), nbNodes);
+        IStateBitSet reached = solver.getEnvironment().makeBitSet(nbNodes);
         stack.push(i);
         while (!stack.isEmpty()) {
             int a = stack.pop();
@@ -377,7 +377,7 @@ public class StoredBitSetGraph {
         // record the connected components of the graph
         for (int i = 0; i < nbNodes; i++) this.numFromVertCC[i].clear();
         for (int i = 0; i < this.setCC.size(); i++) {
-            StoredBitSet contain = this.setCC.elementAt(i);
+            IStateBitSet contain = this.setCC.elementAt(i);
             this.vertFromNumCC[i].clear();
             for (int j = contain.nextSetBit(0); j >= 0; j = contain.nextSetBit(j + 1)) {
                 this.vertFromNumCC[i].set(j, true);
@@ -389,7 +389,7 @@ public class StoredBitSetGraph {
 
     private void showCC() {
         for (int i = 0; i < setCC.size(); i++) {
-            StoredBitSet contain = setCC.elementAt(i);
+            IStateBitSet contain = setCC.elementAt(i);
             LOGGER.info("cc(" + i + ") = " + contain.toString());
         }
         LOGGER.info("*-*-*-*-*-*-*-*-*-*-*-*-*");
@@ -593,27 +593,27 @@ public class StoredBitSetGraph {
         return nbNodes;
     }
 
-    public StoredBitSet getSuccessors(int i) {
+    public IStateBitSet getSuccessors(int i) {
         return graph[i];
     }
 
-    public StoredBitSet getPredecessors(int i) {
+    public IStateBitSet getPredecessors(int i) {
         return revGraph[i];
     }
 
-    public StoredBitSet getDescendants(int i) {
+    public IStateBitSet getDescendants(int i) {
         return tcGraph[i];
     }
 
-    public StoredBitSet getAncestors(int i) {
+    public IStateBitSet getAncestors(int i) {
         return revTcGraph[i];
     }
 
-    public StoredBitSet[] getGraph() {
+    public IStateBitSet[] getGraph() {
         return graph;
     }
 
-    public void setGraph(StoredBitSet[] newGraph) {
+    public void setGraph(IStateBitSet[] newGraph) {
         razGraph();
         for (int i = 0; i < nbNodes; i++) {
             for (int j = newGraph[i].nextSetBit(0); j >= 0; j = newGraph[i].nextSetBit(j + 1)) {
@@ -630,43 +630,43 @@ public class StoredBitSetGraph {
         }
     }
 
-    public StoredBitSet[] getRevGraph() {
+    public IStateBitSet[] getRevGraph() {
         return revGraph;
     }
 
-    public StoredBitSet[] getTcGraph() {
+    public IStateBitSet[] getTcGraph() {
         return tcGraph;
     }
 
-    public StoredBitSet[] getRevTcGraph() {
+    public IStateBitSet[] getRevTcGraph() {
         return revTcGraph;
     }
 
-    public StoredBitSet[] getTrGraph() {
+    public IStateBitSet[] getTrGraph() {
         return trGraph;
     }
 
-    public StoredBitSet[] getRevTrGraph() {
+    public IStateBitSet[] getRevTrGraph() {
         return revTrGraph;
     }
 
-    public StoredBitSet getSrcNodes() {
+    public IStateBitSet getSrcNodes() {
         return srcNodes;
     }
 
-    public StoredBitSet getSinkNodes() {
+    public IStateBitSet getSinkNodes() {
         return sinkNodes;
     }
 
-    public Vector<StoredBitSet> getSetCC() {
+    public Vector<IStateBitSet> getSetCC() {
         return setCC;
     }
 
-    public StoredBitSet[] getVertFromNumCC() {
+    public IStateBitSet[] getVertFromNumCC() {
         return vertFromNumCC;
     }
 
-    public StoredBitSet[] getNumFromVertCC() {
+    public IStateBitSet[] getNumFromVertCC() {
         return numFromVertCC;
     }
 

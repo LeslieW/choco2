@@ -54,7 +54,7 @@ public class  ClauseStore extends AbstractLargeIntSConstraint {
 		fineDegree = new int[vars.length];
 		indexes = new TLongIntHashMap(vars.length);
 		for(int v = 0; v < vars.length; v++){
-			indexes.put(vars[v].getIndice(), v);
+			indexes.put(vars[v].getIndex(), v);
 		}
 	}
 
@@ -161,7 +161,7 @@ public class  ClauseStore extends AbstractLargeIntSConstraint {
 	}
 
 	public int findIndex(IntDomainVar v) {
-		return indexes.get(v.getIndice())+1;
+		return indexes.get(v.getIndex())+1;
 	}
 
 	public void addDynamicClause(IntDomainVar[] positivelits,IntDomainVar[] negativelits) {
