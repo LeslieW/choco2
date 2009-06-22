@@ -242,7 +242,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
           //  m.addConstraint(new ComponentConstraint(SimpleChannelling.SimpleManager.class,null,new IntegerVariable[]{shifts[i],count[i]}));
         m.addConstraint(new ComponentConstraint(SubSetChannelling.SubSetManager.class,null, UtilAlgo.append(shifts,count)));
 
-        m.addConstraint(globalCardinality("cp:ac",count,0,3,bInf,bSup));
+        m.addConstraint(globalCardinality("cp:ac",count,bInf,bSup));
 
 
         //IntegerVariable red = makeIntVar("red",12,32);
@@ -277,7 +277,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
 
         m.addVariables(shifts);
 
-        m.addConstraint(globalCardinality("cp:ac",shifts,0,2+nbAct,bInf,bSup));
+        m.addConstraint(globalCardinality("cp:ac",shifts,bInf,bSup));
         // m.addConstraint(regular(dfa,shifts));
         //Thou shalt respect the automaton
         int[][] csts = new int[shifts.length][nbAct+3];
@@ -515,7 +515,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
 
 
         m.addVariables(vs);
-        m.addConstraint(globalCardinality("cp:ac",vs,1,3,low,up));
+        m.addConstraint(globalCardinality("cp:ac",vs,low,up));
 
         Solver s = new CPSolver();
         s.read(m);
@@ -523,7 +523,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
         {
             StringBuffer st = new StringBuffer();
             for (IntegerVariable v : vs)
-                st.append(s.getVar(v).getVal()+" ");
+                st.append(s.getVar(v).getVal()).append(" ");
             LOGGER.info(st.toString());
         }
 

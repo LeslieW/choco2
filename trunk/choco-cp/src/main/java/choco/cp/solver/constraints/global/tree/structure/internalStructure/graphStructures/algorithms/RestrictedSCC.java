@@ -26,7 +26,6 @@ import choco.cp.solver.constraints.global.tree.structure.internalStructure.graph
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.trailing.StoredBitSet;
 
 import java.util.BitSet;
 import java.util.LinkedList;
@@ -179,7 +178,7 @@ public class RestrictedSCC {
         if (debug) LOGGER.info("\t On visite " + v + " au temps " + time + " (i.e., prefix[" + v + "] = " + prefix[v] + ")");
         minReached[v] = prefix[v];
         revPrefix[prefix[v]] = v;
-        StoredBitSet dom = graph.getSuccessors(v);
+        IStateBitSet dom = graph.getSuccessors(v);
         for (int j = dom.nextSetBit(0); j >= 0; j = dom.nextSetBit(j + 1)) {
             if (contain.get(j) && j != sap && j != v) {
                 if (prefix[j] > 0 && minReached[j] < minReached[v]) {
@@ -255,7 +254,7 @@ public class RestrictedSCC {
             invCGA.addElement(contain);
         }
         for (int i = 0; i < nbVertices; i++) {
-            StoredBitSet dom = graph.getSuccessors(i);
+            IStateBitSet dom = graph.getSuccessors(i);
             for (int j = dom.nextSetBit(0); j >= 0; j = dom.nextSetBit(j + 1)) {
                 invCGA.elementAt(j).set(i, true);
             }

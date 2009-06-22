@@ -1,7 +1,7 @@
 package choco.kernel.memory;
 
 import choco.kernel.common.util.ModifiableInteger;
-import choco.kernel.memory.trailing.ITrailStorage;
+import choco.kernel.memory.trailing.trail.ITrailStorage;
 
 import java.util.*;
 import java.util.Map.Entry;

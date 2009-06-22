@@ -24,7 +24,7 @@ package choco.cp.solver.constraints.global.tree.structure.internalStructure.grap
 
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.StoredBitSetGraph;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.memory.trailing.StoredBitSet;
+import choco.kernel.memory.IStateBitSet;
 import choco.kernel.solver.Solver;
 
 import java.util.BitSet;
@@ -50,8 +50,8 @@ public class ReducedGraph {
     protected int[] composante;
     protected int[] prefix;
     protected LinkedList<Integer> listSuffix;
-    protected Vector<StoredBitSet> CFC;
-    protected StoredBitSet[] reducedGraph;
+    protected Vector<IStateBitSet> CFC;
+    protected IStateBitSet[] reducedGraph;
 
     /**
      * Constructor
@@ -76,9 +76,9 @@ public class ReducedGraph {
         for (int i = 0; i < nbVertices; i++) prefix[i] = 0;
         // liste des sommets tries par suffixes
         this.listSuffix = new LinkedList<Integer>();
-        this.CFC = new Vector<StoredBitSet>(nbVertices);
-        this.reducedGraph = new StoredBitSet[1];
-        this.reducedGraph[0] = new StoredBitSet(solver.getEnvironment(), nbVertices);
+        this.CFC = new Vector<IStateBitSet>(nbVertices);
+        this.reducedGraph = new IStateBitSet[1];
+        this.reducedGraph[0] = solver.getEnvironment().makeBitSet(nbVertices);
     }
 
      /**
@@ -125,7 +125,7 @@ public class ReducedGraph {
         if (affiche) LOGGER.info("Fin du second DFS <====");
         // le tableau composante contient la liste des cfc, on effectue un traitement pour le mettre sous forme d'un vector
         for (int i = 0; i < numComp + 1; i++) {
-            StoredBitSet contain = new StoredBitSet(solver.getEnvironment(), nbVertices);
+            IStateBitSet contain = solver.getEnvironment().makeBitSet(nbVertices);
             boolean add = false;
             for (int j = 0; j < nbVertices; j++) {
                 if (composante[j] == i) {
@@ -142,13 +142,13 @@ public class ReducedGraph {
 
     public void buildCFCgraph() {
         // On contruit une vision du graphe reduit
-        reducedGraph = new StoredBitSet[CFC.size()];
+        reducedGraph = new IStateBitSet[CFC.size()];
         for (int i = 0; i < CFC.size(); i++) {
-            StoredBitSet contain = CFC.elementAt(i);
-            reducedGraph[i] = new StoredBitSet(solver.getEnvironment(), CFC.size());
+            IStateBitSet contain = CFC.elementAt(i);
+            reducedGraph[i] = solver.getEnvironment().makeBitSet(CFC.size());
             BitSet successors_i = new BitSet(nbVertices);
             for (int j = contain.nextSetBit(0); j >= 0; j = contain.nextSetBit(j + 1)) {
-                StoredBitSet succ_j = graph.getSuccessors(j);
+                IStateBitSet succ_j = graph.getSuccessors(j);
                 for (int k = succ_j.nextSetBit(0); k >= 0; k = succ_j.nextSetBit(k + 1)) {
                     if (k != j) {
                         successors_i.set(k, true);
@@ -157,7 +157,7 @@ public class ReducedGraph {
             }
             for (int j = 0; j < CFC.size(); j++) {
                 if (j != i) {
-                    StoredBitSet possible = CFC.elementAt(j);
+                    IStateBitSet possible = CFC.elementAt(j);
                     for (int k = possible.nextSetBit(0); k >= 0; k = possible.nextSetBit(k + 1)) {
                         if (successors_i.get(k)) {
                             reducedGraph[i].set(j, true);
@@ -181,7 +181,7 @@ public class ReducedGraph {
     public LinkedList<Integer> dfs_suffix(int v) {
         prefix[v] = time++;
         if (affiche) LOGGER.info("       On visite " + v);
-        StoredBitSet dom = graph.getSuccessors(v);
+        IStateBitSet dom = graph.getSuccessors(v);
         for (int j = dom.nextSetBit(0); j >= 0; j = dom.nextSetBit(j + 1)) {
             if (affiche) LOGGER.info("              on voudrait visiter " + j);
             if (prefix[j] == 0) dfs_suffix(j);
@@ -209,7 +209,7 @@ public class ReducedGraph {
             invCGA.addElement(contain);
         }
         for (int i = 0; i < nbVertices; i++) {
-            StoredBitSet dom = graph.getSuccessors(i);
+            IStateBitSet dom = graph.getSuccessors(i);
             for (int j = dom.nextSetBit(0); j >= 0; j = dom.nextSetBit(j + 1)) {
                 invCGA.elementAt(j).set(i, true);
             }
@@ -217,15 +217,15 @@ public class ReducedGraph {
         return invCGA;
     }
 
-    public Vector<StoredBitSet> getCFC() {
+    public Vector<IStateBitSet> getCFC() {
         return CFC;
     }
     
-    public StoredBitSet[] getCFCgraph() {
+    public IStateBitSet[] getCFCgraph() {
         return reducedGraph;
     }
 
-    public StoredBitSet getMergedVertices(int numCFC) {
+    public IStateBitSet getMergedVertices(int numCFC) {
         return CFC.elementAt(numCFC);
     }
 }

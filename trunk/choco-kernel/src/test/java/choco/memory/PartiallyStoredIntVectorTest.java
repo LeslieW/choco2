@@ -25,7 +25,7 @@ package choco.memory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.PartiallyStoredIntVector;
+import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import org.junit.After;
 import org.junit.Assert;

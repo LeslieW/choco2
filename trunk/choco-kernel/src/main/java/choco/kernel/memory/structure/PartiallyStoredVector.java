@@ -20,9 +20,12 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.memory;
+package choco.kernel.memory.structure;
 
 import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.IStateInt;
+import choco.kernel.memory.MemoryException;
 
 /**
  * A class implementing a vector with two kind of storage:
@@ -33,16 +36,45 @@ import choco.kernel.common.util.DisposableIntIterator;
  * manner, as if they were in a StoredIntVector
  */
 public class PartiallyStoredVector<E> {
+    /**
+     * Initial capacity of array of static objects
+     */
   public static final int INITIAL_STATIC_CAPACITY = 16;
+
+    /**
+     * Initial capacity of the array of stored objects
+     */
   public static final int INITIAL_STORED_CAPACITY = 16;
+
+    /**
+     * Default offset.
+     * Indicates the maximum size of the array for static objects.
+     */
   public static final int STORED_OFFSET = 1000000;
 
+    /**
+     * objects stored statically
+     */
   protected Object[] staticObjects;
+    /**
+     * objects stored dynamically
+     */
   protected Object[] storedObjects;
 
+    /**
+     * Number of static objects
+     */
   protected int nStaticObjects;
+
+    /**
+     * number of stored objects
+     */
   protected IStateInt nStoredObjects;
 
+    /**
+     * Constructor
+     * @param env environment where the data structure should be created
+     */
   public PartiallyStoredVector(IEnvironment env) {
     staticObjects = new Object[INITIAL_STATIC_CAPACITY];
     storedObjects = new Object[INITIAL_STORED_CAPACITY];
@@ -50,6 +82,13 @@ public class PartiallyStoredVector<E> {
     nStoredObjects = env.makeInt(0);
   }
 
+    /**
+     * Check wether an object is stored.
+     * First, try in the array of static objects, then in the array of stored objects.
+     * Return true if the PartiallyStoredVector contains the object.
+     * @param o the object to look for
+     * @return true if it is contained
+     */
   public boolean contains(Object o) {
     for (int i = 0; i < nStaticObjects; i++) {
       if (staticObjects[i].equals(o)) {
@@ -64,12 +103,23 @@ public class PartiallyStoredVector<E> {
     return false;
   }
 
+    /**
+     * Add a object in the array of static object
+     * @param o the object to add
+     * @return the indice of this object in the structure
+     */
   public int staticAdd(E o) {
     ensureStaticCapacity(nStaticObjects + 1);
     staticObjects[nStaticObjects++] = o;
     return nStaticObjects - 1;
   }
 
+    /**
+     * Insert an object in the array of static object.
+     * @param ind indice to insert in
+     * @param o object to insert
+     * @return the indice of the last object in the array of static objects
+     */
   public int staticInsert(int ind, E o) {
     ensureStaticCapacity(nStaticObjects++);
     for (int i = nStaticObjects; i > ind;  i--) {
@@ -79,13 +129,10 @@ public class PartiallyStoredVector<E> {
     return nStaticObjects - 1;
   }
 
-  // TODO: maintain size ?
-//  protected void staticRemove(int idx) {
-//    staticObjects[idx] = null;
-//    if (idx == nStaticObjects - 1) {
-//		nStaticObjects--;
-//	}
-//  }
+    /**
+     * Remove the object placed at indice idx
+     * @param idx
+     */
     protected void staticRemove(int idx) {
         staticObjects[idx] = null;
         if (idx == nStaticObjects - 1) {
@@ -98,6 +145,13 @@ public class PartiallyStoredVector<E> {
         }
     }
 
+
+    /**
+     * Remove an object
+     * @param o object to remove
+     * @return indice of the object
+     * @throws choco.kernel.memory.MemoryException when trying to remove unknown object or stored object
+     */
   public int remove(Object o) {
     for (int i = 0; i < staticObjects.length; i++) {
       Object staticObject = staticObjects[i];
@@ -109,6 +163,10 @@ public class PartiallyStoredVector<E> {
     throw new MemoryException("impossible to remove the object (a constraint ?) from the static part of the collection (cut manager ?)");
   }
 
+    /**
+     * Ensure that the lenght of the array of static objects is always sufficient.
+     * @param n the expected size
+     */
   public void ensureStaticCapacity(int n) {
     if (n >= staticObjects.length) {
       int newSize = staticObjects.length;
@@ -121,6 +179,11 @@ public class PartiallyStoredVector<E> {
     }
   }
 
+    /**
+     * Add an stored object
+     * @param o the object to add
+     * @return indice of the object in the structure
+     */
   public int add(E o) {
     ensureStoredCapacity(nStoredObjects.get() + 1);
     storedObjects[nStoredObjects.get()] = o;
@@ -128,6 +191,12 @@ public class PartiallyStoredVector<E> {
     return STORED_OFFSET + nStoredObjects.get() - 1;
   }
 
+    /**
+     * Insert an stored object
+     * @param ind indice where to add object
+     * @param o object to insert
+     * @return the size of stored structure
+     */
   public int insert(int ind, E o) {
       ensureStoredCapacity(nStoredObjects.get() + 1);
       for (int i = nStoredObjects.get()+1; i > ind;  i--) {
@@ -138,6 +207,10 @@ public class PartiallyStoredVector<E> {
       return STORED_OFFSET + nStoredObjects.get() - 1;
   }
 
+    /**
+     * Ensure that the stored structure is long enough to add a new element
+     * @param n the expected size
+     */
   public void ensureStoredCapacity(int n) {
     if (n >= storedObjects.length) {
       int newSize = storedObjects.length;
@@ -150,6 +223,11 @@ public class PartiallyStoredVector<E> {
     }
   }
 
+    /**
+     * Get the index th stored object
+     * @param index the indice of the required object
+     * @return the 'index'th object
+     */
   public E get(int index) {
     if (index < STORED_OFFSET) {
       return (E)staticObjects[index];
@@ -158,10 +236,18 @@ public class PartiallyStoredVector<E> {
     }
   }
 
+    /**
+     * Check wether the structure is empty
+     * @return true if the structure is empty
+     */
   public boolean isEmpty() {
     return ((nStaticObjects == 0) && (nStoredObjects.get() == 0));
   }
 
+    /**
+     * Return the number of static and stored objects contained in the structure
+     * @return int 
+     */
   public int size() {
     return (nStaticObjects + nStoredObjects.get());
   }
@@ -233,10 +319,20 @@ public class PartiallyStoredVector<E> {
 
   }
 
+    /**
+     * Check wether the indice idx define a static object
+     * @param idx
+     * @return
+     */
   public static boolean isStaticIndex(int idx) {
     return idx < STORED_OFFSET;
   }
 
+    /**
+     * Return the indexe of an object minus the stored offset
+     * @param idx
+     * @return
+     */
   public static int getSmallIndex(int idx) {
     if (idx < STORED_OFFSET) {
 		return idx;
@@ -253,14 +349,27 @@ public class PartiallyStoredVector<E> {
 	}
   }
 
+    /**
+     * Return the indice of the last static object
+     * @return
+     */
   public int getLastStaticIndex() {
     return nStaticObjects - 1;
   }
 
+    /**
+     * Return the indice of the first static object
+     * @return
+     */
   public static int getFirstStaticIndex() {
     return 0;
   }
 
+
+    /**
+     * Return the indice of the last stored object
+     * @return
+     */
     public int getLastStoredIndex(){
         return nStoredObjects.get()-1;
     }

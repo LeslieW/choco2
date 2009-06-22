@@ -26,10 +26,7 @@ import choco.kernel.memory.IStateBool;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.propagation.ConstraintEvent;
-import choco.kernel.solver.propagation.EventQueue;
-import choco.kernel.solver.propagation.PropagationEvent;
-import choco.kernel.solver.propagation.Propagator;
+import choco.kernel.solver.propagation.*;
 import choco.kernel.solver.variables.Var;
 
 import java.util.HashMap;
@@ -219,13 +216,19 @@ public abstract class AbstractSConstraint implements Propagator {
 
   public void setActive() {
       if (!(isActive())) {
-        active.set(true);
+        setActiveSilently();
         constAwake(true);
       }
   }
 
   public void setActiveSilently() {
-    active.set(true);
+      active.set(true);
+      if(!VarEvent.CHECK_ACTIVE){
+          int nbVar = getNbVars();
+          for(int i = 0; i< nbVar; i++){
+              getVar(i).updateConstraintState(i, getConstraintIdx(i), this, true);
+          }
+      }
   }
 
 
@@ -236,10 +239,17 @@ public abstract class AbstractSConstraint implements Propagator {
 
   public void setPassive() {
       if (active != null) {
-        active.set(false);
-        ConstraintEvent evt = constAwakeEvent;
-        EventQueue q = solver.getPropagationEngine().getQueue(evt);
-        q.remove(evt);
+          active.set(false);
+          ConstraintEvent evt = constAwakeEvent;
+          EventQueue q = solver.getPropagationEngine().getQueue(evt);
+          q.remove(evt);
+
+          if(!VarEvent.CHECK_ACTIVE){
+              int nbVar = getNbVars();
+              for(int i = 0; i< nbVar; i++){
+                  getVar(i).updateConstraintState(i, getConstraintIdx(i), this, true);
+              }
+          }
       }
   }
 
@@ -287,9 +297,9 @@ public abstract class AbstractSConstraint implements Propagator {
    */
 
   public boolean isActive() {
-    if (active != null)
+//    if (active != null)
       return active.get();
-    return false;
+//    return false;
   }
 
   /**
@@ -308,7 +318,6 @@ public abstract class AbstractSConstraint implements Propagator {
       getVar(i).getEvent().addPropagatedEvents(getFilteredEventMask(i));
       //getVar(i).getEvent().addPropagatedEvents(0x0FFFF);
     }
-    active = this.solver.getEnvironment().makeBool(false);
   }
 
   public int getFilteredEventMask(int idx) {
@@ -335,8 +344,8 @@ public abstract class AbstractSConstraint implements Propagator {
 
     /**
      *
-     * @param v 
-     * @param j
+     * @param v variable
+     * @param j indice
      * @param dynamicAddition
      * @return
      */
@@ -412,7 +421,7 @@ public abstract class AbstractSConstraint implements Propagator {
         this.solver = solver;
         // 07/12/2007 CPRU: init the number of variables not instanciated of the constraint.
         this.nbVarNotInst = this.solver.getEnvironment().makeInt(this.getNbVars());
-
+        this.active = this.solver.getEnvironment().makeBool(false);
     }
 
     public abstract SConstraintType getConstraintType();

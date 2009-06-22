@@ -22,16 +22,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
-import static choco.cp.solver.variables.integer.IntVarEvent.DECSUPbitvector;
-import static choco.cp.solver.variables.integer.IntVarEvent.INCINFbitvector;
-import static choco.cp.solver.variables.integer.IntVarEvent.INSTINTbitvector;
-import static choco.cp.solver.variables.integer.IntVarEvent.REMVALbitvector;
+import static choco.cp.solver.variables.integer.IntVarEvent.*;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.PartiallyStoredIntVector;
+import choco.kernel.memory.structure.PartiallyStoredIntVector;
+import choco.kernel.memory.structure.TwoStatesPartiallyStoredIntVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.Propagator;
 import choco.kernel.solver.propagation.VarEvent;
@@ -115,7 +114,11 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 	protected void buildDataStructures(IEnvironment env){
 		events = new PartiallyStoredIntVector[4];
 		for(int i = 0; i < 4; i++){
-			events[i] = env.makePartiallyStoredIntVector();
+			if(IntVarEvent.CHECK_ACTIVE){
+                events[i] = env.makePartiallyStoredIntVector();
+            }else{
+                events[i] = new TwoStatesPartiallyStoredIntVector(env);
+            }
 		}
 		priority = env.makeInt(0);
 	}
@@ -136,16 +139,32 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 		computePriority(c);
 		int mask = ((Propagator)c).getFilteredEventMask(varIdx);
 		if((mask & INSTINTbitvector) != 0){
-			addEvent(dynamicAddition, 0, constraintIdx);
+			if(IntVarEvent.CHECK_ACTIVE){
+                addEvent(dynamicAddition, 0, constraintIdx);
+            }else{
+                addEvent(dynamicAddition, 0, constraintIdx, ((AbstractSConstraint)c).isActive());
+            }
 		}
 		if((mask & INCINFbitvector) != 0){
-			addEvent(dynamicAddition, 1, constraintIdx);
+			if(IntVarEvent.CHECK_ACTIVE){
+                addEvent(dynamicAddition, 1, constraintIdx);
+            }else{
+                addEvent(dynamicAddition, 1, constraintIdx, ((AbstractSConstraint)c).isActive());
+            }
 		}
 		if((mask & DECSUPbitvector) != 0){
-			addEvent(dynamicAddition, 2, constraintIdx);
+			if(IntVarEvent.CHECK_ACTIVE){
+                addEvent(dynamicAddition, 2, constraintIdx);
+            }else{
+                addEvent(dynamicAddition, 2, constraintIdx, ((AbstractSConstraint)c).isActive());
+            }
 		}
 		if((mask & REMVALbitvector) != 0){
-			addEvent(dynamicAddition, 3, constraintIdx);
+			if(IntVarEvent.CHECK_ACTIVE){
+                addEvent(dynamicAddition, 3, constraintIdx);
+            }else{
+                addEvent(dynamicAddition, 3, constraintIdx, ((AbstractSConstraint)c).isActive());
+            }
 		}
 		return constraintIdx;
 	}
@@ -164,7 +183,47 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 		}
 	}
 
-	/**
+    /**
+	 * Add event to the correct partially stored int vector
+	 * @param dynamicAddition
+	 * @param indice
+	 * @param constraintIdx
+	 */
+	private void addEvent(boolean dynamicAddition, int indice, int constraintIdx, boolean active) {
+		if (dynamicAddition) {
+			((TwoStatesPartiallyStoredIntVector)events[indice]).add(constraintIdx, active);
+		} else {
+			((TwoStatesPartiallyStoredIntVector)events[indice]).staticAdd(constraintIdx, active);
+		}
+	}
+
+    /**
+     * Update the constraint state
+     *
+     * @param vidx  index of the variable in the constraint
+     * @param cidx  constraint idx
+     * @param c     the constraint
+     * @param state new state (active/passive)
+     */
+    public void updateConstraintState(int vidx, int cidx, SConstraint c, boolean state) {
+        if(!IntVarEvent.CHECK_ACTIVE){
+            int mask = ((Propagator)c).getFilteredEventMask(vidx);
+            if((mask & INSTINTbitvector) != 0){
+                ((TwoStatesPartiallyStoredIntVector)events[0]).set(cidx, state);
+            }
+            if((mask & INCINFbitvector) != 0){
+                ((TwoStatesPartiallyStoredIntVector)events[1]).set(cidx, state);
+            }
+            if((mask & DECSUPbitvector) != 0){
+                ((TwoStatesPartiallyStoredIntVector)events[2]).set(cidx, state);
+            }
+            if((mask & REMVALbitvector) != 0){
+                ((TwoStatesPartiallyStoredIntVector)events[3]).set(cidx, state);
+            }
+        }
+    }
+
+    /**
 	 * Compute the priotity of the variable
 	 * @param c
 	 */

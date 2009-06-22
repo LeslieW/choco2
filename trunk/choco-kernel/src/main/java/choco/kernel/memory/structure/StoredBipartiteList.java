@@ -20,16 +20,12 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.memory.trailing;
-
-import java.util.AbstractList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
+package choco.kernel.memory.structure;
 
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
+
+import java.util.*;
 
 
 
@@ -53,7 +49,7 @@ public final class StoredBipartiteList<E> extends AbstractList<E> {
 
 
 	@SuppressWarnings("unchecked")
-	public StoredBipartiteList(IEnvironment env, Collection<E>  coll) {
+    public StoredBipartiteList(IEnvironment env, Collection<E>  coll) {
 		super();
 		this.elementData = (E[]) coll.toArray();
 		this.last = env.makeInt(elementData.length);
@@ -65,7 +61,7 @@ public final class StoredBipartiteList<E> extends AbstractList<E> {
 		this.last = env.makeInt(elementData.length);
 	}
 
-	/**
+    /**
 	 * Checks if the given index is in range.  If not, throws an appropriate
 	 * runtime exception.  This method does *not* check if the index is
 	 * negative: It is always used immediately prior to an array access,

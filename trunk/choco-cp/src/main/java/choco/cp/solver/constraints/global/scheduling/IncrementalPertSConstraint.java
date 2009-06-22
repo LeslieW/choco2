@@ -22,27 +22,26 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
+import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.IStateBitSet;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntArrayList;
 
 import java.util.BitSet;
 
-import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.trailing.StoredBitSet;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-
 public class IncrementalPertSConstraint extends PertSConstraint {
 
-	protected final StoredBitSet tasksToPropagateOnInf;
+	protected final IStateBitSet tasksToPropagateOnInf;
 
-	protected final StoredBitSet tasksToPropagateOnSup;
+	protected final IStateBitSet tasksToPropagateOnSup;
 
 	public IncrementalPertSConstraint(Solver solver, IntDomainVar uppBound) {
 		super(solver, uppBound);
 		final IEnvironment env= solver.getEnvironment();
-		tasksToPropagateOnInf =  (StoredBitSet) env.makeBitSet(getNbTasks());
-		tasksToPropagateOnSup = (StoredBitSet) env.makeBitSet(getNbTasks());
+		tasksToPropagateOnInf =  env.makeBitSet(getNbTasks());
+		tasksToPropagateOnSup = env.makeBitSet(getNbTasks());
 		propagationControlInf.set(false);
 		propagationControlSup.set(false);
 	}

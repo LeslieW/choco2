@@ -40,7 +40,8 @@ import java.util.Iterator;
 public class RealVariable extends RealExpressionVariable {
 
 	public RealVariable(String name, VariableType type, double lowB, double uppB) {
-		super(new double[]{lowB, uppB}, Operator.NONE, type, null);
+        //noinspection NullArgumentToVariableArgMethod
+        super(new double[]{lowB, uppB}, Operator.NONE, type, null);
 		this.name = name;
 		this.setLowB(lowB);
 		this.setUppB(uppB);

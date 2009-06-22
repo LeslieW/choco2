@@ -24,8 +24,8 @@ package choco.cp.solver.variables.integer;
 
 import choco.kernel.common.util.DisposableIntIterator;
 import choco.kernel.common.util.IntIterator;
-import choco.kernel.memory.AbstractStateBitSet;
 import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.variables.integer.IBitSetIntDomain;
 
@@ -68,7 +68,7 @@ public class BitSetIntDomain extends AbstractIntDomain implements IBitSetIntDoma
      * A bit set indicating for each value whether it is present or not
      */
 
-    protected AbstractStateBitSet contents;
+    protected IStateBitSet contents;
 
     /**
      * the initial size of the domain (never increases)
@@ -142,7 +142,7 @@ public class BitSetIntDomain extends AbstractIntDomain implements IBitSetIntDoma
         sup =  env.makeInt(b);
     }
 
-	public AbstractStateBitSet getContent() {
+	public IStateBitSet getContent() {
 		return contents;
 	}
 

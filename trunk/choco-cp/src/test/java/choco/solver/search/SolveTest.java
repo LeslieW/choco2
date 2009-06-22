@@ -277,7 +277,7 @@ public class SolveTest {
 
 		int time = s.getSearchStrategy().getTimeCount();
 		int nds = s.getSearchStrategy().getNodeCount();
-		assertEquals(nds, 3);
+		assertEquals(3, nds);
 		LOGGER.info(" time: " + time + " nodes: " + nds);
 	}
 

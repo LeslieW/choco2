@@ -28,7 +28,6 @@ import choco.kernel.memory.*;
 import choco.kernel.solver.propagation.VarEvent;
 
 import java.lang.reflect.Array;
-import java.util.BitSet;
 
 
 public class StoredBitSet extends AbstractStateBitSet  {
@@ -94,7 +93,7 @@ public class StoredBitSet extends AbstractStateBitSet  {
     /**
      * Creates a new bit set. All bits are initially <code>false</code>.
      */
-    public StoredBitSet(IEnvironment environment) {
+    protected StoredBitSet(IEnvironment environment) {
         this.environment = environment;
         this.wordsInUse = environment.makeInt(0);
         initWords(BITS_PER_WORD);
@@ -109,7 +108,7 @@ public class StoredBitSet extends AbstractStateBitSet  {
      * @throws NegativeArraySizeException if the specified initial size
      *                                    is negative.
      */
-    public StoredBitSet(IEnvironment environment, int nbits) {
+    protected StoredBitSet(IEnvironment environment, int nbits) {
         this.environment = environment;
         this.wordsInUse =  environment.makeInt(0);
         // nbits can't be negative; size 0 is OK
@@ -162,12 +161,6 @@ public class StoredBitSet extends AbstractStateBitSet  {
         System.arraycopy(original, 0, copy, 0,
                 Math.min(original.length, newLength));
         return copy;
-    }
-
-    public BitSet copyToBitSet() {
-        BitSet view = new BitSet(this.size());
-        for (int i = this.nextSetBit(0); i >= 0; i = this.nextSetBit(i + 1)) view.set(i,true);
-        return view;
     }
 
     /**
@@ -902,7 +895,7 @@ public class StoredBitSet extends AbstractStateBitSet  {
         return true;
     }
 
-    public Object clone() {
+    public IStateBitSet copy() {
         //if (!sizeIsSticky.get()) trimToSize();
         StoredBitSet result = new StoredBitSet(environment, this.size());
         result.wordsInUse.set(wordsInUse.get());

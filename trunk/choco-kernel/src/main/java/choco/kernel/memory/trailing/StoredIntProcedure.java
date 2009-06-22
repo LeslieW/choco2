@@ -41,7 +41,7 @@ public final class StoredIntProcedure extends StoredInt {
 	}
 
 	@Override
-	protected void _set(int y, int wstamp) {
+    public void _set(int y, int wstamp) {
 		procedure.apply(get(), y);
 		super._set(y, wstamp);
 	}

@@ -24,12 +24,11 @@ package choco.cp.solver.variables.integer;
 
 import choco.kernel.common.util.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.trailing.StoredIndexedBipartiteSet;
+import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 
 import java.util.Random;
-import java.util.logging.Level;
 
 /*
 * User : charles

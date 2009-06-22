@@ -23,20 +23,8 @@
 package choco.kernel.memory.trailing;
 
 
-import java.util.ArrayList;
-
-import choco.kernel.memory.AbstractEnvironment;
-import choco.kernel.memory.AbstractStateBitSet;
-import choco.kernel.memory.IStateBinaryTree;
-import choco.kernel.memory.IStateBool;
-import choco.kernel.memory.IStateDouble;
-import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.IStateIntProcedure;
-import choco.kernel.memory.IStateIntVector;
-import choco.kernel.memory.IStateLong;
-import choco.kernel.memory.IStateVector;
-import choco.kernel.memory.PartiallyStoredIntVector;
-import choco.kernel.memory.PartiallyStoredVector;
+import choco.kernel.memory.*;
+import choco.kernel.memory.trailing.trail.*;
 
 /**
  * The root class for managing memory and sessions.
@@ -47,15 +35,7 @@ import choco.kernel.memory.PartiallyStoredVector;
 public class EnvironmentTrailing extends AbstractEnvironment {
 
 
-	/**
-	 * The maximum numbers of objects that a
-	 * {@link ITrailStorage} can handle.
-	 */
-
-	private int maxHist;
-
-
-	/**
+    /**
 	 * The maximum numbers of worlds that a
 	 * {@link ITrailStorage} can handle.
 	 */
@@ -77,7 +57,7 @@ public class EnvironmentTrailing extends AbstractEnvironment {
 	 */
 
 	public EnvironmentTrailing() {
-		maxHist = 5000; //50000;
+        int maxHist = 5000;
 		maxWorld = 100; //1000;
 		trails = new ITrailStorage[]{
 				new StoredBoolTrail(this, maxHist, maxWorld),
@@ -86,7 +66,7 @@ public class EnvironmentTrailing extends AbstractEnvironment {
 				new StoredIntVectorTrail(this, maxHist, maxWorld),
 				new StoredDoubleTrail(this, maxHist, maxWorld),
 				new StoredLongTrail(this, maxHist, maxWorld),
-				new StoredBinaryTreeTrail(this,maxHist,maxWorld),
+				new StoredBinaryTreeTrail(this, maxHist,maxWorld),
 		};
 	}
 
@@ -94,6 +74,7 @@ public class EnvironmentTrailing extends AbstractEnvironment {
 	 * Returns the <code>i</code>th trail in the trail array.
 	 *
 	 * @param i index of the trail.
+     * @return the trail
 	 */
 
 	public ITrailStorage getTrail(int i) {
@@ -101,6 +82,7 @@ public class EnvironmentTrailing extends AbstractEnvironment {
 	}
 
 
+    @Override
 	public void worldPush() {
 		for (ITrailStorage trail : trails) {
 			trail.worldPush();
@@ -112,6 +94,7 @@ public class EnvironmentTrailing extends AbstractEnvironment {
 	}
 
 
+    @Override
 	public void worldPop() {
 		for (ITrailStorage trail : trails) {
 			trail.worldPop();
@@ -119,6 +102,7 @@ public class EnvironmentTrailing extends AbstractEnvironment {
 		currentWorld--;
 	}
 
+    @Override
 	public void worldCommit() {
 		if (currentWorld == 0) {
 			throw new IllegalStateException("Commit in world 0?");
@@ -129,10 +113,12 @@ public class EnvironmentTrailing extends AbstractEnvironment {
 		currentWorld--;
 	}
 
+    @Override
 	public IStateInt makeInt() {
 		return makeInt(0);
 	}
 
+    @Override
 	public IStateInt makeInt(int initialValue) {
 		return new StoredInt(this, initialValue);
 	}
@@ -143,97 +129,67 @@ public class EnvironmentTrailing extends AbstractEnvironment {
 		return new StoredIntProcedure(this, procedure, initialValue);
 	}
 
+    @Override
 	public IStateBool makeBool(boolean initialValue) {
 		return new StoredBool(this, initialValue);
 	}
 
+    @Override
 	public IStateIntVector makeIntVector() {
 		return new StoredIntVector(this);
 	}
 
+    @Override
 	public IStateIntVector makeIntVector(int size, int initialValue) {
 		return new StoredIntVector(this, size, initialValue);
 	}
 
+    @Override
 	public IStateIntVector makeIntVector(int[] entries) {
 		return new StoredIntVector(this, entries);
 	}
 
-	public IStateIntVector makeBipartiteIntList(int[] entries) {
-		return new StoredIntBipartiteList(this,entries);
-	}
-
-	public IStateIntVector makeBipartiteSet(int[] entries) {
-		return new StoredIndexedBipartiteSet(this,entries);
-	}
-
-	public IStateIntVector makeBipartiteSet(int nbEntries) {
-		return new StoredIndexedBipartiteSet(this,nbEntries);
-	}
-
-	public IStateIntVector makeBipartiteSet(IndexedObject[] entries) {
-		return new StoredIndexedBipartiteSet(this,entries);
-	}
-
-	public IStateIntVector makeBipartiteSet(ArrayList<IndexedObject> entries) {
-		return new StoredIndexedBipartiteSet(this,entries);
-	}
-
-
-	/**
-	 * Increase the size of the shared bi partite set,
-	 * it HAS to be called before the end of the environment creation
-	 * BEWARE: be sure you are correctly calling this method
-	 *
-	 * @param gap
-	 */
-	@Override
-	public void increaseSizeOfSharedBipartiteSet(int gap) {
-		((StoredIndexedBipartiteSet)currentBitSet).increaseSize(gap);
-	}
-
-
+    @Override
 	public <T> IStateVector<T> makeVector() {
 		return new StoredVector<T>(this);
 	}
 
-	public <T> PartiallyStoredVector<T> makePartiallyStoredVector() {
-		return new PartiallyStoredVector<T>(this);
-	}
-
-	public PartiallyStoredIntVector makePartiallyStoredIntVector() {
-		return new PartiallyStoredIntVector(this);
-	}
-
+    @Override
 	public AbstractStateBitSet makeBitSet(int size) {
 		return new StoredBitSet(this, size);
 	}
 
-	public AbstractStateBitSet makeBitSet(int[] entries) {
-		return new StoredBitSet(this, 0);  // TODO
-	}
-
+    @Override
 	public IStateDouble makeFloat() {
 		return makeFloat(Double.NaN);
 	}
 
+    @Override
 	public IStateDouble makeFloat(double initialValue) {
 		return new StoredDouble(this, initialValue);
 	}
 
+    @Override
 	public IStateBinaryTree makeBinaryTree(int inf, int sup) {
 		return new StoredBinaryTree(this, inf, sup);
 	}
 
+    @Override
 	public IStateLong makeLong() {
 		return makeLong(0);
 	}
 
+    @Override
 	public IStateLong makeLong(int init) {
 		return new StoredLong(this,init);
 	}
 
-	public int getTrailSize() {
+    @Override
+    public IStateObject makeObject(Object obj) {
+        throw (new UnsupportedOperationException());
+    }
+
+    public int getTrailSize() {
 		int s = 0;
 		for (ITrailStorage trail : trails) {
 			s += trail.getSize();

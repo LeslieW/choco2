@@ -20,9 +20,10 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.memory.trailing;
+package choco.kernel.memory.trailing.trail;
 
 import choco.kernel.memory.IStateBinaryTree;
+import choco.kernel.memory.trailing.EnvironmentTrailing;
 
 /**
  * Created by IntelliJ IDEA.
@@ -35,7 +36,7 @@ public class StoredBinaryTreeTrail implements ITrailStorage {
 
 	private IStateBinaryTree[] treeStack;
 
-	private StoredBinaryTree.Node[] nodeStack;
+	private IStateBinaryTree.Node[] nodeStack;
 	private int[] opStack;
 	private int[] oldValues;
 	private int[] stampStack;
@@ -92,7 +93,7 @@ public class StoredBinaryTreeTrail implements ITrailStorage {
 		treeStack = tmp1;
 
 		// then, copy the stack of former values
-		final StoredBinaryTree.Node[] tmp2 = new StoredBinaryTree.Node[newCapacity];
+		final IStateBinaryTree.Node[] tmp2 = new IStateBinaryTree.Node[newCapacity];
 		System.arraycopy(nodeStack, 0, tmp2, 0, nodeStack.length);
 		nodeStack = tmp2;
 

@@ -81,7 +81,7 @@ public abstract class AbstractConstraint implements Constraint, Comparable {
      * @return the indice of the objet
      */
     @Override
-    public long getIndice() {
+    public long getIndex() {
         return indice;
     }
 

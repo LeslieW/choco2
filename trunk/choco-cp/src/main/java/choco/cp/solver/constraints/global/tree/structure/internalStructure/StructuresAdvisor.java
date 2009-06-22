@@ -30,7 +30,7 @@ import choco.cp.solver.constraints.global.tree.structure.internalStructure.graph
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.PrecsGraphView;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.StoredBitSetGraph;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.VarGraphView;
-import choco.kernel.memory.trailing.StoredBitSet;
+import choco.kernel.memory.IStateBitSet;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -144,7 +144,7 @@ public class StructuresAdvisor {
 
     private StoredBitSetGraph createIncompGraph() {
         List<StoredBitSetGraph.Maintain> params = new ArrayList<StoredBitSetGraph.Maintain>();
-        StoredBitSet[] dataIncs = new StoredBitSet[nbNodes];
+        IStateBitSet[] dataIncs = new IStateBitSet[nbNodes];
         for (int i = 0; i < nbNodes; i++) {
 			dataIncs[i] = nodes[i].getIncomparableNodes();
 		}
@@ -153,7 +153,7 @@ public class StructuresAdvisor {
 
     private StoredBitSetGraph createCondPrecsGraph() {
         List<StoredBitSetGraph.Maintain> params = new ArrayList<StoredBitSetGraph.Maintain>();
-        StoredBitSet[] dataConds = new StoredBitSet[nbNodes];
+        IStateBitSet[] dataConds = new IStateBitSet[nbNodes];
         for (int i = 0; i < nbNodes; i++) {
 			dataConds[i] = nodes[i].getCondSuccessors();
 		}

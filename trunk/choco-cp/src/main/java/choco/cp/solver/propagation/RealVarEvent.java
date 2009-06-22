@@ -24,14 +24,12 @@ package choco.cp.solver.propagation;
 
 import choco.cp.solver.variables.real.RealVarImpl;
 import choco.kernel.common.util.IntIterator;
-import choco.kernel.memory.PartiallyStoredIntVector;
-import choco.kernel.memory.PartiallyStoredVector;
+import choco.kernel.memory.structure.PartiallyStoredIntVector;
+import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.propagation.RealVarEventListener;
 import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.real.RealVar;
-
-import java.util.logging.Level;
 
 /**
  * An event for real interval variable modifications.

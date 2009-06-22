@@ -23,15 +23,12 @@
 package choco.cp.solver.variables.integer;
 
 import choco.kernel.common.util.DisposableIntIterator;
-import choco.kernel.common.util.IntIterator;
-import choco.kernel.memory.PartiallyStoredIntVector;
-import choco.kernel.memory.PartiallyStoredVector;
+import choco.kernel.memory.structure.PartiallyStoredIntVector;
+import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.IntSConstraint;
 import choco.kernel.solver.propagation.VarEvent;
-
-import java.util.logging.Level;
 
 public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
 
@@ -193,17 +190,22 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
 		PartiallyStoredIntVector indices = v.getIndexVector();
 		PartiallyStoredIntVector cindices = v.getEventsVector()[0]; 
 
-		IntIterator cit = cindices.getIndexIterator();
+		DisposableIntIterator cit = cindices.getIndexIterator();
 		while (cit.hasNext()) {
-			int idx = cindices.get(cit.next());
+			int idx = CHECK_ACTIVE?cindices.get(cit.next()):cit.next();
 			if (idx != evtCause) {
 				IntSConstraint c = (IntSConstraint) constraints.get(idx);
 				int i = indices.get(idx);
-				if (c.isActive()) {
-					c.awakeOnInst(i);
-				}
+				if(CHECK_ACTIVE){
+                    if (c.isActive()) {
+                        c.awakeOnInst(i);
+                    }
+                }else{
+                    c.awakeOnInst(i);
+                }
 			}
 		}
+        cit.dispose();
 	}
 
 
@@ -216,17 +218,22 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
 		PartiallyStoredIntVector indices = v.getIndexVector();
 		PartiallyStoredIntVector cindices = v.getEventsVector()[1];
 
-		IntIterator cit = cindices.getIndexIterator();
+		DisposableIntIterator cit = cindices.getIndexIterator();
 		while (cit.hasNext()) {
-			int idx = cindices.get(cit.next());
+			int idx = CHECK_ACTIVE?cindices.get(cit.next()):cit.next();
 			if (idx != evtCause) {
 				IntSConstraint c = (IntSConstraint) constraints.get(idx);
 				int i = indices.get(idx);
-				if (c.isActive()) {
-					c.awakeOnInf(i);
-				}
+				if(CHECK_ACTIVE){
+                    if (c.isActive()) {
+                        c.awakeOnInf(i);
+                    }
+                }else{
+                    c.awakeOnInf(i);
+                }
 			}
 		}
+        cit.dispose();
 	}
 
 	/**
@@ -238,17 +245,22 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
 		PartiallyStoredIntVector indices = v.getIndexVector();
 		PartiallyStoredIntVector cindices = v.getEventsVector()[2];
 
-		IntIterator cit = cindices.getIndexIterator();
+		DisposableIntIterator cit = cindices.getIndexIterator();
 		while (cit.hasNext()) {
-			int idx = cindices.get(cit.next());
+			int idx = CHECK_ACTIVE?cindices.get(cit.next()):cit.next();
 			if (idx != evtCause) {
 				IntSConstraint c = (IntSConstraint) constraints.get(idx);
 				int i = indices.get(idx);
-				if (c.isActive()) {
-					c.awakeOnSup(i);
-				}
+				if(CHECK_ACTIVE){
+                    if (c.isActive()) {
+                        c.awakeOnSup(i);
+                    }
+				}else{
+                    c.awakeOnSup(i);
+                }
 			}
 		}
+        cit.dispose();
 	}
 
 	/**
@@ -260,22 +272,32 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
 		PartiallyStoredIntVector indices = v.getIndexVector();
 		PartiallyStoredIntVector cindices = v.getEventsVector()[3];
 
-		IntIterator cit = cindices.getIndexIterator();
+		DisposableIntIterator cit = cindices.getIndexIterator();
 		while (cit.hasNext()) {
-			int idx = cindices.get(cit.next());
+			int idx = CHECK_ACTIVE?cindices.get(cit.next()):cit.next();
 			if (idx != evtCause) {
 				IntSConstraint c = (IntSConstraint) constraints.get(idx);
 				int i = indices.get(idx);
-				if (c.isActive()) {
-					DisposableIntIterator iter = this.getEventIterator();
-					try {
-						c.awakeOnRemovals(i, iter);
-					} finally {
-						iter.dispose();
-					}
-				}
+				if(CHECK_ACTIVE){
+                    if (c.isActive()) {
+                        DisposableIntIterator iter = this.getEventIterator();
+                        try {
+                            c.awakeOnRemovals(i, iter);
+                        } finally {
+                            iter.dispose();
+                        }
+                    }
+                }else{
+                    DisposableIntIterator iter = this.getEventIterator();
+                    try {
+                        c.awakeOnRemovals(i, iter);
+                    } finally {
+                        iter.dispose();
+                    }
+                }
 			}
 		}
+        cit.dispose();
 	}
 
 	private int promoteEvent(int basicEvt) {

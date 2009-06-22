@@ -20,28 +20,61 @@
  *     Copyright (C) F. Laburthe,                 *
  *                   N. Jussien    1999-2008      *
  **************************************************/
-package choco.kernel.common;
+package choco.kernel.memory.structure;
+
+import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.IStateInt;
 
 /*
 * User : charles
 * Mail : cprudhom(a)emn.fr
-* Date : 17 févr. 2009
+* Date : 22 juin 2009
 * Since : Choco 2.0.1
 * Update : Choco 2.0.1
-*
-* Index of an object.
-*
-* BEWARE : IT IS NOT SIMILAR TO HASHCODE!!!
-*
-* Index can change from one execution to another one. HashCode should not!
 */
-public interface IIndex {
-    
-    /**
-     * Unique index 
-     * (Different from hashCode, can change from one execution to another one) 
-     * @return the indice of the objet
-     */
-    public long getIndex();
+public class IntInterval {
+
+    private IStateInt inf;
+    private IStateInt sup;
+
+    private final IEnvironment environment;
+
+    public IntInterval(IEnvironment environment, int inf, int sup) {
+        this.environment = environment;
+        this.inf = environment.makeInt(inf);
+        this.sup = environment.makeInt(sup);
+    }
+
+    public int getInf() {
+        return inf.get();
+    }
+
+    public void setInf(int inf) {
+        this.inf.set(inf);
+    }
+
+    public void addInf(int delta) {
+        this.inf.add(delta);
+    }
+
+    public int getSup() {
+        return sup.get();
+    }
+
+    public void setSup(int sup) {
+        this.sup.set(sup);
+    }
+
+    public void addSup(int delta) {
+        this.sup.add(delta);
+    }
+
+    public IEnvironment getEnvironment() {
+        return environment;
+    }
+
+    public boolean contains(int x){
+        return x <= sup.get() && x >= inf.get();
+    }
 
 }

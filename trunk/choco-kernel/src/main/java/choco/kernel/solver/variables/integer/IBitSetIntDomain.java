@@ -22,7 +22,7 @@
  **************************************************/
 package choco.kernel.solver.variables.integer;
 
-import choco.kernel.memory.AbstractStateBitSet;
+import choco.kernel.memory.IStateBitSet;
 
 /*
 * User : charles
@@ -33,5 +33,5 @@ import choco.kernel.memory.AbstractStateBitSet;
 */
 public interface IBitSetIntDomain {
 
-    public AbstractStateBitSet getContent();
+    public IStateBitSet getContent();
 }

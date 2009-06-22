@@ -20,9 +20,11 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.memory;
+package choco.kernel.memory.structure;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.IStateInt;
 
 
 /**
@@ -149,11 +151,31 @@ public class PartiallyStoredIntVector {
 //    };
 //  }
 //
-    public IntIterator getIndexIterator() {
-    return new IntIterator() {
+
+    protected DisposableIntIterator _cachedIndexIterator = null;
+
+    public DisposableIntIterator getIndexIterator() {
+        IndexIterator iter = (IndexIterator) _cachedIndexIterator;
+        if (iter != null && iter.reusable) {
+            iter.init();
+            return iter;
+        }
+        _cachedIndexIterator = new IndexIterator();
+        return _cachedIndexIterator;
+    }
+
+
+    class IndexIterator extends DisposableIntIterator {
       int idx = -1;
       boolean stats = (nStaticInts> 0);
         boolean storeds = (nStoredInts.get() > 0);
+
+        public void init() {
+            super.init();
+            idx = -1;
+            stats = (nStaticInts> 0);
+            storeds = (nStoredInts.get() > 0);
+        }
 
       public boolean hasNext() {
           if(idx == -1){
@@ -176,7 +198,6 @@ public class PartiallyStoredIntVector {
       public void remove() {
         throw new UnsupportedOperationException();
       }
-    };
   }
 
   public static boolean isStaticIndex(int idx) {

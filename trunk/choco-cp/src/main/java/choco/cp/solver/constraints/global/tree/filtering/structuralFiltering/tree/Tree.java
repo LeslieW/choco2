@@ -25,7 +25,7 @@ package choco.cp.solver.constraints.global.tree.filtering.structuralFiltering.tr
 
 import choco.cp.solver.constraints.global.tree.filtering.AbstractPropagator;
 import choco.kernel.common.util.IntIterator;
-import choco.kernel.memory.trailing.StoredBitSet;
+import choco.kernel.memory.IStateBitSet;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -52,8 +52,8 @@ public class Tree extends AbstractPropagator {
      */
     public boolean feasibility() {
         // find sink strongly connected components (scc)
-        Vector<StoredBitSet> cfc = inputGraph.getReducedGraph().getCFC();
-        StoredBitSet[] reducedGraph = inputGraph.getReducedGraph().getCFCgraph();
+        Vector<IStateBitSet> cfc = inputGraph.getReducedGraph().getCFC();
+        IStateBitSet[] reducedGraph = inputGraph.getReducedGraph().getCFCgraph();
         BitSet sink = new BitSet(nbVertices);
         for (int i = 0; i < reducedGraph.length; i++) {
             if (reducedGraph[i].cardinality() == 0) sink.set(i, true);
@@ -61,7 +61,7 @@ public class Tree extends AbstractPropagator {
         // the number of potential roots is synchronized with ntree
         int realLoop = 0;
         int mintree;
-        StoredBitSet potentialRoots = inputGraph.getPotentialRoots();
+        IStateBitSet potentialRoots = inputGraph.getPotentialRoots();
         for (int i = potentialRoots.nextSetBit(0); i >= 0; i = potentialRoots.nextSetBit(i + 1)) {
             if (inputGraph.getSure().getGraph()[i].get(i)) realLoop++;
         }
@@ -81,7 +81,7 @@ public class Tree extends AbstractPropagator {
             if (affiche) LOGGER.info("|SinkSCC| = " + sink.cardinality() + " -VS- |cfc| = " + cfc.size());
             for (int i = sink.nextSetBit(0); i >= 0; i = sink.nextSetBit(i + 1)) {
                 boolean loop = false;
-                StoredBitSet cont = cfc.elementAt(i);
+                IStateBitSet cont = cfc.elementAt(i);
                 for (int j = cont.nextSetBit(0); j >= 0; j = cont.nextSetBit(j + 1)) {
                     if (potentialRoots.get(j)) loop = true;
                 }
@@ -105,8 +105,8 @@ public class Tree extends AbstractPropagator {
      * Filtering method for the <b> pure tree </b> constraint. Algorithmics details are provided in the CPAIOR'05 paper. 
      */
     public void filter() throws ContradictionException {
-        Vector<StoredBitSet> cfc = inputGraph.getReducedGraph().getCFC();
-        StoredBitSet[] reducedGraph = inputGraph.getReducedGraph().getCFCgraph();
+        Vector<IStateBitSet> cfc = inputGraph.getReducedGraph().getCFC();
+        IStateBitSet[] reducedGraph = inputGraph.getReducedGraph().getCFCgraph();
         BitSet sink = new BitSet(reducedGraph.length);
         for (int i = 0; i < reducedGraph.length; i++) {
             if (reducedGraph[i].cardinality() == 0) sink.set(i, true);
@@ -127,7 +127,7 @@ public class Tree extends AbstractPropagator {
         }
         // detect a sink scc with one single potential root
         for (int m = sink.nextSetBit(0); m >= 0; m = sink.nextSetBit(m + 1)) {
-            StoredBitSet b = cfc.elementAt(m);
+            IStateBitSet b = cfc.elementAt(m);
             int occurs = 0;
             int name = -1;
             for (int j = b.nextSetBit(0); j >= 0; j = b.nextSetBit(j + 1)) {
@@ -215,7 +215,7 @@ public class Tree extends AbstractPropagator {
             val = tree.getNtree().getSup();
             if (val == mintree) {
                 for (int m = nonSink.nextSetBit(0); m >= 0; m = nonSink.nextSetBit(m + 1)) {
-                    StoredBitSet cont = cfc.elementAt(m);
+                    IStateBitSet cont = cfc.elementAt(m);
                     for (int j = cont.nextSetBit(0); j >= 0; j = cont.nextSetBit(j + 1)) {
                         if (nodes[j].getSuccessors().canBeInstantiatedTo(j) && !nodes[j].getSuccessors().isInstantiatedTo(j)) {
                             if (affiche)
@@ -242,7 +242,7 @@ public class Tree extends AbstractPropagator {
             if (reducedGraph[i].cardinality() > 0) nonSink.set(i, true);
         }
         for (int m = nonSink.nextSetBit(0); m >= 0; m = nonSink.nextSetBit(m + 1)) {
-            StoredBitSet cont = cfc.elementAt(m);
+            IStateBitSet cont = cfc.elementAt(m);
             BitSet door = new BitSet();
             for (int j = cont.nextSetBit(0); j >= 0; j = cont.nextSetBit(j + 1)) {
                 IntDomainVar var = nodes[j].getSuccessors();

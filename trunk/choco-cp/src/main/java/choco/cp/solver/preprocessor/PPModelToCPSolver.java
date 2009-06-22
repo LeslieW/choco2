@@ -54,7 +54,7 @@ public class PPModelToCPSolver extends CPModelToCPSolver {
 
 
     public void storeExpressionSConstraint(Constraint c, ExpressionSConstraint ic) {
-        knownExpressionCts.put(c.getIndice(),ic);
+        knownExpressionCts.put(c.getIndex(),ic);
     }
 
     /**
@@ -73,7 +73,7 @@ public class PPModelToCPSolver extends CPModelToCPSolver {
      * @return
      */
     protected SConstraint createMetaConstraint(Constraint ic, Boolean decomp) {
-        ExpressionSConstraint c = knownExpressionCts.get(ic.getIndice());
+        ExpressionSConstraint c = knownExpressionCts.get(ic.getIndex());
         if (c == null) {
             c = new ExpressionSConstraint(super.buildBoolNode(ic));
         }

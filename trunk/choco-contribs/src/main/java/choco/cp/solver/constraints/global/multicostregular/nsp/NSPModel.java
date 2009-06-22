@@ -107,7 +107,7 @@ public class NSPModel extends CPModel {
                             csts[d][j][k] = 1;
                     }
             cauto[i] = multiCostRegular(shifts[i],cvars,auto,csts);
-            credo[i] = globalCardinality("cp:bc",shifts[i],0,3,lowerBounds,upperBounds);
+            credo[i] = globalCardinality("cp:bc",shifts[i],lowerBounds,upperBounds);
             cregu[i] =  regular(makeHadrienNSPAutomaton(),shifts[i]);
         }
 
@@ -134,7 +134,7 @@ public class NSPModel extends CPModel {
                 st.append(l).append("\t");
             LOGGER.info(st.toString());
             Arrays.fill(gmax,instance.nbNurses);
-            cgcc[d] = globalCardinality("cp:bc",tmp[d],0,3,instance.coverages[d],gmax);
+            cgcc[d] = globalCardinality("cp:bc",tmp[d],instance.coverages[d],gmax);
         }
 
 

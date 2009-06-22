@@ -25,7 +25,7 @@ package choco.cp.solver.constraints.global.tree.filtering.structuralFiltering;
 
 import choco.cp.solver.constraints.global.tree.filtering.AbstractPropagator;
 import choco.kernel.common.util.IntIterator;
-import choco.kernel.memory.trailing.StoredBitSet;
+import choco.kernel.memory.IStateBitSet;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -47,14 +47,14 @@ public class Nproper extends AbstractPropagator {
     /**
      * the set of nodes that belong to the required graph and that reach a potential root by a path of required arcs
      */
-    protected StoredBitSet tmp;
+    protected IStateBitSet tmp;
 
     public Nproper(Object[] params) {
         super(params);
         this.lowerBd = getLowerBound();
-        StoredBitSet potentialRoots = inputGraph.getPotentialRoots();
+        IStateBitSet potentialRoots = inputGraph.getPotentialRoots();
         this.upperBd = getUpperBound(potentialRoots);
-        this.tmp = new StoredBitSet(solver.getEnvironment(),nbVertices);
+        this.tmp = solver.getEnvironment().makeBitSet(nbVertices);
     }
 
     public String getTypePropag() {
@@ -80,15 +80,15 @@ public class Nproper extends AbstractPropagator {
         }
 
         // update the upper bound of nproper according to the evaluated upper bound
-        StoredBitSet potentialRoots = inputGraph.getPotentialRoots();
+        IStateBitSet potentialRoots = inputGraph.getPotentialRoots();
         upperBd = getUpperBound(potentialRoots);
         if (upperBd < tree.getNproper().getSup()) {
             if (affiche) LOGGER.info("2-NProper: updateSup nProper = " + tree.getNproper().getSup() + " ==> " + upperBd);
             propagateStruct.setMaxNProper(upperBd);
         }
-        Vector<StoredBitSet> setcc = inputGraph.getSure().getSetCC();
+        Vector<IStateBitSet> setcc = inputGraph.getSure().getSetCC();
         int nprop_build = 0;
-        for (StoredBitSet aSetcc : setcc) {
+        for (IStateBitSet aSetcc : setcc) {
             if (aSetcc.cardinality() > 1) nprop_build++;
         }
         if (nprop_build < lowerBd) {
@@ -111,15 +111,15 @@ public class Nproper extends AbstractPropagator {
         if (tree.getNproper().getSup() <= lowerBd) {
             tmp.clear();
             // connect component (cc) of size at least 2 in the required graph
-            Vector<StoredBitSet> ccOfGt = inputGraph.getSure().getSetCC();
-            for (StoredBitSet aCcOfGt : ccOfGt) {
+            Vector<IStateBitSet> ccOfGt = inputGraph.getSure().getSetCC();
+            for (IStateBitSet aCcOfGt : ccOfGt) {
                 if (aCcOfGt.cardinality() >= 2) {
                     for (int j = aCcOfGt.nextSetBit(0); j >= 0; j = aCcOfGt.nextSetBit(j + 1)) tmp.set(j, true);
                 }
             }
             // connect component (cc) of size at least 2 in the precedence graph
-            Vector<StoredBitSet> ccOfGp = precs.getPrecs().getSetCC();
-            for (StoredBitSet aCcOfGp : ccOfGp) {
+            Vector<IStateBitSet> ccOfGp = precs.getPrecs().getSetCC();
+            for (IStateBitSet aCcOfGp : ccOfGp) {
                 if (aCcOfGp.cardinality() >= 2) {
                     for (int j = aCcOfGp.nextSetBit(0); j >= 0; j = aCcOfGp.nextSetBit(j + 1)) tmp.set(j, true);
                 }
@@ -157,7 +157,7 @@ public class Nproper extends AbstractPropagator {
                 }
             }
         }
-        StoredBitSet potentialRoots = inputGraph.getPotentialRoots();
+        IStateBitSet potentialRoots = inputGraph.getPotentialRoots();
         // filtering if min(nProper) >= upperBd
         if (tree.getNproper().getInf() >= upperBd) {
             // node i is isolated and has a loop on itself
@@ -177,7 +177,7 @@ public class Nproper extends AbstractPropagator {
         }
     }
 
-    private int getUpperBound(StoredBitSet potentialRoots) {
+    private int getUpperBound(IStateBitSet potentialRoots) {
         // compute #potentialRoots
         int nbPotRoots = potentialRoots.cardinality();
         // compute #isolatedVertexWithLoops
@@ -196,8 +196,8 @@ public class Nproper extends AbstractPropagator {
     private int getLowerBound() {
         // compute the number of cc of the required graph with at least two nodes and a potential root
         int val = 0;
-        Vector<StoredBitSet> ccOfGt = inputGraph.getSure().getSetCC();
-        for (StoredBitSet aCcOfGt : ccOfGt) {
+        Vector<IStateBitSet> ccOfGt = inputGraph.getSure().getSetCC();
+        for (IStateBitSet aCcOfGt : ccOfGt) {
             // a connected compenant of size at least 2
             if (aCcOfGt.cardinality() >= 2) {
                 boolean root = false;

@@ -24,7 +24,7 @@ package choco.kernel.memory;
 
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
-import choco.kernel.memory.trailing.StoredBinaryTreeTrail;
+import choco.kernel.memory.trailing.trail.StoredBinaryTreeTrail;
 
 import java.util.logging.Logger;
 

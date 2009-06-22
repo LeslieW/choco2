@@ -23,8 +23,7 @@
 package choco.cp.solver.constraints.global.tree.filtering.structuralFiltering.tree;
 
 
-
-import choco.kernel.memory.trailing.StoredBitSet;
+import choco.kernel.memory.IStateBitSet;
 
 import java.util.BitSet;
 
@@ -32,10 +31,10 @@ import java.util.BitSet;
 public class SearchInfeasible {
 
     protected int dom;
-    protected StoredBitSet[] revGraph;
+    protected IStateBitSet[] revGraph;
     protected BitSet reached;
 
-    public SearchInfeasible(int dom, StoredBitSet[] revGraph) {
+    public SearchInfeasible(int dom, IStateBitSet[] revGraph) {
         this.dom = dom;
         this.revGraph = revGraph;
         reached = new BitSet(revGraph.length);
@@ -45,7 +44,7 @@ public class SearchInfeasible {
 
     public void dfsVisit(int u) {
         reached.set(u,true);
-        StoredBitSet succ = revGraph[u];
+        IStateBitSet succ = revGraph[u];
         for (int v = succ.nextSetBit(0); v >= 0; v = succ.nextSetBit(v + 1)) {
              if (!reached.get(v) && v != dom) dfsVisit(v);
         }

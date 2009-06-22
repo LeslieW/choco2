@@ -25,8 +25,8 @@ package choco.cp.solver.constraints.global.tree.structure.internalStructure.cost
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.TreeParameters;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.graphViews.VarGraphView;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.trailing.StoredBitSet;
 import choco.kernel.solver.Solver;
 
 import java.util.logging.Logger;
@@ -127,7 +127,7 @@ public class CostStructure {
         // update the shortest path structure
         this.path.computeMinPaths();
         // compute the cost of a forest covering of the required arcs
-        StoredBitSet[] vertFromNumGt = inputGraph.getSure().getVertFromNumCC();
+        IStateBitSet[] vertFromNumGt = inputGraph.getSure().getVertFromNumCC();
         if (affichecosts) {
             for (int i = 0; i < nbNodes; i++) {
                 LOGGER.info("cc_" + i + " = " + vertFromNumGt[i].toString());
@@ -181,7 +181,7 @@ public class CostStructure {
         if (inputGraph.isFixedSucc(sink) && inputGraph.getPotentialRoots().get(sink)) {
             minSucc = cost[sink][sink].get();
         } else {
-            StoredBitSet maybe = inputGraph.getMaybe().getSuccessors(sink);
+            IStateBitSet maybe = inputGraph.getMaybe().getSuccessors(sink);
             for (int i = maybe.nextSetBit(0); i >= 0; i = maybe.nextSetBit(i + 1)) {
                 if (cost[sink][i].get() < minSucc) minSucc = cost[sink][i].get();
             }

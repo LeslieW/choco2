@@ -37,7 +37,7 @@ import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
-import choco.kernel.memory.PartiallyStoredVector;
+import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;

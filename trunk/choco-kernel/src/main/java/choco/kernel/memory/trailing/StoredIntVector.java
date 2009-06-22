@@ -24,9 +24,7 @@ package choco.kernel.memory.trailing;
 
 import choco.kernel.common.util.DisposableIntIterator;
 import choco.kernel.memory.IStateIntVector;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import choco.kernel.memory.trailing.trail.StoredIntVectorTrail;
 
 /**
  * Implements a backtrackable search vector.
@@ -52,7 +50,7 @@ public final class StoredIntVector implements IStateIntVector {
 	 * Contains time stamps for all entries (the world index of the last update for each entry)
 	 */
 
-	int[] worldStamps;
+    public int[] worldStamps;
 
 	/**
 	 * A backtrackable search with the size of the vector.
@@ -266,7 +264,7 @@ public final class StoredIntVector implements IStateIntVector {
 	 * Sets an element without storing the previous value.
 	 */
 
-	int _set(int index, int val, int stamp) {
+    public int _set(int index, int val, int stamp) {
 		int oldval = elementData[index];
 		elementData[index] = val;
 		worldStamps[index] = stamp;

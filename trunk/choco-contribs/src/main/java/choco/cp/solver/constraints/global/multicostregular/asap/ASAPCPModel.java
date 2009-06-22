@@ -310,7 +310,7 @@ public class ASAPCPModel extends CPModel {
                 IntegerVariable[] col = v[idx];
                 this.lowb[idx] = lowb;
                 this.uppb[idx] = uppb;
-                this.addConstraint(globalCardinality("cp:ac",col,0,9,lowb,uppb));
+                this.addConstraint(globalCardinality("cp:ac",col,lowb,uppb));
             }
 
         }

@@ -20,9 +20,10 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.memory.trailing;
+package choco.kernel.memory.trailing.trail;
 
-
+import choco.kernel.memory.trailing.EnvironmentTrailing;
+import choco.kernel.memory.trailing.StoredInt;
 
 
 /**

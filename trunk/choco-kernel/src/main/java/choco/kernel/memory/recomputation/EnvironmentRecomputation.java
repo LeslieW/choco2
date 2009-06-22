@@ -24,9 +24,10 @@ package choco.kernel.memory.recomputation;
 
 import choco.kernel.memory.*;
 import choco.kernel.memory.copy.EnvironmentCopying;
+import choco.kernel.memory.structure.PartiallyStoredIntVector;
+import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.memory.trailing.IndexedObject;
-import choco.kernel.memory.trailing.StoredIndexedBipartiteSet;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.AbstractSearchStrategy;
 import choco.kernel.solver.search.IntBranchingTrace;
@@ -196,15 +197,17 @@ public class EnvironmentRecomputation extends AbstractEnvironment {
         return delegatedEnv.makeIntVector(entries);
     }
 
+    @Override
     public <T> PartiallyStoredVector<T> makePartiallyStoredVector() {
         return delegatedEnv.makePartiallyStoredVector();
     }
 
+    @Override
     public PartiallyStoredIntVector makePartiallyStoredIntVector() {
         return delegatedEnv.makePartiallyStoredIntVector();
     }
 
-    public AbstractStateBitSet makeBitSet(int size) {
+    public IStateBitSet makeBitSet(int size) {
         return delegatedEnv.makeBitSet(size);
     }
 
@@ -234,23 +237,6 @@ public class EnvironmentRecomputation extends AbstractEnvironment {
     }
 
 
-
-    /**
-     * Increase the size of the shared bi partite set,
-     * it HAS to be called before the end of the environment creation
-     * BEWARE: be sure you are correctly calling this method
-     *
-     * @param gap
-     */
-    @Override
-    public void increaseSizeOfSharedBipartiteSet(int gap) {
-        ((StoredIndexedBipartiteSet)((AbstractEnvironment)delegatedEnv).currentBitSet).increaseSize(gap);
-    }
-
-    /*public AbstractStateBitSet makeBitSet(int[] entries) {
-        return delegatedEnv.makeBitSet(entries);
-    }*/
-
     public IStateDouble makeFloat() {
         return delegatedEnv.makeFloat();
     }
@@ -273,6 +259,11 @@ public class EnvironmentRecomputation extends AbstractEnvironment {
 
     public IStateBinaryTree makeBinaryTree(int inf, int sup) {
         return delegatedEnv.makeBinaryTree(inf, sup);
+    }
+
+    @Override
+    public IStateObject makeObject(Object obj) {
+        return delegatedEnv.makeObject(obj);
     }
 
     /**

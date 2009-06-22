@@ -26,9 +26,8 @@ import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.IntEnumeration;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.trailing.EnvironmentTrailing;
+import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.memory.trailing.IndexedObject;
-import choco.kernel.memory.trailing.StoredIndexedBipartiteSet;
 import choco.kernel.model.constraints.automaton.DFA;
 import choco.kernel.model.constraints.automaton.LightLayeredDFA;
 import choco.kernel.model.constraints.automaton.LightState;
@@ -110,7 +109,7 @@ public class Regular extends AbstractLargeIntSConstraint {
         }
         initQij(qijvalues);
         for (int i = 0; i < Qij.length; i++) {
-            Qij[i] = (StoredIndexedBipartiteSet) ((EnvironmentTrailing) vars[0].getSolver().getEnvironment()).makeBipartiteSet(qijvalues[i]);
+            Qij[i] = (StoredIndexedBipartiteSet) vars[0].getSolver().getEnvironment().makeBipartiteSet(qijvalues[i]);
         }
     }
 

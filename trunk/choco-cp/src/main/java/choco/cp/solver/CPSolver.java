@@ -71,8 +71,8 @@ import choco.kernel.common.util.IntIterator;
 import choco.kernel.common.util.UtilAlgo;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.PartiallyStoredVector;
 import choco.kernel.memory.recomputation.EnvironmentRecomputation;
+import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -448,7 +448,7 @@ public class CPSolver implements Solver {
 	}
 
 	public boolean contains(Variable v) {
-		return mapvariables.containsKey(v.getIndice());
+		return mapvariables.containsKey(v.getIndex());
 	}
 
 	public String getSummary() {
@@ -548,7 +548,7 @@ public class CPSolver implements Solver {
 			Iterator<Variable> it = ic.getVariableIterator();
 			while (it.hasNext()) {
 				Variable v = it.next();
-				if (!mapvariables.containsKey(v.getIndice())) {
+				if (!mapvariables.containsKey(v.getIndex())) {
 					v.findManager(model.properties);
 					mod2sol.readModelVariable(v);
 				}
@@ -2364,14 +2364,14 @@ public class CPSolver implements Solver {
 	public <V extends Var> V[] getVar(Class c, Variable... v) {
 		V[] tmp = (V[]) Array.newInstance(c, v.length);
 		for (int i = 0; i < v.length; i++) {
-			tmp[i] = (V) mapvariables.get(v[i].getIndice());
+			tmp[i] = (V) mapvariables.get(v[i].getIndex());
 		}
 		return tmp;
 	}
 
 
 	public Var getVar(Variable v) {
-		return mapvariables.get(v.getIndice());
+		return mapvariables.get(v.getIndex());
 	}
 
 	public Var[] getVar(Variable... v) {
@@ -2379,7 +2379,7 @@ public class CPSolver implements Solver {
 	}
 
 	public IntDomainVar getVar(IntegerVariable v) {
-		return (IntDomainVar) mapvariables.get(v.getIndice());
+		return (IntDomainVar) mapvariables.get(v.getIndex());
 	}
 
 	public IntDomainVar[] getVar(IntegerVariable... v) {
@@ -2387,7 +2387,7 @@ public class CPSolver implements Solver {
 	}
 
 	public RealVar getVar(RealVariable v) {
-		return (RealVar) mapvariables.get(v.getIndice());
+		return (RealVar) mapvariables.get(v.getIndex());
 	}
 
 	public RealVar[] getVar(RealVariable... v) {
@@ -2395,7 +2395,7 @@ public class CPSolver implements Solver {
 	}
 
 	public SetVar getVar(SetVariable v) {
-		return (SetVar) mapvariables.get(v.getIndice());
+		return (SetVar) mapvariables.get(v.getIndex());
 	}
 
 	public SetVar[] getVar(SetVariable... v) {
@@ -2403,7 +2403,7 @@ public class CPSolver implements Solver {
 	}
 
 	public TaskVar getVar(TaskVariable v) {
-		return (TaskVar) mapvariables.get(v.getIndice());
+		return (TaskVar) mapvariables.get(v.getIndex());
 	}
 
 	public TaskVar[] getVar(TaskVariable... v) {
@@ -2412,7 +2412,7 @@ public class CPSolver implements Solver {
 
 
 	public SConstraint getCstr(Constraint ic) {
-        return mapconstraints.get(ic.getIndice());
+        return mapconstraints.get(ic.getIndex());
 	}
 
 	public void setCardReasoning(boolean creas) {

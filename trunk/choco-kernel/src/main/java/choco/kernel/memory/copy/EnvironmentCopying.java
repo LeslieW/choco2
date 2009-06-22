@@ -23,8 +23,7 @@
 package choco.kernel.memory.copy;
 
 import choco.kernel.memory.*;
-import choco.kernel.memory.trailing.IndexedObject;
-import choco.kernel.memory.trailing.StoredIndexedBipartiteSet;
+import static choco.kernel.memory.copy.RecomputableElement.NB_TYPE;
 
 import java.util.ArrayList;
 import java.util.Stack;
@@ -33,15 +32,6 @@ public class EnvironmentCopying extends AbstractEnvironment {
 
 
 	Stack<Integer> clonedWorldIdxStack;
-
-
-	public static int BOOL = 0;
-	public static int INT = 1;
-	public static int VECTOR = 2;
-	public static int INTVECTOR = 3;
-	public static int BITSET = 4;
-
-	public static int NB_TYPE = 5;
 
 
 
@@ -61,7 +51,8 @@ public class EnvironmentCopying extends AbstractEnvironment {
 
 
 	public EnvironmentCopying() {
-		elements = new ArrayList[NB_TYPE];
+        //noinspection unchecked
+        elements = new ArrayList[NB_TYPE];
 		for (int i = 0 ; i < NB_TYPE ; i++ ) elements[i] = new ArrayList<RecomputableElement>();
 
 		clonedWorldIdxStack = new Stack<Integer>();
@@ -69,26 +60,30 @@ public class EnvironmentCopying extends AbstractEnvironment {
 
 	}
 
-	public void worldPush() {
+    public int getNbCopy() {
+		return nbCopy;
+	}
 
+	public void add(RecomputableElement rc) {
+		elements[rc.getType()].add(rc);
+		newEl = true;
+	}
+
+   @Override
+	public void worldPush() {
 		if (newEl) {
 			save.currentElement = new RecomputableElement[elements.length][];
 
 			for (int i = 0 ; i < elements.length ; i++) {
 				save.currentElement[i] = elements[i].toArray(new RecomputableElement[elements[i].size()]);
 			}
-
 			newEl = false;
 		}
-
-
 		this.saveEnv();
 		currentWorld++;
-
 	}
 
 	private void saveEnv() {
-
 		if (!(currentWorld != 0 && currentWorld == clonedWorldIdxStack.peek())) {
 
 			nbCopy++;
@@ -102,136 +97,92 @@ public class EnvironmentCopying extends AbstractEnvironment {
 		}
 	}
 
+    @Override
 	public void worldPop() {
 		save.restore(--currentWorld);
 		clonedWorldIdxStack.pop();
 	}
 
+    @Override
 	public void worldCommit() {
 		//TODO
 		throw (new UnsupportedOperationException());
 	}
 
+    @Override
 	public IStateInt makeInt() {
 		return new RcInt(this);
 	}
 
+    @Override
 	public IStateInt makeInt(int initialValue) {
 		return new RcInt(this,initialValue);
 	}
 
-	@Override
+    @Override
 	public IStateInt makeIntProcedure(IStateIntProcedure procedure,
 			int initialValue) {
-		return null;
+		return new RcIntProcedure(this, procedure, initialValue);
 	}
 
+    @Override
 	public IStateBool makeBool(boolean initialValue) {
 		return new RcBool(this,initialValue);
 	}
 
+    @Override
 	public IStateIntVector makeIntVector() {
 		return new RcIntVector(this);
 	}
 
+    @Override
 	public IStateIntVector makeIntVector(int size, int initialValue) {
 		return new RcIntVector(this,size,initialValue);
 	}
 
+    @Override
 	public IStateIntVector makeIntVector(int[] entries) {
 		return new RcIntVector(this,entries);
 	}
 
-	public <T> PartiallyStoredVector<T> makePartiallyStoredVector() {
-		return new PartiallyStoredVector<T>(this);
-	}
-
-	public PartiallyStoredIntVector makePartiallyStoredIntVector() {
-		return new PartiallyStoredIntVector(this);
-	}
-
-	public AbstractStateBitSet makeBitSet(int size) {
+    @Override
+	public IStateBitSet makeBitSet(int size) {
 		return new RcBitSet(this,size);
 	}
 
-	public AbstractStateBitSet makeBitSet(int size, boolean fixed) {
-		return new RcBitSet(this,size,fixed);
-	}
-
-	public AbstractStateBitSet makeBitSet(int[] entries) {
-		return new RcBitSet(this,0);
-	}
-
-	@Override
-	public IStateIntVector makeBipartiteIntList(int[] entries) {
-		return null;
-	}
-
-	public IStateIntVector makeBipartiteSet(int[] entries) {
-		LOGGER.warning("using trailing data structure inside copying environnement...");
-		return new StoredIndexedBipartiteSet(this,entries);
-	}
-
-	public IStateIntVector makeBipartiteSet(int nbEntries) {
-		LOGGER.warning("using trailing data structure inside copying environnement...");
-		return new StoredIndexedBipartiteSet(this,nbEntries);
-	}
-
-	public IStateIntVector makeBipartiteSet(IndexedObject[] entries) {
-		LOGGER.warning("using trailing data structure inside copying environnement...");
-		return new StoredIndexedBipartiteSet(this,entries);
-	}
-
-	public IStateIntVector makeBipartiteSet(ArrayList<IndexedObject> entries) {
-		LOGGER.warning("using trailing data structure inside copying environnement...");
-		return new StoredIndexedBipartiteSet(this,entries);
-	}
-
-	/**
-	 * Increase the size of the shared bi partite set,
-	 * it HAS to be called before the end of the environment creation
-	 * BEWARE: be sure you are correctly calling this method
-	 *
-	 * @param gap
-	 */
-	@Override
-	public void increaseSizeOfSharedBipartiteSet(int gap) {
-	}
-
+    @Override
 	public IStateDouble makeFloat() {
-		return null;
+		return new RcDouble(this);
 	}
 
+    @Override
 	public IStateDouble makeFloat(double initialValue) {
-		return null;
+		return new RcDouble(this, initialValue);
 	}
 
+    @Override
 	public IStateLong makeLong() {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+		return new RcLong(this);
 	}
 
+    @Override
 	public IStateLong makeLong(int init) {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+		return new RcLong(this, init);
 	}
 
+    @Override
 	public <T> IStateVector<T> makeVector() {
 		return new RcVector<T>(this);
 	}
 
-	public int getNbCopy() {
-		return nbCopy;
-	}
-
-	public void add(RecomputableElement rc) {
-		elements[rc.getType()].add(rc);
-		newEl = true;
-	}
-
-	public IStateIntInterval makeIntInterval(int initialInf, int initialSup) {
-		return new RCIntInterval(this, initialInf, initialSup);
-	}
-
+    @Override
 	public IStateBinaryTree makeBinaryTree(int inf, int sup) {
-		return null;
+        return null;
 	}
+
+    @Override
+    public IStateObject makeObject(Object obj){
+        return new RcObject(this, obj);
+    }
 }
+

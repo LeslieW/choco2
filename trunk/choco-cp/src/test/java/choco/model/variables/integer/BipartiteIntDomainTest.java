@@ -291,7 +291,7 @@ public class BipartiteIntDomainTest {
         } catch (ContradictionException e) {
             s.worldPop();
         }
-        for (int i = 15; i > 0; i--) {
+        for (int i = 15; i > 1; i--) {
             Assert.assertTrue("y add "+i, yDom.contains(i));
             Assert.assertTrue("y size inf "+i, yDom.getSize()==16-i);
             s.worldPop();

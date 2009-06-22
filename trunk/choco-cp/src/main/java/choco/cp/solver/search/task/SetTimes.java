@@ -25,8 +25,8 @@ package choco.cp.solver.search.task;
 
 import choco.IPretty;
 import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.trailing.StoredBitSet;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.AbstractLargeIntBranching;
@@ -135,10 +135,10 @@ public class SetTimes extends AbstractLargeIntBranching {
 	protected final IStateInt[] flags;
 
 	/** The subset of selectable tasks. */
-	protected final StoredBitSet select;
+	protected final IStateBitSet select;
 
 	/** The subset of non selectable tasks. */
-	protected final StoredBitSet nselect;
+	protected final IStateBitSet nselect;
 
 	/** The tasks list. */
 	protected final List<TaskVar> tasksL;
@@ -167,9 +167,9 @@ public class SetTimes extends AbstractLargeIntBranching {
 		taskIndexM=new TObjectIntHashMap<TaskVar>(tasksL.size());
 		this.selector=selector;
 		final IEnvironment env=solver.getEnvironment();
-		select=(StoredBitSet) env.makeBitSet(tasks.size());
+		select=env.makeBitSet(tasks.size());
 		select.set(0, this.tasksL.size());
-		nselect=(StoredBitSet) env.makeBitSet(tasks.size());
+		nselect=env.makeBitSet(tasks.size());
 		flags=new IStateInt[this.tasksL.size()];
 		for (int i = 0; i < flags.length; i++) {
 			flags[i]=env.makeInt();

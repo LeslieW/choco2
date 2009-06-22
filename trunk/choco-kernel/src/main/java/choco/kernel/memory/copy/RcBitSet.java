@@ -43,14 +43,7 @@ public class RcBitSet extends AbstractStateBitSet implements RecomputableElement
     private int timeStamp;
 
 
-
-
     public RcBitSet(final EnvironmentCopying env, final int initialSize) {
-        this(env, initialSize, false);
-    }
-
-    public RcBitSet(final EnvironmentCopying env, final int initialSize,
-                    final boolean fixed) {
         representedBy = new BitSet(initialSize);
         timeStamp = env.getWorldIndex();
         this.env = env;
@@ -212,5 +205,13 @@ public class RcBitSet extends AbstractStateBitSet implements RecomputableElement
 
     public BitSet getBitSet() {
         return representedBy;
+    }
+
+    public IStateBitSet copy() {
+        //if (!sizeIsSticky.get()) trimToSize();
+        RcBitSet result = new RcBitSet(env, this.size());
+        result.representedBy = (BitSet)this.representedBy.clone();
+        result.timeStamp = this.timeStamp;
+        return result;
     }
 }

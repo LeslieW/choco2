@@ -23,8 +23,7 @@
 
 package choco.kernel.memory.trailing;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import choco.kernel.memory.trailing.trail.StoredVectorTrail;
 
 /**
  * <p>
@@ -42,7 +41,7 @@ public final class StoredVector<E> implements choco.kernel.memory.IStateVector<E
 	 * Contains time stamps for all entries (the world index of the last update for each entry)
 	 */
 
-	int[] worldStamps;
+    public int[] worldStamps;
 
 	/**
 	 * A backtrackable search with the size of the vector.
@@ -170,7 +169,7 @@ public final class StoredVector<E> implements choco.kernel.memory.IStateVector<E
 	 * Sets an element without storing the previous value.
 	 */
 
-	E _set(int index, Object val, int stamp) {
+    public E _set(int index, Object val, int stamp) {
 		E oldval = (E)elementData[index];
 		elementData[index] = val;
 		worldStamps[index] = stamp;
