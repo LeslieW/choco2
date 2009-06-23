@@ -22,8 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.pack;
 
+import static choco.cp.solver.SettingType.DYNAMIC_LB;
 import choco.cp.solver.constraints.BitFlags;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.opres.pack.AbstractHeurisic1BP;
+import choco.kernel.common.opres.pack.BestFit1BP;
+import choco.kernel.common.opres.pack.LowerBoundFactory;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.common.util.UtilAlgo;
 import choco.kernel.solver.ContradictionException;
@@ -32,6 +36,8 @@ import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.set.AbstractLargeSetIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
+
+import gnu.trove.TIntArrayList;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -49,6 +55,8 @@ import java.util.List;
 public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IPackSConstraint {
 
 	public final PackFiltering filtering;
+	
+	protected final BoundNumberOfBins bounds;
 
 	protected final BinStatus status;
 
@@ -61,6 +69,7 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 	/** The bin of each item. */
 	protected final IntDomainVar[] bins;
 
+	public final BitFlags flags;
 
 	public PrimalDualPack(SetVar[] itemSets, IntDomainVar[] loads, IntDomainVar[] sizes,
 			IntDomainVar[] bins,IntDomainVar nbNonEmpty, BitFlags  flags) {
@@ -68,7 +77,9 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 		this.loads=loads;
 		this.sizes=sizes;
 		this.bins =bins;
-		filtering = new PackFiltering(this,new PackBound(), flags);
+		this.flags = flags;
+		this.bounds = new BoundNumberOfBins();
+		filtering = new PackFiltering(this,flags);
 		status = new BinStatus(this.sizes);
 	}
 
@@ -89,16 +100,16 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 		return loads[bin].getSup() - getRequiredSpace(bin);
 	}
 
-	protected boolean isSetEvent(final int varIdx) {
-		return varIdx<svars.length;
+	protected final boolean isSetEvent(final int varIdx) {
+		return varIdx < svars.length;
 	}
 
-	protected int getItemIndex(final int varIdx) {
+	protected final int getItemIndex(final int varIdx) {
 		int idx = varIdx-(2*loads.length+sizes.length);
 		return idx<0 || idx == sizes.length ? -1 : idx;
 	}
 
-	protected int getItemCindice(final int item) {
+	protected final int getItemCindice(final int item) {
 		return int_cIndices[loads.length+sizes.length+item];
 	}
 
@@ -119,40 +130,40 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 
 
 	@Override
-	public int getNbBins() {
+	public final int getNbBins() {
+		return loads.length;
+	}
+
+	@Override
+	public final int getNbItems() {
 		return sizes.length;
 	}
 
-	@Override
-	public int getNbItems() {
-		return loads.length;
-	}
-	
 
 	@Override
-	public IntDomainVar[] getLoads() {
+	public final IntDomainVar[] getLoads() {
 		return loads;
 	}
 
 
 	@Override
-	public IntDomainVar[] getSizes() {
+	public final IntDomainVar[] getSizes() {
 		return sizes;
 	}
 
 	@Override
-	public BinStatus getStatus(int bin) {
+	public final BinStatus getStatus(int bin) {
 		status.set(bin, svars[bin]);
 		return status;
 	}
 
 	@Override
-	public boolean isFilled(int bin) {
+	public final boolean isFilled(int bin) {
 		return svars[bin].isInstantiated();
 	}
 
 	@Override
-	public boolean pack(int item, int bin) throws ContradictionException {
+	public final boolean pack(int item, int bin) throws ContradictionException {
 		boolean res = svars[bin].addToKernel(item, set_cIndices[bin]);
 		if(bins[item].canBeInstantiatedTo(bin)) {
 			final IntIterator iter = bins[item].getDomain().getIterator();
@@ -172,7 +183,7 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 	}
 
 	@Override
-	public boolean remove(int item, int bin) throws ContradictionException {
+	public final boolean remove(int item, int bin) throws ContradictionException {
 		boolean res = svars[bin].remFromEnveloppe(item, set_cIndices[bin]);
 		res |= bins[item].removeVal(bin, getItemCindice(item));
 		if(bins[item].isInstantiated()) {
@@ -184,23 +195,24 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 
 
 	@Override
-	public boolean updateInfLoad(int bin, int load) throws ContradictionException {
+	public final boolean updateInfLoad(int bin, int load) throws ContradictionException {
 		return loads[bin].updateInf(load, int_cIndices[bin]);
 
 	}
 
 	@Override
-	public void updateNbNonEmpty(Point bounds) throws ContradictionException {
+	public final boolean updateNbNonEmpty(Point bounds) throws ContradictionException {
 		final int idx = ivars.length-1;
 		//		if(bounds.x>ivars[idx].getSup()) {
 		//			LOGGER.severe("fail");
 		//		}
 		ivars[idx].updateInf(bounds.x, int_cIndices[idx]);
 		ivars[idx].updateSup(bounds.y, int_cIndices[idx]);
+		return false;
 	}
 
 	@Override
-	public boolean updateSupLoad(int bin, int load) throws ContradictionException {
+	public final boolean updateSupLoad(int bin, int load) throws ContradictionException {
 		return loads[bin].updateSup(load, int_cIndices[bin]);
 	}
 
@@ -216,7 +228,7 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 		return false;
 	}
 
-	protected void checkBounds(int item) throws ContradictionException {
+	protected final void checkBounds(int item) throws ContradictionException {
 		bins[item].updateInf(0, getItemCindice(item));
 		bins[item].updateSup(svars.length-1, getItemCindice(item));
 	}
@@ -366,6 +378,12 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 	@Override
 	public void propagate() throws ContradictionException {
 		filtering.propagate();
+		//feasibility test (DDFF)
+		bounds.reset();
+		updateNbNonEmpty(flags.contains(DYNAMIC_LB) ?
+				bounds.computeBoundsDDFF() :
+					bounds.computeBounds()
+		);
 
 	}
 
@@ -376,30 +394,49 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 
 
 
-	class PackBound extends AbstractNbNonEmptyBound {
+	final class BoundNumberOfBins {
 
-		List<Integer> binsLB = new LinkedList<Integer>();
+		private final int[] itemsLB;
+		
+		private final TIntArrayList binsLB;
+		
+		private final int[] remainingSpace;
 
-		int[] remainingSpace;
+		private int nextIndex;
 
-		//Map<Integer,>
-		public PackBound() {
-			super(loads.length, sizes.length);
-			remainingSpace = new int[loads.length];
+		protected int nbEmpty;
+
+		protected int nbSome;
+
+		protected int nbFull;
+
+		protected int nbBinsLB;
+
+		
+
+		protected int capacityLB;
+
+		public BoundNumberOfBins() {
+			super();
+			itemsLB=new int[getNbBins() + getNbItems()];
+			binsLB = new TIntArrayList(getNbBins());
+			remainingSpace = new int[getNbBins()];
 		}
 
 
-		@Override
-		protected void reset() {
+		public void reset() {
+			nbEmpty=0;
+			nbSome = 0;
+			nbFull=0;
+			nbBinsLB=0;
+			capacityLB=0;
 			Arrays.fill(remainingSpace, 0);
 			binsLB.clear();
-			super.reset();
+			this.initialize();
 		}
 
-
-		@Override
-		protected void initialize() {
-			for (int b = 0; b < nbBins; b++) {
+		private void initialize() {
+			for (int b = 0; b < getNbBins(); b++) {
 				if(svars[b].isInstantiated()) {
 					if(loads[b].isInstantiatedTo(0)) {nbEmpty++;}
 					else {nbFull++;}
@@ -415,11 +452,10 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 			nbBinsLB = binsLB.size();
 		}
 
-		@Override
-		protected int setBinItems(int[] dest, int begin) {
+		private int setBinItems(int[] dest, int begin) {
 			int idx=begin;
-			for (int b : binsLB) {
-				final int s = capacityLB - remainingSpace[b];
+			for (int b = 0; b < binsLB.size(); b++) {
+				final int s = capacityLB - remainingSpace[binsLB.getQuick(b)];
 				if(s > 0) {
 					dest[idx++] = s;
 				}
@@ -427,8 +463,7 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 			return idx;
 		}
 
-		@Override
-		protected int setUnpackedItems(int[] dest, int begin) {
+		private int setUnpackedItems(int[] dest, int begin) {
 			int idx=begin;
 			for (int i = 0; i < bins.length; i++) {
 				if(bins[i].isInstantiated()) {
@@ -441,6 +476,36 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 			}
 			return idx;
 		}
+
+		private int[] getItems() {
+			return Arrays.copyOf(itemsLB, nextIndex);
+		}
+
+		private void computeItems() {
+			nextIndex=0;
+			nextIndex= setUnpackedItems(itemsLB, nextIndex);
+			nextIndex= setBinItems(itemsLB, nextIndex);
+		}
+
+		public Point computeBounds() {
+			return new Point(nbFull+nbSome,getNbBins() -nbEmpty);
+		}
+
+		public Point computeBoundsDDFF() {
+			computeItems();
+			if(nextIndex>0) {
+				final int[] items=getItems();
+				final int ub=new BestFit1BP(items,capacityLB,AbstractHeurisic1BP.SORT).computeUB();
+				if(ub>nbBinsLB) {
+					//heuristic solution is not feasible
+					final int lb=nbFull + LowerBoundFactory.computeL_DFF_1BP(items, capacityLB,ub);
+					return new Point(lb,getNbBins() - nbEmpty);
+				}
+			}
+			return computeBounds();
+		}
+
 	}
+
 
 }
