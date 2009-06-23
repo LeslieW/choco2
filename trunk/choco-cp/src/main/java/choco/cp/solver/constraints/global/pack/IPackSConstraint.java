@@ -73,7 +73,7 @@ public interface IPackSConstraint {
 	 * update the number of non empty bins.
 	 *
 	 */
-	void updateNbNonEmpty(Point bounds) throws ContradictionException;
+	boolean updateNbNonEmpty(Point bounds) throws ContradictionException;
 
 	/**
 	 * Pack an item into a bin

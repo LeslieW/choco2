@@ -23,11 +23,9 @@
 package choco.cp.solver.search.task;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import choco.Choco;
-import choco.cp.solver.CPSolver;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.solver.ContradictionException;

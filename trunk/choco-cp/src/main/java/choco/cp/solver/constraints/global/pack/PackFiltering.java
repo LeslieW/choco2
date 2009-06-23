@@ -22,12 +22,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.pack;
 
-import static choco.cp.solver.SettingType.*;
+import static choco.cp.solver.SettingType.ADDITIONAL_RULES;
+import static choco.cp.solver.SettingType.DYNAMIC_LB;
+import static choco.cp.solver.SettingType.FILL_BIN;
+
+import java.awt.Point;
+import java.util.BitSet;
+
 import choco.cp.solver.constraints.BitFlags;
 import choco.kernel.common.opres.AbstractNoSum;
-import choco.kernel.common.opres.pack.AbstractHeurisic1BP;
-import choco.kernel.common.opres.pack.BestFit1BP;
-import choco.kernel.common.opres.pack.LowerBoundFactory;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.common.util.DisposableIntIterator;
 import choco.kernel.common.util.IntIterator;
@@ -37,10 +40,6 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
-
-import java.awt.*;
-import java.util.Arrays;
-import java.util.BitSet;
 
 
 /**
@@ -71,13 +70,8 @@ public class PackFiltering {
 
 	public final IPackSConstraint cstr;
 	
-	public final BitFlags flags;
+	protected final BitFlags flags;
 
-	/** The number of bins. */
-	public final int nbBins;
-
-	/** The number of items. */
-	public final int nbItems;
 
 	/** The sizes of the items. */
 	protected final IntDomainVar[] sizes;
@@ -86,8 +80,6 @@ public class PackFiltering {
 	protected final IntDomainVar[] loads;
 
 	//general propagation info
-
-	protected final AbstractNbNonEmptyBound bounds;
 
 	/** information about a given bin. */
 	protected BinStatus status;
@@ -106,31 +98,27 @@ public class PackFiltering {
 
 	/**
 	 * Instantiates a new 1BP constraint.
-	 *
 	 * @param assigned contains the set of items which are packed into the bin
 	 * @param loads the loads contains the load of the bin
 	 */
-	public PackFiltering(IPackSConstraint cstr, AbstractNbNonEmptyBound bounds, BitFlags flags) {
+	public PackFiltering(IPackSConstraint cstr, BitFlags flags) {
 		this.cstr = cstr;
 		this.sizes = cstr.getSizes();
 		this.loads = cstr.getLoads();
-		this.bounds=bounds;
-		nbBins = loads.length;
-		nbItems=sizes.length;
 		loadSum = new SumDataStruct(loads,computeTotalSize());
 		this.flags = flags;
 	}
 
 	
-	protected void setSolver(Solver solver) {
-		availableBins = solver.getEnvironment().makeBipartiteIntList(ChocoUtil.zeroToN(nbBins));
+	protected final void setSolver(Solver solver) {
+		availableBins = solver.getEnvironment().makeBipartiteIntList(ChocoUtil.zeroToN( cstr.getNbBins()));
 	}
 	
 	/**
 	 * Compute the total size and check that sizes are constant.
 	 *
 	 */
-	private long computeTotalSize() {
+	private final long computeTotalSize() {
 		long l=0;
 		int last=Integer.MAX_VALUE;
 		for (int i = 0; i < sizes.length; i++) {
@@ -316,7 +304,7 @@ public class PackFiltering {
 	 *
 	 * @throws ContradictionException the contradiction exception
 	 */
-	protected void noSumBinLoads(final AbstractNoSum nosum,final int bin) throws ContradictionException {
+	protected final void noSumBinLoads(final AbstractNoSum nosum,final int bin) throws ContradictionException {
 		if(nosum.noSum(loads[bin].getInf()-status.getRequiredLoad(), loads[bin].getInf()-status.getRequiredLoad())) {
 			updateInfLoad(bin, status.getRequiredLoad()+nosum.getAlphaBeta().y);
 		}
@@ -369,12 +357,6 @@ public class PackFiltering {
 			}
 		}
 		updateAvailableBins();
-		//feasibility test (DDFF)
-		bounds.reset();
-		cstr.updateNbNonEmpty(flags.contains(DYNAMIC_LB) ?
-				bounds.computeBoundsDDFF() :
-					bounds.computeBounds()
-		);
 	}
 
 	/**
@@ -396,7 +378,7 @@ public class PackFiltering {
 	}
 
 
-	class NoSum extends AbstractNoSum {
+	final class NoSum extends AbstractNoSum {
 
 		public NoSum() {
 			super(PackFiltering.this.sizes);
@@ -458,7 +440,7 @@ public class PackFiltering {
  * used during propagation.
  *
  */
-class BinStatus {
+final class BinStatus {
 
 	private final IntDomainVar[] sizes;
 
@@ -551,7 +533,7 @@ class BinStatus {
 }
 
 
-class SumDataStruct {
+final class SumDataStruct {
 
 	/** variables to sum */
 	protected final IntDomainVar[] vars;
@@ -584,89 +566,3 @@ class SumDataStruct {
 	}
 }
 
-
-
-/**
- * An internal structure used to compute dynamic lower bounds.
- */
-abstract class AbstractNbNonEmptyBound {
-
-	protected int nextIndex;
-
-	protected final int nbBins;
-
-	protected int nbEmpty;
-
-	protected int nbSome;
-
-	protected int nbFull;
-
-	private int lb;
-
-	protected int nbBinsLB;
-
-	private final int[] itemsLB;
-
-	protected int capacityLB;
-
-	/**
-	 * Instantiates a new lower bound.
-	 */
-	public AbstractNbNonEmptyBound(int nbBins,int nbItems) {
-		super();
-		this.nbBins=nbBins;
-		itemsLB=new int[nbBins+nbItems];
-	}
-
-
-	protected void reset() {
-		nbEmpty=0;
-		nbSome = 0;
-		nbFull=0;
-		nbBinsLB=0;
-		capacityLB=0;
-		this.initialize();
-	}
-
-	protected abstract void initialize();
-
-	/**
-	 * Computes the unpacked items.
-	 */
-	protected abstract int setUnpackedItems(int[] dest,int begin);
-
-	/**
-	 * Compute the set of item used to fill bins.
-	 */
-	protected abstract int setBinItems(int[] dest,int begin);
-
-
-	public int[] getItems() {
-		return Arrays.copyOf(itemsLB, nextIndex);
-	}
-
-	protected void computeItems() {
-		nextIndex=0;
-		nextIndex= setUnpackedItems(itemsLB, nextIndex);
-		nextIndex= setBinItems(itemsLB, nextIndex);
-	}
-
-	public Point computeBounds() {
-		return new Point(nbFull+nbSome,nbBins-nbEmpty);
-	}
-
-	public Point computeBoundsDDFF() {
-		computeItems();
-		if(nextIndex>0) {
-			final int[] items=getItems();
-			final int ub=new BestFit1BP(items,capacityLB,AbstractHeurisic1BP.SORT).computeUB();
-			if(ub>nbBinsLB) {
-				//heuristic solution is not feasible
-				lb=nbFull + LowerBoundFactory.computeL_DFF_1BP(items, capacityLB,ub);
-				return new Point(lb,nbBins-nbEmpty);
-			}
-		}
-		return computeBounds();
-	}
-
-}

@@ -3,6 +3,11 @@ package choco.cp.solver.search.task;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.ITask;
 
+/**
+ * @author Arnaud Malapert</br> 
+ * @since 18 juin 2009 version 2.1.0</br>
+ * @version 2.1.0</br>
+ */
 public final class StoredPrecedence {
 
 	public final ITask t1;
@@ -32,6 +37,11 @@ public final class StoredPrecedence {
 	
 	public final int getDomMesure() {
 		return t1.getSlack() + t2.getSlack() + 2;
+	}
+	
+	@Override
+	public String toString() {
+		return "("+t1.getName()+","+t2.getName()+")";
 	}
 	
 }
