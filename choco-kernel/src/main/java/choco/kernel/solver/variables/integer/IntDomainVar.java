@@ -44,9 +44,6 @@ package choco.kernel.solver.variables.integer;
  *                    N. Jussien   1999-2008      *
  **************************************************/
 
-import java.util.logging.Logger;
-
-import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 /** History:
@@ -395,7 +392,4 @@ public interface IntDomainVar extends IntVar {
 	 */
 
 	public boolean instantiate(int x, int idx) throws ContradictionException;
-
-	public void updateNbVarInstanciated();
-
 }

@@ -23,14 +23,12 @@
 package choco.kernel.solver.variables;
 
 import choco.kernel.common.HashCoding;
-import choco.kernel.common.util.DisposableIntIterator;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.VarEvent;
 
@@ -305,22 +303,6 @@ public abstract class AbstractVar implements Var {
 	 * @throws choco.kernel.solver.ContradictionException
 	 */
 	public void fail() throws ContradictionException {
-	}
-
-
-	/**
-	 * CPRU 07/12/2007: DomOverFailureDeg implementation
-	 * This method takes into account the instantiation of the variables.
-	 * CPRU_BUG_1877365
-	 *
-	 */
-	public void updateNbVarInstanciated(){
-		DisposableIntIterator cstIter = constraints.getIndexIterator();
-		while(cstIter.hasNext()) {
-			AbstractSConstraint cstr = (AbstractSConstraint) constraints.get(cstIter.next());
-			cstr.decNbVarNotInst();
-		}
-		cstIter.dispose();
 	}
 
     /**

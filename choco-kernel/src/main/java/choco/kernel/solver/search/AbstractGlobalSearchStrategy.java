@@ -34,7 +34,6 @@ import choco.kernel.solver.SolverException;
 import choco.kernel.solver.branch.AbstractBranching;
 import choco.kernel.solver.branch.AbstractIntBranching;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -171,15 +170,6 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
     endTreeSearch();
   }*/
 
-	public void initializeDegreeOfVariables() {
-		for (int i = 0; i < solver.getNbIntVars(); i++) {
-			IntDomainVar v = (IntDomainVar) solver.getIntVar(i);
-			if (v.isInstantiated()) {
-				v.updateNbVarInstanciated();
-			}
-		}
-	}
-
 	/**
 	 * main entry point: searching for one solution
 	 * Note: the initial propagation must be done before pushing any world level.
@@ -200,9 +190,8 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 			if (stopAtFirstSol) {
 				nextSolution();
 			} else {
-				while (nextSolution() == Boolean.TRUE) {
-					;
-				}
+                //noinspection StatementWithEmptyBody
+                while (nextSolution() == Boolean.TRUE);
 			}
 			//model.worldPop();
 			if ((maxNbSolutionStored > 0) && (!stopAtFirstSol) && existsSolution()) {
@@ -238,7 +227,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	public void endTreeSearch() {
 		if (LOGGER.isLoggable(Level.CONFIG)) {
-			LOGGER.log(Level.CONFIG, "=== solve => {0} solutions\n\twith {1}", new Object[]{Integer.valueOf(nbSolutions), runtimeStatistics()});
+			LOGGER.log(Level.CONFIG, "=== solve => {0} solutions\n\twith {1}", new Object[]{nbSolutions, runtimeStatistics()});
 		}
 	}
 

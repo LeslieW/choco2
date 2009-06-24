@@ -132,7 +132,6 @@ public abstract class AbstractIntDomain implements IntDomain {
       if (val == getSup()) {
           //instantiate(getSup(), cause);
           restrict(val);
-          variable.updateNbVarInstanciated();
           solver.getPropagationEngine().postInstInt(variable, cause);
       }
       else
@@ -162,7 +161,6 @@ public abstract class AbstractIntDomain implements IntDomain {
       if (val == getInf()) {
 //        instantiate(getInf(), cause);
           restrict(val);
-          variable.updateNbVarInstanciated();
           solver.getPropagationEngine().postInstInt(variable, cause);
       } else
         solver.getPropagationEngine().postUpdateInf(variable, cause);
@@ -291,8 +289,6 @@ public abstract class AbstractIntDomain implements IntDomain {
       } else {
         restrict(x);
       }
-      //FR_1873619 CPRU: DomOverDeg+DomOverWDeg
-      variable.updateNbVarInstanciated();
       return true;
     }
   }
@@ -364,7 +360,6 @@ public abstract class AbstractIntDomain implements IntDomain {
         _updateInf(x + 1, idx);
         if (getInf() == supv) {
             restrict(supv);
-            variable.updateNbVarInstanciated();
             //_instantiate(supv, idx);
         }
         return true;
@@ -372,7 +367,6 @@ public abstract class AbstractIntDomain implements IntDomain {
         _updateSup(x - 1, idx);
         if (getSup() == infv) {
             restrict(infv);
-            variable.updateNbVarInstanciated();            
             //_instantiate(infv, idx);
         }
         return true;
