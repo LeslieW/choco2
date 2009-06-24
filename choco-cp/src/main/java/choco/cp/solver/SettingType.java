@@ -40,74 +40,76 @@ public enum SettingType {
 	 * <b>dominance rule:</b> Fill a bin when an item fit into pertfectly. equal-sized items and bins must be equivalent
 	 */
 	FILL_BIN("fill bins","FB", "cp:pack:fill", 1<< 2),
+	
+	LAST_BINS_EMPTY("Empty bins are the last ones","LBE", "cp:pack:lbe", 1<< 3),
 
 	//////////////////////// CUMULATIVE ////////////////////////
 
-	TASK_INTERVAL("task interval", "TI","cp:cumul:ti", 1<< 3),
+	TASK_INTERVAL("task interval", "TI","cp:cumul:ti", 1<< 4),
 
-	TASK_INTERVAL_SLOW("task interval", "sTI","cp:cumul:sti", 1<< 4),
+	TASK_INTERVAL_SLOW("task interval", "sTI","cp:cumul:sti", 1<< 5),
 	/**
 	 * Vilim theta lambda tree +
 	 * lazy computation of the inner maximization of the edge finding rule of
 	 * Van hentenrick and Mercier
 	 */
-	VILIM_CEF_ALGO("cumulative edge finding", "cEF","cp:cumul:cef", 1<< 5),
+	VILIM_CEF_ALGO("cumulative edge finding", "cEF","cp:cumul:cef", 1<< 6),
 	/**
 	 *  Simple n^2 \times k algorithm (lazy for R) (CalcEF in the paper of Van Hentenrick)
 	 */
-	VHM_CEF_ALGO_N2K("cumulative edge finding", "scEF","cp:cumul:scef", 1<< 6),
+	VHM_CEF_ALGO_N2K("cumulative edge finding", "scEF","cp:cumul:scef", 1<< 7),
 	
 	/**
 	 * Automatic extraction of a disjunctive constraint (if any) from a cumulative constraint
 	 */
-	EXTRACT_DISJ("automatic disjunctive extraction","ADE","cp:cumul:ade", 1<< 7),
+	EXTRACT_DISJ("automatic disjunctive extraction","ADE","cp:cumul:ade", 1<< 8),
 	
 	//////////////////////// DISJUNCTIVE ////////////////////////
 	/**
 	 * Overload checking rule ( O(n*log(n)), Vilim), also known as task interval.
 	 */
-	OVERLOAD_CHECKING("overload checking","OC","cp:unary:oc", 1<< 8),
+	OVERLOAD_CHECKING("overload checking","OC","cp:unary:oc", 1<< 9),
 	/**
 	 * NotFirst/NotLast rule ( O(n*log(n)), Vilim). recommended.
 	 */
-	NF_NL("not first/not last","NFNL","cp:unary:nfnl", 1<< 9),
+	NF_NL("not first/not last","NFNL","cp:unary:nfnl", 1<< 10),
 	/**
 	 * Detectable Precedence rule ( O(n*log(n)), Vilim)
 	 *
 	 */
-	DETECTABLE_PRECEDENCE("detectable precedences","DP","cp:unary:dp", 1<< 10),
+	DETECTABLE_PRECEDENCE("detectable precedences","DP","cp:unary:dp", 1<< 11),
 	/**
 	 * disjunctive Edge Finding rule ( O(n*log(n)), Vilim). recommended
 	 */
-	EDGE_FINDING_D("disjunctive edge finding", "dEF","cp:unary:ef", 1<< 11),
+	EDGE_FINDING_D("disjunctive edge finding", "dEF","cp:unary:ef", 1<< 12),
 	
 
 	/**
 	 * use filtering algorithm proposed by Vilim. nested loop, each rule is applied until it reach it fixpoint.
 	 */
-	DEFAULT_FILTERING("Default filtering algorithm", "dF","cp:unary:df", 1<< 12),
+	DEFAULT_FILTERING("Default filtering algorithm", "dF","cp:unary:df", 1<< 13),
 
 	/**
 	 * use filtering algorithm proposed by Vilim. nested loop, each rule is applied until it reach it fixpoint.
 	 */
-	VILIM_FILTERING("Vilim filtering algorithm", "vF","cp:unary:vf", 1<< 13),
+	VILIM_FILTERING("Vilim filtering algorithm", "vF","cp:unary:vf", 1<< 14),
 
 	/**
 	 * use filtering algorithm proposed by Vilim. nested loop, each rule is applied until it reach it fixpoint.
 	 */
-	SINGLE_RULE_FILTERING("A single filtering rule (Debug only)", "srF","cp:unary:srf", 1<< 14),
+	SINGLE_RULE_FILTERING("A single filtering rule (Debug only)", "srF","cp:unary:srf", 1<< 15),
 	
 	/**
 	 * use Gueret-Prins forbidden intervals techniques.
 	 */
-	FORBIDDEN_INTERVALS("Forbidden intervals","FI","cp:unary:fi",1 << 15),
+	FORBIDDEN_INTERVALS("Forbidden intervals","FI","cp:unary:fi",1 << 16),
 
 	//////////////////////// PRECEDENCE ////////////////////////
 
 	/**
 	 * pert constraint settings. computes shortest path of the entire PERT graph instead of the subgraph touched by events.
 	 */
-	NOT_INCREMENTAL_PERT("basic pert propagation","NIP","cp:pert:noincr", 1<< 16);
+	NOT_INCREMENTAL_PERT("basic pert propagation","NIP","cp:pert:noincr", 1<< 17);
 
 
 		

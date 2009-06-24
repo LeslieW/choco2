@@ -81,7 +81,7 @@ public abstract class AbstractResourceManager extends IntConstraintManager {
 
 	protected static BitFlags readPackSettings(final Set<String> options) {
 		final BitFlags flags = new BitFlags();
-		flags.read(options, ADDITIONAL_RULES, DYNAMIC_LB, FILL_BIN);
+		flags.read(options, ADDITIONAL_RULES, DYNAMIC_LB, FILL_BIN, LAST_BINS_EMPTY);
 		return flags;
 	}
 

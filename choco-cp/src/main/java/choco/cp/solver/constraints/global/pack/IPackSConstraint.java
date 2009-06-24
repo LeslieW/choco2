@@ -25,8 +25,6 @@ package choco.cp.solver.constraints.global.pack;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.awt.*;
-
 /**
  * @author Arnaud Malapert</br>
  * @since 5 déc. 2008 <b>version</b> 2.0.1</br>
@@ -73,7 +71,7 @@ public interface IPackSConstraint {
 	 * update the number of non empty bins.
 	 *
 	 */
-	boolean updateNbNonEmpty(Point bounds) throws ContradictionException;
+	boolean updateNbNonEmpty(int min, int max) throws ContradictionException;
 
 	/**
 	 * Pack an item into a bin
