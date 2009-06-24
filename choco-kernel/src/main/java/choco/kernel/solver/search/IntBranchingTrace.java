@@ -75,4 +75,12 @@ public final class IntBranchingTrace {
 	  return branchingObject +" branch "+branchIndex;
 	}
 
+    
+    public IntBranchingTrace copy() {
+        IntBranchingTrace t = new IntBranchingTrace(this.branching);
+        t.branchingObject = this.branchingObject;
+        t.branchIndex = this.branchIndex;
+        return t;
+    }
+
 }

@@ -30,6 +30,8 @@ import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.memory.recomputation.EnvironmentRecomputation;
+import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -243,5 +245,37 @@ public class ClausesTest {
         s.read(mod);
         s.solveAll();
         assertEquals(s.getNbSolutions(), 6);
+    }
+
+
+    @Test
+    public void test3() {
+        int nbsol = computeNbSol3();
+        for (int seed = 0; seed < 1; seed++) {
+            CPModel mod = new CPModel();
+            CPSolver s = new CPSolver(new EnvironmentRecomputation());
+            IntegerVariable[] vars = makeIntVarArray("b", 3, 0, 1, "cp:binary");
+            mod.addVariables(vars);
+            s.read(mod);
+            IntDomainVar[] bvs = s.getVar(vars);
+            ClauseStore store = new ClauseStore(s.getVar(vars));
+            store.addClause(new IntDomainVar[]{bvs[0]}, new IntDomainVar[]{bvs[1], bvs[2]});
+            s.post(store);
+            s.setVarIntSelector(new RandomIntVarSelector(s, seed));
+            s.setValIntSelector(new RandomIntValSelector(seed));
+            s.solveAll();
+            assertEquals(nbsol, s.getNbSolutions());
+        }
+    }
+
+    private int computeNbSol3() {
+        CPModel mod = new CPModel();
+        CPSolver s = new CPSolver(new EnvironmentTrailing());
+        IntegerVariable[] v = makeIntVarArray("b", 3, 0, 1, "cp:binary");
+        mod.addVariables(v);
+        mod.addConstraint(or(eq(v[0], 1), eq(v[1], 0), eq(v[2], 0)));
+        s.read(mod);
+        s.solveAll();
+        return s.getNbSolutions();
     }
 }

@@ -51,8 +51,14 @@ public class RcSave implements RecomputableElement {
     private Map<Integer,long []> saveLong;
     private Map<Integer,double []> saveDouble;
     private Map<Integer,Object []> saveObject;
-
-
+//    private TIntObjectHashMap<int []> saveInt;
+//    private TIntObjectHashMap<Object[][]> saveVector;
+//    private TIntObjectHashMap<int[][]> saveIntVector;
+//    private TIntObjectHashMap<boolean[]> saveBool;
+//    private TIntObjectHashMap<BitSet[]> saveBitSet;
+//    private TIntObjectHashMap<long []> saveLong;
+//    private TIntObjectHashMap<double []> saveDouble;
+//    private TIntObjectHashMap<Object []> saveObject;
 
 
 
@@ -60,8 +66,6 @@ public class RcSave implements RecomputableElement {
         environment = env;
         currentElement = env.test;
         lastSavedWorldIndex = env.getWorldIndex();
-
-
 
         saveInt = new HashMap<Integer,int []>();
         saveVector = new HashMap<Integer,Object[][]>();
@@ -71,6 +75,15 @@ public class RcSave implements RecomputableElement {
         saveLong = new HashMap<Integer, long[]>();
         saveDouble = new HashMap<Integer, double[]>();
         saveObject = new HashMap<Integer, Object[]>();
+//
+//        saveInt = new TIntObjectHashMap<int []>();
+//        saveVector = new TIntObjectHashMap<Object[][]>();
+//        saveIntVector = new TIntObjectHashMap<int[][]>();
+//        saveBool = new TIntObjectHashMap<boolean[]>();
+//        saveBitSet = new TIntObjectHashMap<BitSet[]>();
+//        saveLong = new TIntObjectHashMap<long[]>();
+//        saveDouble = new TIntObjectHashMap<double[]>();
+//        saveObject = new TIntObjectHashMap<Object[]>();
     }
 
 

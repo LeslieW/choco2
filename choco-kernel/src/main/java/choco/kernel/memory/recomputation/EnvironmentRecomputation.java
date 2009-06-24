@@ -31,8 +31,10 @@ import choco.kernel.memory.trailing.IndexedObject;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.AbstractSearchStrategy;
 import choco.kernel.solver.search.IntBranchingTrace;
+import gnu.trove.TIntStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Stack;
 
 public class EnvironmentRecomputation extends AbstractEnvironment {
 
@@ -60,7 +62,13 @@ public class EnvironmentRecomputation extends AbstractEnvironment {
     /**
      * Contains the choices made by the solver
      */
-    Map<Integer, Vector<BranchTrace>> contexts;
+    Stack<BranchTrace> contexts;
+
+    /**
+     * Contains the indices, in contexts, of the first
+     * context after a saved world
+     */
+    TIntStack indices;
 
     /**
      * The last saved world equivalent to the top of savedWorldIdxStack
@@ -84,7 +92,7 @@ public class EnvironmentRecomputation extends AbstractEnvironment {
     private int gap;
 
     public EnvironmentRecomputation() {
-        this(new EnvironmentTrailing(), Integer.MAX_VALUE);
+        this(new EnvironmentTrailing(), 10);
     }
 
     public EnvironmentRecomputation(int envType, int gap) {
@@ -95,7 +103,8 @@ public class EnvironmentRecomputation extends AbstractEnvironment {
         }
         currentWorld = 0;
         savedWorldIdxStack = new Stack<Integer>();
-        contexts = new HashMap<Integer, Vector<BranchTrace>>();
+        contexts = new Stack<BranchTrace>();
+        indices = new TIntStack();
         this.gap = gap;
     }
 
@@ -103,7 +112,8 @@ public class EnvironmentRecomputation extends AbstractEnvironment {
 
         currentWorld = 0;
         savedWorldIdxStack = new Stack<Integer>();
-        contexts = new HashMap<Integer, Vector<BranchTrace>>();
+        contexts = new Stack<BranchTrace>();
+        indices = new TIntStack();
         this.gap = gap;
         delegatedEnv = envD;
 
@@ -112,10 +122,11 @@ public class EnvironmentRecomputation extends AbstractEnvironment {
 
 
     public void worldPush() {
-        if ( currentWorld == 0|| (currentWorld -1) % gap == 0 || (lastFail - savedWorldIdxStack.peek())/2 == currentWorld ) {
+        if ( currentWorld == 0|| (currentWorld-1) % gap == 0 || (lastFail - savedWorldIdxStack.peek())/2 == currentWorld ) {
             delegatedEnv.worldPush();
             lastSavedWorld = currentWorld;
             savedWorldIdxStack.push(currentWorld);
+            indices.push(contexts.size());
             nbPush++;
         }
         currentWorld++;
@@ -131,32 +142,34 @@ public class EnvironmentRecomputation extends AbstractEnvironment {
         if (lastSavedWorld == 0) {
             return;
         }
-        if ( lastSavedWorld -currentWorld == 0) {
+        if (lastSavedWorld - currentWorld == 0) {
             savedWorldIdxStack.pop();
             lastSavedWorld = savedWorldIdxStack.peek();
-        }
-        else {
+            int ind = indices.pop();
+            while(contexts.size()>ind){
+                contexts.pop();
+            }
+        } else {
             delegatedEnv.worldPush();
+            int ind = indices.peek();
 
+            // Remove the last element (a goDown ctx).
+            contexts.pop();
 
-            for (int i = (lastSavedWorld) ; i < currentWorld  ; i++) {
-
-                for (BranchTrace trace : contexts.get(i)) {
-
-                    try {
-                        if (trace.isDown) {
-                            trace.ctx.getBranching().goDownBranch(trace.ctx.getBranchingObject(), trace.ctx.getBranchIndex());
-                        }
-                        else
-                            trace.ctx.getBranching().goUpBranch(trace.ctx.getBranchingObject(),trace.ctx.getBranchIndex());
-
-                    } catch (ContradictionException e) {
-                        LOGGER.info("worldPop raised a contradiction (recomputation)");
+            // then apply the other
+            for(int i = ind; i < contexts.size(); i++){
+                BranchTrace trace = contexts.elementAt(i);
+                try {
+                    if (trace.isDown) {
+                        trace.ctx.getBranching().goDownBranch(trace.ctx.getBranchingObject(), trace.ctx.getBranchIndex());
+                    } else {
+                        trace.ctx.getBranching().goUpBranch(trace.ctx.getBranchingObject(), trace.ctx.getBranchIndex());
                     }
+
+                } catch (ContradictionException e) {
+                    LOGGER.info("worldPop raised a contradiction (recomputation)");
                 }
             }
-            contexts.remove(currentWorld+1);
-
         }
 
     }
@@ -273,12 +286,13 @@ public class EnvironmentRecomputation extends AbstractEnvironment {
      * tree, wether up.
      */
     public void pushContext(IntBranchingTrace ctx, boolean isDown) {
-        if (contexts.get(currentWorld) == null) {
-            Vector<BranchTrace> v = new Vector<BranchTrace>();
-            contexts.put(currentWorld,v);
-        }
+        contexts.push(new BranchTrace(ctx,isDown));
+    }
 
-        contexts.get(currentWorld).add(new BranchTrace(ctx,isDown));
+    public void popContext(IntBranchingTrace ctx) {
+        while(contexts.size()>0 && contexts.peek().ctx.getBranchingObject().equals(ctx.getBranchingObject())){
+            contexts.pop();
+        }
     }
 
     /**
@@ -327,7 +341,7 @@ public class EnvironmentRecomputation extends AbstractEnvironment {
         public final IntBranchingTrace ctx ;
 
         public BranchTrace(IntBranchingTrace ctx, boolean isDown) {
-            this.ctx = ctx;
+            this.ctx = ctx.copy();
             this.isDown = isDown;
         }
     }

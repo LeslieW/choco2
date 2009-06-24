@@ -203,6 +203,12 @@ public class RcBitSet extends AbstractStateBitSet implements RecomputableElement
         representedBy = b ;
     }
 
+    public void _set(BitSet bitSet, int worldindex) {
+        timeStamp = worldindex;
+        BitSet b = (BitSet) bitSet.clone();
+        representedBy = b ;
+    }
+
     public BitSet getBitSet() {
         return representedBy;
     }
