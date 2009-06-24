@@ -92,8 +92,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
      * Constructs a new domain for the specified variable and bounds.
      *
      * @param v   The involved variable.
-     * @param low Minimal value.
-     * @param up  Maximal value.
+     * @param sortedValues arry of sorted values.
      */
     public BipartiteIntDomain(IntDomainVarImpl v, int[] sortedValues) {
         if (Choco.DEBUG) {
@@ -147,9 +146,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
         offset = low;
         // Initialisation of values
         values = new int[size];
-        for (int i = 0; i < sortedValues.length; i++) {
-            values[i] = sortedValues[i];
-        }
+        System.arraycopy(sortedValues, 0, values, 0, sortedValues.length);
         // By default all values are in...
         valuesInDomainNumber = env.makeInt(size - 1);
         // Indices are first simply offset...
@@ -283,9 +280,6 @@ public class BipartiteIntDomain extends AbstractIntDomain {
                     }
                 }
                 inf.set(min);
-                if (min == supv) {
-                    variable.updateNbVarInstanciated();
-                }
                 return b;
             } else if (x == supv) {
                 int possiblesup = x - 1;
@@ -303,9 +297,6 @@ public class BipartiteIntDomain extends AbstractIntDomain {
                     }
                 }
                 sup.set(max);
-                if (max == infv) {
-                    variable.updateNbVarInstanciated();
-                }
                 return b;
             } else {
                 return b;//remove(x);

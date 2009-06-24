@@ -428,7 +428,7 @@ public class BooleanDomain extends AbstractIntDomain {
             return false;
     }
 
-    private final void failOnIndex(int idx) throws ContradictionException {
+    private void failOnIndex(int idx) throws ContradictionException {
         if (idx == -1)
             this.getSolver().getPropagationEngine().raiseContradiction(this.variable, ContradictionException.VARIABLE);
         else
@@ -455,7 +455,6 @@ public class BooleanDomain extends AbstractIntDomain {
         } else {
             if (x == 0 || x == 1) {
                 restrict(x);
-                variable.updateNbVarInstanciated();
                 return true;
             } else {
                 failOnIndex(idx);
@@ -485,7 +484,6 @@ public class BooleanDomain extends AbstractIntDomain {
             failOnIndex(idx);
            } else if (x == 1) {
                restrict(1);
-               variable.updateNbVarInstanciated();
                //variable.value.set(1);
                return true;
            }
@@ -514,7 +512,6 @@ public class BooleanDomain extends AbstractIntDomain {
              failOnIndex(idx);
             } else if (x == 0) {
                 restrict(0);
-                variable.updateNbVarInstanciated();
                 //variable.value.set(0);
                 return true;
             }
@@ -542,12 +539,10 @@ public class BooleanDomain extends AbstractIntDomain {
          } else {
             if (x == 0) {
                 restrict(1);
-                variable.updateNbVarInstanciated();
                 //variable.value.set(1);
                 return true;
             } else if (x == 1) {
                 restrict(0);
-                variable.updateNbVarInstanciated();
                 //variable.value.set(0);
                 return true;
             }

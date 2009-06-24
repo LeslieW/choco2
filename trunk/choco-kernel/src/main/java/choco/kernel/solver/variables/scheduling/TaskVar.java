@@ -4,7 +4,6 @@
 package choco.kernel.solver.variables.scheduling;
 
 import choco.kernel.common.IIndex;
-import choco.kernel.common.util.DisposableIntIterator;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
@@ -12,7 +11,6 @@ import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.model.variables.scheduling.ITaskVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.AbstractVar;
@@ -264,21 +262,6 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 			}
 		};
 
-	}
-
-	/**
-	 * CPRU 07/12/2007: DomOverFailureDeg implementation
-	 * This method takes into account the instantiation of the variables.
-	 * CPRU_BUG_1877365
-	 *
-	 */
-	public void updateNbVarInstanciated(){
-		DisposableIntIterator cstIter = constraints.getIndexIterator();
-		while(cstIter.hasNext()) {
-			AbstractSConstraint cstr = (AbstractSConstraint) constraints.get(cstIter.next());
-			cstr.decNbVarNotInst();
-		}
-		cstIter.dispose();
 	}
 	
 	@Override

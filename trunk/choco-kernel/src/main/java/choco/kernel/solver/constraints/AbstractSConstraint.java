@@ -23,7 +23,6 @@
 package choco.kernel.solver.constraints;
 
 import choco.kernel.memory.IStateBool;
-import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.propagation.*;
@@ -71,11 +70,6 @@ public abstract class AbstractSConstraint implements Propagator {
      */
     protected SConstraintType constraintType;
 
-    /**
-     * CPRU 07/12/2007: DomOverWDeg implementation
-     * The number of variable not already instanciated
-     */
-    protected IStateInt nbVarNotInst;
 
   /**
    * The number of extensions registered to this class
@@ -392,7 +386,14 @@ public abstract class AbstractSConstraint implements Propagator {
      * @return the number of failure
      */
     public int getNbVarNotInst() {
-        return nbVarNotInst.get();
+        int notInst = 0;
+        int nbVars = this.getNbVars();
+        for (int i = 0; i < nbVars; i++) {
+          if (!this.getVar(i).isInstantiated()) {
+            notInst++;
+          }
+        }
+        return notInst;
     }
 
     /*
@@ -406,21 +407,8 @@ public abstract class AbstractSConstraint implements Propagator {
         this.nbVarNotInst = nbVarNotInst;
     } */
 
-
-    /**
-     * CPRU 07/12/2007: DomOverWDeg implementation
-     * This method adds i to the failure counter
-     */
-    final public void decNbVarNotInst() {
-        if (nbVarNotInst != null) // <hca> todo : pb with Palm
-        nbVarNotInst.add(-1);
-            //nbVarNotInst.set(nbVarNotInst.get()-1);
-    }
-
     public void setSolver(Solver solver){
         this.solver = solver;
-        // 07/12/2007 CPRU: init the number of variables not instanciated of the constraint.
-        this.nbVarNotInst = this.solver.getEnvironment().makeInt(this.getNbVars());
         this.active = this.solver.getEnvironment().makeBool(false);
     }
 
