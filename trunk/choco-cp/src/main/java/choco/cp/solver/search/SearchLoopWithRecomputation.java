@@ -106,21 +106,22 @@ public class SearchLoopWithRecomputation extends SearchLoop {
                 //searchStrategy.model.propagate();
                 searchStrategy.endTreeNode();
                 searchStrategy.postDynamicCut();
-                //env.pushContext(ctx,false);
 
                 ctx.getBranching().goUpBranch(ctx.getBranchingObject(), ctx.getBranchIndex());
                 searchStrategy.solver.propagate();
+                env.pushContext(ctx,false);
                 //CPSolver.flushLogs();
                 if (!ctx.getBranching().finishedBranching(ctx.getBranchingObject(), ctx.getBranchIndex())) {
                     ctx.setBranchIndex(ctx.getBranching().getNextBranch(ctx.getBranchingObject(), ctx.getBranchIndex()));
 
                     searchStrategy.nextMove = AbstractGlobalSearchStrategy.DOWN_BRANCH;
                 } else {
+                    env.popContext(ctx);
                     ctx = searchStrategy.popTrace();
-                    //env.pushContext(ctx,false);
                     searchStrategy.nextMove = AbstractGlobalSearchStrategy.UP_BRANCH;
                 }
             } catch (ContradictionException e) {
+                env.popContext(ctx);
                 ctx = searchStrategy.popTrace();
                 searchStrategy.nextMove = AbstractGlobalSearchStrategy.UP_BRANCH;
                 env.setLastFail(env.getWorldIndex());
@@ -131,8 +132,8 @@ public class SearchLoopWithRecomputation extends SearchLoop {
     @Override
     public void downBranch() {
         try {
-            env.pushContext(ctx, true);
             env.worldPush();
+            env.pushContext(ctx, true);
             searchStrategy.solver.propagate();
             ctx.getBranching().goDownBranch(ctx.getBranchingObject(), ctx.getBranchIndex());
             searchStrategy.solver.propagate();
