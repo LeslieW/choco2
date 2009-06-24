@@ -23,7 +23,6 @@
 package choco.cp.solver.constraints.global.pack;
 
 import static choco.cp.solver.SettingType.ADDITIONAL_RULES;
-import static choco.cp.solver.SettingType.DYNAMIC_LB;
 import static choco.cp.solver.SettingType.FILL_BIN;
 
 import java.awt.Point;

@@ -23,13 +23,18 @@
 package choco.cp.solver.constraints.global.pack;
 
 import static choco.cp.solver.SettingType.DYNAMIC_LB;
+import gnu.trove.TIntArrayList;
+
+import java.util.Arrays;
+
+import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.BitFlags;
-import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.opres.pack.AbstractHeurisic1BP;
 import choco.kernel.common.opres.pack.BestFit1BP;
 import choco.kernel.common.opres.pack.LowerBoundFactory;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
@@ -37,28 +42,23 @@ import choco.kernel.solver.constraints.set.AbstractLargeSetIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
 
-import gnu.trove.TIntArrayList;
-
-import java.awt.*;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
 /**
  * <b>{@link PrimalDualPack} which maintains a primal-dual packing domain.</b><br>
  * The primal model consists of {@link bins} variables. {@link bins}[item] = bin means that item is packed into bin.<br>
  * The dual model consists of {@link svars} variables. item is in {@link svars}[bin] also means that item is packed into bin.
  * @author Arnaud Malapert</br>
  * @since 5 déc. 2008 version 2.0.1</br>
- * @version 2.0.3</br>
+ * @version 2.1.0</br>
  */
 public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IPackSConstraint {
 
 	public final PackFiltering filtering;
-	
+
 	protected final BoundNumberOfBins bounds;
 
 	protected final BinStatus status;
+
+	private IStateInt maximumNumberOfNewBins; 
 
 	/** The sizes of the items. */
 	protected final IntDomainVar[] sizes;
@@ -86,6 +86,7 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 	public final boolean isEmpty(int bin) {
 		return svars[bin].getKernelDomainSize()==0;
 	}
+	
 	public final int getRequiredSpace(int bin) {
 		IntIterator iter= svars[bin].getDomain().getKernelIterator();
 		int load = 0;
@@ -117,7 +118,18 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 	public void setSolver(Solver solver) {
 		super.setSolver(solver);
 		filtering.setSolver(solver);
+		maximumNumberOfNewBins = solver.getEnvironment().makeInt( getNbBins());
 	}
+
+
+	public final void setMaximumNumberOfNewBins(int value) {
+		if(value != maximumNumberOfNewBins.get()) {
+			this.maximumNumberOfNewBins.set(value);
+			constAwake(false);
+		}
+	}
+	
+	
 
 	public final IntDomainVar[] getBins() {
 		return bins;
@@ -201,14 +213,20 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 	}
 
 	@Override
-	public final boolean updateNbNonEmpty(Point bounds) throws ContradictionException {
+	public final boolean updateNbNonEmpty(int min, int max) throws ContradictionException {
+		boolean res = false;
 		final int idx = ivars.length-1;
-		//		if(bounds.x>ivars[idx].getSup()) {
-		//			LOGGER.severe("fail");
-		//		}
-		ivars[idx].updateInf(bounds.x, int_cIndices[idx]);
-		ivars[idx].updateSup(bounds.y, int_cIndices[idx]);
-		return false;
+		ivars[idx].updateInf(min, int_cIndices[idx]);
+		if( ivars[idx].updateSup(max, int_cIndices[idx])
+				&& flags.contains(SettingType.LAST_BINS_EMPTY)) {
+			for (int b = max; b < getNbBins(); b++) {
+				final IntIterator iter = svars[b].getDomain().getEnveloppeIterator();
+				while(iter.hasNext()) {
+				res |= remove(iter.next(), b);
+				}
+			}
+		}
+		return res;
 	}
 
 	@Override
@@ -247,7 +265,7 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 	}
 	@Override
 	public void awake() throws ContradictionException {
-		//initial channeling, I would prefer be warned by events, but it is not possible
+		//initial channeling
 		checkEnveloppes();
 		for (int item = 0; item < bins.length; item++) {
 			checkBounds(item);
@@ -377,13 +395,12 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 
 	@Override
 	public void propagate() throws ContradictionException {
-		filtering.propagate();
-		//feasibility test (DDFF)
-		bounds.reset();
-		updateNbNonEmpty(flags.contains(DYNAMIC_LB) ?
-				bounds.computeBoundsDDFF() :
-					bounds.computeBounds()
-		);
+		do {
+			filtering.propagate();
+			//feasibility test (DDFF)
+			bounds.reset();
+		}while( updateNbNonEmpty(bounds.getMinimumNumberOfBins( flags.contains(DYNAMIC_LB)), bounds.getMaximumNumberOfBins()));
+
 
 	}
 
@@ -397,9 +414,9 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 	final class BoundNumberOfBins {
 
 		private final int[] itemsLB;
-		
+
 		private final TIntArrayList binsLB;
-		
+
 		private final int[] remainingSpace;
 
 		private int nextIndex;
@@ -412,7 +429,7 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 
 		protected int nbBinsLB;
 
-		
+
 
 		protected int capacityLB;
 
@@ -487,25 +504,24 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 			nextIndex= setBinItems(itemsLB, nextIndex);
 		}
 
-		public Point computeBounds() {
-			return new Point(nbFull+nbSome,getNbBins() -nbEmpty);
+		public int getMaximumNumberOfBins() {
+			return Math.min(getNbBins() -nbEmpty, nbFull + nbSome + maximumNumberOfNewBins.get());
 		}
 
-		public Point computeBoundsDDFF() {
-			computeItems();
-			if(nextIndex>0) {
-				final int[] items=getItems();
-				final int ub=new BestFit1BP(items,capacityLB,AbstractHeurisic1BP.SORT).computeUB();
-				if(ub>nbBinsLB) {
-					//heuristic solution is not feasible
-					final int lb=nbFull + LowerBoundFactory.computeL_DFF_1BP(items, capacityLB,ub);
-					return new Point(lb,getNbBins() - nbEmpty);
+		public int getMinimumNumberOfBins(boolean useDDFF) {
+			if( useDDFF) {
+				computeItems();
+				if(nextIndex>0) {
+					final int[] items=getItems();
+					final int ub=new BestFit1BP(items,capacityLB,AbstractHeurisic1BP.SORT).computeUB();
+					if(ub>nbBinsLB) {
+						//heuristic solution is not feasible
+						return nbFull + LowerBoundFactory.computeL_DFF_1BP(items, capacityLB,ub);
+					}
 				}
 			}
-			return computeBounds();
+			return nbFull + nbSome;
 		}
-
 	}
-
 
 }
