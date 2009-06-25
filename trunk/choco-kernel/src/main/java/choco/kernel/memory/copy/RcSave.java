@@ -22,9 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory.copy;
 
-import java.util.BitSet;
-import java.util.HashMap;
-import java.util.Map;
+import gnu.trove.TIntObjectHashMap;
 
 /*
  * Created by IntelliJ IDEA.
@@ -41,49 +39,36 @@ public class RcSave implements RecomputableElement {
 
 
 
+    private static TIntObjectHashMap<int []> saveInt;
+    private static TIntObjectHashMap<Object[][]> saveVector;
+    private static TIntObjectHashMap<int[][]> saveIntVector;
+    private static TIntObjectHashMap<boolean[]> saveBool;
+    private static TIntObjectHashMap<long []> saveLong;
+    private static TIntObjectHashMap<double []> saveDouble;
+    private static TIntObjectHashMap<Object []> saveObject;
 
-
-    private Map<Integer,int []> saveInt;
-    private Map<Integer,Object[][]> saveVector;
-    private Map<Integer,int[][]> saveIntVector;
-    private Map<Integer,boolean[]> saveBool;
-    private Map<Integer,BitSet[]> saveBitSet;
-    private Map<Integer,long []> saveLong;
-    private Map<Integer,double []> saveDouble;
-    private Map<Integer,Object []> saveObject;
-//    private TIntObjectHashMap<int []> saveInt;
-//    private TIntObjectHashMap<Object[][]> saveVector;
-//    private TIntObjectHashMap<int[][]> saveIntVector;
-//    private TIntObjectHashMap<boolean[]> saveBool;
-//    private TIntObjectHashMap<BitSet[]> saveBitSet;
-//    private TIntObjectHashMap<long []> saveLong;
-//    private TIntObjectHashMap<double []> saveDouble;
-//    private TIntObjectHashMap<Object []> saveObject;
-
+    static {
+        saveInt = new TIntObjectHashMap<int []>();
+        saveVector = new TIntObjectHashMap<Object[][]>();
+        saveIntVector = new TIntObjectHashMap<int[][]>();
+        saveBool = new TIntObjectHashMap<boolean[]>();
+        saveLong = new TIntObjectHashMap<long[]>();
+        saveDouble = new TIntObjectHashMap<double[]>();
+        saveObject = new TIntObjectHashMap<Object[]>();
+    }
 
 
     public RcSave(EnvironmentCopying env) {
         environment = env;
-        currentElement = env.test;
         lastSavedWorldIndex = env.getWorldIndex();
 
-        saveInt = new HashMap<Integer,int []>();
-        saveVector = new HashMap<Integer,Object[][]>();
-        saveIntVector = new HashMap<Integer,int[][]>();
-        saveBool = new HashMap<Integer,boolean[]>();
-        saveBitSet = new HashMap<Integer,BitSet[]>();
-        saveLong = new HashMap<Integer, long[]>();
-        saveDouble = new HashMap<Integer, double[]>();
-        saveObject = new HashMap<Integer, Object[]>();
-//
-//        saveInt = new TIntObjectHashMap<int []>();
-//        saveVector = new TIntObjectHashMap<Object[][]>();
-//        saveIntVector = new TIntObjectHashMap<int[][]>();
-//        saveBool = new TIntObjectHashMap<boolean[]>();
-//        saveBitSet = new TIntObjectHashMap<BitSet[]>();
-//        saveLong = new TIntObjectHashMap<long[]>();
-//        saveDouble = new TIntObjectHashMap<double[]>();
-//        saveObject = new TIntObjectHashMap<Object[]>();
+        saveInt.clear();
+        saveVector.clear();
+        saveIntVector.clear();
+        saveBool.clear();
+        saveLong.clear();
+        saveDouble.clear();
+        saveObject.clear();
     }
 
 
@@ -92,22 +77,19 @@ public class RcSave implements RecomputableElement {
             lastSavedWorldIndex = 0;
 
         boolean [] tmpbool =  new boolean[currentElement[BOOL].length];
-        int i;// = 0;
-        for (i = 0 ; i < currentElement[BOOL].length ; i++ ) {
+        for (int i = currentElement[BOOL].length ; --i>=0; ) {
             tmpbool[i] = ((RcBool) currentElement[BOOL][i]).deepCopy();
         }
         saveBool.put(worldIndex,tmpbool);
 
         int [] tmpint = new int [currentElement[INT].length];
-        i = 0;
-        for (i = 0; i < currentElement[INT].length ; i++ ) {
+        for (int i = currentElement[INT].length ; --i>=0; ) {
             tmpint[i] = ((RcInt) currentElement[INT][i]).deepCopy();
         }
         saveInt.put(worldIndex,tmpint);
 
         Object[][] tmpvec = new Object[currentElement[VECTOR].length][];
-        i = 0;
-        for (i = 0 ; i < currentElement[VECTOR].length ; i++) {
+        for (int i = currentElement[VECTOR].length ; --i>=0; ) {
             if (worldIndex != 0 && lastSavedWorldIndex >= (currentElement[VECTOR][i]).getTimeStamp() )
                 tmpvec[i] = saveVector.get(lastSavedWorldIndex)[i];
             else
@@ -116,8 +98,7 @@ public class RcSave implements RecomputableElement {
         saveVector.put(worldIndex,tmpvec);
 
         int[][] tmpintvec = new int [currentElement[INTVECTOR].length][];
-        i = 0;
-        for (i = 0 ; i < currentElement[INTVECTOR].length ; i++) {
+        for (int i = currentElement[INTVECTOR].length ; --i>=0; ) {
             if (worldIndex != 0 && lastSavedWorldIndex >= (currentElement[INTVECTOR][i]).getTimeStamp() )
                 tmpintvec[i] = saveIntVector.get(lastSavedWorldIndex)[i];
             else
@@ -125,31 +106,20 @@ public class RcSave implements RecomputableElement {
         }
         saveIntVector.put(worldIndex,tmpintvec);
 
-        BitSet[] tmpbitset = new BitSet[currentElement[BITSET].length];
-        for (i = 0 ;i < currentElement[BITSET].length ; i++) {
-            if (worldIndex != 0 && lastSavedWorldIndex >= (currentElement[BITSET][i]).getTimeStamp() )
-                tmpbitset[i] = saveBitSet.get(lastSavedWorldIndex)[i];
-            else
-                tmpbitset[i] = (java.util.BitSet) ((RcBitSet) currentElement[BITSET][i]).getBitSet().clone();
-        }
-        saveBitSet.put(worldIndex,tmpbitset);
-
         long [] tmplong = new long [currentElement[LONG].length];
-        i = 0;
-        for (i = 0; i < currentElement[LONG].length ; i++ ) {
+        for (int i = currentElement[LONG].length ; --i>=0; ) {
             tmplong[i] = ((RcLong) currentElement[LONG][i]).deepCopy();
         }
         saveLong.put(worldIndex,tmplong);
 
         double[] tmpdouble = new double [currentElement[DOUBLE].length];
-        i = 0;
-        for (i = 0; i < currentElement[DOUBLE].length ; i++ ) {
+        for (int i = currentElement[DOUBLE].length ; --i>=0; ) {
             tmpdouble[i] = ((RcDouble) currentElement[DOUBLE][i]).deepCopy();
         }
         saveDouble.put(worldIndex,tmpdouble);
 
         Object[] tmpobject = new Object[currentElement[OBJECT].length];
-        for (i = 0 ;i < currentElement[OBJECT].length ; i++) {
+        for (int i = currentElement[OBJECT].length ; --i>=0; ) {
             if (worldIndex != 0 && lastSavedWorldIndex >= (currentElement[OBJECT][i]).getTimeStamp() )
                 tmpobject[i] = saveObject.get(lastSavedWorldIndex)[i];
             else
@@ -168,28 +138,25 @@ public class RcSave implements RecomputableElement {
         int[] tmpint = saveInt.get(worldIndex);
         Object[][] tmpvec = saveVector.get(worldIndex);
         int[][] tmpintvec = saveIntVector.get(worldIndex);
-        java.util.BitSet[] tmpbitset = saveBitSet.get(worldIndex);
         long[] tmplong = saveLong.get(worldIndex);
         double[] tmpdouble = saveDouble.get(worldIndex);
         Object[] tmpobject = saveObject.get(worldIndex);
         //saveVector.remove(worldIndex);
 
-        for (int i = 0 ; i < tmpbool.length ; i++)
-            ((RcBool) currentElement[BOOL][i]).set(tmpbool[i]);
-        for (int i = 0 ; i < tmpint.length ; i++)
-            ((RcInt) currentElement[INT][i]).set(tmpint[i]);
-        for (int i = 0 ; i < tmpvec.length ; i++)
-            ((RcVector) currentElement[VECTOR][i])._set(tmpvec[i]);
-        for (int i = 0 ; i < tmpintvec.length ; i++)
-            ((RcIntVector) currentElement[INTVECTOR][i])._set(tmpintvec[i]);
-        for (int i = 0 ; i < tmpbitset.length ; i++)
-            ((RcBitSet) currentElement[BITSET][i])._set(tmpbitset[i]);
-        for (int i = 0 ; i < tmplong.length ; i++)
-            ((RcLong) currentElement[LONG][i]).set(tmplong[i]);
-        for (int i = 0 ; i < tmpdouble.length ; i++)
-            ((RcDouble) currentElement[DOUBLE][i]).set(tmpdouble[i]);
-        for (int i = 0 ; i < tmpobject.length ; i++)
-            ((RcObject) currentElement[OBJECT][i]).set(tmpobject[i]);
+        for (int i = tmpbool.length ; --i>=0; )
+            ((RcBool) currentElement[BOOL][i])._set(tmpbool[i], worldIndex);
+        for (int i = tmpint.length ; --i >=0 ; )
+            ((RcInt) currentElement[INT][i])._set(tmpint[i], worldIndex);
+        for (int i = tmpvec.length ; --i>=0;)
+            ((RcVector) currentElement[VECTOR][i])._set(tmpvec[i], worldIndex);
+        for (int i = tmpintvec.length ; --i>=0;)
+            ((RcIntVector) currentElement[INTVECTOR][i])._set(tmpintvec[i], worldIndex);
+        for (int i = tmplong.length ; --i>=0;)
+            ((RcLong) currentElement[LONG][i])._set(tmplong[i], worldIndex);
+        for (int i = tmpdouble.length ; --i>=0;)
+            ((RcDouble) currentElement[DOUBLE][i])._set(tmpdouble[i], worldIndex);
+        for (int i = tmpobject.length ; --i>=0;)
+            ((RcObject) currentElement[OBJECT][i])._set(tmpobject[i], worldIndex);
 
         if (worldIndex == 0)
             clearMaps();
@@ -205,7 +172,6 @@ public class RcSave implements RecomputableElement {
         saveVector.remove(worldIndex);
         saveIntVector.remove(worldIndex);
         saveBool.remove(worldIndex);
-        saveBitSet.remove(worldIndex);
         saveLong.remove(worldIndex);
         saveDouble.remove(worldIndex);
         saveObject.remove(worldIndex);
@@ -217,7 +183,6 @@ public class RcSave implements RecomputableElement {
         saveVector.clear();
         saveIntVector.clear();
         saveBool.clear();
-        saveBitSet.clear();
         saveLong.clear();
         saveDouble.clear();
         saveObject.clear();

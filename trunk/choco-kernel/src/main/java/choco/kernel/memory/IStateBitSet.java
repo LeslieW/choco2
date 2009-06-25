@@ -119,8 +119,6 @@ public interface IStateBitSet {
 
     boolean isEmpty();
 
-    void ensureCapacity(int bitIndex);
-
     IntIterator getCycleButIterator(int avoidIndex);
 
     class EmptyIterator implements IntIterator {
@@ -156,12 +154,12 @@ public interface IStateBitSet {
      */
     public CyclicIterator(final choco.kernel.memory.IStateBitSet bs, final int avoidIndex) {
       bset = bs;
-      k = -1;
-      nextk = -1;
+          k = -1;
+          nextk = -1;
       endMarker = avoidIndex;
-    }
+      }
 
-    public boolean hasNext() {
+      public boolean hasNext() {
       nextk = bset.nextSetBit(k + 1);
       if (nextk < 0) {
         return false;

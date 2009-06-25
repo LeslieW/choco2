@@ -20,17 +20,26 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.memory.trailing;
+package choco.kernel.memory.structure;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.common.util.OpenBitSet;
-import choco.kernel.memory.*;
+import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.IStateBitSet;
+import choco.kernel.memory.IStateInt;
+import choco.kernel.memory.IStateLong;
 import choco.kernel.solver.propagation.VarEvent;
 
 import java.lang.reflect.Array;
+import java.util.BitSet;
+import java.util.logging.Logger;
 
 
-public class StoredBitSet extends AbstractStateBitSet  {
+public class SBitSet implements IStateBitSet{
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
+
+
     /*
     * BitSets are packed into arrays of "words."  Currently a word is
     * a long, which consists of 64 bits, requiring 6 address bits.
@@ -61,6 +70,7 @@ public class StoredBitSet extends AbstractStateBitSet  {
 
     /**
      * Given a bit index, return word index containing it.
+     * @param bitIndex
      */
     private static int wordIndex(int bitIndex) {
         return bitIndex >> ADDRESS_BITS_PER_WORD;
@@ -92,8 +102,9 @@ public class StoredBitSet extends AbstractStateBitSet  {
 
     /**
      * Creates a new bit set. All bits are initially <code>false</code>.
+     * @param environment bactrackable environment
      */
-    protected StoredBitSet(IEnvironment environment) {
+    public SBitSet(IEnvironment environment) {
         this.environment = environment;
         this.wordsInUse = environment.makeInt(0);
         initWords(BITS_PER_WORD);
@@ -104,11 +115,12 @@ public class StoredBitSet extends AbstractStateBitSet  {
      * represent bits with indices in the range <code>0</code> through
      * <code>nbits-1</code>. All bits are initially <code>false</code>.
      *
+     * @param environment backtrackable environment
      * @param nbits the initial size of the bit set.
      * @throws NegativeArraySizeException if the specified initial size
      *                                    is negative.
      */
-    protected StoredBitSet(IEnvironment environment, int nbits) {
+    public SBitSet(IEnvironment environment, int nbits) {
         this.environment = environment;
         this.wordsInUse =  environment.makeInt(0);
         // nbits can't be negative; size 0 is OK
@@ -119,9 +131,10 @@ public class StoredBitSet extends AbstractStateBitSet  {
     }
 
     private void initWords(int nbits) {
-        words = new StoredLong[wordIndex(nbits - 1) + 1];
-        for (int i = 0; i < words.length; i++) words[i] = new StoredLong((EnvironmentTrailing)environment); ;//environment.makeLong(0);//new StoredLong(environment, 0);
+        words = new IStateLong[wordIndex(nbits - 1) + 1];
+        for (int i = 0; i < words.length; i++) words[i] = this.environment.makeLong(0);
     }
+
 
     /**
      * Ensures that the BitSet can hold enough words.
@@ -144,16 +157,18 @@ public class StoredBitSet extends AbstractStateBitSet  {
         int n = this.cardinality();
         if (avoidIndex != VarEvent.NOCAUSE && this.get(avoidIndex)) n -= 1;
         if (n > 0) {
-            return new StoredBitSet.CyclicIterator(this, avoidIndex);
+             return new CyclicIterator(this, avoidIndex);
         } else {
-            return new StoredBitSet.EmptyIterator();
+            return new EmptyIterator();
         }
     }
 
+    @SuppressWarnings({"unchecked"})
     public static <T> T[] copyOf(T[] original, int newLength) {
         return (T[]) copyOf(original, newLength, original.getClass());
     }
 
+    @SuppressWarnings({"unchecked", "SuspiciousSystemArraycopy"})
     public static <T,U> T[] copyOf(U[] original, int newLength, Class<? extends T[]> newType) {
         T[] copy = ((Object)newType == (Object)Object[].class)
                 ? (T[]) new Object[newLength]
@@ -161,6 +176,12 @@ public class StoredBitSet extends AbstractStateBitSet  {
         System.arraycopy(original, 0, copy, 0,
                 Math.min(original.length, newLength));
         return copy;
+    }
+
+    public BitSet copyToBitSet() {
+        BitSet view = new BitSet(this.size());
+        for (int i = this.nextSetBit(0); i >= 0; i = this.nextSetBit(i + 1)) view.set(i,true);
+        return view;
     }
 
     /**
@@ -181,6 +202,8 @@ public class StoredBitSet extends AbstractStateBitSet  {
 
     /**
      * Checks that fromIndex ... toIndex is a valid range of bit indices.
+     * @param fromIndex starting index
+     * @param toIndex ending index
      */
     private static void checkRange(int fromIndex, int toIndex) {
         if (fromIndex < 0)
@@ -435,10 +458,9 @@ public class StoredBitSet extends AbstractStateBitSet  {
         /*while (wordsInUse.get() > 0)
             wordsInUse.set(wordsInUse.get() - 1);
         words[wordsInUse.get()].set(0);      */
-      for (int i = 0; i < words.length; i++) {
-        IStateLong word = words[i];
-        word.set(0);
-      }
+        for (IStateLong word : words) {
+            word.set(0);
+        }
     }
 
     /**
@@ -474,7 +496,7 @@ public class StoredBitSet extends AbstractStateBitSet  {
      *                                   larger than <tt>toIndex</tt>.
      * @since 1.4
      */
-    public StoredBitSet get(int fromIndex, int toIndex) {
+    public SBitSet get(int fromIndex, int toIndex) {
         checkRange(fromIndex, toIndex);
 
         //checkInvariants();
@@ -483,13 +505,13 @@ public class StoredBitSet extends AbstractStateBitSet  {
 
         // If no set bits in range return empty bitset
         if (len <= fromIndex || fromIndex == toIndex)
-            return new StoredBitSet(environment, 0);
+            return new SBitSet(environment, 0);
 
         // An optimization
         if (toIndex > len)
             toIndex = len;
 
-        StoredBitSet result = new StoredBitSet(environment, toIndex - fromIndex);
+        SBitSet result = new SBitSet(environment, toIndex - fromIndex);
         int targetWords = wordIndex(toIndex - fromIndex - 1) + 1;
         int sourceIndex = wordIndex(fromIndex);
         boolean wordAligned = ((fromIndex & BIT_INDEX_MASK) == 0);
@@ -562,7 +584,7 @@ public class StoredBitSet extends AbstractStateBitSet  {
      * Returns the index of the first bit that is set to <code>true</code>
      * that occurs on or before the specified starting index. If no such
      * bit exists then -1 is returned.
-     *                  
+     *
      * @param fromIndex the index to start checking from (inclusive).
      * @return the index of the previous set bit.
      * @throws IndexOutOfBoundsException if the specified index is
@@ -582,7 +604,7 @@ public class StoredBitSet extends AbstractStateBitSet  {
             return length() - 1;
         }
 
-        long mask = (WORD_MASK << fromIndex + 1) ^ WORD_MASK;
+        long mask = ~(WORD_MASK << fromIndex + 1);
         long word = words[u].get() & ( mask != 0 ? mask : WORD_MASK );
 
         while (true) {
@@ -605,7 +627,7 @@ public class StoredBitSet extends AbstractStateBitSet  {
             return fromIndex;
         }
 
-        long mask = (WORD_MASK << fromIndex + 1) ^ WORD_MASK;
+        long mask = ~(WORD_MASK << fromIndex + 1);
         long word = ~words[u].get() & ( mask != 0 ? mask : WORD_MASK );
 
         while (true) {
@@ -690,7 +712,7 @@ public class StoredBitSet extends AbstractStateBitSet  {
      *         the specified <code>BitSet</code>.
      * @since 1.4
      */
-    public boolean intersects(StoredBitSet set) {
+    public boolean intersects(SBitSet set) {
         for (int i = Math.min(wordsInUse.get(), set.wordsInUse.get()) - 1; i >= 0; i--)
             if ((words[i].get() & set.words[i].get()) != 0)
                 return true;
@@ -729,7 +751,7 @@ public class StoredBitSet extends AbstractStateBitSet  {
      * @param setI a bit set.
      */
     public void and(IStateBitSet setI) {
-        StoredBitSet set = (StoredBitSet) setI;
+        SBitSet set = (SBitSet) setI;
         if (this == set)
             return;
 
@@ -756,7 +778,7 @@ public class StoredBitSet extends AbstractStateBitSet  {
      * @param setI a bit set.
      */
     public void or(IStateBitSet setI) {
-        StoredBitSet set = (StoredBitSet) setI;
+        SBitSet set = (SBitSet) setI;
         if (this == set)
             return;
 
@@ -796,7 +818,7 @@ public class StoredBitSet extends AbstractStateBitSet  {
      * @param setI a bit set.
      */
     public void xor(IStateBitSet setI) {
-        StoredBitSet set = (StoredBitSet) setI;
+        SBitSet set = (SBitSet) setI;
         int wordsInCommon = Math.min(wordsInUse.get(), set.wordsInUse.get());
 
         if (wordsInUse.get() < set.wordsInUse.get()) {
@@ -827,7 +849,7 @@ public class StoredBitSet extends AbstractStateBitSet  {
      * @since 1.2
      */
     public void andNot(IStateBitSet setI) {
-        StoredBitSet set = (StoredBitSet) setI;
+        SBitSet set = (SBitSet) setI;
         // Perform logical (a & !b) on words in common
         for (int i = Math.min(wordsInUse.get(), set.wordsInUse.get()) - 1; i >= 0; i--)
             words[i].set(words[i].get() & ~set.words[i].get());
@@ -847,7 +869,7 @@ public class StoredBitSet extends AbstractStateBitSet  {
      * @since   1.4
      */
     public boolean intersects(IStateBitSet setI) {
-        StoredBitSet set = (StoredBitSet) setI;
+        SBitSet set = (SBitSet) setI;
         for (int i = Math.min(wordsInUse.get(), set.wordsInUse.get()) - 1; i >= 0; i--)
             if ((words[i].get() & set.words[i].get()) != 0)
                 return true;
@@ -874,12 +896,12 @@ public class StoredBitSet extends AbstractStateBitSet  {
     }
 
     public boolean equals(Object obj) {
-        if (!(obj instanceof StoredBitSet))
+        if (!(obj instanceof SBitSet))
             return false;
         if (this == obj)
             return true;
 
-        StoredBitSet set = (StoredBitSet) obj;
+        SBitSet set = (SBitSet) obj;
 
         //checkInvariants();
         //set.checkInvariants();
@@ -897,7 +919,7 @@ public class StoredBitSet extends AbstractStateBitSet  {
 
     public IStateBitSet copy() {
         //if (!sizeIsSticky.get()) trimToSize();
-        StoredBitSet result = new StoredBitSet(environment, this.size());
+        SBitSet result = new SBitSet(environment, this.size());
         result.wordsInUse.set(wordsInUse.get());
         //result.sizeIsSticky.set(sizeIsSticky.get());
         for (int i = 0; i < wordsInUse.get(); i++) {
@@ -905,18 +927,6 @@ public class StoredBitSet extends AbstractStateBitSet  {
         }
         //result.checkInvariants();
         return result;
-    }
-
-    /**
-     * Attempts to reduce internal storage used for the bits in this bit set.
-     * Calling this method may, but is not required to, affect the value
-     * returned by a subsequent call to the {@link #size()} method.
-     */
-    private void trimToSize() {
-        if (wordsInUse.get() != words.length) {
-            words = copyOf(words, wordsInUse.get());
-            //checkInvariants();
-        }
     }
 
     public String toString() {

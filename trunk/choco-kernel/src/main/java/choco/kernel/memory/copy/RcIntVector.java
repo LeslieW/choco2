@@ -25,8 +25,6 @@ package choco.kernel.memory.copy;
 import choco.kernel.common.util.DisposableIntIterator;
 import choco.kernel.memory.IStateIntVector;
 
-import java.util.logging.Logger;
-
 /* 
  * Created by IntelliJ IDEA.
  * User: Julien
@@ -227,6 +225,11 @@ public class RcIntVector implements IStateIntVector, RecomputableElement {
 
     public void _set(int[] vals) {
         timeStamp = environment.getWorldIndex();
+        System.arraycopy(vals,0,elementData,0,vals.length);
+    }
+
+    public void _set(int[] vals, int timeStamp) {
+        this.timeStamp = timeStamp;
         System.arraycopy(vals,0,elementData,0,vals.length);
     }
 

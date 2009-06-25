@@ -23,7 +23,7 @@
 package choco.kernel.solver.constraints.integer.extension;
 
 import choco.kernel.common.util.OpenBitSet;
-import choco.kernel.memory.trailing.StoredBitSet;
+import choco.kernel.memory.structure.SBitSet;
 import choco.kernel.solver.variables.integer.IBitSetIntDomain;
 
 /*
@@ -129,6 +129,6 @@ public class CouplesBitSetTable extends ConsistencyRelation implements BinRelati
 	 * @return
 	 */
 	public boolean checkValue(int var, int val, IBitSetIntDomain v) {
-	   return ((StoredBitSet) v.getContent()).intersects(table[var][val - offsets[var]]);
+	   return ((SBitSet) v.getContent()).intersects(table[var][val - offsets[var]]);
 	}
 }
