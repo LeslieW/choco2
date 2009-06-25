@@ -24,8 +24,6 @@ package choco.kernel.memory.copy;
 
 import choco.kernel.memory.IStateVector;
 
-import java.util.logging.Logger;
-
 /**
  * Created by IntelliJ IDEA.
  * User: Julien
@@ -189,6 +187,11 @@ public class RcVector<E> implements IStateVector<E>, RecomputableElement {
 
     public void _set(E[] vals) {
         timeStamp = environment.getWorldIndex();
+        System.arraycopy(vals,0,elementData,0,vals.length);
+    }
+
+    public void _set(E[] vals, int timeStamp) {
+        this.timeStamp = timeStamp;
         System.arraycopy(vals,0,elementData,0,vals.length);
     }
 

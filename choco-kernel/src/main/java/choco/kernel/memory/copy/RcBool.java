@@ -54,6 +54,11 @@ public class RcBool implements IStateBool, RecomputableElement {
         currentValue = b ;
     }
 
+    public void _set(boolean b, int timeStamp) {
+        this.timeStamp = timeStamp;
+        currentValue = b ;
+    }
+
     public boolean deepCopy() {
         return currentValue;
     }

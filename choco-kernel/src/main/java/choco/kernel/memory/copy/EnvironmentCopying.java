@@ -25,39 +25,37 @@ package choco.kernel.memory.copy;
 import choco.kernel.memory.*;
 import static choco.kernel.memory.copy.RecomputableElement.NB_TYPE;
 
-import java.util.ArrayList;
 import java.util.Stack;
 
 public class EnvironmentCopying extends AbstractEnvironment {
 
 
-	Stack<Integer> clonedWorldIdxStack;
-
-
-
-	/**
+    /**
 	 * The current world number (should be less
 	 * than <code>maxWorld</code>).
 	 */
 
-
 	private boolean newEl = false;
-	public ArrayList<RecomputableElement>[] elements;
-	public RecomputableElement[][] test;
-	private RcSave save;
+
+    static Stack<Integer> clonedWorldIdxStack;
+    public static RecomputableElement[][] elements;
+    public static int[] indices;
+	private static RcSave save;
 
 	public int nbCopy = 0 ;
 
 
+    static{
+        elements = new RecomputableElement[NB_TYPE][64];
+        indices = new int[NB_TYPE];
+        clonedWorldIdxStack = new Stack<Integer>();
+    }
+
 
 	public EnvironmentCopying() {
-        //noinspection unchecked
-        elements = new ArrayList[NB_TYPE];
-		for (int i = 0 ; i < NB_TYPE ; i++ ) elements[i] = new ArrayList<RecomputableElement>();
-
-		clonedWorldIdxStack = new Stack<Integer>();
-		save = new RcSave(this);
-
+        for(int i = NB_TYPE; --i>=0;)indices[i] = 0;
+        clonedWorldIdxStack.clear();
+        save = new RcSave(this);
 	}
 
     public int getNbCopy() {
@@ -65,17 +63,30 @@ public class EnvironmentCopying extends AbstractEnvironment {
 	}
 
 	public void add(RecomputableElement rc) {
-		elements[rc.getType()].add(rc);
+        ensureCapacity(rc.getType(), indices[rc.getType()]+1);
+		elements[rc.getType()][indices[rc.getType()]++] = rc;
 		newEl = true;
 	}
 
-   @Override
+    private void ensureCapacity(int type, int n) {
+        if (n > elements[type].length) {
+          int newSize = elements[type].length;
+          while (n >= newSize) {
+              newSize = (3 * newSize) / 2;
+          }
+          RecomputableElement[] newStaticObjects = new RecomputableElement[newSize];
+          System.arraycopy(elements[type], 0, newStaticObjects, 0, elements[type].length);
+          elements[type] = newStaticObjects;
+      }
+    }
+
+    @Override
 	public void worldPush() {
 		if (newEl) {
-			save.currentElement = new RecomputableElement[elements.length][];
-
-			for (int i = 0 ; i < elements.length ; i++) {
-				save.currentElement[i] = elements[i].toArray(new RecomputableElement[elements[i].size()]);
+			save.currentElement = new RecomputableElement[NB_TYPE][];
+			for (int i = NB_TYPE ; --i>=0;) {
+				save.currentElement[i] = new RecomputableElement[indices[i]];
+                System.arraycopy(elements[i], 0, save.currentElement[i], 0, indices[i]);
 			}
 			newEl = false;
 		}
@@ -145,10 +156,10 @@ public class EnvironmentCopying extends AbstractEnvironment {
 		return new RcIntVector(this,entries);
 	}
 
-    @Override
-	public IStateBitSet makeBitSet(int size) {
-		return new RcBitSet(this,size);
-	}
+//    @Override
+//	public IStateBitSet makeBitSet(int size) {
+//		return new RcBitSet(this,size);
+//	}
 
     @Override
 	public IStateDouble makeFloat() {

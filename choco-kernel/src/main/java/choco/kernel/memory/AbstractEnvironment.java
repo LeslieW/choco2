@@ -138,7 +138,18 @@ public abstract class AbstractEnvironment implements IEnvironment {
         return new IntInterval(this, inf, sup);
     }
 
-   /**
+    /**
+     * Factory pattern: new IStateBitSet objects are created by the environment
+     *
+     * @param size initail size of the IStateBitSet
+     * @return IStateBitSet
+     */
+    @Override
+    public IStateBitSet makeBitSet(int size) {
+        return new SBitSet(this, size);
+    }
+
+    /**
 	 * Increase the size of the shared bi partite set,
 	 * it HAS to be called before the end of the environment creation
 	 * BEWARE: be sure you are correctly calling this method

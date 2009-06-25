@@ -154,10 +154,10 @@ public class EnvironmentTrailing extends AbstractEnvironment {
 		return new StoredVector<T>(this);
 	}
 
-    @Override
-	public AbstractStateBitSet makeBitSet(int size) {
-		return new StoredBitSet(this, size);
-	}
+//    @Override
+//	public AbstractStateBitSet makeBitSet(int size) {
+//		return new StoredBitSet(this, size);
+//	}
 
     @Override
 	public IStateDouble makeFloat() {
