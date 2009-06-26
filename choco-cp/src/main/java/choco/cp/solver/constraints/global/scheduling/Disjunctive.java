@@ -30,7 +30,12 @@ import static choco.cp.solver.SettingType.NF_NL;
 import static choco.cp.solver.SettingType.OVERLOAD_CHECKING;
 import static choco.cp.solver.SettingType.SINGLE_RULE_FILTERING;
 import static choco.cp.solver.SettingType.VILIM_FILTERING;
+
+import java.util.Arrays;
+
 import choco.cp.solver.SettingType;
+import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.IPermutation;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -188,6 +193,25 @@ public class Disjunctive extends AbstractResourceSConstraint {
 			}
 		}
 	}
+
+	@Override
+	public boolean isSatisfied(int[] tuple) {
+		IPermutation permutation = ChocoUtil.getSortingPermuation(Arrays.copyOf(tuple, getNbTasks()));
+		int last = 0;
+		for (int i = 0; i < getNbTasks(); i++) {
+			int idx = permutation.getPermutationIndex(i);
+			if( tuple[idx] < last || //overlap with the previous task
+					tuple[idx] + tuple[idx + 2 * getNbTasks()] != tuple[idx + getNbTasks()] //s_i + p_i != e_i !
+			) {
+				return false;
+			}
+			last = tuple[idx];
+		}
+		if(last > tuple[tuple.length - 2]) {return false;}
+		return true;
+	}
+
+
 }
 
 

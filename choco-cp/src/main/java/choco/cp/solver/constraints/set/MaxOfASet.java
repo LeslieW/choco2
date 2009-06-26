@@ -22,7 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.set;
 
-import choco.cp.solver.CPSolver;
+import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.cp.solver.variables.set.SetVarEvent;
 import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.common.util.IntIterator;
 import choco.kernel.memory.IStateInt;
@@ -57,6 +58,9 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 	 */
 	public static final int VARS_OFFSET = 1;
 
+	protected final static int SET_EVENTMASK = SetVarEvent.INSTSETEVENT + SetVarEvent.KEREVENT + SetVarEvent.ENVEVENT;
+	
+	protected final static int INT_EVENTMASK = IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
 
 	public AbstractBoundOfASet(IntVar[] intvars, SetVar setvar) {
 		super(intvars, new SetVar[]{setvar});
@@ -64,6 +68,14 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 			throw new SolverException("The enveloppe of the set variable "+setvar.pretty()+" is larger than the array");
 		}
 	}
+
+	
+
+	@Override
+	public int getFilteredEventMask(int idx) {
+		return idx > 0 ? INT_EVENTMASK : SET_EVENTMASK;
+	}
+
 
 
 	protected final boolean isInKernel(int idx) {
