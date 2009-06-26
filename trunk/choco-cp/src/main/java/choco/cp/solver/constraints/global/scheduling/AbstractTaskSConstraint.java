@@ -13,8 +13,14 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
 
 public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstraint {
 
-	protected static final int EVENT_MASK = IntVarEvent.INSTINTbitvector + IntVarEvent.INCINFbitvector + IntVarEvent.DECSUPbitvector ;;
+	protected static final int EVENT_MASK = IntVarEvent.INSTINTbitvector + IntVarEvent.INCINFbitvector + IntVarEvent.DECSUPbitvector;
+	
 	protected final TaskVar[] taskvars;
+	
+	private final int startOffset;
+	
+	private final int endOffset;
+	
 	protected final int taskIntVarOffset;
 	
 	/**
@@ -36,6 +42,8 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 	public AbstractTaskSConstraint(final TaskVar[] taskvars, final IntDomainVar... otherVars) {
 		super(UtilAlgo.append(taskVarToIntVar(taskvars), otherVars));
 		this.taskvars = taskvars;
+		startOffset = getNbTasks();
+		endOffset = 2 * getNbTasks();
 		this.taskIntVarOffset = 3 *getNbTasks();
 	}
 	
@@ -62,15 +70,15 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 	}
 
 	protected boolean isStartEvent(int idx) {
-		return idx < getNbTasks();
+		return idx < startOffset;
 	}
 	
 	protected boolean isEndEvent(int idx) {
-		return getNbTasks() <= idx && idx < 2*getNbTasks();
+		return startOffset <= idx && idx < endOffset;
 	}
 	
 	protected boolean isDurationEvent(int idx) {
-		return 2*getNbTasks() <= idx && idx < taskIntVarOffset;
+		return endOffset <= idx && idx < taskIntVarOffset;
 	}
 	
 	protected final int getTaskIntVarOffset() {
@@ -78,7 +86,7 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 	}
 
 	protected TaskVar intVarIndexToTask(final int vidx) {
-		return vidx < 3*getNbTasks() ? getTask(vidx % getNbTasks()) : null; 
+		return vidx < taskIntVarOffset ? getTask(vidx % getNbTasks()) : null; 
 	}
 
 	protected final int getCIndiceStart(final int taskIdx) {
@@ -86,11 +94,11 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 	}
 
 	protected final int getCIndiceEnd(final int taskIdx) {
-		return this.cIndices[getNbTasks() + taskIdx];
+		return this.cIndices[startOffset + taskIdx];
 	}
 
 	protected final int getCIndiceDuration(final int taskIdx) {
-		return this.cIndices[2 * getNbTasks() + taskIdx];
+		return this.cIndices[endOffset + taskIdx];
 	}
 
 	@Override

@@ -22,15 +22,31 @@
  **************************************************/
 package choco.shaker;
 
-import choco.Choco;
 import static choco.Choco.distanceEQ;
 import static choco.Choco.reifiedIntConstraint;
+
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.DeterministicIndicedList;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.ChocoUtil;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -40,14 +56,6 @@ import choco.shaker.tools.factory.CPModelFactory;
 import choco.shaker.tools.factory.MetaConstraintFactory;
 import choco.shaker.tools.factory.OperatorFactory;
 import choco.shaker.tools.factory.VariableFactory;
-import org.junit.*;
-
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /*
 * User : charles
@@ -291,6 +299,14 @@ public class ConstraintTest {
                 Choco.eq(vars[1], 4)
                 ));
 
+        checker(new Random(4099));
+    }
+    
+    @Test
+    public void test11(){
+        m  = new CPModel();
+        TaskVariable[] tasks = Choco.makeTaskVarArray("T", 0, 60, ChocoUtil.oneToN(10));
+        m.addConstraint(Choco.disjunctive(tasks));
         checker(new Random(4099));
     }
 
