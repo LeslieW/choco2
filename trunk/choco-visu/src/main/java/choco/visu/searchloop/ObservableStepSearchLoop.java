@@ -40,7 +40,9 @@ public class ObservableStepSearchLoop extends SearchLoop implements IObservableS
 
     private Vector obs;
     private boolean run = false;
-    private int action = 0; // 0: pause; 1: next; 2: play
+
+    private Step action = Step.PAUSE; // 0: pause; 1: next; 2: play
+
     //for tree search vizualisation
     public State state;
 
@@ -60,12 +62,17 @@ public class ObservableStepSearchLoop extends SearchLoop implements IObservableS
         while (!stop) {
             state = State.NONE;
             //if action is pause, wait
-            while(action == 0){/*wait*/}
+            while(action.equals(Step.PAUSE)){/*wait*/}
             // if action is next, pause after one execution
-            if(action == 1)action=0;
+            if(action.equals(Step.NEXT)){
+                action=Step.PAUSE;
+            }
             switch (searchStrategy.nextMove) {
                 case AbstractGlobalSearchStrategy.OPEN_NODE: {
                     openNode();
+                    if(action.equals(Step.PAUSE)){
+                        action=Step.NEXT;
+                    }
                     break;
                 }
                 case AbstractGlobalSearchStrategy.UP_BRANCH: {
@@ -126,18 +133,18 @@ public class ObservableStepSearchLoop extends SearchLoop implements IObservableS
     ////////////////////////////////////////TO INTERACT WITH GUI////////////////////////////////////////////////////////
 
     public void runStepByStep(){
-        action = 1;
+        action = Step.NEXT;
     }
 
     public void runForAWhile(){
-        action = 2;
+        action = Step.PLAY;
     }
 
     public void pause(){
-        action = 0;
+        action = Step.PAUSE;
     }
 
-    public void setAction(int action) {
+    public void setAction(Step action) {
         this.action = action;
     }
 

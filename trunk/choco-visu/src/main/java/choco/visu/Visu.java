@@ -299,7 +299,7 @@ public final class Visu implements IVisu {
         this.buildButtons(ssl);
         // If there is no button, run the resolution
         if (!visible[0] && !visible[1]) {
-            ssl.setAction(2);
+            ssl.setAction(IObservableStepSearchLoop.Step.PLAY);
         }
         tracer.setBreaklength(2);
         tracer.addObservable(ssl);

@@ -32,6 +32,10 @@ import choco.IObservable;
 
 public interface IObservableStepSearchLoop extends IObservable{
 
+    static enum Step{
+        PAUSE, NEXT, PLAY
+    }
+
     /**
      * Action to do in a step-by-step run loop
      */
@@ -47,5 +51,5 @@ public interface IObservableStepSearchLoop extends IObservable{
      */
     public void pause();
 
-    public void setAction(final int action);
+    public void setAction(final Step action);
 }
