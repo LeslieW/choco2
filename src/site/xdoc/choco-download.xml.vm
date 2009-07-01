@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document>
+  <properties>
+    <title>Download CHOCO</title>
+    <author>CHOCO Development Team</author>
+    </properties>
+<body>
+
+<section name="Choco 2.1.0">
+<p>
+  Everything can be found on <a href="http://sourceforge.net/project/showfiles.php?group_id=96738" target="_blank">Sourceforge.net</a>.
+</p>
+
+<p>
+<b>Modules of CHOCO</b>
+</p>
+  <div style="vertical-align: bottom; text-align: left;">
+	<a href="http://sourceforge.net/project/downloading.php?group_id=96738&amp;filename=choco-2.1.0-basic.jar&amp;a=64919058" target="_blank">choco-2.1.0</a><br/>
+	<a href="http://sourceforge.net/project/downloading.php?group_id=96738&amp;filename=choco-kernel-2.1.0.jar&amp;a=96498984" target="_blank">choco-kernel-2.1.0</a><br/>
+	<a href="http://sourceforge.net/project/downloading.php?group_id=96738&amp;filename=choco-cp-2.1.0.jar&amp;a=28079331" target="_blank">choco-cp-2.1.0</a><br/>
+	<a href="http://sourceforge.net/project/downloading.php?group_id=96738&amp;filename=choco-visu-2.1.0.jar&amp;a=95705904" target="_blank">choco-visu-2.1.0</a><br/>
+	<a href="http://sourceforge.net/project/downloading.php?group_id=96738&amp;filename=choco-contribs-2.1.0.jar&amp;a=33921221" target="_blank">choco-contribs-2.1.0</a><br/>
+  </div>
+<p>
+<b>Sources of CHOCO</b>
+</p>
+  <div style="vertical-align: bottom; text-align: left;">
+	<a href="http://choco.svn.sourceforge.net/viewvc/choco/trunk.tar.gz?view=tar" target="_blank">choco-2.1.0</a><br/>
+	<a href="http://choco.svn.sourceforge.net/viewvc/choco/trunk/choco-kernel.tar.gz?view=tar" target="_blank">choco-kernel-2.1.0</a><br/>
+	<a href="http://choco.svn.sourceforge.net/viewvc/choco/trunk/choco-cp.tar.gz?view=tar" target="_blank">choco-cp-2.1.0</a><br/>
+	<a href="http://choco.svn.sourceforge.net/viewvc/choco/trunk/choco-visu.tar.gz?view=tar" target="_blank">choco-visu-2.1.0</a><br/>
+	<a href="http://choco.svn.sourceforge.net/viewvc/choco/trunk/choco-contribs.tar.gz?view=tar" target="_blank">choco-contribs-2.1.0</a><br/>
+  </div>
+</section>
+
+
+<section name="About you">
+<p>
+  Before downloading the last version of Choco, take some few minutes to answer the following questions:
+</p>  
+<p>
+  <div align="center">
+  <form method="POST" action="choco/formmail.php" >
+  <input type="hidden" name="subject" value="enregistrement"/>
+  <table>
+  <tr><td>Name:</td>
+    <td><input type="text" name="nom" size="30"/></td></tr>
+  <tr><td>Email:</td>
+    <td><input type="text" name="email" size="30"/></td></tr>
+  <tr><td>Profession:</td>
+    <td><input type="text" name="prof" size="30"/></td></tr>
+  <tr><td colspan="2">What are you going to use Choco-solver for?:</td>
+  <td><textarea COLS="50" ROWS="6" name="comments"></textarea>
+  </td></tr>
+  </table>
+  <br/>
+  <input type="submit" value="Submit"/>
+  </form>
+</div>
+</p>
+</section>
+</body>
+</document>
+

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document>
+  <properties>
+    <title>Contribution</title>
+    <author>CHOCO Development Team</author>
+    </properties>
+<body>
+
+<section name="Articles">
+
+<p>
+  This section is still under construction.
+</p>  
+<p>
+  If you want to contribute to CHOCO, contact us: <u>choco@emn.fr</u>.
+</p>
+</section>
+
+<section name="Classe header">
+If you want to commit file to the subversion, please be sure that it fill the following template: <a href="./choco-contribs/xref/header/java.html" target="_blank">header.java</a>.
+</section>
+
+</body>
+</document>
+
