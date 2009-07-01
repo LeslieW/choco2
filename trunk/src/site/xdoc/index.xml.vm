@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<document>
+  <properties>
+    <title>Welcome to CHOCO</title>
+    <author>CHOCO Development Team</author>
+    </properties>
+<body>
+
+<section name="Welcome">
+
+<p>
+ The CHOCO development team is eager to announce the release of the new version of its open-source constraint solver: CHOCO.
+</p><p>
+ Choco is Java library that can be used for:
+<ul>
+<li>
+teaching (a user-oriented constraint solver with open-source code)
+</li>
+<li>
+research (state-of-the-art algorithms and techniques, user-defined constraints, domains and variables)
+</li>
+<li>
+real-life applications (many application now embed choco)
+</li>
+</ul>      
+</p>
+<p>
+ Choco is final-user oriented. It has been under heavy refactoring. New constraints, new features have been offered.
+</p>
+<p>
+ Choco is available online with a complete documentation, tutorials, various materials, forums, etc.
+</p>
+<p>
+ Please visit the web site for downloading and more information.  
+</p>
+<p>
+ For further more informations, you can read the white paper of choco. 
+</p>
+
+</section>
+</body>
+</document>
