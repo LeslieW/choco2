@@ -41,7 +41,7 @@ public class ObservableStepSearchLoopWithRestart extends SearchLoopWithRestart i
 
     private Vector obs;
     private boolean run = false;
-    private int action = 0; // 0: pause; 1: next; 2: play
+    private Step action = Step.PAUSE; // 0: pause; 1: next; 2: play
     //for tree search vizualisation
     public State state;
 
@@ -54,31 +54,51 @@ public class ObservableStepSearchLoopWithRestart extends SearchLoopWithRestart i
         int previousNbSolutions = searchStrategy.nbSolutions;
         searchStrategy.setEncounteredLimit(null);
         init();
-        while (!stop) {
-            state = State.NONE;
-            //if action is pause, wait
-            while(action == 0){/*wait*/}
-            // if action is next, pause after one execution
-            if(action == 1)action=0;
-            switch (searchStrategy.nextMove) {
-                case AbstractGlobalSearchStrategy.OPEN_NODE: {
-                    openNode();
-                    break;
+        boolean restartLimit;
+        do {
+            restartLimit = false;
+            while (!stop) {
+                state = State.NONE;
+                //if action is pause, wait
+                while (action.equals(Step.PAUSE)) {/*wait*/}
+                // if action is next, pause after one execution
+                if (action.equals(Step.NEXT)) {
+                    action = Step.PAUSE;
                 }
-                case AbstractGlobalSearchStrategy.UP_BRANCH: {
-                   upBranch();
-                    break;
-                }
-                case AbstractGlobalSearchStrategy.DOWN_BRANCH: {
-                    downBranch();
-                    break;
-                }
-                default:
-                    if(run){
+                while (!stop) {
+                    if (checkRestartMoveMask(searchStrategy.nextMove) &&
+                            restartStrategy.shouldRestart(searchStrategy)) {
+                        LOGGER.finest("=== restarting ...");
+                        stop = restart(ctx);
+                        if (!stop) {
+                            restartLimit = true;
+                        }
+                        break;
                     }
-                    break;
+                    switch (searchStrategy.nextMove) {
+                        case AbstractGlobalSearchStrategy.OPEN_NODE: {
+                            openNode();
+                            if (action.equals(Step.PAUSE)) {
+                                action = Step.NEXT;
+                            }
+                            break;
+                        }
+                        case AbstractGlobalSearchStrategy.UP_BRANCH: {
+                            upBranch();
+                            break;
+                        }
+                        case AbstractGlobalSearchStrategy.DOWN_BRANCH: {
+                            downBranch();
+                            break;
+                        }
+                        default:
+                            if (run) {
+                            }
+                            break;
+                    }
+                }
             }
-        }
+        } while (restartLimit);
         state = State.END;
         notifyObservers(this);
         for (int i = 0; i < searchStrategy.limits.size(); i++) {
@@ -135,21 +155,20 @@ public class ObservableStepSearchLoopWithRestart extends SearchLoopWithRestart i
     ////////////////////////////////////////TO INTERACT WITH GUI////////////////////////////////////////////////////////
 
     public void runStepByStep(){
-        action = 1;
+        action = Step.NEXT;
     }
 
     public void runForAWhile(){
-        action = 2;
+        action = Step.PLAY;
     }
 
     public void pause(){
-        action = 0;
+        action = Step.PAUSE;
     }
 
-    public void setAction(int action) {
+    public void setAction(Step action) {
         this.action = action;
     }
-
 
     ////////////////////////////////IObservable implementation////////////////////////////
 

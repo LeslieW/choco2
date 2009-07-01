@@ -89,6 +89,13 @@ public final class NodeBrick extends AChocoBrick {
                     ((TreeSearchPApplet) chopapplet).tswidth++;
 
                     break;
+                case END:
+                case RESTART:
+                    while(((TreeSearchPApplet) chopapplet).q.size() > 1) {
+                        ((TreeSearchPApplet) chopapplet).q.removeLast();
+                    }
+                    ((TreeSearchPApplet) chopapplet).tsdepth = 0;
+                    ((TreeSearchPApplet) chopapplet).tswidth++;
                 default:
                     break;
             }

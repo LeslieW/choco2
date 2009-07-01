@@ -34,9 +34,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.visu.components.panels.VarChocoPanel;
 import static choco.visu.components.papplets.ChocoPApplet.*;
-import choco.visu.papplet.ColoringPApplet;
-import choco.visu.papplet.DonaldAndFriendsPApplet;
-import choco.visu.papplet.PicrossPApplet;
+import choco.visu.papplet.*;
 import gnu.trove.TIntObjectHashMap;
 import gnu.trove.TObjectIntHashMap;
 import org.junit.Before;
@@ -65,6 +63,20 @@ public class ExamplesTest {
             System.exit(0);
         }
     }
+
+    public static void main(String[] args){
+        ExamplesTest e = new ExamplesTest();
+        e.checkEnvironment();
+//        e.donaldGeraldRobert();
+//        e.knapsack();
+//        e.magicSquare();
+        e.queens();
+//        e.sudokuAdvanced();
+//        e.usa();
+//        e.testPicross();
+    }
+
+
 
     @Test
     public void sudokuAdvanced() {
@@ -209,17 +221,17 @@ public class ExamplesTest {
 //        s.solve();
         Visu v = Visu.createVisu();
 //          Visu v = Visu.createFullVisu();
-      Variable[] vars = new Variable[n * n];
+    Variable[] vars = new Variable[n * n];
         for (int i = 0; i < n; i++) {
             System.arraycopy(var[i], 0, vars, i * n, n);
         }
-        v.addPanel(new VarChocoPanel("Grid", vars, GRID, null));
+//        v.addPanel(new VarChocoPanel("Grid", vars, GRID, null));
         v.addPanel(new VarChocoPanel("TreeSearch", vars, TREESEARCH, null));
-        v.addPanel(new VarChocoPanel("FullDomain", vars, FULLDOMAIN, null));
-        v.addPanel(new VarChocoPanel("NameOrValue", vars, NAMEORVALUE, null));
-        v.addPanel(new VarChocoPanel("ColorOrValue", vars, COLORORVALUE, null));
-        v.addPanel(new VarChocoPanel("Dotty", vars, DOTTYTREESEARCH, new Object[]{DotTest.createDotFileName("choco"), 100, null, null, null}));
-
+//        v.addPanel(new VarChocoPanel("FullDomain", vars, FULLDOMAIN, null));
+//        v.addPanel(new VarChocoPanel("NameOrValue", vars, NAMEORVALUE, null));
+//        v.addPanel(new VarChocoPanel("ColorOrValue", vars, COLORORVALUE, null));
+//        v.addPanel(new VarChocoPanel("Dotty", vars, DOTTYTREESEARCH, new Object[]{DotTest.createDotFileName("choco"), 100, null, null, null}));
+//
 
         // Solve the model
         s.setFirstSolution(true);
@@ -229,7 +241,7 @@ public class ExamplesTest {
         for (int i = 0; i < n; i++) {
         StringBuffer st = new StringBuffer();
             for (int j = 0; j < n; j++) {
-                st.append(s.getVar(var[i][j]).getVal() + " ");
+                st.append(s.getVar(var[i][j]).getVal()).append(" ");
             }
             LOGGER.info(st.toString());
         }
@@ -502,9 +514,79 @@ public class ExamplesTest {
         s.generateSearchStrategy();
         s.visualize(v);
         s.launch();
-        v.kill();
+//        v.kill();
     }
 
+
+    @Test
+       public void queens(){
+    //public static void main(String [] ars){
+        Model m = new CPModel();
+        int n = 8;
+        IntegerVariable[] queens = new IntegerVariable[n];
+        for (int i = 0; i < n; i++) {
+            queens[i] = makeIntVar("Q" + (i+1), 1, n,"cp:enum");
+        }
+
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+            int k = j - i;
+            m.addConstraint(neq(queens[i], queens[j]));
+            m.addConstraint(neq(queens[i], plus(queens[j], k)));  // diagonal constraints
+            m.addConstraint(neq(queens[i], minus(queens[j], k))); // diagonal constraints
+            }
+        }
+
+        Solver s = new CPSolver();
+        s.read(m);
+
+        Visu v = Visu.createVisu(700, 700);
+        v.addPanel(new VarChocoPanel("Damier", queens, QueenBoardPApplet.class, "./images/damier.svg"));
+        v.addPanel(new VarChocoPanel("TreeSearch", queens, TREESEARCH, null));
+
+        s.setFirstSolution(false);
+        s.generateSearchStrategy();
+        s.visualize(v);
+        s.launch();
+        v.kill();
+
+    }
+
+//    @Test
+
+    public void knapsack(){
+//    public static void main(String[] args){
+         Model m = new CPModel();
+
+        IntegerVariable obj1 = makeIntVar("obj1", 0, 5);
+        IntegerVariable obj2 = makeIntVar("obj2", 0, 7);
+        IntegerVariable obj3 = makeIntVar("obj3", 0, 10);
+        IntegerVariable c = makeIntVar("power", 0, 40);
+        IntegerVariable capa = makeIntVar("capa", 0, 34);
+        m.addVariable("cp:bound", c);
+
+        int[] volumes = new int[]{7, 5, 3};
+        int[] energy = new int[]{6, 4, 2};
+
+        m.addConstraint(eq(scalar(volumes, new IntegerVariable[]{obj1, obj2, obj3}), capa));
+        m.addConstraint(leq(capa, 34));
+        m.addConstraint(eq(scalar(energy, new IntegerVariable[]{obj1, obj2, obj3}), c));
+
+        Solver s = new CPSolver();
+        s.read(m);
+
+        Visu v = Visu.createVisu(200, 150);
+//        Visu v = Visu.createFullVisu(200, 150);
+        v.addPanel(new VarChocoPanel("K", new IntegerVariable[]{obj1, obj2, obj3, c, capa}, KnapsackPApplet.class, "./images/knapsack.svg"));
+        v.addPanel(new VarChocoPanel("FullDomain", new IntegerVariable[]{obj1, obj2, obj3, c, capa}, FULLDOMAIN, null));
+        s.setFirstSolution(false);
+//        s.setDoMaximize(true);
+//		s.setObjective(s.getVar(c));
+        s.generateSearchStrategy();
+        s.visualize(v);
+        s.launch();
+        v.kill();
+    }
 
     @Test
     public void testPicross() {
