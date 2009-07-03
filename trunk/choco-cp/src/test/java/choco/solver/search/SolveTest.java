@@ -30,15 +30,44 @@
 /* File choco.currentElement.search.SolveTest.java, last modified by Francois 2 d�c. 2003 23:49:19 */
 package choco.solver.search;
 
-import static choco.Choco.*;
+import static choco.Choco.abs;
+import static choco.Choco.and;
+import static choco.Choco.eq;
+import static choco.Choco.geq;
+import static choco.Choco.gt;
+import static choco.Choco.leq;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.makeIntVarArray;
+import static choco.Choco.minus;
+import static choco.Choco.neq;
+import static choco.Choco.regular;
+import static choco.Choco.scalar;
+import static java.text.MessageFormat.format;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Random;
+import java.util.logging.Logger;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.cp.solver.search.restart.AbstractParametrizedRestartStrategy;
 import choco.cp.solver.search.restart.GeometricalRestart;
 import choco.cp.solver.search.restart.LubyRestart;
+import choco.cp.solver.search.restart.ParametrizedRestartStrategy;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -48,18 +77,6 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.Propagator;
 import choco.kernel.solver.search.Limit;
-import org.junit.After;
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import static java.text.MessageFormat.format;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.logging.Logger;
 
 public class SolveTest {
 	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
@@ -410,7 +427,8 @@ public class SolveTest {
 	};
 
 	public final static int[] GEOMETRIC_1_3 = {1,2,2,3,3,4,5,7,9,11,14,18,24,31,40};
-	private void checkRestart(GeometricalRestart r,double factor,int[] expected) {
+	
+	private void checkRestart(AbstractParametrizedRestartStrategy r,double factor,int[] expected) {
 		r.setGeometricalFactor(factor);
 		int[] computed = r.getExample(expected.length);
 		LOGGER.info("check Restart sequence: "+Arrays.toString(computed));
@@ -419,11 +437,11 @@ public class SolveTest {
 
 	@Test
 	public void testRestartStrategy() {
-		GeometricalRestart r = new LubyRestart(Limit.BACKTRACK,2,1);
+		AbstractParametrizedRestartStrategy r = new LubyRestart(Limit.BACKTRACK,1,2);
 		checkRestart(r, 2, LUBY_2);
 		checkRestart(r, 3, LUBY_3);
 		checkRestart(r, 4, LUBY_4);
-		r = new GeometricalRestart(Limit.BACKTRACK,1.3,1);
+		r = new GeometricalRestart(Limit.BACKTRACK,1,1.3);
 		checkRestart(r, 1.3, GEOMETRIC_1_3);
 	}
 

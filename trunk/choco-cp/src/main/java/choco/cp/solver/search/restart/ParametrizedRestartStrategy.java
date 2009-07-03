@@ -22,33 +22,16 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.restart;
 
-import choco.kernel.solver.search.Limit;
+public interface ParametrizedRestartStrategy extends RestartStrategy {
 
-
-
-/**
- * @author Arnaud Malapert
- *
- */
-public final class GeometricalRestart extends AbstractParametrizedRestartStrategy {
-
+	String getRestartPolicy();
 	
+	int getScaleFactor();
 
-	public GeometricalRestart(Limit type, int scaleFactor,
-			double geometricalFactor) {
-		super(type, scaleFactor, geometricalFactor);
-	}
-	
-	
-	
-	@Override
-	public final String getRestartPolicy() {
-		return "GEOM";
-	}
+	void setScaleFactor(int scaleFactor);
 
+	double getGeometricalFactor();
+	
+	void setGeometricalFactor(double geometricalFactor);
 
-	@Override
-	protected int getNextLimit() {
-		return (int) Math.ceil( Math.pow(geometricalFactor,nbRestarts) * scaleFactor );
-	}
 }

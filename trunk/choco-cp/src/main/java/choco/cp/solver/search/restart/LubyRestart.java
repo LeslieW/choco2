@@ -22,8 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.restart;
 
-import java.math.BigDecimal;
-
 import choco.kernel.common.util.MathUtil;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.search.Limit;
@@ -33,25 +31,30 @@ import choco.kernel.solver.search.Limit;
  * @author Arnaud Malapert</br> 
  * @since version 2.0.0</br>
  */
-public class LubyRestart extends GeometricalRestart {
+public class LubyRestart extends AbstractParametrizedRestartStrategy {
 
 
 	private int geometricalIntFactor;
 
 	private int divFactor;
 
-	public LubyRestart(Limit type, int scaleFactor) {
-		super(type, 2, scaleFactor);
+
+	public LubyRestart(Limit type, int scaleFactor, int geometricalFactor) {
+		super(type, scaleFactor, geometricalFactor);
+	}
+	
+	
+	@Override
+	public String getRestartPolicy() {
+		return "LUBY";
 	}
 
-	public LubyRestart(Limit type, int geometricalFactor, int scaleFactor) {
-		super(type, geometricalFactor, scaleFactor);
-	}
 
 	@Override
 	public final void setGeometricalFactor(double geometricalFactor) {
+		checkNonNegative(geometricalFactor);
 		double f= Math.floor(geometricalFactor);
-		if(f!=geometricalFactor) {throw new SolverException("Luby geometrical parameter should be an integer");}
+		if(f != geometricalFactor) {throw new SolverException("Luby geometrical parameter should be an integer");}
 		super.setGeometricalFactor(geometricalFactor);
 		geometricalIntFactor = (int) geometricalFactor;
 		divFactor = geometricalIntFactor - 1;
