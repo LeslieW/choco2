@@ -198,8 +198,8 @@ public final class OdbConnector {
 		DatabaseManager manager = new DatabaseManager(dbDir, dbName);
 		manager.test();
 		//export
-		odbStream = o.getClass().getResourceAsStream("/chocodb.odb");
-		exportDatabase(odbStream, dbDir, dbName, new File("/tmp/test.odb"));
-		ChocoLogging.flushLogs();
+//		odbStream = o.getClass().getResourceAsStream("/chocodb.odb");
+//		exportDatabase(odbStream, dbDir, dbName, new File("/tmp/test.odb"));
+//		ChocoLogging.flushLogs();
 	}
 }
