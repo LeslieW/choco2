@@ -1373,8 +1373,8 @@ public class CPSolver implements Solver {
 	 *            base;
 	 */
 	public void setGeometricRestart(int base, double grow) {
-		this.setRestartStrategy(new GeometricalRestart(Limit.BACKTRACK, grow,
-				base));
+		this.setRestartStrategy(new GeometricalRestart(Limit.BACKTRACK, base,
+				grow));
 	}
 
 	/**
@@ -1398,7 +1398,7 @@ public class CPSolver implements Solver {
 	 */
 	public void setGeometricRestart(int base, double grow, int restartLimit) {
 		this.setRestartStrategy(new LimitedNumberOfRestart(
-				new GeometricalRestart(Limit.BACKTRACK, grow, base),
+				new GeometricalRestart(Limit.BACKTRACK, base, grow),
 				restartLimit));
 	}
 
@@ -1407,7 +1407,7 @@ public class CPSolver implements Solver {
 	 */
 	@Deprecated
 	public void setLasVegasRestart(int base) {
-		this.setRestartStrategy(new LubyRestart(Limit.BACKTRACK, base));
+		this.setRestartStrategy(new LubyRestart(Limit.BACKTRACK, base, 2));
 	}
 
 	/**
@@ -1416,7 +1416,7 @@ public class CPSolver implements Solver {
 	@Deprecated
 	public void setLasVegasRestart(int base, int restartLimit) {
 		this.setRestartStrategy(new LimitedNumberOfRestart(new LubyRestart(
-				Limit.BACKTRACK, base), restartLimit));
+				Limit.BACKTRACK, base, 2), restartLimit));
 	}
 
 	/**
@@ -1443,7 +1443,7 @@ public class CPSolver implements Solver {
 	 */
 	public void setLubyRestart(int base, int grow, int restartLimit) {
 		this.setRestartStrategy(new LimitedNumberOfRestart(new LubyRestart(
-				Limit.BACKTRACK, grow, base), restartLimit));
+				Limit.BACKTRACK, base, grow), restartLimit));
 	}
 
 	/**
@@ -1467,7 +1467,7 @@ public class CPSolver implements Solver {
 	 *            : the geometrical factor for Luby restart strategy
 	 */
 	public void setLubyRestart(int base, int grow) {
-		this.setRestartStrategy(new LubyRestart(Limit.BACKTRACK, grow, base));
+		this.setRestartStrategy(new LubyRestart(Limit.BACKTRACK, base, grow));
 	}
 
 	/**
@@ -1476,7 +1476,7 @@ public class CPSolver implements Solver {
 	 * @param base
 	 */
 	public void setLubyRestart(int base) {
-		this.setRestartStrategy(new LubyRestart(Limit.BACKTRACK, base));
+		this.setRestartStrategy(new LubyRestart(Limit.BACKTRACK, base, 2));
 	}
 
 	/**
