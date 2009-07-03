@@ -1,7 +1,7 @@
 package db;
 
 import static java.lang.System.getProperty;
-import static java.sql.Types.INTEGER;
+import static java.sql.Types.*;
 import static java.sql.Types.VARCHAR;
 
 import java.io.File;
@@ -13,6 +13,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,7 +27,9 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 
 
 
@@ -33,11 +37,13 @@ import choco.kernel.solver.Solver;
 
 public class DatabaseManager {
 
-	public final static int DEFAULT_COLUMN_WIDTH = 15;
+	public final static int DEFAULT_COLUMN_WIDTH = 12;
 
 	public final static Logger LOGGER = ChocoLogging.getParserLogger();
 
 	public static final Object NULL = "NULL";
+
+	public static final String ID = "ID";
 
 	/**
 	 * Number of bytes per Mo.
@@ -78,7 +84,11 @@ public class DatabaseManager {
 	}
 
 
-	public static final String getSelectPattern(String table, String selection, String[] fields) {
+	public final Integer getLastGeneratedKey() {
+		return jdbcTemplate.queryForInt("CALL IDENTITY()");
+	}
+	
+	public static final String getSelectPattern(String table, String selection, String... fields) {
 		if(fields == null) return null;
 		else {
 			StringBuilder b = new StringBuilder();
@@ -115,83 +125,63 @@ public class DatabaseManager {
 		}
 	}
 
-
+	public final void insert(final String dbTable, final String[] fields,final Object[] values,final int[] argTypes) {
+		PreparedStatementCreator psc = new PreparedStatementCreator() {
+			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+				PreparedStatement ps = con.prepareStatement(getInsertPattern(dbTable, fields));
+				for (int i = 0; i < values.length; i++) {
+					ps.setObject( i + 1, values[i], argTypes[i]);	
+				}
+				return ps;
+			}
+		};
+		//TODO waiting for hsqldb 1.9 to implement getGeneratedkeys
+		//avoid one select statement
+		//			KeyHolder keyHolder = new GeneratedKeyHolder();
+		//			jdbcTemplate.update(psc, keyHolder);
+		//			return keyHolder.getKey();
+		jdbcTemplate.update(psc);
+	}
 	/**
 	 * 
 	 * return the primary key of the entry. the function adds the entry to the table if needed.
 	 * @param dbTable
-	 * @param selectedField only one field, the primary key, must be selected
+	 * @param primaryKey only one field, the primary key, must be selected
 	 * @param fields all required fields for insertion must belong to the query
 	 * @param values no values is null
 	 * @return the primary key of the entry.
 	 */
-	public final Object retrieveKeyOrInsertEntry(final String dbTable, final String selectedField, 
-			final String[] fields,final Object[] values,final int[] argTypes, Class<?> elementType) {
-		final String select = getSelectPattern(dbTable, selectedField, fields);
+	public final Integer retrieveKeyOrInsertEntry(final String dbTable, final String primaryKey, 
+			final String[] fields,final Object[] values,final int[] argTypes) {
+		final String select = getSelectPattern(dbTable, primaryKey, fields);
 		try {
-			return jdbcTemplate.queryForObject(select, values, argTypes, elementType);
+			return jdbcTemplate.queryForInt(select, values, argTypes);
 		} catch (EmptyResultDataAccessException e) {
-			//no associated entry
-			PreparedStatementCreator psc = new PreparedStatementCreator() {
-				public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-					PreparedStatement ps = con.prepareStatement(getInsertPattern(dbTable, fields));
-					for (int i = 0; i < values.length; i++) {
-						ps.setObject( i + 1, values[i], argTypes[i]);	
-					}
-					return ps;
-				}
-			};
-			//TODO waiting for hsqldb 1.9 to implement getGeneratedkeys
-			//avoid one select statement
-			//			KeyHolder keyHolder = new GeneratedKeyHolder();
-			//			jdbcTemplate.update(psc, keyHolder);
-			//			return keyHolder.getKey();
-			jdbcTemplate.update(psc);
-			ChocoLogging.flushLogs();
-			return jdbcTemplate.queryForObject(select, values, argTypes, elementType);
+			insert(dbTable, fields, values, argTypes);
+			return getLastGeneratedKey();
 		}
 	}
 
-	/**
-	 * 
-	 * return the primary key of the entry. the function adds the entry to the table if needed.
-	 * @param dbTable
-	 * @param primaryKeyField the field associated with the primary key
-	 * @param fields all required fields for insertion must belong to the query
-	 * @param values no values is null
-	 * @return the primary key of the entry.
-	 */
-	public final Object retrieveKeyOrInsertEntry2(final String dbTable, final String primaryKeyField, 
-			final String[] fields,final Object[] values,final int[] argTypes, Class<?> elementType) {
-		final String select = getSelectPattern(dbTable, primaryKeyField, fields);
-		try {
-			return jdbcTemplate.queryForObject(select, values, argTypes, elementType);
-		} catch (EmptyResultDataAccessException e) {
-			//no associated entry
-			PreparedStatementCreator psc = new PreparedStatementCreator() {
-				public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-					PreparedStatement ps = con.prepareStatement(getInsertPattern(dbTable, fields));
-					for (int i = 0; i < values.length; i++) {
-						ps.setObject( i + 1, values[i], argTypes[i]);	
-					}
-					return ps;
-				}
-			};
-			//TODO waiting for hsqldb 1.9 to implement getGeneratedkeys
-			//avoid one select statement
-			//			KeyHolder keyHolder = new GeneratedKeyHolder();
-			//			jdbcTemplate.update(psc, keyHolder);
-			//			return keyHolder.getKey();
-			jdbcTemplate.update(psc);
-			ChocoLogging.flushLogs();
-			return jdbcTemplate.queryForObject(select, values, argTypes, elementType);
+	public final static int INDEX_PK = 0;
+
+	public void insertEntryIfAbsentPK(final String dbTable, final String[] fields,final Object[] values,
+			final int[] argTypes) {
+		final String select =getSelectPattern(dbTable, "*", fields[INDEX_PK]);
+		List<?> query =jdbcTemplate.queryForList(select, new Object[]{ values[INDEX_PK]});
+		if( query.isEmpty() ) {
+			insert(dbTable, fields, values, argTypes);
+		} else {
+			LOGGER.log(Level.INFO, "Primary Key {0} is already associated with entry {1} in table {2}", new Object[]{values[INDEX_PK], query,dbTable});
 		}
 	}
 
-	//	public final Object insertEntryThenRetrieveKey(final String dbTable, final String selectedField, 
-	//			final String[] fields,final Object[] values,final int[] argTypes, Class<?> elementType) {
-	//		return null;
-	//	}
+
+
+	public final Integer insertEntryAndRetrieveKey(final String dbTable,  
+			final String[] fields,final Object[] values,final int[] argTypes) {
+		insert(dbTable, fields, values, argTypes);
+		return getLastGeneratedKey();
+	}
 
 	public final void checkSelectValues(Object[] values) {
 		for (int i = 0; i < values.length; i++) {
@@ -202,26 +192,6 @@ public class DatabaseManager {
 		}
 	}
 
-	public final Integer getEntryID(final String dbTable, final String[] fields, final String[] values) {
-		checkSelectValues(values);
-		return (Integer) retrieveKeyOrInsertEntry(dbTable,"ID", fields, values,createTypeArray(fields.length, VARCHAR), Integer.class);
-	}
-
-
-	public final Object getEntryKey(final String dbTable, final String selectedField, final String[] fields, final int[] values, Class<?> elementType) {
-		Integer[] objValues = new Integer[values.length];
-		final int[] types = new int[values.length];
-		for (int i = 0; i < values.length; i++) {
-			types[i] = INTEGER;
-			objValues[i] = Integer.valueOf(values[i]);
-		}
-		return retrieveKeyOrInsertEntry(dbTable,"ID", fields, objValues,types,elementType);
-	}
-
-	public final Integer getEntryID(final String dbTable, final String[] fields, final int[] values) {
-		return (Integer) getEntryKey(dbTable,"ID", fields, values, Integer.class);
-	}
-
 
 	//*****************************************************************//
 	//*******************  T_ENVIRONMENTS  ********************************//
@@ -229,7 +199,7 @@ public class DatabaseManager {
 	/**
 	 * return the maximum memory in Mo.
 	 */
-	public final static Integer getMaxMemory() {
+	protected final static Integer getMaxMemory() {
 		return Integer.valueOf( (int) (Runtime.getRuntime().maxMemory()/Mo));
 	}
 
@@ -241,13 +211,12 @@ public class DatabaseManager {
 		} catch (UnknownHostException e) {
 			host = "unknwon-host";
 		}
-		return (Integer) retrieveKeyOrInsertEntry(
+		return retrieveKeyOrInsertEntry(
 				"T_RUNTIMES",
-				"ID",
+				ID,
 				new String[]{"HOST", "USER", "MAX_MEMORY"}, 
 				new Object[]{host, getProperty("user.name"), getMaxMemory()},
-				new int[]{VARCHAR,VARCHAR,INTEGER},
-				Integer.class
+				new int[]{VARCHAR,VARCHAR,INTEGER}
 		);
 	}
 
@@ -255,27 +224,33 @@ public class DatabaseManager {
 
 
 	protected final Integer getOperatingSystemID() {
-		return getEntryID(
+		return retrieveKeyOrInsertEntry(
 				"T_OS", 
+				ID,
 				new String[]{"NAME", "VERSION", "ARCH"}, 
-				new String[]{getProperty("os.name"), getProperty("os.version"), getProperty("os.arch")}
+				new String[]{getProperty("os.name"), getProperty("os.version"), getProperty("os.arch")},
+				THREE_VARCHARS
 		);
 	}
 
 	protected final Integer getJvmID() {
-		return getEntryID(
+		return retrieveKeyOrInsertEntry(
 				"T_JVM", 
+				ID,
 				new String[]{"NAME", "VERSION", "VENDOR"}, 
-				new String[]{getProperty("java.runtime.name"), getProperty("java.version"), getProperty("java.vendor")}
+				new String[]{getProperty("java.runtime.name"), getProperty("java.version"), getProperty("java.vendor")},
+				THREE_VARCHARS
 		);
 	}
 
 	protected final Integer getEnvironmentID() {
 		if(environmentID == null) {
-			environmentID =getEntryID(
+			environmentID = retrieveKeyOrInsertEntry(
 					"T_ENVIRONMENTS",
+					ID,
 					new String[]{ "RUNTIME_ID", "OS_ID", "JVM_ID"}, 
-					new int[]{ getRuntimeID(), getOperatingSystemID(), getJvmID()}
+					new Integer[]{ getRuntimeID(), getOperatingSystemID(), getJvmID()},
+					new int[]{INTEGER, INTEGER, INTEGER}
 			);
 		}
 		return environmentID;
@@ -287,49 +262,39 @@ public class DatabaseManager {
 	//***************************************************************//
 
 	protected  final static String[] T_PROBLEMS = {"LABEL","NAME", "CATEGORY"};
+	protected  final static int[] THREE_VARCHARS = {VARCHAR, VARCHAR, VARCHAR}; 
 
-	public String getProblemLabel(String label, String name, String category) {
-		return (String) retrieveKeyOrInsertEntry(
+	public void safeProblemInsertion(String label, String name, String category) {
+		insertEntryIfAbsentPK(
 				"T_PROBLEMS",
-				"LABEL",
-				T_PROBLEMS, 
+				T_PROBLEMS,  
 				new String[]{label, name, category},
-				new int[]{VARCHAR, VARCHAR, VARCHAR},
-				String.class
+				THREE_VARCHARS
 		);
 	}
 
 	protected  final static String[] T_INSTANCES = new String[]{"NAME", "PROBLEM_LABEL", "SIZE1","SIZE2"};
+	protected  final static int[] T_INSTANCES_TYPES = {VARCHAR, VARCHAR, INTEGER, INTEGER};
 
-	public String getInstanceName(String instanceName, String problemLabel, int size1, int size2) {
-		return (String) retrieveKeyOrInsertEntry(
+	public void safeInstanceInsertion(String instanceName, String problemLabel, int size1, int size2) {
+		insertEntryIfAbsentPK(
 				"T_INSTANCES",
-				"NAME",
 				T_INSTANCES, 
 				new Object[]{ instanceName, problemLabel, Integer.valueOf(size1), Integer.valueOf(size2)},
-				new int[]{VARCHAR, VARCHAR, INTEGER, INTEGER},
-				String.class
+				T_INSTANCES_TYPES
 		);
 	}
 
 	protected  final static String[] T_BOUNDS = {"INSTANCE_NAME","LOWER_BOUND", "UPPER_BOUND","IS_OPTIMAL"};
+	protected  final static int[] T_BOUNDS_TYPE = {VARCHAR, REAL, REAL, BOOLEAN};
 
-	public void insertBounds(final String instanceName,final double lowerBound, final double upperBound, final boolean isOptimal) {
-		PreparedStatementCreator psc = new PreparedStatementCreator() {
-			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-				PreparedStatement ps = con.prepareStatement(getInsertPattern("T_BOUNDS", T_BOUNDS));
-				ps.setString(1, instanceName);
-				ps.setDouble(2, lowerBound);
-				ps.setDouble(3, upperBound);
-				ps.setBoolean(4, isOptimal || lowerBound == upperBound);
-				return ps;
-			}
-		};
-		try {
-			jdbcTemplate.update(psc);
-		} catch (DataIntegrityViolationException e) {
-			LOGGER.log(Level.WARNING, "duplicate entry: update entry instead of insert it.",e);
-		}
+	public void safeBoundsInsertion(final String instanceName,final double lowerBound, final double upperBound, final boolean isOptimal) {
+		insertEntryIfAbsentPK(
+				"T_BOUNDS",
+				T_BOUNDS,
+				new Object[]{instanceName, lowerBound, upperBound, isOptimal || lowerBound == upperBound},
+				T_BOUNDS_TYPE 
+		);
 	}
 
 	//*****************************************************************//
@@ -340,18 +305,49 @@ public class DatabaseManager {
 		"NB_CONSTRAINTS", "NB_BOOLVARS", "NB_INTVARS",
 		"NB_SETVARS", "NB_TASKVARS", "NB_REALVARS"
 	};
+	protected  final static int[] T_MODELS_TYPES = {INTEGER,INTEGER,INTEGER,INTEGER,INTEGER,INTEGER};
 
 	public final Integer getModelID(Solver s) {
-		return getEntryID(
-				"T_MODELS", T_MODELS, 
-				new int[]{s.getNbIntConstraints(), s.getNbBooleanVars(), s.getNbIntVars(),
-						s.getNbSetVars(), s.getNbTaskVars(), s.getNbRealVars()}
+		return retrieveKeyOrInsertEntry(
+				"T_MODELS", 
+				ID,
+				T_MODELS, 
+				new Integer[]{s.getNbIntConstraints(), s.getNbBooleanVars(), s.getNbIntVars(),
+						s.getNbSetVars(), s.getNbTaskVars(), s.getNbRealVars()},
+						T_MODELS_TYPES
 		);
 	}
 
+	protected  final static String[] T_MESURES = {
+		"STATE_LABEL","NB_SOLUTIONS","OBJECTIVE",
+		"TIME",	"CPU_TIME","NODES","BACKTRACKS","NB_ITERATIONS"
+	};
 
-	protected int insertMesure() {
-		return 0;
+	protected  final static int[] T_MESURES_TYPES = {
+		VARCHAR, INTEGER, DOUBLE, 
+		INTEGER,INTEGER, INTEGER, INTEGER, INTEGER
+	};
+
+
+	public static Double getOptVal(Solver s) {
+		final Number obj = s.getOptimumValue();
+		return obj == null ? 0 : obj.doubleValue();
+	}
+	
+	public Integer insertSolverMesure(Solver s) {
+		return insertEntryAndRetrieveKey(
+				"T_MESURES", 
+				T_MESURES, 
+				new Object[]{ 
+						"SAT", s.getNbSolutions(), getOptVal(s),
+						s.getTimeCount(),s.getCpuTimeCount(),s.getNodeCount(),s.getBackTrackCount(), 1
+				},
+				T_MESURES_TYPES
+		);
+	}
+	
+	public Integer insertSolutionMesure(Solution s) {
+		return null;
 	}
 
 	//*****************************************************************//
@@ -413,32 +409,35 @@ public class DatabaseManager {
 		LOGGER.info(displayTable("T_RUNTIMES"));
 		LOGGER.info(displayTable("T_ENVIRONMENTS"));
 
-		getProblemLabel("OS", "Open-Shop", "Scheduling");
-		getProblemLabel("OS", "Open-sHop", "scheduling");
-		getProblemLabel("JS", "Job-Shop", "scheduling");
+		safeProblemInsertion("OS", "Open-Shop", "Scheduling");
+		safeProblemInsertion("OS", "Open-sHop", "scheduling");
+		safeProblemInsertion("JS", "Job-Shop", "scheduling");
 		LOGGER.info(displayTable("T_PROBLEMS"));
-		getInstanceName("osp1", "OS", 20, 20);
-		getInstanceName("osp1", "OS", 20, 20); //doublons
-		getInstanceName("osp2", "OS", 20, 20);
-		getInstanceName("jsp1", "JS", 10, 20);
-		getInstanceName("jsp1", "JS", 10, 20);//doublons
-		getInstanceName("jsp2", "JS", 10, 30); 
+		safeInstanceInsertion("osp1", "OS", 20, 20);
+		safeInstanceInsertion("osp1", "OS", 20, 20); //doublons
+		safeInstanceInsertion("osp2", "OS", 20, 20);
+		safeInstanceInsertion("jsp1", "JS", 10, 20);
+		safeInstanceInsertion("jsp1", "JS", 10, 20);//doublons
+		safeInstanceInsertion("jsp2", "JS", 10, 30); 
 		LOGGER.info(displayTable("T_INSTANCES"));
-		Solver s = new CPSolver();
-		getModelID(s);
-		LOGGER.info(jdbcTemplate.queryForList("SELECT IDENTITY() FROM T_MODELS").toString());
-		s.createBoundIntVar("v", 0, 5);
-		getModelID(s);
-		LOGGER.info(jdbcTemplate.queryForList("SELECT @@IDENTITY FROM T_MODELS").toString());
-		LOGGER.info(displayTable("T_MODELS"));
 
-
-		//		insertBounds("osp1", 1000, 1010, false);
-		//		insertBounds("jsp1", 1000, 1010, false);
-		//		insertBounds("jsp1", 1000, 1010, false);
-		//insertBounds("jsp2", 1000, 1000, false);
+		safeBoundsInsertion("osp1", 1000, 1010, false);
+		safeBoundsInsertion("jsp1", 1000, 1010, false);
+		safeBoundsInsertion("jsp1", 1000, 1010, false);
+		safeBoundsInsertion("jsp2", 1000, 1000, false);
 		//insertBounds("jsp2345", 1000, 1000, false);
 		LOGGER.info(displayTable("T_BOUNDS"));
+	
+		Solver s = new CPSolver();
+		LOGGER.log(Level.INFO,"MODEL ID: {0}",getModelID(s));
+		s.createBoundIntVar("v", 0, 5);
+		getModelID(s);
+		LOGGER.log(Level.INFO,"MODEL ID: {0}",getModelID(s));
+		LOGGER.info(displayTable("T_MODELS"));
+		s.solve();
+		insertSolverMesure(s);
+		insertSolverMesure(s);
+		LOGGER.info(displayTable("T_MESURES"));
 		ChocoLogging.flushLogs();
 		//jdbcTemplate.queryForObject("SELECT LABEL FROM T_PROBLEMS WHERE CATEGORY=NULL" , new Object[]{null}, new int[]{VARCHAR}, String.class);
 		close();
