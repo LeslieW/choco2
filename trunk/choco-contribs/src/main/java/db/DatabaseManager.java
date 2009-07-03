@@ -425,6 +425,19 @@ public class DatabaseManager {
 					new Object[]{ executionID, getModelID(s), getStrategyID(s), getRestartStrategyID(s)},
 					T_SOLVERS_TYPES);
 	}
+	
+	//*****************************************************************//
+	//*******************  T_LIMITS  ********************************//
+	//***************************************************************//
+	
+	protected  final static String[] T_LIMITS = { "SOLVER_ID", "MESURE_ID"};
+	
+	protected  final static int[] T_LIMITS_TYPES = { INTEGER, INTEGER};
+	
+	public final void insertLimits(Integer solverID, Integer measureID) {
+		insert("T_LIMITS", T_LIMITS, new Object[]{solverID, measureID}, T_LIMITS_TYPES);
+	}
+	
 	//*****************************************************************//
 	//*******************  EXECUTION  ********************************//
 	//***************************************************************//
@@ -532,18 +545,24 @@ public class DatabaseManager {
 		ChocoLogging.flushLogs();
 		;
 		
-		insertSolverMesure(s);
-		insertSolverMesure(s);
-		LOGGER.info(displayTable("T_MESURES"));
-		
-		
-		getSolverID(getExecutionID("osp1", "SAT"), s);
+		Integer measureID = insertSolverMesure(s);
+//		insertSolverMesure(s);
+//		LOGGER.info(displayTable("T_MESURES"));
+//		
+		Integer execID = getExecutionID("osp1", "SAT");
+		Integer solverID = getSolverID(execID, s);
+		getSolverID(execID, s);
+		//getSolverID(execID, s);
 		getExecutionID("jsp1", "MIN", 2);
 		LOGGER.info(displayTable("T_RESTARTS"));
 		LOGGER.info(displayTable("T_STRATEGIES"));
 		LOGGER.info(displayTable("T_MODELS"));
+		LOGGER.info(displayTable("T_SOLVERS"));
 		LOGGER.info(displayTable("T_EXECUTIONS"));
 		
+		insertLimits(solverID, measureID);
+		//insertLimits(solverID, measureID);
+		LOGGER.info(displayTable("T_LIMITS"));
 		
 		
 		//jdbcTemplate.queryForObject("SELECT LABEL FROM T_PROBLEMS WHERE CATEGORY=NULL" , new Object[]{null}, new int[]{VARCHAR}, String.class);
