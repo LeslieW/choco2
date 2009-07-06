@@ -20,9 +20,10 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.common.util;
+package choco.kernel.common.util.objects;
 
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -33,7 +34,7 @@ import java.util.logging.Logger;
  * The list is encoded by two tables of integers. Efficient implementation regarding
  * time but very poor for memory.
  */
-public class DoubleLinkedList implements IntIterator {
+public class DoubleLinkedList extends DisposableIntIterator {
 
 	protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
