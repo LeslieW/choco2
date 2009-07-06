@@ -29,8 +29,15 @@
 package samples.Examples;
 
 
+import static choco.Choco.makeIntVar;
+import static choco.Choco.minus;
+import static choco.Choco.neq;
+import static choco.Choco.plus;
+
+import java.text.MessageFormat;
+import java.util.List;
+
 import choco.Choco;
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
@@ -39,10 +46,6 @@ import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.memory.recomputation.EnvironmentRecomputation;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solution;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
-
-import java.text.MessageFormat;
 
 public class Queen extends PatternExample {
 
@@ -101,17 +104,18 @@ public class Queen extends PatternExample {
 		// Display
 		// -------
 		StringBuffer ret = new StringBuffer();
+		List<Solution> sols = _s.getSearchStrategy().getStoredSolutions();
 		ret.append("The queen's problem asks how to place n queens on an n x n chess board " +
 		"so that none of them can hit any other in one move.\n");
 		ret.append(MessageFormat.format("Here n = {0}\n\n", n));
-		ret.append(MessageFormat.format("The {0} last solutions (among {1} solutions) are:\n", _s.getSearchStrategy().solutions.size(), _s.getNbSolutions()));
+		ret.append(MessageFormat.format("The {0} last solutions (among {1} solutions) are:\n",sols.size(), _s.getNbSolutions()));
 		String line = "+";
 		for (int i = 0; i < n; i++) {
 			line += "---+";
 		}
 		line += "\n";
-		for (int sol = 0; sol < _s.getSearchStrategy().solutions.size(); sol++) {
-			Solution solution = _s.getSearchStrategy().solutions.get(sol);
+		for (int sol = 0; sol < sols.size(); sol++) {
+			Solution solution = sols.get(sol);
 			ret.append(line);
 			for (int i = 0; i < n; i++) {
 				ret.append("|");

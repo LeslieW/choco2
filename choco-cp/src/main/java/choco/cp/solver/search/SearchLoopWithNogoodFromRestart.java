@@ -1,7 +1,6 @@
 
 package choco.cp.solver.search;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -40,7 +39,6 @@ public class SearchLoopWithNogoodFromRestart extends SearchLoopWithRestart {
 		//searchStrategy.setLoggingMaxDepth(1000);
 
 	}
-
 
 
 	@Override

@@ -24,15 +24,17 @@ package choco.solver;
 
 import static choco.Choco.lt;
 import static choco.Choco.makeIntVar;
+
+import java.util.List;
+
+import org.junit.Test;
+
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
-import org.junit.Test;
-
-import java.util.ArrayList;
 
 /*
 * User : charles
@@ -54,7 +56,7 @@ public class SolutionTest {
         s.read(m);
         s.solveAll();
 
-        ArrayList<Solution> sols = s.getSearchStrategy().getStoredSolutions();
+        List<Solution> sols = s.getSearchStrategy().getStoredSolutions();
         
     }
 }

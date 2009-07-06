@@ -1,11 +1,11 @@
 package choco.visu.components.chart;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.jfree.data.category.CategoryDataset;
@@ -195,7 +195,7 @@ public final class ChocoDatasetFactory {
 	public static XYSeries createSolutionXYSeries(CPSolver s, Limit limit) {
 		XYSeries series = new XYSeries("solver sol.");
 		final AbstractGlobalSearchStrategy strat = s.getSearchStrategy();
-		if( strat.existsSolution()) {
+		if( strat.existsStoredSolution()) {
 			if(strat.getLimit(limit) != null) {
 				for (Solution sol : strat.getStoredSolutions()) {
 					Collection<AbstractGlobalSearchLimit> sl = sol.getLimits();
@@ -220,10 +220,10 @@ public final class ChocoDatasetFactory {
 		final AbstractGlobalSearchStrategy strat = s.getSearchStrategy();
 		final String series = "Solver sol.";
 		int cpt=0;
-		if( strat.existsSolution()) {
+		if( strat.existsStoredSolution()) {
 			if(strat.getLimit(limit) != null) {
 				//reversed loop
-				final ArrayList<Solution> sols = strat.getStoredSolutions();
+				final List<Solution> sols = strat.getStoredSolutions();
 				for (int i = sols.size()-1; i >=0; i--) {
 					final Solution sol = sols.get(i);
 					boolean notfound = true;

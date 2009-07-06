@@ -27,9 +27,19 @@ import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 
 
 public class GlobalSearchStrategy extends AbstractGlobalSearchStrategy {
-  public GlobalSearchStrategy(Solver solver) {
-    super(solver);
-    setSearchLoop(new SearchLoop(this));
-  }
+	public GlobalSearchStrategy(Solver solver) {
+		super(solver);
+		setSearchLoop(new SearchLoop(this));
+	}
+
+	/**
+	 * record only the first solutions as we are dealing with a CSP.
+	 */
+	@Override
+	public boolean isRecordingNextSolution() {
+		return getNbStoredSolutions() < getStoredSolutionsCapacity();
+	}
+
+
 
 }

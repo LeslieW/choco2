@@ -44,6 +44,7 @@ import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.GlobalSearchLimit;
+import choco.kernel.solver.search.IMeasures;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.search.real.RealValIterator;
@@ -71,7 +72,7 @@ import java.util.List;
  * Time: 16:43:08
  * Interface for Solver class, declare main expected methods.
  */
-public interface Solver extends IPretty {
+public interface Solver extends IMeasures, IPretty {
 
     public IndexFactory getIndexfactory();
 
@@ -503,6 +504,7 @@ public interface Solver extends IPretty {
      * @return the recorded solution
      */
     public Solution recordSolution();
+    
 
     /**
      * Restore a solution by setting value to every variable
@@ -510,16 +512,6 @@ public interface Solver extends IPretty {
      */
     public void restoreSolution(Solution sol);
 
-
-    /**
-     * get the limits when the last solution has been found.
-     * @return <code>null</code> if no solution has been found yet.
-     */
-    public Collection<AbstractGlobalSearchLimit> getSolutionLimits();
-    /**
-     * Restore the previous solution
-     */
-    //public void restoreSolution();
 
     /**
 	 * Returns the memory environment used by the model.

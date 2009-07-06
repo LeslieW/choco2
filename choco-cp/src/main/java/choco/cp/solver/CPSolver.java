@@ -28,36 +28,104 @@
  *************************************************/
 package choco.cp.solver;
 
+import gnu.trove.TLongObjectHashMap;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.ConstantSConstraint;
 import choco.cp.solver.constraints.global.Occurrence;
 import choco.cp.solver.constraints.global.scheduling.SchedulerConfig;
-import choco.cp.solver.constraints.integer.*;
+import choco.cp.solver.constraints.integer.EqualXC;
+import choco.cp.solver.constraints.integer.EqualXYC;
+import choco.cp.solver.constraints.integer.GreaterOrEqualXC;
+import choco.cp.solver.constraints.integer.GreaterOrEqualXYC;
+import choco.cp.solver.constraints.integer.IntLinComb;
+import choco.cp.solver.constraints.integer.LessOrEqualXC;
+import choco.cp.solver.constraints.integer.MaxOfAList;
+import choco.cp.solver.constraints.integer.NotEqualXC;
+import choco.cp.solver.constraints.integer.NotEqualXYC;
+import choco.cp.solver.constraints.integer.NotEqualXYCEnum;
 import choco.cp.solver.constraints.integer.bool.BoolIntLinComb;
 import choco.cp.solver.constraints.integer.bool.BoolSum;
 import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
 import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
-import choco.cp.solver.constraints.integer.extension.*;
+import choco.cp.solver.constraints.integer.extension.AC2001BinSConstraint;
+import choco.cp.solver.constraints.integer.extension.AC3BinSConstraint;
+import choco.cp.solver.constraints.integer.extension.AC3rmBinSConstraint;
+import choco.cp.solver.constraints.integer.extension.AC3rmBitBinSConstraint;
+import choco.cp.solver.constraints.integer.extension.CspLargeSConstraint;
+import choco.cp.solver.constraints.integer.extension.GAC2001LargeSConstraint;
+import choco.cp.solver.constraints.integer.extension.GAC2001PositiveLargeConstraint;
+import choco.cp.solver.constraints.integer.extension.GAC3rmLargeConstraint;
+import choco.cp.solver.constraints.integer.extension.GAC3rmPositiveLargeConstraint;
+import choco.cp.solver.constraints.integer.extension.GACstrPositiveLargeSConstraint;
 import choco.cp.solver.constraints.real.Equation;
 import choco.cp.solver.constraints.real.MixedEqXY;
-import choco.cp.solver.constraints.real.exp.*;
+import choco.cp.solver.constraints.real.exp.RealCos;
+import choco.cp.solver.constraints.real.exp.RealIntegerPower;
+import choco.cp.solver.constraints.real.exp.RealMinus;
+import choco.cp.solver.constraints.real.exp.RealMult;
+import choco.cp.solver.constraints.real.exp.RealPlus;
+import choco.cp.solver.constraints.real.exp.RealSin;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
-import choco.cp.solver.constraints.set.*;
+import choco.cp.solver.constraints.set.Disjoint;
+import choco.cp.solver.constraints.set.IsIncluded;
+import choco.cp.solver.constraints.set.MemberXY;
+import choco.cp.solver.constraints.set.SetCard;
+import choco.cp.solver.constraints.set.SetEq;
+import choco.cp.solver.constraints.set.SetIntersection;
+import choco.cp.solver.constraints.set.SetNotEq;
+import choco.cp.solver.constraints.set.SetUnion;
 import choco.cp.solver.goals.GoalSearchSolver;
 import choco.cp.solver.propagation.ChocEngine;
 import choco.cp.solver.propagation.EventQueueFactory;
-import choco.cp.solver.search.*;
+import choco.cp.solver.search.BranchAndBound;
+import choco.cp.solver.search.GlobalSearchStrategy;
+import choco.cp.solver.search.OptimizeWithRestarts;
+import choco.cp.solver.search.SearchLoopWithNogoodFromRestart;
+import choco.cp.solver.search.SearchLoopWithRecomputation;
+import choco.cp.solver.search.SearchLoopWithRestart;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.branching.DomOverWDegBranching;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
-import choco.cp.solver.search.limit.*;
-import choco.cp.solver.search.real.*;
-import choco.cp.solver.search.restart.*;
-import choco.cp.solver.search.set.*;
+import choco.cp.solver.search.limit.BackTrackLimit;
+import choco.cp.solver.search.limit.CpuTimeLimit;
+import choco.cp.solver.search.limit.FailLimit;
+import choco.cp.solver.search.limit.NodeLimit;
+import choco.cp.solver.search.limit.TimeLimit;
+import choco.cp.solver.search.real.AbstractRealOptimize;
+import choco.cp.solver.search.real.AssignInterval;
+import choco.cp.solver.search.real.CyclicRealVarSelector;
+import choco.cp.solver.search.real.RealBranchAndBound;
+import choco.cp.solver.search.real.RealIncreasingDomain;
+import choco.cp.solver.search.real.RealOptimizeWithRestarts;
+import choco.cp.solver.search.restart.AbstractRestartStrategyOnLimit;
+import choco.cp.solver.search.restart.GeometricalRestart;
+import choco.cp.solver.search.restart.LimitedNumberOfRestart;
+import choco.cp.solver.search.restart.LubyRestart;
+import choco.cp.solver.search.restart.RestartStrategy;
+import choco.cp.solver.search.set.AssignSetVar;
+import choco.cp.solver.search.set.MinDomSet;
+import choco.cp.solver.search.set.MinEnv;
+import choco.cp.solver.search.set.RandomSetValSelector;
+import choco.cp.solver.search.set.RandomSetVarSelector;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntTerm;
@@ -93,12 +161,31 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.integer.IntExp;
 import choco.kernel.solver.constraints.integer.IntSConstraint;
-import choco.kernel.solver.constraints.integer.extension.*;
+import choco.kernel.solver.constraints.integer.extension.BinRelation;
+import choco.kernel.solver.constraints.integer.extension.CouplesBitSetTable;
+import choco.kernel.solver.constraints.integer.extension.CouplesTable;
+import choco.kernel.solver.constraints.integer.extension.ExtensionalBinRelation;
+import choco.kernel.solver.constraints.integer.extension.IterLargeRelation;
+import choco.kernel.solver.constraints.integer.extension.IterTuplesTable;
+import choco.kernel.solver.constraints.integer.extension.LargeRelation;
+import choco.kernel.solver.constraints.integer.extension.TuplesList;
+import choco.kernel.solver.constraints.integer.extension.TuplesTable;
 import choco.kernel.solver.constraints.real.RealExp;
 import choco.kernel.solver.constraints.set.SetSConstraint;
 import choco.kernel.solver.goals.Goal;
-import choco.kernel.solver.propagation.*;
-import choco.kernel.solver.search.*;
+import choco.kernel.solver.propagation.AbstractPropagationEngine;
+import choco.kernel.solver.propagation.ConstraintEvent;
+import choco.kernel.solver.propagation.ConstraintEventQueue;
+import choco.kernel.solver.propagation.EventQueue;
+import choco.kernel.solver.propagation.PropagationEngine;
+import choco.kernel.solver.propagation.PropagationEngineListener;
+import choco.kernel.solver.propagation.Propagator;
+import choco.kernel.solver.propagation.VarEventQueue;
+import choco.kernel.solver.search.AbstractGlobalSearchLimit;
+import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.AbstractOptimize;
+import choco.kernel.solver.search.GlobalSearchLimit;
+import choco.kernel.solver.search.Limit;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
@@ -117,12 +204,6 @@ import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
 import choco.kernel.visu.IVisu;
-import gnu.trove.TLongObjectHashMap;
-
-import java.lang.reflect.Array;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class serves both as a factory and as a handler for
@@ -1196,6 +1277,32 @@ public class CPSolver implements Solver {
 		this.failLimit = failLimit;
 	}
 
+
+	
+	
+	@Override
+	public boolean existsSolution() {
+		return getSolutionCount() > 0;
+	}
+
+	@Override
+	public int getIterationCount() {
+		LOGGER.warning("not yet implemented");
+		return 1;
+	}
+
+	@Override
+	public Number getObjectiveValue() {
+		LOGGER.warning("not yet implemented");
+		return null;
+	}
+
+	@Override
+	public int getSolutionCount() {
+		return getNbSolutions();
+	}
+
+	
 	/**
 	 * Get the time count of the search algorithm
 	 *
@@ -1241,6 +1348,7 @@ public class CPSolver implements Solver {
 		return strategy.getFailCount();
 	}
 
+
 	/**
 	 * @return true if only the first solution must be found
 	 */
@@ -1255,6 +1363,7 @@ public class CPSolver implements Solver {
 		this.firstSolution = firstSolution;
 	}
 
+	
 	/**
 	 * Sets a unique integer variable selector the search olver should use.
      *
@@ -2432,45 +2541,12 @@ public class CPSolver implements Solver {
 	 * Record a solution by getting every variables' value.
 	 */
 	@Override
-	public Solution recordSolution() {
-		Solution sol = new Solution(this);
-		int nbv = getNbIntVars();
-		for (int i = 0; i < nbv; i++) {
-			IntDomainVar vari = (IntDomainVar) getIntVar(i);
-			if (vari.isInstantiated()) {
-				sol.recordIntValue(i, vari.getVal());
-			}
-		}
-		int nbsv = getNbSetVars();
-		for (int i = 0; i < nbsv; i++) {
-			SetVar vari = getSetVar(i);
-			if (vari.isInstantiated()) {
-				sol.recordSetValue(i, vari.getValue());
-			}
-		}
-		int nbrv = getNbRealVars();
-		for (int i = 0; i < nbrv; i++) {
-			RealVar vari = getRealVar(i);
-			// if (vari.isInstantiated()) { // Not always "instantiated" : for
-			// instance, if the branching
-			// does not contain the variable, the precision can not be
-			// reached....
-			sol.recordRealValue(i, vari.getValue());
-			// }
-		}
-		if (strategy instanceof AbstractOptimize) {
-			sol.recordIntObjective(((AbstractOptimize) strategy)
-					.getObjectiveValue());
-		}
-		final Iterator<Limit> itLimit = limits.keySet().iterator();
-		while (itLimit.hasNext()) {
-			Limit limit = itLimit.next();
-			if (limits.get(limit) == Boolean.TRUE) {
-				sol.recordLimit(getSearchStrategy().getLimit(limit));
-			}
-		}
+	public final Solution recordSolution() {
+		final Solution sol = new Solution(this);
+		sol.save();
 		return sol;
 	}
+
 
 	/**
 	 * Record a solution by getting every variables' value.
@@ -2524,16 +2600,6 @@ public class CPSolver implements Solver {
 		}
 	}
 
-	@Override
-	public Collection<AbstractGlobalSearchLimit> getSolutionLimits() {
-		if (strategy.existsSolution()) {
-			return strategy.solutionLimits == null ? Collections
-					.unmodifiableCollection(strategy.limits)
-					: strategy.solutionLimits;
-		} else {
-			return null;
-		}
-	}
 
 	// **********************************************************************
 	// LOGGERS MANAGEMENT

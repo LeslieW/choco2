@@ -22,16 +22,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.search;
 
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.real.RealVar;
-import choco.kernel.solver.variables.set.SetVar;
-
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * An abstract class handling the control for solving a model
@@ -51,17 +50,16 @@ public abstract class AbstractSearchStrategy {
 	/**
 	 * The historical record of solutions that were found
 	 */
-	public ArrayList<Solution> solutions; //Solution[]
+	private final LinkedList<Solution> solutions; //Solution[]
 
 	/**
 	 * capacity of the history record (keeping solutions)
 	 */
-	public int maxNbSolutionStored = 5;
-
+	private int maxNbSolutionStored = 5;
 
 
 	public AbstractSearchStrategy() {
-		solutions = new ArrayList<Solution>();
+		solutions = new LinkedList<Solution>();
 	}
 
 	/**
@@ -75,6 +73,28 @@ public abstract class AbstractSearchStrategy {
 	public void setSolver(Solver solver) {
 		this.solver = solver;
 	}
+	
+	/**
+	 * indicates if we will store the next solution
+	 */
+	public boolean isRecordingNextSolution() {
+		return maxNbSolutionStored > 0;
+	}
+
+	public final int getStoredSolutionsCapacity() {
+		return maxNbSolutionStored;
+	}
+
+	public final void setRecordingSolutions(int capacity) {
+		this.maxNbSolutionStored = capacity;
+	}
+
+
+	public final void clearSolutions() {
+		solutions.clear();
+	}
+
+
 
 	/**
 	 * recording the current state as a solution
@@ -85,40 +105,15 @@ public abstract class AbstractSearchStrategy {
 	 * this may also increase the size of the pb.solutions vector.
 	 */
 	public void recordSolution() {
-		//    Solution sol = makeSolutionFromCurrentState();
-		Solution sol = solver.recordSolution();
-		storeSolution(sol);
-	}
-
-	protected Solution makeSolutionFromCurrentState() {
-		int nbv = solver.getNbIntVars();
-		Solution sol = new Solution(solver);
-		// sol.time = time_read()
-		for (int i = 0; i < nbv; i++) {
-			IntDomainVar vari = (IntDomainVar) solver.getIntVar(i);
-			if (vari.isInstantiated()) {
-				sol.recordIntValue(i, vari.getVal());
-			}
+		Solution sol;
+		if(solutions.size() < maxNbSolutionStored) {
+			sol = solver.recordSolution();
+		}else {
+			sol = solutions.removeLast();
+			sol.setSolver(solver);
+			sol.save();
 		}
-		int nbsv = solver.getNbSetVars();
-		for (int i = 0; i < nbsv; i++) {
-			SetVar vari = solver.getSetVar(i);
-			if (vari.isInstantiated()) {
-				sol.recordSetValue(i, vari.getValue());
-			}
-		}
-		int nbrv = solver.getNbRealVars();
-		for (int i = 0; i < nbrv; i++) {
-			RealVar vari = solver.getRealVar(i);
-			//if (vari.isInstantiated()) { // Not always "instantiated" : for instance, if the branching
-			// does not contain the variable, the precision can not be reached....
-			sol.recordRealValue(i, vari.getValue());
-			//}
-		}
-		if (this instanceof AbstractOptimize) {
-			sol.recordIntObjective(((AbstractOptimize) this).getObjectiveValue());
-		}
-		return sol;
+		solutions.addFirst(sol);
 	}
 
 	/**
@@ -130,27 +125,32 @@ public abstract class AbstractSearchStrategy {
 		}
 	}
 
-	public void storeSolution(Solution sol) {
+	public final void storeSolution(Solution sol) {
 		//[SVIEW] store solution ~S // sol,
-		if (solutions.size() == maxNbSolutionStored) {
-			solutions.remove(solutions.size() - 1);
+		if(solutions.size() < maxNbSolutionStored) {
+			solutions.removeLast();
 		}
-		solutions.add(0, sol);
+		solutions.addFirst(sol);
 	}
 
-	public boolean existsSolution() {
-		return (solutions.size() > 0);
+	public final boolean existsStoredSolution() {
+		return solutions.size() > 0;
 	}
 
-	protected Solution getBestSolution() {
-		return existsSolution() ? solutions.get(0) : null;
+	public final Solution getBestSolution() {
+		return solutions.isEmpty() ? null : solutions.getFirst();
 	}
+
 	public void restoreBestSolution() {
 		solver.restoreSolution(getBestSolution());
 	}
 
-	public ArrayList<Solution> getStoredSolutions(){
-		return solutions;
+	public final int getNbStoredSolutions(){
+		return solutions.size();
+	}
+
+	public final List<Solution> getStoredSolutions(){
+		return Collections.unmodifiableList(solutions);
 	}
 
 	/**
