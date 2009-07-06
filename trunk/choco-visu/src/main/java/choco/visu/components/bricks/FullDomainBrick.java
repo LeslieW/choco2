@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.visu.components.bricks;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.variables.Var;
 import static choco.visu.components.ColorConstant.BLUE;
 import static choco.visu.components.ColorConstant.GREEN;
@@ -50,7 +50,7 @@ public final class FullDomainBrick extends AChocoBrick{
     private final int lb;
     private final int up;
     private final int offset;
-    private IntIterator it;
+    private DisposableIntIterator it;
     private final int size;
 
 
@@ -66,6 +66,7 @@ public final class FullDomainBrick extends AChocoBrick{
         while(it.hasNext()){
             this.values.set(it.next()+offset);
         }
+        it.dispose();
     }
 
     /**

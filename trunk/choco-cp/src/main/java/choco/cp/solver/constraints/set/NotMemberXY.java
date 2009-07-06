@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.set;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractBinSetIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -51,7 +51,7 @@ public class NotMemberXY extends AbstractBinSetIntSConstraint {
 	 * @throws ContradictionException
 	 */
 	public void filter() throws ContradictionException {
-		IntIterator it = v0.getDomain().getIterator();
+		DisposableIntIterator it = v0.getDomain().getIterator();
 		int count = 0, val = Integer.MAX_VALUE;
 		while (it.hasNext()) {
 			val = it.next();
@@ -60,6 +60,7 @@ public class NotMemberXY extends AbstractBinSetIntSConstraint {
 				if (count > 1) break;
 			}
 		}
+        it.dispose();
 		if (count == 0)
 			this.fail();
 		else if (count == 1) {
@@ -93,20 +94,28 @@ public class NotMemberXY extends AbstractBinSetIntSConstraint {
 		if (varIdx == 0)
 			v1.remFromEnveloppe(v0.getVal(), cIdx1);
 		else {
-			IntIterator it = v1.getDomain().getKernelIterator();
-			while (it.hasNext()) {
-				v0.removeVal(it.next(), cIdx0);
-			}
+			DisposableIntIterator it = v1.getDomain().getKernelIterator();
+			try{
+                while (it.hasNext()) {
+                    v0.removeVal(it.next(), cIdx0);
+                }
+            }finally {
+                it.dispose();
+            }
 			filter();
 		}
 	}
 
 
 	public void propagate() throws ContradictionException {
-		IntIterator it = v1.getDomain().getKernelIterator();
-		while (it.hasNext()) {
-			v0.removeVal(it.next(), cIdx0);
-		}
+		DisposableIntIterator it = v1.getDomain().getKernelIterator();
+		try{
+            while (it.hasNext()) {
+                v0.removeVal(it.next(), cIdx0);
+            }
+        }finally {
+            it.dispose();
+        }
 		filter();
 	}
 
@@ -115,10 +124,14 @@ public class NotMemberXY extends AbstractBinSetIntSConstraint {
 	}
 
 	public boolean isConsistent() {
-		IntIterator it = v0.getDomain().getIterator();
+		DisposableIntIterator it = v0.getDomain().getIterator();
 		while (it.hasNext()) {
-			if (v1.isInDomainKernel(it.next())) return false;
+			if (v1.isInDomainKernel(it.next())) {
+                it.dispose();
+                return false;
+            }
 		}
+        it.dispose();
 		return true;
 	}
 
@@ -132,7 +145,7 @@ public class NotMemberXY extends AbstractBinSetIntSConstraint {
 
 	public Boolean isEntailed() {
 		boolean allValuesOutEnv = true, allValuesInKer = true;
-		IntIterator it = v0.getDomain().getIterator();
+		DisposableIntIterator it = v0.getDomain().getIterator();
 		while (it.hasNext()) {
 			int val = it.next();
 			if (v1.isInDomainEnveloppe(val)) {
@@ -143,6 +156,7 @@ public class NotMemberXY extends AbstractBinSetIntSConstraint {
 				}
 			}
 		}
+        it.dispose();
 		if (allValuesInKer)
 			return Boolean.FALSE;
 		else if (allValuesOutEnv)

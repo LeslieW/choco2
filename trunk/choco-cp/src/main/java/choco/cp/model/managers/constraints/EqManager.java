@@ -33,7 +33,7 @@ import choco.cp.solver.constraints.real.exp.RealMinus;
 import choco.cp.solver.constraints.reified.leaves.bool.*;
 import choco.cp.solver.constraints.set.SetEq;
 import choco.cp.solver.constraints.set.SetNotEq;
-import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
@@ -77,7 +77,7 @@ public class EqManager extends IntConstraintManager {
                 CPSolver cpsolver = (CPSolver) solver;
                 Variable v1 = variables[0];
                 Variable v2 = variables[1];
-                int ty = ChocoUtil.checkType(v1.getVariableType(), v2.getVariableType());
+                int ty = VariableUtils.checkType(v1.getVariableType(), v2.getVariableType());
                 switch(type){
                     case EQ:
                         switch (ty) {

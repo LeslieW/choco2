@@ -32,7 +32,7 @@ import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
@@ -517,7 +517,7 @@ public class GlobalCardinalityTest {
                     e.printStackTrace();
                 }
             }
-			LOGGER.info(ChocoUtil.pretty(vars));
+			LOGGER.info(StringUtils.pretty(vars));
 			int nbsol = getNBSolByBruteForce(vars, n, seed, min, max, s);
 			Constraint gcc;
             gcc = globalCardinality(vars, min, max);
@@ -527,7 +527,7 @@ public class GlobalCardinalityTest {
 				pb.addConstraint("cp:bc", gcc);
 			}
 			s.read(pb);
-			LOGGER.info(ChocoUtil.pretty(s.getVar(vars)));
+			LOGGER.info(StringUtils.pretty(s.getVar(vars)));
 			LOGGER.info(s.pretty());
 			s.setValIntSelector(new RandomIntValSelector(seed));
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed + 10));

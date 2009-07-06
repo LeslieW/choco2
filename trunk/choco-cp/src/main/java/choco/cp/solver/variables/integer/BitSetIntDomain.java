@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -22,8 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
-import choco.kernel.common.util.DisposableIntIterator;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
@@ -261,28 +261,31 @@ public class BitSetIntDomain extends AbstractIntDomain implements IBitSetIntDoma
     }
 
   public DisposableIntIterator getIterator() {
-      if(getSize() == 1) return DisposableIntIterator.getOneValueIterator(getInf());
-      DisposableIntIterator iter = lastIterator;
+      if(getSize() == 1) return OneValueIterator.getOneValueIterator(getInf());
+      DisposableIntIterator iter = _cachedIterator;
       if (iter != null && iter.reusable) {
           iter.init();
           return iter;
       }
-      lastIterator = new BitSetIntDomainIterator();
-      return lastIterator;
+      _cachedIterator = new BitSetIntDomainIterator(this);
+      return _cachedIterator;
   }
 
 
-  protected class BitSetIntDomainIterator extends DisposableIntIterator {
-    protected int nextValue;
+  protected static class BitSetIntDomainIterator extends DisposableIntIterator {
+      BitSetIntDomain domain;
 
-    private BitSetIntDomainIterator() {
+      protected int nextValue;
+
+    private BitSetIntDomainIterator(BitSetIntDomain domain) {
+        this.domain = domain;
       init();
     }
 
     @Override
     public void init() {
           super.init();
-      nextValue = inf.get() - offset;
+      nextValue = domain.inf.get() - domain.offset;
     }
 
     public boolean hasNext() {
@@ -291,8 +294,8 @@ public class BitSetIntDomain extends AbstractIntDomain implements IBitSetIntDoma
 
     public int next() {
       int v = nextValue;
-      nextValue = contents.nextSetBit(nextValue + 1);
-      return v + offset;
+      nextValue = domain.contents.nextSetBit(nextValue + 1);
+      return v + domain.offset;
     }
 
     public void remove() {
@@ -382,7 +385,7 @@ public class BitSetIntDomain extends AbstractIntDomain implements IBitSetIntDoma
         return _cachedDeltaIntDomainIterator;
     }
 
-    protected class DeltaIntDomainIterator extends DisposableIntIterator {
+    protected static class DeltaIntDomainIterator extends DisposableIntIterator {
         protected BitSetIntDomain domain;
         protected int currentIndex = -1;
       protected boolean disposed = true;
@@ -403,19 +406,19 @@ public class BitSetIntDomain extends AbstractIntDomain implements IBitSetIntDoma
 
         public boolean hasNext() {
             if (currentIndex == -1) {
-                return (firstIndexBeingPropagated != -1);
+                return (domain.firstIndexBeingPropagated != -1);
             } else {
-                return (chain[currentIndex] != -1);
+                return (domain.chain[currentIndex] != -1);
             }
         }
 
         public int next() {
             if (currentIndex == -1) {
-                currentIndex = firstIndexBeingPropagated;
+                currentIndex = domain.firstIndexBeingPropagated;
             } else {
-                currentIndex = chain[currentIndex];
+                currentIndex = domain.chain[currentIndex];
             }
-            return currentIndex + offset;
+            return currentIndex + domain.offset;
         }
 
         public void remove() {
@@ -490,12 +493,14 @@ public class BitSetIntDomain extends AbstractIntDomain implements IBitSetIntDoma
         StringBuffer buf = new StringBuffer("{");
         int maxDisplay = 15;
         int count = 0;
-        for (IntIterator it = this.getIterator(); (it.hasNext() && count < maxDisplay);) {
+        DisposableIntIterator it = this.getIterator();
+        for (; (it.hasNext() && count < maxDisplay);) {
             int val = it.next();
             count++;
             if (count > 1) buf.append(", ");
             buf.append(val);
         }
+        it.dispose();
         if (this.getSize() > maxDisplay) {
             buf.append("..., ");
             buf.append(this.getSup());

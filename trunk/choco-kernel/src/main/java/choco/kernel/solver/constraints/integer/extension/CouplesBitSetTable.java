@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.constraints.integer.extension;
 
-import choco.kernel.common.util.OpenBitSet;
+import choco.kernel.common.util.objects.OpenBitSet;
 import choco.kernel.memory.structure.SBitSet;
 import choco.kernel.solver.variables.integer.IBitSetIntDomain;
 

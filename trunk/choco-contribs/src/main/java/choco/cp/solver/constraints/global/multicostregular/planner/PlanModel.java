@@ -31,8 +31,8 @@ import choco.cp.solver.constraints.global.multicostregular.MCRValSelector;
 import choco.cp.solver.constraints.global.multicostregular.MultiCostRegular;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.IntIterator;
-import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
@@ -240,7 +240,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
         count = makeIntVarArray("count",shifts.length,0,3,"cp:enum");
        // for (int i = 0 ; i < count.length; i++)
           //  m.addConstraint(new ComponentConstraint(SimpleChannelling.SimpleManager.class,null,new IntegerVariable[]{shifts[i],count[i]}));
-        m.addConstraint(new ComponentConstraint(SubSetChannelling.SubSetManager.class,null, UtilAlgo.append(shifts,count)));
+        m.addConstraint(new ComponentConstraint(SubSetChannelling.SubSetManager.class,null, ArrayUtils.append(shifts,count)));
 
         m.addConstraint(globalCardinality("cp:ac",count,bInf,bSup));
 
@@ -379,7 +379,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
         double nbTrue = 0;
         for (IntDomainVar v : s.getVar(shifts))
         {
-            IntIterator it ;
+            DisposableIntIterator it ;
             for (it = v.getDomain().getIterator(); it.hasNext() ;)
             {
                 int j = it.next();
@@ -396,6 +396,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
                  s.worldPopUntil(env);
 
             }
+            it.dispose();
 
         }
 

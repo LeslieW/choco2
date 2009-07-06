@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.visu.components.bricks;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.variables.Var;
 import static choco.visu.components.ColorConstant.BLACK;
 import static choco.visu.components.ColorConstant.WHITE;
@@ -44,7 +44,7 @@ import choco.visu.components.papplets.AChocoPApplet;
 public final class QuestionMarkOrValueBrick extends AChocoBrick{
 
     private String value;
-    private IntIterator it;
+    private DisposableIntIterator it;
 
     public QuestionMarkOrValueBrick(final AChocoPApplet chopapplet, final Var var, final int policy) {
         super(chopapplet, var);
@@ -67,6 +67,7 @@ public final class QuestionMarkOrValueBrick extends AChocoBrick{
                 }
                 value+=it.next();
             }
+            it.dispose();
         }else{
             value = "?";
         }

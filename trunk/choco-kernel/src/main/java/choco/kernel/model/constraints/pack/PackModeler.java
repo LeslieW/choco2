@@ -24,8 +24,8 @@
 package choco.kernel.model.constraints.pack;
 
 import static choco.Choco.*;
-import choco.kernel.common.util.ChocoUtil;
-import choco.kernel.common.util.IPermutation;
+import choco.kernel.common.util.comparator.IPermutation;
+import choco.kernel.common.util.tools.PermutationUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
@@ -81,7 +81,7 @@ public class PackModeler {
 		this.nbNonEmpty = nbNonEmpty;
 		this.nbEmpty = makeIntVar("nbEmpty"+nextID(),0, this.nbBins, "cp:bound");
 		this.maxCapacity = capacity;
-		permutation = ChocoUtil.getIdentity();
+		permutation = PermutationUtils.getIdentity();
 	}
 
 	public PackModeler(int[] sizes, int nbBins, int capacity) {
@@ -103,9 +103,9 @@ public class PackModeler {
 		this.nbNonEmpty = makeIntVar("nbNonEmpty-"+name,0, this.nbBins, "cp:bound");
 		this.nbEmpty = makeIntVar("nbEmpty-"+name,0, this.nbBins, "cp:bound");
 		//handle permutation
-		IPermutation tmp =ChocoUtil.getSortingPermuation(sizes,true);
-		permutation = tmp.isIdentity() ? ChocoUtil.getIdentity() : tmp;
-		this.sizes= ChocoUtil.applyPermutation(permutation,sizes);
+		IPermutation tmp = PermutationUtils.getSortingPermuation(sizes,true);
+		permutation = tmp.isIdentity() ? PermutationUtils.getIdentity() : tmp;
+		this.sizes= PermutationUtils.applyPermutation(permutation,sizes);
 	}
 
 	private static String nextID() {

@@ -24,8 +24,8 @@ package choco.cp.solver.constraints.set;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.cp.solver.variables.set.SetVarEvent;
-import choco.kernel.common.util.ChocoUtil;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
@@ -125,7 +125,7 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 	protected abstract boolean updateEnveloppe() throws ContradictionException;
 
 	@Override
-	public void awakeOnEnvRemovals(int idx, IntIterator deltaDomain)
+	public void awakeOnEnvRemovals(int idx, DisposableIntIterator deltaDomain)
 	throws ContradictionException {
 		if(idx==SET_INDEX && deltaDomain.hasNext()) {
 			awakeOnEnv(idx, deltaDomain.next());
@@ -134,7 +134,7 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 
 
 	@Override
-	public void awakeOnkerAdditions(int idx, IntIterator deltaDomain)
+	public void awakeOnkerAdditions(int idx, DisposableIntIterator deltaDomain)
 	throws ContradictionException {
 		if(idx==SET_INDEX && deltaDomain.hasNext()) {
 			awakeOnKer(idx, deltaDomain.next());
@@ -164,7 +164,7 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 		sb.append(ivars[BOUND_INDEX].pretty());
 		sb.append(" = ").append(operator).append("(");
 		sb.append(svars[SET_INDEX].pretty()).append(", ");
-		sb.append(ChocoUtil.pretty(ivars, VARS_OFFSET, ivars.length));
+		sb.append(StringUtils.pretty(ivars, VARS_OFFSET, ivars.length));
 		sb.append(")");
 		return new String(sb);
 
@@ -204,11 +204,12 @@ public class MaxOfASet extends AbstractBoundOfASet {
 	@Override
 	protected boolean updateEnveloppe() throws ContradictionException {
 		final int maxValue = ivars[BOUND_INDEX].getSup();
-		final IntIterator iter= getSetDomain().getOpenDomainIterator();
+		final DisposableIntIterator iter= getSetDomain().getOpenDomainIterator();
 		boolean update = false;
 		while(iter.hasNext()) {
 			removeGreaterFromEnv(iter.next(), maxValue);
 		}
+        iter.dispose();
 		return update;
 	}
 
@@ -217,7 +218,7 @@ public class MaxOfASet extends AbstractBoundOfASet {
 	protected void updateIndexOfMaximumVariables() throws ContradictionException {
 		int maxMax = Integer.MIN_VALUE, maxMaxIdx = -1;
 		int maxMax2 = Integer.MIN_VALUE;
-		IntIterator iter= this.getSetDomain().getEnveloppeIterator();
+		DisposableIntIterator iter= this.getSetDomain().getEnveloppeIterator();
 		while(iter.hasNext()) {
 			final int idx = iter.next() + VARS_OFFSET;
 			final int val = ivars[idx].getSup();
@@ -229,6 +230,7 @@ public class MaxOfASet extends AbstractBoundOfASet {
 				maxMax2 = val;
 			}
 		}
+        iter.dispose();
 		if (maxMax2 < ivars[BOUND_INDEX].getInf()) {
 			this.indexOfMaximumVariable.set(maxMaxIdx);
 
@@ -259,12 +261,13 @@ public class MaxOfASet extends AbstractBoundOfASet {
 	}
 
 	protected final int maxInf() {
-		IntIterator iter= getSetDomain().getKernelIterator();
+		DisposableIntIterator iter= getSetDomain().getKernelIterator();
 		int max = Integer.MIN_VALUE;
 		while(iter.hasNext()) {
 			int val = ivars[VARS_OFFSET+iter.next()].getInf();
 			if(val>max) {max=val;}
 		}
+        iter.dispose();
 		return max;
 	}
 
@@ -273,11 +276,12 @@ public class MaxOfASet extends AbstractBoundOfASet {
 		if( isNotEmptySet()) {
 			int max = Integer.MIN_VALUE;
 			//if the set could be empty : we do nothing
-			IntIterator iter= getSetDomain().getEnveloppeIterator();
+			DisposableIntIterator iter= getSetDomain().getEnveloppeIterator();
 			while(iter.hasNext()) {
 				int val = ivars[VARS_OFFSET+iter.next()].getSup();
 				if(val>max) {max=val;}
 			}
+            iter.dispose();
 			return max;
 		}else {
 			return Integer.MAX_VALUE;
@@ -286,11 +290,12 @@ public class MaxOfASet extends AbstractBoundOfASet {
 
 	protected final void updateKernelSup() throws ContradictionException {
 		final int maxValue = ivars[BOUND_INDEX].getSup();
-		IntIterator iter= svars[SET_INDEX].getDomain().getKernelIterator();
+		DisposableIntIterator iter= svars[SET_INDEX].getDomain().getKernelIterator();
 		while(iter.hasNext()) {
 			final int i = VARS_OFFSET+iter.next();
 			ivars[i].updateSup(maxValue, int_cIndices[i]);
 		}
+        iter.dispose();
 	}
 
 	/**

@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.set;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractBinSetSConstraint;
 import choco.kernel.solver.variables.set.SetVar;
@@ -52,12 +52,14 @@ public class IsNotIncluded extends AbstractBinSetSConstraint {
 
 	public boolean isKer1IncludedInKer2(SetVar x0, SetVar x1) {
 		if (x0.getKernelDomainSize() <= x1.getKernelDomainSize()) {
-			IntIterator it1 = x0.getDomain().getKernelIterator();
+			DisposableIntIterator it1 = x0.getDomain().getKernelIterator();
 			while (it1.hasNext()) {
 				if (!x1.isInDomainKernel(it1.next())) {
+                    it1.dispose();
 					return false;
 				}
 			}
+            it1.dispose();
 			return true;
 		} else {
 			return false;
@@ -66,12 +68,14 @@ public class IsNotIncluded extends AbstractBinSetSConstraint {
 
 	public boolean isKer1IncludedInEnv2(SetVar x0, SetVar x1) {
 		if (x0.getKernelDomainSize() <= x1.getEnveloppeDomainSize()) {
-			IntIterator it1 = x0.getDomain().getKernelIterator();
+			DisposableIntIterator it1 = x0.getDomain().getKernelIterator();
 			while (it1.hasNext()) {
 				if (!x1.isInDomainEnveloppe(it1.next())) {
+                    it1.dispose();
 					return false;
 				}
 			}
+            it1.dispose();
 			return true;
 		} else {
 			return false;
@@ -88,7 +92,7 @@ public class IsNotIncluded extends AbstractBinSetSConstraint {
 	 */
 	public int findUniqueOutsider() throws ContradictionException {
 		prune = false;
-		IntIterator it1 = v0.getDomain().getEnveloppeIterator();
+		DisposableIntIterator it1 = v0.getDomain().getEnveloppeIterator();
 		int uniqueOutsider = Integer.MAX_VALUE;
 		while (it1.hasNext()) {
 			int val = it1.next();
@@ -98,10 +102,12 @@ public class IsNotIncluded extends AbstractBinSetSConstraint {
 					prune = true;
 				} else {
 					prune = false;
+                    it1.dispose();
 					return Integer.MAX_VALUE;
 				}
 			}
 		}
+        it1.dispose();
 		if (!prune) {
 			this.fail();
 		}
@@ -151,12 +157,14 @@ public class IsNotIncluded extends AbstractBinSetSConstraint {
 	}
 
 	public boolean isSatisfied() {
-		IntIterator it2 = v0.getDomain().getKernelIterator();
+		DisposableIntIterator it2 = v0.getDomain().getKernelIterator();
 		while (it2.hasNext()) {
 			if (!v1.isInDomainKernel(it2.next())) {
+                it2.dispose();
 				return true;
 			}
 		}
+        it2.dispose();
 		return false;
 	}
 

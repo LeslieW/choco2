@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.common.opres.graph;
 
-import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.tools.ArrayUtils;
 import gnu.trove.TIntArrayList;
 import gnu.trove.TIntProcedure;
 
@@ -46,8 +46,8 @@ public class DagDTC extends GraphDTC {
 	 */
 	public DagDTC(final int n) {
 		super(n);
-		order = ChocoUtil.zeroToN(n);
-		orderIndex = ChocoUtil.zeroToN(n);
+		order = ArrayUtils.zeroToN(n);
+		orderIndex = ArrayUtils.zeroToN(n);
 	}
 
 

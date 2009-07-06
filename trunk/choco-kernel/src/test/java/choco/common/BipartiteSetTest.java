@@ -23,7 +23,7 @@
 package choco.common;
 
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.BipartiteSet;
+import choco.kernel.common.util.objects.BipartiteSet;
 import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -54,7 +54,7 @@ public class BipartiteSetTest {
 	@Test
 	public void test1() {
 		LOGGER.finer("test1");
-		BipartiteSet set = new BipartiteSet();
+		BipartiteSet<Object> set = new BipartiteSet<Object>();
 		Object obj1 = new Object();
 		Object obj2 = new Object();
 		Object obj3 = new Object();

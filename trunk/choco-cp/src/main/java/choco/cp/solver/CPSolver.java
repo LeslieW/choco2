@@ -66,9 +66,10 @@ import choco.cp.solver.variables.set.SetVarImpl;
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
-import choco.kernel.common.util.ChocoUtil;
-import choco.kernel.common.util.IntIterator;
-import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.util.tools.StringUtils;
+import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.recomputation.EnvironmentRecomputation;
@@ -460,7 +461,7 @@ public class CPSolver implements Solver {
 		buffer.append(getNbIntConstraints()).append(" cons]");
 		if (strategy != null) {
 			buffer.append("\nLimits");
-			buffer.append(ChocoUtil.pretty(strategy.limits));
+			buffer.append(StringUtils.pretty(strategy.limits));
 
 		}
 		return new String(buffer);
@@ -491,20 +492,21 @@ public class CPSolver implements Solver {
 			buf.append("\n");
 		}
 		buf.append("==== TASKS ====\n");
-		buf.append(ChocoUtil.prettyOnePerLine(taskVars));
+		buf.append(StringUtils.prettyOnePerLine(taskVars));
 		return new String(buf);
 	}
 
 	public String constraintsToString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("==== CONSTRAINTS ====\n");
-		IntIterator it = constraints.getIndexIterator();
+		DisposableIntIterator it = constraints.getIndexIterator();
 		while (it.hasNext()) {
 			int i = it.next();
 			AbstractSConstraint c = (AbstractSConstraint) constraints.get(i);
 			buf.append(c.pretty());
 			buf.append("\n");
 		}
+        it.dispose();
 		return new String(buf);
 	}
 
@@ -1852,7 +1854,7 @@ public class CPSolver implements Solver {
 
 	public Iterator<SConstraint> getIntConstraintIterator() {
 		return new Iterator<SConstraint>() {
-			IntIterator it = constraints.getIndexIterator();
+			DisposableIntIterator it = constraints.getIndexIterator();
 
 			public boolean hasNext() {
 				return it.hasNext();
@@ -3429,7 +3431,7 @@ public class CPSolver implements Solver {
 
 	protected SConstraint createBoolLinComb(IntDomainVar[] vs, int[] coefs,
 			IntDomainVar obj, int objcoef, int c, int linOperator) {
-		UtilAlgo.quicksort(coefs, vs, 0, coefs.length - 1);
+		VariableUtils.quicksort(coefs, vs, 0, coefs.length - 1);
 		if (obj == null) { // is there an enum variable ?
 			boolean isAsum = true;
 			for (int i = 0; i < vs.length && isAsum; i++) {
@@ -3450,8 +3452,8 @@ public class CPSolver implements Solver {
 				if (linOperator != IntLinComb.NEQ) {
 					objcoef = -objcoef;
 					c = -c;
-					UtilAlgo.reverse(coefs, vs);
-					UtilAlgo.inverseSign(coefs);
+					VariableUtils.reverse(coefs, vs);
+					ArrayUtils.inverseSign(coefs);
 				}
 				if (linOperator == IntLinComb.GEQ) {
 					newLinOp = IntLinComb.LEQ;

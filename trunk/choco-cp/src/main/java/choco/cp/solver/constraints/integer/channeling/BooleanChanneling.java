@@ -25,7 +25,7 @@
 package choco.cp.solver.constraints.integer.channeling;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -102,7 +102,7 @@ public class BooleanChanneling extends AbstractBinIntSConstraint {
     }
   }
 
-  public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+  public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
     if (idx == 0) {
       filterFromBtoX();
     } else {

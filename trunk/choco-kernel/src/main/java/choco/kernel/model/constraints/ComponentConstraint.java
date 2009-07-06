@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.constraints;
 
-import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.model.variables.Variable;
 
 import java.util.Iterator;
@@ -85,6 +85,6 @@ public class ComponentConstraint extends AbstractConstraint {
      */
     @Override
     public Iterator<Variable> getVariableIterator() {
-       return ChocoUtil.iterator(extractVariables());
+       return IteratorUtils.iterator(extractVariables());
     }
 }

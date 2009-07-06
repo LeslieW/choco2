@@ -30,8 +30,8 @@ import choco.cp.solver.constraints.global.multicostregular.asap.data.ASAPShiftOn
 import choco.cp.solver.constraints.global.multicostregular.asap.data.base.*;
 import choco.cp.solver.constraints.global.multicostregular.asap.parser.ASAPParser;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-import static choco.kernel.common.util.ChocoUtil.pad;
-import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -236,7 +236,7 @@ public class ASAPCPModel extends CPModel {
 
     private void postVerticalGcc()
     {
-        IntegerVariable[][] v = UtilAlgo.transpose(shifts);
+        IntegerVariable[][] v = ArrayUtils.transpose(shifts);
 
         for (ASAPCover c: handler.getCover())
         {
@@ -349,7 +349,7 @@ public class ASAPCPModel extends CPModel {
 
 
         s.read(this);
-        s.setVarIntSelector(new StaticVarOrder(s.getVar(UtilAlgo.flatten(UtilAlgo.transpose(shifts)))));
+        s.setVarIntSelector(new StaticVarOrder(s.getVar(ArrayUtils.flatten(ArrayUtils.transpose(shifts)))));
         s.monitorFailLimit(true);
         //s.setValIntSelector(new MaxVal());
 
@@ -366,7 +366,7 @@ public class ASAPCPModel extends CPModel {
                 st.append(MessageFormat.format("{0} : ", handler.orderedEmployees.get(i++)));
                 for (IntDomainVar iv : s.getVar(ivt))
                 {
-                    st.append(pad(handler.inverseMap.get(iv.getVal()),4," "));
+                    st.append(StringUtils.pad(handler.inverseMap.get(iv.getVal()),4," "));
                 }
                 LOGGER.info(st.toString());
             }
@@ -470,7 +470,7 @@ public class ASAPCPModel extends CPModel {
                     catch (NumberFormatException ignored) {}
                 }
                 // LOGGER.info(reg);
-                dk.brics.automaton.Automaton aa = new dk.brics.automaton.RegExp(UtilAlgo.toCharExp(reg)).toAutomaton();
+                dk.brics.automaton.Automaton aa = new dk.brics.automaton.RegExp(StringUtils.toCharExp(reg)).toAutomaton();
 
                 BufferedWriter out = null;
 

@@ -26,7 +26,7 @@ import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.TaskComparators;
+import choco.kernel.common.util.comparator.TaskComparators;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
@@ -70,7 +70,7 @@ public class TestTask {
 		LOGGER.info(""+tasksL);
 		Collections.sort(tasksL,TaskComparators.makeEarliestStartingTimeCmp());
 		testSort(new int[] {0,2,3,1,4});
-		Collections.sort(tasksL,TaskComparators.makeEarliestCompletionTimeCmp());
+		Collections.sort(tasksL, TaskComparators.makeEarliestCompletionTimeCmp());
 		testSort(new int[] {0,2,1,3,4});
 		Collections.sort(tasksL,TaskComparators.makeLatestStartingTimeCmp());
 		testSort(new int[] {3,2,4,0,1});

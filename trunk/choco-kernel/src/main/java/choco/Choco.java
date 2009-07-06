@@ -24,9 +24,7 @@ package choco;
 
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.ChocoUtil;
-import choco.kernel.common.util.UtilAlgo;
-import static choco.kernel.common.util.UtilAlgo.append;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.*;
 import choco.kernel.model.constraints.automaton.DFA;
@@ -190,7 +188,7 @@ public class Choco{
 	 *                </ul>
 	 */
 	public static IntegerVariable makeIntVar(String name, TIntArrayList valuesList, String... options) {
-		int[] values = ChocoUtil.getNonRedundantSortedValues(valuesList);
+		int[] values = ArrayUtils.getNonRedundantSortedValues(valuesList);
 		checkIntVarBounds(values[0], values[values.length-1]);
 		IntegerVariable v = new IntegerVariable(name, VariableType.INTEGER, values);
         for (String option : options) {
@@ -230,7 +228,7 @@ public class Choco{
 	 *                </ul>
 	 */
 	public static IntegerVariable makeIntVar(String name, int[] valuesArray, String... options) {
-		int[] values = ChocoUtil.getNonRedundantSortedValues(valuesArray);
+		int[] values = ArrayUtils.getNonRedundantSortedValues(valuesArray);
 		checkIntVarBounds(values[0], values[values.length-1]);
 		IntegerVariable v = new IntegerVariable(name, VariableType.INTEGER, values);
         for (String option : options) {
@@ -1972,7 +1970,7 @@ public class Choco{
      * @return Constraint
      */
 	public static Constraint nth(IntegerVariable index, IntegerVariable[] varArray, IntegerVariable val) {
-		IntegerVariable[] vars = UtilAlgo.append(varArray, new IntegerVariable[]{index, val});
+		IntegerVariable[] vars = ArrayUtils.append(varArray, new IntegerVariable[]{index, val});
 		return new ComponentConstraint(ConstraintType.NTH, 0, vars);
 	}
 
@@ -1998,7 +1996,7 @@ public class Choco{
      * @return Constraint
      */
 	public static Constraint nth(IntegerVariable index, IntegerVariable[] varArray, IntegerVariable val, int offset) {
-		IntegerVariable[] vars = append(varArray, new IntegerVariable[]{index, val});
+		IntegerVariable[] vars = ArrayUtils.append(varArray, new IntegerVariable[]{index, val});
 		return new ComponentConstraint(ConstraintType.NTH, offset, vars);
 	}
 
@@ -2027,7 +2025,7 @@ public class Choco{
 		if (y.length != x.length) {
 			throw new SolverException("not a valid inverse channeling constraint with two arrays of different sizes");
 		}
-		IntegerVariable[] vars = append(x, y);
+		IntegerVariable[] vars = ArrayUtils.append(x, y);
 		return new ComponentConstraint(ConstraintType.INVERSECHANNELING, ConstraintType.INVERSECHANNELING, vars);
 	}
 
@@ -2376,7 +2374,7 @@ public class Choco{
 	public static Constraint cumulative(String name, TaskVariable[] tasks, IntegerVariable[] heights, IntegerVariable[] usages, IntegerVariable consumption, IntegerVariable capacity, IntegerVariable uppBound, String... options) {
 		if(tasks.length == heights.length && consumption!= null && capacity!=null) {
 			RscData param = new RscData(name, tasks, usages, uppBound);
-			final Variable[] vars=  UtilAlgo.append(tasks, heights, usages, new Variable[]{consumption, capacity}, uppBound == null ? null : new Variable[]{uppBound});
+			final Variable[] vars=  ArrayUtils.append(tasks, heights, usages, new Variable[]{consumption, capacity}, uppBound == null ? null : new Variable[]{uppBound});
 			final ComponentConstraint c=new ComponentConstraint(ConstraintType.CUMULATIVE, param,vars);
 			c.addOptions(options);
 			return c;
@@ -2534,7 +2532,7 @@ public class Choco{
 	 */
 	public static Constraint disjunctive(String name, TaskVariable[] tasks,IntegerVariable[] usages, IntegerVariable uppBound, String... options) {
 		RscData param = new RscData(name, tasks, usages, uppBound);
-		Variable[] vars = uppBound==null ? UtilAlgo.append((Variable[]) tasks, usages) :   UtilAlgo.append(tasks, usages, new Variable[]{ uppBound});
+		Variable[] vars = uppBound==null ? ArrayUtils.append((Variable[]) tasks, usages) :   ArrayUtils.append(tasks, usages, new Variable[]{ uppBound});
 		final ComponentConstraint c=new ComponentConstraint(ConstraintType.DISJUNCTIVE, param,vars);
 		c.addOptions(options);
 		return c;
@@ -2609,7 +2607,7 @@ public class Choco{
 	 */
 	public static Constraint lexeq(IntegerVariable[] v1, IntegerVariable[] v2) {
 		int offset = v1.length;
-		IntegerVariable[] vars = append(v1, v2);
+		IntegerVariable[] vars = ArrayUtils.append(v1, v2);
 		return new ComponentConstraint(ConstraintType.LEX, new Object[]{ConstraintType.LEXEQ, offset}, vars);
 	}
 
@@ -2623,7 +2621,7 @@ public class Choco{
 	 */
 	public static Constraint lex(IntegerVariable[] v1, IntegerVariable[] v2) {
 		int offset = v1.length;
-		IntegerVariable[] vars = append(v1, v2);
+		IntegerVariable[] vars = ArrayUtils.append(v1, v2);
 		return new ComponentConstraint(ConstraintType.LEX, new Object[]{ConstraintType.LEX, offset}, vars);
 	}
 
@@ -2682,7 +2680,7 @@ public class Choco{
 	 */
 	public static Constraint sorting(IntegerVariable[] v1, IntegerVariable[] v2) {
 		int offset = v1.length;
-		IntegerVariable[] vars = append(v1, v2);
+		IntegerVariable[] vars = ArrayUtils.append(v1, v2);
 		return new ComponentConstraint(ConstraintType.SORTING, offset, vars);
 	}
 
@@ -3065,7 +3063,7 @@ public class Choco{
 	 */
 	public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable cvar, Automaton auto, int[][] costs){
 		return new ComponentConstraint(ConstraintType.COSTREGULAR, new Object[]{auto, costs},
-				append(vars, new IntegerVariable[]{cvar}));
+				ArrayUtils.append(vars, new IntegerVariable[]{cvar}));
 	}
 
     	/**
@@ -3080,7 +3078,7 @@ public class Choco{
 	 */
 	public static Constraint multiCostRegular(IntegerVariable[] vars, IntegerVariable[] cvar, Automaton auto, int[][][] costs){
 		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,costs},
-				append(vars, cvar));
+				ArrayUtils.append(vars, cvar));
 	}
 
 
@@ -3115,7 +3113,7 @@ public class Choco{
 	}
 
 	public static Constraint reifiedIntConstraint(IntegerVariable binVar, Constraint cst) {
-		Variable[] vars = append(new Variable[]{binVar}, cst.getVariables());
+		Variable[] vars = ArrayUtils.append(new Variable[]{binVar}, cst.getVariables());
 		return new ComponentConstraintWithSubConstraints(ConstraintType.REIFIEDINTCONSTRAINT, vars, null, cst);
 	}
 
@@ -3130,7 +3128,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint clause(IntegerVariable[] positiveLiterals, IntegerVariable[] negativeLiterals){
-		IntegerVariable[] literals = UtilAlgo.append(positiveLiterals, negativeLiterals);
+		IntegerVariable[] literals = ArrayUtils.append(positiveLiterals, negativeLiterals);
 		return new ComponentConstraint(ConstraintType.CLAUSES, positiveLiterals.length, literals);
 
 	}

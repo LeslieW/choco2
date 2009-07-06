@@ -29,7 +29,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.automaton.DFA;
@@ -425,7 +425,7 @@ public class RegularTest {
                 StringBuffer st = new StringBuffer();
                 st.append("Solution: ");
                 for (IntegerVariable var : vars) {
-                    st.append(ChocoUtil.pad(s.getVar(var).getVal() + "", 4, " "));
+                    st.append(StringUtils.pad(s.getVar(var).getVal() + "", 4, " "));
                 }
                 LOGGER.info(st.toString());
             } while (s.nextSolution() == Boolean.TRUE);

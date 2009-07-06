@@ -23,14 +23,12 @@
 package choco.cp.solver.constraints.strong;
 
 import choco.cp.solver.constraints.strong.maxrpcrm.MaxRPCrm;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.search.integer.DoubleHeuristicIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.common.util.IntIterator;
-
-import java.util.Iterator;
 
 public final class DomOverDDegRPC extends DoubleHeuristicIntVarSelector {
 	public DomOverDDegRPC(Solver solver) {
@@ -40,8 +38,8 @@ public final class DomOverDDegRPC extends DoubleHeuristicIntVarSelector {
 	public double getHeuristic(IntDomainVar v) {
 		int ddeg = 0;
         int idx = 0;
-        for (final IntIterator it = v.getIndexVector().getIndexIterator(); it
-				.hasNext();) {
+        final DisposableIntIterator it = v.getIndexVector().getIndexIterator();
+        for (; it.hasNext();) {
             idx = it.next();
             SConstraint ct = v.getConstraint(idx);
 			if (ct instanceof MaxRPCrm) {
@@ -50,6 +48,7 @@ public final class DomOverDDegRPC extends DoubleHeuristicIntVarSelector {
 				ddeg+= ct.getFineDegree(v.getVarIndex(idx));
 			}
         }
+        it.dispose();
 		return (ddeg == 0) ? Double.MAX_VALUE
 				: ((double) v.getDomainSize() / ddeg);
 

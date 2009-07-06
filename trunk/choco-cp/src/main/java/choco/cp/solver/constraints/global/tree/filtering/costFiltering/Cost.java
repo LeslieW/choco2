@@ -23,7 +23,7 @@
 package choco.cp.solver.constraints.global.tree.filtering.costFiltering;
 
 import choco.cp.solver.constraints.global.tree.filtering.AbstractPropagator;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
@@ -81,7 +81,8 @@ public class Cost extends AbstractPropagator {
             IntDomainVar var = nodes[i].getSuccessors();
             if (!var.isInstantiated()) {
                 int cc_i = numFromVertGt[i].nextSetBit(0);
-                IntIterator values = var.getDomain().getIterator();
+                DisposableIntIterator values = var.getDomain().getIterator();
+                try{
                 while (values.hasNext()) {
                     int j = values.next();
                     if (forestCost.get() - deltaCosts[cc_i].get() + cost[i][j].get() > tree.getObjective().getSup() ||
@@ -89,6 +90,9 @@ public class Cost extends AbstractPropagator {
                         int[] arc = {i, j};
                         propagateStruct.addRemoval(arc);
                     }
+                }
+                }finally {
+                    values.dispose();
                 }
             }
         }

@@ -28,7 +28,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.MathUtil;
+import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
@@ -378,7 +378,7 @@ public class MaxTest {
 			m.remove(ccard);
             ccard = eq(c, k);
             m.addConstraint(ccard);
-			int nbSets = MathUtil.combinaison(nbVars, k);
+			int nbSets = MathUtils.combinaison(nbVars, k);
 			int nbAssign = (int) Math.pow(domSize, k==0 ? nbVars+1 : nbVars);
 			sum += nbSets*nbAssign;
 			LOGGER.info("NB solutions : "+sum);

@@ -27,7 +27,7 @@ import choco.cp.solver.constraints.global.tree.filtering.FilteringAdvisor;
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.TreeParameters;
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.StructuresAdvisor;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
@@ -251,7 +251,7 @@ public class TreeSConstraint extends AbstractLargeIntSConstraint {
      * @param deltaDomain   an iterator over the removed values
      * @throws ContradictionException
      */
-    public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+    public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
         // events over successor variables
         if ((2 < idx) && (idx < nbNodes + 3)) {
             if (AFFICHE) LOGGER.log(Level.INFO, "awakeOnRemovals");

@@ -25,10 +25,10 @@ package choco.common;
 import static choco.cp.solver.SettingType.*;
 import choco.cp.solver.constraints.BitFlags;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.ChocoUtil;
-import choco.kernel.common.util.IPermutation;
-import static choco.kernel.common.util.MathUtil.combinaison;
-import static choco.kernel.common.util.MathUtil.factoriel;
+import choco.kernel.common.util.comparator.IPermutation;
+import static choco.kernel.common.util.tools.MathUtils.combinaison;
+import static choco.kernel.common.util.tools.MathUtils.factoriel;
+import choco.kernel.common.util.tools.PermutationUtils;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -54,13 +54,13 @@ public class TestSortingTool {
 
 	@Test
 	public void testIdentity() {
-		IPermutation st= ChocoUtil.getSortingPermuation(IDENTITY);
+		IPermutation st= PermutationUtils.getSortingPermuation(IDENTITY);
 		assertTrue("identity",st.isIdentity());
 		test(IDENTITY);
 	}
 
 	protected void test(int[] original) {
-		IPermutation st= ChocoUtil.getSortingPermuation(original);
+		IPermutation st= PermutationUtils.getSortingPermuation(original);
 		int[] c = Arrays.copyOf(original, original.length);
 		Arrays.sort(c);
 		assertArrayEquals("get sorted array",c, st.applyPermutation(original));

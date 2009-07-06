@@ -23,9 +23,9 @@
 
 package choco.cp.model;
 
-import choco.kernel.common.DeterministicIndicedList;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.objects.DeterministicIndicedList;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.IOptions;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
@@ -177,30 +177,30 @@ public class CPModel implements Model {
 
     public String varsToString() {
         StringBuffer buf = new StringBuffer("==== VARIABLES ====\n");
-        buf.append(ChocoUtil.prettyOnePerLine(intVars.iterator()));
-        buf.append(ChocoUtil.prettyOnePerLine(floatVars.iterator()));
-        buf.append(ChocoUtil.prettyOnePerLine(setVars.iterator()));
-        buf.append(ChocoUtil.prettyOnePerLine(constantVars.iterator()));
+        buf.append(StringUtils.prettyOnePerLine(intVars.iterator()));
+        buf.append(StringUtils.prettyOnePerLine(floatVars.iterator()));
+        buf.append(StringUtils.prettyOnePerLine(setVars.iterator()));
+        buf.append(StringUtils.prettyOnePerLine(constantVars.iterator()));
 
         buf.append("==== MULTIPLE VARIABLES ====\n");
-        buf.append(ChocoUtil.prettyOnePerLine(storedMultipleVariables.iterator()));
+        buf.append(StringUtils.prettyOnePerLine(storedMultipleVariables.iterator()));
 
         return new String(buf);
     }
 
     public String constraintsToString() {
         StringBuffer buf = new StringBuffer("==== CONSTRAINTS ====\n");
-        buf.append(ChocoUtil.prettyOnePerLine(constraints.iterator()));
+        buf.append(StringUtils.prettyOnePerLine(constraints.iterator()));
         return new String(buf);
     }
 
 
     public String solutionToString() {
         StringBuffer buf = new StringBuffer();
-        buf.append(ChocoUtil.prettyOnePerLine(intVars.iterator()));
-        buf.append(ChocoUtil.prettyOnePerLine(floatVars.iterator()));
-        buf.append(ChocoUtil.prettyOnePerLine(setVars.iterator()));
-        buf.append(ChocoUtil.prettyOnePerLine(constantVars.iterator()));
+        buf.append(StringUtils.prettyOnePerLine(intVars.iterator()));
+        buf.append(StringUtils.prettyOnePerLine(floatVars.iterator()));
+        buf.append(StringUtils.prettyOnePerLine(setVars.iterator()));
+        buf.append(StringUtils.prettyOnePerLine(constantVars.iterator()));
         return new String(buf);
     }
 

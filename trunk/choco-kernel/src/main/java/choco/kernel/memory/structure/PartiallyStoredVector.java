@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory.structure;
 
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.MemoryException;
@@ -246,26 +246,37 @@ public class PartiallyStoredVector<E> {
 
     /**
      * Return the number of static and stored objects contained in the structure
-     * @return int 
+     * @return int
      */
   public int size() {
     return (nStaticObjects + nStoredObjects.get());
   }
 
-  private class PSVIndexIterator extends DisposableIntIterator {
-      int idx = -1;
-      boolean disposed = true;
+  private static class PSVIndexIterator extends DisposableIntIterator {
+      int idx;
+      PartiallyStoredVector vector;
+
+      private PSVIndexIterator(PartiallyStoredVector vector) {
+          this.vector = vector;
+          init();
+      }
+
+      @Override
+      public void init() {
+          super.init();
+          idx = -1;
+      }
 
       public boolean hasNext() {
         if (idx < STORED_OFFSET) {
-          if (idx + 1 < nStaticObjects) {
+          if (idx + 1 < vector.nStaticObjects) {
 			return true;
-		} else if (nStoredObjects.get()> 0) {
+		} else if (vector.nStoredObjects.get()> 0) {
 			return true;
 		} else {
 			return false;
 		}
-        } else if (idx + 1 < STORED_OFFSET + nStoredObjects.get()) {
+        } else if (idx + 1 < STORED_OFFSET + vector.nStoredObjects.get()) {
 			return true;
 		} else {
 			return false;
@@ -274,17 +285,17 @@ public class PartiallyStoredVector<E> {
 
       public int next() {
         if (idx < STORED_OFFSET) {
-          if (idx + 1 < nStaticObjects) {
+          if (idx + 1 < vector.nStaticObjects) {
             idx++;
-            while (staticObjects[idx] == null && idx < nStaticObjects) {
+            while (vector.staticObjects[idx] == null && idx < vector.nStaticObjects) {
 				idx++;
 			}
-          } else if (nStoredObjects.get()> 0) {
+          } else if (vector.nStoredObjects.get()> 0) {
 			idx = STORED_OFFSET;
 		} else {
 			throw new java.util.NoSuchElementException();
 		}
-        } else if (idx + 1 < STORED_OFFSET + nStoredObjects.get()) {
+        } else if (idx + 1 < STORED_OFFSET + vector.nStoredObjects.get()) {
 			idx++;
 		} else {
 			throw new java.util.NoSuchElementException();
@@ -295,22 +306,15 @@ public class PartiallyStoredVector<E> {
       public void remove() {
         throw new UnsupportedOperationException();
       }
-
-      @Override
-	public void dispose() {
-        disposed = true;
-        idx = -1;
-      }
   }
   private PSVIndexIterator _cachedPSVIndexIterator;
   public DisposableIntIterator getIndexIterator() {
-    if (_cachedPSVIndexIterator != null && _cachedPSVIndexIterator.disposed) {
-      _cachedPSVIndexIterator.disposed = false;
+    if (_cachedPSVIndexIterator != null && _cachedPSVIndexIterator.reusable) {
+        _cachedPSVIndexIterator.init();
       return _cachedPSVIndexIterator;
     } else {
       //if (_cachedPSVIndexIterator == null) {
-        _cachedPSVIndexIterator = new PSVIndexIterator();
-        _cachedPSVIndexIterator.disposed = false;
+        _cachedPSVIndexIterator = new PSVIndexIterator(this);
         return _cachedPSVIndexIterator;
       //} else {
       //  return new PSVIndexIterator();

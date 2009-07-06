@@ -29,7 +29,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
-import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -144,7 +144,7 @@ public class EntailmentTest {
             vars[i] = Choco.makeIntVar("v_"+i, low, upp);
             message.append(vars[i].pretty()).append(" ");
         }
-        variables = UtilAlgo.append(vars, new IntegerVariable[]{mmm});
+        variables = ArrayUtils.append(vars, new IntegerVariable[]{mmm});
         c = min(vars, mmm);
         m.addConstraint(c);
     }
@@ -170,7 +170,7 @@ public class EntailmentTest {
             vars[i] = Choco.makeIntVar("v_"+i, low, upp);
             message.append(vars[i].pretty()).append(" ");
         }
-        variables = UtilAlgo.append(vars, new IntegerVariable[]{mmm});
+        variables = ArrayUtils.append(vars, new IntegerVariable[]{mmm});
         c = max(vars, mmm);
         m.addConstraint(c);
     }

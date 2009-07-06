@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.seminar.nqueen;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -50,7 +50,7 @@ public class NQueenValueSelector implements ValSelector {
     public int getBestVal(IntDomainVar intDomainVar) {
         int minValue = 10000;
         int v0 = -1;
-        IntIterator it = intDomainVar.getDomain().getIterator();
+        DisposableIntIterator it = intDomainVar.getDomain().getIterator();
         while (it.hasNext()){
             int i = it.next();
             int val = dualVar[i - 1].getDomainSize();
@@ -59,6 +59,7 @@ public class NQueenValueSelector implements ValSelector {
                 v0 = i;
              }
         }
+        it.dispose();
         return v0;
     }
 

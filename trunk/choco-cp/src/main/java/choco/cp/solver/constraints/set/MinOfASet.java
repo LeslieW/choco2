@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.set;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntVar;
@@ -57,18 +57,19 @@ public class MinOfASet extends AbstractBoundOfASet {
 	@Override
 	protected boolean updateEnveloppe() throws ContradictionException {
 		final int maxValue = ivars[BOUND_INDEX].getInf();
-		final IntIterator iter= getSetDomain().getOpenDomainIterator();
+		final DisposableIntIterator iter= getSetDomain().getOpenDomainIterator();
 		boolean update = false;
 		while(iter.hasNext()) {
 			removeLowerFromEnv(iter.next(), maxValue);
 		}
+        iter.dispose();
 		return update;
 	}
 
 	protected void updateIndexOfMinimumVariables() throws ContradictionException {
 		int minMin = Integer.MAX_VALUE, minMinIdx = -1;
 		int minMin2 = Integer.MAX_VALUE;
-		IntIterator iter= this.getSetDomain().getEnveloppeIterator();
+		DisposableIntIterator iter= this.getSetDomain().getEnveloppeIterator();
 		while(iter.hasNext()) {
 			final int idx = iter.next() + VARS_OFFSET;
 			final int val = ivars[idx].getInf();
@@ -80,6 +81,7 @@ public class MinOfASet extends AbstractBoundOfASet {
 				minMin2 = val;
 			}
 		}
+        iter.dispose();
 		if (minMin2 > ivars[BOUND_INDEX].getSup()) {
 			this.indexOfMinimumVariable.set(minMinIdx);
 		}
@@ -109,12 +111,13 @@ public class MinOfASet extends AbstractBoundOfASet {
 
 	protected final int minInf() {
 		if( isNotEmptySet()) {
-			IntIterator iter= getSetDomain().getEnveloppeIterator();
+			DisposableIntIterator iter= getSetDomain().getEnveloppeIterator();
 			int min = Integer.MAX_VALUE;
 			while(iter.hasNext()) {
 				int val = ivars[VARS_OFFSET+iter.next()].getInf();
 				if(val<min) {min=val;}
 			}
+            iter.dispose();
 			return min;
 		}else {return Integer.MIN_VALUE;}
 	}
@@ -123,21 +126,23 @@ public class MinOfASet extends AbstractBoundOfASet {
 	protected final int minSup() {
 		int min = Integer.MAX_VALUE;
 		//if the set could be empty : we do nothing
-		IntIterator iter= getSetDomain().getKernelIterator();
+		DisposableIntIterator iter= getSetDomain().getKernelIterator();
 		while(iter.hasNext()) {
 			int val = ivars[VARS_OFFSET+iter.next()].getSup();
 			if(val<min) {min=val;}
 		}
+        iter.dispose();
 		return min;	
 	}
 
 	protected final void updateKernelInf() throws ContradictionException {
 		final int minValue = ivars[BOUND_INDEX].getInf();
-		IntIterator iter= svars[SET_INDEX].getDomain().getKernelIterator();
+		DisposableIntIterator iter= svars[SET_INDEX].getDomain().getKernelIterator();
 		while(iter.hasNext()) {
 			final int i = VARS_OFFSET+iter.next();
 			ivars[i].updateInf(minValue, int_cIndices[i]);
 		}
+        iter.dispose();
 	}
 
 	/**

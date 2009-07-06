@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.set;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.AbstractSearchHeuristic;
 import choco.kernel.solver.search.set.SetValSelector;
@@ -44,11 +44,14 @@ public class MinEnv extends AbstractSearchHeuristic implements SetValSelector {
 
   public int getBestVal(SetVar v) {
     int val = Integer.MIN_VALUE;
-    IntIterator it = v.getDomain().getEnveloppeIterator();
+    DisposableIntIterator it = v.getDomain().getEnveloppeIterator();
     while (it.hasNext()) {
       val = it.next();
-      if (!v.isInDomainKernel(val)) break;
+      if (!v.isInDomainKernel(val)) {
+          break;
+      }
     }
+    it.dispose();
     return val;
   }
 

@@ -23,8 +23,8 @@
 package choco.cp.solver.constraints.global.regular;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.IntEnumeration;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.IntEnumeration;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.memory.trailing.IndexedObject;
@@ -124,7 +124,7 @@ public class Regular extends AbstractLargeIntSConstraint {
         Ni[0].add(autom.getInitState());
         for (int i = 0; i < Ni.length - 1; i++) {
             for (LightState st : Ni[i]) {
-                IntIterator domIt = vars[i].getDomain().getIterator();
+                DisposableIntIterator domIt = vars[i].getDomain().getIterator();
                 for (; domIt.hasNext();) {
                     int val = domIt.next();
                     if (st.hasDelta(val - autom.getOffset(i))) {
@@ -136,6 +136,7 @@ public class Regular extends AbstractLargeIntSConstraint {
                         }
                     }
                 }
+                domIt.dispose();
             }
         }
     }
@@ -195,7 +196,7 @@ public class Regular extends AbstractLargeIntSConstraint {
 
     public void forwardOnLevel(int i) {
         for (LightState st : Ni[i]) {
-            IntIterator domIt = vars[i].getDomain().getIterator();
+            DisposableIntIterator domIt = vars[i].getDomain().getIterator();
             for (; domIt.hasNext();) {
                 int val = domIt.next();
                 if (st.hasDelta(val - autom.getOffset(i))) {
@@ -206,7 +207,7 @@ public class Regular extends AbstractLargeIntSConstraint {
                         mark.set(nst.getIdx());
                     }
                 }
-            }
+            }domIt.dispose();
         }
     }
 
@@ -227,7 +228,7 @@ public class Regular extends AbstractLargeIntSConstraint {
     }
 
     public void backwardOnLevel(int i) {
-        IntIterator domIt = vars[i].getDomain().getIterator();
+        DisposableIntIterator domIt = vars[i].getDomain().getIterator();
         for (; domIt.hasNext();) {
             int val = domIt.next();
             StoredIndexedBipartiteSet qij = getQij(i, val);
@@ -245,10 +246,11 @@ public class Regular extends AbstractLargeIntSConstraint {
             }
             it.dispose();
         }
+        domIt.dispose();
     }
 
     public void backward2OnLevel(int i) {
-        IntIterator domIt = vars[i].getDomain().getIterator();
+        DisposableIntIterator domIt = vars[i].getDomain().getIterator();
         for (; domIt.hasNext();) {
             int val = domIt.next();
             StoredIndexedBipartiteSet qij = getQij(i, val);
@@ -261,6 +263,7 @@ public class Regular extends AbstractLargeIntSConstraint {
             }
             it.dispose();
         }
+        domIt.dispose();
     }
 
 

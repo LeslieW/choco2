@@ -26,21 +26,15 @@ import choco.Choco;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
-import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
-import choco.cp.solver.search.integer.varselector.MinDomain;
-import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-import choco.cp.solver.search.integer.branching.AssignVar;
 import static choco.cp.solver.SettingType.*;
 import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.constraints.global.scheduling.Cumulative;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.MathUtil;
+import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -502,7 +496,7 @@ public class TestCumulative {
         int cpt = 0;
         while (cpt < size) {
             cpt += 2;
-            nbSols *= MathUtil.combinaison(cpt, 2);
+            nbSols *= MathUtils.combinaison(cpt, 2);
         }
         //LOGGER.info(nbSols);
         launchAllRules(pb, nbTests, nbSols, -1, true);
@@ -544,7 +538,7 @@ public class TestCumulative {
         int nbSols = 2; //capacity factor
         int cpt = 0;
         while (cpt++ < size) {
-            final int cnp = MathUtil.combinaison(cpt, 1);
+            final int cnp = MathUtils.combinaison(cpt, 1);
             nbSols *= cnp * cnp;
         }
         launchOnlysweep(pb, nbTests, nbSols, -1); //extract disj is forbidden

@@ -23,6 +23,7 @@
 package choco.cp.solver.constraints.strong;
 
 import choco.cp.solver.constraints.strong.maxrpcrm.MaxRPCrm;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
@@ -30,7 +31,6 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.PropagationEngineListener;
 import choco.kernel.solver.search.integer.DoubleHeuristicIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.common.util.IntIterator;
 
 import java.util.Iterator;
 
@@ -82,8 +82,8 @@ public class DomOverWDegRPC extends DoubleHeuristicIntVarSelector implements
         int dsize = v.getDomainSize();
         int weight = 0;
         int idx = 0;
-        for (IntIterator it = v.getIndexVector().getIndexIterator(); it
-                .hasNext();) {
+        DisposableIntIterator it = v.getIndexVector().getIndexIterator();
+        for (; it.hasNext();) {
             idx = it.next();
             SConstraint ct = v.getConstraint(idx);
             if (ct instanceof MaxRPCrm) {
@@ -97,6 +97,7 @@ public class DomOverWDegRPC extends DoubleHeuristicIntVarSelector implements
                 }
             }
         }
+        it.dispose();
         if (weight == 0) {
             return Double.MAX_VALUE;
         } else {

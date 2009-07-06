@@ -1,13 +1,13 @@
 package choco.cp.solver.constraints.integer.extension;
 
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.extension.BinRelation;
 import choco.kernel.solver.constraints.integer.extension.ConsistencyRelation;
 import choco.kernel.solver.constraints.integer.extension.CspBinSConstraint;
-import choco.kernel.solver.constraints.AbstractSConstraint;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.common.util.DisposableIntIterator;
-import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
  *

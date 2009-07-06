@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.set;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractBinSetSConstraint;
 import choco.kernel.solver.variables.set.SetVar;
@@ -47,30 +47,35 @@ public class SetNotEq extends AbstractBinSetSConstraint {
 	public boolean checkAreEqual() throws ContradictionException {
 		if (v0.isInstantiated() && v1.isInstantiated()
 				&& v0.getKernelDomainSize() == v1.getKernelDomainSize()) {
-			IntIterator it1 = v0.getDomain().getKernelIterator();
+			DisposableIntIterator it1 = v0.getDomain().getKernelIterator();
 			while (it1.hasNext()) {
 				if (!v1.isInDomainKernel(it1.next())) {
 					return false;
 				}
 			}
+            it1.dispose();
 			fail();
 		}
 		return false;
 	}
 
 	public boolean checkAreNotEqual(SetVar instVar, SetVar otherVar) {
-		IntIterator it1 = instVar.getDomain().getKernelIterator();
+		DisposableIntIterator it1 = instVar.getDomain().getKernelIterator();
 		while (it1.hasNext()) {
 			if (!otherVar.isInDomainEnveloppe(it1.next())) {
-				return true;
+				it1.dispose();
+                return true;
 			}
 		}
+        it1.dispose();
 		it1 = otherVar.getDomain().getKernelIterator();
 		while (it1.hasNext()) {
 			if (!instVar.isInDomainEnveloppe(it1.next())) {
+                it1.dispose();
 				return true;
 			}
 		}
+        it1.dispose();
 
 		return false;
 	}
@@ -83,22 +88,24 @@ public class SetNotEq extends AbstractBinSetSConstraint {
 		} else if (deltaSize == 1 && !checkAreNotEqual(instvar,otherVar)) {
 			if (otherVar.getEnveloppeDomainSize() > instvar.getKernelDomainSize()) {
 				//we need to add the element missing in otherVar, otherwise they will be equal
-				IntIterator it1 = otherVar.getDomain().getEnveloppeIterator();
+				DisposableIntIterator it1 = otherVar.getDomain().getEnveloppeIterator();
 				while (it1.hasNext()) {
 					int val = it1.next();
 					if (!otherVar.isInDomainKernel(val)) {
 						otherVar.addToKernel(val, idx);
 					}
 				}
+                it1.dispose();
 			} else {
 				//we need to remove the element missing in otherVar, otherwise they will be equal
-				IntIterator it1 = otherVar.getDomain().getEnveloppeIterator();
+				DisposableIntIterator it1 = otherVar.getDomain().getEnveloppeIterator();
 				while (it1.hasNext()) {
 					int val = it1.next();
 					if (!otherVar.isInDomainKernel(val)) {
 						otherVar.remFromEnveloppe(val, idx);
 					}
 				}
+                it1.dispose();
 			}
 		}
 	}
@@ -158,12 +165,13 @@ public class SetNotEq extends AbstractBinSetSConstraint {
 	public boolean isSatisfied() {
 		if (v0.isInstantiated() && v1.isInstantiated()
 				&& v0.getKernelDomainSize() == v1.getKernelDomainSize()) {
-			IntIterator it1 = v0.getDomain().getKernelIterator();
+			DisposableIntIterator it1 = v0.getDomain().getKernelIterator();
 			while (it1.hasNext()) {
 				if (!v1.isInDomainKernel(it1.next())) {
 					return false;
 				}
 			}
+            it1.dispose();
 			return true;
 		} else {
 			return false;

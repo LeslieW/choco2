@@ -24,7 +24,7 @@ package samples.seminar.tsp;
 
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -106,7 +106,7 @@ public class MinSpanningTree extends AbstractLargeIntSConstraint {
             if (!s[i].isInstantiated()) {
                 int ci = Integer.MAX_VALUE;
                 int j = -1;
-                IntIterator it = s[i].getDomain().getIterator();
+                DisposableIntIterator it = s[i].getDomain().getIterator();
                 while (it.hasNext()) {
                     int tmp = it.next();
                     if (ci > dist[i][tmp].get()) {
@@ -120,6 +120,7 @@ public class MinSpanningTree extends AbstractLargeIntSConstraint {
                         }
                     }
                 }
+                it.dispose();
                 if (j > -1) {
                     cost += ci;
                     //LOGGER.info(showSet(classes));
@@ -183,7 +184,7 @@ public class MinSpanningTree extends AbstractLargeIntSConstraint {
         this.constAwake(false);
     }
 
-    public void awakeOnRemovals(int u, IntIterator deltaDomain) throws ContradictionException {
+    public void awakeOnRemovals(int u, DisposableIntIterator deltaDomain) throws ContradictionException {
         this.constAwake(false);
     }
 

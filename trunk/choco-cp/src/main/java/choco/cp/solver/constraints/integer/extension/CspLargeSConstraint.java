@@ -23,14 +23,14 @@
 
 package choco.cp.solver.constraints.integer.extension;
 
-import choco.kernel.common.util.IntIterator;
+import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.constraints.integer.extension.ConsistencyRelation;
 import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.cp.solver.variables.integer.IntVarEvent;
 
 public class CspLargeSConstraint extends AbstractLargeIntSConstraint {
 
@@ -79,13 +79,17 @@ public class CspLargeSConstraint extends AbstractLargeIntSConstraint {
 		}
 		if (!stop) {
 			if (nbUnassigned == 1) {
-				IntIterator it = vars[index].getDomain().getIterator();
-				while (it.hasNext()) {
+				DisposableIntIterator it = vars[index].getDomain().getIterator();
+				try{
+                while (it.hasNext()) {
 					currentTuple[index] = it.next();
 					if (!relation.isConsistent(currentTuple)) {
 						vars[index].removeVal(currentTuple[index], cIndices[index]);
 					}
 				}
+                }finally {
+                    it.dispose();
+                }
 			} else {
 				if (!relation.isConsistent(currentTuple)) {
 					this.fail();
@@ -95,7 +99,7 @@ public class CspLargeSConstraint extends AbstractLargeIntSConstraint {
 	}
 
 	@Override
-	public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+	public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
 		this.constAwake(false);
 	}
 

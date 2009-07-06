@@ -22,8 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.constraints;
 
-import choco.kernel.common.util.ChocoUtil;
-import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.model.variables.Variable;
 
 import java.util.Iterator;
@@ -64,7 +64,7 @@ public class MetaConstraint<E extends Constraint> extends AbstractConstraint {
     }
 
     public Iterator<Variable> getVariableIterator() {
-        return ChocoUtil.iterator(extractVariables());
+        return IteratorUtils.iterator(extractVariables());
     }
 
 
@@ -80,9 +80,9 @@ public class MetaConstraint<E extends Constraint> extends AbstractConstraint {
     public Variable[] extractVariables() {
         Variable[] listVars = new Variable[0];
         for (Constraint c : constraints) {
-            listVars = UtilAlgo.append(listVars, c.extractVariables());
+            listVars = ArrayUtils.append(listVars, c.extractVariables());
         }
-        return ChocoUtil.getNonRedundantObjects(Variable.class, listVars);
+        return ArrayUtils.getNonRedundantObjects(Variable.class, listVars);
     }
 
     @Override

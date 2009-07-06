@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.propagation.VarEvent;
@@ -58,20 +58,20 @@ public abstract class AbstractIntDomain implements IntDomain {
    */
   protected int currentSupPropagated;
 
-  protected DisposableIntIterator lastIterator;
+  protected DisposableIntIterator _cachedIterator;
 
-  /**
+    /**
    * Returns an getIterator.
    */
 
   public DisposableIntIterator getIterator() {
-    IntDomainIterator iter = (IntDomainIterator) lastIterator;
+    IntDomainIterator iter = (IntDomainIterator) _cachedIterator;
     if (iter != null && iter.reusable) {
       iter.init();
       return iter;
     }
-    lastIterator = new IntDomainIterator(this);
-    return lastIterator;
+    _cachedIterator = new IntDomainIterator(this);
+    return _cachedIterator;
   }
 
   protected static class IntDomainIterator extends DisposableIntIterator {

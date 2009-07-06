@@ -22,7 +22,7 @@
  **************************************************/
 package choco.memory;
 
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.TwoStatesPartiallyStoredIntVector;
 import choco.kernel.memory.trailing.EnvironmentTrailing;

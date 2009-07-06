@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory.structure;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
 
@@ -44,7 +44,7 @@ public class PartiallyStoredBitSet {
   protected BitSet staticInts;
   protected IStateBitSet storedInts;
 
-  public PartiallyStoredBitSet(IEnvironment env) {
+    public PartiallyStoredBitSet(IEnvironment env) {
     staticInts = new BitSet();
     storedInts = env.makeBitSet(16);
   }
@@ -67,23 +67,47 @@ public class PartiallyStoredBitSet {
     }
 
 
-    public IntIterator getIndexIterator() {
-    return new IntIterator() {
-      int idxSta = staticInts.nextSetBit(0);
-      int idxSto = storedInts.nextSetBit(0);
 
-      public boolean hasNext() {
+    protected PartiallyStoredBitSetIterator _cachedIterator;
+
+    public DisposableIntIterator getIndexIterator() {
+        if (_cachedIterator != null && _cachedIterator.reusable) {
+            _cachedIterator.init();
+            return _cachedIterator;
+        }
+        _cachedIterator = new PartiallyStoredBitSetIterator(this);
+        return _cachedIterator;
+    }
+
+    protected static class PartiallyStoredBitSetIterator extends DisposableIntIterator {
+      int idxSta;
+      int idxSto;
+      PartiallyStoredBitSet values;
+
+        public PartiallyStoredBitSetIterator(PartiallyStoredBitSet values) {
+            this.values = values;
+            init();
+        }
+
+        @Override
+        public void init() {
+            super.init();
+            idxSta = values.staticInts.nextSetBit(0);
+            idxSto = values.storedInts.nextSetBit(0);
+        }
+
+        public boolean hasNext() {
           return (idxSta!=-1 || idxSto!=-1);
       }
 
       public int next() {
           if(idxSta!=-1){
               int i = idxSta;
-              idxSta = staticInts.nextSetBit(i+1);
+              idxSta = values.staticInts.nextSetBit(i+1);
               return i;
           }else{
               int i = idxSto;
-              idxSto = storedInts.nextSetBit(i+1);
+              idxSto = values.storedInts.nextSetBit(i+1);
               return i;
           }
       }
@@ -91,6 +115,5 @@ public class PartiallyStoredBitSet {
       public void remove() {
         throw new UnsupportedOperationException();
       }
-    };
-  }
+    }
 }

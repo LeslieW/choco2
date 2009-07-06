@@ -1,9 +1,9 @@
 package choco.cp.solver.constraints.global.scheduling;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.ChocoUtil;
-import choco.kernel.common.util.IntIterator;
-import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
@@ -40,7 +40,7 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 	 * @param otherVars other integer variables of the constraint
 	 */
 	public AbstractTaskSConstraint(final TaskVar[] taskvars, final IntDomainVar... otherVars) {
-		super(UtilAlgo.append(taskVarToIntVar(taskvars), otherVars));
+		super(ArrayUtils.append(taskVarToIntVar(taskvars), otherVars));
 		this.taskvars = taskvars;
 		startOffset = getNbTasks();
 		endOffset = 2 * getNbTasks();
@@ -143,7 +143,7 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 			}
 
 	@Override
-	public void awakeOnRemovals(final int idx, final IntIterator deltaDomain)
+	public void awakeOnRemovals(final int idx, final DisposableIntIterator deltaDomain)
 			throws ContradictionException {
 				//nothing to do
 			}
@@ -167,10 +167,10 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 		StringBuilder b = new StringBuilder();
 		b.append(this.toString());
 		b.append(" taskvars ");
-		b.append(ChocoUtil.pretty(taskvars));
+		b.append(StringUtils.pretty(taskvars));
 		if( vars.length > 3 * getNbTasks()) {
 			b.append(" intvars");
-			b.append(ChocoUtil.pretty(vars, 3 * getNbTasks(), vars.length));
+			b.append(StringUtils.pretty(vars, 3 * getNbTasks(), vars.length));
 		}
 		return new String(b);
 	}

@@ -23,10 +23,10 @@
 
 package choco.kernel.memory;
 
-import java.util.logging.Logger;
-
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+
+import java.util.logging.Logger;
 
 /**
  * Describes an search vector with states (describing some history of the data structure).

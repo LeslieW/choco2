@@ -23,7 +23,7 @@
 package choco.cp.solver.constraints.integer;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
@@ -99,13 +99,17 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
      * @throws ContradictionException
      */
     public void filterFromVarToVar(IntDomainVar var1, IntDomainVar var2, int idx) throws ContradictionException {
-        IntIterator it = var1.getDomain().getIterator();
+        DisposableIntIterator it = var1.getDomain().getIterator();
+        try{
         for (; it.hasNext();) {
             int value = it.next();
             if (!var2.canBeInstantiatedTo(value - cste) &&
                     !var2.canBeInstantiatedTo(value + cste)) {
                 var1.removeVal(value, idx);
             }
+        }
+        }finally {
+            it.dispose();
         }
     }
 
@@ -210,12 +214,16 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
             v.instantiate(val + cste, cIdx);
         } else {
             if (v.hasEnumeratedDomain()) {
-                IntIterator it = v.getDomain().getIterator();
+                DisposableIntIterator it = v.getDomain().getIterator();
+                try{
                 for (; it.hasNext();) {
                     int value = it.next();
                     if (value != (val - cste) && value != (val + cste)) {
                         v.removeVal(value, cIdx);
                     }
+                }
+                }finally {
+                    it.dispose();
                 }
             } else {
                 v.updateInf(val - cste, cIdx);

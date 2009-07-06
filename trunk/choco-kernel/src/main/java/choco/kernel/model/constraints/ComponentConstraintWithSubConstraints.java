@@ -22,13 +22,11 @@
  **************************************************/
 package choco.kernel.model.constraints;
 
-import choco.kernel.common.util.ChocoUtil;
-import choco.kernel.common.util.UtilAlgo;
-import static choco.kernel.common.util.UtilAlgo.toArray;
-import static choco.kernel.common.util.UtilAlgo.toList;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.variables.Variable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Properties;
 
 /*
 * User : charles
@@ -45,27 +43,27 @@ public class ComponentConstraintWithSubConstraints extends ComponentConstraint{
     public ComponentConstraintWithSubConstraints(ConstraintType constraintType, Variable[] variables,
                                                  Object params, Constraint... constraints) {
         super(constraintType, params, variables);
-        this.constraints = new ArrayList<Constraint>(toList(constraints));
-        this.listVars = new ArrayList<Variable>(toList(variables));
+        this.constraints = new ArrayList<Constraint>(ArrayUtils.toList(constraints));
+        this.listVars = new ArrayList<Variable>(ArrayUtils.toList(variables));
     }
 
     public ComponentConstraintWithSubConstraints(String componentClassName, Variable[] variables,
                                                  Object params, Constraint... constraints) {
         super(componentClassName, appendParameters(params, constraints), variables);
-        this.constraints = new ArrayList<Constraint>(toList(constraints));
-        this.listVars = new ArrayList<Variable>(toList(variables));
+        this.constraints = new ArrayList<Constraint>(ArrayUtils.toList(constraints));
+        this.listVars = new ArrayList<Variable>(ArrayUtils.toList(variables));
     }
 
     public ComponentConstraintWithSubConstraints(Class componentClass, Variable[] variables,
                                                  Object params, Constraint... constraints) {
         super(componentClass, appendParameters(params, constraints), variables);
-        this.constraints = new ArrayList<Constraint>(toList(constraints));
-        this.listVars = new ArrayList<Variable>(toList(variables));
+        this.constraints = new ArrayList<Constraint>(ArrayUtils.toList(constraints));
+        this.listVars = new ArrayList<Variable>(ArrayUtils.toList(variables));
     }
 
     public <V extends Variable> void addElements(V[] vars, Constraint[] cstrs){
         recordIndexes(vars);
-        constraints.addAll(toList(cstrs));
+        constraints.addAll(ArrayUtils.toList(cstrs));
     }
 
 
@@ -74,7 +72,7 @@ public class ComponentConstraintWithSubConstraints extends ComponentConstraint{
         for (V var : vars) {
             if (!listVars.contains(var)) {
                 listVars.add(var);
-                variables = UtilAlgo.append(variables, new Variable[]{var});
+                variables = ArrayUtils.append(variables, new Variable[]{var});
             }
         }
     }
@@ -82,7 +80,7 @@ public class ComponentConstraintWithSubConstraints extends ComponentConstraint{
 
     @Override
     public Variable[] getVariables() {
-        return UtilAlgo.toArray(Variable.class, listVars);
+        return ArrayUtils.toArray(Variable.class, listVars);
     }
 
     /**
@@ -95,7 +93,7 @@ public class ComponentConstraintWithSubConstraints extends ComponentConstraint{
 
     @Override
     public Object getParameters() {
-        return appendParameters(parameters, toArray(Constraint.class, constraints));
+        return appendParameters(parameters, ArrayUtils.toArray(Constraint.class, constraints));
     }
 
     private static Object appendParameters(Object parameters, Constraint... constraints){
@@ -119,8 +117,8 @@ public class ComponentConstraintWithSubConstraints extends ComponentConstraint{
     public Variable[] extractVariables() {
         Variable[] listVars = this.getVariables();
         for (Constraint c : constraints) {
-            listVars = UtilAlgo.append(listVars, c.extractVariables());
+            listVars = ArrayUtils.append(listVars, c.extractVariables());
         }
-        return ChocoUtil.getNonRedundantObjects(Variable.class, listVars);
+        return ArrayUtils.getNonRedundantObjects(Variable.class, listVars);
     }
 }

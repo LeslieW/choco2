@@ -22,20 +22,16 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.common;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.logging.Logger;
-
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.objects.StoredPointerCycle;
+import choco.kernel.memory.trailing.EnvironmentTrailing;
 import org.junit.After;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.IntIterator;
-import choco.kernel.common.util.StoredPointerCycle;
-import choco.kernel.memory.trailing.EnvironmentTrailing;
+import java.util.logging.Logger;
 
 // *********************************************
 // *                   J-CHOCO                 *
@@ -57,7 +53,7 @@ public class StoredPointerCycleTest {
   private choco.kernel.memory.IEnvironment env;
   private StoredPointerCycle pcyc1;
   private StoredPointerCycle pcyc2;
-  private IntIterator it;
+  private DisposableIntIterator it;
 
     @Before
   public void setUp() {

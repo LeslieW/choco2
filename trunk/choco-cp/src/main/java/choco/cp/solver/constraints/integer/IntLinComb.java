@@ -25,16 +25,14 @@
 package choco.cp.solver.constraints.integer;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.Arithm;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.constraints.integer.IntExp;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.logging.Level;
 
 /**
  * Implements a constraint Sigma (ai Xi) <=/>=/= C,
@@ -195,7 +193,7 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
 	throws ContradictionException {
 	}
 
-	public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+	public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
 
 	}
 
@@ -433,7 +431,7 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
 		}
 		int i;
 		for (i = 0; i < nbPosVars; i++) {
-			int newSupi = Arithm.divFloor(-(mylb), coeffs[i]) + vars[i].getInf();
+			int newSupi = MathUtils.divFloor(-(mylb), coeffs[i]) + vars[i].getInf();
 			if (vars[i].updateSup(newSupi, cIndices[i])) {
 				//				if (LOGGER.isLoggable(Level.FINER)) {
 				//					LOGGER.log(Level.FINER,  "SUP({0}) <= {1}/{2} + {3} = {4}",
@@ -443,7 +441,7 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
 			}
 		}
 		for (i = nbPosVars; i < nbVars; i++) {
-			int newInfi = Arithm.divCeil(mylb, -(coeffs[i])) + vars[i].getSup();
+			int newInfi = MathUtils.divCeil(mylb, -(coeffs[i])) + vars[i].getSup();
 			if (vars[i].updateInf(newInfi, cIndices[i])) {
 				//				if (LOGGER.isLoggable(Level.FINER)) {
 				//					LOGGER.log(Level.FINER, "INF({0}) >= {1}/{2} + {3} = {4}",
@@ -480,7 +478,7 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
 		}
 		int i;
 		for (i = 0; i < nbPosVars; i++) {
-			int newInfi = Arithm.divCeil(-(myub), coeffs[i]) + vars[i].getSup();
+			int newInfi = MathUtils.divCeil(-(myub), coeffs[i]) + vars[i].getSup();
 			if (vars[i].updateInf(newInfi, cIndices[i])) {
 //				if (LOGGER.isLoggable(Level.FINER)) {
 //					LOGGER.log(Level.FINEST, "INF({0}) >= {1}/{2} + {3} = {4}",
@@ -490,7 +488,7 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
 			}
 		}
 		for (i = nbPosVars; i < nbVars; i++) {
-			int newSupi = Arithm.divFloor(myub, -(coeffs[i])) + vars[i].getInf();
+			int newSupi = MathUtils.divFloor(myub, -(coeffs[i])) + vars[i].getInf();
 			if (vars[i].updateSup(newSupi, cIndices[i])) {
 //				if (LOGGER.isLoggable(Level.FINER)) {
 //					{LOGGER.log(Level.FINER, "SUP({0}) <= {1}/{2} + {3} = {4} ",
@@ -535,13 +533,13 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
 			return false;
 		} else {
 			for (int i = 0; i < nbPosVars; i++) {
-				int newSupi = Arithm.divFloor(-(lb), coeffs[i]) + vars[i].getInf();
+				int newSupi = MathUtils.divFloor(-(lb), coeffs[i]) + vars[i].getInf();
 				if (vars[i].getSup() < newSupi) {
 					return false;
 				}
 			}
 			for (int i = nbPosVars; i < nbVars; i++) {
-				int newInfi = Arithm.divCeil(lb, -(coeffs[i])) + vars[i].getSup();
+				int newInfi = MathUtils.divCeil(lb, -(coeffs[i])) + vars[i].getSup();
 				if (vars[i].getInf() > newInfi) {
 					return false;
 				}
@@ -564,13 +562,13 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
 			return false;
 		} else {
 			for (int i = 0; i < nbPosVars; i++) {
-				int newInfi = Arithm.divCeil(-(ub), coeffs[i]) + vars[i].getSup();
+				int newInfi = MathUtils.divCeil(-(ub), coeffs[i]) + vars[i].getSup();
 				if (vars[i].getInf() > newInfi) {
 					return false;
 				}
 			}
 			for (int i = nbPosVars; i < nbVars; i++) {
-				int newSupi = Arithm.divFloor(ub, -(coeffs[i])) + vars[i].getInf();
+				int newSupi = MathUtils.divFloor(ub, -(coeffs[i])) + vars[i].getInf();
 				if (vars[i].getSup() < newSupi) {
 					return false;
 				}

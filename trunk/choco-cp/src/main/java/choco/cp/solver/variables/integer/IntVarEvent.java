@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.solver.ContradictionException;
@@ -167,7 +167,7 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
 		int evtType = eventType;
 		int evtCause = cause;
 		freeze();
-
+        
 		if ((propagatedEvents & INSTINTbitvector) != 0 && (evtType & INSTINTbitvector) != 0)
 			propagateInstEvent(evtCause);
 		if ((propagatedEvents & INCINFbitvector) != 0 && (evtType & INCINFbitvector) != 0)
@@ -188,7 +188,7 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
 		IntDomainVarImpl v = modifiedVar;
 		PartiallyStoredVector<SConstraint> constraints = v.getConstraintVector();
 		PartiallyStoredIntVector indices = v.getIndexVector();
-		PartiallyStoredIntVector cindices = v.getEventsVector()[0]; 
+		PartiallyStoredIntVector cindices = v.getEventsVector()[0];
 
 		DisposableIntIterator cit = cindices.getIndexIterator();
 		while (cit.hasNext()) {

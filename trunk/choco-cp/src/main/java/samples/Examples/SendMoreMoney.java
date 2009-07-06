@@ -25,7 +25,7 @@ package samples.Examples;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 
@@ -88,9 +88,9 @@ public class SendMoreMoney extends PatternExample {
 
     @Override
     public void prettyOut() {
-        LOGGER.info(ChocoUtil.pretty(_s.getVar(SEND)));
-        LOGGER.info(" + " + ChocoUtil.pretty(_s.getVar(SEND)));
-        LOGGER.info(" = " + ChocoUtil.pretty(_s.getVar(SEND)));
+        LOGGER.info(StringUtils.pretty(_s.getVar(SEND)));
+        LOGGER.info(" + " + StringUtils.pretty(_s.getVar(SEND)));
+        LOGGER.info(" = " + StringUtils.pretty(_s.getVar(SEND)));
     }
 
     public static void main(String[] args) {

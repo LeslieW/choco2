@@ -31,7 +31,7 @@ import choco.cp.solver.preprocessor.detectors.CliqueDetector;
 import choco.cp.solver.preprocessor.detectors.ExpressionDetector;
 import choco.cp.solver.preprocessor.detectors.RelationDetector;
 import choco.cp.solver.preprocessor.graph.ArrayGraph;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.*;
@@ -476,6 +476,8 @@ public class PreProcessCPSolver extends CPSolver {
         }
     }
 
+
+
     private static class Domain{
         protected int low;
         protected int upp;
@@ -639,7 +641,7 @@ public class PreProcessCPSolver extends CPSolver {
 			worldPush();
 			for (int i = 0; i < getNbIntVars(); i++) {
 				IntDomainVar v = (IntDomainVar) getIntVar(i);
-				IntIterator it = v.getDomain().getIterator();
+				DisposableIntIterator it = v.getDomain().getIterator();
 				if ((sched && v.getDomainSize() == 2) || (!sched && v.hasEnumeratedDomain())) {
 					while (it.hasNext()) {
 						int val = it.next();
@@ -670,6 +672,7 @@ public class PreProcessCPSolver extends CPSolver {
 							break;
 						}
 					}
+                    it.dispose();
 				}
 			}
 		}

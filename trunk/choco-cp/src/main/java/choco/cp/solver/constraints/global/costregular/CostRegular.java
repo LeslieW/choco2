@@ -24,7 +24,7 @@ package choco.cp.solver.constraints.global.costregular;
 
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.IStateVector;
@@ -310,12 +310,13 @@ public class CostRegular extends AbstractLargeIntSConstraint
         source.pgcS.set(0);
         layer[0].put(source.index,source);
 
-        IntIterator varIter;
+        DisposableIntIterator varIter;
         Iterator<State> layerIter;
         for (int i = 0 ; i < myVars.length ; i++)
         {
             varIter = myVars[i].getDomain().getIterator();
             int j;
+            try{
             while (varIter.hasNext())
             {
                 j = varIter.next();
@@ -367,6 +368,9 @@ public class CostRegular extends AbstractLargeIntSConstraint
                     }
                 }
 
+            }
+            }finally {
+                varIter.dispose();
             }
 
         }
@@ -422,6 +426,7 @@ public class CostRegular extends AbstractLargeIntSConstraint
         {
             mark.set(0,nbNodes);
             varIter = myVars[i].getDomain().getIterator();
+            try{
             while(varIter.hasNext())
             {
                 HashSet<State> toRemove = new HashSet<State>(nbNodes);
@@ -480,6 +485,9 @@ public class CostRegular extends AbstractLargeIntSConstraint
                 }
                 for (State s : toRemove)
                     remFromQij(i,j,s);
+            }
+            }finally {
+                varIter.dispose();
             }
             for (int b = mark.nextSetBit(0) ; b >= 0  ; b= mark.nextSetBit(b+1))
             {

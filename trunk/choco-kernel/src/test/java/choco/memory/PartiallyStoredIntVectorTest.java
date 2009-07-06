@@ -23,7 +23,7 @@
 package choco.memory;
 
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
@@ -77,41 +77,44 @@ public class PartiallyStoredIntVectorTest {
     assertTrue(vector.size() == 5);
     int[] values = new int[]{4, 0, 1, 2, 3};
     int nValue = 0;
-    for (IntIterator it = vector.getIndexIterator(); it.hasNext();) {
+    DisposableIntIterator it = vector.getIndexIterator();
+    for (; it.hasNext();) {
       int index = it.next();
       int value = vector.get(index);
       assertEquals(values[nValue], value);
       nValue++;
     }
+      it.dispose();
     env.worldPop();
     assertTrue(vector.size() == 3);
     values = new int[]{4, 0, 1};
     nValue = 0;
-    for (IntIterator it = vector.getIndexIterator(); it.hasNext();) {
+    for (it = vector.getIndexIterator(); it.hasNext();) {
       int index = it.next();
       int value = vector.get(index);
       assertEquals(values[nValue], value);
       nValue++;
     }
-
+    it.dispose();
     assertEquals(1, env.getWorldIndex());
     env.worldPop();
     assertTrue(vector.size() == 1);
     values = new int[]{4};
     nValue = 0;
-    for (IntIterator it = vector.getIndexIterator(); it.hasNext();) {
+    for (it = vector.getIndexIterator(); it.hasNext();) {
       int index = it.next();
       int value = vector.get(index);
       assertEquals(values[nValue], value);
       nValue++;
     }
+      it.dispose();
 
     assertEquals(0, env.getWorldIndex());
   }
 
     @Test
     public void test2(){
-        IntIterator it = vector.getIndexIterator();
+        DisposableIntIterator it = vector.getIndexIterator();
         Assert.assertFalse(it.hasNext());
 
         vector.staticAdd(5);

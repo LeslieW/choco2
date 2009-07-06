@@ -26,7 +26,7 @@ import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
@@ -631,7 +631,7 @@ public class ExamplesTest {
         Picross p = new Picross(rows, cols, s);
 
         Visu v = Visu.createVisu(220, 250);
-        Variable[] vars = UtilAlgo.append(p.myvars);
+        Variable[] vars = ArrayUtils.append(p.myvars);
         v.addPanel(new VarChocoPanel("Picross", vars, PicrossPApplet.class, new int[]{rows.length, cols.length}));
         s.setFirstSolution(true);
         s.generateSearchStrategy();

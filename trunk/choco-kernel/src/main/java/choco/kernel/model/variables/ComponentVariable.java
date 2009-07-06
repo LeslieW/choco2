@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.variables;
 
-import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
@@ -211,7 +211,7 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
 
 
     public Iterator<Variable> getVariableIterator() {
-       return ChocoUtil.iterator(extractVariables());
+       return IteratorUtils.iterator(extractVariables());
       }
 
 

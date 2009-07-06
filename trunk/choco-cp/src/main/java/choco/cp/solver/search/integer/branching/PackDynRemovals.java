@@ -22,9 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.branching;
 
-import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.pack.PrimalDualPack;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.integer.ValSelector;
@@ -51,25 +50,33 @@ public class PackDynRemovals extends AssignVar {
 
 
 	public void removeEmptyBins(IntDomainVar bin) throws ContradictionException {
-		final IntIterator iter=bin.getDomain().getIterator();
-		while(iter.hasNext()) {
-			final int b=iter.next();
-			if(pack.isEmpty(b)) {
-				bin.remVal(b);
-			}
-		}
+		final DisposableIntIterator iter=bin.getDomain().getIterator();
+        try{
+            while(iter.hasNext()) {
+                final int b=iter.next();
+                if(pack.isEmpty(b)) {
+                    bin.remVal(b);
+                }
+            }
+        }finally{
+            iter.dispose();
+        }
 	}
 	public final void fail() throws ContradictionException {
 		manager.solver.getPropagationEngine().raiseContradiction(this, ContradictionException.UNKNOWN);
 	}
 
 	public void removeEquivalentBins(IntDomainVar bin,int bup) throws ContradictionException {
-		final IntIterator iter=bin.getDomain().getIterator();
+		final DisposableIntIterator iter=bin.getDomain().getIterator();
 		final int space = pack.getRemainingSpace(bup);
+        try{
 		while(iter.hasNext()) {
 			final int b=iter.next();
 			if(pack.getRemainingSpace(b)==space) {bin.remVal(b);}
 		}
+        }finally {
+            iter.dispose();
+        }
 	}
 	/**
 	 * @see choco.cp.solver.search.integer.branching.AssignVar#goUpBranch(java.lang.Object, int)

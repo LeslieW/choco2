@@ -24,9 +24,9 @@ package choco.cp.solver.constraints.reified;
 
 
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.reified.leaves.bool.NotNode;
 import choco.cp.solver.constraints.integer.extension.FCBinSConstraint;
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.cp.solver.constraints.reified.leaves.bool.NotNode;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;

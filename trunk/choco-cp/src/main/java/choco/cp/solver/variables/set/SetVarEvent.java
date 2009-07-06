@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.set;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.solver.ContradictionException;
@@ -94,11 +94,11 @@ public class SetVarEvent extends VarEvent<SetVarImpl> {
 		(modifiedVar.getDomain()).getKernelDomain().getReleasedDeltaDomain();
 	}
 
-	public IntIterator getEnvEventIterator() {
+	public DisposableIntIterator getEnvEventIterator() {
 		return ( modifiedVar.getDomain()).getEnveloppeDomain().getDeltaIterator();
 	}
 
-	public IntIterator getKerEventIterator() {
+	public DisposableIntIterator getKerEventIterator() {
 		return (modifiedVar.getDomain()).getKernelDomain().getDeltaIterator();
 	}
 
@@ -142,16 +142,21 @@ public class SetVarEvent extends VarEvent<SetVarImpl> {
 		PartiallyStoredVector constraints = v.getConstraintVector();
 		PartiallyStoredIntVector indices = v.getIndexVector();
 
-		for (IntIterator cit = constraints.getIndexIterator(); cit.hasNext();) {
-			int idx = cit.next();
-			if (idx != evtCause) {
-				SetSConstraint c = (SetSConstraint) constraints.get(idx);
-				if (c.isActive()) {
-					int i = indices.get(idx);
-					c.awakeOnInst(i);
-				}
-			}
-		}
+        DisposableIntIterator cit = constraints.getIndexIterator();
+        try{
+            for (; cit.hasNext();) {
+                int idx = cit.next();
+                if (idx != evtCause) {
+                    SetSConstraint c = (SetSConstraint) constraints.get(idx);
+                    if (c.isActive()) {
+                        int i = indices.get(idx);
+                        c.awakeOnInst(i);
+                    }
+                }
+            }
+        }finally{
+            cit.dispose();
+        }
 	}
 
 	/**
@@ -162,16 +167,21 @@ public class SetVarEvent extends VarEvent<SetVarImpl> {
 		PartiallyStoredVector constraints = v.getConstraintVector();
 		PartiallyStoredIntVector indices = v.getIndexVector();
 
-		for (IntIterator cit = constraints.getIndexIterator(); cit.hasNext();) {
-			int idx = cit.next();
-			if (idx != evtCause) {
-				SetSConstraint c = (SetSConstraint) constraints.get(idx);
-				if (c.isActive()) {
-					int i = indices.get(idx);
-					c.awakeOnkerAdditions(i, this.getKerEventIterator());
-				}
-			}
-		}
+        DisposableIntIterator cit = constraints.getIndexIterator();
+        try{
+            for (; cit.hasNext();) {
+                int idx = cit.next();
+                if (idx != evtCause) {
+                    SetSConstraint c = (SetSConstraint) constraints.get(idx);
+                    if (c.isActive()) {
+                        int i = indices.get(idx);
+                        c.awakeOnkerAdditions(i, this.getKerEventIterator());
+                    }
+                }
+            }
+        }finally{
+            cit.dispose();
+        }
 	}
 
 	/**
@@ -182,16 +192,21 @@ public class SetVarEvent extends VarEvent<SetVarImpl> {
 		PartiallyStoredVector constraints = v.getConstraintVector();
 		PartiallyStoredIntVector indices = v.getIndexVector();
 
-		for (IntIterator cit = constraints.getIndexIterator(); cit.hasNext();) {
-			int idx = cit.next();
-			if (idx != evtCause) {
-				SetSConstraint c = (SetSConstraint) constraints.get(idx);
-				if (c.isActive()) {
-					int i = indices.get(idx);
-					c.awakeOnEnvRemovals(i, this.getEnvEventIterator());
-				}
-			}
-		}
+        DisposableIntIterator cit = constraints.getIndexIterator();
+        try{
+            for (; cit.hasNext();) {
+                int idx = cit.next();
+                if (idx != evtCause) {
+                    SetSConstraint c = (SetSConstraint) constraints.get(idx);
+                    if (c.isActive()) {
+                        int i = indices.get(idx);
+                        c.awakeOnEnvRemovals(i, this.getEnvEventIterator());
+                    }
+                }
+            }
+        }finally {
+            cit.dispose();
+        }
 	}
 
 }

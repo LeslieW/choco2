@@ -23,8 +23,10 @@
 package choco.kernel.memory.structure;
 
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.IntIterator;
-import choco.kernel.common.util.OpenBitSet;
+import choco.kernel.common.util.iterators.CyclicIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.EmptyIntIterator;
+import choco.kernel.common.util.objects.OpenBitSet;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
@@ -153,13 +155,13 @@ public class SBitSet implements IStateBitSet{
         }
     }
 
-    public IntIterator getCycleButIterator(int avoidIndex) {
+    public DisposableIntIterator getCycleButIterator(int avoidIndex) {
         int n = this.cardinality();
         if (avoidIndex != VarEvent.NOCAUSE && this.get(avoidIndex)) n -= 1;
         if (n > 0) {
              return new CyclicIterator(this, avoidIndex);
         } else {
-            return new EmptyIterator();
+            return EmptyIntIterator.getEmptyIntIterator();
         }
     }
 

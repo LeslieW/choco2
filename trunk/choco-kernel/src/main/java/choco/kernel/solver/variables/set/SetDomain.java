@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.variables.set;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.variables.Domain;
 
 /*
@@ -38,9 +38,9 @@ public interface SetDomain extends Domain {
 
   public SetSubDomain getEnveloppeDomain();
 
-  public IntIterator getKernelIterator();
+  public DisposableIntIterator getKernelIterator();
 
-  public IntIterator getEnveloppeIterator();
+  public DisposableIntIterator getEnveloppeIterator();
 
-  public IntIterator getOpenDomainIterator();
+  public DisposableIntIterator getOpenDomainIterator();
 }

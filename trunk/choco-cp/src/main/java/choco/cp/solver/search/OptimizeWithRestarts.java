@@ -23,7 +23,6 @@
 package choco.cp.solver.search;
 
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
-import choco.kernel.common.util.Arithm;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.AbstractOptimize;
@@ -125,9 +124,9 @@ public class OptimizeWithRestarts extends AbstractOptimize {
   private void recordNoSolution() {
     // (trace(SVIEW,"... no solution with ~A:~S [~S]\n",obj.name,objtgt,a.limits),
     if (doMaximize) {
-      upperBound = Arithm.min(upperBound, getObjectiveTarget() - 1);
+      upperBound = Math.min(upperBound, getObjectiveTarget() - 1);
     } else {
-      lowerBound = Arithm.max(lowerBound, getObjectiveTarget() + 1);
+      lowerBound = Math.max(lowerBound, getObjectiveTarget() + 1);
     }
   }
 

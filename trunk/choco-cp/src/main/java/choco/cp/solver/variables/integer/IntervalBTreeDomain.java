@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBinaryTree;
 import choco.kernel.memory.IStateInt;
@@ -323,7 +323,7 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
         return _cachedDeltaIntDomainIterator;
     }
 
-    protected class DeltaIntDomainIterator extends DisposableIntIterator {
+    protected static class DeltaIntDomainIterator extends DisposableIntIterator {
         protected IntervalBTreeDomain domain;
         protected int currentVal;
 
@@ -337,8 +337,8 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
       }
 
         public boolean hasNext() {
-            if(stack.size()>0){
-                currentVal = stack.pop();
+            if(domain.stack.size()>0){
+                currentVal = domain.stack.pop();
                 return true;
             }else{
                 return false;

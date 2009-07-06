@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.varselector;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
@@ -84,7 +84,7 @@ public class DomOverWDeg extends DoubleHeuristicIntVarSelector implements Propag
 		int dsize = v.getDomainSize();
 		int weight = 0;
 		// Calcul du poids:
-		IntIterator c = v.getIndexVector().getIndexIterator();
+		DisposableIntIterator c = v.getIndexVector().getIndexIterator();
 		int idx = 0;
         while (c.hasNext()) {
             idx = c.next();
@@ -94,6 +94,7 @@ public class DomOverWDeg extends DoubleHeuristicIntVarSelector implements Propag
 				weight += ((DomOverWDegConstraintExtension) reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure + reuseCstr.getFineDegree(v.getVarIndex(idx));
 			}
         }
+        c.dispose();
 		if (weight == 0)
 			return Double.MAX_VALUE;
 		else

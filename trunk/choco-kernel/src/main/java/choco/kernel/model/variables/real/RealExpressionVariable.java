@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.variables.real;
 
-import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.constraints.ConstraintManager;
 import choco.kernel.model.variables.*;
 
@@ -84,7 +84,7 @@ public class RealExpressionVariable extends ComponentVariable implements DoubleB
      */
     public Variable[] extractVariables() {
         if(listVars == null){
-            listVars = ChocoUtil.getNonRedundantObjects(Variable.class, variables);
+            listVars = ArrayUtils.getNonRedundantObjects(Variable.class, variables);
         }
         return listVars;
     }

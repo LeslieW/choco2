@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.visu.components.bricks;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
@@ -125,7 +125,7 @@ public abstract class AChocoBrick implements IChocoBrick {
      *
      * @return an IntIterator
      */
-    protected final IntIterator getDomainValues() {
+    protected final DisposableIntIterator getDomainValues() {
         if (var instanceof IntDomainVar) {
             return ((IntDomainVar) var).getDomain().getIterator();
         }else
@@ -165,11 +165,12 @@ public abstract class AChocoBrick implements IChocoBrick {
      */
     protected final String getValues(){
         StringBuffer values = new StringBuffer();
-        final IntIterator it = getDomainValues();
+        final DisposableIntIterator it = getDomainValues();
         while(it.hasNext()){
             int value = it.next();
             values.append(value).append(" - ");
         }
+        it.dispose();
         values = values.delete(values.length()-3, values.length());
         return values.toString();
     }

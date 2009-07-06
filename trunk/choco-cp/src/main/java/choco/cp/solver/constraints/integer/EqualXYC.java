@@ -25,16 +25,14 @@
 package choco.cp.solver.constraints.integer;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.Arithm;
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.logging.Level;
 
 /**
  * Implements a constraint X == Y + C, with X and Y two variables and C a constant.
@@ -115,6 +113,7 @@ public class EqualXYC extends AbstractBinIntSConstraint {
         
         IntDomain dom1 = v1.getDomain();
         it = dom1.getIterator();
+        try{
         while (it.hasNext()) {
             int val1 = it.next();
             if (!(v0.canBeInstantiatedTo(val1 + cste))) {
@@ -123,7 +122,9 @@ public class EqualXYC extends AbstractBinIntSConstraint {
                 v1.removeVal(val1, cIdx1);
             }
         }
-        it.dispose();
+        }finally{
+            it.dispose();
+        }
     }
   }
 
@@ -223,7 +224,7 @@ public class EqualXYC extends AbstractBinIntSConstraint {
     sb.append(v0.toString());
     sb.append(" = ");
     sb.append(v1.toString());
-    sb.append(Arithm.pretty(this.cste));
+    sb.append(StringUtils.pretty(this.cste));
     return sb.toString();
   }
 

@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.set;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractBinSetSConstraint;
 import choco.kernel.solver.variables.set.SetVar;
@@ -51,28 +51,44 @@ public class SetEq extends AbstractBinSetSConstraint {
 
 
 	public void filterEq() throws ContradictionException {
-		IntIterator it0 = v0.getDomain().getKernelIterator();
-		while (it0.hasNext()) {
-			v1.addToKernel(it0.next(), cIdx1);
-		}
-		IntIterator it1 = v1.getDomain().getKernelIterator();
-		while (it1.hasNext()) {
-			v0.addToKernel(it1.next(), cIdx0);
-		}
+		DisposableIntIterator it0 = v0.getDomain().getKernelIterator();
+		try{
+            while (it0.hasNext()) {
+                v1.addToKernel(it0.next(), cIdx1);
+            }
+        }finally {
+            it0.dispose();
+        }
+		it0 = v1.getDomain().getKernelIterator();
+        try{
+            while (it0.hasNext()) {
+                v0.addToKernel(it0.next(), cIdx0);
+            }
+        }finally {
+            it0.dispose();
+        }
 		it0 = v0.getDomain().getEnveloppeIterator();
-		while (it0.hasNext()) {
-			int val = it0.next();
-			if (!v1.isInDomainEnveloppe(val)) {
-				v0.remFromEnveloppe(val, cIdx0);
-			}
-		}
-		it1 = v1.getDomain().getEnveloppeIterator();
-		while (it1.hasNext()) {
-			int val = it1.next();
-			if (!v0.isInDomainEnveloppe(val)) {
-				v1.remFromEnveloppe(val, cIdx1);
-			}
-		}
+        try{
+            while (it0.hasNext()) {
+                int val = it0.next();
+                if (!v1.isInDomainEnveloppe(val)) {
+                    v0.remFromEnveloppe(val, cIdx0);
+                }
+            }
+        }finally {
+            it0.dispose();
+        }
+		it0 = v1.getDomain().getEnveloppeIterator();
+        try{
+            while (it0.hasNext()) {
+                int val = it0.next();
+                if (!v0.isInDomainEnveloppe(val)) {
+                    v1.remFromEnveloppe(val, cIdx1);
+                }
+            }
+        }finally {
+            it0.dispose();
+        }
 	}
 
 	@Override
@@ -104,18 +120,22 @@ public class SetEq extends AbstractBinSetSConstraint {
 
 	public boolean isSatisfied() {
 		if (v0.getKernelDomainSize() == v1.getKernelDomainSize()) {
-			IntIterator it1 = v0.getDomain().getKernelIterator();
+			DisposableIntIterator it1 = v0.getDomain().getKernelIterator();
 			while (it1.hasNext()) {
 				if (!v1.isInDomainKernel(it1.next())) {
+                    it1.dispose();
 					return false;
 				}
 			}
+            it1.dispose();
 			it1 = v1.getDomain().getKernelIterator();
 			while (it1.hasNext()) {
 				if (!v0.isInDomainKernel(it1.next())) {
+                    it1.dispose();
 					return false;
 				}
 			}
+            it1.dispose();
 			return false;
 		} else {
 			return false;

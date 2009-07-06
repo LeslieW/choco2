@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.variables.integer;
 
-import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.variables.*;
 
 /*
@@ -289,7 +289,7 @@ public class IntegerExpressionVariable extends ComponentVariable implements IntB
      */
     public Variable[] extractVariables() {
         if(listVars == null){
-            listVars = ChocoUtil.getNonRedundantObjects(Variable.class, variables);
+            listVars = ArrayUtils.getNonRedundantObjects(Variable.class, variables);
         }
         return listVars;
     }

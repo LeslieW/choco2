@@ -24,13 +24,13 @@
 
 package choco.cp.solver.constraints.global;
 
-import choco.kernel.common.util.IntIterator;
+import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.cp.solver.variables.integer.IntVarEvent;
 
 public class Occurrence extends AbstractLargeIntSConstraint {
     /**
@@ -125,7 +125,7 @@ public class Occurrence extends AbstractLargeIntSConstraint {
         }
     }
 
-    public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+    public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
         //assumption : we only get the inst events on all variables except the occurrence variable
             while (deltaDomain.hasNext()) {
                 int x = deltaDomain.next();
@@ -133,6 +133,7 @@ public class Occurrence extends AbstractLargeIntSConstraint {
                     nbPossible.add(-1);
                 }
             }
+        deltaDomain.dispose();
             checkNbPossible();
     }
 

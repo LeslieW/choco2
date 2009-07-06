@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers;
 
-import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.model.variables.ComponentVariable;
 import choco.kernel.model.variables.Variable;
 
@@ -50,7 +50,7 @@ public class VariableIterator implements Iterator<Variable> {
 		if (v instanceof ComponentVariable) {
 			return ( (ComponentVariable) v).getVariableIterator();
 		} else {
-			return ChocoUtil.iterator(v);
+			return IteratorUtils.iterator(v);
 		}
 	}
 

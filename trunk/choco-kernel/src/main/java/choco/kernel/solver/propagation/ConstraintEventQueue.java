@@ -23,12 +23,10 @@
 
 package choco.kernel.solver.propagation;
 
-import choco.kernel.common.util.BipartiteSet;
+import choco.kernel.common.util.objects.BipartiteSet;
 import choco.kernel.solver.ContradictionException;
 
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Implements an {@link choco.kernel.solver.propagation.EventQueue} for managing the constraint awake events.

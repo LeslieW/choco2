@@ -26,7 +26,7 @@ import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
@@ -158,7 +158,7 @@ public class FilteringTest {
                 double nbTrue = 0;
                 for (IntDomainVar v : s.getVar(vars))
                 {
-                    IntIterator it ;
+                    DisposableIntIterator it ;
                     for (it = v.getDomain().getIterator(); it.hasNext() ;)
                     {
                         int j = it.next();
@@ -179,6 +179,7 @@ public class FilteringTest {
 
 
                     }
+                    it.dispose();
 
                 }
 

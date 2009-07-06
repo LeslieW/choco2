@@ -24,7 +24,7 @@ package choco.solver;
 
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.Ignore;
@@ -66,9 +66,9 @@ public class SolverTest {
 //                }
             cpt = newcpt;
             StringBuffer st = new StringBuffer();
-            st.append(format("|{0} |", ChocoUtil.pad("" + n, -9, " ")));
-            st.append(format("|{0} |", ChocoUtil.pad("" + (System.currentTimeMillis() - t), -5, " ")));
-            st.append(format("|{0} |", ChocoUtil.pad("" + cpt, -10, " ")));
+            st.append(format("|{0} |", StringUtils.pad("" + n, -9, " ")));
+            st.append(format("|{0} |", StringUtils.pad("" + (System.currentTimeMillis() - t), -5, " ")));
+            st.append(format("|{0} |", StringUtils.pad("" + cpt, -10, " ")));
             LOGGER.info(st.toString());
         }
     }
@@ -95,9 +95,9 @@ public class SolverTest {
 //                }
             cpt = newcpt;
             StringBuffer st = new StringBuffer();
-            st.append(format("|{0} |", ChocoUtil.pad("" + n, -9, " ")));
-            st.append(format("|{0} |", ChocoUtil.pad("" + (System.currentTimeMillis() - t), -5, " ")));
-            st.append(format("|{0} |", ChocoUtil.pad("" + cpt, -10, " ")));
+            st.append(format("|{0} |", StringUtils.pad("" + n, -9, " ")));
+            st.append(format("|{0} |", StringUtils.pad("" + (System.currentTimeMillis() - t), -5, " ")));
+            st.append(format("|{0} |", StringUtils.pad("" + cpt, -10, " ")));
             LOGGER.info(st.toString());
         }
     }

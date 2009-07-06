@@ -22,11 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.constraints.automaton;
 
-import choco.kernel.common.util.DoubleLinkedList;
+import choco.kernel.common.util.objects.DoubleLinkedList;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.BitSet;
 import java.util.Enumeration;
 import java.util.Hashtable;

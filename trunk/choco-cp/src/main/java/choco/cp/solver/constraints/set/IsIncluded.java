@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.set;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractBinSetSConstraint;
 import choco.kernel.solver.variables.set.SetVar;
@@ -47,18 +47,26 @@ public class IsIncluded extends AbstractBinSetSConstraint {
 
 	public void filter(int idx) throws ContradictionException {
 		if (idx == 0) {
-			IntIterator it1 = v0.getDomain().getKernelIterator();
-			while (it1.hasNext()) {
-				v1.addToKernel(it1.next(), cIdx1);
-			}
+			DisposableIntIterator it1 = v0.getDomain().getKernelIterator();
+			try{
+                while (it1.hasNext()) {
+                    v1.addToKernel(it1.next(), cIdx1);
+                }
+            }finally {
+                it1.dispose();
+            }
 		} else if (idx == 1) {
-			IntIterator it2 = v0.getDomain().getEnveloppeIterator();
-			while (it2.hasNext()) {
-				int val = it2.next();
-				if (!v1.isInDomainEnveloppe(val)) {
-					v0.remFromEnveloppe(val, cIdx0);
-				}
-			}
+			DisposableIntIterator it2 = v0.getDomain().getEnveloppeIterator();
+			try{
+                while (it2.hasNext()) {
+                    int val = it2.next();
+                    if (!v1.isInDomainEnveloppe(val)) {
+                        v0.remFromEnveloppe(val, cIdx0);
+                    }
+                }
+            }finally {
+                it2.dispose();
+            }
 		}
 	}
 
@@ -87,12 +95,16 @@ public class IsIncluded extends AbstractBinSetSConstraint {
 	}
 
 	public boolean isSatisfied() {
-		IntIterator it2 = v0.getDomain().getKernelIterator();
-		while (it2.hasNext()) {
-			if (!v1.isInDomainKernel(it2.next())) {
-				return false;
-			}
-		}
+		DisposableIntIterator it2 = v0.getDomain().getKernelIterator();
+        try{
+            while (it2.hasNext()) {
+                if (!v1.isInDomainKernel(it2.next())) {
+                    return false;
+                }
+            }
+        }finally {
+            it2.dispose();
+        }
 		return true;
 	}
 

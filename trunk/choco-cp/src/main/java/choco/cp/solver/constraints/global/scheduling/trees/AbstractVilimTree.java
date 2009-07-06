@@ -22,18 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling.trees;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-
 import choco.kernel.common.opres.graph.IBinaryNode;
 import choco.kernel.common.opres.graph.ProperBinaryTree;
-import choco.kernel.common.util.TaskComparators;
+import choco.kernel.common.util.comparator.TaskComparators;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.scheduling.ITask;
+
+import java.util.*;
 
 
 

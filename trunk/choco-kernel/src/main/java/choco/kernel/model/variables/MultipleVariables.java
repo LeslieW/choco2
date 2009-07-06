@@ -22,8 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.variables;
 
-import choco.kernel.common.util.ChocoUtil;
-import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 
@@ -195,7 +194,7 @@ public abstract class MultipleVariables extends AbstractVariable {
      */
      public Variable[] extractVariables() {
         if(listVars==null){
-            listVars = ChocoUtil.getNonRedundantObjects(Variable.class, UtilAlgo.toArray(Variable.class, variables));
+            listVars = ArrayUtils.getNonRedundantObjects(Variable.class, ArrayUtils.toArray(Variable.class, variables));
         }
         return listVars;
     }

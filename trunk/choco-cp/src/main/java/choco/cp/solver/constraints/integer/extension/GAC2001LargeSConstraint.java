@@ -24,7 +24,7 @@
 package choco.cp.solver.constraints.integer.extension;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
@@ -246,7 +246,7 @@ public class GAC2001LargeSConstraint extends CspLargeSConstraint {
     }
 
 
-     public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+     public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
         filter(idx);
     }
 

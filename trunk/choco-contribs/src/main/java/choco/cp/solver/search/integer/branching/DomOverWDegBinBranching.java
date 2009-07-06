@@ -23,6 +23,7 @@
 package choco.cp.solver.search.integer.branching;
 
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.AbstractBinIntBranching;
@@ -36,11 +37,9 @@ import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.integer.IntVar;
-import choco.kernel.common.util.IntIterator;
 
 import java.util.Iterator;
 import java.util.Random;
-import java.util.logging.Level;
 
 /* History:
  * 2008-04-23 : Creation : dom / wdeg needs to be a branching not just an heuristic to allow to deal with
@@ -124,8 +123,8 @@ public class DomOverWDegBinBranching extends AbstractBinIntBranching {
 			// d'entre elle serait deja instanti�e !!
 			int weight = 0;
             int idx = 0;
-            for (IntIterator c = v.getIndexVector().getIndexIterator(); c
-					.hasNext();) {
+            DisposableIntIterator c = v.getIndexVector().getIndexIterator();
+            for (; c.hasNext();) {
                 idx = c.next();
                 AbstractSConstraint cstr = (AbstractSConstraint) v.getConstraint(idx);
 				if (cstr.getNbVarNotInst() > 1) {
@@ -133,6 +132,7 @@ public class DomOverWDegBinBranching extends AbstractBinIntBranching {
 							.getExtension(CONSTRAINT_EXTENSION)).nbFailure + cstr.getFineDegree(v.getVarIndex(idx));
 				}
             }
+            c.dispose();
 			((VarExtension) v.getExtension(VAR_EXTENSION)).sum_weighted = weight;
 		}
 	}

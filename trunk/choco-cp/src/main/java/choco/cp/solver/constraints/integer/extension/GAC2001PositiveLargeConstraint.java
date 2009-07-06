@@ -23,7 +23,7 @@
 package choco.cp.solver.constraints.integer.extension;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.extension.IterTuplesTable;
@@ -128,18 +128,22 @@ public class GAC2001PositiveLargeConstraint extends CspLargeSConstraint {
 	 * @throws ContradictionException
 	 */
 	public void reviseVar(int indexVar) throws ContradictionException {
-		IntIterator itv = vars[indexVar].getDomain().getIterator();
-		while (itv.hasNext()) {
-			int val = itv.next();
-			int nva = val - relation.getRelationOffset(indexVar);
-			int currentIdxSupport = getSupport(indexVar, val);
-            currentIdxSupport = seekNextSupport(indexVar, nva, currentIdxSupport);
-			if (currentIdxSupport == NO_SUPPORT) {
-				vars[indexVar].removeVal(val, cIndices[indexVar]);
-			} else {
-				setSupport(indexVar, val, currentIdxSupport);
-			}
-		}
+		DisposableIntIterator itv = vars[indexVar].getDomain().getIterator();
+        try{
+            while (itv.hasNext()) {
+                int val = itv.next();
+                int nva = val - relation.getRelationOffset(indexVar);
+                int currentIdxSupport = getSupport(indexVar, val);
+                currentIdxSupport = seekNextSupport(indexVar, nva, currentIdxSupport);
+                if (currentIdxSupport == NO_SUPPORT) {
+                    vars[indexVar].removeVal(val, cIndices[indexVar]);
+                } else {
+                    setSupport(indexVar, val, currentIdxSupport);
+                }
+            }
+        }finally {
+            itv.dispose();
+        }
 	}
 
 
@@ -184,7 +188,7 @@ public class GAC2001PositiveLargeConstraint extends CspLargeSConstraint {
 			reviseVar(indexVar);
 	}	
 
-	public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+	public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
 		filter(idx);
 	}
 

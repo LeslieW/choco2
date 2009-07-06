@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.set;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractTernSetSConstraint;
 import choco.kernel.solver.variables.set.SetVar;
@@ -106,37 +106,56 @@ public class SetUnion extends AbstractTernSetSConstraint {
     public void awakeOnInst(int varIdx) throws ContradictionException {
         switch (varIdx) {
             case 0:
-                IntIterator it1 = v0.getDomain().getKernelIterator();
-                while (it1.hasNext()) {
-                    int val = it1.next();
-                    v2.addToKernel(val, cIdx2);
+                DisposableIntIterator it1 = v0.getDomain().getKernelIterator();
+                try{
+                    while (it1.hasNext()) {
+                        int val = it1.next();
+                        v2.addToKernel(val, cIdx2);
+                    }
+                }finally {
+                    it1.dispose();
                 }
-
-                IntIterator it4 = v2.getDomain().getEnveloppeIterator();
-                while (it4.hasNext()) {
-                    int val = it4.next();
-                    if (!v0.isInDomainEnveloppe(val) && !v1.isInDomainEnveloppe(val)) v2.remFromEnveloppe(val, cIdx2);
+                it1 = v2.getDomain().getEnveloppeIterator();
+                try{
+                    while (it1.hasNext()) {
+                        int val = it1.next();
+                        if (!v0.isInDomainEnveloppe(val) && !v1.isInDomainEnveloppe(val)) v2.remFromEnveloppe(val, cIdx2);
+                    }
+                }finally {
+                    it1.dispose();
                 }
                 break;
             case 1:
-                IntIterator it2 = v1.getDomain().getKernelIterator();
-                while (it2.hasNext()) {
-                    int val = it2.next();
-                    v2.addToKernel(val, cIdx2);
+                DisposableIntIterator it2 = v1.getDomain().getKernelIterator();
+                try{
+                    while (it2.hasNext()) {
+                        int val = it2.next();
+                        v2.addToKernel(val, cIdx2);
+                    }
+                }finally {
+                    it2.dispose();
                 }
 
-                IntIterator it5 = v2.getDomain().getEnveloppeIterator();
-                while (it5.hasNext()) {
-                    int val = it5.next();
-                    if (!v0.isInDomainEnveloppe(val) && !v1.isInDomainEnveloppe(val)) v2.remFromEnveloppe(val, cIdx2);
+                it2 = v2.getDomain().getEnveloppeIterator();
+                try{
+                    while (it2.hasNext()) {
+                        int val = it2.next();
+                        if (!v0.isInDomainEnveloppe(val) && !v1.isInDomainEnveloppe(val)) v2.remFromEnveloppe(val, cIdx2);
+                    }
+                }finally {
+                    it2.dispose();
                 }
                 break;
             case 2:
-                IntIterator it3 = v2.getDomain().getKernelIterator();
-                while (it3.hasNext()) {
-                    int val = it3.next();
-                    if (!v0.isInDomainEnveloppe(val)) v1.addToKernel(val, cIdx1);
-                    if (!v1.isInDomainEnveloppe(val)) v0.addToKernel(val, cIdx0);
+                DisposableIntIterator it3 = v2.getDomain().getKernelIterator();
+                try{
+                    while (it3.hasNext()) {
+                        int val = it3.next();
+                        if (!v0.isInDomainEnveloppe(val)) v1.addToKernel(val, cIdx1);
+                        if (!v1.isInDomainEnveloppe(val)) v0.addToKernel(val, cIdx0);
+                    }
+                }finally {
+                    it3.dispose();
                 }
                 break;
             default:
@@ -146,30 +165,46 @@ public class SetUnion extends AbstractTernSetSConstraint {
 
     public void propagate() throws ContradictionException {
 
-        IntIterator it1 = v0.getDomain().getKernelIterator();
-        while (it1.hasNext()) {
-            int val = it1.next();
-            v2.addToKernel(val, cIdx2);
+        DisposableIntIterator it1 = v0.getDomain().getKernelIterator();
+        try{
+            while (it1.hasNext()) {
+                int val = it1.next();
+                v2.addToKernel(val, cIdx2);
+            }
+        }finally {
+            it1.dispose();
         }
-        IntIterator it2 = v1.getDomain().getKernelIterator();
-        while (it2.hasNext()) {
-            int val = it2.next();
-            v2.addToKernel(val, cIdx2);
+        it1 = v1.getDomain().getKernelIterator();
+        try{
+            while (it1.hasNext()) {
+                int val = it1.next();
+                v2.addToKernel(val, cIdx2);
+            }
+        }finally {
+            it1.dispose();
         }
 
-        IntIterator it3 = v2.getDomain().getKernelIterator();
-        while (it3.hasNext()) {
-            int val = it3.next();
+        it1 = v2.getDomain().getKernelIterator();
+        try{
+        while (it1.hasNext()) {
+            int val = it1.next();
             if (!v0.isInDomainEnveloppe(val)) v1.addToKernel(val, cIdx1);
             if (!v1.isInDomainEnveloppe(val)) v0.addToKernel(val, cIdx0);
         }
+        }finally {
+            it1.dispose();
+        }
 
-        IntIterator it4 = v2.getDomain().getEnveloppeIterator();
-        while (it4.hasNext()) {
-            int val = it4.next();
-            if (!v0.isInDomainEnveloppe(val) && !v1.isInDomainEnveloppe(val)) {
-                v2.remFromEnveloppe(val, cIdx2);
+        it1 = v2.getDomain().getEnveloppeIterator();
+        try{
+            while (it1.hasNext()) {
+                int val = it1.next();
+                if (!v0.isInDomainEnveloppe(val) && !v1.isInDomainEnveloppe(val)) {
+                    v2.remFromEnveloppe(val, cIdx2);
+                }
             }
+        }finally {
+            it1.dispose();
         }
     }
 
@@ -183,28 +218,40 @@ public class SetUnion extends AbstractTernSetSConstraint {
 
     public boolean isSatisfied() {
         boolean allin = true;
-        IntIterator it1 = v2.getDomain().getKernelIterator();
-        while (it1.hasNext()) {
-            int val = it1.next();
-            if(!v0.isInDomainKernel(val) && !v1.isInDomainKernel(val)){
-                allin=false;
+        DisposableIntIterator it = v2.getDomain().getKernelIterator();
+        try{
+            while (it.hasNext()) {
+                int val = it.next();
+                if(!v0.isInDomainKernel(val) && !v1.isInDomainKernel(val)){
+                    allin=false;
+                }
             }
+        }finally {
+            it.dispose();
         }
         if(!allin) return false;
-        IntIterator it2 = v1.getDomain().getKernelIterator();
-        while (it2.hasNext()){
-            int val = it2.next();
-            if(!v2.isInDomainKernel(val)){
-                allin = false;
+        it = v1.getDomain().getKernelIterator();
+        try{
+            while (it.hasNext()){
+                int val = it.next();
+                if(!v2.isInDomainKernel(val)){
+                    allin = false;
+                }
             }
+        }finally {
+            it.dispose();
         }
         if(!allin) return false;
-        IntIterator it3 = v0.getDomain().getKernelIterator();
-        while (it3.hasNext()){
-            int val = it3.next();
-            if(!v2.isInDomainKernel(val)){
-                allin = false;
+        it = v0.getDomain().getKernelIterator();
+        try{
+            while (it.hasNext()){
+                int val = it.next();
+                if(!v2.isInDomainKernel(val)){
+                    allin = false;
+                }
             }
+        }finally {
+            it.dispose();
         }
         return allin;
     }

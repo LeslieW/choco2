@@ -23,7 +23,7 @@
 package choco.cp.solver.constraints.integer;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
@@ -88,6 +88,7 @@ public class Absolute extends AbstractBinIntSConstraint {
 		if (v0.getDomain().isEnumerated()) {
 			IntDomain dom0 = v0.getDomain();
 			DisposableIntIterator it = dom0.getIterator();
+            try{
             while(it.hasNext()) {
                 int valeur = it.next();
         		if (!v1.canBeInstantiatedTo(valeur) &&
@@ -95,7 +96,9 @@ public class Absolute extends AbstractBinIntSConstraint {
 					v0.removeVal(valeur, cIdx0);
 				}
 			}
-            it.dispose();
+            }finally {
+                it.dispose();
+            }
         } else {
 			awakeOnInf(1);
 			awakeOnSup(1);
@@ -103,6 +106,7 @@ public class Absolute extends AbstractBinIntSConstraint {
 		if (v1.getDomain().isEnumerated()) {
 			IntDomain dom1 = v1.getDomain();
             DisposableIntIterator it = dom1.getIterator();
+            try{
             while (it.hasNext()) {
                 int valeur = it.next();
                 if (!v0.canBeInstantiatedTo(valeur) &&
@@ -111,7 +115,9 @@ public class Absolute extends AbstractBinIntSConstraint {
 					v1.removeVal(-valeur, cIdx1);
 				}
 			}
-            it.dispose();
+            }finally {
+                it.dispose();
+            }
         } else {
 			awakeOnInf(0);
 			awakeOnSup(0);

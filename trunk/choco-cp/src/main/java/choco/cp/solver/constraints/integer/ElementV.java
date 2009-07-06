@@ -24,14 +24,14 @@
 
 package choco.cp.solver.constraints.integer;
 
-import choco.kernel.common.util.Arithm;
-import choco.kernel.common.util.IntIterator;
+import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.memory.IStateBool;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.cp.solver.variables.integer.IntVarEvent;
 
 /**
  * A class implementing the constraint A[I] == X, with I and X being IntVars and A an array of IntVars
@@ -71,7 +71,7 @@ public class ElementV extends AbstractLargeIntSConstraint {
     }
 
     public String pretty() {
-    return (this.getValueVar().toString() + " = nth(" + this.getIndexVar().toString() + ", " + Arithm.pretty(this.vars, 0, vars.length - 3) + ")");
+    return (this.getValueVar().toString() + " = nth(" + this.getIndexVar().toString() + ", " + StringUtils.pretty(this.vars, 0, vars.length - 2) + ")");
   }
 
 
@@ -92,11 +92,13 @@ public class ElementV extends AbstractLargeIntSConstraint {
     IntDomainVar valVar = getValueVar();
     int minval = Integer.MAX_VALUE;
     int maxval = Integer.MIN_VALUE;
-    for (IntIterator iter = idxVar.getDomain().getIterator(); iter.hasNext();) {
+      DisposableIntIterator iter = idxVar.getDomain().getIterator();
+    for (; iter.hasNext();) {
       int feasibleIndex = iter.next();
-      minval = Arithm.min(minval, vars[feasibleIndex + cste].getInf());
-      maxval = Arithm.max(maxval, vars[feasibleIndex + cste].getSup());
+      minval = Math.min(minval, vars[feasibleIndex + cste].getInf());
+      maxval = Math.max(maxval, vars[feasibleIndex + cste].getSup());
     }
+      iter.dispose();
     // further optimization:
     // I should consider for the min, the minimum value in domain(c.vars[feasibleIndex) that is >= to valVar.inf
     // (it can be greater than valVar.inf if there are holes in domain(c.vars[feasibleIndex]))
@@ -106,7 +108,7 @@ public class ElementV extends AbstractLargeIntSConstraint {
     if (valVar.hasEnumeratedDomain()) {
       for (int v = valVar.getInf(); v < valVar.getSup(); v = valVar.getNextDomainValue(v)) {
         boolean possibleV = false;
-        IntIterator it = idxVar.getDomain().getIterator();
+        DisposableIntIterator it = idxVar.getDomain().getIterator();
         while ((it.hasNext()) && !(possibleV) ) {
         int tentativeIdx = it.next();
   //      for (int tentativeIdx = idxVar.getInf(); tentativeIdx <= idxVar.getSup(); tentativeIdx = idxVar.getNextDomainValue(tentativeIdx)) {
@@ -115,6 +117,7 @@ public class ElementV extends AbstractLargeIntSConstraint {
             break;
           }
         }
+          it.dispose();
         if (!possibleV) {
           valVar.removeVal(v, cIndices[vars.length - 1]);
         }
@@ -126,8 +129,8 @@ public class ElementV extends AbstractLargeIntSConstraint {
   protected void updateIndexFromValue() throws ContradictionException {
     IntDomainVar idxVar = getIndexVar();
     IntDomainVar valVar = getValueVar();
-    int minFeasibleIndex = Arithm.max(0 - cste, idxVar.getInf());
-    int maxFeasibleIndex = Arithm.min(idxVar.getSup(), vars.length - 3 - cste);
+    int minFeasibleIndex = Math.max(0 - cste, idxVar.getInf());
+    int maxFeasibleIndex = Math.min(idxVar.getSup(), vars.length - 3 - cste);
     int cause = cIndices[vars.length - 2];
     if (valVar.hasEnumeratedDomain()) {
       cause = VarEvent.NOCAUSE;
@@ -236,10 +239,12 @@ public class ElementV extends AbstractLargeIntSConstraint {
         } else if (vars[idx].getInf() > valVar.getInf()) {
           // only the inf can change if the index is not removed
           int minval = Integer.MAX_VALUE;
-          for (IntIterator it = idxVar.getDomain().getIterator(); it.hasNext();) {
+            DisposableIntIterator it = idxVar.getDomain().getIterator();
+          for (; it.hasNext();) {
             int feasibleIndex = it.next() + this.cste;
-            minval = Arithm.min(minval, vars[feasibleIndex].getInf());
+            minval = Math.min(minval, vars[feasibleIndex].getInf());
           }
+            it.dispose();
           valVar.updateInf(minval, VarEvent.NOCAUSE);
           // NOCAUSE because if valVar takes a new min, then it can have consequence
           // on the constraint itself (ie remove indices such that l[i].sup < value.inf)
@@ -278,10 +283,12 @@ public class ElementV extends AbstractLargeIntSConstraint {
         } else if (vars[idx].getSup() < valVar.getSup()) {
           // only the sup can change if the index is not removed
           int maxval = Integer.MIN_VALUE;
-          for (IntIterator it = idxVar.getDomain().getIterator(); it.hasNext();) {
+            DisposableIntIterator it = idxVar.getDomain().getIterator();
+          for (; it.hasNext();) {
             int feasibleIndex = it.next() + this.cste;
-            maxval = Arithm.max(maxval, vars[feasibleIndex].getSup());
+            maxval = Math.max(maxval, vars[feasibleIndex].getSup());
           }
+            it.dispose();
           valVar.updateSup(maxval, VarEvent.NOCAUSE);
           // NOCAUSE because if valVar takes a new min, then it can have consequence
           // on the constraint itself (ie remove indices such that l[i].sup < value.inf)
@@ -340,12 +347,14 @@ public class ElementV extends AbstractLargeIntSConstraint {
         }
       } else if ((idxVar.canBeInstantiatedTo(idx - cste)) && (valVar.hasEnumeratedDomain())) {
         boolean existsSupport = false;
-        for (IntIterator it = idxVar.getDomain().getIterator(); it.hasNext();) {
+          DisposableIntIterator it = idxVar.getDomain().getIterator();
+        for (; it.hasNext();) {
           int feasibleIndex = it.next() + this.cste;
           if (vars[feasibleIndex].canBeInstantiatedTo(x)) {
             existsSupport = true;
           }
         }
+          it.dispose();
         if (!existsSupport) {
           valVar.removeVal(x, VarEvent.NOCAUSE);
         }
@@ -362,24 +371,28 @@ public class ElementV extends AbstractLargeIntSConstraint {
         (idxVar.getInf() + this.cste >= 0) &&
         (idxVar.getSup() + this.cste < vars.length - 2)) {
       boolean allEqualToValVar = true;
-      for (IntIterator it = idxVar.getDomain().getIterator(); it.hasNext();) {
+        DisposableIntIterator it = idxVar.getDomain().getIterator();
+      for (; it.hasNext();) {
         int feasibleIndex = it.next() + this.cste;
         if (!vars[feasibleIndex].isInstantiatedTo(valVar.getVal())) {
           allEqualToValVar = false;
         }
       }
+        it.dispose();
       if (allEqualToValVar) {
         isEntailed = Boolean.TRUE;
       }
     }
     if (isEntailed != Boolean.TRUE) {
       boolean existsSupport = false;
-      for (IntIterator it = idxVar.getDomain().getIterator(); it.hasNext();) {
+        DisposableIntIterator it = idxVar.getDomain().getIterator();
+      for (; it.hasNext();) {
         int feasibleIndex = it.next() + this.cste;
         if ((feasibleIndex >= 0) && (feasibleIndex < vars.length - 2) && (valVar.canBeEqualTo(vars[feasibleIndex]))) {
           existsSupport = true;
         }
       }
+        it.dispose();
       if (!existsSupport) isEntailed = Boolean.FALSE;
     }
     return isEntailed;

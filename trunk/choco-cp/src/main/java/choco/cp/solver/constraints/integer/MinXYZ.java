@@ -23,7 +23,7 @@
 package choco.cp.solver.constraints.integer;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractTernIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomain;
@@ -131,13 +131,16 @@ public class MinXYZ extends AbstractTernIntSConstraint {
             if (v0.hasEnumeratedDomain()) {
                 IntDomain dom0 = v0.getDomain();
                 DisposableIntIterator it = dom0.getIterator();
-                while (it.hasNext()) {
-                    int valeur = it.next();
-                    if (!v1.canBeInstantiatedTo(valeur) && !v2.canBeInstantiatedTo(valeur)) {
-                        v0.removeVal(valeur, cIdx0);
+                try{
+                    while (it.hasNext()) {
+                        int valeur = it.next();
+                        if (!v1.canBeInstantiatedTo(valeur) && !v2.canBeInstantiatedTo(valeur)) {
+                            v0.removeVal(valeur, cIdx0);
+                        }
                     }
+                }finally {
+                    it.dispose();
                 }
-                it.dispose();
             }
         } else if (idx == 1) {
             v1.updateInf(v0.getInf(), cIdx1);
@@ -148,13 +151,16 @@ public class MinXYZ extends AbstractTernIntSConstraint {
             if (v1.hasEnumeratedDomain()) {
                 IntDomain dom1 = v1.getDomain();
                 DisposableIntIterator it = dom1.getIterator();
-                while (it.hasNext()) {
-                    int valeur = it.next();
-                    if (!v0.canBeInstantiatedTo(valeur) && (v2.getInf() > valeur)) {
-                        v1.removeVal(valeur, cIdx1);
+                try{
+                    while (it.hasNext()) {
+                        int valeur = it.next();
+                        if (!v0.canBeInstantiatedTo(valeur) && (v2.getInf() > valeur)) {
+                            v1.removeVal(valeur, cIdx1);
+                        }
                     }
+                }finally {
+                    it.dispose();
                 }
-                it.dispose();
             }
 
         } else if (idx == 2) {
@@ -165,13 +171,16 @@ public class MinXYZ extends AbstractTernIntSConstraint {
             if (v2.hasEnumeratedDomain()) {
                 IntDomain dom2 = v2.getDomain();
                 DisposableIntIterator it = dom2.getIterator();
-                while (it.hasNext()) {
-                    int valeur = it.next();
-                    if (!v0.canBeInstantiatedTo(valeur) && (v1.getInf() > valeur)) {
-                        v2.removeVal(valeur, cIdx2);
+                try{
+                    while (it.hasNext()) {
+                        int valeur = it.next();
+                        if (!v0.canBeInstantiatedTo(valeur) && (v1.getInf() > valeur)) {
+                            v2.removeVal(valeur, cIdx2);
+                        }
                     }
+                }finally {
+                    it.dispose();
                 }
-                it.dispose();
             }
 
         }

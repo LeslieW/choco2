@@ -23,8 +23,8 @@
 package choco.common;
 
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.IPrioritizable;
-import choco.kernel.common.util.PriorityQueue;
+import choco.kernel.common.util.objects.IPrioritizable;
+import choco.kernel.common.util.objects.PriorityQueue;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;

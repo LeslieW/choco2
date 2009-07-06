@@ -24,7 +24,7 @@
 package choco.kernel.model.constraints.automaton.FA;
 
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.common.util.tools.StringUtils;
 import dk.brics.automaton.RegExp;
 import dk.brics.automaton.Transition;
 import gnu.trove.*;
@@ -199,7 +199,7 @@ public class Automaton {
 
 
     public Automaton(String regexp) {
-        this(new RegExp(UtilAlgo.toCharExp(regexp)).toAutomaton());
+        this(new RegExp(StringUtils.toCharExp(regexp)).toAutomaton());
 
 
     }

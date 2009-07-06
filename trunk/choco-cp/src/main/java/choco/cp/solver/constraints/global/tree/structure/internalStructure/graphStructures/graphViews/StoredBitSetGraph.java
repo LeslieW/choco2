@@ -24,7 +24,7 @@ package choco.cp.solver.constraints.global.tree.structure.internalStructure.grap
 
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.algorithms.ConnectedComponents;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.Solver;
@@ -554,16 +554,18 @@ public class StoredBitSetGraph {
      * @param u     index of a node
      * @param deltaDomain   an iterator over the removed indices
      */
-    public void remAllNodes(int u, IntIterator deltaDomain) {
+    public void remAllNodes(int u, DisposableIntIterator deltaDomain) {
         while (deltaDomain.hasNext()) {
             int v = deltaDomain.next();
             graph[u].set(v, false);
             revGraph[v].set(u, false);
         }
+        deltaDomain.dispose();
         while (deltaDomain.hasNext()) {
             int v = deltaDomain.next();
             if (params.contains(Maintain.TRANSITIVE_CLOSURE)) remIncreTC(u, v);
         }
+        deltaDomain.dispose();
         if (params.contains(Maintain.TRANSITIVE_REDUCTION)) computeTRfromScratch();
         updateSpecialNodes();
         if (params.contains(Maintain.CONNECTED_COMP)) computeCCfromScratch();

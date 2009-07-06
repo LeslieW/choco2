@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.visu.brick;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.visu.components.ColorConstant;
@@ -76,7 +76,7 @@ public class QueenBrick extends AChocoBrick{
             chopapplet.shape(pion, 0, 0);
             chopapplet.noFill();
         }else{
-            IntIterator it = ((IntDomainVar)var).getDomain().getIterator();
+            DisposableIntIterator it = ((IntDomainVar)var).getDomain().getIterator();
             while(it.hasNext()){
                 int val = it.next();
                 val = name + ((val-1)*8);
@@ -86,6 +86,7 @@ public class QueenBrick extends AChocoBrick{
                 chopapplet.shape(pion, 0, 0);
                 chopapplet.noFill();
             }
+            it.dispose();
         }
     }
 }

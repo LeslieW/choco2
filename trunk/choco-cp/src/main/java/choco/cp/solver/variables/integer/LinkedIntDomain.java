@@ -22,8 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
-import choco.kernel.common.util.DisposableIntIterator;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.IStateIntVector;
@@ -421,12 +420,20 @@ public class LinkedIntDomain extends AbstractIntDomain {
   }
 
 
+   protected DeltaIntDomainIterator _cachedDeltaIntDomainIterator = null;
+
   // TODO: these methods should be in a AbstractEnumeratedIntDomain !!
   public DisposableIntIterator getDeltaIterator() {
-    return new DeltaIntDomainIterator(this);
+    DeltaIntDomainIterator iter = _cachedDeltaIntDomainIterator;
+        if (iter != null && iter.reusable) {
+            iter.init();
+            return iter;
+        }
+        _cachedDeltaIntDomainIterator = new DeltaIntDomainIterator(this);
+        return _cachedDeltaIntDomainIterator;
   }
 
-  protected class DeltaIntDomainIterator extends DisposableIntIterator {
+  protected static class DeltaIntDomainIterator extends DisposableIntIterator {
     protected LinkedIntDomain domain;
     protected int currentIndex = -1;
 
@@ -441,19 +448,19 @@ public class LinkedIntDomain extends AbstractIntDomain {
 
     public boolean hasNext() {
       if (currentIndex == -1) {
-        return (firstIndexBeingPropagated != -1);
+        return (domain.firstIndexBeingPropagated != -1);
       } else {
-        return (chain[currentIndex] != -1);
+        return (domain.chain[currentIndex] != -1);
       }
     }
 
     public int next() {
       if (currentIndex == -1) {
-        currentIndex = firstIndexBeingPropagated;
+        currentIndex = domain.firstIndexBeingPropagated;
       } else {
-        currentIndex = chain[currentIndex];
+        currentIndex = domain.chain[currentIndex];
       }
-      return currentIndex + offset;
+      return currentIndex + domain.offset;
     }
 
     public void remove() {
@@ -529,12 +536,14 @@ public class LinkedIntDomain extends AbstractIntDomain {
     StringBuffer buf = new StringBuffer("{");
     int maxDisplay = 15;
     int count = 0;
-    for (IntIterator it = this.getIterator(); (it.hasNext() && count < maxDisplay);) {
+      DisposableIntIterator it = this.getIterator();
+    for (; (it.hasNext() && count < maxDisplay);) {
       int val = it.next();
       count++;
       if (count > 1) buf.append(", ");
       buf.append(val);
     }
+      it.dispose();
     if (this.getSize() > maxDisplay) {
       buf.append("..., ");
       buf.append(this.getSup());

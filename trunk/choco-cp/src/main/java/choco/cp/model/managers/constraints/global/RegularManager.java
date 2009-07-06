@@ -26,7 +26,7 @@ import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.regular.Regular;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.constraints.automaton.DFA;
 import choco.kernel.model.constraints.automaton.Transition;
 import choco.kernel.model.variables.Variable;
@@ -113,13 +113,14 @@ public class RegularManager extends IntConstraintManager {
         for (int i = 1; i < P.length; ++i)
             for (int b = 0; b < P[0].length; ++b)
                 if (P[i - 1][b] == 1) {
-                    IntIterator it = bools[i - 1].getDomainIterator();
+                    DisposableIntIterator it = bools[i - 1].getDomainIterator();
                     while (it.hasNext()) {
                         int x = it.next();
                         //for (int x = bools[i - 1].getLowB(); x <= bools[i - 1].getUppB(); ++x)
                         if (b + A[i] * x <= U)
                             P[i][b + A[i] * x] = 1;
                     }
+                    it.dispose();
                 }
 
         boolean sat = false;
@@ -131,13 +132,14 @@ public class RegularManager extends IntConstraintManager {
             for (int i = G.length - 2; i >= 0; --i)
                 for (int b = 0; b < G[0].length; b++)
                     if (G[i + 1][b] == 1) {
-                        IntIterator it = bools[i].getDomainIterator();
+                        DisposableIntIterator it = bools[i].getDomainIterator();
                         while (it.hasNext()) {
                             int x = it.next();
                             //for (int x = bools[i].getLowB(); x <= bools[i].getUppB(); ++x)
                             if (b - A[i + 1] * x >= 0 && P[i][b - A[i + 1] * x] == 1)
                                 G[i][b - A[i + 1] * x] = 1;
                         }
+                        it.dispose();
                     }
 
             List<Transition> t = new LinkedList<Transition>();

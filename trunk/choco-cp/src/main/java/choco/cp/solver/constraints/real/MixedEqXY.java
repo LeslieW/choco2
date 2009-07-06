@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.real;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.real.AbstractBinRealIntSConstraint;
 import choco.kernel.solver.constraints.real.MixedSConstraint;
@@ -89,7 +89,7 @@ public class MixedEqXY extends AbstractBinRealIntSConstraint implements MixedSCo
   public void awakeOnRem(int varIdx, int val) throws ContradictionException {
   }
 
-  public void awakeOnRemovals(int varIdx, IntIterator deltaDomain) throws ContradictionException {
+  public void awakeOnRemovals(int varIdx, DisposableIntIterator deltaDomain) throws ContradictionException {
   }
 
   public void awakeOnBounds(int varIdx) throws ContradictionException {

@@ -24,7 +24,7 @@ package samples.seminar.tsp;
 
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.model.variables.Variable;
@@ -202,7 +202,7 @@ public class SubTourConstraint extends AbstractLargeIntSConstraint {
         this.constAwake(false);
     }
 
-    public void awakeOnRemovals(int u, IntIterator deltaDomain) throws ContradictionException {
+    public void awakeOnRemovals(int u, DisposableIntIterator deltaDomain) throws ContradictionException {
         this.constAwake(false);
     }
 

@@ -22,10 +22,10 @@
  **************************************************/
 package choco.kernel.solver.variables.set;
 
-import java.util.logging.Logger;
-
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+
+import java.util.logging.Logger;
 
 /*
 * User : charles
@@ -56,5 +56,5 @@ public interface SetSubDomain {
 
     public boolean getReleasedDeltaDomain();
 
-    public IntIterator getDeltaIterator();
+    public DisposableIntIterator getDeltaIterator();
 }

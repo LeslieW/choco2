@@ -24,8 +24,7 @@ package choco.cp.solver.constraints.integer.extension;
 
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.DisposableIntIterator;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.variables.integer.IntDomain;
@@ -97,6 +96,7 @@ public class GAC3rmLargeConstraint extends CspLargeSConstraint {
         int val;
         if (vars[indexVar].hasEnumeratedDomain()) {
             DisposableIntIterator it = dom.getIterator();
+            try{
             while(it.hasNext()) {
                 val = it.next();
                 if (lastSupport(indexVar, val)[0] == Integer.MIN_VALUE) { // no supports initialized yet for this value
@@ -108,7 +108,9 @@ public class GAC3rmLargeConstraint extends CspLargeSConstraint {
                     }
                 }
             }
-            it.dispose();
+            }finally {
+                it.dispose();
+            }
         } else {
             for (val = vars[indexVar].getInf(); val <= vars[indexVar].getSup(); val++) {
                 currentSupport = seekNextSupport(indexVar, val);
@@ -138,7 +140,7 @@ public class GAC3rmLargeConstraint extends CspLargeSConstraint {
         int val;
         if (vars[indexVar].hasEnumeratedDomain()) {
             DisposableIntIterator it = dom.getIterator();
-            try {
+            try{
                 while (it.hasNext()) {
                     val = it.next();
                     if (!isValid(lastSupport(indexVar, val))) {
@@ -293,7 +295,7 @@ public class GAC3rmLargeConstraint extends CspLargeSConstraint {
     }
 
 
-    public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+    public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
         for (int i = 0; i < size; i++)
             if (idx != i) reviseVar(i);
         if (!vars[idx].hasEnumeratedDomain()) {

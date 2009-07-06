@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -23,7 +23,9 @@
 package choco.cp.solver.variables.integer;
 
 import choco.Choco;
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.EmptyIntIterator;
+import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
@@ -113,13 +115,36 @@ public class IntervalIntDomain extends AbstractIntDomain {
         return (x > getInf());
     }
 
-    public DisposableIntIterator getIterator() {
-        if(getSize() == 1) return DisposableIntIterator.getOneValueIterator(getInf());
-        return new DisposableIntIterator() {
-            int x = getInf() - 1;
+    protected DisposableIntIterator _iterator = null;
 
-            public boolean hasNext() {
-                return x < getSup();
+    public DisposableIntIterator getIterator(){
+        if(getSize() == 1) return OneValueIterator.getOneValueIterator(getInf());
+          IntervalIntDomainIterator iter = (IntervalIntDomainIterator) _iterator ;
+        if (iter != null && iter.reusable) {
+            iter.init();
+            return iter;
+        }
+        _iterator  = new IntervalIntDomainIterator(this);
+        return _iterator ;
+      }
+
+    protected static class IntervalIntDomainIterator extends DisposableIntIterator{
+        IntervalIntDomain domain;
+        int x;
+
+        public IntervalIntDomainIterator(IntervalIntDomain domain) {
+            this.domain = domain;
+            init();
+        }
+
+        @Override
+        public void init() {
+            super.init();
+            x = domain.getInf() - 1;
+        }
+
+        public boolean hasNext() {
+                return x < domain.getSup();
             }
 
             public int next() {
@@ -129,8 +154,7 @@ public class IntervalIntDomain extends AbstractIntDomain {
             public void remove() {
                 throw new UnsupportedOperationException();
             }
-        };
-    }
+        }
 
     public boolean remove(int x) {
         return false;
@@ -246,49 +270,60 @@ public class IntervalIntDomain extends AbstractIntDomain {
     return true;
   }
 
+
+    protected DisposableIntIterator _deltaIterator = null;
+
     public DisposableIntIterator getDeltaIterator() {
-      if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
-      return new DisposableIntIterator() {
-            int x = lastInfPropagated-1;
-
-            public boolean hasNext() {
-              if (x+1 == currentInfPropagated) return currentSupPropagated < lastSupPropagated;
-              if (x > currentSupPropagated) return x < lastSupPropagated;
-              return (x+1 < currentInfPropagated);
-            }
-
-            public int next() {
-              x++;
-              if (x == currentInfPropagated) {
-                x = currentSupPropagated + 1;
-              }
-              return x;
-            }
-
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-
-            public void dispose() {}
-        };
+        if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
+          IntervalIntDomainDeltaIterator iter = (IntervalIntDomainDeltaIterator) _deltaIterator;
+        if (iter != null && iter.reusable) {
+            iter.init();
+            return iter;
+        }
+        _deltaIterator = new IntervalIntDomainDeltaIterator(this);
+        return _deltaIterator;
       } else {
-        return new DisposableIntIterator() {
-
-          public void dispose() {
-          }
-
-          public boolean hasNext() {
-            return false;
-          }
-
-          public int next() {
-            return 42;
-          }
-
-          public void remove() {
-          }
-        };
+        return EmptyIntIterator.getEmptyIntIterator();
       }
+    }
+
+
+    protected static class IntervalIntDomainDeltaIterator extends DisposableIntIterator{
+        IntervalIntDomain domain;
+
+        int x;
+
+        public IntervalIntDomainDeltaIterator(IntervalIntDomain dom) {
+            domain = dom;
+            init();
+        }
+
+        public void init() {
+            super.init();
+            x = domain.lastInfPropagated - 1;
+        }
+
+
+        public boolean hasNext() {
+            if (x + 1 == domain.currentInfPropagated) return domain.currentSupPropagated < domain.lastSupPropagated;
+            if (x > domain.currentSupPropagated) return x < domain.lastSupPropagated;
+            return (x + 1 < domain.currentInfPropagated);
+        }
+
+        public int next() {
+            x++;
+            if (x == domain.currentInfPropagated) {
+                x = domain.currentSupPropagated + 1;
+            }
+            return x;
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+
+        public void dispose() {
+        }
     }
 
     public String pretty() {

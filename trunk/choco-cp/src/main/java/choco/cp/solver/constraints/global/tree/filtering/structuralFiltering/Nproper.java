@@ -24,7 +24,7 @@ package choco.cp.solver.constraints.global.tree.filtering.structuralFiltering;
 
 
 import choco.cp.solver.constraints.global.tree.filtering.AbstractPropagator;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -106,7 +106,7 @@ public class Nproper extends AbstractPropagator {
      * to <code> tmp </code>. </blockquote>
      * <blockquote> - min(nProper) >= upperBd: enforce the potential root of each isolated node. </blockquote>
      */
-    public void filter() throws ContradictionException {
+    public void filter(){
         // filtering if max(nProper) <= lowerBd
         if (tree.getNproper().getSup() <= lowerBd) {
             tmp.clear();
@@ -136,7 +136,7 @@ public class Nproper extends AbstractPropagator {
                         if (inputGraph.getMaybe().getSuccessors(i).get(j)) reachable = true;
                     }
                     if (!tmp.get(i) && !reachable) {
-                        IntIterator it = var.getDomain().getIterator();
+                        DisposableIntIterator it = var.getDomain().getIterator();
                         while (it.hasNext()) {
                             int j = it.next();
                             if (j != i && var.canBeInstantiatedTo(j)) {
@@ -145,6 +145,7 @@ public class Nproper extends AbstractPropagator {
                                 propagateStruct.addRemoval(arc);
                             }
                         }
+                        it.dispose();
                         // no node reach the node i
                         for (int j = 0; j < nbVertices; j++) {
                             if (j != i && nodes[j].getSuccessors().canBeInstantiatedTo(i)) {
@@ -164,7 +165,7 @@ public class Nproper extends AbstractPropagator {
             for (int i = potentialRoots.nextSetBit(0); i >= 0; i = potentialRoots.nextSetBit(i + 1)) {
                 // enforce the loop for node i
                 IntDomainVar var = nodes[i].getSuccessors();
-                IntIterator it = var.getDomain().getIterator();
+                DisposableIntIterator it = var.getDomain().getIterator();
                 while (it.hasNext()) {
                     int j = it.next();
                     if (j != i && var.canBeInstantiatedTo(j)) {
@@ -173,6 +174,7 @@ public class Nproper extends AbstractPropagator {
                         propagateStruct.addRemoval(arc);
                     }
                 }
+                it.dispose();
             }
         }
     }
