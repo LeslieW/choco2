@@ -20,19 +20,18 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.common.util;
 
-/*
- * Created by IntelliJ IDEA.
- * User: Hadrien
- * Date: 26 d�c. 2006
- * Since : Choco 2.0.0
- *
+
+package choco.kernel.common.util.objects;
+
+/**
+ * Specifies an object with a priority.
  */
-public interface IntEnumeration {
+public interface IPrioritizable {
 
-    public abstract boolean hasMoreElements();
+  /**
+   * Returns the priority of the object.
+   */
 
-    public abstract int nextElement();
-
+  public int getPriority();
 }

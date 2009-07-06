@@ -20,9 +20,9 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.common.util;
+package choco.kernel.common.util.tools;
 
-import java.awt.Point;
+import java.awt.*;
 
 
 /**
@@ -31,17 +31,17 @@ import java.awt.Point;
  * @since 8 déc. 2008 version 2.0.1</br>
  * @version 2.0.1</br>
  */
-public final class MathUtil {
+public final class MathUtils {
 
 	public final static double ROUNDED_LOG_PRECISION = 10000;
 	/**
 	 *
 	 */
-	private MathUtil() {
+	private MathUtils() {
 		//do nothing
 	}
 
-	/**
+    /**
 	 * simple recursive version of factorielle
 	 */
 	public static long factoriel(int n) {
@@ -109,4 +109,21 @@ public final class MathUtil {
 		}
 	}
 
+    public static int divFloor(int a, int b) {
+      if (b < 0) return divFloor(-a, -b);
+      if (b == 0) return Integer.MAX_VALUE;
+      if (a >= 0)
+        return (a / b);
+      else // if (a < 0)
+        return (a - b + 1) / b;
+    }
+
+    public static int divCeil(int a, int b) {
+      if (b < 0) return divCeil(-a, -b);
+      if (b == 0) return Integer.MIN_VALUE;
+      if (a >= 0)
+        return ((a + b - 1) / b);
+      else // if (a < 0)
+        return a / b;
+    }
 }

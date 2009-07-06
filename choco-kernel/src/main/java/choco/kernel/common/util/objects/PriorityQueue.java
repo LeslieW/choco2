@@ -22,7 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-package choco.kernel.common.util;
+package choco.kernel.common.util.objects;
+
+import choco.kernel.common.logging.ChocoLogging;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,8 +32,6 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import choco.kernel.common.logging.ChocoLogging;
 
 /**
  * Implements a priority aware queue (FIFO structure).
@@ -105,7 +105,7 @@ public class PriorityQueue {
 
   /**
    * Adds an element to the queue. It must be a
-   * {@link choco.kernel.common.util.IPrioritizable} object.
+   * {@link IPrioritizable} object.
    */
 
   public boolean add(Object o) {
@@ -356,7 +356,7 @@ public class PriorityQueue {
 
   /**
    * Updates the location of the element in the list.
-   * The object must be {@link choco.kernel.common.util.IPrioritizable}.
+   * The object must be {@link IPrioritizable}.
    */
 
   public void updatePriority(Object o) {

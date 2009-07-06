@@ -20,15 +20,15 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.common.util;
+package choco.kernel.common.util.objects;
+
+import choco.kernel.common.logging.ChocoLogging;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import choco.kernel.common.logging.ChocoLogging;
 
 /**
  * Implements a bipartite set.

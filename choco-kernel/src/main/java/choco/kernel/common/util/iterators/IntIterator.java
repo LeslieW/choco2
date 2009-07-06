@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 
 
-package choco.kernel.common.util;
+package choco.kernel.common.util.iterators;
 
 
 /**
@@ -32,7 +32,7 @@ package choco.kernel.common.util;
  * and not Object.
  */
 
-public interface IntIterator {
+interface IntIterator {
   /**
    * Returns <tt>true</tt> if the iteration has more elements. (In other
    * words, returns <tt>true</tt> if <tt>next</tt> would return an element

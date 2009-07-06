@@ -20,7 +20,9 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.common.util;
+package choco.kernel.common.util.objects;
+
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 
 
 /**
@@ -31,7 +33,7 @@ public class IntList {
 	protected int size;
 	protected int currentIdx = 0;
 
-	public IntList(int size) {
+    public IntList(int size) {
 		this.size = size;
 		this.content = new int[size];
 	}
@@ -67,58 +69,75 @@ public class IntList {
 			content[size++] = v;
 	}
 
-	public IntIterator iterator() {
-		return new IntListIterator();
-	}
-
-
 
 	@Override
 	public String toString() {
 		StringBuilder b = new StringBuilder();
 		b.append('{');
-		IntIterator iter = iterator(); 
+		DisposableIntIterator iter = iterator();
 		if(iter.hasNext()) {
 			b.append(iter.next());
 			while(iter.hasNext()) {
 				b.append(',').append(iter.next());
 			}
 		}
+        iter.dispose();
 		b.append('}');
 		return new String(b);
 	}
 
 
+    protected IntListIterator _cachedIterator = null;
 
-	private class IntListIterator implements choco.kernel.common.util.IntIterator {
+    public DisposableIntIterator iterator() {
+        IntListIterator iter = _cachedIterator;
+        if (iter != null && iter.reusable) {
+            iter.init();
+            return iter;
+        }
+        _cachedIterator = new IntListIterator(this);
+        return _cachedIterator;
+    }
+
+
+	protected static class IntListIterator extends DisposableIntIterator {
 		int currentIdx = 0;
 		int maxSize;
 
-		public IntListIterator() {
-			currentIdx = 0;
+        IntList list;
+
+		public IntListIterator(IntList list) {
+            this.list = list;
+			init();
 		}
 
-		public boolean hasNext() {
-			return (currentIdx < size);
+        @Override
+        public void init() {
+            super.init();
+            currentIdx = 0;
+        }
+
+        public boolean hasNext() {
+			return (currentIdx < list.size);
 		}
 
 		public int next() {
-			return content[currentIdx++];
+			return list.content[currentIdx++];
 		}
 
 		public void remove() {
-			if (currentIdx != size) {
+			if (currentIdx != list.size) {
 				currentIdx--; // back to last returned
-				content[currentIdx] = content[size - 1]; // reinsert the last one where we remove one
+				list.content[currentIdx] = list.content[list.size - 1]; // reinsert the last one where we remove one
 			}
-			size--;
+			list.size--;
 		}
 
 		/**
 		 * Read the next element wihtout incrementing
 		 */
 		public int read() {
-			return content[currentIdx];
+			return list.content[currentIdx];
 		}
 
 

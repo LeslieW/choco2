@@ -21,13 +21,13 @@
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 
-package choco.kernel.common.util;
+package choco.kernel.common.util.objects;
 
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.EmptyIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.propagation.VarEvent;
-
-import java.util.logging.Logger;
 
 /**
  * A data structure implementing a subset of a given set, by means of a cyclic
@@ -165,48 +165,20 @@ public class StoredPointerCycle {
    * @param avoidIndex the index to exclude
    * @return the built iterator
    */
-  public IntIterator getCycleButIterator(final int avoidIndex) {
+  public DisposableIntIterator getCycleButIterator(final int avoidIndex) {
     int n = size();
     if (avoidIndex != VarEvent.NOCAUSE) { n -= 1; }
     if (n > 0) {
       return new CyclicIterator(this, avoidIndex);
     } else {
-      return new EmptyIterator();
-    }
-  }
-
-  /**
-   * An empty iterator.
-   */
-  class EmptyIterator implements IntIterator {
-    /**
-     * Checks if there is another element.
-     * @return here always false
-     */
-    public boolean hasNext() {
-      return false;
-    }
-
-    /**
-     * The next element.
-     * @return here arbitrarily 0
-     */
-    public int next() {
-      return 0;
-    }
-
-    /**
-     * Removes an element. Not supported here !
-     */
-    public void remove() {
-      throw new UnsupportedOperationException();
+      return EmptyIntIterator.getEmptyIntIterator();
     }
   }
 
   /**
    * An iterator for a pointer cycle object.
    */
-  class CyclicIterator implements IntIterator {
+  class CyclicIterator extends DisposableIntIterator {
     /**
      * The variable over whose constraint cycle we are iterating.
      */

@@ -21,17 +21,24 @@
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 
-
-package choco.kernel.common.util;
+package choco.kernel.common.util.iterators;
 
 /**
- * Specifies an object with a priority.
+ * @author grochart
  */
-public interface IPrioritizable {
+public abstract class DisposableIntIterator implements IntIterator {
 
-  /**
-   * Returns the priority of the object.
-   */
+    public boolean reusable;
 
-  public int getPriority();
+    public void init() {
+        reusable = false;
+    }
+
+    /**
+     * This method allows to declare that the iterator is not usefull anymoure. It
+     * can be reused by another object.
+     */
+    public void dispose() {
+        reusable = true;
+    }
 }

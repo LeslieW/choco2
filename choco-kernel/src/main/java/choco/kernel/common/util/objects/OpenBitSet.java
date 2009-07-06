@@ -26,7 +26,7 @@
  * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
  * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
  */
-package choco.kernel.common.util;
+package choco.kernel.common.util.objects;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

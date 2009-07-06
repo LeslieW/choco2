@@ -20,8 +20,9 @@
  *     Copyright (C) F. Laburthe,                 *
  *                   N. Jussien    1999-2008      *
  **************************************************/
-package choco.kernel.common;
+package choco.kernel.common.util.objects;
 
+import choco.kernel.common.IIndex;
 import gnu.trove.TLongIntHashMap;
 
 import static java.lang.reflect.Array.newInstance;
