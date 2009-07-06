@@ -3,8 +3,7 @@
  */
 package choco.kernel.model.constraints;
 
-import choco.kernel.common.util.ChocoUtil;
-import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.variables.Variable;
 
 import java.util.Properties;
@@ -36,8 +35,8 @@ public class MetaTaskConstraint extends ComponentConstraint {
 	@Override
 	public Variable[] extractVariables() {
 		Variable[] listVars = super.extractVariables();
-		listVars = UtilAlgo.append(listVars, constraint.extractVariables());
-		return ChocoUtil.getNonRedundantObjects(Variable.class, listVars);
+		listVars = ArrayUtils.append(listVars, constraint.extractVariables());
+		return ArrayUtils.getNonRedundantObjects(Variable.class, listVars);
 	}
 
 	@Override

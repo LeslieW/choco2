@@ -25,7 +25,7 @@ package choco.model.variables.integer;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -69,12 +69,16 @@ public class IsOdd extends AbstractUnIntSConstraint {
 
         public void awake() throws ContradictionException {
             DisposableIntIterator it = v0.getDomain().getIterator();
+            try{
                 while(it.hasNext()){
                     int val = it.next();
                     if(val%2==0){
                         v0.removeVal(val, cIdx0);
                     }
                 }
+            }finally {
+                it.dispose();
+            }
         }
 
         /**

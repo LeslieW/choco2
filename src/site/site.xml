@@ -41,7 +41,7 @@
       <item name="Users" href="/choco-users.html"/>
       <item name="Applications" href="/choco-applications.html"/>
       <item name="Articles" href="/choco-articles.html"/>
-      <item name="Contribute" href="/choco-contribute.html"/>
+      <item name="Developper Corner" href="/choco-developper_corner.html"/>
     </menu>
 
     <menu ref="modules" />

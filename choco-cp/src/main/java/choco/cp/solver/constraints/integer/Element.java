@@ -23,13 +23,13 @@
 
 package choco.cp.solver.constraints.integer;
 
-import choco.kernel.common.util.Arithm;
-import choco.kernel.common.util.IntIterator;
+import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.cp.solver.variables.integer.IntVarEvent;
 
 public class Element extends AbstractBinIntSConstraint {
     int[] lval;
@@ -73,17 +73,19 @@ public class Element extends AbstractBinIntSConstraint {
     }
 
     public String pretty() {
-        return (this.v1.pretty() + " = nth(" + this.v0.pretty() + ", " + Arithm.pretty(this.lval) + ")");
+        return (this.v1.pretty() + " = nth(" + this.v0.pretty() + ", " + StringUtils.pretty(this.lval) + ")");
     }
 
     protected void updateValueFromIndex() throws ContradictionException {
         int minVal = Integer.MAX_VALUE;
         int maxVal = Integer.MIN_VALUE;
-        for (IntIterator iter = this.v0.getDomain().getIterator(); iter.hasNext();) {
+        DisposableIntIterator iter = this.v0.getDomain().getIterator();
+        for (; iter.hasNext();) {
             int index = iter.next();
             if (minVal > this.lval[index + cste]) minVal = this.lval[index + cste];
             if (maxVal < this.lval[index + cste]) maxVal = this.lval[index + cste];
         }
+        iter.dispose();
         this.v1.updateInf(minVal, this.cIdx1);
         this.v1.updateSup(maxVal, this.cIdx1);
 
@@ -136,7 +138,8 @@ public class Element extends AbstractBinIntSConstraint {
         if (this.v1.isInstantiated()) {
             boolean allVal = true;
             boolean oneVal = false;
-            for (IntIterator iter = this.v0.getDomain().getIterator(); iter.hasNext();) {
+            DisposableIntIterator iter = this.v0.getDomain().getIterator();
+            for (; iter.hasNext();) {
                 int val = iter.next();
                 boolean b = (val + this.cste) >= 0
                         && (val + this.cste) < this.lval.length
@@ -144,11 +147,12 @@ public class Element extends AbstractBinIntSConstraint {
                 allVal &= b;
                 oneVal |= b;
             }
+            iter.dispose();
             if (allVal) return Boolean.TRUE;
             if (oneVal) return null;
         } else {
             boolean b = false;
-            IntIterator iter = this.v0.getDomain().getIterator();
+            DisposableIntIterator iter = this.v0.getDomain().getIterator();
             while (iter.hasNext() && !b) {
                 int val = iter.next();
                 if ((val + this.cste) >= 0 &&
@@ -156,6 +160,7 @@ public class Element extends AbstractBinIntSConstraint {
                     b |= this.v1.canBeInstantiatedTo(this.lval[val + this.cste]);
                 }
             }
+            iter.dispose();
             if (b) return null;
         }
         return Boolean.FALSE;

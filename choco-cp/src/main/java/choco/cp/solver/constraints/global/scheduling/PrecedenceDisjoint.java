@@ -30,7 +30,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractTernIntSConstraint;
@@ -129,7 +129,7 @@ public class PrecedenceDisjoint extends AbstractTernIntSConstraint {
         }
 	}
 
-    public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+    public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
         if (v0.isInstantiatedTo(0))
             propagateP2();
         else if (v0.isInstantiatedTo(1))

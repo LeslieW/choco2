@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.seminar;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -151,7 +151,7 @@ public class ConstraintPattern extends AbstractLargeIntSConstraint {
      * @param deltaDomain iterator over remove values.
      * @throws ContradictionException contradiction exception
      */
-    public void awakeOnRemovals(int varIdx, IntIterator deltaDomain) throws ContradictionException {
+    public void awakeOnRemovals(int varIdx, DisposableIntIterator deltaDomain) throws ContradictionException {
         //Change if necessary
         constAwake(false);
     }

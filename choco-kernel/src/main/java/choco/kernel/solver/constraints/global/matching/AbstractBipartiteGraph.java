@@ -23,7 +23,7 @@
 
 package choco.kernel.solver.constraints.global.matching;
 
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.ContradictionException;

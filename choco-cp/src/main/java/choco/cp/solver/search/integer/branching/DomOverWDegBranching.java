@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.branching;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.AbstractLargeIntBranching;
@@ -187,7 +187,7 @@ public class DomOverWDegBranching extends AbstractLargeIntBranching implements P
 
 			// Pour etre sur, on verifie toutes les contraintes... au cas ou une d'entre elle serait deja instanti�e !!
 			int weight = 0;
-			IntIterator c = v.getIndexVector().getIndexIterator();
+			DisposableIntIterator c = v.getIndexVector().getIndexIterator();
 			int idx = 0;
 			while (c.hasNext()) {
 				idx = c.next();

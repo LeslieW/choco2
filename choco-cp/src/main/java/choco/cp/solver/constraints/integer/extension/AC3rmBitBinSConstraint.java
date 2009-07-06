@@ -24,8 +24,7 @@ package choco.cp.solver.constraints.integer.extension;
 
 import choco.cp.solver.variables.integer.BitSetIntDomain;
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.DisposableIntIterator;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.extension.CouplesBitSetTable;
 import choco.kernel.solver.constraints.integer.extension.CspBinSConstraint;
@@ -149,21 +148,27 @@ public class AC3rmBitBinSConstraint extends CspBinSConstraint {
 	public void awake() throws ContradictionException {
 		init();
 		DisposableIntIterator itv0 = v0Domain.getIterator();
-		while (itv0.hasNext()) {
-			int val0 = itv0.next();
-			if (!((CouplesBitSetTable) relation).checkValue(0, val0, v1Domain)) {
-				v0.removeVal(val0, cIdx0);
-			}
-		}
-		itv0.dispose();
-		DisposableIntIterator itv1 = v1Domain.getIterator();
-		while (itv1.hasNext()) {
-			int val1 = itv1.next();
-			if (!((CouplesBitSetTable) relation).checkValue(1, val1, v0Domain)) {
-				v1.removeVal(val1, cIdx1);
-			}
-		}
-		itv1.dispose();
+        try{
+            while (itv0.hasNext()) {
+                int val0 = itv0.next();
+                if (!((CouplesBitSetTable) relation).checkValue(0, val0, v1Domain)) {
+                    v0.removeVal(val0, cIdx0);
+                }
+            }
+        }finally {
+            itv0.dispose();
+        }
+        itv0 = v1Domain.getIterator();
+        try{
+            while (itv0.hasNext()) {
+                int val1 = itv0.next();
+                if (!((CouplesBitSetTable) relation).checkValue(1, val1, v0Domain)) {
+                    v1.removeVal(val1, cIdx1);
+                }
+            }
+        }finally {
+            itv0.dispose();
+        }
 	}
 
 	public void propagate() throws ContradictionException {
@@ -171,7 +176,7 @@ public class AC3rmBitBinSConstraint extends CspBinSConstraint {
 		reviseV1();
 	}
 
-	public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+	public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
 		revise(idx);
 	}
 

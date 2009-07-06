@@ -22,10 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.set;
 
-import java.util.Arrays;
-import java.util.logging.Level;
-
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
@@ -191,12 +188,13 @@ public class SetVarImpl extends AbstractVar implements SetVar {
 
 	public int[] getValue() {
 		int[] val = new int[getKernelDomainSize()];
-		IntIterator it = domain.getKernelIterator();
+		DisposableIntIterator it = domain.getKernelIterator();
 		int i = 0;
 		while (it.hasNext()) {
 			val[i] = it.next();
 			i++;
 		}
+        it.dispose();
 		return val;
 	}
 

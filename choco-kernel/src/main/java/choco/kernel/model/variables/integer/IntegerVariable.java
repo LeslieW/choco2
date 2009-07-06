@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.variables.integer;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
@@ -193,32 +193,48 @@ public class IntegerVariable extends IntegerExpressionVariable {
         }
     }
 
-    public IntIterator getDomainIterator() {
-        return new DomainIterator();
+    protected IntDomainIterator _cachedIterator = null;
+
+    public DisposableIntIterator getDomainIterator() {
+        IntDomainIterator iter = _cachedIterator;
+        if (iter != null && iter.reusable) {
+            iter.init();
+            return iter;
+        }
+        _cachedIterator = new IntDomainIterator(this);
+        return _cachedIterator;
     }
 
-    public class DomainIterator implements IntIterator {
 
+    protected static class IntDomainIterator extends DisposableIntIterator {
         public int idx;
         public int currentVal;
+        public IntegerVariable v;
 
-        public DomainIterator() {
+        public IntDomainIterator(IntegerVariable v) {
+            this.v = v;
+            init();
+        }
+
+        @Override
+        public void init() {
+            super.init();
             idx = 0;
-            currentVal = getLowB();
+            currentVal = v.getLowB();
         }
 
         public boolean hasNext() {
-            if (values == null) {
-               return currentVal <= getUppB();
+            if (v.getValues() == null) {
+               return currentVal <= v.getUppB();
             } else {
-                return idx < values.length;
+                return idx < v.getValues().length;
             }
         }
 
         public int next() {
-            if (values == null)
+            if (v.getValues() == null)
                 return currentVal++;
-            else return values[idx++];
+            else return v.getValues()[idx++];
         }
 
         public void remove() {

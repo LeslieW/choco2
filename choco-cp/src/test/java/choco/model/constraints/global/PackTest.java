@@ -22,34 +22,28 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.global;
 
-import static choco.Choco.constantArray;
-import static choco.Choco.eq;
-import static choco.Choco.geq;
-import static choco.Choco.leq;
-import static choco.Choco.pack;
+import choco.Choco;
+import static choco.Choco.*;
+import choco.cp.model.CPModel;
+import choco.cp.solver.CPSolver;
+import choco.cp.solver.SettingType;
+import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.util.tools.MathUtils;
+import choco.kernel.model.ModelException;
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.pack.PackModeler;
+import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import static org.junit.Assert.assertEquals;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.junit.Test;
-import org.junit.Ignore;
-
-import choco.Choco;
-import choco.cp.model.CPModel;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.SettingType;
-import choco.cp.solver.search.integer.varselector.MinDomain;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.ChocoUtil;
-import choco.kernel.common.util.MathUtil;
-import choco.kernel.model.ModelException;
-import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.pack.PackModeler;
-import choco.kernel.model.variables.integer.IntegerConstantVariable;
 
 /**
  *
@@ -131,7 +125,7 @@ public class PackTest {
 		if(seed==-1) {
 			solver.setVarIntSelector(new MinDomain(solver));
 		}else {
-			solver.setRandomSelectors();
+			solver.setRandomSelectors(seed);
 		}
 		if(!set) {
 			solver.attachGoal(solver.generateIntGoal());
@@ -188,8 +182,8 @@ public class PackTest {
 	public void binForTwo() {
 		for (int i = MIN_ITEMS; i < MAX_ITEMS; i=i+2) {
 			int nbBins=(i+1)/2;
-			initializeModels(ChocoUtil.oneToN(i), nbBins, i+1);
-			testAll( (int) MathUtil.factoriel(nbBins));
+			initializeModels(ArrayUtils.oneToN(i), nbBins, i+1);
+			testAll( (int) MathUtils.factoriel(nbBins));
 		}
 	}
 

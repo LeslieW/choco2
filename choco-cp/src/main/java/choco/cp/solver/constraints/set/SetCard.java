@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.set;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractBinSetIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -59,9 +59,13 @@ public class SetCard extends AbstractBinSetIntSConstraint {
 		if (v0.getInf() > envSize)
 			this.fail();
 		else if (v0.getInf() == envSize) {
-			IntIterator it = v1.getDomain().getOpenDomainIterator();
-			while (it.hasNext())
-				v1.addToKernel(it.next(), cIdx1);
+			DisposableIntIterator it = v1.getDomain().getOpenDomainIterator();
+            try{
+                while (it.hasNext())
+                    v1.addToKernel(it.next(), cIdx1);
+            }finally {
+                it.dispose();
+            }
 		}
 	}
 
@@ -69,9 +73,13 @@ public class SetCard extends AbstractBinSetIntSConstraint {
 		if (v0.getSup() < kerSize)
 			this.fail();
 		else if (v0.getSup() == kerSize) {
-			IntIterator it = v1.getDomain().getOpenDomainIterator();
-			while (it.hasNext())
-				v1.remFromEnveloppe(it.next(), cIdx1);
+			DisposableIntIterator it = v1.getDomain().getOpenDomainIterator();
+            try{
+                while (it.hasNext())
+                    v1.remFromEnveloppe(it.next(), cIdx1);
+            }finally {
+                it.dispose();
+            }
 		}
 	}
 
@@ -83,13 +91,21 @@ public class SetCard extends AbstractBinSetIntSConstraint {
 				this.fail();
 			else if (kerSize < envSize) {
 				if (v0.getInf() == envSize) {
-					IntIterator it = v1.getDomain().getOpenDomainIterator();
-					while (it.hasNext())
-						v1.addToKernel(it.next(), cIdx1);
+					DisposableIntIterator it = v1.getDomain().getOpenDomainIterator();
+                    try{
+                        while (it.hasNext())
+                            v1.addToKernel(it.next(), cIdx1);
+                    }finally{
+                        it.dispose();
+                    }
 				} else if (v0.getSup() == kerSize) {
-					IntIterator it = v1.getDomain().getOpenDomainIterator();
-					while (it.hasNext())
-						v1.remFromEnveloppe(it.next(), cIdx1);
+					DisposableIntIterator it = v1.getDomain().getOpenDomainIterator();
+                    try{
+                        while (it.hasNext())
+                            v1.remFromEnveloppe(it.next(), cIdx1);
+                    }finally {
+                        it.dispose();
+                    }
 				}
 			}
 		} else if (inf) {
@@ -97,9 +113,13 @@ public class SetCard extends AbstractBinSetIntSConstraint {
 				this.fail();
 			else if (kerSize < envSize) {
 				if (v0.getSup() == kerSize) {
-					IntIterator it = v1.getDomain().getOpenDomainIterator();
-					while (it.hasNext())
-						v1.remFromEnveloppe(it.next(), cIdx1);
+					DisposableIntIterator it = v1.getDomain().getOpenDomainIterator();
+                    try{
+                        while (it.hasNext())
+                            v1.remFromEnveloppe(it.next(), cIdx1);
+                    }finally {
+                        it.dispose();
+                    }
 				}
 			}
 		} else {
@@ -107,9 +127,13 @@ public class SetCard extends AbstractBinSetIntSConstraint {
 				this.fail();
 			else if (kerSize < envSize) {
 				if (v0.getInf() == envSize) {
-					IntIterator it = v1.getDomain().getOpenDomainIterator();
-					while (it.hasNext())
-						v1.addToKernel(it.next(), cIdx1);
+					DisposableIntIterator it = v1.getDomain().getOpenDomainIterator();
+                    try{
+                        while (it.hasNext())
+                            v1.addToKernel(it.next(), cIdx1);
+                    }finally {
+                        it.dispose();
+                    }
 				}
 			}
 		}
@@ -123,11 +147,11 @@ public class SetCard extends AbstractBinSetIntSConstraint {
 		if (sup) reactOnSupAndKerEvents(v1.getKernelDomainSize());
 	}
 
-	public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+	public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
 		filter();
 	}
 
-	public void awakeOnkerAdditions(int idx, IntIterator deltaDomain) throws ContradictionException {
+	public void awakeOnkerAdditions(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
 		if (inf) {
 			int kerSize = v1.getKernelDomainSize();
 			v0.updateInf(kerSize, cIdx0);
@@ -135,7 +159,7 @@ public class SetCard extends AbstractBinSetIntSConstraint {
 		}
 	}
 
-	public void awakeOnEnvRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+	public void awakeOnEnvRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
 		if (sup) {
 			int envSize = v1.getEnveloppeDomainSize();
 			v0.updateSup(envSize, cIdx0);

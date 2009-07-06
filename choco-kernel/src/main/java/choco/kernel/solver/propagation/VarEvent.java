@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */                        
 package choco.kernel.solver.propagation;
 
-import choco.kernel.common.util.IPrioritizable;
+import choco.kernel.common.util.objects.IPrioritizable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.Var;

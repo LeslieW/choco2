@@ -4,7 +4,7 @@
 package choco.kernel.solver.variables.scheduling;
 
 import choco.kernel.common.IIndex;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
@@ -247,7 +247,7 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 	 */
 	public Iterator<SConstraint> getConstraintsIterator() {
 		return new Iterator<SConstraint>() {
-			IntIterator indices = constraints.getIndexIterator();
+			DisposableIntIterator indices = constraints.getIndexIterator();
 
 			public boolean hasNext() {
 				return indices.hasNext();

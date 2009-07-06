@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory.structure;
 
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 
@@ -206,27 +206,30 @@ public class TwoStatesPartiallyStoredIntVector extends PartiallyStoredIntVector 
         }
     }
 
-    protected DisposableIntIterator _cachedIndexIterator = null;
+    protected DisposableIntIterator _cachedIterator = null;
 
     @Override
     public DisposableIntIterator getIndexIterator() {
-        ActiveIterator iter = (ActiveIterator) _cachedIndexIterator;
+        ActiveIterator iter = (ActiveIterator) _cachedIterator;
         if (iter != null && iter.reusable) {
             iter.init();
             return iter;
         }
-        _cachedIndexIterator = new ActiveIterator();
-        return _cachedIndexIterator;
+        _cachedIterator = new ActiveIterator(this);
+        return _cachedIterator;
     }
 
-    class ActiveIterator extends DisposableIntIterator {
+    protected static class ActiveIterator extends DisposableIntIterator {
+        TwoStatesPartiallyStoredIntVector vector;
+
         int staticI = -1;
         int storedI = -1;
 
-        boolean stats = (offsetStatic > 0);
-        boolean storeds = (offsetStored.get() > 0);
+        boolean stats ;
+        boolean storeds;
 
-        ActiveIterator() {
+        ActiveIterator(TwoStatesPartiallyStoredIntVector vector) {
+            this.vector = vector;
             init();
         }
 
@@ -234,27 +237,27 @@ public class TwoStatesPartiallyStoredIntVector extends PartiallyStoredIntVector 
             super.init();
             staticI = -1;
             storedI = -1;
-            stats = (offsetStatic > 0);
-            storeds = (offsetStored.get() > 0);
+            stats = (vector.offsetStatic > 0);
+            storeds = (vector.offsetStored.get() > 0);
         }
 
         public boolean hasNext() {
             if (staticI == -1 && storedI == -1) {
                 return stats || storeds;
             } else {
-                return ((stats && staticI < offsetStatic - 1)
-                        || (staticI == offsetStatic && storeds)
-                        || (storeds && storedI < offsetStored.get() - 1));
+                return ((stats && staticI < vector.offsetStatic - 1)
+                        || (staticI == vector.offsetStatic && storeds)
+                        || (storeds && storedI < vector.offsetStored.get() - 1));
             }
         }
 
         public int next() {
-            if (staticI < offsetStatic - 1) {
+            if (staticI < vector.offsetStatic - 1) {
                 staticI++;
-                return staticInts[staticI];
+                return vector.staticInts[staticI];
             } else {
                 storedI++;
-                return storedInts[storedI] + STORED_OFFSET;
+                return vector.storedInts[storedI] + STORED_OFFSET;
             }
         }
 

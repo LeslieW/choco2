@@ -22,8 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.set;
 
-import choco.kernel.common.util.DisposableIntIterator;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.set.SetDomain;
@@ -141,22 +140,24 @@ public class SetDomainImpl implements SetDomain {
     public String toString() {
         StringBuffer buf = new StringBuffer("{Env[");
     int count = 0;
-    IntIterator it = this.getEnveloppeIterator();
+    DisposableIntIterator it = this.getEnveloppeIterator();
     while (it.hasNext()) {
       int val = it.next();
       count += 1;
       if (count > 1) buf.append(",");
       buf.append(val);
     }
+    it.dispose();
     buf.append("], Ker[");
     count = 0;
-    IntIterator it2 = this.getKernelIterator();
-    while (it2.hasNext()) {
-      int val = it2.next();
+    it = this.getKernelIterator();
+    while (it.hasNext()) {
+      int val = it.next();
       count += 1;
       if (count > 1) buf.append(",");
       buf.append(val);
     }
+    it.dispose();
     buf.append("]}");
     return buf.toString();
     }
@@ -262,26 +263,28 @@ public class SetDomainImpl implements SetDomain {
   // Iterators on kernel and enveloppe.
   // ============================================
 
-  public DisposableIntIterator getKernelIterator() {
-//      SetDomainIterator iter = lastIterator;
-//      if (iter != null && iter.reusable) {
-//          iter.init(this.kernel);
-//          return iter;
-//      }
-//      lastIterator = new SetDomainImpl.SetDomainIterator(this.kernel);
-//      return lastIterator;
-      return new SetDomainIterator(this.kernel);
+    protected SetDomainIterator _cachedKernelIterator = null;
+
+    public DisposableIntIterator getKernelIterator() {
+      SetDomainIterator iter = _cachedKernelIterator;
+      if (iter != null && iter.reusable) {
+          iter.init(this.kernel);
+          return iter;
+      }
+      _cachedKernelIterator = new SetDomainImpl.SetDomainIterator(this.kernel);
+      return _cachedKernelIterator;
   }
 
-  public DisposableIntIterator getEnveloppeIterator() {
-//      SetDomainIterator iter = lastIterator;
-//      if (iter != null && iter.reusable) {
-//          iter.init(this.enveloppe);
-//          return iter;
-//      }
-//      lastIterator = new SetDomainImpl.SetDomainIterator(this.enveloppe);
-//      return lastIterator;
-      return new SetDomainIterator(this.enveloppe);
+    protected SetDomainIterator _cachedEnveloppeIterator = null;
+
+    public DisposableIntIterator getEnveloppeIterator() {
+      SetDomainIterator iter = _cachedEnveloppeIterator;
+      if (iter != null && iter.reusable) {
+          iter.init(this.enveloppe);
+          return iter;
+      }
+      _cachedEnveloppeIterator = new SetDomainImpl.SetDomainIterator(this.enveloppe);
+      return _cachedEnveloppeIterator;
   }
 
   protected static class SetDomainIterator extends DisposableIntIterator {
@@ -317,15 +320,17 @@ public class SetDomainImpl implements SetDomain {
     }
   }
 
+  protected SetOpenDomainIterator _cachedIterator = null;
+
   public DisposableIntIterator getOpenDomainIterator() {
-//      SetOpenDomainIterator iter = openiterator;
-//      if (iter != null && iter.reusable) {
-//          iter.init(this.enveloppe, this.kernel);
-//          return iter;
-//      }
-//      openiterator = new SetDomainImpl.SetOpenDomainIterator(this.enveloppe, this.kernel);
-//      return lastIterator;
-      return new SetOpenDomainIterator(this.enveloppe, this.kernel);
+      SetOpenDomainIterator iter = _cachedIterator;
+      if (iter != null && iter.reusable) {
+          iter.init(this.enveloppe, this.kernel);
+          return iter;
+      }
+      _cachedIterator = new SetDomainImpl.SetOpenDomainIterator(this.enveloppe, this.kernel);
+      return _cachedIterator;
+//      return new SetOpenDomainIterator(this.enveloppe, this.kernel);
   }
 
   protected static class SetOpenDomainIterator extends DisposableIntIterator {

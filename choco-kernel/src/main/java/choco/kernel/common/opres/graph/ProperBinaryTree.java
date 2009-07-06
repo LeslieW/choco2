@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.common.opres.graph;
 
-import static choco.kernel.common.util.MathUtil.isPowerOfTwo;
+import static choco.kernel.common.util.tools.MathUtils.isPowerOfTwo;
 
 
 /**

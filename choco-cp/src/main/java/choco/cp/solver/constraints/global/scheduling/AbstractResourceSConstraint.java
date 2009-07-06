@@ -22,15 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
-import static choco.kernel.common.util.UtilAlgo.append;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import choco.cp.solver.constraints.BitFlags;
-import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
@@ -39,6 +33,11 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.AbstractRTask;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -105,7 +104,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 			throw new SolverException("no makepsan specified for a resource constraint");
 		}
 		IntDomainVar unit = uppBound.getSolver().createIntegerConstant("unit", 1);
-		return append(otherVars, new IntDomainVar[]{uppBound, unit});
+		return ArrayUtils.append(otherVars, new IntDomainVar[]{uppBound, unit});
 	}
 
 	
@@ -179,7 +178,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 	@Override
 	public Iterator<TaskVar> getTaskIterator() {
-		return ChocoUtil.iterator(taskvars);
+		return IteratorUtils.iterator(taskvars);
 	}
 
 

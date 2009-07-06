@@ -23,7 +23,7 @@
 package choco.cp.solver.constraints.global.costregular;
 
 import choco.cp.model.managers.IntConstraintManager;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -360,7 +360,7 @@ public class RegularI extends AbstractLargeIntSConstraint
                 {
                     int orig = idx%nbNodes;
                     int var = idx / nbNodes;
-                    IntIterator lit = l.getIterator();
+                    DisposableIntIterator lit = l.getIterator();
                     while (lit.hasNext())
                     {
                         int repr = lit.next();
@@ -370,6 +370,7 @@ public class RegularI extends AbstractLargeIntSConstraint
                         addToInarc(orig,dest,symb,var+1);
                         addToQij(var,symb,orig);
                     }
+                    lit.dispose();
                     l.clear();
                 }
             }
@@ -400,9 +401,9 @@ public class RegularI extends AbstractLargeIntSConstraint
     {
         int n = vars.length;
         int i,j,k;
-        IntIterator varIter;
-        IntIterator layerIter;
-        IntIterator qijIter;
+        DisposableIntIterator varIter;
+        DisposableIntIterator layerIter;
+        DisposableIntIterator qijIter;
 
         DLList[] layer = new DLList[vars.length+1];
 
@@ -433,6 +434,7 @@ public class RegularI extends AbstractLargeIntSConstraint
                     }
                 }
             }
+            varIter.dispose();
         }
 
         //removing reachable non accepting states
@@ -496,16 +498,20 @@ public class RegularI extends AbstractLargeIntSConstraint
     {
         for (int i = 0 ;i < vars.length ; i++)
         {
-            IntIterator it = vars[i].getDomain().getIterator();
+            DisposableIntIterator it = vars[i].getDomain().getIterator();
             int j;
-            while (it.hasNext())
-            {
-                j = it.next();
-                DLList l = getQij(i,j);
-                if (l == null || l.isEmpty())
+            try{
+                while (it.hasNext())
                 {
-                    vars[i].removeVal(j,cIndices[i]);
+                    j = it.next();
+                    DLList l = getQij(i,j);
+                    if (l == null || l.isEmpty())
+                    {
+                        vars[i].removeVal(j,cIndices[i]);
+                    }
                 }
+            }finally {
+                it.dispose();
             }
         }
     }
@@ -524,20 +530,24 @@ public class RegularI extends AbstractLargeIntSConstraint
         if (lst.size() == 0  && i > 0)
         {
             DLList inarc = getInArc(i,k);
-            IntIterator it = inarc.getIterator();
+            DisposableIntIterator it = inarc.getIterator();
             int repr;
-            while (it.hasNext())
-            {
-                repr = it.next();
-                int l = repr%nbNodes;
-                int j = repr / nbNodes;
-                remFromOutarc(l,k,j,i-1);
-                DLList qij = getQij(i-1,j);
-                qij.remove(l);
+            try{
+                while (it.hasNext())
+                {
+                    repr = it.next();
+                    int l = repr%nbNodes;
+                    int j = repr / nbNodes;
+                    remFromOutarc(l,k,j,i-1);
+                    DLList qij = getQij(i-1,j);
+                    qij.remove(l);
 
-                if (qij.isEmpty())
-                    vars[i-1].removeVal(j,cIndices[i-1]);
-                decrementOutdeg(i-1,l);
+                    if (qij.isEmpty())
+                        vars[i-1].removeVal(j,cIndices[i-1]);
+                    decrementOutdeg(i-1,l);
+                }
+            }finally {
+                it.dispose();
             }
             getInArc(i,k).clear();
         }
@@ -559,24 +569,28 @@ public class RegularI extends AbstractLargeIntSConstraint
             DLList outarc = getOutArc(i,k);
             if (outarc != null)
             {
-                IntIterator it = outarc.getIterator();
+                DisposableIntIterator it = outarc.getIterator();
                 int repr;
-                while (it.hasNext())
-                {
-                    repr = it.next();
-                    save(i*nbNodes+k,repr);
+                try{
+                    while (it.hasNext())
+                    {
+                        repr = it.next();
+                        save(i*nbNodes+k,repr);
 
-                    int l = repr % nbNodes;
-                    int j = repr / nbNodes;
+                        int l = repr % nbNodes;
+                        int j = repr / nbNodes;
 
-                    remFromInarc(k,l,j,i+1);
+                        remFromInarc(k,l,j,i+1);
 
-                    DLList qij = getQij(i,j);
-                    qij.remove(k);
+                        DLList qij = getQij(i,j);
+                        qij.remove(k);
 
-                    if (qij.isEmpty())
-                        vars[i].removeVal(j,cIndices[i]);
-                    decrementIndeg(i+1,l);
+                        if (qij.isEmpty())
+                            vars[i].removeVal(j,cIndices[i]);
+                        decrementIndeg(i+1,l);
+                    }
+                }finally {
+                    it.dispose();
                 }
                 getOutArc(i,k).clear();
             }
@@ -631,18 +645,22 @@ public class RegularI extends AbstractLargeIntSConstraint
             DLList qij = getQij(idx,val);
             if (qij != null)
             {
-                IntIterator it = qij.getIterator();
+                DisposableIntIterator it = qij.getIterator();
                 int k;
-                while (it.hasNext())
-                {
-                    k = it.next();
-                    int kn = automaton.delta(k,val);
+                try{
+                    while (it.hasNext())
+                    {
+                        k = it.next();
+                        int kn = automaton.delta(k,val);
 
-                    remFromOutarc(k,kn,val,idx);
-                    remFromInarc(k,kn,val,idx+1);
+                        remFromOutarc(k,kn,val,idx);
+                        remFromInarc(k,kn,val,idx+1);
 
-                    decrementOutdeg(idx,k);
-                    decrementIndeg(idx+1,kn);
+                        decrementOutdeg(idx,k);
+                        decrementIndeg(idx+1,kn);
+                    }
+                }finally {
+                    it.dispose();
                 }
                 qij.clear();
             }
@@ -759,7 +777,7 @@ public class RegularI extends AbstractLargeIntSConstraint
      * Inner class that provides fixed size set that performs add and remove and contains operation in constant time
      * A set is implemented as a double-linked list
      */
-    private static class DLList implements IntIterator
+    private static class DLList extends DisposableIntIterator
     {
         int[] succ;
         int[] pred;
@@ -909,7 +927,7 @@ public class RegularI extends AbstractLargeIntSConstraint
             return s.toString();
         }
 
-        public IntIterator getIterator()
+        public DisposableIntIterator getIterator()
         {
             current = first;
             return this;

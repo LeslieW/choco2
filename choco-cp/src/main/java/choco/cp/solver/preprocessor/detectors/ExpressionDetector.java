@@ -28,7 +28,7 @@ import choco.cp.solver.constraints.integer.bool.BoolTimesXYZ;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.cp.solver.constraints.reified.leaves.ConstantLeaf;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.ArithmNode;
@@ -435,11 +435,13 @@ public class ExpressionDetector {
                 while (it.hasNext()) {
                     int val = it.next();
                     if (v2.canBeInstantiatedTo(val)) {
-                        if (ic.checkCouple(val, val))
+                        if (ic.checkCouple(val, val)){
+                            it.dispose();
                             return false;
+                        }
                     }
-
                 }
+                it.dispose();
                 return true;
             }
         }

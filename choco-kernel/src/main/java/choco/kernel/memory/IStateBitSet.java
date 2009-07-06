@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 
 import java.util.BitSet;
 
@@ -119,69 +119,6 @@ public interface IStateBitSet {
 
     boolean isEmpty();
 
-    IntIterator getCycleButIterator(int avoidIndex);
+    DisposableIntIterator getCycleButIterator(int avoidIndex);
 
-    class EmptyIterator implements IntIterator {
-    public boolean hasNext() {
-      return false;
-    }
-
-    public int next() {
-      return 0;
-    }
-
-    public void remove() {
-      throw new UnsupportedOperationException();
-    }
-  }
-
-  class CyclicIterator implements IntIterator {
-    /**
-     * current index of the iteration
-     * (the one just returned at the last call to next())
-     */
-    private int k, nextk;
-
-    /**
-     * the index where the iteration started when the iterator was created
-     */
-    private int endMarker;
-
-    private IStateBitSet bset;
-
-    /**
-     * constructor
-     */
-    public CyclicIterator(final choco.kernel.memory.IStateBitSet bs, final int avoidIndex) {
-      bset = bs;
-          k = -1;
-          nextk = -1;
-      endMarker = avoidIndex;
-      }
-
-      public boolean hasNext() {
-      nextk = bset.nextSetBit(k + 1);
-      if (nextk < 0) {
-        return false;
-      } else if (nextk == endMarker) {
-        nextk = bset.nextSetBit(nextk + 1);
-        if (nextk < 0) {
-          return false;
-        } else {
-          return true;
-        }
-      } else {
-        return true;
-      }
-    }
-
-    public int next() {
-      k = nextk;
-      return k;
-    }
-
-    public void remove() {
-      throw new UnsupportedOperationException();
-    }
-  }
 }

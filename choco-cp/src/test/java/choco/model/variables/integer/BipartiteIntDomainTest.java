@@ -9,7 +9,7 @@ import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.cp.solver.variables.integer.AbstractIntDomain;
 import choco.cp.solver.variables.integer.BipartiteIntDomain;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -143,7 +143,7 @@ public class BipartiteIntDomainTest {
 
         {
             yDom.freezeDeltaDomain();
-            IntIterator it = yDom.getDeltaIterator();
+            DisposableIntIterator it = yDom.getDeltaIterator();
             assertFalse(it.hasNext());
             assertTrue(yDom.releaseDeltaDomain());
         }
@@ -153,7 +153,7 @@ public class BipartiteIntDomainTest {
         Set<Integer> tmp357 = new TreeSet<Integer>();
         yDom.freezeDeltaDomain();
         yDom.remove(9);
-        for (IntIterator it = yDom.getDeltaIterator(); it.hasNext();) {
+        for (DisposableIntIterator it = yDom.getDeltaIterator(); it.hasNext();) {
             int val = it.next();
             tmp357.add(val);
         }
@@ -161,7 +161,7 @@ public class BipartiteIntDomainTest {
         assertFalse(yDom.releaseDeltaDomain());
         yDom.freezeDeltaDomain();
         Set<Integer> tmp9 = new TreeSet<Integer>();
-        for (IntIterator it = yDom.getDeltaIterator(); it.hasNext();) {
+        for (DisposableIntIterator it = yDom.getDeltaIterator(); it.hasNext();) {
             int val = it.next();
             tmp9.add(val);
         }
@@ -185,10 +185,11 @@ public class BipartiteIntDomainTest {
         assertEquals(7, yDom.getInf());
         assertEquals(7, yDom.getSup());
         assertEquals(1, yDom.getSize());
-        IntIterator it = yDom.getIterator();
+        DisposableIntIterator it = yDom.getIterator();
         assertTrue(it.hasNext());
         assertEquals(7, it.next());
         assertFalse(it.hasNext());
+            it.dispose();
         } catch (ContradictionException e) {
             assertTrue(false);
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

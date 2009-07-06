@@ -22,14 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.varselector;
 
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
-import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.search.integer.DoubleHeuristicIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.common.util.IntIterator;
-
-import java.util.Iterator;
 
 /* 
  * Created by IntelliJ IDEA.
@@ -61,7 +58,7 @@ public final class DomOverDynDeg extends DoubleHeuristicIntVarSelector {
 	public int getDynDeg(IntDomainVar v) {
 		int ddeg = 0;
         int idx = 0;
-        IntIterator it = v.getIndexVector().getIndexIterator();
+        DisposableIntIterator it = v.getIndexVector().getIndexIterator();
 		while (it.hasNext()) {
             idx = it.next();
             AbstractSConstraint ct = (AbstractSConstraint) v.getConstraint(idx);

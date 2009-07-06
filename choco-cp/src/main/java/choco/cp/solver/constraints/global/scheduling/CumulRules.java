@@ -24,7 +24,7 @@ package choco.cp.solver.constraints.global.scheduling;
 
 import choco.cp.solver.constraints.global.scheduling.trees.CumTreeT;
 import choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode;
-import choco.kernel.common.util.TaskComparators;
+import choco.kernel.common.util.comparator.TaskComparators;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.scheduling.IRTask;

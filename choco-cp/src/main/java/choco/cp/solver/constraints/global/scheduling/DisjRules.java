@@ -22,27 +22,21 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
-import static choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode.ECT;
-import static choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode.LST;
-import static choco.kernel.common.util.TaskComparators.makeLatestStartingTimeCmp;
-import static choco.kernel.common.util.TaskComparators.makeREarliestCompletionTimeCmp;
-import static choco.kernel.common.util.TaskComparators.makeRLatestCompletionTimeCmp;
-import static choco.kernel.common.util.TaskComparators.makeReverseEarliestCompletionTimeCmp;
-import static choco.kernel.common.util.TaskComparators.makeReverseREarliestCompletionTimeCmp;
-import static choco.kernel.common.util.TaskComparators.makeReverseRLatestCompletionTimeCmp;
-import static java.util.Arrays.sort;
-
-import java.util.Arrays;
-import java.util.Comparator;
-
 import choco.cp.solver.constraints.global.scheduling.trees.DisjTreeT;
 import choco.cp.solver.constraints.global.scheduling.trees.DisjTreeTL;
 import choco.cp.solver.constraints.global.scheduling.trees.IThetaLambdaTree;
 import choco.cp.solver.constraints.global.scheduling.trees.IThetaTree;
 import choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode;
+import static choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode.ECT;
+import static choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode.LST;
+import static choco.kernel.common.util.comparator.TaskComparators.*;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
+
+import java.util.Arrays;
+import static java.util.Arrays.sort;
+import java.util.Comparator;
 
 
 /**

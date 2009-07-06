@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.set;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractBinSetSConstraint;
 import choco.kernel.solver.variables.set.SetVar;
@@ -51,15 +51,23 @@ public class Disjoint extends AbstractBinSetSConstraint {
 
 	public void filter(int idx) throws ContradictionException {
 		if (idx == 0) {
-			IntIterator it1 = v0.getDomain().getKernelIterator();
-			while (it1.hasNext()) {
-				v1.remFromEnveloppe(it1.next(), cIdx1);
-			}
+			DisposableIntIterator it1 = v0.getDomain().getKernelIterator();
+            try{
+                while (it1.hasNext()) {
+                    v1.remFromEnveloppe(it1.next(), cIdx1);
+                }
+            }finally {
+                it1.dispose();
+            }
 		} else if (idx == 1) {
-			IntIterator it2 = v1.getDomain().getKernelIterator();
-			while (it2.hasNext()) {
-				v0.remFromEnveloppe(it2.next(), cIdx0);
-			}
+			DisposableIntIterator it2 = v1.getDomain().getKernelIterator();
+            try{
+                while (it2.hasNext()) {
+                    v0.remFromEnveloppe(it2.next(), cIdx0);
+                }
+            }finally {
+                it2.dispose();
+            }
 		}
 	}
 
@@ -70,7 +78,7 @@ public class Disjoint extends AbstractBinSetSConstraint {
 			v0.remFromEnveloppe(x, cIdx0);
 	}
 
-	public void awakeOnEnvRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+	public void awakeOnEnvRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
 		//Nothing to do
 	}
 
@@ -84,10 +92,14 @@ public class Disjoint extends AbstractBinSetSConstraint {
 	}
 
 	public boolean isSatisfied() {
-		IntIterator it2 = v1.getDomain().getKernelIterator();
-		while (it2.hasNext()) {
-			if (v0.isInDomainKernel(it2.next())) return false;
-		}
+		DisposableIntIterator it2 = v1.getDomain().getKernelIterator();
+        try{
+            while (it2.hasNext()) {
+                if (v0.isInDomainKernel(it2.next())) return false;
+            }
+        }finally {
+            it2.dispose();
+        }
 		return true;
 	}
 
@@ -105,7 +117,7 @@ public class Disjoint extends AbstractBinSetSConstraint {
 
 	public Boolean isEntailed() {
 		boolean someSureIn = false, somePossibleIn = false;
-		IntIterator it1 = v0.getDomain().getEnveloppeIterator();
+		DisposableIntIterator it1 = v0.getDomain().getEnveloppeIterator();
 		while (it1.hasNext()) {
 			int val = it1.next();
 			if (v1.isInDomainEnveloppe(val)) {
@@ -116,6 +128,7 @@ public class Disjoint extends AbstractBinSetSConstraint {
 				somePossibleIn = true;
 			}
 		}
+      it1.dispose();
 		if (someSureIn)
 			return Boolean.FALSE;
 		else if (!somePossibleIn)

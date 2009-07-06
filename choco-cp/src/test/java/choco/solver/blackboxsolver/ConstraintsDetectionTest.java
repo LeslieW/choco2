@@ -1034,4 +1034,25 @@ public class ConstraintsDetectionTest {
             Assert.assertEquals("wrong upper bound for Y ("+seed+")", 1, s.getVar(y).getSup());
         }
     }
+
+
+    @Test
+    public void detectEqualities3(){
+        Model m;
+        PreProcessCPSolver s;
+        Random r;
+        for(int size = 100; size <= 10000; size +=100){
+            for(int seed = 0; seed < 50; seed++){
+                r = new Random(seed);
+                m = new CPModel();
+                IntegerVariable[] vars = Choco.makeIntVarArray("v", size, 0, 10, "cp:bound");
+                for(int i = 0; i < size-1; i++){
+                    m.addConstraint(eq(vars[i], vars[i+1]));
+                }
+                s = new PreProcessCPSolver();
+                s.read(m);
+                
+            }
+        }
+    }
 }

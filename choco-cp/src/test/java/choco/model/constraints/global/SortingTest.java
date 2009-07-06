@@ -29,13 +29,12 @@ import choco.cp.solver.constraints.global.SortingSConstraint;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import junit.framework.TestCase;
 
-import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -115,7 +114,7 @@ public class SortingTest extends TestCase {
             s1.read(m);
 //            s.setValIntSelector(new RandomIntValSelector(seed));
 //            s.setVarIntSelector(new RandomIntVarSelector(s, seed + 2));
-            s1.setVarIntSelector(new StaticVarOrder(s1.getVar((IntegerVariable[])UtilAlgo.append(x,y))));
+            s1.setVarIntSelector(new StaticVarOrder(s1.getVar((IntegerVariable[]) ArrayUtils.append(x,y))));
             s1.setValIntIterator(new IncreasingDomain());
             s1.solve();
             if(s1.isFeasible()){

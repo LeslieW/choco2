@@ -22,7 +22,8 @@
  **************************************************/
 package choco.cp.solver.variables.integer;
 
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.solver.ContradictionException;
@@ -180,14 +181,14 @@ public class BooleanDomain extends AbstractIntDomain {
     }
 
     public DisposableIntIterator getIterator() {
-        if(getSize() == 1) return DisposableIntIterator.getOneValueIterator(getInf());
-        BitSetIntDomainIterator iter = (BitSetIntDomainIterator) lastIterator;
+        if(getSize() == 1) return OneValueIterator.getOneValueIterator(getInf());
+        BitSetIntDomainIterator iter = (BitSetIntDomainIterator) _cachedIterator;
         if (iter != null && iter.reusable) {
             iter.init();
             return iter;
         }
-        lastIterator = new BitSetIntDomainIterator();
-        return lastIterator;
+        _cachedIterator = new BitSetIntDomainIterator();
+        return _cachedIterator;
     }
 
     protected class BitSetIntDomainIterator extends DisposableIntIterator {
@@ -289,7 +290,7 @@ public class BooleanDomain extends AbstractIntDomain {
 
     public DisposableIntIterator getDeltaIterator() {
         DeltaBoolDomainIterator iter = (DeltaBoolDomainIterator) _cachedDeltaIntDomainIterator;
-        if (iter != null && iter.disposed) {
+        if (iter != null && iter.reusable) {
             iter.init();
             return iter;
         }
@@ -300,7 +301,6 @@ public class BooleanDomain extends AbstractIntDomain {
     protected static class DeltaBoolDomainIterator extends DisposableIntIterator {
         protected BooleanDomain domain;
         protected int val = -1;
-        protected boolean disposed = true;
 
         private DeltaBoolDomainIterator(BooleanDomain dom) {
             domain = dom;
@@ -308,14 +308,10 @@ public class BooleanDomain extends AbstractIntDomain {
         }
 
         public void init() {
+            super.init();
             val = domain.getValueIfInst();
             if (val == 1) val = 0;
             else if (val == 0) val = 1;
-            disposed = false;
-        }
-
-        public void dispose() {
-            disposed = true;
         }
 
         public boolean hasNext() {

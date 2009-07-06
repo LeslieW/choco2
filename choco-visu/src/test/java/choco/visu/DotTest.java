@@ -29,7 +29,7 @@ import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -118,7 +118,7 @@ public class DotTest {
         s.setTimeLimit(timeLimit);
 
         Visu v = Visu.createVisu(220, 200);
-        Variable[] vars = UtilAlgo.append(queens, queensdual);
+        Variable[] vars = ArrayUtils.append(queens, queensdual);
         v.addPanel(new VarChocoPanel("Dotty", vars, DOTTYTREESEARCH, new Object[]{url, 100, null, null, null}));
 
         // Solve the model
@@ -174,7 +174,7 @@ public class DotTest {
 //        int timeLimit = 60000;
 //        s.setTimeLimit(timeLimit);
         Visu v = Visu.createVisu(220, 200);
-        Variable[] vars = UtilAlgo.append(queens, queensdual);
+        Variable[] vars = ArrayUtils.append(queens, queensdual);
         v.addPanel(new VarChocoPanel("Dotty", vars, DOTTYTREESEARCH, new Object[]{url, 100, null, null, Boolean.TRUE}));
 
         // Solve the model

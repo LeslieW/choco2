@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.visu.components.bricks;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.variables.Var;
 import static choco.visu.components.ColorConstant.BLACK;
 import static choco.visu.components.ColorConstant.WHITE;
@@ -49,7 +49,7 @@ public final class HazardOrValueBrick extends AChocoBrick{
     private int last;
     private int low;
     private int upp;
-    private IntIterator it;
+    private DisposableIntIterator it;
 
     public HazardOrValueBrick(final AChocoPApplet chopapplet, final Var var, final int policy) {
         super(chopapplet, var);
@@ -77,6 +77,7 @@ public final class HazardOrValueBrick extends AChocoBrick{
                 }
                 value+=it.next();
             }
+            it.dispose();
             this.inst = true;
         }else{
             low = getLowBound();

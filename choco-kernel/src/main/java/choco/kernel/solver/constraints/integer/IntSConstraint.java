@@ -23,7 +23,7 @@
 
 package choco.kernel.solver.constraints.integer;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.IntVarEventListener;
@@ -45,7 +45,7 @@ public interface IntSConstraint extends SConstraint, Propagator, IntVarEventList
 
   public IntDomainVar getIntVar(int i);
 
-  public void awakeOnRemovals(int varIdx, IntIterator deltaDomain) throws ContradictionException;
+  public void awakeOnRemovals(int varIdx, DisposableIntIterator deltaDomain) throws ContradictionException;
 
   public void awakeOnBounds(int varIdx) throws ContradictionException;
 

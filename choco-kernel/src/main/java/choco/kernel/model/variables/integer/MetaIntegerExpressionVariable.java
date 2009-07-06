@@ -22,8 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.variables.integer;
 
-import choco.kernel.common.util.ChocoUtil;
-import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Operator;
 import choco.kernel.model.variables.Variable;
@@ -61,9 +60,9 @@ public class MetaIntegerExpressionVariable extends IntegerExpressionVariable {
         if(listVars == null){
             listVars = variables;
             for(Constraint c : constraints){
-                listVars = UtilAlgo.append(listVars, c.extractVariables());
+                listVars = ArrayUtils.append(listVars, c.extractVariables());
             }
-            listVars = ChocoUtil.getNonRedundantObjects(Variable.class, listVars);
+            listVars = ArrayUtils.getNonRedundantObjects(Variable.class, listVars);
         }
         return listVars;
     }

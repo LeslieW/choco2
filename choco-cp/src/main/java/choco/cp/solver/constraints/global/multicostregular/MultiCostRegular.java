@@ -28,8 +28,8 @@ import choco.cp.solver.constraints.global.multicostregular.structure.Arc;
 import choco.cp.solver.constraints.global.multicostregular.structure.LayeredGraph;
 import choco.cp.solver.constraints.global.multicostregular.structure.Node;
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.IntIterator;
-import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.solver.ContradictionException;
@@ -194,7 +194,7 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
      */
     public MultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final Automaton auto, final int[][][] costs)
     {
-        super(UtilAlgo.<IntDomainVar>append(vars,CR));
+        super(ArrayUtils.<IntDomainVar>append(vars,CR));
         this.vs = vars;
         this.costs = costs;
         this.z= CR;
@@ -629,12 +629,15 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
 
 
 
-    public void awakeOnRemovals(final int idx, final IntIterator deltadomain) throws ContradictionException {
+    public void awakeOnRemovals(final int idx, final DisposableIntIterator deltadomain) throws ContradictionException {
         removed.clear();
         // boolean modified = false;
+        try{
         while (deltadomain.hasNext())
             removed.add(deltadomain.next());
-
+        }finally {
+            deltadomain.dispose();
+        }
         Node[] sn = this.graph.getLayer(idx);
         for (Node n : sn)
         {

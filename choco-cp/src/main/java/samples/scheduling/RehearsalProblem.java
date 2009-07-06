@@ -4,7 +4,7 @@ import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
@@ -136,7 +136,7 @@ public class RehearsalProblem extends PatternExample {
 	@Override
 	public void prettyOut() {
 		LOGGER.info(""+_s.getVar(totalWaitingTime));
-		LOGGER.info(ChocoUtil.pretty(_s.getVar(musicPieces)));
+		LOGGER.info(StringUtils.pretty(_s.getVar(musicPieces)));
 
 	}
 

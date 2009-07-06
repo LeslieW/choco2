@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.set;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.search.set.SetValSelector;
 import choco.kernel.solver.variables.set.SetVar;
 
@@ -51,13 +51,14 @@ public class RandomSetValSelector implements SetValSelector {
       int value = Integer.MIN_VALUE;
       Vector<Integer> vector;
       vector = new Vector<Integer>();
-      IntIterator it = v.getDomain().getEnveloppeIterator();
+      DisposableIntIterator it = v.getDomain().getEnveloppeIterator();
       while (it.hasNext()){
           int val = it.next();
           if(!v.isInDomainKernel(val)) {
               vector.add(val);
           }
       }
+      it.dispose();
       if(vector.size()>0)value = Integer.valueOf(vector.get(random.nextInt(vector.size())));
       return value;
   }

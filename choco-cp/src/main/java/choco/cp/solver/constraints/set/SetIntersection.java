@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.set;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractTernSetSConstraint;
 import choco.kernel.solver.variables.set.SetVar;
@@ -90,66 +90,102 @@ public class SetIntersection extends AbstractTernSetSConstraint {
 	public void awakeOnInst(int varIdx) throws ContradictionException {
 		int x;
 		if (varIdx == 0) {
-			IntIterator it1 = v0.getDomain().getKernelIterator();
-			while (it1.hasNext()) {
-				x = it1.next();
-				if (v1.isInDomainKernel(x)) v2.addToKernel(x, cIdx2);
-				if (!v2.isInDomainEnveloppe(x)) v1.remFromEnveloppe(x, cIdx1);
-			}
-			IntIterator it2 = v2.getDomain().getEnveloppeIterator();
-			while (it2.hasNext()) {
-				x = it2.next();
-				if (!v0.isInDomainKernel(x)) v2.remFromEnveloppe(x, cIdx2);
-			}
+			DisposableIntIterator it = v0.getDomain().getKernelIterator();
+            try{
+                while (it.hasNext()) {
+                    x = it.next();
+                    if (v1.isInDomainKernel(x)) v2.addToKernel(x, cIdx2);
+                    if (!v2.isInDomainEnveloppe(x)) v1.remFromEnveloppe(x, cIdx1);
+                }
+            }finally {
+                it.dispose();
+            }
+			it = v2.getDomain().getEnveloppeIterator();
+            try{
+                while (it.hasNext()) {
+                    x = it.next();
+                    if (!v0.isInDomainKernel(x)) v2.remFromEnveloppe(x, cIdx2);
+                }
+            }finally {
+                it.dispose();
+            }
 		} else if (varIdx == 1) {
-			IntIterator it1 = v1.getDomain().getKernelIterator();
-			while (it1.hasNext()) {
-				x = it1.next();
+			DisposableIntIterator it = v1.getDomain().getKernelIterator();
+            try{
+			while (it.hasNext()) {
+				x = it.next();
 				if (v0.isInDomainKernel(x)) v2.addToKernel(x, cIdx2);
 				if (!v2.isInDomainEnveloppe(x)) v0.remFromEnveloppe(x, cIdx0);
 			}
-			IntIterator it2 = v2.getDomain().getEnveloppeIterator();
-			while (it2.hasNext()) {
-				x = it2.next();
+            }finally {
+                it.dispose();
+            }
+			it = v2.getDomain().getEnveloppeIterator();
+            try{
+			while (it.hasNext()) {
+				x = it.next();
 				if (!v1.isInDomainKernel(x)) v2.remFromEnveloppe(x, cIdx2);
 			}
+            }finally {
+                it.dispose();
+            }
 		} else {
-			IntIterator it1 = v2.getDomain().getKernelIterator();
-			while (it1.hasNext()) {
-				x = it1.next();
-				if (!v0.isInDomainKernel(x)) v0.addToKernel(x, cIdx0);
-				if (!v1.isInDomainKernel(x)) v1.addToKernel(x, cIdx1);
-			}
+			DisposableIntIterator it = v2.getDomain().getKernelIterator();
+            try{
+                while (it.hasNext()) {
+                    x = it.next();
+                    if (!v0.isInDomainKernel(x)) v0.addToKernel(x, cIdx0);
+                    if (!v1.isInDomainKernel(x)) v1.addToKernel(x, cIdx1);
+                }
+            }finally {
+                it.dispose();
+            }
 		}
 	}
 
 	public void propagate() throws ContradictionException {
-		IntIterator it1 = v0.getDomain().getKernelIterator();
-		while (it1.hasNext()) {
-			int val = it1.next();
+		DisposableIntIterator it = v0.getDomain().getKernelIterator();
+		try{
+        while (it.hasNext()) {
+			int val = it.next();
 			if (v1.isInDomainKernel(val)) v2.addToKernel(val, cIdx2);
 			if (!v2.isInDomainEnveloppe(val)) v1.remFromEnveloppe(val, cIdx1);
 		}
-		IntIterator it2 = v1.getDomain().getKernelIterator();
-		while (it2.hasNext()) {
-			int val = it2.next();
-			if (v0.isInDomainKernel(val)) v2.addToKernel(val, cIdx2);
-			if (!v2.isInDomainEnveloppe(val)) v0.remFromEnveloppe(val, cIdx0);
-		}
-		IntIterator it3 = v2.getDomain().getKernelIterator();
-		while (it3.hasNext()) {
-			int val = it3.next();
-			if (!v0.isInDomainKernel(val)) v0.addToKernel(val, cIdx0);
-			if (!v1.isInDomainKernel(val)) v1.addToKernel(val, cIdx1);
-		}
-		IntIterator it4 = v2.getDomain().getEnveloppeIterator();
-		while (it4.hasNext()) {
-			int val = it4.next();
-			if (!v0.isInDomainEnveloppe(val) ||
-					!v1.isInDomainEnveloppe(val))
-				v2.remFromEnveloppe(val, cIdx2);
+        }finally {
+            it.dispose();
+        }
+		it = v1.getDomain().getKernelIterator();
+        try{
+            while (it.hasNext()) {
+                int val = it.next();
+                if (v0.isInDomainKernel(val)) v2.addToKernel(val, cIdx2);
+                if (!v2.isInDomainEnveloppe(val)) v0.remFromEnveloppe(val, cIdx0);
+            }
+        }finally {
+            it.dispose();
+        }
+		it = v2.getDomain().getKernelIterator();
+        try{
+            while (it.hasNext()) {
+                int val = it.next();
+                if (!v0.isInDomainKernel(val)) v0.addToKernel(val, cIdx0);
+                if (!v1.isInDomainKernel(val)) v1.addToKernel(val, cIdx1);
+            }
+        }finally {
+            it.dispose();
+        }
+		it = v2.getDomain().getEnveloppeIterator();
+        try{
+            while (it.hasNext()) {
+                int val = it.next();
+                if (!v0.isInDomainEnveloppe(val) ||
+                        !v1.isInDomainEnveloppe(val))
+                    v2.remFromEnveloppe(val, cIdx2);
 
-		}
+            }           
+        }finally {
+            it.dispose();
+        }
 	}
 
 	public String toString() {
@@ -162,23 +198,25 @@ public class SetIntersection extends AbstractTernSetSConstraint {
 
 	public boolean isSatisfied() {
 		boolean nonout = true, allIn = true;
-		IntIterator it3 = v2.getDomain().getKernelIterator();
-		while (it3.hasNext()) {
-			int val = it3.next();
+		DisposableIntIterator it = v2.getDomain().getKernelIterator();
+		while (it.hasNext()) {
+			int val = it.next();
 			if (!(v0.isInDomainKernel(val)) || !(v1.isInDomainKernel(val))) {
 				allIn = false;
 				break;
 			}
 		}
+        it.dispose();
 		if (!allIn) return false;
-		IntIterator it2 = v1.getDomain().getKernelIterator();
-		while (it2.hasNext()) {
-			int val = it2.next();
+		it = v1.getDomain().getKernelIterator();
+		while (it.hasNext()) {
+			int val = it.next();
 			if (!v2.isInDomainKernel(val) && v0.isInDomainKernel(val)) {
 				nonout = false;
 				break;
 			}
 		}
+        it.dispose();
 		return nonout;
 	}
 

@@ -23,7 +23,7 @@
 package choco.kernel.model.constraints.automaton;
 
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.IntEnumeration;
+import choco.kernel.common.util.iterators.IntEnumeration;
 import choco.kernel.memory.trailing.IndexedObject;
 
 import java.util.BitSet;

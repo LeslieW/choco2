@@ -25,8 +25,7 @@ package choco.cp.solver.constraints.integer.extension;
 
 import choco.cp.solver.variables.integer.AbstractIntDomain;
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.DisposableIntIterator;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.extension.BinRelation;
 import choco.kernel.solver.constraints.integer.extension.CspBinSConstraint;
@@ -223,28 +222,32 @@ public class AC3rmBinSConstraint extends CspBinSConstraint {
 		DisposableIntIterator itv0 = v0Domain.getIterator();
 		int support = 0;
 		boolean found = false;
-		while (itv0.hasNext()) {
-			DisposableIntIterator itv1 = v1Domain.getIterator();
-			int val0 = itv0.next();
-			while (itv1.hasNext()) {
-				int val1 = itv1.next();
-				if (relation.isConsistent(val0, val1)) {
-					support = val1;
-					found = true;
-					break;
-				}
-			}
-			itv1.dispose();
-			if (!found) {
-				v0.removeVal(val0, cIdx0);
-			} else {
-				storeSupportV0(support,val0);
-			}
-			found = false;
-		}
-		itv0.dispose();
+        try{
+            while (itv0.hasNext()) {
+                DisposableIntIterator itv1 = v1Domain.getIterator();
+                int val0 = itv0.next();
+                while (itv1.hasNext()) {
+                    int val1 = itv1.next();
+                    if (relation.isConsistent(val0, val1)) {
+                        support = val1;
+                        found = true;
+                        break;
+                    }
+                }
+                itv1.dispose();
+                if (!found) {
+                    v0.removeVal(val0, cIdx0);
+                } else {
+                    storeSupportV0(support,val0);
+                }
+                found = false;
+            }
+        }finally {
+            itv0.dispose();
+        }
 		found = false;
 		DisposableIntIterator itv1 = v1Domain.getIterator();
+        try{
 		while (itv1.hasNext()) {
 			itv0 = v0Domain.getIterator();
 			int val1 = itv1.next();
@@ -264,7 +267,9 @@ public class AC3rmBinSConstraint extends CspBinSConstraint {
 			}
 			found = false;
 		}
-		itv1.dispose();
+        }finally {
+            itv1.dispose();
+        }
 		//propagate();
 	}
 
@@ -273,7 +278,7 @@ public class AC3rmBinSConstraint extends CspBinSConstraint {
 		reviseV1();
 	}
 
-	public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+	public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
 		revise(idx);
 	}
 

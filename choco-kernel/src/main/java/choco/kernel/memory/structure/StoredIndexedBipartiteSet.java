@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory.structure;
 
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.IStateIntVector;
@@ -72,7 +72,7 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
     /**
      * An iterator to be reused
      */
-    protected DisposableIntIterator lastIterator;
+    protected DisposableIntIterator _cachedIterator;
 
     /**
      * @param environment
@@ -238,23 +238,23 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
     }
 
     public DisposableIntIterator getIterator() {
-        BipartiteSetIterator iter = (BipartiteSetIterator) lastIterator;
+        BipartiteSetIterator iter = (BipartiteSetIterator) _cachedIterator;
         if (iter != null && iter.disposed) {
             iter.init();
             return iter;
         }
-        lastIterator = new BipartiteSetIterator();
-        return lastIterator;
+        _cachedIterator = new BipartiteSetIterator(this);
+        return _cachedIterator;
     }
 
     public BipartiteSetIterator getObjectIterator() {
-        BipartiteSetIterator iter = (BipartiteSetIterator) lastIterator;
+        BipartiteSetIterator iter = (BipartiteSetIterator) _cachedIterator;
         if (iter != null && iter.disposed) {
             iter.init();
             return iter;
         }
-        lastIterator = new BipartiteSetIterator();
-        return (BipartiteSetIterator) lastIterator;
+        _cachedIterator = new BipartiteSetIterator(this);
+        return (BipartiteSetIterator) _cachedIterator;
     }
 
     public String pretty() {
@@ -266,11 +266,14 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
     }
 
 
-    public class BipartiteSetIterator extends DisposableIntIterator {
+    public static class BipartiteSetIterator extends DisposableIntIterator {
+        StoredIndexedBipartiteSet sibset;
+
         int idx;
         boolean disposed;
 
-        public BipartiteSetIterator() {
+        public BipartiteSetIterator(StoredIndexedBipartiteSet sibset) {
+            this.sibset = sibset;
             init();
         }
 
@@ -280,29 +283,29 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
         }
 
         public boolean hasNext() {
-            return idx <= last.get();
+            return idx <= sibset.last.get();
         }
 
         public int next() {
-            return list[idx++];
+            return sibset.list[idx++];
         }
 
         public IndexedObject nextObject() {
-            return idxToObjects[list[idx++]];
+            return sibset.idxToObjects[sibset.list[idx++]];
         }
 
         public void remove() {
             idx--;
             int idxToRem = idx;
-            if (idxToRem == last.get()) {
-                last.add(-1);
+            if (idxToRem == sibset.last.get()) {
+                sibset.last.add(-1);
             } else {
-                int temp = list[last.get()];
-                list[last.get()] = list[idxToRem];
-                list[idxToRem] = temp;
-                position[list[last.get()]] = last.get();
-                position[temp] = idxToRem;
-                last.add(-1);
+                int temp = sibset.list[sibset.last.get()];
+                sibset.list[sibset.last.get()] = sibset.list[idxToRem];
+                sibset.list[idxToRem] = temp;
+                sibset.position[sibset.list[sibset.last.get()]] = sibset.last.get();
+                sibset.position[temp] = idxToRem;
+                sibset.last.add(-1);
             }
         }
 

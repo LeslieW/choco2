@@ -24,7 +24,7 @@ package choco.cp.solver.constraints.global.tree.filtering.structuralFiltering;
 
 
 import choco.cp.solver.constraints.global.tree.filtering.AbstractPropagator;
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomain;
@@ -76,9 +76,13 @@ public class Incomparability extends AbstractPropagator {
             if (!nodes[u].getSuccessors().isInstantiated()) {
                 IntDomain dom = nodes[u].getSuccessors().getDomain();
                 DisposableIntIterator iter = dom.getIterator();
+                try{
                 while (iter.hasNext()) {
                     int v = iter.next();
                     if (u != v) filteringAccordingToPrecsAndIncs(u, v);
+                }
+                }finally {
+                    iter.dispose();
                 }
             }
         }

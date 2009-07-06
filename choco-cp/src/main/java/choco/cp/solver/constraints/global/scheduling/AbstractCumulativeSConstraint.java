@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
-import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBool;
 import choco.kernel.solver.ContradictionException;
@@ -59,7 +59,7 @@ public abstract class AbstractCumulativeSConstraint extends AbstractResourceSCon
 	public AbstractCumulativeSConstraint(final String name, final TaskVar[] taskvars, final IntDomainVar[] heights,
 			final IntDomainVar consumption,final IntDomainVar capacity,
 			final IntDomainVar uppBound, final IntDomainVar... otherVars) {
-		super(name, taskvars, uppBound,UtilAlgo.append(heights,new IntDomainVar[]{consumption, capacity},otherVars));
+		super(name, taskvars, uppBound, ArrayUtils.append(heights,new IntDomainVar[]{consumption, capacity},otherVars));
 		if(taskvars.length != heights.length) {
 			throw new SolverException("tasks and heights array have different length.");
 		}

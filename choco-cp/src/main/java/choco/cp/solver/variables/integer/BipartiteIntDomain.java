@@ -23,8 +23,8 @@
 package choco.cp.solver.variables.integer;
 
 import choco.Choco;
-import choco.kernel.common.util.DisposableIntIterator;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
@@ -376,27 +376,29 @@ public class BipartiteIntDomain extends AbstractIntDomain {
     }
 
     public DisposableIntIterator getIterator() {
-        if(getSize() == 1) return DisposableIntIterator.getOneValueIterator(getInf());
-        BipartiteIntDomainIterator iter = (BipartiteIntDomainIterator) lastIterator;
+        if(getSize() == 1) return OneValueIterator.getOneValueIterator(getInf());
+        BipartiteIntDomainIterator iter = (BipartiteIntDomainIterator) _cachedIterator;
         if (iter != null && iter.reusable) {
             iter.init();
             return iter;
         }
-        lastIterator = new BipartiteIntDomainIterator();
-        return lastIterator;
+        _cachedIterator = new BipartiteIntDomainIterator(this);
+        return _cachedIterator;
     }
 
-    protected class BipartiteIntDomainIterator extends DisposableIntIterator {
+    protected static class BipartiteIntDomainIterator extends DisposableIntIterator {
+        BipartiteIntDomain domain;
         protected int nextIdx;
 
-        private BipartiteIntDomainIterator() { //AbstractIntDomain dom) {
+        private BipartiteIntDomainIterator(BipartiteIntDomain dom) { //AbstractIntDomain dom) {
+            this.domain = dom;
             init();
         }
 
         @Override
         public void init() {
             super.init();
-            nextIdx = valuesInDomainNumber.get();
+            nextIdx = domain.valuesInDomainNumber.get();
         }
 
         public boolean hasNext() {
@@ -406,7 +408,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
         public int next() {
             int v = nextIdx;
             nextIdx--;
-            return values[v];
+            return domain.values[v];
         }
 
         public void remove() {
@@ -426,7 +428,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
         return _cachedDeltaIntDomainIterator;
     }
 
-    protected class DeltaBipartiteIterator extends DisposableIntIterator {
+    protected static class DeltaBipartiteIterator extends DisposableIntIterator {
         protected BipartiteIntDomain domain;
         protected int currentIndex = -1;
         protected boolean disposed = true;
@@ -437,7 +439,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
         }
 
         public void init() {
-            currentIndex = beginningOfDeltaDomain;
+            currentIndex = domain.beginningOfDeltaDomain;
             disposed = false;
         }
 
@@ -446,11 +448,11 @@ public class BipartiteIntDomain extends AbstractIntDomain {
         }
 
         public boolean hasNext() {
-            return currentIndex < endOfDeltaDomain;
+            return currentIndex < domain.endOfDeltaDomain;
         }
 
         public int next() {
-            return values[currentIndex++];
+            return domain.values[currentIndex++];
         }
 
         public void remove() {
@@ -523,12 +525,14 @@ public class BipartiteIntDomain extends AbstractIntDomain {
         StringBuffer buf = new StringBuffer("{");
         int maxDisplay = 15;
         int count = 0;
-        for (IntIterator it = this.getIterator(); (it.hasNext() && count < maxDisplay);) {
+        DisposableIntIterator it = this.getIterator();
+        for (; (it.hasNext() && count < maxDisplay);) {
             int val = it.next();
             count++;
             if (count > 1) buf.append(", ");
             buf.append(val);
         }
+        it.dispose();
         if (this.getSize() > maxDisplay) {
             buf.append("..., ");
             buf.append(this.getSup());

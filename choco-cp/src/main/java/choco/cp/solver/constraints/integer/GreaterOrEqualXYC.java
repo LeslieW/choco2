@@ -25,14 +25,12 @@
 package choco.cp.solver.constraints.integer;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.Arithm;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.logging.Level;
 
 /**
  * Implements a constraint X > Y + C, with X and Y two variables and C a constant.
@@ -193,7 +191,7 @@ public class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
         sb.append(v0.toString());
         sb.append(" >= ");
         sb.append(v1.toString());
-        sb.append(Arithm.pretty(this.cste));
+        sb.append(StringUtils.pretty(this.cste));
         return sb.toString();
     }
 

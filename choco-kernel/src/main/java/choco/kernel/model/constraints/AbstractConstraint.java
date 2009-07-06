@@ -24,7 +24,9 @@ package choco.kernel.model.constraints;
 
 import choco.kernel.common.HashCoding;
 import choco.kernel.common.IndexFactory;
-import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.util.tools.IteratorUtils;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableType;
@@ -112,7 +114,7 @@ public abstract class AbstractConstraint implements Constraint, Comparable {
     }
 
     protected void variablesPrettyPrint(final StringBuilder buffer) {
-        buffer.append(ChocoUtil.pretty(this.getVariableIterator()));
+        buffer.append(StringUtils.pretty(this.getVariableIterator()));
     }
 
 
@@ -181,7 +183,7 @@ public abstract class AbstractConstraint implements Constraint, Comparable {
         }
         else if(iev.getVariableType().equals(VariableType.INTEGER_EXPRESSION)){
             Variable[] tmp = iev.extractVariables();
-            Iterator<Variable> it = ChocoUtil.iterator(tmp);
+            Iterator<Variable> it = IteratorUtils.iterator(tmp);
             while(it.hasNext()){
                 vs.addAll(extractEveryvariables((IntegerExpressionVariable)it.next()));
             }
@@ -211,7 +213,7 @@ public abstract class AbstractConstraint implements Constraint, Comparable {
     public Variable[] extractVariables() {
     	Variable[] listVars = null;
         if (getVariables() != null) {
-            listVars = ChocoUtil.getNonRedundantObjects(Variable.class, getVariables());
+            listVars = ArrayUtils.getNonRedundantObjects(Variable.class, getVariables());
         }
         return listVars;
     }

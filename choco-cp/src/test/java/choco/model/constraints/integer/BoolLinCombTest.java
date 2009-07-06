@@ -29,7 +29,7 @@ import choco.cp.solver.constraints.integer.IntLinComb;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -228,7 +228,7 @@ public class BoolLinCombTest {
 			} else if (op == IntLinComb.EQ) {
                 s.post(makeIntLinComb(s.getVar(vars),randCoefs,-k,IntLinComb.EQ));
             } else if (op == IntLinComb.LEQ) {
-                UtilAlgo.inverseSign(randCoefs);
+                ArrayUtils.inverseSign(randCoefs);
                 s.post(makeIntLinComb(s.getVar(vars),randCoefs,k,IntLinComb.GEQ));
             }
         }
@@ -270,7 +270,7 @@ public class BoolLinCombTest {
 			} else if (op == IntLinComb.EQ) {
 	              s.post(makeIntLinComb(s.getVar(vars),sumcoef,-k,IntLinComb.EQ));
 	          } else if (op == IntLinComb.LEQ) {
-	              UtilAlgo.inverseSign(sumcoef);
+	              ArrayUtils.inverseSign(sumcoef);
 	              s.post(makeIntLinComb(s.getVar(vars),sumcoef,k,IntLinComb.GEQ));
 	          }
 	      }

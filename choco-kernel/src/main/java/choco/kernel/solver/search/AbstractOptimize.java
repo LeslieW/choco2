@@ -22,11 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.search;
 
-import java.util.logging.Level;
-
-import choco.kernel.common.util.Arithm;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.logging.Level;
 
 public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 	/**
@@ -134,9 +133,9 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 	public void setBound() {
 		int objval = getObjectiveValue();
 		if (doMaximize) {
-			lowerBound = Arithm.max(lowerBound, objval);
+			lowerBound = Math.max(lowerBound, objval);
 		} else {
-			upperBound = Arithm.min(upperBound, objval);
+			upperBound = Math.min(upperBound, objval);
 		}
 	}
 

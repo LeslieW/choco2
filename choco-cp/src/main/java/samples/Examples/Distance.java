@@ -25,7 +25,7 @@ package samples.Examples;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 
@@ -84,7 +84,7 @@ public class Distance extends PatternExample{
 
     @Override
     public void prettyOut() {
-        LOGGER.info("maximize distantce between "+ChocoUtil.pretty(x[0],y[0],x[1],y[1]));
+        LOGGER.info("maximize distantce between "+ StringUtils.pretty(x[0],y[0],x[1],y[1]));
         LOGGER.info("maximal distance = 10,63");
         LOGGER.info(" d = sqrt( (x0-x1)^2 + (y0-y1)^2 ) "+(ceil?"-- ceil":"--floor"));
         LOGGER.info("x = ["+_s.getVar(x[0]).getVal()+","+_s.getVar(x[1]).getVal()+"]");

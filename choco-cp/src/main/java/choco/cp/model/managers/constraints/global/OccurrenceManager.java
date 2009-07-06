@@ -26,15 +26,13 @@ import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.Occurrence;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.variables.Variable;
-import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.set.SetVar;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashSet;
 
@@ -112,7 +110,7 @@ public class OccurrenceManager extends IntConstraintManager {
                 IntegerVariable[] tvars = new IntegerVariable[variables.length-2];
                 //noinspection SuspiciousSystemArraycopy
                 System.arraycopy(variables, 2, tvars, 0, tvars.length);
-                IntDomainVar[] vars = UtilAlgo.append(solver.getVar(tvars), new IntDomainVar[]{Y});
+                IntDomainVar[] vars = ArrayUtils.append(solver.getVar(tvars), new IntDomainVar[]{Y});
 
                 if(type == NOR){
                     solver.post(new Occurrence(vars, ((IntegerConstantVariable)variables[0]).getValue(), true, true));

@@ -25,7 +25,7 @@ package choco.cp.solver.constraints.global.multicostregular.asap.hci.abstraction
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.multicostregular.asap.ASAPCPModel;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.solver.Solver;
 
 import java.util.Observable;
@@ -75,7 +75,7 @@ public class ASAPDataHandler extends Observable {
         this.solver.read(this.model);
         this.solver.setVarIntSelector(
                 new StaticVarOrder(
-                        this.solver.getVar(UtilAlgo.flatten(UtilAlgo.transpose(this.model.shifts)))
+                        this.solver.getVar(ArrayUtils.flatten(ArrayUtils.transpose(this.model.shifts)))
                 )
         );
         //this.solver.setVarIntSelector(new ASAPVarSelector(this.solver,UtilAlgo.transpose(this.model.shifts)));

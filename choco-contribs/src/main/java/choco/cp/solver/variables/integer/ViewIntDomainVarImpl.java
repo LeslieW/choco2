@@ -22,14 +22,11 @@
  **************************************************/
 package choco.cp.solver.variables.integer;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.logging.Level;
 
 /*
 * User : charles
@@ -136,11 +133,15 @@ public class ViewIntDomainVarImpl extends IntDomainVarImpl{
         if (!this.hasEnumeratedDomain() || !x.hasEnumeratedDomain())
           return true;
         else {
-          for (IntIterator it = this.getDomain().getIterator(); it.hasNext();) {
+            DisposableIntIterator it = this.getDomain().getIterator();
+          for (; it.hasNext();) {
             int v = it.next();
-            if (x.canBeInstantiatedTo(v))
-              return true;
+            if (x.canBeInstantiatedTo(v)){
+                it.dispose();
+                return true;
+            }
           }
+            it.dispose();
           return false;
         }
       } else

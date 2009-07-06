@@ -30,7 +30,7 @@ import choco.cp.solver.search.integer.branching.DomOverWDegBranching;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
@@ -286,9 +286,9 @@ public class ModelTest {
 			//                }
 			cpt = newcpt;
             StringBuffer st = new StringBuffer();
-			st.append(MessageFormat.format("|{0} |", ChocoUtil.pad("" + n, -9, " ")));
-			st.append(MessageFormat.format("|{0} |", ChocoUtil.pad("" + (currentTimeMillis() - t), -5, " ")));
-			st.append(MessageFormat.format("|{0} |", ChocoUtil.pad("" + cpt, -10, " ")));
+			st.append(MessageFormat.format("|{0} |", StringUtils.pad("" + n, -9, " ")));
+			st.append(MessageFormat.format("|{0} |", StringUtils.pad("" + (currentTimeMillis() - t), -5, " ")));
+			st.append(MessageFormat.format("|{0} |", StringUtils.pad("" + cpt, -10, " ")));
             LOGGER.info(st.toString());
 		}
 	}
@@ -316,9 +316,9 @@ public class ModelTest {
 			//                }
 			cpt = newcpt;
             StringBuffer st = new StringBuffer();
-			st.append(MessageFormat.format("|{0} |", ChocoUtil.pad("" + n, -9, " ")));
-			st.append(MessageFormat.format("|{0} |", ChocoUtil.pad("" + (currentTimeMillis() - t), -5, " ")));
-			st.append(MessageFormat.format("|{0} |", ChocoUtil.pad("" + cpt, -10, " ")));
+			st.append(MessageFormat.format("|{0} |", StringUtils.pad("" + n, -9, " ")));
+			st.append(MessageFormat.format("|{0} |", StringUtils.pad("" + (currentTimeMillis() - t), -5, " ")));
+			st.append(MessageFormat.format("|{0} |", StringUtils.pad("" + cpt, -10, " ")));
             LOGGER.info(st.toString());
 		}
 	}
@@ -344,9 +344,9 @@ public class ModelTest {
 			//                }
 			cpt = newcpt;
 			StringBuffer st = new StringBuffer();
-            st.append(MessageFormat.format("|{0} |", ChocoUtil.pad("" + n, -9, " ")));
-			st.append(MessageFormat.format("|{0} |", ChocoUtil.pad("" + (currentTimeMillis() - t), -5, " ")));
-			st.append(MessageFormat.format("|{0} |", ChocoUtil.pad("" + cpt, -10, " ")));
+            st.append(MessageFormat.format("|{0} |", StringUtils.pad("" + n, -9, " ")));
+			st.append(MessageFormat.format("|{0} |", StringUtils.pad("" + (currentTimeMillis() - t), -5, " ")));
+			st.append(MessageFormat.format("|{0} |", StringUtils.pad("" + cpt, -10, " ")));
             LOGGER.info(st.toString());
 		}
 	}

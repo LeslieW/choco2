@@ -22,9 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.strong.maxrpcrm;
 
-import choco.cp.solver.constraints.strong.ISpecializedConstraint;
-import choco.kernel.common.util.DisposableIntIterator;
-
 import java.util.Arrays;
 
 public class Clique {

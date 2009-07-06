@@ -24,21 +24,19 @@ package choco.cp.solver.constraints.global.pack;
 
 import static choco.cp.solver.SettingType.ADDITIONAL_RULES;
 import static choco.cp.solver.SettingType.FILL_BIN;
-
-import java.awt.Point;
-import java.util.BitSet;
-
 import choco.cp.solver.constraints.BitFlags;
 import choco.kernel.common.opres.AbstractNoSum;
-import choco.kernel.common.util.ChocoUtil;
-import choco.kernel.common.util.DisposableIntIterator;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
+
+import java.awt.*;
+import java.util.BitSet;
 
 
 /**
@@ -110,7 +108,7 @@ public class PackFiltering {
 
 	
 	protected final void setSolver(Solver solver) {
-		availableBins = solver.getEnvironment().makeBipartiteIntList(ChocoUtil.zeroToN( cstr.getNbBins()));
+		availableBins = solver.getEnvironment().makeBipartiteIntList(ArrayUtils.zeroToN( cstr.getNbBins()));
 	}
 	
 	/**
@@ -471,7 +469,7 @@ final class BinStatus {
 		mLoad=0;
 		rLoad=0;
 		candidates.clear();
-		final IntIterator iter=set.getDomain().getEnveloppeIterator();
+		final DisposableIntIterator iter=set.getDomain().getEnveloppeIterator();
 		while(iter.hasNext()) {
 			final int item=iter.next();
 			if(set.isInDomainKernel(item)) {
@@ -481,6 +479,7 @@ final class BinStatus {
 				mLoad+=sizes[item].getVal();
 			}
 		}
+        iter.dispose();
 		mLoad+=rLoad;
 	}
 

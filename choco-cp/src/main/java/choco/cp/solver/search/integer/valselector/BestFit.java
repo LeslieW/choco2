@@ -23,7 +23,7 @@
 package choco.cp.solver.search.integer.valselector;
 
 import choco.cp.solver.constraints.global.pack.PrimalDualPack;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -43,7 +43,7 @@ public class BestFit implements ValSelector {
 
 	@Override
 	public int getBestVal(IntDomainVar x) {
-		final IntIterator iter=x.getDomain().getIterator();
+		final DisposableIntIterator iter=x.getDomain().getIterator();
 		int bin= iter.next();
 		int max=pack.getRemainingSpace(bin);
 		while(iter.hasNext()) {
@@ -54,6 +54,7 @@ public class BestFit implements ValSelector {
 				bin = b;
 			}
 		}
+        iter.dispose();
 		return bin;
 	}
 

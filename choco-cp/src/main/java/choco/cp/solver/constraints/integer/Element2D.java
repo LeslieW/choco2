@@ -23,8 +23,8 @@
 package choco.cp.solver.constraints.integer;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.Arithm;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractTernIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomain;
@@ -106,9 +106,9 @@ public class Element2D extends AbstractTernIntSConstraint {
 
     public void updateValueFromIndex() throws ContradictionException {
         int minVal = Integer.MAX_VALUE, maxVal = Integer.MIN_VALUE, val;
-        IntIterator v0It = this.v0.getDomain().getIterator();
-        IntIterator v1It = this.v1.getDomain().getIterator();
-        IntIterator v2It = this.v2.getDomain().getIterator();
+        DisposableIntIterator v0It = this.v0.getDomain().getIterator();
+        DisposableIntIterator v1It = this.v1.getDomain().getIterator();
+        DisposableIntIterator v2It = this.v2.getDomain().getIterator();
         while (v0It.hasNext()) {
             int i = v0It.next();
             while (v1It.hasNext()) {
@@ -117,44 +117,53 @@ public class Element2D extends AbstractTernIntSConstraint {
                 if (minVal > val) minVal = val;
                 if (maxVal < val) maxVal = val;
             }
+            v1It.dispose();
             v1It = this.v1.getDomain().getIterator();
         }
+        v0It.dispose();
         v2.updateSup(maxVal, this.cIdx2);
         v2.updateInf(minVal, this.cIdx2);
         // propagate on holes
         if (v2.hasEnumeratedDomain()) {
             v0It = this.v0.getDomain().getIterator();
-            v1It = this.v1.getDomain().getIterator();
             BitSet feasValues = new BitSet(v2.getDomainSize());
             while (v0It.hasNext()) {
                 int v0val = v0It.next();
                 while (v1It.hasNext()) {
                     feasValues.set(lvals[v0val][v1It.next()] + cste);
                 }
+                v1It.dispose();
                 v1It = this.v1.getDomain().getIterator();
             }
-            for (int i = v2It.next(); v2It.hasNext(); i = v2It.next()) {  // on parcourt la valeur
-                if (!feasValues.get(i + cste))
-                    v2.removeVal(i, this.cIdx2);
+            try{
+                for (; v2It.hasNext(); ) {  // on parcourt la valeur
+                    int i = v2It.next();
+                    if (!feasValues.get(i + cste))
+                        v2.removeVal(i, this.cIdx2);
+                }
+            }finally{
+                v2It.dispose();
             }
         }
     }
 
     public boolean testValueVarV0(int idx) {
         boolean ret = false;
-        IntIterator domIt = v1.getDomain().getIterator();
+        DisposableIntIterator domIt = v1.getDomain().getIterator();
         while (!ret & domIt.hasNext()) {
             ret = v2.canBeInstantiatedTo(lvals[idx][domIt.next()]);
         }
+        domIt.dispose();
         return ret;
     }
 
     public boolean testValueVarV1(int idx) {
         boolean ret = false;
-        IntIterator domIt = v0.getDomain().getIterator();
+        DisposableIntIterator domIt = v0.getDomain().getIterator();
         while (!ret & domIt.hasNext()) {
             ret = v2.canBeInstantiatedTo(lvals[domIt.next()][idx]);
         }
+        domIt.dispose();
         return ret;
     }
 
@@ -174,12 +183,13 @@ public class Element2D extends AbstractTernIntSConstraint {
             }
         } else {
             // update index1
-            IntIterator v0It = this.v0.getDomain().getIterator();
+            DisposableIntIterator v0It = this.v0.getDomain().getIterator();
             while (v0It.hasNext()) {
                 int v0val = v0It.next();
                 if (!testValueVarV0(v0val)) minFeasibleIndex1 = v0val;
                 else break;
             }
+            v0It.dispose();
             v0.updateInf(minFeasibleIndex1, thecause1);
 
             // Todo : update the prevValue api on BitSetIntDomain to perform a more efficient iteration
@@ -198,12 +208,13 @@ public class Element2D extends AbstractTernIntSConstraint {
             }
         } else {
             // update index2
-            IntIterator v1It = this.v1.getDomain().getIterator();
+            DisposableIntIterator v1It = this.v1.getDomain().getIterator();
             while (v1It.hasNext()) {
                 int v1val = v1It.next();
                 if (!testValueVarV1(v1val)) minFeasibleIndex2 = v1val;
                 else break;
             }
+            v1It.dispose();
             v1.updateInf(minFeasibleIndex2, thecause2);
 
             // Todo : update the prevValue api on BitSetIntDomain to perform a more efficient iteration
@@ -245,7 +256,7 @@ public class Element2D extends AbstractTernIntSConstraint {
             updateIndexFromValue();
     }
 
-    public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+    public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
         if (idx <= 1)
             updateValueFromIndex();
         else
@@ -262,15 +273,17 @@ public class Element2D extends AbstractTernIntSConstraint {
    public Boolean isEntailed() {
     if (this.v2.isInstantiated()) {
       boolean b = true;
-      IntIterator v0It = this.v0.getDomain().getIterator();
-      IntIterator v1It = this.v1.getDomain().getIterator();
+      DisposableIntIterator v0It = this.v0.getDomain().getIterator();
+      DisposableIntIterator v1It = this.v1.getDomain().getIterator();
       while (b && v0It.hasNext()) {
           int v0val = v0It.next();
           while (b && v1It.hasNext()) {
               b &= (lvals[v0val][v1It.next()] == v2.getVal());
           }
+          v1It.dispose();
           v1It = this.v1.getDomain().getIterator();
       }
+        v0It.dispose();
       if (b) return Boolean.TRUE;
     }
     return Boolean.FALSE;
@@ -283,6 +296,6 @@ public class Element2D extends AbstractTernIntSConstraint {
     }
 
   public String pretty() {
-    return (this.v2.pretty() + " = nth(" + this.v0.pretty() + ", " + this.v1.pretty() + ", " + Arithm.pretty(this.lvals) + ")");
+    return (this.v2.pretty() + " = nth(" + this.v0.pretty() + ", " + this.v1.pretty() + ", " + StringUtils.pretty(this.lvals) + ")");
   }
 }

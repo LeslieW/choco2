@@ -23,7 +23,7 @@
 package choco.cp.solver.constraints.integer;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.Arithm;
+import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.integer.AbstractTernIntSConstraint;
@@ -534,59 +534,59 @@ public Boolean isEntailed() {
   }
 
   private int getNonZeroSup(IntDomainVar v) {
-    return Arithm.min(v.getSup(), -1);
+    return Math.min(v.getSup(), -1);
   }
 
   private int getNonZeroInf(IntDomainVar v) {
-    return Arithm.max(v.getInf(), 1);
+    return Math.max(v.getInf(), 1);
   }
 
   private int infCeilmm(IntDomainVar a, IntDomainVar b, IntDomainVar c) {
-    return Arithm.divCeil(b.getInf(), getNonZeroInf(c));
+    return MathUtils.divCeil(b.getInf(), getNonZeroInf(c));
   }
 
   private int infCeilmM(IntDomainVar a, IntDomainVar b, IntDomainVar c) {
-    return Arithm.divCeil(getNonZeroInf(b), c.getSup());
+    return MathUtils.divCeil(getNonZeroInf(b), c.getSup());
   }
 
   private int infCeilMm(IntDomainVar a, IntDomainVar b, IntDomainVar c) {
-    return Arithm.divCeil(getNonZeroSup(b), c.getInf());
+    return MathUtils.divCeil(getNonZeroSup(b), c.getInf());
   }
 
   private int infCeilMM(IntDomainVar a, IntDomainVar b, IntDomainVar c) {
-    return Arithm.divCeil(b.getSup(), getNonZeroSup(c));
+    return MathUtils.divCeil(b.getSup(), getNonZeroSup(c));
   }
 
   private int infCeilmP(IntDomainVar a, IntDomainVar b, IntDomainVar c) {
-    return Arithm.divCeil(b.getInf(), getMinPositive(c));
+    return MathUtils.divCeil(b.getInf(), getMinPositive(c));
   }
 
   private int infCeilMN(IntDomainVar a, IntDomainVar b, IntDomainVar c) {
-    return Arithm.divCeil(b.getSup(), getMaxNegative(c));
+    return MathUtils.divCeil(b.getSup(), getMaxNegative(c));
   }
 
   private int supCeilmm(IntDomainVar a, IntDomainVar b, IntDomainVar c) {
-    return Arithm.divFloor(getNonZeroInf(b), c.getInf());
+    return MathUtils.divFloor(getNonZeroInf(b), c.getInf());
   }
 
   private int supCeilmM(IntDomainVar a, IntDomainVar b, IntDomainVar c) {
-    return Arithm.divFloor(b.getInf(), getNonZeroSup(c));
+    return MathUtils.divFloor(b.getInf(), getNonZeroSup(c));
   }
 
   private int supCeilMm(IntDomainVar a, IntDomainVar b, IntDomainVar c) {
-    return Arithm.divFloor(b.getSup(), getNonZeroInf(c));
+    return MathUtils.divFloor(b.getSup(), getNonZeroInf(c));
   }
 
   private int supCeilMM(IntDomainVar a, IntDomainVar b, IntDomainVar c) {
-    return Arithm.divFloor(getNonZeroSup(b), c.getSup());
+    return MathUtils.divFloor(getNonZeroSup(b), c.getSup());
   }
 
   private int supCeilmN(IntDomainVar a, IntDomainVar b, IntDomainVar c) {
-    return Arithm.divFloor(b.getInf(), getMaxNegative(c));
+    return MathUtils.divFloor(b.getInf(), getMaxNegative(c));
   }
 
   private int supCeilMP(IntDomainVar a, IntDomainVar b, IntDomainVar c) {
-    return Arithm.divFloor(b.getSup(), getMinPositive(c));
+    return MathUtils.divFloor(b.getSup(), getMinPositive(c));
   }
 
   private int infFloorxx(IntDomainVar a, IntDomainVar b, IntDomainVar c) {
@@ -606,11 +606,11 @@ public Boolean isEntailed() {
   }
 
   private int infCeilxx(IntDomainVar a, IntDomainVar b, IntDomainVar c) {
-    return Arithm.min(Arithm.divCeil(b.getInf(), getMinPositive(c)), Arithm.divCeil(b.getSup(), getMaxNegative(c)));
+    return Math.min(MathUtils.divCeil(b.getInf(), getMinPositive(c)), MathUtils.divCeil(b.getSup(), getMaxNegative(c)));
   }  //v0.18
 
   private int supCeilEq(IntDomainVar a, IntDomainVar b, IntDomainVar c) {
-    return Arithm.max(Arithm.divFloor(b.getInf(), getMaxNegative(c)), Arithm.divFloor(b.getSup(), getMinPositive(c)));
+    return Math.max(MathUtils.divFloor(b.getInf(), getMaxNegative(c)), MathUtils.divFloor(b.getSup(), getMinPositive(c)));
   }   //v0.18
 
   @Override
@@ -676,8 +676,8 @@ public void propagate() throws ContradictionException {
       propagateZero();    // make one of X,Y be 0 if the other cannot be
       return false;       //no more shaving need to be performed
     } else {
-      boolean infChange = (!(v1.canBeInstantiatedTo(0)) && v0.updateInf(Arithm.min(0, xmin), cIdx0));
-      boolean supChange = (!(v1.canBeInstantiatedTo(0)) && v0.updateSup(Arithm.max(0, xmax), cIdx0));
+      boolean infChange = (!(v1.canBeInstantiatedTo(0)) && v0.updateInf(Math.min(0, xmin), cIdx0));
+      boolean supChange = (!(v1.canBeInstantiatedTo(0)) && v0.updateSup(Math.max(0, xmax), cIdx0));
       return (infChange || supChange);
     }
   }
@@ -690,8 +690,8 @@ public void propagate() throws ContradictionException {
       propagateZero();    // make one of X,Y be 0 if the other cannot be
       return false;       //no more shaving need to be performed
     } else {
-      boolean infChange = (!(v0.canBeInstantiatedTo(0)) && v1.updateInf(Arithm.min(0, ymin), cIdx1));
-      boolean supChange = (!(v0.canBeInstantiatedTo(0)) && v1.updateSup(Arithm.max(0, ymax), cIdx1));
+      boolean infChange = (!(v0.canBeInstantiatedTo(0)) && v1.updateInf(Math.min(0, ymin), cIdx1));
+      boolean supChange = (!(v0.canBeInstantiatedTo(0)) && v1.updateSup(Math.max(0, ymax), cIdx1));
       return (infChange || supChange);
     }
   }

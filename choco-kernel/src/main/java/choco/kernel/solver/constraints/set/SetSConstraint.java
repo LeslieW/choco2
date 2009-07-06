@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.constraints.set;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.Propagator;
@@ -40,8 +40,8 @@ public interface SetSConstraint extends SConstraint, Propagator, SetVarEventList
 
   public SetVar getSetVar(int i);
 
-  public void awakeOnkerAdditions(int varIdx, IntIterator deltaDomain) throws ContradictionException;
+  public void awakeOnkerAdditions(int varIdx, DisposableIntIterator deltaDomain) throws ContradictionException;
 
-  public void awakeOnEnvRemovals(int varIdx, IntIterator deltaDomain) throws ContradictionException;
+  public void awakeOnEnvRemovals(int varIdx, DisposableIntIterator deltaDomain) throws ContradictionException;
 
 }

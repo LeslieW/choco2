@@ -22,18 +22,17 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global;
 
-import java.util.BitSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-import choco.kernel.common.util.DisposableIntIterator;
-import choco.kernel.common.util.IntIterator;
-import choco.kernel.common.util.IntList;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.objects.IntList;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.BitSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Enforce the number of identical values wihtin a list of variables to
@@ -113,14 +112,17 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
 		if (v.hasEnumeratedDomain()) {
 			IntDomain dom = v.getDomain();
 			DisposableIntIterator it = dom.getIterator();
-			while(it.hasNext()) {
-				int val = it.next();
-				if (!allowedDomain.get(val - offset)) {
-					//LOGGER.log(Level.INFO, "2 remove value {0} from {1}", new Object[]{val, v});
-					v.removeVal(val, -1);
-				}
-			}
-			it.dispose();
+			try{
+                while(it.hasNext()) {
+                    int val = it.next();
+                    if (!allowedDomain.get(val - offset)) {
+                        //LOGGER.log(Level.INFO, "2 remove value {0} from {1}", new Object[]{val, v});
+                        v.removeVal(val, -1);
+                    }
+                }
+            }finally {
+                it.dispose();
+            }
 		}
 	}
 
@@ -136,10 +138,11 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
 	 * @return false if v has at least one value in gval.
 	 */
 	public boolean emptyIntersectionWithGval(IntDomainVar v) {
-		IntIterator vdom = v.getDomain().getIterator();
+		DisposableIntIterator vdom = v.getDomain().getIterator();
 		while (vdom.hasNext()) {
 			if (gval.get(vdom.next() + cste)) return false;
 		}
+        vdom.dispose();
 		return true;
 	}
 
@@ -150,11 +153,12 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
 	public BitSet intersectionDomains() {
 		if (dVar.getSize() > 0) {
 			List<Integer> inter = new LinkedList<Integer>();
-			IntIterator vdom = vars[dVar.getFirst()].getDomain().getIterator();
+			DisposableIntIterator vdom = vars[dVar.getFirst()].getDomain().getIterator();
 			while (vdom.hasNext()) {
 				inter.add(vdom.next());
 			}
-			IntIterator intIt = dVar.iterator();
+            vdom.dispose();
+			DisposableIntIterator intIt = dVar.iterator();
 			while (intIt.hasNext()) {
 				IntDomainVar v = vars[intIt.next()];
 				for (Iterator it = inter.iterator(); it.hasNext();) {
@@ -162,6 +166,7 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
 						it.remove();
 				}
 			}
+            intIt.dispose();
 			BitSet interDvar = new BitSet(maxDSize);
 			for (Integer i : inter) {
 				interDvar.set(i + cste);
@@ -208,11 +213,12 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
 		if (nGval == 0) {
 			dVar = freeVars.copy();
 		} else {
-			IntIterator intIt = freeVars.iterator();
+			DisposableIntIterator intIt = freeVars.iterator();
 			while (intIt.hasNext()) {
 				int i = intIt.next();
 				if(emptyIntersectionWithGval(vars[i])) dVar.add(i);
 			}
+            intIt.dispose();
 		}
 
 		// update the lower bound of the nvalue variable
@@ -228,22 +234,30 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
 
 	// case of Nvalue instantiated to nGval
 	public void pruningK0() throws ContradictionException {
-		IntIterator intIt = freeVars.iterator();
-		while (intIt.hasNext()) {
-			int i = intIt.next();
-			restrict(1,vars[i],gval);
-		}
+		DisposableIntIterator intIt = freeVars.iterator();
+        try{
+            while (intIt.hasNext()) {
+                int i = intIt.next();
+                restrict(1,vars[i],gval);
+            }
+        }finally {
+            intIt.dispose();
+        }
 	}
 
 	// case of Nvalue reduced to [nGval,nGval + 1]
 	public void pruningK1() throws ContradictionException {
 		BitSet interDvar = intersectionDomains();
 		interDvar.or(gval);
-		IntIterator intIt = freeVars.iterator();
-		while (intIt.hasNext()) {
-			int i = intIt.next();
-			restrict(2,vars[i],interDvar);
-		}
+		DisposableIntIterator intIt = freeVars.iterator();
+        try{
+            while (intIt.hasNext()) {
+                int i = intIt.next();
+                restrict(2,vars[i],interDvar);
+            }
+        }finally {
+            intIt.dispose();
+        }
 	}
 
 	// a greedy approach to compute an independent set of the intersection graph
@@ -254,7 +268,7 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
 			while (dVar.getSize() > 0) {
 				int min = Integer.MAX_VALUE;
 				int y = -1;
-				IntIterator intIt = dVar.iterator();
+				DisposableIntIterator intIt = dVar.iterator();
 				while (intIt.hasNext()) {
 					int next = intIt.next();
 					if (min >= ngraph[next].size()) {
@@ -283,10 +297,10 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
 			ngraph[i].clear();
 			ngraphSize[i] = 0;
 		}
-		IntIterator intIt = dVar.iterator();
+		DisposableIntIterator intIt = dVar.iterator();
 		while (intIt.hasNext()) {
 			int i = intIt.next();
-			IntIterator intIt2 = dVar.iterator();
+			DisposableIntIterator intIt2 = dVar.iterator();
 			while (intIt2.hasNext()) {
 				int j = intIt2.next();
 				if (i <= j) break;
@@ -297,24 +311,33 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
 					ngraphSize[j] ++;
 				}
 			}
+            intIt2.dispose();
 		}
+        intIt.dispose();
 	}
 
 	public void pruning(LinkedList<IntDomainVar> A) throws ContradictionException {
 		BitSet unionOfAllowedValue = gval;
 		for (IntDomainVar x : A) {
-			IntIterator it = x.getDomain().getIterator();
+			DisposableIntIterator it = x.getDomain().getIterator();
+            try{
 			while (it.hasNext()) {
 				int value = it.next();
 				unionOfAllowedValue.set(value + cste);
 			}
+            }finally {
+                it.dispose();
+            }
 		}
-		IntIterator intIt = freeVars.iterator();
-		while (intIt.hasNext()) {
-			int i = intIt.next();
-			restrict(3,vars[i],unionOfAllowedValue);
-
-		}
+		DisposableIntIterator intIt = freeVars.iterator();
+        try{
+            while (intIt.hasNext()) {
+                int i = intIt.next();
+                restrict(3,vars[i],unionOfAllowedValue);
+            }
+        }finally {
+            intIt.dispose();
+        }
 	}
 	
 	// /!\  Logging statements really decrease performance
@@ -334,7 +357,7 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
 		constAwake(false);
 	}
 
-	public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+	public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
 //		while (deltaDomain.hasNext()) {
 //				LOGGER.log(Level.INFO, "remove from {0} value {1}", new Object[]{vars[idx], deltaDomain.next()});
 //			}

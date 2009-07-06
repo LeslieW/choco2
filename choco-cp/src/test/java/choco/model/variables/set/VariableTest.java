@@ -27,7 +27,7 @@ import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
@@ -54,7 +54,7 @@ public class VariableTest {
 		} catch (ContradictionException e) {
 			assertTrue(false);
 		}
-		IntIterator it = x.getDomain().getOpenDomainIterator();
+		DisposableIntIterator it = x.getDomain().getOpenDomainIterator();
 		while (it.hasNext()) {
 			int val = it.next();
 			LOGGER.info("" + val);
@@ -69,7 +69,7 @@ public class VariableTest {
 		SetVar set = s.createBoundSetVar("X", 1, 5);
 		boolean bool = true;
 		LOGGER.info("" + set.pretty());
-		for (IntIterator it0 = set.getDomain().getEnveloppeIterator();
+		for (DisposableIntIterator it0 = set.getDomain().getEnveloppeIterator();
 		     it0.hasNext();) {
 			int x = it0.next();
 			bool = !bool;

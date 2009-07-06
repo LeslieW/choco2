@@ -23,7 +23,7 @@
 package choco.cp.solver.propagation;
 
 import choco.cp.solver.variables.real.RealVarImpl;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.solver.ContradictionException;
@@ -102,7 +102,9 @@ public class RealVarEvent extends VarEvent<RealVarImpl> {
 		PartiallyStoredVector constraints = v.getConstraintVector();
 		PartiallyStoredIntVector indices = v.getIndexVector();
 
-		for (IntIterator cit = constraints.getIndexIterator(); cit.hasNext();) {
+        DisposableIntIterator cit = constraints.getIndexIterator();
+        try{
+		for (; cit.hasNext();) {
 			int idx = cit.next();
 			if (idx != evtCause) {
 				RealVarEventListener c = (RealVarEventListener) constraints.get(idx);
@@ -112,6 +114,10 @@ public class RealVarEvent extends VarEvent<RealVarImpl> {
 				}
 			}
 		}
+        }finally {
+            cit.dispose();
+        }
+
 	}
 
 	/**
@@ -122,8 +128,11 @@ public class RealVarEvent extends VarEvent<RealVarImpl> {
 		PartiallyStoredVector constraints = v.getConstraintVector();
 		PartiallyStoredIntVector indices = v.getIndexVector();
 
-		for (IntIterator cit = constraints.getIndexIterator(); cit.hasNext();) {
+        DisposableIntIterator cit = constraints.getIndexIterator();
+        try{
+		for (; cit.hasNext();) {
 			int idx = cit.next();
+
 			if (idx != evtCause) {
 				RealVarEventListener c = (RealVarEventListener) constraints.get(idx);
 				if (c.isActive()) {
@@ -131,7 +140,11 @@ public class RealVarEvent extends VarEvent<RealVarImpl> {
 					c.awakeOnInf(i);
 				}
 			}
-		}
+            }
+        }finally {
+            cit.dispose();
+        }
+
 	}
 
 	/**
@@ -142,8 +155,11 @@ public class RealVarEvent extends VarEvent<RealVarImpl> {
 		PartiallyStoredVector constraints = v.getConstraintVector();
 		PartiallyStoredIntVector indices = v.getIndexVector();
 
-		for (IntIterator cit = constraints.getIndexIterator(); cit.hasNext();) {
+        DisposableIntIterator cit = constraints.getIndexIterator();
+        try{
+		for (; cit.hasNext();) {
 			int idx = cit.next();
+
 			if (idx != evtCause) {
 				RealVarEventListener c = (RealVarEventListener) constraints.get(idx);
 				if (c.isActive()) {
@@ -152,7 +168,10 @@ public class RealVarEvent extends VarEvent<RealVarImpl> {
 					c.awakeOnSup(i);
 				}
 			}
-		}
+        }
+        }finally {
+            cit.dispose();
+        }
 
 	}
 

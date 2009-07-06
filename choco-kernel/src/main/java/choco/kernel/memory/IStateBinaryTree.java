@@ -23,7 +23,7 @@
 package choco.kernel.memory;
 
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.trailing.trail.StoredBinaryTreeTrail;
 
 import java.util.logging.Logger;
@@ -360,7 +360,7 @@ public interface IStateBinaryTree {
      * gets an iterator over the value in the tree
      * @return an TreeIterator implementing IntIterator
      */
-    IntIterator getIterator();
+    DisposableIntIterator getIterator();
 
     /**
      *  get the tree in dot format

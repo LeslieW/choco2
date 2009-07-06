@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.set;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
@@ -38,13 +38,13 @@ import choco.kernel.solver.variables.set.SetVar;
  *
  */
 public class BitSetEnumeratedDomain implements SetSubDomain {
-  
+
     /**
      * The (optimization or decision) model to which the entity belongs.
      */
 
     public Solver solver;
-    
+
   /**
    * The offset, that is the minimal value of the domain (stored at index 0).
    * Thus the entry at index i corresponds to x=i+offset).
@@ -91,7 +91,7 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
    */
   protected int firstIndexBeingPropagated;
 
-  /**
+    /**
    * Constructs a new domain for the specified variable and bounds.
    *
    * @param v    The involved variable.
@@ -311,20 +311,35 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
     return (contents.prevSetBit(i - 1) != -1);
   }
 
-  public IntIterator getDeltaIterator() {
-    return new BitSetEnumeratedDomain.DeltaDomainIterator(this);
+
+   protected DeltaDomainIterator _cachedDeltaDomainIterator = null;
+
+  public DisposableIntIterator getDeltaIterator() {
+      DisposableIntIterator iter = _cachedDeltaDomainIterator;
+      if(iter != null && iter.reusable){
+          iter.init();
+          return iter;
+      }
+      _cachedDeltaDomainIterator = new DeltaDomainIterator(this);
+      return _cachedDeltaDomainIterator;
   }
 
-  protected class DeltaDomainIterator implements IntIterator {
+  protected class DeltaDomainIterator extends DisposableIntIterator{
     protected BitSetEnumeratedDomain domain;
     protected int currentIndex = -1;
 
     private DeltaDomainIterator(BitSetEnumeratedDomain dom) {
       domain = dom;
-      currentIndex = -1;
+      init();
     }
 
-    public boolean hasNext() {
+      @Override
+      public void init() {
+          super.init();
+          currentIndex = -1;
+      }
+
+      public boolean hasNext() {
       if (currentIndex == -1) {
         return (firstIndexBeingPropagated != -1);
       } else {

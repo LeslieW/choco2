@@ -24,7 +24,7 @@ package choco.cp.solver.constraints.integer.extension;
 
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.extension.IterTuplesTable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -127,7 +127,8 @@ public class GAC3rmPositiveLargeConstraint extends CspLargeSConstraint {
      * @throws ContradictionException
      */
     public void reviseVar(final int indexVar) throws ContradictionException {
-        IntIterator itv = vars[indexVar].getDomain().getIterator();
+        DisposableIntIterator itv = vars[indexVar].getDomain().getIterator();
+        try{
         while (itv.hasNext()) {
             int val = itv.next();
             int nva = val - relation.getRelationOffset(indexVar);
@@ -142,6 +143,9 @@ public class GAC3rmPositiveLargeConstraint extends CspLargeSConstraint {
                     setSupport(currentIdxSupport);
                 }
             }
+        }
+        }finally {
+            itv.dispose();
         }
     }
 
@@ -189,13 +193,17 @@ public class GAC3rmPositiveLargeConstraint extends CspLargeSConstraint {
      */
     public void initSupports() throws ContradictionException {
         for (int i = 0; i < vars.length; i++) {
-            IntIterator itv = vars[i].getDomain().getIterator();
+            DisposableIntIterator itv = vars[i].getDomain().getIterator();
+            try{
             while (itv.hasNext()) {
                 int val = itv.next();
                 int nva = val - relation.getRelationOffset(i);
                 if (tab[i][nva].length == 0)
                     vars[i].removeVal(val, cIndices[i]);
                 else setSupport(tab[i][nva][0]);
+            }
+            }finally {
+                itv.dispose();
             }
         }
     }
@@ -219,7 +227,7 @@ public class GAC3rmPositiveLargeConstraint extends CspLargeSConstraint {
             reviseVar(indexVar);
     }
 
-    public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+    public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
         filter(idx);
     }
 

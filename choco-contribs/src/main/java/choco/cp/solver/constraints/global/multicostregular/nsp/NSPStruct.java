@@ -1,7 +1,7 @@
 package choco.cp.solver.constraints.global.multicostregular.nsp;
 
 import choco.cp.model.managers.IntConstraintManager;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -86,7 +86,7 @@ public class NSPStruct extends AbstractLargeIntSConstraint {
             this.fail();*/
 
     }
-    public void awakeOnRemovals(int idx, IntIterator it){}
+    public void awakeOnRemovals(int idx, DisposableIntIterator it){}
     public void awakeOnRem(int idx, int val){}
     public void awakeOnSup(int idx){}
     public void awakeOnInf(int idx){}

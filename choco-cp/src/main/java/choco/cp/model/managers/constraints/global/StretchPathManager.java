@@ -26,7 +26,7 @@ import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.regular.Regular;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.constraints.automaton.DFA;
 import choco.kernel.model.constraints.automaton.Transition;
 import choco.kernel.model.variables.Variable;
@@ -66,12 +66,14 @@ public class StretchPathManager extends IntConstraintManager {
 
                 ArrayList alphabet = new ArrayList();
                 for (int i = 0; i < vars.length; i++) {
-                    for (IntIterator it = tmpVars[i].getDomain().getIterator(); it.hasNext();) {
+                    DisposableIntIterator it = tmpVars[i].getDomain().getIterator();
+                    for ( ; it.hasNext();) {
                         int val = it.next();
                         if (!alphabet.contains(val)) {
                             alphabet.add(val);
                         }
                     }
+                    it.dispose();
                 }
 
                 int nbStates = 1;

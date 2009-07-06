@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory.structure;
 
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.IStateIntVector;
@@ -53,7 +53,7 @@ public class StoredIntBipartiteList implements IStateIntVector {
     /**
      * An iterator to be reused
      */
-    protected DisposableIntIterator lastIterator;
+    protected DisposableIntIterator _cachedIterator;
 
     public StoredIntBipartiteList(IEnvironment environment, int[] values) {
         this.list = values;
@@ -90,13 +90,13 @@ public class StoredIntBipartiteList implements IStateIntVector {
     }
 
     public DisposableIntIterator getIterator() {
-      BipartiteListIterator iter = (BipartiteListIterator) lastIterator;
+      BipartiteListIterator iter = (BipartiteListIterator) _cachedIterator;
       if (iter != null && iter.disposed) {
         iter.init();
         return iter;
       }
-      lastIterator = new BipartiteListIterator();
-      return lastIterator;
+      _cachedIterator = new BipartiteListIterator(this);
+      return _cachedIterator;
     }
 
     public String pretty() {
@@ -108,11 +108,14 @@ public class StoredIntBipartiteList implements IStateIntVector {
     }
     
 
-    private class BipartiteListIterator extends DisposableIntIterator {
+    protected static class BipartiteListIterator extends DisposableIntIterator {
+        StoredIntBipartiteList siblist;
+
         int idx;
         boolean disposed;
 
-        public BipartiteListIterator() {
+        public BipartiteListIterator(StoredIntBipartiteList list) {
+            this.siblist = list;
            init();
         }
 
@@ -122,19 +125,19 @@ public class StoredIntBipartiteList implements IStateIntVector {
         }
 
         public boolean hasNext() {
-            return idx <= last.get();
+            return idx <= siblist.last.get();
         }
 
         public int next() {
-            return list[idx++];
+            return siblist.list[idx++];
         }
 
         public void remove() {
             idx--;
-            int temp = list[last.get()];
-            list[last.get()] = list[idx];
-            list[idx] = temp;
-            last.add(-1);
+            int temp = siblist.list[siblist.last.get()];
+            siblist.list[siblist.last.get()] = siblist.list[idx];
+            siblist.list[idx] = temp;
+            siblist.last.add(-1);
         }
 
         @Override

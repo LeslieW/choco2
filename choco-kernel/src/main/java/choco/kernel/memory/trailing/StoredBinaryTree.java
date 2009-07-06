@@ -45,7 +45,7 @@ package choco.kernel.memory.trailing;
 **************************************************/
 
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBinaryTree;
 import choco.kernel.memory.trailing.trail.StoredBinaryTreeTrail;
@@ -88,12 +88,13 @@ public class StoredBinaryTree implements IStateBinaryTree {
 
     public int getSize() {
         int out = 0;
-        IntIterator it = this.getIterator();
+        DisposableIntIterator it = this.getIterator();
         while (it.hasNext())
         {
             it.next();
             out++;
         }
+        it.dispose();
         return out;
     }
 
@@ -486,11 +487,6 @@ public class StoredBinaryTree implements IStateBinaryTree {
       return b.toString(); */
     }
 
-    public IntIterator getIterator()
-    {
-        return new TreeIterator();
-    }
-
     public List<Node> toList()
     {
         ArrayList<Node> out = new ArrayList<Node>();
@@ -515,17 +511,38 @@ public class StoredBinaryTree implements IStateBinaryTree {
         return buf.toString();
     }
 
-    public class TreeIterator implements IntIterator
+    protected TreeIterator _cachedIterator = null;
+
+    public DisposableIntIterator getIterator()
     {
+        TreeIterator iter = _cachedIterator;
+        if (iter != null && iter.reusable) {
+            iter.init();
+            return iter;
+        }
+        _cachedIterator = new TreeIterator(this);
+        return _cachedIterator;
+    }
+
+    public static class TreeIterator extends DisposableIntIterator
+    {
+        StoredBinaryTree tree;
         int currentValue;
         Node currentNode;
         Node lastNode;
 
-        public TreeIterator()
+        public TreeIterator(StoredBinaryTree tree)
         {
+            this.tree = tree;
+            init();
+        }
+
+        @Override
+        public void init() {
+            super.init();
             currentValue = Integer.MIN_VALUE;
-            currentNode = getFirstNode();
-            lastNode = getLastNode();
+            currentNode = tree.getFirstNode();
+            lastNode = tree.getLastNode();
         }
 
         public boolean hasNext() {
@@ -544,16 +561,16 @@ public class StoredBinaryTree implements IStateBinaryTree {
             }
             else
             {
-                currentNode = nextNode(currentNode);
+                currentNode = tree.nextNode(currentNode);
                 currentValue = currentNode.inf;
             }
             return currentValue;
         }
 
         public void remove() {
-            rem(currentValue);
-            currentNode = nextNode(currentValue);
-            lastNode = getLastNode();
+            tree.rem(currentValue);
+            currentNode = tree.nextNode(currentValue);
+            lastNode = tree.getLastNode();
 
         }
     }

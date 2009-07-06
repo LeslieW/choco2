@@ -23,8 +23,7 @@
 package choco.cp.solver.constraints.integer.extension;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.DisposableIntIterator;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.extension.BinRelation;
@@ -181,7 +180,7 @@ public class AC2001BinSConstraint extends CspBinSConstraint {
         reviseV1();
     }
 
-    public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+    public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
         if (idx == 0)
             reviseV1();
         else

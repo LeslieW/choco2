@@ -25,7 +25,7 @@ package choco.cp.solver.constraints.strong.maxrpcrm;
 import choco.cp.solver.constraints.strong.AbstractStrongConsistency;
 import choco.cp.solver.constraints.strong.ISpecializedConstraint;
 import choco.cp.solver.constraints.strong.SCConstraint;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -81,7 +81,7 @@ public class MaxRPCrm extends AbstractStrongConsistency<MaxRPCVariable> {
 	}
 
 	@Override
-	public void awakeOnRemovals(int idx, IntIterator deltaDomain) {
+	public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) {
 		touched(idx);
 	}
 

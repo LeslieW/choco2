@@ -23,23 +23,16 @@
 package choco.cp.solver.constraints.global.scheduling;
 
 
-import static choco.cp.solver.SettingType.DEFAULT_FILTERING;
-import static choco.cp.solver.SettingType.DETECTABLE_PRECEDENCE;
-import static choco.cp.solver.SettingType.EDGE_FINDING_D;
-import static choco.cp.solver.SettingType.NF_NL;
-import static choco.cp.solver.SettingType.OVERLOAD_CHECKING;
-import static choco.cp.solver.SettingType.SINGLE_RULE_FILTERING;
-import static choco.cp.solver.SettingType.VILIM_FILTERING;
-
-import java.util.Arrays;
-
 import choco.cp.solver.SettingType;
-import choco.kernel.common.util.ChocoUtil;
-import choco.kernel.common.util.IPermutation;
+import static choco.cp.solver.SettingType.*;
+import choco.kernel.common.util.comparator.IPermutation;
+import choco.kernel.common.util.tools.PermutationUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+
+import java.util.Arrays;
 
 
 /**
@@ -196,7 +189,7 @@ public class Disjunctive extends AbstractResourceSConstraint {
 
 	@Override
 	public boolean isSatisfied(int[] tuple) {
-		IPermutation permutation = ChocoUtil.getSortingPermuation(Arrays.copyOf(tuple, getNbTasks()));
+		IPermutation permutation = PermutationUtils.getSortingPermuation(Arrays.copyOf(tuple, getNbTasks()));
 		int last = 0;
 		for (int i = 0; i < getNbTasks(); i++) {
 			int idx = permutation.getPermutationIndex(i);

@@ -36,7 +36,7 @@ import choco.cp.solver.propagation.ChocEngine;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -183,7 +183,7 @@ public class IntVarEventTest  {
     assertEquals(IntVarEvent.BOUNDSbitvector + IntVarEvent.REMVALbitvector, ((IntVarEvent) evt).getEventType());
 
     PartiallyStoredVector constraints = y.getConstraintVector();
-    IntIterator cit = constraints.getIndexIterator();
+    DisposableIntIterator cit = constraints.getIndexIterator();
     assertTrue(cit.hasNext());
     assertEquals(PartiallyStoredVector.STORED_OFFSET + 0, cit.next());
     assertTrue(cit.hasNext());

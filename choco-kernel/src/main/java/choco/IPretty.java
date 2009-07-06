@@ -22,12 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco;
 
-import choco.kernel.common.util.ChocoUtil;
-
 /**
  * @author Arnaud Malapert
  * an interface for all pretty printings (model + solver)
- * @see {@link ChocoUtil} for useful functions
+ * @see {@link choco.kernel.common.util.tools.ChocoUtil} for useful functions
  *
  */
 public interface IPretty {

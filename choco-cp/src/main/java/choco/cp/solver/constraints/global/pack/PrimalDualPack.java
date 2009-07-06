@@ -22,18 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.pack;
 
-import static choco.cp.solver.SettingType.DYNAMIC_LB;
-import gnu.trove.TIntArrayList;
-
-import java.util.Arrays;
-
 import choco.cp.solver.SettingType;
+import static choco.cp.solver.SettingType.DYNAMIC_LB;
 import choco.cp.solver.constraints.BitFlags;
 import choco.kernel.common.opres.pack.AbstractHeurisic1BP;
 import choco.kernel.common.opres.pack.BestFit1BP;
 import choco.kernel.common.opres.pack.LowerBoundFactory;
-import choco.kernel.common.util.IntIterator;
-import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -41,6 +37,9 @@ import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.set.AbstractLargeSetIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
+import gnu.trove.TIntArrayList;
+
+import java.util.Arrays;
 
 /**
  * <b>{@link PrimalDualPack} which maintains a primal-dual packing domain.</b><br>
@@ -73,7 +72,7 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 
 	public PrimalDualPack(SetVar[] itemSets, IntDomainVar[] loads, IntDomainVar[] sizes,
 			IntDomainVar[] bins,IntDomainVar nbNonEmpty, BitFlags  flags) {
-		super(UtilAlgo.append(loads,sizes,bins,new IntDomainVar[]{nbNonEmpty}),itemSets);
+		super(ArrayUtils.append(loads,sizes,bins,new IntDomainVar[]{nbNonEmpty}),itemSets);
 		this.loads=loads;
 		this.sizes=sizes;
 		this.bins =bins;
@@ -88,11 +87,12 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 	}
 	
 	public final int getRequiredSpace(int bin) {
-		IntIterator iter= svars[bin].getDomain().getKernelIterator();
+		DisposableIntIterator iter= svars[bin].getDomain().getKernelIterator();
 		int load = 0;
 		while(iter.hasNext()) {
 			load+= sizes[iter.next()].getVal();
 		}
+        iter.dispose();
 		return load;
 	}
 
@@ -178,15 +178,19 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 	public final boolean pack(int item, int bin) throws ContradictionException {
 		boolean res = svars[bin].addToKernel(item, set_cIndices[bin]);
 		if(bins[item].canBeInstantiatedTo(bin)) {
-			final IntIterator iter = bins[item].getDomain().getIterator();
+			final DisposableIntIterator iter = bins[item].getDomain().getIterator();
 			//remove from other env
-			while(iter.hasNext()) {
-				final int b= iter.next();
-				if(bin!=b) {
-					res |= svars[b].remFromEnveloppe(item, set_cIndices[b]);
-				}
-			}
-			res |= bins[item].instantiate(bin, getItemCindice(item));	
+            try{
+                while(iter.hasNext()) {
+                    final int b= iter.next();
+                    if(bin!=b) {
+                        res |= svars[b].remFromEnveloppe(item, set_cIndices[b]);
+                    }
+                }
+            }finally {
+                iter.dispose();
+            }
+			res |= bins[item].instantiate(bin, getItemCindice(item));
 		}else {
 			LOGGER.warning("should not raise a contradiction here.");
 			this.fail();
@@ -220,10 +224,14 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 		if( ivars[idx].updateSup(max, int_cIndices[idx])
 				&& flags.contains(SettingType.LAST_BINS_EMPTY)) {
 			for (int b = max; b < getNbBins(); b++) {
-				final IntIterator iter = svars[b].getDomain().getEnveloppeIterator();
-				while(iter.hasNext()) {
-				res |= remove(iter.next(), b);
-				}
+				final DisposableIntIterator iter = svars[b].getDomain().getEnveloppeIterator();
+				try{
+                    while(iter.hasNext()) {
+                        res |= remove(iter.next(), b);
+                    }
+                }finally {
+                    iter.dispose();
+                }
 			}
 		}
 		return res;
@@ -314,12 +322,16 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 
 
 	protected void checkDeltaDomain(int item) throws ContradictionException {
-		final IntIterator iter=bins[item].getDomain().getDeltaIterator();
+		final DisposableIntIterator iter=bins[item].getDomain().getDeltaIterator();
 		if(iter.hasNext()) {
-			while(iter.hasNext()) {
-				final int b=iter.next();
-				svars[b].remFromEnveloppe(item, set_cIndices[b]);
-			}
+            try{
+                while(iter.hasNext()) {
+                    final int b=iter.next();
+                    svars[b].remFromEnveloppe(item, set_cIndices[b]);
+                }
+            }finally {
+                iter.dispose();
+            }
 		}else {
 			throw new SolverException("empty delta domain: "+bins[item].pretty());
 		}
@@ -345,13 +357,17 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 	@Override
 	public void awakeOnInst(int varIdx) throws ContradictionException {
 		if(isSetEvent(varIdx)) {
-			IntIterator iter= svars[varIdx].getDomain().getKernelIterator();
-			while(iter.hasNext()) {
-				final int item=iter.next();
-				if(! bins[item].isInstantiated()) {
-					pack(item,varIdx);
-				}
-			}
+			DisposableIntIterator iter= svars[varIdx].getDomain().getKernelIterator();
+            try{
+                while(iter.hasNext()) {
+                    final int item=iter.next();
+                    if(! bins[item].isInstantiated()) {
+                        pack(item,varIdx);
+                    }
+                }
+            }finally {
+                iter.dispose();
+            }
 			iter= svars[varIdx].getDomain().getEnveloppeDomain().getDeltaIterator();
 			while(iter.hasNext()) {
 				final int item=iter.next();

@@ -24,7 +24,7 @@ package choco.cp.solver.constraints.global.tree.structure.internalStructure.grap
 
 import choco.cp.solver.constraints.global.tree.structure.internalStructure.graphStructures.reducedGraph.ReducedGraph;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -161,19 +161,21 @@ public class VarGraphView {
                 int j = s[i].getVal();
                 sureGraph[i].set(j, true);
             } else {
-                IntIterator it = s[i].getDomain().getIterator();
+                DisposableIntIterator it = s[i].getDomain().getIterator();
                 while (it.hasNext()) {
                     int j = it.next();
                     maybeGraph[i].set(j, true);
                 }
+                it.dispose();
             }
         }
         for (int i = 0; i < nbNodes; i++) {
-            IntIterator it = s[i].getDomain().getIterator();
+            DisposableIntIterator it = s[i].getDomain().getIterator();
             while (it.hasNext()) {
                 int j = it.next();
                 globalGraph[i].set(j, true);
             }
+            it.dispose();
         }
     }
 
@@ -222,7 +224,7 @@ public class VarGraphView {
      * @param u     index of a node
      * @param deltaDomain   an iterator over the removed indices
      */
-    public void updateOnRemovals(int u, IntIterator deltaDomain) {
+    public void updateOnRemovals(int u, DisposableIntIterator deltaDomain) {
         // supprimer tous les succ de u qui sont dans deltaDomain de maybe et global
         maybe.remAllNodes(u, deltaDomain);
         global.remAllNodes(u, deltaDomain);
@@ -232,6 +234,7 @@ public class VarGraphView {
             int v = deltaDomain.next();
             if (u == v) potentialRoots.set(u, false);
         }
+        deltaDomain.dispose();
     }
 
     /**

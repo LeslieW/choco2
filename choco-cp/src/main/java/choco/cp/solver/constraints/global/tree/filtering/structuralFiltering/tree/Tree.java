@@ -24,7 +24,7 @@ package choco.cp.solver.constraints.global.tree.filtering.structuralFiltering.tr
 
 
 import choco.cp.solver.constraints.global.tree.filtering.AbstractPropagator;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -138,7 +138,7 @@ public class Tree extends AbstractPropagator {
             }
             // a sink scc with a single potential root
             if (occurs == 1) {
-                IntIterator it = nodes[name].getSuccessors().getDomain().getIterator();
+                DisposableIntIterator it = nodes[name].getSuccessors().getDomain().getIterator();
                 int[] toRem = new int[nodes[name].getSuccessors().getDomainSize()];
                 for (int j = 0; j < toRem.length; j++) toRem[j] = -1;
                 int j = 0;
@@ -149,6 +149,7 @@ public class Tree extends AbstractPropagator {
                         j++;
                     }
                 }
+                it.dispose();
                 j = 0;
                 while (toRem[j] != -1) {
                     if (nodes[name].getSuccessors().canBeInstantiatedTo(toRem[j])) {
@@ -174,7 +175,7 @@ public class Tree extends AbstractPropagator {
             for (int m = 0; m < nbVertices; m++) {
                 IntDomainVar var = nodes[m].getSuccessors();
                 if (var.canBeInstantiatedTo(m)) {
-                    IntIterator it = var.getDomain().getIterator();
+                    DisposableIntIterator it = var.getDomain().getIterator();
                     int[] toRem = new int[var.getDomainSize()];
                     for (int j = 0; j < toRem.length; j++) toRem[j] = -1;
                     int j = 0;
@@ -185,6 +186,7 @@ public class Tree extends AbstractPropagator {
                             j++;
                         }
                     }
+                    it.dispose();
                     j = 0;
                     while (toRem[j] != -1) {
                         if (var.canBeInstantiatedTo(toRem[j])) {
@@ -246,18 +248,19 @@ public class Tree extends AbstractPropagator {
             BitSet door = new BitSet();
             for (int j = cont.nextSetBit(0); j >= 0; j = cont.nextSetBit(j + 1)) {
                 IntDomainVar var = nodes[j].getSuccessors();
-                IntIterator it = var.getDomain().getIterator();
+                DisposableIntIterator it = var.getDomain().getIterator();
                 while (it.hasNext()) {
                     int r = it.next();
                     if (r == j)
                         door.set(j, true);
                     else if (!cont.get(r)) door.set(j, true);
                 }
+                it.dispose();
             }
             if (door.cardinality() == 1) {
                 int j = door.nextSetBit(0);
                 IntDomainVar var = nodes[j].getSuccessors();
-                IntIterator it = var.getDomain().getIterator();
+                DisposableIntIterator it = var.getDomain().getIterator();
                 while (it.hasNext()) {
                     int r = it.next();
                     if (cont.get(r) && r != j && var.canBeInstantiatedTo(r)) {
@@ -267,6 +270,7 @@ public class Tree extends AbstractPropagator {
                         propagateStruct.addRemoval(arc);
                     }
                 }
+                it.dispose();
             }
         }
         // filtering rule on dominator nodes (originaly called strong articulation points in CPAIOR'05 paper)

@@ -23,7 +23,7 @@
 package choco.memory;
 
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.memory.structure.StoredIntBipartiteList;
 import choco.kernel.memory.trailing.EnvironmentTrailing;

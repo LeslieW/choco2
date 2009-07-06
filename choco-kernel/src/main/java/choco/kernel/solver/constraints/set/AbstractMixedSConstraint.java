@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.constraints.set;
 
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
@@ -55,12 +55,16 @@ public abstract class AbstractMixedSConstraint extends AbstractSConstraint imple
 	 * @param idx
 	 * @throws choco.kernel.solver.ContradictionException
 	 */
-	public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+	public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
 		if (deltaDomain != null) {
+            try{
 			for (; deltaDomain.hasNext();) {
 				int val = deltaDomain.next();
 				awakeOnRem(idx, val);
 			}
+            }finally {
+                deltaDomain.dispose();
+            }
 		}
 	}
 
@@ -106,23 +110,31 @@ public abstract class AbstractMixedSConstraint extends AbstractSConstraint imple
         this.constAwake(false);
     }
 
-    public void awakeOnEnvRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+    public void awakeOnEnvRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
 		if (deltaDomain != null) {
+            try{
 			for (; deltaDomain.hasNext();) {
 				int val = deltaDomain.next();
 				awakeOnEnv(idx, val);
 			}
+            }finally {
+                deltaDomain.dispose();
+            }
 		} else {
 			throw new SolverException("deltaDomain should not be null in awakeOnEnvRemovals");
 		}
 	}
 
-	public void awakeOnkerAdditions(int idx, IntIterator deltaDomain) throws ContradictionException {
+	public void awakeOnkerAdditions(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
 		if (deltaDomain != null) {
+            try{
 			for (; deltaDomain.hasNext();) {
 				int val = deltaDomain.next();
 				awakeOnKer(idx, val);
 			}
+            }finally {
+                deltaDomain.dispose();
+            }
 		} else {
 			throw new SolverException("deltaDomain should not be null in awakeOnKerAdditions");
 		}

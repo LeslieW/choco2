@@ -24,7 +24,7 @@ package choco.cp.solver.constraints.strong.maxrpcrm;
 
 import choco.cp.solver.constraints.strong.ISpecializedConstraint;
 import choco.cp.solver.constraints.strong.SCVariable;
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 

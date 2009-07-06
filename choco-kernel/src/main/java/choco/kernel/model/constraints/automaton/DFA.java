@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.constraints.automaton;
 
-import choco.kernel.common.util.UtilAlgo;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.solver.SolverException;
 import dk.brics.automaton.RegExp;
@@ -148,7 +148,7 @@ public class DFA {
      */
     public DFA(String strRegExp, int sizeword) {
         try {
-        String formated = UtilAlgo.toCharExp(strRegExp);
+        String formated = StringUtils.toCharExp(strRegExp);
         dk.brics.automaton.RegExp regexp = new RegExp(formated);
         dk.brics.automaton.Automaton a = regexp.toAutomaton();
         List<Transition> ts = new LinkedList<Transition>();

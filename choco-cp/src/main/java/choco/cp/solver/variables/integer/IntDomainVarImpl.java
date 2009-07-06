@@ -23,7 +23,7 @@
 package choco.cp.solver.variables.integer;
 
 import static choco.cp.solver.variables.integer.IntVarEvent.*;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
@@ -389,11 +389,13 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 				if (!this.hasEnumeratedDomain() || !x.hasEnumeratedDomain())
 					return true;
 				else {
-					for (IntIterator it = this.getDomain().getIterator(); it.hasNext();) {
+                    DisposableIntIterator it = this.getDomain().getIterator();
+					for (; it.hasNext();) {
 						int v = it.next();
 						if (x.canBeInstantiatedTo(v))
 							return true;
 					}
+                    it.dispose();
 					return false;
 				}
 			} else

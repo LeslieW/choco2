@@ -28,8 +28,8 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
 import choco.cp.solver.search.task.SetTimes;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.ChocoUtil;
-import choco.kernel.common.util.TaskComparators;
+import choco.kernel.common.util.comparator.TaskComparators;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.variables.scheduling.ITask;
@@ -92,7 +92,7 @@ public class OpenShopExample {
 		//RESOURCES
 		for (int i = 0; i < n; i++) {
 			machines[i] = Choco.disjunctive(tasks[i],SettingType.FORBIDDEN_INTERVALS.getOptionName());
-			TaskVariable[] job = ChocoUtil.getColumn(tasks, i);
+			TaskVariable[] job = ArrayUtils.getColumn(tasks, i);
 			jobs[i] = Choco.disjunctive(job, SettingType.FORBIDDEN_INTERVALS.getOptionName());
 		}
 		model.addConstraints(jobs);

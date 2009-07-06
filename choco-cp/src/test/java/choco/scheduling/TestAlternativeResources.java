@@ -26,7 +26,7 @@ import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -264,28 +264,28 @@ public class TestAlternativeResources {
 	@Test
 	public void testAltDisj1() {
 		int n = 4;
-		int[] durations = ChocoUtil.oneToN(n);
+		int[] durations = ArrayUtils.oneToN(n);
 		testAltDisjunctive(TestDisjunctive.NB_TESTS, durations, (n * (n - 1)) / 2, 2);
 	}
 
 	@Test
 	public void testAltDisj2() {
 		int n = 5;
-		int[] durations = ChocoUtil.oneToN(n);
+		int[] durations = ArrayUtils.oneToN(n);
 		testAltDisjunctive(1,durations, (n * (n - 1)) / 2, 1);
 	}
 
 	@Test
 	public void testAltDisj3() {
 		int n = 5;
-		int[] durations = ChocoUtil.oneToN(n);
+		int[] durations = ArrayUtils.oneToN(n);
 		testAltDisjunctive(1, durations, ((n - 1) * (n - 2)) / 2 + n / 2, 2);
 	}
 
 	@Test
 	public void testEmptyResource() {
 		int n = 4;
-		int[] durations = ChocoUtil.oneToN(n);
+		int[] durations = ArrayUtils.oneToN(n);
 		AltDisjProblem pb = new AltDisjProblem(durations, 4);
 		pb.setHorizon(4);
 		TestDisjunctive.launchAllRules(pb, 2 * 3 * 4);
@@ -294,7 +294,7 @@ public class TestAlternativeResources {
 	@Test
 	public void testAltCumul1() {
 		int n = 3;
-		int[] durations = ChocoUtil.oneToN(n);
+		int[] durations = ArrayUtils.oneToN(n);
 		int[] heights = new int[n];
 		Arrays.fill(heights, n/2);
 		testAltCumulative(TestCumulative.NB_TEST, durations, heights, n, n*(n+1)/4+3, 1);
@@ -304,7 +304,7 @@ public class TestAlternativeResources {
 	@Test
 	public void testAltCumul2() {
 		int n = 4;
-		int[] durations = ChocoUtil.oneToN(n);
+		int[] durations = ArrayUtils.oneToN(n);
 		int[] heights = new int[n];
 		Arrays.fill(heights, n/2);
 		testAltCumulative(TestCumulative.NB_TEST, durations, heights, n, n*(n+1)/4-1, 1);
@@ -314,7 +314,7 @@ public class TestAlternativeResources {
 	@Test
 	public void testAltCumul3() {
 		int n = 5;
-		int[] durations = ChocoUtil.oneToN(n);
+		int[] durations = ArrayUtils.oneToN(n);
 		int[] heights = new int[n];
 		Arrays.fill(heights, n/2);
 		testAltCumulative(5, durations, heights, n, n*(n+1)/4-2, 1);

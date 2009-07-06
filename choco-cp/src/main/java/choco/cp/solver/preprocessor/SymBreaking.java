@@ -24,7 +24,7 @@ package choco.cp.solver.preprocessor;
 
 import choco.Choco;
 import choco.cp.model.CPModel;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -52,10 +52,11 @@ public class SymBreaking {
      */
     public void addSymBreakingConstraint(CPModel m) {
         if (maxclique != null && checkOnlyOneDomain(m) && checkOnlyDiff(m)) {
-            IntIterator it = m.getIntVar(0).getDomainIterator();
+            DisposableIntIterator it = m.getIntVar(0).getDomainIterator();
             for (int i = 0; i < maxclique.length && it.hasNext(); i++) {
                 m.addConstraint(Choco.eq(maxclique[i], it.next()));
             }
+            it.dispose();
         }
     }
 

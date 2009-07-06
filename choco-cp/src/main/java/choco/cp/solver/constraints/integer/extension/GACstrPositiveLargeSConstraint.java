@@ -23,8 +23,7 @@
 package choco.cp.solver.constraints.integer.extension;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.DisposableIntIterator;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.structure.StoredIntBipartiteList;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.solver.ContradictionException;
@@ -146,11 +145,15 @@ public class GACstrPositiveLargeSConstraint extends CspLargeSConstraint {
             int vIdx = itf.next();
             IntDomainVar v = vars[vIdx];
             DisposableIntIterator it3 = v.getDomain().getIterator();
-            while (it3.hasNext()) {
-                int val = it3.next();
-                if (!gacValues[vIdx].get(val - offsets[vIdx])) {
-                    v.removeVal(val, cIndices[vIdx]);
+            try{
+                while (it3.hasNext()) {
+                    int val = it3.next();
+                    if (!gacValues[vIdx].get(val - offsets[vIdx])) {
+                        v.removeVal(val, cIndices[vIdx]);
+                    }
                 }
+            }finally {
+                it3.dispose();
             }
         }
     }
@@ -258,7 +261,7 @@ public class GACstrPositiveLargeSConstraint extends CspLargeSConstraint {
         gacstr();
     }
 
-    public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+    public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
         filter(idx);
     }
 

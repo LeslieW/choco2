@@ -28,7 +28,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.constraints.global.scheduling.AbstractResourceSConstraint;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.IntList;
+import choco.kernel.common.util.objects.IntList;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;

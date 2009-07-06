@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.restart;
 
-import choco.kernel.common.util.MathUtil;
+import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.search.Limit;
 
@@ -61,16 +61,16 @@ public class LubyRestart extends AbstractParametrizedRestartStrategy {
 	}
 
 	public static final int geometricalSum(int value, int exponent) {
-		return  ( MathUtil.pow(value,exponent)-1 ) / ( value -1 );
+		return  ( MathUtils.pow(value,exponent)-1 ) / ( value -1 );
 	}
 	
 
 	public final int getLasVegasCoef(int i) {
 		//<hca> I round it to PRECISION because of issues between versions of the jvm on mac and pc
-		final double log = MathUtil.roundedLog( i * divFactor + 1,geometricalIntFactor);
+		final double log = MathUtils.roundedLog( i * divFactor + 1,geometricalIntFactor);
 		final int k = (int) Math.floor(log);
 		if(log == k) {
-			return MathUtil.pow(geometricalIntFactor,k-1);
+			return MathUtils.pow(geometricalIntFactor,k-1);
 		}else {
 			//recursion
 			return getLasVegasCoef(i - geometricalSum(geometricalIntFactor, k));

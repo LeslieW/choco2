@@ -24,8 +24,7 @@ package choco.cp.solver.search.integer.branching;
 
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
-import choco.kernel.common.util.DisposableIntIterator;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.AbstractLargeIntBranching;
@@ -286,7 +285,7 @@ public class ImpactBasedBranching extends AbstractLargeIntBranching {
 					//for (Object svar : svars) {
 					IntDomainVar v = (IntDomainVar) svars.get(i);
 					if (!v.isInstantiated() && v.hasEnumeratedDomain()) {
-						IntIterator it = v.getDomain().getIterator();
+						DisposableIntIterator it = v.getDomain().getIterator();
 						while (it != null && it.hasNext()) {
 							int val = it.next();
 							boolean cont = false;
@@ -316,6 +315,7 @@ public class ImpactBasedBranching extends AbstractLargeIntBranching {
 								return true;
 							}
 						}
+                        it.dispose();
 					}
 				}
 				_branching._solver.worldPop();
@@ -469,12 +469,13 @@ public class ImpactBasedBranching extends AbstractLargeIntBranching {
 			int idx = ((ImpactBasedBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).index;
 			if (idx != -1) {
 				double imp = 0.0;
-				IntIterator it = var.getDomain().getIterator();
+				DisposableIntIterator it = var.getDomain().getIterator();
 				int blockadress = dataS.blocks[idx] - dataS.offsets[idx];
 				while (it.hasNext()) {
 					int val = it.next();
 					imp += 1 - getImpactVal(blockadress + val);
 				}
+                it.dispose();
 				return imp;
 			} else
 				return 0;

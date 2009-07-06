@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory.structure;
 
-import choco.kernel.common.util.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 
@@ -160,36 +160,42 @@ public class PartiallyStoredIntVector {
             iter.init();
             return iter;
         }
-        _cachedIndexIterator = new IndexIterator();
+        _cachedIndexIterator = new IndexIterator(this);
         return _cachedIndexIterator;
     }
 
 
-    class IndexIterator extends DisposableIntIterator {
-      int idx = -1;
-      boolean stats = (nStaticInts> 0);
-        boolean storeds = (nStoredInts.get() > 0);
+    protected static class IndexIterator extends DisposableIntIterator {
+        PartiallyStoredIntVector vector;
+        int idx = -1;
+      boolean stats;
+        boolean storeds;
+
+        public IndexIterator(PartiallyStoredIntVector vector) {
+            this.vector = vector;
+            init();
+        }
 
         public void init() {
             super.init();
             idx = -1;
-            stats = (nStaticInts> 0);
-            storeds = (nStoredInts.get() > 0);
+            stats = (vector.nStaticInts> 0);
+            storeds = (vector.nStoredInts.get() > 0);
         }
 
       public boolean hasNext() {
           if(idx == -1){
               return stats || storeds;
           }else{
-              return ((stats && idx < nStaticInts-1)
-                      || (idx == nStaticInts-1 && storeds)
-                  ||( storeds && STORED_OFFSET <= idx && idx < STORED_OFFSET + nStoredInts.get()-1));
+              return ((stats && idx < vector.nStaticInts-1)
+                      || (idx == vector.nStaticInts-1 && storeds)
+                  ||( storeds && STORED_OFFSET <= idx && idx < STORED_OFFSET + vector.nStoredInts.get()-1));
           }
       }
 
       public int next() {
           idx++;
-          if(idx==nStaticInts){
+          if(idx==vector.nStaticInts){
               idx = STORED_OFFSET;
           }
           return idx;

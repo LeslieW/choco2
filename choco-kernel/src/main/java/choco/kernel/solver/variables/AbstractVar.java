@@ -23,7 +23,7 @@
 package choco.kernel.solver.variables;
 
 import choco.kernel.common.HashCoding;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
@@ -279,7 +279,7 @@ public abstract class AbstractVar implements Var {
 	 */
 	public Iterator<SConstraint> getConstraintsIterator() {
 		return new Iterator<SConstraint>() {
-			IntIterator indices = constraints.getIndexIterator();
+			DisposableIntIterator indices = constraints.getIndexIterator();
 
 			public boolean hasNext() {
 				return indices.hasNext();

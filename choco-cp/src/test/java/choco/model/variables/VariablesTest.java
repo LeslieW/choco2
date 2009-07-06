@@ -28,7 +28,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.ChocoUtil;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
@@ -101,7 +101,7 @@ public class VariablesTest {
 	public void testEnumVarWithRedundantValues() {
 		int[] values = new int[] {3,5,7,3,5,9,10, 10};
 		int[] res = new int[] {3,5,7,9,10};
-		Assert.assertArrayEquals("sort and remove redundat values ", res, ChocoUtil.getNonRedundantSortedValues(values));
+		Assert.assertArrayEquals("sort and remove redundat values ", res, ArrayUtils.getNonRedundantSortedValues(values));
 		final CPModel m = new CPModel();
 		final IntegerVariable v = Choco.makeIntVar("v", values);
 		m.addVariable(v);

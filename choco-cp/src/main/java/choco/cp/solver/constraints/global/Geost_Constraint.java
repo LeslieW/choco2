@@ -31,7 +31,7 @@ import choco.cp.solver.constraints.global.geost.layers.ExternalLayer;
 import choco.cp.solver.constraints.global.geost.layers.GeometricKernel;
 import choco.cp.solver.constraints.global.geost.layers.IntermediateLayer;
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.IntIterator;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
@@ -217,7 +217,7 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 		this.constAwake(false);
 	 }
 
-	public void awakeOnRemovals(int idx, IntIterator deltaDomain) throws ContradictionException {
+	public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
 		this.constAwake(false);
 	}
 
