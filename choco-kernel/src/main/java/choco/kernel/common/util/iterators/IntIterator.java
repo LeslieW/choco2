@@ -30,6 +30,12 @@ package choco.kernel.common.util.iterators;
  * (among other things, this is useful for iterating domains)
  * Note that it does not extend Iterator, as we iterate over native int,
  * and not Object.
+ *
+ * DEVELOPPERS :
+ * This class must be preotected:
+ * 
+ * Use directly DisposableIntIterator!!
+ *
  */
 
 interface IntIterator {
