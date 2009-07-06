@@ -28,16 +28,16 @@
 //**************************************************
 package choco.kernel.solver.search;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Level;
+
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.branch.AbstractBranching;
 import choco.kernel.solver.branch.AbstractIntBranching;
 import choco.kernel.solver.constraints.SConstraint;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.logging.Level;
 
 /**
  * An abstract class for controlling tree search in various ways
@@ -114,16 +114,13 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	/**
 	 * A set of limits controlling the exploration
 	 */
-	//	public AbstractGlobalSearchLimit[] limits;
-	public ArrayList<AbstractGlobalSearchLimit> limits;
-
-	public Collection<AbstractGlobalSearchLimit> solutionLimits;
+	public List<AbstractGlobalSearchLimit> limits;
 
 	public ISearchLoop searchLoop;
 
 	protected AbstractGlobalSearchStrategy(Solver solver) {
 		this.solver = solver;
-		limits = new ArrayList<AbstractGlobalSearchLimit>();
+		limits = new LinkedList<AbstractGlobalSearchLimit>(); //always iterates over the list
 		traceStack = new IntBranchingTrace[solver.getNbBooleanVars() + solver.getNbIntVars() + solver.getNbSetVars()];
 		nextMove = INIT_SEARCH;
 	}
@@ -191,14 +188,14 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 				nextSolution();
 			} else {
                 //noinspection StatementWithEmptyBody
-                while (nextSolution() == Boolean.TRUE);
+                while (nextSolution() == Boolean.TRUE){}
 			}
 			//model.worldPop();
-			if ((maxNbSolutionStored > 0) && (!stopAtFirstSol) && existsSolution()) {
+			if ( existsStoredSolution() && (!stopAtFirstSol)) {
 				solver.worldPopUntil(baseWorld);
 				restoreBestSolution();
 			}
-			if (!isEncounteredLimit() && !existsSolution()) {
+			if (!isEncounteredLimit() && !solver.existsSolution()) {
 				solver.setFeasible(Boolean.FALSE);
 			}
 		} else {
@@ -218,7 +215,6 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 			lim.reset(true);
 		}
 		nbSolutions = 0;
-		solutionLimits = null;
 		baseWorld = solver.getEnvironment().getWorldIndex();
 	}
 
@@ -267,6 +263,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		} else {return  searchLoop.run();}
 	}
 
+	
 	/**
 	 * called when a solution is encountered: printing and, if needed, storing the solution
 	 */
@@ -285,7 +282,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 				LOGGER.log(Level.FINE, "=== {0}",sb);	
 				if (LOGGER.isLoggable(Level.FINER)) {LOGGER.log(Level.FINER,"\t{0}", solver.solutionToString());}
 			}
-			if (maxNbSolutionStored > 0) {
+			if ( isRecordingNextSolution() ) {
 				super.recordSolution();
 			}
 		}else{
@@ -293,13 +290,6 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		}
 	}
 
-
-
-	@Override
-	public void restoreBestSolution() {
-		super.restoreBestSolution();
-		solutionLimits = getBestSolution().getLimits();
-	}
 
 	/**
 	 * called before going down into each branch of the choice point

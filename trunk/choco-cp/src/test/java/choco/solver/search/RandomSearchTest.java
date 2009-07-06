@@ -27,6 +27,8 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -47,7 +49,8 @@ public class RandomSearchTest {
 
     @Test
   public void testNQueens() {
-    int n = 8;
+    //ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+    	int n = 8;
     Model m;
     IntegerVariable[] queens;
     m = new CPModel();

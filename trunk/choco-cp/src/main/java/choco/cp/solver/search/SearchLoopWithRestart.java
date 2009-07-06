@@ -67,7 +67,7 @@ public class SearchLoopWithRestart extends SearchLoop {
 
 	public void setRestartMoveMask(int restartMask) {
 		if(restartMask == 0) {
-			throw new SolverException("empty move mask is forbidden");
+			throw new SolverException("empty mask is forbidden");
 		}
 		this.restartMoveMask = restartMask;
 	}

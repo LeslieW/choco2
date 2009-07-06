@@ -110,7 +110,7 @@ public class SearchTest {
         s.setValSetSelector(new MinEnv(s));
         s.solve();
         LOGGER.info("NbSolution " + s.getNbSolutions());
-        Solution sol = s.getSearchStrategy().solutions.get(0);
+        Solution sol = s.getSearchStrategy().getBestSolution();
         s.restoreSolution(sol);
         for (int i = 0; i < n; i++) {
             LOGGER.info("set[" + i + "]:" + s.getVar(vars[i]).pretty());

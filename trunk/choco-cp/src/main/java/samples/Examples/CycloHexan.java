@@ -111,7 +111,7 @@ public class CycloHexan extends PatternExample {
     public void prettyOut() {
         packSolutions(_s, _m);
         StringBuffer st = new StringBuffer();
-        List solutions = _s.getSearchStrategy().solutions;
+        List solutions = _s.getSearchStrategy().getStoredSolutions();
         st.append("The CycloHexane problem consists in finding the 3D configuration of a cyclohexane molecule." +
                 "It is decribed with a system of three non linear equations : \n" +
                 " y^2 * (1 + z^2) + z * (z - 24 * y) = -13 \n" +
@@ -130,7 +130,7 @@ public class CycloHexan extends PatternExample {
     }
 
     private static void packSolutions(Solver solver, Model m) {
-        List solus = solver.getSearchStrategy().solutions;
+        List solus = solver.getSearchStrategy().getStoredSolutions();
 
         for (int i = 0; i < solus.size(); i++) {
             Solution sol = (Solution) solus.get(i);

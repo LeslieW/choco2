@@ -1,7 +1,11 @@
 package db;
 
 import static java.lang.System.getProperty;
-import static java.sql.Types.*;
+import static java.sql.Types.BOOLEAN;
+import static java.sql.Types.DOUBLE;
+import static java.sql.Types.INTEGER;
+import static java.sql.Types.REAL;
+import static java.sql.Types.TIMESTAMP;
 import static java.sql.Types.VARCHAR;
 
 import java.io.File;
@@ -14,13 +18,10 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -32,10 +33,7 @@ import choco.cp.solver.search.restart.ParametrizedRestartStrategy;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.search.AbstractGlobalSearchLimit;
-
-
-
+import choco.kernel.solver.search.IMeasures;
 
 
 public class DatabaseManager {
@@ -47,6 +45,8 @@ public class DatabaseManager {
 	public static final Object NULL = "NULL";
 
 	public static final String ID = "ID";
+	
+	protected  final static int[] THREE_VARCHARS = {VARCHAR, VARCHAR, VARCHAR}; 
 
 	/**
 	 * Number of bytes per Mo.
@@ -60,7 +60,7 @@ public class DatabaseManager {
 	//ID to reuse
 
 	private Integer noRestartStrategyID;
-	
+
 	private Integer unknownStrategyID;
 
 	private Integer environmentID;
@@ -271,8 +271,7 @@ public class DatabaseManager {
 	//***************************************************************//
 
 	protected  final static String[] T_PROBLEMS = {"LABEL","NAME", "CATEGORY"};
-	protected  final static int[] THREE_VARCHARS = {VARCHAR, VARCHAR, VARCHAR}; 
-
+	
 	public void safeProblemInsertion(String label, String name, String category) {
 		insertEntryIfAbsentPK(
 				"T_PROBLEMS",
@@ -283,6 +282,7 @@ public class DatabaseManager {
 	}
 
 	protected  final static String[] T_INSTANCES = new String[]{"NAME", "PROBLEM_LABEL", "SIZE1","SIZE2"};
+	
 	protected  final static int[] T_INSTANCES_TYPES = {VARCHAR, VARCHAR, INTEGER, INTEGER};
 
 	public void safeInstanceInsertion(String instanceName, String problemLabel, int size1, int size2) {
@@ -327,37 +327,6 @@ public class DatabaseManager {
 		);
 	}
 
-	protected  final static String[] T_MESURES = {
-		"STATE_LABEL","NB_SOLUTIONS","OBJECTIVE",
-		"TIME",	"CPU_TIME","NODES","BACKTRACKS","NB_ITERATIONS"
-	};
-
-	protected  final static int[] T_MESURES_TYPES = {
-		VARCHAR, INTEGER, DOUBLE, 
-		INTEGER,INTEGER, INTEGER, INTEGER, INTEGER
-	};
-
-
-	public static Double getOptVal(Solver s) {
-		final Number obj = s.getOptimumValue();
-		return obj == null ? 0 : obj.doubleValue();
-	}
-
-	public Integer insertSolverMesure(Solver s) {
-		return insertEntryAndRetrieveKey(
-				"T_MESURES", 
-				T_MESURES, 
-				new Object[]{ 
-						"SAT", s.getNbSolutions(), getOptVal(s),
-						s.getTimeCount(),s.getCpuTimeCount(),s.getNodeCount(),s.getBackTrackCount(), 1
-				},
-				T_MESURES_TYPES
-		);
-	}
-
-	public Integer insertSolutionMesure(Solution s) {
-		return null;
-	}
 
 	protected  final static String[] T_RESTARTS = { "POLICY", "SCALE_FACTOR", "GEOM_FACTOR"};
 
@@ -381,7 +350,7 @@ public class DatabaseManager {
 		return noRestartStrategyID;
 	}
 
-		
+
 	public final Integer getRestartStrategyID(Solver s) {
 		if (s instanceof CPSolver) {
 			final CPSolver cps = (CPSolver) s;
@@ -392,9 +361,9 @@ public class DatabaseManager {
 		}
 		return getNoRestartStrategyID();
 	}
-	
+
 	protected  final static String[] T_STRATEGIES = { "BRANCHING", "VAR_SELECTOR", "VAL_SELECTOR"};
-	
+
 	private final Integer getStrategyID(Object[] values) {
 		return retrieveKeyOrInsertEntry(
 				"T_STRATEGIES", 
@@ -404,52 +373,80 @@ public class DatabaseManager {
 				THREE_VARCHARS
 		);
 	}
-	
+
 	public final Integer getUnknwonStrategyID() {
 		if( unknownStrategyID == null) {
 			unknownStrategyID = getStrategyID(new Object[]{NULL,NULL,NULL});
 		}
 		return unknownStrategyID;
 	}
-	
+
 	public final Integer getStrategyID(Solver s) {
 		return getUnknwonStrategyID();
 	}
+
+	protected  final static String[] T_SOLVERS = { "EXECUTION_ID", "MODEL_ID", "STRATEGY_ID", "RESTART_ID", "DESCRIPTION"};
 	
-	protected  final static String[] T_SOLVERS = { "EXECUTION_ID", "MODEL_ID", "STRATEGY_ID", "RESTART_ID"};
-	protected  final static int[] T_SOLVERS_TYPES = {INTEGER, INTEGER, INTEGER, INTEGER};
-	
+	protected  final static int[] T_SOLVERS_TYPES = {INTEGER, INTEGER, INTEGER, INTEGER, VARCHAR};
+
 	public final Integer getSolverID(Integer executionID, Solver s) {
+		return getSolverID(executionID, s, null);
+	}
+	public final Integer getSolverID(Integer executionID, Solver s, String description) {
 		return insertEntryAndRetrieveKey("T_SOLVERS", 
-					T_SOLVERS, 
-					new Object[]{ executionID, getModelID(s), getStrategyID(s), getRestartStrategyID(s)},
-					T_SOLVERS_TYPES);
+				T_SOLVERS, 
+				new Object[]{ executionID, getModelID(s), getStrategyID(s), 
+				getRestartStrategyID(s), (description == null ? NULL : description)},
+				T_SOLVERS_TYPES);
+	}
+
+	//*****************************************************************//
+	//*******************  T_MEASURES AND T_LIMITS  ******************//
+	//***************************************************************//
+
+	protected  final static String[] T_MEASURES = {
+		"STATE_LABEL","NB_SOLUTIONS","OBJECTIVE",
+		"TIME",	"CPU_TIME","NODES","BACKTRACKS","NB_ITERATIONS"
+	};
+
+	protected  final static int[] T_MESURES_TYPES = {
+		VARCHAR, INTEGER, DOUBLE, 
+		INTEGER,INTEGER, INTEGER, INTEGER, INTEGER
+	};
+
+
+	public Integer insertSolverMeasure(IMeasures m) {
+		return insertEntryAndRetrieveKey(
+				"T_MEASURES", 
+				T_MEASURES, 
+				new Object[]{ 
+						"SAT", m.getSolutionCount(), m.getObjectiveValue() == null ? 0 : m.getObjectiveValue().doubleValue(),
+						m.getTimeCount(),m.getCpuTimeCount(),m.getNodeCount(),m.getBackTrackCount(), m.getIterationCount()
+				},
+				T_MESURES_TYPES
+		);
 	}
 	
-	//*****************************************************************//
-	//*******************  T_LIMITS  ********************************//
-	//***************************************************************//
-	
-	protected  final static String[] T_LIMITS = { "SOLVER_ID", "MESURE_ID"};
-	
+	protected  final static String[] T_LIMITS = { "SOLVER_ID", "MEASURE_ID"};
+
 	protected  final static int[] T_LIMITS_TYPES = { INTEGER, INTEGER};
-	
+
 	public final void insertLimits(Integer solverID, Integer measureID) {
 		insert("T_LIMITS", T_LIMITS, new Object[]{solverID, measureID}, T_LIMITS_TYPES);
 	}
-	
+
 	//*****************************************************************//
 	//*******************  EXECUTION  ********************************//
 	//***************************************************************//
-	
+
 	protected  final static String[] T_EXECUTIONS = {"TIMESTAMP", "INSTANCE_NAME", "MODE_LABEL", "ENVIRONMENT_ID", "SEED"};
-	
+
 	protected  final static int[] T_EXECUTIONS_TYPES = { TIMESTAMP, VARCHAR, VARCHAR, INTEGER, INTEGER};
-	
+
 	public final Integer getExecutionID(String instanceName, String modeLabel) {
 		return getExecutionID(instanceName, modeLabel, 0);
 	}
-	
+
 	public final Integer getExecutionID(String instanceName, String modeLabel, int seed) {
 		return insertEntryAndRetrieveKey("T_EXECUTIONS",
 				T_EXECUTIONS, 
@@ -496,16 +493,7 @@ public class DatabaseManager {
 	}
 
 	public final void test() {
-		//		LOGGER.log(Level.INFO, "display modes: {0}",jdbcTemplate.queryForList("select LABEL from T_MODES",String.class));
-		//		LOGGER.log(Level.INFO, "count modes: {0}",jdbcTemplate.queryForInt("select count(0) from T_MODES"));
-		//		LOGGER.log(Level.INFO, "count null mode: {0}",jdbcTemplate.queryForInt("select count(0) from T_MODES WHERE LABEL = ?", new Object[]{null}, new int[]{VARCHAR}));
-		//		LOGGER.log(Level.INFO, "insert MULTI in table: {0}",jdbcTemplate.update("insert into T_MODES (LABEL) VALUES ('MULTI')"));
-		//		LOGGER.log(Level.INFO, "display modes: {0}",jdbcTemplate.queryForList("select LABEL from T_MODES",String.class));
-		//		LOGGER.log(Level.INFO, "count modes: {0}",jdbcTemplate.queryForInt("select count(0) from T_MODES"));
-		//		getOperatingSystemID();
-		//		getJvmID();
-		//LOGGER.info(displayTable("T_JVM"));
-		//
+
 
 		getEnvironmentID();
 		getJvmID();
@@ -544,11 +532,11 @@ public class DatabaseManager {
 		s.solve();
 		ChocoLogging.flushLogs();
 		;
-		
-		Integer measureID = insertSolverMesure(s);
-//		insertSolverMesure(s);
-//		LOGGER.info(displayTable("T_MESURES"));
-//		
+
+		Integer measureID = insertSolverMeasure(s);
+		//		insertSolverMesure(s);
+		//		LOGGER.info(displayTable("T_MESURES"));
+		//		
 		Integer execID = getExecutionID("osp1", "SAT");
 		Integer solverID = getSolverID(execID, s);
 		getSolverID(execID, s);
@@ -559,12 +547,12 @@ public class DatabaseManager {
 		LOGGER.info(displayTable("T_MODELS"));
 		LOGGER.info(displayTable("T_SOLVERS"));
 		LOGGER.info(displayTable("T_EXECUTIONS"));
-		
+
 		insertLimits(solverID, measureID);
 		//insertLimits(solverID, measureID);
 		LOGGER.info(displayTable("T_LIMITS"));
-		
-		
+
+
 		//jdbcTemplate.queryForObject("SELECT LABEL FROM T_PROBLEMS WHERE CATEGORY=NULL" , new Object[]{null}, new int[]{VARCHAR}, String.class);
 		close();
 
