@@ -3080,6 +3080,20 @@ public class Choco{
 		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,costs},
 				ArrayUtils.append(vars, cvar));
 	}
+     /**
+	 * Constructs a new CostRegular constraint
+	 * This constraint ensures that the sequence of variables values
+	 * will follow a pattern defined by a DFA and that this sequence has a cost bounded by the cost variable
+	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+	 * @param cvar the cost variable
+	 * @param auto  the automaton describing the regular language
+	 * @param costs the cost of taking value j for the variable i from state s
+	 * @return  a instance of the constraint
+	 */
+	public static Constraint multiCostRegular(IntegerVariable[] vars, IntegerVariable[] cvar, Automaton auto, int[][][][] costs){
+		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,costs},
+				ArrayUtils.append(vars, cvar));
+	}
 
 
 
