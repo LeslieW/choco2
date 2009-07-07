@@ -31,11 +31,15 @@ import java.util.logging.Logger;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.search.measures.ISolutionMeasures;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.real.RealVar;
+import choco.kernel.solver.variables.set.SetVar;
 
 /**
  * An abstract class handling the control for solving a model
  */
-public abstract class AbstractSearchStrategy {
+public abstract class AbstractSearchStrategy implements ISolutionMeasures {
 
 	/**
 	 * an object for logging trace statements
@@ -50,16 +54,21 @@ public abstract class AbstractSearchStrategy {
 	/**
 	 * The historical record of solutions that were found
 	 */
-	private final LinkedList<Solution> solutions; //Solution[]
+	private final LinkedList<Solution> solutions = new LinkedList<Solution>();
 
 	/**
 	 * capacity of the history record (keeping solutions)
 	 */
 	private int maxNbSolutionStored = 5;
 
+	/**
+	 * count of the solutions found during search
+	 */
+	private int nbSolutions = 0;
+
 
 	public AbstractSearchStrategy() {
-		solutions = new LinkedList<Solution>();
+		super();
 	}
 
 	/**
@@ -73,7 +82,23 @@ public abstract class AbstractSearchStrategy {
 	public void setSolver(Solver solver) {
 		this.solver = solver;
 	}
-	
+
+	@Override
+	public final boolean existsSolution() {
+		return nbSolutions > 0;
+	}
+
+	@Override
+	public int getSolutionCount() {
+		return nbSolutions;
+	}
+
+	public final void resetSolutionCounter() {
+		clearSolutions();
+		solver.setFeasible(Boolean.FALSE);
+		nbSolutions = 0;
+	}
+
 	/**
 	 * indicates if we will store the next solution
 	 */
@@ -105,15 +130,52 @@ public abstract class AbstractSearchStrategy {
 	 * this may also increase the size of the pb.solutions vector.
 	 */
 	public void recordSolution() {
-		Solution sol;
-		if(solutions.size() < maxNbSolutionStored) {
-			sol = solver.recordSolution();
-		}else {
-			sol = solutions.removeLast();
-			sol.setSolver(solver);
-			sol.save();
+		solver.setFeasible(Boolean.TRUE);
+		nbSolutions++;
+		if(isRecordingNextSolution()) {
+			//record solution
+			Solution sol;
+			if(solutions.size() < maxNbSolutionStored) {
+				sol = new Solution(solver);
+			}else {
+				sol = solutions.removeLast();
+				sol.setSolver(solver);
+			}
+			writeSolution(sol);
+			solutions.addFirst(sol);
 		}
-		solutions.addFirst(sol);
+	}
+	
+	public void writeSolution(Solution sol) {
+		sol.recordSolutionCount(nbSolutions);
+		//record values
+		for (int i = 0; i < solver.getNbIntVars(); i++) {
+			final IntDomainVar vari = (IntDomainVar) solver.getIntVar(i);
+			sol.recordIntValue(i, vari.isInstantiated() ? vari.getVal() : Integer.MAX_VALUE);
+			
+		}
+		for (int i = 0; i < solver.getNbSetVars(); i++) {
+			final SetVar vari = solver.getSetVar(i);
+			sol.recordSetValue(i, vari.isInstantiated() ? vari.getValue() : null);
+		}
+		
+		for (int i = 0; i < solver.getNbRealVars(); i++) {
+			RealVar vari = solver.getRealVar(i);
+			// if (vari.isInstantiated()) { // Not always "instantiated" : for
+			// instance, if the branching
+			// does not contain the variable, the precision can not be
+			// reached....
+				sol.recordRealValue(i, vari.getValue());
+			// }
+		}
+		//record objective
+		final AbstractGlobalSearchStrategy strategy = solver.getSearchStrategy();
+		if (solver.getSearchStrategy() instanceof AbstractOptimize) {
+			sol.recordIntObjective(((AbstractOptimize) strategy)
+					.getObjectiveValue());
+		}else {
+			sol.recordIntObjective(Integer.MAX_VALUE);
+		}
 	}
 
 	/**

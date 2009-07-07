@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.search;
 
+import java.util.Collection;
+
 /**
  * An abstract class for limiting tree search (imposing conditions on depth, ...)
  */
@@ -142,6 +144,18 @@ public abstract class AbstractGlobalSearchLimit implements GlobalSearchLimit {
 		return strategy;
 	}
 
+	public static final AbstractGlobalSearchLimit getLimit(Collection<AbstractGlobalSearchLimit> limits, Limit limit) {
+		for (AbstractGlobalSearchLimit l : limits) {
+			if (l.getType().equals(limit)) {
+				return l;
+			}
+		}
+		return null;
+	}
 
+	public static final int getLimitValue(Collection<AbstractGlobalSearchLimit> limits, Limit limit) {
+		final AbstractGlobalSearchLimit l = getLimit(limits, limit);
+		return l == null ? -1 : l.getNbAll();
+	}
 }
 

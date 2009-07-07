@@ -22,6 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 import choco.IPretty;
 import choco.kernel.common.IndexFactory;
 import choco.kernel.memory.IEnvironment;
@@ -41,12 +45,11 @@ import choco.kernel.solver.constraints.integer.extension.BinRelation;
 import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.propagation.PropagationEngine;
-import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.GlobalSearchLimit;
-import choco.kernel.solver.search.IMeasures;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.measures.IMeasures;
 import choco.kernel.solver.search.real.RealValIterator;
 import choco.kernel.solver.search.real.RealVarSelector;
 import choco.kernel.solver.search.set.SetValSelector;
@@ -59,10 +62,6 @@ import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
 import choco.kernel.visu.IVisu;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 
 /**
@@ -161,35 +160,37 @@ public interface Solver extends IMeasures, IPretty {
 	public void setFailLimit(int nodeLimit);
 
 
-    /**
-     * Get the time count of the search algorithm
-     * @return time count
-     */
-    public int getTimeCount();
-
-    /**
-     * Get the cpu time count of the search algorithm
-     * @return cpu time count
-     */
-    public int getCpuTimeCount();
-
-    /**
-     * Get the node count of the search algorithm
-     * @return node count
-     */
-    public int getNodeCount();
-
-    /**
-     * Get the backtrack count of the search algorithm
-     * @return backtrack count
-     */
-    public int getBackTrackCount();
-
-    /**
-     * Get the fail count of the search algorithm
-     * @return fail count
-     */
-    public int getFailCount();
+		
+	//Interface IMeasures
+//    /**
+//     * Get the time count of the search algorithm
+//     * @return time count
+//     */
+//    public int getTimeCount();
+//
+//    /**
+//     * Get the cpu time count of the search algorithm
+//     * @return cpu time count
+//     */
+//    public int getCpuTimeCount();
+//
+//    /**
+//     * Get the node count of the search algorithm
+//     * @return node count
+//     */
+//    public int getNodeCount();
+//
+//    /**
+//     * Get the backtrack count of the search algorithm
+//     * @return backtrack count
+//     */
+//    public int getBackTrackCount();
+//
+//    /**
+//     * Get the fail count of the search algorithm
+//     * @return fail count
+//     */
+//    public int getFailCount();
 
     /**
 	 * @return true if only the first solution must be found

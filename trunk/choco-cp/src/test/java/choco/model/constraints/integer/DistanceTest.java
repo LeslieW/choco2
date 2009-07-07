@@ -90,7 +90,7 @@ public class DistanceTest {
 				LOGGER.info(e.getMessage());
 			}
 			s.solveAll();
-			int nbNode = s.getSearchStrategy().limits.get(1).getNbTot();
+			int nbNode = s.getNodeCount();
 			LOGGER.info("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
 			assertEquals(s.getNbSolutions(), 4);
 		}
@@ -119,7 +119,7 @@ public class DistanceTest {
 				LOGGER.info(e.getMessage());
 			}
 			s.solveAll();
-			int nbNode = s.getSearchStrategy().limits.get(1).getNbTot();
+			int nbNode = s.getNodeCount();
 			LOGGER.info("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
 			assertEquals(s.getNbSolutions(), 12147);
 		}
@@ -147,7 +147,7 @@ public class DistanceTest {
 				LOGGER.info(e.getMessage());
 			}
 			s.solveAll();
-			int nbNode = s.getSearchStrategy().limits.get(1).getNbTot();
+			int nbNode = s.getNodeCount();
 			LOGGER.info("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
 			assertEquals(s.getNbSolutions(), 4);
 		}
@@ -176,7 +176,7 @@ public class DistanceTest {
 				LOGGER.info(e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
 			}
 			s.solveAll();
-			int nbNode = s.getSearchStrategy().limits.get(1).getNbTot();
+			int nbNode = s.getNodeCount();
 			LOGGER.info("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
 			assertEquals(s.getNbSolutions(), 4);
 		}
@@ -200,7 +200,7 @@ public class DistanceTest {
 				LOGGER.info(e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
 			}
 			s.solveAll();
-			int nbNode = s.getSearchStrategy().limits.get(1).getNbTot();
+			int nbNode = s.getNodeCount();
 			LOGGER.info("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
 			assertEquals(s.getNbSolutions(), 6);
 		}
@@ -225,7 +225,7 @@ public class DistanceTest {
 				LOGGER.info(e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
 			}
 			s.solveAll();
-			int nbNode = s.getSearchStrategy().limits.get(1).getNbTot();
+			int nbNode = s.getNodeCount();
 			LOGGER.info("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
 			assertEquals(s.getNbSolutions(), 6);
 		}
@@ -249,7 +249,7 @@ public class DistanceTest {
 				LOGGER.info(e.getMessage());  //To change body of catch statement use File | Settings | File Templates.
 			}
 			s.solveAll();
-			int nbNode = s.getSearchStrategy().limits.get(1).getNbTot();
+			int nbNode = s.getNodeCount();
 			LOGGER.info("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
 			assertEquals(s.getNbSolutions(), 31);
 			assertEquals(nbNodeFromRegulatModel(seed), nbNode);
@@ -280,7 +280,7 @@ public class DistanceTest {
 		}
 		s.solveAll();
 		//LOGGER.info("solutions regular : " + s.getNbSolutions());
-		return s.getSearchStrategy().limits.get(1).getNbTot();
+		return s.getNodeCount();
 	}
 
 	//********************************************************************//

@@ -113,7 +113,7 @@ public class SearchLoopWithRestart extends SearchLoop {
 
 	@Override
 	public Boolean run() {
-		int previousNbSolutions = searchStrategy.nbSolutions;
+		int previousNbSolutions = searchStrategy.getSolutionCount();
 		searchStrategy.setEncounteredLimit(null);
 		ctx = null;
 		stop = false;
@@ -146,13 +146,10 @@ public class SearchLoopWithRestart extends SearchLoop {
 				}
 				}
 			}
-			for (int i = 0; i < searchStrategy.limits.size(); i++) {
-				AbstractGlobalSearchLimit lim = searchStrategy.limits.get(i);
-				lim.reset(false);
-			}
+			searchStrategy.resetLimits(false);
 		} while (restartLimit);
 
-		if (searchStrategy.nbSolutions > previousNbSolutions) {
+		if (searchStrategy.getSolutionCount() > previousNbSolutions) {
 			return Boolean.TRUE;
 		} else if (searchStrategy.isEncounteredLimit()) {
 			return null;

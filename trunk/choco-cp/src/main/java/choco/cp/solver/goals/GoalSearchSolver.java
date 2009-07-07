@@ -129,7 +129,7 @@ public class GoalSearchSolver extends AbstractGlobalSearchStrategy {
   int lastRealMove = DOWN_BRANCH;
 
   public Boolean nextSolution() {
-    int previousNbSolutions = nbSolutions;
+    int previousNbSolutions = getSolutionCount();
     encounteredLimit = null;
     boolean stop = false;
 
@@ -218,11 +218,8 @@ public class GoalSearchSolver extends AbstractGlobalSearchStrategy {
         }
       }
     }
-    for (int i = 0; i < limits.size(); i++) {
-      AbstractGlobalSearchLimit lim = (AbstractGlobalSearchLimit) limits.get(i);
-      lim.reset(false);
-    }
-    if (nbSolutions > previousNbSolutions) {
+    resetLimits(false);
+    if (getSolutionCount() > previousNbSolutions) {
       return Boolean.TRUE;
     } else if (isEncounteredLimit()) {
       return null;

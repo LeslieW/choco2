@@ -565,7 +565,7 @@ public class RegularTest {
         s.solveAll();
 
         int nbsolution = s.getNbSolutions();
-        int nbNode = s.getSearchStrategy().limits.get(1).getNbTot();
+        int nbNode = s.getNodeCount();
         LOGGER.info("TestsAutomate test7(" + n + " reines) : " + nbsolution + " nodes " + nbNode + " tps " + (System.currentTimeMillis() - tps));
         assertEquals(NBSols[n - 1], nbsolution);
 

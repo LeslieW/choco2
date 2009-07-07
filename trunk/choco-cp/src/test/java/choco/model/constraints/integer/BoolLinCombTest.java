@@ -235,9 +235,9 @@ public class BoolLinCombTest {
         s.setVarIntSelector(new RandomIntVarSelector(s, s.getVar(vars), seed + 3));
         s.setValIntSelector(new RandomIntValSelector(seed + 4));
         s.solveAll();
-        nbNodes = s.getSearchStrategy().getNodeCount();
+        nbNodes = s.getNodeCount();
         nbSol = s.getNbSolutions();
-        LOGGER.info("n:" + n + " op:" + op + " ver:" + optimized + " nbSol " + nbSol + " nbNode " + nbNodes + " tps " + s.getSearchStrategy().getTimeCount());
+        LOGGER.info("n:" + n + " op:" + op + " ver:" + optimized + " nbSol " + nbSol + " nbNode " + nbNodes + " tps " + s.getTimeCount());
     }
 
 	private void testSumComb(int n, int op, boolean optimized, int seed) {

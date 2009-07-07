@@ -1041,7 +1041,7 @@ public class ConstraintsDetectionTest {
         Model m;
         PreProcessCPSolver s;
         Random r;
-        for(int size = 100; size <= 10000; size +=100){
+        for(int size = 100; size <= 500; size +=100){
             for(int seed = 0; seed < 50; seed++){
                 r = new Random(seed);
                 m = new CPModel();

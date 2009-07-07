@@ -62,8 +62,8 @@ public class NValueTest {
             s.setVarIntSelector(new RandomIntVarSelector(s, k));
             s.setValIntSelector(new RandomIntValSelector(k + 1));
             s.solveAll();
-            LOGGER.info("noeud : " + s.getSearchStrategy().getNodeCount());
-            LOGGER.info("temps : " + s.getSearchStrategy().getTimeCount());
+            LOGGER.info("noeud : " + s.getNodeCount());
+            LOGGER.info("temps : " + s.getTimeCount());
             assertEquals(s.getNbSolutions(),93);
         }
     }
@@ -83,8 +83,8 @@ public class NValueTest {
             s.setVarIntSelector(new RandomIntVarSelector(s, k));
             s.setValIntSelector(new RandomIntValSelector(k + 1));
             s.solveAll();
-            LOGGER.info("noeud : " + s.getSearchStrategy().getNodeCount());
-            LOGGER.info("temps : " + s.getSearchStrategy().getTimeCount());
+            LOGGER.info("noeud : " + s.getNodeCount());
+            LOGGER.info("temps : " + s.getTimeCount());
             assertEquals(s.getNbSolutions(),93);
         }
 
@@ -134,8 +134,8 @@ public class NValueTest {
         s.addConstraint(atMostNValue(vars, v));
         //s.setTimeLimit(30000);
         s.solve();
-        LOGGER.info("noeud : " + s.getSearchStrategy().getNodeCount());
-        LOGGER.info("temps : " + s.getSearchStrategy().getTimeCount());
+        LOGGER.info("noeud : " + s.getNodeCount());
+        LOGGER.info("temps : " + s.getTimeCount());
         List<Integer> values = new LinkedList<Integer>();
         if (s.isFeasible()) {
         for (int i = 0; i < n*n; i++) {

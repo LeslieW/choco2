@@ -88,7 +88,7 @@ public class OptimizeWithRestarts extends AbstractOptimize {
   protected void newLoop() throws ContradictionException {
     //initBounds();
     nbIter = nbIter + 1;
-    baseNbSol = nbSolutions;
+    baseNbSol = getSolutionCount();
     postTargetBound();
     solver.propagate();
     // time_set()
@@ -102,10 +102,7 @@ public class OptimizeWithRestarts extends AbstractOptimize {
                getBestObjectiveValue(a),  // v1.013 using the accessor
               a.nbIter,a.limits,t)]
 */
-    for (int i = 0; i < limits.size(); i++) {
-      AbstractGlobalSearchLimit lim = (AbstractGlobalSearchLimit) limits.get(i);
-      lim.reset(false);
-    }
+	  resetLimits(false);
     /*if (LOGGER.isLoggable(Level.SEVERE)) {
       if (model.feasible == Boolean.TRUE) { // <hca> bug quand feasible est � null
         LOGGER.log(Level.SEVERE, "solve => " + new Integer(nbSolutions) + " solutions");

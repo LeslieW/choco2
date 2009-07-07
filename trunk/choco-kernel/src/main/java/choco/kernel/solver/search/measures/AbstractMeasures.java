@@ -20,24 +20,28 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.solver.search;
+package choco.kernel.solver.search.measures;
 
 import java.util.Collection;
+import java.util.logging.Logger;
 
-public abstract class AbstractMeasures implements IMeasures {
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.solver.search.AbstractGlobalSearchLimit;
+import choco.kernel.solver.search.Limit;
 
+public abstract class AbstractMeasures implements ISearchMeasures {
+
+	/**
+	 * an object for logging trace statements
+	 */
+	public final static Logger LOGGER = ChocoLogging.getSearchLogger();
 	
-	public abstract Collection<AbstractGlobalSearchLimit> getLimits();
+	protected abstract Collection<AbstractGlobalSearchLimit> getLimits();
 	
-	protected int getLimitValue(Limit limit) {
-		return getLimitValue(getLimits(), limit);
+	public final int getLimitValue(Limit limit) {
+		return AbstractGlobalSearchLimit.getLimitValue(getLimits(), limit);
 	}
 	
-	@Override
-	public boolean existsSolution() {
-		return getSolutionCount() > 0;
-	}
-
 	@Override
 	public final int getBackTrackCount() {
 		return getLimitValue(Limit.BACKTRACK);
@@ -64,38 +68,10 @@ public abstract class AbstractMeasures implements IMeasures {
 		return getLimitValue(Limit.NODE);
 	}
 
-
-	@Override
-	public int getSolutionCount() {
-		LOGGER.warning("not yet implemented");
-		return -1;
-	}
-
 	@Override
 	public final int getTimeCount() {
 		return getLimitValue(Limit.TIME);
 	}
 	
-	@Override
-	public String pretty() {
-		final StringBuilder b = new StringBuilder();
-		for (AbstractGlobalSearchLimit l : getLimits()) {
-			b.append(l.pretty()).append(" ; ");
-		}
-		return new String(b);
-	}
 
-	public static final AbstractGlobalSearchLimit getLimit(Collection<AbstractGlobalSearchLimit> limits, Limit limit) {
-		for (AbstractGlobalSearchLimit l : limits) {
-			if (l.getType().equals(limit)) {
-				return l;
-			}
-		}
-		return null;
-	}
-
-	public static final int getLimitValue(Collection<AbstractGlobalSearchLimit> limits, Limit limit) {
-		final AbstractGlobalSearchLimit l = getLimit(limits, limit);
-		return l == null ? -1 : l.getNbAll();
-	}
 }

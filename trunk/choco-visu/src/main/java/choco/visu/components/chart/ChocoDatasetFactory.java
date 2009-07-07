@@ -198,17 +198,7 @@ public final class ChocoDatasetFactory {
 		if( strat.existsStoredSolution()) {
 			if(strat.getLimit(limit) != null) {
 				for (Solution sol : strat.getStoredSolutions()) {
-					Collection<AbstractGlobalSearchLimit> sl = sol.getLimits();
-					boolean notfound = true;
-					for (AbstractGlobalSearchLimit l : sl) {
-						if(l.getType() == limit) {
-							series.add(l.getNbAll(), sol.getObjectiveValue());
-							notfound = false;break;
-						}
-					}
-					if(notfound) {
-						series.add(-1, sol.getObjectiveValue());
-					}
+					series.add(sol.getLimitValue(limit), sol.getObjectiveValue());
 				}
 			}
 		}
@@ -219,23 +209,13 @@ public final class ChocoDatasetFactory {
 		final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 		final AbstractGlobalSearchStrategy strat = s.getSearchStrategy();
 		final String series = "Solver sol.";
-		int cpt=0;
 		if( strat.existsStoredSolution()) {
 			if(strat.getLimit(limit) != null) {
 				//reversed loop
 				final List<Solution> sols = strat.getStoredSolutions();
 				for (int i = sols.size()-1; i >=0; i--) {
 					final Solution sol = sols.get(i);
-					boolean notfound = true;
-					for (AbstractGlobalSearchLimit l : sol.getLimits()) {
-						if(l.getType() == limit) {
-							dataset.addValue(sol.getObjectiveValue(), series, Integer.valueOf(l.getNbAll()));
-							notfound = false;break;
-						}
-					}
-					if(notfound) {
-						dataset.addValue(sol.getObjectiveValue(), series, "noLimit"+ (++cpt) );
-					}
+					dataset.addValue(sol.getObjectiveValue(), series, Integer.valueOf(sol.getLimitValue(limit)));
 				}
 
 			}

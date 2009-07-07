@@ -87,9 +87,9 @@ public class HeuristicTest {
 
     s.setFirstSolution(true);
 	s.generateSearchStrategy();
-    s.getSearchStrategy().limits.add(new BackTrackLimit(s.getSearchStrategy(), Integer.MAX_VALUE));
-    s.getSearchStrategy().limits.add(new FailLimit(s.getSearchStrategy(), Integer.MAX_VALUE));
-
+    s.monitorBackTrackLimit(true);
+    s.monitorFailLimit(true);
+    
     if (domWdeg == 3) {
             s.getSearchStrategy().setSearchLoop(new SearchLoopWithRestart(s.getSearchStrategy(),
           new RestartStrategy() {
@@ -97,7 +97,7 @@ public class HeuristicTest {
             double mult = 1.5;
 
             public boolean shouldRestart(AbstractGlobalSearchStrategy search) {
-              boolean shouldRestart =  (search.limits.get(1).getNb() >= nodesLimit);
+              boolean shouldRestart =  (search.measures.getNodeCount() >= nodesLimit);
               if (shouldRestart) {
 				nodesLimit *= mult;
 			}
@@ -108,13 +108,10 @@ public class HeuristicTest {
 
     s.launch();
     assertTrue(!s.isFeasible());
-    int nb = s.getSearchStrategy().getNodeCount();
+    int nb = s.getNodeCount();
     long delta = System.currentTimeMillis() - start;
     LOGGER.info(nb + " nodes in " + delta + " ms");
-    for (int i = 0; i < s.getSearchStrategy().limits.size(); i++) {
-      AbstractGlobalSearchLimit abstractGlobalSearchLimit = s.getSearchStrategy().limits.get(i);
-      LOGGER.info(abstractGlobalSearchLimit.toString());
-    }
+    s.printRuntimeSatistics();
     return nb;
   }
 }
