@@ -36,11 +36,11 @@ import java.util.HashSet;
 
 /**
  * Created by IntelliJ IDEA.
-* User: julien
-* Mail: julien.menana{at}emn.fr
-* Date: Mar 23, 2009
-* Time: 4:43:36 PM
-*/
+ * User: julien
+ * Mail: julien.menana{at}emn.fr
+ * Date: Mar 23, 2009
+ * Time: 4:43:36 PM
+ */
 public class MultiCostRegularManager extends IntConstraintManager
 {
 
@@ -57,15 +57,21 @@ public class MultiCostRegularManager extends IntConstraintManager
             {
                 int sz = (Integer) param[0];
                 Automaton pi = (Automaton) param[1];
-                int[][][] csts = (int[][][]) param[2];
-
                 IntDomainVar[] vs = new IntDomainVar[sz];
                 IntDomainVar[] z = new IntDomainVar[all.length-sz];
                 System.arraycopy(all, 0, vs, 0, vs.length);
                 System.arraycopy(all, vs.length, z, 0, all.length - vs.length);
 
-
-                return new MultiCostRegular(vs,z,pi,csts);
+                if (param[2] instanceof int[][][])
+                {
+                    int[][][] csts = (int[][][]) param[2];
+                    return new MultiCostRegular(vs,z,pi,csts);
+                }
+                else if (param[2] instanceof int[][][][])
+                {
+                    int[][][][] csts = (int[][][][]) param[2];
+                    return new MultiCostRegular(vs,z,pi,csts);
+                }
             }
         }
         return null;
