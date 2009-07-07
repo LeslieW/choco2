@@ -28,7 +28,6 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.IntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
-import choco.cp.solver.constraints.global.multicostregular.algo.PathFinder;
 import choco.cp.solver.constraints.global.multicostregular.structure.*;
 
 import java.io.BufferedWriter;
