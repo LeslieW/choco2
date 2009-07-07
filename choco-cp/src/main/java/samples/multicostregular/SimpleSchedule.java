@@ -209,7 +209,7 @@ public class SimpleSchedule extends CPModel
            do {
                m.printSolution(s);
                System.out.println("");
-               s.postCut(s.leq(z,z.getVal()));
+               s.postCut(s.geq(z,z.getVal()));
            }
            while(s.nextSolution());
         }
