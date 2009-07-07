@@ -189,6 +189,7 @@ import choco.kernel.solver.search.Limit;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.measures.IMeasures;
 import choco.kernel.solver.search.real.RealValIterator;
 import choco.kernel.solver.search.real.RealVarSelector;
 import choco.kernel.solver.search.set.AbstractSetVarSelector;
@@ -364,7 +365,7 @@ public class CPSolver implements Solver {
 	 */
 	public int propNogoodWorld;
 
-    public void setLoggingMaxDepth(int loggingMaxDepth) {
+	public void setLoggingMaxDepth(int loggingMaxDepth) {
 		this.loggingMaxDepth = loggingMaxDepth;
 	}
 
@@ -542,7 +543,7 @@ public class CPSolver implements Solver {
 		buffer.append(getNbIntConstraints()).append(" cons]");
 		if (strategy != null) {
 			buffer.append("\nLimits");
-			buffer.append(StringUtils.pretty(strategy.limits));
+			buffer.append(StringUtils.pretty(strategy.getLimitsView()));
 
 		}
 		return new String(buffer);
@@ -587,7 +588,7 @@ public class CPSolver implements Solver {
 			buf.append(c.pretty());
 			buf.append("\n");
 		}
-        it.dispose();
+		it.dispose();
 		return new String(buf);
 	}
 
@@ -616,7 +617,7 @@ public class CPSolver implements Solver {
 		return mod2sol.makeSConstraint(mc, b);
 	}
 
-    public SConstraint[] makeSConstraintAndOpposite(Constraint mc) {
+	public SConstraint[] makeSConstraintAndOpposite(Constraint mc) {
 		return mod2sol.makeSConstraintAndOpposite(mc);
 	}
 
@@ -1056,12 +1057,12 @@ public class CPSolver implements Solver {
 		if (strategy == null) {
 			tempGoal = branching;
 		} else {
-            // To remove properly the listener from the Propagation engine
-            if(strategy.mainGoal!=null
-                    && strategy.mainGoal instanceof PropagationEngineListener){
-                ((PropagationEngineListener)strategy.mainGoal).safeDelete();
-            }
-            AbstractIntBranching br = branching;
+			// To remove properly the listener from the Propagation engine
+			if(strategy.mainGoal!=null
+					&& strategy.mainGoal instanceof PropagationEngineListener){
+				((PropagationEngineListener)strategy.mainGoal).safeDelete();
+			}
+			AbstractIntBranching br = branching;
 			while (br != null) {
 				br.setSolver(strategy);
 				br = (AbstractIntBranching) br.getNextBranching();
@@ -1119,7 +1120,7 @@ public class CPSolver implements Solver {
 	 *         the search
 	 */
 	public int getNbSolutions() {
-		return strategy.nbSolutions;
+		return strategy.getSolutionCount();
 	}
 
 	/**
@@ -1144,19 +1145,19 @@ public class CPSolver implements Solver {
 	 */
 	protected void addLimitsAndRestartStrategy() {
 		if (limits.get(Limit.TIME)) {
-			strategy.limits.add(new TimeLimit(strategy, timeLimit));
+			strategy.addLimit(new TimeLimit(strategy, timeLimit));
 		}
 		if (limits.get(Limit.CPU_TIME)) {
-			strategy.limits.add(new CpuTimeLimit(strategy, cpuTimeLimit));
+			strategy.addLimit(new CpuTimeLimit(strategy, cpuTimeLimit));
 		}
 		if (limits.get(Limit.NODE)) {
-			strategy.limits.add(new NodeLimit(strategy, nodeLimit));
+			strategy.addLimit(new NodeLimit(strategy, nodeLimit));
 		}
 		if (limits.get(Limit.BACKTRACK)) {
-			strategy.limits.add(new BackTrackLimit(strategy, backTrackLimit));
+			strategy.addLimit(new BackTrackLimit(strategy, backTrackLimit));
 		}
 		if (limits.get(Limit.FAIL)) {
-			strategy.limits.add(new FailLimit(strategy, failLimit));
+			strategy.addLimit(new FailLimit(strategy, failLimit));
 		}
 		if (restartS != null) {
 			if (useRecomputation) {
@@ -1278,38 +1279,16 @@ public class CPSolver implements Solver {
 	}
 
 
-	
-	
-	@Override
-	public boolean existsSolution() {
-		return getSolutionCount() > 0;
-	}
 
-	@Override
-	public int getIterationCount() {
-		LOGGER.warning("not yet implemented");
-		return 1;
-	}
 
-	@Override
-	public Number getObjectiveValue() {
-		LOGGER.warning("not yet implemented");
-		return null;
-	}
 
-	@Override
-	public int getSolutionCount() {
-		return getNbSolutions();
-	}
-
-	
 	/**
 	 * Get the time count of the search algorithm
 	 *
 	 * @return time count
 	 */
 	public int getTimeCount() {
-		return strategy.getTimeCount();
+		return strategy.getSearchMeasures().getTimeCount();
 	}
 
 	/**
@@ -1318,7 +1297,7 @@ public class CPSolver implements Solver {
 	 * @return CPU time count
 	 */
 	public int getCpuTimeCount() {
-		return strategy.getCpuTimeCount();
+		return strategy.getSearchMeasures().getCpuTimeCount();
 	}
 
 	/**
@@ -1327,7 +1306,7 @@ public class CPSolver implements Solver {
 	 * @return node count
 	 */
 	public int getNodeCount() {
-		return strategy.getNodeCount();
+		return strategy.getSearchMeasures().getNodeCount();
 	}
 
 	/**
@@ -1336,7 +1315,7 @@ public class CPSolver implements Solver {
 	 * @return backtrack count
 	 */
 	public int getBackTrackCount() {
-		return strategy.getBackTrackCount();
+		return strategy.getSearchMeasures().getBackTrackCount();
 	}
 
 	/**
@@ -1345,8 +1324,37 @@ public class CPSolver implements Solver {
 	 * @return fail count
 	 */
 	public int getFailCount() {
-		return strategy.getFailCount();
+		return strategy.getSearchMeasures().getFailCount();
 	}
+
+		
+	@Override
+	public int getIterationCount() {
+		return strategy.getSearchMeasures().getIterationCount();
+	}
+
+	@Override
+	public int getSolutionCount() {
+		return strategy.getSolutionCount();
+	}
+	
+	@Override
+	public Number getObjectiveValue() {
+		LOGGER.warning("not yet implemented");
+		return null;
+	}
+
+	@Override
+	public boolean isObjectiveOptimal() {
+		LOGGER.warning("not yet implemented");
+		return false;
+	}
+
+	@Override
+	public boolean existsSolution() {
+		return strategy.existsSolution();
+	}
+
 
 
 	/**
@@ -1363,18 +1371,18 @@ public class CPSolver implements Solver {
 		this.firstSolution = firstSolution;
 	}
 
-	
+
 	/**
 	 * Sets a unique integer variable selector the search olver should use.
-     *
-     * @see choco.cp.solver.CPSolver#addGoal(choco.kernel.solver.branch.AbstractIntBranching)
-     * @see choco.cp.solver.CPSolver#attachGoal(choco.kernel.solver.branch.AbstractIntBranching)
+	 *
+	 * @see choco.cp.solver.CPSolver#addGoal(choco.kernel.solver.branch.AbstractIntBranching)
+	 * @see choco.cp.solver.CPSolver#attachGoal(choco.kernel.solver.branch.AbstractIntBranching)
 	 */
 	public void setVarIntSelector(VarSelector varSelector) {
-        // To remove properly the listener from the Propagation engine
-        if(this.varIntSelector!=null && this.varIntSelector instanceof PropagationEngineListener){
-            ((PropagationEngineListener)this.varIntSelector).safeDelete();
-        }
+		// To remove properly the listener from the Propagation engine
+		if(this.varIntSelector!=null && this.varIntSelector instanceof PropagationEngineListener){
+			((PropagationEngineListener)this.varIntSelector).safeDelete();
+		}
 		this.varIntSelector = varSelector;
 		IntDomainVar[] vars = ((AbstractIntVarSelector) varSelector).getVars();
 		if (vars != null) {
@@ -1383,19 +1391,19 @@ public class CPSolver implements Solver {
 				intDecisionVars.add(vars[i]);
 			}
 		} else if(!intDecisionVars.isEmpty()){
-            vars = new IntDomainVar[intDecisionVars.size()];
-            intDecisionVars.toArray(vars);
-            ((AbstractIntVarSelector) varSelector).setVars(vars);
-        }else{
+			vars = new IntDomainVar[intDecisionVars.size()];
+			intDecisionVars.toArray(vars);
+			((AbstractIntVarSelector) varSelector).setVars(vars);
+		}else{
 			intDecisionVars.addAll(intVars);
 		}
 	}
 
 	/**
 	 * Sets a unique real variable selector the search strategy should use.
-     *
-     * @see choco.cp.solver.CPSolver#addGoal(choco.kernel.solver.branch.AbstractIntBranching)
-     * @see choco.cp.solver.CPSolver#attachGoal(choco.kernel.solver.branch.AbstractIntBranching)
+	 *
+	 * @see choco.cp.solver.CPSolver#addGoal(choco.kernel.solver.branch.AbstractIntBranching)
+	 * @see choco.cp.solver.CPSolver#attachGoal(choco.kernel.solver.branch.AbstractIntBranching)
 	 */
 	public void setVarRealSelector(RealVarSelector realVarSelector) {
 		this.varRealSelector = realVarSelector;
@@ -1404,22 +1412,22 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Sets unique set variable selector the search strategy should use.
-     *
-     * @see choco.cp.solver.CPSolver#addGoal(choco.kernel.solver.branch.AbstractIntBranching)
-     * @see choco.cp.solver.CPSolver#attachGoal(choco.kernel.solver.branch.AbstractIntBranching)
+	 *
+	 * @see choco.cp.solver.CPSolver#addGoal(choco.kernel.solver.branch.AbstractIntBranching)
+	 * @see choco.cp.solver.CPSolver#attachGoal(choco.kernel.solver.branch.AbstractIntBranching)
 	 */
 	public void setVarSetSelector(SetVarSelector setVarSelector) {
 		this.varSetSelector = setVarSelector;
 		SetVar[] vars = ((AbstractSetVarSelector) setVarSelector).getVars();
 		if (vars != null) {
-            setDecisionVars.clear();
+			setDecisionVars.clear();
 			for (int i = 0; i < vars.length; i++) {
 				setDecisionVars.add(vars[i]);
 			}
-        } else if(!setDecisionVars.isEmpty()){
-            vars = new SetVar[setDecisionVars.size()];
-            intDecisionVars.toArray(vars);
-            ((AbstractSetVarSelector) setVarSelector).setVars(vars);
+		} else if(!setDecisionVars.isEmpty()){
+			vars = new SetVar[setDecisionVars.size()];
+			intDecisionVars.toArray(vars);
+			((AbstractSetVarSelector) setVarSelector).setVars(vars);
 		} else {
 			setDecisionVars.addAll(setVars);
 		}
@@ -2154,7 +2162,7 @@ public class CPSolver implements Solver {
 	public void postCut(SConstraint cc) {
 		if (cc instanceof Propagator) {
 			if ((!cc.equals(TRUE) || !constraints.contains(TRUE))
-				&& (!cc.equals(FALSE) || !constraints.contains(FALSE))) {
+					&& (!cc.equals(FALSE) || !constraints.contains(FALSE))) {
 				// avoid adding the TRUE or FALSE constraint more than once
 				Propagator c = (Propagator) cc;
 				c.setSolver(this);
@@ -2165,9 +2173,9 @@ public class CPSolver implements Solver {
 				PropagationEngine pe = getPropagationEngine();
 				pe.registerEvent(event);
 				pe.postConstAwake(c, true);
-                if (strategy != null)
-                    strategy.initMainGoal(cc);
-            }
+				if (strategy != null)
+					strategy.initMainGoal(cc);
+			}
 
 		} else {
 			throw new SolverException(
@@ -2189,23 +2197,23 @@ public class CPSolver implements Solver {
 	public void addNogood(IntDomainVar[] poslit, IntDomainVar[] neglit) {
 		if (nogoodStore == null) {
 			nogoodStore = new ClauseStore(getBooleanVariables());
-            postCut(nogoodStore);
+			postCut(nogoodStore);
 		}
 		nogoodStore.addDynamicClause(poslit,neglit);
 		propNogoodWorld = this.getWorldIndex();
-        nogoodStore.constAwake(false);
-        //put the nogood store last in the static list
+		nogoodStore.constAwake(false);
+		//put the nogood store last in the static list
 	}
 
 
-    public void initNogoodBase() {
-        if (nogoodStore != null) {
-            nogoodStore.setActiveSilently();
-            nogoodStore.constAwake(false);
-        }
-    }
+	public void initNogoodBase() {
+		if (nogoodStore != null) {
+			nogoodStore.setActiveSilently();
+			nogoodStore.constAwake(false);
+		}
+	}
 
-    /**
+	/**
 	 * @return the number of boolean variables
 	 */
 	public int getNbBooleanVars() {
@@ -2282,7 +2290,7 @@ public class CPSolver implements Solver {
 		//        indexOfLastInitializedStaticConstraint.set(environment.getWorldIndex());
 		if (nogoodStore != null && propNogoodWorld > this.getWorldIndex()) {
 			nogoodStore.setActiveSilently();
-            nogoodStore.constAwake(false);
+			nogoodStore.constAwake(false);
 			propNogoodWorld = this.getWorldIndex();
 		}
 	}
@@ -2361,14 +2369,14 @@ public class CPSolver implements Solver {
 		Boolean isSolution = true;
 		StringBuffer st = new StringBuffer("~~~~~SOLUTION CHECKER~~~~~")
 		.append("\n");
-        st.append("(check wether every constraints define isSatisfied())")
-            .append("\n");
+		st.append("(check wether every constraints define isSatisfied())")
+		.append("\n");
 		// Check variable
 		Iterator<SConstraint> ctit = this.getIntConstraintIterator();
 		while (ctit.hasNext()) {
 			SConstraint c = ctit.next();
 			if (c.isSatisfied()) {
-                st.append(c.pretty()).append(" - ok").append("\n");
+				st.append(c.pretty()).append(" - ok").append("\n");
 			} else {
 				st.append("WARNINNG - ").append(c.pretty()).append(" - ko")
 				.append("\n");
@@ -2523,7 +2531,7 @@ public class CPSolver implements Solver {
 
 
 	public SConstraint getCstr(Constraint ic) {
-        return mapconstraints.get(ic.getIndex());
+		return mapconstraints.get(ic.getIndex());
 	}
 
 	public void setCardReasoning(boolean creas) {
@@ -2543,7 +2551,7 @@ public class CPSolver implements Solver {
 	@Override
 	public final Solution recordSolution() {
 		final Solution sol = new Solution(this);
-		sol.save();
+		strategy.writeSolution(sol);
 		return sol;
 	}
 
@@ -2577,14 +2585,14 @@ public class CPSolver implements Solver {
 				vari.intersect(sol.getRealValue(i));
 			}
 			if (Choco.DEBUG) {
-                if (nogoodStore != null)
-                    nogoodStore.setPassive();
-                ChocoLogging.flushLogs();
+				if (nogoodStore != null)
+					nogoodStore.setPassive();
+				ChocoLogging.flushLogs();
 				propagate();
-                if (nogoodStore != null)
-                    nogoodStore.setActive();
-                // Iterator<Propagator> ctit =
-				// solver.getIntConstraintIterator();
+				if (nogoodStore != null)
+					nogoodStore.setActive();
+				// Iterator<Propagator> ctit =
+					// solver.getIntConstraintIterator();
 				// while (ctit.hasNext()) {
 				// SConstraint c = ctit.next();
 				// if(!c.isSatisfied()){
@@ -2604,14 +2612,14 @@ public class CPSolver implements Solver {
 	// **********************************************************************
 	// LOGGERS MANAGEMENT
 	// **********************************************************************
-	
+
 	public static final int SILENT = 0;
 	public static final int SOLUTION = 1;
 	public static final int SEARCH = 2;
 	public static final int PROPAGATION = 3;
 	public static final int FINEST = 4;
 
-	
+
 	/**
 	 * use {@link ChocoLogging#setVerbosity(Verbosity)}
 	 * @param verbosity
@@ -2642,7 +2650,7 @@ public class CPSolver implements Solver {
 		ChocoLogging.flushLogs();
 	}
 
-	
+
 	// All abstract methods for constructing constraint
 	// that need be defined by a Model implementing a model
 

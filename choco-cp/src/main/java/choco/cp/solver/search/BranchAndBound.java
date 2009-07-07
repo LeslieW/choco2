@@ -49,31 +49,25 @@ public class BranchAndBound extends AbstractOptimize {
    */
   public void newTreeSearch() {
     initBounds();
-    for (int i = 0; i < limits.size(); i++) {
-      AbstractGlobalSearchLimit lim = (AbstractGlobalSearchLimit) limits.get(i);
-      lim.reset(true);
-    }
+    resetLimits(true);
   }
 
-  /**
-   * Called when a new search tree has been completely browsed. It
-   * resets all limits.
-   */  
-  public void endTreeSearch() {
-	  super.endTreeSearch();
-	  //FIXME why did we not reset limits in the superclass if it is useful ?
-    for (int i = 0; i < limits.size(); i++) {
-      AbstractGlobalSearchLimit lim = (AbstractGlobalSearchLimit) limits.get(i);
-      lim.reset(false);
-    }
-    
-    if (solver.getFeasible() == Boolean.TRUE) {
-      //[SVIEW] solve => ~S sol, best:~S [~S]
-      // a.nbSol,(if a.doMaximize a.lowerBound else a.upperBound),a.limits
-    } else if (solver.getFeasible() == Boolean.FALSE) {
-      //[SVIEW] solve => no sol [~S]// a.limits
-    } else {
-      //[SVIEW] solve interrupted before any solution was found [~S]// a.limits
-    }
-  }
+//  /**
+//   * Called when a new search tree has been completely browsed. It
+//   * resets all limits.
+//   */  
+//  public void endTreeSearch() {
+//	  super.endTreeSearch();
+//	  //FIXME why did we not reset limits in the superclass if it is useful ?
+//	 
+//    
+//    if (solver.getFeasible() == Boolean.TRUE) {
+//      //[SVIEW] solve => ~S sol, best:~S [~S]
+//      // a.nbSol,(if a.doMaximize a.lowerBound else a.upperBound),a.limits
+//    } else if (solver.getFeasible() == Boolean.FALSE) {
+//      //[SVIEW] solve => no sol [~S]// a.limits
+//    } else {
+//      //[SVIEW] solve interrupted before any solution was found [~S]// a.limits
+//    }
+//  }
 }

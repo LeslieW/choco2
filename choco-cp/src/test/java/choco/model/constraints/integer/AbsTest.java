@@ -90,7 +90,7 @@ public class AbsTest {
 		s.read(m);
 		LOGGER.info(s.pretty());
 		s.solveAll();
-		int nbNode = ((NodeLimit) s.getSearchStrategy().limits.get(1)).getNbTot();
+		int nbNode = s.getNodeCount();
 		LOGGER.info("solutions : " + s.getNbSolutions() + " nbNode : " + nbNode);
 		assertEquals(110,s.getNbSolutions());
 

@@ -20,39 +20,46 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.search.real;
+package choco.kernel.solver.search.measures;
 
-import choco.kernel.solver.variables.real.RealVar;
 
-/**
- * J-CHOCO
- * Copyright (C) F. Laburthe, 1999-2003
- * <p/>
- * An open-source Constraint Programming Kernel
- * for Research and Education
- * <p/>
- * Created by: Guillaume on 20 juil. 2004
- */
-public class RealBranchAndBound extends AbstractRealOptimize {
-  public RealBranchAndBound(RealVar obj, boolean maximize) {
-    super(obj, maximize);
-  }
+public interface ISearchMeasures {
+	   
+	/**
+     * Get the time count in milliseconds of the measure
+     * @return time count
+     */
+    int getTimeCount();
 
-// TODO: seeems useless !    
-  public void newTreeSearch() {
-    initBounds();
-    resetLimits(true);
-  }
+    /**
+     * Get the cpu time count in milliseconds of the measure
+     * @return cpu time count
+     */
+    int getCpuTimeCount();
 
-  public void endTreeSearch() {
-	  resetLimits(false);
-    if (solver.getFeasible()==Boolean.TRUE) {
-      //[SVIEW] solve => ~S sol, best:~S [~S]// a.nbSol,(if a.doMaximize a.lowerBound else a.upperBound),a.limits
-    } else if (solver.getFeasible() == Boolean.FALSE) {
-      //[SVIEW] solve => no sol [~S]// a.limits
-    } else {
-      //[SVIEW] solve interrupted before any solution was found [~S]// a.limits
-    }
-    printRuntimeStatistics();
-  }
+    /**
+     * Get the node count of the measure
+     * @return node count
+     */
+    int getNodeCount();
+
+    /**
+     * Get the backtrack count of the measure
+     * @return backtrack count
+     */
+    int getBackTrackCount();
+
+    /**
+     * Get the fail count of the measure
+     * @return fail count
+     */
+    int getFailCount();
+    
+    /**
+     * Get the iteration/restart count of the measure
+     * @return iteration/restart count
+     */
+    int getIterationCount();
+    
+    
 }

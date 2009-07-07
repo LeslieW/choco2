@@ -33,7 +33,7 @@ import choco.cp.solver.search.restart.ParametrizedRestartStrategy;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.search.IMeasures;
+import choco.kernel.solver.search.measures.IMeasures;
 
 
 public class DatabaseManager {
@@ -531,7 +531,7 @@ public class DatabaseManager {
 		LOGGER.info(displayTable("T_MODELS"));
 		s.solve();
 		ChocoLogging.flushLogs();
-		;
+		
 
 		Integer measureID = insertSolverMeasure(s);
 		//		insertSolverMesure(s);

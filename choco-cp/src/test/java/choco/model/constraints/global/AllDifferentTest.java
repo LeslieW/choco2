@@ -125,7 +125,7 @@ public class AllDifferentTest{
         //s.setTimeLimit(30000);
         long tps = System.currentTimeMillis();
         s.solveAll();
-        LOGGER.info(format("tps nreines2 {0} nbNode {1}", System.currentTimeMillis() - tps, s.getSearchStrategy().limits.get(1).getNbTot()));
+        LOGGER.info(format("tps nreines2 {0} nbNode {1}", System.currentTimeMillis() - tps, s.getNodeCount()));
         assertEquals(92,s.getNbSolutions());
     }
     @Test
@@ -158,7 +158,7 @@ public class AllDifferentTest{
         //s.setTimeLimit(30000);
         long tps = System.currentTimeMillis();
         s.solveAll();
-        LOGGER.info(format("tps nreines3 {0} nbNode {1}", System.currentTimeMillis() - tps, s.getSearchStrategy().limits.get(1).getNbTot()));
+        LOGGER.info(format("tps nreines3 {0} nbNode {1}", System.currentTimeMillis() - tps, s.getNodeCount()));
         assertEquals(92,s.getNbSolutions());
     }
    @Test

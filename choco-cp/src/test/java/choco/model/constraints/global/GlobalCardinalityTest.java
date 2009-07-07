@@ -257,7 +257,7 @@ public class GlobalCardinalityTest {
 			}
 			LOGGER.info(st.toString());
 		}
-		LOGGER.info("nb Sol " + cpt + " time " + s.getSearchStrategy().getTimeCount());
+		LOGGER.info("nb Sol " + cpt + " time " + s.getTimeCount());
 		assertEquals(20, cpt);
 	}
 	@Test
@@ -289,7 +289,7 @@ public class GlobalCardinalityTest {
 			}
 			LOGGER.info(st.toString());
 		}
-		LOGGER.info("nb Sol " + cpt + " time " + s.getSearchStrategy().getTimeCount());
+		LOGGER.info("nb Sol " + cpt + " time " + s.getTimeCount());
 		assertEquals(7, cpt);
 	}
 
@@ -329,7 +329,7 @@ public class GlobalCardinalityTest {
 		while (s.nextSolution() == Boolean.TRUE) {
 			cpt++;
 		}
-		LOGGER.info("nb Sol " + cpt + " time " + s.getSearchStrategy().getTimeCount() + " nbNode " + s.getSearchStrategy().getNodeCount());
+		LOGGER.info("nb Sol " + cpt + " time " + s.getTimeCount() + " nbNode " + s.getNodeCount());
 		assertEquals(12600, cpt);
 	}
 	@Test
@@ -420,7 +420,7 @@ public class GlobalCardinalityTest {
 		s.solve(true);
 
 		assertEquals(soluces[n - 1], s.getNbSolutions());
-		LOGGER.info("LatinSquare Solutions : " + s.getNbSolutions() + " " + s.getSearchStrategy().getTimeCount());
+		LOGGER.info("LatinSquare Solutions : " + s.getNbSolutions() + " " + s.getTimeCount());
 	}
 
 	@Test
@@ -473,7 +473,7 @@ public class GlobalCardinalityTest {
 
 
 		tps = System.currentTimeMillis() - tps;
-		int nbNode = s.getSearchStrategy().limits.get(1).getNbTot();
+		int nbNode = s.getNodeCount();
 		LOGGER.info("temps (en ms) : " + tps + " Noeud : " + nbNode + " Nombre de solutions : " + s.getNbSolutions());
 
 	}
@@ -656,7 +656,7 @@ public class GlobalCardinalityTest {
 
 
 		tps = System.currentTimeMillis() - tps;
-		int nbNode = s.getSearchStrategy().limits.get(1).getNbTot();
+		int nbNode = s.getNodeCount();
 		LOGGER.info("temps (en ms) : " + tps + " Noeud : " + nbNode + " Nombre de solutions : " + s.getNbSolutions());
 
 	}

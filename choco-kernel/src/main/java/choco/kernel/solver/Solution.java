@@ -23,17 +23,16 @@
 package choco.kernel.solver;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.AbstractMeasures;
-import choco.kernel.solver.search.AbstractOptimize;
-import choco.kernel.solver.search.IMeasures;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.search.Limit;
+import choco.kernel.solver.search.measures.AbstractMeasures;
+import choco.kernel.solver.search.measures.IMeasures;
 import choco.kernel.solver.variables.real.RealInterval;
-import choco.kernel.solver.variables.real.RealVar;
-import choco.kernel.solver.variables.set.SetVar;
 
 /**
  * A class storing a state of the model
@@ -44,7 +43,8 @@ public class Solution {
 	 * the solver owning the solution
 	 */
 	protected Solver solver;
-
+	
+	protected int solutionCount;
 	/**
 	 * data storage for values of search variables
 	 */
@@ -57,6 +57,8 @@ public class Solution {
 	protected int objectiveValue;
 
 	protected final SolutionMeasures measures;
+
+	private List<AbstractGlobalSearchLimit> solutionLimits;
 	/**
 	 * Constructor
 	 *
@@ -68,54 +70,13 @@ public class Solution {
 		setVarValues = new int[solver.getNbSetVars()][];
 		realVarValues = new RealInterval[solver.getNbRealVars()];
 		objectiveValue = Integer.MAX_VALUE;
-		measures = new SolutionMeasures(solver);
+		solutionLimits = new LinkedList<AbstractGlobalSearchLimit>();
+		measures = new SolutionMeasures();
 	}
 
 	public void setSolver(Solver s) {
 		this.solver = s;
-		reset();
-	}
-	
-	public void save() {
-		//record values
-		for (int i = 0; i < solver.getNbIntVars(); i++) {
-			final IntDomainVar vari = (IntDomainVar) solver.getIntVar(i);
-			recordIntValue(i, vari.isInstantiated() ? vari.getVal() : Integer.MAX_VALUE);
-			
-		}
-		for (int i = 0; i < solver.getNbSetVars(); i++) {
-			final SetVar vari = solver.getSetVar(i);
-			recordSetValue(i, vari.isInstantiated() ? vari.getValue() : null);
-		}
-		
-		for (int i = 0; i < solver.getNbRealVars(); i++) {
-			RealVar vari = solver.getRealVar(i);
-			// if (vari.isInstantiated()) { // Not always "instantiated" : for
-			// instance, if the branching
-			// does not contain the variable, the precision can not be
-			// reached....
-				recordRealValue(i, vari.getValue());
-			// }
-		}
-		//record objective
-		final AbstractGlobalSearchStrategy strategy = solver.getSearchStrategy();
-		if (solver.getSearchStrategy() instanceof AbstractOptimize) {
-			recordIntObjective(((AbstractOptimize) strategy)
-					.getObjectiveValue());
-		}else {
-			objectiveValue = Integer.MAX_VALUE;
-		}
-		//record limits
-		for (AbstractGlobalSearchLimit l : strategy.limits) {
-			recordLimit(l);
-		}
-	}
-	
-	/**
-	 * prepare to record a new solution
-	 */
-	public final void reset() {
-		measures.solutionLimits.clear();
+		solutionLimits.clear();
 		if(solver.getNbIntVars() > intVarValues.length) {
 			intVarValues = new int[solver.getNbIntVars()];
 		}
@@ -132,11 +93,18 @@ public class Solution {
 		return measures;
 	}
 
+	public final int getLimitValue(Limit limit) {
+		return AbstractGlobalSearchLimit.getLimitValue(solutionLimits, limit);
+	}
+	
 	public final int getObjectiveValue() {
 		return objectiveValue;
 	}
 
-
+	public final void recordSolutionCount(int solutionCount) {
+		this.solutionCount = solutionCount;
+	}
+	
 	public final void recordIntValue(int intVarIndex, int intVarValue) {
 		intVarValues[intVarIndex] = intVarValue;
 	}
@@ -154,7 +122,7 @@ public class Solution {
 	}
 
 	public void recordLimit(AbstractGlobalSearchLimit limit){
-		measures.solutionLimits.add(new StoredLimit(limit));
+		solutionLimits.add(new StoredLimit(limit));
 	}
 
 
@@ -176,35 +144,44 @@ public class Solution {
 		return realVarValues[varIndex];
 	}
 
-	public Collection<AbstractGlobalSearchLimit> getLimits() {
-		return measures.solutionLimits;
-	}
-	
 
-	final class SolutionMeasures extends AbstractMeasures {
+	final class SolutionMeasures extends AbstractMeasures implements IMeasures {
 
-		public final Collection<AbstractGlobalSearchLimit> solutionLimits;
-		
-		public SolutionMeasures(Solver solver) {
+		public SolutionMeasures() {
 			super();
-			solutionLimits = new LinkedList<AbstractGlobalSearchLimit>();
 		}
 
-		
+		@Override
+		public boolean isObjectiveOptimal() {
+			return false;
+		}
+
 
 		@Override
 		public Collection<AbstractGlobalSearchLimit> getLimits() {
-			return solutionLimits;
+			return Collections.unmodifiableCollection(solutionLimits);
 		}
-
 
 
 		@Override
 		public Number getObjectiveValue() {
-			return objectiveValue;
+			return Integer.valueOf(objectiveValue);
 		}
 
+		@Override
+		public boolean existsSolution() {
+			return true;
+		}
+
+		@Override
+		public int getSolutionCount() {
+			return solutionCount;
+		}
+		
+		
+
 	}
+	
 	
 	public static final class StoredLimit extends AbstractGlobalSearchLimit {
 

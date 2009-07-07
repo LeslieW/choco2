@@ -53,7 +53,7 @@ public class ObservableStepSearchLoop extends SearchLoop implements IObservableS
     }
 
     public Boolean run() {
-        int previousNbSolutions = searchStrategy.nbSolutions;
+        int previousNbSolutions = searchStrategy.getSolutionCount();
         searchStrategy.setEncounteredLimit(null);
         ctx = null;
         stop = false;
@@ -91,11 +91,8 @@ public class ObservableStepSearchLoop extends SearchLoop implements IObservableS
         }
         state = State.END;
         notifyObservers(this);
-        for (int i = 0; i < searchStrategy.limits.size(); i++) {
-            AbstractGlobalSearchLimit lim = searchStrategy.limits.get(i);
-            lim.reset(false);
-        }
-        if (searchStrategy.nbSolutions > previousNbSolutions) {
+        searchStrategy.resetLimits(false);
+        if (searchStrategy.getSolutionCount() > previousNbSolutions) {
             return Boolean.TRUE;
         } else if (searchStrategy.isEncounteredLimit()) {
             return null;

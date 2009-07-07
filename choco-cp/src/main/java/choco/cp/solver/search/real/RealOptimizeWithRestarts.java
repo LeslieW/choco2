@@ -37,88 +37,85 @@ import choco.kernel.solver.variables.real.RealVar;
  * Created by: Guillaume on 20 juil. 2004
  */
 public class RealOptimizeWithRestarts extends AbstractRealOptimize {
-  /**
-   * counting the number of iterations
-   */
-  protected int nbIter = 0;
+	/**
+	 * counting the number of iterations
+	 */
+	protected int nbIter = 0;
 
-  /**
-   * counting the overall number of solutions
-   */
-  protected int baseNbSol = 0;
+	/**
+	 * counting the overall number of solutions
+	 */
+	protected int baseNbSol = 0;
 
-  /**
-   * total nb of backtracks (all trees in the optimization process)
-   */
-  protected int nbBkTot = 0;
+	/**
+	 * total nb of backtracks (all trees in the optimization process)
+	 */
+	protected int nbBkTot = 0;
 
-  /**
-   * total nb of nodes expanded in all trees
-   */
-  protected int nbNdTot = 0;
+	/**
+	 * total nb of nodes expanded in all trees
+	 */
+	protected int nbNdTot = 0;
 
-  public RealOptimizeWithRestarts(RealVar obj, boolean maximize) {
-    super(obj, maximize);
-  }
+	public RealOptimizeWithRestarts(RealVar obj, boolean maximize) {
+		super(obj, maximize);
+	}
 
-  public void newTreeSearch() throws ContradictionException {
-    super.newTreeSearch();
-    nbIter = nbIter + 1;
-    baseNbSol = nbSolutions;
-    postTargetBound();
-    solver.propagate();
-  }
+	public void newTreeSearch() throws ContradictionException {
+		super.newTreeSearch();
+		nbIter = nbIter + 1;
+		baseNbSol = getSolutionCount();
+		postTargetBound();
+		solver.propagate();
+	}
 
-  /**
-   * called before a new search tree is explored
-   */
-  public void endTreeSearch() {
-    for (int i = 0; i < limits.size(); i++) {
-      AbstractGlobalSearchLimit lim = (AbstractGlobalSearchLimit) limits.get(i);
-      lim.reset(false);
-    }
-    clearTrace();
-    solver.worldPopUntil(baseWorld);
-  }
+	/**
+	 * called before a new search tree is explored
+	 */
+	public void endTreeSearch() {
+		resetLimits(false);	
+		clearTrace();
+		solver.worldPopUntil(baseWorld);
+	}
 
-  // should we call a fullReset on limits ? (to reset cumulated counter?)
-  private void newLoop() {
-    initBounds();
-    // time_set()
-  }
+	// should we call a fullReset on limits ? (to reset cumulated counter?)
+	private void newLoop() {
+		initBounds();
+		// time_set()
+	}
 
-  private void endLoop() {
-/*
+	private void endLoop() {
+		/*
     -> let t := time_get() in
        trace(SVIEW,"Optimisation over => ~A(~A) = ~S found in ~S iterations, [~S], ~S ms.\n",
               (if a.doMaximize "max" else "min"),a.objective.name,
               getBestObjectiveValue(a),  // v1.013 using the accessor
               a.nbIter,a.limits,t)]
-*/
-  }
+		 */
+	}
 
-  private void recordNoSolution() {
-    // (trace(SVIEW,"... no solution with ~A:~S [~S]\n",obj.name,objtgt,a.limits),
-    if (doMaximize) {
-      upperBound = Math.min(upperBound, RealMath.prevFloat(getObjectiveTarget()));
-    } else {
-      lowerBound = Math.max(lowerBound, RealMath.nextFloat(getObjectiveTarget()));
-    }
-  }
+	private void recordNoSolution() {
+		// (trace(SVIEW,"... no solution with ~A:~S [~S]\n",obj.name,objtgt,a.limits),
+		if (doMaximize) {
+			upperBound = Math.min(upperBound, RealMath.prevFloat(getObjectiveTarget()));
+		} else {
+			lowerBound = Math.max(lowerBound, RealMath.nextFloat(getObjectiveTarget()));
+		}
+	}
 
-  /**
-   * loop until the lower bound equals the upper bound
-   *
-   * @return true if one more loop is needed
-   */
-  private boolean oneMoreLoop() {
-    return (lowerBound < upperBound);
-  }
+	/**
+	 * loop until the lower bound equals the upper bound
+	 *
+	 * @return true if one more loop is needed
+	 */
+	private boolean oneMoreLoop() {
+		return (lowerBound < upperBound);
+	}
 
-  /*
-   * @deprecated replaced by the incrementalRun
-   */
-  /*public void run() {
+	/*
+	 * @deprecated replaced by the incrementalRun
+	 */
+	/*public void run() {
     int w = model.getWorldIndex() + 1;
     AbstractModel pb = model;
     boolean finished = false;
