@@ -1,8 +1,8 @@
 package choco.cp.solver.constraints.global.multicostregular.algo;
 
-import choco.cp.solver.constraints.global.multicostregular.structure.Arc;
-import choco.cp.solver.constraints.global.multicostregular.structure.LayeredGraph;
-import choco.cp.solver.constraints.global.multicostregular.structure.Node;
+import choco.cp.solver.constraints.global.multicostregular.structure.ILayeredGraph;
+import choco.cp.solver.constraints.global.multicostregular.structure.IArc;
+import choco.cp.solver.constraints.global.multicostregular.structure.INode;
 import choco.cp.solver.constraints.global.multicostregular.MultiCostRegular;
 import choco.kernel.memory.IStateIntVector;
 
@@ -25,28 +25,28 @@ public class PathFinder {
     /**
      * the graph in which 
      */
-    final LayeredGraph graph;
+    final ILayeredGraph graph;
 
     /**
      * Array to store the last computed shortest part
      */
-    final Arc[] sp;
+    final IArc[] sp;
 
     /**
      * Array to store the last computed longest path
      */
-    final Arc[] lp;
+    final IArc[] lp;
 
 
     /**
      * Constructs a PathFinder instance
      * @param graph the LayeredGraph on which computation will be made
      */
-    public PathFinder(final LayeredGraph graph)
+    public PathFinder(final ILayeredGraph graph)
     {
         this.graph = graph;
-        this.sp = new Arc[this.graph.getNbLayers()-1];
-        this.lp = new Arc[this.graph.getNbLayers()-1];
+        this.sp = new IArc[this.graph.getNbLayers()-1];
+        this.lp = new IArc[this.graph.getNbLayers()-1];
     }
 
 
@@ -55,14 +55,14 @@ public class PathFinder {
      * ATTENTION : does not compute the actual shortest path
      * @return an array of Arcs that forms the SP
      */
-    public Arc[] getShortestPath()
+    public IArc[] getShortestPath()
     {
         int i = 0;
-        Node current = this.graph.getSource();
+        INode current = this.graph.getSource();
         do {
-            Arc e = current.getSptt();
+            IArc e = current.getSptt();
             sp[i++]= (e);
-            current = e.dest;
+            current = e.getDestination();
 
         } while(current.getSptt() != null);
         return sp;
@@ -73,14 +73,14 @@ public class PathFinder {
      * ATTENTION : does not compute the actual longest path
      * @return an array of Arcs that forms the LP
      */
-    public Arc[] getLongestPath()
+    public IArc[] getLongestPath()
     {
         int i = 0;
-        Node current = this.graph.getSource();
+        INode current = this.graph.getSource();
         do {
-            Arc e = current.getLptt();
+            IArc e = current.getLptt();
             lp[i++] = e;
-            current = e.dest;
+            current = e.getDestination();
 
         } while(current.getLptt() != null);
         return lp;
@@ -113,7 +113,7 @@ public class PathFinder {
     {
         for (int i = 0 ; i < this.graph.getNbLayers() ; i++)
         {
-            for (Node node : this.graph.getLayer(i)) node.resetShortestPathValues();
+            for (INode node : this.graph.getLayer(i)) node.resetShortestPathValues();
         }
     }
 
@@ -124,7 +124,7 @@ public class PathFinder {
     {
         for (int i = 0 ; i < this.graph.getNbLayers() ; i++)
         {
-            for (Node node : this.graph.getLayer(i)) node.resetLongestPathValues();
+            for (INode node : this.graph.getLayer(i)) node.resetLongestPathValues();
         }
     }
 
@@ -135,7 +135,7 @@ public class PathFinder {
     {
         for (int i = 0 ; i < this.graph.getNbLayers() ; i++)
         {
-            for (Node node : this.graph.getLayer(i)) {
+            for (INode node : this.graph.getLayer(i)) {
                 node.resetLongestPathValues();
                 node.resetShortestPathValues();
             }
@@ -149,7 +149,7 @@ public class PathFinder {
      * @param cost the cost matrix of arcs
      * @param ub the upper bound of the shortest path
      */
-    public void computeShortestPath(final IStateIntVector removed, final double[][] cost, final double ub)
+    public void computeShortestPath(final IStateIntVector removed, final double[][][] cost, final double ub)
     {
 
 
@@ -158,16 +158,16 @@ public class PathFinder {
 
         for (int i = 0 ; i < cost.length ; i++)
         {
-            for (Node n : graph.getLayer(i))
+            for (INode n : graph.getLayer(i))
             {
-                Iterator<Arc> out = graph.getOutEdgeIterator(n);
+                Iterator<IArc> out = graph.getOutEdgeIterator(n);
                 while (out.hasNext())
                 {
-                    Arc e = out.next();
-                    if (!graph.isInStack(e.getOutIndex()))
+                    IArc e = out.next();
+                    if (!graph.isInStack(e.getInStackIdx()))
                     {
-                        Node next =e.dest;
-                        double newCost = n.getSpfs() + cost[n.getLayer()][e.getLabel()];
+                        INode next =e.getDestination();
+                        double newCost = n.getSpfs() + cost[n.getLayer()][e.getLabel()][n.getState()];
                         if (next.getSpfs() > newCost)
                         {
                             next.setSpfs(newCost);
@@ -179,21 +179,21 @@ public class PathFinder {
         }
         for (int i = cost.length ; i > 0 ; i--)
         {
-            for (Node n : graph.getLayer(i))
+            for (INode n : graph.getLayer(i))
             {
-                Iterator<Arc> in = graph.getInEdgeIterator(n);
+                Iterator<IArc> in = graph.getInEdgeIterator(n);
                 while (in.hasNext())
                 {
-                    Arc e = in.next();
-                    if (!graph.isInStack(e.getOutIndex()))
+                    IArc e = in.next();
+                    if (!graph.isInStack(e.getInStackIdx()))
                     {
-                        Node next =e.orig;
-                        double newCost = n.getSpft() + cost[next.getLayer()][e.getLabel()];
+                        INode next =e.getOrigin()  ;
+                        double newCost = n.getSpft() + cost[next.getLayer()][e.getLabel()][next.getState()];
 
                         if (newCost + next.getSpfs() - ub >= MultiCostRegular.D_PREC)
                         {
-                            graph.getInStack().set(e.getOutIndex());
-                            removed.add(e.getOutIndex());
+                            graph.getInStack().set(e.getInStackIdx());
+                            removed.add(e.getInStackIdx());
                         }
                         else if (next.getSpft() > newCost)
                         {
@@ -213,7 +213,7 @@ public class PathFinder {
      * @param cost the cost matrix of arcs
      * @param lb the lower bound of the longest path
      */
-    public void computeLongestPath(final IStateIntVector removed, final double[][] cost, final double lb)
+    public void computeLongestPath(final IStateIntVector removed, final double[][][] cost, final double lb)
     {
 
 
@@ -222,17 +222,17 @@ public class PathFinder {
 
         for (int i = 0 ; i < cost.length ; i++)
         {
-            for (Node n : graph.getLayer(i))
+            for (INode n : graph.getLayer(i))
             {
-                Iterator<Arc> out = graph.getOutEdgeIterator(n);
+                Iterator<IArc> out = graph.getOutEdgeIterator(n);
                 while (out.hasNext())
                 {
-                    Arc e = out.next();
-                    if (!graph.isInStack(e.getOutIndex()))
+                    IArc e = out.next();
+                    if (!graph.isInStack(e.getInStackIdx()))
                     {
-                        Node next =e.dest;
+                        INode next =e.getDestination();
 
-                        double newCost = n.getLpfs() + cost[n.getLayer()][e.getLabel()];
+                        double newCost = n.getLpfs() + cost[n.getLayer()][e.getLabel()][n.getState()];
                         if (next.getLpfs() < newCost)
                         {
                             next.setLpfs(newCost);
@@ -244,20 +244,20 @@ public class PathFinder {
         }
         for (int i = cost.length ; i > 0 ; i--)
         {
-            for (Node n : graph.getLayer(i))
+            for (INode n : graph.getLayer(i))
             {
-                Iterator<Arc> in = graph.getInEdgeIterator(n);
+                Iterator<IArc> in = graph.getInEdgeIterator(n);
                 while (in.hasNext())
                 {
-                    Arc e = in.next();
-                    if (!graph.isInStack(e.getOutIndex()))
+                    IArc e = in.next();
+                    if (!graph.isInStack(e.getInStackIdx()))
                     {
-                        Node next =e.orig;
-                        double newCost = n.getLpft() + cost[next.getLayer()][e.getLabel()];
+                        INode next =e.getOrigin();
+                        double newCost = n.getLpft() + cost[next.getLayer()][e.getLabel()][next.getState()];
                         if (newCost + next.getLpfs() -lb <= -MultiCostRegular.D_PREC)
                         {
-                            graph.getInStack().set(e.getOutIndex());
-                            removed.add(e.getOutIndex());
+                            graph.getInStack().set(e.getInStackIdx());
+                            removed.add(e.getInStackIdx());
                         }
                         else if (next.getLpft() < newCost)
                         {
@@ -280,7 +280,7 @@ public class PathFinder {
      * @param ub the upper bound of the shortest path
      *
      */
-    public void computeShortestAndLongestPath(final IStateIntVector removed,final double[][] cost, final double lb,final double ub)
+    public void computeShortestAndLongestPath(final IStateIntVector removed,final double[][][] cost, final double lb,final double ub)
     {
 
 
@@ -292,23 +292,23 @@ public class PathFinder {
 
         for (int i = 0 ; i < cost.length ; i++)
         {
-            for (Node n : graph.getLayer(i))
+            for (INode n : graph.getLayer(i))
             {
-                Iterator<Arc> out = graph.getOutEdgeIterator(n);
+                Iterator<IArc> out = graph.getOutEdgeIterator(n);
                 while (out.hasNext())
                 {
-                    Arc e = out.next();
-                    if (!graph.isInStack(e.getOutIndex()))
+                    IArc e = out.next();
+                    if (!graph.isInStack(e.getInStackIdx()))
                     {
-                        Node next =e.dest;
-                        double newCost = n.getSpfs() + cost[n.getLayer()][e.getLabel()];
+                        INode next =e.getDestination();
+                        double newCost = n.getSpfs() + cost[n.getLayer()][e.getLabel()][n.getState()];
                         if (next.getSpfs() > newCost)
                         {
                             next.setSpfs(newCost);
                             next.setSpts(e);
                         }
 
-                        newCost = n.getLpfs() + cost[n.getLayer()][e.getLabel()];
+                        newCost = n.getLpfs() + cost[n.getLayer()][e.getLabel()][n.getState()];
                         if (next.getLpfs() < newCost)
                         {
                             next.setLpfs(newCost);
@@ -320,24 +320,24 @@ public class PathFinder {
         }
         for (int i = cost.length ; i > 0 ; i--)
         {
-            for (Node n : graph.getLayer(i))
+            for (INode n : graph.getLayer(i))
             {
-                Iterator<Arc> in = graph.getInEdgeIterator(n);
+                Iterator<IArc> in = graph.getInEdgeIterator(n);
                 while (in.hasNext())
                 {
-                    Arc e = in.next();
-                    if (!graph.isInStack(e.getOutIndex()))
+                    IArc e = in.next();
+                    if (!graph.isInStack(e.getInStackIdx()))
                     {
-                        Node next =e.orig;
-                        double newCost = n.getLpft() + cost[next.getLayer()][e.getLabel()];
-                        double newCost2 = n.getSpft() + cost[next.getLayer()][e.getLabel()];
+                        INode next =e.getOrigin();
+                        double newCost = n.getLpft() + cost[next.getLayer()][e.getLabel()][next.getState()];
+                        double newCost2 = n.getSpft() + cost[next.getLayer()][e.getLabel()][next.getState()];
 
                         if (newCost + next.getLpfs() -lb <= -MultiCostRegular.D_PREC
                                 || newCost2 + next.getSpfs() - ub >= MultiCostRegular.D_PREC)
                         {
 
-                            graph.getInStack().set(e.getOutIndex());
-                            removed.add(e.getOutIndex());
+                            graph.getInStack().set(e.getInStackIdx());
+                            removed.add(e.getInStackIdx());
                         }
                         else
                         {
@@ -357,6 +357,7 @@ public class PathFinder {
             }
         }
     }
+
 
 
 }

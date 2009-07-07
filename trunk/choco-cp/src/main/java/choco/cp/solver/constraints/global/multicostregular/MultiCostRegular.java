@@ -24,22 +24,23 @@ package choco.cp.solver.constraints.global.multicostregular;
 
 import static choco.Choco.DEBUG;
 import choco.cp.solver.constraints.global.multicostregular.algo.PathFinder;
-import choco.cp.solver.constraints.global.multicostregular.structure.Arc;
-import choco.cp.solver.constraints.global.multicostregular.structure.LayeredGraph;
-import choco.cp.solver.constraints.global.multicostregular.structure.Node;
+import choco.cp.solver.constraints.global.multicostregular.structure.IArc;
+import choco.cp.solver.constraints.global.multicostregular.structure.ILayeredGraph;
+import choco.cp.solver.constraints.global.multicostregular.structure.INode;
+import choco.cp.solver.constraints.global.multicostregular.structure.list.LLayeredGraph;
+import choco.cp.solver.constraints.global.multicostregular.structure.bitset.BLayeredGraph;
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.tools.ArrayUtils;
 import gnu.trove.TIntHashSet;
 import gnu.trove.TObjectIntHashMap;
 
 import java.util.Iterator;
-import java.util.logging.Level;
 
 
 /**
@@ -63,6 +64,21 @@ import java.util.logging.Level;
  */
 public class MultiCostRegular extends AbstractLargeIntSConstraint
 {
+
+    /**
+     * Integer to tell MCR to use a bitset-based data-structure
+     */
+    public static final int BITSET = 0;
+
+    /**
+     * Integer to tell MCR to use a list-based date-structure
+     */
+    public static final int LIST = 1;
+
+    /**
+     * Integer to choose the data structure to use (default = BITSET)
+     */
+    public static int DATA_STRUCT = BITSET;
 
     /**
      * Defines the rounding precision
@@ -92,7 +108,7 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
     /**
      * Lagrangian multiplier decreasing factor
      */
-    public final static double RO = 0.75;
+    public final static double RO = 0.7;
 
 
     /**
@@ -103,12 +119,12 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
     /**
      * The last computed Shortest Path
      */
-    public Arc[] lastSp;
+    public IArc[] lastSp;
 
     /**
      * The last computed Longest Path
      */
-    public Arc[] lastLp;
+    public IArc[] lastLp;
 
 
     /**
@@ -122,9 +138,9 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
     protected final IntDomainVar[] z;
 
     /**
-     * Integral costs : c[i][j][k] is the cost over dimension k of x_i = j
+     * Integral costs : c[i][j][k][s] is the cost over dimension k of x_i = j on state s
      */
-    protected final int[][][] costs;
+    protected final int[][][][] costs;
 
     /**
      * The finite automaton which defines the regular language the variable sequence must belong
@@ -134,7 +150,7 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
     /**
      * Layered graph of the unfolded automaton
      */
-    protected LayeredGraph graph;
+    protected ILayeredGraph graph;
 
     /**
      * Boolean array which record whether a bound has been modified by the propagator
@@ -144,7 +160,7 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
     /**
      * Cost to be applied to the graph for a given relaxation
      */
-    protected final double[][] newCosts;
+    protected final double[][][] newCosts;
 
     /**
      * Lagrangian multiplier container to compute an UB
@@ -194,6 +210,19 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
      */
     public MultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final Automaton auto, final int[][][] costs)
     {
+        this(vars,CR,auto,make4dim(costs,auto));
+    }
+
+
+    /**
+     * Constructs a multi-cost-regular constraint propagator
+     * @param vars  decision variables
+     * @param CR    cost variables
+     * @param auto  finite automaton
+     * @param costs assignment cost arrays
+     */
+    public MultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final Automaton auto, final int[][][][] costs)
+    {
         super(ArrayUtils.<IntDomainVar>append(vars,CR));
         this.vs = vars;
         this.costs = costs;
@@ -201,11 +230,11 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
         this.nbR = this.z.length-1;
         this.pi = auto;
         this.modifiedBound = new boolean[]{true,true};
-        this.newCosts = new double[costs.length+1][];
+        this.newCosts = new double[costs.length+1][][];
         for (int i = 0; i < costs.length; i++) {
-            this.newCosts[i] = new double[costs[i].length];
+            this.newCosts[i] = new double[costs[i].length][this.pi.getNbStates()];
         }
-        this.newCosts[costs.length] = new double[1];
+        this.newCosts[costs.length] = new double[1][this.pi.getNbStates()+1];
         this.uUb = new double[2*nbR];
         this.uLb = new double[2*nbR];
 
@@ -215,7 +244,6 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
             this.map.put(vars[i],i);
         }
         this.toRemove = this.getSolver().getEnvironment().makeIntVector();
-
     }
 
 
@@ -233,7 +261,7 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
         double newLB;
         double newLA;
         boolean modif;
-        Arc[] P;
+        IArc[] P;
         double coeff;
         double bk = RO;
         int nbNSig = 0;
@@ -256,11 +284,20 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
             boolean tmp = true;
             while (tmp)
             {
+                //     int bui = toRemove.size();
                 slp.resetNodeLongestPathValues();// slp.resetNodeShortestPathValues();
                 slp.computeLongestPath(toRemove,newCosts,z[0].getInf()-coeff);
                 tmp = false;
-                tmp = toRemove.size() > 0;
-                 this.delayedGraphUpdate();
+                // tmp = toRemove.size() > 0;
+                // this.delayedGraphUpdate();
+                //     bui = toRemove.size()-bui;
+                /*     if (bui > 0)
+               {
+                   System.err.println("############## ITER "+nbIter+" ################");
+                   System.err.println("CA SERT A QQCH : "+bui);
+                   System.err.println("######################################");
+
+               } */
 
 
             }
@@ -298,12 +335,12 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
             for (int l= 0 ;  l < uUb.length/2 ; l++)
             {
                 axu = 0.0;
-                for (Arc e : P)
+                for (IArc e : P)
                 {
-                    int i = e.orig.getLayer();
+                    int i = e.getOrigin().getLayer();
                     int j = e.getLabel();
                     if (i < vs.length)
-                        axu+= costs[i][j][l+1];
+                        axu+= costs[i][j][e.getOrigin().getState()][l+1];
                 }
                 newLB = Math.max(uUb[l]- uk * (z[l+1].getSup()-axu),0);
                 newLA = Math.max(uUb[l+nbR]- uk*(axu-z[l+1].getInf()),0);
@@ -341,7 +378,7 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
         double axu;
         double newLB;
         double newLA;
-        Arc[] P;
+        IArc[] P;
         double coeff;
         double bk = RO;
         double bestVal = Double.NEGATIVE_INFINITY;
@@ -370,8 +407,8 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
                 slp.resetNodeShortestPathValues();
                 slp.computeShortestPath(toRemove,newCosts,z[0].getSup()+coeff);
                 tmp = false;
-                tmp = toRemove.size() > 0;
-                this.delayedGraphUpdate();
+                // tmp = toRemove.size() > 0;
+                //this.delayedGraphUpdate();
             }
 
 
@@ -409,12 +446,12 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
             {
 
                 axu = 0.0;
-                for (Arc e : P)
+                for (IArc e : P)
                 {
-                    int i = e.orig.getLayer();
+                    int i = e.getOrigin().getLayer();
                     int j = e.getLabel();
                     if (i < vs.length)
-                        axu+= costs[i][j][l+1];
+                        axu+= costs[i][j][e.getOrigin().getState()][l+1];
                 }
 
                 newLB = Math.max(uLb[l]+ uk * (axu-z[l+1].getSup()),0);
@@ -459,14 +496,14 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
                 b |= toRemove.size() > 0;
                 z[i].updateInf((int)Math.ceil(p.getShortestPathValue()),this.getConstraintIdx(vs.length));
                 z[i].updateSup((int)Math.floor(p.getLongestPathValue()),this.getConstraintIdx(vs.length));
-                if (b)
-                {
-                       this.delayedGraphUpdate();
-                       break;
-                }
+                /*  if (b)
+               {
+                   this.delayedGraphUpdate();
+                   break;
+               } */
 
             }
-           // b = false;
+            b = false;
         }
         this.delayedGraphUpdate();
     }
@@ -533,14 +570,18 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
         {
             for (int j = 0 ; j < costs[i].length ; j++)
             {
-                double tmp = 0;
-                for (int k = 1 ; k < costs[i][j].length; k++)
+                for (int s = 0 ; s < this.pi.getNbStates() ; s++)
                 {
-                    tmp+= (u[k-1]-u[k-1+nbR])*costs[i][j][k];
+                    double tmp = 0;
+                    for (int k = 1 ; k < costs[i][j][s].length; k++)
+                    {
+                       // if (k != resource)
+                            tmp+= (u[k-1]-u[k-1+nbR])*costs[i][j][s][k];
 
+                    }
+                    if (max) tmp = -tmp;
+                    newCosts[i][j][s] = costs[i][j][s][resource]+ tmp;
                 }
-                if (max) tmp = -tmp;
-                newCosts[i][j] = costs[i][j][resource]+ tmp;
             }
         }
     }
@@ -575,29 +616,41 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
         }
         if (!pi.run(word))
         {
-            LOGGER.severe("Word is not accepted by the automaton");
-            StringBuffer st = new StringBuffer("{");
-            st.append(word[0]);
-            for (int i = 1 ; i < word.length ;i++){
-                st.append(","+word[i]);
-            }
-            st.append("}");
-            LOGGER.severe(st.toString());
+            System.err.println("Word is not accepted by the automaton");
+            System.err.print("{"+word[0]);
+            for (int i = 1 ; i < word.length ;i++)
+                System.err.print(","+word[i]);
+            System.err.println("}");
 
             return false;
         }
-        for (int k = 0 ; k < costs[0][0].length ; k++)
+        for (int k = 0 ; k < costs[0][0][this.pi.getStartingState()].length ; k++)
         {
             int cost = 0;
+            int init = this.pi.getStartingState();
             for (int i = 0 ; i < vs.length ; i++)
             {
-                cost+= costs[i][word[i]][k];
+                cost+= costs[i][word[i]][init][k];
+                init = this.pi.delta(init,word[i]);
+
             }
-                if (cost != z[k].getVal())
+            if (k == 0)
+            {
+                if (cost != z[0].getVal())
                 {
-                    LOGGER.log(Level.SEVERE, "cost: {0} != z[{1}]: {2}", new Object[]{cost, k, z[k].getVal()});
+                    System.err.println("cost: "+cost+" != z:"+z[0].getVal());
                     return false;
                 }
+            }
+            else
+            {
+                if (cost != z[k].getVal())
+                {
+                    System.err.println("cost: "+cost+" != z["+k+"] :"+z[k].getVal());
+                    return false;
+                }
+            }
+
         }
         return true;
 
@@ -605,7 +658,7 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
     }
 
     public int getFilteredEventMask(int idx) {
-        return (idx < vs.length ? IntVarEvent.REMVALbitvector + IntVarEvent.INSTINTbitvector : IntVarEvent.INSTINTbitvector + IntVarEvent.INCINFbitvector + IntVarEvent.DECSUPbitvector);
+        return (idx < vs.length ? IntVarEvent.REMVALbitvector : IntVarEvent.INSTINTbitvector + IntVarEvent.INCINFbitvector + IntVarEvent.DECSUPbitvector);
     }
 
 
@@ -630,27 +683,21 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
 
 
     public void awakeOnRemovals(final int idx, final DisposableIntIterator deltadomain) throws ContradictionException {
+
         removed.clear();
-        // boolean modified = false;
-        try{
         while (deltadomain.hasNext())
             removed.add(deltadomain.next());
-        }finally {
-            deltadomain.dispose();
-        }
-        Node[] sn = this.graph.getLayer(idx);
-        for (Node n : sn)
+
+        INode[] sn = this.graph.getLayer(idx);
+        for (INode n : sn)
         {
-            Iterator<Arc> it = this.graph.getOutEdgeIterator(n);
+            Iterator<IArc> it = this.graph.getOutEdgeIterator(n);
             while (it.hasNext())
             {
-                Arc e = it.next();
-                if (removed.contains(e.getLabel()) &&!graph.isInStack(e.getOutIndex())) {
-                    graph.setInStack(e.getOutIndex());
-                    toRemove.add(e.getOutIndex());
-
-                    //if (this.lastLp == null || this.lastLp[e.orig.getLayer()].equals(e) || this.lastSp[e.orig.getLayer()].equals(e))
-                    //  modified = true;
+                IArc e = it.next();
+                if (removed.contains(e.getLabel()) &&!graph.isInStack(e.getInStackIdx())) {
+                    graph.setInStack(e.getInStackIdx());
+                    toRemove.add(e.getInStackIdx());
                 }
             }
         }
@@ -659,140 +706,6 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
             this.constAwake(false);
         }
     }
-
-    public void awakeOnRem(final int idx, final int val) throws ContradictionException {
-        Node[] sn = this.graph.getLayer(idx);
-        for (Node n : sn) {
-            Iterator<Arc> it = this.graph.getOutEdgeIterator(n);
-            while (it.hasNext()) {
-                Arc e = it.next();
-                if (e.getLabel() == val && !graph.isInStack(e.getOutIndex())) {
-                    graph.setInStack(e.getOutIndex());
-                    toRemove.add(e.getOutIndex());
-
-                    //if (this.lastLp == null || this.lastLp[e.orig.getLayer()].equals(e) || this.lastSp[e.orig.getLayer()].equals(e))
-                    //  modified = true;
-                }
-            }
-        }
-        if (!toRemove.isEmpty())
-        {
-            this.constAwake(false);
-        }
-
-    }
-    public void awakeOnInst(final int idx) throws ContradictionException {
-        //boolean modified = false;
-        int val = vars[idx].getVal();
-        if (idx >= vs.length)
-        {
-            this.constAwake(false);
-        }
-        else if (idx < vs.length)
-        {
-            Node[] sn = this.graph.getLayer(idx);
-            for (Node n : sn)
-            {
-                Iterator<Arc> it = this.graph.getOutEdgeIterator(n);
-                while (it.hasNext())
-                {
-                    Arc e = it.next();
-                    if (e.getLabel() != val &&!graph.isInStack(e.getOutIndex())) {
-                        graph.setInStack(e.getOutIndex());
-                        toRemove.add(e.getOutIndex());
-
-                        //if (this.lastLp == null || this.lastLp[e.orig.getLayer()].equals(e) || this.lastSp[e.orig.getLayer()].equals(e))
-                        //  modified = true;
-                    }
-                }
-
-            }
-
-
-            if (!toRemove.isEmpty())
-            {
-
-                this.constAwake(false);
-            }
-        }
-    }
-
-    public void awakeOnBounds(final int idx) throws ContradictionException {
-        this.awakeOnInf(idx);
-        this.awakeOnSup(idx);
-    }
-
-    public void awakeOnInf(final int idx) throws ContradictionException {
-        if (idx >= vs.length)
-        {
-            this.constAwake(false);
-        }
-        else if (idx < vs.length)
-        {
-            //boolean modified = false;
-            int inf = vars[idx].getInf();
-
-            Node[] sn = this.graph.getLayer(idx);
-            int i = 0 ;
-            while (i < sn.length) {
-                Node n = sn[i];
-                Iterator<Arc> it = this.graph.getOutEdgeIterator(n);
-                while(it.hasNext())
-                {
-                    Arc e = it.next();
-                    if (e.getLabel() < inf && !graph.isInStack(e.getOutIndex()))
-                    {
-                        graph.setInStack(e.getOutIndex());
-                        toRemove.add(e.getOutIndex());
-                        //if (this.lastLp == null || this.lastLp[e.orig.getLayer()].equals(e) || this.lastSp[e.orig.getLayer()].equals(e))
-                        //  modified = true;
-                    }
-                }
-                i++;
-            }
-            if (!toRemove.isEmpty())
-            {
-                this.constAwake(false);
-            }
-
-        }
-
-    }
-    public void awakeOnSup(final int idx) throws ContradictionException {
-        if (idx >= vs.length)
-        {
-            this.constAwake(false);
-        }
-        else
-        {
-            //boolean modified = false;
-            int sup = vars[idx].getSup();
-            if (idx < vs.length)
-            {
-                Node[] sn = this.graph.getLayer(idx);
-                for (Node n : sn) {
-                    Iterator<Arc> it = this.graph.getOutEdgeIterator(n);
-                    while (it.hasNext()) {
-                        Arc e = it.next();
-                        if (e.getLabel() > sup && !graph.isInStack(e.getOutIndex())) {
-                            graph.setInStack(e.getOutIndex());
-                            this.toRemove.add(e.getOutIndex());
-                            //if (this.lastLp == null || this.lastLp[e.orig.getLayer()].equals(e) || this.lastSp[e.orig.getLayer()].equals(e))
-                            //modified = true;
-                        }
-                    }
-                }
-            }
-
-            if (!toRemove.isEmpty())
-            {
-                this.constAwake(false);
-            }
-
-        }
-
-    }
-
 
     /**
      * Iteratively compute upper and lower bound for the underlying RCSPP
@@ -823,15 +736,19 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
 
     public void awake() throws ContradictionException
     {
-        this.graph = new LayeredGraph(vs,pi,this);
+        if (DATA_STRUCT == BITSET)
+            this.graph = new BLayeredGraph(vs,pi,this);
+        else if (DATA_STRUCT == LIST)
+            this.graph = new LLayeredGraph(vs,pi,this);
+
         this.slp = this.graph.getPF();
         if(DEBUG)
         {
-            LOGGER.log(Level.INFO, "NB OF EDGES IN GRAPH : {0}",this.graph.getActiveOut().cardinality());
+            //  System.out.println("NB OF EDGES IN GRAPH : "+this.graph.getActiveOut().cardinality());
             int nbNode = 0 ;
             for (int i = 0 ; i <  this.graph.getNbLayers() ; i++)
                 nbNode+=this.graph.getLayer(i).length;
-            LOGGER.log(Level.INFO, "NB Of NODES IN GRAPH : {0}", nbNode);
+            System.out.println("NB Of NODES IN GRAPH : "+nbNode);
         }
         prefilter();
         propagate();
@@ -845,14 +762,39 @@ public class MultiCostRegular extends AbstractLargeIntSConstraint
         this.modifiedBound[1] = true;
         this.computeSharpBounds();
         if (toRemove.size() > 0)
-            LOGGER.info("PB");
+            System.out.println("PB");
         if (DEBUG && !this.check())
         {
             System.out.flush();
-            LOGGER.severe("ACCEPTED INSTANTIATION DOES NOT COMPLY WITH CHECKER");
+            System.err.println("ACCEPTED INSTANTIATION DOES NOT COMPLY WITH CHECKER");
             System.exit(1);
             this.fail();
         }
+    }
+
+
+    private static int[][][][] make4dim(int[][][] costs,Automaton auto)
+    {
+        int n = auto.getNbStates();
+        int[][][][] out = new int[costs.length][][][];
+        for (int i = 0 ; i < out.length ; i++)
+        {
+            out[i] = new int[costs[i].length][][];
+
+            for (int j = 0 ; j < out[i].length ; j++)
+            {
+                out[i][j] = new int[n][costs[i][j].length];
+
+                for (int k = 0 ; k < costs[i][j].length ; k++)
+                {
+                    for (int s = 0 ; s < n ; s++)
+                        out[i][j][s][k] = costs[i][j][k];
+                }
+            }
+
+        }
+
+        return out;
     }
 
 
