@@ -1040,19 +1040,16 @@ public class ConstraintsDetectionTest {
     public void detectEqualities3(){
         Model m;
         PreProcessCPSolver s;
-        Random r;
-        for(int size = 100; size <= 500; size +=100){
-            for(int seed = 0; seed < 50; seed++){
-                r = new Random(seed);
-                m = new CPModel();
-                IntegerVariable[] vars = Choco.makeIntVarArray("v", size, 0, 10, "cp:bound");
-                for(int i = 0; i < size-1; i++){
-                    m.addConstraint(eq(vars[i], vars[i+1]));
-                }
-                s = new PreProcessCPSolver();
-                s.read(m);
-                
+        for(int size = 1000; size <= 2000; size +=100){
+            m = new CPModel();
+            IntegerVariable[] vars = Choco.makeIntVarArray("v", size, 0, 10, "cp:bound");
+            for(int i = 0; i < size-1; i++){
+                m.addConstraint(eq(vars[i], vars[i+1]));
             }
+            s = new PreProcessCPSolver();
+            long t = -System.currentTimeMillis();
+            s.read(m);
+            Assert.assertEquals(1, s.getNbIntVars());
         }
     }
 }
