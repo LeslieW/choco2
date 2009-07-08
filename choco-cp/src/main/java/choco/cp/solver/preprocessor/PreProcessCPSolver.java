@@ -30,8 +30,9 @@ import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.cp.solver.preprocessor.detectors.CliqueDetector;
 import choco.cp.solver.preprocessor.detectors.ExpressionDetector;
 import choco.cp.solver.preprocessor.detectors.RelationDetector;
-import choco.cp.solver.preprocessor.graph.ArrayGraph;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.objects.BooleanSparseMatrix;
+import choco.kernel.common.util.objects.ISparseMatrix;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.*;
@@ -43,6 +44,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import gnu.trove.TIntObjectHashMap;
 import parser.chocogen.XmlModel;
 
 import java.util.*;
@@ -409,7 +411,7 @@ public class PreProcessCPSolver extends CPSolver {
 
     private void detectEqualities(Model m) {
         int n = m.getNbIntVars();
-        ArrayGraph eqGraph = new ArrayGraph(n);
+        ISparseMatrix matrix = new BooleanSparseMatrix(n);
         Iterator<Constraint> iteq = m.getConstraintByType(ConstraintType.EQ);
         Constraint c;
         // Run over equalities constraints, and create edges
@@ -421,37 +423,43 @@ public class PreProcessCPSolver extends CPSolver {
                     && v2.getVariableType()== VariableType.INTEGER){
                 int idxa = (Integer) ((IntegerVariable)v1).getHook();
                 int idxb = (Integer) ((IntegerVariable)v2).getHook();
-                eqGraph.addEdge(idxa,idxb);
+                matrix.add(idxa,idxb);
                 this.mapconstraints.put(c.getIndex(), null);
             }
         }
-        if(eqGraph.nbEdges> 0){
+        if(matrix.getNbElement()> 0){
+            matrix.prepare();
             // Detect connex components
             int[] color = new int[n];
             Arrays.fill(color, -1);
-            HashMap<Integer, Domain> domainByColor = new HashMap<Integer, Domain>();
+            TIntObjectHashMap<Domain> domainByColor = new TIntObjectHashMap<Domain>();
             int k = -1;
             Domain dtmp = new Domain();
-            for(int i = 0; i < n; i++ ){
-                for(int j = 0; j < n; j++ ){
-                    if (color[i]==-1){
+            Iterator<Long> it = matrix.iterator();
+            while(it.hasNext()){
+                long v = it.next();
+                int i = (int)(v / n);
+                int j = (int)(v % n);
+
+                if (color[i]==-1){
+                    k++;
+                    color[i]=k;
+                    domainByColor.put(k, new Domain(m.getIntVar(i)));
+                }
+                Domain d = domainByColor.get(color[i]);
+                //backup
+                dtmp.copy(d);
+                if(d.intersection(m.getIntVar(j))){
+                    color[j] = color[i];
+                    domainByColor.put(color[i], d);
+                }else{
+                    m.addConstraint(Choco.eq(m.getIntVar(i), m.getIntVar(j)));
+                    //rollback
+                    d.copy(dtmp);
+                    if (color[j]==-1){
                         k++;
-                        color[i]=k;
-                        domainByColor.put(k, new Domain(m.getIntVar(i)));
-                    }
-                    if(eqGraph.isIn(i,j)
-                            || eqGraph.isIn(j,i)){
-                        Domain d = domainByColor.get(color[i]);
-                        //backup
-                        dtmp.copy(d);
-                        if(d.intersection(m.getIntVar(j))){
-                            color[j]=color[i];
-                            domainByColor.put(color[i], d);
-                        }else{
-                            m.addConstraint(Choco.eq(m.getIntVar(i), m.getIntVar(j)));
-                            //rollback
-                            d.copy(dtmp);
-                        }
+                        color[j]=k;
+                        domainByColor.put(k, new Domain(m.getIntVar(j)));
                     }
                 }
             }
