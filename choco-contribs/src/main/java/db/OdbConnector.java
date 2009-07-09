@@ -195,7 +195,7 @@ public final class OdbConnector {
 		String dbName = "testdb";
 		extractDatabaseHSQLDB( odbStream, dbDir, dbName);
 		//connection
-		DatabaseManager manager = new DatabaseManager(dbDir, dbName);
+		DbManager manager = new DbManager(dbDir, dbName);
 		manager.test();
 		//export
 //		odbStream = o.getClass().getResourceAsStream("/chocodb.odb");

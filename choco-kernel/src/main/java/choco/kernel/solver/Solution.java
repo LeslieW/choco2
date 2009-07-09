@@ -165,7 +165,8 @@ public class Solution {
 
 		@Override
 		public Number getObjectiveValue() {
-			return Integer.valueOf(objectiveValue);
+			
+			return objectiveValue == Integer.MAX_VALUE ? null : Integer.valueOf(objectiveValue);
 		}
 
 		@Override
