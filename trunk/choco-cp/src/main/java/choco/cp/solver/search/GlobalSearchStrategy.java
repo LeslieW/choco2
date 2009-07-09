@@ -27,6 +27,8 @@ import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 
 
 public class GlobalSearchStrategy extends AbstractGlobalSearchStrategy {
+	
+		
 	public GlobalSearchStrategy(Solver solver) {
 		super(solver);
 		setSearchLoop(new SearchLoop(this));
