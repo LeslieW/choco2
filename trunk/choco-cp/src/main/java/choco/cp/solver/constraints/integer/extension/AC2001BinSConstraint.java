@@ -54,18 +54,6 @@ public class AC2001BinSConstraint extends CspBinSConstraint {
         }
     }
 
-    /**
-     * @return a list of domains accepted by the constraint and sorted
-     *         by order of preference
-     */
-    public int[] getFavoriteDomains() {
-        return new int[]{IntDomainVar.BITSET,
-                IntDomainVar.LINKEDLIST,
-                IntDomainVar.BINARYTREE,
-                IntDomainVar.BOUNDS,
-        };
-    }
-
     public int getFilteredEventMask(int idx) {
         return IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
     }

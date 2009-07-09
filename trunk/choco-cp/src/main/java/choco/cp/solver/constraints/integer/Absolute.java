@@ -65,18 +65,6 @@ public class Absolute extends AbstractBinIntSConstraint {
     }
 
 
-       /**
-     * @return a list of domains accepted by the constraint and sorted
-     *         by order of preference
-     */
-    public int[] getFavoriteDomains() {
-        return new int[]{IntDomainVar.BITSET,
-                IntDomainVar.LINKEDLIST,
-                IntDomainVar.BINARYTREE,
-                IntDomainVar.BOUNDS,
-        };
-    }
-
     /**
 	 * The initial propagation consist in
 	 * enforcing X to be positive

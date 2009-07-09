@@ -56,15 +56,6 @@ public class AC3rmBitBinSConstraint extends CspBinSConstraint {
 		v1Domain = (BitSetIntDomain) v1.getDomain();
 	}
 
-    /**
-     * @return a list of domains accepted by the constraint and sorted
-     *         by order of preference
-     */
-    public int[] getFavoriteDomains() {
-        return new int[]{IntDomainVar.BITSET};
-    }
-
-
     public int getFilteredEventMask(int idx) {
         return IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
     }    
