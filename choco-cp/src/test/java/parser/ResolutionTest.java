@@ -25,6 +25,7 @@ package parser;
 import choco.kernel.common.logging.ChocoLogging;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import parser.absconparseur.tools.SolutionChecker;
 import parser.chocogen.XmlModel;
@@ -136,7 +137,7 @@ public class ResolutionTest {
 
 
     @Test
-//    @Ignore
+    @Ignore
     public void aTest() {
         XmlModel xm = new XmlModel();
         args[1] = args[1] + "/normalized-aim-200-3-4-sat-3_ext.xml";

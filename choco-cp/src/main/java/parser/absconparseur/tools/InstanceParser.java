@@ -608,6 +608,14 @@ private PFunction parseFunction(Element functionElement) {
 			return parseWeightedSumConstraint(name, scope, parameters);
 		if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.CUMULATIVE)))
 			return parseCumulativeConstraint(name, scope, parameters);
+        if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.DISJUNCTIVE)))
+			return parseDisjunctiveConstraint(name, scope, parameters);
+        if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.GLOBALCARDINALITY)))
+			return parseGlobalCardinalityConstraint(name, scope, parameters);
+        if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.LEXLESS)))
+			return parseLexLessConstraint(name, scope, parameters);
+        if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.LEXLESSEQ)))
+			return parseLexLessEqConstraint(name, scope, parameters);
 
 		LOGGER.log(Level.WARNING, "Problem with the reference", reference);
 		return null;
