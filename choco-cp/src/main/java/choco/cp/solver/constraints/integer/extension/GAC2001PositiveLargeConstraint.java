@@ -110,18 +110,6 @@ public class GAC2001PositiveLargeConstraint extends CspLargeSConstraint {
     }
 
     /**
-     * @return a list of domains accepted by the constraint and sorted
-     *         by order of preference
-     */
-    public int[] getFavoriteDomains() {
-        return new int[]{IntDomainVar.BITSET,
-                IntDomainVar.LINKEDLIST,
-                IntDomainVar.BINARYTREE,
-                IntDomainVar.BOUNDS,
-        };
-    }
-
-    /**
 	 * 	updates the support for all values in the domain of variable
 	 * 	and remove unsupported values for variable
 	 * @param indexVar

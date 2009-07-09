@@ -75,6 +75,14 @@
     </roles>   
   </developer>
   <developer>
+    <id>sdemassey</id>
+    <name>Sophie Demassey</name>
+    <email>sophie.demassey@emn.fr</email>
+    <roles>
+      <role>developper</role>
+    </roles>   
+  </developer>
+  <developer>
     <id>arnaud_m</id>
     <name>Arnaud Malapert</name>
     <email>arnaud.malapert@emn.fr</email>

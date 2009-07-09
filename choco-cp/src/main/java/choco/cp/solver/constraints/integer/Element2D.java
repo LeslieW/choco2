@@ -91,17 +91,6 @@ public class Element2D extends AbstractTernIntSConstraint {
         }
     }
 
-    /**
-     * @return a list of domains accepted by the constraint and sorted
-     *         by order of preference
-     */
-    public int[] getFavoriteDomains() {
-        return new int[]{IntDomainVar.BITSET,
-                IntDomainVar.LINKEDLIST,
-                IntDomainVar.BINARYTREE,
-                IntDomainVar.BOUNDS,
-        };
-    }
 
 
     public void updateValueFromIndex() throws ContradictionException {
