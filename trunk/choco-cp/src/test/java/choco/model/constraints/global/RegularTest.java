@@ -37,11 +37,8 @@ import choco.kernel.model.constraints.automaton.Transition;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import org.junit.After;
+import org.junit.*;
 import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -858,6 +855,31 @@ public class RegularTest {
         trans.add(new Transition(15,E,16));
 
         return new DFA(trans,acc,4);
+    }
+
+    @Test
+    public void testWithBound(){
+
+        Model m = new CPModel();
+        int n = 6;
+        IntegerVariable[] vars = Choco.makeIntVarArray("v", n, 1, 5, "cp:bound");
+
+        String regexp = "(1|2)(3*)(2|4|5)";
+        m.addConstraint(Choco.regular(regexp, vars));
+
+        Solver s = new CPSolver();
+        s.read(m);
+
+        s.solve();
+        if (s.isFeasible()) {
+            do {
+                for(IntegerVariable v : vars){
+                    System.out.print(s.getVar(v).getVal()+ " ");
+                }
+                System.out.println();
+                Assert.assertTrue(s.checkSolution(true));
+            }while (s.nextSolution());
+        }
     }
 
 }
