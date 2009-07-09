@@ -16,7 +16,7 @@
 </variables>
 
 <constraints nbConstraints='1'>
- <constraint name='C0' arity='5' scope='V0 V1 V2 V3 V4 V5' reference='global:lexless'>
+ <constraint name='C0' arity='5' scope='V0 V1 V2 V3 V4 V5' reference='global:lexlesseq'>
   <parameters>
    [ V0 V1 V2 ]
    [ V3 V4 V5 ]
