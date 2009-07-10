@@ -196,7 +196,9 @@ public class SimpleSchedule extends CPModel
 
     public static void main(String[] args)
     {
-        MultiCostRegular.DATA_STRUCT = MultiCostRegular.BITSET;
+        MultiCostRegular.DATA_STRUCT = MultiCostRegular.LIST;
+        //MultiCostRegular.DATA_STRUCT = MultiCostRegular.BITSET;
+
         SimpleSchedule m = new SimpleSchedule();
         CPSolver s = new CPSolver();
 
@@ -209,7 +211,7 @@ public class SimpleSchedule extends CPModel
            do {
                m.printSolution(s);
                System.out.println("");
-               s.postCut(s.geq(z,z.getVal()));
+               s.postCut(s.leq(z,z.getVal()));
            }
            while(s.nextSolution());
         }
