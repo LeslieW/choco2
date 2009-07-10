@@ -86,9 +86,8 @@ public class Candles extends PatternExample{
         }
         LOGGER.info("Number of candles : "+ sum);
     }
-
-
+    
     public static void main(String[] args) {
-        new Candles().execute(null);
+        new Candles().execute();
     }
 }

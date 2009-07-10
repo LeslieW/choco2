@@ -19,7 +19,7 @@ public class DbProblemBean implements DbProblem {
 	public DbProblemBean(String label, String name, String category) {
 		super();
 		setLabel(label);
-		setName(label);
+		setName(name);
 		setCategory(category);
 	}
 

@@ -209,13 +209,20 @@ public class WolfGoatCabbage1 extends PatternExample {
 
     }
 
-     public static void main(String[] args) {
-        // Since we start on the left bank and end on the right
-        // there must be an even number of states. Let i be
-        // the number of states, including the start and end states.
-        for (int i = 2; i <= 32; i += 2) {
-            new WolfGoatCabbage1().execute(i);
-        }
+    
+     @Override
+	public void execute() {
+    	// Since we start on the left bank and end on the right
+         // there must be an even number of states. Let i be
+         // the number of states, including the start and end states.
+    	 for (int i = 2; i <= 32; i += 2) {
+             execute(i);
+         }
+	}
+
+
+	public static void main(String[] args) {
+            new WolfGoatCabbage1().execute();
     }
 
 

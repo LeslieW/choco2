@@ -163,8 +163,10 @@ public class CycloHexan extends PatternExample {
         }
     }
 
+ 
+    
     public static void main(String[] args) {
-        new CycloHexan().execute(null);
+        new CycloHexan().execute();
     }
 
 }

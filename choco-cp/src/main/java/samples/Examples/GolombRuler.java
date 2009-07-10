@@ -35,11 +35,15 @@ import java.util.Arrays;
  */
 public class GolombRuler extends PatternExample {
 
+	public final static int[][] OPTIMAL_RULER =	{ 
+		{5, 11}, {6, 17}, {7, 25}, {8, 34}, {9, 44}, {10, 55}, {11, 72}
+	};
+	
     IntegerVariable[] ticks, diff;
 	public int m;
 	public int length;
     private boolean alldiff = false;
-
+    
     @Override
     public void setUp(Object paramaters) {
 
@@ -108,16 +112,18 @@ public class GolombRuler extends PatternExample {
 		}
 	}
 
+	
+
+	@Override
+	public void execute() {
+		execute(new Object[]{OPTIMAL_RULER[1][0], OPTIMAL_RULER[1][1], true});
+	}
 
 	public static void main(String[] args) {
-		//ChocoLogging.setVerbosity(Verbosity.VERBOSE);
-		new GolombRuler().execute(new Object[]{5,11, true});
-		new GolombRuler().execute(new Object[]{6,17, true});
-		//new GolombRuler().execute(new Object[]{7,25, true});
-		//new GolombRuler().execute(new Object[]{8,34, true});
-		//new GolombRuler().execute(new Object[]{9,44, true});
-		//new GolombRuler().execute(new Object[]{10,55, true});
-		//new GolombRuler().execute(new Object[]{11,72, true});
+		final GolombRuler ruler = new GolombRuler();
+		for (int i = 0; i < OPTIMAL_RULER.length - 2; i++) {
+			ruler.execute(new Object[]{OPTIMAL_RULER[i][0], OPTIMAL_RULER[i][1], true});
+		}
 	}
 
 }

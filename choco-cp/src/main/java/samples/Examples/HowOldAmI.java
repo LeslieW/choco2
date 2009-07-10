@@ -74,6 +74,6 @@ public class HowOldAmI extends PatternExample{
     }
 
     public static void main(String[] args) {
-        new HowOldAmI().execute(null);
+        new HowOldAmI().execute();
     }
 }

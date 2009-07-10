@@ -95,6 +95,12 @@ public class Distance extends PatternExample{
 	private IntegerExpressionVariable power2(IntegerExpressionVariable v) {
 		return mult(v,v);
 	}
+	
+	
+	@Override
+	public void execute() {
+		super.execute(true);
+	}
 
 	public static void main(String[] args) {
         new Distance().execute(true);

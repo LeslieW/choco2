@@ -130,6 +130,12 @@ public class Queen extends PatternExample {
 		_s.printRuntimeSatistics();
 	}
 
+	
+	@Override
+	public void execute() {
+		execute(10);
+	}
+
 	public static void main(String[] args) {
 		new Queen().execute(10);
 		//        new Queen().execute(10);

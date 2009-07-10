@@ -143,22 +143,20 @@ public class RehearsalProblem extends PatternExample {
 	@Override
 	public void solve() {
 		_s.minimize(false);
-
+	}
+	
+	@Override
+	public void execute() {
+		execute(new Object[]{CSPLIB_DURATIONS, CSPLIB_REQUIREMENTS});
 	}
 
+
 	public static void main(String[] args) {
-		int[][] req = {
-				{1,1,0,1,0},
-				{0,1,1,0,1},
-				{1,1,0,1,1},
-		};
-		int[] dur = {4,6,3,5,7};
-		
 		RehearsalProblem pb = new RehearsalProblem();
-		pb.isDisjunctiveModel = false;
+		pb.isDisjunctiveModel = true;
 		pb.isPrecOnlyDecision = false;
-		//pb.execute(new Object[]{CSPLIB_DURATIONS, CSPLIB_REQUIREMENTS});
-		pb.execute(new Object[]{ dur, req});
+		pb.execute(new Object[]{CSPLIB_DURATIONS, CSPLIB_REQUIREMENTS});
+		//pb.execute(new Object[]{ dur, req});
 	}
 
 
