@@ -112,10 +112,12 @@ public class MinimumEdgeDeletion extends PatternExample {
 		_s.launch();
 	}
 
+	@Override
+	public void execute() {
+		execute(new Object[]{7,0.5,0});
+	}
 
 	public static void main(String[] args) {
-		Object parameters = new Object[]{7,0.5,0};
-		MinimumEdgeDeletion pb = new MinimumEdgeDeletion();
-		pb.execute(parameters);
+		new MinimumEdgeDeletion().execute();
 	}
 }

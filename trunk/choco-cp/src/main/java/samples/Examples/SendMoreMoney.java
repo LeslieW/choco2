@@ -94,7 +94,7 @@ public class SendMoreMoney extends PatternExample {
     }
 
     public static void main(String[] args) {
-        new SendMoreMoney().execute(null);
+        new SendMoreMoney().execute();
     }
 
 }

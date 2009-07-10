@@ -151,8 +151,14 @@ public class U2planning extends PatternExample{
         LOGGER.info(_s.pretty());
     }
 
+    
+
+	@Override
+	public void execute() {
+		execute(2);
+	}
 
 	public static void main(String[] args) {
-		new U2planning().execute(2);
+		new U2planning().execute();
 	}
 }

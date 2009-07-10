@@ -65,6 +65,7 @@ public class DbManager {
 	}
 	public DbManager(String url) {
 		super();
+		LOGGER.info("fetching data source ...");
 		dataSource.setDriverClassName("org.hsqldb.jdbcDriver");
 		dataSource.setUrl(url);
 		dataSource.setUsername("sa");
@@ -198,12 +199,15 @@ public class DbManager {
 		return safeSolverInsertion(solver, null, instance, null, null);
 	}
 
-	public final Integer safeSolverInsertion(Solver solver, Integer executionID, DbInstance instance) {
-		return safeSolverInsertion(solver, executionID, instance, null, null);
+	public final Integer safeSolverInsertion(Solver solver,  DbInstance instance, Integer seed) {
+		return safeSolverInsertion(solver, null, instance, null, seed);
 	}
-
-
-	public final Integer safeSolverInsertion(Solver solver,  Integer executionID, DbInstance instance, String description, String seed) {
+	
+	public final Integer safeSolverInsertion(Solver solver,  DbInstance instance, String description, Integer seed) {
+		return safeSolverInsertion(solver, null, instance, description, seed);
+	}
+	
+	public final Integer safeSolverInsertion(Solver solver,  Integer executionID, DbInstance instance, String description, Integer seed) {
 		//find execution
 		if( executionID == null) {
 			executionID = getExecutionID(null);
@@ -280,16 +284,21 @@ public class DbManager {
 		return environmentID;
 	}
 
+	protected Integer insertExecution(Date date, Integer seed) {
+		return insertEntryAndRetrieveGPK(DbTables.T_EXECUTIONS, 
+				new Object[]{ getEnvironmentID(), new Date(System.currentTimeMillis()), seed});
+	}
 	
 	public final Integer getExecutionID(Integer seed) {
+		final Date date = new Date(System.currentTimeMillis());
 		if( seed == null) {
 			if(defaultExecutionID == null) {
-				defaultExecutionID = getExecutionID(null);
+				defaultExecutionID = insertExecution(date, null);
 			}
 			return defaultExecutionID;
 		}else {
 			return insertEntryAndRetrieveGPK(DbTables.T_EXECUTIONS, 
-					new Object[]{ getEnvironmentID(), new Date(System.currentTimeMillis()), seed});
+					new Object[]{ getEnvironmentID(), date, seed});
 		}
 	}
 

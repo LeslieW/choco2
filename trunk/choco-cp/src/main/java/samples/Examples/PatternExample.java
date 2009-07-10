@@ -26,45 +26,57 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.solver.Solver;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /*
-* User : charles
-* Mail : cprudhom(a)emn.fr
-* Date : 9 janv. 2009
-* Since : Choco 2.0.1
-* Update : Choco 2.0.1
-*/
-public abstract class PatternExample {
+ * User : charles
+ * Mail : cprudhom(a)emn.fr
+ * Date : 9 janv. 2009
+ * Since : Choco 2.0.1
+ * Update : Choco 2.0.1
+ */
+public abstract class PatternExample implements Example {
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+	public static Model _m;
 
-    public static Model _m;
+	public static Solver _s;
 
-    public static Solver _s;
-
-    public void setUp(Object parameters){
-    }
+	public void setUp(Object parameters){
+	}
 
 
 	public abstract void buildModel();
 
-    public abstract void buildSolver();
+	public abstract void buildSolver();
 
-    public abstract void solve();
+	public abstract void solve();
 
-    public abstract void prettyOut();
+	public abstract void prettyOut();
 
-    public final void execute(Object parameters){
-        this.setUp(parameters);
-        this.buildModel();
-        this.buildSolver();
-        this.solve();
-        this.prettyOut();
-        LOGGER.info("\n *********** ");
-        LOGGER.info("#sol : " + _s.getNbSolutions());
-        _s.printRuntimeSatistics();
-        ChocoLogging.flushLogs();
-    }
+	public final void execute(Object parameters){
+		LOGGER.log(Level.INFO,"\nexecute {0} ...", getClass().getSimpleName());
+		this.setUp(parameters);
+		this.buildModel();
+		this.buildSolver();
+		this.solve();
+		this.prettyOut();
+		if(LOGGER.isLoggable(Level.INFO)) {
+			if( _s == null) {
+				LOGGER.info("\n***********\n solver object is null.");
+			}else {
+				LOGGER.log(Level.INFO, "\n***********\n#sol : {0}\n{1}", new Object[]{ _s.getSolutionCount(), _s.runtimeSatistics()});
+			}
+			ChocoLogging.flushLogs();
+		}
+	}
+
+
+	@Override
+	public void execute() {
+		execute(null);		
+	}
+	
+	
 
 }

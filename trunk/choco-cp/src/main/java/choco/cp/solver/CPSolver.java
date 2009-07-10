@@ -1340,8 +1340,7 @@ public class CPSolver implements Solver {
 	
 	@Override
 	public Number getObjectiveValue() {
-		LOGGER.warning("not yet implemented");
-		return null;
+		return getOptimumValue();
 	}
 
 	@Override

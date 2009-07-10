@@ -120,8 +120,8 @@ public class Arm extends PatternExample{
         LOGGER.info("ir = "+ _s.getVar(ir).getValue());
         LOGGER.info("jr = "+ _s.getVar(jr).getValue());
     }
-
-    public static void main(String[] args) {
-        new Arm().execute(null);
+    
+	public static void main(String[] args) {
+        new Arm().execute();
     }
 }
