@@ -23,6 +23,7 @@
 package choco.kernel.solver.search;
 
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solution;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.logging.Level;
@@ -113,6 +114,13 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 
 	}
 
+	
+
+	@Override
+	public void writeSolution(Solution sol) {
+		super.writeSolution(sol);
+		sol.recordIntObjective(this.getObjectiveValue());
+	}
 
 	@Override
 	public void recordSolution() {

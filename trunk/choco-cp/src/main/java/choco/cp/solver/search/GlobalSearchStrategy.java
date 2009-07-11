@@ -34,14 +34,4 @@ public class GlobalSearchStrategy extends AbstractGlobalSearchStrategy {
 		setSearchLoop(new SearchLoop(this));
 	}
 
-	/**
-	 * record only the first solutions as we are dealing with a CSP.
-	 */
-	@Override
-	public boolean isRecordingNextSolution() {
-		return getNbStoredSolutions() < getStoredSolutionsCapacity();
-	}
-
-
-
 }

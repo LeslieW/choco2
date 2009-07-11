@@ -25,6 +25,8 @@ package samples.Examples;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.variables.integer.IntegerVariable;
 
 import java.util.Arrays;
@@ -78,6 +80,7 @@ public class GolombRuler extends PatternExample {
     public void buildSolver() {
         _s = new CPSolver();
         _s.read(_m);
+        _s.monitorBackTrackLimit(true);
     }
 
     @Override
@@ -116,14 +119,15 @@ public class GolombRuler extends PatternExample {
 
 	@Override
 	public void execute() {
-		execute(new Object[]{OPTIMAL_RULER[1][0], OPTIMAL_RULER[1][1], true});
+		execute(new Object[]{OPTIMAL_RULER[4][0], OPTIMAL_RULER[4][1], true});
 	}
 
 	public static void main(String[] args) {
-		final GolombRuler ruler = new GolombRuler();
-		for (int i = 0; i < OPTIMAL_RULER.length - 2; i++) {
-			ruler.execute(new Object[]{OPTIMAL_RULER[i][0], OPTIMAL_RULER[i][1], true});
-		}
+//		final GolombRuler ruler = new GolombRuler();
+//		for (int i = 0; i < OPTIMAL_RULER.length - 2; i++) {
+//			ruler.execute(new Object[]{OPTIMAL_RULER[i][0], OPTIMAL_RULER[i][1], true});
+//		}
+		new GolombRuler().execute();
 	}
 
 }

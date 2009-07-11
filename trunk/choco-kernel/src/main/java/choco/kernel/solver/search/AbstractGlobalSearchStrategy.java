@@ -34,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
@@ -209,7 +210,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
                 while (nextSolution() == Boolean.TRUE){}
 			}
 			//model.worldPop();
-			if ( existsStoredSolution() && (!stopAtFirstSol)) {
+			if (  ! solutionPool.isEmpty() && (!stopAtFirstSol)) {
 				solver.worldPopUntil(baseWorld);
 				restoreBestSolution();
 			}

@@ -185,7 +185,9 @@ import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.AbstractOptimize;
 import choco.kernel.solver.search.GlobalSearchLimit;
+import choco.kernel.solver.search.ISolutionPool;
 import choco.kernel.solver.search.Limit;
+import static choco.kernel.solver.search.SolutionPoolFactory.*;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
@@ -374,6 +376,13 @@ public class CPSolver implements Solver {
 	 */
 	public int loggingMaxDepth = 5;
 
+
+	@Override
+	public void setSolutionPoolCapacity(int capacity) {
+		this.solutionPoolCapacity = capacity;		
+	}
+
+	public int solutionPoolCapacity = 1;
 	/**
 	 * Do we want to restart a new search after each solution. This is relevant
 	 * in the context of optimization
@@ -830,10 +839,13 @@ public class CPSolver implements Solver {
 				}
 			}
 		}
+
 		strategy.stopAtFirstSol = firstSolution;
 
 		strategy.setLoggingMaxDepth(this.loggingMaxDepth);
 
+		strategy.setSolutionPool( makeDefaultSolutionPool(solutionPoolCapacity));
+	
 		addLimitsAndRestartStrategy();
 
 		if (this.useRecomputation()) {
@@ -1327,7 +1339,7 @@ public class CPSolver implements Solver {
 		return strategy.getSearchMeasures().getFailCount();
 	}
 
-		
+
 	@Override
 	public int getIterationCount() {
 		return strategy.getSearchMeasures().getIterationCount();
@@ -1337,7 +1349,7 @@ public class CPSolver implements Solver {
 	public int getSolutionCount() {
 		return strategy.getSolutionCount();
 	}
-	
+
 	@Override
 	public Number getObjectiveValue() {
 		return getOptimumValue();
@@ -2591,7 +2603,7 @@ public class CPSolver implements Solver {
 				if (nogoodStore != null)
 					nogoodStore.setActive();
 				// Iterator<Propagator> ctit =
-					// solver.getIntConstraintIterator();
+				// solver.getIntConstraintIterator();
 				// while (ctit.hasNext()) {
 				// SConstraint c = ctit.next();
 				// if(!c.isSatisfied()){

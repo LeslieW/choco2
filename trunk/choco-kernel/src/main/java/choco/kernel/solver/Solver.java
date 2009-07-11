@@ -464,6 +464,8 @@ public interface Solver extends IMeasures, IPretty {
 
     public Boolean minimize(Var obj, boolean restart);
 
+    public void setSolutionPoolCapacity(int capacity);
+    
     public void printRuntimeSatistics();
     
     public String runtimeSatistics();

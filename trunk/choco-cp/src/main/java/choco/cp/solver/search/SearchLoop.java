@@ -47,8 +47,18 @@ public class SearchLoop implements ISearchLoop {
         this.searchStrategy = searchStrategy;
     }
 
+    
 
-    public Boolean run() {
+    @Override
+	public void initialize() {
+		LOGGER.severe("not yet implemented");// TODO Auto-generated method stub
+    }
+
+
+
+	
+
+	public Boolean run() {
 
         int previousNbSolutions = searchStrategy.getSolutionCount();
         searchStrategy.setEncounteredLimit(null);
@@ -161,4 +171,11 @@ public class SearchLoop implements ISearchLoop {
             searchStrategy.nextMove = AbstractGlobalSearchStrategy.UP_BRANCH;
         }
     }
+    
+    @Override
+	public void restart() {
+		LOGGER.severe("not yet implemented");
+    }
+
+
 }

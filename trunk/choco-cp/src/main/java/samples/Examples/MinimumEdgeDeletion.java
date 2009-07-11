@@ -97,7 +97,6 @@ public class MinimumEdgeDeletion extends PatternExample {
 		_s.read(_m);
 		_s.setFirstSolution(false);
 		_s.setDoMaximize(false);
-		_s.generateSearchStrategy();
 	}
 
 	@Override
@@ -109,6 +108,7 @@ public class MinimumEdgeDeletion extends PatternExample {
 
 	@Override
 	public void solve() {
+		_s.generateSearchStrategy();
 		_s.launch();
 	}
 
