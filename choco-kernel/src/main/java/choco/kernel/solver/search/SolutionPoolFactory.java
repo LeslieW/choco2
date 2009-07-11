@@ -18,14 +18,14 @@ public final class SolutionPoolFactory {
 	}
 
 	/**
-	 * pool with a nil capacity.
+	 * pool with a nil capacity (not resizable).
 	 */
 	public static ISolutionPool makeEmptySolutionPool() {
 		return EmptySolutionPool.SINGLETON;
 	}
 	
 	/**
-	 * pool of unit capacity, contains the last solution
+	 * pool of unit capacity, contains the last solution (not resizable);
 	 * 
 	 */
 	public static ISolutionPool makeSingleSolutionPool() {
@@ -38,10 +38,10 @@ public final class SolutionPoolFactory {
 	}
 	
 	/**
-	 * contains the last/best solutions.
+	 * contains the last/best solutions (capa > 0).
 	 */
 	public static ISolutionPool makeLastSolutionPool(int capacity) {
-		return new FifoSolutionPool(capacity);
+		return new LastSolutionPool(capacity);
 	}
 	
 	
@@ -50,17 +50,24 @@ public final class SolutionPoolFactory {
 	}
 	
 	/**
-	 * contains the first solutions, useful for a solveAll (keep some solutions but do not record each solution).
+	 * contains the first solutions, useful for a solveAll. Keep some solutions but do not record each solution ((capa > 0).
 	 */
 	public static ISolutionPool makeFirstSolutionPool(int capacity) {
-		return new LifoSolutionPool(capacity);
+		return new FirstSolutionPool(capacity);
 	}
 	
-
+	/**
+	 * record all solution (not resizable).
+	 */
+	public static ISolutionPool makeAllSolutionPool() {
+		return new ListSolutionPool();
+	}
+	
 	public static ISolutionPool makeDefaultSolutionPool(int capacity) {
-		if( capacity < 1) { return makeEmptySolutionPool();}
-		else if(capacity > 1) {return makeLastSolutionPool(capacity);}
-		else { return makeSingleSolutionPool();} 
+		if(capacity == 1) return makeSingleSolutionPool();
+		else if(capacity == Integer.MAX_VALUE) return makeAllSolutionPool();
+		if( capacity < 1) return makeEmptySolutionPool();
+		else return makeLastSolutionPool(capacity);
 	}
 	
 	
@@ -172,21 +179,17 @@ final class EmptySolutionPool implements ISolutionPool {
 }
 
 
-abstract class AbstractListSolutionPool implements ISolutionPool {
+
+ class ListSolutionPool implements ISolutionPool {
 	
 	/**
 	 * The historical record of solutions that were found
 	 */
 	protected final LinkedList<Solution> solutions = new LinkedList<Solution>();
 
-	/**
-	 * capacity of the history record (keeping solutions)
-	 */
-	protected int capacity;
-
-	public AbstractListSolutionPool(int capacity) {
+	
+	public ListSolutionPool() {
 		super();
-		setCapacity(capacity);
 	}
 
 	@Override
@@ -200,8 +203,8 @@ abstract class AbstractListSolutionPool implements ISolutionPool {
 	}
 
 	@Override
-	public final int getCapacity() {
-		return capacity;
+	public int getCapacity() {
+		return Integer.MAX_VALUE;
 	}
 
 	@Override
@@ -213,6 +216,45 @@ abstract class AbstractListSolutionPool implements ISolutionPool {
 	public final int size() {
 		return solutions.size();
 	}
+	
+	@Override
+	public void setCapacity(int capacity) {
+		LOGGER.warning("the solution pool has an infinite capacity");
+	}
+
+	@Override
+	public Solution getBestSolution() {
+		return solutions.peekFirst();
+	}
+
+	@Override
+	public void recordSolution(Solver solver) {
+		Solution sol = new Solution(solver);
+		solver.getSearchStrategy().writeSolution(sol);
+		solutions.addFirst(sol);
+	}
+	
+	
+}
+
+abstract class AbstractCapacitedListSolutionPool extends ListSolutionPool {
+	
+	/**
+	 * capacity of the history record (keeping solutions)
+	 */
+	protected int capacity;
+
+	public AbstractCapacitedListSolutionPool(int capacity) {
+		super();
+		setCapacity(capacity);
+	}
+
+	@Override
+	public final int getCapacity() {
+		return capacity;
+	}
+
+
 	
 	protected void resizeCapacity() {
 		while(solutions.size() > capacity) {
@@ -233,17 +275,11 @@ abstract class AbstractListSolutionPool implements ISolutionPool {
 }
 
 
-final class FifoSolutionPool extends AbstractListSolutionPool {
+final class LastSolutionPool extends AbstractCapacitedListSolutionPool {
 
 
-	public FifoSolutionPool(int capacity) {
+	public LastSolutionPool(int capacity) {
 		super(capacity);
-	}
-
-
-	@Override
-	public Solution getBestSolution() {
-		return solutions.getFirst();
 	}
 
 	
@@ -265,15 +301,10 @@ final class FifoSolutionPool extends AbstractListSolutionPool {
 }
 
 
-final class LifoSolutionPool extends AbstractListSolutionPool {
+final class FirstSolutionPool extends AbstractCapacitedListSolutionPool {
 
-	public LifoSolutionPool(int capacity) {
+	public FirstSolutionPool(int capacity) {
 		super(capacity);
-	}
-
-	@Override
-	public Solution getBestSolution() {
-		return solutions.getLast();
 	}
 
 	@Override
@@ -281,6 +312,7 @@ final class LifoSolutionPool extends AbstractListSolutionPool {
 		if (solutions.size() < capacity) {
 			final Solution sol = new Solution(solver);
 			solver.getSearchStrategy().writeSolution(sol);
+			solutions.addFirst(sol);
 		}
 	}
 	

@@ -359,9 +359,7 @@ public class SearchTest {
 			super.execute();
 			assertEquals(Math.min( capa, _s.getNbSolutions()),  PatternExample._s.getSearchStrategy().getSolutionPool().size());
 		}
-		
-		
-				
+						
 	}
 	
 	@Test
@@ -370,7 +368,9 @@ public class SearchTest {
 		PoolSwitcher pl = new PoolSwitcher();
 		for (capa = 0; capa  < 7; capa++) {
 			pl.execute();
-		}		
+		}
+		capa = Integer.MAX_VALUE;
+		pl.execute();
 	}
 
 
