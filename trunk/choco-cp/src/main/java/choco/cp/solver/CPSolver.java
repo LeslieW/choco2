@@ -184,6 +184,7 @@ import choco.kernel.solver.propagation.VarEventQueue;
 import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.AbstractOptimize;
+import choco.kernel.solver.search.AbstractSearchStrategy;
 import choco.kernel.solver.search.GlobalSearchLimit;
 import choco.kernel.solver.search.ISolutionPool;
 import choco.kernel.solver.search.Limit;
@@ -376,7 +377,11 @@ public class CPSolver implements Solver {
 	 */
 	public int loggingMaxDepth = 5;
 
-
+	/**
+	 * set the number of stored solutions.
+	 * it defines a default {@link ISolutionPool} for the solver. Default pools are partially resizable if 1 < capa < Integer.MaxValue.
+	 * you can easily provide set your own policy with @{link {@link AbstractSearchStrategy#setSolutionPool(ISolutionPool)}. 
+	 */
 	@Override
 	public void setSolutionPoolCapacity(int capacity) {
 		this.solutionPoolCapacity = capacity;		
