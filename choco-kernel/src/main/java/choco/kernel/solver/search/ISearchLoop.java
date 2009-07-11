@@ -39,6 +39,8 @@ public interface ISearchLoop {
 	
 	Boolean run();
 
+	void initialize();
+	
 	void init();
 
 	void openNode();
@@ -46,4 +48,6 @@ public interface ISearchLoop {
 	void upBranch();
 
 	void downBranch();
+	
+	void restart();
 }

@@ -105,7 +105,7 @@ public class SteinerSystem extends PatternExample{
 	@Override
 	public void prettyOut() {
 		StringBuffer s = new StringBuffer();
-		Solution sol = _s.getSearchStrategy().getBestSolution();
+		Solution sol = _s.getSearchStrategy().getSolutionPool().getBestSolution();
 		_s.restoreSolution(sol);
 		s.append("A ternary Steiner system of order n is a set of triplets of n*(n - 1) / 6 " +
 				"distinct elements taking their values between 1 and n," +

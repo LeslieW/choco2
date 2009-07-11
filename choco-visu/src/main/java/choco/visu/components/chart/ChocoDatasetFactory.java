@@ -195,13 +195,11 @@ public final class ChocoDatasetFactory {
 	public static XYSeries createSolutionXYSeries(CPSolver s, Limit limit) {
 		XYSeries series = new XYSeries("solver sol.");
 		final AbstractGlobalSearchStrategy strat = s.getSearchStrategy();
-		if( strat.existsStoredSolution()) {
-			if(strat.getLimit(limit) != null) {
+		if(strat.getLimit(limit) != null) {
 				for (Solution sol : strat.getStoredSolutions()) {
 					series.add(sol.getLimitValue(limit), sol.getObjectiveValue());
 				}
 			}
-		}
 		return series;
 	}
 
@@ -209,8 +207,7 @@ public final class ChocoDatasetFactory {
 		final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 		final AbstractGlobalSearchStrategy strat = s.getSearchStrategy();
 		final String series = "Solver sol.";
-		if( strat.existsStoredSolution()) {
-			if(strat.getLimit(limit) != null) {
+		if(strat.getLimit(limit) != null) {
 				//reversed loop
 				final List<Solution> sols = strat.getStoredSolutions();
 				for (int i = sols.size()-1; i >=0; i--) {
@@ -218,7 +215,6 @@ public final class ChocoDatasetFactory {
 					dataset.addValue(sol.getObjectiveValue(), series, Integer.valueOf(sol.getLimitValue(limit)));
 				}
 
-			}
 		}
 		return dataset;
 	}
