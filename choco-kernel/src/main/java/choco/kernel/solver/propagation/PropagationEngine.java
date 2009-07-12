@@ -42,21 +42,9 @@ public interface PropagationEngine {
 	/**
 	 * Raising a contradiction with a cause.
 	 */
-
 	public void raiseContradiction(Object cause, int type) throws ContradictionException;
 
-
-	/**
-	 * Recording that there was no known cause for the last contradiction.
-	 */
-
-	public void setNoContradictionCause();
-
-	/**
-	 * Recording the cause of the last contradiction.
-	 */
-
-	public void setContradictionCause(Object cause, int type);
+	public void raiseContradiction(Object cause, int type, int move) throws ContradictionException;
 
 	/**
 	 * Retrieving the cause of the last contradiction.

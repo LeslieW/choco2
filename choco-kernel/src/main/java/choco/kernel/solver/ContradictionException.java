@@ -29,8 +29,11 @@
 
 package choco.kernel.solver;
 
+import choco.kernel.model.variables.set.SetConstantVariable;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.PropagationEngine;
+import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.AbstractSearchStrategy;
 import choco.kernel.solver.variables.Domain;
 import choco.kernel.solver.variables.Var;
 
@@ -52,6 +55,7 @@ public class ContradictionException extends Exception {
 
 	private Object contradictionCause;
     private int contradictionType;
+    private int contradictionMove;
 
     /**
 	 * An exception may have a local cause (the last variable
@@ -65,32 +69,32 @@ public class ContradictionException extends Exception {
 	 *              for the failure of propagation
 	 */
 
-	public ContradictionException(Object cause, int type) {
-		set(cause,type);
+	public ContradictionException() {
+		this(null,UNKNOWN);
+	}
+	
+	
+
+	public ContradictionException(Object contradictionCause,
+			int contradictionType) {
+		super();
+		this.contradictionCause = contradictionCause;
+		this.contradictionType = contradictionType;
+		this.contradictionMove = AbstractGlobalSearchStrategy.UP_BRANCH;
 	}
 
-	public void set(Object cause, int type) {
-		PropagationEngine pe=null;
+
+
+	public final void set(Object cause, int type) {
 		contradictionCause = cause;
         contradictionType = type;
-		switch(type){
-		case VARIABLE:
-			pe = ((Var)cause).getSolver().getPropagationEngine();
-			pe.setContradictionCause(cause, VARIABLE);
-			break;
-		case CONSTRAINT:
-			pe = ((SConstraint)cause).getSolver().getPropagationEngine();
-			pe.setContradictionCause(cause, CONSTRAINT);
-			break;
-		case DOMAIN:
-			pe = ((Domain)cause).getSolver().getPropagationEngine();
-			pe.setContradictionCause(cause, DOMAIN);
-			break;
-		case SEARCH_LIMIT:
-			break;
-		default:
-			break;
-		}
+		contradictionMove = AbstractGlobalSearchStrategy.UP_BRANCH;
+	}
+	
+	public final void set(Object cause, int type, int move) {
+		contradictionCause = cause;
+        contradictionType = type;
+		contradictionMove = move;
 	}
 
 	@Override
@@ -98,12 +102,18 @@ public class ContradictionException extends Exception {
 		return "Exception due to " + contradictionCause;
 	}
 
-	public Object getContradictionCause() {
+	public final Object getContradictionCause() {
 		return contradictionCause;
 	}
 
-    public int getContraditionType(){
+    public final int getContraditionType(){
         return contradictionType;
     }
+
+	public final int getContradictionType() {
+		return contradictionType;
+	}
+  
+    
 }
 
