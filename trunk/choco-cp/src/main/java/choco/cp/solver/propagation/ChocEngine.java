@@ -23,18 +23,23 @@
 
 package choco.cp.solver.propagation;
 
+import java.util.logging.Level;
+
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.cp.solver.variables.set.SetVarEvent;
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.propagation.*;
+import choco.kernel.solver.propagation.AbstractPropagationEngine;
+import choco.kernel.solver.propagation.ConstraintEvent;
+import choco.kernel.solver.propagation.ConstraintEventQueue;
+import choco.kernel.solver.propagation.EventQueue;
+import choco.kernel.solver.propagation.PropagationEvent;
+import choco.kernel.solver.propagation.Propagator;
+import choco.kernel.solver.propagation.VarEvent;
+import choco.kernel.solver.propagation.VarEventQueue;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.set.SetVar;
-
-import java.util.ArrayList;
-import java.util.logging.Level;
 
 /**
  * Implementation of an {@link choco.kernel.solver.propagation.AbstractPropagationEngine} for Choco.
@@ -70,11 +75,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 
 	protected VarEventQueue[] varEventQueue;
 
-	/**
-	 * List of all listeners of events occuring in this engine.
-	 */
-	protected ArrayList<PropagationEngineListener> propagationEngineListeners =
-		new ArrayList<PropagationEngineListener>();
+	
 
 
 	/**
@@ -103,7 +104,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * @param idx The index of the constraint which is responsible of the var.
 	 */
 
-	public void postUpdateInf(IntDomainVar v, int idx) {
+	public final void postUpdateInf(final IntDomainVar v, final int idx) {
 		postEvent(v, idx, IntVarEvent.INCINF);
 	}
 
@@ -114,7 +115,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * @param idx The index of the constraint which is responsible of the var.
 	 */
 
-	public void postUpdateSup(IntDomainVar v, int idx) {
+	public void postUpdateSup(final IntDomainVar v, final int idx) {
 		postEvent(v, idx, IntVarEvent.DECSUP);
 	}
 
@@ -127,11 +128,8 @@ public class ChocEngine extends AbstractPropagationEngine {
 	// idee: - si on est "frozen", devenir en plus "redondant" (ie: double).
 	//       - par ailleurs, noter le changement (garder la vieille valeur de la borne ou
 	//       - devenir enqueued
-	public void postEvent(Var v, int idx, int basicEvt) {
+	public final void postEvent(final Var v, final int idx, final int basicEvt) {
 		VarEvent<? extends Var> event = v.getEvent();
-		// /!\  Logging statements really decrease performance
-		//    if (LOGGER.isLoggable(Level.FINEST))
-		//      LOGGER.log(Level.FINEST, "post Event {0} for basicEvt: {1}", new Object[]{event, basicEvt});
 		boolean alreadyEnqueued = event.isEnqueued();
 		event.recordEventTypeAndCause(basicEvt, idx);
 		if (!alreadyEnqueued) {
@@ -140,7 +138,6 @@ public class ChocEngine extends AbstractPropagationEngine {
 			// no priority anymore
 			//varEventQueue.updatePriority(event);
 		}
-		//LOGGER.log(Level.FINEST, "posted Event {0}", event);
 	}
 
 	/**
@@ -150,7 +147,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * @param idx The index of the constraint which is responsible of the var.
 	 */
 
-	public void postInstInt(IntDomainVar v, int idx) {
+	public final void postInstInt(final IntDomainVar v, final int idx) {
 		postEvent(v, idx, IntVarEvent.INSTINT);
 	}
 
@@ -162,7 +159,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * @param idx The index of the constraint which is responsible of the var.
 	 */
 
-	public void postRemoveVal(IntDomainVar v, int x, int idx) {
+	public final void postRemoveVal(final IntDomainVar v, int x, final int idx) {
 		postEvent(v, idx, IntVarEvent.REMVAL);
 	}
 
@@ -172,7 +169,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * @param v the real variable
 	 * @param idx indice of the constraint that change the lower bound
 	 */
-	public void postUpdateInf(RealVar v, int idx) {
+	public final void postUpdateInf(final RealVar v, final int idx) {
 		postEvent(v, idx, RealVarEvent.INCINF);
 	}
 
@@ -182,7 +179,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * @param v real variable
 	 * @param idx indice of the constraint that change the bound
 	 */
-	public void postUpdateSup(RealVar v, int idx) {
+	public final void postUpdateSup(final RealVar v, final int idx) {
 		postEvent(v, idx, RealVarEvent.DECSUP);
 	}
 
@@ -192,7 +189,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * @param v   the variable the enveloppe is modified
 	 * @param idx the index of the constraint that causes the event
 	 */
-	public void postRemEnv(SetVar v, int idx) {
+	public final void postRemEnv(final SetVar v, final int idx) {
 		postEvent(v, idx, SetVarEvent.REMENV);
 	}
 
@@ -202,7 +199,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * @param v   the variable the kernel is modified
 	 * @param idx the index of the constraint that causes the event
 	 */
-	public void postAddKer(SetVar v, int idx) {
+	public final void postAddKer(final SetVar v, final int idx) {
 		postEvent(v, idx, SetVarEvent.ADDKER);
 	}
 
@@ -213,7 +210,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * @param idx The index of the constraint which is responsible of the var.
 	 */
 
-	public void postInstSet(SetVar v, int idx) {
+	public final void postInstSet(final SetVar v, final int idx) {
 		postEvent(v, idx, SetVarEvent.INSTSET);
 	}
 
@@ -225,9 +222,9 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 *                   (awake instead of propagate).
 	 */
 
-	public boolean postConstAwake(Propagator constraint, boolean init) {
-		ConstraintEvent event = (ConstraintEvent) constraint.getEvent();
-		ConstraintEventQueue queue = this.getQueue(event);
+	public final boolean postConstAwake(final Propagator constraint, final boolean init) {
+		final ConstraintEvent event = (ConstraintEvent) constraint.getEvent();
+		final ConstraintEventQueue queue = this.getQueue(event);
 		if (queue.pushEvent(event)) {
 			event.setInitialized(!init);
 			if (init) this.incPendingInitConstAwakeEvent();
@@ -237,22 +234,25 @@ public class ChocEngine extends AbstractPropagationEngine {
 	}
 
 
+	
+	private final static int NO_PRIORITY_IMPLEMENTED = 0;
 	/**
 	 * Gets the queue for a given priority of var.
 	 *
 	 * @param event The var for which the queue is searched.
 	 */
 
-	public ConstraintEventQueue getQueue(ConstraintEvent event) {
+	public final ConstraintEventQueue getQueue(final ConstraintEvent event) {
 		// CHOCO_2.0.1: Tests have shown that taking priorities into account is not interesting for the moment...
 		// int prio = event.getPriority();
-		int prio = 0;
-		if (prio < NB_CONST_QUEUES) {
-			return constEventQueues[prio];
-		} else {
-			LOGGER.warning("wrong constraint priority. It should be between 0 and 3.");
-			return constEventQueues[3];
-		}
+//		int prio = 0;
+//		if (prio < NB_CONST_QUEUES) {
+//			return constEventQueues[prio];
+//		} else {
+//			LOGGER.warning("wrong constraint priority. It should be between 0 and 3.");
+//			return constEventQueues[3];
+//		}
+		return constEventQueues[NO_PRIORITY_IMPLEMENTED];
 	}
 
 
@@ -263,8 +263,8 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * @param event the event to register
 	 */
 
-	public void registerEvent(ConstraintEvent event) {
-		ConstraintEventQueue queue = this.getQueue(event);
+	public final void registerEvent(final ConstraintEvent event) {
+		final ConstraintEventQueue queue = this.getQueue(event);
 		queue.add(event);
 	}
 
@@ -273,7 +273,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * Returns the variables queues.
 	 */
 
-	public VarEventQueue[] getVarEventQueues() {
+	public final VarEventQueue[] getVarEventQueues() {
 		return varEventQueue;
 	}
 
@@ -281,11 +281,11 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * Set Var Event Queues
 	 * @param veqs array of variable event queues
 	 */
-	public void setVarEventQueues(VarEventQueue[] veqs) {
+	public final void setVarEventQueues(VarEventQueue[] veqs) {
 		System.arraycopy(veqs, 0, varEventQueue, 0, varEventQueue.length);
 	}
 
-	public void setVarEventQueues(int eventQueueType){
+	public final void setVarEventQueues(int eventQueueType){
 		for(int i = 0; i < varEventQueue.length; i++ ){
 			varEventQueue[i] = EventQueueFactory.getVarEventQueue(eventQueueType);
 		}
@@ -295,7 +295,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * Returns the constraints queues.
 	 */
 
-	public ConstraintEventQueue[] getConstraintEventQueues() {
+	public final ConstraintEventQueue[] getConstraintEventQueues() {
 		return constEventQueues;
 	}
 
@@ -303,51 +303,17 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * Set constraint Event Queues
 	 * @param ceqs arrays of constraint event queues
 	 */
-	public void setConstraintEventQueues(ConstraintEventQueue[] ceqs) {
+	public final void setConstraintEventQueues(final ConstraintEventQueue[] ceqs) {
 		System.arraycopy(ceqs, 0, constEventQueues, 0, constEventQueues.length);
 	}
 
 
-	public void addPropagationEngineListener(PropagationEngineListener listener) {
-		propagationEngineListeners.add(listener);
-	}
-
-    /**
-     * Removes a old listener from the propagation engine
-     *
-     * @param listener removal listener
-     */
-    @Override
-    public void removePropagationEngineListener(PropagationEngineListener listener) {
-        propagationEngineListeners.remove(listener);
-    }
-
-    ContradictionException e  = new ContradictionException(null,0);
-	/**
-	 * Throws a contradiction with the specified cause.
-	 *
-	 * @throws choco.kernel.solver.ContradictionException
-	 */
-
-	public void raiseContradiction(Object cause, int type) throws ContradictionException {
-		e.set(cause,type);
-		for(PropagationEngineListener listener : propagationEngineListeners) {
-			listener.contradictionOccured(e);
-		}
-		throw(e);
-	}
-
-	public void setContradictionCause(Object cause, int type) {
-		//if(type== ContradictionException.VARIABLE){
-		contradictionCause = cause;
-		//}
-	}
-
+	
 	/**
 	 * Decrements the number of init constraint awake events.
 	 */
 
-	public void decPendingInitConstAwakeEvent() {
+	public final void decPendingInitConstAwakeEvent() {
 		this.nbPendingInitConstAwakeEvent--;
 	}
 
@@ -356,7 +322,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * Increments the number of init constraint awake events.
 	 */
 
-	public void incPendingInitConstAwakeEvent() {
+	public final void incPendingInitConstAwakeEvent() {
 		this.nbPendingInitConstAwakeEvent++;
 	}
 
@@ -366,7 +332,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * @return Event queue
 	 */
 
-	public EventQueue getNextActiveConstraintEventQueue() {
+	public final EventQueue getNextActiveConstraintEventQueue() {
 		for (int i = 0; i < NB_CONST_QUEUES; i++) {
 			if (!this.constEventQueues[i].isEmpty()) return this.constEventQueues[i];
 		}
@@ -378,7 +344,8 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * Returns the next queue from which an event should be propagated.
 	 */
 
-	public EventQueue getNextActiveEventQueue() {
+	@Override
+	public final EventQueue getNextActiveEventQueue() {
 		/*if (this.nbPendingInitConstAwakeEvent > 0) {
       return this.getNextActiveConstraintEventQueue();
     } else */
@@ -388,7 +355,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 		return this.getNextActiveConstraintEventQueue();
 	}
 
-	public int getNbPendingEvents() {
+	public final int getNbPendingEvents() {
 		int nbEvts = 0;
 		for (int i = 0; i < NB_VAR_QUEUES; i++) {
 			nbEvts += varEventQueue[i].size();
@@ -405,7 +372,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * @param idx indice of the event
 	 * @return a propagation event
 	 */
-	public PropagationEvent getPendingEvent(int idx) {
+	public final PropagationEvent getPendingEvent(int idx) {
 		int varsSize = 0;
 		for (int i = 0; i < NB_VAR_QUEUES; i++) {
 			if (nbPendingInitConstAwakeEvent > 0) {
@@ -442,7 +409,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * Removes all pending events (used when interrupting a propagation because
 	 * a contradiction has been raised)
 	 */
-	public void flushEvents() {
+	public final void flushEvents() {
 		for (int i = 0; i < NB_CONST_QUEUES; i++) {
 			this.constEventQueues[i].flushEventQueue();
 		}
@@ -453,21 +420,20 @@ public class ChocEngine extends AbstractPropagationEngine {
 		}
 	}
 
-	public boolean checkCleanState() {
+	public final boolean checkCleanState() {
 		boolean ok = true;
-		Solver solver = getSolver();
-		int nbiv = solver.getNbIntVars();
+		final int nbiv = solver.getNbIntVars();
 		for (int i = 0; i < nbiv; i++) {
-			IntVarEvent evt = (IntVarEvent) solver.getIntVar(i).getEvent();
+			final IntVarEvent evt = (IntVarEvent) solver.getIntVar(i).getEvent();
 			if (!(evt.getReleased())) {
 				LOGGER.log(Level.SEVERE, "var event non released {0}", evt);
 				//        new Exception().printStackTrace();
 				ok = false;
 			}
 		}
-		int nbsv = solver.getNbSetVars();
+		final int nbsv = solver.getNbSetVars();
 		for (int i = 0; i < nbsv; i++) {
-			SetVarEvent evt = (SetVarEvent) solver.getSetVar(i).getEvent();
+			final SetVarEvent evt = (SetVarEvent) solver.getSetVar(i).getEvent();
 			if (!(evt.getReleased())) {
 				LOGGER.log(Level.SEVERE, "var event non released {0}", evt);
 				//        new Exception().printStackTrace();

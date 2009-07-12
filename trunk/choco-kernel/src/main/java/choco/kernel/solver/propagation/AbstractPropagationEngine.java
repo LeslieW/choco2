@@ -22,6 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.propagation;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 
 /**
@@ -29,56 +33,85 @@ import choco.kernel.solver.Solver;
  */
 public abstract class AbstractPropagationEngine implements PropagationEngine {
 
-    public Solver solver;
+	public Solver solver;
 
-        /**
-   * Retrieves the solver of the entity.
-   */
+	/**
+	 * List of all listeners of events occuring in this engine.
+	 */
+	protected final List<PropagationEngineListener> propagationEngineListeners =
+		new LinkedList<PropagationEngineListener>();
 
-  public Solver getSolver(){
-            return solver;
-        }
+	/**
+	 * Storing the last contradiction (reusable).
+	 */
+	protected final ContradictionException reuseException  = new ContradictionException(null,0);
+	/**
+	 * Retrieves the solver of the entity.
+	 */
 
-
-  public void setSolver(Solver solver){
-      this.solver = solver;
-  }
-
-  /**
-   * Storing the cause of the last contradiction.
-   */
-
-  protected Object contradictionCause;
-
+	public final Solver getSolver(){
+		return solver;
+	}
 
 
-  public AbstractPropagationEngine(Solver solver) {
-    this.solver = solver;
-  }
-
-  /**
-   * Erase the cause of the last contradiction.
-   */
-
-  public void setNoContradictionCause() {
-    contradictionCause = null;
-  }
+	public void setSolver(Solver solver){
+		this.solver = solver;
+	}
 
 
+	public AbstractPropagationEngine(Solver solver) {
+		this.solver = solver;
+	}
+
+
+	/**
+	 * Throws a contradiction with the specified cause.
+	 *
+	 * @throws choco.kernel.solver.ContradictionException
+	 */
+
+	public final void raiseContradiction(final Object cause, final int type) throws ContradictionException {
+		reuseException.set(cause,type);
+		for(PropagationEngineListener listener : propagationEngineListeners) {
+			listener.contradictionOccured(reuseException);
+		}
+		throw(reuseException);
+	}
+	
+	public final void raiseContradiction(final Object cause, final int type, final int move) throws ContradictionException {
+		reuseException.set(cause,type, move);
+		for(PropagationEngineListener listener : propagationEngineListeners) {
+			listener.contradictionOccured(reuseException);
+		}
+		throw(reuseException);
+	}
+	
+	public final void addPropagationEngineListener(PropagationEngineListener listener) {
+		propagationEngineListeners.add(listener);
+	}
 
     /**
-   * Retrieving the cause of the last contradiction.
-   */
+     * Removes a old listener from the propagation engine
+     *
+     * @param listener removal listener
+     */
+    @Override
+    public final void removePropagationEngineListener(PropagationEngineListener listener) {
+        propagationEngineListeners.remove(listener);
+    }
 
-  public Object getContradictionCause() {
-    return contradictionCause;
-  }
+	/**
+	 * Retrieving the cause of the last contradiction.
+	 */
+	public final Object getContradictionCause() {
+		return reuseException.getContradictionCause();
+	}
 
-  /**
-   * Gets the next queue from which a var will be propagated.
-   */
+	/**
+	 * Gets the next queue from which a var will be propagated.
+	 */
 
-  public EventQueue getNextActiveEventQueue() {
-    return null;
-  }
+	public EventQueue getNextActiveEventQueue() {
+		return null;
+	}
 }
