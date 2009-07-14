@@ -128,6 +128,7 @@ public class GolombRuler extends PatternExample {
 //			ruler.execute(new Object[]{OPTIMAL_RULER[i][0], OPTIMAL_RULER[i][1], true});
 //		}
 		new GolombRuler().execute();
+		//new GolombRuler().execute(new Object[]{OPTIMAL_RULER[5][0], OPTIMAL_RULER[5][1], true});
 	}
 
 }

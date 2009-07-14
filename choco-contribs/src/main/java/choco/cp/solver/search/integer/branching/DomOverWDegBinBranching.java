@@ -235,7 +235,7 @@ public class DomOverWDegBinBranching extends AbstractBinIntBranching {
 	public void contradictionOccured(ContradictionException e) {
 		Object cause = e.getContradictionCause();
 		if (cause != null
-				&& e.getContraditionType() == ContradictionException.CONSTRAINT) {
+				&& e.getContradictionType() == ContradictionException.CONSTRAINT) {
 			final AbstractSConstraint causeCstr = (AbstractSConstraint) cause;
 			if (SConstraintType.INTEGER.equals(causeCstr.getConstraintType())) {
 				try {

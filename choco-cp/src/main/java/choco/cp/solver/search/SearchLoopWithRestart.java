@@ -32,7 +32,9 @@ import choco.kernel.solver.SolverException;
 import choco.kernel.solver.branch.AbstractIntBranching;
 import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.AbstractSearchStrategy;
 import choco.kernel.solver.search.IntBranchingTrace;
+import choco.solver.branch.StrategyTest;
 
 /**
  * A solver allowing to restart searching when no solution was found during to many time.
@@ -129,6 +131,8 @@ public class SearchLoopWithRestart extends SearchLoop {
 					if (!stop) {
 						restartLimit = true;
 					}
+//					searchStrategy.nextMove = AbstractGlobalSearchStrategy.INIT_SEARCH;
+//					init();
 					break;
 				}
 				switch (searchStrategy.nextMove) {

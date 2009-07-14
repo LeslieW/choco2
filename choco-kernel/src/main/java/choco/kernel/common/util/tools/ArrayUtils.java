@@ -35,11 +35,16 @@ import java.util.*;
 * Since : Choco 2.1.0
 * Update : Choco 2.1.0
 */
-public class ArrayUtils {
+public final class ArrayUtils {
     public static TLongHashSet hs = new TLongHashSet();
     public static ArrayList<Object> c = new ArrayList<Object>();
 
-    public static int[] zeroToN(int n) {
+    
+    private ArrayUtils() {
+		super();
+    }
+
+	public static int[] zeroToN(int n) {
         final int[] r = new int[n];
         for (int i = 0; i < n; i++) {
             r[i] = i;

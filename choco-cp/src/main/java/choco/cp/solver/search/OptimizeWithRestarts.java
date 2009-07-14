@@ -182,7 +182,10 @@ public class OptimizeWithRestarts extends AbstractOptimize {
 
   public Boolean nextSolution() {
     Boolean bool;
-    if (oneMoreLoop() == false) return Boolean.FALSE;
+    if (oneMoreLoop() == false) {
+    	LOGGER.warning("it works !?");
+    	//return Boolean.FALSE;
+    }
     try {
       newLoop();
       nextMove = INIT_SEARCH;

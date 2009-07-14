@@ -106,8 +106,8 @@ public class ContradictionException extends Exception {
 		return contradictionCause;
 	}
 
-    public final int getContraditionType(){
-        return contradictionType;
+    public final int getContradictionMove(){
+        return contradictionMove;
     }
 
 	public final int getContradictionType() {
