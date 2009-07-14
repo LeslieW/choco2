@@ -405,6 +405,16 @@ public class Regular extends AbstractLargeIntSConstraint {
 
             propagateRemoval(idx, x);
         } else this.constAwake(false);
+        if (!vars[idx].hasEnumeratedDomain()){
+            StoredIndexedBipartiteSet supports = getQij(idx, vars[idx].getInf());
+            if (supports.isEmpty()) {
+                vars[idx].removeVal(vars[idx].getInf(),-1);
+            }
+            supports = getQij(idx, vars[idx].getSup());
+            if (supports.isEmpty()) {
+                vars[idx].removeVal(vars[idx].getSup(),-1);           
+            }
+        }
     }
 
 
