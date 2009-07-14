@@ -58,6 +58,8 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	public static final int OPEN_NODE = 1;
 	public static final int UP_BRANCH = 1 << 1;
 	public static final int DOWN_BRANCH = 1 << 2;
+	public static final int RESTART = 1 << 3;
+	public static final int STOP = 1 << 4;
 
 	/**
 	 * index of the current trace in the stack
@@ -232,6 +234,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		assert(solver.getSearchStrategy() == this);
 		resetSolutionCounter();
 		baseWorld = solver.getEnvironment().getWorldIndex();
+		initialTrace.setBranching(this.mainGoal);
 		resetLimits(true);
 	}
 
@@ -361,7 +364,14 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 			return traceStack[currentTraceIndex];
 		}
 	}
+	
+	private final IntBranchingTrace initialTrace = new IntBranchingTrace();
+	
+	public final IntBranchingTrace initialTrace() {
+		return isTraceEmpty() ? initialTrace : traceStack[currentTraceIndex];
+	}
 
+	
 	public final IntBranchingTrace topTrace() {
 		return isTraceEmpty() ? null : traceStack[currentTraceIndex];
 	}

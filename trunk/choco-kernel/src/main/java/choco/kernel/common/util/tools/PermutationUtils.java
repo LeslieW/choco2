@@ -35,8 +35,16 @@ import choco.kernel.model.variables.integer.IntegerConstantVariable;
 * Since : Choco 2.1.0
 * Update : Choco 2.1.0
 */
-public class PermutationUtils {
-    public static IPermutation getIdentity() {
+public final class PermutationUtils {
+   
+	
+	
+	private PermutationUtils() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public static IPermutation getIdentity() {
         return Identity.SINGLETON;
     }
 

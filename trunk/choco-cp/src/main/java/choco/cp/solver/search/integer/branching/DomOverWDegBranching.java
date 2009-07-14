@@ -341,7 +341,7 @@ public class DomOverWDegBranching extends AbstractLargeIntBranching implements P
 
 	public void contradictionOccured(ContradictionException e) {
 		Object cause = e.getContradictionCause();
-		if (cause != null && e.getContraditionType() == ContradictionException.CONSTRAINT) {
+		if (cause != null && e.getContradictionType() == ContradictionException.CONSTRAINT) {
 			reuseCstr = (AbstractSConstraint) cause;
 			if (SConstraintType.INTEGER.equals(reuseCstr.getConstraintType())) {
 				try {

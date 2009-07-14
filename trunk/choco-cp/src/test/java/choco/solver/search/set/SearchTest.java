@@ -350,8 +350,13 @@ public class SearchTest {
 
 		@Override
 		public void buildSolver() {
-			super.buildSolver();
+			_s = new CPSolver();
+			_s.read(_m);
+			_s.setFirstSolution(false);
+			_s.setDoMaximize(false);
 			_s.setSolutionPoolCapacity(capa);
+			_s.generateSearchStrategy();
+			
 		}
 
 		@Override
