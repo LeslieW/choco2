@@ -1,11 +1,11 @@
-package i_want_to_use_this_old_version_of_choco.palm.dbt.search.pathrepair;
+package choco.ecp.solver.search.dbt.pathrepair;
 
-
-import i_want_to_use_this_old_version_of_choco.AbstractConstraint;
-import i_want_to_use_this_old_version_of_choco.palm.dbt.explain.PalmConstraintPlugin;
-import i_want_to_use_this_old_version_of_choco.palm.dbt.explain.SearchInfo;
 
 import java.util.Comparator;
+
+import choco.ecp.solver.explanations.dbt.SearchInfo;
+import choco.ecp.solver.explanations.dbt.PalmConstraintPlugin;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 
 
 /**
@@ -70,9 +70,9 @@ public class PathRepairSearchInfo implements SearchInfo {
 
     public int compare(Object o1, Object o2) {
 
-      PalmConstraintPlugin plug1 = (PalmConstraintPlugin) ((AbstractConstraint) o1).getPlugIn();
+      PalmConstraintPlugin plug1 = (PalmConstraintPlugin) ((AbstractSConstraint) o1).getPlugIn();
 
-      PalmConstraintPlugin plug2 = (PalmConstraintPlugin) ((AbstractConstraint) o2).getPlugIn();
+      PalmConstraintPlugin plug2 = (PalmConstraintPlugin) ((AbstractSConstraint) o2).getPlugIn();
 
       if (((PathRepairSearchInfo) plug1.getSearchInfo()).getWeigth() > ((PathRepairSearchInfo) plug2.getSearchInfo()).getWeigth())
 
