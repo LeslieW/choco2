@@ -467,19 +467,21 @@ public class PreProcessCPSolver extends CPSolver {
             IntegerVariable vtmp;
             for(int i = 0; i < n; i++){
                 int col = color[i];
-                IntegerVariable v = m.getIntVar(i);
-                if(var[col] == null){
-                    dtmp = domainByColor.get(col);
-                    if(dtmp.values != null){
-                        vtmp = new IntegerVariable(v.getName(), VariableType.INTEGER, dtmp.values);
-                    }else{
-                        vtmp = new IntegerVariable(v.getName(), VariableType.INTEGER, dtmp.low, dtmp.upp);
+                if(col !=-1){
+                    IntegerVariable v = m.getIntVar(i);
+                    if(var[col] == null){
+                        dtmp = domainByColor.get(col);
+                        if(dtmp.values != null){
+                            vtmp = new IntegerVariable(v.getName(), VariableType.INTEGER, dtmp.values);
+                        }else{
+                            vtmp = new IntegerVariable(v.getName(), VariableType.INTEGER, dtmp.low, dtmp.upp);
+                        }
+                        vtmp.addOptions(dtmp.options);
+                        vtmp.findManager(model.properties);
+                        var[col] = (IntDomainVar)mod2sol.readModelVariable(vtmp);
                     }
-                    vtmp.addOptions(dtmp.options);
-                    vtmp.findManager(model.properties);
-                    var[col] = (IntDomainVar)mod2sol.readModelVariable(vtmp);
+                    this.mapvariables.put(v.getIndex(), var[col]);
                 }
-                this.mapvariables.put(v.getIndex(), var[col]);
             }
         }
     }
