@@ -382,8 +382,8 @@ public class XmlModel {
         //LOGGER.info("" + isFeasible);
         //Output in a format for internal competition
         if (isFeasible == Boolean.TRUE
-                && (!checkEverythingIsInstantiated(parser, s))) {
-            // || s.checkSolution(false)!=Boolean.TRUE)) {
+            && ((!checkEverythingIsInstantiated(parser, s))
+                  || s.checkSolution(false) !=Boolean.TRUE)) {
             isFeasible = null;
         }
         values = new String[parser.getVariables().length + 1];
