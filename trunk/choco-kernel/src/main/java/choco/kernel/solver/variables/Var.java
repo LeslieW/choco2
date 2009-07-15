@@ -51,9 +51,10 @@ public interface Var extends IPretty, IIndex {
 	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	/**
-	 * Retrieves the model of the entity.
+	 * <b>Public user API:</b>
+	 * <i>Util :</i> retrieves the solver to which the variable belongs.
+	 * @return the solver to which the variable belongs
 	 */
-
 	public Solver getSolver();
 
 

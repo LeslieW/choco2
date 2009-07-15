@@ -110,15 +110,5 @@ public String toString() {
       return this == var;
   }
 
-  /**
-   * Retrieves the solver of the entity
-   */
-
-  public Solver getSolver() {
-    return solver;
-  }
-
-  public void setSolver(Solver solver) {
-    this.solver = solver;
-  }
+ 
 }
