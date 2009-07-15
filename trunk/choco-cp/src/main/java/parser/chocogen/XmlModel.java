@@ -438,7 +438,7 @@ public class XmlModel {
 
         LOGGER.info("" + res);
         if (verb > 0) {
-            if (s.isFeasible() == Boolean.TRUE) {
+            if (isFeasible == Boolean.TRUE) {
                 SolutionChecker.main(values);
             }
         }
