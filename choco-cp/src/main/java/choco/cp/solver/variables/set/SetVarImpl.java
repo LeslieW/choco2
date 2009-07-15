@@ -112,22 +112,6 @@ public class SetVarImpl extends AbstractVar implements SetVar {
 		return card;
 	}
 
-	/**
-	 * CPRU 07/12/2007: DomOverFailureDeg implementation
-	 * Add:
-	 * - call of super.fail()
-	 * - call of raiseContradiction(this)
-	 * - comment fail() initial
-	 *
-	 * @throws ContradictionException
-	 */
-	@Override
-	public final void fail() throws ContradictionException {
-		super.fail();
-		solver.getPropagationEngine().raiseContradiction(this, ContradictionException.VARIABLE);
-		//this.fail();
-	}
-
 	public boolean isInstantiated() {
 		return domain.isInstantiated();  //To change body of implemented methods use File | Settings | File Templates.
 	}

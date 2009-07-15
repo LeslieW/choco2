@@ -26,8 +26,8 @@ import static choco.cp.solver.variables.integer.IntVarEvent.*;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
+import choco.kernel.memory.structure.PartiallyStoredActiveIntVector;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
-import choco.kernel.memory.structure.TwoStatesPartiallyStoredIntVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
@@ -117,7 +117,7 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 			if(IntVarEvent.CHECK_ACTIVE){
                 events[i] = env.makePartiallyStoredIntVector();
             }else{
-                events[i] = new TwoStatesPartiallyStoredIntVector(env);
+                events[i] = new PartiallyStoredActiveIntVector(env);
             }
 		}
 		priority = env.makeInt(0);
@@ -191,9 +191,9 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 	 */
 	private void addEvent(boolean dynamicAddition, int indice, int constraintIdx, boolean active) {
 		if (dynamicAddition) {
-			((TwoStatesPartiallyStoredIntVector)events[indice]).add(constraintIdx, active);
+			((PartiallyStoredActiveIntVector)events[indice]).add(constraintIdx, active);
 		} else {
-			((TwoStatesPartiallyStoredIntVector)events[indice]).staticAdd(constraintIdx, active);
+			((PartiallyStoredActiveIntVector)events[indice]).staticAdd(constraintIdx, active);
 		}
 	}
 
@@ -209,16 +209,16 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
         if(!IntVarEvent.CHECK_ACTIVE){
             int mask = ((Propagator)c).getFilteredEventMask(vidx);
             if((mask & INSTINTbitvector) != 0){
-                ((TwoStatesPartiallyStoredIntVector)events[0]).set(cidx, state);
+                ((PartiallyStoredActiveIntVector)events[0]).set(cidx, state);
             }
             if((mask & INCINFbitvector) != 0){
-                ((TwoStatesPartiallyStoredIntVector)events[1]).set(cidx, state);
+                ((PartiallyStoredActiveIntVector)events[1]).set(cidx, state);
             }
             if((mask & DECSUPbitvector) != 0){
-                ((TwoStatesPartiallyStoredIntVector)events[2]).set(cidx, state);
+                ((PartiallyStoredActiveIntVector)events[2]).set(cidx, state);
             }
             if((mask & REMVALbitvector) != 0){
-                ((TwoStatesPartiallyStoredIntVector)events[3]).set(cidx, state);
+                ((PartiallyStoredActiveIntVector)events[3]).set(cidx, state);
             }
         }
     }
@@ -548,12 +548,6 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 
 	public boolean instantiate(int x, int idx) throws ContradictionException {
 		return domain.instantiate(x, idx);
-	}
-
-
-	@Override
-	public final void fail() throws ContradictionException {
-		solver.getPropagationEngine().raiseContradiction(this, ContradictionException.DOMAIN);
 	}
 
 

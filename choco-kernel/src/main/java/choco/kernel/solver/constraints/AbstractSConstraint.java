@@ -241,7 +241,7 @@ public abstract class AbstractSConstraint implements Propagator {
           if(!VarEvent.CHECK_ACTIVE){
               int nbVar = getNbVars();
               for(int i = 0; i< nbVar; i++){
-                  getVar(i).updateConstraintState(i, getConstraintIdx(i), this, true);
+                  getVar(i).updateConstraintState(i, getConstraintIdx(i), this, false);
               }
           }
       }

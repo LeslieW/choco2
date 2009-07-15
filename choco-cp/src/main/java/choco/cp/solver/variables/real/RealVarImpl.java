@@ -86,21 +86,6 @@ public String toString() {
     this.domain.intersect(interval, index);
   }
 
-    /**
-     * CPRU 07/12/2007: DomOverFailureDeg implementation
-     * Add:
-     * - call of super.fail()
-     * - call of raiseContradiction(this)
-     * - comment fail() initial
-     *
-     * @throws ContradictionException
-     */
-    public void fail() throws ContradictionException {
-        super.fail();
-        solver.getPropagationEngine().raiseContradiction(this, ContradictionException.DOMAIN);
-        //fail();
-  }
-
   public boolean isInstantiated() {
     return RealMath.isCanonical(this, this.solver.getPrecision());
   }

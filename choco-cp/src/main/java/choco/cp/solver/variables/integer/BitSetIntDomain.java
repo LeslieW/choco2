@@ -203,7 +203,7 @@ public class BitSetIntDomain extends AbstractIntDomain implements IBitSetIntDoma
      * @param x The value to check.
      */
 
-    public final boolean contains(final int x) {
+    public boolean contains(final int x) {
         return (contents.get(x - offset));
     }
 
