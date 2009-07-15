@@ -22,19 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search;
 
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.DOWN_BRANCH;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.OPEN_NODE;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.UP_BRANCH;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.restart.RestartStrategy;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
-import choco.kernel.solver.branch.AbstractIntBranching;
-import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.AbstractSearchStrategy;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.*;
 import choco.kernel.solver.search.IntBranchingTrace;
-import choco.solver.branch.StrategyTest;
 
 /**
  * A solver allowing to restart searching when no solution was found during to many time.

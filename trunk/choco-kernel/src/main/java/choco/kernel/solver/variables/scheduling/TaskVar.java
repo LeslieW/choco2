@@ -9,7 +9,6 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.model.variables.scheduling.ITaskVariable;
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.VarEvent;
@@ -277,11 +276,6 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 	@Override
 	public boolean isInstantiated() {
 		return  start.isInstantiated() && end.isInstantiated() && duration.isInstantiated();
-	}
-
-	@Override
-	public void fail() throws ContradictionException {
-		solver.getPropagationEngine().raiseContradiction(this, ContradictionException.VARIABLE);		
 	}
 
     /**

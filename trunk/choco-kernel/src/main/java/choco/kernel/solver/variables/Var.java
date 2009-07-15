@@ -28,7 +28,6 @@ import choco.kernel.common.IIndex;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.VarEvent;
@@ -66,13 +65,6 @@ public interface Var extends IPretty, IIndex {
 	 */
 
 	public int getNbConstraints();
-
-	/**
-	 * a constraint may fail during propagation, raising a contradiction
-	 * @throws choco.kernel.solver.ContradictionException contradiction exception
-	 */
-
-	public void fail() throws ContradictionException;
 
 	/**
 	 * Returns the <code>i</code>th constraint. <code>i</code>

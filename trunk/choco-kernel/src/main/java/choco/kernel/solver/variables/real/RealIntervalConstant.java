@@ -139,16 +139,6 @@ public class RealIntervalConstant implements RealConstant {
     }
 
     /**
-     * a constraint may fail during propagation, raising a contradiction
-     *
-     * @throws choco.kernel.solver.ContradictionException
-     *          contradiction exception
-     */
-    @Override
-    public void fail() throws ContradictionException {
-    }
-
-    /**
      * Returns the <code>i</code>th constraint. <code>i</code>
      * should be more than or equal to 0, and less or equal to
      * the number of constraint minus 1.

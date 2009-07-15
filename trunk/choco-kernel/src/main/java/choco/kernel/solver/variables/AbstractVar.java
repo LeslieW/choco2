@@ -27,7 +27,6 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.VarEvent;
@@ -294,15 +293,6 @@ public abstract class AbstractVar implements Var {
 			}
 		};
 
-	}
-
-	/**
-	 * * CPRU 07/12/2007: DomOverFailureDeg implementation
-	 * This methods at least raise the number of failure.
-	 *
-	 * @throws choco.kernel.solver.ContradictionException
-	 */
-	public void fail() throws ContradictionException {
 	}
 
     /**
