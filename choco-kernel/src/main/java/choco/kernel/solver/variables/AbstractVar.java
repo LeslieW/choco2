@@ -107,6 +107,20 @@ public abstract class AbstractVar implements Var {
 		return name;
 	}
 
+	
+	@Override
+	public final Solver getSolver() {
+		return solver;
+	}
+
+
+	@Override
+	public void setSolver(Solver solver) {
+		this.solver = solver;
+		
+	}
+
+
 	/**
 	 * Initializes a new variable.
 	 * @param solver The model this variable belongs to

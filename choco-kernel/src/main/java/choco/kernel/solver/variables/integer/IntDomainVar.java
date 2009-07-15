@@ -292,15 +292,6 @@ public interface IntDomainVar extends IntVar {
 
 
 	/**
-	 * <b>Public user API:</b>
-	 * <i>Util :</i> retrieves the solver to which the variable belongs.
-	 * @return the solver to which the variable belongs
-	 */
-
-	public Solver getSolver();
-
-
-	/**
 	 * Returns the lower bound of the variable domain (e.g. the smallest value that the variable can be assigned).
 	 *
 	 * @return the domain lower bound

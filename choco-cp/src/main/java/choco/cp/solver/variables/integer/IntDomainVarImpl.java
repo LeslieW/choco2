@@ -603,13 +603,7 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 		return (this.toString() + "[" + this.domain.getSize() + "]" + this.domain.pretty());
 	}
 
-	public final Solver getSolver() {
-		return this.solver;
-	}
-
-	public final void setSolver(Solver solver) {
-		this.solver = solver;
-	}
+	
 
 
 }

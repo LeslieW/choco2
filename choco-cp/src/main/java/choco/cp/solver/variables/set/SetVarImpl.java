@@ -212,11 +212,5 @@ public class SetVarImpl extends AbstractVar implements SetVar {
 		return this.name + " "+this.domain.toString();
 	}
 
-	public Solver getSolver() {
-		return this.solver;
-	}
-
-	public void setSolver(Solver solver) {
-		this.solver = solver;
-	}
+	
 }
