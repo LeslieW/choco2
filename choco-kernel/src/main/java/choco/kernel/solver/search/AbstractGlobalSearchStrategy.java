@@ -28,13 +28,6 @@
 //**************************************************
 package choco.kernel.solver.search;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Level;
-
-import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
@@ -44,6 +37,12 @@ import choco.kernel.solver.branch.AbstractIntBranching;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.search.measures.AbstractMeasures;
 import choco.kernel.solver.search.measures.ISearchMeasures;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.logging.Level;
 
 /**
  * An abstract class for controlling tree search in various ways
@@ -232,7 +231,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	public void newTreeSearch() throws ContradictionException {
 		assert(solver.getSearchStrategy() == this);
-		resetSolutionCounter();
+        initNbSolutions();
 		baseWorld = solver.getEnvironment().getWorldIndex();
 		initialTrace.setBranching(this.mainGoal);
 		resetLimits(true);

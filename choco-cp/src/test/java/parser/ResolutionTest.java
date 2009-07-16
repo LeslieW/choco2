@@ -108,9 +108,13 @@ public class ResolutionTest {
             }finally {
                 System.setSecurityManager(null);
             }
-            int builtime = Integer.valueOf((String) properties.get("pb."+i+".buildtime"));
-            LOGGER.info(xm.getBuildTime()  + " > " + builtime + "?" + " for " + "pb."+i);
-            Assert.assertTrue("too much time spending in building problem...", xm.getBuildTime() < builtime);
+            int time = Integer.valueOf((String) properties.get("pb."+i+".buildtime"));
+            LOGGER.info(xm.getBuildTime()  + " > " + time + "?" + " for " + "pb."+i);
+            Assert.assertTrue(properties.get("pb."+i+".name")+": too much time spending in reading problem...", xm.getBuildTime() < time);
+
+            time = Integer.valueOf((String) properties.get("pb."+i+".conftime"));
+            LOGGER.info(xm.getConfTime()  + " > " + time + "?" + " for " + "pb."+i);
+            Assert.assertTrue(properties.get("pb."+i+".name")+": too much time spending in preprocessing problem...", xm.getConfTime() < time);
         }
     }
 
@@ -133,7 +137,7 @@ public class ResolutionTest {
                 Assert.assertEquals("not same number of nodes", nbNodes, xm.getNbNodes());
             }
         }
-        }
+    }
 
 
     @Test
