@@ -343,7 +343,8 @@ public class XmlModel {
             }
         } else {
             if (s.restartMode) {
-                s.setGeometricRestart(Math.min(Math.max(s.getNbIntVars(), 200), 400), 1.4d);
+                s.setGeometricRestart(10, 1.3);                                
+                //s.setGeometricRestart(Math.min(Math.max(s.getNbIntVars(), 200), 400), 1.4d);
             }
         }
 
