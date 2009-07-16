@@ -169,10 +169,10 @@ public class XmlModel {
             seed = Integer.parseInt(options.get("-seed"));
         }
         if (options.containsKey("-randval")) {
-           randvalh = true;
+           randvalh = Boolean.parseBoolean(options.get("-randval"));;
         }
         if (options.containsKey("-ngfres")) {
-           ngFromRestart = true;
+           ngFromRestart = Boolean.parseBoolean(options.get("-ngfres"));;
         }
         try {
             if (dossier.isFile()) {
