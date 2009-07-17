@@ -116,7 +116,7 @@ public final class PicrossPApplet extends AChocoPApplet{
     public final void build() {
         size(100, 100);
         background(WHITE);
-        PFont font = loadFont("./resources/fonts/FreeMono-18.vlw");
+        PFont font = loadFont("./fonts/FreeMono-18.vlw");
         textFont(font);
         noStroke();
     }
