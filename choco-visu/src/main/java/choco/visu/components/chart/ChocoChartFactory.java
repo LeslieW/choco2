@@ -62,7 +62,7 @@ import choco.kernel.model.constraints.pack.PackModeler;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
-import choco.kernel.solver.search.Limit;
+import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.visu.components.chart.axis.Log2Axis;
 import choco.visu.components.chart.dataset.MyXYTaskDataset;

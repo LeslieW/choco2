@@ -49,7 +49,7 @@ public class BranchAndBound extends AbstractOptimize {
    */
   public void newTreeSearch() {
     initBounds();
-    resetLimits(true);
+    limitManager.initialize();
   }
 
 //  /**

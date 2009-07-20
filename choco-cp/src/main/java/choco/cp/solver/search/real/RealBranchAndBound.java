@@ -41,11 +41,11 @@ public class RealBranchAndBound extends AbstractRealOptimize {
 // TODO: seeems useless !    
   public void newTreeSearch() {
     initBounds();
-    resetLimits(true);
+    limitManager.initialize();
   }
 
   public void endTreeSearch() {
-	  resetLimits(false);
+	  limitManager.reset();
     if (solver.getFeasible()==Boolean.TRUE) {
       //[SVIEW] solve => ~S sol, best:~S [~S]// a.nbSol,(if a.doMaximize a.lowerBound else a.upperBound),a.limits
     } else if (solver.getFeasible() == Boolean.FALSE) {

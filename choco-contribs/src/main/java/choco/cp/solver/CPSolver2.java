@@ -4,14 +4,17 @@ import samples.Examples.MinimumEdgeDeletion;
 import choco.cp.solver.goals.GoalSearchSolver;
 import choco.cp.solver.search.BranchAndBound2;
 import choco.cp.solver.search.GlobalSearchStrategy;
+import choco.cp.solver.search.RealBranchAndBound2;
 import choco.cp.solver.search.SearchLoop2;
 import choco.cp.solver.search.SearchLoopWithRecomputation;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
-import choco.cp.solver.search.real.RealBranchAndBound;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.memory.IEnvironment;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.SolutionPoolFactory;
+import choco.kernel.solver.search.limit.Limit;
+import choco.kernel.solver.search.restart.LubyRestartStrategy;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.real.RealVar;
 
@@ -62,12 +65,14 @@ public class CPSolver2 extends CPSolver {
 				//					}
 				//				}
 				// if no restart option
+				
+				//do not need restart option anymore
 				else {
 					if (objective instanceof IntDomainVar) {
 						strategy = new BranchAndBound2(
 								(IntDomainVar) objective, doMaximize);
 					} else if (objective instanceof RealVar) {
-						strategy = new RealBranchAndBound((RealVar) objective,
+						strategy = new RealBranchAndBound2((RealVar) objective,
 								doMaximize);
 					}
 				}
@@ -111,7 +116,17 @@ public class CPSolver2 extends CPSolver {
 			_s.setRestart(true);
 			_s.setFirstSolution(false);
 			_s.setDoMaximize(false);
+//			if (useNew) {
+//			((CPSolver) _s).limitManager.setRestartStrategy(new LubyRestartStrategy(1,2), Limit.BACKTRACK);
+//			}else { ((CPSolver) _s).setLubyRestart(1, 2);}
+			//_s.setTimeLimit(20);
 			//_s.attachGoal(new AssignVar(new MinDomain(_s), new MinVal()));
+			try {
+				_s.getVar(deletion).setSup(0);
+			} catch (ContradictionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			_s.generateSearchStrategy();
 			
 		}
@@ -127,18 +142,19 @@ public class CPSolver2 extends CPSolver {
 			//super.execute();
 			super.execute(new Object[]{4,0.5,0}); //diff et pas beaucoup de noeuds
 			
-			//super.execute(new Object[]{10,0.5,0});
-			//super.execute(new Object[]{15,0.5,0});
+			//super.execute(new Object[]{20,0.5,0});
+			//super.execute(new Object[]{19,0.5,0});
+			//super.execute(new Object[]{12,0.5,0});
 			
 			//assertEquals(Math.min( capa, _s.getNbSolutions()),  PatternExample._s.getSearchStrategy().getSolutionPool().size());
 		}
 	}
 	
 	public static void main(String[] args) {
-		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
-		useNew = false;
-		new TestMed().execute();
+		//ChocoLogging.setVerbosity(Verbosity.SOLUTION);
 		useNew = true;
+		new TestMed().execute();
+		useNew = false;
 		new TestMed().execute();
 	}
 }

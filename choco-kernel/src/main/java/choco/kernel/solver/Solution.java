@@ -29,7 +29,7 @@ import java.util.List;
 
 import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.Limit;
+import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.search.measures.AbstractMeasures;
 import choco.kernel.solver.search.measures.IMeasures;
 import choco.kernel.solver.variables.real.RealInterval;
@@ -43,7 +43,7 @@ public class Solution {
 	 * the solver owning the solution
 	 */
 	protected Solver solver;
-	
+
 	protected int solutionCount;
 	/**
 	 * data storage for values of search variables
@@ -54,9 +54,13 @@ public class Solution {
 
 	protected int[][] setVarValues;
 
-	protected int objectiveValue;
+	protected int objectiveIntValue = Integer.MAX_VALUE;
+
+	protected double objectiveRealValue = Double.POSITIVE_INFINITY;
 
 	protected final SolutionMeasures measures;
+
+	protected int[] limitValues;
 
 	private List<AbstractGlobalSearchLimit> solutionLimits;
 	/**
@@ -69,7 +73,7 @@ public class Solution {
 		intVarValues = new int[solver.getNbIntVars()];
 		setVarValues = new int[solver.getNbSetVars()][];
 		realVarValues = new RealInterval[solver.getNbRealVars()];
-		objectiveValue = Integer.MAX_VALUE;
+		limitValues = new int[solver.getSearchStrategy().getLimitManager().getNbLimits()];
 		solutionLimits = new LinkedList<AbstractGlobalSearchLimit>();
 		measures = new SolutionMeasures();
 	}
@@ -86,9 +90,12 @@ public class Solution {
 		if(solver.getNbRealVars() > realVarValues.length) {
 			realVarValues = new RealInterval[solver.getNbRealVars()];
 		}
+		if(solver.getSearchStrategy().getLimitManager().getNbLimits() >  limitValues.length) {
+			realVarValues = new RealInterval[solver.getSearchStrategy().getLimitManager().getNbLimits()];
+		}
 	}
-	
-	
+
+
 	public final IMeasures getMeasures() {
 		return measures;
 	}
@@ -96,15 +103,15 @@ public class Solution {
 	public final int getLimitValue(Limit limit) {
 		return AbstractGlobalSearchLimit.getLimitValue(solutionLimits, limit);
 	}
-	
+
 	public final int getObjectiveValue() {
-		return objectiveValue;
+		return objectiveIntValue;
 	}
 
 	public final void recordSolutionCount(int solutionCount) {
 		this.solutionCount = solutionCount;
 	}
-	
+
 	public final void recordIntValue(int intVarIndex, int intVarValue) {
 		intVarValues[intVarIndex] = intVarValue;
 	}
@@ -117,12 +124,16 @@ public class Solution {
 		realVarValues[realVarIndex] = realVarValue;
 	}
 
-	public final void recordIntObjective(int intObjectiveValue) {
-		objectiveValue = intObjectiveValue;
+	public final void recordIntObjective(int objectiveIntValue) {
+		this.objectiveIntValue = objectiveIntValue;
 	}
 
-	public void recordLimit(AbstractGlobalSearchLimit limit){
-		solutionLimits.add(new StoredLimit(limit));
+	public final void recordRealObjective(double objectiveRealValue) {
+		this.objectiveRealValue = objectiveRealValue;
+	}
+
+	public final void recordLimit(int idx, int value){
+		limitValues[idx] = value;
 	}
 
 
@@ -156,17 +167,25 @@ public class Solution {
 			return false;
 		}
 
-
 		@Override
-		public Collection<AbstractGlobalSearchLimit> getLimits() {
-			return Collections.unmodifiableCollection(solutionLimits);
+		public int getLimitValue(Limit type) {
+			final int idx = solver.getSearchStrategy().getLimitManager().getLimitIndex(type);
+			return idx < 0 ? -1 : limitValues[idx];
 		}
 
+		@Override
+		public int getIterationCount() {
+			System.err.println("not yet implemented");
+			return -1;
+		}
 
 		@Override
 		public Number getObjectiveValue() {
-			
-			return objectiveValue == Integer.MAX_VALUE ? null : Integer.valueOf(objectiveValue);
+			return ( 
+					objectiveIntValue == Integer.MAX_VALUE ? 
+							( objectiveRealValue == Double.POSITIVE_INFINITY? null : Double.valueOf(objectiveRealValue) ) :
+								Integer.valueOf(objectiveIntValue) 
+			);
 		}
 
 		@Override
@@ -178,48 +197,15 @@ public class Solution {
 		public int getSolutionCount() {
 			return solutionCount;
 		}
-		
-		
-
-	}
-	
-	
-	public static final class StoredLimit extends AbstractGlobalSearchLimit {
-
-		/**
-		 * A copy constructor.
-		 */
-		public StoredLimit(AbstractGlobalSearchLimit toCopy) {
-			super(toCopy.getStrategy(),toCopy.getNbMax(),toCopy.getType());
-			nb = toCopy.getNb();
-			nbTot = toCopy.getNbTot();
-			nbMax = toCopy.getNbMax();
-		}
-
-		/**
-		 * synchronize the counters of the two limits.
-		 */
-		public final void synchronize(AbstractGlobalSearchLimit toSync) {
-			nb = toSync.getNb();
-			nbTot = toSync.getNbTot();
-		}
-		
-		@Override
-		public boolean endNode(AbstractGlobalSearchStrategy strategy) {
-			return false;
-		}
-
-		@Override
-		public boolean newNode(AbstractGlobalSearchStrategy strategy) {
-			return false;
-		}
 
 
 
 	}
 
 
-	
+
+
+
 }
 
 

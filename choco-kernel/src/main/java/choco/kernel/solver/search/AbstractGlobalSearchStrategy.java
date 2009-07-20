@@ -28,6 +28,8 @@
 //**************************************************
 package choco.kernel.solver.search;
 
+import java.util.logging.Level;
+
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
@@ -35,14 +37,8 @@ import choco.kernel.solver.SolverException;
 import choco.kernel.solver.branch.AbstractBranching;
 import choco.kernel.solver.branch.AbstractIntBranching;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.search.measures.AbstractMeasures;
+import choco.kernel.solver.search.limit.AbstractLimitManager;
 import choco.kernel.solver.search.measures.ISearchMeasures;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Level;
 
 /**
  * An abstract class for controlling tree search in various ways
@@ -69,6 +65,11 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 * a data structure storing the stack of choice contexts (for incremental search explorations)
 	 */
 	protected IntBranchingTrace[] traceStack;
+	
+	/**
+	 * a reusable trace object to start the branching from the root node.
+	 */
+	private final IntBranchingTrace initialTrace = new IntBranchingTrace();
 
 	/**
 	 * search controller: a flag storing the next move in the search tree
@@ -114,19 +115,12 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	public int baseWorld = 0;
 
-	/**
-	 * A set of limits controlling the exploration
-	 */
-	protected List<AbstractGlobalSearchLimit> limits;
+	public AbstractLimitManager limitManager;
 	
-	public final ISearchMeasures measures;
-
 	public ISearchLoop searchLoop;
 
 	protected AbstractGlobalSearchStrategy(Solver solver) {
 		this.solver = solver;
-		limits = new LinkedList<AbstractGlobalSearchLimit>(); //always iterates over the list
-		measures = new StrategyMeasures();
 		traceStack = new IntBranchingTrace[solver.getNbBooleanVars() + solver.getNbIntVars() + solver.getNbSetVars()];
 		nextMove = INIT_SEARCH;
 	}
@@ -141,20 +135,12 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 			}
 		}
 	}
+		
 
-	public final void addLimit(AbstractGlobalSearchLimit limit) {
-		limits.add(limit);
+	public final AbstractLimitManager getLimitManager() {
+		return limitManager;
 	}
-	
-	public final void resetLimits(boolean first) {
-		for (AbstractGlobalSearchLimit limit : limits) {
-			limit.reset(first);
-		}
-	}
-	
-	public final List<AbstractGlobalSearchLimit> getLimitsView() {
-		return Collections.unmodifiableList(limits);
-	}
+
 
 	/*
 	 * main entry point: searching for one solution
@@ -231,17 +217,17 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	public void newTreeSearch() throws ContradictionException {
 		assert(solver.getSearchStrategy() == this);
-        initNbSolutions();
+        resetSolutions();
 		baseWorld = solver.getEnvironment().getWorldIndex();
 		initialTrace.setBranching(this.mainGoal);
-		resetLimits(true);
+		limitManager.initialize();
 	}
 
 	/**
 	 * called before a new search tree is explored
 	 */
 	public void endTreeSearch() {
-		resetLimits(false);
+		limitManager.reset();
 		if (LOGGER.isLoggable(Level.CONFIG)) {
 			LOGGER.log(Level.CONFIG, "=== solve => {0} solutions\n\twith {1}", new Object[]{getSolutionCount(), runtimeStatistics()});
 		}
@@ -252,12 +238,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 * @throws choco.kernel.solver.ContradictionException
 	 */
 	public void newTreeNode() throws ContradictionException {
-		for (AbstractGlobalSearchLimit lim : limits) {
-			if (!lim.newNode(this)) {
-				encounteredLimit = lim;
-				solver.getPropagationEngine().raiseContradiction(lim, ContradictionException.SEARCH_LIMIT);
-			}
-		}
+		limitManager.newNode();
 	}
 
 	/**
@@ -265,12 +246,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 * @throws choco.kernel.solver.ContradictionException
 	 */
 	public void endTreeNode() throws ContradictionException {
-		for (AbstractGlobalSearchLimit lim : limits) {
-			if (!lim.endNode(this)) {//<hca> currentElement also the limit while going up to avoid useless propagation steps lim.endNode(this);
-				encounteredLimit = lim;
-				solver.getPropagationEngine().raiseContradiction(lim, ContradictionException.SEARCH_LIMIT);
-			}
-		}
+		limitManager.endNode();
 	}
 
 
@@ -288,10 +264,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	@Override
 	public void writeSolution(Solution sol) {
 		super.writeSolution(sol);
-		//record limits
-		for (AbstractGlobalSearchLimit l : limits) {
-			sol.recordLimit(l);
-		}
+		limitManager.writeLimits(sol);
 	}
 
 	/**
@@ -305,7 +278,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 			if (LOGGER.isLoggable(Level.FINE)) {
 				StringBuilder sb = new StringBuilder();
 				sb.append("Solution #").append(getSolutionCount()).append(" is found");
-				if  (this.limits.size() > 0) {
+				if  (limitManager.getNbLimits() > 0) {
 					sb.append("\n\twith ").append(runtimeStatistics());
 				}
 				LOGGER.log(Level.FINE, "=== {0}",sb);	
@@ -324,6 +297,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	public void postDynamicCut() throws ContradictionException {
 	}
 
+	
 	
 	public final IntBranchingTrace pushTrace() {
 		currentTraceIndex++;
@@ -364,7 +338,6 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		}
 	}
 	
-	private final IntBranchingTrace initialTrace = new IntBranchingTrace();
 	
 	public final IntBranchingTrace initialTrace() {
 		return isTraceEmpty() ? initialTrace : traceStack[currentTraceIndex];
@@ -402,21 +375,13 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	}
 
 	public String runtimeStatistics() {
-		final StringBuilder stb = new StringBuilder();
-		for (AbstractGlobalSearchLimit l : limits) {
-			stb.append(l.pretty()).append(" ; ");
-		}
-		return stb.toString();
+		return limitManager.pretty();
 	}
 
-	public AbstractGlobalSearchLimit getLimit(Limit limit) {
-		return AbstractGlobalSearchLimit.getLimit(limits, limit);
-	}
-
-
+	
 
 	public final ISearchMeasures getSearchMeasures() {
-		return measures;
+		return limitManager;
 	}
 	
 	/**
@@ -425,7 +390,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	@Deprecated
 	public int getTimeCount() {
-		return measures.getTimeCount();
+		return limitManager.getTimeCount();
 	}
 
 	/**
@@ -434,7 +399,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	@Deprecated
 	public int getCpuTimeCount() {
-		return measures.getTimeCount();
+		return limitManager.getTimeCount();
 	}
 
 	/**
@@ -443,7 +408,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	@Deprecated
 	public int getNodeCount() {
-		return measures.getNodeCount();
+		return limitManager.getNodeCount();
 	}
 
 	/**
@@ -451,7 +416,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	@Deprecated
 	public int getBackTrackCount() {
-		return measures.getBackTrackCount();
+		return limitManager.getBackTrackCount();
 	}
 
 	/**
@@ -459,7 +424,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	@Deprecated
 	public int getFailCount() {
-		return measures.getFailCount();
+		return limitManager.getFailCount();
 	}
 
 	/**
@@ -467,7 +432,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 *
 	 * @return true if a limit has been reached
 	 */
-	public boolean isEncounteredLimit() {
+	public final boolean isEncounteredLimit() {
 		return encounteredLimit != null;
 	}
 
@@ -475,25 +440,24 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 * If a limit has been encounteres, return the involved limit
 	 * @return the encoutered limit
 	 */
-	public GlobalSearchLimit getEncounteredLimit() {
+	public final GlobalSearchLimit getEncounteredLimit() {
 		return encounteredLimit;
 	}
 
-	public void setSearchLoop(ISearchLoop searchLoop) {
+	
+	public final void setLimitManager(AbstractLimitManager limitManager) {
+		this.limitManager = limitManager;
+		limitManager.setSearchStrategy(this);
+	}
+
+	public final void setSearchLoop(ISearchLoop searchLoop) {
 		this.searchLoop = searchLoop;
 	}
 
-	public void setEncounteredLimit(GlobalSearchLimit encounteredLimit) {
+	public final void setEncounteredLimit(GlobalSearchLimit encounteredLimit) {
 		this.encounteredLimit = encounteredLimit;
 	}
 	
 	
-	private final class StrategyMeasures extends AbstractMeasures {
-
-		@Override
-		protected Collection<AbstractGlobalSearchLimit> getLimits() {
-			return getLimitsView();
-		}	
-	}
 	
 }

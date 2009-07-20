@@ -22,12 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search;
 
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.DOWN_BRANCH;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.OPEN_NODE;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.UP_BRANCH;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.restart.RestartStrategy;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.*;
 import choco.kernel.solver.search.IntBranchingTrace;
 
 /**
@@ -125,8 +127,6 @@ public class SearchLoopWithRestart extends SearchLoop {
 					if (!stop) {
 						restartLimit = true;
 					}
-//					searchStrategy.nextMove = AbstractGlobalSearchStrategy.INIT_SEARCH;
-//					init();
 					break;
 				}
 				switch (searchStrategy.nextMove) {
@@ -142,9 +142,13 @@ public class SearchLoopWithRestart extends SearchLoop {
 					downBranch();
 					break;
 				}
+				case AbstractGlobalSearchStrategy.STOP: {
+					stop = true;
+					break;
+				}
 				}
 			}
-			searchStrategy.resetLimits(false);
+			searchStrategy.limitManager.reset();
 		} while (restartLimit);
 
 		if (searchStrategy.getSolutionCount() > previousNbSolutions) {

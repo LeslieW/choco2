@@ -86,7 +86,7 @@ public class ObservableStepSearchLoopWithRecomputation extends SearchLoopWithRec
         }
         state = State.END;
         notifyObservers(this);
-        searchStrategy.resetLimits(false);
+        searchStrategy.limitManager.reset();
         if (searchStrategy.getSolutionCount() > previousNbSolutions) {
             return Boolean.TRUE;
         } else if (searchStrategy.isEncounteredLimit()) {

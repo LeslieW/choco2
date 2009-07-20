@@ -50,7 +50,7 @@ import java.util.logging.Logger;
  */
 public class XmlModel {
 
-    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+    public final static Logger LOGGER = ChocoLogging.getParserLogger();
 
     //heuristics
     private static final int DOMOVERDEG = 0;
@@ -336,7 +336,6 @@ public class XmlModel {
                     break;
             }
         }
-
         if (forcerestart != null) {
             if (forcerestart) {
                 s.setGeometricRestart(base, growth);
@@ -360,7 +359,7 @@ public class XmlModel {
 //            s.solve();
 
             isFeasible = s.isFeasible();
-            nbnode = s.getSearchStrategy().getNodeCount();
+            nbnode = s.getNodeCount();
             nbback = s.getBackTrackCount();
         } else {
             isFeasible = false;

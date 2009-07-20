@@ -102,7 +102,7 @@ public class OptimizeWithRestarts extends AbstractOptimize {
                getBestObjectiveValue(a),  // v1.013 using the accessor
               a.nbIter,a.limits,t)]
 */
-	  resetLimits(false);
+	  limitManager.reset();
     /*if (LOGGER.isLoggable(Level.SEVERE)) {
       if (model.feasible == Boolean.TRUE) { // <hca> bug quand feasible est � null
         LOGGER.log(Level.SEVERE, "solve => " + new Integer(nbSolutions) + " solutions");
@@ -184,7 +184,7 @@ public class OptimizeWithRestarts extends AbstractOptimize {
     Boolean bool;
     if (oneMoreLoop() == false) {
     	LOGGER.warning("it works !?");
-    	//return Boolean.FALSE;
+    	return Boolean.FALSE;
     }
     try {
       newLoop();

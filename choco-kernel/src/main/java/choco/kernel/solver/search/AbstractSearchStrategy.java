@@ -82,7 +82,7 @@ public abstract class AbstractSearchStrategy implements ISolutionMeasures {
 	}
 
 	@Override
-	public int getSolutionCount() {
+	public final int getSolutionCount() {
 		return nbSolutions;
 	}
 
@@ -101,18 +101,12 @@ public abstract class AbstractSearchStrategy implements ISolutionMeasures {
 		this.solutionPool = solutionPool;
 	}
 
-	public final void resetSolutionCounter() {
+	
+	public final void resetSolutions() {
 		solutionPool.clear();
-		solver.setFeasible(Boolean.FALSE);
-		initNbSolutions();
+		nbSolutions = 0;
+		solver.setFeasible(null);
 	}
-
-    public final void initNbSolutions(){
-        nbSolutions = 0;
-    }
-
-
-
 
 
 	/**

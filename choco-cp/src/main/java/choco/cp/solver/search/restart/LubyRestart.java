@@ -24,7 +24,7 @@ package choco.cp.solver.search.restart;
 
 import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.solver.SolverException;
-import choco.kernel.solver.search.Limit;
+import choco.kernel.solver.search.limit.Limit;
 
 
 /**
@@ -44,11 +44,6 @@ public class LubyRestart extends AbstractParametrizedRestartStrategy {
 	}
 	
 	
-	@Override
-	public String getRestartPolicy() {
-		return "LUBY";
-	}
-
 
 	@Override
 	public final void setGeometricalFactor(double geometricalFactor) {

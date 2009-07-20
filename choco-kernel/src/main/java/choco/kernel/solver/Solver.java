@@ -523,7 +523,7 @@ public interface Solver extends IMeasures, IPretty {
 
 	public IEnvironment getEnvironment();
 
-	public void setFeasible(boolean b);
+	public void setFeasible(Boolean b);
 
 	public Boolean getFeasible();
 

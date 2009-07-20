@@ -80,9 +80,13 @@ public class SearchLoop implements ISearchLoop {
                     downBranch();
                     break;
                 }
+                case AbstractGlobalSearchStrategy.STOP: {
+                    stop = true;
+                    break;
+                }
             }
         }
-       searchStrategy.resetLimits(false);
+        searchStrategy.limitManager.reset();
         if (searchStrategy.getSolutionCount() > previousNbSolutions) {
             return Boolean.TRUE;
         } else if (searchStrategy.isEncounteredLimit()) {
@@ -130,7 +134,7 @@ public class SearchLoop implements ISearchLoop {
                 stop = true;
             }
         } catch (ContradictionException e) {
-            searchStrategy.nextMove = AbstractGlobalSearchStrategy.UP_BRANCH;
+            searchStrategy.nextMove = e.getContradictionMove();
         }
     }
 
@@ -156,7 +160,7 @@ public class SearchLoop implements ISearchLoop {
                 }
             } catch (ContradictionException e) {
                 ctx = searchStrategy.popTrace();
-                searchStrategy.nextMove = AbstractGlobalSearchStrategy.UP_BRANCH;
+                searchStrategy.nextMove = e.getContradictionMove();
             }
         }
     }
@@ -168,7 +172,7 @@ public class SearchLoop implements ISearchLoop {
             searchStrategy.solver.propagate();
             searchStrategy.nextMove = AbstractGlobalSearchStrategy.OPEN_NODE;
         } catch (ContradictionException e) {
-            searchStrategy.nextMove = AbstractGlobalSearchStrategy.UP_BRANCH;
+            searchStrategy.nextMove = e.getContradictionMove();
         }
     }
     

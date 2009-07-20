@@ -23,6 +23,7 @@
 package choco.cp.solver.search;
 
 import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.*;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.AbstractBranching;
 import choco.kernel.solver.branch.AbstractIntBranching;
@@ -87,6 +88,7 @@ public class SearchLoop2 implements ISearchLoop {
 		stop = false;
 
 		while (!stop) {
+			//ChocoLogging.flushLogs();
 			switch (searchStrategy.nextMove) {
 			//The order of the condition is important. 
 			//RESTART does not happen often and STOP only once.
@@ -227,7 +229,7 @@ public class SearchLoop2 implements ISearchLoop {
 	}
 
 	public Boolean endLoop() {
-		searchStrategy.resetLimits(false);
+		searchStrategy.limitManager.reset();
 		if (searchStrategy.getSolutionCount() > previousNbSolutions) {
 			return Boolean.TRUE;
 		} else if (searchStrategy.isEncounteredLimit()) {
@@ -250,7 +252,9 @@ public class SearchLoop2 implements ISearchLoop {
 	 * @return <code>true</code> if the loop should stop
 	 */
 	public void restart() {
+		LOGGER.finest("=== restarting ...");
 		restartCount++;
+		searchStrategy.setEncounteredLimit(null);
 		restoreRootNode(ctx);
 		try {
 			searchStrategy.postDynamicCut();

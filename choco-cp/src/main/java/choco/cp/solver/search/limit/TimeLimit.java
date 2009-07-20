@@ -22,32 +22,25 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.limit;
 
-import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.Limit;
+import choco.kernel.solver.search.limit.AbstractGlobalTimeLimit;
+import choco.kernel.solver.search.limit.Limit;
 
-public class TimeLimit extends AbstractGlobalSearchLimit {
-  protected long starth = Long.MIN_VALUE;
+public class TimeLimit extends AbstractGlobalTimeLimit {
 
-  public TimeLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
-    super(theStrategy, theLimit, Limit.TIME);
-  }
+	public TimeLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
+		super(theStrategy, theLimit, Limit.TIME);
+	}
 
-  @Override
-public void reset(boolean first) {
-    long newh = System.currentTimeMillis();
-    nb = (int) (newh - starth);
-    super.reset(first);
-    starth = newh;
-  }
+	@Override
+	public final long getTimeStamp() {
+		return System.currentTimeMillis();
+	}
 
-  public boolean newNode(AbstractGlobalSearchStrategy strategy) {
-    nb = (int) (System.currentTimeMillis() - starth);
-    return ((nb + nbTot) < nbMax);
-  }
-
-  public boolean endNode(AbstractGlobalSearchStrategy strategy) {
-      nb = (int) (System.currentTimeMillis() - starth);
-      return ((nb + nbTot) < nbMax);
-  }
+	@Override
+	public final void update() {
+		nb = (int) (newh - starth); 
+	}
+	
 }
+

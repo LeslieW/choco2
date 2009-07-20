@@ -37,7 +37,7 @@ public final class DbConstants {
 		}
 
 		@Override
-		public String getRestartPolicy() {
+		public String getName() {
 			return "NO_RESTARTS";
 		}
 
@@ -54,11 +54,6 @@ public final class DbConstants {
 		@Override
 		public void setScaleFactor(int scaleFactor) {
 			throw new DatabaseException("can set attribute: constant object");			
-		}
-
-		@Override
-		public boolean shouldRestart(AbstractGlobalSearchStrategy search) {
-			return false;
 		}
 		
 		

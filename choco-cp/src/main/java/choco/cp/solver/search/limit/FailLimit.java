@@ -26,34 +26,40 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.propagation.PropagationEngineListener;
 import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.Limit;
+import choco.kernel.solver.search.limit.Limit;
 
 /**
  * Limit counting the fail number
  */
-public class FailLimit extends AbstractGlobalSearchLimit implements PropagationEngineListener {
-  public FailLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
-    super(theStrategy, theLimit, Limit.FAIL);
-    theStrategy.getSolver().getPropagationEngine().addPropagationEngineListener(this);
-  }
+public final class FailLimit extends AbstractGlobalSearchLimit implements PropagationEngineListener {
 
-    /**
-     * Define action to do just before a deletion.
-     */
-    @Override
-    public void safeDelete() {
-        strategy.getSolver().getPropagationEngine().removePropagationEngineListener(this);
-    }
+	
+	public FailLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
+		super(theStrategy, theLimit, Limit.FAIL);
+		strategy.getSolver().getPropagationEngine().addPropagationEngineListener(this);
+		limitMask = nbMax == Integer.MAX_VALUE ? 0 : NEW_NODE + END_NODE;
+	}
 
-  public boolean newNode(AbstractGlobalSearchStrategy strategy) {
-    return ((nb + nbTot) < nbMax);
-  }
+	/**
+	 * Define action to do just before a deletion.
+	 */
+	@Override
+	public final void safeDelete() {
+		strategy.getSolver().getPropagationEngine().removePropagationEngineListener(this);
+	}
+	
 
-  public boolean endNode(AbstractGlobalSearchStrategy strategy) {
-    return ((nb + nbTot) < nbMax);
-  }
-
-  public void contradictionOccured(ContradictionException e) {
-    nb++;
-  }
+	@Override
+	public void newNode() throws ContradictionException {
+		checkLimit();
+	}
+	
+	@Override
+	public void endNode() throws ContradictionException {
+		checkLimit();
+	}
+	
+	public void contradictionOccured(ContradictionException e) {
+		if( e.getContradictionType() != ContradictionException.SEARCH_LIMIT) {nb++;}
+	}
 }
