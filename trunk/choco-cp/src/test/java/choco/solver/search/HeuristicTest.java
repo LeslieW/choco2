@@ -97,7 +97,7 @@ public class HeuristicTest {
             double mult = 1.5;
 
             public boolean shouldRestart(AbstractGlobalSearchStrategy search) {
-              boolean shouldRestart =  (search.measures.getNodeCount() >= nodesLimit);
+              boolean shouldRestart =  (search.getLimitManager().getNodeCount() >= nodesLimit);
               if (shouldRestart) {
 				nodesLimit *= mult;
 			}

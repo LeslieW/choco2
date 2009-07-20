@@ -1,7 +1,7 @@
 package choco.cp.solver.search.restart;
 
 import choco.kernel.solver.SolverException;
-import choco.kernel.solver.search.Limit;
+import choco.kernel.solver.search.limit.Limit;
 
 public abstract class AbstractParametrizedRestartStrategy extends
 		AbstractRestartStrategyOnLimit implements ParametrizedRestartStrategy {
@@ -17,8 +17,9 @@ public abstract class AbstractParametrizedRestartStrategy extends
 		
 	}
 	
+
 	@Override
-	public String getRestartPolicy() {
+	public String getName() {
 		return this.getClass().getSimpleName();
 	}
 

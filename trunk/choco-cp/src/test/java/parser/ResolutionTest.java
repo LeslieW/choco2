@@ -23,6 +23,8 @@
 package parser;
 
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -35,6 +37,7 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.security.Permission;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /*
@@ -90,7 +93,6 @@ public class ResolutionTest {
         int nbpb=Integer.parseInt((String) properties.get("pb.nbpb"));
         for(int i = 1; i < nbpb+1; i++){
             args[1] = directory + "/"+ properties.get("pb."+i+".name")+".xml";
-
             XmlModel xm = new XmlModel();
             try {
                 xm.generate(args);
@@ -125,7 +127,7 @@ public class ResolutionTest {
         args[1] = args[1] + "/bibd-8-14-7-4-3_glb.xml";
         int nbNodes = -1;
         for (int i = 0; i < 5; i++) {
-            try {
+        	try {
                 xm.generate(args);
             } catch (Exception e) {
                 LOGGER.severe(e.toString());
@@ -144,7 +146,8 @@ public class ResolutionTest {
     @Ignore
     public void aTest() {
         XmlModel xm = new XmlModel();
-        args[1] = args[1] + "/normalized-aim-200-3-4-sat-3_ext.xml";
+        args[1] = args[1] + "/protein.xml";
+        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         try {
             xm.generate(args);
         } catch (Exception e) {

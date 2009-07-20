@@ -369,7 +369,7 @@ public class SearchTest {
 	
 	@Test
 	public void testSolutionPool() {
-		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+		//ChocoLogging.setVerbosity(Verbosity.VERBOSE);
 		PoolSwitcher pl = new PoolSwitcher();
 		for (capa = 0; capa  < 7; capa++) {
 			pl.execute();

@@ -101,7 +101,7 @@ public class ObservableStepSearchLoopWithRestart extends SearchLoopWithRestart i
         } while (restartLimit);
         state = State.END;
         notifyObservers(this);
-        searchStrategy.resetLimits(false);
+        searchStrategy.limitManager.reset();
         if (searchStrategy.getSolutionCount() > previousNbSolutions) {
             return Boolean.TRUE;
         } else if (searchStrategy.isEncounteredLimit()) {

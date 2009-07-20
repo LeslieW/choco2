@@ -22,25 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.search.measures;
 
-import java.util.Collection;
-import java.util.logging.Logger;
-
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.solver.search.AbstractGlobalSearchLimit;
-import choco.kernel.solver.search.Limit;
+import choco.kernel.solver.search.limit.Limit;
 
 public abstract class AbstractMeasures implements ISearchMeasures {
 
-	/**
-	 * an object for logging trace statements
-	 */
-	public final static Logger LOGGER = ChocoLogging.getSearchLogger();
-	
-	protected abstract Collection<AbstractGlobalSearchLimit> getLimits();
-	
-	public final int getLimitValue(Limit limit) {
-		return AbstractGlobalSearchLimit.getLimitValue(getLimits(), limit);
-	}
+
+	public abstract int getLimitValue(Limit limit);
 	
 	@Override
 	public final int getBackTrackCount() {
@@ -55,12 +42,6 @@ public abstract class AbstractMeasures implements ISearchMeasures {
 	@Override
 	public final int getFailCount() {
 		return getLimitValue(Limit.FAIL);
-	}
-
-	@Override
-	public int getIterationCount() {
-		LOGGER.warning("not yet implemented");
-		return -1;
 	}
 
 	@Override

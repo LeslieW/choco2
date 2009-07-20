@@ -4,7 +4,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.variables.Var;
 
-public interface IBoundsManager {
+public interface IObjectiveManager {
 	
 	Var getObjective();
 	

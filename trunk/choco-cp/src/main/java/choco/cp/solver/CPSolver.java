@@ -103,6 +103,8 @@ import static choco.kernel.solver.search.SolutionPoolFactory.makeDefaultSolution
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.limit.AbstractLimitManager;
+import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.search.real.RealValIterator;
 import choco.kernel.solver.search.real.RealVarSelector;
 import choco.kernel.solver.search.set.AbstractSetVarSelector;
@@ -376,17 +378,8 @@ public class CPSolver implements Solver {
 	 */
 	protected SetValSelector valSetSelector = null;
 
-	protected int timeLimit = Integer.MAX_VALUE;
-
-	protected int cpuTimeLimit = Integer.MAX_VALUE;
-
-	protected int nodeLimit = Integer.MAX_VALUE;
-
-	protected int backTrackLimit = Integer.MAX_VALUE;
-
-	protected int failLimit = Integer.MAX_VALUE;
-
-	protected Map<Limit, Boolean> limits = new HashMap<Limit, Boolean>();
+	
+	protected AbstractLimitManager limitManager = new LimitManager();
 
 	protected CPModelToCPSolver mod2sol;
 
@@ -438,7 +431,6 @@ public class CPSolver implements Solver {
 			useRecomputation = true;
 		}
 		this.indexOfLastInitializedStaticConstraint = env.makeInt(PartiallyStoredVector.getFirstStaticIndex() - 1);
-		initLimit();
 	}
 
 	/**
@@ -474,8 +466,7 @@ public class CPSolver implements Solver {
 		buffer.append(getNbIntConstraints()).append(" cons]");
 		if (strategy != null) {
 			buffer.append("\nLimits");
-			buffer.append(StringUtils.pretty(strategy.getLimitsView()));
-
+			buffer.append(strategy.runtimeStatistics());
 		}
 		return new String(buffer);
 	}
@@ -637,7 +628,7 @@ public class CPSolver implements Solver {
 		return eventQueueType;
 	}
 
-	public void setFeasible(boolean b) {
+	public void setFeasible(Boolean b) {
 		this.feasible = b;
 	}
 
@@ -1058,41 +1049,14 @@ public class CPSolver implements Solver {
 	}
 
 	/**
-	 * Init the map of limit monitored. Default limits are:
-	 * <ul>
-	 * <li>time,</li>
-	 * <li>node</li>
-	 * </ul>
-	 */
-	public void initLimit() {
-		limits.put(Limit.TIME, true);
-		limits.put(Limit.CPU_TIME, false);
-		limits.put(Limit.NODE, true);
-		limits.put(Limit.BACKTRACK, false);
-		limits.put(Limit.FAIL, false);
-	}
-
-	/**
 	 * Add limit, if defined, to the search strategy. If the strategy is also
 	 * based on the number of backtracks (like Impact or DomOverWDeg), change
 	 * the kind of search loop.
 	 */
 	protected void addLimitsAndRestartStrategy() {
-		if (limits.get(Limit.TIME)) {
-			strategy.addLimit(new TimeLimit(strategy, timeLimit));
-		}
-		if (limits.get(Limit.CPU_TIME)) {
-			strategy.addLimit(new CpuTimeLimit(strategy, cpuTimeLimit));
-		}
-		if (limits.get(Limit.NODE)) {
-			strategy.addLimit(new NodeLimit(strategy, nodeLimit));
-		}
-		if (limits.get(Limit.BACKTRACK)) {
-			strategy.addLimit(new BackTrackLimit(strategy, backTrackLimit));
-		}
-		if (limits.get(Limit.FAIL)) {
-			strategy.addLimit(new FailLimit(strategy, failLimit));
-		}
+		strategy.setLimitManager(limitManager);
+		limitManager.generateLimits();
+		
 		if (restartS != null) {
 			if (useRecomputation) {
 				throw new SolverException(
@@ -1100,7 +1064,7 @@ public class CPSolver implements Solver {
 			} else {
 				if (restartS instanceof AbstractRestartStrategyOnLimit) {
 					AbstractRestartStrategyOnLimit rs = (AbstractRestartStrategyOnLimit) restartS;
-					AbstractGlobalSearchLimit l = strategy.getLimit(rs
+					AbstractGlobalSearchLimit l = strategy.limitManager.getLimit(rs
 							.getLimit());
 					if (l == null) {
 						throw new SolverException(
@@ -1123,7 +1087,7 @@ public class CPSolver implements Solver {
 	 *            indicates wether the search stategy monitor the time limit
 	 */
 	public void monitorTimeLimit(boolean b) {
-		limits.put(Limit.TIME, b);
+		limitManager.monitorLimit(Limit.TIME, b);
 	}
 
 	/**
@@ -1133,7 +1097,7 @@ public class CPSolver implements Solver {
 	 *            indicates wether the search stategy monitor the time limit
 	 */
 	public void monitorCpuTimeLimit(boolean b) {
-		limits.put(Limit.CPU_TIME, b);
+		limitManager.monitorLimit(Limit.CPU_TIME, b);
 	}
 
 	/**
@@ -1143,7 +1107,7 @@ public class CPSolver implements Solver {
 	 *            indicates wether the search stategy monitor the node limit
 	 */
 	public void monitorNodeLimit(boolean b) {
-		limits.put(Limit.NODE, b);
+		limitManager.monitorLimit(Limit.NODE, b);
 	}
 
 	/**
@@ -1154,7 +1118,7 @@ public class CPSolver implements Solver {
 	 *            limit
 	 */
 	public void monitorBackTrackLimit(boolean b) {
-		limits.put(Limit.BACKTRACK, b);
+		limitManager.monitorLimit(Limit.BACKTRACK, b);
 	}
 
 	/**
@@ -1164,7 +1128,7 @@ public class CPSolver implements Solver {
 	 *            indicates wether the search stategy monitor the fail limit
 	 */
 	public void monitorFailLimit(boolean b) {
-		limits.put(Limit.FAIL, b);
+		limitManager.monitorLimit(Limit.FAIL, b);
 	}
 
 	/**
@@ -1172,8 +1136,7 @@ public class CPSolver implements Solver {
 	 * algorithm
 	 */
 	public void setTimeLimit(int timeLimit) {
-		limits.put(Limit.TIME, true);
-		this.timeLimit = timeLimit;
+		limitManager.setLimit(Limit.TIME, timeLimit);
 	}
 
 	/**
@@ -1181,8 +1144,7 @@ public class CPSolver implements Solver {
 	 * algorithm
 	 */
 	public void setCpuTimeLimit(int cpuTimeLimit) {
-		limits.put(Limit.CPU_TIME, true);
-		this.cpuTimeLimit = cpuTimeLimit;
+		limitManager.setLimit(Limit.CPU_TIME, cpuTimeLimit);
 	}
 
 	/**
@@ -1190,8 +1152,7 @@ public class CPSolver implements Solver {
 	 * search algorithm
 	 */
 	public void setNodeLimit(int nodeLimit) {
-		limits.put(Limit.NODE, true);
-		this.nodeLimit = nodeLimit;
+		limitManager.setLimit(Limit.NODE, nodeLimit);
 	}
 
 	/**
@@ -1199,8 +1160,7 @@ public class CPSolver implements Solver {
 	 * by the search algorithm
 	 */
 	public void setBackTrackLimit(int backTrackLimit) {
-		limits.put(Limit.BACKTRACK, true);
-		this.backTrackLimit = backTrackLimit;
+		limitManager.setLimit(Limit.BACKTRACK, backTrackLimit);
 	}
 
 	/**
@@ -1208,12 +1168,8 @@ public class CPSolver implements Solver {
 	 * search algorithm
 	 */
 	public void setFailLimit(int failLimit) {
-		limits.put(Limit.FAIL, true);
-		this.failLimit = failLimit;
+		limitManager.setLimit(Limit.FAIL, failLimit);
 	}
-
-
-
 
 
 	/**
@@ -1550,7 +1506,7 @@ public class CPSolver implements Solver {
 		} else {
 			if (restartS instanceof AbstractRestartStrategyOnLimit) {
 				AbstractRestartStrategyOnLimit rs = (AbstractRestartStrategyOnLimit) restartS;
-				this.limits.put(rs.getLimit(), true);
+				limitManager.monitorLimit(rs.getLimit(), true);
 			}
 			this.restartS = restartS;
 		}

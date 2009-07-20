@@ -20,42 +20,35 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.solver.search;
+package choco.cp.solver.search.limit;
 
-/*
- * Created by IntelliJ IDEA.
- * User: charles
- * Date: 11 juin 2008
- * Since : Choco 2.0.0
+import choco.kernel.solver.search.AbstractGlobalSearchLimit;
+import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.limit.AbstractGlobalTimeLimit;
+import choco.kernel.solver.search.limit.Limit;
+
+/**
+ * check the total amount of CPU time (user + system).
+ * call {@link AbstractGlobalTimeLimit#updateTimeStamp()} before calling {@link AbstractGlobalSearchLimit#getNb()}.
  *
  */
-public enum Limit {
-    NODE("limit.node","nodes"),
-    TIME("limit.time","millis."),
-    FAIL("limit.fail","fails"),
-    BACKTRACK("limit.backtrack","backtracks"),
-    CPU_TIME("limit.cputime","millis. (cpu time)"),
-    SOLUTION("limit.solution", "first solutions");
-
-    private final String property;
-
-    private final String unit;
+public final class TimeCount extends TimeLimit {
 
 
-	private Limit(String property, String unit) {
-		this.property = property;
-		this.unit = unit;
+	public TimeCount(AbstractGlobalSearchStrategy theStrategy) {
+		super(theStrategy, Integer.MAX_VALUE);
+		limitMask = 0;
 	}
 
 
-	public final String getUnit() {
-		return unit;
+	/**
+	 * should update the value before recording solution as the event are not handled.
+	 */
+	@Override
+	public int getUpdatedNb() {
+		newh = getTimeStamp();
+		update();
+		return nb;
 	}
-
-	public final String getProperty(){
-        return property;
-    }
-
-
-
 }
+

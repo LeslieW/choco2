@@ -34,20 +34,20 @@ import choco.kernel.solver.variables.Var;
 
 public abstract class AbstractOptimize2 extends AbstractGlobalSearchStrategy {
 	/**
-	 * a boolean indicating whether we want to maximize (true) or minize (false) the objective variable
+	 * a boolean indicating whether we want to maximize (true) or minimize (false) the objective variable
 	 */
 	public final boolean doMaximize;
 
 	public final Var objective;
 	
-	protected final IBoundsManager bounds;
+	protected final IObjectiveManager bounds;
 
 	/**
 	 * constructor
 	 * @param maximize maximization or minimization ?
 	 * @param solver the solver
 	 */
-	protected AbstractOptimize2(IBoundsManager bounds, boolean maximize) {
+	protected AbstractOptimize2(IObjectiveManager bounds, boolean maximize) {
 		super(bounds.getObjective().getSolver());
 		this.bounds = bounds;
 		objective = bounds.getObjective();
@@ -64,7 +64,7 @@ public abstract class AbstractOptimize2 extends AbstractGlobalSearchStrategy {
 	}
 	
 	
-	public final IBoundsManager getBounds() {
+	public final IObjectiveManager getBounds() {
 		return bounds;
 	}
 

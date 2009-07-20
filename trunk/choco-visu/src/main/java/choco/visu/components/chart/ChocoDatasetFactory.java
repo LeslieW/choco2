@@ -30,7 +30,7 @@ import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
 import choco.kernel.solver.constraints.global.scheduling.IResource;
 import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.Limit;
+import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.ITask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
@@ -195,7 +195,7 @@ public final class ChocoDatasetFactory {
 	public static XYSeries createSolutionXYSeries(CPSolver s, Limit limit) {
 		XYSeries series = new XYSeries("solver sol.");
 		final AbstractGlobalSearchStrategy strat = s.getSearchStrategy();
-		if(strat.getLimit(limit) != null) {
+		if(strat.getLimitManager().getLimit(limit) != null) {
 				for (Solution sol : strat.getStoredSolutions()) {
 					series.add(sol.getLimitValue(limit), sol.getObjectiveValue());
 				}
@@ -207,7 +207,7 @@ public final class ChocoDatasetFactory {
 		final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 		final AbstractGlobalSearchStrategy strat = s.getSearchStrategy();
 		final String series = "Solver sol.";
-		if(strat.getLimit(limit) != null) {
+		if(strat.getLimitManager().getLimit(limit) != null) {
 				//reversed loop
 				final List<Solution> sols = strat.getStoredSolutions();
 				for (int i = sols.size()-1; i >=0; i--) {

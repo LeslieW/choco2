@@ -23,12 +23,21 @@
 package choco.kernel.solver.search;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.ListIterator;
+
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.search.limit.Limit;
 
 /**
  * An abstract class for limiting tree search (imposing conditions on depth, ...)
  */
 public abstract class AbstractGlobalSearchLimit implements GlobalSearchLimit {
 
+	public final static int NEW_NODE = 1;
+	
+	public final static int END_NODE = 2;
+	
 	/**
 	 * the strategy that delegates the limit checking task to such AbstractGlobalSearchLimit objects
 	 */
@@ -47,8 +56,10 @@ public abstract class AbstractGlobalSearchLimit implements GlobalSearchLimit {
 	/**
 	 * maximal value limitting the search exploration
 	 */
-	protected int nbMax = Integer.MAX_VALUE;
+	protected int nbMax;
 
+
+	protected int limitMask = NEW_NODE + END_NODE;
 	/**
 	 * a counter who is limited to values below max
 	 */
@@ -58,6 +69,7 @@ public abstract class AbstractGlobalSearchLimit implements GlobalSearchLimit {
 	 * counting for successive tree search
 	 */
 	protected int nbTot = 0;
+
 
 	public AbstractGlobalSearchLimit(AbstractGlobalSearchStrategy theStrategy,int theLimit, String unit) {
 		strategy = theStrategy;
@@ -73,33 +85,51 @@ public abstract class AbstractGlobalSearchLimit implements GlobalSearchLimit {
 		this.unit= type.getUnit();
 	}
 
+	public final int getLimitMask() {
+		return limitMask;
+	}
+	
+	public int getUpdatedNb() {
+		return nb;
+	}
+	
+	public final int getUpdatedNbAll() {
+		return nbTot + getUpdatedNb();
+	}
+
 	@Override
 	public String toString() {
 		return getNbAll() +" "+unit;
 	}
 
-	public void reset(final boolean first) {
-		if (first) {
-			nbTot = 0;
-		} else {
-			nbTot += nb;
-		}
+
+	@Override
+	public void initialize() {
+		nb = 0;
+		nbTot = 0;		
+	}
+
+	@Override
+	public void reset() {
+		nbTot += nb;
 		nb = 0;
 	}
 
 	public String pretty() {
-		String res = nbTot + "[+" + nb + "]";
+		StringBuilder b = new StringBuilder();
+		b.append(nbTot).append("[+").append(nb).append(']');
 		if (nbMax != Integer.MAX_VALUE) {
-			res += "/" + nbMax;
+			b.append('/').append(nbMax);
 		}
-		return res + " " + unit;
+		b.append(' ').append(unit);
+		return new String(b);
 	}
 
 	/**
 	 * get the current counter
 	 */
 
-	public int getNb() {
+	public final int getNb() {
 		return nb;
 	}
 
@@ -107,7 +137,7 @@ public abstract class AbstractGlobalSearchLimit implements GlobalSearchLimit {
 	 * get the total counter
 	 */
 
-	public int getNbTot() {
+	public final int getNbTot() {
 		return nbTot;
 	}
 
@@ -115,47 +145,69 @@ public abstract class AbstractGlobalSearchLimit implements GlobalSearchLimit {
 	 * the sum of {@link this#getNb()} {@link this#getNbTot()}
 	 *
 	 */
-	public int getNbAll() {
-		return getNb() + getNbTot();
+	public final int getNbAll() {
+		return nb + nbTot;
 	}
 	/**
 	 * @return the limit value
 	 */
 
-	public int getNbMax() {
+	public final int getNbMax() {
 		return nbMax;
 	}
 
-	/**
-	 * Sets the limits
-	 *
-	 * @param nbMax new value of the limit
-	 */
 
-	public void setNbMax(final int nbMax) {
-		this.nbMax = nbMax;
-	}
-
-	public Limit getType() {
+	public final Limit getType() {
 		return type;
 	}
 
-	public final AbstractGlobalSearchStrategy getStrategy() {
+	
+	public final String getUnit() {
+		return unit;
+	}
+
+	protected final void raiseContradiction(int nextMove) throws ContradictionException {
+		strategy.setEncounteredLimit(this);
+		strategy.solver.getPropagationEngine().raiseContradiction(this, ContradictionException.SEARCH_LIMIT, nextMove);
+	}
+	
+	protected final void checkLimit() throws ContradictionException {
+		if(  nbTot + nb >= nbMax) {
+			raiseContradiction(AbstractGlobalSearchStrategy.STOP);
+		}
+	}
+
+	@Override
+	public final AbstractGlobalSearchStrategy getSearchStrategy() {
 		return strategy;
 	}
 
-	public static final AbstractGlobalSearchLimit getLimit(Collection<AbstractGlobalSearchLimit> limits, Limit limit) {
+	public static final AbstractGlobalSearchLimit getLimit(Collection<AbstractGlobalSearchLimit> limits, Limit type) {
 		for (AbstractGlobalSearchLimit l : limits) {
-			if (l.getType().equals(limit)) {
+			if (l.getType().equals(type)) {
 				return l;
 			}
 		}
 		return null;
 	}
 
-	public static final int getLimitValue(Collection<AbstractGlobalSearchLimit> limits, Limit limit) {
-		final AbstractGlobalSearchLimit l = getLimit(limits, limit);
+	public static final int getLimitIndex(List<AbstractGlobalSearchLimit> limits, Limit type) {
+		final ListIterator<AbstractGlobalSearchLimit> iter = limits.listIterator();
+		while(iter.hasNext()) {
+			if (iter.next().getType().equals(type)) {
+				return Integer.valueOf(iter.previousIndex());
+			}
+		}
+		return -1;
+	}
+
+	public static final int getLimitValue(Collection<AbstractGlobalSearchLimit> limits, Limit type) {
+		final AbstractGlobalSearchLimit l = getLimit(limits, type);
 		return l == null ? -1 : l.getNbAll();
 	}
+
+
+
+
 }
 

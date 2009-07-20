@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -20,35 +20,43 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.search.restart;
+package choco.kernel.solver.search.limit;
 
-import choco.kernel.solver.search.limit.Limit;
-
-
-
-/**
- * @author Arnaud Malapert
+/*
+ * Created by IntelliJ IDEA.
+ * User: charles
+ * Date: 11 juin 2008
+ * Since : Choco 2.0.0
  *
  */
-public final class GeometricalRestart extends AbstractParametrizedRestartStrategy {
+public enum Limit {
+    NODE("limit.node","nodes"),
+    TIME("limit.time","millis."),
+    FAIL("limit.fail","fails"),
+    BACKTRACK("limit.backtrack","backtracks"),
+    CPU_TIME("limit.cputime","millis. (cpu time)"),
+    RESTART("","restarts");
+   // SOLUTION("limit.solution", "first solutions");
 
-	
+    private final String property;
 
-	public GeometricalRestart(Limit type, int scaleFactor,
-			double geometricalFactor) {
-		super(type, scaleFactor, geometricalFactor);
+    private final String unit;
+
+
+	private Limit(String property, String unit) {
+		this.property = property;
+		this.unit = unit;
 	}
-	
-	
-	
-	@Override
-	public final String getName() {
-		return "GEOM";
-	}
 
 
-	@Override
-	protected int getNextLimit() {
-		return (int) Math.ceil( Math.pow(geometricalFactor,nbRestarts) * scaleFactor );
+	public final String getUnit() {
+		return unit;
 	}
+
+	public final String getProperty(){
+        return property;
+    }
+
+
+
 }

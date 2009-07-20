@@ -76,7 +76,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.Propagator;
-import choco.kernel.solver.search.Limit;
+import choco.kernel.solver.search.limit.Limit;
 
 public class SolveTest {
 	protected final static Logger LOGGER = ChocoLogging.getTestLogger();

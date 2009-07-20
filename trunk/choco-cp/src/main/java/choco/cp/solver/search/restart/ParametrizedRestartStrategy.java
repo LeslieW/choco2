@@ -22,9 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.restart;
 
-public interface ParametrizedRestartStrategy extends RestartStrategy {
+public interface ParametrizedRestartStrategy {
 
-	String getRestartPolicy();
+	String getName();
 	
 	int getScaleFactor();
 

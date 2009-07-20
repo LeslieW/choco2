@@ -73,7 +73,7 @@ public class RealOptimizeWithRestarts extends AbstractRealOptimize {
 	 * called before a new search tree is explored
 	 */
 	public void endTreeSearch() {
-		resetLimits(false);	
+		limitManager.reset();	
 		clearTrace();
 		solver.worldPopUntil(baseWorld);
 	}

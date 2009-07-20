@@ -218,7 +218,7 @@ public class GoalSearchSolver extends AbstractGlobalSearchStrategy {
         }
       }
     }
-    resetLimits(false);
+    limitManager.reset();
     if (getSolutionCount() > previousNbSolutions) {
       return Boolean.TRUE;
     } else if (isEncounteredLimit()) {
