@@ -22,12 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search;
 
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.*;
-import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.AbstractBranching;
 import choco.kernel.solver.branch.AbstractIntBranching;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.*;
 import choco.kernel.solver.search.ISearchLoop;
 import choco.kernel.solver.search.IntBranchingTrace;
 
@@ -43,7 +42,7 @@ public class SearchLoop2 implements ISearchLoop {
 	//It seems that it is important to reinit the branching when restarting after each solution with DWDeg.
 	//If you only set up an OPEN_NODE, it really decreases performance
 	//So we have to check the combinatin of DWDeg an a restart strategy.
-	private int moveAfterRestart=  INIT_SEARCH;
+	private final int moveAfterRestart=  INIT_SEARCH;
 
 	protected int previousNbSolutions = 0;
 
@@ -141,7 +140,7 @@ public class SearchLoop2 implements ISearchLoop {
 		try {
 			searchStrategy.newTreeNode();
 			//looking for the next branching object
-			Object branchingObj = null;
+			Object branchingObj;
 			AbstractIntBranching currentBranching = (AbstractIntBranching) ctx.getBranching();
 			while(currentBranching != null) {
 				branchingObj = currentBranching.selectBranchingObject();
@@ -239,7 +238,7 @@ public class SearchLoop2 implements ISearchLoop {
 		}
 	}
 
-	protected void restoreRootNode(IntBranchingTrace ctx) {
+	protected void restoreRootNode() {
 		searchStrategy.clearTrace();
 		searchStrategy.solver.worldPopUntil(searchStrategy.baseWorld + 1);
 		//((CPSolver) searchStrategy.getSolver()).initNogoodBase();
@@ -247,15 +246,12 @@ public class SearchLoop2 implements ISearchLoop {
 
 	/**
 	 * perform the restart.
-	 *
-	 * @param ctx the branching trace
-	 * @return <code>true</code> if the loop should stop
 	 */
 	public void restart() {
 		LOGGER.finest("=== restarting ...");
 		restartCount++;
 		searchStrategy.setEncounteredLimit(null);
-		restoreRootNode(ctx);
+		restoreRootNode();
 		try {
 			searchStrategy.postDynamicCut();
 			searchStrategy.solver.propagate();
