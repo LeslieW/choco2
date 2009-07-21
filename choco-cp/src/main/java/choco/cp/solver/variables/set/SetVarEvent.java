@@ -116,18 +116,25 @@ public class SetVarEvent extends VarEvent<SetVarImpl> {
 		int evtCause = cause;
 		freeze();
 
-		if (evtType >= INSTSETEVENT)
-			propagateInstEvent(evtCause);
-		else if (evtType <= BOUNDSEVENT) {
-			if (evtType == ENVEVENT)
-				propagateEnveloppeEvents(evtCause);
-			else if (evtType == KEREVENT)
-				propagateKernelEvents(evtCause);
-			else if (evtType == BOUNDSEVENT) {
-				propagateKernelEvents(evtCause);
-				propagateEnveloppeEvents(evtCause);
-			}
-		}
+        if ((propagatedEvents & INSTSETEVENT) != 0 && (evtType & INSTSETEVENT) != 0)
+            propagateInstEvent(evtCause);
+        if ((propagatedEvents & ENVEVENT) != 0 && (evtType & ENVEVENT) != 0)
+            propagateEnveloppeEvents(evtCause);
+        if ((propagatedEvents & KEREVENT) != 0 && (evtType & KEREVENT) != 0)
+            propagateKernelEvents(evtCause);
+
+//		if (evtType >= INSTSETEVENT)
+//			propagateInstEvent(evtCause);
+//		else if (evtType <= BOUNDSEVENT) {
+//			if (evtType == ENVEVENT)
+//				propagateEnveloppeEvents(evtCause);
+//			else if (evtType == KEREVENT)
+//				propagateKernelEvents(evtCause);
+//			else if (evtType == BOUNDSEVENT) {
+//				propagateKernelEvents(evtCause);
+//				propagateEnveloppeEvents(evtCause);
+//			}
+//		}
 
 		// last, release event
 		return release();
