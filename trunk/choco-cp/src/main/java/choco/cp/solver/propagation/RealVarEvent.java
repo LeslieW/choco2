@@ -37,9 +37,9 @@ public class RealVarEvent extends VarEvent<RealVarImpl> {
     public static final int DECSUP = 1;
 
     public final static int EMPTYEVENT = 0;
-    public final static int BOUNDSEVENT = 3;
     public final static int INFEVENT = 1;
     public final static int SUPEVENT = 2;
+    public final static int BOUNDSEVENT = 3;
 
     public RealVarEvent(RealVarImpl var) {
         super(var);
@@ -79,15 +79,20 @@ public class RealVarEvent extends VarEvent<RealVarImpl> {
         int evtCause = cause;
         freeze();
 
-        if (evtType <= BOUNDSEVENT) {     // only two first bits (bounds) are on
-            if (evtType == INFEVENT)
-                propagateInfEvent(evtCause);
-            else if (evtType == SUPEVENT)
-                propagateSupEvent(evtCause);
-            else if (evtType == BOUNDSEVENT) {
-                propagateBoundsEvent(evtCause);
-            }
-        }
+        if ((propagatedEvents & INFEVENT) != 0 && (evtType & INFEVENT) != 0)
+            propagateInfEvent(evtCause);
+        if ((propagatedEvents & SUPEVENT) != 0 && (evtType & SUPEVENT) != 0)
+            propagateSupEvent(evtCause);
+
+//        if (evtType <= BOUNDSEVENT) {     // only two first bits (bounds) are on
+//            if (evtType == INFEVENT)
+//                propagateInfEvent(evtCause);
+//            else if (evtType == SUPEVENT)
+//                propagateSupEvent(evtCause);
+//            else if (evtType == BOUNDSEVENT) {
+//                propagateBoundsEvent(evtCause);
+//            }
+//        }
         // last, release event
         return release();
     }
@@ -127,22 +132,22 @@ public class RealVarEvent extends VarEvent<RealVarImpl> {
 
     }
 
-    /**
-     * Propagates the update to the domain lower and upper bounds
-     */
-    public void propagateBoundsEvent(int evtCause) throws ContradictionException {
-        RealVarImpl v = getModifiedVar();
-        DisposableIterator<Couple<RealSConstraint>> cit = v.getActiveConstraints(evtCause);
-
-        try {
-            while (cit.hasNext()) {
-                Couple<RealSConstraint> cc = cit.next();
-                cc.c.awakeOnInf(cc.i);
-                cc.c.awakeOnSup(cc.i);
-            }
-        } finally {
-            cit.dispose();
-        }
-
-    }
+//    /**
+//     * Propagates the update to the domain lower and upper bounds
+//     */
+//    public void propagateBoundsEvent(int evtCause) throws ContradictionException {
+//        RealVarImpl v = getModifiedVar();
+//        DisposableIterator<Couple<RealSConstraint>> cit = v.getActiveConstraints(evtCause);
+//
+//        try {
+//            while (cit.hasNext()) {
+//                Couple<RealSConstraint> cc = cit.next();
+//                cc.c.awakeOnInf(cc.i);
+//                cc.c.awakeOnSup(cc.i);
+//            }
+//        } finally {
+//            cit.dispose();
+//        }
+//
+//    }
 }
