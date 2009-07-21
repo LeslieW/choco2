@@ -54,7 +54,7 @@ import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
-import choco.cp.solver.search.limit.*;
+import choco.cp.solver.search.limit.LimitManager;
 import choco.cp.solver.search.real.*;
 import choco.cp.solver.search.restart.*;
 import choco.cp.solver.search.set.*;
@@ -74,6 +74,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.recomputation.EnvironmentRecomputation;
 import choco.kernel.memory.structure.PartiallyStoredVector;
+import choco.kernel.memory.structure.StoredBipartiteVarList;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -211,17 +212,17 @@ public class CPSolver implements Solver {
 	/**
 	 * All the search intVars in the model.
 	 */
-	protected ArrayList<IntDomainVar> intVars;
+	protected StoredBipartiteVarList<IntDomainVar> intVars;
 	/**
 	 * All the set intVars in the model.
 	 */
-	protected ArrayList<SetVar> setVars;
+	protected StoredBipartiteVarList<SetVar> setVars;
 	/**
 	 * All the float vars in the model.
 	 */
-	protected ArrayList<RealVar> floatVars;
+	protected StoredBipartiteVarList<RealVar> floatVars;
 
-	protected ArrayList<TaskVar> taskVars;
+	protected StoredBipartiteVarList<TaskVar> taskVars;
 	/**
 	 * All the decision integer Vars in the model.
 	 */
@@ -412,10 +413,10 @@ public class CPSolver implements Solver {
 		mod2sol = new CPModelToCPSolver(this);
 		mapvariables = new TLongObjectHashMap<Var>();
 		mapconstraints = new TLongObjectHashMap<SConstraint>();
-		intVars = new ArrayList<IntDomainVar>();
-		setVars = new ArrayList<SetVar>();
-		floatVars = new ArrayList<RealVar>();
-		taskVars = new ArrayList<TaskVar>();
+		intVars = new StoredBipartiteVarList<IntDomainVar>(env);
+		setVars = new StoredBipartiteVarList<SetVar>(env);
+		floatVars = new StoredBipartiteVarList<RealVar>(env);
+		taskVars = new StoredBipartiteVarList<TaskVar>(env);
 		intDecisionVars = new ArrayList<IntDomainVar>();
 		setDecisionVars = new ArrayList<SetVar>();
 		floatDecisionVars = new ArrayList<RealVar>();
@@ -437,7 +438,7 @@ public class CPSolver implements Solver {
 	 * Specify the visualization of the solver. Allow the visu to get
 	 * informations from the solver to visualize it.
 	 *
-	 * @param visu
+	 * @param visu the external visualizer
 	 */
 	public void visualize(IVisu visu) {
 		// Change the var event queue to an observable one
@@ -496,7 +497,8 @@ public class CPSolver implements Solver {
 			buf.append("\n");
 		}
 		buf.append("==== TASKS ====\n");
-		buf.append(StringUtils.prettyOnePerLine(taskVars));
+        //noinspection unchecked
+        buf.append(StringUtils.prettyOnePerLine(taskVars.toList()));
 		return new String(buf);
 	}
 
@@ -549,20 +551,20 @@ public class CPSolver implements Solver {
 
 	public void addConstraint(Constraint... tabic) {
 		Constraint ic;
-		for (int i = 0; i < tabic.length; i++) {
-			ic = tabic[i];
-			Iterator<Variable> it = ic.getVariableIterator();
-			while (it.hasNext()) {
-				Variable v = it.next();
-				if (!mapvariables.containsKey(v.getIndex())) {
-					v.findManager(model.properties);
-					mod2sol.readModelVariable(v);
-				}
-			}
-			ic.findManager(model.properties);
-			mod2sol.readConstraint(ic, model
-					.getDefaultExpressionDecomposition());
-		}
+        for (Constraint aTabic : tabic) {
+            ic = aTabic;
+            Iterator<Variable> it = ic.getVariableIterator();
+            while (it.hasNext()) {
+                Variable v = it.next();
+                if (!mapvariables.containsKey(v.getIndex())) {
+                    v.findManager(model.properties);
+                    mod2sol.readModelVariable(v);
+                }
+            }
+            ic.findManager(model.properties);
+            mod2sol.readConstraint(ic, model
+                    .getDefaultExpressionDecomposition());
+        }
 	}
 
 	/**
@@ -753,7 +755,8 @@ public class CPSolver implements Solver {
 			}
 		}
 
-		strategy.stopAtFirstSol = firstSolution;
+        assert strategy != null;
+        strategy.stopAtFirstSol = firstSolution;
 
 		strategy.setLoggingMaxDepth(this.loggingMaxDepth);
 
@@ -865,29 +868,29 @@ public class CPSolver implements Solver {
 	 */
 	public boolean checkDecisionVariables() {
 		if (intDecisionVars != null) {
-			for (int i = 0; i < intDecisionVars.size(); i++) {
-				if (!intDecisionVars.get(i).isInstantiated()) {
-					return false;
-				}
-			}
+            for (IntDomainVar intDecisionVar : intDecisionVars) {
+                if (!intDecisionVar.isInstantiated()) {
+                    return false;
+                }
+            }
 		}
 
 		if (setDecisionVars != null) {
-			for (int i = 0; i < setDecisionVars.size(); i++) {
-				if (!setDecisionVars.get(i).isInstantiated()) {
-					return false;
-				}
+            for (SetVar setDecisionVar : setDecisionVars) {
+                if (!setDecisionVar.isInstantiated()) {
+                    return false;
+                }
 
-			}
+            }
 		}
 
 		if (floatDecisionVars != null) {
-			for (int i = 0; i < floatDecisionVars.size(); i++) {
-				if (!floatDecisionVars.get(i).isInstantiated()) {
-					return false;
-				}
+            for (RealVar floatDecisionVar : floatDecisionVars) {
+                if (!floatDecisionVar.isInstantiated()) {
+                    return false;
+                }
 
-			}
+            }
 		}
 		return true;
 	}
@@ -1276,15 +1279,13 @@ public class CPSolver implements Solver {
 		IntDomainVar[] vars = ((AbstractIntVarSelector) varSelector).getVars();
 		if (vars != null) {
 			intDecisionVars.clear();
-			for (int i = 0; i < vars.length; i++) {
-				intDecisionVars.add(vars[i]);
-			}
+            intDecisionVars.addAll(Arrays.asList(vars));
 		} else if(!intDecisionVars.isEmpty()){
 			vars = new IntDomainVar[intDecisionVars.size()];
 			intDecisionVars.toArray(vars);
 			((AbstractIntVarSelector) varSelector).setVars(vars);
 		}else{
-			intDecisionVars.addAll(intVars);
+			intDecisionVars.addAll(intVars.toList());
 		}
 	}
 
@@ -1296,7 +1297,7 @@ public class CPSolver implements Solver {
 	 */
 	public void setVarRealSelector(RealVarSelector realVarSelector) {
 		this.varRealSelector = realVarSelector;
-		floatDecisionVars.addAll(floatVars);
+		floatDecisionVars.addAll(floatVars.toList());
 	}
 
 	/**
@@ -1318,7 +1319,7 @@ public class CPSolver implements Solver {
 			intDecisionVars.toArray(vars);
 			((AbstractSetVarSelector) setVarSelector).setVars(vars);
 		} else {
-			setDecisionVars.addAll(setVars);
+			setDecisionVars.addAll(setVars.toList());
 		}
 	}
 
@@ -1664,7 +1665,7 @@ public class CPSolver implements Solver {
 	 * @return an unmodifiable list
 	 */
 	public final List<IntDomainVar> getIntDecisionVars() {
-		return getDecisionList(intDecisionVars, intVars);
+		return getDecisionList(intDecisionVars, intVars.toList());
 	}
 
 	/**
@@ -1673,7 +1674,7 @@ public class CPSolver implements Solver {
 	 * @return an unmodifiable list
 	 */
 	public final List<SetVar> getSetDecisionVars() {
-		return getDecisionList(setDecisionVars, setVars);
+		return getDecisionList(setDecisionVars, setVars.toList());
 
 	}
 
@@ -1683,7 +1684,7 @@ public class CPSolver implements Solver {
 	 * @return an unmodifiable list
 	 */
 	public final List<RealVar> getRealDecisionVars() {
-		return getDecisionList(floatDecisionVars, floatVars);
+		return getDecisionList(floatDecisionVars, floatVars.toList());
 	}
 
 	/**
@@ -1692,7 +1693,7 @@ public class CPSolver implements Solver {
 	 * @return an unmodifiable list
 	 */
 	public final List<TaskVar> getTaskDecisionVars() {
-		return getDecisionList(taskDecisionVars, taskVars);
+		return getDecisionList(taskDecisionVars, taskVars.toList());
 	}
 
 	/**

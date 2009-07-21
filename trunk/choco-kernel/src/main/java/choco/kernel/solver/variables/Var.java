@@ -92,7 +92,7 @@ public interface Var extends IPretty, IIndex {
 	 *
 	 * @return the vector of constraints
 	 */
-	public PartiallyStoredVector<SConstraint> getConstraintVector();
+	public PartiallyStoredVector<? extends SConstraint> getConstraintVector();
 
 	/**
 	 * access the data structure storing indices associated to constraints involving a given variable

@@ -272,7 +272,7 @@ public class CPModelToCPSolver {
 		if (!intDecisionVar.isEmpty()) {
 			cpsolver.intDecisionVars.addAll(intDecisionVar);
 		} else if (!intNoDecisionVar.isEmpty()) {
-			cpsolver.intDecisionVars.addAll(cpsolver.intVars);
+			cpsolver.intDecisionVars.addAll(cpsolver.intVars.toList());
 			cpsolver.intDecisionVars.removeAll(intNoDecisionVar);
 			cpsolver.intDecisionVars.removeAll(cpsolver.getIntConstantSet());
 		}
@@ -280,14 +280,14 @@ public class CPModelToCPSolver {
 		if (!setDecisionVar.isEmpty()) {
 			cpsolver.setDecisionVars.addAll(setDecisionVar);
 		} else if (!setNoDecisionVar.isEmpty()) {
-			cpsolver.setDecisionVars.addAll(cpsolver.setVars);
+			cpsolver.setDecisionVars.addAll(cpsolver.setVars.toList());
 			cpsolver.setDecisionVars.removeAll(setNoDecisionVar);
 		}
 		// Real decision variables
 		if (!realDecisionVar.isEmpty()) {
 			cpsolver.floatDecisionVars.addAll(realDecisionVar);
 		} else if (!realNoDecisionVar.isEmpty()) {
-			cpsolver.floatDecisionVars.addAll(cpsolver.floatVars);
+			cpsolver.floatDecisionVars.addAll(cpsolver.floatVars.toList());
 			cpsolver.floatDecisionVars.removeAll(realNoDecisionVar);
 			cpsolver.intDecisionVars.removeAll(cpsolver.getRealConstantSet());
 		}
@@ -295,7 +295,7 @@ public class CPModelToCPSolver {
 		if (!taskDecisionVar.isEmpty()) {
 			cpsolver.taskDecisionVars.addAll(taskDecisionVar);
 		} else if (!taskNoDecisionVar.isEmpty()) {
-			cpsolver.taskDecisionVars.addAll(cpsolver.taskVars);
+			cpsolver.taskDecisionVars.addAll(cpsolver.taskVars.toList());
 			cpsolver.taskDecisionVars.removeAll(taskNoDecisionVar);
 		}
 	}

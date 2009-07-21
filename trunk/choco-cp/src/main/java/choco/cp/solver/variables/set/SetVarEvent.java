@@ -22,13 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.set;
 
+import choco.cp.memory.structure.Couple;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.memory.structure.PartiallyStoredIntVector;
-import choco.kernel.memory.structure.PartiallyStoredVector;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.SetSConstraint;
 import choco.kernel.solver.propagation.VarEvent;
-import choco.kernel.solver.variables.set.SetVar;
 
 /*
  * Created by IntelliJ IDEA.
@@ -138,21 +137,13 @@ public class SetVarEvent extends VarEvent<SetVarImpl> {
 	 * Propagates the instantiation event
 	 */
 	public void propagateInstEvent(int evtCause) throws ContradictionException {
-		SetVar v = getModifiedVar();
-		PartiallyStoredVector constraints = v.getConstraintVector();
-		PartiallyStoredIntVector indices = v.getIndexVector();
+		SetVarImpl v = getModifiedVar();
+        DisposableIterator<Couple<SetSConstraint>> cit = v.getActiveConstraints(evtCause);
 
-        DisposableIntIterator cit = constraints.getIndexIterator();
         try{
-            for (; cit.hasNext();) {
-                int idx = cit.next();
-                if (idx != evtCause) {
-                    SetSConstraint c = (SetSConstraint) constraints.get(idx);
-                    if (c.isActive()) {
-                        int i = indices.get(idx);
-                        c.awakeOnInst(i);
-                    }
-                }
+            while(cit.hasNext()){
+                Couple<SetSConstraint> cc = cit.next();
+                cc.c.awakeOnInst(cc.i);
             }
         }finally{
             cit.dispose();
@@ -163,21 +154,13 @@ public class SetVarEvent extends VarEvent<SetVarImpl> {
 	 * Propagates a set of value removals
 	 */
 	public void propagateKernelEvents(int evtCause) throws ContradictionException {
-		SetVar v = getModifiedVar();
-		PartiallyStoredVector constraints = v.getConstraintVector();
-		PartiallyStoredIntVector indices = v.getIndexVector();
+		SetVarImpl v = getModifiedVar();
+        DisposableIterator<Couple<SetSConstraint>> cit = v.getActiveConstraints(evtCause);
 
-        DisposableIntIterator cit = constraints.getIndexIterator();
         try{
-            for (; cit.hasNext();) {
-                int idx = cit.next();
-                if (idx != evtCause) {
-                    SetSConstraint c = (SetSConstraint) constraints.get(idx);
-                    if (c.isActive()) {
-                        int i = indices.get(idx);
-                        c.awakeOnkerAdditions(i, this.getKerEventIterator());
-                    }
-                }
+            while(cit.hasNext()){
+                Couple<SetSConstraint> cc = cit.next();
+                cc.c.awakeOnkerAdditions(cc.i, this.getKerEventIterator());
             }
         }finally{
             cit.dispose();
@@ -188,21 +171,14 @@ public class SetVarEvent extends VarEvent<SetVarImpl> {
 	 * Propagates a set of value removals
 	 */
 	public void propagateEnveloppeEvents(int evtCause) throws ContradictionException {
-		SetVar v = getModifiedVar();
-		PartiallyStoredVector constraints = v.getConstraintVector();
-		PartiallyStoredIntVector indices = v.getIndexVector();
+		SetVarImpl v = getModifiedVar();
+        DisposableIterator<Couple<SetSConstraint>> cit = v.getActiveConstraints(evtCause);
 
-        DisposableIntIterator cit = constraints.getIndexIterator();
         try{
-            for (; cit.hasNext();) {
-                int idx = cit.next();
-                if (idx != evtCause) {
-                    SetSConstraint c = (SetSConstraint) constraints.get(idx);
-                    if (c.isActive()) {
-                        int i = indices.get(idx);
-                        c.awakeOnEnvRemovals(i, this.getEnvEventIterator());
-                    }
-                }
+            while(cit.hasNext()){
+                Couple<SetSConstraint> cc = cit.next();
+                cc.c.awakeOnEnvRemovals(cc.i, this.getEnvEventIterator());
+
             }
         }finally {
             cit.dispose();

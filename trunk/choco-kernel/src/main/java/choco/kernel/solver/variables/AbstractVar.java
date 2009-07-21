@@ -23,8 +23,7 @@
 package choco.kernel.solver.variables;
 
 import choco.kernel.common.HashCoding;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.structure.APartiallyStoredCstrList;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.solver.Solver;
@@ -33,9 +32,6 @@ import choco.kernel.solver.propagation.VarEvent;
 
 import java.util.HashMap;
 import java.util.Iterator;
-/** History:
- * 2007-12-07 : FR_1873619 CPRU: DomOverDeg+DomOverWDeg
- * */
 /**
  * An abstract class for all implementations of domain variables.
  */
@@ -65,14 +61,7 @@ public abstract class AbstractVar implements Var {
 	/**
 	 * The list of constraints (listeners) observing the variable.
 	 */
-	protected PartiallyStoredVector<SConstraint> constraints;
-
-	/**
-	 * List of indices encoding the constraint network.
-	 * <i>v.indices[i]=j</i> means that v is the j-th variable
-	 * of its i-th constraint.
-	 */
-	protected PartiallyStoredIntVector indices;
+	protected APartiallyStoredCstrList<? extends SConstraint> constraints;
 
 	/**
 	 * The number of extensions registered to this class
@@ -84,7 +73,7 @@ public abstract class AbstractVar implements Var {
 	 */
 	private static final HashMap<String, Integer> REGISTERED_ABSTRACTVAR_EXTENSIONS = new HashMap<String, Integer>();
 
-	/**
+    /**
 	 * Returns a new number of extension registration
 	 * @param name A name for the extension (should be an UID, like the absolute path for instance)
 	 * @return a number that can be used for specifying an extension (setExtension method)
@@ -125,13 +114,13 @@ public abstract class AbstractVar implements Var {
 	 * Initializes a new variable.
 	 * @param solver The model this variable belongs to
 	 * @param name The name of the variable
+     * @param constraints constraints stored specific structure
 	 */
-	public AbstractVar(final Solver solver, final String name) {
+	public AbstractVar(final Solver solver, final String name,
+                       final APartiallyStoredCstrList<? extends SConstraint> constraints) {
 		this.solver =solver;
 		this.name = name;
-		IEnvironment env = solver.getEnvironment();
-		constraints = env.makePartiallyStoredVector();
-		indices = env.makePartiallyStoredIntVector();
+		this.constraints = constraints;
 		index = solver.getIndexfactory().getIndex();
 	}
 
@@ -201,7 +190,7 @@ public abstract class AbstractVar implements Var {
 	 * @return the constraint number i according to the variable
 	 */
 	public SConstraint getConstraint(final int i) {
-		return constraints.get(i);
+		return constraints.getConstraint(i);
 	}
 
 
@@ -210,15 +199,15 @@ public abstract class AbstractVar implements Var {
 	 * @return the number of constraints containing this variable
 	 */
 	public int getNbConstraints() {
-		return constraints.size();
+		return constraints.getNbConstraints();
 	}
 
 	/**
 	 * Access the data structure storing constraints involving a given variable.
 	 * @return the backtrackable structure containing the constraints
 	 */
-	public PartiallyStoredVector<SConstraint> getConstraintVector() {
-		return constraints;
+	public PartiallyStoredVector<? extends SConstraint> getConstraintVector() {
+		return constraints.getConstraintVector();
 	}
 
 	/**
@@ -227,7 +216,7 @@ public abstract class AbstractVar implements Var {
 	 * @return the indices associated to this variable in each constraint
 	 */
 	public PartiallyStoredIntVector getIndexVector() {
-		return indices;
+		return constraints.getIndexVector();
 	}
 
 	/**
@@ -237,7 +226,7 @@ public abstract class AbstractVar implements Var {
 	 * @return the index of the variable
 	 */
 	public int getVarIndex(final int constraintIndex) {
-		return indices.get(constraintIndex);
+		return constraints.getConstraintIndex(constraintIndex);
 	}
 
 	/**
@@ -247,8 +236,7 @@ public abstract class AbstractVar implements Var {
 	 * maintains.
 	 */
 	public void eraseConstraint(final SConstraint c) {
-		int idx = constraints.remove(c);
-		indices.remove(idx);
+		constraints.eraseConstraint(c);
 	}
 
 	// ============================================
@@ -266,15 +254,7 @@ public abstract class AbstractVar implements Var {
 	 */
 	public int addConstraint(final SConstraint c, final int varIdx,
 			final boolean dynamicAddition) {
-		int constraintIdx;
-		if (dynamicAddition) {
-			constraintIdx = constraints.add(c);
-			indices.add(varIdx);
-		} else {
-			constraintIdx = constraints.staticAdd(c);
-			indices.staticAdd(varIdx);
-		}
-		return constraintIdx;
+		return constraints.addConstraint(c, varIdx, dynamicAddition);
 	}
 
 	/**
@@ -291,21 +271,7 @@ public abstract class AbstractVar implements Var {
 	 * @return an iterator over all constraints involving this variable
 	 */
 	public Iterator<SConstraint> getConstraintsIterator() {
-		return new Iterator<SConstraint>() {
-			DisposableIntIterator indices = constraints.getIndexIterator();
-
-			public boolean hasNext() {
-				return indices.hasNext();
-			}
-
-			public SConstraint next() {
-				return constraints.get(indices.next());
-			}
-
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
-		};
+		return constraints.getConstraintsIterator();
 
 	}
 
@@ -319,5 +285,6 @@ public abstract class AbstractVar implements Var {
      */
     @Override
     public void updateConstraintState(int vidx, int cidx, SConstraint c, boolean state) {
+        constraints.updateConstraintState(vidx, cidx, c, state);
     }
 }

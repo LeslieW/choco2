@@ -44,7 +44,7 @@ import choco.kernel.solver.constraints.integer.IntSConstraint;
  * SetConstraint and IntConstraint and implements a default behaviour
  * for all events awakeOn...
  */
-public abstract class AbstractMixedSConstraint extends AbstractSConstraint implements SetSConstraint, IntSConstraint {
+public abstract class AbstractMixedSetIntSConstraint extends AbstractSConstraint implements SetSConstraint, IntSConstraint {
 
 
 	/**

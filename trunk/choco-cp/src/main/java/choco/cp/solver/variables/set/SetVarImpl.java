@@ -22,10 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.set;
 
+import choco.cp.memory.structure.Couple;
+import choco.cp.memory.structure.PartiallyStoredSetCstrList;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
+import choco.kernel.solver.constraints.set.SetSConstraint;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetDomain;
@@ -34,14 +38,18 @@ import choco.kernel.solver.variables.set.SetVar;
 /** History:
  * 2007-12-07 : FR_1873619 CPRU: DomOverDeg+DomOverWDeg
  * */
-public class SetVarImpl extends AbstractVar implements SetVar {
+public final class SetVarImpl extends AbstractVar implements SetVar {
 
-	protected SetDomainImpl domain;
+	protected SetDomain domain;
 
 	protected IntDomainVar card;
 
+    private SetVarImpl(Solver solver, String name){
+        super(solver, name, new PartiallyStoredSetCstrList(solver.getEnvironment()));
+    }
+
 	public SetVarImpl(Solver solver, String name, int a, int b, IntDomainVar card) {
-		super(solver, name);
+		this(solver, name);
 		this.domain = new SetDomainImpl(this, a, b);
 		this.event = new SetVarEvent(this);
 		this.card = card;
@@ -58,7 +66,7 @@ public class SetVarImpl extends AbstractVar implements SetVar {
      * @param type
      */
     public SetVarImpl(Solver solver, String name, int a, int b,IntDomainVar card, int type) {
-		super(solver, name);
+		this(solver, name);
 		this.domain = new SetDomainImpl(this, a, b);
 		this.event = new SetVarEvent(this);
         if(card==null){
@@ -73,7 +81,7 @@ public class SetVarImpl extends AbstractVar implements SetVar {
     }
 
     public SetVarImpl(Solver solver, String name, int[] sortedValues, IntDomainVar card) {
-		super(solver, name);
+		this(solver, name);
 		this.domain = new SetDomainImpl(this, sortedValues);
 		this.event = new SetVarEvent(this);
 		this.card = card;
@@ -88,7 +96,7 @@ public class SetVarImpl extends AbstractVar implements SetVar {
      * @param type
      */
     public SetVarImpl(Solver solver, String name, int[] sortedValues, IntDomainVar card, int type) {
-        super(solver, name);
+        this(solver, name);
 		this.event = new SetVarEvent(this);
         int size = sortedValues.length;
         if(card ==null){
@@ -106,6 +114,11 @@ public class SetVarImpl extends AbstractVar implements SetVar {
         boolean constant = (type == BOUNDSET_CONSTANT);
         this.domain = new SetDomainImpl(this, sortedValues, constant);
 	}
+
+    public final DisposableIterator<Couple<SetSConstraint>> getActiveConstraints(int cstrCause){
+        //noinspection unchecked
+        return ((PartiallyStoredSetCstrList)constraints).getActiveConstraint(cstrCause);
+    }
 
 
     public IntDomainVar getCard() {

@@ -36,7 +36,7 @@ import choco.kernel.solver.variables.set.SetVar;
 // *     for Research and Education                 *
 // **************************************************
 
-public abstract class AbstractBinSetIntSConstraint extends AbstractMixedSConstraint {
+public abstract class AbstractBinSetIntSConstraint extends AbstractMixedSetIntSConstraint {
 
   /**
    * The first variable of the constraint.

@@ -22,11 +22,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.real;
 
+import choco.cp.memory.structure.Couple;
+import choco.cp.memory.structure.PartiallyStoredRealCstrList;
 import choco.cp.solver.propagation.RealVarEvent;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.real.RealExp;
+import choco.kernel.solver.constraints.real.RealSConstraint;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.real.*;
 
@@ -38,16 +42,21 @@ import java.util.Set;
 /**
  * An implementation of real variables using RealDomain domains.
  */
-public class RealVarImpl extends AbstractVar implements RealVar {
+public final class RealVarImpl extends AbstractVar implements RealVar {
   protected RealDomain domain;
 
   public RealVarImpl(Solver solver, String name, double a, double b, int domaintype) {
-    super(solver, name);
+    super(solver, name, new PartiallyStoredRealCstrList(solver.getEnvironment()));
     if (domaintype == RealVar.BOUNDS) {
      this.domain = new RealDomainImpl(this, a, b);
     } else throw new SolverException("Unknown real domain");
     this.event = new RealVarEvent(this);
   }
+
+    public final DisposableIterator<Couple<RealSConstraint>> getActiveConstraints(int cstrCause){
+        //noinspection unchecked
+        return ((PartiallyStoredRealCstrList)constraints).getActiveConstraint(cstrCause);
+    }
 
   @Override
 public String toString() {

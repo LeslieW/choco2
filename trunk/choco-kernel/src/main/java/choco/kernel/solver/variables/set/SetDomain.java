@@ -23,6 +23,7 @@
 package choco.kernel.solver.variables.set;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.Domain;
 
 /*
@@ -34,13 +35,21 @@ import choco.kernel.solver.variables.Domain;
  */
 public interface SetDomain extends Domain {
 
-  public SetSubDomain getKernelDomain();
+    public boolean isInstantiated();
 
-  public SetSubDomain getEnveloppeDomain();
+    public SetSubDomain getKernelDomain();
 
-  public DisposableIntIterator getKernelIterator();
+    public SetSubDomain getEnveloppeDomain();
 
-  public DisposableIntIterator getEnveloppeIterator();
+    boolean addToKernel(int x, int idx) throws ContradictionException;
 
-  public DisposableIntIterator getOpenDomainIterator();
+    boolean remFromEnveloppe(int x, int idx) throws ContradictionException;
+
+    boolean instantiate(int[] x, int idx) throws ContradictionException;
+
+    public DisposableIntIterator getKernelIterator();
+
+    public DisposableIntIterator getEnveloppeIterator();
+
+    public DisposableIntIterator getOpenDomainIterator();
 }

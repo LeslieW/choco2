@@ -22,45 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.constraints.real;
 
-import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.IntSConstraint;
-import choco.kernel.solver.propagation.Propagator;
-import choco.kernel.solver.propagation.RealVarEventListener;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.real.RealVar;
 
 /**
  * An interface for mixed constraint : interger and flot variables.
  */
-public interface MixedSConstraint extends SConstraint, Propagator,
-        RealVarEventListener, IntSConstraint {
-  /**
-   * Returns the real variable with index i.
-   * @param i the variable index
-   * @return the variable with index i
-   */
-  RealVar getRealVar(int i);
+public abstract class AbstractMixedSRealIntSConstraint extends AbstractSConstraint implements IntSConstraint, RealSConstraint {
 
-  /**
-   * Returns the number of real variables. Note that here the number of 
-   * variables should equal the number of real variables plus the number
-   * of integer variables.
-   * @return the number of <i>real</i> variables.
-   */
-  int getRealVarNb();
-
-  /**
-   * Returns the integer variable with index i.
-   * @param i the variable index
-   * @return the variable with index i
-   */
-  IntDomainVar getIntVar(int i);
-
-  /**
-   * Returns the number of integer variables. Note that here the number of 
-   * variables should equal the number of real variables plus the number
-   * of integer variables.
-   * @return the number of <i>integer</i> variables.
-   */  
-  int getIntVarNb();
 }

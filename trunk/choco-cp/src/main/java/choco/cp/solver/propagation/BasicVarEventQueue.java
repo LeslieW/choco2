@@ -27,9 +27,8 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.propagation.PropagationEvent;
 import choco.kernel.solver.propagation.VarEventQueue;
 
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.Queue;
-import java.util.logging.Level;
 
 /*
  * Created by IntelliJ IDEA.
@@ -39,14 +38,13 @@ import java.util.logging.Level;
 
 public class BasicVarEventQueue implements VarEventQueue {
 
-	/**
-	 * A priority queue with all the var. Default number of priority levels: 5
-	 * from 0 (most important) to 4.
-	 */
-	// protected PriorityQueue queue = new PriorityQueue();
-	protected Queue<PropagationEvent> queue = new LinkedList<PropagationEvent>();
 
-	/**
+    /**
+     * FIFO queue to deal with variable events
+      */
+    protected Queue<PropagationEvent> queue = new ArrayDeque<PropagationEvent>();
+
+    /**
 	 * The last popped var (may be useful for flushing popping events).
 	 */
 	protected PropagationEvent lastPopped = null;
