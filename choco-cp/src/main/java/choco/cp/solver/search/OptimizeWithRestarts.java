@@ -24,8 +24,8 @@ package choco.cp.solver.search;
 
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.AbstractOptimize;
+import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 
 public class OptimizeWithRestarts extends AbstractOptimize {
   /**

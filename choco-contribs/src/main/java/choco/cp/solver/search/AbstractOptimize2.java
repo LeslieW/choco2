@@ -38,8 +38,14 @@ public abstract class AbstractOptimize2 extends AbstractGlobalSearchStrategy {
 	 */
 	public final boolean doMaximize;
 
+	/**
+	 * the objective variable
+	 */
 	public final Var objective;
 	
+	/**
+	 * the bounding object, record objective value and compute target bound.
+	 */
 	protected final IObjectiveManager bounds;
 
 	/**
@@ -112,4 +118,17 @@ public abstract class AbstractOptimize2 extends AbstractGlobalSearchStrategy {
 	}
 
 
+	@Override
+	public Boolean nextSolution() {
+		if( bounds.isTargetInfeasible()) {
+			//the search is finished as the optimum has been proven by the boudig mechanism.
+			return Boolean.FALSE;
+		}else {
+			//otherwise, continue the search.
+			return super.nextSolution();
+		}
+	}
+
+
+	
 }

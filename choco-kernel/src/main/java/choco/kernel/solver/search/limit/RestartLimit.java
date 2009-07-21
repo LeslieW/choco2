@@ -1,7 +1,6 @@
 package choco.kernel.solver.search.limit;
 
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.restart.UniversalRestartStrategy;
 

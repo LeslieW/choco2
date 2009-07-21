@@ -104,6 +104,7 @@ import static choco.kernel.solver.search.SolutionPoolFactory.makeDefaultSolution
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.limit.AbstractLimitManager;
 import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.search.real.RealValIterator;

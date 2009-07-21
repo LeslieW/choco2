@@ -1,6 +1,7 @@
 package choco.cp.solver.search.objective;
 
 import choco.kernel.solver.variables.real.RealIntervalConstant;
+import choco.kernel.solver.variables.real.RealMath;
 import choco.kernel.solver.variables.real.RealVar;
 
 public final class MaxRealObjManager extends RealObjectiveManager {
@@ -21,7 +22,8 @@ public final class MaxRealObjManager extends RealObjectiveManager {
 
 	@Override
 	public void initBounds() {
-		bound = objective.getInf();
+		bound = Double.NEGATIVE_INFINITY;
+		oppositeBound = objective.getSup();
 		targetBound = objective.getInf();
 		setBoundInterval();
 	}
@@ -35,10 +37,13 @@ public final class MaxRealObjManager extends RealObjectiveManager {
 
 	@Override
 	public void setTargetBound() {
-		targetBound = objective.getInf() + 1;
+		targetBound = RealMath.nextFloat(objective.getInf());
 		setBoundInterval();
 		
 	}
 	
-	
+	@Override
+	public boolean isTargetInfeasible() {
+		return targetBound > oppositeBound;
+	}
 }

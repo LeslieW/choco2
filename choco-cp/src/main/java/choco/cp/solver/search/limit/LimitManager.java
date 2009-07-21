@@ -2,8 +2,8 @@ package choco.cp.solver.search.limit;
 
 import java.util.logging.Level;
 
-import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.limit.AbstractLimitManager;
 import choco.kernel.solver.search.limit.Limit;
 

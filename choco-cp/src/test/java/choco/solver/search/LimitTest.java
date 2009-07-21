@@ -42,7 +42,7 @@ import choco.cp.solver.search.limit.TimeLimit;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.solver.search.AbstractGlobalSearchLimit;
+import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.limit.Limit;
 
 /**

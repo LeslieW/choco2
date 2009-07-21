@@ -22,11 +22,16 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search;
 
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.DOWN_BRANCH;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.INIT_SEARCH;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.OPEN_NODE;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.RESTART;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.STOP;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.UP_BRANCH;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.AbstractBranching;
 import choco.kernel.solver.branch.AbstractIntBranching;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.*;
 import choco.kernel.solver.search.ISearchLoop;
 import choco.kernel.solver.search.IntBranchingTrace;
 
@@ -42,7 +47,7 @@ public class SearchLoop2 implements ISearchLoop {
 	//It seems that it is important to reinit the branching when restarting after each solution with DWDeg.
 	//If you only set up an OPEN_NODE, it really decreases performance
 	//So we have to check the combinatin of DWDeg an a restart strategy.
-	private final int moveAfterRestart=  INIT_SEARCH;
+	private int moveAfterRestart=  INIT_SEARCH;
 
 	protected int previousNbSolutions = 0;
 
@@ -135,13 +140,16 @@ public class SearchLoop2 implements ISearchLoop {
 //		}
 	}
 
+	private Object branchingObj;
+	
+	private AbstractIntBranching currentBranching;
+	
 	//TODO create private fields and remove cast.
 	public void openNode() {
 		try {
 			searchStrategy.newTreeNode();
 			//looking for the next branching object
-			Object branchingObj;
-			AbstractIntBranching currentBranching = (AbstractIntBranching) ctx.getBranching();
+			currentBranching = (AbstractIntBranching) ctx.getBranching();
 			while(currentBranching != null) {
 				branchingObj = currentBranching.selectBranchingObject();
 				if( branchingObj == null) {
@@ -160,9 +168,9 @@ public class SearchLoop2 implements ISearchLoop {
 			//WE FOUND A VALID SOLUTION
 			//the solution must instantiate at least the decision variables
 			//Other variables should be fixed by propagation or remained not instantiated 
-			searchStrategy.recordSolution();
-			searchStrategy.nextMove = moveAfterSolution; //set a backtrack or restart move
+			searchStrategy.nextMove = moveAfterSolution; //set the next move (backtrack, restart or stop)
 			stop = true; //a solution has been found, we should run the loop again to find another solution
+			searchStrategy.recordSolution(); //record the solution (could change the nextMove)
 
 			//The original version makes more comparisons and affectations 
 
@@ -246,6 +254,9 @@ public class SearchLoop2 implements ISearchLoop {
 
 	/**
 	 * perform the restart.
+	 *
+	 * @param ctx the branching trace
+	 * @return <code>true</code> if the loop should stop
 	 */
 	public void restart() {
 		LOGGER.finest("=== restarting ...");

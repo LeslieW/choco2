@@ -23,7 +23,7 @@
 package choco.cp.solver.search.real;
 
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.search.AbstractGlobalSearchLimit;
+import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.variables.real.RealMath;
 import choco.kernel.solver.variables.real.RealVar;
 
