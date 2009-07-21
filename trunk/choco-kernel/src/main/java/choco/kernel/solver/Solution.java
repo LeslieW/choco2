@@ -27,8 +27,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.search.measures.AbstractMeasures;
 import choco.kernel.solver.search.measures.IMeasures;

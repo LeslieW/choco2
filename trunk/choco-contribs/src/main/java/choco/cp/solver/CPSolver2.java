@@ -112,8 +112,9 @@ public class CPSolver2 extends CPSolver {
 		public void buildSolver() {
 			_s =  useNew ? new CPSolver2() : new CPSolver();
 			_s.setLoggingMaxDepth(100);
+			_s.monitorBackTrackLimit(true);
 			_s.read(_m);
-			_s.setRestart(true);
+			_s.setRestart(false);
 			_s.setFirstSolution(false);
 			_s.setDoMaximize(false);
 //			if (useNew) {
@@ -122,7 +123,7 @@ public class CPSolver2 extends CPSolver {
 			//_s.setTimeLimit(20);
 			//_s.attachGoal(new AssignVar(new MinDomain(_s), new MinVal()));
 			try {
-				_s.getVar(deletion).setSup(0);
+				_s.getVar(deletion).setInf(7);
 			} catch (ContradictionException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -140,21 +141,21 @@ public class CPSolver2 extends CPSolver {
 		@Override
 		public void execute() {
 			//super.execute();
-			super.execute(new Object[]{4,0.5,0}); //diff et pas beaucoup de noeuds
+			//super.execute(new Object[]{4,0.5,0}); //diff et pas beaucoup de noeuds
 			
 			//super.execute(new Object[]{20,0.5,0});
 			//super.execute(new Object[]{19,0.5,0});
-			//super.execute(new Object[]{12,0.5,0});
+			super.execute(new Object[]{12,0.5,0});
 			
 			//assertEquals(Math.min( capa, _s.getNbSolutions()),  PatternExample._s.getSearchStrategy().getSolutionPool().size());
 		}
 	}
 	
 	public static void main(String[] args) {
-		//ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+		ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+//		useNew = true;
+//		new TestMed().execute();
 		useNew = true;
-		new TestMed().execute();
-		useNew = false;
 		new TestMed().execute();
 	}
 }

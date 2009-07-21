@@ -46,7 +46,8 @@ public interface IObjectiveManager {
 	 */
 	void setBound();
 	/**
-	 * resetting the values of the target bounds (bounds for the remaining search)
+	 * resetting the values of the target bounds (bounds for the remaining search).
+	 * @return <code>true</code> if the target bound is indeasible regarding to the objective domain.
 	 */
 	void setTargetBound();
 	
@@ -55,5 +56,9 @@ public interface IObjectiveManager {
 	 */
 	void postTargetBound() throws ContradictionException;
 
-	
+	/**
+	 * indicates if the target bound is infeasible, i.e. does not belong to the current objective domain.
+	 * @return <code>true</code> if the target bound does not belong to the objective domain, <code>false</code> otherwise.
+	 */
+	boolean isTargetInfeasible();
 }

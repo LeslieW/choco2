@@ -9,6 +9,8 @@ public abstract class IntObjectiveManager implements IObjectiveManager {
 	
 	public final IntDomainVar objective;
 	
+	protected int oppositeBound;
+	
 	protected int bound;
 	
 	protected int targetBound;

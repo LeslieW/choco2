@@ -23,8 +23,8 @@
 package choco.cp.solver.search.restart;
 
 import choco.kernel.solver.SolverException;
-import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.limit.Limit;
 
 public abstract class AbstractRestartStrategyOnLimit implements RestartStrategy {

@@ -17,6 +17,7 @@ public abstract class RealObjectiveManager implements IObjectiveManager {
 	
 	protected double targetBound;
 	
+	protected double oppositeBound;
 	
 	public RealObjectiveManager(RealVar objective) {
 		super();

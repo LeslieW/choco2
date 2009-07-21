@@ -18,7 +18,8 @@ public final class MinIntObjManager extends IntObjectiveManager {
 
 	@Override
 	public void initBounds() {
-		bound = objective.getSup();
+		bound = Integer.MAX_VALUE;
+		oppositeBound = objective.getInf();
 		targetBound = objective.getSup();
 	}
 
@@ -40,5 +41,8 @@ public final class MinIntObjManager extends IntObjectiveManager {
 		targetBound = objective.getSup() - 1;
 	}
 	
-	
+	@Override
+	public boolean isTargetInfeasible() {
+		return targetBound < oppositeBound;
+	}
 }

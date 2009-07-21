@@ -1,7 +1,7 @@
 package choco.kernel.solver.search.limit;
 
-import static choco.kernel.solver.search.AbstractGlobalSearchLimit.END_NODE;
-import static choco.kernel.solver.search.AbstractGlobalSearchLimit.NEW_NODE;
+import static choco.kernel.solver.search.limit.AbstractGlobalSearchLimit.END_NODE;
+import static choco.kernel.solver.search.limit.AbstractGlobalSearchLimit.NEW_NODE;
 import gnu.trove.TIntObjectHashMap;
 import gnu.trove.TObjectIntHashMap;
 import gnu.trove.TObjectIntProcedure;
@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
-import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.GlobalSearchLimit;
 import choco.kernel.solver.search.measures.AbstractMeasures;

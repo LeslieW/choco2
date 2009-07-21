@@ -20,14 +20,15 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.solver.search;
+package choco.kernel.solver.search.limit;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.search.limit.Limit;
+import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.GlobalSearchLimit;
 
 /**
  * An abstract class for limiting tree search (imposing conditions on depth, ...)

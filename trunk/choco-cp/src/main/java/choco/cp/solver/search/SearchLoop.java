@@ -25,10 +25,10 @@ package choco.cp.solver.search;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.AbstractBranching;
 import choco.kernel.solver.branch.AbstractIntBranching;
-import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.ISearchLoop;
 import choco.kernel.solver.search.IntBranchingTrace;
+import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 
 /**
  * Created by IntelliJ IDEA.

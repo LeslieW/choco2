@@ -25,9 +25,9 @@ package choco.visu.searchloop;
 import choco.IObserver;
 import choco.cp.solver.search.SearchLoopWithRestart;
 import choco.cp.solver.search.restart.RestartStrategy;
-import choco.kernel.solver.search.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.IntBranchingTrace;
+import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 
 import java.util.Vector;
 /* 
