@@ -25,7 +25,6 @@ package choco.cp.solver.constraints.real;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.real.AbstractBinRealIntSConstraint;
-import choco.kernel.solver.constraints.real.MixedSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.real.RealIntervalConstant;
 import choco.kernel.solver.variables.real.RealVar;
@@ -38,7 +37,7 @@ import choco.kernel.solver.variables.real.RealVar;
  * <p/>
  * a1... an sequence is supposed to be ordered (a1&lt;a2&lt;... an)
  */
-public class MixedCstElt extends AbstractBinRealIntSConstraint implements MixedSConstraint {
+public class MixedCstElt extends AbstractBinRealIntSConstraint{
   protected double[] values;
 
   public MixedCstElt(RealVar v0, IntDomainVar v1, double[] values) {

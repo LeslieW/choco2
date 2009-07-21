@@ -22,24 +22,19 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
-import static choco.cp.solver.variables.integer.IntVarEvent.*;
+import choco.cp.memory.structure.Couple;
+import choco.cp.memory.structure.PartiallyStoredIntCstrList;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.structure.PartiallyStoredActiveIntVector;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.AbstractSConstraint;
-import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.propagation.Propagator;
+import choco.kernel.solver.constraints.integer.IntSConstraint;
 import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-/** History:
- * 2007-12-07 : FR_1873619 CPRU: DomOverDeg+DomOverWDeg
- * */
+
 /**
  * Implements search valued domain variables.
  */
@@ -51,17 +46,13 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 
 	protected AbstractIntDomain domain;
 
-	protected PartiallyStoredIntVector[] events;
-
-	protected IStateInt priority;
-
-
 	/**
 	 * Default constructor
-	 */
-	protected IntDomainVarImpl(Solver solver, String name) {
-		super(solver, name);
-		buildDataStructures(solver.getEnvironment());
+     * @param solver master solver
+     * @param name name of the variable
+     */
+	protected <C extends IntSConstraint> IntDomainVarImpl(Solver solver, String name) {
+		super(solver, name, new PartiallyStoredIntCstrList<C>(solver.getEnvironment()));
 	}
 
 	/**
@@ -76,7 +67,7 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 	 */
 
 	public IntDomainVarImpl(Solver solver, String name, int domainType, int a, int b) {
-		super(solver, name);
+		this(solver, name);
 		if (domainType == IntDomainVar.BITSET) {
 			domain = new BitSetIntDomain(this, a, b);
 		} else if (domainType == IntDomainVar.LINKEDLIST) {
@@ -91,11 +82,10 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 			domain = new IntervalIntDomain(this, a, b);
 		}
 		this.event = new IntVarEvent(this);
-		buildDataStructures(solver.getEnvironment());
 	}
 
 	public IntDomainVarImpl(Solver solver, String name, int domainType, int[] distinctSortedValues) {
-		super(solver, name);
+		this(solver, name);
 		if (domainType == IntDomainVar.BINARYTREE) {
 			domain = new IntervalBTreeDomain(this, distinctSortedValues);
 		} else
@@ -107,162 +97,19 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 				domain = new BitSetIntDomain(this, distinctSortedValues);
 			}
 		this.event = new IntVarEvent(this);
-		buildDataStructures(solver.getEnvironment());
 	}
 
-
-	protected void buildDataStructures(IEnvironment env){
-		events = new PartiallyStoredIntVector[4];
-		for(int i = 0; i < 4; i++){
-			if(IntVarEvent.CHECK_ACTIVE){
-                events[i] = env.makePartiallyStoredIntVector();
-            }else{
-                events[i] = new PartiallyStoredActiveIntVector(env);
-            }
-		}
-		priority = env.makeInt(0);
-	}
-
-	/**
-	 * Adds a new constraints on the stack of constraints
-	 * the addition can be dynamic (undone upon backtracking) or not.
-	 *
-	 * @param c               the constraint to add
-	 * @param varIdx          the variable index accrding to the added constraint
-	 * @param dynamicAddition states if the addition is definitic (cut) or
-	 *                        subject to backtracking (standard constraint)
-	 * @return the index affected to the constraint according to this variable
-	 */
-	@Override
-	public int addConstraint(SConstraint c, int varIdx, boolean dynamicAddition) {
-		int constraintIdx = super.addConstraint(c, varIdx, dynamicAddition);
-		computePriority(c);
-		int mask = ((Propagator)c).getFilteredEventMask(varIdx);
-		if((mask & INSTINTbitvector) != 0){
-			if(IntVarEvent.CHECK_ACTIVE){
-                addEvent(dynamicAddition, 0, constraintIdx);
-            }else{
-                addEvent(dynamicAddition, 0, constraintIdx, ((AbstractSConstraint)c).isActive());
-            }
-		}
-		if((mask & INCINFbitvector) != 0){
-			if(IntVarEvent.CHECK_ACTIVE){
-                addEvent(dynamicAddition, 1, constraintIdx);
-            }else{
-                addEvent(dynamicAddition, 1, constraintIdx, ((AbstractSConstraint)c).isActive());
-            }
-		}
-		if((mask & DECSUPbitvector) != 0){
-			if(IntVarEvent.CHECK_ACTIVE){
-                addEvent(dynamicAddition, 2, constraintIdx);
-            }else{
-                addEvent(dynamicAddition, 2, constraintIdx, ((AbstractSConstraint)c).isActive());
-            }
-		}
-		if((mask & REMVALbitvector) != 0){
-			if(IntVarEvent.CHECK_ACTIVE){
-                addEvent(dynamicAddition, 3, constraintIdx);
-            }else{
-                addEvent(dynamicAddition, 3, constraintIdx, ((AbstractSConstraint)c).isActive());
-            }
-		}
-		return constraintIdx;
-	}
-
-	/**
-	 * Add event to the correct partially stored int vector
-	 * @param dynamicAddition
-	 * @param indice
-	 * @param constraintIdx
-	 */
-	private void addEvent(boolean dynamicAddition, int indice, int constraintIdx) {
-		if (dynamicAddition) {
-			events[indice].add(constraintIdx);
-		} else {
-			events[indice].staticAdd(constraintIdx);
-		}
-	}
-
-    /**
-	 * Add event to the correct partially stored int vector
-	 * @param dynamicAddition
-	 * @param indice
-	 * @param constraintIdx
-	 */
-	private void addEvent(boolean dynamicAddition, int indice, int constraintIdx, boolean active) {
-		if (dynamicAddition) {
-			((PartiallyStoredActiveIntVector)events[indice]).add(constraintIdx, active);
-		} else {
-			((PartiallyStoredActiveIntVector)events[indice]).staticAdd(constraintIdx, active);
-		}
-	}
-
-    /**
-     * Update the constraint state
-     *
-     * @param vidx  index of the variable in the constraint
-     * @param cidx  constraint idx
-     * @param c     the constraint
-     * @param state new state (active/passive)
-     */
-    public void updateConstraintState(int vidx, int cidx, SConstraint c, boolean state) {
-        if(!IntVarEvent.CHECK_ACTIVE){
-            int mask = ((Propagator)c).getFilteredEventMask(vidx);
-            if((mask & INSTINTbitvector) != 0){
-                ((PartiallyStoredActiveIntVector)events[0]).set(cidx, state);
-            }
-            if((mask & INCINFbitvector) != 0){
-                ((PartiallyStoredActiveIntVector)events[1]).set(cidx, state);
-            }
-            if((mask & DECSUPbitvector) != 0){
-                ((PartiallyStoredActiveIntVector)events[2]).set(cidx, state);
-            }
-            if((mask & REMVALbitvector) != 0){
-                ((PartiallyStoredActiveIntVector)events[3]).set(cidx, state);
-            }
-        }
+    public final DisposableIterator<Couple<IntSConstraint>> getActiveConstraints(int evtType, int cstrCause){
+        //noinspection unchecked
+        return ((PartiallyStoredIntCstrList)constraints).getActiveConstraint(evtType, cstrCause);
     }
 
-    /**
-	 * Compute the priotity of the variable
-	 * @param c
-	 */
-	private void computePriority(SConstraint c) {
-		priority.set(Math.max(priority.get(),((Propagator)c).getPriority()));
-	}
-
-	/**
-	 * Removes (permanently) a constraint from the list of constraints
-	 * connected to the variable.
-	 *
-	 * @param c the constraint that should be removed from the list this variable
-	 *          maintains.
-	 */
-	@Override
-	public final void eraseConstraint(SConstraint c) {
-		int constraintIdx = constraints.remove(c);
-		indices.remove(constraintIdx);
-		int mask = ((Propagator)c).getFilteredEventMask(indices.get(constraintIdx));
-		if((mask & INSTINTbitvector) != 0){
-			events[0].remove(constraintIdx);
-		}
-		if((mask & INCINFbitvector) != 0){
-			events[1].remove(constraintIdx);
-		}
-		if((mask & DECSUPbitvector) != 0){
-			events[2].remove(constraintIdx);
-		}
-		if((mask & REMVALbitvector) != 0){
-			events[3].remove(constraintIdx);
-		}
-	}
-
 	public final PartiallyStoredIntVector[] getEventsVector(){
-		return events;
+		return ((PartiallyStoredIntCstrList)constraints).getEventsVector();
 	}
 
 	public final int getPriority() {
-		return priority.get();
+		return ((PartiallyStoredIntCstrList)constraints).getPriority();
 	}
 
 	// ============================================

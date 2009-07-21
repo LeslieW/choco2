@@ -23,7 +23,6 @@
 package choco.kernel.solver.constraints.real;
 
 import choco.kernel.solver.SolverException;
-import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraintType;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -36,7 +35,7 @@ import choco.kernel.solver.variables.real.RealVar;
  * Since : Choco 2.0.0
  *
  */
-public abstract class AbstractBinRealIntSConstraint extends AbstractSConstraint {
+public abstract class AbstractBinRealIntSConstraint extends AbstractMixedSRealIntSConstraint {
   protected RealVar v0;
   protected int cIdx0;
   protected IntDomainVar v1;

@@ -1,7 +1,5 @@
 package choco.cp.solver.variables.integer;
 
-import java.util.logging.Level;
-
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomain;
@@ -10,7 +8,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /**
  * A variable implementation dedicated to boolean domains
  **/
-public class BooleanVarImpl extends IntDomainVarImpl {
+public final class BooleanVarImpl extends IntDomainVarImpl {
 
     /**
      * A reference to the domain

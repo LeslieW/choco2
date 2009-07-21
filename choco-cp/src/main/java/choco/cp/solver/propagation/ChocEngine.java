@@ -23,23 +23,16 @@
 
 package choco.cp.solver.propagation;
 
-import java.util.logging.Level;
-
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.cp.solver.variables.set.SetVarEvent;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.propagation.AbstractPropagationEngine;
-import choco.kernel.solver.propagation.ConstraintEvent;
-import choco.kernel.solver.propagation.ConstraintEventQueue;
-import choco.kernel.solver.propagation.EventQueue;
-import choco.kernel.solver.propagation.PropagationEvent;
-import choco.kernel.solver.propagation.Propagator;
-import choco.kernel.solver.propagation.VarEvent;
-import choco.kernel.solver.propagation.VarEventQueue;
+import choco.kernel.solver.propagation.*;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.set.SetVar;
+
+import java.util.logging.Level;
 
 /**
  * Implementation of an {@link choco.kernel.solver.propagation.AbstractPropagationEngine} for Choco.
@@ -115,7 +108,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * @param idx The index of the constraint which is responsible of the var.
 	 */
 
-	public void postUpdateSup(final IntDomainVar v, final int idx) {
+	public final void postUpdateSup(final IntDomainVar v, final int idx) {
 		postEvent(v, idx, IntVarEvent.DECSUP);
 	}
 

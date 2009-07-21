@@ -55,11 +55,11 @@ public class PartiallyStoredVector<E> {
     /**
      * objects stored statically
      */
-  protected Object[] staticObjects;
+  protected E[] staticObjects;
     /**
      * objects stored dynamically
      */
-  protected Object[] storedObjects;
+  protected E[] storedObjects;
 
     /**
      * Number of static objects
@@ -76,8 +76,8 @@ public class PartiallyStoredVector<E> {
      * @param env environment where the data structure should be created
      */
   public PartiallyStoredVector(IEnvironment env) {
-    staticObjects = new Object[INITIAL_STATIC_CAPACITY];
-    storedObjects = new Object[INITIAL_STORED_CAPACITY];
+    staticObjects = (E[])new Object[INITIAL_STATIC_CAPACITY];
+    storedObjects = (E[])new Object[INITIAL_STORED_CAPACITY];
     nStaticObjects = 0;
     nStoredObjects = env.makeInt(0);
   }
@@ -175,7 +175,7 @@ public class PartiallyStoredVector<E> {
       }
       Object[] newStaticObjects = new Object[newSize];
       System.arraycopy(staticObjects, 0, newStaticObjects, 0, staticObjects.length);
-      this.staticObjects = newStaticObjects;
+      this.staticObjects = (E[])newStaticObjects;
     }
   }
 
@@ -219,7 +219,7 @@ public class PartiallyStoredVector<E> {
       }
       Object[] newStoredObjects = new Object[newSize];
       System.arraycopy(storedObjects, 0, newStoredObjects, 0, storedObjects.length);
-      this.storedObjects = newStoredObjects;
+      this.storedObjects = (E[])newStoredObjects;
     }
   }
 
@@ -230,9 +230,9 @@ public class PartiallyStoredVector<E> {
      */
   public E get(int index) {
     if (index < STORED_OFFSET) {
-      return (E)staticObjects[index];
+      return staticObjects[index];
     } else {
-      return (E)storedObjects[index - STORED_OFFSET];
+      return storedObjects[index - STORED_OFFSET];
     }
   }
 
@@ -269,18 +269,8 @@ public class PartiallyStoredVector<E> {
 
       public boolean hasNext() {
         if (idx < STORED_OFFSET) {
-          if (idx + 1 < vector.nStaticObjects) {
-			return true;
-		} else if (vector.nStoredObjects.get()> 0) {
-			return true;
-		} else {
-			return false;
-		}
-        } else if (idx + 1 < STORED_OFFSET + vector.nStoredObjects.get()) {
-			return true;
-		} else {
-			return false;
-		}
+            return idx + 1 < vector.nStaticObjects || vector.nStoredObjects.get() > 0;
+        } else return idx + 1 < STORED_OFFSET + vector.nStoredObjects.get();
       }
 
       public int next() {

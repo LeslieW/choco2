@@ -31,7 +31,7 @@ import java.util.Iterator;
 * Since : Choco 2.1.0
 * Update : Choco 2.1.0
 */
-public abstract class DisposableIterator implements Iterator {
+public abstract class DisposableIterator<E> implements Iterator<E> {
 
     public boolean reusable;
 

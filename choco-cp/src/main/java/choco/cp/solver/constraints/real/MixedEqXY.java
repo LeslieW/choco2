@@ -25,12 +25,11 @@ package choco.cp.solver.constraints.real;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.real.AbstractBinRealIntSConstraint;
-import choco.kernel.solver.constraints.real.MixedSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.real.RealIntervalConstant;
 import choco.kernel.solver.variables.real.RealVar;
 
-public class MixedEqXY extends AbstractBinRealIntSConstraint implements MixedSConstraint {
+public class MixedEqXY extends AbstractBinRealIntSConstraint{
 
   public MixedEqXY(RealVar v0, IntDomainVar v1) {
     super(v0, v1);

@@ -37,7 +37,7 @@ import java.util.Arrays;
  * Date: 6 juin 2004
  * Time: 14:20:54
  */
-public class SetDomainImpl implements SetDomain {
+public final class SetDomainImpl implements SetDomain {
 
     /**
      * The (optimization or decision) model to which the entity belongs.
@@ -171,7 +171,7 @@ public class SetDomainImpl implements SetDomain {
   // ============================================
 
   // Si promotion, il faut annuler la cause
-  protected boolean remFromEnveloppe(int x, int idx) throws ContradictionException {
+  public boolean remFromEnveloppe(int x, int idx) throws ContradictionException {
     if (_remFromEnveloppe(x, idx)) {
       if (isInstantiated())
         solver.getPropagationEngine().postInstSet(variable, SetVarEvent.NOCAUSE);
@@ -183,7 +183,7 @@ public class SetDomainImpl implements SetDomain {
   }
 
   // Si promotion, il faut annuler la cause
-  protected boolean addToKernel(int x, int idx) throws ContradictionException {
+  public boolean addToKernel(int x, int idx) throws ContradictionException {
     if (_addToKernel(x,idx)) {
       if (isInstantiated())
         solver.getPropagationEngine().postInstSet(variable, SetVarEvent.NOCAUSE);
@@ -194,7 +194,7 @@ public class SetDomainImpl implements SetDomain {
     return false;
   }
 
-  protected boolean instantiate(int[] x, int idx) throws ContradictionException {
+  public boolean instantiate(int[] x, int idx) throws ContradictionException {
     if (_instantiate(x, idx)) {
       solver.getPropagationEngine().postInstSet(variable, idx);
       return true;

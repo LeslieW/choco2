@@ -34,7 +34,7 @@ import choco.kernel.solver.variables.set.SetVar;
  * A class to represent a large constraint including both set and int variables in
  * its scope.
  **/
-public abstract class AbstractLargeSetIntSConstraint extends AbstractMixedSConstraint {
+public abstract class AbstractLargeSetIntSConstraint extends AbstractMixedSetIntSConstraint {
 
 	/**
 	 * The set variables representing the first part of the scope of the constraint.
