@@ -27,6 +27,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
+import choco.kernel.memory.recomputation.EnvironmentRecomputation;
 import choco.kernel.model.variables.integer.IntegerVariable;
 
 import java.util.Arrays;
@@ -78,8 +79,8 @@ public class GolombRuler extends PatternExample {
 
     @Override
     public void buildSolver() {
-        _s = new CPSolver();
-        _s.read(_m);
+       _s = new CPSolver();
+       _s.read(_m);
         _s.monitorBackTrackLimit(true);
     }
 

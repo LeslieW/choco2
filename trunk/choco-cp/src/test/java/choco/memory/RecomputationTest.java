@@ -23,6 +23,8 @@
 package choco.memory;
 
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.recomputation.EnvironmentRecomputation;
 import choco.kernel.model.Model;
@@ -54,7 +56,8 @@ public class RecomputationTest {
         @Test
         @Ignore
         public void donaldGeraldRobert(){
-            Model m = modelIt1();
+           //ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+        	Model m = modelIt1();
             Solver s = new CPSolver(env);
             Solver _s = new CPSolver();
             // Read the model
@@ -63,13 +66,16 @@ public class RecomputationTest {
 
             // Then solve it
             s.solve();
+            //ChocoLogging.flushLogs();
             _s.solve();
-
+            //ChocoLogging.flushLogs();
             // Print name value
             Assert.assertEquals("donald is not equal",_s.getVar(_donald).getVal(),s.getVar(_donald).getVal());
             Assert.assertEquals("gerald is not equal",_s.getVar(_gerald).getVal(),s.getVar(_gerald).getVal());
             Assert.assertEquals("robert is not equal",_s.getVar(_robert).getVal(),s.getVar(_robert).getVal());
         }
+        
+        
 
 
 }
