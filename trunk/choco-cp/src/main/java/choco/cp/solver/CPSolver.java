@@ -2169,7 +2169,7 @@ public class CPSolver implements Solver {
 	public void worldPop() {
 		environment.worldPop();
 		propagationEngine.flushEvents();
-		int lastStaticIdx = constraints.getLastStaticIndex();
+		final int lastStaticIdx = constraints.getLastStaticIndex();
 		for (int i = indexOfLastInitializedStaticConstraint.get() + 1; i <= lastStaticIdx; i++) {
 			Propagator c = constraints.get(i);
 			if (c != null) {
@@ -2179,6 +2179,7 @@ public class CPSolver implements Solver {
 			}
 		}
 		//        indexOfLastInitializedStaticConstraint.set(environment.getWorldIndex());
+		//TODO avoid first conditions and test only propNogoodWorld 
 		if (nogoodStore != null && propNogoodWorld > this.getWorldIndex()) {
 			nogoodStore.setActiveSilently();
 			nogoodStore.constAwake(false);

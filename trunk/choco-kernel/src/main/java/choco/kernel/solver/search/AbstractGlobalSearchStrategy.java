@@ -121,7 +121,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 
 	protected AbstractGlobalSearchStrategy(Solver solver) {
 		this.solver = solver;
-		traceStack = new IntBranchingTrace[solver.getNbBooleanVars() + solver.getNbIntVars() + solver.getNbSetVars()];
+		traceStack = new IntBranchingTrace[solver.getNbIntVars() + solver.getNbSetVars()];
 		nextMove = INIT_SEARCH;
 	}
 
@@ -322,6 +322,10 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	
 	public final IntBranchingTrace getTrace(int index) {
 		return traceStack[index];
+	}
+	
+	public final int getCurrentTraceIndex() {
+		return currentTraceIndex;
 	}
 	
 	public final int getTraceSize() {

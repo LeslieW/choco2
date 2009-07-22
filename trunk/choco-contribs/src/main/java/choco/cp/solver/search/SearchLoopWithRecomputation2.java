@@ -22,82 +22,83 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search;
 
-import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.recomputation.EnvironmentRecomputation;
+import gnu.trove.TIntStack;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.SolverException;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 
 
 public class SearchLoopWithRecomputation2 extends AbstractSearchLoopWithRestart {
 
-	protected EnvironmentRecomputation env;
+	private final int gap =10;
+
+	private int cpt = 0;
+
+	private int lastSavedTraceIndex = 0;
+
+	private final TIntStack savedTraceIndex;
 
 	public SearchLoopWithRecomputation2(AbstractGlobalSearchStrategy searchStrategy) {
 		super(searchStrategy);
+		savedTraceIndex = new TIntStack(searchStrategy.solver.getNbIntVars());
 	}
+
+	
+
 
 	@Override
 	public void initialize() {
-		final IEnvironment e = searchStrategy.solver.getEnvironment();
-		if (e instanceof EnvironmentRecomputation) {
-			env = (EnvironmentRecomputation) e;
-		}else {
-			throw new SolverException("environment "+e.getClass().getSimpleName() +" incompatible with the search loop ");
-		}
 		super.initialize();
+		savedTraceIndex.reset();
+		lastSavedTraceIndex = 0;
+		savedTraceIndex.push(lastSavedTraceIndex);
+		searchStrategy.solver.worldPush();
 	}
 
 
-
-	public void openNode() {
-		try {
-			searchStrategy.solver.propagate();
-			searchStrategy.newTreeNode();
-			doOpenNode();
-		} catch (ContradictionException e) {
-			searchStrategy.nextMove = e.getContradictionMove();
-			env.setLastFail(env.getWorldIndex());
-		}
-	}
 
 
 	@Override
-	protected void doUpBranch() {
-		try {
-			 env.incNbFail();
-			 searchStrategy.solver.worldPop();
-			searchStrategy.endTreeNode();
-			goUpBranch();
-			env.pushContext(ctx,false);
-			if (!ctx.getBranching().finishedBranching(ctx.getBranchingObject(), ctx.getBranchIndex())) {
-				ctx.setBranchIndex(ctx.getBranching().getNextBranch(ctx.getBranchingObject(), ctx.getBranchIndex()));
-				searchStrategy.nextMove = AbstractGlobalSearchStrategy.DOWN_BRANCH;
-			} else {
-				 env.popContext(ctx);
-				 ctx = searchStrategy.popTrace();
-				//env.pushContext(ctx,false);
-				searchStrategy.nextMove = AbstractGlobalSearchStrategy.UP_BRANCH;
-			}
-		} catch (ContradictionException e) {
-			 env.popContext(ctx);
-			ctx = searchStrategy.popTrace();
-			searchStrategy.nextMove = e.getContradictionMove();
-			env.setLastFail(env.getWorldIndex());
+	protected void worldPop() {
+		cpt--;
+		//should we pop the delegated environment
+		searchStrategy.solver.worldPop();
+		if(searchStrategy.getCurrentTraceIndex() == lastSavedTraceIndex) {
+			savedTraceIndex.pop();
+			lastSavedTraceIndex = savedTraceIndex.peek();
+			searchStrategy.solver.worldPop();
 		}
+		searchStrategy.solver.worldPush();
 	}
 
-
-	public void downBranch() {
-		try {
-			env.worldPush();
-			env.pushContext(ctx, true);
-			searchStrategy.solver.propagate();
-			goDownBranch();
-		} catch (ContradictionException e) {
-			searchStrategy.nextMove = e.getContradictionMove();
-			env.setLastFail(env.getWorldIndex());
+	@Override
+	protected void goUpBranch() throws ContradictionException {
+		searchStrategy.postDynamicCut();
+		LOGGER.finest("recomputation ...");
+		for (int i = lastSavedTraceIndex; i < searchStrategy.getCurrentTraceIndex() ; i++) {
+			ctx = searchStrategy.getTrace(i);
+			ctx.getBranching().goDownBranch(ctx.getBranchingObject(), ctx.getBranchIndex());
 		}
+		ctx = searchStrategy.topTrace();
+		LOGGER.finest("backtrack ...");
+		//FIXME should also store previous up branches ! 
+		ctx.getBranching().goUpBranch(ctx.getBranchingObject(), ctx.getBranchIndex());
+		LOGGER.finest("continue ...");
+		searchStrategy.solver.propagate();
 	}
+
+	@Override
+	protected void worldPush() {
+		if( cpt < gap) {
+			cpt++;
+		} else {
+			searchStrategy.solver.worldPush();
+			lastSavedTraceIndex = searchStrategy.getCurrentTraceIndex();
+			savedTraceIndex.push(lastSavedTraceIndex);
+			cpt = 0;
+
+		}
+
+	}
+
 
 }

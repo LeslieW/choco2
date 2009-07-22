@@ -63,6 +63,9 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 	}
 
 
+	//*****************************************************************//
+	//*******************  INITIALIZATIONS ***************************//
+	//***************************************************************//
 	private AbstractBranching br;
 
 	@Override
@@ -85,110 +88,6 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 	}
 
 
-
-	public void init() {
-		// specific initialization for the very first solution search (start from the tree root, instead of last leaf)
-		//		if (searchStrategy.nextMove == AbstractGlobalSearchStrategy.INIT_SEARCH) {
-		//			searchStrategy.nextMove = AbstractGlobalSearchStrategy.OPEN_NODE;
-		//			ctx = new IntBranchingTrace(searchStrategy.mainGoal);
-		//			AbstractBranching b = searchStrategy.mainGoal;
-		//			while (b != null) {
-		//				b.initBranching();
-		//				b = b.getNextBranching();
-		//			}
-		//		} else {
-		//			ctx = searchStrategy.topTrace();
-		//		}
-	}
-
-	private Object branchingObj;
-
-	private AbstractIntBranching currentBranching;
-	
-	protected final void doOpenNode() throws ContradictionException {
-		//looking for the next branching object
-		currentBranching = (AbstractIntBranching) ctx.getBranching(); //TODO avoid cast
-		while(currentBranching != null) {
-			branchingObj = currentBranching.selectBranchingObject();
-			if( branchingObj == null) {
-				//the branching is achieved, check next branching
-				currentBranching = (AbstractIntBranching) currentBranching.getNextBranching(); 
-			}else {
-				//create the node associated with the branching object
-				ctx = searchStrategy.pushTrace();
-				ctx.setBranching(currentBranching);
-				ctx.setBranchingObject(branchingObj);
-				ctx.setBranchIndex(currentBranching.getFirstBranch(ctx.getBranchingObject()));
-				searchStrategy.nextMove = AbstractGlobalSearchStrategy.DOWN_BRANCH;
-				return; //the new node is opened.
-			}
-		}
-		doRecordSolution();
-		
-
-		//The original version makes more comparisons and affectations 
-
-		//			Object branchingObj = null;
-		//			AbstractIntBranching currentBranching = (AbstractIntBranching) ctx.getBranching();
-		//			AbstractIntBranching nextBranching = currentBranching;
-		//			while ((branchingObj == null) && (nextBranching != null)) {
-		//				currentBranching = nextBranching;
-		//				branchingObj = currentBranching.selectBranchingObject();
-		//				nextBranching = (AbstractIntBranching) currentBranching.getNextBranching();
-		//			}
-		//			if (branchingObj != null) {
-		//				ctx = searchStrategy.pushTrace();
-		//				ctx.setBranching(currentBranching);
-		//				ctx.setBranchingObject(branchingObj);
-		//				ctx.setBranchIndex(currentBranching.getFirstBranch(ctx.getBranchingObject()));
-		//				searchStrategy.nextMove = AbstractGlobalSearchStrategy.DOWN_BRANCH;
-		//			} else {
-		//				searchStrategy.recordSolution();
-		//				searchStrategy.nextMove = moveAfterSolution;
-		//				stop = true;
-		//			}
-	}
-
-
-	protected void doRecordSolution() {
-		//the solution must instantiate at least the decision variables
-		//Other variables should be fixed by propagation or remained not instantiated 
-		searchStrategy.nextMove = moveAfterSolution; //set the next move (backtrack, restart or stop)
-		stop = true; //a solution has been found, we should run the loop again to find another solution
-		searchStrategy.recordSolution(); //record the solution (could change the nextMove)
-	}
-
-	
-	/**
-	 * post the dynamic cut, backtrack and propagate.
-	 */
-	protected final void goUpBranch() throws ContradictionException {
-		searchStrategy.postDynamicCut();
-		ctx.getBranching().goUpBranch(ctx.getBranchingObject(), ctx.getBranchIndex());
-		searchStrategy.solver.propagate();
-	}
-
-	
-	protected abstract void doUpBranch();
-
-	public final void upBranch() {
-		if (searchStrategy.isTraceEmpty()) {
-			stop = true;
-		} else {
-			doUpBranch();
-		}
-	}
-
-	/**
-	 * set the next decision, propagate and set the next move.
-	 * @throws ContradictionException
-	 */
-	protected final void goDownBranch() throws ContradictionException {
-		ctx.getBranching().goDownBranch(ctx.getBranchingObject(), ctx.getBranchIndex());
-		searchStrategy.solver.propagate();
-		searchStrategy.nextMove = AbstractGlobalSearchStrategy.OPEN_NODE;
-	}
-
 	/**
 	 * reset the limit and compute the exit status. 
 	 */
@@ -204,6 +103,148 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 		}
 	}
 
+	public void init() {
+		// specific initialization for the very first solution search (start from the tree root, instead of last leaf)
+		//		if (searchStrategy.nextMove == AbstractGlobalSearchStrategy.INIT_SEARCH) {
+		//			searchStrategy.nextMove = AbstractGlobalSearchStrategy.OPEN_NODE;
+		//			ctx = new IntBranchingTrace(searchStrategy.mainGoal);
+		//			AbstractBranching b = searchStrategy.mainGoal;
+		//			while (b != null) {
+		//				b.initBranching();
+		//				b = b.getNextBranching();
+		//			}
+		//		} else {
+		//			ctx = searchStrategy.topTrace();
+		//		}
+	}
+	
+	
+	//*****************************************************************//
+	//*******************  OPEN_NODE  ********************************//
+	//***************************************************************//
+
+	private Object branchingObj;
+
+	private AbstractIntBranching currentBranching;
+	
+	public void openNode() {
+		try {
+			searchStrategy.newTreeNode();
+			//looking for the next branching object
+			currentBranching = (AbstractIntBranching) ctx.getBranching(); //TODO avoid cast
+			while(currentBranching != null) {
+				branchingObj = currentBranching.selectBranchingObject();
+				if( branchingObj == null) {
+					//the branching is achieved, check next branching
+					currentBranching = (AbstractIntBranching) currentBranching.getNextBranching(); 
+				}else {
+					//create the node associated with the branching object
+					ctx = searchStrategy.pushTrace();
+					ctx.setBranching(currentBranching);
+					ctx.setBranchingObject(branchingObj);
+					ctx.setBranchIndex(currentBranching.getFirstBranch(ctx.getBranchingObject()));
+					searchStrategy.nextMove = AbstractGlobalSearchStrategy.DOWN_BRANCH;
+					return; //the new node is opened.
+				}
+			}
+			//The original version makes more comparisons and affectations 
+
+			//			Object branchingObj = null;
+			//			AbstractIntBranching currentBranching = (AbstractIntBranching) ctx.getBranching();
+			//			AbstractIntBranching nextBranching = currentBranching;
+			//			while ((branchingObj == null) && (nextBranching != null)) {
+			//				currentBranching = nextBranching;
+			//				branchingObj = currentBranching.selectBranchingObject();
+			//				nextBranching = (AbstractIntBranching) currentBranching.getNextBranching();
+			//			}
+			//			if (branchingObj != null) {
+			//				ctx = searchStrategy.pushTrace();
+			//				ctx.setBranching(currentBranching);
+			//				ctx.setBranchingObject(branchingObj);
+			//				ctx.setBranchIndex(currentBranching.getFirstBranch(ctx.getBranchingObject()));
+			//				searchStrategy.nextMove = AbstractGlobalSearchStrategy.DOWN_BRANCH;
+			//			} else {
+			//				searchStrategy.recordSolution();
+			//				searchStrategy.nextMove = moveAfterSolution;
+			//				stop = true;
+			//			}
+			
+			//we found a valid solution because there is no more branching object
+			//the solution must instantiate at least the decision variables
+			//Other variables should be fixed by propagation or remained not instantiated 
+			searchStrategy.nextMove = moveAfterSolution; //set the next move (backtrack, restart or stop)
+			stop = true; //a solution has been found, we should run the loop again to find another solution
+			searchStrategy.recordSolution(); //record the solution (could change the nextMove)
+		} catch (ContradictionException e) {
+			searchStrategy.nextMove = e.getContradictionMove();
+		}
+	}
+	
+	
+	//*****************************************************************//
+	//*******************  UP_BRANCH  ********************************//
+	//***************************************************************//
+	
+	protected abstract void worldPop();
+	
+	/**
+	 * post the dynamic cut, backtrack and propagate.
+	 */
+	protected void goUpBranch() throws ContradictionException {
+		searchStrategy.postDynamicCut();
+		ctx.getBranching().goUpBranch(ctx.getBranchingObject(), ctx.getBranchIndex());
+		searchStrategy.solver.propagate();
+	}
+
+	
+	
+
+	
+	public final void upBranch() {
+		if (searchStrategy.isTraceEmpty()) {
+			//cant backtrack from the root node
+			stop = true;
+		} else {
+			try {
+				searchStrategy.endTreeNode(); //check limit
+				worldPop();
+				goUpBranch(); //backtrack
+				//compute the next move
+				if (!ctx.getBranching().finishedBranching(ctx.getBranchingObject(), ctx.getBranchIndex())) {
+					ctx.setBranchIndex(ctx.getBranching().getNextBranch(ctx.getBranchingObject(), ctx.getBranchIndex()));
+					searchStrategy.nextMove = AbstractGlobalSearchStrategy.DOWN_BRANCH;
+				} else {
+					ctx = searchStrategy.popTrace();
+					searchStrategy.nextMove = AbstractGlobalSearchStrategy.UP_BRANCH;
+				}
+			} catch (ContradictionException e) {
+				ctx = searchStrategy.popTrace();
+				searchStrategy.nextMove = e.getContradictionMove();
+			}
+		}
+	}
+
+	//*****************************************************************//
+	//*******************  DOWN_BRANCH  ********************************//
+	//***************************************************************//
+	
+	protected abstract void worldPush();
+	
+	public void downBranch() {
+		try {
+			worldPush();
+			ctx.getBranching().goDownBranch(ctx.getBranchingObject(), ctx.getBranchIndex());
+			searchStrategy.solver.propagate();
+			searchStrategy.nextMove = AbstractGlobalSearchStrategy.OPEN_NODE;
+		} catch (ContradictionException e) {
+			searchStrategy.nextMove = e.getContradictionMove();
+		}
+	}
+	
+	//*****************************************************************//
+	//*******************  RESTART  ********************************//
+	//***************************************************************//
+	
 	protected void restoreRootNode() {
 		searchStrategy.clearTrace();
 		searchStrategy.solver.worldPopUntil(searchStrategy.baseWorld + 1);

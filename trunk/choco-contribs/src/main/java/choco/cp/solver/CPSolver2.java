@@ -6,9 +6,12 @@ import choco.cp.solver.search.AbstractSearchLoopWithRestart;
 import choco.cp.solver.search.BranchAndBound2;
 import choco.cp.solver.search.GlobalSearchStrategy;
 import choco.cp.solver.search.RealBranchAndBound2;
-import choco.cp.solver.search.SearchLoop3;
+import choco.cp.solver.search.SearchLoop2;
 import choco.cp.solver.search.SearchLoopWithRecomputation2;
+import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
+import choco.cp.solver.search.integer.valselector.MinVal;
+import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.memory.IEnvironment;
@@ -87,7 +90,7 @@ public class CPSolver2 extends CPSolver {
 		addLimitsAndRestartStrategy();
 
 		//SearchLoop2 sl = new SearchLoop2(strategy);
-		AbstractSearchLoopWithRestart sl = this.useRecomputation ? new SearchLoopWithRecomputation2(strategy) : new SearchLoop3(strategy);
+		AbstractSearchLoopWithRestart sl = this.useRecomputation ? new SearchLoopWithRecomputation2(strategy) : new SearchLoop2(strategy);
 		sl.setRestartAfterEachSolution(restart);
 		strategy.setSearchLoop(sl);
 		if (ilogGoal == null) {
@@ -107,26 +110,15 @@ public class CPSolver2 extends CPSolver {
 		
 		@Override
 		public void buildSolver() {
-			_s =  useNew ? new CPSolver(new EnvironmentRecomputation()) : new CPSolver();
-			//_s.monitorBackTrackLimit(true);
+			_s =  useNew ? new CPSolver2() : new CPSolver(new EnvironmentRecomputation());
+			//if(useNew) ((CPSolver) _s).setRecomputation(true);
+			_s.monitorBackTrackLimit(true);
 			_s.setLoggingMaxDepth(25);
 			_s.read(_m);
 			_s.setRestart(false);
 			_s.setFirstSolution(false);
+			_s.attachGoal(new AssignVar(new MinDomain(_s), new MinVal()));
 			//_s.setObjective(null);
-			_s.setDoMaximize(false);
-			
-//			if (useNew) {
-//			((CPSolver) _s).limitManager.setRestartStrategy(new LubyRestartStrategy(1,2), Limit.BACKTRACK);
-//			}else { ((CPSolver) _s).setLubyRestart(1, 2);}
-			//_s.setTimeLimit(20);
-			//_s.attachGoal(new AssignVar(new MinDomain(_s), new MinVal()));
-//			try {
-//				_s.getVar(deletion).setInf(7);
-//			} catch (ContradictionException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
 			_s.generateSearchStrategy();
 			
 		}
@@ -135,14 +127,14 @@ public class CPSolver2 extends CPSolver {
 		@Override
 		public void solve() {
 			super.solve();
-			System.out.println(_s.checkSolution(false));  
+			//System.out.println(_s.checkSolution(false));  
 		}
 
 
 		@Override
 		public void prettyOut() {
 			LOGGER.info(_s.getClass().getSimpleName());
-			LOGGER.info(_s.pretty());
+			//LOGGER.info(_s.pretty());
 			super.prettyOut();
 		}
 
@@ -161,9 +153,9 @@ public class CPSolver2 extends CPSolver {
 	
 	public static void main(String[] args) {
 		ChocoLogging.setVerbosity(Verbosity.SEARCH);
+//		useNew = false;
+//		new TestMed().execute();
 		useNew = false;
-		new TestMed().execute();
-		useNew = true;
 		new TestMed().execute();
 	}
 }

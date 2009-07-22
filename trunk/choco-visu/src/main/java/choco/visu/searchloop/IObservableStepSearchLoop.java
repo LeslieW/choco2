@@ -23,6 +23,7 @@
 package choco.visu.searchloop;
 
 import choco.IObservable;
+import choco.kernel.solver.search.ISearchLoop;
 /*
  * Created by IntelliJ IDEA.
  * User: charles
@@ -30,7 +31,7 @@ import choco.IObservable;
  * Since : Choco 2.0.1
  */
 
-public interface IObservableStepSearchLoop extends IObservable{
+public interface IObservableStepSearchLoop extends ISearchLoop, IObservable{
 
     static enum Step{
         PAUSE, NEXT, PLAY

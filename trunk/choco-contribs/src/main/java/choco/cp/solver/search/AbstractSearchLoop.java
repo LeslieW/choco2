@@ -28,12 +28,9 @@ import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.OPEN_NODE;
 import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.RESTART;
 import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.STOP;
 import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.UP_BRANCH;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.branch.AbstractBranching;
-import choco.kernel.solver.branch.AbstractIntBranching;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.ISearchLoop;
-import choco.kernel.solver.search.IntBranchingTrace;
 
 
 public abstract class AbstractSearchLoop implements ISearchLoop {
@@ -52,7 +49,7 @@ public abstract class AbstractSearchLoop implements ISearchLoop {
 		initLoop();
 		stop = false;
 		while (!stop) {
-			//ChocoLogging.flushLogs();
+			ChocoLogging.flushLogs();
 			//TODO move nextMove into this class
 			switch (searchStrategy.nextMove) {
 			//The order of the condition is important. 
