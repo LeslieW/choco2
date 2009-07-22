@@ -407,8 +407,7 @@ public class CPSolver implements Solver {
 	}
 
 	public CPSolver() {
-		//this(new EnvironmentTrailing());
-		this(new EnvironmentRecomputation());
+		this(new EnvironmentTrailing());
 	}
 
 	public CPSolver(IEnvironment env) {

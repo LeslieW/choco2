@@ -107,11 +107,6 @@ public class CPSolver2 extends CPSolver {
 		
 		@Override
 		public void buildSolver() {
-			//_s =  useNew ? new CPSolver2() : new CPSolver();
-			
-			//_s =  useNew ? new CPSolver2(new EnvironmentRecomputation()) : new CPSolver(new EnvironmentRecomputation());
-			//((CPSolver) _s).setRecomputation(true);
-			//_s =  new CPSolver();
 			_s =  useNew ? new CPSolver(new EnvironmentRecomputation()) : new CPSolver();
 			//_s.monitorBackTrackLimit(true);
 			_s.setLoggingMaxDepth(25);
@@ -168,8 +163,8 @@ public class CPSolver2 extends CPSolver {
 		ChocoLogging.setVerbosity(Verbosity.SEARCH);
 		useNew = false;
 		new TestMed().execute();
-//		useNew = false;
-//		new TestMed().execute();
+		useNew = true;
+		new TestMed().execute();
 	}
 }
 
