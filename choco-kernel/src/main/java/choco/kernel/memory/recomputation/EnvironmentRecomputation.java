@@ -344,6 +344,13 @@ public class EnvironmentRecomputation extends AbstractEnvironment {
             this.ctx = ctx.copy();
             this.isDown = isDown;
         }
+
+		@Override
+		public String toString() {
+			return ctx.toString()+":"+isDown;
+		}
+        
+        
     }
 
 }
