@@ -3,6 +3,7 @@ package samples.Examples;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.memory.recomputation.EnvironmentRecomputation;
 import choco.kernel.model.variables.integer.IntegerVariable;
 
 import java.util.Arrays;
