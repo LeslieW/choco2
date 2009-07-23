@@ -27,6 +27,11 @@
     	<artifactId>spring-jdbc</artifactId>
     	<version>2.5.6</version>
     </dependency>
+    <dependency>
+    <groupId>net.sourceforge.jexcelapi</groupId>
+    <artifactId>jxl</artifactId>
+    <version>2.6.3</version>
+</dependency> 
   </dependencies>
   <reporting>
         <plugins>
