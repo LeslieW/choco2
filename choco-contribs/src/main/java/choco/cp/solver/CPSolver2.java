@@ -1,24 +1,18 @@
 package choco.cp.solver;
 
-import samples.Examples.MinimumEdgeDeletion;
 import choco.cp.solver.goals.GoalSearchSolver;
-import choco.cp.solver.search.AbstractSearchLoopWithRestart;
-import choco.cp.solver.search.BranchAndBound2;
-import choco.cp.solver.search.GlobalSearchStrategy;
-import choco.cp.solver.search.RealBranchAndBound2;
-import choco.cp.solver.search.SearchLoop2;
-import choco.cp.solver.search.SearchLoopWithRecomputation2;
+import choco.cp.solver.search.*;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
-import choco.cp.solver.search.integer.valselector.MinVal;
+import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.recomputation.EnvironmentRecomputation;
 import choco.kernel.solver.search.SolutionPoolFactory;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.real.RealVar;
+import samples.Examples.MinimumEdgeDeletion;
 
 public class CPSolver2 extends CPSolver {
 
@@ -31,7 +25,16 @@ public class CPSolver2 extends CPSolver {
 
 	}
 
-	@Override
+    /**
+     * returning the index of the current worl
+     */
+    @Override
+    public int getWorldIndex() {
+        return sl.getCurrentDepth();
+    }
+    private AbstractSearchLoopWithRestart sl;
+
+    @Override
 	public void generateSearchStrategy() {
 		if (!(tempGoal != null && tempGoal instanceof ImpactBasedBranching)
 				|| strategy == null) { // <hca> really ugly to remove once
@@ -81,7 +84,8 @@ public class CPSolver2 extends CPSolver {
 			}
 		}
 
-		strategy.stopAtFirstSol = firstSolution;
+        assert strategy != null;
+        strategy.stopAtFirstSol = firstSolution;
 
 		strategy.setLoggingMaxDepth(this.loggingMaxDepth);
 
@@ -90,7 +94,7 @@ public class CPSolver2 extends CPSolver {
 		addLimitsAndRestartStrategy();
 
 		//SearchLoop2 sl = new SearchLoop2(strategy);
-		AbstractSearchLoopWithRestart sl = this.useRecomputation ? new SearchLoopWithRecomputation2(strategy) : new SearchLoop2(strategy);
+		sl = this.useRecomputation ? new SearchLoopWithRecomputation2(strategy) : new SearchLoop2(strategy);
 		sl.setRestartAfterEachSolution(restart);
 		strategy.setSearchLoop(sl);
 		if (ilogGoal == null) {
@@ -110,14 +114,16 @@ public class CPSolver2 extends CPSolver {
 		
 		@Override
 		public void buildSolver() {
-			_s =  useNew ? new CPSolver2() : new CPSolver(new EnvironmentRecomputation());
+//			_s =  useNew ? new CPSolver2() : new CPSolver(new EnvironmentRecomputation());
+            _s = new CPSolver2();
 			//if(useNew) ((CPSolver) _s).setRecomputation(true);
+            ((CPSolver)_s).setRecomputation(useNew);
 			_s.monitorBackTrackLimit(true);
 			_s.setLoggingMaxDepth(25);
 			_s.read(_m);
 			_s.setRestart(false);
 			_s.setFirstSolution(false);
-			_s.attachGoal(new AssignVar(new MinDomain(_s), new MinVal()));
+			_s.attachGoal(new AssignVar(new MinDomain(_s), new IncreasingDomain()));
 			//_s.setObjective(null);
 			_s.generateSearchStrategy();
 			
@@ -145,7 +151,7 @@ public class CPSolver2 extends CPSolver {
 			
 			//super.execute(new Object[]{20,0.5,0});
 			//super.execute(new Object[]{19,0.5,0});
-			execute(new Object[]{9,0.5,0});
+			execute(new Object[]{8,0.5,0});
 			
 			//assertEquals(Math.min( capa, _s.getNbSolutions()),  PatternExample._s.getSearchStrategy().getSolutionPool().size());
 		}
@@ -155,7 +161,7 @@ public class CPSolver2 extends CPSolver {
 		ChocoLogging.setVerbosity(Verbosity.SEARCH);
 //		useNew = false;
 //		new TestMed().execute();
-		useNew = false;
+		useNew = true;
 		new TestMed().execute();
 	}
 }

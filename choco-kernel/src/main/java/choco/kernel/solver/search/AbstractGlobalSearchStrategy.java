@@ -28,8 +28,6 @@
 //**************************************************
 package choco.kernel.solver.search;
 
-import java.util.logging.Level;
-
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
@@ -39,6 +37,8 @@ import choco.kernel.solver.branch.AbstractIntBranching;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.search.limit.AbstractLimitManager;
 import choco.kernel.solver.search.measures.ISearchMeasures;
+
+import java.util.logging.Level;
 
 /**
  * An abstract class for controlling tree search in various ways
@@ -179,7 +179,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 * It is therefore kept before restoring a solution
 	 */
 	public void incrementalRun() {
-		baseWorld = solver.getEnvironment().getWorldIndex();
+		baseWorld = solver.getWorldIndex();
 		boolean feasibleRootState = true;
 		try {
 			newTreeSearch();
@@ -218,7 +218,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	public void newTreeSearch() throws ContradictionException {
 		assert(solver.getSearchStrategy() == this);
         resetSolutions();
-		baseWorld = solver.getEnvironment().getWorldIndex();
+		baseWorld = solver.getWorldIndex();
 		initialTrace.setBranching(this.mainGoal);
 		limitManager.initialize();
 	}

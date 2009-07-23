@@ -22,9 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search;
 
-import gnu.trove.TIntStack;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import gnu.trove.TIntStack;
 
 
 public class SearchLoopWithRecomputation2 extends AbstractSearchLoopWithRestart {
@@ -50,7 +50,7 @@ public class SearchLoopWithRecomputation2 extends AbstractSearchLoopWithRestart 
 		super.initialize();
 		savedTraceIndex.reset();
 		lastSavedTraceIndex = 0;
-		savedTraceIndex.push(lastSavedTraceIndex);
+        savedTraceIndex.push(lastSavedTraceIndex);
 		searchStrategy.solver.worldPush();
 	}
 
@@ -88,16 +88,12 @@ public class SearchLoopWithRecomputation2 extends AbstractSearchLoopWithRestart 
 
 	@Override
 	protected void worldPush() {
-		if( cpt < gap) {
-			cpt++;
-		} else {
+		if( cpt % gap == 0) {
 			searchStrategy.solver.worldPush();
 			lastSavedTraceIndex = searchStrategy.getCurrentTraceIndex();
 			savedTraceIndex.push(lastSavedTraceIndex);
-			cpt = 0;
-
 		}
-
+        cpt++;
 	}
 
 
