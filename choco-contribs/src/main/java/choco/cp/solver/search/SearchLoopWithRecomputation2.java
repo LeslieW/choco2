@@ -24,7 +24,10 @@ package choco.cp.solver.search;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.IntBranchingTrace;
 import gnu.trove.TIntStack;
+
+import java.util.Stack;
 
 
 public class SearchLoopWithRecomputation2 extends AbstractSearchLoopWithRestart {
@@ -37,12 +40,18 @@ public class SearchLoopWithRecomputation2 extends AbstractSearchLoopWithRestart 
 
 	private final TIntStack savedTraceIndex;
 
+    private final Stack<IntBranchingTrace> contexts;
+
+    private final TIntStack ctxIndices;
+
+
 	public SearchLoopWithRecomputation2(AbstractGlobalSearchStrategy searchStrategy) {
 		super(searchStrategy);
-		savedTraceIndex = new TIntStack(searchStrategy.solver.getNbIntVars());
+        int n = searchStrategy.solver.getNbIntVars();
+		savedTraceIndex = new TIntStack(n);
+        contexts = new Stack<IntBranchingTrace>();
+        ctxIndices = new TIntStack(n);
 	}
-
-	
 
 
 	@Override
@@ -51,6 +60,7 @@ public class SearchLoopWithRecomputation2 extends AbstractSearchLoopWithRestart 
 		savedTraceIndex.reset();
 		lastSavedTraceIndex = 0;
         savedTraceIndex.push(lastSavedTraceIndex);
+        ctxIndices.push(contexts.size());
 		searchStrategy.solver.worldPush();
 	}
 
@@ -66,7 +76,11 @@ public class SearchLoopWithRecomputation2 extends AbstractSearchLoopWithRestart 
 			savedTraceIndex.pop();
 			lastSavedTraceIndex = savedTraceIndex.peek();
 			searchStrategy.solver.worldPop();
-		}
+        }
+        int ind = ctxIndices.pop();
+        while(contexts.size()>ind){
+            contexts.pop();
+        }
 		searchStrategy.solver.worldPush();
 	}
 
@@ -80,10 +94,16 @@ public class SearchLoopWithRecomputation2 extends AbstractSearchLoopWithRestart 
 		}
 		ctx = searchStrategy.topTrace();
 		LOGGER.finest("backtrack ...");
-		//FIXME should also store previous up branches ! 
+        int ind = ctxIndices.peek();
+        for(int i = ind; i < contexts.size(); i++){
+            IntBranchingTrace context = contexts.get(i);
+            ctx.getBranching().goUpBranch(context.getBranchingObject(), context.getBranchIndex());
+        }
+
 		ctx.getBranching().goUpBranch(ctx.getBranchingObject(), ctx.getBranchIndex());
 		LOGGER.finest("continue ...");
 		searchStrategy.solver.propagate();
+        contexts.push(ctx.copy());
 	}
 
 	@Override
@@ -93,8 +113,8 @@ public class SearchLoopWithRecomputation2 extends AbstractSearchLoopWithRestart 
 			lastSavedTraceIndex = searchStrategy.getCurrentTraceIndex();
 			savedTraceIndex.push(lastSavedTraceIndex);
 		}
+        ctxIndices.push(contexts.size());
         cpt++;
 	}
-
 
 }
