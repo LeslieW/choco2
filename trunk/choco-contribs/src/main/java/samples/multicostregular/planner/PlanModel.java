@@ -296,8 +296,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
             throw new Exception("Thou shalt create a model first");
 
         s = new CPSolver();
-        s.monitorCpuTimeLimit(true);
-       // s.setTimeLimit(600000);
+        // s.setTimeLimit(600000);
         //s.setFailLimit(1500);
 
         s.monitorFailLimit(true);

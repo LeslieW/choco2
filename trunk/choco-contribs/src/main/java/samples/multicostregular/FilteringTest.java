@@ -354,14 +354,13 @@ public class FilteringTest {
 
                 s.read(m);
                 s.monitorBackTrackLimit(true);
-                s.monitorCpuTimeLimit(true);
-
+                
                 s.solve();
                 for (IntDomainVar dom : s.getVar(vars)) System.out.print(dom.getVal()+" ");
                 System.out.println("");
                 String feas =(StringUtils.pad(s.isFeasible()+"",6," "));
                 String nc = StringUtils.pad(s.getNodeCount()+" nodes",-11," ");
-                String ti = StringUtils.pad(s.getCpuTimeCount()+"ms",-10," ");
+                String ti = StringUtils.pad(s.getTimeCount()+"ms",-10," ");
                 System.out.println(feas+nc+ti);
 
             }

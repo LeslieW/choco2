@@ -58,9 +58,10 @@ public abstract class AbstractGlobalSearchLimit implements GlobalSearchLimit {
 	 * maximal value limitting the search exploration
 	 */
 	protected int nbMax;
-
-
+	
+	
 	protected int limitMask = NEW_NODE + END_NODE;
+	
 	/**
 	 * a counter who is limited to values below max
 	 */
@@ -86,6 +87,7 @@ public abstract class AbstractGlobalSearchLimit implements GlobalSearchLimit {
 		this.unit= type.getUnit();
 	}
 
+	
 	public final int getLimitMask() {
 		return limitMask;
 	}

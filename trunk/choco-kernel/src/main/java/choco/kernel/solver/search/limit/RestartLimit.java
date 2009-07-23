@@ -16,6 +16,10 @@ public final class RestartLimit extends AbstractGlobalSearchLimit {
 		super(watchedLimit.getSearchStrategy(), Integer.MAX_VALUE, Limit.RESTART);
 		this.restartStrategy = restartStrategy;
 		this.watchedLimit = watchedLimit;
+		//Often, we could restart when opening or ending a node
+		//However, we should only restart while opening a node when we use nogood recording.
+		//Furthermore, it speedup the limits to check only at opening.
+		limitMask = NEW_NODE; 
 	}
 
 	

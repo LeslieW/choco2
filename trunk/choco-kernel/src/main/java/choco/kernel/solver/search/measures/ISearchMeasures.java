@@ -32,12 +32,6 @@ public interface ISearchMeasures {
     int getTimeCount();
 
     /**
-     * Get the cpu time count in milliseconds of the measure
-     * @return cpu time count
-     */
-    int getCpuTimeCount();
-
-    /**
      * Get the node count of the measure
      * @return node count
      */

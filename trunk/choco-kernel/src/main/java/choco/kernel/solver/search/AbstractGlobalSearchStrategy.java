@@ -312,6 +312,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		}else if (traceStack[currentTraceIndex] == null) {
 			traceStack[currentTraceIndex] = new IntBranchingTrace();  //create trace
 		}else {
+			//is it really useful as we overwrite the trace ?
 			traceStack[currentTraceIndex].clear(); //reset old trace
 		}
 		 return traceStack[currentTraceIndex];
@@ -348,9 +349,15 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		return isTraceEmpty() ? initialTrace : traceStack[currentTraceIndex];
 	}
 
-	
+	/**
+	 * @returns reusable trace object to start or restart the search.
+	 */
+	public final IntBranchingTrace getReusableInitialTrace() {
+		return initialTrace;
+	}
+
 	public final IntBranchingTrace topTrace() {
-		return isTraceEmpty() ? null : traceStack[currentTraceIndex];
+		return traceStack[currentTraceIndex];
 	}
 	
 	public final void clearTrace() {

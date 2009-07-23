@@ -1,20 +1,27 @@
 package choco.cp.solver;
 
+import samples.Examples.MinimumEdgeDeletion;
+import samples.Examples.Queen;
 import choco.cp.solver.goals.GoalSearchSolver;
-import choco.cp.solver.search.*;
+import choco.cp.solver.search.AbstractSearchLoopWithRestart;
+import choco.cp.solver.search.BranchAndBound2;
+import choco.cp.solver.search.GlobalSearchStrategy;
+import choco.cp.solver.search.RealBranchAndBound2;
+import choco.cp.solver.search.SearchLoop2;
+import choco.cp.solver.search.SearchLoopWithRecomputation2;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.search.SolutionPoolFactory;
+import choco.kernel.solver.search.limit.Limit;
+import choco.kernel.solver.search.restart.LubyRestartStrategy;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.real.RealVar;
-import org.junit.Assert;
-import samples.Examples.MinimumEdgeDeletion;
-import samples.Examples.PatternExample;
-import samples.Examples.Queen;
 
 public class CPSolver2 extends CPSolver {
 
@@ -27,17 +34,17 @@ public class CPSolver2 extends CPSolver {
 
 	}
 
-    /**
-     * returning the index of the current worl
-     */
-    @Override
-    public int getWorldIndex() {
-        return sl.getCurrentDepth();
-    }
-    
-    private AbstractSearchLoopWithRestart sl;
+	/**
+	 * returning the index of the current worl
+	 */
+	@Override
+	public int getWorldIndex() {
+		return sl.getCurrentDepth();
+	}
 
-    @Override
+	private AbstractSearchLoopWithRestart sl;
+
+	@Override
 	public void generateSearchStrategy() {
 		if (!(tempGoal != null && tempGoal instanceof ImpactBasedBranching)
 				|| strategy == null) { // <hca> really ugly to remove once
@@ -73,7 +80,7 @@ public class CPSolver2 extends CPSolver {
 				//					}
 				//				}
 				// if no restart option
-				
+
 				//do not need restart option anymore
 				else {
 					if (objective instanceof IntDomainVar) {
@@ -87,8 +94,8 @@ public class CPSolver2 extends CPSolver {
 			}
 		}
 
-        assert strategy != null;
-        strategy.stopAtFirstSol = firstSolution;
+		assert strategy != null;
+		strategy.stopAtFirstSol = firstSolution;
 
 		strategy.setLoggingMaxDepth(this.loggingMaxDepth);
 
@@ -99,6 +106,9 @@ public class CPSolver2 extends CPSolver {
 		//SearchLoop2 sl = new SearchLoop2(strategy);
 		sl = this.useRecomputation ? new SearchLoopWithRecomputation2(strategy) : new SearchLoop2(strategy);
 		sl.setRestartAfterEachSolution(restart);
+		if( isRecordingNogoodFromRestart()) {
+			sl.setNogoodRecordingFromRestart(true);
+		}
 		strategy.setSearchLoop(sl);
 		if (ilogGoal == null) {
 			if (tempGoal == null) {
@@ -109,28 +119,29 @@ public class CPSolver2 extends CPSolver {
 			}
 		}
 	}
-	
+
 	public static boolean useNew = true;
-	
+
 	static class TestMed extends MinimumEdgeDeletion {
 
-		
+
 		@Override
 		public void buildSolver() {
 			_s =  useNew ? new CPSolver2() : new CPSolver();
 			//if(useNew) ((CPSolver) _s).setRecomputation(true);
-            ((CPSolver)_s).setRecomputation(useNew);
+			//((CPSolver)_s).setRecomputation(useNew);
 			_s.monitorBackTrackLimit(true);
 			_s.setLoggingMaxDepth(25);
+			((CPSolver)_s).limitManager.setRestartStrategy(new LubyRestartStrategy(1,2), Limit.BACKTRACK);
+			((CPSolver)_s).setRecordNogoodFromRestart(true);
 			_s.read(_m);
 			_s.setRestart(false);
 			_s.setFirstSolution(false);
-			_s.attachGoal(new AssignVar(new MinDomain(_s), new MinVal()));
-			//_s.setObjective(null);
+			//_s.attachGoal(new AssignVar(new MinDomain(_s), new MinVal()));
 			_s.generateSearchStrategy();
-			
+
 		}
-		
+
 
 		@Override
 		public void solve() {
@@ -150,24 +161,20 @@ public class CPSolver2 extends CPSolver {
 		public void execute() {
 			//super.execute();
 			//super.execute(new Object[]{4,0.5,0}); //diff et pas beaucoup de noeuds
-			
-			super.execute(new Object[]{20,0.5,0});
-			//super.execute(new Object[]{19,0.5,0});
-//			execute(new Object[]{9,0.5,0});
-			
-			//assertEquals(Math.min( capa, _s.getNbSolutions()),  PatternExample._s.getSearchStrategy().getSolutionPool().size());
+			super.execute(new Object[]{15,0.5,0});
+			//super.execute(new Object[]{20,0.5,0});
+
 		}
 	}
-
-    static class TestMed2 extends Queen {
+	static class TestMed2 extends Queen {
 
 
 		@Override
 		public void buildSolver() {
-//			_s =  useNew ? new CPSolver2() : new CPSolver(new EnvironmentRecomputation());
-            _s = new CPSolver2();
+			//			_s =  useNew ? new CPSolver2() : new CPSolver(new EnvironmentRecomputation());
+			_s = new CPSolver2();
 			//if(useNew) ((CPSolver) _s).setRecomputation(true);
-            ((CPSolver)_s).setRecomputation(useNew);
+			((CPSolver)_s).setRecomputation(useNew);
 			_s.monitorBackTrackLimit(true);
 			_s.setLoggingMaxDepth(25);
 			_s.read(_m);
@@ -199,18 +206,21 @@ public class CPSolver2 extends CPSolver {
 		}
 	}
 
-	
+
+
 	public static void main(String[] args) {
-//		ChocoLogging.setVerbosity(Verbosity.SOLUTION);
-        useNew = false;
-        PatternExample tm = new TestMed();
-        tm.execute();
-        int nb = tm._s.getNbSolutions();
-        LOGGER.info("**************************");
-        useNew = true;
-        tm = new TestMed();
-        tm.execute();
-        Assert.assertEquals(nb, tm._s.getNbSolutions());
+		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+		//		useNew = false;
+		long time  = -System.currentTimeMillis();
+		//		new TestMed().execute();
+		time  += System.currentTimeMillis();
+		System.out.println(time);
+		useNew = true;
+		time  = -System.currentTimeMillis();
+		new TestMed().execute();
+		time  += System.currentTimeMillis();
+		System.out.println(time);
+
 	}
 }
 

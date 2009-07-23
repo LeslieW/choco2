@@ -11,7 +11,6 @@ import choco.kernel.solver.search.limit.Limit;
 public class LimitManager extends AbstractLimitManager {
 
 	
-	private final static int SEC_TO_MS = 1000;
 	/**
 	 * Initialize a default limit manager monitoring:
 	 * <ul>
@@ -37,8 +36,6 @@ public class LimitManager extends AbstractLimitManager {
 			return new FailLimit(strategy, limit);
 		case TIME:
 			return (limit == Integer.MAX_VALUE ? new TimeCount(strategy) : new TimeLimit(strategy, limit));
-		case CPU_TIME:
-			return (limit == Integer.MAX_VALUE ? new CpuTimeCount(strategy) : new CpuTimeLimit(strategy, limit));
 		default:
 			LOGGER.log(Level.WARNING, "cant create limit {0}", type);
 		return null;

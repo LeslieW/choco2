@@ -35,11 +35,6 @@ public abstract class AbstractMeasures implements ISearchMeasures {
 	}
 
 	@Override
-	public final int getCpuTimeCount() {
-		return getLimitValue(Limit.CPU_TIME);
-	}
-
-	@Override
 	public final int getFailCount() {
 		return getLimitValue(Limit.FAIL);
 	}

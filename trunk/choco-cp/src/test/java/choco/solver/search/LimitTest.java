@@ -103,11 +103,7 @@ public class LimitTest {
 		check(Limit.TIME);
 	}
 
-	@Test
-	public void testCpuTimeLimit() {
-		solver.setCpuTimeLimit(SIZE*10);
-		check(Limit.CPU_TIME);
-	}
+	
 
 
 }
