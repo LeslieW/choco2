@@ -190,6 +190,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		}
 		if (feasibleRootState) {
 			solver.worldPush();
+			searchLoop.initialize();
 			if (stopAtFirstSol) {
 				nextSolution();
 			} else {

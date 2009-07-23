@@ -32,6 +32,7 @@ public class CPSolver2 extends CPSolver {
     public int getWorldIndex() {
         return sl.getCurrentDepth();
     }
+    
     private AbstractSearchLoopWithRestart sl;
 
     @Override
@@ -114,8 +115,7 @@ public class CPSolver2 extends CPSolver {
 		
 		@Override
 		public void buildSolver() {
-//			_s =  useNew ? new CPSolver2() : new CPSolver(new EnvironmentRecomputation());
-            _s = new CPSolver2();
+			_s =  useNew ? new CPSolver2() : new CPSolver();
 			//if(useNew) ((CPSolver) _s).setRecomputation(true);
             ((CPSolver)_s).setRecomputation(useNew);
 			_s.monitorBackTrackLimit(true);
@@ -151,16 +151,17 @@ public class CPSolver2 extends CPSolver {
 			
 			//super.execute(new Object[]{20,0.5,0});
 			//super.execute(new Object[]{19,0.5,0});
-			execute(new Object[]{8,0.5,0});
+			execute(new Object[]{9,0.5,0});
+
 			
 			//assertEquals(Math.min( capa, _s.getNbSolutions()),  PatternExample._s.getSearchStrategy().getSolutionPool().size());
 		}
 	}
 	
 	public static void main(String[] args) {
-		ChocoLogging.setVerbosity(Verbosity.SEARCH);
-//		useNew = false;
-//		new TestMed().execute();
+		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+		useNew = true;
+		new TestMed().execute();
 		useNew = true;
 		new TestMed().execute();
 	}

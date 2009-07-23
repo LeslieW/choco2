@@ -37,17 +37,17 @@ public interface ISearchLoop {
 
     final static Logger LOGGER = ChocoLogging.getSearchLogger();
 	
+    void initialize();
+    
 	Boolean run();
 
-	void initialize();
+	//void init();
+
+	//void openNode();
+
+	//void upBranch();
+
+	//void downBranch();
 	
-	void init();
-
-	void openNode();
-
-	void upBranch();
-
-	void downBranch();
-	
-	void restart();
+	//void restart();
 }
