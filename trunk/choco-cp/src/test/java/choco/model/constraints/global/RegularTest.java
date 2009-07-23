@@ -864,8 +864,10 @@ public class RegularTest {
         int n = 6;
         IntegerVariable[] vars = Choco.makeIntVarArray("v", n, 1, 5, "cp:bound");
 
+
         String regexp = "(1|2)(3*)(2|4|5)";
         m.addConstraint(Choco.regular(regexp, vars));
+        //m.addConstraint(Choco.eq(vars[0],3));
 
         Solver s = new CPSolver();
         s.read(m);

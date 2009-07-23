@@ -25,6 +25,7 @@ package samples.multicostregular;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.constraints.SConstraint;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -206,12 +207,13 @@ public class SimpleSchedule extends CPModel
         IntDomainVar z = s.getVar(m.getCostVariable());
 
 
+
         if (s.solve())
         {
            do {
                m.printSolution(s);
                System.out.println("");
-               s.postCut(s.leq(z,z.getVal()));
+               s.postCut(s.gt(z,z.getVal()));
            }
            while(s.nextSolution());
         }
