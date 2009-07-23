@@ -173,6 +173,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
     endTreeSearch();
   }*/
 
+	
 	/**
 	 * main entry point: searching for one solution
 	 * Note: the initial propagation must be done before pushing any world level.
@@ -189,15 +190,13 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 			feasibleRootState = false;
 		}
 		if (feasibleRootState) {
-			solver.worldPush();
-			searchLoop.initialize();
+			newFeasibleRootState();
 			if (stopAtFirstSol) {
 				nextSolution();
 			} else {
                 //noinspection StatementWithEmptyBody
                 while (nextSolution() == Boolean.TRUE){}
 			}
-			//model.worldPop();
 			if (  ! solutionPool.isEmpty() && (!stopAtFirstSol)) {
 				solver.worldPopUntil(baseWorld);
 				restoreBestSolution();
@@ -224,6 +223,13 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		limitManager.initialize();
 	}
 
+	/**
+	 * called when the root state of the search tree is feasible. 
+	 */
+	public void newFeasibleRootState() {
+		solver.worldPush();
+		searchLoop.initialize();
+	}
 	/**
 	 * called before a new search tree is explored
 	 */

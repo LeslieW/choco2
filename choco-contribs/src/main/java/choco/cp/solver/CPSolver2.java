@@ -132,8 +132,8 @@ public class CPSolver2 extends CPSolver {
 			//((CPSolver)_s).setRecomputation(useNew);
 			_s.monitorBackTrackLimit(true);
 			_s.setLoggingMaxDepth(25);
-			((CPSolver)_s).limitManager.setRestartStrategy(new LubyRestartStrategy(1,2), Limit.BACKTRACK);
-			((CPSolver)_s).setRecordNogoodFromRestart(true);
+			//((CPSolver)_s).limitManager.setRestartStrategy(new LubyRestartStrategy(1,2), Limit.BACKTRACK);
+			//((CPSolver)_s).setRecordNogoodFromRestart(true);
 			_s.read(_m);
 			_s.setRestart(false);
 			_s.setFirstSolution(false);
@@ -161,7 +161,7 @@ public class CPSolver2 extends CPSolver {
 		public void execute() {
 			//super.execute();
 			//super.execute(new Object[]{4,0.5,0}); //diff et pas beaucoup de noeuds
-			super.execute(new Object[]{15,0.5,0});
+			super.execute(new Object[]{20,0.5,0});
 			//super.execute(new Object[]{20,0.5,0});
 
 		}
@@ -174,7 +174,7 @@ public class CPSolver2 extends CPSolver {
 			//			_s =  useNew ? new CPSolver2() : new CPSolver(new EnvironmentRecomputation());
 			_s = new CPSolver2();
 			//if(useNew) ((CPSolver) _s).setRecomputation(true);
-			((CPSolver)_s).setRecomputation(useNew);
+			//((CPSolver)_s).setRecomputation(useNew);
 			_s.monitorBackTrackLimit(true);
 			_s.setLoggingMaxDepth(25);
 			_s.read(_m);
