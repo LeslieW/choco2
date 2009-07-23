@@ -110,12 +110,6 @@ public interface Solver extends IMeasures, IPretty {
     public void monitorTimeLimit(boolean b);
 
     /**
-     * Monitor the CPU time limit (default to false)
-     * @param b indicates wether the search stategy monitor the time limit
-     */
-    public void monitorCpuTimeLimit(boolean b);
-
-    /**
      * Monitor the node limit (default to true)
      * @param b indicates wether the search stategy monitor the node limit
      */
@@ -133,16 +127,10 @@ public interface Solver extends IMeasures, IPretty {
      */
     public void monitorFailLimit(boolean b);
 
-
     /**
 	 * Sets the time limit i.e. the maximal time before stopping the search algorithm
 	 */
 	public void setTimeLimit(int timeLimit);
-
-	/**
-	 * Sets the CPU time limit i.e. the maximal CPU time (user + system) before stopping the search algorithm
-	 */
-	public void setCpuTimeLimit(int timeLimit);
 
 	/**
 	 * Sets the node limit i.e. the maximal number of nodes explored by the search algorithm

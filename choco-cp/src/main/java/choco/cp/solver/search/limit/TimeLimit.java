@@ -22,24 +22,46 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.limit;
 
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.limit.AbstractGlobalTimeLimit;
+import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.limit.Limit;
 
-public class TimeLimit extends AbstractGlobalTimeLimit {
+/**
+ * check the total amount of time
+ */
+public final class TimeLimit extends AbstractGlobalSearchLimit {
 
 	public TimeLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
 		super(theStrategy, theLimit, Limit.TIME);
 	}
 
+	
 	@Override
-	public final long getTimeStamp() {
-		return System.currentTimeMillis();
+	public void initialize() {
+		super.initialize();
+		TimeCacheThread.reset();
+	}
+
+
+	@Override
+	public void reset() {
+		super.reset();
+		TimeCacheThread.reset();
+	}
+
+
+	@Override
+	public void endNode() throws ContradictionException {
+		nb = TimeCacheThread.elapsedTimeMillis;
+		checkLimit();
+		
 	}
 
 	@Override
-	public final void update() {
-		nb = (int) (newh - starth); 
+	public void newNode() throws ContradictionException {
+		nb = TimeCacheThread.elapsedTimeMillis;
+		checkLimit();
 	}
 	
 }

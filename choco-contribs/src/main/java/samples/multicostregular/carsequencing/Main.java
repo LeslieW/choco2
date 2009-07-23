@@ -55,8 +55,7 @@ public class Main {
          s.setVarIntSelector(new StaticVarOrder(seqVars));
         //s.setVarIntSelector(new ManInTheMiddleVarHeur(seqVars));
         s.monitorFailLimit(true);
-        s.monitorCpuTimeLimit(true);
-
+        	
 
 
 

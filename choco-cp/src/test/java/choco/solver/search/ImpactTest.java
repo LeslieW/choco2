@@ -132,7 +132,6 @@ public class ImpactTest {
         ImpactBasedBranching ibb = new ImpactBasedBranching(s);
         ibb.getImpactStrategy().initImpacts(1000000);
 
-        s.setCpuTimeLimit(60000);
         s.setTimeLimit(65000);
         s.monitorBackTrackLimit(true);
         s.setGeometricRestart(14, 1.5d);
