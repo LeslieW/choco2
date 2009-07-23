@@ -5,14 +5,16 @@ import choco.cp.solver.search.*;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
+import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.MinDomain;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.search.SolutionPoolFactory;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.real.RealVar;
+import org.junit.Assert;
 import samples.Examples.MinimumEdgeDeletion;
+import samples.Examples.PatternExample;
+import samples.Examples.Queen;
 
 public class CPSolver2 extends CPSolver {
 
@@ -123,7 +125,7 @@ public class CPSolver2 extends CPSolver {
 			_s.read(_m);
 			_s.setRestart(false);
 			_s.setFirstSolution(false);
-			_s.attachGoal(new AssignVar(new MinDomain(_s), new IncreasingDomain()));
+			_s.attachGoal(new AssignVar(new MinDomain(_s), new MinVal()));
 			//_s.setObjective(null);
 			_s.generateSearchStrategy();
 			
@@ -149,21 +151,66 @@ public class CPSolver2 extends CPSolver {
 			//super.execute();
 			//super.execute(new Object[]{4,0.5,0}); //diff et pas beaucoup de noeuds
 			
-			//super.execute(new Object[]{20,0.5,0});
+			super.execute(new Object[]{20,0.5,0});
 			//super.execute(new Object[]{19,0.5,0});
-			execute(new Object[]{9,0.5,0});
-
+//			execute(new Object[]{9,0.5,0});
 			
 			//assertEquals(Math.min( capa, _s.getNbSolutions()),  PatternExample._s.getSearchStrategy().getSolutionPool().size());
 		}
 	}
+
+    static class TestMed2 extends Queen {
+
+
+		@Override
+		public void buildSolver() {
+//			_s =  useNew ? new CPSolver2() : new CPSolver(new EnvironmentRecomputation());
+            _s = new CPSolver2();
+			//if(useNew) ((CPSolver) _s).setRecomputation(true);
+            ((CPSolver)_s).setRecomputation(useNew);
+			_s.monitorBackTrackLimit(true);
+			_s.setLoggingMaxDepth(25);
+			_s.read(_m);
+			_s.setRestart(false);
+			_s.setFirstSolution(false);
+			_s.attachGoal(new AssignVar(new MinDomain(_s), new IncreasingDomain()));
+			//_s.setObjective(null);
+			_s.generateSearchStrategy();
+
+		}
+
+
+		@Override
+		public void solve() {
+			_s.launch();
+		}
+
+
+		@Override
+		public void prettyOut() {
+			LOGGER.info(_s.getClass().getSimpleName());
+			//LOGGER.info(_s.pretty());
+			super.prettyOut();
+		}
+
+		@Override
+		public void execute() {
+			execute(11);
+		}
+	}
+
 	
 	public static void main(String[] args) {
-		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
-		useNew = true;
-		new TestMed().execute();
-		useNew = true;
-		new TestMed().execute();
+//		ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+        useNew = false;
+        PatternExample tm = new TestMed();
+        tm.execute();
+        int nb = tm._s.getNbSolutions();
+        LOGGER.info("**************************");
+        useNew = true;
+        tm = new TestMed();
+        tm.execute();
+        Assert.assertEquals(nb, tm._s.getNbSolutions());
 	}
 }
 
