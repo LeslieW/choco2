@@ -22,14 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search;
 
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.DOWN_BRANCH;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.INIT_SEARCH;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.OPEN_NODE;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.RESTART;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.STOP;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.UP_BRANCH;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.*;
 import choco.kernel.solver.search.ISearchLoop;
 
 
@@ -39,11 +34,15 @@ public abstract class AbstractSearchLoop implements ISearchLoop {
 
 	protected boolean stop = false;
 
+    protected int depth;
 
 	public AbstractSearchLoop(AbstractGlobalSearchStrategy searchStrategy) {
 		this.searchStrategy = searchStrategy;
 	}
 
+    public int getCurrentDepth(){
+        return depth;
+    }
 
 	public final Boolean run() {
 		initLoop();
@@ -59,10 +58,12 @@ public abstract class AbstractSearchLoop implements ISearchLoop {
 				break;
 			}
 			case UP_BRANCH: {
+                depth--;
 				upBranch();
 				break;
 			}
 			case DOWN_BRANCH: {
+                depth++;
 				downBranch();
 				break;
 			}
@@ -71,6 +72,7 @@ public abstract class AbstractSearchLoop implements ISearchLoop {
 				break;
 			}
 			case INIT_SEARCH: {
+                depth = 0;
 				initialize();
 				break;
 			}

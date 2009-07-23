@@ -22,14 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search;
 
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.INIT_SEARCH;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.OPEN_NODE;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.RESTART;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.UP_BRANCH;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.AbstractBranching;
 import choco.kernel.solver.branch.AbstractIntBranching;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.*;
 import choco.kernel.solver.search.IntBranchingTrace;
 
 
@@ -189,7 +186,8 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 	
 	/**
 	 * post the dynamic cut, backtrack and propagate.
-	 */
+     * @throws choco.kernel.solver.ContradictionException can be thrown 
+     */
 	protected void goUpBranch() throws ContradictionException {
 		searchStrategy.postDynamicCut();
 		ctx.getBranching().goUpBranch(ctx.getBranchingObject(), ctx.getBranchIndex());
@@ -253,9 +251,6 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 
 	/**
 	 * perform the restart.
-	 *
-	 * @param ctx the branching trace
-	 * @return <code>true</code> if the loop should stop
 	 */
 	@Override
 	public void restart() {

@@ -52,7 +52,7 @@ public final class WorldFormatter{
 	}
 	
 	public WorldFormatter(AbstractGlobalSearchStrategy strategy, int delta) {
-		this.worldIndex = strategy.getSolver().getEnvironment().getWorldIndex();
+		this.worldIndex = strategy.getSolver().getWorldIndex();
 		this.delta = delta;
 	}
 
