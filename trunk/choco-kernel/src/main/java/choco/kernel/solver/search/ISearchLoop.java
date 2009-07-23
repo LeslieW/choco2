@@ -40,14 +40,4 @@ public interface ISearchLoop {
     void initialize();
     
 	Boolean run();
-
-	//void init();
-
-	//void openNode();
-
-	//void upBranch();
-
-	//void downBranch();
-	
-	//void restart();
 }

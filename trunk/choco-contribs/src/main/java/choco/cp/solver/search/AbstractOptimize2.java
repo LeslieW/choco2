@@ -76,11 +76,10 @@ public abstract class AbstractOptimize2 extends AbstractGlobalSearchStrategy {
 
 
 	@Override
-	public void newTreeSearch() throws ContradictionException {
-		super.newTreeSearch();
+	public void newFeasibleRootState() {
+		super.newFeasibleRootState();
 		bounds.initBounds();
 	}
-
 
 
 	@Override
@@ -121,7 +120,7 @@ public abstract class AbstractOptimize2 extends AbstractGlobalSearchStrategy {
 	@Override
 	public Boolean nextSolution() {
 		if( bounds.isTargetInfeasible()) {
-			//the search is finished as the optimum has been proven by the boudig mechanism.
+			//the search is finished as the optimum has been proven by the bounding mechanism.
 			return Boolean.FALSE;
 		}else {
 			//otherwise, continue the search.
