@@ -32,8 +32,6 @@ import choco.kernel.solver.search.IntBranchingTrace;
 
 public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 
-	protected int restartCount = 0;
-
 	private int moveAfterSolution = UP_BRANCH;
 
 	//It seems that it is important to reinit the branching when restarting after each solution with DWDeg.
@@ -55,18 +53,22 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 		moveAfterSolution = restart ? RESTART : UP_BRANCH; 
 	}
 
-	public final int getRestartCount() {
-		return restartCount;
-	}
-
+	
 
 	//*****************************************************************//
 	//*******************  INITIALIZATIONS ***************************//
 	//***************************************************************//
+	
+	@Override
+	public void initialize() {
+		previousNbSolutions = 0;
+		super.initialize();
+	}
+	
 	private AbstractBranching br;
 
 	@Override
-	public void initialize() {
+	public void initSearch() {
 		br = searchStrategy.mainGoal;
 		while (br != null) {
 			br.initBranching();
@@ -78,7 +80,7 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 
 
 	@Override
-	protected void initLoop() {
+	public void initLoop() {
 		previousNbSolutions = searchStrategy.getSolutionCount();
 		searchStrategy.setEncounteredLimit(null);
 		ctx = searchStrategy.initialTrace();
@@ -100,21 +102,6 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 		}
 	}
 
-	public void init() {
-		// specific initialization for the very first solution search (start from the tree root, instead of last leaf)
-		//		if (searchStrategy.nextMove == AbstractGlobalSearchStrategy.INIT_SEARCH) {
-		//			searchStrategy.nextMove = AbstractGlobalSearchStrategy.OPEN_NODE;
-		//			ctx = new IntBranchingTrace(searchStrategy.mainGoal);
-		//			AbstractBranching b = searchStrategy.mainGoal;
-		//			while (b != null) {
-		//				b.initBranching();
-		//				b = b.getNextBranching();
-		//			}
-		//		} else {
-		//			ctx = searchStrategy.topTrace();
-		//		}
-	}
-	
 	
 	//*****************************************************************//
 	//*******************  OPEN_NODE  ********************************//
@@ -124,6 +111,7 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 
 	private AbstractIntBranching currentBranching;
 	
+	@Override
 	public void openNode() {
 		try {
 			searchStrategy.newTreeNode();
@@ -198,6 +186,7 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 	
 
 	
+	@Override
 	public final void upBranch() {
 		if (searchStrategy.isTraceEmpty()) {
 			//cant backtrack from the root node
@@ -228,6 +217,7 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 	
 	protected abstract void worldPush();
 	
+	@Override
 	public void downBranch() {
 		try {
 			worldPush();
@@ -255,7 +245,6 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 	@Override
 	public void restart() {
 		LOGGER.finest("=== restarting ...");
-		restartCount++;
 		searchStrategy.setEncounteredLimit(null);
 		restoreRootNode();
 		try {

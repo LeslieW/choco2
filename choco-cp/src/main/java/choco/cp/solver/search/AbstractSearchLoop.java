@@ -22,31 +22,53 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search;
 
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.DOWN_BRANCH;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.INIT_SEARCH;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.OPEN_NODE;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.RESTART;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.STOP;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.UP_BRANCH;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.*;
 import choco.kernel.solver.search.ISearchLoop;
 
 
 public abstract class AbstractSearchLoop implements ISearchLoop {
 
-	protected final AbstractGlobalSearchStrategy searchStrategy;
+	public final AbstractGlobalSearchStrategy searchStrategy;
 
-	protected boolean stop = false;
+	private int restartCount;
+	
+	private int depth;
 
-    protected int depth;
+	protected boolean stop;
 
+	
 	public AbstractSearchLoop(AbstractGlobalSearchStrategy searchStrategy) {
 		this.searchStrategy = searchStrategy;
 	}
 
-    public int getCurrentDepth(){
-        return depth;
-    }
+
+	public final int getRestartCount() {
+		return restartCount;
+	}
+
+
+	public final int getCurrentDepth() {
+		return depth;
+	}
+
+	
+	@Override
+	public void initialize() {
+		restartCount = 0;
+		depth = 0;
+	}
+
 
 	public final Boolean run() {
-		initLoop();
 		stop = false;
+		initLoop();
 		while (!stop) {
 			ChocoLogging.flushLogs();
 			//TODO move nextMove into this class
@@ -58,22 +80,23 @@ public abstract class AbstractSearchLoop implements ISearchLoop {
 				break;
 			}
 			case UP_BRANCH: {
-                depth--;
+				depth--;
 				upBranch();
 				break;
 			}
 			case DOWN_BRANCH: {
-                depth++;
+				depth++;
 				downBranch();
 				break;
 			}
 			case RESTART: {
+				depth = 0;
+				restartCount++;
 				restart();
 				break;
 			}
 			case INIT_SEARCH: {
-                depth = 0;
-				initialize();
+				initSearch();
 				break;
 			}
 			case STOP: {
@@ -85,10 +108,19 @@ public abstract class AbstractSearchLoop implements ISearchLoop {
 		return endLoop();
 	}
 
-	protected abstract void initLoop();
+	public abstract void initLoop();
 	
+	public abstract void openNode();
 	
-	protected abstract Boolean endLoop();
+	public abstract void upBranch();
+	
+	public abstract void downBranch();
+	
+	public abstract void restart();
+	
+	public abstract void initSearch();
+	
+	public abstract Boolean endLoop();
 
 
 }

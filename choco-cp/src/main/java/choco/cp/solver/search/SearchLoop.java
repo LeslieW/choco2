@@ -50,9 +50,7 @@ public class SearchLoop implements ISearchLoop {
     
 
     @Override
-	public void initialize() {
-		LOGGER.severe("not yet implemented");// TODO Auto-generated method stub
-    }
+	public void initialize() {}
 
 
 
@@ -175,11 +173,5 @@ public class SearchLoop implements ISearchLoop {
             searchStrategy.nextMove = e.getContradictionMove();
         }
     }
-    
-    @Override
-	public void restart() {
-		LOGGER.severe("not yet implemented");
-    }
-
 
 }
