@@ -31,7 +31,9 @@ import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.model.Model;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -318,5 +320,132 @@ public class OccurrenceTest {
         assertEquals(6,s.getNbSolutions());
 
     }
+
+
+    @Test
+    public void testMateo() {
+        int nbrun = 10;
+        int tableVars = 5;
+        int cubeVars = 7;
+        for (int seed = 0; seed < nbrun; seed ++) {
+            int nba = version1(seed, tableVars, cubeVars);
+            int nbb = version2(seed, tableVars, cubeVars);
+            int nbc = version3(seed, tableVars, cubeVars);
+            assertEquals(nba, nbb);
+            assertEquals(nbb, nbc);
+            System.out.println("---------");
+        }
+    }
+
+    public static int version1(int seed, int tableVars, int cubeVars) {
+        Model model = new CPModel();
+        model.setDefaultExpressionDecomposition(true);
+        IntegerVariable table[] = new IntegerVariable[tableVars];
+        IntegerVariable cube[] = new IntegerVariable[cubeVars];
+        for (int i = 0; i < tableVars; i++) {
+            table[i] = makeIntVar("table" + i, 0, cubeVars - 1);
+        }
+        for (int i = 0; i < cubeVars; i++) {
+            cube[i] = makeIntVar("cube" + i, 0, 1);
+        }
+        model.addConstraint(allDifferent("cp:bc", table));
+        for (int t = 0; t < tableVars; t++) {
+            for (int c = 0; c < cubeVars; c++) {
+                model.addConstraint(implies(eq(table[t], c) , eq(cube[c], 1)));
+            }
+        }
+        for (int c = 0; c < cubeVars; c++) {
+            Constraint temp = eq(table[0], c);
+            for (int i = 1; i < tableVars; i++) {
+                temp = or(temp, eq(table[i],c));
+            }
+            model.addConstraint(implies(eq(cube[c], 1) , temp));
+         }
+
+        Solver solver = new CPSolver();
+        solver.read(model);
+        //System.out.println(solver.pretty());
+        solver.setVarIntSelector(new RandomIntVarSelector(solver,seed));
+        solver.setValIntSelector(new RandomIntValSelector(seed));
+        solver.solveAll();
+        System.out.println("Version1: " + seed + " number of solution : " + solver.getNbSolutions()+ " node: " + solver.getNodeCount() + " time: " + solver.getTimeCount());
+        return solver.getNbSolutions();
+        
+    }
+
+    public static int version2(int seed, int tableVars, int cubeVars) {
+        Model model = new CPModel();
+        model.setDefaultExpressionDecomposition(false);
+        IntegerVariable table[] = new IntegerVariable[tableVars];
+        IntegerVariable cube[] = new IntegerVariable[cubeVars];
+        IntegerVariable one = makeIntVar("one", 1, 1);
+        for (int i = 0; i < tableVars; i++) {
+            table[i] = makeIntVar("table" + i, 0, cubeVars - 1);
+        }
+        for (int i = 0; i < cubeVars; i++) {
+            cube[i] = makeIntVar("cube" + i, 0, 1);
+        }
+        model.addConstraint(allDifferent("cp:bc", table));
+        for (int t = 0; t < tableVars; t++) {
+            for (int c = 0; c < cubeVars; c++) {
+                model.addConstraint(implies(eq(table[t], c) , eq(cube[c], 1)));
+            }
+        }
+        for (int c = 0; c < cubeVars; c++) {
+            model.addConstraint(implies(eq(cube[c], 1) , occurrenceMin(c, one, table)));
+        }
+        Solver solver = new CPSolver();
+        solver.read(model);
+       // System.out.println(solver.pretty());
+        solver.setVarIntSelector(new RandomIntVarSelector(solver,seed));
+        solver.setValIntSelector(new RandomIntValSelector(seed));
+        solver.solveAll();
+        System.out.println("Version2: "+ seed + " number of solution : " + solver.getNbSolutions() + " node: " + solver.getNodeCount() + " time: " + solver.getTimeCount());
+        return solver.getNbSolutions();
+        
+    }
+
+    public static int version3(int seed, int tableVars, int cubeVars) {
+        Model model = new CPModel();
+        model.setDefaultExpressionDecomposition(false);
+        IntegerVariable table[] = new IntegerVariable[tableVars];
+        IntegerVariable cube[] = new IntegerVariable[cubeVars];
+        IntegerVariable one = makeIntVar("one", 1, 1);
+        IntegerVariable zero = makeIntVar("zero", 0, 0);
+        IntegerVariable booleanIntermediate[][] = new IntegerVariable[cubeVars][tableVars];
+
+        for (int i = 0; i < tableVars; i++) {
+            table[i] = makeIntVar("table" + i, 0, cubeVars - 1);
+        }
+        for (int i = 0; i < cubeVars; i++) {
+            cube[i] = makeIntVar("cube" + i, 0, 1);
+        }
+        for (int i = 0; i < cubeVars; i++) {
+            for (int j = 0; j < tableVars; j++) {
+                booleanIntermediate[i][j] = makeIntVar("slot:" + i + "_TableVar"
+                        + j, 0, 1);
+            }
+        }
+        model.addConstraint(allDifferent("cp:bc", table));
+        for (int i = 0; i < tableVars; i++) {
+            for (int j = 0; j < cubeVars; j++) {
+                model.addConstraint(boolChanneling(booleanIntermediate[j][i],
+                        table[i], j));
+            }
+        }
+        for (int i = 0; i < cubeVars; i++) {
+            model.addConstraint(eq(cube[i],
+                    sum(booleanIntermediate[i])));
+        }
+        Solver solver = new CPSolver();
+        solver.read(model);
+        solver.setVarIntSelector(new RandomIntVarSelector(solver,seed));
+        solver.setValIntSelector(new RandomIntValSelector(seed));
+        solver.solveAll();
+        System.out.println("Version 3: "+ seed + " number of solution : " + solver.getNbSolutions() + " node: " + solver.getNodeCount() + " time: " + solver.getTimeCount());
+        return solver.getNbSolutions();
+    }
+
+
 
 }

@@ -141,7 +141,7 @@ public class Occurrence extends AbstractLargeIntSConstraint {
         int nbVars = vars.length - 1;
         int cptVal = 0;
         for (int i = 0; i < nbVars; i++) {
-            if (vars[i].getVal() == cste) cptVal++;
+            if (tuple[i] == cste) cptVal++;
         }
         if (constrainOnInfNumber & constrainOnSupNumber)
             return cptVal == vars[nbVars].getVal();
