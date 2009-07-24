@@ -362,7 +362,7 @@ public class SearchTest {
 		@Override
 		public void execute() {
 			super.execute();
-			assertEquals(Math.min( capa, _s.getNbSolutions()),  PatternExample._s.getSearchStrategy().getSolutionPool().size());
+			assertEquals(Math.min( capa, _s.getNbSolutions()),  _s.getSearchStrategy().getSolutionPool().size());
 		}
 						
 	}

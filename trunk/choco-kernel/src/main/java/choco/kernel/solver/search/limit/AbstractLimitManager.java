@@ -186,7 +186,7 @@ public abstract class AbstractLimitManager extends AbstractMeasures implements G
 	public final void writeLimits(Solution sol) {
 		iter = limits.listIterator();
 		while(iter.hasNext()) {
-			sol.recordLimit(iter.nextIndex(), iter.next().getUpdatedNbAll());
+			sol.recordLimit(iter.nextIndex(), iter.next().getNbAll());
 		}
 	}
 

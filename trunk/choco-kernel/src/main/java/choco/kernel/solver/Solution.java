@@ -183,7 +183,7 @@ public class Solution {
 		public Number getObjectiveValue() {
 			return ( 
 					objectiveIntValue == Integer.MAX_VALUE ? 
-							( objectiveRealValue == Double.POSITIVE_INFINITY? null : Double.valueOf(objectiveRealValue) ) :
+							( objectiveRealValue == Double.POSITIVE_INFINITY? (Number) null: Double.valueOf(objectiveRealValue) ) :
 								Integer.valueOf(objectiveIntValue) 
 			);
 		}

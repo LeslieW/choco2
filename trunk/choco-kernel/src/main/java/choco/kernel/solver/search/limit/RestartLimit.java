@@ -40,9 +40,9 @@ public final class RestartLimit extends AbstractGlobalSearchLimit {
 	private int limitNb;
 	
 	private final void checkRestart() throws ContradictionException {
-		limitNb = watchedLimit.getUpdatedNb();
+		limitNb = watchedLimit.getNb();
 		if(limitNb > cutoff) {
-			nbMax = restartStrategy.getNextCutoff(getUpdatedNbAll()); //update the cutoff
+			nbMax = restartStrategy.getNextCutoff(getNbAll()); //update the cutoff
 			cutoff =  nbMax + limitNb; //cutoff with an offset due to the current state of the search
 			nb++; //count restart 
 			raiseContradiction(AbstractGlobalSearchStrategy.RESTART);
