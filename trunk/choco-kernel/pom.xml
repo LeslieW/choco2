@@ -67,8 +67,8 @@
     </reporting>
   <distributionManagement>
   <site>
-    <id>choco.kernel.site</id>
-    <url>${choco-local-repo}/choco-kernel</url>
+    <id>choco-repo</id>
+    <url>${choco-dir}/choco-kernel</url>
   </site>
   </distributionManagement>
 </project>

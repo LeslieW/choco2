@@ -23,7 +23,7 @@
     </links>
 
     <menu name="About choco-old_version">
-      <item name="What is choco-old_version?" href="/index.html"/>
+      <item name="What is choco-old_version?" href="index.html"/>
     </menu>
 
     <!--${reports}-->

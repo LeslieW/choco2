@@ -94,8 +94,8 @@
     </reporting>
   <distributionManagement>
   <site>
-    <id>choco.visu.site</id>
-    <url>${choco-local-repo}/choco-visu</url>
+    <id>choco-repo</id>
+    <url>${choco-dir}/choco-visu</url>
   </site>
   </distributionManagement>
   <repositories>

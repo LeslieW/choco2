@@ -23,7 +23,7 @@
     </links>
 
     <menu name="About choco-contribs">
-      <item name="What is choco-contribs?" href="/index.html"/>
+      <item name="What is choco-contribs?" href="index.html"/>
     </menu>
 
     <!--${reports}-->

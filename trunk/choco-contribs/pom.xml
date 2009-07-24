@@ -84,8 +84,8 @@
     </reporting>
   <distributionManagement>
   <site>
-    <id>choco.contribs.site</id>
-    <url>${choco-local-repo}/choco-contribs</url>
+    <id>choco-repo</id>
+    <url>${choco-dir}/choco-contribs</url>
   </site>
   </distributionManagement>
 </project>
