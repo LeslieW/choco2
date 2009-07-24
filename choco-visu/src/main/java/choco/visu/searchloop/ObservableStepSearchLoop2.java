@@ -1,12 +1,11 @@
 package choco.visu.searchloop;
 
-import java.util.Vector;
-import java.util.logging.Level;
-
 import choco.IObserver;
 import choco.cp.solver.search.AbstractSearchLoop;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.solver.branch.StrategyTest;
+
+import java.util.Vector;
+import java.util.logging.Level;
 
 public class ObservableStepSearchLoop2 extends AbstractSearchLoop implements IObservableStepSearchLoop {
 
@@ -25,6 +24,7 @@ public class ObservableStepSearchLoop2 extends AbstractSearchLoop implements IOb
 	public ObservableStepSearchLoop2(AbstractGlobalSearchStrategy searchStrategy) {
 		super(searchStrategy);
 		obs = new Vector<IObserver>();
+        internalSearchLoop = (AbstractSearchLoop)searchStrategy.searchLoop;
 	}
 
 	public final void test() {
