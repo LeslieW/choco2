@@ -64,9 +64,9 @@
         </plugins>
     </reporting>
   <distributionManagement>
-  <site>
-    <id>choco.cp.site</id>
-    <url>${choco-local-repo}/choco-cp</url>
-  </site>
+	<site>
+            <id>choco-repo</id>
+            <url>${choco-dir}/choco-cp</url>
+        </site>
   </distributionManagement>
 </project>

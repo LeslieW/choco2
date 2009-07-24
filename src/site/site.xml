@@ -2,14 +2,14 @@
 <project name="CHOCO">
   <bannerLeft>
     <name>CHOCO</name>
-    <src>/images/name.png</src>
-    <href>./index.html</href>
+    <src>images/name.png</src>
+    <href>index.html</href>
   </bannerLeft>
 
   <bannerRight>
     <name>CHOCO</name>
-    <src>/images/logo.png</src>
-    <href>./index.html</href>
+    <src>images/logo.png</src>
+    <href>index.html</href>
   </bannerRight>
 
   <publishDate format="dd MMM yyyy" />
@@ -22,26 +22,26 @@
     </links>
 
     <menu name="About CHOCO">
-      <item name="Welcome" href="/index.html"/>
-      <item name="About" href="/choco-about.html"/>
+      <item name="Welcome" href="index.html"/>
+      <item name="About" href="choco-about.html"/>
     </menu>
 
     <menu name="Get CHOCO">
-      <item name="Download" href="/choco-download.html"/>
-      <item name="Licence" href="/choco-licence.html"/>
+      <item name="Download" href="choco-download.html"/>
+      <item name="Licence" href="choco-licence.html"/>
     </menu>
 
     <menu name="Using CHOCO">
-      <item name="Documentation" href="/choco-documentation.html"/>
-      <item name="Tutorials" href="/choco-tutorials.html"/>
-      <item name="FAQ" href="/choco-faq.html"/>
+      <item name="Documentation" href="choco-documentation.html"/>
+      <item name="Tutorials" href="choco-tutorials.html"/>
+      <item name="FAQ" href="choco-faq.html"/>
     </menu>
 
     <menu name="Around CHOCO">
-      <item name="Users" href="/choco-users.html"/>
-      <item name="Applications" href="/choco-applications.html"/>
-      <item name="Articles" href="/choco-articles.html"/>
-      <item name="Developper Corner" href="/choco-developper_corner.html"/>
+      <item name="Users" href="choco-users.html"/>
+      <item name="Applications" href="choco-applications.html"/>
+      <item name="Articles" href="choco-articles.html"/>
+      <item name="Developper Corner" href="choco-developper_corner.html"/>
     </menu>
 
     <menu ref="modules" />

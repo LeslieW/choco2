@@ -23,7 +23,7 @@
     </links>
 
     <menu name="About choco-cp">
-      <item name="What is choco-cp?" href="/index.html"/>
+      <item name="What is choco-cp?" href="index.html"/>
     </menu>
 
     <!--${reports}-->
