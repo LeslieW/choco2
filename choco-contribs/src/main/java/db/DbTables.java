@@ -29,7 +29,7 @@ public final class DbTables {
 	public final static DbTableView T_RESTARTS = new DbTableView (
 			"T_RESTARTS",
 			new String[]{"ID", "POLICY", "SCALE_FACTOR", "GEOM_FACTOR"},
-			new String[]{null, "restartPolicy", "scaleFactor", "geometricalFactor"}
+			new String[]{null, "name", "scaleFactor", "geometricalFactor"}
 	);
 
 
@@ -58,11 +58,11 @@ public final class DbTables {
 			"T_MEASURES",
 			new String[] {
 					"ID","NB_SOLUTIONS","OBJECTIVE",
-					"TIME",	"CPU_TIME","NODES","BACKTRACKS","NB_ITERATIONS"
+					"TIME", "NODES","BACKTRACKS","FAILS", "NB_ITERATIONS"
 			},
 			new String[] {
 					null, "solutionCount", "objectiveValue", 
-					"timeCount", "cpuTimeCount", "nodeCount", "backTrackCount", "iterationCount"
+					"timeCount", "nodeCount", "backTrackCount", "failCount", "iterationCount"
 			}
 	);
 

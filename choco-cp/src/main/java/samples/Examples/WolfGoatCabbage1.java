@@ -87,7 +87,7 @@ public class WolfGoatCabbage1 extends PatternExample {
         printStateTransitions();
     }
 
-    private static void printStateTransitions() {
+    private void printStateTransitions() {
         StringBuffer st = new StringBuffer();
         st.append("\n\n"+(_s.isFeasible() ? "S" : "Not s") + "olved in " + states.length + " states: ");
         for (int j = 0; j < states.length; j++) {

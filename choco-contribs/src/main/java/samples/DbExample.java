@@ -13,7 +13,6 @@ import samples.Examples.MinimumEdgeDeletion;
 import samples.Examples.PatternExample;
 import samples.Examples.Queen;
 import choco.kernel.common.logging.ChocoLogging;
-import db.DbConstants;
 import db.DbManager;
 import db.DbTables;
 import db.OdbConnector;
@@ -31,29 +30,29 @@ public class DbExample implements Example {
 			inst.setName("ruler-"+i);
 			inst.setSize1(ruler.m);
 			inst.setSize1(ruler.length);
-			manager.safeSolverInsertion(PatternExample._s, inst);
+			manager.safeSolverInsertion(ruler._s, inst);
 		}
 	}
 
 	public void solveQueens(DbManager manager) {
 		DbInstanceBean inst =new DbInstanceBean("nq", new DbProblemBean("NQ", "N-Queens", "PUZZLE"));
-		Example queens = new Queen();
+		PatternExample queens = new Queen();
 		for (int i = 5; i < 10; i++) {
 			inst.setName("queens-"+i);
 			queens.execute(i);
 			inst.setSize1(i);
-			manager.safeSolverInsertion(PatternExample._s, inst);
+			manager.safeSolverInsertion(queens._s, inst);
 		}
 	}
 
 	public void solveMED(DbManager manager) {
 		DbInstanceBean inst =new DbInstanceBean("med", new DbProblemBean("MED", "Minimum Edge Deletion", "Boolean Optimization"));
-		Example med = new MinimumEdgeDeletion();
+		PatternExample med = new MinimumEdgeDeletion();
 		for (int i = 5; i < 10; i++) {
 			inst.setName("med-"+i);
 			med.execute(new Object[]{i,0.5,i});
 			inst.setSize1(i);
-			manager.safeSolverInsertion(PatternExample._s, inst, Integer.valueOf(i));
+			manager.safeSolverInsertion(med._s, inst, Integer.valueOf(i));
 		}
 	}
 

@@ -363,7 +363,8 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	}
 
 	public final IntBranchingTrace topTrace() {
-		return traceStack[currentTraceIndex];
+		//FIXME remove the test when switching to new search loops.
+		return isTraceEmpty() ? null : traceStack[currentTraceIndex];
 	}
 	
 	public final void clearTrace() {

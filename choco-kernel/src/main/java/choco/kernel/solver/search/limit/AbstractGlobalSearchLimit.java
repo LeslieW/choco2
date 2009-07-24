@@ -92,14 +92,7 @@ public abstract class AbstractGlobalSearchLimit implements GlobalSearchLimit {
 		return limitMask;
 	}
 	
-	public int getUpdatedNb() {
-		return nb;
-	}
 	
-	public final int getUpdatedNbAll() {
-		return nbTot + getUpdatedNb();
-	}
-
 	@Override
 	public String toString() {
 		return getNbAll() +" "+unit;

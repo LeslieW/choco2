@@ -38,9 +38,9 @@ import java.util.logging.Logger;
  */
 public abstract class PatternExample implements Example {
 
-	public static Model _m;
+	public Model _m;
 
-	public static Solver _s;
+	public Solver _s;
 
 	public void setUp(Object parameters){
 	}

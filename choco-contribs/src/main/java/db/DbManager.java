@@ -181,12 +181,13 @@ public class DbManager {
 
 	protected final Integer getRestartStrategyID(Solver solver) {
 		ParametrizedRestartStrategy restarts = DbConstants.NO_RESTARTS;
-		if (solver instanceof CPSolver) {
-			final CPSolver cps = (CPSolver) solver;
-			if ( cps.getRestartStrategy() != null && cps.getRestartStrategy() instanceof ParametrizedRestartStrategy) {
-				restarts = (ParametrizedRestartStrategy) cps.getRestartStrategy();
-			}
-		}
+		LOGGER.warning("record restart strategy in database");
+//		if (solver instanceof CPSolver) {
+//			final CPSolver cps = (CPSolver) solver;
+//			if ( cps.getRestartStrategy() != null && cps.getRestartStrategy() instanceof ParametrizedRestartStrategy) {
+//				restarts = (ParametrizedRestartStrategy) cps.getRestartStrategy();
+//			}
+//		}
 		return retrieveGPKOrInsertEntry(DbTables.T_RESTARTS, new BeanPropertySqlParameterSource(restarts));
 	}
 
