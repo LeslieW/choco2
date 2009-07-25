@@ -22,12 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.search.measures.AbstractMeasures;
@@ -45,6 +42,8 @@ public class Solution {
 	protected Solver solver;
 
 	protected int solutionCount;
+	
+	protected int iterationCount;
 	/**
 	 * data storage for values of search variables
 	 */
@@ -111,6 +110,10 @@ public class Solution {
 	public final void recordSolutionCount(int solutionCount) {
 		this.solutionCount = solutionCount;
 	}
+	
+	public final void recordIterationCount(int restartCount) {
+		this.iterationCount = restartCount;
+	}
 
 	public final void recordIntValue(int intVarIndex, int intVarValue) {
 		intVarValues[intVarIndex] = intVarValue;
@@ -143,15 +146,15 @@ public class Solution {
 	 * @param varIndex the index of the variable among all variables of the model
 	 * @return its value (whenever it is instantiated in the solution), or Integer.MAX_VALUE otherwise
 	 */
-	public int getIntValue(int varIndex) {
+	public final int getIntValue(int varIndex) {
 		return intVarValues[varIndex];
 	}
 
-	public int[] getSetValue(int varIndex) {
+	public final int[] getSetValue(int varIndex) {
 		return setVarValues[varIndex];
 	}
 
-	public RealInterval getRealValue(int varIndex) {
+	public final RealInterval getRealValue(int varIndex) {
 		return realVarValues[varIndex];
 	}
 
@@ -175,8 +178,7 @@ public class Solution {
 
 		@Override
 		public int getIterationCount() {
-			System.err.println("not yet implemented");
-			return -1;
+			return iterationCount;
 		}
 
 		@Override

@@ -28,7 +28,6 @@ import choco.kernel.solver.branch.AbstractIntBranching;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.ISearchLoop;
 import choco.kernel.solver.search.IntBranchingTrace;
-import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 
 /**
  * Created by IntelliJ IDEA.
@@ -48,8 +47,25 @@ public class SearchLoop implements ISearchLoop {
     }
 
     
+    
 
     @Override
+	public int getRestartCount() {
+    	return 0;
+	}
+
+
+
+
+	@Override
+	public AbstractGlobalSearchStrategy getSearchStrategy() {
+		return searchStrategy;
+	}
+
+
+
+
+	@Override
 	public void initialize() {}
 
 

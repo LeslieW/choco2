@@ -48,6 +48,13 @@ public abstract class AbstractSearchLoop implements ISearchLoop {
 		this.searchStrategy = searchStrategy;
 	}
 
+	
+
+	public final AbstractGlobalSearchStrategy getSearchStrategy() {
+		return searchStrategy;
+	}
+
+
 
 	public final int getRestartCount() {
 		return restartCount;

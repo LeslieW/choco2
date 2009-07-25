@@ -35,9 +35,14 @@ import java.util.logging.Logger;
  */
 public interface ISearchLoop {
 
-    final static Logger LOGGER = ChocoLogging.getSearchLogger();
-	
-    void initialize();
-    
+	final static Logger LOGGER = ChocoLogging.getSearchLogger();
+
+	void initialize();
+
 	Boolean run();
+
+	AbstractGlobalSearchStrategy getSearchStrategy();
+
+	int getRestartCount();
+
 }
