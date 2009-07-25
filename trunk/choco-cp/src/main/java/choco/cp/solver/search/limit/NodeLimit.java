@@ -24,26 +24,19 @@ package choco.cp.solver.search.limit;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
-import choco.kernel.solver.search.limit.Limit;
 
 
-public final class NodeLimit extends AbstractGlobalSearchLimit {
+public final class NodeLimit extends NodeCount {
 
 	
 	public NodeLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
-		super(theStrategy, theLimit,Limit.NODE);
-		limitMask = NEW_NODE;
+		super(theStrategy, theLimit);
 	}
 
 	@Override
 	public void newNode() throws ContradictionException {
-		nb++;
+		super.newNode();
 		checkLimit();
 	}
-
-	@Override
-	public final void endNode() throws ContradictionException {}
-
 	
 }
