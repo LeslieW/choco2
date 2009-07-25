@@ -1,3 +1,25 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * 
+ *          _       _                            *
+ *         |  °(..)  |                           *
+ *         |_  J||L _|        CHOCO solver       *
+ *                                               *
+ *    Choco is a java library for constraint     *
+ *    satisfaction problems (CSP), constraint    *
+ *    programming (CP) and explanation-based     *
+ *    constraint solving (e-CP). It is built     *
+ *    on a event-based propagation mechanism     *
+ *    with backtrackable structures.             *
+ *                                               *
+ *    Choco is an open-source software,          *
+ *    distributed under a BSD licence            *
+ *    and hosted by sourceforge.net              *
+ *                                               *
+ *    + website : http://choco.emn.fr            *
+ *    + support : choco@emn.fr                   *
+ *                                               *
+ *    Copyright (C) F. Laburthe,                 *
+ *                  N. Jussien    1999-2008      *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.limit;
 
 import java.util.logging.Level;
@@ -26,16 +48,15 @@ public class LimitManager extends AbstractLimitManager {
 
 	
 	@Override
-	public AbstractGlobalSearchLimit makeLimit(AbstractGlobalSearchStrategy strategy, Limit type, int limit) {
+	public AbstractGlobalSearchLimit makeLimit(AbstractGlobalSearchStrategy strategy, Limit type, int theLimit) {
 		switch (type) {
 		case NODE:
-			return limit == Integer.MAX_VALUE ? new NodeCount(strategy) : new NodeLimit(strategy, limit);
+			return theLimit == Integer.MAX_VALUE ? new NodeCount(strategy) : new NodeLimit(strategy, theLimit);
 		case BACKTRACK:
-			return limit == Integer.MAX_VALUE ? new BackTrackCount(strategy) : new BackTrackLimit(strategy, limit);
-		case FAIL:
-			return new FailLimit(strategy, limit);
+			return theLimit == Integer.MAX_VALUE ? new BackTrackCount(strategy) : new BackTrackLimit(strategy, theLimit);
+		case FAIL: return new FailLimit(strategy, theLimit);
 		case TIME:
-			return (limit == Integer.MAX_VALUE ? new TimeCount(strategy) : new TimeLimit(strategy, limit));
+			return (theLimit == Integer.MAX_VALUE ? new TimeCount(strategy) : new TimeLimit(strategy, theLimit));
 		default:
 			LOGGER.log(Level.WARNING, "cant create limit {0}", type);
 		return null;

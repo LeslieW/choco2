@@ -31,36 +31,44 @@ import choco.kernel.solver.search.limit.Limit;
  * compute the total amount of time (ms).
  *
  */
-public final class TimeCount extends AbstractGlobalSearchLimit {
+public class TimeCount extends AbstractGlobalSearchLimit {
 
 
+	private long starth;
+		
+	
 	public TimeCount(AbstractGlobalSearchStrategy theStrategy) {
-		super(theStrategy, Integer.MAX_VALUE, Limit.TIME);
+		this(theStrategy, Integer.MAX_VALUE);
+	}
+	
+	protected TimeCount(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
+		super(theStrategy, theLimit, Limit.TIME);
 	}
 
 	
 	@Override
-	public void initialize() {
+	public final void initialize() {
 		super.initialize();
-		TimeCacheThread.reset();
+		starth = TimeCacheThread.currentTimeMillis;
 	}
 
 
 	@Override
-	public void reset() {
+	public final void reset() {
 		super.reset();
-		TimeCacheThread.reset();
+		starth = TimeCacheThread.currentTimeMillis;
+		
 	}
 
 
 	@Override
 	public void endNode() throws ContradictionException {
-		nb = TimeCacheThread.elapsedTimeMillis;
+		nb =  (int) (TimeCacheThread.currentTimeMillis - starth);
 	}
 
 	@Override
 	public void newNode() throws ContradictionException {
-		nb = TimeCacheThread.elapsedTimeMillis;
+		nb =  (int) (TimeCacheThread.currentTimeMillis - starth);
 	}
 	
 }

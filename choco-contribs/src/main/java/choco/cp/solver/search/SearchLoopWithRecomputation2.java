@@ -32,7 +32,7 @@ import java.util.Stack;
 
 public class SearchLoopWithRecomputation2 extends AbstractSearchLoopWithRestart {
 
-	private final int gap =10;
+	public final int gap;
 
 	private int cpt = 0;
 
@@ -45,13 +45,21 @@ public class SearchLoopWithRecomputation2 extends AbstractSearchLoopWithRestart 
     private final TIntStack ctxIndices;
 
 
-	public SearchLoopWithRecomputation2(AbstractGlobalSearchStrategy searchStrategy) {
+	public SearchLoopWithRecomputation2(AbstractGlobalSearchStrategy searchStrategy, int gap) {
 		super(searchStrategy);
-        int n = searchStrategy.solver.getNbIntVars();
-		savedTraceIndex = new TIntStack(n);
+        this.gap = gap;
+        final int n = searchStrategy.solver.getNbIntVars();
+        savedTraceIndex = new TIntStack(n);
         contexts = new Stack<IntBranchingTrace>();
         ctxIndices = new TIntStack(n);
 	}
+
+
+
+	public final int getGap() {
+		return gap;
+	}
+
 
 
 	@Override

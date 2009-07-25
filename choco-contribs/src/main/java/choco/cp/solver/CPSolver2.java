@@ -104,7 +104,7 @@ public class CPSolver2 extends CPSolver {
 		addLimitsAndRestartStrategy();
 
 		//SearchLoop2 sl = new SearchLoop2(strategy);
-		sl = this.useRecomputation ? new SearchLoopWithRecomputation2(strategy) : new SearchLoop2(strategy);
+		sl = this.useRecomputation ? new SearchLoopWithRecomputation2(strategy, 10) : new SearchLoop2(strategy);
 		sl.setRestartAfterEachSolution(restart);
 		if( isRecordingNogoodFromRestart()) {
 			sl.setNogoodRecordingFromRestart(true);

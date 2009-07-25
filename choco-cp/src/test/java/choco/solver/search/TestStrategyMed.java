@@ -9,13 +9,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import samples.Examples.MinimumEdgeDeletion;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.memory.recomputation.EnvironmentRecomputation;
 
 
@@ -102,12 +102,13 @@ public class TestStrategyMed {
 	}
 
 	@Test
-	public void testMED() {
+	public void testMinimumEquivalenceDetection3() {
 		testMED(new Object[]{9,0.6,6});
 
 	}
 
 	@Test
+	@Ignore
 	public void testManyMED() {
 		for (double p = 0.6; p < 0.9; p+=0.1) {
 			//testMED(new Object[]{9,p});
@@ -116,6 +117,7 @@ public class TestStrategyMed {
 	}
 
 	@Test
+	@Ignore
 	public void testLargeMED() {
 		testMED(new Object[]{15,0.4});
 	}
