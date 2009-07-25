@@ -45,6 +45,12 @@ public abstract class AbstractLimitManager extends AbstractMeasures implements G
 	}
 
 	@Override
+	public final int getIterationCount() {
+		return searchStrategy.searchLoop.getRestartCount() + 1;
+	}
+
+	
+	@Override
 	public final int getLimitValue(Limit type) {
 		return AbstractGlobalSearchLimit.getLimitValue(limits, type);
 	}
@@ -52,14 +58,6 @@ public abstract class AbstractLimitManager extends AbstractMeasures implements G
 	public final int getLimitIndex(Limit type) {
 		return AbstractGlobalSearchLimit.getLimitIndex(limits, type);
 	}
-
-
-	@Override
-	public final int getIterationCount() {
-		LOGGER.warning("not yet implemented");
-		return -1;
-	}
-
 
 
 	public final int getNbLimits() {
@@ -188,6 +186,7 @@ public abstract class AbstractLimitManager extends AbstractMeasures implements G
 		while(iter.hasNext()) {
 			sol.recordLimit(iter.nextIndex(), iter.next().getNbAll());
 		}
+		sol.recordIterationCount(getIterationCount());
 	}
 
 	@Override
