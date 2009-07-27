@@ -189,7 +189,7 @@ public class EqualXYC extends AbstractBinIntSConstraint {
       return Boolean.FALSE;
     else if (v0.isInstantiated() &&
         v1.isInstantiated() &&
-        (v0.getVal() == v1.getVal()))
+        (v0.getVal() == v1.getVal() + cste))
       return Boolean.TRUE;
     else
       return null;

@@ -139,6 +139,13 @@ public final class StoredBipartiteVarList<E extends Var>{
         return Arrays.asList(t);
     }
 
+    public E[] toArray(){
+        @SuppressWarnings({"unchecked"})
+        E[] t = (E[])new Var[size];
+        System.arraycopy(vars, 0, t , 0, size);
+        return t;
+    }
+
     public E get(int i){
         return vars[i];
     }
