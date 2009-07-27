@@ -24,7 +24,7 @@
                 <reportSets>
                     <reportSet>
                         <reports>
-			<!--EMPTY : to ensure reports are not duplicated-->
+			<report>dependencies</report>
                         </reports>
                     </reportSet>
                 </reportSets>
