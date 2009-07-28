@@ -27,6 +27,7 @@ import choco.kernel.visu.components.IVisuVariable;
 import choco.visu.components.ColorConstant;
 import choco.visu.components.bricks.AChocoBrick;
 import processing.core.PApplet;
+import processing.core.PFont;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -50,6 +51,7 @@ public abstract class AChocoPApplet extends PApplet {
 
     protected AChocoBrick[] bricks;
 
+    protected PFont font;
 
     private final Object parameters;
 
@@ -59,6 +61,13 @@ public abstract class AChocoPApplet extends PApplet {
      */
     protected AChocoPApplet(final Object parameters) {
         this.parameters = parameters;
+        //this.font = createFont("Serif", 18, true);
+        try{
+            this.font = loadFont("./fonts/FreeMono-18.vlw") ;
+        }catch(Exception e){
+            LOGGER.warning("\"FreeMono-18.vlw\" not found. Use default one instead (can be slower)");
+            this.font = createFont("Serif", 18);
+        }
     }
 
     /**
@@ -99,6 +108,7 @@ public abstract class AChocoPApplet extends PApplet {
      * again after it's initial execution. 
      */
     public final void setup() {
+        frameRate(15);
         build();
         
     }
@@ -123,6 +133,21 @@ public abstract class AChocoPApplet extends PApplet {
         drawFrontSide();
     }
 
+    /**
+     * Specify the font to use
+     * @param font PFont font
+     */
+    public final void setFont(PFont font){
+        this.font = font;
+    }
+
+    /**
+     * Specify the font to use
+     * @param path the path to the font
+     */
+    public final void setFont(String path){
+        this.font = loadFont(path);
+    }
 
     /**
      * Return the ideal dimension of the chopapplet
