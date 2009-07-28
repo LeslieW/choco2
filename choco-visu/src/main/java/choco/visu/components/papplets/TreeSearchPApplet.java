@@ -72,7 +72,7 @@ public final class TreeSearchPApplet extends AChocoPApplet {
             this.font = loadFont("./fonts/FreeMono-48.vlw") ;
         }catch(Exception e){
             LOGGER.warning("\"FreeMono-48.vlw\" not found. Use default one instead (can be slower)");
-            this.font = createFont("Serif", 48);
+            this.font = getFont(48);
         }
         }else{
             font = (PFont)parameters;
