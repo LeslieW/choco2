@@ -28,7 +28,6 @@ import static choco.visu.components.ColorConstant.BLACK;
 import static choco.visu.components.ColorConstant.WHITE;
 import choco.visu.components.bricks.AChocoBrick;
 import choco.visu.components.bricks.ColorValueBrick;
-import processing.core.PFont;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -98,7 +97,6 @@ public final class ColorValuePApplet extends AChocoPApplet{
     public final void build() {
         size(200, 10 + bricks.length*(size+5));
         background(WHITE);
-        PFont font = loadFont("./fonts/FreeMono-18.vlw");
         textFont(font);
         noStroke();
     }

@@ -60,7 +60,6 @@ public final class TreeSearchPApplet extends AChocoPApplet {
 
     public ParticleSystem physics;
     Smoother3D centroid;
-    PFont fontA;
     public LinkedList<NodeBrick.CParticle> q;
     public HashMap<Particle, Object[]> settings;
     public int tswidth = 0, tsdepth = 0;
@@ -68,6 +67,16 @@ public final class TreeSearchPApplet extends AChocoPApplet {
 
     public TreeSearchPApplet(final Object parameters) {
         super(parameters);
+        if(parameters == null){
+            try{
+            this.font = loadFont("./fonts/FreeMono-48.vlw") ;
+        }catch(Exception e){
+            LOGGER.warning("\"FreeMono-48.vlw\" not found. Use default one instead (can be slower)");
+            this.font = createFont("Serif", 48);
+        }
+        }else{
+            font = (PFont)parameters;
+        }
     }
 
     /**
@@ -107,15 +116,13 @@ public final class TreeSearchPApplet extends AChocoPApplet {
     public final void build() {
         size(800, 800);
         smooth();
-        frameRate(24);
         strokeWeight(2);
         ellipseMode(CENTER);
 
         physics = new ParticleSystem((float)0.5, (float) 0.25);
         centroid = new Smoother3D((float) 0.8);
 
-        fontA = loadFont("./fonts/FreeSans-48.vlw");
-        textFont(fontA, 4);
+        textFont(font, 4);
 
         initialize();
     }

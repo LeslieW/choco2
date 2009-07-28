@@ -273,7 +273,7 @@
 	</repository>
         <repository>
             <id>choco.repo</id>
-            <url>${mvn-url}</url>
+            <url>http://www.emn.fr/x-info/choco-solver/mvn/repository/</url>
         </repository>
     </repositories>
     <build>
@@ -293,8 +293,8 @@
                 <configuration>
                     <descriptors>
                         <descriptor>./src/main/assembly/basic.xml</descriptor>
-                        <descriptor>./src/main/assembly/basic+visu.xml</descriptor>
-                        <descriptor>./src/main/assembly/basic+old.xml</descriptor>
+<!--                        <descriptor>./src/main/assembly/basic+visu.xml</descriptor>-->
+<!--                        <descriptor>./src/main/assembly/basic+old.xml</descriptor>-->
                         <descriptor>./src/main/assembly/beta.xml</descriptor>
                     </descriptors>
                     <archive>

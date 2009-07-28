@@ -16,6 +16,10 @@
         <exclude>**/samples/**</exclude>
       </excludes>
     </fileSet>
+    <fileSet>
+	<directory>choco-visu/target/classes</directory>
+	<outputDirectory>/</outputDirectory>
+    </fileSet>
   </fileSets>
     <dependencySets>
       <dependencySet>

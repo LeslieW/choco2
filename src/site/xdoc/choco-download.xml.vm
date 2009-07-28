@@ -6,7 +6,7 @@
     </properties>
 <body>
 
-<section name="Choco 2.1.0">
+<section name="choco-${project.version}">
 <p>
   Everything can be found on <a href="http://sourceforge.net/project/showfiles.php?group_id=96738" target="_blank">Sourceforge.net</a>.
 </p>
@@ -15,24 +15,57 @@
 <b>Modules of CHOCO</b>
 </p>
   <div style="vertical-align: bottom; text-align: left;">
-	<a href="http://sourceforge.net/project/downloading.php?group_id=96738&amp;filename=choco-2.1.0-basic.jar&amp;a=64919058" target="_blank">choco-2.1.0</a><br/>
-	<a href="http://sourceforge.net/project/downloading.php?group_id=96738&amp;filename=choco-kernel-2.1.0.jar&amp;a=96498984" target="_blank">choco-kernel-2.1.0</a><br/>
-	<a href="http://sourceforge.net/project/downloading.php?group_id=96738&amp;filename=choco-cp-2.1.0.jar&amp;a=28079331" target="_blank">choco-cp-2.1.0</a><br/>
-	<a href="http://sourceforge.net/project/downloading.php?group_id=96738&amp;filename=choco-visu-2.1.0.jar&amp;a=95705904" target="_blank">choco-visu-2.1.0</a><br/>
-	<a href="http://sourceforge.net/project/downloading.php?group_id=96738&amp;filename=choco-contribs-2.1.0.jar&amp;a=33921221" target="_blank">choco-contribs-2.1.0</a><br/>
+	<a href="http://sourceforge.net/project/downloading.php?group_id=96738&amp;filename=choco-${project.version}-basic.jar&amp;a=64919058" target="_blank">choco-${project.version}</a><br/>
+	<a href="http://sourceforge.net/project/downloading.php?group_id=96738&amp;filename=choco-kernel-${project.version}.jar&amp;a=96498984" target="_blank">choco-kernel-${project.version}</a><br/>
+	<a href="http://sourceforge.net/project/downloading.php?group_id=96738&amp;filename=choco-cp-${project.version}.jar&amp;a=28079331" target="_blank">choco-cp-${project.version}</a><br/>
+	<a href="http://sourceforge.net/project/downloading.php?group_id=96738&amp;filename=choco-visu-${project.version}.jar&amp;a=95705904" target="_blank">choco-visu-${project.version}</a><br/>
+	<a href="http://sourceforge.net/project/downloading.php?group_id=96738&amp;filename=choco-contribs-${project.version}.jar&amp;a=33921221" target="_blank">choco-contribs-${project.version}</a><br/>
   </div>
 <p>
 <b>Sources of CHOCO</b>
 </p>
   <div style="vertical-align: bottom; text-align: left;">
-	<a href="http://choco.svn.sourceforge.net/viewvc/choco/trunk.tar.gz?view=tar" target="_blank">choco-2.1.0</a><br/>
-	<a href="http://choco.svn.sourceforge.net/viewvc/choco/trunk/choco-kernel.tar.gz?view=tar" target="_blank">choco-kernel-2.1.0</a><br/>
-	<a href="http://choco.svn.sourceforge.net/viewvc/choco/trunk/choco-cp.tar.gz?view=tar" target="_blank">choco-cp-2.1.0</a><br/>
-	<a href="http://choco.svn.sourceforge.net/viewvc/choco/trunk/choco-visu.tar.gz?view=tar" target="_blank">choco-visu-2.1.0</a><br/>
-	<a href="http://choco.svn.sourceforge.net/viewvc/choco/trunk/choco-contribs.tar.gz?view=tar" target="_blank">choco-contribs-2.1.0</a><br/>
+	<a href="http://choco.svn.sourceforge.net/viewvc/choco/trunk.tar.gz?view=tar" target="_blank">choco-${project.version}</a><br/>
+	<a href="http://choco.svn.sourceforge.net/viewvc/choco/trunk/choco-kernel.tar.gz?view=tar" target="_blank">choco-kernel-${project.version}</a><br/>
+	<a href="http://choco.svn.sourceforge.net/viewvc/choco/trunk/choco-cp.tar.gz?view=tar" target="_blank">choco-cp-${project.version}</a><br/>
+	<a href="http://choco.svn.sourceforge.net/viewvc/choco/trunk/choco-visu.tar.gz?view=tar" target="_blank">choco-visu-${project.version}</a><br/>
+	<a href="http://choco.svn.sourceforge.net/viewvc/choco/trunk/choco-contribs.tar.gz?view=tar" target="_blank">choco-contribs-${project.version}</a><br/>
   </div>
 </section>
 
+<section name="Installation instructions">
+<p>
+<i>Maven is a Java tool, so you must have <a href="http://java.sun.com/javase/6/">Java6</a> installed in order to proceed. More precisely, the Java Runtime Environment (JRE) is sufficient.</i>
+</p>
+
+<p>
+<b>JAR files</b>
+<ul>
+<li>Download the choco-${project.version}-basic jar file</li>
+<li>Add it to the classpath of your project</li>
+</ul>
+You can also choose the specific JAR files you require, like choco-kernel-${project.version}.jar and choco-cp-${project.version}.jar, and add them to your classpath.
+
+<br/>
+<b>Sources</b>
+<br/><i>To get the sources, <a href="http://subversion.tigris.org/">Subversion</a> is required, and to manage the project, we recommend <a href="http://maven.apache.org/">Maven2</a>.</i>
+<ul>
+<li>On a terminal, run the following command to get the sources to the current directory:</li>
+<code>svn co https://choco.svn.sourceforge.net/svnroot/choco/trunk/</code>
+<li>Go into trunk/, run the following command to install choco and get the dependencies:</li>
+<code>mvn install -Dmaven.test.skip=true</code>
+The <code>-Dmaven.test.skip=true</code> option is recommended to skip time consumer tests.
+<li>Prepare the project to your favorite IDE:</li>
+	<ul>
+		<li><code>mvn idea:idea</code></li>
+		<li><code>mvn eclipse:eclipse</code></li>
+	</ul>
+</ul>
+<li>Open your favorite IDE</li>
+</p>
+
+
+</section>
 
 <section name="About you">
 <p>

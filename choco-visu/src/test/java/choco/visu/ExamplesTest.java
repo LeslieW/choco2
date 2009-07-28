@@ -70,8 +70,8 @@ public class ExamplesTest {
 //        e.donaldGeraldRobert();
 //        e.knapsack();
 //        e.magicSquare();
-        e.queens();
-//        e.sudokuAdvanced();
+//        e.queens();
+        e.sudokuAdvanced();
 //        e.usa();
 //        e.testPicross();
     }
@@ -157,9 +157,9 @@ public class ExamplesTest {
         s.setFirstSolution(true);
         s.generateSearchStrategy();
         s.visualize(v);
-        s.launch();
+//        s.launch();
 
-        v.kill();
+//        v.kill();
     }
 
 

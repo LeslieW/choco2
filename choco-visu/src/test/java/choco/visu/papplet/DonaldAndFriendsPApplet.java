@@ -29,7 +29,6 @@ import static choco.visu.components.ColorConstant.WHITE;
 import choco.visu.components.bricks.AChocoBrick;
 import choco.visu.components.bricks.HazardOrValueBrick;
 import choco.visu.components.papplets.AChocoPApplet;
-import processing.core.PFont;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -107,7 +106,6 @@ public class DonaldAndFriendsPApplet extends AChocoPApplet {
         public void build() {
             size(200, 200);
             background(WHITE);
-            PFont font = loadFont("./fonts/FreeMono-18.vlw");
             textFont(font);
             noStroke();
         }
