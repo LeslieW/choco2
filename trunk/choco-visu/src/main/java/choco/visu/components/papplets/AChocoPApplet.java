@@ -26,6 +26,7 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.visu.components.IVisuVariable;
 import choco.visu.components.ColorConstant;
 import choco.visu.components.bricks.AChocoBrick;
+import gnu.trove.TIntObjectHashMap;
 import processing.core.PApplet;
 import processing.core.PFont;
 
@@ -55,6 +56,12 @@ public abstract class AChocoPApplet extends PApplet {
 
     private final Object parameters;
 
+    public static TIntObjectHashMap<PFont> listFont;
+
+    static{
+        listFont = new TIntObjectHashMap<PFont>();
+    }
+
     /**
      * Create a new instanciation of AChocoPApplet
      * @param parameters parameters of the build (size, numnber of variables,...
@@ -66,7 +73,7 @@ public abstract class AChocoPApplet extends PApplet {
             this.font = loadFont("./fonts/FreeMono-18.vlw") ;
         }catch(Exception e){
             LOGGER.warning("\"FreeMono-18.vlw\" not found. Use default one instead (can be slower)");
-            this.font = createFont("Serif", 18);
+            this.font = getFont(18);
         }
     }
 
@@ -169,5 +176,14 @@ public abstract class AChocoPApplet extends PApplet {
 
     public Object getParameters() {
         return parameters;
+    }
+
+    public PFont getFont(int size){
+        PFont font = listFont.get(size);
+        if(font == null){
+            font = createFont("Serif", size);
+            listFont.put(size, font);
+        }
+        return font;
     }
 }

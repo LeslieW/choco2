@@ -288,6 +288,15 @@
                     <encoding>ISO-8859-1</encoding>
                 </configuration>
             </plugin>
+	    <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <!-- Permet de spécifier l'encoding en UTF8 lors du traitement des ressources-->
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
