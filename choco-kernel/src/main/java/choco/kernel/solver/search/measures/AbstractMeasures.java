@@ -31,6 +31,7 @@ public abstract class AbstractMeasures implements ISearchMeasures {
 				b.append(val).append(' ').append(type.getUnit()).append(" ; ");
 			}
 		}
+		b.delete(b.length()-3, b.length());
 		return new String(b);
 	}
 

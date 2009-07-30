@@ -8,7 +8,7 @@ public final class RestartLimit extends AbstractGlobalSearchLimit {
 
 	
 	public RestartLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
-		super(theStrategy, theLimit + 1, Limit.RESTART);
+		super(theStrategy, theLimit, Limit.RESTART);
 	}
 
 	

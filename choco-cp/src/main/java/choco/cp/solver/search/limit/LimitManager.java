@@ -186,7 +186,7 @@ public class LimitManager implements GlobalSearchLimit {
 		stb.append(" ; restart:").append(restartLimit.pretty());
 		stb.append(" }");
 		if(restartStrategy != null) {
-			stb.append("\nRestartStrategy{ policy:").append(restartStrategy.pretty());
+			stb.append(" RestartStrategy{ policy:").append(restartStrategy.pretty());
 			stb.append(" ; count:").append(restartFromStrategyCount);
 			stb.append(" ; cutoff:").append(restartStrategyLimit.pretty());
 			stb.append(" }");

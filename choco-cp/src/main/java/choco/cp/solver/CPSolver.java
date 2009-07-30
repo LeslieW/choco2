@@ -863,6 +863,8 @@ public class CPSolver implements Solver {
 						new SearchLoopWithRecomputation(strategy, kickRestart, getRecomputationGap()):
 							new SearchLoop(strategy, kickRestart) )
 							;
+		searchLoop.setRestartAfterEachSolution(restartConfig.isRestartAfterEachSolution());
+		searchLoop.setInitializeSearchAfterRestart(restartConfig.isInitializingSearchAfterRestart());
 		strategy.setSearchLoop(searchLoop);
 		return searchLoop;
 	}
@@ -1221,7 +1223,7 @@ public class CPSolver implements Solver {
 	 * The limit does not stop the search only the restart process.
 	 */
 	public void setRestartLimit(int restartLimit) {
-		limitConfig.setSearchLimit(Limit.RESTART, restartLimit);
+		limitConfig.setRestartLimit(Limit.RESTART, restartLimit);
 	}
 
 
