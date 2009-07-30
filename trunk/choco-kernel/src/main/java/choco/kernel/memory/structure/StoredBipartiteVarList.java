@@ -22,6 +22,9 @@
  **************************************************/
 package choco.kernel.memory.structure;
 
+import choco.IPretty;
+import choco.kernel.common.util.iterators.DisposableIterator;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.variables.Var;
@@ -29,6 +32,8 @@ import choco.kernel.solver.variables.Var;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.xml.ws.Dispatch;
 
 /*
 * User : charles
@@ -43,7 +48,7 @@ import java.util.List;
 * - a iterator over elements
 * - a
 */
-public final class StoredBipartiteVarList<E extends Var>{
+public final class StoredBipartiteVarList<E extends Var> implements IPretty {
 
     private static final int INITIAL_CAPACITY = 8;
 
@@ -115,7 +120,7 @@ public final class StoredBipartiteVarList<E extends Var>{
 			throw new IndexOutOfBoundsException(
 					"Index: "+index+", Size: "+size());
 	}
-
+	
     /**
 	 * removal performs a swap on a pair of elements. Do not remove while iterating if you want to preserve the current order.
      * @param index index of the object to remove
@@ -129,7 +134,7 @@ public final class StoredBipartiteVarList<E extends Var>{
 		varsNotInstanciated[index] = varsNotInstanciated[idx];
 		varsNotInstanciated[idx] = tmp;
 		offset.set(idx);
-		return tmp;
+		return (E) tmp;
 	}
 
     public List<E> toList(){
@@ -147,7 +152,7 @@ public final class StoredBipartiteVarList<E extends Var>{
     }
 
     public E get(int i){
-        return vars[i];
+        return (E) vars[i];
     }
 
     /**
@@ -188,8 +193,18 @@ public final class StoredBipartiteVarList<E extends Var>{
     public int size(){
         return size;
     }
+    
+    @Override
+	public String pretty() {
+    	return StringUtils.pretty(vars, 0, size);
+	}
 
-    /**
+	@Override
+	public String toString() {
+		return Arrays.toString(vars);
+	}
+
+	/**
      * Iterator over every variables
      * @return iterator
      */
@@ -247,7 +262,7 @@ public final class StoredBipartiteVarList<E extends Var>{
      * BEWARE: initial order is not preserved
      * @return iterator
      */
-    public final Iterator<E> getNotInstanciatedVariableIterator(){
+    public final DisposableIterator<E> getNotInstanciatedVariableIterator(){
         return new QuickIterator();
     }
 
@@ -260,9 +275,18 @@ public final class StoredBipartiteVarList<E extends Var>{
         return new DualIterator();
     }
 
-    private class QuickIterator implements Iterator<E> {
+    private class QuickIterator extends DisposableIterator<E> {
         int i = -1;
-        /**
+       
+        
+        
+        @Override
+		public void dispose() {
+        	super.dispose();
+        	i = -1;
+		}
+
+		/**
          * Returns <tt>true</tt> if the iteration has more elements. (In other
          * words, returns <tt>true</tt> if <tt>next</tt> would return an element
          * rather than throwing an exception.)
@@ -287,7 +311,7 @@ public final class StoredBipartiteVarList<E extends Var>{
          */
         @Override
         public E next() {
-            return varsNotInstanciated[i];
+            return (E) varsNotInstanciated[i];
         }
 
         /**

@@ -43,12 +43,6 @@ public class DbManager {
 
 	public final static Logger LOGGER = ChocoLogging.getParserLogger();
 
-	public static final String NULL = "NULL";
-
-	public static final String ID = "ID";
-
-	protected  final static int[] THREE_VARCHARS = {VARCHAR, VARCHAR, VARCHAR}; 
-
 	public final DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
 	SingleConnectionDataSource sdataSource;
@@ -58,7 +52,7 @@ public class DbManager {
 	protected final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 	private Integer environmentID;
-	
+
 	private Integer defaultExecutionID;
 
 	public DbManager(File databaseDir, String databaseName) {
@@ -182,12 +176,11 @@ public class DbManager {
 
 	protected final Integer getRestartStrategyID(Solver solver) {
 		UniversalRestartStrategy restarts = NoRestartStrategy.SINGLOTON;
-		LOGGER.warning("record restart strategy in database");
 		if (solver instanceof CPSolver) {
-//			final CPSolver cps = (CPSolver) solver;
-//			if ( cps.getRestartStrategy() != null && cps.getRestartStrategy() instanceof ParametrizedRestartStrategy) {
-//				restarts = (ParametrizedRestartStrategy) cps.getRestartStrategy();
-//			}
+			final CPSolver cps = (CPSolver) solver;
+			if ( cps.restartConfig.getRestartStrategy() != null) {
+				restarts = cps.restartConfig.getRestartStrategy();
+			}
 		}
 		return retrieveGPKOrInsertEntry(DbTables.T_RESTARTS, new BeanPropertySqlParameterSource(restarts));
 	}
@@ -204,11 +197,11 @@ public class DbManager {
 	public final Integer safeSolverInsertion(Solver solver,  DbInstance instance, Integer seed) {
 		return safeSolverInsertion(solver, null, instance, null, seed);
 	}
-	
+
 	public final Integer safeSolverInsertion(Solver solver,  DbInstance instance, String description, Integer seed) {
 		return safeSolverInsertion(solver, null, instance, description, seed);
 	}
-	
+
 	public final Integer safeSolverInsertion(Solver solver,  Integer executionID, DbInstance instance, String description, Integer seed) {
 		//find execution
 		if( executionID == null) {
@@ -245,7 +238,7 @@ public class DbManager {
 	}
 
 
-	
+
 	protected final Integer getRuntimeID() {
 		String host;	
 		try {
@@ -290,7 +283,7 @@ public class DbManager {
 		return insertEntryAndRetrieveGPK(DbTables.T_EXECUTIONS, 
 				new Object[]{ getEnvironmentID(), new Date(System.currentTimeMillis()), seed});
 	}
-	
+
 	public final Integer getExecutionID(Integer seed) {
 		final Date date = new Date(System.currentTimeMillis());
 		if( seed == null) {

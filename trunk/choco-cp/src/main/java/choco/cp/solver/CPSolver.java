@@ -711,14 +711,14 @@ public class CPSolver implements Solver {
 	public String solutionToString() {
 		StringBuffer buf = new StringBuffer();
 		for (int i = 0; i < getNbIntVars(); i++) {
-			IntVar v = getIntVar(i);
+			final IntVar v = getIntVar(i);
 			if (v.isInstantiated()) {
 				buf.append(v.toString());
 				buf.append(", ");
 			}
 		}
 		for (int j = 0; j < getNbRealVars(); j++) {
-			RealVar v = getRealVar(j);
+			final RealVar v = getRealVar(j);
 			if (v.isInstantiated()) {
 				buf.append(v.toString());
 				buf.append(", ");
@@ -726,7 +726,7 @@ public class CPSolver implements Solver {
 		}
 
 		for (int k = 0; k < getNbSetVars(); k++) {
-			SetVar v = getSetVar(k);
+			final SetVar v = getSetVar(k);
 			if (v.isInstantiated()) {
 				buf.append(v.toString());
 				buf.append(", ");
@@ -2493,24 +2493,21 @@ public class CPSolver implements Solver {
 			// Integer variables
 			int nbv = getNbIntVars();
 			for (int i = 0; i < nbv; i++) {
-				IntDomainVar vari = (IntDomainVar) getIntVar(i);
 				if (sol.getIntValue(i) != Integer.MAX_VALUE) {
-					vari.setVal(sol.getIntValue(i));
+					getIntVar(i).setVal(sol.getIntValue(i));
 				}
 			}
 
 			// Set variables
 			nbv = getNbSetVars();
 			for (int i = 0; i < nbv; i++) {
-				SetVar vari = getSetVar(i);
-				vari.setVal(sol.getSetValue(i));
+				getSetVar(i).setVal(sol.getSetValue(i));
 			}
 
 			// Real variables
 			nbv = getNbRealVars();
 			for (int i = 0; i < nbv; i++) {
-				RealVar vari = getRealVar(i);
-				vari.intersect(sol.getRealValue(i));
+				getRealVar(i).intersect(sol.getRealValue(i));
 			}
 			if (Choco.DEBUG) {
 				if (nogoodStore != null)

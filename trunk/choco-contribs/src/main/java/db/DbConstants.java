@@ -16,6 +16,8 @@ public final class DbConstants {
 	public static final int Mo = 1048576;
 
 	
+	public static final String ID = "ID";
+	
 	public static final String NULL = "NULL";
 	
 	public final static String CALL_IDENTITY = "CALL IDENTITY()";

@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import junit.framework.Assert;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -16,6 +18,7 @@ import samples.Examples.MinimumEdgeDeletion;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.memory.recomputation.EnvironmentRecomputation;
 
 
@@ -53,7 +56,7 @@ public class TestStrategyMed {
 		do {
 			do {
 				do {
-					//do {
+				//	do {
 						//do {
 			
 			med.buildSolver();
@@ -73,22 +76,26 @@ public class TestStrategyMed {
 //		}while( nogoodFromRestart);
 			randomSelectors = ! randomSelectors;
 		}while( randomSelectors);
-		//	recomputation = ! recomputation;
-		//}while( recomputation);
+//			recomputation = ! recomputation;
+//		}while( recomputation);
 	}
 
 	@Test
-	public void debugTest() {
-		recomputation = false;
+	public void recomputationMedTest() {
+		ChocoLogging.setVerbosity(Verbosity.SEARCH);
+		recomputation = true;
 		restartAfterSolution = true;
-		restartPolicy = true;
+		restartPolicy = false;
 		nogoodFromRestart = false;
 		randomSelectors = false;
-		med.setUp(new Object[]{10,0.7,1});
+		med.setUp(new Object[]{6,0.7,2});
 		med.buildModel();
 		med.buildSolver();
 		med.solve();
 		med.prettyOut();
+		ChocoLogging.setVerbosity(Verbosity.SILENT);
+		Assert.assertEquals("nb deletion", 1, med._s.getObjectiveValue());
+		
 	}
 	
 	@Test
@@ -109,16 +116,14 @@ public class TestStrategyMed {
 
 	@Test
 	//@Ignore
-	public void testManyMED() {
-		for (double p = 0.6; p < 0.9; p+=0.1) {
-			//testMED(new Object[]{9,p});
-			testMED(new Object[]{10,p});
-		}
+	public void testMinimumEquivalenceDetection4() {
+		testMED(new Object[]{10,0.7});
+		testMED(new Object[]{10,0.9});
 	}
 
 	@Test
-	@Ignore
-	public void testLargeMED() {
+	//@Ignore
+	public void testLargeMinimumEquivalenceDetection() {
 		testMED(new Object[]{15,0.4});
 	}
 	
@@ -126,8 +131,7 @@ public class TestStrategyMed {
 
 		@Override
 		public void buildSolver() {
-			LOGGER.log(Level.INFO, "Use Recomputation: {0}", recomputation);
-			_s =  recomputation ? new CPSolver(new EnvironmentRecomputation()) : new CPSolver();
+			_s =  new CPSolver();
 			_s.monitorBackTrackLimit(true);
 			_s.monitorFailLimit(true);
 			_s.setLoggingMaxDepth(100);
@@ -135,6 +139,7 @@ public class TestStrategyMed {
 			_s.setFirstSolution(false);
 			_s.setDoMaximize(false);
 			CPSolver s = (CPSolver) _s;
+			s.setRecomputation(recomputation);
 			s.setRestart(restartAfterSolution);
 			if(restartPolicy) {s.setLubyRestart(1, 2);} //many restarts, bad performance but good testing !
 			s.setRecordNogoodFromRestart(nogoodFromRestart);
@@ -146,16 +151,10 @@ public class TestStrategyMed {
 				if(restartPolicy) {b.append(" restartPolicy (LUBY) ;");}
 				if(nogoodFromRestart) {b.append(" nogoodFromRestart ;");}
 				if(randomSelectors) {b.append(" randomSelectors ;");}
+				if(recomputation) {b.append(" recomputation ;");}
 				LOGGER.info(new String(b));
 			}
 			_s.generateSearchStrategy();
-		}
-		
-
-		@Override
-		public void solve() {
-			super.solve();
-			prettyOut();
 		}
 	}
 }

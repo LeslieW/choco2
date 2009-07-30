@@ -45,7 +45,6 @@ package choco.kernel.solver.variables.integer;
  **************************************************/
 
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
 /** History:
  * 2007-12-07 : FR_1873619 CPRU: DomOverDeg+DomOverWDeg
  * */
@@ -101,18 +100,6 @@ public interface IntDomainVar extends IntVar {
 	 * 2007-12-07 FR_1873619 CPRU: DomOverDeg+DomOverWDeg
 	 */
 	public static int WEIGHT = 1;
-
-
-	/**
-	 * <b>Public user API:</b>
-	 * <i>Propagation events</i> assigning a value to a variable
-	 * (ie: removing all other values from its domain).
-	 *
-	 * @param x the value that is assigned to the variable
-	 * @throws choco.kernel.solver.ContradictionException contradiction exception
-	 */
-
-	public void setVal(int x) throws ContradictionException;
 
 
 	/**
@@ -198,14 +185,6 @@ public interface IntDomainVar extends IntVar {
 
 	public IntDomain getDomain();
 
-	/**
-	 * <b>Public user API:</b>
-	 * <i>Domains :</i> testing whether the value of an instantiated variable
-	 * is equal to a specific value.
-	 * @param x the tested value
-	 * @return wether the value of an instantiated variables is equal to a x.
-	 */
-	public boolean isInstantiatedTo(int x);
 
 	/**
 	 * <b>Public user API:</b>
@@ -309,13 +288,6 @@ public interface IntDomainVar extends IntVar {
 	public int getSup();
 
 
-	/**
-	 * Returns the value of the variable if instantiated.
-	 *
-	 * @return the value of the variable
-	 */
-
-	public int getVal();
 
 	/**
 	 * @deprecated replaced by getVal
