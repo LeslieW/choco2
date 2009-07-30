@@ -22,6 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.real;
 
+import choco.cp.solver.search.real.objective.MaxRealObjManager;
+import choco.cp.solver.search.real.objective.MinRealObjManager;
+import choco.kernel.solver.search.AbstractOptimize;
+import choco.kernel.solver.search.IObjectiveManager;
+import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.real.RealVar;
 
 /**
@@ -33,26 +38,26 @@ import choco.kernel.solver.variables.real.RealVar;
  * <p/>
  * Created by: Guillaume on 20 juil. 2004
  */
-public class RealBranchAndBound extends AbstractRealOptimize {
-  public RealBranchAndBound(RealVar obj, boolean maximize) {
-    super(obj, maximize);
-  }
+public class RealBranchAndBound extends AbstractOptimize {
 
-// TODO: seeems useless !    
-  public void newTreeSearch() {
-    initBounds();
-    limitManager.initialize();
-  }
+	public final RealVar objective;
 
-  public void endTreeSearch() {
-	  limitManager.reset();
-    if (solver.getFeasible()==Boolean.TRUE) {
-      //[SVIEW] solve => ~S sol, best:~S [~S]// a.nbSol,(if a.doMaximize a.lowerBound else a.upperBound),a.limits
-    } else if (solver.getFeasible() == Boolean.FALSE) {
-      //[SVIEW] solve => no sol [~S]// a.limits
-    } else {
-      //[SVIEW] solve interrupted before any solution was found [~S]// a.limits
-    }
-    printRuntimeStatistics();
-  }
+	public RealBranchAndBound(RealVar objective, boolean maximize) {
+		super( makeDefaultObjManager(objective, maximize), maximize);
+		this.objective = objective;
+	}
+	
+	protected final static IObjectiveManager makeDefaultObjManager(RealVar objective, boolean maximize) {
+		return maximize ? new MaxRealObjManager(objective) : new MinRealObjManager(objective);
+	}
+	
+	@Override
+	public final Var getObjective() {
+		return objective;
+	}
+	
+	public final RealVar getIntObjective() {
+		return objective;
+	}
+		
 }

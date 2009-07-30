@@ -52,7 +52,18 @@ public abstract class AbstractRestartStrategy implements UniversalRestartStrateg
 		checkPositiveValue(scaleFactor);
 		this.scaleFactor = scaleFactor;
 	}
+
+	@Override
+	public String pretty() {
+		return getName() +'('+getScaleFactor()+','+getGeometricalFactor()+')';
+	}
 	
-	
-	
+	public int[] getSequenceExample(int length) {
+		int[] res = new int[length];
+		for (int i = 0; i < res.length; i++) {
+			res[i] = getNextCutoff(i);
+		}
+		return res;
+	}
+		
 }

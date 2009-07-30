@@ -20,51 +20,27 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.search.objective;
+package choco.cp.solver.search.restart;
 
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 
-public final class MinIntObjManager extends IntObjectiveManager {
+public abstract class AbstractKickRestart implements IKickRestart {
 
+	
+	public final AbstractGlobalSearchStrategy searchStrategy;
 
-
-	public MinIntObjManager(IntDomainVar objective) {
-		super(objective);
+	
+	public AbstractKickRestart(AbstractGlobalSearchStrategy searchStrategy) {
+		super();
+		this.searchStrategy = searchStrategy;
 	}
 
-	@Override
-	public int getObjectiveIntValue() {
-		return objective.getInf();
-	}
 
 	@Override
-	public void initBounds() {
-		bound = Integer.MAX_VALUE;
-		oppositeBound = objective.getInf();
-		targetBound = objective.getSup();
-	}
-
-	@Override
-	public void postTargetBound() throws ContradictionException {
-		objective.setSup(targetBound);
-		
-	}
-
-	@Override
-	public void setBound() {
-		final int v = objective.getInf();
-		if( v < bound) { bound = v;}
+	public AbstractGlobalSearchStrategy getSearchStrategy() {
+		return searchStrategy;
 	}
 	
-
-	@Override
-	public void setTargetBound() {
-		targetBound = objective.getSup() - 1;
-	}
 	
-	@Override
-	public boolean isTargetInfeasible() {
-		return targetBound < oppositeBound;
-	}
+	
 }

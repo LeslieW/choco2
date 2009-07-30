@@ -33,11 +33,11 @@ import choco.kernel.solver.search.limit.Limit;
  */
 public final class FailLimit extends AbstractGlobalSearchLimit implements PropagationEngineListener {
 
+	private int nb;
 	
 	public FailLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
 		super(theStrategy, theLimit, Limit.FAIL);
 		strategy.getSolver().getPropagationEngine().addPropagationEngineListener(this);
-		limitMask = nbMax == Integer.MAX_VALUE ? 0 : NEW_NODE + END_NODE;
 	}
 
 	/**
@@ -49,16 +49,12 @@ public final class FailLimit extends AbstractGlobalSearchLimit implements Propag
 	}
 	
 
-	@Override
-	public void newNode() throws ContradictionException {
-		checkLimit();
-	}
 	
 	@Override
-	public void endNode() throws ContradictionException {
-		checkLimit();
+	public final int getNb() {
+		return nb;
 	}
-	
+
 	public void contradictionOccured(ContradictionException e) {
 		if( e.getContradictionType() != ContradictionException.SEARCH_LIMIT) {nb++;}
 	}

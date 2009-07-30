@@ -31,7 +31,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -43,6 +43,8 @@ import java.util.logging.Logger;
 // *  an open-source Constraint Programming Kernel  *
 // *     for Research and Education                 *
 // **************************************************
+
+import junit.framework.Assert;
 
 public class OptimizeTest {
 	private final static Logger LOGGER = ChocoLogging.getTestLogger();
@@ -95,5 +97,17 @@ public class OptimizeTest {
         assertTrue(s.getNbSolutions() == 32);
         assertEquals(s.getOptimumValue().intValue(), 30);
     }
+    
+    
+  
+    @Test
+    public void test3() {
+        LOGGER.finer("test3");
+        s.setNodeLimit(2);
+        assertNull("feasible", s.maximize(s.getVar(obj), false));
+        assertEquals("solution count", 0, s.getSolutionCount());
+        assertNull("objective value", s.getObjectiveValue());
+    }
+    
 
 }

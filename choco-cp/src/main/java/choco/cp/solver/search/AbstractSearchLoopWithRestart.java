@@ -22,13 +22,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search;
 
-import choco.cp.solver.CPSolver;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.INIT_SEARCH;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.OPEN_NODE;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.RESTART;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.UP_BRANCH;
+import choco.cp.solver.search.restart.IKickRestart;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.SolverException;
 import choco.kernel.solver.branch.AbstractBranching;
 import choco.kernel.solver.branch.AbstractIntBranching;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.*;
 import choco.kernel.solver.search.IntBranchingTrace;
 
 
@@ -41,32 +43,38 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 	//So we have to check the combinatin of DWDeg an a restart strategy.
 	private int moveAfterRestart=  INIT_SEARCH;
 
-	protected int previousNbSolutions = 0;
+	protected int previousNbSolutions;
 
 	protected IKickRestart kickRestart;
 
-
-	
 	/**
 	 * current trace object. 
 	 */
 	protected IntBranchingTrace ctx = null;
 
 
-	public AbstractSearchLoopWithRestart(AbstractGlobalSearchStrategy searchStrategy) {
+	public AbstractSearchLoopWithRestart(AbstractGlobalSearchStrategy searchStrategy, IKickRestart kickRestart) {
 		super(searchStrategy);
-		kickRestart = new BasicKickRestart();
+		this.kickRestart = kickRestart;
 	}
+	
+	
+
+	public final IntBranchingTrace getCurrentTrace() {
+		return ctx;
+	}
+
+
+
+	public final void setCtx(IntBranchingTrace ctx) {
+		this.ctx = ctx;
+	}
+
 
 
 	public final void setRestartAfterEachSolution(boolean restart) {
 		moveAfterSolution = restart ? RESTART : UP_BRANCH; 
 	}
-
-	public final void setNogoodRecordingFromRestart(boolean recording) {
-		kickRestart = recording ? new NogoodKickRestart() : new BasicKickRestart();
-	}
-
 
 
 
@@ -81,7 +89,7 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 	//***************************************************************//
 
 
-	
+
 
 
 	@Override
@@ -152,7 +160,7 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 					ctx = searchStrategy.pushTrace();
 					ctx.setBranching(currentBranching);
 					ctx.setBranchingObject(branchingObj);
-					ctx.setBranchIndex(currentBranching.getFirstBranch(ctx.getBranchingObject()));
+					ctx.setBranchIndex(currentBranching.getFirstBranch(branchingObj));
 					searchStrategy.nextMove = AbstractGlobalSearchStrategy.DOWN_BRANCH;
 					return; //the new node is opened.
 				}
@@ -213,122 +221,74 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 
 	@Override
 	public final void upBranch() {
-		if (searchStrategy.isTraceEmpty()) {
-			//cant backtrack from the root node
-			stop = true;
-		} else {
-			try {
-				searchStrategy.endTreeNode(); //check limit
-				worldPop();
-				goUpBranch(); //backtrack
-				//compute the next move
-				if (!ctx.getBranching().finishedBranching(ctx.getBranchingObject(), ctx.getBranchIndex())) {
-					ctx.setBranchIndex(ctx.getBranching().getNextBranch(ctx.getBranchingObject(), ctx.getBranchIndex()));
-					searchStrategy.nextMove = AbstractGlobalSearchStrategy.DOWN_BRANCH;
-				} else {
-					ctx = searchStrategy.popTrace();
-					searchStrategy.nextMove = AbstractGlobalSearchStrategy.UP_BRANCH;
-				}
-			} catch (ContradictionException e) {
-				ctx = searchStrategy.popTrace();
-				searchStrategy.nextMove = e.getContradictionMove();
-			}
-		}
-	}
-
-	//*****************************************************************//
-	//*******************  DOWN_BRANCH  ********************************//
-	//***************************************************************//
-
-	protected abstract void worldPush();
-
-	@Override
-	public void downBranch() {
 		try {
-			worldPush();
-			ctx.getBranching().goDownBranch(ctx.getBranchingObject(), ctx.getBranchIndex());
-			searchStrategy.solver.propagate();
-			searchStrategy.nextMove = AbstractGlobalSearchStrategy.OPEN_NODE;
+			searchStrategy.endTreeNode(); //check limit
+			worldPop();
+			goUpBranch(); //backtrack
+			//compute the next move
+			if (!ctx.getBranching().finishedBranching(ctx.getBranchingObject(), ctx.getBranchIndex())) {
+				ctx.setBranchIndex(ctx.getBranching().getNextBranch(ctx.getBranchingObject(), ctx.getBranchIndex()));
+				searchStrategy.nextMove = AbstractGlobalSearchStrategy.DOWN_BRANCH;
+			} else {
+				ctx = searchStrategy.popTrace();
+				searchStrategy.nextMove = AbstractGlobalSearchStrategy.UP_BRANCH;
+			}
 		} catch (ContradictionException e) {
+			ctx = searchStrategy.popTrace();
 			searchStrategy.nextMove = e.getContradictionMove();
 		}
 	}
 
-	//*****************************************************************//
-	//*******************  RESTART  ********************************//
-	//***************************************************************//
 
+//*****************************************************************//
+//*******************  DOWN_BRANCH  ********************************//
+//***************************************************************//
 
+protected abstract void worldPush();
 
-	/**
-	 * an interface used to restore the root node when restarting.
-	 */
-	public static interface IKickRestart {
-
-		/**
-		 * Restore the root node of the search tree.
-		 */
-		void restoreRootNode();
+@Override
+public void downBranch() {
+	try {
+		worldPush();
+		ctx.getBranching().goDownBranch(ctx.getBranchingObject(), ctx.getBranchIndex());
+		searchStrategy.solver.propagate();
+		searchStrategy.nextMove = AbstractGlobalSearchStrategy.OPEN_NODE;
+	} catch (ContradictionException e) {
+		searchStrategy.nextMove = e.getContradictionMove();
 	}
+}
 
-	/**
-	 * 
-	 * basic 
-	 */
-	protected final class BasicKickRestart implements IKickRestart {
+//*****************************************************************//
+//*******************  RESTART  ********************************//
+//***************************************************************//
 
-		public void restoreRootNode() {
-			searchStrategy.clearTrace();
-			searchStrategy.solver.worldPopUntil(searchStrategy.baseWorld + 1);
+
+/**
+ * perform the restart.
+ */
+@Override
+public void restart() {
+	LOGGER.finest("=== restarting ...");
+	kickRestart.restoreRootNode(ctx);
+	try {
+		searchStrategy.postDynamicCut();
+		searchStrategy.solver.propagate();
+		ctx = searchStrategy.getReusableInitialTrace();
+		searchStrategy.nextMove = moveAfterRestart;
+		if( searchStrategy.limitManager.newRestart()) {
+			setRestartAfterEachSolution(false);
+			searchStrategy.limitManager.cancelRestart();
 		}
-
+	} catch (ContradictionException e) {
+		stop = true;
 	}
-
-	protected final class NogoodKickRestart implements IKickRestart {
-
-		private final NogoodRecorder recorder;
-		
-		public NogoodKickRestart() {
-			super();
-			if (searchStrategy.solver instanceof CPSolver) {
-				recorder = new NogoodRecorder( (CPSolver) searchStrategy.solver);
-			}else {
-				throw new SolverException("nogood recording is a CPSolver feature.");
-			}
-		}
-		
-
-		public void restoreRootNode() {
-			recorder.reset();
-			recorder.handleTrace(ctx);
-			while ( (ctx = searchStrategy.popTrace() ) != null ) {
-				recorder.handleTrace(ctx);
-			}
-			searchStrategy.solver.worldPopUntil(searchStrategy.baseWorld + 1);
-			recorder.generateNogoods();  //succeed
-		}
-
-	}
+}
 
 
 
-	/**
-	 * perform the restart.
-	 */
-	@Override
-	public void restart() {
-		LOGGER.finest("=== restarting ...");
-		searchStrategy.setEncounteredLimit(null);
-		kickRestart.restoreRootNode();
-		try {
-			searchStrategy.postDynamicCut();
-			searchStrategy.solver.propagate();
-			ctx = searchStrategy.getReusableInitialTrace();
-			searchStrategy.nextMove = moveAfterRestart;
-		} catch (ContradictionException e) {
-			stop = true;
-		}
-	}
+
+
+
 
 
 

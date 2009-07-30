@@ -26,9 +26,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
-import choco.kernel.solver.search.limit.Limit;
-import choco.kernel.solver.search.measures.AbstractMeasures;
 import choco.kernel.solver.search.measures.IMeasures;
+import choco.kernel.solver.search.measures.ISearchMeasures;
+import choco.kernel.solver.search.measures.MeasuresBean;
 import choco.kernel.solver.variables.real.RealInterval;
 
 /**
@@ -42,7 +42,7 @@ public class Solution {
 	protected Solver solver;
 
 	protected int solutionCount;
-	
+
 	protected int iterationCount;
 	/**
 	 * data storage for values of search variables
@@ -59,8 +59,6 @@ public class Solution {
 
 	protected final SolutionMeasures measures;
 
-	protected int[] limitValues;
-
 	private List<AbstractGlobalSearchLimit> solutionLimits;
 	/**
 	 * Constructor
@@ -72,7 +70,6 @@ public class Solution {
 		intVarValues = new int[solver.getNbIntVars()];
 		setVarValues = new int[solver.getNbSetVars()][];
 		realVarValues = new RealInterval[solver.getNbRealVars()];
-		limitValues = new int[solver.getSearchStrategy().getLimitManager().getNbLimits()];
 		solutionLimits = new LinkedList<AbstractGlobalSearchLimit>();
 		measures = new SolutionMeasures();
 	}
@@ -89,9 +86,6 @@ public class Solution {
 		if(solver.getNbRealVars() > realVarValues.length) {
 			realVarValues = new RealInterval[solver.getNbRealVars()];
 		}
-		if(solver.getSearchStrategy().getLimitManager().getNbLimits() >  limitValues.length) {
-			realVarValues = new RealInterval[solver.getSearchStrategy().getLimitManager().getNbLimits()];
-		}
 	}
 
 
@@ -99,9 +93,6 @@ public class Solution {
 		return measures;
 	}
 
-	public final int getLimitValue(Limit limit) {
-		return AbstractGlobalSearchLimit.getLimitValue(solutionLimits, limit);
-	}
 
 	public final int getObjectiveValue() {
 		return objectiveIntValue;
@@ -110,7 +101,7 @@ public class Solution {
 	public final void recordSolutionCount(int solutionCount) {
 		this.solutionCount = solutionCount;
 	}
-	
+
 	public final void recordIterationCount(int restartCount) {
 		this.iterationCount = restartCount;
 	}
@@ -135,8 +126,8 @@ public class Solution {
 		this.objectiveRealValue = objectiveRealValue;
 	}
 
-	public final void recordLimit(int idx, int value){
-		limitValues[idx] = value;
+	public final void recordSearchMeasures(ISearchMeasures measures){
+		this.measures.copy(measures);
 	}
 
 
@@ -159,7 +150,7 @@ public class Solution {
 	}
 
 
-	final class SolutionMeasures extends AbstractMeasures implements IMeasures {
+	final class SolutionMeasures extends MeasuresBean implements IMeasures {
 
 		public SolutionMeasures() {
 			super();
@@ -170,16 +161,6 @@ public class Solution {
 			return false;
 		}
 
-		@Override
-		public int getLimitValue(Limit type) {
-			final int idx = solver.getSearchStrategy().getLimitManager().getLimitIndex(type);
-			return idx < 0 ? -1 : limitValues[idx];
-		}
-
-		@Override
-		public int getIterationCount() {
-			return iterationCount;
-		}
 
 		@Override
 		public Number getObjectiveValue() {

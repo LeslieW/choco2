@@ -23,18 +23,16 @@
 package choco.cp.solver.goals;
 
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+
 import choco.cp.solver.goals.choice.Generate;
-import choco.cp.solver.search.SearchLoop;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.goals.solver.ChoicePoint;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
 
 /**
  * Created by IntelliJ IDEA.
@@ -68,7 +66,6 @@ public class GoalSearchSolver extends AbstractGlobalSearchStrategy {
 
   public GoalSearchSolver(Solver s, Goal mainGoal) {
     super(s);
-      setSearchLoop(new SearchLoop(this));
     this.mainGoal = mainGoal;
   }
 

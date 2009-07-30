@@ -11,7 +11,7 @@ public class SolutionMeasuresWrapper implements IOptimizationMeasures {
 
 	@Override
 	public Number getObjectiveValue() {
-		return null;
+		return (Number) null;
 	}
 
 	@Override

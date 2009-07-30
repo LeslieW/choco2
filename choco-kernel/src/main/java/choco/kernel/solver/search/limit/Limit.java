@@ -30,12 +30,11 @@ package choco.kernel.solver.search.limit;
  *
  */
 public enum Limit {
-    NODE("limit.node","nodes"),
-    TIME("limit.time","millis."),
+	TIME("limit.time","millis."),
+	NODE("limit.node","nodes"),
+	BACKTRACK("limit.backtrack","backtracks"),
     FAIL("limit.fail","fails"),
-    BACKTRACK("limit.backtrack","backtracks"),
-    RESTART("","restarts");
-   // SOLUTION("limit.solution", "first solutions");
+    RESTART("limit.restart","restarts");
 
     private final String property;
 

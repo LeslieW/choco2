@@ -29,13 +29,7 @@
 
 package choco.kernel.solver;
 
-import choco.kernel.model.variables.set.SetConstantVariable;
-import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.AbstractSearchStrategy;
-import choco.kernel.solver.variables.Domain;
-import choco.kernel.solver.variables.Var;
 
 /**
  * An exception thrown when a contradiction achieved.

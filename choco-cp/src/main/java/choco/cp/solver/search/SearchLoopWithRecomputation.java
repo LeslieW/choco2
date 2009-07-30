@@ -22,125 +22,106 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search;
 
-import choco.kernel.memory.recomputation.EnvironmentRecomputation;
+import gnu.trove.TIntStack;
+
+import java.util.Stack;
+
+import choco.cp.solver.search.restart.IKickRestart;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.branch.AbstractIntBranching;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.IntBranchingTrace;
 
-/**
- * Created by IntelliJ IDEA.
- * User: julien
- * Date: 16 juil. 2007
- * Time: 09:48:05
- */
-public class SearchLoopWithRecomputation extends SearchLoop {
 
-    private EnvironmentRecomputation env = null;
+public class SearchLoopWithRecomputation extends AbstractSearchLoopWithRestart {
 
+	public final int gap;
 
-    public SearchLoopWithRecomputation(AbstractGlobalSearchStrategy searchStrategy) {
-        super(searchStrategy);
-    }
+	private int cpt = 0;
 
+	private int lastSavedTraceIndex = 0;
 
-    @Override
-    public Boolean run() {
-        env = (EnvironmentRecomputation) searchStrategy.solver.getEnvironment();
-        return super.run();
-    }
+	private final TIntStack savedTraceIndex;
+
+    private final Stack<IntBranchingTrace> contexts;
+
+    private final TIntStack ctxIndices;
 
 
-    @Override
-    public final void init() {
-        // specific initialization for the very first solution search (start from the tree root, instead of last leaf)
-        if (searchStrategy.nextMove == AbstractGlobalSearchStrategy.INIT_SEARCH) {
-            searchStrategy.nextMove = AbstractGlobalSearchStrategy.OPEN_NODE;
-            ctx = new IntBranchingTrace(searchStrategy.mainGoal);
-        } else {
-            ctx = searchStrategy.topTrace();
+    public SearchLoopWithRecomputation(AbstractGlobalSearchStrategy searchStrategy, IKickRestart kickRestart, int gap) {
+		super(searchStrategy, kickRestart);
+        this.gap = gap;
+        final int n = searchStrategy.solver.getNbIntVars();
+        savedTraceIndex = new TIntStack(n);
+        contexts = new Stack<IntBranchingTrace>();
+        ctxIndices = new TIntStack(n);
+	}
+
+
+	public final int getGap() {
+		return gap;
+	}
+
+	@Override
+	public void initialize() {
+		super.initialize();
+		savedTraceIndex.reset();
+		lastSavedTraceIndex = 0;
+        savedTraceIndex.push(lastSavedTraceIndex);
+        ctxIndices.push(contexts.size());
+		searchStrategy.solver.worldPush();
+	}
+
+
+
+
+	@Override
+	protected void worldPop() {
+		cpt--;
+		//should we pop the delegated environment
+		searchStrategy.solver.worldPop();
+		if(searchStrategy.getCurrentTraceIndex() == lastSavedTraceIndex) {
+			savedTraceIndex.pop();
+			lastSavedTraceIndex = savedTraceIndex.peek();
+			searchStrategy.solver.worldPop();
         }
-    }
-
-    @Override
-    public void openNode() {
-        try {
-            searchStrategy.solver.propagate();
-            searchStrategy.newTreeNode();
-            Object branchingObj = null;
-            AbstractIntBranching currentBranching = (AbstractIntBranching) ctx.getBranching();
-            AbstractIntBranching nextBranching = currentBranching;
-
-            do {
-                currentBranching = nextBranching;
-                branchingObj = currentBranching.selectBranchingObject();
-                nextBranching = (AbstractIntBranching) currentBranching.getNextBranching();
-            } while ((branchingObj == null) && (nextBranching != null));
-            if (branchingObj != null) {
-                ctx = searchStrategy.pushTrace();
-                ctx.setBranching(currentBranching);
-                ctx.setBranchingObject(branchingObj);
-                ctx.setBranchIndex(currentBranching.getFirstBranch(ctx.getBranchingObject()));
-                searchStrategy.nextMove = AbstractGlobalSearchStrategy.DOWN_BRANCH;
-            } else {
-                searchStrategy.recordSolution();
-                searchStrategy.nextMove = AbstractGlobalSearchStrategy.UP_BRANCH;
-                stop = true;
-            }
-        } catch (ContradictionException e) {
-            searchStrategy.nextMove = AbstractGlobalSearchStrategy.UP_BRANCH;
-            env.setLastFail(env.getWorldIndex());
+        int ind = ctxIndices.pop();
+        while(contexts.size()>ind){
+            contexts.pop();
         }
-    }
+		searchStrategy.solver.worldPush();
+	}
 
-    @Override
-    public void upBranch() {
-        if (searchStrategy.isTraceEmpty()) {
-            stop = true;
-        } else {
-            try {
-
-                env.incNbFail();
-
-                searchStrategy.solver.worldPop();
-                //searchStrategy.model.propagate();
-                searchStrategy.endTreeNode();
-                searchStrategy.postDynamicCut();
-
-                ctx.getBranching().goUpBranch(ctx.getBranchingObject(), ctx.getBranchIndex());
-                searchStrategy.solver.propagate();
-                env.pushContext(ctx,false);
-                //CPSolver.flushLogs();
-                if (!ctx.getBranching().finishedBranching(ctx.getBranchingObject(), ctx.getBranchIndex())) {
-                    ctx.setBranchIndex(ctx.getBranching().getNextBranch(ctx.getBranchingObject(), ctx.getBranchIndex()));
-
-                    searchStrategy.nextMove = AbstractGlobalSearchStrategy.DOWN_BRANCH;
-                } else {
-                    env.popContext(ctx);
-                    ctx = searchStrategy.popTrace();
-                    searchStrategy.nextMove = AbstractGlobalSearchStrategy.UP_BRANCH;
-                }
-            } catch (ContradictionException e) {
-                env.popContext(ctx);
-                ctx = searchStrategy.popTrace();
-                searchStrategy.nextMove = AbstractGlobalSearchStrategy.UP_BRANCH;
-                env.setLastFail(env.getWorldIndex());
-            }
+	@Override
+	protected void goUpBranch() throws ContradictionException {
+		searchStrategy.postDynamicCut();
+		LOGGER.finest("recomputation ...");
+		for (int i = lastSavedTraceIndex; i < searchStrategy.getCurrentTraceIndex() ; i++) {
+			ctx = searchStrategy.getTrace(i);
+			ctx.getBranching().goDownBranch(ctx.getBranchingObject(), ctx.getBranchIndex());
+		}
+		ctx = searchStrategy.topTrace();
+		LOGGER.finest("backtrack ...");
+        int ind = ctxIndices.peek();
+        for(int i = ind; i < contexts.size(); i++){
+            IntBranchingTrace context = contexts.get(i);
+            ctx.getBranching().goUpBranch(context.getBranchingObject(), context.getBranchIndex());
         }
-    }
 
-    @Override
-    public void downBranch() {
-        try {
-            env.worldPush();
-            env.pushContext(ctx, true);
-            searchStrategy.solver.propagate();
-            ctx.getBranching().goDownBranch(ctx.getBranchingObject(), ctx.getBranchIndex());
-            searchStrategy.solver.propagate();
-            searchStrategy.nextMove = AbstractGlobalSearchStrategy.OPEN_NODE;
-        } catch (ContradictionException e) {
-            searchStrategy.nextMove = AbstractGlobalSearchStrategy.UP_BRANCH;
-            env.setLastFail(env.getWorldIndex());
-        }
-    }
+		ctx.getBranching().goUpBranch(ctx.getBranchingObject(), ctx.getBranchIndex());
+		LOGGER.finest("continue ...");
+		searchStrategy.solver.propagate();
+        contexts.push(ctx.copy());
+	}
+
+	@Override
+	protected void worldPush() {
+		if( cpt % gap == 0) {
+			searchStrategy.solver.worldPush();
+			lastSavedTraceIndex = searchStrategy.getCurrentTraceIndex();
+			savedTraceIndex.push(lastSavedTraceIndex);
+		}
+        ctxIndices.push(contexts.size());
+        cpt++;
+	}
+
 }

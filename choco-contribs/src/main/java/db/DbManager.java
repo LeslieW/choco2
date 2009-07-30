@@ -1,7 +1,7 @@
 package db;
 
-import static java.sql.Types.VARCHAR;
 import static java.lang.System.getProperty;
+import static java.sql.Types.VARCHAR;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -24,11 +24,12 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.restart.ParametrizedRestartStrategy;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.measures.IMeasures;
+import choco.kernel.solver.search.restart.NoRestartStrategy;
+import choco.kernel.solver.search.restart.UniversalRestartStrategy;
 import db.beans.DbInstanceBean;
 import db.beans.DbProblemBean;
 import db.dao.DbInstance;
@@ -180,14 +181,14 @@ public class DbManager {
 	}
 
 	protected final Integer getRestartStrategyID(Solver solver) {
-		ParametrizedRestartStrategy restarts = DbConstants.NO_RESTARTS;
+		UniversalRestartStrategy restarts = NoRestartStrategy.SINGLOTON;
 		LOGGER.warning("record restart strategy in database");
-//		if (solver instanceof CPSolver) {
+		if (solver instanceof CPSolver) {
 //			final CPSolver cps = (CPSolver) solver;
 //			if ( cps.getRestartStrategy() != null && cps.getRestartStrategy() instanceof ParametrizedRestartStrategy) {
 //				restarts = (ParametrizedRestartStrategy) cps.getRestartStrategy();
 //			}
-//		}
+		}
 		return retrieveGPKOrInsertEntry(DbTables.T_RESTARTS, new BeanPropertySqlParameterSource(restarts));
 	}
 

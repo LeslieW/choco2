@@ -46,9 +46,9 @@ import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.GlobalSearchLimit;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.measures.IMeasures;
 import choco.kernel.solver.search.real.RealValIterator;
 import choco.kernel.solver.search.real.RealVarSelector;
@@ -146,40 +146,13 @@ public interface Solver extends IMeasures, IPretty {
 	 * Sets the fail limit i.e. the maximal numnber of fails before stopping the search algorithm
 	 */
 	public void setFailLimit(int nodeLimit);
-
-
-		
-	//Interface IMeasures
-//    /**
-//     * Get the time count of the search algorithm
-//     * @return time count
-//     */
-//    public int getTimeCount();
-//
-//    /**
-//     * Get the cpu time count of the search algorithm
-//     * @return cpu time count
-//     */
-//    public int getCpuTimeCount();
-//
-//    /**
-//     * Get the node count of the search algorithm
-//     * @return node count
-//     */
-//    public int getNodeCount();
-//
-//    /**
-//     * Get the backtrack count of the search algorithm
-//     * @return backtrack count
-//     */
-//    public int getBackTrackCount();
-//
-//    /**
-//     * Get the fail count of the search algorithm
-//     * @return fail count
-//     */
-//    public int getFailCount();
-
+	
+	/**
+	 * Sets the restart limit i.e. the maximal number of restart performed during the search algorithm.
+	 * The limit does not stop the search only the restart process.
+	 */
+	public void setRestartLimit(int restartLimit);
+	
     /**
 	 * @return true if only the first solution must be found
 	 */
@@ -295,7 +268,7 @@ public interface Solver extends IMeasures, IPretty {
 	 * If a limit has been encountered, return the involved limit
      * @return the limit encountered
      */
-	public GlobalSearchLimit getEncounteredLimit();
+	public AbstractGlobalSearchLimit getEncounteredLimit();
 
 	public AbstractGlobalSearchStrategy getSearchStrategy();
 
@@ -623,7 +596,7 @@ public interface Solver extends IMeasures, IPretty {
 
     public Var getVar(Variable v);
 
-    public Var[] getVar(Variable[] v);
+    public Var[] getVar(Variable... v);
 
     public IntDomainVar getVar(IntegerVariable v);
 

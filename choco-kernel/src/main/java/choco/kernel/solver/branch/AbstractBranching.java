@@ -26,11 +26,13 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 
 public abstract class AbstractBranching {
+  
   /**
    * the main control object (responsible for the whole exploration, while the branching object
    * is responsible only at the choice point level
    */
   protected AbstractGlobalSearchStrategy manager;
+  
   /**
    * a link towards the next branching object (once this one is exhausted)
    */

@@ -22,185 +22,214 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.visu.searchloop;
 
-import choco.IObserver;
-import choco.cp.solver.search.SearchLoop;
-import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.IntBranchingTrace;
-import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
-
 import java.util.Vector;
-/* 
- * Created by IntelliJ IDEA.
- * User: charles
- * Date: 6 nov. 2008
- * Since : Choco 2.0.1
- */
+import java.util.logging.Level;
 
-public class ObservableStepSearchLoop extends SearchLoop implements IObservableStepSearchLoop {
+import choco.IObserver;
+import choco.cp.solver.search.AbstractSearchLoop;
+import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 
-    private Vector obs;
-    private boolean run = false;
-
-    private Step action = Step.PAUSE; // 0: pause; 1: next; 2: play
-
-    //for tree search vizualisation
-    public State state;
-
-    public ObservableStepSearchLoop(AbstractGlobalSearchStrategy searchStrategy) {
-        super(searchStrategy);
-        obs = new Vector();
-
-    }
-
-    public Boolean run() {
-        int previousNbSolutions = searchStrategy.getSolutionCount();
-        searchStrategy.setEncounteredLimit(null);
-        ctx = null;
-        stop = false;
-
-        init();
-        while (!stop) {
-            state = State.NONE;
-            //if action is pause, wait
-            while(action.equals(Step.PAUSE)){/*wait*/}
-            // if action is next, pause after one execution
-            if(action.equals(Step.NEXT)){
-                action=Step.PAUSE;
-            }
-            switch (searchStrategy.nextMove) {
-                case AbstractGlobalSearchStrategy.OPEN_NODE: {
-                    openNode();
-                    if(action.equals(Step.PAUSE)){
-                        action=Step.NEXT;
-                    }
-                    break;
-                }
-                case AbstractGlobalSearchStrategy.UP_BRANCH: {
-                   upBranch();
-                    break;
-                }
-                case AbstractGlobalSearchStrategy.DOWN_BRANCH: {
-                    downBranch();
-                    break;
-                }
-                default:
-                    if(run){
-                    }
-                    break;
-            }
-        }
-        state = State.END;
-        notifyObservers(this);
-        searchStrategy.limitManager.reset();
-        if (searchStrategy.getSolutionCount() > previousNbSolutions) {
-            return Boolean.TRUE;
-        } else if (searchStrategy.isEncounteredLimit()) {
-            return null;
-        } else {
-            return Boolean.FALSE;
-        }
-    }
-
-    public void openNode() {
-        super.openNode();
-        if(searchStrategy.nextMove == AbstractGlobalSearchStrategy.UP_BRANCH
-                && stop){
-            state = State.SOLUTION;
-            notifyObservers(this);
-        }
-    }
-
-    public void upBranch() {
-        super.upBranch();
-        state = State.UP;
-        notifyObservers(this);
-    }
-
-    public void downBranch() {
-        state = State.DOWN;
-        super.downBranch();
-        notifyObservers(this);
-    }
+public class ObservableStepSearchLoop extends AbstractSearchLoop implements IObservableStepSearchLoop {
 
 
-    public IntBranchingTrace getCtx(){
-        return this.ctx;
-    }
+	private final Vector<IObserver> obs;
 
-    ////////////////////////////////////////TO INTERACT WITH GUI////////////////////////////////////////////////////////
+	private AbstractSearchLoop internalSearchLoop;
 
-    public void runStepByStep(){
-        action = Step.NEXT;
-    }
+	private int previousNbSolutions;
 
-    public void runForAWhile(){
-        action = Step.PLAY;
-    }
+	private Step action = Step.PAUSE; // 0: pause; 1: next; 2: play
 
-    public void pause(){
-        action = Step.PAUSE;
-    }
+	//for tree search vizualisation
+	public State state;
 
-    public void setAction(Step action) {
-        this.action = action;
-    }
+	public ObservableStepSearchLoop(AbstractGlobalSearchStrategy searchStrategy) {
+		super(searchStrategy);
+		obs = new Vector<IObserver>();
+        internalSearchLoop = (AbstractSearchLoop)searchStrategy.searchLoop;
+	}
+
+	public final void test() {
+		state = State.NONE;
+		//if action is pause, wait
+		while(action.equals(Step.PAUSE)){
+			/*wait*/
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				LOGGER.log(Level.SEVERE, "The search was interrupted while waiting for a GUI event" , e);
+			}
+		}
+		// if action is next, pause after one execution
+		if(action.equals(Step.NEXT)){
+			action=Step.PAUSE;
+		}
+	}
+
+	////////////////////////////////////////TO INTERACT WITH GUI////////////////////////////////////////////////////////
+
+	@Override
+	public void initialize() {
+		super.initialize();
+		action = Step.PAUSE;
+		internalSearchLoop.initialize();
+	}
 
 
-    ////////////////////////////////IObservable implementation////////////////////////////
 
-    /**
-     * Adds an observer to the set of observers for this object, provided
-     * that it is not the same as some observer already in the set.
-     * The order in which notifications will be delivered to multiple
-     * observers is not specified. See the class comment.
-     *
-     * @param o an observer to be added.
-     * @throws NullPointerException if the parameter o is null.
-     */
-    public synchronized void addObserver(IObserver o) {
-        if (o == null)
-            throw new NullPointerException();
-        if (!obs.contains(o)) {
-            obs.addElement(o);
-        }
-    }
 
-    /**
-     * If this object has changed, as indicated by the
-     * <code>hasChanged</code> method, then notify all of its observers
-     * and then call the <code>clearChanged</code> method to indicate
-     * that this object has no longer changed.
-     * <p/>
-     * Each observer has its <code>update</code> method called with two
-     * arguments: this observable object and the <code>arg</code> argument.
-     *
-     * @param arg any object.
-     * @see choco.IObserver#update(choco.IObservable , Object)
-     */
-    public void notifyObservers(Object arg) {
-	/*
-         * a temporary array buffer, used as a snapshot of the state of
-         * current Observers.
-         */
-        Object[] arrLocal;
+	@Override
+	public void downBranch() {
+		state = State.DOWN;
+		internalSearchLoop.downBranch();
+		notifyObservers(this);
 
-	synchronized (this) {
-	    /* We don't want the Observer doing callbacks into
-	     * arbitrary code while holding its own Monitor.
-	     * The code where we extract each Observable from
-	     * the Vector and store the state of the Observer
-	     * needs synchronization, but notifying observers
-	     * does not (should not).  The worst result of any
-	     * potential race-condition here is that:
-	     * 1) a newly-added Observer will miss a
-	     *   notification in progress
-	     * 2) a recently unregistered Observer will be
-	     *   wrongly notified when it doesn't care
-	     */
-            arrLocal = obs.toArray();
-        }
+	}
 
-        for (int i = arrLocal.length-1; i>=0; i--)
-            ((IObserver)arrLocal[i]).update(this, arg);
-    }
+
+
+
+	@Override
+	public Boolean endLoop() {
+		state = State.END;
+		notifyObservers(this);
+		return internalSearchLoop.endLoop();
+	}
+
+
+
+
+	@Override
+	public void initLoop() {
+		internalSearchLoop.initLoop();
+		previousNbSolutions = searchStrategy.getSolutionCount();
+
+	}
+
+
+
+
+	@Override
+	public void initSearch() {
+		internalSearchLoop.initSearch();
+
+	}
+
+
+
+
+	@Override
+	public void openNode() {
+		internalSearchLoop.openNode();
+		if(searchStrategy.getSolutionCount() > previousNbSolutions) {
+			state = State.SOLUTION;
+		}
+		notifyObservers(this);
+		if(action.equals(Step.PAUSE)){
+			action=Step.NEXT;
+		}
+	}
+
+
+
+
+	@Override
+	public void restart() {
+		state = State.RESTART;
+		notifyObservers(this);
+		internalSearchLoop.restart();
+	}
+
+
+
+
+	@Override
+	public void upBranch() {
+		state = State.UP;
+		internalSearchLoop.upBranch();
+		notifyObservers(this);
+
+
+	}
+
+
+	////////////////////////////////////////TO INTERACT WITH GUI////////////////////////////////////////////////////////
+
+	public void runStepByStep(){
+		action = Step.NEXT;
+	}
+
+	public void runForAWhile(){
+		action = Step.PLAY;
+	}
+
+	public void pause(){
+		action = Step.PAUSE;
+	}
+
+	public void setAction(Step action) {
+		this.action = action;
+	}
+
+
+	////////////////////////////////IObservable implementation////////////////////////////
+
+	/**
+	 * Adds an observer to the set of observers for this object, provided
+	 * that it is not the same as some observer already in the set.
+	 * The order in which notifications will be delivered to multiple
+	 * observers is not specified. See the class comment.
+	 *
+	 * @param o an observer to be added.
+	 * @throws NullPointerException if the parameter o is null.
+	 */
+	public synchronized void addObserver(IObserver o) {
+		if (o == null)
+			throw new NullPointerException();
+		if (!obs.contains(o)) {
+			obs.addElement(o);
+		}
+	}
+
+	/**
+	 * If this object has changed, as indicated by the
+	 * <code>hasChanged</code> method, then notify all of its observers
+	 * and then call the <code>clearChanged</code> method to indicate
+	 * that this object has no longer changed.
+	 * <p/>
+	 * Each observer has its <code>update</code> method called with two
+	 * arguments: this observable object and the <code>arg</code> argument.
+	 *
+	 * @param arg any object.
+	 * @see choco.IObserver#update(choco.IObservable , Object)
+	 */
+	public void notifyObservers(Object arg) {
+		/*
+		 * a temporary array buffer, used as a snapshot of the state of
+		 * current Observers.
+		 */
+		Object[] arrLocal;
+
+		synchronized (this) {
+			/* We don't want the Observer doing callbacks into
+			 * arbitrary code while holding its own Monitor.
+			 * The code where we extract each Observable from
+			 * the Vector and store the state of the Observer
+			 * needs synchronization, but notifying observers
+			 * does not (should not).  The worst result of any
+			 * potential race-condition here is that:
+			 * 1) a newly-added Observer will miss a
+			 *   notification in progress
+			 * 2) a recently unregistered Observer will be
+			 *   wrongly notified when it doesn't care
+			 */
+			arrLocal = obs.toArray();
+		}
+
+		for (int i = arrLocal.length-1; i>=0; i--)
+			((IObserver)arrLocal[i]).update(this, arg);
+	}
+
 }
+
+

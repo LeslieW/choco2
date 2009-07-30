@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * *
+/* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -20,56 +20,54 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.search.limit;
+package choco.cp.solver.search.real.objective;
 
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
-import choco.kernel.solver.search.limit.Limit;
+import choco.kernel.solver.variables.real.RealIntervalConstant;
+import choco.kernel.solver.variables.real.RealMath;
+import choco.kernel.solver.variables.real.RealVar;
 
-/**
- * compute the total amount of time (ms).
- *
- */
-public class TimeCount extends AbstractGlobalSearchLimit {
+public final class MinRealObjManager extends RealObjectiveManager {
 
+	
+	public MinRealObjManager(RealVar objective) {
+		super(objective);
+	}
 
-	private long starth;
+	@Override
+	public double getObjectiveRealValue() {
+		return objective.getInf();
+	}
+
+	private final void setBoundInterval() {
+		boundInterval = new RealIntervalConstant(Double.NEGATIVE_INFINITY, targetBound);
+	}
+
+	@Override
+	public void initBounds() {
+		bound = Double.POSITIVE_INFINITY;
+		oppositeBound = objective.getInf();
+		targetBound = objective.getSup();
+		setBoundInterval();
+	}
+
+	@Override
+	public void setBound() {
+		final double v = objective.getInf();
+		if( v < bound) { bound = v;}
+	}
+	
+
+	@Override
+	public void setTargetBound() {
+		targetBound = RealMath.prevFloat(objective.getSup());
+		setBoundInterval();
 		
-	
-	public TimeCount(AbstractGlobalSearchStrategy theStrategy) {
-		this(theStrategy, Integer.MAX_VALUE);
 	}
 	
-	protected TimeCount(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
-		super(theStrategy, theLimit, Limit.TIME);
+	@Override
+	public boolean isTargetInfeasible() {
+		return targetBound < objective.getInf();
 	}
-
 	
-	@Override
-	public final void initialize() {
-		super.initialize();
-		starth = TimeCacheThread.currentTimeMillis;
-	}
-
-
-	@Override
-	public final void reset() {
-		super.reset();
-		starth = TimeCacheThread.currentTimeMillis;
-		
-	}
-
-
-	@Override
-	public void endNode() throws ContradictionException {
-		nb =  (int) (TimeCacheThread.currentTimeMillis - starth);
-	}
-
-	@Override
-	public void newNode() throws ContradictionException {
-		nb =  (int) (TimeCacheThread.currentTimeMillis - starth);
-	}
 	
 }
-
