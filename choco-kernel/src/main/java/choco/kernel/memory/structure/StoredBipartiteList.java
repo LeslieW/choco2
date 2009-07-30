@@ -97,7 +97,7 @@ public final class StoredBipartiteList<E> extends AbstractList<E> {
 			int cursor = 0;
 
 			public boolean hasNext() {
-		            return cursor != size();
+		            return cursor < size();
 			}
 
 			public E next() {
@@ -110,7 +110,7 @@ public final class StoredBipartiteList<E> extends AbstractList<E> {
 	 }
 	 
 	@Override
-	public int size() {
+	public final int size() {
 		return last.get();
 	}
 

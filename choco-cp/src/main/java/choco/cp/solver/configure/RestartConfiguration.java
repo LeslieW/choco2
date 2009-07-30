@@ -64,7 +64,6 @@ public class RestartConfiguration {
 	public UniversalRestartStrategy restartStrategy;
 
 
-
 	public RestartConfiguration() {
 		super();
 	}

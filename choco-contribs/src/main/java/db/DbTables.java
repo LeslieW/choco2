@@ -58,11 +58,11 @@ public final class DbTables {
 			"T_MEASURES",
 			new String[] {
 					"ID","NB_SOLUTIONS","OBJECTIVE",
-					"TIME", "NODES","BACKTRACKS","FAILS", "NB_ITERATIONS"
+					"TIME", "NODES","BACKTRACKS","FAILS", "RESTARTS"
 			},
 			new String[] {
 					null, "solutionCount", "objectiveValue", 
-					"timeCount", "nodeCount", "backTrackCount", "failCount", "iterationCount"
+					"timeCount", "nodeCount", "backTrackCount", "failCount", "restartCount"
 			}
 	);
 
