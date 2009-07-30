@@ -35,12 +35,6 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.MinDomain;
-import choco.cp.solver.search.limit.BackTrackLimit;
-import choco.cp.solver.search.limit.FailLimit;
-import choco.cp.solver.search.limit.NodeLimit;
-import choco.cp.solver.search.limit.TimeLimit;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.limit.Limit;
@@ -60,7 +54,7 @@ public class LimitTest {
 
 	@Before
 	public void initialize() {
-		//ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
 		model=new CPModel();
 		IntegerVariable[] vars=makeIntVarArray("v", SIZE, 0, SIZE);
 		model.addConstraint("cp:ac",allDifferent(vars));
@@ -104,6 +98,34 @@ public class LimitTest {
 	}
 
 	
+	@Test
+	public void testRestartLimit1() {
+		final int lim =7;
+		solver.setTimeLimit(SIZE*20);
+		solver.setRestart(true);
+		solver.setRestartLimit(lim);
+		check(Limit.TIME);
+		assertEquals(lim, solver.getRestartCount());
+	}
 
+	@Test
+	public void testRestartLimit2() {
+		final int lim =3;
+		solver.setTimeLimit(SIZE*20);
+		solver.setRestartLimit(lim);
+		solver.setLubyRestart(1, 2, lim);
+		check(Limit.TIME);
+		assertEquals(lim, solver.getRestartCount());
+	}
+	
+	@Test
+	public void testRestartLimit3() {
+		solver.setTimeLimit(SIZE*20);
+		( (CPSolver) solver).limitConfig.setRestartLimit(Limit.NODE, 2);
+		solver.setLubyRestart(1, 2);
+		check(Limit.TIME);
+		assertEquals(1, solver.getRestartCount());
+	}
+	
 
 }

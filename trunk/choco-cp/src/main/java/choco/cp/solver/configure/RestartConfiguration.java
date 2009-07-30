@@ -53,7 +53,7 @@ public class RestartConfiguration {
 	 * should we reinitialize the search (branching) after a restart. 
 	 * For example, this is relevant with Dom/WDeg search heuristics.
 	 */
-	public boolean reintializeSearchAfterRestart = true;
+	public boolean initializeSearchAfterRestart = true;
 
 	/**
 	 * Do we want to apply a universal restart policy.
@@ -103,10 +103,23 @@ public class RestartConfiguration {
 
 	
 
+	public final boolean isInitializingSearchAfterRestart() {
+		return initializeSearchAfterRestart;
+	}
+
+	public final void setInitializeSearchAfterRestart(
+			boolean reintializeSearchAfterRestart) {
+		this.initializeSearchAfterRestart = reintializeSearchAfterRestart;
+	}
+
+	public final UniversalRestartStrategy getRestartStrategy() {
+		return restartStrategy;
+	}
+
 	public final void cancelRestarts() {
 		restartStrategy = null;
 		restartAfterEachSolution = false;
-		reintializeSearchAfterRestart = true;
+		initializeSearchAfterRestart = true;
 		setRecordNogoodFromRestart(false);
 	}
 	

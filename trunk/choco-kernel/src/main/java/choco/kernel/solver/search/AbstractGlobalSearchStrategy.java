@@ -419,7 +419,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	}
 
 	public String runtimeStatistics() {
-		return "Measures{ "+searchMeasures.pretty()+" }\n"+limitManager.pretty();
+		return "Measures{ "+searchMeasures.pretty()+" } "+limitManager.pretty();
 	}
 
 	

@@ -108,7 +108,7 @@ public class TestStrategyMed {
 	}
 
 	@Test
-	@Ignore
+	//@Ignore
 	public void testManyMED() {
 		for (double p = 0.6; p < 0.9; p+=0.1) {
 			//testMED(new Object[]{9,p});

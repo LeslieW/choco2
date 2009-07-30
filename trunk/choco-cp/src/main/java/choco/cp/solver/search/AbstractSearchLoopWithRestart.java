@@ -72,6 +72,10 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 
 
 
+	public final void setInitializeSearchAfterRestart(boolean reinit) {
+		moveAfterRestart = reinit ? INIT_SEARCH : OPEN_NODE; 
+	}
+	
 	public final void setRestartAfterEachSolution(boolean restart) {
 		moveAfterSolution = restart ? RESTART : UP_BRANCH; 
 	}
