@@ -22,8 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.search.measures;
 
+import choco.IPretty;
+import choco.kernel.solver.search.limit.Limit;
 
-public interface ISearchMeasures {
+
+public interface ISearchMeasures extends IPretty {
 	   
 	/**
      * Get the time count in milliseconds of the measure
@@ -50,10 +53,16 @@ public interface ISearchMeasures {
     int getFailCount();
     
     /**
-     * Get the iteration/restart count of the measure
-     * @return iteration/restart count
+     * Get the restart count of the measure
+     * @return restart count
      */
-    int getIterationCount();
+    int getRestartCount();
     
+    /**
+     * get the counter for the given limit
+     * @param type the type of the counter
+     * @return the value of the counter or -1 if the type is unknown. 
+     */
+    int getLimitCount(Limit type);
     
 }

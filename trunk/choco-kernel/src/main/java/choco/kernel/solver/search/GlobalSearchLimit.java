@@ -24,6 +24,7 @@ package choco.kernel.solver.search;
 
 import choco.IPretty;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.search.restart.UniversalRestartStrategy;
 
 
 /**
@@ -63,5 +64,20 @@ public interface GlobalSearchLimit extends IPretty {
 	 */
 	void endNode() throws ContradictionException;
 
-
+	/**
+	 * notify the limit object whenever the search has been restarted.
+	 * return <code>true</code> if the limit does stop the restart process.
+	 */
+	boolean newRestart();
+	
+	/**
+	 * get the restart strategy, if any.
+	 */
+	UniversalRestartStrategy getRestartStrategy();
+	/**
+	 * cancel the restart mechanisms during search.
+	 */
+	void cancelRestart();
+	
 }
+

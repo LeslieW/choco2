@@ -43,6 +43,4 @@ public interface ISearchLoop {
 
 	AbstractGlobalSearchStrategy getSearchStrategy();
 
-	int getRestartCount();
-
 }

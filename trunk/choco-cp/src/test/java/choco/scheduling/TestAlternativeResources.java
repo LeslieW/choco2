@@ -29,6 +29,7 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import org.junit.Test;
@@ -322,7 +323,5 @@ public class TestAlternativeResources {
 		testAltCumulative(4, durations, heights, n, n*(n+1)/4, 2);
 	}
 	
-
-
 
 }

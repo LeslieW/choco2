@@ -22,57 +22,89 @@
  **************************************************/
 package choco.shaker.tools.search;
 
-import choco.cp.solver.search.SearchLoop;
+import choco.cp.solver.search.AbstractSearchLoop;
 import choco.kernel.solver.propagation.Propagator;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 
 /*
-* User : charles
-* Mail : cprudhom(a)emn.fr
-* Date : 11 mars 2009
-* Since : Choco 2.0.1
-* Update : Choco 2.0.1
-* 
-* SearchLoop with entailment checker
-*/
-public class SearchLoopWithEntailment extends SearchLoop {
+ * User : charles
+ * Mail : cprudhom(a)emn.fr
+ * Date : 11 mars 2009
+ * Since : Choco 2.0.1
+ * Update : Choco 2.0.1
+ * 
+ * SearchLoop with entailment checker
+ */
+public class SearchLoopWithEntailment extends AbstractSearchLoop {
 
-        Propagator p;
-        public Boolean entail = null;
+	Propagator p;
+	
+	public Boolean entail = null;
 
-    public SearchLoopWithEntailment() {
-        super(null);
-    }
+	public final AbstractSearchLoop searchLoop;
+	
 
-    public SearchLoopWithEntailment(AbstractGlobalSearchStrategy searchStrategy, Propagator p) {
-            super(searchStrategy);
-            this.p = p;
-        }
+	public SearchLoopWithEntailment(AbstractGlobalSearchStrategy searchStrategy, Propagator propagator) {
+		super(searchStrategy);
+		this.searchLoop = (AbstractSearchLoop) searchStrategy.searchLoop;
+		this.p = propagator;
+	}
 
-    @Override
-        public void init(){
-            super.init();
-            checkEntailment();
-        }
+	
+	
+	@Override
+	public void downBranch() {
+		searchLoop.downBranch();
+		checkEntailment();
+		
+	}
 
-        @Override
-        public void upBranch() {
-            super.upBranch();
-            checkEntailment();
-        }
+	@Override
+	public Boolean endLoop() {
+		final Boolean res = searchLoop.endLoop();
+		checkEntailment();
+		return res;
+	}
 
-        @Override
-        public void downBranch() {
-            super.downBranch();
-            checkEntailment();
-        }
+	@Override
+	public void initLoop() {
+		searchLoop.initLoop();
+	}
 
-        private void checkEntailment(){
-            if(p.isActive()){
-                entail = p.isEntailed();
-                if(entail!=null){
-                    p.setPassive();
-                }
-            }
-        }
-    }
+	@Override
+	public void initSearch() {
+		searchLoop.initSearch();
+		checkEntailment();
+		
+	}
+
+	@Override
+	public void openNode() {
+		searchLoop.openNode();
+		checkEntailment();
+		
+	}
+
+	@Override
+	public void restart() {
+		searchLoop.restart();
+		checkEntailment();
+		
+	}
+
+	@Override
+	public void upBranch() {
+		searchLoop.upBranch();
+		checkEntailment();
+		
+	}
+
+	private void checkEntailment(){
+		if(p.isActive()){
+			entail = p.isEntailed();
+			if(entail!=null){
+				p.setPassive();
+			}
+		}
+	}
+}

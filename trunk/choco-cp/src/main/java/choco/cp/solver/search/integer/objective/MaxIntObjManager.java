@@ -20,52 +20,53 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.search.objective;
+package choco.cp.solver.search.integer.objective;
 
-import choco.kernel.solver.variables.real.RealIntervalConstant;
-import choco.kernel.solver.variables.real.RealMath;
-import choco.kernel.solver.variables.real.RealVar;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public final class MaxRealObjManager extends RealObjectiveManager {
+public final class MaxIntObjManager extends IntObjectiveManager {
 
 	
-	public MaxRealObjManager(RealVar objective) {
+	public MaxIntObjManager(IntDomainVar objective) {
 		super(objective);
 	}
 
 	@Override
-	public double getObjectiveRealValue() {
+	public int getObjectiveIntValue() {
 		return objective.getSup();
-	}
-
-	private final void setBoundInterval() {
-		boundInterval = new RealIntervalConstant(targetBound, Double.POSITIVE_INFINITY);
 	}
 
 	@Override
 	public void initBounds() {
-		bound = Double.NEGATIVE_INFINITY;
+		bound = Integer.MIN_VALUE;
 		oppositeBound = objective.getSup();
 		targetBound = objective.getInf();
-		setBoundInterval();
+	}
+
+	@Override
+	public void postTargetBound() throws ContradictionException {
+		objective.setInf(targetBound);
+		
 	}
 
 	@Override
 	public void setBound() {
-		final double v = objective.getSup();
+		final int v = objective.getSup();
 		if( v > bound) { bound = v;}
 	}
 	
 
 	@Override
 	public void setTargetBound() {
-		targetBound = RealMath.nextFloat(objective.getInf());
-		setBoundInterval();
-		
+		targetBound = objective.getInf() + 1;
 	}
-	
+
 	@Override
 	public boolean isTargetInfeasible() {
 		return targetBound > oppositeBound;
 	}
+	
+	
+	
 }

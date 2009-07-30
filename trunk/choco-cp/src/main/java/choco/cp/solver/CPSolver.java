@@ -47,6 +47,8 @@ import java.util.logging.Logger;
 
 import choco.Choco;
 import choco.cp.model.CPModel;
+import choco.cp.solver.configure.LimitConfiguration;
+import choco.cp.solver.configure.RestartConfiguration;
 import choco.cp.solver.constraints.ConstantSConstraint;
 import choco.cp.solver.constraints.global.Occurrence;
 import choco.cp.solver.constraints.global.scheduling.SchedulerConfig;
@@ -94,12 +96,12 @@ import choco.cp.solver.constraints.set.SetUnion;
 import choco.cp.solver.goals.GoalSearchSolver;
 import choco.cp.solver.propagation.ChocEngine;
 import choco.cp.solver.propagation.EventQueueFactory;
+import choco.cp.solver.search.AbstractSearchLoopWithRestart;
 import choco.cp.solver.search.BranchAndBound;
+import choco.cp.solver.search.DefaultStrategyMeasures;
 import choco.cp.solver.search.GlobalSearchStrategy;
-import choco.cp.solver.search.OptimizeWithRestarts;
-import choco.cp.solver.search.SearchLoopWithNogoodFromRestart;
+import choco.cp.solver.search.SearchLoop;
 import choco.cp.solver.search.SearchLoopWithRecomputation;
-import choco.cp.solver.search.SearchLoopWithRestart;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.branching.DomOverWDegBranching;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
@@ -107,17 +109,13 @@ import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.cp.solver.search.limit.LimitManager;
-import choco.cp.solver.search.real.AbstractRealOptimize;
 import choco.cp.solver.search.real.AssignInterval;
 import choco.cp.solver.search.real.CyclicRealVarSelector;
 import choco.cp.solver.search.real.RealBranchAndBound;
 import choco.cp.solver.search.real.RealIncreasingDomain;
-import choco.cp.solver.search.real.RealOptimizeWithRestarts;
-import choco.cp.solver.search.restart.AbstractRestartStrategyOnLimit;
-import choco.cp.solver.search.restart.GeometricalRestart;
-import choco.cp.solver.search.restart.LimitedNumberOfRestart;
-import choco.cp.solver.search.restart.LubyRestart;
-import choco.cp.solver.search.restart.RestartStrategy;
+import choco.cp.solver.search.restart.BasicKickRestart;
+import choco.cp.solver.search.restart.IKickRestart;
+import choco.cp.solver.search.restart.NogoodKickRestart;
 import choco.cp.solver.search.set.AssignSetVar;
 import choco.cp.solver.search.set.MinDomSet;
 import choco.cp.solver.search.set.MinEnv;
@@ -182,13 +180,11 @@ import choco.kernel.solver.propagation.VarEventQueue;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.AbstractOptimize;
 import choco.kernel.solver.search.AbstractSearchStrategy;
-import choco.kernel.solver.search.GlobalSearchLimit;
 import choco.kernel.solver.search.ISolutionPool;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
-import choco.kernel.solver.search.limit.AbstractLimitManager;
 import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.search.real.RealValIterator;
 import choco.kernel.solver.search.real.RealVarSelector;
@@ -212,6 +208,9 @@ import choco.kernel.visu.IVisu;
  * AbstractGlobalSearchSolvers:
  */
 public class CPSolver implements Solver {
+
+
+	public static boolean USE_SEARCH_LOOP_UNDER_DEV = false;
 
 	/**
 	 * A constant denoting the true constraint (always satisfied)
@@ -259,10 +258,13 @@ public class CPSolver implements Solver {
 	public static final IntTerm ZERO = new IntTerm(0);
 	public static final IntTerm UN = new IntTerm(1);
 
+
 	/**
-	 * Tell the strategy wether or not use recomputation
+	 * tells the strategy wether or not use recomputation.
+	 * The value of the parameter indicates the maximum recomputation gap, i.e. the maximum number of decisions between two storages.
+	 * If the parameter is lower than or equal to 1, the trailing storage mechanism is used (default).
 	 */
-	protected boolean useRecomputation = false;
+	protected int recomputationGap = 1;
 
 	/**
 	 * Decide if redundant constraints are automatically to the model to reason
@@ -386,21 +388,7 @@ public class CPSolver implements Solver {
 	}
 
 	public int solutionPoolCapacity = 1;
-	/**
-	 * Do we want to restart a new search after each solution. This is relevant
-	 * in the context of optimization
-	 */
-	protected boolean restart = false;
 
-	/**
-	 * A restart strategy (null by default)
-	 */
-	protected RestartStrategy restartS = null;
-
-	/**
-	 * If <code>true</code>, nogood are recorded at each restart
-	 */
-	protected boolean recordNogoodFromRestart = false;
 
 	/**
 	 * do we want to explore one or all solutions (default=one solution)
@@ -457,8 +445,12 @@ public class CPSolver implements Solver {
 	 */
 	protected SetValSelector valSetSelector = null;
 
-	
-	protected AbstractLimitManager limitManager = new LimitManager();
+
+	public final LimitConfiguration limitConfig = new LimitConfiguration();
+
+	public final RestartConfiguration restartConfig = new RestartConfiguration();
+
+	//protected LimitManager limitManager = new LimitManager();
 
 	protected CPModelToCPSolver mod2sol;
 
@@ -507,7 +499,7 @@ public class CPSolver implements Solver {
 		indexfactory = new IndexFactory();
 		scheduler = new SchedulerConfig(this);
 		if (env instanceof EnvironmentRecomputation) {
-			useRecomputation = true;
+			setRecomputation(true);
 		}
 		this.indexOfLastInitializedStaticConstraint = env.makeInt(PartiallyStoredVector.getFirstStaticIndex() - 1);
 	}
@@ -575,8 +567,8 @@ public class CPSolver implements Solver {
 			buf.append("\n");
 		}
 		buf.append("==== TASKS ====\n");
-        //noinspection unchecked
-        buf.append(StringUtils.prettyOnePerLine(taskVars.toList()));
+		//noinspection unchecked
+		buf.append(StringUtils.prettyOnePerLine(taskVars.toList()));
 		return new String(buf);
 	}
 
@@ -629,20 +621,20 @@ public class CPSolver implements Solver {
 
 	public void addConstraint(Constraint... tabic) {
 		Constraint ic;
-        for (Constraint aTabic : tabic) {
-            ic = aTabic;
-            Iterator<Variable> it = ic.getVariableIterator();
-            while (it.hasNext()) {
-                Variable v = it.next();
-                if (!mapvariables.containsKey(v.getIndex())) {
-                    v.findManager(model.properties);
-                    mod2sol.readModelVariable(v);
-                }
-            }
-            ic.findManager(model.properties);
-            mod2sol.readConstraint(ic, model
-                    .getDefaultExpressionDecomposition());
-        }
+		for (Constraint aTabic : tabic) {
+			ic = aTabic;
+			Iterator<Variable> it = ic.getVariableIterator();
+			while (it.hasNext()) {
+				Variable v = it.next();
+				if (!mapvariables.containsKey(v.getIndex())) {
+					v.findManager(model.properties);
+					mod2sol.readModelVariable(v);
+				}
+			}
+			ic.findManager(model.properties);
+			mod2sol.readConstraint(ic, model
+					.getDefaultExpressionDecomposition());
+		}
 	}
 
 	/**
@@ -775,6 +767,7 @@ public class CPSolver implements Solver {
 		this.setValSetSelector(new RandomSetValSelector(manager.nextLong()));
 	}
 
+
 	/**
 	 * Generate a search strategy to run over the tree search. The search
 	 * strategy is build, according to the choice of the user :
@@ -809,42 +802,32 @@ public class CPSolver implements Solver {
 					throw new UnsupportedOperationException(
 					"Ilog goal are not yet available in optimization");
 				}
-				// If restart option has been precised
-				if (restart) {
-					// strategy
-					if (objective instanceof IntDomainVar) {
-						strategy = new OptimizeWithRestarts(
-								(IntDomainVarImpl) objective, doMaximize);
-					} else if (objective instanceof RealVar) {
-						strategy = new RealOptimizeWithRestarts(
-								(RealVar) objective, doMaximize);
-					}
-				}
-				// if no restart option
-				else {
-					if (objective instanceof IntDomainVar) {
-						strategy = new BranchAndBound(
-								(IntDomainVarImpl) objective, doMaximize);
-					} else if (objective instanceof RealVar) {
-						strategy = new RealBranchAndBound((RealVar) objective,
-								doMaximize);
-					}
+				if (objective instanceof IntDomainVar) {
+					strategy = new BranchAndBound(
+							(IntDomainVar) objective, doMaximize);
+				} else if (objective instanceof RealVar) {
+					strategy = new RealBranchAndBound((RealVar) objective,
+							doMaximize);
 				}
 			}
 		}
 
-        assert strategy != null;
-        strategy.stopAtFirstSol = firstSolution;
+
+		assert strategy != null;
+		strategy.stopAtFirstSol = firstSolution;
 
 		strategy.setLoggingMaxDepth(this.loggingMaxDepth);
 
 		strategy.setSolutionPool( makeDefaultSolutionPool(solutionPoolCapacity));
-	
-		addLimitsAndRestartStrategy();
 
-		if (this.useRecomputation()) {
-			strategy.setSearchLoop(new SearchLoopWithRecomputation(strategy));
-		}
+		strategy.setSearchMeasures(
+				new DefaultStrategyMeasures(strategy, 
+						generateSearchLoop(), 
+						generateLimitManager()
+				)
+		);
+
+
 		if (ilogGoal == null) {
 			if (tempGoal == null) {
 				generateGoal();
@@ -855,6 +838,34 @@ public class CPSolver implements Solver {
 		}
 	}
 
+	protected LimitManager generateLimitManager() {
+		final LimitManager limitManager = new LimitManager(strategy);
+		limitManager.setSearchLimit(limitConfig.makeSearchLimit(strategy)); //controlling the search
+		limitManager.setRestartLimit(limitConfig.makeRestartLimit(strategy)); //controlling the restart
+		//controlling the restart strategy
+		limitManager.setRestartStrategy(
+				restartConfig.getRestartPolicy(), 
+				limitConfig.createLimit(strategy,limitConfig.getRestartStrategyLimitType(), Integer.MAX_VALUE)
+		); 
+		strategy.setLimitManager(limitManager);
+		return limitManager;
+	}
+
+	protected AbstractSearchLoopWithRestart generateSearchLoop() {
+		final IKickRestart kickRestart = ( 
+				restartConfig.isRecordNogoodFromRestart() ? 
+						new NogoodKickRestart(strategy) : 
+							new BasicKickRestart(strategy)
+		); 
+
+		final AbstractSearchLoopWithRestart searchLoop =  (
+				useRecomputation() ? 
+						new SearchLoopWithRecomputation(strategy, kickRestart, getRecomputationGap()):
+							new SearchLoop(strategy, kickRestart) )
+							;
+		strategy.setSearchLoop(searchLoop);
+		return searchLoop;
+	}
 	public AbstractIntBranching generateRealGoal() {
 		// default strategy choice for real
 		if (varRealSelector == null) {
@@ -946,29 +957,29 @@ public class CPSolver implements Solver {
 	 */
 	public boolean checkDecisionVariables() {
 		if (intDecisionVars != null) {
-            for (IntDomainVar intDecisionVar : intDecisionVars) {
-                if (!intDecisionVar.isInstantiated()) {
-                    return false;
-                }
-            }
+			for (IntDomainVar intDecisionVar : intDecisionVars) {
+				if (!intDecisionVar.isInstantiated()) {
+					return false;
+				}
+			}
 		}
 
 		if (setDecisionVars != null) {
-            for (SetVar setDecisionVar : setDecisionVars) {
-                if (!setDecisionVar.isInstantiated()) {
-                    return false;
-                }
+			for (SetVar setDecisionVar : setDecisionVars) {
+				if (!setDecisionVar.isInstantiated()) {
+					return false;
+				}
 
-            }
+			}
 		}
 
 		if (floatDecisionVars != null) {
-            for (RealVar floatDecisionVar : floatDecisionVars) {
-                if (!floatDecisionVar.isInstantiated()) {
-                    return false;
-                }
+			for (RealVar floatDecisionVar : floatDecisionVars) {
+				if (!floatDecisionVar.isInstantiated()) {
+					return false;
+				}
 
-            }
+			}
 		}
 		return true;
 	}
@@ -1129,47 +1140,16 @@ public class CPSolver implements Solver {
 		return strategy.getSolutionCount();
 	}
 
-	/**
-	 * Add limit, if defined, to the search strategy. If the strategy is also
-	 * based on the number of backtracks (like Impact or DomOverWDeg), change
-	 * the kind of search loop.
-	 */
-	protected void addLimitsAndRestartStrategy() {
-		strategy.setLimitManager(limitManager);
-		limitManager.generateLimits();
-		
-		if (restartS != null) {
-			if (useRecomputation) {
-				throw new SolverException(
-				"restart can not be used in recomputation mode");
-			} else {
-				if (restartS instanceof AbstractRestartStrategyOnLimit) {
-					AbstractRestartStrategyOnLimit rs = (AbstractRestartStrategyOnLimit) restartS;
-					AbstractGlobalSearchLimit l = strategy.limitManager.getLimit(rs
-							.getLimit());
-					if (l == null) {
-						throw new SolverException(
-								"restart can not be find the limit: "
-								+ rs.getLimit());
-					} else {
-						rs.setFailLimit(l);
-					}
-				}
-				strategy.setSearchLoop( isRecordingNogoodFromRestart() ? 
-						new SearchLoopWithNogoodFromRestart(strategy, restartS) : new SearchLoopWithRestart(strategy,restartS)) ;
-			}
-		}
-	}
 
 	/**
 	 * Monitor the time limit (default to true)
 	 *
 	 * @param b
 	 *            indicates wether the search stategy monitor the time limit
+	 *            @deprecated the limit is always monitored
 	 */
-	public void monitorTimeLimit(boolean b) {
-		limitManager.monitorLimit(Limit.TIME, b);
-	}
+	@Deprecated
+	public void monitorTimeLimit(boolean b) {}
 
 
 	/**
@@ -1177,10 +1157,10 @@ public class CPSolver implements Solver {
 	 *
 	 * @param b
 	 *            indicates wether the search stategy monitor the node limit
+	 *            @deprecated the limit is always monitored
 	 */
-	public void monitorNodeLimit(boolean b) {
-		limitManager.monitorLimit(Limit.NODE, b);
-	}
+	@Deprecated
+	public void monitorNodeLimit(boolean b) {}
 
 	/**
 	 * Monitor the backtrack limit (default to false)
@@ -1188,10 +1168,10 @@ public class CPSolver implements Solver {
 	 * @param b
 	 *            indicates wether the search stategy monitor the backtrack
 	 *            limit
+	 *            @deprecated the limit is always monitored
 	 */
-	public void monitorBackTrackLimit(boolean b) {
-		limitManager.monitorLimit(Limit.BACKTRACK, b);
-	}
+	@Deprecated
+	public void monitorBackTrackLimit(boolean b) {}
 
 	/**
 	 * Monitor the fail limit (default to false)
@@ -1200,7 +1180,7 @@ public class CPSolver implements Solver {
 	 *            indicates wether the search stategy monitor the fail limit
 	 */
 	public void monitorFailLimit(boolean b) {
-		limitManager.monitorLimit(Limit.FAIL, b);
+		limitConfig.monitorFailLimit(b);
 	}
 
 	/**
@@ -1208,7 +1188,7 @@ public class CPSolver implements Solver {
 	 * algorithm
 	 */
 	public void setTimeLimit(int timeLimit) {
-		limitManager.setLimit(Limit.TIME, timeLimit);
+		limitConfig.setSearchLimit(Limit.TIME, timeLimit);
 	}
 
 
@@ -1217,7 +1197,7 @@ public class CPSolver implements Solver {
 	 * search algorithm
 	 */
 	public void setNodeLimit(int nodeLimit) {
-		limitManager.setLimit(Limit.NODE, nodeLimit);
+		limitConfig.setSearchLimit(Limit.NODE, nodeLimit);
 	}
 
 	/**
@@ -1225,7 +1205,7 @@ public class CPSolver implements Solver {
 	 * by the search algorithm
 	 */
 	public void setBackTrackLimit(int backTrackLimit) {
-		limitManager.setLimit(Limit.BACKTRACK, backTrackLimit);
+		limitConfig.setSearchLimit(Limit.BACKTRACK, backTrackLimit);
 	}
 
 	/**
@@ -1233,9 +1213,22 @@ public class CPSolver implements Solver {
 	 * search algorithm
 	 */
 	public void setFailLimit(int failLimit) {
-		limitManager.setLimit(Limit.FAIL, failLimit);
+		limitConfig.setSearchLimit(Limit.FAIL, failLimit);
 	}
 
+	/**
+	 * Sets the restart limit i.e. the maximal number of restart performed during the search algorithm.
+	 * The limit does not stop the search only the restart process.
+	 */
+	public void setRestartLimit(int restartLimit) {
+		limitConfig.setSearchLimit(Limit.RESTART, restartLimit);
+	}
+
+
+	@Override
+	public int getLimitCount(Limit type) {
+		return strategy.getSearchMeasures().getLimitCount(type);
+	}
 
 	/**
 	 * Get the time count of the search algorithm
@@ -1276,8 +1269,8 @@ public class CPSolver implements Solver {
 
 
 	@Override
-	public int getIterationCount() {
-		return strategy.getSearchMeasures().getIterationCount();
+	public int getRestartCount() {
+		return strategy.getSearchMeasures().getRestartCount();
 	}
 
 	@Override
@@ -1287,13 +1280,15 @@ public class CPSolver implements Solver {
 
 	@Override
 	public Number getObjectiveValue() {
-		return getOptimumValue();
+		if (strategy instanceof AbstractOptimize) {
+			return ( (AbstractOptimize) strategy).getObjectiveValue();
+		}
+		return (Number) null;
 	}
 
 	@Override
 	public boolean isObjectiveOptimal() {
-		LOGGER.warning("not yet implemented");
-		return false;
+		return existsSolution() &&  !firstSolution && !isEncounteredLimit();
 	}
 
 	@Override
@@ -1333,7 +1328,7 @@ public class CPSolver implements Solver {
 		IntDomainVar[] vars = ((AbstractIntVarSelector) varSelector).getVars();
 		if (vars != null) {
 			intDecisionVars.clear();
-            intDecisionVars.addAll(Arrays.asList(vars));
+			intDecisionVars.addAll(Arrays.asList(vars));
 		} else if(!intDecisionVars.isEmpty()){
 			vars = new IntDomainVar[intDecisionVars.size()];
 			intDecisionVars.toArray(vars);
@@ -1419,6 +1414,28 @@ public class CPSolver implements Solver {
 		this.valSetSelector = setValIntSelector;
 	}
 
+
+	public void cancelRestartConfiguration() {
+		limitConfig.setRestartStrategyLimitType(null); //set default;
+		restartConfig.cancelRestarts();
+	}
+
+	/**
+	 * Perform a search with restarts regarding the number of backtrack. An
+	 * initial allowed number of backtrack is given (parameter base) and once
+	 * this limit is reached a restart is performed and the new limit imposed to
+	 * the search is increased by multiplying the previous limit with the
+	 * parameter grow. Restart strategies makes really sense with strategies
+	 * that make choices based on the past experience of the search :
+	 * DomOverWdeg or Impact based search. It could also be used with a random
+	 * heuristic
+	 *
+	 * @param base
+	 *            : the initial number of fails limiting the first search
+	 */
+	public void setGeometricRestart(int base) {
+		restartConfig.setGeometricalRestartPolicy(base, 1.2);
+	}
 	/**
 	 * Perform a search with restarts regarding the number of backtrack. An
 	 * initial allowed number of backtrack is given (parameter base) and once
@@ -1436,8 +1453,7 @@ public class CPSolver implements Solver {
 	 *            base;
 	 */
 	public void setGeometricRestart(int base, double grow) {
-		this.setRestartStrategy(new GeometricalRestart(Limit.BACKTRACK, base,
-				grow));
+		restartConfig.setGeometricalRestartPolicy(base, grow);
 	}
 
 	/**
@@ -1460,27 +1476,10 @@ public class CPSolver implements Solver {
 	 *            the maximum number of restarts
 	 */
 	public void setGeometricRestart(int base, double grow, int restartLimit) {
-		this.setRestartStrategy(new LimitedNumberOfRestart(
-				new GeometricalRestart(Limit.BACKTRACK, base, grow),
-				restartLimit));
+		restartConfig.setGeometricalRestartPolicy(base, grow);
+		limitConfig.setRestartLimit(Limit.RESTART, restartLimit);
 	}
 
-	/**
-	 * use {@link CPSolver#setLubyRestart(int)} instead
-	 */
-	@Deprecated
-	public void setLasVegasRestart(int base) {
-		this.setRestartStrategy(new LubyRestart(Limit.BACKTRACK, base, 2));
-	}
-
-	/**
-	 * use {@link CPSolver#setLubyRestart(int,int,int)} instead
-	 */
-	@Deprecated
-	public void setLasVegasRestart(int base, int restartLimit) {
-		this.setRestartStrategy(new LimitedNumberOfRestart(new LubyRestart(
-				Limit.BACKTRACK, base, 2), restartLimit));
-	}
 
 	/**
 	 * Perform a search with restarts regarding the number of backtrack. One way
@@ -1505,8 +1504,8 @@ public class CPSolver implements Solver {
 	 *            the maximum number of restarts
 	 */
 	public void setLubyRestart(int base, int grow, int restartLimit) {
-		this.setRestartStrategy(new LimitedNumberOfRestart(new LubyRestart(
-				Limit.BACKTRACK, base, grow), restartLimit));
+		restartConfig.setLubyRestartPolicy(base, grow);
+		limitConfig.setRestartLimit(Limit.RESTART, restartLimit);
 	}
 
 	/**
@@ -1530,7 +1529,7 @@ public class CPSolver implements Solver {
 	 *            : the geometrical factor for Luby restart strategy
 	 */
 	public void setLubyRestart(int base, int grow) {
-		this.setRestartStrategy(new LubyRestart(Limit.BACKTRACK, base, grow));
+		restartConfig.setLubyRestartPolicy(base, grow);
 	}
 
 	/**
@@ -1539,47 +1538,16 @@ public class CPSolver implements Solver {
 	 * @param base
 	 */
 	public void setLubyRestart(int base) {
-		this.setRestartStrategy(new LubyRestart(Limit.BACKTRACK, base, 2));
+		restartConfig.setLubyRestartPolicy(base, 2);
 	}
-
-	/**
-	 * use {@link choco.cp.solver.CPSolver#cancelRestartStrategy()} instead
-	 */
-	@Deprecated
-	public void cancelGeometricRestart() {
-		restartS = null;
-	}
-
-	public void cancelRestartStrategy() {
-		restartS = null;
-	}
-
-	public void setRestartStrategy(RestartStrategy restartS) {
-		if (useRecomputation) {
-			throw new SolverException(
-			"restart can not be used in recomputation mode");
-		} else {
-			if (restartS instanceof AbstractRestartStrategyOnLimit) {
-				AbstractRestartStrategyOnLimit rs = (AbstractRestartStrategyOnLimit) restartS;
-				limitManager.monitorLimit(rs.getLimit(), true);
-			}
-			this.restartS = restartS;
-		}
-	}
-
-
-	public RestartStrategy getRestartStrategy() {
-		return restartS;
-	}
-
 
 
 	public final boolean isRecordingNogoodFromRestart() {
-		return recordNogoodFromRestart;
+		return restartConfig.isRecordNogoodFromRestart();
 	}
 
 	public final void setRecordNogoodFromRestart(boolean recordNogoodFromRestart) {
-		this.recordNogoodFromRestart = recordNogoodFromRestart;
+		restartConfig.setRecordNogoodFromRestart(recordNogoodFromRestart);
 	}
 
 	/**
@@ -1588,7 +1556,7 @@ public class CPSolver implements Solver {
 	 * @param restart
 	 */
 	public void setRestart(boolean restart) {
-		this.restart = restart;
+		restartConfig.setRestartAfterEachSolution(restart);
 	}
 
 	/**
@@ -1610,13 +1578,15 @@ public class CPSolver implements Solver {
 		this.objective = objective;
 	}
 
+	@Deprecated
 	public Number getOptimumValue() {
-		if (strategy instanceof AbstractOptimize) {
-			return ((AbstractOptimize) strategy).getBestObjectiveValue();
-		} else if (strategy instanceof AbstractRealOptimize) {
-			return ((AbstractRealOptimize) strategy).getBestObjectiveValue();
-		}
-		return null;
+//		if (strategy instanceof AbstractOptimize) {
+//			return ((AbstractOptimize) strategy).getBestObjectiveValue();
+//		} else if (strategy instanceof AbstractRealOptimize) {
+//			return ((AbstractRealOptimize) strategy).getBestObjectiveValue();
+//		}
+//		return null;
+		return getObjectiveValue();
 	}
 
 
@@ -1696,7 +1666,7 @@ public class CPSolver implements Solver {
 	/**
 	 * If a limit has been encounteres, return the involved limit
 	 */
-	public GlobalSearchLimit getEncounteredLimit() {
+	public AbstractGlobalSearchLimit getEncounteredLimit() {
 		return strategy.getEncounteredLimit();
 	}
 
@@ -2417,15 +2387,25 @@ public class CPSolver implements Solver {
 		doMaximize = true;
 	}
 
-	public boolean useRecomputation() {
-		return useRecomputation;
+	public final boolean useRecomputation() {
+		return recomputationGap > 1;
 	}
 
-	public void setRecomputation(boolean on) {
-		useRecomputation = on;
+	public final void setRecomputation(boolean on) {
+		recomputationGap = on ? 10 : 1;
 	}
 
-	public <V extends Var> V[] getVar(Class c, Variable... v) {
+
+	public final int getRecomputationGap() {
+		return recomputationGap;
+	}
+
+	public final void setRecomputationGap(int recomputationGap) {
+		this.recomputationGap = recomputationGap;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <V extends Var> V[] getVar(Class<?> c, Variable... v) {
 		V[] tmp = (V[]) Array.newInstance(c, v.length);
 		for (int i = 0; i < v.length; i++) {
 			tmp[i] = (V) mapvariables.get(v[i].getIndex());
@@ -2440,6 +2420,7 @@ public class CPSolver implements Solver {
 
 	public Var[] getVar(Variable... v) {
 		return getVar(Variable.class, v);
+
 	}
 
 	public IntDomainVar getVar(IntegerVariable v) {

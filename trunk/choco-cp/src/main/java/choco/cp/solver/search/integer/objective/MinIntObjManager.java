@@ -20,66 +20,51 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.search.objective;
+package choco.cp.solver.search.integer.objective;
 
-import choco.cp.solver.search.IObjectiveManager;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solution;
-import choco.kernel.solver.variables.Var;
-import choco.kernel.solver.variables.real.RealIntervalConstant;
-import choco.kernel.solver.variables.real.RealVar;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public abstract class RealObjectiveManager implements IObjectiveManager {
-	
-	public final RealVar objective;
-	
-	protected RealIntervalConstant boundInterval;
-	
-	protected double bound;
-	
-	protected double targetBound;
-	
-	protected double oppositeBound;
-	
-	public RealObjectiveManager(RealVar objective) {
-		super();
-		this.objective = objective;
+public final class MinIntObjManager extends IntObjectiveManager {
+
+
+
+	public MinIntObjManager(IntDomainVar objective) {
+		super(objective);
 	}
 
 	@Override
-	public final Var getObjective() {
-		return objective;
+	public int getObjectiveIntValue() {
+		return objective.getInf();
 	}
 
 	@Override
-	public final Number getObjectiveValue() {
-		return Double.valueOf(getObjectiveRealValue());
-	}
-	
-	@Override
-	public final int getObjectiveIntValue() {
-		return getObjectiveValue().intValue();
+	public void initBounds() {
+		bound = Integer.MAX_VALUE;
+		oppositeBound = objective.getInf();
+		targetBound = objective.getSup();
 	}
 
-	@Override
-	public final Number getBestObjectiveValue() {
-		return Double.valueOf(bound);
-	}
-
-	@Override
-	public final Number getObjectiveTarget() {
-		return Double.valueOf(targetBound);
-	}
-
-	
 	@Override
 	public void postTargetBound() throws ContradictionException {
-		objective.intersect(boundInterval);
+		objective.setSup(targetBound);
+		
 	}
 
 	@Override
-	public final void writeObjective(Solution sol) {
-		sol.recordRealObjective(getObjectiveRealValue());
+	public void setBound() {
+		final int v = objective.getInf();
+		if( v < bound) { bound = v;}
 	}
 	
+
+	@Override
+	public void setTargetBound() {
+		targetBound = objective.getSup() - 1;
+	}
+	
+	@Override
+	public boolean isTargetInfeasible() {
+		return targetBound < oppositeBound;
+	}
 }

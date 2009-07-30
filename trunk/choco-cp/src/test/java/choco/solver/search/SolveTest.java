@@ -64,10 +64,6 @@ import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.MinDomain;
-import choco.cp.solver.search.restart.AbstractParametrizedRestartStrategy;
-import choco.cp.solver.search.restart.GeometricalRestart;
-import choco.cp.solver.search.restart.LubyRestart;
-import choco.cp.solver.search.restart.ParametrizedRestartStrategy;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -77,6 +73,9 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.Propagator;
 import choco.kernel.solver.search.limit.Limit;
+import choco.kernel.solver.search.restart.AbstractRestartStrategy;
+import choco.kernel.solver.search.restart.GeometricalRestartStrategy;
+import choco.kernel.solver.search.restart.LubyRestartStrategy;
 
 public class SolveTest {
 	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
@@ -428,20 +427,20 @@ public class SolveTest {
 
 	public final static int[] GEOMETRIC_1_3 = {1,2,2,3,3,4,5,7,9,11,14,18,24,31,40};
 	
-	private void checkRestart(AbstractParametrizedRestartStrategy r,double factor,int[] expected) {
+	private void checkRestart(AbstractRestartStrategy r,double factor,int[] expected) {
 		r.setGeometricalFactor(factor);
-		int[] computed = r.getExample(expected.length);
+		int[] computed = r.getSequenceExample(expected.length);
 		LOGGER.info("check Restart sequence: "+Arrays.toString(computed));
 		assertArrayEquals(expected, computed);
 	}
 
 	@Test
 	public void testRestartStrategy() {
-		AbstractParametrizedRestartStrategy r = new LubyRestart(Limit.BACKTRACK,1,2);
+		AbstractRestartStrategy r = new LubyRestartStrategy(1,2);
 		checkRestart(r, 2, LUBY_2);
 		checkRestart(r, 3, LUBY_3);
 		checkRestart(r, 4, LUBY_4);
-		r = new GeometricalRestart(Limit.BACKTRACK,1,1.3);
+		r = new GeometricalRestartStrategy(1,1.3);
 		checkRestart(r, 1.3, GEOMETRIC_1_3);
 	}
 

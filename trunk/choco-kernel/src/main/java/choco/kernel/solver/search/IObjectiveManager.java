@@ -20,7 +20,7 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.search;
+package choco.kernel.solver.search;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;

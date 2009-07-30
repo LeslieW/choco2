@@ -28,6 +28,8 @@
 //**************************************************
 package choco.kernel.solver.search;
 
+import java.util.logging.Level;
+
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
@@ -35,10 +37,8 @@ import choco.kernel.solver.SolverException;
 import choco.kernel.solver.branch.AbstractBranching;
 import choco.kernel.solver.branch.AbstractIntBranching;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.search.limit.AbstractLimitManager;
+import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.measures.ISearchMeasures;
-
-import java.util.logging.Level;
 
 /**
  * An abstract class for controlling tree search in various ways
@@ -84,7 +84,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	/**
 	 * indicates whether a limit was encountered in the alst incremental search
 	 */
-	protected GlobalSearchLimit encounteredLimit = null;
+	protected AbstractGlobalSearchLimit encounteredLimit = null;
 
 
 	/**
@@ -115,7 +115,10 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	public int baseWorld = 0;
 
-	public AbstractLimitManager limitManager;
+	
+	public ISearchMeasures searchMeasures;
+	
+	public GlobalSearchLimit limitManager;
 	
 	public ISearchLoop searchLoop;
 
@@ -137,11 +140,35 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	}
 		
 
-	public final AbstractLimitManager getLimitManager() {
+	public final GlobalSearchLimit getLimitManager() {
 		return limitManager;
 	}
 
 
+
+	public final ISearchMeasures getSearchMeasures() {
+		return searchMeasures;
+	}
+	
+
+	public final ISearchLoop getSearchLoop() {
+		return searchLoop;
+	}
+
+
+	public final void setSearchLoop(ISearchLoop searchLoop) {
+		this.searchLoop = searchLoop;
+	}
+	
+	public final void setSearchMeasures(ISearchMeasures searchMeasures) {
+		this.searchMeasures = searchMeasures;
+	}
+
+	public final void setLimitManager(GlobalSearchLimit limitManager) {
+		this.limitManager = limitManager;
+	}
+
+	
 	/*
 	 * main entry point: searching for one solution
 	 * Note: the initial propagation must be done before pushing any world level.
@@ -221,6 +248,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		baseWorld = solver.getWorldIndex();
 		initialTrace.setBranching(this.mainGoal);
 		limitManager.initialize();
+		searchLoop.initialize();
 	}
 
 	/**
@@ -228,7 +256,6 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	public void newFeasibleRootState() {
 		solver.worldPush();
-		searchLoop.initialize();
 	}
 	/**
 	 * called before a new search tree is explored
@@ -271,7 +298,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	@Override
 	public void writeSolution(Solution sol) {
 		super.writeSolution(sol);
-		limitManager.writeLimits(sol);
+		sol.recordSearchMeasures(searchMeasures);
 	}
 
 	/**
@@ -285,9 +312,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 			if (LOGGER.isLoggable(Level.FINE)) {
 				StringBuilder sb = new StringBuilder();
 				sb.append("Solution #").append(getSolutionCount()).append(" is found");
-				if  (limitManager.getNbLimits() > 0) {
-					sb.append("\n\twith ").append(runtimeStatistics());
-				}
+				sb.append("\n\twith ").append(runtimeStatistics());
 				LOGGER.log(Level.FINE, "=== {0}",sb);	
 				if (LOGGER.isLoggable(Level.FINER)) {LOGGER.log(Level.FINER,"\t{0}", solver.solutionToString());}
 			}
@@ -394,14 +419,10 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	}
 
 	public String runtimeStatistics() {
-		return limitManager.pretty();
+		return "Measures{ "+searchMeasures.pretty()+" }\n"+limitManager.pretty();
 	}
 
 	
-
-	public final ISearchMeasures getSearchMeasures() {
-		return limitManager;
-	}
 	
 	/**
 	 * @return the time elapsed during the last search in milliseconds
@@ -409,7 +430,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	@Deprecated
 	public int getTimeCount() {
-		return limitManager.getTimeCount();
+		return searchMeasures.getTimeCount();
 	}
 
 	/**
@@ -418,7 +439,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	@Deprecated
 	public int getCpuTimeCount() {
-		return limitManager.getTimeCount();
+		return searchMeasures.getTimeCount();
 	}
 
 	/**
@@ -427,7 +448,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	@Deprecated
 	public int getNodeCount() {
-		return limitManager.getNodeCount();
+		return searchMeasures.getNodeCount();
 	}
 
 	/**
@@ -435,7 +456,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	@Deprecated
 	public int getBackTrackCount() {
-		return limitManager.getBackTrackCount();
+		return searchMeasures.getBackTrackCount();
 	}
 
 	/**
@@ -443,7 +464,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	@Deprecated
 	public int getFailCount() {
-		return limitManager.getFailCount();
+		return searchMeasures.getFailCount();
 	}
 
 	/**
@@ -459,21 +480,13 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 * If a limit has been encounteres, return the involved limit
 	 * @return the encoutered limit
 	 */
-	public final GlobalSearchLimit getEncounteredLimit() {
+	public final AbstractGlobalSearchLimit getEncounteredLimit() {
 		return encounteredLimit;
 	}
 
-	
-	public final void setLimitManager(AbstractLimitManager limitManager) {
-		this.limitManager = limitManager;
-		limitManager.setSearchStrategy(this);
-	}
 
-	public final void setSearchLoop(ISearchLoop searchLoop) {
-		this.searchLoop = searchLoop;
-	}
 
-	public final void setEncounteredLimit(GlobalSearchLimit encounteredLimit) {
+	public final void setEncounteredLimit(AbstractGlobalSearchLimit encounteredLimit) {
 		this.encounteredLimit = encounteredLimit;
 	}
 	

@@ -20,35 +20,52 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.search.restart;
+package choco.cp.solver.search.real.objective;
 
-import choco.kernel.solver.search.limit.Limit;
+import choco.kernel.solver.variables.real.RealIntervalConstant;
+import choco.kernel.solver.variables.real.RealMath;
+import choco.kernel.solver.variables.real.RealVar;
 
-
-
-/**
- * @author Arnaud Malapert
- *
- */
-public final class GeometricalRestart extends AbstractParametrizedRestartStrategy {
+public final class MaxRealObjManager extends RealObjectiveManager {
 
 	
-
-	public GeometricalRestart(Limit type, int scaleFactor,
-			double geometricalFactor) {
-		super(type, scaleFactor, geometricalFactor);
-	}
-	
-	
-	
-	@Override
-	public final String getName() {
-		return "GEOM";
+	public MaxRealObjManager(RealVar objective) {
+		super(objective);
 	}
 
+	@Override
+	public double getObjectiveRealValue() {
+		return objective.getSup();
+	}
+
+	private final void setBoundInterval() {
+		boundInterval = new RealIntervalConstant(targetBound, Double.POSITIVE_INFINITY);
+	}
 
 	@Override
-	protected int getNextLimit() {
-		return (int) Math.ceil( Math.pow(geometricalFactor,nbRestarts) * scaleFactor );
+	public void initBounds() {
+		bound = Double.NEGATIVE_INFINITY;
+		oppositeBound = objective.getSup();
+		targetBound = objective.getInf();
+		setBoundInterval();
+	}
+
+	@Override
+	public void setBound() {
+		final double v = objective.getSup();
+		if( v > bound) { bound = v;}
+	}
+	
+
+	@Override
+	public void setTargetBound() {
+		targetBound = RealMath.nextFloat(objective.getInf());
+		setBoundInterval();
+		
+	}
+	
+	@Override
+	public boolean isTargetInfeasible() {
+		return targetBound > oppositeBound;
 	}
 }

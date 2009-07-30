@@ -22,52 +22,39 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search;
 
-import choco.cp.solver.variables.integer.IntDomainVarImpl;
+import choco.cp.solver.search.integer.objective.MaxIntObjManager;
+import choco.cp.solver.search.integer.objective.MinIntObjManager;
 import choco.kernel.solver.search.AbstractOptimize;
-import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
+import choco.kernel.solver.search.IObjectiveManager;
+import choco.kernel.solver.variables.Var;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
-
-/**
- * A branch and bound implementation of optimizer strategy.
- */
 public class BranchAndBound extends AbstractOptimize {
 
-  /**
-   * Builds a new optimizing strategy with the specified variable.
-   * @param obj is the variable that should be optimized
-   * @param maximize states if the objective variable should be maximized
-   */
-  public BranchAndBound(final IntDomainVarImpl obj,
-      final boolean maximize) {
-    super(obj, maximize);
-      setSearchLoop(new SearchLoop(this));
-  }
+	public final IntDomainVar objective;
 
-  /**
-   * Called when a new search tree is built. It initializes the bounds and
-   * resets all limits.
-   */
-  public void newTreeSearch() {
-    initBounds();
-    limitManager.initialize();
-  }
+	/**
+	 * Builds a new optimizing strategy with the specified variable.
+	 * @param obj is the variable that should be optimized
+	 * @param maximize states if the objective variable should be maximized
+	 */
+	public BranchAndBound(IntDomainVar objective, boolean maximize) {
+		super( makeDefaultObjManager(objective, maximize), maximize);
+		this.objective = objective;
+	}
 
-//  /**
-//   * Called when a new search tree has been completely browsed. It
-//   * resets all limits.
-//   */  
-//  public void endTreeSearch() {
-//	  super.endTreeSearch();
-//	  //FIXME why did we not reset limits in the superclass if it is useful ?
-//	 
-//    
-//    if (solver.getFeasible() == Boolean.TRUE) {
-//      //[SVIEW] solve => ~S sol, best:~S [~S]
-//      // a.nbSol,(if a.doMaximize a.lowerBound else a.upperBound),a.limits
-//    } else if (solver.getFeasible() == Boolean.FALSE) {
-//      //[SVIEW] solve => no sol [~S]// a.limits
-//    } else {
-//      //[SVIEW] solve interrupted before any solution was found [~S]// a.limits
-//    }
-//  }
+	protected final static IObjectiveManager makeDefaultObjManager(IntDomainVar objective, boolean maximize) {
+		return maximize ? new MaxIntObjManager(objective) : new MinIntObjManager(objective);
+	}
+
+	@Override
+	public final Var getObjective() {
+		return objective;
+	}
+
+	public final IntDomainVar getIntObjective() {
+		return objective;
+	}
+
+
 }

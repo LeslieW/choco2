@@ -22,21 +22,24 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.limit;
 
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
+import choco.kernel.solver.search.limit.Limit;
 
 /**
  * Limit counting the backtrack number
  */
-public final class BackTrackLimit extends BackTrackCount {
+public final class BackTrackLimit extends AbstractGlobalSearchLimit {
 
 	public BackTrackLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
-		super(theStrategy, theLimit);
+		super(theStrategy, theLimit, Limit.BACKTRACK);
+		
 	}
 
 	@Override
-	public void endNode() throws ContradictionException {
-		super.endNode();
-		checkLimit();
+	public final int getNb() {
+		return strategy.searchMeasures.getBackTrackCount();
 	}
+
+	
 }

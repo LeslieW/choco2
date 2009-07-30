@@ -22,21 +22,22 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.limit;
 
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
+import choco.kernel.solver.search.limit.Limit;
 
 
-public final class NodeLimit extends NodeCount {
+public final class NodeLimit extends AbstractGlobalSearchLimit {
 
 	
 	public NodeLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
-		super(theStrategy, theLimit);
+		super(theStrategy, theLimit, Limit.NODE);
 	}
 
+
 	@Override
-	public void newNode() throws ContradictionException {
-		super.newNode();
-		checkLimit();
+	public final int getNb() {
+		return strategy.searchMeasures.getNodeCount();
 	}
 	
 }

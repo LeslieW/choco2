@@ -1,7 +1,5 @@
 package db;
 
-import choco.cp.solver.search.restart.ParametrizedRestartStrategy;
-import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import db.beans.DbInstanceBean;
 import db.beans.DbProblemBean;
 import db.beans.DbStrategyBean;
@@ -28,38 +26,6 @@ public final class DbConstants {
 	
 	public final static DbStrategy NO_STRATEGY = new DbStrategyBean();
 	
-	
-	public final static ParametrizedRestartStrategy NO_RESTARTS = new ParametrizedRestartStrategy() {
-		
-		@Override
-		public double getGeometricalFactor() {
-			return 1;
-		}
-
-		@Override
-		public String getName() {
-			return "NO_RESTARTS";
-		}
-
-		@Override
-		public int getScaleFactor() {
-			return 1;
-		}
-
-		@Override
-		public void setGeometricalFactor(double geometricalFactor) {
-			throw new DatabaseException("can set attribute: constant object");			
-		}
-
-		@Override
-		public void setScaleFactor(int scaleFactor) {
-			throw new DatabaseException("can set attribute: constant object");			
-		}
-		
-		
-	};
-
-
 	private DbConstants() {
 		super();
 	}

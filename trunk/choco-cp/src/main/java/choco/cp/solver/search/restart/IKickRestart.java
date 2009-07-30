@@ -20,32 +20,26 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.search.limit;
+package choco.cp.solver.search.restart;
 
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
-import choco.kernel.solver.search.limit.Limit;
+import choco.kernel.solver.search.IntBranchingTrace;
 
-public class BackTrackCount extends AbstractGlobalSearchLimit {
+/**
+ * an interface allow to control the restarting process in the search loop.
+ * @author Arnaud Malapert</br> 
+ * @since 29 juil. 2009 version 2.1.1</br>
+ * @version 2.1.1</br>
+ */
+public interface IKickRestart {
+
 	
-	public BackTrackCount(AbstractGlobalSearchStrategy theStrategy) {
-		this(theStrategy, Integer.MAX_VALUE);
-	}
+	AbstractGlobalSearchStrategy getSearchStrategy();
 	
-	protected BackTrackCount(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
-		super(theStrategy, theLimit, Limit.BACKTRACK);
-		limitMask = END_NODE;
-	}
-	
-
-	@Override
-	public final void newNode() throws ContradictionException {}
-
-
-	@Override
-	public void endNode() throws ContradictionException {
-		nb++;
-	}
+	/**
+	 * This function restore the root state (trace, memory). 
+	 * @param ctx the last decision as we restart only when opening node.
+	 */
+	void restoreRootNode(IntBranchingTrace ctx);
 }
 
