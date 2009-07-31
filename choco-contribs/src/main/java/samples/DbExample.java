@@ -82,7 +82,7 @@ public class DbExample implements Example {
 				solveMED(manager);
 			}
 			manager.printTable(DbTables.T_SOLVERS);
-			manager.close();
+			manager.shutdown();
 			odbStream = getClass().getResourceAsStream("/chocodb.odb");
 			OdbConnector.exportDatabase(odbStream, dbDir, dbName,File.createTempFile(dbName+"-", ".odb")); //export database to odb
 		} catch (IOException e) {

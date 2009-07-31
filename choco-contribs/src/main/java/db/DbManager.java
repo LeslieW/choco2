@@ -1,7 +1,6 @@
 package db;
 
 import static java.lang.System.getProperty;
-import static java.sql.Types.VARCHAR;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -56,8 +55,10 @@ public class DbManager {
 	private Integer defaultExecutionID;
 
 	public DbManager(File databaseDir, String databaseName) {
-		this("jdbc:hsqldb:file:" + databaseDir.getAbsolutePath()+"/"+databaseName);
+		this(DbUrlFactory.makeEmbeddedURL(databaseDir, databaseName));
 	}
+
+	
 	public DbManager(String url) {
 		super();
 		LOGGER.info("fetching data source ...");
@@ -71,8 +72,12 @@ public class DbManager {
 	}
 
 
-	public final void close() {
+	public final void shutdown() {
 		jdbcTemplate.execute("SHUTDOWN");
+	}
+	
+	public final void commit() {
+		jdbcTemplate.execute("COMMIT");
 	}
 
 
@@ -454,8 +459,13 @@ public class DbManager {
 		//
 
 		//jdbcTemplate.queryForObject("SELECT LABEL FROM T_PROBLEMS WHERE CATEGORY=NULL" , new Object[]{null}, new int[]{VARCHAR}, String.class);
-		close();
+		shutdown();
 
 	}
 
+	public static void main(String[] args) {
+		DbManager dbm = new DbManager(DbUrlFactory.makeLocalhostURL("cdb"));
+		dbm.printTable(DbTables.T_SOLVERS);
+		dbm.shutdown();
+	}
 }

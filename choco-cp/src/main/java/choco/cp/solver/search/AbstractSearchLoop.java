@@ -60,6 +60,12 @@ public abstract class AbstractSearchLoop implements ISearchLoop {
 
 
 
+	public final boolean isStop() {
+		return stop;
+	}
+
+
+
 	public final int getNodeCount() {
 		return nodeCount;
 	}

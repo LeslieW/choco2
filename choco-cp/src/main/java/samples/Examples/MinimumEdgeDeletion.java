@@ -1,13 +1,25 @@
 package samples.Examples;
 
-import static choco.Choco.*;
-import choco.cp.model.CPModel;
-import choco.cp.solver.CPSolver;
-import choco.kernel.memory.recomputation.EnvironmentRecomputation;
-import choco.kernel.model.variables.integer.IntegerVariable;
+import static choco.Choco.eq;
+import static choco.Choco.makeBooleanVar;
+import static choco.Choco.makeBooleanVarArray;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.minus;
+import static choco.Choco.neq;
+import static choco.Choco.reifiedIntConstraint;
+import static choco.Choco.sum;
 
 import java.util.Arrays;
 import java.util.Random;
+
+import choco.cp.model.CPModel;
+import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.integer.branching.AssignVar;
+import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
+import choco.cp.solver.search.integer.valselector.MinVal;
+import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.search.integer.ValIterator;
 
 /**
  * Let consider a set of N boolean variables and a binary constraint network (eq or neq).
