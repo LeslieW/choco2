@@ -24,7 +24,7 @@ package choco.visu;
 
 import choco.IObservable;
 import choco.IObserver;
-import choco.kernel.solver.SolverException;
+import choco.cp.solver.search.AbstractSearchLoopWithRestart;
 import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.search.ISearchLoop;
 import choco.kernel.solver.search.IntBranchingTrace;
@@ -36,7 +36,6 @@ import choco.visu.variables.VisuVariable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 
 /*
  * Created by IntelliJ IDEA.
@@ -84,16 +83,14 @@ public final class Tracer implements IObserver {
 	 */
 	public final void setVariables(final Collection<VisuVariable> vars) {
 		if(this.vars == null){
-			this.vars = new ArrayList();
-			mapvars = new HashMap();
+			this.vars = new ArrayList<VisuVariable>();
+			mapvars = new HashMap<Var, VisuVariable>();
 		}
 
-		final Iterator it = vars.iterator();
-		while(it.hasNext()){
-			VisuVariable vv = (VisuVariable) it.next();
-			this.vars.add(vv);
-			mapvars.put(vv.getSolverVar(), vv);
-		}
+        for (VisuVariable var : vars) {
+            this.vars.add(var);
+            mapvars.put(var.getSolverVar(), var);
+        }
 	}
 
 	/**
@@ -118,26 +115,26 @@ public final class Tracer implements IObserver {
 				v.refresh(ve.getEventType());
 			}
 		}else if(arg instanceof ISearchLoop){
-			throw new SolverException("not yet implemented");
-			//IntBranchingTrace ctx = ((ObservableStepSearchLoop)arg).getCtx();
-			//            if(ctx==null)return;
-			//            Object ob = ctx.getBranchingObject();
-			//            VisuVariable v = null;
-			//            if(ob instanceof IntDomainVar){
-			//                v = mapvars.get(ob);
-			//            }else if (ob instanceof Object[]){
-			//                v = mapvars.get(((Object[])ob)[0]);
-			//            }
-			//            if(v != null){
-			//                v.refresh(arg);
-			//            }
+			IntBranchingTrace ctx = ((AbstractSearchLoopWithRestart)((ObservableStepSearchLoop)arg)
+                    .getInternalSearchLoop()).getCurrentTrace();
+            if(ctx==null)return;
+            Object ob = ctx.getBranchingObject();
+            VisuVariable v = null;
+            if(ob instanceof IntDomainVar){
+                v = mapvars.get(ob);
+            }else if (ob instanceof Object[]){
+                v = mapvars.get(((Object[])ob)[0]);
+            }
+            if(v != null){
+                v.refresh(arg);
+            }
 		}
 	}
 
 	/**
 	 * Create a visual pause
 	 */
-	private final void haveBreak(){
+	private void haveBreak(){
 		try {
 			Thread.sleep(this.breaklength);
 		} catch (InterruptedException e) {

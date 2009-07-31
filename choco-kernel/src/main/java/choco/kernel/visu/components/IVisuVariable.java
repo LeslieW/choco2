@@ -22,6 +22,7 @@
  **************************************************/
 package choco.kernel.visu.components;
 
+import choco.kernel.common.IIndex;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.visu.components.bricks.IChocoBrick;
 
@@ -32,7 +33,7 @@ import choco.kernel.visu.components.bricks.IChocoBrick;
 * Since : Choco 2.0.1
 * Update : Choco 2.0.1
 */
-public interface IVisuVariable {
+public interface IVisuVariable extends IIndex {
 
     public Var getSolverVar();
 

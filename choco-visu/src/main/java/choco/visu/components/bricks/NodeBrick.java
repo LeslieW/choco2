@@ -69,9 +69,9 @@ public final class NodeBrick extends AChocoBrick {
             switch (state) {
                 case SOLUTION:
                     color = ColorConstant.GREEN;
-                    name = "SOLUTION";
-                    ((TreeSearchPApplet) chopapplet).tsdepth++;
-                    ((TreeSearchPApplet) chopapplet).q.add(addNode());
+                    CParticle p = ((TreeSearchPApplet) chopapplet).q.getLast();
+                    Object[] o = ((TreeSearchPApplet) chopapplet).settings.remove(p.particle);
+                    ((TreeSearchPApplet) chopapplet).settings.put(p.particle, new Object[]{o[0], color});
                     break;
                 case DOWN:
                     color = ColorConstant.BLUE;

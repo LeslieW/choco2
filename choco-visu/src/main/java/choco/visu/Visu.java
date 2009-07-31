@@ -22,37 +22,28 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.visu;
 
-import static choco.visu.VisuButton.NEXT;
-import static choco.visu.VisuButton.PLAY;
-
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSlider;
-import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import choco.cp.solver.propagation.ObservableVarEventQueue;
+import choco.cp.solver.search.AbstractSearchLoop;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.visu.IVisu;
 import choco.kernel.visu.components.IVisuVariable;
 import choco.kernel.visu.components.panels.AVarChocoPanel;
+import static choco.visu.VisuButton.NEXT;
+import static choco.visu.VisuButton.PLAY;
 import choco.visu.searchloop.IObservableStepSearchLoop;
+import choco.visu.searchloop.ObservableStepSearchLoop;
 import choco.visu.variables.VisuVariable;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public final class Visu implements IVisu {
 
@@ -305,24 +296,11 @@ public final class Visu implements IVisu {
 	 }
 
 	 private IObservableStepSearchLoop chooseSearchLoop(final Solver s) {
-		 throw new SolverException("not yet implemented");
-		 //        try {
-		 //            if (s.getSearchStrategy().searchLoop instanceof SearchLoopWithRestart) {
-		 //                ssl = new ObservableStepSearchLoopWithRestart(s.getSearchStrategy(),
-		 //                        ((SearchLoopWithRestart) s.getSearchStrategy().searchLoop).getRestartStrategy());
-		 //                s.getSearchStrategy().setSearchLoop((SearchLoopWithRestart) ssl);
-		 //            } else if (s.getSearchStrategy().searchLoop instanceof SearchLoopWithRecomputation) {
-		 //                ssl = new ObservableStepSearchLoopWithRecomputation(s.getSearchStrategy());
-		 //                s.getSearchStrategy().setSearchLoop((SearchLoopWithRecomputation) ssl);
-		 //            } else if (s.getSearchStrategy().searchLoop instanceof SearchLoop) {
-		 //                ssl = new ObservableStepSearchLoop(s.getSearchStrategy());
-		 //                s.getSearchStrategy().setSearchLoop((SearchLoop) ssl);
-		 //            }
-		 //        } catch (NullPointerException e) {
-		 //            LOGGER.severe("ERROR : Call Solver#generateSearchStrategy() before Solver#visualize(IVisu)");
-		 //            System.exit(-1);
-		 //        }
-		 //        return ssl;
+         AbstractSearchLoop ssl = (AbstractSearchLoop)s.getSearchStrategy().getSearchLoop();
+         if(ssl instanceof ObservableStepSearchLoop){
+             return (ObservableStepSearchLoop)ssl;
+         }
+         return new ObservableStepSearchLoop(s.getSearchStrategy());
 	 }
 
 	 /**

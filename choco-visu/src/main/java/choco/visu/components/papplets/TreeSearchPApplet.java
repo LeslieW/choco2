@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.visu.components.papplets;
 
-import choco.kernel.solver.variables.Var;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.visu.components.IVisuVariable;
 import static choco.visu.components.ColorConstant.WHITE;
 import choco.visu.components.bricks.AChocoBrick;
@@ -69,9 +69,9 @@ public final class TreeSearchPApplet extends AChocoPApplet {
         super(parameters);
         if(parameters == null){
             try{
-            this.font = loadFont("./fonts/FreeMono-48.vlw") ;
+            this.font = loadFont("./fonts/FreeSans-48.vlw") ;
         }catch(Exception e){
-            LOGGER.warning("\"FreeMono-48.vlw\" not found. Use default one instead (can be slower)");
+            LOGGER.warning("\"FreeSans-48.vlw\" not found. Use default one instead (can be slower)");
             this.font = getFont(48);
         }
         }else{
@@ -85,18 +85,15 @@ public final class TreeSearchPApplet extends AChocoPApplet {
      * @param list of visu variables o watch
      */
     public final void initialize(final ArrayList<IVisuVariable> list) {
-        final Var[] vars = new Var[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            vars[i] = list.get(i).getSolverVar();
-        }
+        final IVisuVariable[] vars = ArrayUtils.getNonRedundantObjects(IVisuVariable.class,
+                list.toArray(new IVisuVariable[list.size()]));
         bricks = new AChocoBrick[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            IVisuVariable vv = list.get(i);
-            Var v = vv.getSolverVar();
-            bricks[i] = new NodeBrick(this, v);
-            vv.addBrick(bricks[i]);
+        int i =0;
+        for (IVisuVariable var : vars){
+            bricks[i] = new NodeBrick(this, var.getSolverVar());
+            var.addBrick(bricks[i++]);
         }
-        settings = new HashMap();
+        settings = new HashMap<Particle, Object[]>();
         this.init();
     }
 
