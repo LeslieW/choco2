@@ -324,4 +324,44 @@ public class TestAlternativeResources {
 	}
 	
 
+	@Test
+	public void CosmicTest() {
+		int maxDuration = 28;
+		CPModel model = new CPModel();
+
+		TaskVariable JobA = Choco.makeTaskVar("JobA", 0, maxDuration, 4);
+		TaskVariable JobB = Choco.makeTaskVar("JobB", 0, maxDuration, 6);
+		TaskVariable JobC = Choco.makeTaskVar("JobC", 0, maxDuration, 8);
+
+		
+		IntegerVariable JobA_Res1 = Choco.makeIntVar("JobA_Res1", 0, 1, "cp:binary");
+		IntegerVariable JobA_Res2 = Choco.makeIntVar("JobA_Res2", 0, 1, "cp:binary");
+		IntegerVariable JobB_Res1 = Choco.makeIntVar("JobB_Res1", 0, 1, "cp:binary");
+		IntegerVariable JobB_Res2 = Choco.makeIntVar("JobB_Res2", 0, 1, "cp:binary");
+		IntegerVariable JobC_Res1 = Choco.makeIntVar("JobC_Res1", 0, 1, "cp:binary");
+		IntegerVariable JobC_Res2 = Choco.makeIntVar("JobC_Res2", 0, 1, "cp:binary");
+
+		model.addConstraint(Choco.eq(Choco.plus(JobA_Res1, JobA_Res2), 1));
+		model.addConstraint(Choco.eq(Choco.plus(JobB_Res1, JobB_Res2), 1));
+		model.addConstraint(Choco.eq(Choco.plus(JobC_Res1, JobC_Res2), 1));
+
+		model.addConstraint(Choco.disjunctive( new TaskVariable[]{JobA, JobB, JobC}, 
+				new IntegerVariable[] {JobA_Res1, JobB_Res1, JobC_Res1})) ; 
+		model.addConstraint(Choco.disjunctive( new TaskVariable[]{JobA, JobB, JobC}, 
+				new IntegerVariable[] {JobA_Res2, JobB_Res2, JobC_Res2})) ; 
+
+		CPSolver solver = new CPSolver();
+		solver.setHorizon(maxDuration);
+		solver.read(model);
+
+		solver.setDoMaximize(false);
+		solver.setObjective(solver.getMakespan());
+		solver.setRestart(true);
+		solver.setFirstSolution(false);
+		solver.setTimeLimit(5000);
+		
+		solver.solveAll();
+		System.out.println(solver.solutionToString());
+	}
+
 }

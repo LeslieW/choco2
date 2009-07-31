@@ -17,6 +17,9 @@ import org.junit.Test;
 import samples.Examples.MinimumEdgeDeletion;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.integer.branching.AssignVar;
+import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
+import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.memory.recomputation.EnvironmentRecomputation;
@@ -139,6 +142,7 @@ public class TestStrategyMed {
 			_s.setFirstSolution(false);
 			_s.setDoMaximize(false);
 			CPSolver s = (CPSolver) _s;
+			//_s.attachGoal(new AssignVar(new MinDomain(_s), new IncreasingDomain()));
 			s.setRecomputation(recomputation);
 			s.setRestart(restartAfterSolution);
 			if(restartPolicy) {s.setLubyRestart(1, 2);} //many restarts, bad performance but good testing !

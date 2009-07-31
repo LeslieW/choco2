@@ -66,10 +66,9 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 
 
 
-	public final void setCtx(IntBranchingTrace ctx) {
-		this.ctx = ctx;
+	public final IKickRestart getKickRestart() {
+		return kickRestart;
 	}
-
 
 
 	public final void setInitializeSearchAfterRestart(boolean reinit) {
