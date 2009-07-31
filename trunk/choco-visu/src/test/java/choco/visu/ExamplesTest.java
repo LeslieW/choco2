@@ -25,6 +25,7 @@ package choco.visu;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.preprocessor.PreProcessCPSolver;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.Model;
@@ -67,11 +68,11 @@ public class ExamplesTest {
     public static void main(String[] args){
         ExamplesTest e = new ExamplesTest();
         e.checkEnvironment();
-//        e.donaldGeraldRobert();
+        e.donaldGeraldRobert();
 //        e.knapsack();
 //        e.magicSquare();
 //        e.queens();
-        e.sudokuAdvanced();
+//        e.sudokuAdvanced();
 //        e.usa();
 //        e.testPicross();
     }
@@ -157,9 +158,9 @@ public class ExamplesTest {
         s.setFirstSolution(true);
         s.generateSearchStrategy();
         s.visualize(v);
-//        s.launch();
+        s.launch();
 
-//        v.kill();
+        v.kill();
     }
 
 
@@ -221,11 +222,11 @@ public class ExamplesTest {
 //        s.solve();
         Visu v = Visu.createVisu();
 //          Visu v = Visu.createFullVisu();
-    Variable[] vars = new Variable[n * n];
+        Variable[] vars = new Variable[n * n];
         for (int i = 0; i < n; i++) {
             System.arraycopy(var[i], 0, vars, i * n, n);
         }
-//        v.addPanel(new VarChocoPanel("Grid", vars, GRID, null));
+        v.addPanel(new VarChocoPanel("Grid", vars, GRID, null));
         v.addPanel(new VarChocoPanel("TreeSearch", vars, TREESEARCH, null));
 //        v.addPanel(new VarChocoPanel("FullDomain", vars, FULLDOMAIN, null));
 //        v.addPanel(new VarChocoPanel("NameOrValue", vars, NAMEORVALUE, null));
@@ -333,7 +334,7 @@ public class ExamplesTest {
     @Test
     public void usa() {
         Model m = new CPModel();
-        Solver s = new CPSolver();
+        Solver s = new PreProcessCPSolver();
         int nbColor = 4;
         TIntObjectHashMap<String> invStates = new TIntObjectHashMap<String>();
         for(int i = 0; i< states.keys().length; i++){
@@ -552,8 +553,7 @@ public class ExamplesTest {
 
     }
 
-//    @Test
-
+    @Test
     public void knapsack(){
 //    public static void main(String[] args){
          Model m = new CPModel();
@@ -580,8 +580,8 @@ public class ExamplesTest {
         v.addPanel(new VarChocoPanel("K", new IntegerVariable[]{obj1, obj2, obj3, c, capa}, KnapsackPApplet.class, "./images/knapsack.svg"));
         v.addPanel(new VarChocoPanel("FullDomain", new IntegerVariable[]{obj1, obj2, obj3, c, capa}, FULLDOMAIN, null));
         s.setFirstSolution(false);
-//        s.setDoMaximize(true);
-//		s.setObjective(s.getVar(c));
+        s.setDoMaximize(true);
+		s.setObjective(s.getVar(c));
         s.generateSearchStrategy();
         s.visualize(v);
         s.launch();
