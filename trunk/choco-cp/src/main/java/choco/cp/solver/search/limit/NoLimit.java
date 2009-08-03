@@ -4,10 +4,11 @@ import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 
 public final class NoLimit extends AbstractGlobalSearchLimit {
 
+	public final static String NO_LIMIT_UNIT = "unlimited";
 	public final static NoLimit SINGLOTON = new NoLimit();
 	
 	private NoLimit() {
-		super(null, Integer.MAX_VALUE, "unlimited");
+		super(null, Integer.MAX_VALUE, NO_LIMIT_UNIT);
 	}
 
 	@Override

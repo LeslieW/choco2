@@ -1,7 +1,9 @@
 package choco.kernel.solver.search.restart;
 
 public final class NoRestartStrategy implements UniversalRestartStrategy {
-
+	
+	public final static String NO_RESTART_NAME = "NO_RESTART";
+	
 	public final static NoRestartStrategy SINGLOTON = new NoRestartStrategy();
 	
 	private NoRestartStrategy() {

@@ -430,9 +430,16 @@ public interface Solver extends IMeasures, IPretty {
     public void printRuntimeSatistics();
     
     public String runtimeSatistics();
-	
+    /**
+	 * set the maximal search depth for logging statements
+	 */
     public void setLoggingMaxDepth(int loggingMaxDepth);
 
+    /**
+	 * get the maximal search depth for logging statements
+	 */
+    public int getLoggingMaxDepth();
+    
 	/**
 	 * pushing one world on the stack
 	 */

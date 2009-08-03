@@ -22,65 +22,143 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.search;
 
-import choco.kernel.solver.branch.IntBranching;
+
+import choco.IPretty;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.branch.AbstractIntBranching;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.integer.IntVar;
+import choco.kernel.solver.variables.real.RealVar;
+import choco.kernel.solver.variables.set.SetVar;
 
 /**
  * A class for keeping a trace of the search algorithm, through an IntBranching
  * (storing the current branching object, as well as the label of the current branch)
  */
-public final class IntBranchingTrace {
-  private IntBranching branching;
-  private Object branchingObject;
-  private int branchIndex;
+public class IntBranchingTrace implements IntBranchingDecision {
 
-  public IntBranchingTrace() {
-  }
+	private AbstractIntBranching branching;
 
-  public IntBranchingTrace(IntBranching ibranching) {
-    branching = ibranching;
-  }
+	private Object branchingObject;
 
-  public void setBranching(IntBranching ibranching) {
-    branching = ibranching;
-  }
+	private int branchIndex;
 
-  public void setBranchingObject(Object branchingObj) {
-    branchingObject = branchingObj;
-  }
+	private int branchingValue = Integer.MAX_VALUE;
 
-  public void setBranchIndex(int bIdx) {
-    branchIndex = bIdx;
-  }
 
-  public IntBranching getBranching() {
-    return branching;
-  }
 
-  public Object getBranchingObject() {
-    return branchingObject;
-  }
-
-  public int getBranchIndex() {
-    return branchIndex;
-  }
-
-  public void clear() {
-    branching = null;
-    branchingObject = null;
-    branchIndex = -999;
-  }
-  
-  @Override
-	public String toString() {
-	  return branchingObject +" branch "+branchIndex;
+	public IntBranchingTrace() {
+		super();
 	}
 
-    
-    public IntBranchingTrace copy() {
-        IntBranchingTrace t = new IntBranchingTrace(this.branching);
-        t.branchingObject = this.branchingObject;
-        t.branchIndex = this.branchIndex;
-        return t;
-    }
+
+
+	public IntBranchingTrace(AbstractIntBranching branching,
+			Object branchingObject, int branchIndex, int branchingValue) {
+		super();
+		this.branching = branching;
+		this.branchingObject = branchingObject;
+		this.branchIndex = branchIndex;
+		this.branchingValue = branchingValue;
+	}
+
+
+
+	public final AbstractIntBranching getBranching() {
+		return branching;
+	}
+
+	public final void setBranching(AbstractIntBranching branching) {
+		this.branching = branching;
+	}
+
+	public final int getBranchIndex() {
+		return branchIndex;
+	}
+
+	public final void setBranchIndex(final int branchIndex) {
+		this.branchIndex = branchIndex;
+	}
+
+	public final void incrementBranchIndex() {
+		branchIndex++;
+	}
+
+	public final int getBranchingValue() {
+		return branchingValue;
+	}
+
+	public final void setBranchingValue(final int branchingValue) {
+		this.branchingValue = branchingValue;
+	}
+
+	public final Object getBranchingObject() {
+		return branchingObject;
+	}
+
+	@Override
+	public final IntDomainVar getBranchingIntVar() {
+		return (IntDomainVar) branchingObject;
+	}
+
+	@Override
+	public final SetVar getBranchingSetVar() {
+		return (SetVar) branchingObject;
+	}
+
+	@Override
+	public final RealVar getBranchingRealVar() {
+		return (RealVar) branchingObject;
+	}
+
+	public final void setBranchingObject(final Object branchingObject) {
+		this.branchingObject = branchingObject;
+	}
+
+	public void clear() {
+		branchIndex = 0;
+		branchingObject = null;
+		branching = null;
+		branchingValue = Integer.MAX_VALUE;
+	}
+
+	public IntBranchingTrace copy() {
+		return new IntBranchingTrace(branching, branchingObject, branchIndex, branchingValue);
+	}
+	
+	//utility function
+	public final void setIntVal() throws ContradictionException {
+		( (IntVar) branchingObject).setVal(branchingValue);
+	}
+	
+	public final void remIntVal() throws ContradictionException {
+		( (IntDomainVar) branchingObject).remVal(branchingValue);
+	}
+	
+	public final void setValInSet() throws ContradictionException {
+		( (SetVar) branchingObject).setValIn(branchingValue);
+	}
+	
+	public final void setValOutSet() throws ContradictionException {
+		( (SetVar) branchingObject).setValOut(branchingValue);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder b = new StringBuilder();
+		if (branchingObject instanceof IPretty) {
+			b.append( ( (IPretty) branchingObject).pretty());
+		}else {
+			b.append(branchingObject);
+		}
+		if(branchingValue != Integer.MAX_VALUE) {
+			b.append(" value=").append(branchingValue);
+		}
+		b.append(" branch ").append(branchIndex);
+		return new String(b);
+	}
+
+
+
 
 }

@@ -23,10 +23,10 @@
 package choco.cp.solver.search.set;
 
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.search.set.AbstractSetBranching;
 import choco.kernel.solver.search.set.SetValSelector;
 import choco.kernel.solver.search.set.SetVarSelector;
-import choco.kernel.solver.variables.set.SetVar;
 
 // **************************************************
 // *                   J-CHOCO                      *
@@ -47,13 +47,12 @@ public final class AssignSetVar extends AbstractSetBranching {
 	}
 
 	public Object selectBranchingObject() throws ContradictionException {
-		Object x = varselector.selectSetVar();
-		if (x == null) return null;
-		return new Object[]{x, valselector.getBestVal((SetVar) x)};
+		return varselector.selectSetVar();
 	}
                                                                                
+	
 	@Override
-	public int getFirstBranch(Object x) {
-		return 1;
+	public void setFirstBranch(final IntBranchingDecision decision) {
+		decision.setBranchingValue( valselector.getBestVal(decision.getBranchingSetVar()));
 	}
 }

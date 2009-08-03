@@ -97,17 +97,16 @@ public class SearchLoopWithRecomputation extends AbstractSearchLoopWithRestart {
 		LOGGER.finest("recomputation ...");
 		for (int i = lastSavedTraceIndex; i < searchStrategy.getCurrentTraceIndex() ; i++) {
 			ctx = searchStrategy.getTrace(i);
-			ctx.getBranching().goDownBranch(ctx.getBranchingObject(), ctx.getBranchIndex());
+			ctx.getBranching().goDownBranch(ctx);
 		}
 		ctx = searchStrategy.topTrace();
 		LOGGER.finest("backtrack ...");
         int ind = ctxIndices.peek();
         for(int i = ind; i < contexts.size(); i++){
-            IntBranchingTrace context = contexts.get(i);
-            ctx.getBranching().goUpBranch(context.getBranchingObject(), context.getBranchIndex());
+        	ctx.getBranching().goUpBranch(contexts.get(i));
         }
 
-		ctx.getBranching().goUpBranch(ctx.getBranchingObject(), ctx.getBranchIndex());
+		ctx.getBranching().goUpBranch(ctx);
 		LOGGER.finest("continue ...");
 		searchStrategy.solver.propagate();
         contexts.push(ctx.copy());

@@ -22,44 +22,23 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.branch;
 
+import choco.kernel.solver.search.IntBranchingDecision;
+
 public abstract class AbstractBinIntBranching extends AbstractIntBranching {
-	public int getFirstBranch(Object x) {
-		return 0;
+	
+	
+	public AbstractBinIntBranching() {
+		super();
+		
 	}
 
-	public int getNextBranch(Object x, int i) {
-		assert i == 0;
-		return 1;
+	public final void setNextBranch(final IntBranchingDecision ctx) {
+		assert ctx.getBranchIndex() == 0;
 	}
 
-	public boolean finishedBranching(Object x, int i) {
-		return i > 0;
+	public final boolean finishedBranching(final IntBranchingDecision ctx) {
+		return ctx.getBranchIndex() > 0;
 	}
-
-	/**
-	 * @deprecated replaced by the management incremental search (with a stack
-	 *             of BranchingTrace storing the environment (local variables)
-	 *             associated to each choice point
-	 * @param n
-	 * @return
-	 */
-	// public boolean explore(int n) {
-	// AbstractGlobalSearchStrategy algo = manager;
-	// AbstractModel pb = algo.model;
-	// Object x = selectBranchingObject();
-	// if (null != x) {
-	// try {
-	// return branchOn(x, n);
-	// } catch (ContradictionException e) {
-	// return false;
-	// }
-	// } else if (null != nextBranching) {
-	// return ((IntBranching) nextBranching).explore(n);
-	// } else {
-	// algo.recordSolution();
-	// algo.showSolution();
-	// return algo.stopAtFirstSol;
-	// }
-	// }
+	
 
 }

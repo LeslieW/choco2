@@ -132,6 +132,7 @@ public class ObservableStepSearchLoop extends AbstractSearchLoop implements IObs
             previousNbSolutions++;
             stop = true;
 			state = SOLUTION;
+			stop = true;
 		}
 		notifyObservers(this);
 		if(action.equals(Step.PAUSE)){

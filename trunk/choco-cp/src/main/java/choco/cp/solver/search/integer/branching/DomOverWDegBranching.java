@@ -22,6 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.branching;
 
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -31,19 +38,13 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.SConstraintType;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.propagation.PropagationEngineListener;
+import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.integer.IntVar;
-
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /* History:
  * 2008-04-23 : Creation : dom / wdeg needs to be a branching not just an heuristic to allow to deal with
@@ -269,9 +270,10 @@ public class DomOverWDegBranching extends AbstractLargeIntBranching implements P
 		}
 	}
 
-	public int getFirstBranch(Object x) {
-		IntDomainVar v = (IntDomainVar) x;
-		for (Iterator iter = v.getConstraintsIterator(); iter.hasNext();) {
+	IntDomainVar v;
+	public void setFirstBranch(final IntBranchingDecision decision) {
+		v = decision.getBranchingIntVar();
+		for (Iterator<SConstraint> iter = v.getConstraintsIterator(); iter.hasNext();) {
 			reuseCstr = (AbstractSConstraint) iter.next();
 			if (SConstraintType.INTEGER.equals(reuseCstr.getConstraintType())) {
 				if (reuseCstr.getNbVarNotInst() == 2) {
@@ -286,26 +288,26 @@ public class DomOverWDegBranching extends AbstractLargeIntBranching implements P
 			}
 		}
 		if (_valIterator != null) {
-			return _valIterator.getFirstVal((IntDomainVar) x);
+			decision.setBranchingValue( _valIterator.getFirstVal(v));
 		} else {
-			return _valSelector.getBestVal((IntDomainVar) x);
+			decision.setBranchingValue( _valSelector.getBestVal(v));
 		}
 	}
 
-	public int getNextBranch(Object x, int i) {
+	public void setNextBranch(final IntBranchingDecision decision) {
 		if (_valIterator != null) {
-			return _valIterator.getNextVal((IntDomainVar) x, i);
+			decision.setBranchingValue( _valIterator.getNextVal( decision.getBranchingIntVar(), decision.getBranchingValue()));
 		} else {
-			return _valSelector.getBestVal((IntDomainVar) x);
+			decision.setBranchingValue( _valSelector.getBestVal(decision.getBranchingIntVar()));
 		}
 	}
 
-	public boolean finishedBranching(Object x, int i) {
+	public boolean finishedBranching(final IntBranchingDecision decision) {
 		if (_valIterator != null) {
-			boolean finished = !_valIterator.hasNextVal((IntDomainVar) x, i);
+			v = decision.getBranchingIntVar();
+			final boolean finished = !_valIterator.hasNextVal(v, decision.getBranchingValue());
 			if (finished) {
-				IntDomainVar v = (IntDomainVar) x;
-				for (Iterator iter = v.getConstraintsIterator(); iter.hasNext();) {
+				for (Iterator<SConstraint> iter = v.getConstraintsIterator(); iter.hasNext();) {
 					reuseCstr = (AbstractSConstraint) iter.next();
 					if (SConstraintType.INTEGER.equals(reuseCstr.getConstraintType())) {
 						if (reuseCstr.getNbVarNotInst() == 2) {
@@ -326,15 +328,19 @@ public class DomOverWDegBranching extends AbstractLargeIntBranching implements P
 			return false;
 		}
 	}
-
-	public void goDownBranch(Object x, int i) throws ContradictionException {
-        IntDomainVar v = (IntDomainVar) x;
-        v.setVal(i);
+	public void goDownBranch(final IntBranchingDecision decision) throws ContradictionException {
+		decision.setIntVal();
 	}
-
-	public void goUpBranch(Object x, int i) throws ContradictionException {
+	public void goUpBranch(final IntBranchingDecision decision) throws ContradictionException {
 		//IntDomainVar v = (IntDomainVar) x;
 		//v.remVal(i);     // On le retire !! mais attention pas de selector pour les variables du coup !!!!
+	}
+	
+	
+
+	@Override
+	public String getDecisionLogMessage(IntBranchingDecision decision) {
+		return decision.getBranchingObject() + LOG_DECISION_MSG_ASSIGN + decision.getBranchingValue();
 	}
 
 	public void contradictionOccured(ContradictionException e) {

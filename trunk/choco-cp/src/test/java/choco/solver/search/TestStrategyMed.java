@@ -26,28 +26,28 @@ import choco.kernel.memory.recomputation.EnvironmentRecomputation;
 
 
 public class TestStrategyMed {
-	
+
 	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	@Before
 	public void init() {
-//		ChocoLogging.getTestLogger().setLevel(Level.INFO);
-//		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+		//		ChocoLogging.getTestLogger().setLevel(Level.INFO);
+		//		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
 		Choco.DEBUG=true;
 	}
 
 	private final MinimumEdgeDeletion med = new MedShaker();
 
 	private boolean recomputation = false;
-	
+
 	private boolean restartAfterSolution = false;
-	
+
 	private boolean restartPolicy = false;
-	
+
 	private boolean nogoodFromRestart = false;
-	
+
 	private boolean randomSelectors = false;
-	
+
 	/**
 	 * shake a little bit the optimization options.
 	 */
@@ -59,28 +59,27 @@ public class TestStrategyMed {
 		do {
 			do {
 				do {
-				//	do {
+					do {
 						//do {
-			
-			med.buildSolver();
-			med.solve();
-			med.prettyOut();
-			assertEquals("Minimum Edge Deletion is Feasible", Boolean.TRUE, med._s.isFeasible());
-			if(objective == null) {objective = med._s.getOptimumValue();}
-			else {assertEquals("objective", objective, med._s.getOptimumValue());}
-			//also check that the nogood from restart reduce the number of nodes
-			
-			restartAfterSolution = !restartAfterSolution;
-		}while( restartAfterSolution);
-			restartPolicy = !restartPolicy;
-		}while( restartPolicy);
-			//fail in combination with random selectors
-//			nogoodFromRestart = ! nogoodFromRestart;
-//		}while( nogoodFromRestart);
+
+						med.buildSolver();
+						med.solve();
+						med.prettyOut();
+						assertEquals("Minimum Edge Deletion is Feasible", Boolean.TRUE, med._s.isFeasible());
+						if(objective == null) {objective = med._s.getOptimumValue();}
+						else {assertEquals("objective", objective, med._s.getOptimumValue());}
+						//also check that the nogood from restart reduce the number of nodes
+
+						restartAfterSolution = !restartAfterSolution;
+					}while( restartAfterSolution);
+					restartPolicy = !restartPolicy;
+				}while( restartPolicy);
+				nogoodFromRestart = ! nogoodFromRestart;
+			}while( nogoodFromRestart);
 			randomSelectors = ! randomSelectors;
 		}while( randomSelectors);
-//			recomputation = ! recomputation;
-//		}while( recomputation);
+		//			recomputation = ! recomputation;
+		//		}while( recomputation);
 	}
 
 	@Test
@@ -98,9 +97,8 @@ public class TestStrategyMed {
 		med.prettyOut();
 		ChocoLogging.setVerbosity(Verbosity.SILENT);
 		Assert.assertEquals("nb deletion", 1, med._s.getObjectiveValue());
-		
 	}
-	
+
 	@Test
 	public void testMinimumEquivalenceDetection1() {
 		testMED(new Object[]{6,0.7,2});	
@@ -108,7 +106,7 @@ public class TestStrategyMed {
 
 	@Test
 	public void testMinimumEquivalenceDetection2() {
-		testMED(new Object[]{8,0.6,0});
+		testMED(new Object[]{8,0.6});
 	}
 
 	@Test
@@ -120,16 +118,15 @@ public class TestStrategyMed {
 	@Test
 	//@Ignore
 	public void testMinimumEquivalenceDetection4() {
-		testMED(new Object[]{10,0.7});
-		testMED(new Object[]{10,0.9});
+		testMED(new Object[]{10,0.9,1});
 	}
 
 	@Test
-	//@Ignore
+	@Ignore
 	public void testLargeMinimumEquivalenceDetection() {
 		testMED(new Object[]{15,0.4});
 	}
-	
+
 	class MedShaker extends MinimumEdgeDeletion {
 
 		@Override

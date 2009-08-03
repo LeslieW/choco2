@@ -22,16 +22,21 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.branching;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.variables.integer.IntDomainVarImpl;
+import choco.cp.solver.search.limit.TimeCacheThread;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.AbstractLargeIntBranching;
+import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.*;
 
 /**
  * Impact based branchging based on the code from Hadrien
@@ -43,11 +48,11 @@ public final class ImpactBasedBranching extends AbstractLargeIntBranching {
 	IntDomainVar[] _vars;
 	AbstractImpactStrategy _ibs;
 
-    protected Random randValueChoice;
-    protected Random randomBreakTies;
+	protected Random randValueChoice;
+	protected Random randomBreakTies;
 
-    private static final int ABSTRACTVAR_EXTENSION =
-			AbstractVar.getAbstractVarExtensionNumber("choco.cp.cpsolver.search.integer.ImpactBasedBranching");
+	private static final int ABSTRACTVAR_EXTENSION =
+		AbstractVar.getAbstractVarExtensionNumber("choco.cp.cpsolver.search.integer.ImpactBasedBranching");
 
 	protected static final class ImpactBasedBranchingVarExtension {
 		private int index = 0;
@@ -84,130 +89,140 @@ public final class ImpactBasedBranching extends AbstractLargeIntBranching {
 		return _ibs;
 	}
 
-    public void setRandomVarTies(int seed) {
-        randomBreakTies = new Random(seed);
-    }
+	public void setRandomVarTies(int seed) {
+		randomBreakTies = new Random(seed);
+	}
 
-    public Object selectBranchingObject() throws ContradictionException {
+	public Object selectBranchingObject() throws ContradictionException {
 		double min = Double.MAX_VALUE;
 		IntDomainVar minVar = null;
 		if (randomBreakTies == null) {
-            for (IntDomainVar var : _vars) {
-                if (!var.isInstantiated()) {
-                    double note;
-                    if (var.hasEnumeratedDomain())
-                        note = _ibs.getEnumImpactVar(var);
-                    else
-                        note = _ibs.getBoundImpactVar(var);
-                    if (note < min) {
-                        min = note;
-                        minVar = var;
-                    }
-                }
-            }
-            return minVar;
-        } else {
-            //return null;
-            List<IntDomainVar> lvs = new LinkedList<IntDomainVar>();
-            for (IntDomainVar var : _vars) {
-                if (!var.isInstantiated()) {
-                    double note;
-                    if (var.hasEnumeratedDomain())
-                        note = _ibs.getEnumImpactVar(var);
-                    else
-                        note = _ibs.getBoundImpactVar(var);
-                    if (note < min) {
-                        lvs.clear();
-                        min = note;
-                        lvs.add(var);
-                    } else if (note == min) {
-                        lvs.add(var);
-                    }
-                }
-            }
-            if (lvs.size() == 0) {
-                return null;
-            }
-            return lvs.get(randomBreakTies.nextInt(lvs.size()));
-        }
+			for (IntDomainVar var : _vars) {
+				if (!var.isInstantiated()) {
+					double note;
+					if (var.hasEnumeratedDomain())
+						note = _ibs.getEnumImpactVar(var);
+					else
+						note = _ibs.getBoundImpactVar(var);
+					if (note < min) {
+						min = note;
+						minVar = var;
+					}
+				}
+			}
+			return minVar;
+		} else {
+			//return null;
+			List<IntDomainVar> lvs = new LinkedList<IntDomainVar>();
+			for (IntDomainVar var : _vars) {
+				if (!var.isInstantiated()) {
+					double note;
+					if (var.hasEnumeratedDomain())
+						note = _ibs.getEnumImpactVar(var);
+					else
+						note = _ibs.getBoundImpactVar(var);
+					if (note < min) {
+						lvs.clear();
+						min = note;
+						lvs.add(var);
+					} else if (note == min) {
+						lvs.add(var);
+					}
+				}
+			}
+			if (lvs.size() == 0) {
+				return null;
+			}
+			return lvs.get(randomBreakTies.nextInt(lvs.size()));
+		}
 
 	}
 
-	public int getFirstBranch(Object x) {
-		return getBestVal(x);
+	public final void setFirstBranch(final IntBranchingDecision ctx) {
+		ctx.setBranchingValue( getBestVal( ctx.getBranchingIntVar()));
 	}
 
-	public int getNextBranch(Object x, int i) {
-		return getBestVal(x);
+	public void setNextBranch(final IntBranchingDecision ctx) {
+		setFirstBranch(ctx);
 	}
 
-    public void setRandomValueChoice(long seed) {
-        randValueChoice = new Random(seed);
-    }
-
-    public int getBestVal(Object x) {
-        IntDomainVar var = (IntDomainVar) x;
-        if (randValueChoice == null) {
-            if (var.hasEnumeratedDomain()) {
-                DisposableIntIterator iter = var.getDomain().getIterator();
-                double min = Double.MAX_VALUE;
-                int minVal = Integer.MAX_VALUE;
-                while (iter.hasNext()) {
-                    int val = iter.next();
-                    double note = _ibs.getImpactVal(var, val);
-                    if (note < min) {
-                        min = note;
-                        minVal = val;
-                    }
-                }
-                iter.dispose();
-                return minVal;
-            } else {
-                return var.getInf();
-            }
-        } else {
-            if (var.hasEnumeratedDomain()) {
-                if (var.isInstantiated()) return var.getVal();                
-                int val = (randValueChoice.nextInt(var.getDomainSize()));
-                DisposableIntIterator iterator = var.getDomain().getIterator();
-                for (int i = 0; i < val; i++) {
-                    iterator.next();
-                }
-                int res = iterator.next();
-                iterator.dispose();
-                return res;
-            } else {
-                int val = (randValueChoice.nextInt(2));
-                if (val == 0) return var.getInf();
-                else return var.getSup();
-            }
-        }
-    }
-
-	public boolean finishedBranching(Object x, int i) {
-		return ((IntDomainVar) x).getDomainSize() == 0;
+	public void setRandomValueChoice(long seed) {
+		randValueChoice = new Random(seed);
 	}
 
-	@Override
-	public void goDownBranch(Object x, int i) throws ContradictionException {
-		IntDomainVar y = (IntDomainVar) x;
-		_ibs.doBeforePropagDownBranch(x, i);
+	public int getBestVal(IntDomainVar var) {
+		if (randValueChoice == null) {
+			if (var.hasEnumeratedDomain()) {
+				DisposableIntIterator iter = var.getDomain().getIterator();
+				double min = Double.MAX_VALUE;
+				int minVal = Integer.MAX_VALUE;
+				while (iter.hasNext()) {
+					int val = iter.next();
+					double note = _ibs.getImpactVal(var, val);
+					if (note < min) {
+						min = note;
+						minVal = val;
+					}
+				}
+				iter.dispose();
+				return minVal;
+			} else {
+				return var.getInf();
+			}
+		} else {
+			if (var.hasEnumeratedDomain()) {
+				if (var.isInstantiated()) return var.getVal();                
+				int val = (randValueChoice.nextInt(var.getDomainSize()));
+				DisposableIntIterator iterator = var.getDomain().getIterator();
+				for (int i = 0; i < val; i++) {
+					iterator.next();
+				}
+				int res = iterator.next();
+				iterator.dispose();
+				return res;
+			} else {
+				int val = (randValueChoice.nextInt(2));
+				if (val == 0) return var.getInf();
+				else return var.getSup();
+			}
+		}
+	}
+
+	public boolean finishedBranching(final IntBranchingDecision ctx) {
+		return ctx.getBranchingIntVar().getDomainSize() == 0; //FIXME why do we test the condition, it is always false ?
+	}
+
+
+	protected final void goDownBranch(final IntDomainVar var, final int val) throws ContradictionException {
+		_ibs.doBeforePropagDownBranch(var, val);
 		try {
-			y.setVal(i);
+			var.setVal(val);
 			_solver.propagate();
 		} catch (ContradictionException e) {
-			_ibs.doAfterFail(x, i);
+			_ibs.doAfterFail(var, val);
 
 			throw e;
 		}
-		_ibs.doAfterPropagDownBranch(x, i);
+		_ibs.doAfterPropagDownBranch(var, val);
+
 	}
 
 	@Override
-	public void goUpBranch(Object x, int i) throws ContradictionException {
-		IntDomainVarImpl y = (IntDomainVarImpl) x;
-		y.remVal(i);
+	public void goDownBranch(final IntBranchingDecision ctx) throws ContradictionException {
+		goDownBranch(ctx.getBranchingIntVar(), ctx.getBranchingValue());
 	}
+
+	@Override
+	public void goUpBranch(final IntBranchingDecision decision) throws ContradictionException {
+		decision.remIntVal();
+	}
+
+	@Override
+
+	public String getDecisionLogMessage(IntBranchingDecision decision) {
+		return getDefaultAssignMsg(decision);
+	}
+
 
 
 	public interface ImpactStrategy {
@@ -277,67 +292,67 @@ public final class ImpactBasedBranching extends AbstractLargeIntBranching {
 		 */
 		public boolean initImpacts(int timelimit) {
 			if (timelimit != 0) {
-            long tps = System.currentTimeMillis();
-			_branching._solver.generateSearchStrategy();
-			_branching.setSolver(_branching._solver.getSearchStrategy());
-			try {
-				_branching._solver.propagate();
-				_branching._solver.worldPush();
-                for (Object svar : svars) {
-                    //for (Object svar : svars) {
-                    IntDomainVar v = (IntDomainVar) svar;
-                    if (!v.isInstantiated() && v.hasEnumeratedDomain()) {
-                        DisposableIntIterator it = v.getDomain().getIterator();
-                        while (it != null && it.hasNext()) {
-                            int val = it.next();
-                            boolean cont = false;
-                            if (v.hasBooleanDomain() && val > v.getInf() && val < v.getSup())
-                                break;
-                            _branching._solver.worldPush();
-                            try {
-                                goDownBranch(v, val);
-                            } catch (ContradictionException e) {
-                                cont = true;
-                            }
-                            _branching._solver.worldPop();
-                            if (cont) {
-                                _branching._solver.worldPop();
-                                try {
-                                    v.remVal(val);
-                                    _branching._solver.propagate();
-                                } catch (ContradictionException e) {
-                                    return false;
-                                }
-                                _branching._solver.worldPush();
-                            }
-                            if ((System.currentTimeMillis() - tps) > timelimit) {
-                                _branching._solver.worldPop();
-                                _branching._solver.getSearchStrategy().clearTrace();
-                                ((CPSolver) _branching._solver).resetSearchStrategy();
-                                return true;
-                            }
-                        }
-                        assert it != null;
-                        it.dispose();
-                    }
-                }
-				_branching._solver.worldPop();
-			} catch (ContradictionException e) {
-				return false;
-			} catch (Exception e) {
-				e.printStackTrace();
+				long tps = TimeCacheThread.currentTimeMillis;
+				_branching._solver.generateSearchStrategy();
+				_branching.setSolver(_branching._solver.getSearchStrategy());
+				try {
+					_branching._solver.propagate();
+					_branching._solver.worldPush();
+					for (int i = 0; i < svars.size(); i++) {
+						//for (Object svar : svars) {
+						IntDomainVar v = (IntDomainVar) svars.get(i);
+						if (!v.isInstantiated() && v.hasEnumeratedDomain()) {
+							DisposableIntIterator it = v.getDomain().getIterator();
+							while (it != null && it.hasNext()) {
+								int val = it.next();
+								boolean cont = false;
+								if (v.hasBooleanDomain() && val > v.getInf() && val < v.getSup())
+									break;							
+								_branching._solver.worldPush();
+								try {
+									_branching.goDownBranch(v, val);
+								} catch (ContradictionException e) {
+									cont = true;
+								}
+								_branching._solver.worldPop();
+								if (cont) {
+									_branching._solver.worldPop();
+									try {
+										v.remVal(val);
+										_branching._solver.propagate();
+									} catch (ContradictionException e) {
+										return false;
+									}
+									_branching._solver.worldPush();								
+								}
+								if ((TimeCacheThread.currentTimeMillis - tps) > timelimit) {
+									_branching._solver.worldPop();
+									_branching._solver.getSearchStrategy().clearTrace();
+									((CPSolver) _branching._solver).resetSearchStrategy();
+									return true;
+								}
+							}
+							it.dispose();
+						}
+
+					}
+					_branching._solver.worldPop();
+				} catch (ContradictionException e) {
+					return false;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				_branching._solver.getSearchStrategy().clearTrace();
+				((CPSolver) _branching._solver).resetSearchStrategy();
 			}
-			_branching._solver.getSearchStrategy().clearTrace();
-			((CPSolver) _branching._solver).resetSearchStrategy();
-            }
-            return true;
+			return true;
 
-        }
-
-
-		public void goDownBranch(Object x, int i) throws ContradictionException {
-			_branching.goDownBranch(x, i);
 		}
+
+
+//		public void goDownBranch(Object x, int i) throws ContradictionException {
+//			_branching.goDownBranch(x, i);
+//		}
 
 		protected static class ImpactStorage {
 
@@ -364,7 +379,7 @@ public final class ImpactBasedBranching extends AbstractLargeIntBranching {
 				sizes = new int[subset.size()];
 				blocks = new int[subset.size()];
 				if (subset.size() > 0) 
-                    blocks[0] = 0;
+					blocks[0] = 0;
 				for (int i = 0; i < subset.size(); i++) {
 					IntDomainVar tv = (IntDomainVar) subset.get(i);
 					((ImpactBasedBranchingVarExtension) ((AbstractVar) tv).getExtension(ABSTRACTVAR_EXTENSION)).index = i;
@@ -422,8 +437,8 @@ public final class ImpactBasedBranching extends AbstractLargeIntBranching {
 			super(branching, vars);
 			_branching = branching;
 			int totalSize = 0;
-            if (vars.size() != 0)
-                totalSize = dataS.blocks[vars.size() - 1] + dataS.sizes[vars.size() - 1];
+			if (vars.size() != 0)
+				totalSize = dataS.blocks[vars.size() - 1] + dataS.sizes[vars.size() - 1];
 			impact = new double[totalSize];
 			nbDecOnVarVal = new int[totalSize];
 			domBefore = new int[vars.size()];
@@ -480,7 +495,7 @@ public final class ImpactBasedBranching extends AbstractLargeIntBranching {
 					int val = it.next();
 					imp += 1 - getImpactVal(blockadress + val);
 				}
-                it.dispose();
+				it.dispose();
 				return imp;
 			} else
 				return 0;

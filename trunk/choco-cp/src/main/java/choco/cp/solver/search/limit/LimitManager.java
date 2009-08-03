@@ -121,7 +121,9 @@ public class LimitManager implements GlobalSearchLimit {
 
 	@Override
 	public final void initialize() {
-		starth = TimeCacheThread.currentTimeMillis;
+		//starth = TimeCacheThread.currentTimeMillis;
+		starth = System.currentTimeMillis();
+		TimeCacheThread.currentTimeMillis = starth;
 		restartFromStrategyCount = 0;
 		restartCutoff = restartStrategy.getScaleFactor();
 		restartStrategyLimit.setNbMax(restartCutoff);
@@ -129,10 +131,18 @@ public class LimitManager implements GlobalSearchLimit {
 
 	@Override
 	public final void reset() {
+		//TODO create EndTreeSearch method to have maximal time precision when ending search.
 		updateTimeCount();
 		restartStrategyLimit.setNbMax( restartStrategyLimit.getNb() + restartCutoff);
 	}
 
+	
+
+	@Override
+	public void endTreeSearch() {
+		timeCount = (int) (System.currentTimeMillis() - starth);
+		
+	}
 
 	@Override
 	public final void newNode() throws ContradictionException {
@@ -182,10 +192,16 @@ public class LimitManager implements GlobalSearchLimit {
 	@Override
 	public String pretty() {
 		final StringBuilder stb = new StringBuilder();
-		stb.append("Limits{ search:").append(searchLimit.pretty());
-		stb.append(" ; restart:").append(restartLimit.pretty());
-		stb.append(" }");
-		if(restartStrategy != null) {
+		if( searchLimit.getUnit() != NoLimit.NO_LIMIT_UNIT) {
+			stb.append("Limits{ search:").append(searchLimit.pretty());
+			if( restartLimit.getUnit() != NoLimit.NO_LIMIT_UNIT) {
+				stb.append(" ; restart:").append(restartLimit.pretty());
+			}
+			stb.append(" }");
+		}else if( restartLimit.getUnit() != NoLimit.NO_LIMIT_UNIT) {
+			stb.append("Limits{ restart:").append(restartLimit.pretty()).append(" }");
+		}
+		if(restartStrategy != null && restartStrategy.getName() != NoRestartStrategy.NO_RESTART_NAME) {
 			stb.append(" RestartStrategy{ policy:").append(restartStrategy.pretty());
 			stb.append(" ; count:").append(restartFromStrategyCount);
 			stb.append(" ; cutoff:").append(restartStrategyLimit.pretty());

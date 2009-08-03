@@ -2,6 +2,7 @@ package samples.multicostregular.nsp;
 
 import choco.kernel.solver.branch.AbstractLargeIntBranching;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -12,75 +13,65 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public class NSPBranching extends AbstractLargeIntBranching {
 
-    NSPVarSelector varselec;
-    NSPValSelector valselec;
-    IntDomainVar nextVar;
+	NSPVarSelector varselec;
+	NSPValSelector valselec;
+	IntDomainVar nextVar;
 
-    public NSPBranching(NSPVarSelector varselec, NSPValSelector valselec)
-    {
-        this.varselec = varselec;
-        this.valselec = valselec;
-    }
+	public NSPBranching(NSPVarSelector varselec, NSPValSelector valselec)
+	{
+		this.varselec = varselec;
+		this.valselec = valselec;
+	}
 
 
-    public String getDecisionLogMsg(int branchIndex) {
-        return null;
 
-    }
+	public void setFirstBranch(final IntBranchingDecision decision) {
+		decision.setBranchingValue( valselec.getBestVal( decision.getBranchingIntVar()));
+	}
 
-    public int getFirstBranch(Object x) {
-        return valselec.getBestVal((IntDomainVar)x);
-    }
 
-    public int getNextBranch(Object x, int i) {
-        return Integer.MAX_VALUE;
+	private IntDomainVar reuseVar;
 
-    }
+	public void setNextBranch(final IntBranchingDecision decision) {
+		decision.setBranchingValue( valselec.getBestVal( reuseVar));
+	}
 
-    public boolean finishedBranching(Object x, int i) {
-        return (((IntDomainVar)x).getDomainSize() == 0 || varselec.selectIntVar() == null);
+	public boolean finishedBranching(final IntBranchingDecision decision) {
+		if(decision.getBranchingIntVar().getDomainSize() == 0) {
+			return true;
+		}else {
+			reuseVar = varselec.selectIntVar();
+			return reuseVar == null;
+		}
 
-    }
+	}
 
-    public Object selectBranchingObject() throws ContradictionException {
-        return varselec.selectIntVar();
-    }
+	public Object selectBranchingObject() throws ContradictionException {
+		return varselec.selectIntVar();
+	}
 
-    public void goDownBranch(Object x, int i) throws ContradictionException {
-        IntDomainVar v;
-        int val;
-        if (i < Integer.MAX_VALUE)
-        {
-            v = (IntDomainVar) x;
-            val = i;
-        }
-        else
-        {
-            v = varselec.selectIntVar();
-            val = valselec.getBestVal(v);
-        }
-       // System.out.println(v+" <- "+val);;
-        super.goDownBranch(v, val);
-        v.setVal(val);
+	public void goDownBranch(final IntBranchingDecision decision) throws ContradictionException {
+		if ( decision.getBranchIndex() == 0) {
+			decision.setIntVal();
+		} else {
+			reuseVar.setVal( decision.getBranchingValue());
+		}
+	}
 
-    }
+	public void goUpBranch(final IntBranchingDecision decision) throws ContradictionException {
+		if ( decision.getBranchIndex() == 0) {
+			decision.remIntVal();
+		} else {
+			reuseVar.remVal( decision.getBranchingValue());
+		}    
+	}
 
-    public void goUpBranch(Object x, int i) throws ContradictionException {
-        IntDomainVar v;
-        int val;
-        if (i < Integer.MAX_VALUE)
-        {
-            v = (IntDomainVar) x;
-            val = i;
-        }
-        else
-        {
-            v = varselec.selectIntVar();
-            val = valselec.getBestVal(v);
-        }
-      //  System.out.println(v+" != "+val);;
 
-        super.goUpBranch(v, val);
-        v.remVal(val);
-    }
+
+	@Override
+	public String getDecisionLogMessage(IntBranchingDecision decision) {
+		return (decision.getBranchIndex() == 0 ? decision.getBranchingObject() : reuseVar) + LOG_DECISION_MSG_ASSIGN + decision.getBranchingValue();
+	}
+	
+	
 }
