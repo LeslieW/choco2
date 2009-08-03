@@ -123,6 +123,7 @@ public class LimitTest {
 		solver.setTimeLimit(SIZE*20);
 		( (CPSolver) solver).limitConfig.setRestartLimit(Limit.NODE, 2);
 		solver.setLubyRestart(1, 2);
+		solver.setLubyRestart(1, 3);
 		check(Limit.TIME);
 		assertEquals(1, solver.getRestartCount());
 	}

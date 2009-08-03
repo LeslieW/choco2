@@ -30,6 +30,7 @@ import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.AbstractLargeIntBranching;
+import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.search.task.RandomizedTaskSelector;
 import choco.kernel.solver.search.task.TaskSelector;
 import choco.kernel.solver.search.task.TaskVarSelector;
@@ -159,7 +160,7 @@ public class SetTimes extends AbstractLargeIntBranching {
 	 *
 	 * @param selector the heuristic
 	 * @param solver based solver
-     * @param tasks the selectables
+	 * @param tasks the selectables
 	 */
 	public SetTimes(final Solver solver, final List<TaskVar> tasks, final TaskVarSelector selector) {
 		super();
@@ -185,38 +186,26 @@ public class SetTimes extends AbstractLargeIntBranching {
 	 * @see choco.kernel.solver.branch.IntBranching#finishedBranching(java.lang.Object, int)
 	 */
 	@Override
-	public boolean finishedBranching(final Object x, final int i) {
-		final SetTimesNode n= (SetTimesNode) x;
-		return n.selectables.isEmpty();
+	public boolean finishedBranching(final IntBranchingDecision decision) {
+		return ( (SetTimesNode) decision.getBranchingObject()).selectables.isEmpty();
 	}
 
-	/**
-	 * Gets the first branch.
-	 *
-	 * @param x the x
-	 *
-	 * @return the first branch : 1
-	 *
-	 * @see choco.kernel.solver.branch.IntBranching#getFirstBranch(java.lang.Object)
-	 */
+	private SetTimesNode reuseNode;
+
+	private TaskVar reuseTask;
+
+	private int reuseIndex;
+
+
 	@Override
-	public int getFirstBranch(final Object x) {
-		return 1;
+	public void setFirstBranch(final IntBranchingDecision decision) {
+		reuseNode = (SetTimesNode) decision.getBranchingObject();
+		reuseTask = selector.selectTaskVar(reuseNode.selectables);
+		reuseNode.setLastSelected(reuseTask);
 	}
 
-	/**
-	 * Gets the next branch.
-	 *
-	 * @param x the x
-	 * @param i the i
-	 *
-	 * @return i+1
-	 *
-	 * @see choco.kernel.solver.branch.IntBranching#getNextBranch(java.lang.Object, int)
-	 */
-	@Override
-	public int getNextBranch(final Object x, final int i) {
-		return i+1;
+	public void setNextBranch(final IntBranchingDecision decision) {
+		setFirstBranch(decision);
 	}
 
 
@@ -262,11 +251,9 @@ public class SetTimes extends AbstractLargeIntBranching {
 	 * @see choco.kernel.solver.branch.AbstractIntBranching#goDownBranch(java.lang.Object, int)
 	 */
 	@Override
-	public void goDownBranch(final Object x, final int i) throws ContradictionException {
-		final SetTimesNode n= (SetTimesNode) x;
-		final TaskVar s = selector.selectTaskVar(n.selectables);
-		n.setLastSelected(s);
-		s.start().setVal(s.getEST());
+	public void goDownBranch(final IntBranchingDecision decision) throws ContradictionException {
+		reuseTask = ((SetTimesNode) decision.getBranchingObject()).getLastSelected();
+		reuseTask.start().setVal(reuseTask.getEST());
 	}
 
 	/**
@@ -274,31 +261,19 @@ public class SetTimes extends AbstractLargeIntBranching {
 	 *
 	 */
 	@Override
-	public void goUpBranch(final Object x, final int i) throws ContradictionException {
-		//enlever la dernière valeur
-		final SetTimesNode n=(SetTimesNode) x;
-		final TaskVar t = n.getLastSelected();
-		n.removeLastSelected();
-		final int idx=this.taskIndexM.get(t);
-		nselect.set(idx);
-		flags[idx].set(t.getEST());
+	public void goUpBranch(final IntBranchingDecision decision) throws ContradictionException {
+		reuseNode = (SetTimesNode) decision.getBranchingObject();
+		reuseTask = reuseNode.getLastSelected();
+		reuseNode.removeLastSelected();
+		reuseIndex =this.taskIndexM.get(reuseTask);
+		nselect.set(reuseIndex);
+		flags[reuseIndex].set(reuseTask.getEST());
 	}
 
 	@Override
-	protected String getLogMessage() {
-		return LOG_MSG_FORMAT_WITH_BRANCH;
+	public String getDecisionLogMessage(IntBranchingDecision decision) {
+		reuseTask = ((SetTimesNode) decision.getBranchingObject()).getLastSelected();
+		return reuseTask + LOG_DECISION_MSG_ASSIGN + reuseTask.getEST(); 
 	}
 
-    /**
-     * used for logging messages related to the search tree
-     *
-     * @param branchObject is the object of the branching
-     * @param branchIndex  is the index of the branching
-     * @return an string that will be printed between the branching object and the branch index
-     *         Suggested implementations return LOG_DECISION_MSG[0] or LOG_DECISION_MSG[branchIndex]
-     */
-    @Override
-    public String getDecisionLogMsg(Object branchObject, int branchIndex) {
-        return ((TaskVar) branchObject).getEST() + LOG_DECISION_MSG + branchIndex;
-    }
 }

@@ -42,7 +42,7 @@ public interface GlobalSearchLimit extends IPretty {
 	 * initialize the limit.
 	 */
 	void initialize();
-	
+
 	/**
 	 * resets the limit (the counter run from now on)
 	 *
@@ -69,7 +69,9 @@ public interface GlobalSearchLimit extends IPretty {
 	 * return <code>true</code> if the limit does stop the restart process.
 	 */
 	boolean newRestart();
-	
+
+	void endTreeSearch();
+
 	/**
 	 * get the restart strategy, if any.
 	 */
@@ -78,6 +80,6 @@ public interface GlobalSearchLimit extends IPretty {
 	 * cancel the restart mechanisms during search.
 	 */
 	void cancelRestart();
-	
+
 }
 

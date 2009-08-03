@@ -26,7 +26,7 @@ import static choco.Choco.makeIntVar;
 import static choco.Choco.minus;
 import static choco.Choco.neq;
 import static choco.Choco.plus;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.logging.Logger;
 
@@ -59,7 +59,7 @@ public class SearchTest {
 		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
 		int n1 = testNQueens(true);
 		int n2 = testNQueens(false);
-		assertTrue(n1 == n2);
+		assertEquals("Nb Nodes", n1 ,n2);
 	}
 
 	//return the number of nodes needed to solve the problem
@@ -101,7 +101,7 @@ public class SearchTest {
 		LOGGER.info("Nb solutions = " + s.getNbSolutions());
 
 		s.printRuntimeSatistics();
-		return s.getSearchStrategy().getNodeCount();
+		return s.getNodeCount();
 	}
 
 }

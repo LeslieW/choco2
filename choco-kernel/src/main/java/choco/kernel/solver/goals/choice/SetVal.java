@@ -23,14 +23,15 @@
 package choco.kernel.solver.goals.choice;
 
 
-import choco.kernel.common.logging.WorldFormatter;
+import java.util.logging.Level;
+
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.branch.LogIntBranching;
+import choco.kernel.solver.branch.AbstractBranching;
+import choco.kernel.solver.branch.AbstractIntBranching;
+import choco.kernel.solver.branch.BranchingWithLoggingStatements;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.logging.Level;
 
 /**
  * Created by IntelliJ IDEA.
@@ -55,10 +56,10 @@ public final class SetVal implements Goal {
 	}
 
 	public Goal execute(Solver s) throws ContradictionException {
-		if (LOGGER.isLoggable(Level.INFO)) {
-			final WorldFormatter wl = new WorldFormatter(s);
-			if ( wl.isLoggable(s)) {
-				LOGGER.log(Level.INFO, "{0} {1} {2} {3} {4}", new Object[]{wl, LogIntBranching.LOG_DOWN_MSG, var, " == ", val});
+		if (LOGGER.isLoggable(Level.INFO)) { 
+			final int ws = s.getWorldIndex();
+			if( ws <= s.getLoggingMaxDepth() ) {
+				LOGGER.log(Level.INFO, "{0}{1} {2} {3} {4}", new Object[]{BranchingWithLoggingStatements.makeLoggingMsgPrefix(ws), AbstractBranching.LOG_DOWN_MSG, var, AbstractIntBranching.LOG_DECISION_MSG_ASSIGN, val});
 			}
 		}
 		var.setVal(val);

@@ -32,12 +32,13 @@ import choco.cp.solver.search.real.AssignInterval;
 import choco.cp.solver.search.real.CyclicRealVarSelector;
 import choco.cp.solver.search.real.RealIncreasingDomain;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.real.RealVariable;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.real.RealExp;
 import choco.kernel.solver.variables.real.RealVar;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import org.junit.Test;
 
 import java.util.logging.Logger;
@@ -48,7 +49,7 @@ public class TrigoTest{
 
     @Test
     public void test1() {
-        CPSolver s = new CPSolver();
+    	CPSolver s = new CPSolver();
         RealVar alpha = s.createRealVal("alpha", -Math.PI, Math.PI);
 
         RealExp exp = new RealMinus(s,
@@ -64,8 +65,8 @@ public class TrigoTest{
         s.addGoal(new AssignInterval(new CyclicRealVarSelector(s), new RealIncreasingDomain()));
         s.launch();
 
-        assertTrue(s.getNbSolutions() >= 2);
-        assertTrue(Math.abs(Math.cos(alpha.getInf()) - Math.sin(alpha.getInf())) < 1e-8);
+        assertTrue("Nb sols", s.getNbSolutions() >= 2);
+        assertTrue("Precision", Math.abs(Math.cos(alpha.getInf()) - Math.sin(alpha.getInf())) < 1e-8);
     }
 
     @Test

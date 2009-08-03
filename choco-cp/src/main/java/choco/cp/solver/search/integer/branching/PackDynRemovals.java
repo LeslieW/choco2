@@ -26,6 +26,7 @@ import choco.cp.solver.constraints.global.pack.PrimalDualPack;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.VarSelector;
+import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -78,23 +79,25 @@ public final class PackDynRemovals extends AssignVar {
             iter.dispose();
         }
 	}
+	
+	private int reuseVal;
 	/**
 	 * @see choco.cp.solver.search.integer.branching.AssignVar#goUpBranch(java.lang.Object, int)
 	 */
 	@Override
-	public void goUpBranch(final Object x, final int i) throws ContradictionException {
-		super.goUpBranch(x, i);
-		final IntDomainVar bin= (IntDomainVar) x;
-		if(pack.svars[i].isInstantiated()) {
+	public void goUpBranch(final IntBranchingDecision decision) throws ContradictionException {
+		super.goUpBranch(decision);
+		reuseVal = decision.getBranchingValue();
+		if(pack.svars[reuseVal].isInstantiated()) {
 			//we cant pack another item into the bin, so the free space is lost.
 			//the previous partial assignment dominates any assignment where the item is packed into antother bin
 			fail();
-		}else if(pack.isEmpty(i)) {
+		}else if(pack.isEmpty(reuseVal)) {
 			//there was a single item into the bin, so we cant pack the item into a empty bin again
-			removeEmptyBins(bin);
+			removeEmptyBins(decision.getBranchingIntVar());
 		} else {
 			//there was other items into the bin, so we cant pack the item into a bin with the same available space again
-			removeEquivalentBins(bin, i);
+			removeEquivalentBins(decision.getBranchingIntVar(), reuseVal);
 		}
 	}
 

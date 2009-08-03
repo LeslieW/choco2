@@ -28,6 +28,23 @@
  *************************************************/
 package choco.cp.solver;
 
+import static choco.kernel.solver.search.SolutionPoolFactory.makeDefaultSolutionPool;
+import gnu.trove.TLongObjectHashMap;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.configure.LimitConfiguration;
@@ -35,21 +52,56 @@ import choco.cp.solver.configure.RestartConfiguration;
 import choco.cp.solver.constraints.ConstantSConstraint;
 import choco.cp.solver.constraints.global.Occurrence;
 import choco.cp.solver.constraints.global.scheduling.SchedulerConfig;
-import choco.cp.solver.constraints.integer.*;
+import choco.cp.solver.constraints.integer.EqualXC;
+import choco.cp.solver.constraints.integer.EqualXYC;
+import choco.cp.solver.constraints.integer.GreaterOrEqualXC;
+import choco.cp.solver.constraints.integer.GreaterOrEqualXYC;
+import choco.cp.solver.constraints.integer.IntLinComb;
+import choco.cp.solver.constraints.integer.LessOrEqualXC;
+import choco.cp.solver.constraints.integer.MaxOfAList;
+import choco.cp.solver.constraints.integer.NotEqualXC;
+import choco.cp.solver.constraints.integer.NotEqualXYC;
+import choco.cp.solver.constraints.integer.NotEqualXYCEnum;
 import choco.cp.solver.constraints.integer.bool.BoolIntLinComb;
 import choco.cp.solver.constraints.integer.bool.BoolSum;
 import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
 import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
-import choco.cp.solver.constraints.integer.extension.*;
+import choco.cp.solver.constraints.integer.extension.AC2001BinSConstraint;
+import choco.cp.solver.constraints.integer.extension.AC3BinSConstraint;
+import choco.cp.solver.constraints.integer.extension.AC3rmBinSConstraint;
+import choco.cp.solver.constraints.integer.extension.AC3rmBitBinSConstraint;
+import choco.cp.solver.constraints.integer.extension.CspLargeSConstraint;
+import choco.cp.solver.constraints.integer.extension.GAC2001LargeSConstraint;
+import choco.cp.solver.constraints.integer.extension.GAC2001PositiveLargeConstraint;
+import choco.cp.solver.constraints.integer.extension.GAC3rmLargeConstraint;
+import choco.cp.solver.constraints.integer.extension.GAC3rmPositiveLargeConstraint;
+import choco.cp.solver.constraints.integer.extension.GACstrPositiveLargeSConstraint;
 import choco.cp.solver.constraints.real.Equation;
 import choco.cp.solver.constraints.real.MixedEqXY;
-import choco.cp.solver.constraints.real.exp.*;
+import choco.cp.solver.constraints.real.exp.RealCos;
+import choco.cp.solver.constraints.real.exp.RealIntegerPower;
+import choco.cp.solver.constraints.real.exp.RealMinus;
+import choco.cp.solver.constraints.real.exp.RealMult;
+import choco.cp.solver.constraints.real.exp.RealPlus;
+import choco.cp.solver.constraints.real.exp.RealSin;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
-import choco.cp.solver.constraints.set.*;
+import choco.cp.solver.constraints.set.Disjoint;
+import choco.cp.solver.constraints.set.IsIncluded;
+import choco.cp.solver.constraints.set.MemberXY;
+import choco.cp.solver.constraints.set.SetCard;
+import choco.cp.solver.constraints.set.SetEq;
+import choco.cp.solver.constraints.set.SetIntersection;
+import choco.cp.solver.constraints.set.SetNotEq;
+import choco.cp.solver.constraints.set.SetUnion;
 import choco.cp.solver.goals.GoalSearchSolver;
 import choco.cp.solver.propagation.ChocEngine;
 import choco.cp.solver.propagation.EventQueueFactory;
-import choco.cp.solver.search.*;
+import choco.cp.solver.search.AbstractSearchLoopWithRestart;
+import choco.cp.solver.search.BranchAndBound;
+import choco.cp.solver.search.DefaultStrategyMeasures;
+import choco.cp.solver.search.GlobalSearchStrategy;
+import choco.cp.solver.search.SearchLoop;
+import choco.cp.solver.search.SearchLoopWithRecomputation;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.branching.DomOverWDegBranching;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
@@ -64,7 +116,11 @@ import choco.cp.solver.search.real.RealIncreasingDomain;
 import choco.cp.solver.search.restart.BasicKickRestart;
 import choco.cp.solver.search.restart.IKickRestart;
 import choco.cp.solver.search.restart.NogoodKickRestart;
-import choco.cp.solver.search.set.*;
+import choco.cp.solver.search.set.AssignSetVar;
+import choco.cp.solver.search.set.MinDomSet;
+import choco.cp.solver.search.set.MinEnv;
+import choco.cp.solver.search.set.RandomSetValSelector;
+import choco.cp.solver.search.set.RandomSetVarSelector;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntTerm;
@@ -95,23 +151,37 @@ import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.branch.AbstractIntBranching;
-import choco.kernel.solver.branch.LogIntBranching;
+import choco.kernel.solver.branch.BranchingWithLoggingStatements;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.integer.IntExp;
 import choco.kernel.solver.constraints.integer.IntSConstraint;
-import choco.kernel.solver.constraints.integer.extension.*;
+import choco.kernel.solver.constraints.integer.extension.BinRelation;
+import choco.kernel.solver.constraints.integer.extension.CouplesBitSetTable;
+import choco.kernel.solver.constraints.integer.extension.CouplesTable;
+import choco.kernel.solver.constraints.integer.extension.ExtensionalBinRelation;
+import choco.kernel.solver.constraints.integer.extension.IterLargeRelation;
+import choco.kernel.solver.constraints.integer.extension.IterTuplesTable;
+import choco.kernel.solver.constraints.integer.extension.LargeRelation;
+import choco.kernel.solver.constraints.integer.extension.TuplesList;
+import choco.kernel.solver.constraints.integer.extension.TuplesTable;
 import choco.kernel.solver.constraints.real.RealExp;
 import choco.kernel.solver.constraints.set.SetSConstraint;
 import choco.kernel.solver.goals.Goal;
-import choco.kernel.solver.propagation.*;
+import choco.kernel.solver.propagation.AbstractPropagationEngine;
+import choco.kernel.solver.propagation.ConstraintEvent;
+import choco.kernel.solver.propagation.ConstraintEventQueue;
+import choco.kernel.solver.propagation.EventQueue;
+import choco.kernel.solver.propagation.PropagationEngine;
+import choco.kernel.solver.propagation.PropagationEngineListener;
+import choco.kernel.solver.propagation.Propagator;
+import choco.kernel.solver.propagation.VarEventQueue;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.AbstractOptimize;
 import choco.kernel.solver.search.AbstractSearchStrategy;
 import choco.kernel.solver.search.ISolutionPool;
-import static choco.kernel.solver.search.SolutionPoolFactory.makeDefaultSolutionPool;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
@@ -132,12 +202,6 @@ import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
 import choco.kernel.visu.IVisu;
-import gnu.trove.TLongObjectHashMap;
-
-import java.lang.reflect.Array;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -305,14 +369,18 @@ public class CPSolver implements Solver {
 	 */
 	public int propNogoodWorld;
 
-	public void setLoggingMaxDepth(int loggingMaxDepth) {
+	public final void setLoggingMaxDepth(int loggingMaxDepth) {
 		this.loggingMaxDepth = loggingMaxDepth;
+	}
+	
+	public final int getLoggingMaxDepth() {
+		return loggingMaxDepth;
 	}
 
 	/**
 	 * maximal search depth for logging statements
 	 */
-	public int loggingMaxDepth = 5;
+	public int loggingMaxDepth = 10;
 
 	/**
 	 * set the number of stored solutions.
@@ -753,8 +821,6 @@ public class CPSolver implements Solver {
 		assert strategy != null;
 		strategy.stopAtFirstSol = firstSolution;
 
-		strategy.setLoggingMaxDepth(this.loggingMaxDepth);
-
 		strategy.setSolutionPool(makeDefaultSolutionPool(solutionPoolCapacity));
 
 		strategy.setSearchMeasures(
@@ -772,6 +838,11 @@ public class CPSolver implements Solver {
 				attachGoal(tempGoal);
 				tempGoal = null;
 			}
+		}
+		
+		//logging statements
+		if( ChocoLogging.getBranchingLogger().isLoggable(BranchingWithLoggingStatements.LOGGING_LEVEL)) {
+			strategy.mainGoal = BranchingWithLoggingStatements.setLoggingStatement(strategy.mainGoal);
 		}
 	}
 
@@ -1010,8 +1081,7 @@ public class CPSolver implements Solver {
 	 *            the branching strategy
 	 */
 	public void attachGoal(AbstractIntBranching branching) {
-		branching = chooseBranchingType(branching);
-        if (strategy == null) {
+		if (strategy == null) {
 			tempGoal = branching;
 		} else {
 			// To remove properly the listener from the Propagation engine
@@ -1037,8 +1107,7 @@ public class CPSolver implements Solver {
 	 *            the order given by the adding.
 	 */
 	public void addGoal(AbstractIntBranching branching) {
-		branching = chooseBranchingType(branching);
-        AbstractIntBranching br;
+		AbstractIntBranching br;
 		if (strategy == null) {
 			br = tempGoal;
 		} else {
@@ -1051,27 +1120,7 @@ public class CPSolver implements Solver {
 		br.setNextBranching(branching);
 	}
 
-    /**
-     * Create a Logged branching if necessary
-     * @param branching initial branching object
-     * @return branching object
-     */
-    private static AbstractIntBranching chooseBranchingType(AbstractIntBranching branching) {
-        // If verbosity of LOGGER is not SEARCH
-        if(ChocoLogging.getSearchLogger().getLevel().intValue() > Level.INFO.intValue()){
-            if(branching.isLogged()){
-                return ((LogIntBranching)branching).getWrapper();
-            }else{
-                return branching;
-            }
-        }else{
-            if(branching.isLogged()){
-                return branching;
-            }else{
-                return new LogIntBranching(branching);
-            }
-        }
-    }
+  
 
     /**
 	 * Set the ilogGoal of the search strategy

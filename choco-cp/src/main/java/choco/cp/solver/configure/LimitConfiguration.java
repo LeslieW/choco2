@@ -59,10 +59,11 @@ public class LimitConfiguration {
 	public LimitConfiguration() {}
 
 	private void checkPreviousConfiguration(String operation, Limit prevType, int prevLimit, Limit currentType, int currentLimit) {
-		if(restartLimitType != null && restartLimit != Integer.MAX_VALUE) {
+		if(restartLimitType != null && restartLimit != Integer.MAX_VALUE 
+		 && ( prevType != currentType || prevLimit !=  currentLimit) ) {
 			LOGGER.log(Level.WARNING, 
-					"override previous setting of the {0] limit: {1} {2} => {3} {4}.\n",
-					new Object[]{prevLimit, prevType.getUnit(), currentLimit, currentType.getUnit()}
+					"override previous setting of the {0} limit: {1} {2} => {3} {4}.\n",
+					new Object[]{operation, prevLimit, prevType.getUnit(), currentLimit, currentType.getUnit()}
 			);
 		}
 	}

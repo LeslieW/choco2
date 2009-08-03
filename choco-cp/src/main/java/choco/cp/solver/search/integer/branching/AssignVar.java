@@ -22,110 +22,115 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.branching;
 
+
 import choco.cp.solver.search.integer.varselector.DomOverWDeg;
-import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.AbstractLargeIntBranching;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public class AssignVar extends AbstractLargeIntBranching {
-  private VarSelector varHeuristic;
-  private ValIterator valHeuristic;
-  private ValSelector valSHeuristic;
-  protected ValueChooserWrapper wrapper;
+	private VarSelector varHeuristic;
+	private ValIterator valHeuristic;
+	private ValSelector valSHeuristic;
+	protected ValueChooserWrapper wrapper;
 
-  String[]  LOG_DECISION_MSG = new String[]{"=="};
+	public AssignVar(VarSelector varSel, ValIterator valHeuri) {
+		varHeuristic = varSel;
+		valHeuristic = valHeuri;
+		wrapper = new ValIteratorWrapper();
+	}
 
-  public AssignVar(VarSelector varSel, ValIterator valHeuri) {
-    varHeuristic = varSel;
-    valHeuristic = valHeuri;
-    wrapper = new ValIteratorWrapper();
-  }
+	public AssignVar(VarSelector varSel, ValSelector valHeuri) {
+		varHeuristic = varSel;
+		valSHeuristic = valHeuri;
+		wrapper = new ValSelectorWrapper();
+	}
 
-  public AssignVar(VarSelector varSel, ValSelector valHeuri) {
-    varHeuristic = varSel;
-    valSHeuristic = valHeuri;
-    wrapper = new ValSelectorWrapper();
-  }
+	/**
+	 * selecting the object under scrutiny (that object on which an alternative will be set)
+	 *
+	 * @return the object on which an alternative will be set (often  a variable)
+	 */
+	public Object selectBranchingObject() throws ContradictionException {
+		return varHeuristic.selectVar();
+	}
 
-  /**
-   * selecting the object under scrutiny (that object on which an alternative will be set)
-   *
-   * @return the object on which an alternative will be set (often  a variable)
-   */
-  public final Object selectBranchingObject() throws ContradictionException {
-    return varHeuristic.selectVar();
-  }
 
-  public final boolean finishedBranching(Object x, int i) {
-    return wrapper.finishedBranching(x, i);
-  }
+	public boolean finishedBranching(final IntBranchingDecision decision) {
+		return wrapper.finishedBranching(decision);
+	}
 
-  public final int getFirstBranch(Object x) {
-    return wrapper.getFirstBranch(x);
-  }
+	
 
-  public final int getNextBranch(Object x, int i) {
-    return wrapper.getNextBranch(x, i);
-  }
+	public void setFirstBranch(final IntBranchingDecision decision) {
+		decision.setBranchingValue(wrapper.getFirstBranch(decision));
+	}
 
-  @Override
-public final void goDownBranch(Object x, int i) throws ContradictionException {
-    IntDomainVarImpl y = (IntDomainVarImpl) x;
-    y.setVal(i);
-    //manager.model.propagate();
-  }
+	public void setNextBranch(final IntBranchingDecision decision) {
+		decision.setBranchingValue(wrapper.getNextBranch(decision));
+	}
 
-  @Override
-public void goUpBranch(Object x, int i) throws ContradictionException {
-    IntDomainVarImpl y = (IntDomainVarImpl) x;
-    y.remVal(i);
-    //manager.model.propagate();
-  }
+	@Override
+	public void goDownBranch(final IntBranchingDecision decision) throws ContradictionException {
+		decision.setIntVal();
+	}
 
-  protected interface ValueChooserWrapper {
-    public boolean finishedBranching(Object x, int i);
+	@Override
+	public void goUpBranch(final IntBranchingDecision decision) throws ContradictionException {
+		decision.remIntVal();
+	}
 
-    public int getFirstBranch(Object x);
+	@Override
+	public String getDecisionLogMessage(IntBranchingDecision decision) {
+		return getDefaultAssignMsg(decision);
+	}
 
-    public int getNextBranch(Object x, int i);
-  }
+	protected interface ValueChooserWrapper {
+		public boolean finishedBranching(IntBranchingDecision decision);
 
-  protected final class ValIteratorWrapper implements ValueChooserWrapper {
-    public boolean finishedBranching(Object x, int i) {
-      return (!valHeuristic.hasNextVal((IntDomainVar) x, i));
-    }
+		public int getFirstBranch(IntBranchingDecision decision);
 
-    public int getFirstBranch(Object x) {
-      return valHeuristic.getFirstVal((IntDomainVar) x);
-    }
 
-    public int getNextBranch(Object x, int i) {
-      return valHeuristic.getNextVal((IntDomainVar) x, i);
-    }
-  }
+		public int getNextBranch(IntBranchingDecision decision);
+	}
 
-  protected final class ValSelectorWrapper implements ValueChooserWrapper {
-    public boolean finishedBranching(Object x, int i) {
-      return ((IntDomainVar) x).getDomainSize() == 0;
-    }
+	protected class ValIteratorWrapper implements ValueChooserWrapper {
+		public boolean finishedBranching(final IntBranchingDecision decision) {
+			return ( ! valHeuristic.hasNextVal(decision.getBranchingIntVar(), decision.getBranchingValue()));
+		}
 
-    public int getFirstBranch(Object x) {
-      return valSHeuristic.getBestVal((IntDomainVar) x);
-    }
+		public int getFirstBranch(final IntBranchingDecision decision) {
+			return valHeuristic.getFirstVal(decision.getBranchingIntVar());
+		}
 
-    public int getNextBranch(Object x, int i) {
-      return valSHeuristic.getBestVal((IntDomainVar) x);
-    }
-  }
+		public int getNextBranch(final IntBranchingDecision decision) {
+			return valHeuristic.getNextVal(decision.getBranchingIntVar(), decision.getBranchingValue());
+		}
+	}
 
-  public final void initConstraintForBranching(SConstraint c) {
-    if (varHeuristic instanceof DomOverWDeg) {
-        ((DomOverWDeg) varHeuristic).initConstraintForBranching(c);
-    }
-  }
+
+	protected class ValSelectorWrapper implements ValueChooserWrapper {
+		public boolean finishedBranching(final IntBranchingDecision decision) {
+			return decision.getBranchingIntVar().getDomainSize() == 0;
+		}
+
+		public int getFirstBranch(final IntBranchingDecision decision) {
+			return valSHeuristic.getBestVal(decision.getBranchingIntVar());
+		}
+
+		public int getNextBranch(final IntBranchingDecision decision) {
+			return valSHeuristic.getBestVal(decision.getBranchingIntVar());
+		}
+	}
+
+	@Override
+	public void initConstraintForBranching(SConstraint c) {
+		if (varHeuristic instanceof DomOverWDeg) {
+			((DomOverWDeg) varHeuristic).initConstraintForBranching(c);
+		}
+	}
 }

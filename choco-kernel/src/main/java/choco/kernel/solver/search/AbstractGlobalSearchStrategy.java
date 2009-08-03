@@ -87,22 +87,25 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	protected AbstractGlobalSearchLimit encounteredLimit = null;
 
 
-	/**
-	 * count of the backtracks made during search
-	 * @param loggingMaxDepth max depth of the logging
-	 */
-	public void setLoggingMaxDepth(int loggingMaxDepth) {
-		this.loggingMaxDepth = loggingMaxDepth;
-	}
-
-	public int getLoggingMaxDepth() {
-		return loggingMaxDepth;
-	}
-
-	/**
-	 * maximal search depth for logging statements
-	 */
-	protected int loggingMaxDepth = 5;
+	//ALREADY EXIST IN THE SOLVER
+//	/**
+//	 * set the maximal search depth for logging statements
+//	 */
+//	public void setLoggingMaxDepth(int loggingMaxDepth) {
+//		this.loggingMaxDepth = loggingMaxDepth;
+//	}
+//
+//	/**
+//	 * get the maximal search depth for logging statements
+//	 */
+//	public int getLoggingMaxDepth() {
+//		return loggingMaxDepth;
+//	}
+//
+//	/**
+//	 * maximal search depth for logging statements
+//	 */
+//	protected int loggingMaxDepth = 5;
 
 	/**
 	 * /**
@@ -261,7 +264,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 * called before a new search tree is explored
 	 */
 	public void endTreeSearch() {
-		limitManager.reset();
+		limitManager.endTreeSearch();
 		if (LOGGER.isLoggable(Level.CONFIG)) {
 			LOGGER.log(Level.CONFIG, "=== solve => {0} solutions\n\twith {1}", new Object[]{getSolutionCount(), runtimeStatistics()});
 		}

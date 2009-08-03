@@ -30,6 +30,7 @@ import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.Solver;
 import parser.absconparseur.tools.InstanceParser;
 import parser.absconparseur.tools.SolutionChecker;
@@ -338,16 +339,20 @@ public class XmlModel {
         }
         if (forcerestart != null) {
             if (forcerestart) {
-                s.setGeometricRestart(base, growth);
+               s.setGeometricRestart(base, growth);
+               //should investigate the effect of reinitializing branching in more details
+               //it seemed useful with restartFromSol and useless with a restart policy.
+               s.restartConfig.setInitializeSearchAfterRestart(false); 
             }
         } else {
             if (s.restartMode) {
-                s.setGeometricRestart(10, 1.3);                                
-                //s.setGeometricRestart(Math.min(Math.max(s.getNbIntVars(), 200), 400), 1.4d);
+               s.setGeometricRestart(10, 1.3);                                
+               s.restartConfig.setInitializeSearchAfterRestart(false);
+               //s.setGeometricRestart(Math.min(Math.max(s.getNbIntVars(), 200), 400), 1.4d);
             }
         }
-
-        //s.setLoggingMaxDepth(200);
+        //ChocoLogging.setVerbosity(Verbosity.SEARCH);
+        s.setLoggingMaxDepth(200);
         if (isFeasible && (cheuri == IMPACT || s.rootNodeSingleton(initialisationtime))) {
             if (ngFromRestart && (s.restartMode || forcerestart)) {
             	s.setRecordNogoodFromRestart(true);

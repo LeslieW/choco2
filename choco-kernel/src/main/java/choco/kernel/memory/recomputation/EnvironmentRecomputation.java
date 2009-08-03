@@ -22,20 +22,33 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory.recomputation;
 
-import choco.kernel.memory.*;
-import choco.kernel.memory.copy.EnvironmentCopying;
-import choco.kernel.memory.structure.PartiallyStoredIntVector;
-import choco.kernel.memory.structure.PartiallyStoredVector;
-import choco.kernel.memory.trailing.EnvironmentTrailing;
-import choco.kernel.memory.trailing.IndexedObject;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.search.AbstractSearchStrategy;
-import choco.kernel.solver.search.IntBranchingTrace;
 import gnu.trove.TIntStack;
 
 import java.util.ArrayList;
 import java.util.Stack;
 
+import choco.kernel.memory.AbstractEnvironment;
+import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.IStateBinaryTree;
+import choco.kernel.memory.IStateBitSet;
+import choco.kernel.memory.IStateBool;
+import choco.kernel.memory.IStateDouble;
+import choco.kernel.memory.IStateInt;
+import choco.kernel.memory.IStateIntProcedure;
+import choco.kernel.memory.IStateIntVector;
+import choco.kernel.memory.IStateLong;
+import choco.kernel.memory.IStateObject;
+import choco.kernel.memory.IStateVector;
+import choco.kernel.memory.copy.EnvironmentCopying;
+import choco.kernel.memory.structure.PartiallyStoredIntVector;
+import choco.kernel.memory.structure.PartiallyStoredVector;
+import choco.kernel.memory.trailing.EnvironmentTrailing;
+import choco.kernel.memory.trailing.IndexedObject;
+import choco.kernel.solver.SolverException;
+import choco.kernel.solver.search.AbstractSearchStrategy;
+import choco.kernel.solver.search.IntBranchingTrace;
+
+@Deprecated
 public class EnvironmentRecomputation extends AbstractEnvironment {
 
 
@@ -159,16 +172,18 @@ public class EnvironmentRecomputation extends AbstractEnvironment {
             // then apply the other
             for(int i = ind; i < contexts.size(); i++){
                 BranchTrace trace = contexts.elementAt(i);
-                try {
+                //try {
                     if (trace.isDown) {
-                        trace.ctx.getBranching().goDownBranch(trace.ctx.getBranchingObject(), trace.ctx.getBranchIndex());
+                    	throw new SolverException("not yet implemented");
+                        //trace.ctx.getBranching().goDownBranch(trace.ctx.getBranchingObject(), trace.ctx.getBranchIndex());
                     } else {
-                        trace.ctx.getBranching().goUpBranch(trace.ctx.getBranchingObject(), trace.ctx.getBranchIndex());
+                    	throw new SolverException("not yet implemented");
+                        //trace.ctx.getBranching().goUpBranch(trace.ctx.getBranchingObject(), trace.ctx.getBranchIndex());
                     }
 
-                } catch (ContradictionException e) {
-                    LOGGER.info("worldPop raised a contradiction (recomputation)");
-                }
+//                } catch (ContradictionException e) {
+//                    LOGGER.info("worldPop raised a contradiction (recomputation)");
+//                }
             }
         }
 

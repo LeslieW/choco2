@@ -23,8 +23,8 @@
 package choco.kernel.solver.search.set;
 
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.branch.AbstractIntBranching;
-import choco.kernel.solver.variables.set.SetVar;
+import choco.kernel.solver.branch.AbstractBinIntBranching;
+import choco.kernel.solver.search.IntBranchingDecision;
 
 //**************************************************
 //*                   J-CHOCO                      *
@@ -34,76 +34,35 @@ import choco.kernel.solver.variables.set.SetVar;
 //*     for Research and Education                 *
 //**************************************************
 
-public abstract class AbstractSetBranching extends AbstractIntBranching {
 
-    final static String[] LOG_DECISION_MSG = new String[]{"contains ", "contains not ", "??"};
+public abstract class AbstractSetBranching extends AbstractBinIntBranching {
 
-	public int getNextBranch(Object x, int i) {
-		if (i == 1) {
-			return 2;
-		}
-		return 0;
-	}
-
-	public boolean finishedBranching(Object x, int i) {
-
-		return i == 2;
-	}
-
+	public final static String[] LOG_DECISION_MSG = new String[]{"contains ", "contains not "};
+	
+	
 	@Override
-	public void goDownBranch(Object x, int numBranch) throws ContradictionException {
-		Object[] xx = (Object[]) x;
-		SetVar var = (SetVar) xx[0];
-		int val = (Integer) xx[1];
-		if (numBranch == 1) {
-			var.setValIn(val);
-			getManager().solver.propagate();
-		} else if (numBranch == 2) {
-			var.setValOut(val);
-			getManager()
-                    .solver.propagate();
+
+	public void goDownBranch(final IntBranchingDecision decision) throws ContradictionException {
+		if (decision.getBranchIndex() == 0) {
+			decision.setValInSet();
+			manager.solver.propagate(); // is propagate useful ?
+		} else {
+			decision.setValOutSet();
+			manager.solver.propagate(); // is propagate useful ?
 		}
 	}
-
-
 
 	/**
+	 * nothing to do
 	 * @see choco.kernel.solver.branch.AbstractIntBranching#goUpBranch(java.lang.Object, int)
 	 */
 	@Override
-	public void goUpBranch(Object x, int i) throws ContradictionException {}
-
-//	public void goUpBranch(Object x, int i, int numBranch) throws ContradictionException {
-//		this.goUpBranch(x, numBranch);
-//	}
-
-    /**
-     * used for logging messages related to the search tree
-     *
-     * @param branchObject is the object of the branching
-     * @param branchIndex  is the index of the branching
-     * @return an string that will be printed between the branching object and the branch index
-     *         Suggested implementations return LOG_DECISION_MSG[0] or LOG_DECISION_MSG[branchIndex]
-     */
-    @Override
-    public String getDecisionLogMsg(Object branchObject, int branchIndex) {
-        StringBuffer st = new StringBuffer();
-        Object[] o = (Object[])branchObject;
-        st.append(o[0]);
-        switch(branchIndex){
-            case 1:
-                st.append(LOG_DECISION_MSG[0]);
-            case 2:
-                st.append(LOG_DECISION_MSG[1]);
-            default:
-                st.append(LOG_DECISION_MSG[2]);
-        }
-        st.append(o[1]);
-        return st.toString();
-    }
-
-    @Override
-	protected final String getLogMessage() {
-		return LOG_MSG_FORMAT_WITH_BRANCH;
+	public void goUpBranch(final IntBranchingDecision ctx) throws ContradictionException {
+		//nothing to do
 	}
+
+	public String getDecisionLogMessage(IntBranchingDecision decision) {
+		return decision.getBranchingSetVar() + LOG_DECISION_MSG[decision.getBranchIndex()] + decision.getBranchingValue();
+	}
+
 }
