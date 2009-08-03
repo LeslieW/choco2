@@ -111,8 +111,8 @@ public abstract class AbstractVilimTree extends ProperBinaryTree implements IVil
 				throw new SolverException("inconsitent vilim tree");
 			}
 		}else {
-			AbstractVilimStatus<?> s = (AbstractVilimStatus<?>) getRoot().getNodeStatus();
-			s.reset();
+			//no need to sort, reset only the root node
+			 ((AbstractVilimStatus<?>) getRoot().getNodeStatus()).reset();
 		}
 	}
 
