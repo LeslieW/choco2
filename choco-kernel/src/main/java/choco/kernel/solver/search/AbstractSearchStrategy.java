@@ -22,10 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.search;
 
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
@@ -33,6 +29,10 @@ import choco.kernel.solver.search.measures.ISolutionMeasures;
 import choco.kernel.solver.variables.integer.IntVar;
 import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.set.SetVar;
+
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -57,7 +57,7 @@ public abstract class AbstractSearchStrategy implements ISolutionMeasures {
 	/**
 	 * count of the solutions found during search
 	 */
-	private int nbSolutions = 0;
+	protected int nbSolutions = 0;
 
 
 	public AbstractSearchStrategy() {

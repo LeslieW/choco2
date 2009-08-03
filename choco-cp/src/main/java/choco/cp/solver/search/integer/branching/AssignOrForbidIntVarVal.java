@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -35,8 +35,9 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * value to an IntVar (X == v) - and the other forbidding this assignment (X !=
  * v)
  */
-public class AssignOrForbidIntVarVal extends AbstractBinIntBranching {
-	private VarSelector varHeuristic;
+public final class AssignOrForbidIntVarVal extends AbstractBinIntBranching {
+
+    private VarSelector varHeuristic;
 
 	private ValSelector valSHeuristic;
 
@@ -53,42 +54,58 @@ public class AssignOrForbidIntVarVal extends AbstractBinIntBranching {
 	}
 
 	@Override
-	public String getDecisionLogMsg(int branchIndex) {
-		return branchIndex == 0 ? "==" : "!=";
-	}
-
-	@Override
 	public void goDownBranch(Object x, int i) throws ContradictionException {
-		super.goDownBranch(x, i);
 		IntVarValPair p = (IntVarValPair) x;
 		if (i == 0) {
 			p.var.setVal(p.val);
-			// p.getSolver().propagate();
 		} else {
 			p.var.remVal(p.val);
-			// p.getSolver().propagate();
 		}
 		// Calls to propagate() are useless since it is done in the SearchLoop
 	}
 
-	@Override
+    /**
+     * Performs the action,
+     * so that we go up the current branch to the father choice point.
+     *
+     * @param x the object on which the alternative has been set
+     *          at the father choice point
+     * @param i the label of the branch that has been travelled down
+     *          from the father choice point
+     * @throws choco.kernel.solver.ContradictionException
+     *          if a domain empties or a contradiction is
+     *          infered
+     */
+    @Override
+    public void goUpBranch(Object x, int i) throws ContradictionException {}
+
+
+    @Override
 	protected final String getLogMessage() {
-		return getLogMessageWithBranch();
+		return LOG_MSG_FORMAT_WITH_BRANCH;
 	}
 
+    /**
+     * used for logging messages related to the search tree
+     *
+     * @param branchObject is the object of the branching
+     * @param branchIndex  is the index of the branching
+     * @return an string that will be printed between the branching object and the branch index
+     *         Suggested implementations return LOG_DECISION_MSG[0] or LOG_DECISION_MSG[branchIndex]
+     */
+    @Override
+    public final String getDecisionLogMsg(Object branchObject, int branchIndex) {
+        IntVarValPair p = (IntVarValPair) branchObject;
+        return p.var + LOG_DECISION_MSG + p.val;
+    }
 
 
-	@Override
-	protected Object getValueLogParameter(Object x, int branch) {
-		return Integer.valueOf(((IntVarValPair) x).val);
-	}
-
-	@Override
-	protected Object getVariableLogParameter(Object x) {
-		return ((IntVarValPair) x).var;
-	}
-
-	public Object selectBranchingObject() throws ContradictionException {
+    /**
+     * selecting the object under scrutiny (that object on which an alternative will be set)
+     *
+     * @return the object on which an alternative will be set (often  a variable)
+     */
+    public Object selectBranchingObject() throws ContradictionException {
 		if (pairHeuristic != null) {
 			return pairHeuristic.selectVarValPair();
 		}

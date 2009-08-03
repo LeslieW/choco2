@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -266,7 +266,6 @@ public class SetTimes extends AbstractLargeIntBranching {
 		final SetTimesNode n= (SetTimesNode) x;
 		final TaskVar s = selector.selectTaskVar(n.selectables);
 		n.setLastSelected(s);
-		logDownBranch(s,i);
 		s.start().setVal(s.getEST());
 	}
 
@@ -280,22 +279,26 @@ public class SetTimes extends AbstractLargeIntBranching {
 		final SetTimesNode n=(SetTimesNode) x;
 		final TaskVar t = n.getLastSelected();
 		n.removeLastSelected();
-		logUpBranch(t,i);
 		final int idx=this.taskIndexM.get(t);
 		nselect.set(idx);
 		flags[idx].set(t.getEST());
 	}
 
-
-
 	@Override
 	protected String getLogMessage() {
-		return getLogMessageWithBranch();
+		return LOG_MSG_FORMAT_WITH_BRANCH;
 	}
 
-	@Override
-	protected Object getValueLogParameter(Object x, int branch) {
-		return ((TaskVar) x).getEST();
-	}
-
+    /**
+     * used for logging messages related to the search tree
+     *
+     * @param branchObject is the object of the branching
+     * @param branchIndex  is the index of the branching
+     * @return an string that will be printed between the branching object and the branch index
+     *         Suggested implementations return LOG_DECISION_MSG[0] or LOG_DECISION_MSG[branchIndex]
+     */
+    @Override
+    public String getDecisionLogMsg(Object branchObject, int branchIndex) {
+        return ((TaskVar) branchObject).getEST() + LOG_DECISION_MSG + branchIndex;
+    }
 }

@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -26,28 +26,30 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 
 public abstract class AbstractBranching {
-  
-  /**
-   * the main control object (responsible for the whole exploration, while the branching object
+
+    static final String LOG_MSG_FORMAT = "{0} {1} {2} {3}";
+
+    protected static final String LOG_MSG_FORMAT_WITH_BRANCH = "{0} {1} {2} branch {3}";
+
+    protected static final String LOG_DECISION_MSG = "==";
+    /**
+   * the main control object (responsible for the whole exploration, while Eqthe branching object
    * is responsible only at the choice point level
    */
-  protected AbstractGlobalSearchStrategy manager;
-  
+  private AbstractGlobalSearchStrategy manager;
   /**
    * a link towards the next branching object (once this one is exhausted)
    */
-  protected AbstractBranching nextBranching;
-  
-  
+  private AbstractBranching nextBranching;
 
-  public final static String LOG_DOWN_MSG = "down branch ";
-  public final static String LOG_UP_MSG = "up branch ";
-  public final static String LOG_DECISION_MSG_ASSIGN = "==";
-  
 
-  public final void setSolver(AbstractGlobalSearchStrategy s) {
+  public void setSolver(AbstractGlobalSearchStrategy s) {
     manager = s;
   }
+
+    public AbstractGlobalSearchStrategy getManager(){
+        return manager;
+    }
 
   /**
    * Gets the next branching.
@@ -65,13 +67,21 @@ public abstract class AbstractBranching {
     this.nextBranching = nextBranching;
   }
 
-  /**
-   * used for logging messages related to the search tree
-   * @param branchIndex is the index of the branching
-   * @return an string that will be printed between the branching object and the branch index
-   * Suggested implementations return LOG_DECISION_MSG[0] or LOG_DECISION_MSG[branchIndex]
-   */
-  public abstract String getDecisionLogMsg(int branchIndex);
+    /**
+     * used for logging messages related to the search tree
+     *
+     * @param branchObject is the object of the branching
+     * @param branchIndex  is the index of the branching
+     * @return an string that will be printed between the branching object and the branch index
+     *         Suggested implementations return LOG_DECISION_MSG[0] or LOG_DECISION_MSG[branchIndex]
+     */
+    public String getDecisionLogMsg(Object branchObject, int branchIndex) {
+        StringBuffer st = new StringBuffer();
+        st.append(branchObject);
+        st.append(LOG_DECISION_MSG);
+//        st.append(branchIndex);
+        return st.toString();
+    }
 
   /**
    * This method is called before launching the search. it may be used to intialiaze data structures or counters for
@@ -84,10 +94,24 @@ public abstract class AbstractBranching {
     /**
      * this method is used to build the data structure in the branching for
      * the given constraint. This is used when the constraint was not present
-     * at the initialization of the branching, for example a cut 
+     * at the initialization of the branching, for example a cut
      * @param c constraint
      */
   public void initConstraintForBranching(SConstraint c) {
     //nothing to do by default
   }
+
+    /**
+	 * a log message using java.util logging {} arguments </br>
+	 * {0}: world index (formatter arguments)</br>
+	 * {1}: Up or Down message </br>
+	 * {2}: log message </br>
+     * 
+	 * {5}: Branch index </br>
+	 *
+	 * @return log message
+	 */
+    protected String getLogMessage() {
+		return LOG_MSG_FORMAT;
+	}
 }

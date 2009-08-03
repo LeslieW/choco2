@@ -28,23 +28,6 @@
  *************************************************/
 package choco.cp.solver;
 
-import static choco.kernel.solver.search.SolutionPoolFactory.makeDefaultSolutionPool;
-import gnu.trove.TLongObjectHashMap;
-
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.configure.LimitConfiguration;
@@ -52,56 +35,21 @@ import choco.cp.solver.configure.RestartConfiguration;
 import choco.cp.solver.constraints.ConstantSConstraint;
 import choco.cp.solver.constraints.global.Occurrence;
 import choco.cp.solver.constraints.global.scheduling.SchedulerConfig;
-import choco.cp.solver.constraints.integer.EqualXC;
-import choco.cp.solver.constraints.integer.EqualXYC;
-import choco.cp.solver.constraints.integer.GreaterOrEqualXC;
-import choco.cp.solver.constraints.integer.GreaterOrEqualXYC;
-import choco.cp.solver.constraints.integer.IntLinComb;
-import choco.cp.solver.constraints.integer.LessOrEqualXC;
-import choco.cp.solver.constraints.integer.MaxOfAList;
-import choco.cp.solver.constraints.integer.NotEqualXC;
-import choco.cp.solver.constraints.integer.NotEqualXYC;
-import choco.cp.solver.constraints.integer.NotEqualXYCEnum;
+import choco.cp.solver.constraints.integer.*;
 import choco.cp.solver.constraints.integer.bool.BoolIntLinComb;
 import choco.cp.solver.constraints.integer.bool.BoolSum;
 import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
 import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
-import choco.cp.solver.constraints.integer.extension.AC2001BinSConstraint;
-import choco.cp.solver.constraints.integer.extension.AC3BinSConstraint;
-import choco.cp.solver.constraints.integer.extension.AC3rmBinSConstraint;
-import choco.cp.solver.constraints.integer.extension.AC3rmBitBinSConstraint;
-import choco.cp.solver.constraints.integer.extension.CspLargeSConstraint;
-import choco.cp.solver.constraints.integer.extension.GAC2001LargeSConstraint;
-import choco.cp.solver.constraints.integer.extension.GAC2001PositiveLargeConstraint;
-import choco.cp.solver.constraints.integer.extension.GAC3rmLargeConstraint;
-import choco.cp.solver.constraints.integer.extension.GAC3rmPositiveLargeConstraint;
-import choco.cp.solver.constraints.integer.extension.GACstrPositiveLargeSConstraint;
+import choco.cp.solver.constraints.integer.extension.*;
 import choco.cp.solver.constraints.real.Equation;
 import choco.cp.solver.constraints.real.MixedEqXY;
-import choco.cp.solver.constraints.real.exp.RealCos;
-import choco.cp.solver.constraints.real.exp.RealIntegerPower;
-import choco.cp.solver.constraints.real.exp.RealMinus;
-import choco.cp.solver.constraints.real.exp.RealMult;
-import choco.cp.solver.constraints.real.exp.RealPlus;
-import choco.cp.solver.constraints.real.exp.RealSin;
+import choco.cp.solver.constraints.real.exp.*;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
-import choco.cp.solver.constraints.set.Disjoint;
-import choco.cp.solver.constraints.set.IsIncluded;
-import choco.cp.solver.constraints.set.MemberXY;
-import choco.cp.solver.constraints.set.SetCard;
-import choco.cp.solver.constraints.set.SetEq;
-import choco.cp.solver.constraints.set.SetIntersection;
-import choco.cp.solver.constraints.set.SetNotEq;
-import choco.cp.solver.constraints.set.SetUnion;
+import choco.cp.solver.constraints.set.*;
 import choco.cp.solver.goals.GoalSearchSolver;
 import choco.cp.solver.propagation.ChocEngine;
 import choco.cp.solver.propagation.EventQueueFactory;
-import choco.cp.solver.search.AbstractSearchLoopWithRestart;
-import choco.cp.solver.search.BranchAndBound;
-import choco.cp.solver.search.DefaultStrategyMeasures;
-import choco.cp.solver.search.GlobalSearchStrategy;
-import choco.cp.solver.search.SearchLoop;
-import choco.cp.solver.search.SearchLoopWithRecomputation;
+import choco.cp.solver.search.*;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.branching.DomOverWDegBranching;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
@@ -116,11 +64,7 @@ import choco.cp.solver.search.real.RealIncreasingDomain;
 import choco.cp.solver.search.restart.BasicKickRestart;
 import choco.cp.solver.search.restart.IKickRestart;
 import choco.cp.solver.search.restart.NogoodKickRestart;
-import choco.cp.solver.search.set.AssignSetVar;
-import choco.cp.solver.search.set.MinDomSet;
-import choco.cp.solver.search.set.MinEnv;
-import choco.cp.solver.search.set.RandomSetValSelector;
-import choco.cp.solver.search.set.RandomSetVarSelector;
+import choco.cp.solver.search.set.*;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntTerm;
@@ -151,36 +95,23 @@ import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.branch.AbstractIntBranching;
+import choco.kernel.solver.branch.LogIntBranching;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.integer.IntExp;
 import choco.kernel.solver.constraints.integer.IntSConstraint;
-import choco.kernel.solver.constraints.integer.extension.BinRelation;
-import choco.kernel.solver.constraints.integer.extension.CouplesBitSetTable;
-import choco.kernel.solver.constraints.integer.extension.CouplesTable;
-import choco.kernel.solver.constraints.integer.extension.ExtensionalBinRelation;
-import choco.kernel.solver.constraints.integer.extension.IterLargeRelation;
-import choco.kernel.solver.constraints.integer.extension.IterTuplesTable;
-import choco.kernel.solver.constraints.integer.extension.LargeRelation;
-import choco.kernel.solver.constraints.integer.extension.TuplesList;
-import choco.kernel.solver.constraints.integer.extension.TuplesTable;
+import choco.kernel.solver.constraints.integer.extension.*;
 import choco.kernel.solver.constraints.real.RealExp;
 import choco.kernel.solver.constraints.set.SetSConstraint;
 import choco.kernel.solver.goals.Goal;
-import choco.kernel.solver.propagation.AbstractPropagationEngine;
-import choco.kernel.solver.propagation.ConstraintEvent;
-import choco.kernel.solver.propagation.ConstraintEventQueue;
-import choco.kernel.solver.propagation.EventQueue;
-import choco.kernel.solver.propagation.PropagationEngine;
-import choco.kernel.solver.propagation.PropagationEngineListener;
-import choco.kernel.solver.propagation.Propagator;
-import choco.kernel.solver.propagation.VarEventQueue;
+import choco.kernel.solver.propagation.*;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.AbstractOptimize;
 import choco.kernel.solver.search.AbstractSearchStrategy;
 import choco.kernel.solver.search.ISolutionPool;
+import static choco.kernel.solver.search.SolutionPoolFactory.makeDefaultSolutionPool;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
@@ -201,6 +132,12 @@ import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
 import choco.kernel.visu.IVisu;
+import gnu.trove.TLongObjectHashMap;
+
+import java.lang.reflect.Array;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -380,11 +317,11 @@ public class CPSolver implements Solver {
 	/**
 	 * set the number of stored solutions.
 	 * it defines a default {@link ISolutionPool} for the solver. Default pools are partially resizable if 1 < capa < Integer.MaxValue.
-	 * you can easily provide set your own policy with @{link {@link AbstractSearchStrategy#setSolutionPool(ISolutionPool)}. 
+	 * you can easily provide set your own policy with @{link {@link AbstractSearchStrategy#setSolutionPool(ISolutionPool)}.
 	 */
 	@Override
 	public void setSolutionPoolCapacity(int capacity) {
-		this.solutionPoolCapacity = capacity;		
+		this.solutionPoolCapacity = capacity;
 	}
 
 	public int solutionPoolCapacity = 1;
@@ -818,7 +755,7 @@ public class CPSolver implements Solver {
 
 		strategy.setLoggingMaxDepth(this.loggingMaxDepth);
 
-		strategy.setSolutionPool( makeDefaultSolutionPool(solutionPoolCapacity));
+		strategy.setSolutionPool(makeDefaultSolutionPool(solutionPoolCapacity));
 
 		strategy.setSearchMeasures(
 				new DefaultStrategyMeasures(strategy, 
@@ -1073,7 +1010,8 @@ public class CPSolver implements Solver {
 	 *            the branching strategy
 	 */
 	public void attachGoal(AbstractIntBranching branching) {
-		if (strategy == null) {
+		branching = chooseBranchingType(branching);
+        if (strategy == null) {
 			tempGoal = branching;
 		} else {
 			// To remove properly the listener from the Propagation engine
@@ -1082,15 +1020,15 @@ public class CPSolver implements Solver {
 				((PropagationEngineListener)strategy.mainGoal).safeDelete();
 			}
 			AbstractIntBranching br = branching;
-			while (br != null) {
-				br.setSolver(strategy);
-				br = (AbstractIntBranching) br.getNextBranching();
-			}
-			strategy.mainGoal = branching;
+            while (br != null) {
+                br.setSolver(strategy);
+                br = (AbstractIntBranching) br.getNextBranching();
+            }
+            strategy.mainGoal = branching;
 		}
 	}
 
-	/**
+    /**
 	 * Add branching strategy to the search strategy. (Do not have to be called
 	 * before attachGoal(AbstractIntBranching branching))
 	 *
@@ -1099,7 +1037,8 @@ public class CPSolver implements Solver {
 	 *            the order given by the adding.
 	 */
 	public void addGoal(AbstractIntBranching branching) {
-		AbstractIntBranching br;
+		branching = chooseBranchingType(branching);
+        AbstractIntBranching br;
 		if (strategy == null) {
 			br = tempGoal;
 		} else {
@@ -1112,7 +1051,29 @@ public class CPSolver implements Solver {
 		br.setNextBranching(branching);
 	}
 
-	/**
+    /**
+     * Create a Logged branching if necessary
+     * @param branching initial branching object
+     * @return branching object
+     */
+    private static AbstractIntBranching chooseBranchingType(AbstractIntBranching branching) {
+        // If verbosity of LOGGER is not SEARCH
+        if(ChocoLogging.getSearchLogger().getLevel().intValue() > Level.INFO.intValue()){
+            if(branching.isLogged()){
+                return ((LogIntBranching)branching).getWrapper();
+            }else{
+                return branching;
+            }
+        }else{
+            if(branching.isLogged()){
+                return branching;
+            }else{
+                return new LogIntBranching(branching);
+            }
+        }
+    }
+
+    /**
 	 * Set the ilogGoal of the search strategy
 	 *
 	 * @param ilogGoal
@@ -1362,12 +1323,10 @@ public class CPSolver implements Solver {
 		SetVar[] vars = ((AbstractSetVarSelector) setVarSelector).getVars();
 		if (vars != null) {
 			setDecisionVars.clear();
-			for (int i = 0; i < vars.length; i++) {
-				setDecisionVars.add(vars[i]);
-			}
+            setDecisionVars.addAll(Arrays.asList(vars));
 		} else if(!setDecisionVars.isEmpty()){
 			vars = new SetVar[setDecisionVars.size()];
-			intDecisionVars.toArray(vars);
+			setDecisionVars.toArray(vars);
 			((AbstractSetVarSelector) setVarSelector).setVars(vars);
 		} else {
 			setDecisionVars.addAll(setVars.toList());
@@ -1537,7 +1496,7 @@ public class CPSolver implements Solver {
 	/**
 	 * default growing factor:2
 	 *
-	 * @param base
+	 * @param base scale factor
 	 */
 	public void setLubyRestart(int base) {
 		restartConfig.setLubyRestartPolicy(base, 2);
@@ -1555,7 +1514,7 @@ public class CPSolver implements Solver {
 	/**
 	 * set the optimization strategy: - restart or not after each solution found
 	 *
-	 * @param restart
+	 * @param restart indicates wether to restart or not
 	 */
 	public void setRestart(boolean restart) {
 		restartConfig.setRestartAfterEachSolution(restart);
@@ -1565,7 +1524,7 @@ public class CPSolver implements Solver {
 	 * a boolean indicating if the strategy minize or maximize the objective
 	 * function
 	 *
-	 * @param doMaximize
+	 * @param doMaximize indicates wether the strategy is maximizing or not (minimizing)
 	 */
 	public void setDoMaximize(boolean doMaximize) {
 		this.doMaximize = doMaximize;
@@ -1574,7 +1533,7 @@ public class CPSolver implements Solver {
 	/**
 	 * Set the variable to optimize
 	 *
-	 * @param objective
+	 * @param objective objective variable
 	 */
 	public void setObjective(Var objective) {
 		this.objective = objective;
@@ -1926,7 +1885,8 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Checks if all the variables are instantiated.
-	 */
+     * @return indicates wether every integer variables are instantiated
+     */
 	public boolean isCompletelyInstantiated() {
 		int n = getNbIntVars();
 		for (int i = 0; i < n; i++) {
@@ -1998,7 +1958,7 @@ public class CPSolver implements Solver {
 	 * Extract the list, build the table and post GAC - Post Gac on the implicit
 	 * table - Post FC on the explicit table
 	 *
-	 * @param exp
+	 * @param exp expressions constraint
 	 */
 	protected void decisionOnExpression(ExpressionSConstraint exp) {
 		Boolean decomp = exp.isDecomposeExp();
@@ -2026,7 +1986,7 @@ public class CPSolver implements Solver {
 	 * Post the redundant constraint that allows to capture the reasonnings on
 	 * cardinalities
 	 *
-	 * @param p
+	 * @param p constraint
 	 */
 	public void postRedundantSetConstraints(SConstraint p) {
 		if (cardinalityReasonningsOnSETS && p instanceof SetSConstraint
@@ -2204,7 +2164,7 @@ public class CPSolver implements Solver {
 			}
 		}
 		//        indexOfLastInitializedStaticConstraint.set(environment.getWorldIndex());
-		//TODO avoid first conditions and test only propNogoodWorld 
+		//TODO avoid first conditions and test only propNogoodWorld
 		if (nogoodStore != null && propNogoodWorld > this.getWorldIndex()) {
 			nogoodStore.setActiveSilently();
 			nogoodStore.constAwake(false);
@@ -2410,7 +2370,8 @@ public class CPSolver implements Solver {
 	public <V extends Var> V[] getVar(Class<?> c, Variable... v) {
 		V[] tmp = (V[]) Array.newInstance(c, v.length);
 		for (int i = 0; i < v.length; i++) {
-			tmp[i] = (V) mapvariables.get(v[i].getIndex());
+            //noinspection unchecked
+            tmp[i] = (V) mapvariables.get(v[i].getIndex());
 		}
 		return tmp;
 	}
@@ -2468,7 +2429,8 @@ public class CPSolver implements Solver {
 
 	/**
 	 * post redundant task constraints start + duration =end
-	 */
+     * @param treas redundant reasonning on tasks
+     */
 	public void setTaskReasoning(boolean treas) {
 		scheduler.setRedundantReasonningsOnTasks(treas);
 	}
@@ -2547,7 +2509,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * use {@link ChocoLogging#setVerbosity(Verbosity)}
-	 * @param verbosity
+	 * @param verbosity logger verbosity
 	 */
 	@Deprecated
 	public static void setVerbosity(int verbosity) {
@@ -2867,7 +2829,7 @@ public class CPSolver implements Solver {
 	/**
 	 * Creates a constraint by stating that a term is greater or equal than a
 	 * constant
-	 * 
+	 *
 	 * @param x
 	 *            the expression
 	 * @param c
@@ -2991,7 +2953,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Subtracting two terms one from another
-	 * 
+	 *
 	 * @param t1
 	 *            first term
 	 * @param t2
@@ -3095,7 +3057,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Adding two terms one to another
-	 * 
+	 *
 	 * @param t1
 	 *            first term
 	 * @param t2
@@ -3170,7 +3132,7 @@ public class CPSolver implements Solver {
 	/**
 	 * Utility method for constructing a term from two lists of variables, list
 	 * of coeffcicients and constants
-	 * 
+	 *
 	 * @param coeffs1
 	 *            coefficients from the first term
 	 * @param vars1
@@ -3204,7 +3166,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Creates a simple linear term from one coefficient and one variable
-	 * 
+	 *
 	 * @param a
 	 *            the coefficient
 	 * @param x
@@ -3224,7 +3186,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Creates a constraint by stating that a term is not equal than a constant
-	 * 
+	 *
 	 * @param x
 	 *            the expression
 	 * @param c
@@ -3360,7 +3322,8 @@ public class CPSolver implements Solver {
 	protected SConstraint createIntLinComb(IntVar[] sortedVars,
 			int[] sortedCoeffs, int nbPositiveCoeffs, int c, int linOperator) {
 		IntDomainVar[] tmpVars = new IntDomainVar[sortedVars.length];
-		System.arraycopy(sortedVars, 0, tmpVars, 0, sortedVars.length);
+        //noinspection SuspiciousSystemArraycopy
+        System.arraycopy(sortedVars, 0, tmpVars, 0, sortedVars.length);
 		if (isBoolLinComb(tmpVars, sortedCoeffs, linOperator)) {
 			return createBoolLinComb(tmpVars, sortedCoeffs, c, linOperator);
 		} else {
@@ -3469,7 +3432,7 @@ public class CPSolver implements Solver {
 	 * Makes an equation from an expression and a constant interval. It is used
 	 * by all methods building constraints. This is useful for subclassing this
 	 * modeller for another kind of model (like PaLM).
-	 * 
+	 *
 	 * @param exp
 	 *            The expression
 	 * @param cst
@@ -3487,7 +3450,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Equality constraint.
-	 * 
+	 *
 	 * @param exp1
 	 *            the first expression
 	 * @param exp2
@@ -3514,7 +3477,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Inferority constraint.
-	 * 
+	 *
 	 * @param exp1
 	 *            the fisrt expression
 	 * @param exp2
@@ -3544,7 +3507,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Superiority constraint.
-	 * 
+	 *
 	 * @param exp1
 	 *            the fisrt expression
 	 * @param exp2
@@ -3565,7 +3528,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Addition of two expressions.
-	 * 
+	 *
 	 * @param exp1
 	 *            the first expression
 	 * @param exp2
@@ -3578,7 +3541,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Substraction of two expressions.
-	 * 
+	 *
 	 * @param exp1
 	 *            the first expression
 	 * @param exp2
@@ -3591,7 +3554,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Multiplication of two expressions.
-	 * 
+	 *
 	 * @param exp1
 	 *            the first expression
 	 * @param exp2
@@ -3604,7 +3567,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Power of an expression.
-	 * 
+	 *
 	 * @param exp
 	 *            the expression to x
 	 * @param power
@@ -3667,7 +3630,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Building a term from a scalar product of coefficients and variables
-	 * 
+	 *
 	 * @param lc
 	 *            the array of coefficients
 	 * @param lv
@@ -3691,7 +3654,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Building a term from a scalar product of coefficients and variables
-	 * 
+	 *
 	 * @param lv
 	 *            the array of variables
 	 * @param lc
@@ -3704,7 +3667,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Building a term from a sum of integer expressions
-	 * 
+	 *
 	 * @param lv
 	 *            the array of integer expressions
 	 * @return the term
@@ -3756,7 +3719,7 @@ public class CPSolver implements Solver {
 	 * compute the opposite of the relation if needed so the min[i]/max[i] can
 	 * be smaller/bigger than min_{j \in pairs} pairs.get(j)[i] or max_{j \in
 	 * pairs} pairs.get(j)[i]
-	 * 
+	 *
 	 * @param min
 	 * @param max
 	 * @param mat
@@ -3800,7 +3763,7 @@ public class CPSolver implements Solver {
 	 * compute the opposite of the relation if needed so the min[i]/max[i] can
 	 * be smaller/bigger than min_{j \in pairs} pairs.get(j)[i] or max_{j \in
 	 * pairs} pairs.get(j)[i]
-	 * 
+	 *
 	 * @param min
 	 * @param max
 	 * @param mat
@@ -3817,7 +3780,7 @@ public class CPSolver implements Solver {
 
 	/**
 	 * Create a binary relation from the given matrix of consistency
-	 * 
+	 *
 	 * @param v1
 	 * @param v2
 	 * @param mat
@@ -3871,7 +3834,7 @@ public class CPSolver implements Solver {
 	/**
 	 * Create a constraint to enforce GAC on a list of feasible or infeasible
 	 * tuples
-	 * 
+	 *
 	 * @param vs
 	 * @param tuples
 	 *            the list of tuples
@@ -3901,7 +3864,7 @@ public class CPSolver implements Solver {
 	/**
 	 * Create a constraint enforcing Arc Consistency on a given a given list of
 	 * feasible tuples. Default algorithm is GAC3rm
-	 * 
+	 *
 	 * @param vars
 	 * @param tuples
 	 *            : a list of int[] corresponding to feasible tuples
@@ -3913,7 +3876,7 @@ public class CPSolver implements Solver {
 	/**
 	 * Create a constraint enforcing Arc Consistency on a given a given list of
 	 * infeasible tuples. Default algorithm is GAC3rm
-	 * 
+	 *
 	 * @param vars
 	 * @param tuples
 	 *            : a list of int[] corresponding to infeasible tuples
@@ -3925,7 +3888,7 @@ public class CPSolver implements Solver {
 	/**
 	 * Create a constraint enforcing Arc Consistency on a given a given list of
 	 * feasible tuples
-	 * 
+	 *
 	 * @param vars
 	 * @param tuples
 	 *            : a list of int[] corresponding to feasible tuples
@@ -3948,7 +3911,7 @@ public class CPSolver implements Solver {
 	/**
 	 * Create a constraint enforcing Arc Consistency on a given a given list of
 	 * infeasible tuples
-	 * 
+	 *
 	 * @param vars
 	 * @param tuples
 	 *            : a list of int[] corresponding to infeasible tuples
@@ -3979,7 +3942,7 @@ public class CPSolver implements Solver {
 		} else if (ac == 32) {
 			return new AC3rmBinSConstraint(v1, v2, binR);
 		} else if (ac == 322) {
-			return new AC3rmBitBinSConstraint(v1, v2, (CouplesBitSetTable) binR); 
+			return new AC3rmBitBinSConstraint(v1, v2, (CouplesBitSetTable) binR);
 			// TODO: add the bitset implementation
 		} else {
 			throw new UnsupportedOperationException("Ac " + ac
@@ -4010,7 +3973,7 @@ public class CPSolver implements Solver {
 	 * - or in the table itself in which case one need to be able to iterate
 	 * over the tuples and not only check consistency (here put feas = true to
 	 * get such a relation)
-	 * 
+	 *
 	 * @param min
 	 *            : min[i] has to be greater or equal the minimum value of any
 	 *            i-th variable on which this relation will be used
@@ -4035,7 +3998,7 @@ public class CPSolver implements Solver {
 	 * - or in the table itself in which case one need to be able to iterate
 	 * over the tuples and not only check consistency (here put feas = true to
 	 * get such a relation)
-	 * 
+	 *
 	 * @param min
 	 *            : min[i] has to be greater or equal the minimum value of any
 	 *            i-th variable on which this relation will be used
@@ -4112,7 +4075,7 @@ public class CPSolver implements Solver {
 	/**
 	 * Create a constraint enforcing Forward Checking on a given a given list of
 	 * feasible tuples
-	 * 
+	 *
 	 * @param vars
 	 * @param tuples
 	 *            : a list of int[] corresponding to feasible tuples
@@ -4124,7 +4087,7 @@ public class CPSolver implements Solver {
 	/**
 	 * Create a constraint enforcing Forward Checking on a given a given list of
 	 * infeasible tuples
-	 * 
+	 *
 	 * @param vars
 	 * @param tuples
 	 *            : a list of int[] corresponding to infeasible tuples
@@ -4136,7 +4099,7 @@ public class CPSolver implements Solver {
 	/**
 	 * Create a constraint enforcing Forward Checking on a given a given list of
 	 * infeasible tuples
-	 * 
+	 *
 	 * @param vars
 	 * @param tuples
 	 *            : a list of int[] corresponding to infeasible tuples
@@ -4148,7 +4111,7 @@ public class CPSolver implements Solver {
 	/**
 	 * Create a constraint enforcing Forward Checking on a given a given list of
 	 * feasible tuples
-	 * 
+	 *
 	 * @param vars
 	 * @param tuples
 	 *            : a list of int[] corresponding to feasible tuples
@@ -4160,7 +4123,7 @@ public class CPSolver implements Solver {
 	/**
 	 * Create a constraint enforcing Arc Consistency on a given a given list of
 	 * infeasible tuples
-	 * 
+	 *
 	 * @param vars
 	 * @param tuples
 	 *            : a list of int[] corresponding to infeasible tuples
@@ -4172,7 +4135,7 @@ public class CPSolver implements Solver {
 	/**
 	 * Create a constraint enforcing Arc Consistency on a given a given list of
 	 * feasible tuples
-	 * 
+	 *
 	 * @param vars
 	 * @param tuples
 	 *            : a list of int[] corresponding to feasible tuples
@@ -4184,7 +4147,7 @@ public class CPSolver implements Solver {
 	/**
 	 * Create a constraint enforcing Forward Checking on a given consistency
 	 * relation
-	 * 
+	 *
 	 * @param vs
 	 * @param rela
 	 */
@@ -4204,7 +4167,7 @@ public class CPSolver implements Solver {
 	 * relation. The GAC algorithm depends on the kind of relation : -
 	 * IterIndexedLargeRelation is used in GAC3rm with allowed tuples -
 	 * Otherwise a GAC3rm in valid tuples will be used
-	 * 
+	 *
 	 * @param vs
 	 * @param rela
 	 */
@@ -4217,7 +4180,7 @@ public class CPSolver implements Solver {
 	 * relation. The GAC algorithm depends on the kind of relation and the ac
 	 * algorithm : - IterIndexedLargeRelation is used in GAC3rm with allowed
 	 * tuples - Otherwise a GAC3rm in valid tuples will be used
-	 * 
+	 *
 	 * @param vs
 	 * @param rela
 	 */

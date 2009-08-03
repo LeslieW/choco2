@@ -37,7 +37,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * @since 7 déc. 2008 version 2.0.1</br>
  * @version 2.0.1</br>
  */
-public class PackDynRemovals extends AssignVar {
+public final class PackDynRemovals extends AssignVar {
 
 	public final PrimalDualPack pack;
 
@@ -63,7 +63,7 @@ public class PackDynRemovals extends AssignVar {
         }
 	}
 	public final void fail() throws ContradictionException {
-		manager.solver.getPropagationEngine().raiseContradiction(this, ContradictionException.UNKNOWN);
+		getManager().solver.getPropagationEngine().raiseContradiction(this, ContradictionException.UNKNOWN);
 	}
 
 	public void removeEquivalentBins(IntDomainVar bin,int bup) throws ContradictionException {

@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -24,10 +24,8 @@ package choco.cp.solver.search.real;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.AbstractIntBranching;
-import choco.kernel.solver.branch.IntBranching;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.real.RealVarSelector;
-import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.real.RealMath;
 import choco.kernel.solver.variables.real.RealVar;
 
@@ -35,10 +33,10 @@ import choco.kernel.solver.variables.real.RealVar;
  * A binary branching assigning interval to subinterval.
  */
 
-public class AssignInterval extends AbstractIntBranching {
+public final class AssignInterval extends AbstractIntBranching{
 	protected RealVarSelector varSelector;
 	protected ValIterator valIterator;
-	protected final String[] LOG_DECISION_MSG = new String[]{"in first half of", "in second half of"};
+	private final static String[] LOG_DECISION_MSG = new String[]{"in first half of", "in second half of", "??"};
 
 	public AssignInterval(RealVarSelector varSelector, ValIterator valIterator) {
 		this.varSelector = varSelector;
@@ -49,69 +47,21 @@ public class AssignInterval extends AbstractIntBranching {
 		return varSelector.selectRealVar();
 	}
 
-	/*
-	 * @deprecated replaced by the management incremental search (with a stack of BranchingTrace storing the
-	 *             environment (local variables) associated to each choice point
-	 */
-	/*public boolean branchOn(Object x, int n) throws ContradictionException {
-    AbstractGlobalSearchStrategy algo = manager;
-    AbstractModel pb = algo.model;
-    boolean nodeSuccess = false;
-    boolean nodeFinished = false;
-    int i = getFirstBranch(x);
-    algo.newTreeNode();
-    try {
-      do {
-        boolean branchSuccess = false;
-        try {
-          //pb.getPropagationEngine().checkCleanState();
-          pb.getEnvironment().worldPush();
-          goDownBranch(x, i);
-          if (explore(n + 1)) {
-            branchSuccess = true;
-          }
-        } catch (ContradictionException e) {
-          ;
-        }
-        if (!branchSuccess) {
-          pb.worldPop();
-        }
-        algo.endTreeNode();
-        algo.postDynamicCut();
-        goUpBranch(x, i);
-        if (branchSuccess) {
-          nodeSuccess = true;
-        }
-        if (!finishedBranching(x, i)) {
-          i = getNextBranch(x, i);
-        } else {
-          nodeFinished = true;
-        }
-      } while (!nodeSuccess && !nodeFinished);
-    } catch (ContradictionException e) {
-      nodeSuccess = false;
-    }
-    return nodeSuccess;
-  }*/
-
 	@Override
 	public void goDownBranch(Object x, int i) throws ContradictionException {
-		super.goDownBranch(x, i);
 		if (i == 1) {
 			((RealVar) x).intersect(RealMath.firstHalf((RealVar) x));
-			manager.solver.propagate();
+			getManager().solver.propagate();
 		} else if (i == 2) {
 			((RealVar) x).intersect(RealMath.secondHalf((RealVar) x));
-			manager.solver.propagate();
+			getManager().solver.propagate();
 		} else {
 			LOGGER.severe("!! Not a valid value for AssignInterval branching !!");
 		}
 	}
 
 	@Override
-	public void goUpBranch(Object x, int i) throws ContradictionException {
-		super.goUpBranch(x, i);
-	}
+	public void goUpBranch(Object x, int i) throws ContradictionException {}
 
 	public int getFirstBranch(Object x) {
 		return valIterator.getFirstVal((RealVar) x);
@@ -125,23 +75,28 @@ public class AssignInterval extends AbstractIntBranching {
 		return !valIterator.hasNextVal((RealVar) x, i);
 	}
 
-
-
-	@Override
-	protected Object getValueLogParameter(Object x, int branch) {
-		return ( (RealVar) x).getDomain().pretty();
-	}
-
-	@Override
-	protected Object getVariableLogParameter(Object x) {
-		return ((Var) x).getName();
-	}
-
-	@Override
-	public String getDecisionLogMsg(int i) {
-		if (i == 1) return LOG_DECISION_MSG[0];
-		else if (i == 2) return LOG_DECISION_MSG[1];
-		else return "";
-	}
-
+    /**
+     * used for logging messages related to the search tree
+     *
+     * @param branchObject is the object of the branching
+     * @param branchIndex  is the index of the branching
+     * @return an string that will be printed between the branching object and the branch index
+     *         Suggested implementations return LOG_DECISION_MSG[0] or LOG_DECISION_MSG[branchIndex]
+     */
+    @Override
+    public String getDecisionLogMsg(Object branchObject, int branchIndex) {
+        StringBuffer st = new StringBuffer();
+        RealVar v = (RealVar)branchObject;
+        st.append(v.getName());
+        switch(branchIndex){
+            case 1:
+                st.append(LOG_DECISION_MSG[0]);
+            case 2:
+                st.append(LOG_DECISION_MSG[1]);
+            default:
+                st.append(LOG_DECISION_MSG[2]);
+        }
+        st.append(v.getDomain().pretty());
+        return st.toString();
+    }
 }

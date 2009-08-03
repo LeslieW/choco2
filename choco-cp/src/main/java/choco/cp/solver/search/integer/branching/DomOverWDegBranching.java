@@ -328,13 +328,11 @@ public class DomOverWDegBranching extends AbstractLargeIntBranching implements P
 	}
 
 	public void goDownBranch(Object x, int i) throws ContradictionException {
-		super.goDownBranch(x, i);
         IntDomainVar v = (IntDomainVar) x;
         v.setVal(i);
 	}
 
 	public void goUpBranch(Object x, int i) throws ContradictionException {
-		super.goUpBranch(x, i);
 		//IntDomainVar v = (IntDomainVar) x;
 		//v.remVal(i);     // On le retire !! mais attention pas de selector pour les variables du coup !!!!
 	}

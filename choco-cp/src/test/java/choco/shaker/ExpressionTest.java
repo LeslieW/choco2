@@ -33,7 +33,7 @@ import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.integer.IntVar;
 import choco.shaker.tools.factory.CPModelFactory;
 import choco.shaker.tools.factory.VariableFactory;
 import org.junit.*;
@@ -196,7 +196,6 @@ public class ExpressionTest {
         vars[0] = Choco.makeIntVar("v1", 1,3);
         vars[1] = Choco.makeIntVar("v2", 2,2);
         vars[2] = Choco.makeIntVar("v3", 1,2);
-
         m.addConstraint(gt(
                     plus(ifThenElse(leq(vars[2],vars[0]),constant(2),vars[0]),
                             scalar(new int[]{7,7}, new IntegerVariable[]{vars[1], vars[2]})),
@@ -754,7 +753,7 @@ public class ExpressionTest {
                 if(print){
                     st = new StringBuffer();
                     for (int i = 0; i < 4; i++) {
-                        IntDomainVar v = ((IntDomainVar) decomposedSolver.getIntVar(i));
+                        IntVar v = decomposedSolver.getIntVar(i);
                         st.append(v.getName()).append(":").append(v.getVal()).append(" ");
                     }
                     LOGGER.info(st.toString());
@@ -773,7 +772,7 @@ public class ExpressionTest {
                     Assert.assertEquals("undecomposedSolver.isSatisfied()",Boolean.TRUE, undecomposedSolver.checkSolution(false));
                     st = new StringBuffer();
                     for (int i = 0; i < undecomposedSolver.getNbIntVars(); i++) {
-                        IntDomainVar v = ((IntDomainVar) undecomposedSolver.getIntVar(i));
+                        IntVar v = undecomposedSolver.getIntVar(i);
                         st.append(v.getName()).append(":").append(v.getVal()).append(" ");
                     }
                     LOGGER.info(st.toString());

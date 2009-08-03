@@ -3282,6 +3282,14 @@ public class Choco{
 		return new IntegerExpressionVariable(null, Operator.DIV, n1, n2);
 	}
 
+    public static IntegerExpressionVariable div(IntegerExpressionVariable n1, int n2) {
+		return new IntegerExpressionVariable(null, Operator.DIV, n1, constant(n2));
+	}
+
+    public static IntegerExpressionVariable div(int n1, IntegerExpressionVariable n2) {
+		return new IntegerExpressionVariable(null, Operator.DIV, constant(n1), n2);
+	}
+
 	public static IntegerExpressionVariable max(IntegerExpressionVariable n1, IntegerExpressionVariable n2) {
 		return new IntegerExpressionVariable(null, Operator.MAX, n1, n2);
 	}

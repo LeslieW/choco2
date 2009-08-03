@@ -138,7 +138,7 @@ public final class Tracer implements IObserver {
 		try {
 			Thread.sleep(this.breaklength);
 		} catch (InterruptedException e) {
-
+            // nothing to do
 		}
 	}
 }

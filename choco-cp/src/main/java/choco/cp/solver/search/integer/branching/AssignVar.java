@@ -22,12 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.branching;
 
-import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.search.integer.varselector.DomOverWDeg;
+import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.branch.AbstractLargeIntBranching;
 import choco.kernel.solver.branch.VarSelector;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -57,25 +57,24 @@ public class AssignVar extends AbstractLargeIntBranching {
    *
    * @return the object on which an alternative will be set (often  a variable)
    */
-  public Object selectBranchingObject() throws ContradictionException {
+  public final Object selectBranchingObject() throws ContradictionException {
     return varHeuristic.selectVar();
   }
 
-  public boolean finishedBranching(Object x, int i) {
+  public final boolean finishedBranching(Object x, int i) {
     return wrapper.finishedBranching(x, i);
   }
 
-  public int getFirstBranch(Object x) {
+  public final int getFirstBranch(Object x) {
     return wrapper.getFirstBranch(x);
   }
 
-  public int getNextBranch(Object x, int i) {
+  public final int getNextBranch(Object x, int i) {
     return wrapper.getNextBranch(x, i);
   }
 
   @Override
-public void goDownBranch(Object x, int i) throws ContradictionException {
-    super.goDownBranch(x, i);
+public final void goDownBranch(Object x, int i) throws ContradictionException {
     IntDomainVarImpl y = (IntDomainVarImpl) x;
     y.setVal(i);
     //manager.model.propagate();
@@ -83,7 +82,6 @@ public void goDownBranch(Object x, int i) throws ContradictionException {
 
   @Override
 public void goUpBranch(Object x, int i) throws ContradictionException {
-    super.goUpBranch(x, i);
     IntDomainVarImpl y = (IntDomainVarImpl) x;
     y.remVal(i);
     //manager.model.propagate();
@@ -97,7 +95,7 @@ public void goUpBranch(Object x, int i) throws ContradictionException {
     public int getNextBranch(Object x, int i);
   }
 
-  protected class ValIteratorWrapper implements ValueChooserWrapper {
+  protected final class ValIteratorWrapper implements ValueChooserWrapper {
     public boolean finishedBranching(Object x, int i) {
       return (!valHeuristic.hasNextVal((IntDomainVar) x, i));
     }
@@ -111,7 +109,7 @@ public void goUpBranch(Object x, int i) throws ContradictionException {
     }
   }
 
-  protected class ValSelectorWrapper implements ValueChooserWrapper {
+  protected final class ValSelectorWrapper implements ValueChooserWrapper {
     public boolean finishedBranching(Object x, int i) {
       return ((IntDomainVar) x).getDomainSize() == 0;
     }
@@ -125,7 +123,7 @@ public void goUpBranch(Object x, int i) throws ContradictionException {
     }
   }
 
-  public void initConstraintForBranching(SConstraint c) {
+  public final void initConstraintForBranching(SConstraint c) {
     if (varHeuristic instanceof DomOverWDeg) {
         ((DomOverWDeg) varHeuristic).initConstraintForBranching(c);
     }

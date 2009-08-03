@@ -109,7 +109,7 @@ public final class NodeBrick extends AChocoBrick {
         //Not used
     }
 
-    private final CParticle addNode() {
+    private CParticle addNode() {
         final CParticle p = new CParticle();
         p.particle = ((TreeSearchPApplet) chopapplet).physics.makeParticle();
         p.particle.setMass(1);
@@ -123,7 +123,7 @@ public final class NodeBrick extends AChocoBrick {
         return p;
     }
 
-    public final void addSpacersToNode(final CParticle p, final CParticle r) {
+    private void addSpacersToNode(final CParticle p, final CParticle r) {
         for (int i = 0; i < ((TreeSearchPApplet) chopapplet).physics.numberOfParticles(); ++i) {
             Particle q = ((TreeSearchPApplet) chopapplet).physics.getParticle(i);
             if (p.particle != q && p.particle != r.particle)
@@ -132,12 +132,12 @@ public final class NodeBrick extends AChocoBrick {
         }
     }
 
-    public final void makeEdgeBetween(final CParticle a, final CParticle b) {
+    private void makeEdgeBetween(final CParticle a, final CParticle b) {
         ((TreeSearchPApplet) chopapplet).physics.makeSpring(a.particle, b.particle, ((TreeSearchPApplet) chopapplet).EDGE_STRENGTH,
                 ((TreeSearchPApplet) chopapplet).EDGE_STRENGTH, ((TreeSearchPApplet) chopapplet).EDGE_LENGTH);
     }
 
-    public final static CParticle createParticle(){
+    public static CParticle createParticle(){
         return new CParticle();
     }
 

@@ -22,14 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search;
 
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.DOWN_BRANCH;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.INIT_SEARCH;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.OPEN_NODE;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.RESTART;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.STOP;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.UP_BRANCH;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.*;
 import choco.kernel.solver.search.ISearchLoop;
 
 
@@ -99,7 +94,7 @@ public abstract class AbstractSearchLoop implements ISearchLoop {
 		return depthCount;
 	}
 
-	
+
 	@Override
 	public void initialize() {
 		nodeCount = 0;

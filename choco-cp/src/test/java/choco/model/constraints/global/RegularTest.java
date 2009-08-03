@@ -36,7 +36,6 @@ import choco.kernel.model.constraints.automaton.DFA;
 import choco.kernel.model.constraints.automaton.Transition;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.*;
 import static org.junit.Assert.assertEquals;
 
@@ -722,13 +721,12 @@ public class RegularTest {
                     int port = 0;
                     LOGGER.info("------------Solution---------");
                     for (int i = 0; i < s.getNbIntVars(); i++) {
-                        int valPort = ((IntDomainVar) s.getIntVar(i))
-                                .getVal();
+                        int valPort = s.getIntVar(i).getVal();
                         double mult = Math.pow(10, s.getNbIntVars()
                                 - 1 - i);
                         port += valPort * mult;
                         LOGGER.severe("au tour " + tour + " port = " + port + ", valPort = " + valPort + ", mult =" + mult);
-                        LOGGER.info("" + s.getIntVar(i) + " = " + ((IntDomainVar) (s.getIntVar(i))).getVal());
+                        LOGGER.info("" + s.getIntVar(i) + " = " + s.getIntVar(i).getVal());
                     }
                     tour++;
                 } while (s.nextSolution() == Boolean.TRUE && tour < longueur);

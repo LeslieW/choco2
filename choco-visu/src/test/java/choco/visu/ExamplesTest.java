@@ -68,13 +68,13 @@ public class ExamplesTest {
     public static void main(String[] args){
         ExamplesTest e = new ExamplesTest();
         e.checkEnvironment();
-        e.donaldGeraldRobert();
+//        e.donaldGeraldRobert();
 //        e.knapsack();
 //        e.magicSquare();
 //        e.queens();
 //        e.sudokuAdvanced();
 //        e.usa();
-//        e.testPicross();
+        e.testPicross();
     }
 
 
@@ -377,6 +377,7 @@ public class ExamplesTest {
         m.addConstraint(neq(etats[states.get("AZ")], etats[states.get("NM")]));
 
         m.addConstraint(neq(etats[states.get("MT")], etats[states.get("WY")]));
+        m.addConstraint(neq(etats[states.get("MT")], etats[states.get("ND")]));
         m.addConstraint(neq(etats[states.get("MT")], etats[states.get("SD")]));
 
         m.addConstraint(neq(etats[states.get("AZ")], etats[states.get("ND")]));
@@ -402,6 +403,7 @@ public class ExamplesTest {
         m.addConstraint(neq(etats[states.get("SD")], etats[states.get("NE")]));
 
         m.addConstraint(neq(etats[states.get("NE")], etats[states.get("MO")]));
+        m.addConstraint(neq(etats[states.get("NE")], etats[states.get("IA")]));
         m.addConstraint(neq(etats[states.get("NE")], etats[states.get("KS")]));
 
         m.addConstraint(neq(etats[states.get("KS")], etats[states.get("MO")]));
@@ -591,46 +593,63 @@ public class ExamplesTest {
     @Test
     public void testPicross() {
         Solver s = new CPSolver();
+
+        int[][] cols = new int[][]{
+                {2, 2},
+                {2, 4},
+                {1, 2, 2},
+                {2, 1, 1, 2},
+                {1, 1, 1, 3, 1},
+                {2, 1, 2, 1, 5, 1, 1},
+                {1, 2, 2, 8, 1, 1},
+                {2, 2, 3, 6, 1, 1},
+                {2, 12, 1, 1},
+                {2, 10, 1},
+                {9, 5, 2},
+                {4, 2},
+                {3, 2, 8},
+                {3, 2, 1, 2},
+                {3, 3, 1, 5},
+                {2, 4, 1, 1, 2},
+                {2, 2, 1, 1, 1},
+                {1, 1, 4, 2, 2, 2},
+                {1, 1, 1, 2, 3},
+                {3, 2, 1},
+                {4, 3},
+                {8},
+                {5}
+        };
         int[][] rows = new int[][]
                 {
-                        {1, 2},
-                        {3, 2, 1},
-                        {1, 2, 1, 4, 1},
-                        {1, 2, 2, 2, 1},
-                        {1, 3, 2},
-                        {2, 3, 2},
-                        {10},
-                        {5, 4, 2},
-                        {1, 2, 2, 1, 4},
-                        {2, 3, 1},
-                        {1, 2, 2, 1},
-                        {1, 5, 2},
-                        {2, 3, 1, 1},
-                        {4, 1, 1, 1},
-                        {1, 3}
+                        {0},
+                        {3, 2},
+                        {1, 2, 3, 4},
+                        {1, 2, 3, 3},
+                        {4, 2, 2, 6},
+                        {2, 1, 1, 2, 3},
+                        {5, 2, 1, 2, 3, 2},
+                        {2, 2, 1, 1, 2, 1, 1, 2},
+                        {1, 3, 1, 3, 2, 3},
+                        {2, 1, 2, 7},
+                        {9, 1, 2, 2},
+                        {2, 1, 3},
+                        {1, 8},
+                        {1, 6, 7},
+                        {2, 9, 2},
+                        {1, 10, 1},
+                        {6, 3, 2},
+                        {1, 5, 1, 1, 2},
+                        {2, 2, 1, 1},
+                        {7, 2, 1},
+                        {2, 2, 1},
+                        {6, 3},
+                        {0}
                 };
 
-        int[][] cols = new int[][]
-                {
-                        {3, 1},
-                        {1, 1, 1, 4},
-                        {1, 1, 3, 2},
-                        {2, 5, 1},
-                        {1, 2, 2, 1},
-                        {1, 3, 2},
-                        {4, 1, 2, 2, 1},
-                        {2, 4, 5},
-                        {10},
-                        {2, 3, 2},
-                        {2, 3, 1},
-                        {1, 2, 2, 2, 1},
-                        {1, 4, 1, 2, 1},
-                        {1, 2, 3},
-                        {2, 1}
-                };
+
         Picross p = new Picross(rows, cols, s);
 
-        Visu v = Visu.createVisu(220, 250);
+        Visu v = Visu.createFullVisu();
         Variable[] vars = ArrayUtils.append(p.myvars);
         v.addPanel(new VarChocoPanel("Picross", vars, PicrossPApplet.class, new int[]{rows.length, cols.length}));
         s.setFirstSolution(true);
