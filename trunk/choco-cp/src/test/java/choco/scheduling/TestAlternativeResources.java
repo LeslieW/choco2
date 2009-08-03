@@ -26,6 +26,7 @@ import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -326,6 +327,7 @@ public class TestAlternativeResources {
 
 	@Test
 	public void CosmicTest() {
+		
 		int maxDuration = 28;
 		CPModel model = new CPModel();
 
@@ -350,18 +352,16 @@ public class TestAlternativeResources {
 		model.addConstraint(Choco.disjunctive( new TaskVariable[]{JobA, JobB, JobC}, 
 				new IntegerVariable[] {JobA_Res2, JobB_Res2, JobC_Res2})) ; 
 
+		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
 		CPSolver solver = new CPSolver();
 		solver.setHorizon(maxDuration);
 		solver.read(model);
 
 		solver.setDoMaximize(false);
 		solver.setObjective(solver.getMakespan());
-		solver.setRestart(true);
+		solver.setRestart(false);
 		solver.setFirstSolution(false);
-		solver.setTimeLimit(5000);
-		
 		solver.solveAll();
-		System.out.println(solver.solutionToString());
 	}
 
 }
