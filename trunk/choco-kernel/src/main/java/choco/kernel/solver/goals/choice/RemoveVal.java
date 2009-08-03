@@ -23,14 +23,14 @@
 package choco.kernel.solver.goals.choice;
 
 
-import java.util.logging.Level;
-
 import choco.kernel.common.logging.WorldFormatter;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.branch.AbstractBranching;
+import choco.kernel.solver.branch.LogIntBranching;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.logging.Level;
 
 /**
  * Created by IntelliJ IDEA.
@@ -39,7 +39,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Time: 10:24:06
  * To change this template use File | Settings | File Templates.
  */
-public class RemoveVal implements Goal {
+public final class RemoveVal implements Goal {
  
   protected IntDomainVar var;
   protected int val;
@@ -57,7 +57,7 @@ public class RemoveVal implements Goal {
     if (LOGGER.isLoggable(Level.INFO)) {
     	final WorldFormatter wl = new WorldFormatter(s);
 		if ( wl.isLoggable(s)) {
-		    LOGGER.log(Level.INFO, "{0} {1} {2} {3} {4}", new Object[]{wl, AbstractBranching.LOG_DOWN_MSG, var, " != ", val});
+		    LOGGER.log(Level.INFO, "{0} {1} {2} {3} {4}", new Object[]{wl, LogIntBranching.LOG_DOWN_MSG, var, " != ", val});
 		  }
 		}
     var.remVal(val);

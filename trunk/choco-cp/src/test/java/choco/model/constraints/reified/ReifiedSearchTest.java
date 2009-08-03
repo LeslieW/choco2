@@ -27,12 +27,11 @@ import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
-import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
-import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
-import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
+import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
+import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -40,12 +39,12 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import static org.junit.Assert.assertEquals;
 import org.junit.*;
+import static org.junit.Assert.assertEquals;
 
 import static java.text.MessageFormat.format;
-import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * J-CHOCO
@@ -1066,7 +1065,7 @@ public class ReifiedSearchTest {
 				StringBuffer st = new StringBuffer();
 				for(int i =0; i < s1.getNbIntVars(); i++){
 					st.append(s1.getIntVar(i).getName()).append(":")
-					.append(((IntDomainVar)s1.getIntVar(i)).getVal())
+					.append(s1.getIntVar(i).getVal())
 					.append(" ");
 				}
 				//                    st.append(s1.getVar(bo)).append(" - ");
@@ -1097,7 +1096,7 @@ public class ReifiedSearchTest {
 				StringBuffer st = new StringBuffer();
 				for(int i =0; i < s2.getNbIntVars(); i++){
 					st.append(s2.getIntVar(i).getName()).append(":")
-					.append(((IntDomainVar)s2.getIntVar(i)).getVal())
+					.append(s2.getIntVar(i).getVal())
 					.append(" ");
 				}
 
@@ -1140,7 +1139,7 @@ public class ReifiedSearchTest {
 				StringBuffer st = new StringBuffer();
 				for(int i =0; i < s1.getNbIntVars(); i++){
 					st.append(s1.getIntVar(i).getName()).append(":")
-					.append(((IntDomainVar)s1.getIntVar(i)).getVal())
+					.append(s1.getIntVar(i).getVal())
 					.append(" ");
 				}
 				//                    st.append(s1.getVar(X).getVal()).append(" de : {");
@@ -1178,7 +1177,7 @@ public class ReifiedSearchTest {
 				StringBuffer st = new StringBuffer();
 				for(int i =0; i < s1.getNbIntVars(); i++){
 					st.append(s1.getIntVar(i).getName()).append(":")
-					.append(((IntDomainVar)s1.getIntVar(i)).getVal())
+					.append(s1.getIntVar(i).getVal())
 					.append(" ");
 				}
 				//                    st.append(s1.getVar(bo)).append(" - ");
@@ -1209,7 +1208,7 @@ public class ReifiedSearchTest {
 				StringBuffer st = new StringBuffer();
 				for(int i =0; i < s2.getNbIntVars(); i++){
 					st.append(s2.getIntVar(i).getName()).append(":")
-					.append(((IntDomainVar)s2.getIntVar(i)).getVal())
+					.append(s2.getIntVar(i).getVal())
 					.append(" ");
 				}
 
@@ -1253,7 +1252,7 @@ public class ReifiedSearchTest {
 				StringBuffer st = new StringBuffer();
 				for(int i =0; i < s1.getNbIntVars(); i++){
 					st.append(s1.getIntVar(i).getName()).append(":")
-					.append(((IntDomainVar)s1.getIntVar(i)).getVal())
+					.append(s1.getIntVar(i).getVal())
 					.append(" ");
 				}
 				//                    st.append(s1.getVar(bo)).append(" - ");
@@ -1284,7 +1283,7 @@ public class ReifiedSearchTest {
 				StringBuffer st = new StringBuffer();
 				for(int i =0; i < s2.getNbIntVars(); i++){
 					st.append(s2.getIntVar(i).getName()).append(":")
-					.append(((IntDomainVar)s2.getIntVar(i)).getVal())
+					.append(s2.getIntVar(i).getVal())
 					.append(" ");
 				}
 

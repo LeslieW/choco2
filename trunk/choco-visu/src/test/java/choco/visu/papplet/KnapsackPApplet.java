@@ -110,6 +110,6 @@ public class KnapsackPApplet extends AChocoPApplet{
      * @return
      */
     public Dimension getDimension() {
-        return new Dimension(100, 40);
+        return new Dimension(200, 150);
     }
 }

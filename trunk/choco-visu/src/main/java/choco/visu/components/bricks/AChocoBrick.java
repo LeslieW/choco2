@@ -158,6 +158,29 @@ public abstract class AChocoBrick implements IChocoBrick {
         }
     }
 
+    /**
+     * Returns the y coordinate where a text has to be write.
+     * It depends on the policy, the lenght of the text to print and the original y.
+     * @param y
+     * @param length
+     * @return
+     */
+    protected final float alignText(final float y, final float length){
+        //x and y represent the coordinates of the middle point of the case
+        // we have now to considere the lenght of the value to put inside.
+        // we consider the size of a character as 6 px
+        switch (policy){
+            case CENTER:
+                return  y - (length/2)*6;
+            case LEFT:
+                return y;
+            case RIGHT:
+                return  y + length*6;
+            default:
+                return y;
+        }
+    }
+
 
     /**
      * Return a string that represents the instantiated values of {@code Var}.

@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -36,6 +36,8 @@ import choco.kernel.solver.variables.set.SetVar;
 
 public abstract class AbstractSetBranching extends AbstractIntBranching {
 
+    final static String[] LOG_DECISION_MSG = new String[]{"contains ", "contains not ", "??"};
+
 	public int getNextBranch(Object x, int i) {
 		if (i == 1) {
 			return 2;
@@ -50,16 +52,16 @@ public abstract class AbstractSetBranching extends AbstractIntBranching {
 
 	@Override
 	public void goDownBranch(Object x, int numBranch) throws ContradictionException {
-		super.goDownBranch(x,numBranch);
 		Object[] xx = (Object[]) x;
 		SetVar var = (SetVar) xx[0];
-		int val = ((Integer) xx[1]).intValue();
+		int val = (Integer) xx[1];
 		if (numBranch == 1) {
 			var.setValIn(val);
-			manager.solver.propagate();
+			getManager().solver.propagate();
 		} else if (numBranch == 2) {
 			var.setValOut(val);
-			manager.solver.propagate();
+			getManager()
+                    .solver.propagate();
 		}
 	}
 
@@ -69,82 +71,39 @@ public abstract class AbstractSetBranching extends AbstractIntBranching {
 	 * @see choco.kernel.solver.branch.AbstractIntBranching#goUpBranch(java.lang.Object, int)
 	 */
 	@Override
-	public void goUpBranch(Object x, int i) throws ContradictionException {
-		super.goUpBranch(x, i);
-	}
+	public void goUpBranch(Object x, int i) throws ContradictionException {}
 
+//	public void goUpBranch(Object x, int i, int numBranch) throws ContradictionException {
+//		this.goUpBranch(x, numBranch);
+//	}
 
-	public void goUpBranch(Object x, int i, int numBranch) throws ContradictionException {
-		this.goUpBranch(x, numBranch);
-
-	}
-	
-	
-	@Override
-	protected final String getLogMessage() {
-		return getLogMessageWithBranch();
-	}
-
-	@Override
-	protected Object getValueLogParameter(Object x, int branch) {
-		return ((Object[]) x)[1];
-	}
-
-	@Override
-	protected Object getVariableLogParameter(Object x) {
-		return ((Object[]) x)[0];
-	}
-
-	@Override
-	public int getFirstBranch(Object x) {
-		return 0;
-	}
-
-
-
-	/*
-	 * @deprecated replaced by the management incremental search (with a stack of BranchingTrace storing the
-	 *             environment (local variables) associated to each choice point
-	 */
-	/*public boolean branchOn(Object x, int n) throws ContradictionException {
-    AbstractGlobalSearchStrategy algo = manager;
-    AbstractModel pb = algo.model;
-    boolean nodeSuccess = false;
-    boolean nodeFinished = false;
-    int numBranch = getFirstBranch(x);
-    algo.newTreeNode();
-    try {
-      do {
-        boolean branchSuccess = false;
-        try {
-          //pb.getPropagationEngine().checkCleanState();
-          pb.getEnvironment().worldPush();
-          goDownBranch(x, numBranch);
-          if (explore(n + 1)) {
-            branchSuccess = true;
-          }
-        } catch (ContradictionException e) {
-          ;
+    /**
+     * used for logging messages related to the search tree
+     *
+     * @param branchObject is the object of the branching
+     * @param branchIndex  is the index of the branching
+     * @return an string that will be printed between the branching object and the branch index
+     *         Suggested implementations return LOG_DECISION_MSG[0] or LOG_DECISION_MSG[branchIndex]
+     */
+    @Override
+    public String getDecisionLogMsg(Object branchObject, int branchIndex) {
+        StringBuffer st = new StringBuffer();
+        Object[] o = (Object[])branchObject;
+        st.append(o[0]);
+        switch(branchIndex){
+            case 1:
+                st.append(LOG_DECISION_MSG[0]);
+            case 2:
+                st.append(LOG_DECISION_MSG[1]);
+            default:
+                st.append(LOG_DECISION_MSG[2]);
         }
-        if (!branchSuccess) {
-          pb.worldPop();
-        }
-        algo.endTreeNode();
-        algo.postDynamicCut();
-        goUpBranch(x, numBranch);
-        if (branchSuccess) {
-          nodeSuccess = true;
-        }
-        if (numBranch == 1) {
-          numBranch = 2;
-        } else {
-          nodeFinished = true;
-        }
-      } while (!nodeSuccess && !nodeFinished);
-    } catch (ContradictionException e) {
-      nodeSuccess = false;
+        st.append(o[1]);
+        return st.toString();
     }
-    return nodeSuccess;
-  }*/
 
+    @Override
+	protected final String getLogMessage() {
+		return LOG_MSG_FORMAT_WITH_BRANCH;
+	}
 }

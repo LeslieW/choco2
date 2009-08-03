@@ -22,15 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search;
 
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.INIT_SEARCH;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.OPEN_NODE;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.RESTART;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.UP_BRANCH;
 import choco.cp.solver.search.restart.IKickRestart;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.AbstractBranching;
 import choco.kernel.solver.branch.AbstractIntBranching;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.*;
 import choco.kernel.solver.search.IntBranchingTrace;
 
 
@@ -43,9 +40,9 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 	//So we have to check the combinatin of DWDeg an a restart strategy.
 	private int moveAfterRestart=  INIT_SEARCH;
 
-	protected int previousNbSolutions;
+	private int previousNbSolutions;
 
-	protected IKickRestart kickRestart;
+	private IKickRestart kickRestart;
 
 	/**
 	 * current trace object. 
@@ -286,13 +283,5 @@ public void restart() {
 		stop = true;
 	}
 }
-
-
-
-
-
-
-
-
 
 }

@@ -36,11 +36,10 @@ import choco.kernel.solver.variables.set.SetVar;
 // *     for Research and Education                 *
 // **************************************************
 
-public class AssignSetVar extends AbstractSetBranching {
+public final class AssignSetVar extends AbstractSetBranching {
 
 	SetVarSelector varselector;
 	SetValSelector valselector;
-	String[] LOG_DECISION_MSG = new String[]{"contains ", "contains not "};
 
 	public AssignSetVar(SetVarSelector varselect, SetValSelector valselect) {
 		varselector = varselect;
@@ -52,17 +51,9 @@ public class AssignSetVar extends AbstractSetBranching {
 		if (x == null) return null;
 		return new Object[]{x, valselector.getBestVal((SetVar) x)};
 	}
-
+                                                                               
 	@Override
 	public int getFirstBranch(Object x) {
 		return 1;
 	}
-
-	@Override
-	public String getDecisionLogMsg(int i) {
-		if (i == 1) return LOG_DECISION_MSG[0];
-		else if (i == 2) return LOG_DECISION_MSG[1];
-		else return "";
-	}
-
 }

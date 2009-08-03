@@ -25,6 +25,7 @@ package choco.visu.searchloop;
 import choco.IObserver;
 import choco.cp.solver.search.AbstractSearchLoop;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import static choco.visu.searchloop.State.*;
 
 import java.util.Vector;
 import java.util.logging.Level;
@@ -41,7 +42,7 @@ public class ObservableStepSearchLoop extends AbstractSearchLoop implements IObs
 	private Step action = Step.PAUSE; // 0: pause; 1: next; 2: play
 
 	//for tree search vizualisation
-	public State state;
+	public State state = NONE;
 
 	public ObservableStepSearchLoop(AbstractGlobalSearchStrategy searchStrategy) {
 		super(searchStrategy);
@@ -55,7 +56,7 @@ public class ObservableStepSearchLoop extends AbstractSearchLoop implements IObs
     }
 
     public final void test() {
-		state = State.NONE;
+		state = NONE;
 		//if action is pause, wait
 		while(action.equals(Step.PAUSE)){
 			/*wait*/
@@ -85,7 +86,7 @@ public class ObservableStepSearchLoop extends AbstractSearchLoop implements IObs
 	@Override
 	public void downBranch() {
         test();
-		state = State.DOWN;
+		state = DOWN;
 		internalSearchLoop.downBranch();
 		notifyObservers(this);
 
@@ -96,7 +97,7 @@ public class ObservableStepSearchLoop extends AbstractSearchLoop implements IObs
 
 	@Override
 	public Boolean endLoop() {
-		state = State.END;
+		state = END;
 		notifyObservers(this);
 		return internalSearchLoop.endLoop();
 	}
@@ -130,7 +131,7 @@ public class ObservableStepSearchLoop extends AbstractSearchLoop implements IObs
 		if(searchStrategy.getSolutionCount() > previousNbSolutions) {
             previousNbSolutions++;
             stop = true;
-			state = State.SOLUTION;
+			state = SOLUTION;
 		}
 		notifyObservers(this);
 		if(action.equals(Step.PAUSE)){
@@ -144,7 +145,7 @@ public class ObservableStepSearchLoop extends AbstractSearchLoop implements IObs
 	@Override
 	public void restart() {
         test();
-		state = State.RESTART;
+		state = RESTART;
 		notifyObservers(this);
 		internalSearchLoop.restart();
 	}
@@ -155,7 +156,7 @@ public class ObservableStepSearchLoop extends AbstractSearchLoop implements IObs
 	@Override
 	public void upBranch() {
         test();
-		state = State.UP;
+		state = UP;
 		internalSearchLoop.upBranch();
         if(searchStrategy.isTraceEmpty()){
             stop = true;

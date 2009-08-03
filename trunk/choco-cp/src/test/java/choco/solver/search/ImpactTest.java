@@ -32,7 +32,6 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
@@ -147,7 +146,7 @@ public class ImpactTest {
         for (int i = 0; i < n; i++) {
             StringBuffer st = new StringBuffer();
             for (int j = 0; j < n; j++) {
-                st.append(MessageFormat.format("{0} ", ((IntDomainVar) s.getIntVar(i * n + j)).getVal()));
+                st.append(MessageFormat.format("{0} ", s.getIntVar(i * n + j).getVal()));
             }
             LOGGER.info(st.toString());
         }
@@ -197,7 +196,7 @@ public class ImpactTest {
         for (int i = 0; i < n; i++) {
             StringBuffer st = new StringBuffer();
             for (int j = 0; j < n; j++) {
-                st.append(MessageFormat.format("{0} ", ((IntDomainVar) s.getIntVar(i * n + j)).getVal()));
+                st.append(MessageFormat.format("{0} ", s.getIntVar(i * n + j).getVal()));
             }
             LOGGER.info(st.toString());
         }
@@ -241,7 +240,7 @@ public class ImpactTest {
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                System.out.print(((IntDomainVar) s.getIntVar(i * n + j)).getVal() + " ");
+                System.out.print(s.getIntVar(i * n + j).getVal() + " ");
             }
             System.out.println("");
         }

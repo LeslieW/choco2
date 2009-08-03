@@ -27,12 +27,13 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.search.integer.IntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.integer.IntVar;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 public class RandomIntVarSelector extends AbstractIntVarSelector implements IntVarSelector {
-  protected ArrayList<IntDomainVar> list = new ArrayList<IntDomainVar>();
+  protected ArrayList<IntVar> list = new ArrayList<IntVar>();
   protected Random random;
 
   /**
@@ -64,18 +65,17 @@ public class RandomIntVarSelector extends AbstractIntVarSelector implements IntV
     // list supposed cleared !
     if (vars == null) {
       for (int i = 0; i < solver.getNbIntVars(); i++) {
-        IntDomainVar v = (IntDomainVar) solver.getIntVar(i);
+        IntVar v = solver.getIntVar(i);
         if (!v.isInstantiated()) {
           list.add(v);
         }
       }
     } else {
-      for (int i = 0; i < vars.length; i++) {
-        IntDomainVar v = vars[i];
-        if (!v.isInstantiated()) {
-          list.add(v);
+        for (IntDomainVar v : vars) {
+            if (!v.isInstantiated()) {
+                list.add(v);
+            }
         }
-      }
     }
     IntDomainVarImpl ret = null;
     if (list.size() > 0) ret = (IntDomainVarImpl) list.get(random.nextInt(list.size()));

@@ -96,6 +96,7 @@ public final class PicrossBrick extends AChocoBrick{
      * Draw the graphic representation of the var associated to the brick
      */
     public final void drawBrick(final int x, final int y, final int width, final int height) {
+        chopapplet.noStroke();
         if(isinstanciated){
                 chopapplet.fill(ColorConstant.BLACK);
             }else{

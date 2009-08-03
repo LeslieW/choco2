@@ -25,7 +25,6 @@ package choco.visu.papplet;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.visu.components.IVisuVariable;
 import choco.visu.brick.PicrossBrick;
-import static choco.visu.components.ColorConstant.BLACK;
 import static choco.visu.components.ColorConstant.WHITE;
 import choco.visu.components.bricks.AChocoBrick;
 import choco.visu.components.papplets.AChocoPApplet;
@@ -68,7 +67,8 @@ import java.util.ArrayList;
 
 public final class PicrossPApplet extends AChocoPApplet{
 
-    private final int size = 5;
+    private static final int SIZE = 15;
+    private static final int MARGE = 20;
     private final int n;
     private final int m;
 
@@ -105,7 +105,7 @@ public final class PicrossPApplet extends AChocoPApplet{
      * @return
      */
     public final Dimension getDimension() {
-        return new Dimension(100, 100);
+        return new Dimension(n * SIZE, m * SIZE);
     }
 
     /**
@@ -113,7 +113,7 @@ public final class PicrossPApplet extends AChocoPApplet{
      * This method is called inside the {@code PApplet#setup()} method.
      */
     public final void build() {
-        size(100, 100);
+        size(n * SIZE, m * SIZE);
         background(WHITE);
         textFont(font);
         noStroke();
@@ -126,12 +126,6 @@ public final class PicrossPApplet extends AChocoPApplet{
      */
     public final void drawBackSide() {
         background(WHITE);
-        for(int x = 0; x < bricks.length; x++){
-            int i = x/n;
-            int j = x%m;
-            stroke(BLACK);
-            rect(20 + (i*size), 20 + (j*size), size, size);
-        }
     }
 
     /**
@@ -143,7 +137,7 @@ public final class PicrossPApplet extends AChocoPApplet{
         for(int x = 0; x < bricks.length; x++){
             int i = x%n;
             int j = x/m;
-            bricks[x].drawBrick(20 + (i*size), 20 + (j*size), size, size);
+            bricks[x].drawBrick(MARGE + (i* SIZE), MARGE + (j* SIZE), SIZE, SIZE);
         }
     }
 }

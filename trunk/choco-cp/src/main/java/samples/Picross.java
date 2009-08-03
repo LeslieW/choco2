@@ -55,6 +55,7 @@ public class Picross extends CPModel {
      * The model variables.
      */
     public IntegerVariable[][] myvars;
+    public IntegerVariable[][] dualmyvars;
 
     /**
      * The width of the nonogram
@@ -113,10 +114,13 @@ public class Picross extends CPModel {
      */
     public void makeVar() {
         myvars = new IntegerVariable[X][Y];
-        for (int i = 0 ; i < X ; i++)
-            for (int j = 0 ; j < Y ; j++)
+        dualmyvars = new IntegerVariable[Y][X];
+        for (int i = 0 ; i < X ; i++){
+            for (int j = 0 ; j < Y ; j++){
                 myvars[i][j] = makeIntVar("var "+i+" "+j+" ",0,1);
-
+                dualmyvars[j][i] = myvars[i][j];
+            }
+        }
     }
 
 
@@ -174,20 +178,14 @@ public class Picross extends CPModel {
 
         Constraint[] cons = new Constraint[X+Y];
 
-        for (int i = 0 ; i < myvars.length ; i++) {
+        for (int i = 0 ; i < X ; i++) {
             cons[i] = regular(dfas[i],myvars[i]);
         }
 
-        for (int i = 0 ; i < myvars[0].length ; i ++) {
-            IntegerVariable [] tmp = new IntegerVariable[Y];
-            for (int j = 0 ; j < Y ; j++) {
-                tmp[j] = myvars[j][i];
-
-            }
-            cons[i+X] = regular(dfas[i+X],tmp);
+        for (int i = 0 ; i < Y ; i++) {
+            cons[i+X] = regular(dfas[i+X],dualmyvars[i]);
         }
-
-
+        
         for (Constraint c : cons)
             this.addConstraint(c);
 
