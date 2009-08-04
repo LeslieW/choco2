@@ -24,6 +24,8 @@ package choco.cp.solver.search.task;
 
 import java.util.Random;
 
+import choco.cp.solver.search.integer.branching.IRandomBreakTies;
+
 public class Centroid implements PrecValSelector, IRandomBreakTies {
 
 	private Random randomBreakTies;

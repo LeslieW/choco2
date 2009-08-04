@@ -49,7 +49,9 @@ import java.util.Random;
 /**
  * WARNING ! This implementation suppose that the variables will not change. It
  * copies all variables in an array at the beginning !!
+ * @deprecated use {@link DomOverWDegBinBranching2} instead.
  */
+@Deprecated
 public class DomOverWDegBinBranching extends AbstractAssignOrForbidBranching {
 	private static final int CONSTRAINT_EXTENSION = AbstractSConstraint
 	.getAbstractSConstraintExtensionNumber("choco.cp.cpsolver.search.integer.varselector.DomOverWDeg");
