@@ -30,6 +30,7 @@ import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import org.junit.After;
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,6 +59,7 @@ public class QueensTest {
 
     @Before
     public void setUp() {
+//        ChocoLogging.setVerbosity(Verbosity.FINEST);
         LOGGER.fine("Queens Testing...");
         m = new CPModel();
         s = new CPSolver();
@@ -74,9 +76,7 @@ public class QueensTest {
         return makeIntVar(name, min, max);
     }
 
-    private void queen0(int n) {
-        LOGGER.finer("n queens, binary model, n=" + n);
-        // create variables
+    private void model(int n){
         queens = new IntegerVariable[n];
         for (int i = 0; i < n; i++) {
             queens[i] = createVar("Q" + i, 1, n);
@@ -90,8 +90,15 @@ public class QueensTest {
                 m.addConstraint(neq(queens[i], minus(queens[j], k)));
             }
         }
+    }
+
+    private void solve(int n){
         s.read(m);
-        s.solve(true);
+        s.read(m);
+        s.solve();
+        do{
+            Assert.assertTrue("Not a solution", s.checkSolution(false));
+        }while(Boolean.TRUE.equals(s.nextSolution()));
         if (n >= 4) {
             if (n <= 13) {
                 assertEquals(Boolean.TRUE, s.isFeasible());
@@ -100,6 +107,12 @@ public class QueensTest {
         } else {
             assertEquals(Boolean.FALSE, s.isFeasible());
         }
+    }
+
+    private void queen0(int n) {
+        LOGGER.finer("n queens, binary model, n=" + n);
+        model(n);
+        solve(n);
     }
 
     @Test

@@ -22,13 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.branching;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -45,6 +38,13 @@ import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.integer.IntVar;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /* History:
  * 2008-04-23 : Creation : dom / wdeg needs to be a branching not just an heuristic to allow to deal with
@@ -332,8 +332,8 @@ public class DomOverWDegBranching extends AbstractLargeIntBranching implements P
 		decision.setIntVal();
 	}
 	public void goUpBranch(final IntBranchingDecision decision) throws ContradictionException {
-		//IntDomainVar v = (IntDomainVar) x;
-		//v.remVal(i);     // On le retire !! mais attention pas de selector pour les variables du coup !!!!
+		IntDomainVar v = (IntDomainVar) x;
+		v.remVal(i);     // On le retire !! mais attention pas de selector pour les variables du coup !!!!
 	}
 	
 	
