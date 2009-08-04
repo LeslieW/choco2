@@ -22,14 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search;
 
-import gnu.trove.TIntStack;
-
-import java.util.Stack;
-
 import choco.cp.solver.search.restart.IKickRestart;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.IntBranchingTrace;
+import gnu.trove.TIntStack;
+
+import java.util.Stack;
 
 
 public class SearchLoopWithRecomputation extends AbstractSearchLoopWithRestart {
@@ -98,14 +97,15 @@ public class SearchLoopWithRecomputation extends AbstractSearchLoopWithRestart {
 		for (int i = lastSavedTraceIndex; i < searchStrategy.getCurrentTraceIndex() ; i++) {
 			ctx = searchStrategy.getTrace(i);
 			ctx.getBranching().goDownBranch(ctx);
+            searchStrategy.solver.propagate();
 		}
 		ctx = searchStrategy.topTrace();
 		LOGGER.finest("backtrack ...");
         int ind = ctxIndices.peek();
         for(int i = ind; i < contexts.size(); i++){
         	ctx.getBranching().goUpBranch(contexts.get(i));
+            searchStrategy.solver.propagate();
         }
-
 		ctx.getBranching().goUpBranch(ctx);
 		LOGGER.finest("continue ...");
 		searchStrategy.solver.propagate();
