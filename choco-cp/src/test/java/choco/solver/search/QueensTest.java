@@ -53,8 +53,8 @@ public class QueensTest {
     public static int nbQueensSolution[] = {0, 0, 0, 0, 2, 10, 4, 40, 92, 352, 724, 2680, 14200, 73712};
     public static final boolean LINKED = false;
     private final static Logger LOGGER = ChocoLogging.getTestLogger();
-    private Model m;
-    private Solver s;
+    public Model m;
+    public Solver s;
     private IntegerVariable[] queens;
 
     @Before
@@ -76,7 +76,7 @@ public class QueensTest {
         return makeIntVar(name, min, max);
     }
 
-    private void model(int n){
+    public void model(int n){
         queens = new IntegerVariable[n];
         for (int i = 0; i < n; i++) {
             queens[i] = createVar("Q" + i, 1, n);
@@ -92,8 +92,7 @@ public class QueensTest {
         }
     }
 
-    private void solve(int n){
-        s.read(m);
+    public void solve(int n){
         s.read(m);
         s.solve();
         do{
@@ -109,7 +108,7 @@ public class QueensTest {
         }
     }
 
-    private void queen0(int n) {
+    public void queen0(int n) {
         LOGGER.finer("n queens, binary model, n=" + n);
         model(n);
         solve(n);
