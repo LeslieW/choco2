@@ -1,0 +1,36 @@
+%\part{feastuplefc}
+\label{feastuplefc}
+\hypertarget{feastuplefc}{}
+
+\section{feasTupleFC (constraint)}\label{feastuplefc:feastuplefcconstraint}\hypertarget{feastuplefc:feastuplefcconstraint}{}
+\begin{notedef}
+  \texttt{feasTupleFC}$(x,feasTuples)$ states an extensional constraint on $(x_1,\ldots,x_n)$ defined by the table $feasTuples$ of compatible tuples of values, and then performs Forward Checking:
+      $$\exists \text{ tuple } i\ |\quad (x_1,\ldots,x_n)=feasTuples[i]$$
+\end{notedef}
+
+
+\begin{itemize}
+	\item \textbf{API} : \mylst{feasTupleFC(List<int[]> tuples, IntegerVariable... x)}
+	\item \textbf{return type}: \texttt{Constraint}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain}: \emph{to complete}
+	\item \textbf{references} :\\
+      global constraint catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Cin_relation.html}{in\_relation}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();
+	IntegerVariable v1 = makeIntVar("v1", 0, 2);
+	IntegerVariable v2 = makeIntVar("v2", 0, 4);
+	
+	ArrayList feasTuple = new ArrayList();
+	feasTuple.add(new int[]{1, 1}); // x*y = 1
+	feasTuple.add(new int[]{2, 4}); // x*y = 1
+	
+	m.addConstraint(feasTupleFC(feasTuple, new IntegerVariable[]{v1, v2}));
+	
+	s.read(m);
+	s.solve();
+\end{lstlisting}

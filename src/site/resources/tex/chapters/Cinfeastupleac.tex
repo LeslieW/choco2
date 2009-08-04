@@ -1,0 +1,46 @@
+%\part{infeastupleac}
+\label{infeastupleac}
+\hypertarget{infeastupleac}{}
+
+\section{infeasTupleAC (constraint)}\label{infeastupleac:infeastupleacconstraint}\hypertarget{infeastupleac:infeastupleacconstraint}{}
+\begin{notedef}
+  \texttt{infeasTupleAC}$(x,feasTuples)$ states an extensional constraint on $(x_1,\ldots,x_n)$ defined by the table $infeasTuples$ of compatible tuples of values, and then enforces arc consistency:
+      $$\forall \text{ tuple } i\ |\quad (x_1,\ldots,x_n)\neq infeasTuples[i]$$
+\end{notedef}
+
+The API is duplicated to define options.
+\begin{itemize}
+	\item \textbf{API} :
+	\begin{itemize}
+		\item \mylst{infeasTupleAC(List<int[]> infeasTuples, IntegerVariable... x)}
+		\item \mylst{infeasTupleAC(String options, List<int[]> infeasTuples, IntegerVariable... x)}
+	\end{itemize}
+	\item \textbf{return type}: \texttt{Constraint}
+	\item \textbf{options} :
+	\begin{itemize}
+		\item \emph{no option}: use AC32 (default arc consistency)
+		\item \texttt{cp:ac32}: to get AC3rm algorithm (maintaining the current support of each value in a non backtrackable way)
+		\item \texttt{cp:ac2001}: to get AC2001 algorithm (maintaining the current support of each value)
+		\item \texttt{cp:ac2008}: to get AC2008 algorithm (maintained by STR)
+	\end{itemize}
+	\item \textbf{favorite domain} : \emph{to complete}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();
+	IntegerVariable x = makeIntVar("x", 1, 5);
+	IntegerVariable y = makeIntVar("y", 1, 5);
+	IntegerVariable z = makeIntVar("z", 1, 5);
+	
+	ArrayList forbiddenTuples = new ArrayList();
+	forbiddenTuples.add(new int[]{1, 1, 1});
+	forbiddenTuples.add(new int[]{2, 2, 2});
+	forbiddenTuples.add(new int[]{2, 5, 3});
+	
+	m.addConstraint(infeasTupleAC(forbiddenTuples, new IntegerVariable[]{x, y, z}));
+	
+	s.read(m);
+	s.solveAll();
+\end{lstlisting}

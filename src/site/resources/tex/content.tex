@@ -1,0 +1,143 @@
+\addcontentsline{toc}{chapter}{Preface}
+\chapter*{Preface}
+Choco is a java library for constraint satisfaction problems (CSP), constraint programming (CP) and explanation-based constraint solving (e-CP). It is built on a event-based propagation mechanism with backtrackable structures.
+Choco is an open-source software, distributed under a \textbf{BSD licence} and hosted by \href{http://sourceforge.net/projects/choco/}{sourceforge.net}.
+For any requests send a mail to \url{choco@emn.fr}.
+\bigskip
+
+\noindent This document is organized as follows:
+\begin{itemize}
+\item \hyperlink{ch:doc}{Documentation} is the user-guide of Choco. After a short \hypertarget{doc:introduction}{introduction} to constraint programming and to the Choco solver, it presents the basics of \hyperlink{doc:model}{modeling} and \hyperlink{doc:solver}{solving} with Choco, the \hyperlink{doc:advanced}{advanced usages} (customizing propagation and search), some examples of \hyperlink{doc:applications}{Applications}, and a \hyperlink{faq:frequentlyaskedquestions}{FAQ} section.
+\item \hyperlink{part:elements}{Elements of Choco} gives a detailed description of the \hyperlink{ch:vars}{variables}, \hyperlink{ch:operators}{operators}, \hyperlink{ch:constraints}{constraints} currently available in Choco.
+\item \hyperlink{ch:tut}{Tutorials} provides a \hyperlink{gettingstarted:gettingstarted:welcometochoco}{fast how-to} write a Choco program, a detailed example of a \hyperlink{gettingstarted:firstexample:magicsquare}{simple program}, and several \hyperlink{exercises}{exercises} with their \hyperlink{solutions}{solutions}.
+\item \hyperlink{ch:extra}{Extras} presents future works, only available on the beta version or extension of the current jar, such as the \hyperlink{chocoandvisu:chocoandvisu}{visualization module of Choco}. The section dedicated to \hyperlink{sudokuandcp:sudokuandconstraintprogramming}{Sudoku} aims at explaining the basic principles of Constraint Programming (propagation and search) on this famous game.
+%\begin{itemize}
+%%	\item \hyperlink{chocoandgraphviz}{Choco and Graphviz} \emph{not yet available. Has been included in \hyperlink{chocoandvisu}{Choco and Visu}.}
+%	\item 
+
+\end{itemize}
+
+\input{chapters/documentation.tex}
+\input{chapters/faq.tex}
+
+%\chapter{Variables}\label{ch:vars}\hypertarget{ch:vars}{}
+%\input{chapters/integervariable.tex}
+%\input{chapters/realvariable.tex}
+%\input{chapters/setvariable.tex}
+
+\part{Elements of Choco}\label{part:elements}\hypertarget{part:elements}{}
+\chapter{Variables (Model)}\label{ch:vars}\hypertarget{ch:vars}{}
+This section describes the three kinds of \hyperlink{model:variables}{variables} that can be used within a Choco Model.
+\input{chapters/integervariable.tex}
+\input{chapters/realvariable.tex}
+\input{chapters/setvariable.tex}
+\chapter{Operators}\label{ch:operators}\hypertarget{ch:operators}{}
+This section lists and details the \hyperlink{model:expressionvariables}{operators} that can be used within a Choco Model to combine variables in expressions.
+\input{chapters/Oabs.tex}
+\input{chapters/Ocos.tex}
+\input{chapters/Odiv.tex}
+\input{chapters/Ofalse.tex}
+\input{chapters/Oifthenelse.tex}
+\input{chapters/Omax.tex}
+\input{chapters/Omin.tex}
+\input{chapters/Ominus.tex}
+\input{chapters/Omod.tex}
+\input{chapters/Omult.tex}
+\input{chapters/Oneg.tex}
+\input{chapters/Oplus.tex}
+\input{chapters/Opower.tex}
+\input{chapters/Oscalar.tex}
+\input{chapters/Osin.tex}
+\input{chapters/Osum.tex}
+\input{chapters/Otrue.tex}
+\chapter{Constraints}\label{ch:constraints}\hypertarget{ch:constraints}{}
+This section lists and details the \hyperlink{model:constraints}{constraints} currently available in Choco.
+\input{chapters/Cabs.tex}
+\input{chapters/Calldifferent.tex}
+\input{chapters/Cand.tex}
+\input{chapters/Catmostnvalue.tex}
+\input{chapters/Cboolchanneling.tex}
+\input{chapters/Ccumulative.tex}
+\input{chapters/Cdisjunctive.tex}
+\input{chapters/Cdistanceeq.tex}
+\input{chapters/Cdistancegt.tex}
+\input{chapters/Cdistancelt.tex}
+\input{chapters/Cdistanceneq.tex}
+\input{chapters/Ceq.tex}
+\input{chapters/Ceqcard.tex}
+\input{chapters/Cequation.tex}
+\input{chapters/Cfalse.tex}
+\input{chapters/Cfeaspairac.tex}
+\input{chapters/Cfeastupleac.tex}
+\input{chapters/Cfeastuplefc.tex}
+\input{chapters/Cgeost.tex}
+\input{chapters/Cgeq.tex}
+\input{chapters/Cgeqcard.tex}
+\input{chapters/Cglobalcardinality.tex}
+\input{chapters/Cgt.tex}
+\input{chapters/Cifonlyif.tex}
+\input{chapters/Cifthenelse.tex}
+\input{chapters/Cimplies.tex}
+\input{chapters/Cinfeaspairac.tex}
+\input{chapters/Cinfeastupleac.tex}
+\input{chapters/Cinfeastuplefc.tex}
+\input{chapters/Cintdiv.tex}
+\input{chapters/Cinversechanneling.tex}
+\input{chapters/Cisincluded.tex}
+\input{chapters/Cisnotincluded.tex}
+\input{chapters/Cleq.tex}
+\input{chapters/Cleqcard.tex}
+\input{chapters/Clex.tex}
+\input{chapters/Clexchain.tex}
+\input{chapters/Clexchaineq.tex}
+\input{chapters/Clexeq.tex}
+\input{chapters/Cleximin.tex}
+\input{chapters/Clt.tex}
+\input{chapters/Cmax.tex}
+\input{chapters/Cmember.tex}
+\input{chapters/Cmin.tex}
+\input{chapters/Cmod.tex}
+\input{chapters/Cmulticostregular.tex}
+\input{chapters/Cneq.tex}
+\input{chapters/Cneqcard.tex}
+\input{chapters/Cnot.tex}
+\input{chapters/Cnotmember.tex}
+\input{chapters/Cnth.tex}
+\input{chapters/Coccurrence.tex}
+\input{chapters/Coccurrencemax.tex}
+\input{chapters/Coccurrencemin.tex}
+\input{chapters/Coppositesign.tex}
+\input{chapters/Cor.tex}
+\input{chapters/Cpack.tex}
+\input{chapters/Cprecedencereified.tex}
+\input{chapters/Cpreceding.tex}
+\input{chapters/Cregular.tex}
+\input{chapters/Creifiedintconstraint.tex}
+\input{chapters/Crelationpairac.tex}
+\input{chapters/Crelationtupleac.tex}
+\input{chapters/Crelationtuplefc.tex}
+\input{chapters/Csamesign.tex}
+\input{chapters/Csetdisjoint.tex}
+\input{chapters/Csetinter.tex}
+\input{chapters/Csetunion.tex}
+\input{chapters/Csorting.tex}
+\input{chapters/Cstretchcyclic.tex}
+\input{chapters/Cstretchpath.tex}
+\input{chapters/Ctimes.tex}
+\input{chapters/Ctree.tex}
+\input{chapters/Ctrue.tex}
+
+\part{Tutorials}\label{ch:tut}\hypertarget{ch:tut}{}
+If you look for an easy step-by-step program in CHOCO, \hyperlink{gettingstarted}{getting\ started} is for you! It introduces to basic concepts of a CHOCO program (Model, Solver, variables and constraints...).
+
+This part also presents a collection of \hyperlink{exercises}{exercises} with their \hyperlink{solutions}{solutions}. It covers simple to advanced uses of CHOCO.
+
+\emph{See also old pages:} \url{http://choco.sourceforge.net/tut\_expl.html}
+
+\input{chapters/getting_started.tex}
+\input{chapters/exercises.tex}
+\input{chapters/solutions.tex}
+
+\part{Extras}\label{ch:extra}\hypertarget{ch:extra}{}
+\input{chapters/choco_and_visu.tex}
+\input{chapters/sudoku_and_cp.tex}

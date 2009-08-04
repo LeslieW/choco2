@@ -1,0 +1,42 @@
+\section{Set variables}\label{setvariable}\hypertarget{setvariable}{}
+\texttt{SetVariable} is high level modeling tool. It allows to represent variable whose values are sets. A SetVariable on integer values between $[1,n]$ has $2*n$ values (every possible subsets of $\{1..n\}$). This makes an exponential number of values and the domain is represented with two bounds corresponding to the intersection of all possible sets (called the kernel) and the union of all possible sets (called the envelope) which are the possible candidate values for the variable. The consistency achieved on SetVariables is therefore a kind of bound consistency.
+
+\subsubsection{constructors:}
+      \noindent\begin{tabular}{p{.8\linewidth}p{.15\linewidth}}
+        Choco method & return type \\
+        \hline
+        \mylst{makeSetVar(String name, int lowB, int uppB, String... options)} &\texttt{SetVariable}\\
+        \mylst{makeSetVarArray(String name, int dim, int lowB, int uppB, String... options)} &\texttt{SetVariable[]}
+      \end{tabular}
+%	\begin{itemize}
+%		\item to create an \textbf{SetVariable} object:
+%		\begin{itemize}
+%			\item \mylst{makeSetVar(String name, int lowB, int uppB, String... options)}
+%		\end{itemize}
+%		\item to create an \textbf{array of SetVariable} object:
+%		\begin{itemize}
+%			\item \mylst{makeSetVarArray(String name, int dim, int lowB, int uppB, String... options)}
+%		\end{itemize}
+%	\end{itemize}
+%	\item \textbf{return type} : \texttt{SetVariable} \emph{or} \texttt{SetVariable[]}
+\subsubsection{options:}
+	\begin{itemize}
+		\item \emph{no option} : equivalent to option \texttt{cp:enum}
+		\item \texttt{cp:enum} : to force Solver to create \texttt{SetVariable} with enumerated domain for the caridinality variable. It is a domain in which holes can be created by the solver. It should be used when set variable cardinality domain is discrete, quite small and constraints performing reasonings on holes in the cardinality are present in the model. Implemeted by two \texttt{BitSets} for upper and lower bounds and an enumerated \texttt{IntegerVariable} for the cardinality.
+		\item \texttt{cp:bound} : to force Solver to create \texttt{SetVariable} with bounded cardinality. It is a domain where only bound propagation can be done (no holes). It is very well suited when constraints performing only Bound Consistency are added on the corresponding variables. It must be used when large domains are needed. Implemented by two integers.
+		\item \texttt{cp:decision} : to force variable to be a decisional one
+		\item \texttt{cp:no\_decision} : to force variable to be removed from the pool of decisionnal variables
+		\item \texttt{cp:objective} : to define the variable to be the one to optimize
+	\end{itemize}
+
+The variable representing the cardinality can be accessed and constrained using method \texttt{getCard()} that returns an \hyperlink{integervariable}{\tt IntegerVariable} object.
+
+\subsubsection{Example:}
+\begin{lstlisting}
+  SetVariable svar1 = makeSetVar("svar1", -10, 10);
+  setVariable svar2 = makeSetVar("svar2", 0, 10000, "cp:bound", "cp:no_decision");
+\end{lstlisting} 
+
+Set variables are illustrated on the \hyperlink{model:example2:ternarysteinerchoco}{ternary Steiner problem}. 
+
+

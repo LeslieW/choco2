@@ -1,0 +1,40 @@
+%\part{ifthenelse}
+\label{ifthenelse}
+\hypertarget{ifthenelse}{}
+
+\section{ifThenElse (constraint)}\label{ifthenelse:ifthenelseconstraint}\hypertarget{ifthenelse:ifthenelseconstraint}{}
+\begin{notedef}
+  \texttt{ifThenElse}$(c_1,c_2,c_3)$ states that if $c_1$ holds then $c_2$ holds, otherwise $c_3$ holds:
+  $$(c_1\land c_2) \lor (\neg c_1 \land c_3)$$
+\end{notedef}
+
+\texttt{ifThenElse}$(c_1,c_2,c_3)$ can also state that if the first constraint is satisfied, it returns the second parameter, otherwise it returns the the third one.
+
+\begin{itemize}
+	\item \textbf{API} :
+	\begin{itemize}
+		\item \mylst{ifThenElse(Constraint c1, Constraint c2, Constraint c3)}
+	\end{itemize}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : \emph{n/a}
+\end{itemize}
+
+\textbf{Example}:
+
+\begin{lstlisting}
+	CPModel m = new CPModel();
+	CPSolver s = new CPSolver();
+	
+	IntegerVariable x = makeIntVar("x", 1, 3);
+	IntegerVariable y = makeIntVar("y", 1, 3);
+	IntegerVariable z = makeIntVar("z", 1, 3);
+	// use API ifThenElse(Constraint, Constraint, Constraint)
+	m.addConstraint(ifThenElse(lt((x), (y)), gt((y), (z)), FALSE));
+    
+    // and ifThenElse(Constraint, IntegerExpressionVariable, IntegerExpressionVariable)
+	m.addConstraint(leq(z, ifThenElse(lt(x, y), constant(1), plus(x,y))));
+	
+	s.read(m);
+	s.solveAll();
+\end{lstlisting}

@@ -1,0 +1,32 @@
+%\part{leqcard}
+\label{leqcard}
+\hypertarget{leqcard}{}
+
+\section{leqCard (constraint)}\label{leqcard:leqcardconstraint}\hypertarget{leqcard:leqcardconstraint}{}
+\begin{notedef}
+  \texttt{leqCard}$(s,x)$ states that the cardinality of set $s$ is less than or equal to $x$:
+$$|s| \le x$$
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} :
+	\begin{itemize}
+		\item \mylst{leqCard(SetVariable s, IntegerVariable x)}
+		\item \mylst{leqCard(SetVariable s, int x)}
+	\end{itemize}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : \emph{to complete}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();
+	SetVariable s = makeSetVar("s", 1, 5);
+	IntegerVariable i = makeIntVar("card", 2, 3);
+	m.addConstraint(member(x, 3));
+	m.addConstraint(leqCard(x, i));
+	s.read(m);
+	s.solve();
+\end{lstlisting}

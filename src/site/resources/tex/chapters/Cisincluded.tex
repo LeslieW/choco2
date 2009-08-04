@@ -1,0 +1,27 @@
+%\part{isincluded}
+\label{isincluded}
+\hypertarget{isincluded}{}
+
+\section{isIncluded (constraint)}\label{isincluded:isincludedconstraint}\hypertarget{isincluded:isincludedconstraint}{}
+\begin{notedef}
+  \texttt{isIncluded}$(x,y)$ states that the second set $y$ contains the first set $x$:
+ $$x\subseteq y$$
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} : \mylst{isIncluded(SetVariable x, SetVariable y)}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} :\emph{n/a}
+	\item \textbf{favorite domain} : \emph{to complete}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();
+	SetVariable v1 = makeSetVar("v1", 3, 4);
+	SetVariable v2 = makeSetVar("v2", 3, 8);
+	m.addConstraint(isIncluded(v1, v2));
+	s.read(m);
+	s.solveAll();
+\end{lstlisting} 

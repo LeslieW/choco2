@@ -1,0 +1,62 @@
+%\part{scalar}
+\label{scalar}
+\hypertarget{scalar}{}
+
+\section{scalar (operator)}\label{scalar:scalaroperator}\hypertarget{scalar:scalaroperator}{}
+Return an integer expression that corresponds to the scalar product of coefficients array and variables array (\(c_1*x_1+c_2*x_2+...+c_n*x_n\)).
+
+\begin{itemize}
+	\item \textbf{API} :
+	\begin{itemize}
+		\item scalar(int[] c, IntegerVariable[] x)
+		\item scalar(IntegerVariable[] x, int[] c)
+	\end{itemize}
+	\item \textbf{return type} : IntegerExpressionVariable
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : \emph{to complete}
+\end{itemize}
+
+\textbf{Example}:
+
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();
+	
+	IntegerVariable[] vars = new IntegerVariable[n * n];
+	for (int i = 0; i < n; i++)
+	      for (int j = 0; j < n; j++) {
+	           vars[i * n + j] = makeIntVar("C" + i + "_" + j, 1, n * n);
+	      }
+	IntegerVariable sum = makeIntVar("S", 1, n * n * (n * n + 1) / 2);
+	
+	m.addConstraint(eq(sum, n * (n * n + 1) / 2));
+	for (int i = 0; i < n * n; i++)
+	    for (int j = 0; j < i; j++)
+	        m.addConstraint(neq(vars[i], vars[j]));
+	int[] coeffs = new int[n];
+	for (int i = 0; i < n; i++) {
+	    coeffs[i] = 1;
+	}
+	
+	for (int i = 0; i < n; i++) {
+	    IntegerVariable[] col = new IntegerVariable[n];    
+	    IntegerVariable[] row = new IntegerVariable[n];
+	    for (int j = 0; j < n; j++) {
+	        col[j] = vars[i * n + j];
+	        row[j] = vars[j * n + i];
+	    } 
+	    m.addConstraint(eq(scalar(coeffs, row), sum));
+	    m.addConstraint(eq(scalar(coeffs, col), sum));
+	}
+	s.read(m);
+	s.solve();
+	//System.out.println("" + pretty());
+	for (int i = 0; i < n; i++) {
+	    for (int j = 0; j < n; j++) {   
+	        System.out.print("" + s.getVar(vars[i * n + j]).getVal());
+	        if (s.getVar(vars[i * n + j]).getVal() > 9) System.out.print(" ");
+	           else System.out.print("  ");
+	        }
+	    System.out.println("");
+	}
+\end{lstlisting}

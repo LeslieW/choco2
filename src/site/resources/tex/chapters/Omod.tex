@@ -1,0 +1,34 @@
+
+\section{mod (operator)}\label{mod:modoperator}\hypertarget{mod:modoperator}{}
+Returns an expression variable that represents the integer remainder of the division of the first argument variable by the second one (\(x_1\%x_2\)).
+
+\begin{itemize}
+	\item \textbf{API}:
+	\begin{itemize}
+		\item mod(IntegerExpressionVariable x1, IntegerExpressionVariable x2)
+		\item mod(int x1, IntegerExpressionVariable x2)
+		\item mod(IntegerExpressionVariable x1, int x2)
+	\end{itemize}
+	\item \textbf{return type} : \texttt{IntegerExpressionVariable}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : \emph{n/a}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();
+	
+	IntegerVariable x = makeIntVar("x", 1, 10);
+	IntegerVariable w = makeIntVar("w", 22, 44);
+	
+	m.addConstraint(eq(1, mod(w,x)));
+	
+	s.read(m);
+	s.solve();
+\end{lstlisting}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

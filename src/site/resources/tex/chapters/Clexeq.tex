@@ -1,0 +1,40 @@
+%\part{lexeq}
+\label{lexeq}
+\hypertarget{lexeq}{}
+
+\section{lexeq (constraint)}\label{lexeq:lexeqconstraint}\hypertarget{lexeq:lexeqconstraint}{}
+\begin{notedef}
+  \texttt{lexeq}$(x,y)$ enforces a lexicographic ordering  $x \le_{lex} y$ between two arrays of same size $n$:
+$$\exists\ j\in\{1,\ldots,n\}\ |\qquad x_j\le y_j\quad \land\quad x_i=y_i\ (\forall\  i<j)$$
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} : \mylst{lexeq(IntegerVariable[] x, IntegerVariable[] y)}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} :\emph{n/a}
+	\item \textbf{favorite domain} : \emph{to complete}
+	\item \textbf{references} :
+      \begin{itemize}
+      \item \cite{FrischCP02}: \emph{Global Constraints for Lexicographic Orderings}
+      \item global constraint catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Clex_lesseq.html}{lex\_lesseq}
+      \end{itemize}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model pb = new CPModel();
+	Solver s = new CPSolver();
+	
+	int n1 = 8;
+	int k = 2;
+	IntegerVariable[] vs1 = new IntegerVariable[n1 / 2];
+	IntegerVariable[] vs2 = new IntegerVariable[n1 / 2];
+	for (int i = 0; i < n1 / 2; i++) {
+	   vs1[i] = makeIntVar("" + i, 0, k);
+	   vs2[i] = makeIntVar("" + i, 0, k);
+	}
+	
+	m.addConstraint(lexeq(vs1, vs2));
+	s.read(m);
+	s.solve();
+\end{lstlisting} 

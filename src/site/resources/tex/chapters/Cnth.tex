@@ -1,0 +1,51 @@
+%\part{nth}
+\label{nth}
+\hypertarget{nth}{}
+
+\section{nth (constraint)}\label{nth:nthconstraint}\hypertarget{nth:nthconstraint}{}
+\texttt{nth} is the well known \emph{element} constraint.
+Several APIs are available: 
+\begin{notedef}
+\begin{itemize}
+\item \texttt{nth}$(i,x,y)$ ensures that $x[i]=y$
+\item \texttt{nth}$(i,x,y,o)$ ensures that $x[i+o]=y$ ($o$ is an \emph{offset} for shifting values)
+\item \texttt{nth}$(i,j,x,y)$ ensures that $x[i][j]=y$
+\end{itemize}
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} :
+	\begin{itemize}
+		\item \mylst{nth(IntegerVariable i, int[] x, IntegerVariable y)}
+		\item \mylst{nth(IntegerVariable i, IntegerVariable[] x, IntegerVariable y)}
+		\item \mylst{nth(IntegerVariable i, int[] x, IntegerVariable y, int offset)}
+		\item \mylst{nth(IntegerVariable i, IntegerVariable[] x, IntegerVariable y, int offset)}
+		\item \mylst{nth(IntegerVariable i, IntegerVariable j, int[][] x, IntegerVariable y)}
+	\end{itemize}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} :\emph{n/a}
+	\item \textbf{favorite domain} : \emph{to complete}
+	\item \textbf{references} :\\
+      global constraint catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Celement.html}{element}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();            
+	
+	int[][] values = new int[][]{
+	    {1, 2, 0, 4, -323},
+	    {2, 1, 0, 3, 42},
+	    {6, 1, -7, 4, -40},
+	    {-1, 0, 6, 2, -33},
+	    {2, 3, 0, -1, 49}};
+	IntegerVariable index1 = makeIntVar("index1", -3, 10);
+	IntegerVariable index2 = makeIntVar("index2", -3, 10);
+	IntegerVariable var = makeIntVar("value", -20, 20);
+	
+	m.addConstraint(nth(index1, index2, values, var));
+	
+	s.read(m);
+	s.solveAll();
+\end{lstlisting} 

@@ -1,0 +1,33 @@
+%\part{distancelt}
+\label{distancelt}
+\hypertarget{distancelt}{}
+
+\section{distanceLT (constraint)}\label{distancelt:distanceltconstraint}\hypertarget{distancelt:distanceltconstraint}{}
+\begin{notedef}
+  \texttt{distanceLT}$(x_1,x_2,x_3,c)$ states that $x_3$ plus an offset $c$ (by default $c=0$) is strictly smaller than the distance between $x_1$ and $x_2$:
+$$ x_3 + c < | x_1 - x_2 |$$
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} :
+	\begin{itemize}
+		\item \mylst{distanceLT(IntegerVariable x1, IntegerVariable x2, int x3)}
+		\item \mylst{distanceLT(IntegerVariable x1, IntegerVariable x2, IntegerVariable x3)}
+		\item \mylst{distanceLT(IntegerVariable x1, IntegerVariable x2, IntegerVariable x3, int c)}
+	\end{itemize}
+	\item \textbf{return type}: \texttt{Constraint}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : \emph{to complete}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();
+	IntegerVariable v0 = makeIntVar("v0", 0, 5);
+	IntegerVariable v1 = makeIntVar("v1", 0, 5);
+	IntegerVariable v2 = makeIntVar("v2", 0, 5);
+	m.addConstraint(distanceLT(v0, v1, v2, 0));
+	s.read(m);
+	s.solveAll();
+\end{lstlisting}

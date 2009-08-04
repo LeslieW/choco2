@@ -1,0 +1,29 @@
+%\part{boolchanneling}
+\label{boolchanneling}
+\hypertarget{boolchanneling}{}
+
+\section{boolChanneling (constraint)}\label{boolchanneling:boolchannelingconstraint}\hypertarget{boolchanneling:boolchannelingconstraint}{}
+\begin{notedef}  
+\texttt{boolChanneling}$(b,x,v)$ states that $b$ is true if and only if $x$ is equal to $v$:
+$$b\quad\iff\quad (x=v)$$ 
+\end{notedef}
+
+It acts as an observer of value $v$. Imagine a bin packing problem where variable $x$ tells you on which a given bin object is placed. By stating the boolean channeling, $b$ is true if and only if the object is placed on bin $v$, the knapsack constraint for bin $v$ can then be easily stated as a scalar of the boolean variables.
+\begin{itemize}
+	\item \textbf{API} : \mylst{boolChanneling(IntegerVariable b, IntegerVariable x, int v)}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : enumerated for $x$
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();
+	IntegerVariable bool = makeIntVar("bool", 0, 1);
+	IntegerVariable x = makeIntVar("x", 0, 5);
+	m.addConstraint(boolChanneling(bool, x, 4));
+	s.read(m);
+	s.solveAll();
+	assertEquals(6, s.getNbSolutions());
+\end{lstlisting}

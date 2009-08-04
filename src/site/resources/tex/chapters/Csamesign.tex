@@ -1,0 +1,32 @@
+%\part{samesign}
+\label{samesign}
+\hypertarget{samesign}{}
+
+\section{sameSign (constraint)}\label{samesign:samesignconstraint}\hypertarget{samesign:samesignconstraint}{}
+\todo{verify case 0}
+
+\begin{notedef}
+  \texttt{sameSign}$(x,y)$ states that the two arguments have the same sign:
+$$xy\ge 0$$
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} : \mylst{sameSign(IntegerExpressionVariable x, IntegerExpressionVariable y)}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} :\emph{n/a}
+	\item \textbf{favorite domain} : \emph{to complete}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();
+	IntegerVariable x = makeIntVar("x", -1, 1);
+	IntegerVariable y = makeIntVar("y", -1, 1);
+	IntegerVariable z = makeIntVar("z", 0, 1000);
+	m.addConstraint(oppositeSign(x,y));
+	m.addConstraint(eq(z, plus(mult(x, -425), mult(y, 391))));
+	s.read(m);
+	s.solve();
+	System.out.println(s.getVar(z).getVal());
+\end{lstlisting} 

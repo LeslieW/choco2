@@ -1,0 +1,29 @@
+%\part{setunion}
+\label{setunion}
+\hypertarget{setunion}{}
+
+\section{setUnion (constraint)}\label{setunion:setunionconstraint}\hypertarget{setunion:setunionconstraint}{}
+\begin{notedef}
+  \texttt{setUnion}$(s_1,s_2,s_3)$ states that the third set $s_3$ is exactly the union of the two first sets:
+$$s_1\cup s_2=s_3$$
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} : \mylst{setUnion(SetVariable s1, SetVariable s2, SetVariable s3)}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} :\emph{n/a}
+	\item \textbf{favorite domain} : \emph{to complete}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();
+	setVar x = makeSetVar("X", 1, 3);
+	SetVar y = makeSetVar("Y", 3, 5);
+	SetVar z = makeSetVar("Z", 0, 6);
+	Constraint c1 = setUnion(x, y, z);
+	m.addConstraint(c1);
+	s.read(m);
+	s.solveAll();
+\end{lstlisting} 
