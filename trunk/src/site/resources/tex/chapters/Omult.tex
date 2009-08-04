@@ -1,0 +1,44 @@
+%\part{mult}
+\label{mult}
+\hypertarget{mult}{}
+
+\section{mult (operator)}\label{mult:multoperator}\hypertarget{mult:multoperator}{}
+Returns an expression variable that corresponding to the product of variables in argument (\(x*y\)).
+
+\begin{itemize}
+	\item \textbf{API} :
+	\begin{itemize}
+		\item mult(IntegerExpressionVariable x, IntegerExpressionVariable y)
+		\item mult(IntegerExpressionVariable x, int y)
+		\item mult(int x, IntegerExpressionVariable y)
+		\item mult(RealExpressionVariable x, RealExpressionVariable y)
+		\item mult(RealExpressionVariable x, double y)
+		\item mult(double x, RealExpressionVariable y)
+	\end{itemize}
+	\item \textbf{return type} :
+	\begin{itemize}
+		\item \texttt{IntegerExpressionVariable}, if parameters are \texttt{IntegerExpressionVariable}
+		\item \texttt{RealExpressionVariable}, if parameters are \texttt{RealExpressionVariable}
+	\end{itemize}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : \emph{to complete}
+\end{itemize}
+
+\textbf{Example}
+\begin{lstlisting}
+	CPModel m = new CPModel();
+	IntegerVariable x = makeIntVar("x", -10, 10);
+	IntegerVariable z = makeIntVar("z", -10, 10);
+	IntegerVariable w = makeIntVar("w", -10, 10);
+	m.addVariable(x, z, w);
+	
+	CPSolver s = new CPSolver();
+	// x >= z * w
+	Constraint exp = geq(x, mult(z,w));
+	
+	m.setDefaultExpressionDecomposition(true);
+	m.addConstraint(exp);
+	
+	s.read(m);
+	s.solveAll();
+\end{lstlisting}

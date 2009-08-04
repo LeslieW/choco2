@@ -1,0 +1,97 @@
+%\part{plus}
+\label{plus}
+\hypertarget{plus}{}
+
+
+
+\section{plus (operator)}\label{plus:plusoperator}\hypertarget{plus:plusoperator}{}
+Returns an expression variable that corresponding to the sum of the two arguments (\(x+y\)).
+
+\begin{itemize}
+	\item \textbf{API} :
+	\begin{itemize}
+		\item \mylst{plus(IntegerExpressionVariable x, IntegerExpressionVariable y)}
+		\item \mylst{plus(IntegerExpressionVariable x, int y)}
+		\item \mylst{plus(int x, IntegerExpressionVariable y)}
+		\item \mylst{plus(RealExpressionVariable x, RealExpressionVariable y)}
+		\item \mylst{plus(RealExpressionVariable x, double y)}
+		\item \mylst{plus(double x, RealExpressionVariable y)}
+	\end{itemize}
+	\item \textbf{return type} :
+	\begin{itemize}
+		\item \texttt{IntegerExpressionVariable}, if parameters are \texttt{IntegerExpressionVariable}
+		\item \texttt{RealExpressionVariable}, if parameters are \texttt{RealExpressionVariable}
+	\end{itemize}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : \emph{to complete}
+\end{itemize}
+
+\textbf{Example}
+% \begin{itemize}
+% 	\item example1:
+% \end{itemize}
+
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();
+	IntegerVariable a = makeIntVar("a", 0, 4);
+    // a + 1 = 2
+	m.addConstraint(eq(plus(a, 1), 2));
+	s.read(m);
+	s.solve();
+\end{lstlisting}
+
+% \begin{itemize}
+% 	\item example2:
+% \end{itemize}
+
+% \begin{lstlisting}
+% 	// Build model
+% 	Model model = new CPModel();
+% 	// Declare every letter as a variable
+% 	IntegerVariable d = makeIntVar("d", 0, 9);
+% 	IntegerVariable o = makeIntVar("o", 0, 9);
+% 	IntegerVariable n = makeIntVar("n", 0, 9);
+% 	IntegerVariable a = makeIntVar("a", 0, 9);
+% 	IntegerVariable l = makeIntVar("l", 0, 9);
+% 	IntegerVariable g = makeIntVar("g", 0, 9);
+% 	IntegerVariable e = makeIntVar("e", 0, 9);
+% 	IntegerVariable r = makeIntVar("r", 0, 9);
+% 	IntegerVariable b = makeIntVar("b", 0, 9);
+% 	IntegerVariable t = makeIntVar("t", 0, 9);
+	
+% 	// Declare every name as a variable
+% 	IntegerVariable donald = makeIntVar("donald", 0, 1000000);
+% 	IntegerVariable gerald = makeIntVar("gerald", 0, 1000000);
+% 	IntegerVariable robert = makeIntVar("robert", 0, 1000000);
+% 	model.addVariable("cp:bound", donald, gerald, robert);
+	
+% 	// Array of coefficients
+% 	int[] coeff = new int[]{100000, 10000, 1000, 100, 10, 1};
+	
+% 	// Declare every combination of letter as an integer expression
+% 	IntegerExpressionVariable donaldLetters = scalar(new IntegerVariable[]{d, o, n, a, l, d}, coeff);
+% 	IntegerExpressionVariable geraldLetters = scalar(new IntegerVariable[]{g, e, r, a, l, d}, coeff);
+% 	IntegerExpressionVariable robertLetters = scalar(new IntegerVariable[]{r, o, b, e, r, t}, coeff);
+	
+% 	// Add equality between name and letters combination
+% 	model.addConstraint(eq(donaldLetters, donald));
+% 	model.addConstraint(eq(geraldLetters, gerald));
+% 	model.addConstraint(eq(robertLetters, robert));
+% 	// Add constraint name sum
+% 	model.addConstraint(eq(plus(donald, gerald), robert));
+% 	// Add constraint of all different letters.
+% 	model.addConstraint(allDifferent(new IntegerVariable[]{d, o, n, a, l, g, e, r, b, t}));
+	
+% 	// Build a solver
+% 	Solver s = new CPSolver();
+% 	// Read the model
+% 	s.read(model);
+% 	// Then solve it
+% 	s.solve();
+	
+% 	// Print name value
+% 	System.out.println("donald = " + s.getVar(donald).getVal());
+% 	System.out.println("gerald = " + s.getVar(gerald).getVal());
+% 	System.out.println("robert = " + s.getVar(robert).getVal());
+% \end{lstlisting}

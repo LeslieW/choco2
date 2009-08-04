@@ -1,0 +1,27 @@
+%\part{isnotincluded}
+\label{isnotincluded}
+\hypertarget{isnotincluded}{}
+
+\section{isNotIncluded (constraint)}\label{isnotincluded:isnotincludedconstraint}\hypertarget{isnotincluded:isnotincludedconstraint}{}
+\begin{notedef}
+  \texttt{isNotIncluded}$(x,y)$ states that the second set $y$ does not contain the first set $x$:
+ $$x\not\subseteq y$$
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} : \mylst{isNotIncluded(SetVariable x, SetVariable y)}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} :\emph{n/a}
+	\item \textbf{favorite domain} : \emph{to complete}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();
+	SetVariable v1 = makeSetVar("v1", 3, 4);
+	SetVariable v2 = makeSetVar("v2", 3, 8);
+	m.addConstraint(isNotIncluded(v1, v2));
+	s.read(m);
+	s.solveAll();
+\end{lstlisting} 

@@ -1,0 +1,32 @@
+%\part{geqcard}
+\label{geqcard}
+\hypertarget{geqcard}{}
+
+\section{geqCard (constraint)}\label{geqcard:geqcardconstraint}\hypertarget{geqcard:geqcardconstraint}{}
+\begin{notedef}
+  \texttt{geqCard}$(s,x)$ states that the cardinality of set $s$ is greater than or equal to $x$:
+$$|s| \ge x$$
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} :
+	\begin{itemize}
+		\item \mylst{geqCard(SetVariable s, IntegerVariable x)}
+		\item \mylst{geqCard(SetVariable s, int x)}
+	\end{itemize}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : \emph{to complete}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();
+	SetVariable s = makeSetVar("s", 1, 5);
+	IntegerVariable i = makeIntVar("card", 2, 3);
+	m.addConstraint(member(x, 3));
+	m.addConstraint(geqCard(x, i));
+	s.read(m);
+	s.solve();
+\end{lstlisting}

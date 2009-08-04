@@ -1,0 +1,39 @@
+%\part{member}
+\label{member}
+\hypertarget{member}{}
+
+\section{member (constraint)}\label{member:memberconstraint}\hypertarget{member:memberconstraint}{}
+
+\begin{notedef}
+  \texttt{member}$(x,s)$ states that integer $x$ is contained in set
+  $s$:
+$$x\in s.$$
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} :
+	\begin{itemize}
+		\item \mylst{member(int x, SetVariable s)}
+		\item \mylst{member(SetVariable s, int x)}
+		\item \mylst{member(SetVariable s, IntegerVariable x)}
+		\item \mylst{member(IntegerVariable x, SetVariable s)}
+	\end{itemize}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} :\emph{n/a}
+	\item \textbf{favorite domain} : \emph{to complete}
+	\item \textbf{references} :\\
+      global constraint catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Cin_set.html}{in\_set}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();
+	int x = 3;
+	int card = 2;
+	SetVariable y = makeSetVar("y", 2, 4);
+	m.addConstraint(member(y, x));
+	m.addConstraint(eqCard(y, card));
+	s.read(m);
+	s.solveAll();
+\end{lstlisting} 

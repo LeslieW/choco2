@@ -1,0 +1,27 @@
+%\part{abs}
+%\label{abs}\hypertarget{abs}{}
+\section{abs (constraint)}\label{abs:absconstraint}\hypertarget{abs:absconstraint}{}
+\begin{notedef}
+  \texttt{abs}$(x,y)$ states that $x$ is the absolute value of $y$:
+$$x = |y|$$
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} : \mylst{abs(IntegerVariable x, IntegerVariable y)}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : enumerated
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	CPModel m = new CPModel();
+	IntegerVariable x = makeIntVar("x", 1, 5, "cp:enum");
+	IntegerVariable y = makeIntVar("y", -5, 5, "cp:enum");
+	m.addConstraint(abs(x,y));
+	CPSolver s = new CPSolver();
+	s.read(m);
+	s.solve();
+	Assert.assertEquals(s.getVar(x).getVal(),Math.abs(s.getVar(y).getVal()));
+\end{lstlisting}
+

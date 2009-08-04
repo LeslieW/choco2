@@ -1,0 +1,69 @@
+%\part{globalcardinality}
+\label{globalcardinality}
+\hypertarget{globalcardinality}{}
+
+\section{globalCardinality (constraint)}\label{globalcardinality:globalcardinalityconstraint}\hypertarget{globalcardinality:globalcardinalityconstraint}{}
+\begin{notedef}
+  \texttt{globalCardinality}$(x,low, up)$ states bounds on the occurrence numbers of any value $v$ in $x$ (here, offset $min$ is the minimum value over all variables in $x$) :
+$$low[v-min]\le|\{i\ |\ x_i=v\}|\le up[v-min],\quad\forall \text{ value } v$$   
+\end{notedef}
+
+Mulitple APIs exist:
+\begin{itemize}
+	\item \emph{bounds on cardinalities:} Given an array of variables $x$, $min$ the minimal value over all variables, and $max$ the maximal value over all variables, the constraint ensures that the number of occurrences of value $v$ among the variables is between $low[v-min]$ and $up[v-min]$. Note that the length of $low$ and $up$ should be $max - min + 1$. Use the propagator of \cite{QuimperCP03}.
+	\item \emph{default offset $min=1$:} Given an array of variables $x$, the constraint ensures that the number of occurrences of the value 1 in all the variables $x$ is between $low[0]$ and $up[0]$, and generally the number of occurrences of the value $v$ in $x$ is between $low[v-1]$ and $up[v-1]$.
+	\item \emph{variable cardinalities:} Given an array of variables $x$, an array of variables $card$ to represent the cardinalities, the constraint ensures that the number of occurrences of the value $v$ among the variables is equal to $card[v]$. This constraint:
+      \begin{itemize}
+      \item enforces Bound Consistency over $x$ regarding the lower and upper bounds of $card$, 
+      \item maintains the upper bounds of $card$ by counting the number of variables in which each value can occur, 
+      \item maintains the lower bounds of $card$ by counting the number of variables instantiated to each value, 
+      \item enforces $card[0] + \cdots + card[m] = n$, where \emph{n} is the number of variables and \emph{m} the number of values.
+      \end{itemize}
+
+\end{itemize}
+
+The APIs are duplicated to define options. 
+
+\begin{itemize}
+	\item \textbf{API} :
+      \begin{itemize}
+	\item \mylst{globalCardinality(IntegerVariable[] x, int min, int max, int[] low, int[] up)}
+	\item \mylst{globalCardinality(String options, IntegerVariable[] x, int min, int max, int[] low, int[] up)}
+	\item \mylst{globalCardinality(IntegerVariable[] x, int[] low, int[] up)}
+	\item \mylst{globalCardinality(String options, IntegerVariable[] x, int[] low, int[] up)}
+	\item \mylst{globalCardinality(IntegerVariable[] x, int min, int max, IntegerVariable[] card)}
+      \end{itemize}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options}:
+	\begin{itemize}
+		\item \emph{no option} :
+		\item \texttt{cp:ac} : for \cite{ReginAAAI96} implementation of arc consistency
+		\item \texttt{cp:bc} : for  \cite{QuimperCP03} implementation of bound consistency
+	\end{itemize}
+	\item \textbf{favorite domain} : \emph{to complete}
+	\item \textbf{references} :
+      \begin{itemize}
+      \item \cite{ReginAAAI96}: \emph{Generalized arc consistency for global cardinality constraint},
+      \item \cite{QuimperCP03}: \emph{An efficient bounds consistency algorithm for the global cardinality constraint}
+      \item global constraint catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Cglobal_cardinality.html}{global\_cardinality}
+      \end{itemize}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	int n = 5;
+	CPModel pb = new CPModel();
+	CPSolver s = new CPSolver();
+	
+	IntegerVariable[] vars = new IntegerVariable[n];
+	for (int i = 0; i < n; i++) {
+	   vars[i] = makeIntVar("var " + i, 1, n);
+	}
+	
+	int[] LB2 = {0, 1, 1, 0, 3};
+	int[] UB2 = {0, 1, 1, 0, 3};
+	
+	m.addConstraint("cp:bc", globalCardinality(vars, 1, n, LB2, UB2));
+	s.read(pb);
+	s.solve();
+\end{lstlisting}

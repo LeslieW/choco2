@@ -1,0 +1,28 @@
+%\part{neg}
+\label{neg}
+\hypertarget{neg}{}
+
+\section{neg (operator)}\label{neg:negoperator}\hypertarget{neg:negoperator}{}
+
+Returns an expression variable that is the opposite of the expression integer variable in argument (\(-x\)).
+
+\begin{itemize}
+	\item \textbf{API} : neg(IntegerExpressionVariable x)
+	\item \textbf{return type} : \texttt{IntegerExpressionVariable}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : \emph{n/a}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();
+	
+	IntegerVariable x = makeIntVar("x", -10, 10);
+	IntegerVariable w = makeIntVar("w", -10, 10);
+	// -x = w - 20
+	m.addConstraint(eq(neg(x), minus(w, 20)));
+	
+	s.read(m);
+	s.solve();
+\end{lstlisting}

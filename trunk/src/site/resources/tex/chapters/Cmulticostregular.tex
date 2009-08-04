@@ -1,0 +1,103 @@
+%\part{multicostregular}
+\label{multicostregular}
+\hypertarget{multicostregular}{}
+
+\section{multiCostRegular (constraint)}\label{multicostregular:multicostregularconstraint}\hypertarget{multicostregular:multicostregularconstraint}{}
+\begin{notedef}
+  \texttt{multiCostRegular}$(x,z,\mathcal{L}(\Pi),c)$ states that sequence $x$ is a word belonging to the regular language $\mathcal{L}(\Pi)$,
+% recognized by a deterministic finite automaton (DFA) or a multicostregular expression $\Pi$:
+$$(x_1,\ldots,x_n)\in\mathcal{L}(\Pi)$$
+and that the bounded vector $z$ is equal to the costs of $x$ according to the assigment cost matrix $c$:
+$$\sum_{i=1}^{n} c[r][i][x_i]=z[r],\quad \forall r\in\{0,\ldots,R\}$$
+\end{notedef}
+\texttt{multiCostRegular} is a conjunction of a \hyperlink{regular}{\texttt{regular}} constraint with $R+1$ cost functions.
+It may be used in the context of personnel scheduling problems, handling complex work regulations by the mean of regular expressions, together with cardinality or financial constraints by the mean of cost functions.
+The filtering algorithm associated with \texttt{multiCostRegular} is based on lagrangian relaxation and computations of shortest/longest pathes in a layered digraph~\cite{MenanaCPAIOR09}. It typically performs more filtering than the conjunction of \texttt{costRegular} and \texttt{globalCardinality} or than multiple \texttt{costRegular}.
+
+The accepting language is specified by a deterministic finite automaton (DFA):
+Automaton $\Pi$ is defined on a given \emph{alphabet} $\Sigma\subseteq\Z$ by a set $Q=\{0,\ldots,m\}$ of \emph{states}, a subset $A\subseteq Q$ of \emph{final} or \emph{accepting states} and a table $\Delta\subseteq Q\!\times\!\Sigma\!\times Q$ of \emph{transitions} between states. $\Pi$ is encoded as an object of class \texttt{Automaton}, whose API contains:
+\begin{lstlisting}
+  Automaton();
+  int addState();
+  void setStartingState(int state); 
+  void setAcceptingState(int state); 
+  void addTransition(int state1, int state2, int label);
+  int getNbStates();
+\end{lstlisting}
+The cost functions are encoded as one matrix \texttt{int cost[nTime][nAct][auto.getNbStates()][nRes]} such that
+\texttt{cost[i][j][s][r]} is the cost of assigning variable $x_i$ to activity $j$ at state $s$ on dimension $r+1$.
+
+\begin{itemize}
+	\item \textbf{API} :
+	\begin{itemize}
+		\item \mylst{multiCostRegular(IntegerVariable[] x, IntegerVariable[] z, Automaton P, int[][][][] c)}
+	\end{itemize}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} :
+      \begin{itemize}
+      \item \texttt{MultiCostRegular.DATA\_STRUCT} is  \texttt{MultiCostRegular.BITSET} or \texttt{MultiCostRegular.LIST}: a parameter stating which backtrable data structure to use for storing the outgoing arcs of the layered digraph. The observed behaviour is until $1000$ arcs the bipartite list is much more efficient, afterwards the memory efficiency of the bitset representation allow faster operations. 
+      \item \texttt{MultiCostRegular.U0}, \texttt{MultiCostRegular.R0}, \texttt{MultiCostRegular.MAXNONIMPROVEITER}, and \texttt{MultiCostRegular.MAXBOUNDITER} are value parameters of the subgradient algorithm used for solving the lagrangean relaxation.
+      \item \texttt{MultiCostRegular.D\_PREC} is a double parameter stating the precision of float computation. It is set by default to $10^{-5}$.
+      \end{itemize}
+	\item \textbf{favorite domain} : \emph{to complete}
+	\item \textbf{references} :\\
+       \cite{MenanaCPAIOR09}: \emph{Sequencing and Counting with the {\tt multicost-regular} Constraint}
+\end{itemize}
+%\begin{notedef}
+%  For further informations, see the multicost-regular description.
+%\end{notedef}
+\textbf{Example}:
+\begin{lstlisting}
+  //1- create the model
+  Model m = new CPModel();
+
+  int nTime = 14; // 2 weeks: 14 days
+  int nAct = 3;   // 3 activities: DAY, NIGHT, REST
+  int nRes = 4;   // 4 resources: cost (0), #DAY (1), #NIGHT (2), #WORK (3)
+
+  //2- Create the schedule variables: the activity processed at each time slot
+  IntegerVariable[] sequence = makeIntVarArray("x",nTime,0,nAct-1,"cp:enum");
+  // - create the cost variables (one for each resource)
+  IntegerVariable[] bounds =  new IntegerVariable[4];
+  bounds[0] = makeIntVar("z_0",30,80,"cp:bound"); // 30 <= cost <= 80
+  bounds[1] = makeIntVar("day",0,7,"cp:bound");   // 0 <= #DAY <= 7
+  bounds[2] = makeIntVar("night",3,7,"cp:bound"); // 3 <= #NIGHT <= 7
+  bounds[3] = makeIntVar("work",7,9,"cp:bound");  // 7 <= #WORK <= 9
+
+  //3- Create the automaton
+  Automaton auto = new Automaton();
+  // state 0: starting and accepting state
+  int start = auto.addState();
+  auto.setStartingState(start); 
+  auto.setAcceptingState(start);
+  // state 1 and a transition (0,DAY,1)
+  int first = auto.addState();
+  auto.addTransition(start,first,DAY);
+  // state 2 and transitions (1,DAY,2), (1,NIGHT,2), (2,REST,0), (0,NIGHT,2)
+  int second = auto.addState();
+  auto.addTransition(first,second,new int[]{DAY,NIGHT});
+  auto.addTransition(second,start,REST);
+  auto.addTransition(start,second,NIGHT);
+
+  //4- Declare the assignment/transition costs:
+  // csts[i][j][s][r]: cost on resource r of assigning Xi to activity j at state s
+  int[][][][] csts = new int[nTime][nAct][auto.getNbStates()][nRes];
+  for (int i = 0 ; i < csts.length ; i++) {
+      csts[i][DAY][0] = new int[]{3,1,0,1}; // costs of transition (0,DAY,1)
+      csts[i][NIGHT][0] = new int[]{8,0,1,1}; // costs of transition (0,NIGHT,2)
+      csts[i][DAY][1] = new int[]{5,1,0,1}; // costs of transition (1,DAY,2)
+      csts[i][NIGHT][1] = new int[]{9,0,1,1}; // costs of transition (1,NIGHT,2)
+      csts[i][REST][2] = new int[]{2,0,0,0}; // costs of transition (2,REST,0)
+  }
+
+  //5- Set a constraint parameter
+  MultiCostRegular.DATA_STRUCT = MultiCostRegular.LIST;
+
+  //6- add the constraint
+  m.addConstraint(multiCostRegular(sequence,bounds,auto,csts));	
+  
+  //7- create the solver, read the model and solve it
+  Solver s = new CPSolver();
+  s.read(m);
+  s.solve();
+\end{lstlisting}

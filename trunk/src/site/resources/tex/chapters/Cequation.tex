@@ -1,0 +1,38 @@
+%\part{equation}
+\label{equation}
+\hypertarget{equation}{}
+
+\section{equation (constraint)}\label{equation:equationconstraint}\hypertarget{equation:equationconstraint}{}
+\begin{notedef}
+  \texttt{equation}$(x,c,z)$ states a linear equation:
+$$c_1x_1+c_2x_2+...+c_nx_n = z$$
+\end{notedef}
+It enforces GAC using \hyperlink{regular:regularconstraint}{regular} to state a \emph{knapsack} constraint.
+
+\begin{itemize}
+	\item \textbf{API} :
+	\begin{itemize}
+		\item equation(IntegerVariable[] x, int[] c, int z)
+	\end{itemize}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : \emph{to complete}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	CPModel m = new CPModel();                                 
+	CPSolver s = new CPSolver();                               
+	int n = 10;                                                
+	IntegerVariable[] bvars = makeIntVarArray("b", n, 0, 10,"cp:enum");  
+	int charge = 10;                                           
+	Random rand = new Random();                            
+	for (int i = 0; i < coefs.length; i++) {                   
+	    coefs[i] = rand.nextInt(10);                           
+	}                                                          
+	                                                           
+	Constraint knapsack = Choco.equation(bvars, coefs, charge);
+	m.addConstraint(knapsack);                                 
+	s.read(m);                                                 
+	s.solveAll();
+\end{lstlisting}

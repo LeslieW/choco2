@@ -1,0 +1,68 @@
+%\part{alldifferent}
+\label{alldifferent}
+\hypertarget{alldifferent}{}
+
+\section{allDifferent (constraint)}\label{alldifferent:alldifferentconstraint}\hypertarget{alldifferent:alldifferentconstraint}{}
+\begin{notedef}
+  \texttt{allDifferent}$(x_1,\ldots,x_n)$ states that the arguments have pairwise distinct values:
+ $$x_i \neq x_j,\quad \forall\ i\neq j$$  
+\end{notedef}
+This constraint is useful for some matching problems.
+Notice that the filtering algorithm used will depend on the nature (enumerated or bounded) of the variables: 
+when \emph{enumerated}, the constraint refers to the alldifferent of \cite{ReginAAAI94};
+when \emph{bounded}, a dedicated algorithm for bound propagation is used \cite{LopezIJCAI03}.
+
+\begin{itemize}
+	\item \textbf{API} :
+	\begin{itemize}
+		\item \mylst{allDifferent(IntegerVariable... x)}
+		\item \mylst{allDifferent(String options, IntegerVariable... x)}
+	\end{itemize}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} :
+	\begin{itemize}
+		\item \emph{no option} clever choice made on domains of given variables
+		\item \texttt{cp:ac} for \cite{ReginAAAI94} implementation of arc consistency
+		\item \texttt{cp:bc} for \cite{LopezIJCAI03} implementation of bound consistency
+		\item \texttt{cp:clique} for propagating the clique of differences
+	\end{itemize}
+	\item \textbf{favorite domain} : depending of options.
+	\item \textbf{references} :
+      \begin{itemize}
+      \item  \cite{ReginAAAI94}: \emph{A filtering algorithm for constraints of difference in CSPs}
+      \item  \cite{LopezIJCAI03}: \emph{A fast and simple algorithm for bounds consistency of the alldifferent constraint}
+      \item global constraint catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Calldifferent.html}{\tt alldifferent}
+      \end{itemize}
+\end{itemize}
+
+
+
+\textbf{Example}:
+\begin{lstlisting}
+	int n = 8;
+	CPModel m = new CPModel();
+	IntegerVariable[] queens = new IntegerVariable[n];
+	IntegerVariable[] diag1 = new IntegerVariable[n];
+	IntegerVariable[] diag2 = new IntegerVariable[n];
+	for (int i = 0; i < n; i++) {
+	    queens[i] = makeIntVar("Q" + i, 1, n);
+	    diag1[i] = makeIntVar("D1" + i, 1, 2 * n);
+	    diag2[i] = makeIntVar("D2" + i, -n + 1, n);
+	}
+	
+	m.addConstraint(allDifferent(queens));
+	for (int i = 0; i < n; i++) {
+	    m.addConstraint(eq(diag1[i], plus(queens[i], i)));
+	    m.addConstraint(eq(diag2[i], minus(queens[i], i)));
+	}
+	m.addConstraint("cp:clique", allDifferent(diag1));
+	m.addConstraint("cp:clique", allDifferent(diag2));
+	
+	// diagonal constraints
+	CPSolver s = new CPSolver();
+	s.read(m);
+	long tps = System.currentTimeMillis();
+	s.solveAll();
+	System.out.println("tps nreines1 " + (System.currentTimeMillis() - tps) + " nbNode " + s.getNodeCount());
+	assertEquals(92,s.getNbSolutions());
+\end{lstlisting}

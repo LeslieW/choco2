@@ -1,0 +1,633 @@
+%\part{advanced}
+\label{advanced}
+\hypertarget{advanced}{}
+
+
+\chapter{Advanced uses of Choco}\label{advanced:advancedusesofchoco}\hypertarget{advanced:advancedusesofchoco}{}
+
+\section{Define your own limit search space}\label{advanced:defineyourownlimitsearchspace}\hypertarget{advanced:defineyourownlimitsearchspace}{}
+
+To define your own limits/statistics (notice that a limit object can be used only to get statistics about the search), you can create a limit object by extending the \texttt{AbstractGlobalSearchLimit} class or implementing directly the interface \texttt{IGlobalSearchLimit}. Limits are managed at each node of the tree search and are updated each time a node is open or closed. Notice that limits are therefore time consuming. Implementing its own limit need only to specify to the following interface :
+
+\begin{lstlisting}
+	/**
+	 * The interface of objects limiting the global search exploration
+	 */
+	public interface GlobalSearchLimit {
+
+	  /**
+	   * resets the limit (the counter run from now on)
+	   * @param first true for the very first initialization, false for subsequent ones
+	   */
+	  public void reset(boolean first);
+	
+	  /**
+	   * notify the limit object whenever a new node is created in the search tree
+	   * @param solver the controller of the search exploration, managing the limit
+	   * @return true if the limit accepts the creation of the new node, false otherwise
+	   */
+	  public boolean newNode(AbstractGlobalSearchSolver solver);
+	
+	  /**
+	   * notify the limit object whenever the search closes a node in the search tree
+	   * @param solver the controller of the search exploration, managing the limit
+	   * @return true if the limit accepts the death of the new node, false otherwise
+	   */
+	  public boolean endNode(AbstractGlobalSearchSolver solver);
+	}
+\end{lstlisting}
+
+Look at the following example to see a concrete implementation of the previous interface. We define here a limit on the depth of the search (which is not found by default in choco). The \texttt{getWorldIndex()} is used to get the current world, i.e the current depth of the search or the number of choices which have been done from baseWorld. 
+
+\begin{lstlisting}
+	public class DepthLimit extends AbstractGlobalSearchLimit {
+	
+	  public DepthLimit(AbstractGlobalSearchSolver theSolver, int theLimit) {
+	    super(theSolver,theLimit);
+	    unit = "deep";
+	  }
+	
+	  public boolean newNode(AbstractGlobalSearchSolver solver) {
+	    nb = Math.max(nb, this.getProblem().getWorldIndex() ‚Äì
+	    this.getProblem().getSolver().getSearchSolver().baseWorld);
+	    return (nb < nbMax);
+	  }
+	
+	  public boolean endNode(AbstractGlobalSearchSolver solver) {
+	    return true;
+	  }
+	
+	  public void reset(boolean first) {
+	   if (first) {
+	    nbTot = 0;
+	   } else {
+	    nbTot = Math.max(nbTot, nb);
+	   }
+	   nb = 0;
+	  }
+\end{lstlisting}
+
+Once you have implemented your own limit, you need to tell the search solver to take it into account. Instead of using a call to the \texttt{solve()} method, you have to create the search solver by yourself and add the limit to its limits list such as in the following code :
+\begin{lstlisting}
+	Solver s = new CPSolver();
+	s.read(model);
+	s.setFirstSolution(true);
+	s.generateSearchStrategy();
+	s.getSearchStrategy().limits.add(new DepthLimit(s.getSearchStrategy(),10));
+	s.launch();
+\end{lstlisting}
+
+\section{Define your own search strategy}\label{advanced:defineyourownsearchstrategy}\hypertarget{advanced:defineyourownsearchstrategy}{}
+%A key ingredient of any constraint approach is a clever branching strategy. The construction of the search tree is done according to a series of Branching objects (that plays the role of achieving intermediate goals in logic programming). The user may specify the sequence of branching objects to be used to build the search tree. 
+Section~\hyperlink{solver:searchstrategy}{Search strategy} presented the default branching strategies available in Choco and showed how to post them or to compose them as goals.
+In this section, we will start with a very simple and common way to branch by choosing values for variables and specially how to define its own variable/value selection strategy. We will then focus on more complex branching such as dichotomic or n-ary choices. Finally we will show how to control the search space in more details with well known strategy such as LDS (Limited discrepancy search).
+
+% SOFREM: duplicated section see solver
+%\subsection{Building a sequence of branching object}\label{advanced:buildingasequenceofbranchingobject}\hypertarget{advanced:buildingasequenceofbranchingobject}{}
+%Adding a new goal is made through the solver with the \texttt{addGoal(AbstractBranching b)} method. As for the addition of your own limit, don't call the \texttt{solve()} method, but instead: build the solver by yourself, add your sequence of branching, and call the \texttt{launch()} method of the solver. 
+
+%The following example add three branching objects on integer variables \emph{vars1, vars2} and set variables \emph{svars}. The first two branching are both \texttt{AssignVar} (see next section) but uses two different variable/values selection strategies:
+%\begin{lstlisting}
+%	s.attachGoal(new AssignVar(new MinDomain(s,s.getVar(vars1)), new IncreasingDomain()));
+%	s.addGoal(new AssignVar(new DomOverDeg(s,s.getVar(vars2)),new DecreasingDomain());
+%	s.addGoal(new AssignSetVar(new MinDomSet(s,s.getVar(svars)), new MinEnv(s)));
+%	s.generateSearchStrategy();
+%	s.launch();
+%\end{lstlisting}
+%An example of how to set the search solver in case of optimization in given in the \hyperlink{schedulinganduseofthecumulative}{tutorial on the cumulative constraint}.
+
+%Choco provides means of composing search trees by specifying the heuristics used for selecting variables and values on integer variables in case of \texttt{AssignVar} branchings:
+%\begin{lstlisting}
+%	s.attachGoal(new AssignVar(new MinDomain(s,s.getVar(vars1)), new IncreasingDomain()));
+%	s.addGoal(new AssignVar(new DomOverDeg(s,s.getVar(vars2)),new DecreasingDomain());
+%%    s.addGoal(new AssignSetVar(new MinDomSet(s,s.getVar(svars)), new MinEnv(s)));
+%	s.generateSearchStrategy();
+%	s.launch();
+%\end{lstlisting}
+
+% An \texttt{AssignVar} branching takes as input the variable and value selection strategy which are based on the following interfaces:
+For integer variables, the variable and value selection strategy objects are based on the following interfaces:
+\begin{itemize}
+	\item \texttt{IntVarSelector} : Interface for the (integer) variable selection
+	\item \texttt{ValIterator} : Interface to describes an iteration scheme on the domain of a variable
+	\item \texttt{ValSelector} : Interface for a value selection
+\end{itemize}
+%The default branching heuristic used by Choco is to choose the variable with current minimum domain size first and to take its values in increasing order. 
+Concrete examples of these interfaces are respectively \texttt{DomOverDeg}, \texttt{IncreasingDomain}, \texttt{MinVal}.
+The default branchings currently supported by Choco are available in packages \texttt{src.choco.cpsolver.search.integer} for integer variables, \texttt{src.choco.cpsolver.search.set} for set variables, \texttt{src.choco.cpsolver.search.real} for real variables.
+%Concrete examples of the previous interfaces are classes \texttt{MinDomain}, \texttt{MostConstrained}, \texttt{DomOverDeg}, \texttt{RandomIntVarSelector}, etc. 
+%If you only want to use one single goal but with customized value and variable heuristics, you can use the API available on the \texttt{Solver} class (before calling the \texttt{solve()} method) as shown on the following example:
+%\begin{lstlisting}
+%  solver.setVarIntSelector(new RandomIntVarSelector(pb));
+%\end{lstlisting}
+%Changing the values enumeration/selection can be done in the same way:
+%\begin{lstlisting}
+%  // select the value in increasing order
+%  solver.setValIntIterator(new DecreasingDomain());
+%  // or select a random value
+%  solver.setValIntSelector(new RandomIntValSelector());
+%\end{lstlisting}
+
+\subsection{Define your own variable selection}\label{advanced:defineyourownvariableselection}\hypertarget{advanced:defineyourownvariableselection}{}
+You may extend this small library of branching schemes and heuristics by defining your own concrete classes of \texttt{AbstractIntVarSelector}. We give here an example of an \texttt{IntVarSelector} with the implementation of a static variable ordering :
+\begin{lstlisting}
+  public class StaticVarOrder extends AbstractIntVarSelector {
+
+      // the sequence of variables that need be instantiated
+	  protected IntDomainVar[] vars;
+	
+	  public StaticVarOrder(IntDomainVar[] vars) {
+          this.vars = vars;
+	  }
+	
+	  public IntDomainVar selectIntVar() {
+          for (int i = 0; i < vars.length; i++)
+              if (!vars[i].isInstantiated())
+                  return vars[i];
+          return null;
+	  }
+  }
+\end{lstlisting}
+
+Notice on this example that you only need to implement method \texttt{selectIntVar()} which belongs to the contract of \texttt{IntVarSelector}. This method should return a non instantiated variable or \texttt{null}. Once the branching is finished, the next branching (if one exists) is taken by the search algorithm to continue the search, otherwise, the search stops as all variable are instantiated. To avoid the loop over the variables of the branching, a backtrackable integer (\texttt{StoredInt}) could be used to remember the last instantiated variable and to directly select the next one in the table. Notice that backtrackable structures could be used in any of the code presented in this chapter to speedup the computation of dynamic choices.
+
+You can add your variable selector to the solver as common variable selector, using the \texttt{Solver} API:
+\begin{lstlisting}
+  solver.setVarIntSelector(new MyVarSelector(...));
+\end{lstlisting}
+
+\subsection{Define your own value selection}\label{advanced:defineyourownvalueselection}\hypertarget{advanced:defineyourownvalueselection}{}
+You may also define your own concrete classes of \texttt{ValIterator} or \texttt{ValSelector}. 
+
+\subsubsection{Value selector}\label{advanced:valueselector}\hypertarget{advanced:valueselector}{}
+We give here an example of an \texttt{IntValSelector} with the implementation of a minimum value selecting:
+\begin{lstlisting}
+  public class MinVal extends AbstractSearchHeuristic implements ValSelector {
+	 /**
+      * selecting the lowest value in the domain
+      * @param x the variable under consideration
+      * @return what seems the most interesting value for branching
+      */
+	  public int getBestVal(IntDomainVar x) {
+          return x.getInf();
+	  }
+  }
+\end{lstlisting}
+Only \texttt{getBestVal()} method must be implemented, returning the best value \emph{in the domain} according to the heuristic.
+
+You can add your value selector to the solver as common variable selector, using the \texttt{Solver} API:
+\begin{lstlisting}
+  solver.setValIntSelector(new MyValSelector(...));
+\end{lstlisting}
+
+\subsubsection{Values iterator}\label{advanced:valuesiterator}\hypertarget{advanced:valuesiterator}{}
+We give here an example of an \texttt{ValIterator} with the implementation of an increasing domain iterator:
+\begin{lstlisting}
+  public final class IncreasingDomain implements ValIterator {
+	  /**
+	   * testing whether more branches can be considered after branch i, 
+       * on the alternative associated to variable x
+	   * @param x the variable under scrutiny
+	   * @param i the index of the last branch explored
+	   * @return true if more branches can be expanded after branch i
+	   */
+       public boolean hasNextVal(Var x, int i) {
+           return (i < ((IntDomainVar) x).getSup());
+       }
+	
+	  /**
+	   * accessing the index of the first branch for variable x
+	   * @param x the variable under scrutiny
+	   * @return the index of the first branch: first value to be assigned to x
+	   */
+       public int getFirstVal(Var x) {
+           return ((IntDomainVar) x).getInf();
+       }
+	
+	  /**
+	   * generates the index of the next branch after branch i, 
+       * on the alternative associated to variable x
+	   * @param x the variable under scrutiny
+	   * @param i the index of the last branch explored
+	   * @return the index of the next branch to be expanded after branch i
+	   */
+       public int getNextVal(Var x, int i) {
+           return ((IntDomainVar) x).getNextDomainValue(i);
+       }
+   }
+\end{lstlisting}
+%Works as an basic \texttt{Iterator} object, implementing the three main methods \texttt{hasNextVal()}, \texttt{getFirstVal()} and \texttt{getNextVal()}.
+
+You can add your value iterator to the solver as common variable selector, using the \texttt{Solver} API:
+\begin{lstlisting}
+  s.setValIntIterator(new MyValIterator(..));
+\end{lstlisting}
+
+\subsection{How does a search loop work ?}\label{advanced:howdoesasearchloopwork}\hypertarget{advanced:howdoesasearchloopwork}{}
+The seach loop is created when a \texttt{solve()} method is called. It goes down and up in the branches in order to cover the tree search. 
+
+%\subsubsection{Search loop}\label{advanced:searchloop}\hypertarget{advanced:searchloop}{}
+\begin{lstlisting}[title={Algorithm of the search loop in Choco}]
+  next_move = new node
+  WHILE no solution AND in search limit
+        IF next_move is new node
+	    THEN
+	        create a new node : variable/value selection ;
+	        IF node exists 
+	        THEN
+	            next_move <-- go down branch ;            
+	        ELSE 
+	            next_move <-- go up branch ;
+	            solution is found ;
+	
+	    ELSE IF next_move is go down branch
+	        propagate ;
+	        IF no contradiction 
+	        THEN
+	            next_move <-- new node ;                        
+	        ELSE
+	            next_move <-- go up branch ;
+	        
+	    ELSE IF next_move is go up branch 
+	        find next branch ;
+	        propagate ;
+	        IF has next branch AND no contradiction
+	        THEN
+	            next_move <-- go down branch ;                            
+	        ELSE
+	            next_move <-- go up branch ;
+	
+	    END IF
+	
+  END WHILE
+\end{lstlisting}
+%\subsubsection{Search loop with recomputation}\label{advanced:searchloopwithrecomputation}\hypertarget{advanced:searchloopwithrecomputation}{}
+
+\subsection{How to define your own Branching object}\label{advanced:beyondvariable/valueselection,howtodefineyourownbranchingobject}\hypertarget{advanced:beyondvariable/valueselection,howtodefineyourownbranchingobject}{}
+
+Beyond Variable/value selection...
+
+\todo{under development} See \href{http://choco-solver.net/index.phptitle=userguide:beyondvariable.2fvalueselection.2chowtodefineyourownbranchingobject}{old version}
+
+\section{Define your own constraint}\label{advanced:defineyourownconstraint}\hypertarget{advanced:defineyourownconstraint}{}
+
+This section describes how to add you own constraint, with specific propagation algorithms. Note that this section is only useful in case you want to express a constraint for which the basic propagation algorithms (using tables of tuples, or boolean predicates) are not efficient enough to propagate the constraint.
+
+The general process consists in defining a new constraint class and implementing the various propagation methods. We recommend the user to follow the examples of existing constraint classes (for instance, such as \texttt{GreaterOrEqualXYC} for a binary inequality) 
+
+\subsection{The constraint hierarchy}\label{advanced:theconstrainthierarchy}\hypertarget{advanced:theconstrainthierarchy}{}
+
+Each new constraint must be represented by an object implementing the \texttt{\bf SConstraint} interface (\texttt{S} for solver constraint). To help the user defining new constraint classes, several abstract classes defining \texttt{SConstraint} have been implemented. These abstract classes provide the user with a management of the constraint network and the propagation engineering. They should be used as much as possible.
+
+For constraints on integer variables, the easiest way to implement your own constraint is to inherit from one of the following classes, depending of the number of solver integer variables (\texttt{IntDomainVar}) involved:
+
+\centerline{\begin{tabular}{ll}
+      \hline
+  Default class to implement &  number of solver integer variables \\
+  \hline
+  \mylst{AbstractUnIntSConstraint} &  \textbf{one} variable \\
+  \mylst{AbstractBinIntSConstraint} &  \textbf{two} variables \\
+  \mylst{AbstractTernIntSConstraint} &  \textbf{three} variables \\
+  \mylst{AbstractLargeIntSConstraint} &  any number of variables. \\
+  \hline\\
+\end{tabular}}
+
+\noindent Constraints over integers must implement the following methods (grouped in the \texttt{IntSConstraint} interface):
+
+\noindent\begin{tabular}{lp{.6\linewidth}}
+  \hline
+  Method to implement &  description \\
+  \hline
+  \mylst{pretty()} &Returns a pretty print of the constraint \\
+  \mylst{propagate()} &The main propagation method (propagation from scratch). Propagating the constraint until local consistency is reached. \\
+  \mylst{awake()} &Propagating the constraint for the very first time until local consistency is reached. The awake is meant to initialize the data structures contrary to the propagate. Specially, it is important to avoid initializing the data structures in the constructor. \\
+  \mylst{awakeOnInst(int x)} &Default propagation on instantiation: full constraint re-propagation. \\
+  \mylst{awakeOnBounds(int x)} &Default propagation on improved bounds: propagation on domain revision. \\
+  \mylst{awakeOnRemovals(int x, IntIterator v)} &Default propagation on mutliple values removal: propagation on domain revision. The iterator allow to iterate over the values that have been removed. \\
+&\\
+\hline
+\multicolumn{2}{l}{Methods \texttt{awakeOnBounds} and \texttt{awakeOnRemovals} can be replaced by more fine grained methods:}\\
+\hline
+%Alternative Method &  description \\
+%  \hline
+  \mylst{awakeOnInf(int x)} &Default propagation on improved lower bound: propagation on domain revision. \\
+  \mylst{awakeOnSup(int x)} &Default propagation on improved upper bound: propagation on domain revision. \\
+  \mylst{awakeOnRem(int x, int v)} &Default propagation on one value removal: propagation on domain revision.  \\
+&\\
+  \hline
+\multicolumn{2}{l}{To use the constraint in expressions or reification, the following minimum API is mandatory:}\\
+  \hline
+  \mylst{isSatisfied(int[] x)} &Tests if the constraint is satisfied when the variables are instantiated. \\
+	\mylst{isEntailed()} &Checks if the constraint must be checked or must fail. It returns true if the constraint is known to be satisfied whatever happend on the variable from now on, false if it is violated. \\
+	\mylst{opposite()} &It returns an AbstractSConstraint that is the opposite of the current constraint. \\
+    \hline\\
+	\end{tabular}
+
+In the same way, a \textbf{set constraint} can inherit from \texttt{AbstractUnSetSConstraint}, \texttt{AbstractBinSetSConstraint}, \texttt{AbstractTernSetSConstraint} or \texttt{AbstractLargeSetSConstraint}.
+
+A \textbf{real constraint} can inherit from \texttt{AbstractUnRealSConstraint}, \texttt{AbstractBinRealSConstraint} or \texttt{AbstractLargeRealSConstraint}.
+
+A mixed constraint between \textbf{set and integer variables} can inherit from \texttt{AbstractBinSetIntSConstraint} or \texttt{AbstractLargeSetIntSConstraint}.
+
+\begin{note}
+A simple way to implement its own constraint is to:
+\begin{itemize}
+	\item create an empty constraint with only \texttt{propagate()} method implemented and every \texttt{awakeOnXxx()} ones set to \texttt{this.constAwake(false);}
+	\item when the propagation filter is sure, separate it into the \texttt{awakeOnXxx()} methods in order to have finer granularity
+	\item finally, if necessary, use backtrackables objects to improve the efficient of your constraint
+\end{itemize}
+
+\end{note}
+
+\subsubsection{How do I add my constraint to the Model ?}\label{advanced:howdoiaddmyconstrainttothemodel}\hypertarget{advanced:howdoiaddmyconstrainttothemodel}{}
+
+Adding your constraint to the model requires you to definite a specific constraint manager (that can be a inner class of your Constraint).
+This manager need to implement:
+\begin{lstlisting}
+makeConstraint(Solver s, Variable[] vars, Object params, HashSet<String> options)
+\end{lstlisting}
+This method allows the Solver to create an instance of your constraint, with your parameters and Solver objects.
+
+\begin{note}
+If you create your constraint manager as an inner class, you must declare this class as \textbf{public and static}.
+If you don't, the solver can't instantiate your manager.
+\end{note}
+
+Once this manager has been implemented, you simply add your constraint to the model using the \texttt{addConstraint()} API with a \texttt{ComponentConstraint} object:
+\begin{lstlisting}
+  model.addConstraint( new ComponentConstraint(MyConstraintManager.class, params, vars) );
+  // OR
+  model.addConstraint( new ComponentConstraint("package.of.MyConstraint", params, vars) );
+\end{lstlisting}
+Where \emph{params} is whatever you want (\texttt{Object[], int, String},...) and \emph{vars} is an array of Model Variables (or more specific) objects.
+
+\subsection{Example: implement and add the \texttt{IsOdd} constraint}
+One creates the constraint by implementing the \texttt{AbstractUnIntSConstraint} (one integer variable) class:
+\begin{lstlisting}
+	public class IsOdd extends AbstractUnIntSConstraint {
+	
+	        public IsOdd(IntDomainVar v0) {
+	            super(v0);
+	        }
+	
+            /** Default initial propagation: full constraint re-propagation */
+            public void awake() throws ContradictionException {
+	            DisposableIntIterator it = v0.getDomain().getIterator();
+                while(it.hasNext()){
+                    int val = it.next();
+                    if(val%2==0)
+                        v0.removeVal(val, 0);
+                }
+	        }
+	
+	        /** Propagation until local consistency is reached */
+	        public void propagate() throws ContradictionException {
+	            if(v0.isInstantiated() && v0.getVal()%2==0)
+                    fail();
+	        }
+	    }
+\end{lstlisting}
+
+To add the constraint to the model, one creates the following class (or inner class):
+\begin{lstlisting}
+  public static class IsOddManager implements IntConstraintManager {
+      public SConstraint makeConstraint(Solver s, Variable[] vars, Object params, HashSet<String> options) {
+          return new IsOdd(s.getVar((IntegerVariable)vars[0]));
+      }
+  }
+\end{lstlisting}
+It calls the constructor of the constraint, with every \emph{vars}, \emph{params} and \emph{options} needed.
+
+Then, the constraint can be added to a model as follows:
+\begin{lstlisting}
+	// Creation of the model
+	Model m = new CPModel();
+	
+	// Declaration of the variable
+	IntegerVariable aVar = Choco.makeIntVar("a_variable", 0, 10);
+	
+	// Adding the constraint to the model, 1st solution:
+	m.addConstraint(new ComponentConstraint(IsOddManager.class, null, new IntegerVariable[]{aVar}));
+	// OR 2nd solution:
+	m.addConstraint(new ComponentConstraint("myPackage.Constraint.IsOddManager", null, new IntegerVariable[]{aVar}));
+	
+	Solver s = new CPSolver();
+	s.read(m);
+	s.solve();
+\end{lstlisting}
+And that's it!!
+
+\subsection{Example of an empty constraint}\label{advanced:anexempleofemptyconstraint}\hypertarget{advanced:anexempleofemptyconstraint}{}
+
+See the complete code: \href{media/zip/constraintpattern.zip}{ConstraintPattern.zip}
+
+\begin{lstlisting}
+  public class ConstraintPattern extends AbstractLargeIntSConstraint {
+      
+      public ConstraintPattern(IntDomainVar[] vars) {
+          super(vars);
+      }
+	
+      /**
+      * pretty print. The String is not constant and may depend on the context.
+      * @return a readable string representation of the object
+      */
+      public String pretty() {
+          return null;
+      }
+	
+      /**
+      * check whether the tuple satisfies the constraint
+      * @param tuple values
+      * @return true if satisfied
+      */
+      public boolean isSatisfied(int[] tuple) {
+          return false;
+      }
+
+      /**
+      * propagate until local consistency is reached
+      */
+      public void propagate() throws ContradictionException {
+          // elementary method to implement
+      }
+	    
+      /**
+      * propagate for the very first time until local consistency is reached.
+      */
+      public void awake() throws ContradictionException {
+          constAwake(false);        // change if necessary
+      }
+	
+	
+      /**
+      * default propagation on instantiation: full constraint re-propagation
+      * @param var index of the variable to reduce
+      */
+      public void awakeOnInst(int var) throws ContradictionException {
+          constAwake(false);        // change if necessary
+      }
+	
+      /**
+      * default propagation on improved lower bound: propagation on domain revision
+      * @param var index of the variable to reduce
+      */
+      public void awakeOnInf(int var) throws ContradictionException {
+          constAwake(false);        // change if necessary
+      }
+	
+	
+      /**
+      * default propagation on improved upper bound: propagation on domain revision
+      * @param var index of the variable to reduce
+      */
+      public void awakeOnSup(int var) throws ContradictionException {
+          constAwake(false);        // change if necessary
+      }
+	
+      /**
+      * default propagation on improve bounds: propagation on domain revision
+      * @param var index of the variable to reduce
+      */
+      public void awakeOnBounds(int var) throws ContradictionException {
+          constAwake(false);        // change if necessary
+      }
+	
+      /**
+      * default propagation on one value removal: propagation on domain revision
+      * @param var index of the variable to reduce
+      * @param val the removed value
+      */
+      public void awakeOnRem(int var, int val) throws ContradictionException {
+          constAwake(false);        // change if necessary
+      }
+	
+      /**
+      * default propagation on one value removal: propagation on domain revision
+      * @param var index of the variable to reduce
+      * @param delta iterator over remove values
+      */
+      public void awakeOnRemovals(int var, IntIterator delta) throws ContradictionException {
+          constAwake(false);        // change if necessary
+      }
+  }
+\end{lstlisting}
+
+The first step to create a constraint in Choco is to implement all \texttt{awakeOn...} methods with \texttt{constAwake(false)} and to put your propagation algorithm in the \texttt{propagate()} method. 
+
+A constraint can choose not to react to fine grained events such as the removal of a value of a given variable but instead delay its propagation at the end of the fix point reached by ``fine grained events'' and fast constraints that deal with them incrementally (that's the purpose of the constraints events queue). 
+
+To do that, you can use \texttt{constAwake(false)} that tells the solver that you want this constraint to be called only once the variables events queue is empty. This is done so that heavy propagators can delay their action after the fast one to avoid doing a heavy processing at each single little modification of domains.
+
+\section{Define your own operator}\label{advanced:defineyourownoperator}\hypertarget{advanced:defineyourownoperator}{}
+\todo{to complete}
+
+\section{Define your own variable}\label{advanced:defineyourownvariable}\hypertarget{advanced:defineyourownvariable}{}
+\todo{to complete}
+
+\section{Backtrackable structures}\label{advanced:backtrackablestructures}\hypertarget{advanced:backtrackablestructures}{}
+\todo{to complete}
+
+\section{Logging System}\label{advanced:loggingsystem}\hypertarget{advanced:loggingsystem}{}
+
+Choco logging system is based on the \texttt{java.util.logging} package and located in the package \texttt{common.logging}.
+Most Choco abstract classes or interfaces propose a static field \texttt{LOGGER}.
+The following figures present the architecture of the logging system with the default verbosity.
+
+\insertGraphique{.9\linewidth}{media/logger-default.png}{Logger Tree with the default verbosity}
+
+The shape of the node depicts the type of logger:
+\begin{itemize}
+	\item The \emph{house} loggers represent private loggers. Do not use directly these loggers because their level are low and all messages would always be displayed.
+	\item The \emph{octagon} loggers represent critical loggers. These loggers are provided in the variables, constraints and search classes and could have a huge impact on the global performances.
+	\item The \emph{box} loggers are provided for dev and users.
+\end{itemize}
+The color of the node gives its logging level with DEFAULT verbosity:
+\texttt{Level.FINEST} (\textcolor{yellow}{gold}),
+\texttt{Level.INFO} (\textcolor{orange}{orange}),
+\texttt{Level.WARNING} (\textcolor{red}{red}).
+
+\subsubsection{Verbosity.}\label{advanced:verbosity}\hypertarget{advanced:verbosity}{}
+The following table summarizes the verbosity available in choco: 
+\begin{center}
+ 	\begin{tabular}{l c l}
+      \hline
+      Verbosity &level & description \\
+      \hline
+		 OFF &0 &  disable logging \\
+		 SILENT &1 &  display only severe messages \\
+		 DEFAULT &2 &  display warning and some API messages \\
+		 VERBOSE &3 &  display more API messages and a solving message \\
+		 SOLUTION &4 &  display all solutions \\
+		 SEARCH &5 &  display the search tree \\
+		 FINEST &6 &  display all logs\\
+         \hline\\
+	\end{tabular}
+\end{center}
+More precisely, if the verbosity level is greater than DEFAULT, then the verbosity levels of the model and of the solver are increased to INFO, and the verbosity levels of the search and of the branching are slightly modified to display the solution(s) and search messages.
+
+The verbosity level can be changed as follows:
+\begin{lstlisting}
+	ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+\end{lstlisting}
+
+\subsubsection{How to write logging statements ?}\label{advanced:howtowriteloggingstatements}\hypertarget{advanced:howtowriteloggingstatements}{}
+
+\begin{itemize}
+	\item Critical Loggers are provided to display error or warning. Displaying too much message really \textbf{impacts the performances}.
+	\item Check the logging level before creating arrays or strings.
+	\item Avoid multiple calls to \texttt{Logger} functions. Prefer to build a \texttt{StringBuilder} then call the \texttt{Logger} function.
+	\item Use the \texttt{Logger.log} function instead of building string in \texttt{Logger.info()}.
+\end{itemize}
+
+\subsubsection{Handlers.}\label{advanced:handlers}\hypertarget{advanced:handlers}{}
+Logs are displayed on \texttt{System.out} but warnings and severe messages are also displayed on \texttt{System.err}.
+\texttt{ChocoLogging.java} also provides utility functions to easily change handlers:
+\begin{itemize}
+	\item Functions \texttt{set...Handler} remove current handlers and replace them by a new handler.
+	\item Functions \texttt{add...Handler} add new handlers but do not touch existing handlers.
+\end{itemize}
+
+\subsubsection{Define your own logger.}\label{advanced:defineyourownlogger}\hypertarget{advanced:defineyourownlogger}{}
+\begin{lstlisting}
+ChocoLogging.makeUserLogger(String suffix);
+\end{lstlisting}
+
+% \subsubsection{Figure source}\label{advanced:figuresource}\hypertarget{advanced:figuresource}{}
+% \begin{lstlisting}
+%   digraph G {
+%       node [style=filled, shape=box];
+%       choco [shape=house,fillcolor=gold];
+	
+%       kernel [shape=house,fillcolor=gold];
+%       engine [shape=octagon,fillcolor=indianred];
+%       search [shape=octagon,fillcolor=darkorange];
+%       branching [shape=octagon,fillcolor=indianred];
+	
+%       api [shape=house,fillcolor=gold];
+%       model [fillcolor=indianred];
+%       solver [fillcolor=indianred];
+%       parser [fillcolor=darkorange];
+      
+%       user [fillcolor=darkorange];
+%       samples [fillcolor=darkorange];
+      
+%       test [fillcolor=indianred];
+      
+%       choco -> kernel;
+%       choco -> API;
+%       choco -> user;
+%       choco -> test;
+      
+%       kernel -> engine;
+%       kernel -> search;
+      
+%       api -> model;
+%       api -> solver
+%       api -> parser;
+      
+%       user  -> samples;
+      
+%       search -> branching;
+% 	}
+% \end{lstlisting}

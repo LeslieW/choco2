@@ -1,0 +1,68 @@
+%\part{max}
+\label{max}
+\hypertarget{max}{}
+
+\section{max (constraint)}\label{max:maxconstraint}\hypertarget{max:maxconstraint}{}
+
+\subsection{max of a list}\label{max:maxofalist}\hypertarget{max:maxofalist}{}
+
+\begin{notedef}
+\texttt{max}$(x,z)$ states that $z$ is equal to the greater element of vector $x$:
+$$z = \max(x_1, x_2, ..., x_n)$$  
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API}:
+	\begin{itemize}
+		\item \mylst{max(IntegerVariable[] x, IntegerVariable z)}
+		\item \mylst{max(IntegerVariable x1, IntegerVariable x2, IntegerVariable z)}
+		\item \mylst{max(int x1, IntegerVariable x2, IntegerVariable z)}
+		\item \mylst{max(IntegerVariable x1, int x2, IntegerVariable z)}
+	\end{itemize}
+	\item \textbf{return type}: \texttt{Constraint}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : \emph{to complete}
+	\item \textbf{references} :\\
+      global constraint catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Cmaximum.html}{maximum}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s= new CPSolver();
+	IntegerVariable x = makeIntVar("x", 1, 5);
+	IntegerVariable y = makeIntVar("y", 1, 5);
+	IntegerVariable z = makeIntVar("z", 1, 5);
+	m.addVariable("cp:bound", x, y, z);
+	m.addConstraint(max(y, z, x));
+	s.read(m);
+	s.solve();
+\end{lstlisting}
+
+\subsection{max of a set}\label{max:maxofaset}\hypertarget{max:maxofaset}{}
+
+\begin{notedef}
+\texttt{max}$(s,x,z)$ states that $z$ is equal to the greater element of vector $x$ whose index is in set $s$:
+$$z = \max_{i\in s}( x_i )$$
+  \end{notedef}
+
+\begin{itemize}
+	\item \textbf{API}:
+	\begin{itemize}
+		\item \mylst{max(SetVariable s, IntegerVariable[] x, IntegerVariable z)}
+	\end{itemize}
+	\item \textbf{return type}: \texttt{Constraint}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : \emph{to complete}
+\end{itemize}
+
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s= new CPSolver();
+	IntegerVariable[] x = constantArray(new int[]{5,7,9,10,12,3,2});
+	IntegerVariable max = makeIntVar("max", 1, 100);
+	SetVariable set = makeSetVar("set", 0, x.length-1);
+	m.addConstraints(max(set, x, max), leqCard(set, constant(5)));
+	s.read(m);
+	s.solve();
+\end{lstlisting}

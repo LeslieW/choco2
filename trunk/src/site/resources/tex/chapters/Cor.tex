@@ -1,0 +1,30 @@
+%\part{or}
+\label{or}
+\hypertarget{or}{}
+
+\section{or (constraint)}\label{or:orconstraint}\hypertarget{or:orconstraint}{}
+\begin{notedef}
+  \texttt{or}$(c_1,\ldots,c_n)$ states that one or more of the constraints in arguments are satisfied:
+$$ c_1 \lor c_2 \lor\ldots\lor c_n$$
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} : \mylst{or(Constraint... c)}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : \emph{n/a}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();
+	
+	IntegerVariable v1 = makeIntVar("v1", 0, 1);
+	IntegerVariable v2 = makeIntVar("v2", 0, 1);
+	
+	m.addConstraint(or(eq(v1, 1), eq(v2, 1)));
+	
+	s.read(m);
+	s.solve();
+\end{lstlisting}

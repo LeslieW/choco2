@@ -1,0 +1,32 @@
+%\part{ifonlyif}
+\label{ifonlyif}
+\hypertarget{ifonlyif}{}
+
+\section{ifOnlyIf (constraint)}\label{ifonlyif:ifonlyifconstraint}\hypertarget{ifonlyif:ifonlyifconstraint}{}
+\begin{notedef}
+  \texttt{ifOnlyIf}$(c_1,c_2)$ states that $c_1$ holds if and only if $c_2$ holds:
+$$c_1\iff c_2$$
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} : \mylst{ifOnlyIf(Constraint c1, Constraint c2)}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : \emph{n/a}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();
+	
+	IntegerVariable x = makeIntVar("x", 1, 3);
+	IntegerVariable y = makeIntVar("y", 1, 3);
+	IntegerVariable z = makeIntVar("z", 1, 3);
+	m.addVariable("cp:bound",x ,y, z);
+	
+	m.addConstraint(ifOnlyIf(lt(x, y), lt(y, z)));
+	
+	s.read(m);
+	s.solveAll();
+\end{lstlisting}

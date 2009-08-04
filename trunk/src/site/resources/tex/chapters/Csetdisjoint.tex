@@ -1,0 +1,28 @@
+%\part{setdisjoint}
+\label{setdisjoint}
+\hypertarget{setdisjoint}{}
+
+\section{setDisjoint (constraint)}\label{setdisjoint:setdisjointconstraint}\hypertarget{setdisjoint:setdisjointconstraint}{}
+\begin{notedef}
+  \texttt{setDisjoint}$(s_1,s_2)$ states that the two set arguments are disjoint:
+$$s_1\cap s_2=\emptyset$$
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} : \mylst{setDisjoint(SetVariable s1, SetVariable s2)}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} :\emph{n/a}
+	\item \textbf{favorite domain} : \emph{to complete}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();
+	SetVar x = makeSetVar("X", 1, 3);
+	SetVar y = makeSetVar("Y", 1, 3);
+	Constraint c1 = setDisjoint(x, y);
+	m.addConstraint(c1);
+	s.read(m);
+	s.solveAll();
+\end{lstlisting} 

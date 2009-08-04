@@ -1,0 +1,34 @@
+
+\section{min (operator)}\label{min:minoperator}\hypertarget{min:minoperator}{}
+Returns an expression variable equals to the smaller value of the argument (\(min(x_1, x_2, ..., x_n)\)).
+
+\begin{itemize}
+	\item \textbf{API} :
+	\begin{itemize}
+		\item min(IntegerExpressionVariable x1, IntegerExpressionVariable x2)
+		\item min(int x1, IntegerExpressionVariable x2)
+		\item min(IntegerExpressionVariable x1, int x2)
+		\item min(IntegerExpressionVariable[] x)
+	\end{itemize}
+	\item \textbf{return type}: IntegerExpressionVariable
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : \emph{to complete}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	m.setDefaultExpressionDecomposition(true);
+	IntegerVariable[] v = makeIntVarArray("v", 3, -3, 3);
+	IntegerVariable maxv = makeIntVar("max", -3, 3);
+	Constraint c = eq(maxv, min(v));
+	m.addConstraint(c);
+	Solver s = new CPSolver();
+	s.read(m);
+	s.solveAll();
+\end{lstlisting}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

@@ -1,0 +1,32 @@
+%\part{disjunctive}
+\label{disjunctive}
+\hypertarget{disjunctive}{}
+
+\section{disjunctive (constraint)}\label{disjunctive:disjunctiveconstraint}\hypertarget{disjunctive:disjunctiveconstraint}{}
+
+\begin{notedef}
+  \texttt{disjunctive(start,duration)} states that a set of tasks (defined by their starting times and durations) are executed on a ddisjunctive resource, i.e. they do not overlap in time:
+$$|\{i\ |\ \mathtt{start}[i]\le t < \mathtt{start}[i]+\mathtt{duration}[i]\}| \le 1,\quad (\forall \text{ time } t)$$
+\end{notedef}
+
+The notion of task does not exist yet in Choco. The \texttt{disjunctive} takes therefore as input arrays of integer variables (of same size $n$) denoting the starting and duration of each task. When the array of finishing times is also specified, the constraint ensures that \texttt{start[i] + duration[i] = end[i]} for all task $i$.
+As usual, a task is executed in the interval \texttt{[start,end-1]}.
+
+\begin{itemize}
+	\item \textbf{API} :
+	\begin{itemize}
+		\item \mylst{disjunctive(IntegerVariable[] start, int[] duration, String...options)}
+		\item \mylst{disjunctive(IntegerVariable[] start, IntegerVariable[] duration, String... options)}
+		\item \mylst{disjunctive(IntegerVariable[] start, IntegerVariable[] end, IntegerVariable[] duration, String... options)}
+		\item \mylst{disjunctive(IntegerVariable[] start, IntegerVariable[] end, IntegerVariable[] duration, IntegerVariable uppBound, String... options)}
+	\end{itemize}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} :\emph{n/a}
+	\item \textbf{favorite domain} : \emph{to complete}
+	\item \textbf{references} :\\
+      global constraint catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Cdisjunctive.html}{\tt disjunctive}
+\end{itemize}
+
+\textbf{Example}:
+
+\mylst{//TODO: complete} 

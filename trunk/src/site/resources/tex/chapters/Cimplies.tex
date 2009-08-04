@@ -1,0 +1,34 @@
+%\part{implies}
+\label{implies}
+\hypertarget{implies}{}
+
+\section{implies (constraint)}\label{implies:impliesconstraint}\hypertarget{implies:impliesconstraint}{}
+\begin{notedef}
+  \texttt{implies}$(c_1,c_2)$ states that if $c_1$ holds then $c_2$ holds:
+$$c_1\implies c_2$$
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} : \mylst{implies(Constraint c1, Constraint c2)}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : \emph{n/a}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();
+	
+	IntegerVariable x = makeIntVar("x", 1, 2);
+	IntegerVariable y = makeIntVar("y", 1, 2);
+	IntegerVariable z = makeIntVar("z", 1, 2);
+	
+	m.addVariable("cp:bound",x ,y, z);
+	
+	Constraint e1 = implies(leq(x, y), leq(x, z));
+	m.addConstraint(e1);
+	
+	s.read(m);
+	s.solveAll();
+\end{lstlisting}

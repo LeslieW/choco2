@@ -1,0 +1,35 @@
+%\part{infeastuplefc}
+\label{infeastuplefc}
+\hypertarget{infeastuplefc}{}
+
+\section{infeasTupleFC (constraint)}\label{infeastuplefc:infeastuplefcconstraint}\hypertarget{infeastuplefc:infeastuplefcconstraint}{}
+\begin{notedef}
+  \texttt{infeasTupleFC}$(x,feasTuples)$ states an extensional constraint on $(x_1,\ldots,x_n)$ defined by the table $infeasTuples$ of compatible tuples of values, and then performs Forward Checking:
+      $$\forall \text{ tuple } i\ |\quad (x_1,\ldots,x_n)\neq infeasTuples[i]$$
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} : \mylst{infeasTupleFC(List<int[]> infeasTuples, IntegerVariable... x)}
+	\item \textbf{return type}: \texttt{Constraint}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain}: \emph{to complete}
+\end{itemize}
+
+\textbf{Example}:
+\begin{lstlisting}
+	Model m = new CPModel();
+	Solver s = new CPSolver();
+	IntegerVariable x = makeIntVar("x", 1, 5);
+	IntegerVariable y = makeIntVar("y", 1, 5);
+	IntegerVariable z = makeIntVar("z", 1, 5);
+	
+	ArrayList forbiddenTuples = new ArrayList();
+	forbiddenTuples.add(new int[]{1, 1, 1});
+	forbiddenTuples.add(new int[]{2, 2, 2});
+	forbiddenTuples.add(new int[]{2, 5, 3});
+	
+	m.addConstraint(infeasTupleFC(forbiddenTuples, new IntegerVariable[]{x, y, z}));
+	
+	s.read(m);
+	s.solveAll();
+\end{lstlisting}
