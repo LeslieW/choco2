@@ -211,4 +211,13 @@ public abstract class MultipleVariables extends AbstractVariable {
             variable.findManager(properties);
         }
     }
+
+    /**
+     * Check wether to Multiple variables are equivelents
+     * @param mv
+     * @return
+     */
+    public boolean isEquivalentTo(MultipleVariables mv) {
+        return false;
+    }
 }

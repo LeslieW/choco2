@@ -36,6 +36,7 @@ import choco.kernel.common.util.objects.ISparseMatrix;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.*;
+import choco.kernel.model.variables.MultipleVariables;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -44,6 +45,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.scheduling.TaskVar;
 import gnu.trove.TIntObjectHashMap;
 import parser.chocogen.XmlModel;
 
@@ -162,6 +164,15 @@ public class PreProcessCPSolver extends CPSolver {
             iv.setHook(cpt);
             cpt++;
         }
+        it = m.getMultipleVarIterator();
+        cpt = 0;
+        while (it.hasNext()) {
+            MultipleVariables iv = (MultipleVariables) it.next();
+            if(iv instanceof TaskVariable){
+                ((TaskVariable)iv).setHook(cpt);
+                cpt++;
+            }
+        }
     }
 
     /**
@@ -179,9 +190,16 @@ public class PreProcessCPSolver extends CPSolver {
 
         associateIndexes(m);
 
-        detectEqualities(m);
+        detectEqualitiesOnIntegers(m);
+        mod2sol.readIntegerVariables(model);
 
-        mod2sol.readVariables(model);
+        mod2sol.readRealVariables(model);
+        mod2sol.readSetVariables(model);
+        mod2sol.readConstants(model);
+
+        detectEqualitiesOnTasks(m);
+        mod2sol.readMultipleVariables(model);
+        mod2sol.readParameters(model);
 
         if (options.contains("bb:disjunctive"))
             detectDisjonctives(m);
@@ -409,7 +427,7 @@ public class PreProcessCPSolver extends CPSolver {
     // ######                   Merge equalities                                             ###
     // ############################################################################################################
 
-    private void detectEqualities(Model m) {
+    private void detectEqualitiesOnIntegers(Model m) {
         int n = m.getNbIntVars();
         ISparseMatrix matrix = new BooleanSparseMatrix(n);
         Iterator<Constraint> iteq = m.getConstraintByType(ConstraintType.EQ);
@@ -486,6 +504,72 @@ public class PreProcessCPSolver extends CPSolver {
         }
     }
 
+    private void detectEqualitiesOnTasks(Model m) {
+        int n = m.getNbStoredMultipleVars();
+        ISparseMatrix matrix = new BooleanSparseMatrix(n);
+        MultipleVariables m1, m2;
+        // Run over equalities constraints, and create edges
+        for(int i = 0; i < n-1; i++){
+            m1 = m.getStoredMultipleVar(i);
+            if(m1 instanceof TaskVariable){
+                for(int j = i+1; j < n; j++){
+                    m2 = m.getStoredMultipleVar(j);
+                    if(m2 instanceof TaskVariable){
+                        if(m1.isEquivalentTo(m2)){
+                            int idxa = ((TaskVariable)m1).getHook();
+                            int idxb = ((TaskVariable)m2).getHook();
+                            matrix.add(idxa,idxb);
+                        }
+                    }
+
+                }
+            }
+        }
+        if(matrix.getNbElement()> 0){
+            matrix.prepare();
+            // Detect connex components
+            int[] color = new int[n];
+            Arrays.fill(color, -1);
+            TIntObjectHashMap<TaskObjects> domainByColor = new TIntObjectHashMap<TaskObjects>();
+            int k = -1;
+            TaskObjects dtmp = new TaskObjects();
+            Iterator<Long> it = matrix.iterator();
+            while(it.hasNext()){
+                long v = it.next();
+                int i = (int)(v / n);
+                int j = (int)(v % n);
+
+                if (color[i]==-1){
+                    k++;
+                    color[i]=k;
+                    domainByColor.put(k, new TaskObjects((TaskVariable)m.getStoredMultipleVar(i)));
+                }
+                TaskObjects d = domainByColor.get(color[i]);
+                //backup
+                d.merge((TaskVariable)m.getStoredMultipleVar(j));
+                color[j] = color[i];
+                domainByColor.put(color[i], d);
+            }
+            TaskVar[] var = new TaskVar[k+1];
+            TaskVariable vtmp;
+            for(int i = 0; i < n; i++){
+                int col = color[i];
+                if(col !=-1){
+                    TaskVariable v = (TaskVariable)m.getStoredMultipleVar(i);
+                    if(var[col] == null){
+                        dtmp = domainByColor.get(col);
+                        vtmp = new TaskVariable(v.getName(), dtmp.start, dtmp.duration, dtmp.end);
+                        vtmp.addOptions(vtmp.getOptions());
+                        vtmp.findManager(model.properties);
+                        var[col] = (TaskVar)mod2sol.readModelVariable(vtmp);
+                    }
+                    this.mapvariables.put(v.getIndex(), var[col]);
+                    v.reinitHook();
+                }
+            }
+        }
+    }
+
 
 
     private static class Domain{
@@ -504,18 +588,6 @@ public class PreProcessCPSolver extends CPSolver {
             low = v.getLowB();
             upp = v.getUppB();
             options = v.getOptions();
-//            options = new HashSet<String>();
-//            if(v.getOptions().contains("cp:decision")){
-//                this.options.add("cp:decision");
-//            }
-//            if(v.getOptions().contains("cp:objective")){
-//                this.options.add("cp:objective");
-//            }
-//            if(v.getOptions().contains("cp:enum")){
-//                this.options.add("cp:objective");
-//            }
-
-
         }
 
         public void copy(Domain d){
@@ -612,6 +684,47 @@ public class PreProcessCPSolver extends CPSolver {
 
     }
 
+
+    private static class TaskObjects{
+        protected IntegerVariable start;
+        protected IntegerVariable duration;
+        protected IntegerVariable end;
+
+        HashSet<String> options;
+
+        private TaskObjects() {
+            options = new HashSet<String>();
+        }
+
+        private TaskObjects(TaskVariable v) {
+            this();
+            start = v.start();
+            duration = v.duration();
+            end = v.end();
+            options = v.getOptions();
+        }
+
+        public void merge(TaskVariable d){
+            if(start  == null){
+                start = d.start();
+            }
+            if(duration == null){
+                duration = d.duration();
+            }
+            if(end == null){
+                end = d.end();
+            }
+            HashSet<String> tOptions = new HashSet<String>();
+            if(d.getOptions().contains("cp:decision")
+                    || options.contains("cp:decision")){
+                tOptions.add("cp:decision");
+            }
+            if(d.getOptions().contains("cp:objective")
+                    || options.contains("cp:objective")){
+                tOptions.add("cp:objective");
+            }
+        }
+    }
 
 
 //******************************************************************//

@@ -51,7 +51,7 @@ public interface ISparseMatrix {
      * Return an iterator over the values
      * @return an iterator
      */
-    public Iterator iterator();
+    public Iterator<Long> iterator();
 
     /**
      * Prepare the matrix for correct iteration.

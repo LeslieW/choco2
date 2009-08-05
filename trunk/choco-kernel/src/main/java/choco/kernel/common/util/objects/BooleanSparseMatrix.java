@@ -87,8 +87,8 @@ public class BooleanSparseMatrix implements ISparseMatrix{
      * @return an iterator
      */
     @Override
-    public Iterator iterator() {
-        return new Iterator(){
+    public Iterator<Long> iterator() {
+        return new Iterator<Long>(){
             int i = 0;
             /**
              * Returns <tt>true</tt> if the iteration has more elements. (In other
@@ -110,7 +110,7 @@ public class BooleanSparseMatrix implements ISparseMatrix{
              *          iteration has no more elements.
              */
             @Override
-            public Object next() {
+            public Long next() {
                 return elements[i++];
             }
 
