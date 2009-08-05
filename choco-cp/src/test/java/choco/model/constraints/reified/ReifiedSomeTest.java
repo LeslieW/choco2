@@ -1638,5 +1638,28 @@ public class ReifiedSomeTest {
          }
      }
 
+    @Test
+    public void testRichard() {
+        for (int seed = 0; seed < 5; seed++) {
+             CPModel m = new CPModel();
+             m.setDefaultExpressionDecomposition(true);
+             IntegerVariable r1 = makeIntVar("x", 0, 1);
+             IntegerVariable r2 = makeIntVar("y", 0, 4);
+             IntegerVariable e1 = makeIntVar("z", 0, 3);
+             IntegerVariable e2 = makeIntVar("z", 0, 3);
+             IntegerVariable s1 = makeIntVar("z", 0, 3);
+             IntegerVariable s2 = makeIntVar("z", 0, 3);
+
+             m.addConstraint(implies(eq(r1, r2), or(gt(s1, e2), gt(s2, e1))));
+             CPSolver s = new CPSolver();
+             s.read(m);
+             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
+             s.setValIntSelector(new RandomIntValSelector());
+             s.solveAll();
+             System.out.println(""+ s.getNbSolutions());
+             LOGGER.info("" + s.getNbSolutions());
+             Assert.assertEquals("nb de solutions", 2360, s.getNbSolutions()); 
+        }
+    }
 
 }
