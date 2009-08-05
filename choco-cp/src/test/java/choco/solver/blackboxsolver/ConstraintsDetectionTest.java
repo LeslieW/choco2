@@ -37,9 +37,12 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.Propagator;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.scheduling.TaskVar;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -1052,4 +1055,81 @@ public class ConstraintsDetectionTest {
             Assert.assertEquals(1, s.getNbIntVars());
         }
     }
+
+    @Test
+    public void detectTasks1(){
+        Model m;
+        PreProcessCPSolver s;
+
+        m = new CPModel();
+        IntegerVariable A = Choco.makeIntVar("A", 0, 10, "cp:bound");
+        IntegerVariable B = Choco.makeIntVar("B", 0, 10, "cp:bound");
+        IntegerVariable C = Choco.makeIntVar("C", 0, 10, "cp:bound");
+
+        TaskVariable t1 = Choco.makeTaskVar("t1", A, B, C);
+        TaskVariable t2 = Choco.makeTaskVar("t2", A, B, C);
+
+        m.addVariables(t1, t2);
+
+        s = new PreProcessCPSolver();
+        s.read(m);
+        
+        Assert.assertEquals(1, s.getNbTaskVars());
+
+    }
+
+    @Test
+    public void detectTasks2(){
+        Model m;
+        PreProcessCPSolver s;
+
+        m = new CPModel();
+        IntegerVariable A = Choco.makeIntVar("A", 0, 10, "cp:bound");
+        IntegerVariable B = Choco.makeIntVar("B", 0, 10, "cp:bound");
+        IntegerVariable C = Choco.makeIntVar("C", 0, 10, "cp:bound");
+
+        TaskVariable t1 = Choco.makeTaskVar("t2", A, C);
+        TaskVariable t2 = Choco.makeTaskVar("t1", A, B, C);
+
+        m.addVariables(t1, t2);
+
+        s = new PreProcessCPSolver();
+        s.read(m);
+
+        Assert.assertEquals(1, s.getNbTaskVars());
+        IntDomainVar a = s.getVar(A);
+        IntDomainVar b = s.getVar(B);
+        IntDomainVar c = s.getVar(C);
+
+        TaskVar t = s.getVar(t2);
+        Assert.assertEquals(a, t.start());
+        Assert.assertEquals(b, t.end());
+        Assert.assertEquals(c, t.duration());
+
+
+    }
+
+    @Test
+    public void detectTasks3(){
+        Model m;
+        PreProcessCPSolver s;
+
+        m = new CPModel();
+        IntegerVariable A = Choco.makeIntVar("A", 0, 10, "cp:bound");
+        IntegerVariable B = Choco.makeIntVar("B", 0, 10, "cp:bound");
+        IntegerVariable C = Choco.makeIntVar("C", 0, 10, "cp:bound");
+
+        for(int i = 0; i < 100; i++){
+            TaskVariable t = Choco.makeTaskVar("t", A, B, C);
+            m.addVariables(t);
+        }
+
+
+        s = new PreProcessCPSolver();
+        s.read(m);
+
+        Assert.assertEquals(1, s.getNbTaskVars());
+
+    }
+
 }

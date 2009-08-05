@@ -39,7 +39,7 @@ import java.util.Properties;
  */
 public class TaskVariable extends MultipleVariables implements IComponentVariable, ITaskVariable<IntegerVariable>{
 
-	private int NO_HOOK = -1;
+	private static final int NO_HOOK = -1;
 	
 	protected final String name;
 
@@ -99,14 +99,33 @@ public class TaskVariable extends MultipleVariables implements IComponentVariabl
 		return hook;
 	}
 
-	public void setHook(int hook) {
+    public void setHook(int hook) {
 		if (this.hook !=  NO_HOOK) {
 			throw new ModelException("hook already used");
 		} else if(hook == NO_HOOK){throw new ModelException("invalid hook value:"+hook);}
 		else {this.hook = hook;}
 	}
 
-	public String pretty() {
+    public void reinitHook(){
+        this.hook =  NO_HOOK;
+    }
+
+    @Override
+    public boolean isEquivalentTo(MultipleVariables mv) {
+        if (mv instanceof TaskVariable) {
+            TaskVariable t = (TaskVariable) mv;
+            boolean r = (t.start().getIndex() == this.start().getIndex() &&
+                t.duration().getIndex() == this.duration().getIndex());
+            /*r &= (t.end() == null ||
+                    this.end() == null ||
+                    t.end().getIndex() == this.end().getIndex());*/
+            return r;
+
+        }
+        return false;
+    }
+
+    public String pretty() {
 		final StringBuilder buffer = new StringBuilder();
 		buffer.append(name).append(" {").append(start().pretty());
 		buffer.append(" + ").append(duration().pretty());

@@ -26,9 +26,13 @@ import choco.Choco;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
+import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Solver;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -124,4 +128,30 @@ public class EqTest {
         Assert.assertEquals("nb of solution", 0, s.getNbSolutions());
 
     }
+
+    @Test
+    public void test7(){
+        IntegerVariable A = Choco.makeIntVar("A", -4, -2);
+        IntegerVariable B = Choco.makeIntVar("B", 2, 4);
+        IntegerVariable C = Choco.makeIntVar("C", 2, 4);
+        IntegerVariable D = Choco.makeIntVar("D", 2, 4);
+        IntegerVariable E = Choco.makeIntVar("E", 2, 4);
+        IntegerVariable F = Choco.makeIntVar("F", 2, 4);
+
+        Constraint c = Choco.eq( Choco.power(E, F), Choco.mult( Choco.power( A, B) ,Choco.power( C, D) ) );
+
+        double b = Math.pow(-1.0, 2.0);
+        Assert.assertTrue(Double.compare(-2.0, b)==0);
+
+        Model m  = new CPModel();
+        m.addConstraint(c);
+        m.setDefaultExpressionDecomposition(true);
+        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+
+        Solver s = new CPSolver();
+        s.read(m);
+        s.solve();
+        Assert.assertFalse(s.checkSolution(false));
+    }
 }
+

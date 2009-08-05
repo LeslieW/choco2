@@ -118,16 +118,18 @@ public class CPModelToCPSolver {
 	 * @param model to read
 	 */
 	public void readVariables(CPModel model) {
-		IntegerVariable i;
-		RealVariable r;
-		SetVariable s;
-		Variable v;
-		MultipleVariables mv;
-		IntegerConstantVariable ci;
-		RealConstantVariable cr;
-		SetConstantVariable cs;
+		readIntegerVariables(model);
+        readRealVariables(model);
+		readSetVariables(model);
+		readConstants(model);
+        readMultipleVariables(model);
 
-		//1- IntegerVariable
+		readParameters(model);
+	}
+
+    public void readIntegerVariables(CPModel model){
+        IntegerVariable i;
+
 		Iterator it = model.getIntVarIterator();
 		while (it.hasNext()) {
 			i = (IntegerVariable) it.next();
@@ -135,16 +137,22 @@ public class CPModelToCPSolver {
 				cpsolver.mapvariables.put(i.getIndex(), readModelVariable(i));
 			}
 		}
-		//2- RealVariable
-		it = model.getRealVarIterator();
+    }
+
+    public void readRealVariables(CPModel model){
+        RealVariable r;
+		Iterator it = model.getRealVarIterator();
 		while (it.hasNext()) {
 			r = (RealVariable) it.next();
 			if (!cpsolver.mapvariables.containsKey(r.getIndex())) {
 				cpsolver.mapvariables.put(r.getIndex(), readModelVariable(r));
 			}
 		}
-		//3- SetVariable
-		it = model.getSetVarIterator();
+    }
+
+    public void readSetVariables(CPModel model){
+        SetVariable s;
+        Iterator it = model.getSetVarIterator();
 		while (it.hasNext()) {
 			s = (SetVariable) it.next();
 			if (!cpsolver.mapvariables.containsKey(s.getIndex())) {
@@ -154,8 +162,14 @@ public class CPModelToCPSolver {
 				checkOptions(s.getCard(), setVar.getCard());
 			}
 		}
-		//4- Constant
-		it = model.getConstVarIterator();
+    }
+
+    public void readConstants(CPModel model){
+        Variable v;
+		IntegerConstantVariable ci;
+		RealConstantVariable cr;
+		SetConstantVariable cs;
+		Iterator it = model.getConstVarIterator();
 		while (it.hasNext()) {
 			v = (Variable) it.next();
 			if (!cpsolver.mapvariables.containsKey(v.getIndex())) {
@@ -181,20 +195,26 @@ public class CPModelToCPSolver {
 				}
 			}
 		}
-		//1- IntegerVariable
-		it = model.getMultipleVarIterator();
+    }
+
+    public void readMultipleVariables(CPModel model){
+        MultipleVariables mv;
+        Iterator it = model.getMultipleVarIterator();
 		while (it.hasNext()) {
 			mv = (MultipleVariables) it.next();
 			if (!cpsolver.mapvariables.containsKey(mv.getIndex())) {
 				cpsolver.mapvariables.put(mv.getIndex(), readModelVariable(mv));
 			}
 		}
-		cpsolver.setPrecision(model.getPrecision());
-		cpsolver.setReduction(model.getReduction());
-	}
+    }
+
+    public void readParameters(CPModel model) {
+        cpsolver.setPrecision(model.getPrecision());
+        cpsolver.setReduction(model.getReduction());
+    }
 
 
-	public Var readModelVariable(Variable v) {
+    public Var readModelVariable(Variable v) {
 		if (v instanceof IComponentVariable) {
 			IComponentVariable vv = (IComponentVariable) v;
 
