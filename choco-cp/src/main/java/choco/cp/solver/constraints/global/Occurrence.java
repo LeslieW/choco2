@@ -203,29 +203,7 @@ public class Occurrence extends AbstractLargeIntSConstraint {
     }
 
     public void awake() throws ContradictionException {
-        nbSure.set(0);
-        nbPossible.set(0);
-        int cpt = 0;
-        for (int i = 0; i < nbListVars; i++) {
-            if (vars[i].canBeInstantiatedTo(cste)) {
-                nbPossible.add(1);
-                cpt++;
-            }
-            if (vars[i].isInstantiatedTo(cste)) {
-                nbSure.add(+1);
-            }
-        }
-        relevantVar = new IntDomainVar[cpt];
-        cpt = 0;
-        for (int i = 0; i < nbListVars; i++) {
-            if (vars[i].canBeInstantiatedTo(cste)) {
-                relevantVar[cpt] = vars[i];            
-                cpt++;
-            }
-        }
-        if (constrainOnInfNumber) vars[nbListVars].updateSup(nbListVars, cIndices[nbListVars]);
-        if (constrainOnSupNumber) vars[nbListVars].updateInf(0, cIndices[nbListVars]);
-        filter();
+        propagate();
     }
 
     public Boolean isEntailed() {

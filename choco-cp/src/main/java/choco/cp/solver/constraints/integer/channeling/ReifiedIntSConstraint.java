@@ -127,9 +127,9 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
     //assume that the boolean is known
     public void filterReifiedConstraintFromBool() throws ContradictionException {
         if (vars[0].isInstantiatedTo(1)) {
-            cons.propagate();
+            cons.awake();//propagate();
         } else {
-            oppositeCons.propagate();
+            oppositeCons.awake();//propagate();
         }
     }
 
