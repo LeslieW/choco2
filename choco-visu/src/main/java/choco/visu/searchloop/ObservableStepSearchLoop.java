@@ -130,7 +130,6 @@ public class ObservableStepSearchLoop extends AbstractSearchLoop implements IObs
 		internalSearchLoop.openNode();
 		if(searchStrategy.getSolutionCount() > previousNbSolutions) {
             previousNbSolutions++;
-            stop = true;
 			state = SOLUTION;
 			stop = true;
 		}

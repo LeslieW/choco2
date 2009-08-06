@@ -42,7 +42,8 @@ public class SearchLoopWithEntailment extends AbstractSearchLoop {
 	public Boolean entail = null;
 
 	public final AbstractSearchLoop searchLoop;
-	
+
+    private int previousNbSolutions;
 
 	public SearchLoopWithEntailment(AbstractGlobalSearchStrategy searchStrategy, Propagator propagator) {
 		super(searchStrategy);
@@ -61,40 +62,41 @@ public class SearchLoopWithEntailment extends AbstractSearchLoop {
 
 	@Override
 	public Boolean endLoop() {
-		final Boolean res = searchLoop.endLoop();
-		checkEntailment();
-		return res;
+		return searchLoop.endLoop();
 	}
 
 	@Override
 	public void initLoop() {
 		searchLoop.initLoop();
+        checkEntailment();
 	}
 
 	@Override
 	public void initSearch() {
 		searchLoop.initSearch();
-		checkEntailment();
-		
 	}
 
 	@Override
 	public void openNode() {
 		searchLoop.openNode();
-		checkEntailment();
-		
+        if(searchStrategy.getSolutionCount() > previousNbSolutions) {
+            previousNbSolutions++;
+            stop = true;
+		}
 	}
 
 	@Override
 	public void restart() {
 		searchLoop.restart();
-		checkEntailment();
-		
+//		checkEntailment();
 	}
 
 	@Override
 	public void upBranch() {
 		searchLoop.upBranch();
+        if(searchStrategy.isTraceEmpty()){
+            stop = true;
+        }
 		checkEntailment();
 		
 	}
