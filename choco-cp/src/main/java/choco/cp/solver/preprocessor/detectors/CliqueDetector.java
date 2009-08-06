@@ -61,8 +61,8 @@ public class CliqueDetector {
     }
 
     public void addEdge(Variable a, Variable b, Constraint c) {
-        int idxa = (Integer) ((IntegerVariable) a).getHook();
-        int idxb = (Integer) ((IntegerVariable) b).getHook();
+        final int idxa = a.getHook();
+        final int idxb = b.getHook();
         diffs.addEdge(idxa,idxb);
         diffs.storeEdge(c,idxa,idxb);
     }
@@ -125,8 +125,8 @@ public class CliqueDetector {
                 if (sp != null) {
                     b = true;
                     addEdge(sp.v1, sp.v2, ic);
-                    int idx1 = (Integer) sp.v1.getHook();
-                    int idx2 = (Integer) sp.v2.getHook();
+                    int idx1 = sp.v1.getHook();
+                    int idx2 = sp.v2.getHook();
                     if (durations[idx1] == -1)
                         durations[idx1] = sp.d1;
                     else if (durations[idx1] != sp.d1) {

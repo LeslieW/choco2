@@ -204,9 +204,9 @@ AbstractLargeIntBranching implements PropagationEngineListener, IRandomBreakTies
 			final DisposableIntIterator iter= v.getIndexVector().getIndexIterator();
 			while (iter.hasNext()) {
 				final int idx = iter.next();
-				final AbstractSConstraint c = (AbstractSConstraint) v.getConstraint(idx);
-				if (c.getNbVarNotInst() > 1) {
-					weight+= getConstraintExtension(c).getNbFailure() + c.getFineDegree(v.getVarIndex(idx));
+				reuseCstr = (AbstractSConstraint) v.getConstraint(idx);
+				if (reuseCstr.getNbVarNotInst() > 1) {
+					weight+= getConstraintExtension(reuseCstr).getNbFailure() + reuseCstr.getFineDegree(v.getVarIndex(idx));
 				}
 			}
 			getVarExtension((AbstractVar) v).setSumWeights(weight);
@@ -247,7 +247,7 @@ AbstractLargeIntBranching implements PropagationEngineListener, IRandomBreakTies
 	}
 
 	public void contradictionOccured(ContradictionException e) {
-		if (e.getContradictionCause() != null && e.getContradictionType() == ContradictionException.CONSTRAINT) {
+		if (e.getContradictionType() == ContradictionException.CONSTRAINT && e.getContradictionCause() != null) {
 			addFailure(e.getContradictionCause());
 		}
 	}
@@ -317,7 +317,7 @@ AbstractLargeIntBranching implements PropagationEngineListener, IRandomBreakTies
 	}
 
 	protected final void appendVariable(StringBuilder b, Var v) {
-		AbstractVar var = (AbstractVar) v;
+		final AbstractVar var = (AbstractVar) v;
 		b.append("w=").append(getVarExtension(var).getSumWeights());
 		b.append("\t").append(var.pretty());
 		b.append('\n');

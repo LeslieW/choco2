@@ -43,12 +43,11 @@ public class IntegerVariable extends IntegerExpressionVariable {
 
 	protected int[] values;
 
-    //an empty field
-    protected Object hook;
+  
 
     public IntegerVariable(String name, VariableType type, int binf, int bsup) {
         //noinspection NullArgumentToVariableArgMethod
-        super(new int[]{binf, bsup}, Operator.NONE, type, null);
+        super(new int[]{binf, bsup}, Operator.NONE, type);
 		this.name = name;
 		this.setLowB(binf);
 		this.setUppB(bsup);
@@ -56,7 +55,7 @@ public class IntegerVariable extends IntegerExpressionVariable {
 
 	public IntegerVariable(String name, VariableType type, int[] values) {
         //noinspection NullArgumentToVariableArgMethod
-        super(values, Operator.NONE, type, null);
+        super(values, Operator.NONE, type);
 		this.name = name;
 		this.values = new int[values.length];
         System.arraycopy(values, 0, this.values, 0, values.length);
@@ -181,18 +180,7 @@ public class IntegerVariable extends IntegerExpressionVariable {
     };
     }
 
-    public Object getHook() {
-        return hook;
-    }
-
-    public void setHook(Object hook) {
-        if (this.hook != null) {
-            throw new ModelException("hook already used");
-        } else {
-            this.hook = hook;
-        }
-    }
-
+  
     protected IntDomainIterator _cachedIterator = null;
 
     public DisposableIntIterator getDomainIterator() {

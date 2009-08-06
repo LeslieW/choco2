@@ -147,8 +147,6 @@ import java.util.logging.Logger;
 public class CPSolver implements Solver {
 
 
-	public static boolean USE_SEARCH_LOOP_UNDER_DEV = false;
-
 	/**
 	 * A constant denoting the true constraint (always satisfied)
 	 */

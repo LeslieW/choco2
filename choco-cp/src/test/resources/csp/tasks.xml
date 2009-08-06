@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<instance>
+	<presentation maxConstraintArity='10' format='XCSP 2.1' />
+
+	<domains nbDomains='5'>
+		<domain name='D0' nbValues='4'>4..7</domain>
+		<domain name='D1' nbValues='6'>4..9</domain>
+		<domain name='D2' nbValues='4'>4..7</domain>
+		<domain name='D3' nbValues='22'>4..25</domain>
+		<domain name='D4' nbValues='16'>10..25</domain>
+	</domains>
+
+	<variables nbVariables='11'>
+		<variable name='S0' domain='D0' />
+		<variable name='S1' domain='D0' />
+		<variable name='S2' domain='D0' />
+		<variable name='S3' domain='D0' />
+		<variable name='D0' domain='D0' />
+		<variable name='D1' domain='D2' />
+		<variable name='D2' domain='D1' />
+		<variable name='D3' domain='D1' />
+		<variable name='E0' domain='D3' />
+		<variable name='E1' domain='D3' />
+		<variable name='E2' domain='D4' />
+	</variables>
+
+	<constraints nbConstraints='1'>
+		<constraint name='C0' arity='9' scope='S0 D0 E0 S1 D1 E1 S2 D2 E2'
+			reference='global:cumulative'>
+			<parameters> [ {S0 2 E0 1} {S1 3 E1 1} {S2 2 E2 1} ]  10 </parameters>
+		</constraint>
+	</constraints>
+</instance>

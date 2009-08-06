@@ -141,6 +141,18 @@ public class ResolutionTest {
         }
     }
 
+    @Test
+    @Ignore
+    public void taskTest() {
+    	 XmlModel xm = new XmlModel();
+         args[1] = args[1] + "/tasks.xml";
+         try {
+			xm.generate(args);
+         } catch (Exception e) {
+        	 LOGGER.log(Level.SEVERE, "unexpected exceptions", e);
+             Assert.fail();
+		}
+    }
 
     @Test
     @Ignore
