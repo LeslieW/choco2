@@ -29,6 +29,8 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.extension.BinRelation;
 import choco.kernel.solver.constraints.integer.extension.CspBinSConstraint;
+import choco.kernel.solver.constraints.integer.extension.ConsistencyRelation;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.Arrays;
@@ -100,7 +102,11 @@ public class AC3rmBinSConstraint extends CspBinSConstraint {
 		return new AC3rmBinSConstraint(this.v0, this.v1, this.relation);
 	}
 
-	public boolean testDeepakConditionV1(int y, int v0Size) {
+    public AbstractSConstraint opposite() {
+        return new AC3rmBinSConstraint(this.v0, this.v1, (BinRelation) ((ConsistencyRelation) this.relation).getOpposite());        
+    }
+
+    public boolean testDeepakConditionV1(int y, int v0Size) {
 		return initS1[y - offset1] <= (initDomSize0 - v0Size);
 	}
 

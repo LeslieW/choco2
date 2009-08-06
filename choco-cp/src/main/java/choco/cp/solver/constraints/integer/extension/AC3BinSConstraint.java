@@ -47,7 +47,7 @@ public class AC3BinSConstraint extends CspBinSConstraint {
 		return new AC3BinSConstraint(this.v0, this.v1, this.relation);
 	}
 
-	// updates the support for all values in the domain of v1, and remove unsupported values for v1
+    // updates the support for all values in the domain of v1, and remove unsupported values for v1
 	public void reviseV1() throws ContradictionException {
 		int nbs = 0;
 		DisposableIntIterator itv1 = v1.getDomain().getIterator();

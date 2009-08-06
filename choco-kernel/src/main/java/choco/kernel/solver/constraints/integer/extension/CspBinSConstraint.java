@@ -24,6 +24,7 @@ package choco.kernel.solver.constraints.integer.extension;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public abstract class CspBinSConstraint extends AbstractBinIntSConstraint {
