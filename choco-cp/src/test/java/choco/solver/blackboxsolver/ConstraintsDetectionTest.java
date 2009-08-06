@@ -31,6 +31,7 @@ import choco.cp.solver.constraints.global.matching.AllDifferent;
 import choco.cp.solver.constraints.global.scheduling.Disjunctive;
 import choco.cp.solver.constraints.integer.*;
 import choco.cp.solver.constraints.integer.bool.BoolIntLinComb;
+import choco.cp.solver.constraints.integer.extension.CspLargeSConstraint;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
 import choco.cp.solver.variables.integer.*;
 import choco.kernel.common.logging.ChocoLogging;
@@ -43,6 +44,10 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.Propagator;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+import choco.shaker.tools.factory.CPModelFactory;
+import static choco.shaker.tools.factory.ConstraintFactory.C;
+import choco.shaker.tools.factory.MetaConstraintFactory;
+import choco.shaker.tools.factory.OperatorFactory;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -1130,6 +1135,68 @@ public class ConstraintsDetectionTest {
 
         Assert.assertEquals(1, s.getNbTaskVars());
 
+    }
+
+    @Test
+    public void detectNotAndEqual(){
+        Model m;
+        CPSolver s;
+        Random r;
+        IntegerVariable A = Choco.makeIntVar("A", 0, 10, "cp:bound");
+        IntegerVariable B = Choco.makeIntVar("B", 0, 10, "cp:bound");
+        for(int seed = 0; seed < 100; seed++){
+            r = new Random(seed);
+            CPModelFactory mf = new CPModelFactory();
+            mf.defines(A, B);
+            mf.uses(MetaConstraintFactory.MC.NOT);
+            mf.uses(C.EQ, C.NEQ, C.GEQ, C.LEQ,
+                    C.GT, C.LT);
+            mf.uses(OperatorFactory.O.NONE);
+
+            m = mf.model(r);
+
+            s = new CPSolver();
+            s.read(m);
+
+            Iterator<SConstraint> it = s.getIntConstraintIterator();
+            while(it.hasNext()){
+                SConstraint c = it.next();
+                boolean t = c instanceof CspLargeSConstraint;
+                Assert.assertFalse("unexpected type of constraint: "+seed, t);
+            }
+
+        }
+    }
+
+    @Test
+    public void detectNotAndSign(){
+        Model m;
+        CPSolver s;
+        Random r;
+        IntegerVariable A = Choco.makeIntVar("A", 0, 10, "cp:bound");
+        IntegerVariable B = Choco.makeIntVar("B", 0, 10, "cp:bound");
+        for(int seed = 0; seed < 20; seed++){
+            r = new Random(seed);
+            CPModelFactory mf = new CPModelFactory();
+            mf.defines(A, B);
+            mf.uses(MetaConstraintFactory.MC.NOT);
+            mf.uses(C.SAMESIGN, C.SIGNOPP);
+            mf.uses(OperatorFactory.O.NONE);
+
+            m = mf.model(r);
+            m.setDefaultExpressionDecomposition(true);
+
+            s = new CPSolver();
+            s.read(m);
+
+            Iterator<SConstraint> it = s.getIntConstraintIterator();
+            while(it.hasNext()){
+                SConstraint c = it.next();
+                boolean t = c instanceof SignOp;
+                Assert.assertTrue("unexpected type of constraint", t);
+            }
+
+        }
     }
 
 }

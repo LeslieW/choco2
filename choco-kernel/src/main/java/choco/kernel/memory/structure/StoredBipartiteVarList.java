@@ -26,14 +26,12 @@ import choco.IPretty;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.IStateInt;
+import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.Var;
 
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.xml.ws.Dispatch;
 
 /*
 * User : charles
@@ -45,46 +43,38 @@ import javax.xml.ws.Dispatch;
 *
 * Provide a structure for Var-like objects.
 * It ensures:
-* - a iterator over elements
-* - a
+* - an iterator over every variables
+* - an efficient iterator over not instanciated variables
+* - an iterator over instanciated variables
 */
-public final class StoredBipartiteVarList<E extends Var> implements IPretty {
+public final class StoredBipartiteVarList<E extends Var> extends StoredBipartiteList<E> implements IPretty {
 
-    private static final int INITIAL_CAPACITY = 8;
-
-    private E[] vars;
 
     private E[] varsNotInstanciated;
 
     private int size;
 
-    private IStateInt offset;
-
     IEnvironment env;
 
-    private boolean update = false;
-
     public StoredBipartiteVarList(IEnvironment env) {
-        //noinspection unchecked
+        super(env);
         this.env = env;
-        vars = (E[])new Var[INITIAL_CAPACITY];
+        //noinspection unchecked
         varsNotInstanciated = (E[])new Var[INITIAL_CAPACITY];
         size = 0;
-        offset = env.makeInt(0);
     }
 
     /**
      * Add a variable to the structure.
-     * Check also wether the variable is instanciated or not.
      * @param e the new variable
      * @return the index of the variable in the variable
      */
+    @Override
     public boolean add(E e){
-        assert(env.getWorldIndex() == 0);
         ensureCapacity(size +1);
-        vars[size] = e;
+        elementData[size] = e;
         varsNotInstanciated[size++] = e;
-        offset.add(1);
+        last.add(1);
         return true;
     }
 
@@ -93,16 +83,16 @@ public final class StoredBipartiteVarList<E extends Var> implements IPretty {
      * @param expectedSize expected size
      */
     public void ensureCapacity(int expectedSize) {
-        if(vars.length < expectedSize){
-            int newSize = vars.length;
+        if(elementData.length < expectedSize){
+            int newSize = elementData.length;
             do{
                 newSize *= 2;
             }while(newSize < expectedSize);
 
             @SuppressWarnings({"unchecked"})
             E[] newElements = (E[])new Var[newSize];
-            System.arraycopy(vars, 0, newElements, 0, vars.length);
-            vars = newElements;
+            System.arraycopy(elementData, 0, newElements, 0, elementData.length);
+            elementData = newElements;
 
             System.arraycopy(varsNotInstanciated, 0, newElements, 0, varsNotInstanciated.length);
             varsNotInstanciated = newElements;
@@ -110,49 +100,34 @@ public final class StoredBipartiteVarList<E extends Var> implements IPretty {
     }
 
     /**
-	 * Checks if the given index is in range.  If not, throws an appropriate
-	 * runtime exception.  This method does *not* check if the index is
-	 * negative: It is always used immediately prior to an array access,
-	 * which throws an ArrayIndexOutOfBoundsException if index is negative.
-	 */
-	private void RangeCheck(int index) {
-		if (index >= size())
-			throw new IndexOutOfBoundsException(
-					"Index: "+index+", Size: "+size());
-	}
-	
-    /**
 	 * removal performs a swap on a pair of elements. Do not remove while iterating if you want to preserve the current order.
      * @param index index of the object to remove
      * @return the removed object
      */
 	private E swap(int index) {
 		RangeCheck(index);
-		final int idx = offset.get()-1;
+		final int idx = last.get()-1;
 		//should swap the element to remove with the last element
 		final E tmp = varsNotInstanciated[index];
 		varsNotInstanciated[index] = varsNotInstanciated[idx];
 		varsNotInstanciated[idx] = tmp;
-		offset.set(idx);
-		return (E) tmp;
+		last.set(idx);
+		return tmp;
 	}
 
     public List<E> toList(){
         @SuppressWarnings({"unchecked"})
         E[] t = (E[])new Var[size];
-        System.arraycopy(vars, 0, t , 0, size);
+        System.arraycopy(elementData, 0, t , 0, size);
         return Arrays.asList(t);
     }
 
+    @Override
     public E[] toArray(){
         @SuppressWarnings({"unchecked"})
         E[] t = (E[])new Var[size];
-        System.arraycopy(vars, 0, t , 0, size);
+        System.arraycopy(elementData, 0, t , 0, size);
         return t;
-    }
-
-    public E get(int i){
-        return (E) vars[i];
     }
 
     /**
@@ -180,111 +155,85 @@ public final class StoredBipartiteVarList<E extends Var> implements IPretty {
     public int indexOf(Object o) {
 	if (o == null) {
 	    for (int i = 0; i < size; i++)
-		if (vars[i]==null)
+		if (elementData[i]==null)
 		    return i;
 	} else {
 	    for (int i = 0; i < size; i++)
-		if (o.equals(vars[i]))
+		if (o.equals(elementData[i]))
 		    return i;
 	}
 	return -1;
     }
 
+    @Override
     public int size(){
         return size;
     }
     
     @Override
 	public String pretty() {
-    	return StringUtils.pretty(vars, 0, size);
+    	return StringUtils.pretty(elementData, 0, size);
 	}
 
 	@Override
 	public String toString() {
-		return Arrays.toString(vars);
+		return Arrays.toString(elementData);
 	}
 
-	/**
-     * Iterator over every variables
-     * @return iterator
+    /**
+     * removal performs a swap on a pair of elements. Do not remove while iterating if you want to preserve the current order.
+     *
+     * @see java.util.AbstractList#remove(int)
      */
-    public final Iterator<E> getIterator(){
-        return new Iterator<E>(){
-            int i = 0;
-
-            /**
-             * Returns <tt>true</tt> if the iteration has more elements. (In other
-             * words, returns <tt>true</tt> if <tt>next</tt> would return an element
-             * rather than throwing an exception.)
-             *
-             * @return <tt>true</tt> if the iterator has more elements.
-             */
-            @Override
-            public boolean hasNext() {
-                return i < size;
-            }
-
-            /**
-             * Returns the next element in the iteration.
-             *
-             * @return the next element in the iteration.
-             * @throws java.util.NoSuchElementException
-             *          iteration has no more elements.
-             */
-            @Override
-            public E next() {
-                return vars[i++];
-            }
-
-            /**
-             * Removes from the underlying collection the last element returned by the
-             * iterator (optional operation).  This method can be called only once per
-             * call to <tt>next</tt>.  The behavior of an iterator is unspecified if
-             * the underlying collection is modified while the iteration is in
-             * progress in any way other than by calling this method.
-             *
-             * @throws UnsupportedOperationException if the <tt>remove</tt>
-             *                                       operation is not supported by this Iterator.
-             * @throws IllegalStateException         if the <tt>next</tt> method has not
-             *                                       yet been called, or the <tt>remove</tt> method has already
-             *                                       been called after the last call to the <tt>next</tt>
-             *                                       method.
-             */
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("Cannot remove within iterator");
-            }
-        };
+    @Override
+    public E remove(int index) {
+        throw new SolverException("Not yet implemented");
     }
 
+    protected QuickIterator _cachedQuickIterator = null;
     /**
      * Iterator over non instanciated variables
      * BEWARE: initial order is not preserved
      * @return iterator
      */
     public final DisposableIterator<E> getNotInstanciatedVariableIterator(){
-        return new QuickIterator();
+        @SuppressWarnings({"unchecked"})
+        QuickIterator iter = _cachedQuickIterator;
+        if (iter != null && iter.reusable) {
+            iter.init();
+            return iter;
+        }
+        _cachedQuickIterator = new QuickIterator();
+        return _cachedQuickIterator;
     }
 
+    protected DualIterator _cachedDualterator = null;
     /**
      * Iterator over instanciated variables
      * BEWARE: initial order is not preserved
      * @return iterator
      */
     public final Iterator<E> getInstanciatedVariableIterator(){
-        return new DualIterator();
+        @SuppressWarnings({"unchecked"})
+        DualIterator iter = _cachedDualterator;
+        if (iter != null && iter.reusable) {
+            iter.init();
+            return iter;
+        }
+        _cachedDualterator = new DualIterator();
+        return _cachedDualterator;
     }
+
+
 
     private class QuickIterator extends DisposableIterator<E> {
         int i = -1;
-       
-        
-        
+
         @Override
-		public void dispose() {
-        	super.dispose();
-        	i = -1;
-		}
+        public void init() {
+            super.init();
+            i = -1;
+        }
 
 		/**
          * Returns <tt>true</tt> if the iteration has more elements. (In other
@@ -296,10 +245,10 @@ public final class StoredBipartiteVarList<E extends Var> implements IPretty {
         @Override
         public boolean hasNext() {
             i++;
-            while(i < offset.get() && varsNotInstanciated[i].isInstantiated()){
+            while(i < last.get() && varsNotInstanciated[i].isInstantiated()){
                 swap(i);
             }
-            return i < offset.get();
+            return i < last.get();
         }
 
         /**
@@ -311,7 +260,7 @@ public final class StoredBipartiteVarList<E extends Var> implements IPretty {
          */
         @Override
         public E next() {
-            return (E) varsNotInstanciated[i];
+            return varsNotInstanciated[i];
         }
 
         /**
@@ -334,8 +283,15 @@ public final class StoredBipartiteVarList<E extends Var> implements IPretty {
         }
     }
 
-    private class DualIterator implements Iterator<E> {
+    private class DualIterator extends DisposableIterator<E> {
         int i = -1;
+
+        @Override
+        public void init() {
+            super.init();
+            i = -1;
+        }
+
         /**
          * Returns <tt>true</tt> if the iteration has more elements. (In other
          * words, returns <tt>true</tt> if <tt>next</tt> would return an element
