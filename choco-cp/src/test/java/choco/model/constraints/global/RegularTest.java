@@ -725,7 +725,7 @@ public class RegularTest {
                         double mult = Math.pow(10, s.getNbIntVars()
                                 - 1 - i);
                         port += valPort * mult;
-                        LOGGER.severe("au tour " + tour + " port = " + port + ", valPort = " + valPort + ", mult =" + mult);
+                        LOGGER.info("au tour " + tour + " port = " + port + ", valPort = " + valPort + ", mult =" + mult);
                         LOGGER.info("" + s.getIntVar(i) + " = " + s.getIntVar(i).getVal());
                     }
                     tour++;

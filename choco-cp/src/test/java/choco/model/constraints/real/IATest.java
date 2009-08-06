@@ -21,15 +21,19 @@
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.real;
+import static junit.framework.Assert.assertTrue;
+
+import java.util.Random;
+import java.util.logging.Logger;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.variables.real.RealInterval;
 import choco.kernel.solver.variables.real.RealIntervalConstant;
 import choco.kernel.solver.variables.real.RealMath;
-import junit.framework.TestCase;
-
-import java.util.Random;
-import java.util.logging.Logger;
 
 /**
  * J-CHOCO
@@ -40,12 +44,13 @@ import java.util.logging.Logger;
  * <p/>
  * Created by: Guillaume on 18 juin 2004
  */
-public class IATest extends TestCase {
+public class IATest {
     protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
   RealInterval[] intervals = new RealInterval[3];
   public static int nbBox = 20;
 
+  @Before
   public void setUp() {
     Random rand = new Random();
     for (int i = 0; i < intervals.length; i++) {
@@ -55,12 +60,14 @@ public class IATest extends TestCase {
     }
   }
 
+  @After
   public void tearDown() {
     for (int i = 0; i < intervals.length; i++) {
       intervals[i] = null;
     }
   }
 
+  @Test
   public void testPlus() {
     RealInterval a = intervals[0];
     RealInterval b = intervals[1];
@@ -79,6 +86,7 @@ public class IATest extends TestCase {
     }
   }
 
+  @Test
   public void testMinus() {
     RealInterval a = intervals[0];
     RealInterval b = intervals[1];
@@ -97,6 +105,7 @@ public class IATest extends TestCase {
     }
   }
 
+  @Test
   public void testMult() {
     RealInterval a = intervals[0];
     RealInterval b = intervals[1];
@@ -115,6 +124,7 @@ public class IATest extends TestCase {
     }
   }
 
+  @Test
   public void testDiv() {
     RealInterval a = intervals[0];
     RealInterval b = intervals[1];

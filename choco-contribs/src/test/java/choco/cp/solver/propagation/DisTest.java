@@ -48,7 +48,7 @@ public class DisTest {
         qt = new QueensTest();
         qt.m = new CPModel();
         BlockingVarEventQueue._LOG = true;
-        qt.s = new CPSolverDis();
+        qt.s1 = new CPSolverDis();
     }
 
     @After

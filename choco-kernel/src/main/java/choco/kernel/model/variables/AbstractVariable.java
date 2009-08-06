@@ -170,7 +170,7 @@ public abstract class AbstractVariable implements Variable, Comparable{
 
 	@Override
 	public final void setHook(int hook) {
-		if( hook == NO_HOOK) {
+		if( this.hook == NO_HOOK) {
 			this.hook = hook;
 		}else {
 			throw new ModelException("The hook of the variable "+this.pretty()+" is already set to "+this.hook);

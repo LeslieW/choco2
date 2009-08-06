@@ -22,8 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.real;
 
+import static junit.framework.Assert.*;
 import static choco.Choco.makeIntVar;
 import static choco.Choco.makeRealVar;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.real.MixedEqXY;
@@ -31,7 +37,6 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.real.RealVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.real.RealIntervalConstant;
-import junit.framework.TestCase;
 
 /**
  * J-CHOCO
@@ -42,12 +47,13 @@ import junit.framework.TestCase;
  * <p/>
  * Created by: Guillaume on 18 juin 2004
  */
-public class MixedEqualityTest extends TestCase {
+public class MixedEqualityTest  {
   CPModel m;
     CPSolver s;
   RealVariable v1;
   IntegerVariable v2;
 
+  @Before
   public void setUp() {
     m = new CPModel();
     s = new CPSolver();
@@ -58,6 +64,7 @@ public class MixedEqualityTest extends TestCase {
     s.post(new MixedEqXY(s.getVar(v1), s.getVar(v2)));
   }
 
+  @After
   public void tearDown() {
     m = null;
       s = null;
@@ -65,6 +72,7 @@ public class MixedEqualityTest extends TestCase {
     v2 = null;
   }
 
+  @Test
   public void testInt2Real() {
     try {
       s.propagate();
@@ -77,6 +85,7 @@ public class MixedEqualityTest extends TestCase {
     }
   }
 
+  @Test
   public void testReal2Int() {
     try {
       s.propagate();

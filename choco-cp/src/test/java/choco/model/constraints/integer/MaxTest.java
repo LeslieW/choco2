@@ -52,7 +52,7 @@ import java.util.logging.Logger;
  */
 public class MaxTest {
 
-    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	private CPModel m;
 	private CPSolver s;
@@ -364,10 +364,10 @@ public class MaxTest {
 		IntegerVariable[] vars = makeIntVarArray("v",nbVars,1, domSize);
 		if(bounded) {m.addVariables("cp:bound", vars);}
 		IntegerVariable w = makeIntVar("bound", 1, domSize);
-        IntegerVariable c  = makeIntVar("card", 0, nbVars+1);
-        Constraint ccard = eq(c, 0);
-        m.addConstraint(ccard);
-        m.addConstraint( minOrMax ?
+		IntegerVariable c  = makeIntVar("card", 0, nbVars+1);
+		Constraint ccard = eq(c, 0);
+		m.addConstraint(ccard);
+		m.addConstraint( minOrMax ?
 				min(set,vars,w) :
 					max(set,vars,w)
 		);
@@ -376,8 +376,8 @@ public class MaxTest {
 		int sum=0;
 		for (int k = 0; k < nbVars+1; k++) {
 			m.remove(ccard);
-            ccard = eq(c, k);
-            m.addConstraint(ccard);
+			ccard = eq(c, k);
+			m.addConstraint(ccard);
 			int nbSets = MathUtils.combinaison(nbVars, k);
 			int nbAssign = (int) Math.pow(domSize, k==0 ? nbVars+1 : nbVars);
 			sum += nbSets*nbAssign;
@@ -420,18 +420,18 @@ public class MaxTest {
 		testAll(false,false);
 	}
 
-         @Test
-    public void testOneVarMax() {
-        IntegerVariable[] vars = makeIntVarArray("vars", 1, 3, 5);
-        IntegerVariable max = makeIntVar("min", 1, 6);
-        m.addConstraint(eq(max, max(vars)));
-        s.read(m);
-        try {
-            s.propagate();
-        } catch (ContradictionException e) {
-            e.printStackTrace();
-        }
-        LOGGER.info("max " + s.getVar(max).getDomain().pretty());
-        assertTrue(s.getVar(max).getDomain().getSize() == 3);
-    }
+	@Test
+	public void testOneVarMax() {
+		IntegerVariable[] vars = makeIntVarArray("vars", 1, 3, 5);
+		IntegerVariable max = makeIntVar("min", 1, 6);
+		m.addConstraint(eq(max, max(vars)));
+		s.read(m);
+		try {
+			s.propagate();
+		} catch (ContradictionException e) {
+			e.printStackTrace();
+		}
+		LOGGER.info("max " + s.getVar(max).getDomain().pretty());
+		assertTrue(s.getVar(max).getDomain().getSize() == 3);
+	}
 }

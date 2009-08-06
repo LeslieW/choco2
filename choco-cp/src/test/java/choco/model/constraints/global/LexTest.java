@@ -22,7 +22,21 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.global;
 
-import static choco.Choco.*;
+import static choco.Choco.allDifferent;
+import static choco.Choco.lex;
+import static choco.Choco.lexeq;
+import static choco.Choco.leximin;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.makeIntVarArray;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+
+import java.text.MessageFormat;
+import java.util.logging.Logger;
+
+import org.junit.Test;
+
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
@@ -33,11 +47,6 @@ import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import junit.framework.TestCase;
-import org.junit.Test;
-
-import java.text.MessageFormat;
-import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -45,9 +54,9 @@ import java.util.logging.Logger;
  * Date: 5 avr. 2006
  * Time: 08:42:43
  */
-public class LexTest extends TestCase {
+public class LexTest {
 
-    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	@Test
 	public void testLessLexq() {
@@ -113,7 +122,7 @@ public class LexTest extends TestCase {
 
 			do {
 				LOGGER.info("u = [ " + s.getVar(u[0]).getVal() + " " + s.getVar(u[1]).getVal() + " " + s.getVar(u[2]).getVal() + " ] - "
-				+"v = [ " + s.getVar(v[0]).getVal() + " " + s.getVar(v[1]).getVal() + " " + s.getVar(v[2]).getVal() + " ]");
+						+"v = [ " + s.getVar(v[0]).getVal() + " " + s.getVar(v[1]).getVal() + " " + s.getVar(v[2]).getVal() + " ]");
 			} while (s.nextSolution() == Boolean.TRUE);
 			assertEquals(78, s.getNbSolutions());
 		}
@@ -145,8 +154,8 @@ public class LexTest extends TestCase {
 	}
 
 
-	    @Test
-    public void testAshish(){
+	@Test
+	public void testAshish(){
 		Model m = new CPModel();
 		Solver s = new CPSolver();
 		IntegerVariable[] a = new IntegerVariable[2];
@@ -161,27 +170,27 @@ public class LexTest extends TestCase {
 
 		m.addConstraint(lex(a, b));
 		s.read(m);
-		
+
 		try {
 			s.propagate();
 
 		} catch (ContradictionException e) {
-			 assertFalse(false);
+			assertFalse(false);
 		}
 		s.solve();
 		do {
-		    StringBuffer st = new StringBuffer();
-            st.append("[");
-		        for (int i = 0; i < a.length; i++) {
-			        st.append(MessageFormat.format("{0}{1}", s.getVar(a[i]).getVal(), (i == (a.length - 1)) ? "" : " "));
-		        }
-		        st.append("]");
-		        st.append(" < [");
-		        for (int i = 0; i < b.length; i++) {
-			        st.append(MessageFormat.format("{0}{1}", s.getVar(b[i]).getVal(), (i == (b.length - 1)) ? "" : " "));
-		        }
-		        st.append("]");
-            LOGGER.info(st.toString());
+			StringBuffer st = new StringBuffer();
+			st.append("[");
+			for (int i = 0; i < a.length; i++) {
+				st.append(MessageFormat.format("{0}{1}", s.getVar(a[i]).getVal(), (i == (a.length - 1)) ? "" : " "));
+			}
+			st.append("]");
+			st.append(" < [");
+			for (int i = 0; i < b.length; i++) {
+				st.append(MessageFormat.format("{0}{1}", s.getVar(b[i]).getVal(), (i == (b.length - 1)) ? "" : " "));
+			}
+			st.append("]");
+			LOGGER.info(st.toString());
 		} while (s.nextSolution() == Boolean.TRUE);
 
 		assertTrue(s.getNbSolutions() > 0);
