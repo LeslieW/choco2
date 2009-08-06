@@ -1654,7 +1654,7 @@ public class ReifiedSomeTest {
              s.setVarIntSelector(new RandomIntVarSelector(s, seed));
              s.setValIntSelector(new RandomIntValSelector(seed));
              s.solveAll();
-             System.out.println(""+ s.getNbSolutions());
+             //System.out.println(""+ s.getNbSolutions());
              LOGGER.info("" + s.getNbSolutions());
              Assert.assertEquals("nb de solutions", 2360, s.getNbSolutions()); 
         }

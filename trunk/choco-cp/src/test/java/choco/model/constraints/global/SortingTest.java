@@ -21,8 +21,19 @@
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.global;
+import static choco.Choco.allDifferent;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.makeIntVarArray;
+import static choco.Choco.sorting;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 
-import static choco.Choco.*;
+import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.junit.Test;
+
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.SortingSConstraint;
@@ -33,11 +44,6 @@ import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
-import junit.framework.TestCase;
-
-import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -45,11 +51,12 @@ import java.util.logging.Logger;
  * Date: 4 juin 2007
  * Time: 16:45:46
  */
-public class SortingTest extends TestCase {
+public class SortingTest {
 
     protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
-    public static void testSorting() {
+    @Test
+    public void testSorting() {
         CPModel m = new CPModel();
         IntegerVariable[] x = {
                 makeIntVar("x0", 1, 16),
@@ -78,7 +85,8 @@ public class SortingTest extends TestCase {
         }
     }
 
-    public static void testSorting2() {
+    @Test
+    public void testSorting2() {
         for (int seed = 0; seed < 1; seed++) {
             CPModel m = new CPModel();
             int n = 3;
@@ -144,6 +152,7 @@ public class SortingTest extends TestCase {
 
     }
 
+    @Test
     public void testName() {
         CPModel m = new CPModel();
         int n = 3;

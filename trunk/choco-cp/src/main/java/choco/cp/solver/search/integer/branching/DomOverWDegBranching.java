@@ -53,6 +53,7 @@ import java.util.logging.Logger;
 /**
  * WARNING ! This implementation suppose that the variables will not change. It copies all variables in an array
  * at the beginning !!
+ * @deprecated use {@link DomOverWDegBranching2}
  */
 public class DomOverWDegBranching extends AbstractLargeIntBranching implements PropagationEngineListener {
 	protected static final int ABSTRACTCONTRAINT_EXTENSION =
@@ -202,6 +203,7 @@ public class DomOverWDegBranching extends AbstractLargeIntBranching implements P
 		//logWeights(ChocoLogging.getChocoLogger(), Level.INFO);
 	}
 
+	@Override
 	public void initConstraintForBranching(SConstraint c) {
 		((AbstractSConstraint) c).setExtension(ABSTRACTCONTRAINT_EXTENSION, new DomOverWDegBranchingConstraintExtension());
 	}

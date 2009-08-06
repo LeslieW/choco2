@@ -36,8 +36,8 @@ import java.util.*;
 * Update : Choco 2.1.0
 */
 public final class ArrayUtils {
-    public static TLongHashSet hs = new TLongHashSet();
-    public static ArrayList<Object> c = new ArrayList<Object>();
+    private final static TLongHashSet HASHSET = new TLongHashSet();
+    private final static ArrayList<Object> LIST = new ArrayList<Object>();
 
     
     private ArrayUtils() {
@@ -242,17 +242,17 @@ public final class ArrayUtils {
 
     @SuppressWarnings({"unchecked"})
     public static <V extends IIndex> V[] getNonRedundantObjects(Class classe, V[] all) {
-        hs.clear();
-        c.clear();
+        HASHSET.clear();
+        LIST.clear();
         for (V v : all) {
-            if (!hs.contains(v.getIndex())) {
-                c.add(v);
-                hs.add(v.getIndex());
+            if (!HASHSET.contains(v.getIndex())) {
+                LIST.add(v);
+                HASHSET.add(v.getIndex());
             }
         }
-        if (c.size() != all.length) {
-            V[] a = (V[]) java.lang.reflect.Array.newInstance(classe, c.size());
-            c.toArray(a);
+        if (LIST.size() != all.length) {
+            V[] a = (V[]) java.lang.reflect.Array.newInstance(classe, LIST.size());
+            LIST.toArray(a);
             return a;
         }
         return all;

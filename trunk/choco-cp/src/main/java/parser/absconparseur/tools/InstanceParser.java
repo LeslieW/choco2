@@ -46,8 +46,8 @@ import java.util.logging.Logger;
  */
 public class InstanceParser {
 
-    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
-    
+	protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+
 	public static final String VERSION = "version 2.1.4 (November 4, 2008)";
 
 	private Document document;
@@ -125,6 +125,11 @@ public class InstanceParser {
 
 	public Map<String, PPredicate> getMapOfPredicat() {
 		return mapOfPredicates;
+	}
+	
+
+	public Map<String, PVariable> getMapOfVariables() {
+		return mapOfVariables;
 	}
 
 	public int getNbExtensionConstraints() {
@@ -331,7 +336,7 @@ public class InstanceParser {
 		}
 	}
 
-private PFunction parseFunction(Element functionElement) {
+	private PFunction parseFunction(Element functionElement) {
 		String name = functionElement.getAttribute(InstanceTokens.NAME);
 		Element parameters = (Element) functionElement.getElementsByTagName(InstanceTokens.PARAMETERS).item(0);
 		Element expression = (Element) functionElement.getElementsByTagName(InstanceTokens.EXPRESSION).item(0);
@@ -405,7 +410,7 @@ private PFunction parseFunction(Element functionElement) {
 		return new PWeightedSum(name, scope, coeffs, operator, limit);
 	}
 
-	private String buildStringRepresentationOf(Element parameters) {
+	protected String buildStringRepresentationOf(Element parameters) {
 		NodeList nodeList = parameters.getChildNodes();
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < nodeList.getLength(); i++) {
@@ -420,7 +425,7 @@ private PFunction parseFunction(Element functionElement) {
 		return sb.toString();
 	}
 
-	private PConstraint parseCumulativeConstraint(String name, PVariable[] scope, Element parameters) {
+	protected PConstraint parseCumulativeConstraint(String name, PVariable[] scope, Element parameters) {
 		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters), InstanceTokens.WHITE_SPACE + "{}");
 		st.nextToken(); // token '[' skipped
 		List<PTask> tasks = new ArrayList<PTask>();
@@ -449,7 +454,7 @@ private PFunction parseFunction(Element functionElement) {
 	}
 
 
-    private PConstraint parseDisjunctiveConstraint(String name, PVariable[] scope, Element parameters) {
+	protected PConstraint parseDisjunctiveConstraint(String name, PVariable[] scope, Element parameters) {
 		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters), InstanceTokens.WHITE_SPACE + "{}");
 		st.nextToken(); // token '[' skipped
 		List<PTask> tasks = new ArrayList<PTask>();
@@ -469,107 +474,108 @@ private PFunction parseFunction(Element functionElement) {
 	}
 
 
-     private PConstraint parseGlobalCardinalityConstraint(String name, PVariable[] involvedVariables, Element parameters){
+	private PConstraint parseGlobalCardinalityConstraint(String name, PVariable[] involvedVariables, Element parameters){
 		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters));
 		st.nextToken(); // token '[' skipped
 		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>();
 		String token = st.nextToken();
-        List<Object> table = new ArrayList<Object>();
-        while (!token.equals("]")) {
+		List<Object> table = new ArrayList<Object>();
+		while (!token.equals("]")) {
 			Object var = mapOfVariables.get(token);
-            if (var == null)
-                var = token.equals(InstanceTokens.NIL) ? null : Integer.parseInt(token);
-            else
-                involvedVariablesInParameters.add((PVariable) var);
-            table.add(var);
+			if (var == null)
+				var = token.equals(InstanceTokens.NIL) ? null : Integer.parseInt(token);
+			else
+				involvedVariablesInParameters.add((PVariable) var);
+			table.add(var);
 			token = st.nextToken();
 		}
-        int nbVars = table.size();
-        token = st.nextToken();
-        token = st.nextToken();
+		int nbVars = table.size();
+		token = st.nextToken();
+		token = st.nextToken();
 		while (!token.equals("]")) {
-            token = st.nextToken();
-            Integer val = token.equals(InstanceTokens.NIL) ? null : Integer.parseInt(token);
-            table.add(val);
+			token = st.nextToken();
+			Integer val = token.equals(InstanceTokens.NIL) ? null : Integer.parseInt(token);
+			table.add(val);
 			token = st.nextToken();
 			Object noccurrence = mapOfVariables.get(token);
 			if (noccurrence == null)
 				noccurrence = token.equals(InstanceTokens.NIL) ? null : Integer.parseInt(token);
 			else
 				involvedVariablesInParameters.add((PVariable) noccurrence);
-            table.add(noccurrence);
+			table.add(noccurrence);
 			token = st.nextToken();
-            token = st.nextToken();
+			token = st.nextToken();
 		}
 		return new PGlobalCardinality(name, involvedVariables,
-                table.toArray(new Object[table.size()]),
-                nbVars);
+				table.toArray(new Object[table.size()]),
+				nbVars);
 	}
 
-    private PConstraint parseLexLessConstraint(String name, PVariable[] involvedVariables, Element parameters){
+	private PConstraint parseLexLessConstraint(String name, PVariable[] involvedVariables, Element parameters){
 		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters));
 		st.nextToken(); // token '[' skipped
 		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>();
 		String token = st.nextToken();
-        List<Object> table = new ArrayList<Object>();
-        while (!token.equals("]")) {
-			Object var = mapOfVariables.get(token);
-            if (var == null)
-                var = token.equals(InstanceTokens.NIL) ? null : Integer.parseInt(token);
-            else
-                involvedVariablesInParameters.add((PVariable) var);
-            table.add(var);
-			token = st.nextToken();
-		}
-        int nbVars = table.size();
-        token = st.nextToken();
-        token = st.nextToken();
+		List<Object> table = new ArrayList<Object>();
 		while (!token.equals("]")) {
 			Object var = mapOfVariables.get(token);
-            if (var == null)
-                var = token.equals(InstanceTokens.NIL) ? null : Integer.parseInt(token);
-            else
-                involvedVariablesInParameters.add((PVariable) var);
-            table.add(var);
+			if (var == null)
+				var = token.equals(InstanceTokens.NIL) ? null : Integer.parseInt(token);
+			else
+				involvedVariablesInParameters.add((PVariable) var);
+			table.add(var);
+			token = st.nextToken();
+		}
+		int nbVars = table.size();
+		token = st.nextToken();
+		token = st.nextToken();
+		while (!token.equals("]")) {
+			Object var = mapOfVariables.get(token);
+			if (var == null)
+				var = token.equals(InstanceTokens.NIL) ? null : Integer.parseInt(token);
+			else
+				involvedVariablesInParameters.add((PVariable) var);
+			table.add(var);
 			token = st.nextToken();
 		}
 		return new PLexLess(name, involvedVariables,
-                table.toArray(new Object[table.size()]),
-                nbVars);
+				table.toArray(new Object[table.size()]),
+				nbVars);
 	}
 
-    private PConstraint parseLexLessEqConstraint(String name, PVariable[] involvedVariables, Element parameters){
+	private PConstraint parseLexLessEqConstraint(String name, PVariable[] involvedVariables, Element parameters){
 		StringTokenizer st = new StringTokenizer(buildStringRepresentationOf(parameters));
 		st.nextToken(); // token '[' skipped
 		Set<PVariable> involvedVariablesInParameters = new HashSet<PVariable>();
 		String token = st.nextToken();
-        List<Object> table = new ArrayList<Object>();
-        while (!token.equals("]")) {
-			Object var = mapOfVariables.get(token);
-            if (var == null)
-                var = token.equals(InstanceTokens.NIL) ? null : Integer.parseInt(token);
-            else
-                involvedVariablesInParameters.add((PVariable) var);
-            table.add(var);
-			token = st.nextToken();
-		}
-        int nbVars = table.size();
-        token = st.nextToken();
-        token = st.nextToken();
+		List<Object> table = new ArrayList<Object>();
 		while (!token.equals("]")) {
 			Object var = mapOfVariables.get(token);
-            if (var == null)
-                var = token.equals(InstanceTokens.NIL) ? null : Integer.parseInt(token);
-            else
-                involvedVariablesInParameters.add((PVariable) var);
-            table.add(var);
+			if (var == null)
+				var = token.equals(InstanceTokens.NIL) ? null : Integer.parseInt(token);
+			else
+				involvedVariablesInParameters.add((PVariable) var);
+			table.add(var);
+			token = st.nextToken();
+		}
+		int nbVars = table.size();
+		token = st.nextToken();
+		token = st.nextToken();
+		while (!token.equals("]")) {
+			Object var = mapOfVariables.get(token);
+			if (var == null)
+				var = token.equals(InstanceTokens.NIL) ? null : Integer.parseInt(token);
+			else
+				involvedVariablesInParameters.add((PVariable) var);
+			table.add(var);
 			token = st.nextToken();
 		}
 		return new PLexLessEq(name, involvedVariables,
-                table.toArray(new Object[table.size()]),
-                nbVars);
+				table.toArray(new Object[table.size()]),
+				nbVars);
 	}
 
+	
 
 	private PConstraint parseConstraint(Element constraintElement) throws UnsupportedConstraintException {
 		String name = constraintElement.getAttribute(InstanceTokens.NAME);
@@ -597,9 +603,12 @@ private PFunction parseFunction(Element functionElement) {
 		}
 
 		nbGlobalConstraints++;
-		String lreference = reference.toLowerCase();
-		Element parameters = (Element) constraintElement.getElementsByTagName(InstanceTokens.PARAMETERS).item(0);
-
+		final Element parameters = (Element) constraintElement.getElementsByTagName(InstanceTokens.PARAMETERS).item(0);
+		return parseGlobalConstraint(reference, name, scope, parameters);
+	}
+	
+	protected PConstraint parseGlobalConstraint(String reference, String name, PVariable[] scope, Element parameters) {
+		final String lreference = reference.toLowerCase();
 		if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.ALL_DIFFERENT)))
 			return new PAllDifferent(name, scope);
 		if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.ELEMENT)))
@@ -608,16 +617,15 @@ private PFunction parseFunction(Element functionElement) {
 			return parseWeightedSumConstraint(name, scope, parameters);
 		if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.CUMULATIVE)))
 			return parseCumulativeConstraint(name, scope, parameters);
-        if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.DISJUNCTIVE)))
+		if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.DISJUNCTIVE)))
 			return parseDisjunctiveConstraint(name, scope, parameters);
-        if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.GLOBALCARDINALITY)))
+		if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.GLOBALCARDINALITY)))
 			return parseGlobalCardinalityConstraint(name, scope, parameters);
-        if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.LEXLESS)))
+		if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.LEXLESS)))
 			return parseLexLessConstraint(name, scope, parameters);
-        if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.LEXLESSEQ)))
+		if (lreference.equals(InstanceTokens.getLowerCaseGlobalNameOf(InstanceTokens.LEXLESSEQ)))
 			return parseLexLessEqConstraint(name, scope, parameters);
-
-		LOGGER.log(Level.WARNING, "Problem with the reference", reference);
+		LOGGER.log(Level.WARNING, "Problem with the reference {0}", reference);
 		return null;
 	}
 
@@ -625,13 +633,13 @@ private PFunction parseFunction(Element functionElement) {
 		mapOfConstraints = new HashMap<String, PConstraint>();
 		int nbConstraints = Integer.parseInt(constraintsElement.getAttribute(InstanceTokens.NB_CONSTRAINTS));
 		if (displayInstance && LOGGER.isLoggable(Level.INFO)) {
-            StringBuffer st = new StringBuffer();
-            st.append("=> ").append(nbConstraints).append(" constraints");
+			StringBuffer st = new StringBuffer();
+			st.append("=> ").append(nbConstraints).append(" constraints");
 			if (type.equals(InstanceTokens.WCSP)) {
 				int maximalCost = Integer.parseInt(constraintsElement.getAttribute(InstanceTokens.MAXIMAL_COST));
 				String s = constraintsElement.getAttribute(InstanceTokens.INITIAL_COST);
 				int initialCost = s.equals("") ? 0 : Integer.parseInt(s);
-                st.append(" maximalCost=").append(maximalCost).append(" initialCost=").append(initialCost);
+				st.append(" maximalCost=").append(maximalCost).append(" initialCost=").append(initialCost);
 			}
 			LOGGER.info(st.toString());
 		}
