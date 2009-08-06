@@ -213,7 +213,7 @@ public abstract class MultipleVariables extends AbstractVariable {
     }
 
     /**
-     * Check wether to Multiple variables are equivelents
+     * Check wether to Multiple variables are equivalents
      * @param mv
      * @return
      */

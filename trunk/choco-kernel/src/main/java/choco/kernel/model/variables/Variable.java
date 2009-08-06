@@ -42,7 +42,7 @@ import java.util.logging.Logger;
  * Define all the methods for a variable to be used
  * on the Model.
  */
-public interface Variable extends IPretty, IIndex, IOptions {
+public interface Variable extends IPretty, IIndex, IOptions, IHook {
 
     final static Logger LOGGER = ChocoLogging.getModelLogger();
 

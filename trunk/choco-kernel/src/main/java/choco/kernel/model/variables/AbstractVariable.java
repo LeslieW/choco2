@@ -24,6 +24,7 @@ package choco.kernel.model.variables;
 
 import choco.kernel.common.HashCoding;
 import choco.kernel.common.IndexFactory;
+import choco.kernel.model.ModelException;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -43,7 +44,8 @@ public abstract class AbstractVariable implements Variable, Comparable{
 	protected HashSet<String> options = new HashSet<String>();
     protected Variable[] listVars;
     protected final long indice;
-
+    protected int hook = NO_HOOK; //a utility field
+    
 	public AbstractVariable(VariableType type) {
 		this.type = type;
         indice = IndexFactory.getId();
@@ -60,14 +62,14 @@ public abstract class AbstractVariable implements Variable, Comparable{
 		}
 	}
 
-    public void addOptions(String[] options) {
+    public final void addOptions(String[] options) {
         for (String option : options) {
             this.addOption(option);
         }
 	}
 
 
-    public void addOptions(HashSet<String> tOptions){
+    public final void addOptions(HashSet<String> tOptions){
         if(tOptions != null){
             for (String tOption : tOptions) {
                 this.addOption(tOption);
@@ -106,7 +108,7 @@ public abstract class AbstractVariable implements Variable, Comparable{
      * @return the indice of the objet
      */
     @Override
-    public long getIndex() {
+    public final long getIndex() {
         return indice;
     }
 
@@ -155,4 +157,26 @@ public abstract class AbstractVariable implements Variable, Comparable{
             return 1;
         }
     }
+
+	@Override
+	public final int getHook() {
+		return hook;
+	}
+
+	@Override
+	public final void resetHook() {
+		this.hook = NO_HOOK;		
+	}
+
+	@Override
+	public final void setHook(int hook) {
+		if( hook == NO_HOOK) {
+			this.hook = hook;
+		}else {
+			throw new ModelException("The hook of the variable "+this.pretty()+" is already set to "+this.hook);
+		}
+		
+	}
+    
+    
 }

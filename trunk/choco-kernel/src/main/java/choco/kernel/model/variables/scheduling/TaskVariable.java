@@ -39,13 +39,9 @@ import java.util.Properties;
  */
 public class TaskVariable extends MultipleVariables implements IComponentVariable, ITaskVariable<IntegerVariable>{
 
-	private static final int NO_HOOK = -1;
-	
 	protected final String name;
 
 	protected String variableManager;
-
-	private int hook = NO_HOOK;
 
 	public TaskVariable(String name, IntegerVariable start, IntegerVariable end, IntegerVariable duration) {
 		super(3);
@@ -66,8 +62,8 @@ public class TaskVariable extends MultipleVariables implements IComponentVariabl
 	 * Get the duration of the task
 	 * @return
 	 */
-	public IntegerVariable duration() {
-		return (IntegerVariable)variables.get(2);
+	public final IntegerVariable duration() {
+		return (IntegerVariable) variables.get(2);
 	}
 
 
@@ -75,7 +71,7 @@ public class TaskVariable extends MultipleVariables implements IComponentVariabl
 	 * Get the end time of the task
 	 * @return
 	 */
-	public IntegerVariable end() {
+	public final IntegerVariable end() {
 		return (IntegerVariable)variables.get(1);
 	}
 
@@ -84,7 +80,7 @@ public class TaskVariable extends MultipleVariables implements IComponentVariabl
 	 * Get the start time of the task
 	 * @return
 	 */
-	public IntegerVariable start() {
+	public final IntegerVariable start() {
 		return (IntegerVariable)variables.get(0);
 	}
 
@@ -95,20 +91,7 @@ public class TaskVariable extends MultipleVariables implements IComponentVariabl
 		return name;
 	}
 
-	public int getHook() {
-		return hook;
-	}
-
-    public void setHook(int hook) {
-		if (this.hook !=  NO_HOOK) {
-			throw new ModelException("hook already used");
-		} else if(hook == NO_HOOK){throw new ModelException("invalid hook value:"+hook);}
-		else {this.hook = hook;}
-	}
-
-    public void reinitHook(){
-        this.hook =  NO_HOOK;
-    }
+	
 
     @Override
     public boolean isEquivalentTo(MultipleVariables mv) {

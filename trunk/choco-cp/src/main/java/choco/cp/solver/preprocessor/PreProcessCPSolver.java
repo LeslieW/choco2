@@ -382,7 +382,7 @@ public class PreProcessCPSolver extends CPSolver {
     public int[] getVarIndexes(IntegerVariable[] vs) {
         int[] idxs = new int[vs.length];
         for (int i = 0; i < idxs.length; i++) {
-            idxs[i] = (Integer) vs[i].getHook();
+            idxs[i] = vs[i].getHook();
         }
         return idxs;
     }
@@ -439,9 +439,7 @@ public class PreProcessCPSolver extends CPSolver {
             Variable v2 = c.getVariables()[1];
             if(v1.getVariableType()== VariableType.INTEGER
                     && v2.getVariableType()== VariableType.INTEGER){
-                int idxa = (Integer) ((IntegerVariable)v1).getHook();
-                int idxb = (Integer) ((IntegerVariable)v2).getHook();
-                matrix.add(idxa,idxb);
+            	matrix.add(v1.getHook(), v2.getHook());
                 this.mapconstraints.put(c.getIndex(), null);
             }
         }
@@ -516,9 +514,7 @@ public class PreProcessCPSolver extends CPSolver {
                     m2 = m.getStoredMultipleVar(j);
                     if(m2 instanceof TaskVariable){
                         if(m1.isEquivalentTo(m2)){
-                            int idxa = ((TaskVariable)m1).getHook();
-                            int idxb = ((TaskVariable)m2).getHook();
-                            matrix.add(idxa,idxb);
+                        	matrix.add(m1.getHook(), m2.getHook());
                         }
                     }
 
@@ -564,7 +560,7 @@ public class PreProcessCPSolver extends CPSolver {
                         var[col] = (TaskVar)mod2sol.readModelVariable(vtmp);
                     }
                     this.mapvariables.put(v.getIndex(), var[col]);
-                    v.reinitHook();
+                    v.resetHook();
                 }
             }
         }
