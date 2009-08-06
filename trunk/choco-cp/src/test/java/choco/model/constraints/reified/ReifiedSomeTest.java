@@ -54,9 +54,7 @@ import org.junit.*;
 import static org.junit.Assert.*;
 
 import static java.text.MessageFormat.format;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Random;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -1654,12 +1652,67 @@ public class ReifiedSomeTest {
              CPSolver s = new CPSolver();
              s.read(m);
              s.setVarIntSelector(new RandomIntVarSelector(s, seed));
-             s.setValIntSelector(new RandomIntValSelector());
+             s.setValIntSelector(new RandomIntValSelector(seed));
              s.solveAll();
              System.out.println(""+ s.getNbSolutions());
              LOGGER.info("" + s.getNbSolutions());
              Assert.assertEquals("nb de solutions", 2360, s.getNbSolutions()); 
         }
     }
+
+    @Test
+    public void testRichard2() {
+        for (int seed = 0; seed < 5; seed++) {
+             CPModel m = new CPModel();
+             m.setDefaultExpressionDecomposition(true);
+             IntegerVariable r1 = makeIntVar("x", 0, 1);
+             IntegerVariable r2 = makeIntVar("y", 0, 4);
+             IntegerVariable e1 = makeIntVar("z", 0, 3);
+             IntegerVariable e2 = makeIntVar("z", 0, 3);
+             IntegerVariable s1 = makeIntVar("z", 0, 3);
+             IntegerVariable s2 = makeIntVar("z", 0, 3);
+
+             m.addConstraint(implies(eq(r1, 3), and(geq(s1, e2), leq(s2, e1))));
+             CPSolver s = new CPSolver();
+             s.read(m);
+             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
+             s.setValIntSelector(new RandomIntValSelector(seed));
+             s.solveAll();
+             System.out.println(""+ s.getNbSolutions());
+             LOGGER.info("" + s.getNbSolutions());
+             Assert.assertEquals("nb de solutions", 512, s.getNbSolutions());
+        }
+    }
+
+    @Test
+    public void testRichard3() {
+        for (int seed = 0; seed < 5; seed++) {
+             CPModel m = new CPModel();
+             m.setDefaultExpressionDecomposition(true);
+             IntegerVariable r1 = makeIntVar("x", 0, 1);
+             IntegerVariable r2 = makeIntVar("y", 0, 1);
+             IntegerVariable s1 = makeIntVar("z", 0, 1);
+             IntegerVariable s2 = makeIntVar("z", 0, 1);
+             List<int[]> tuples = new LinkedList<int[]>();
+             tuples.add(new int[]{0,0});
+             tuples.add(new int[]{1,1});
+
+             m.addConstraint(implies(feasTupleAC(tuples, r1, r2), gt(s1, s2)));
+
+             //m.addConstraint(implies(eq(r1, 3), and(geq(s1, e2), leq(s2, e1))));
+             CPSolver s = new CPSolver();
+             s.read(m);
+             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
+             s.setValIntSelector(new RandomIntValSelector(seed));
+             s.solveAll();
+             System.out.println(""+ s.getNbSolutions());
+             LOGGER.info("" + s.getNbSolutions());
+             Assert.assertEquals("nb de solutions", 10, s.getNbSolutions());
+        }
+    }
+
+
+
+
 
 }

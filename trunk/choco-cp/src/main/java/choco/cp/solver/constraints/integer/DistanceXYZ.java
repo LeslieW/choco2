@@ -221,7 +221,7 @@ public class DistanceXYZ extends AbstractTernIntSConstraint {
             v2.updateInf(-cste,cIdx2);
         }
 		filterFixPoint();
-	}
+    }
 
 	@Override
 	public String toString() {
