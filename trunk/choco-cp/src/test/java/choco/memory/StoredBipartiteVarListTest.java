@@ -73,7 +73,7 @@ public class StoredBipartiteVarListTest {
             ar.add(var[i]);
         }
 
-        Iterator it = ar.getIterator();
+        Iterator it = ar.quickIterator();
         checkIterator(it, var);
         it = ar.getInstanciatedVariableIterator();
         checkIterator(it, new IntDomainVar[0]);
@@ -85,7 +85,7 @@ public class StoredBipartiteVarListTest {
 
 //        ar.isInstanciated(var[1]);
 
-        it = ar.getIterator();
+        it = ar.quickIterator();
         checkIterator(it, var);
         it = ar.getInstanciatedVariableIterator();
         checkIterator(it, new IntDomainVar[]{var[1]});
@@ -96,7 +96,7 @@ public class StoredBipartiteVarListTest {
         var[0].instantiate(0, -1);
 //        ar.isInstanciated(var[0]);
 
-        it = ar.getIterator();
+        it = ar.quickIterator();
         checkIterator(it, var);
         it = ar.getInstanciatedVariableIterator();
         checkIterator(it, new IntDomainVar[]{var[0], var[1]});
@@ -141,7 +141,7 @@ public class StoredBipartiteVarListTest {
         var[3].instantiate(0,-1);
 
         env.worldPop();
-        Iterator it = ar.getIterator();
+        Iterator it = ar.quickIterator();
         checkIterator(it, var);
         it = ar.getInstanciatedVariableIterator();
         checkIterator(it, new IntDomainVar[]{var[0], var[1]});
@@ -149,7 +149,7 @@ public class StoredBipartiteVarListTest {
         checkIterator(it, new IntDomainVar[]{var[3], var[2]});
 
         env.worldPop();
-        it = ar.getIterator();
+        it = ar.quickIterator();
         checkIterator(it, var);
         it = ar.getNotInstanciatedVariableIterator();
         checkIterator(it, new IntDomainVar[]{var[3], var[2], var[1], var[0]});

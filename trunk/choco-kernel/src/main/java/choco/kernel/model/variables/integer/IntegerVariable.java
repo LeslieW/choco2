@@ -186,7 +186,7 @@ public class IntegerVariable extends IntegerExpressionVariable {
     }
 
     public void setHook(Object hook) {
-        if (hook == null) {
+        if (this.hook != null) {
             throw new ModelException("hook already used");
         } else {
             this.hook = hook;

@@ -22,20 +22,19 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.expressions;
 
+import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
-import choco.cp.solver.constraints.reified.leaves.bool.NotNode;
-import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.reified.leaves.bool.*;
+import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.constraints.MetaConstraint;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
-import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.reified.INode;
-import choco.Choco;
 
 import java.util.HashSet;
 
@@ -83,15 +82,77 @@ public class NotManager extends IntConstraintManager {
      */
     public INode makeNode(Solver solver, Constraint[] cstrs, IntegerExpressionVariable[] vars) {
         MetaConstraint mc = (MetaConstraint)cstrs[0];
-        INode[] nt = new INode[mc.getConstraints().length];
-        for (int i = 0; i < mc.getConstraints().length; i++) {
-            Constraint c = mc.getConstraints()[i];
-            IntegerExpressionVariable[] ev = new IntegerExpressionVariable[c.getNbVars()];
-            for(int j = 0; j < c.getNbVars(); j++){
-                ev[j]  = (IntegerExpressionVariable)c.getVariables()[j];
+        Constraint cons = mc.getConstraints()[0];
+        if(cons instanceof ComponentConstraint){
+            return detectSimpleNode(solver, cons);
+        }else{
+            INode[] nt = new INode[mc.getConstraints().length];
+            for (int i = 0; i < mc.getConstraints().length; i++) {
+                Constraint c = mc.getConstraints()[i];
+                IntegerExpressionVariable[] ev = new IntegerExpressionVariable[c.getNbVars()];
+                for(int j = 0; j < c.getNbVars(); j++){
+                    ev[j]  = (IntegerExpressionVariable)c.getVariables()[j];
+                }
+                nt[i] = c.getEm().makeNode(solver, new Constraint[]{c}, ev);
             }
-            nt[i] = c.getEm().makeNode(solver, new Constraint[]{c}, ev);
+            return new NotNode(nt);
         }
-        return new NotNode(nt);
     }
+
+    /**
+     * Detect simple unary constraint that can be replaced by efficient one
+     * @param solver
+     * @param cons
+     * @return
+     */
+    private INode detectSimpleNode(Solver solver, Constraint cons) {
+        ComponentConstraint cc = (ComponentConstraint) cons;
+        ConstraintType type = cc.getConstraintType();
+
+        switch (type) {
+            case EQ:
+                return new NeqNode(buildVariableNodes(solver, cc));
+            case NEQ:
+                return new EqNode(buildVariableNodes(solver, cc));
+            case GEQ:
+                return new LtNode(buildVariableNodes(solver, cc));
+            case LEQ:
+                return new GtNode(buildVariableNodes(solver, cc));
+            case GT:
+                return new LeqNode(buildVariableNodes(solver, cc));
+            case LT:
+                return new GeqNode(buildVariableNodes(solver, cc));
+            case SIGNOP:
+                if (cc.getParameters() == Boolean.FALSE) {
+                    return new SameSignNode(buildVariableNodes(solver, cc));
+                }
+                if (cc.getParameters() == Boolean.TRUE) {
+                    return new OppSignNode(buildVariableNodes(solver, cc));
+                }
+            default:
+                INode[] nt = new INode[1];
+                IntegerExpressionVariable[] ev = new IntegerExpressionVariable[cons.getNbVars()];
+                for (int j = 0; j < cons.getNbVars(); j++) {
+                    ev[j] = (IntegerExpressionVariable) cons.getVariables()[j];
+                }
+                nt[0] = cons.getEm().makeNode(solver, new Constraint[]{cons}, ev);
+                return new NotNode(nt);
+        }
+    }
+
+    /**
+     * Build variable nodes for Component constraint
+     * @param solver the solver
+     * @param cc the component constraint
+     * @return array of variable leaves
+     */
+    private static INode[] buildVariableNodes(Solver solver, ComponentConstraint cc){
+        INode[] nt = new INode[cc.getVariables().length];
+        for (int i = 0; i < cc.getVariables().length; i++) {
+            IntegerExpressionVariable v = (IntegerExpressionVariable) cc.getVariable(i);
+            nt[i] = v.getEm().makeNode(solver, v.getConstraints(), v.getVariables());
+        }
+        return nt;
+    }
+
 }

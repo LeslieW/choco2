@@ -24,6 +24,7 @@ package choco.kernel.memory.structure;
 
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
+import choco.kernel.solver.variables.Var;
 
 import java.util.*;
 
@@ -35,8 +36,10 @@ import java.util.*;
  * @version 2.0.3</br>
  * @param <E>
  */
-public final class StoredBipartiteList<E> extends AbstractList<E> {
-	
+public class StoredBipartiteList<E> extends AbstractList<E> {
+
+    static final int INITIAL_CAPACITY = 8;
+
 	/**
 	 * The list of values
 	 */
@@ -47,8 +50,14 @@ public final class StoredBipartiteList<E> extends AbstractList<E> {
 	 */
 	protected IStateInt last;
 
+    StoredBipartiteList(IEnvironment env) {
+        super();
+        //noinspection unchecked
+        elementData = (E[])new Var[INITIAL_CAPACITY];
+		this.last = env.makeInt(0);
+    }
 
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     public StoredBipartiteList(IEnvironment env, Collection<E>  coll) {
 		super();
 		this.elementData = (E[]) coll.toArray();
@@ -66,8 +75,9 @@ public final class StoredBipartiteList<E> extends AbstractList<E> {
 	 * runtime exception.  This method does *not* check if the index is
 	 * negative: It is always used immediately prior to an array access,
 	 * which throws an ArrayIndexOutOfBoundsException if index is negative.
-	 */
-	private void RangeCheck(int index) {
+     * @param index index to check
+     */
+	void RangeCheck(int index) {
 		if (index >= size())
 			throw new IndexOutOfBoundsException(
 					"Index: "+index+", Size: "+size());
@@ -110,7 +120,7 @@ public final class StoredBipartiteList<E> extends AbstractList<E> {
 	 }
 	 
 	@Override
-	public final int size() {
+	public int size() {
 		return last.get();
 	}
 
