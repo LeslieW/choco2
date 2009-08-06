@@ -27,6 +27,8 @@ import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.extension.LargeRelation;
+import choco.kernel.solver.constraints.integer.extension.ConsistencyRelation;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -80,6 +82,12 @@ public class GAC3rmLargeConstraint extends CspLargeSConstraint {
 
     }
 
+    @Override
+	public AbstractSConstraint opposite() {
+		LargeRelation rela2 = (LargeRelation) ((ConsistencyRelation) relation).getOpposite();
+		AbstractSConstraint ct = new GAC3rmLargeConstraint(vars, rela2);
+		return ct;
+	}
 
     public int getFilteredEventMask(int idx) {
         return IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
