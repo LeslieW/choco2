@@ -255,7 +255,7 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
         else if (n.contains(x-1))
             return x-1;
         else
-            return n.getInf();
+            return n.getSup();
 
     }
 

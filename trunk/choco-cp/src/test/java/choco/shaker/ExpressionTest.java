@@ -38,6 +38,7 @@ import choco.shaker.tools.factory.CPModelFactory;
 import choco.shaker.tools.factory.VariableFactory;
 import org.junit.*;
 
+import java.util.Iterator;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -278,7 +279,7 @@ public class ExpressionTest {
         checker(false);
     }
 
-    @Test(expected=AssertionError.class)
+    @Test
     public void testExpression9() {
         m  = new CPModel();
         IntegerVariable[] v = new IntegerVariable[2];
@@ -752,8 +753,9 @@ public class ExpressionTest {
                 Assert.assertEquals("decomposedSolver.isSatisfied()",Boolean.TRUE, decomposedSolver.checkSolution(false));
                 if(print){
                     st = new StringBuffer();
-                    for (int i = 0; i < 4; i++) {
-                        IntVar v = decomposedSolver.getIntVar(i);
+                    Iterator<IntegerVariable> it = m.getIntVarIterator();
+                    while(it.hasNext()){
+                        IntVar v = decomposedSolver.getVar(it.next());
                         st.append(v.getName()).append(":").append(v.getVal()).append(" ");
                     }
                     LOGGER.info(st.toString());
@@ -771,12 +773,13 @@ public class ExpressionTest {
                 if(print){
                     Assert.assertEquals("undecomposedSolver.isSatisfied()",Boolean.TRUE, undecomposedSolver.checkSolution(false));
                     st = new StringBuffer();
-                    for (int i = 0; i < undecomposedSolver.getNbIntVars(); i++) {
-                        IntVar v = undecomposedSolver.getIntVar(i);
+                    Iterator<IntegerVariable> it = m.getIntVarIterator();
+                    while(it.hasNext()){
+                        IntVar v = undecomposedSolver.getVar(it.next());
                         st.append(v.getName()).append(":").append(v.getVal()).append(" ");
                     }
                     LOGGER.info(st.toString());
-                }
+                    }
             } while (undecomposedSolver.nextSolution());
         }
         Assert.assertEquals("Not same number of solutions", decomposedSolver.getNbSolutions(), undecomposedSolver.getNbSolutions());
