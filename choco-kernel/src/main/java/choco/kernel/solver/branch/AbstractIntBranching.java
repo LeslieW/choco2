@@ -29,6 +29,8 @@ import choco.kernel.solver.search.IntBranchingDecision;
 
 /**
  * An abstract class for all implementations of branching objets (objects controlling the tree search)
+ *
+ * See OldAbstractIntBranching to use old branching tools
  */
 public abstract class AbstractIntBranching extends AbstractBranching implements IntBranching {
 
