@@ -1,25 +1,3 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
- *          _       _                            *
- *         |  °(..)  |                           *
- *         |_  J||L _|        CHOCO solver       *
- *                                               *
- *    Choco is a java library for constraint     *
- *    satisfaction problems (CSP), constraint    *
- *    programming (CP) and explanation-based     *
- *    constraint solving (e-CP). It is built     *
- *    on a event-based propagation mechanism     *
- *    with backtrackable structures.             *
- *                                               *
- *    Choco is an open-source software,          *
- *    distributed under a BSD licence            *
- *    and hosted by sourceforge.net              *
- *                                               *
- *    + website : http://choco.emn.fr            *
- *    + support : choco@emn.fr                   *
- *                                               *
- *    Copyright (C) F. Laburthe,                 *
- *                  N. Jussien    1999-2008      *
- * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.variables.geost;
 
 import choco.kernel.model.variables.MultipleVariables;
@@ -47,6 +25,7 @@ public class GeostObject extends MultipleVariables{
     private final IntegerVariable startTime;
     private final IntegerVariable durationTime;
     private final IntegerVariable endTime;
+    private final int radius;
 
     /**
 	 * Creates an object with the given parameters
@@ -72,6 +51,24 @@ public class GeostObject extends MultipleVariables{
         this.addVariable(durationTime);
         this.endTime = endTime;
         this.addVariable(endTime);
+        this.radius=-1;
+    }
+
+    public GeostObject(int dim, int objectId, IntegerVariable shapeId, IntegerVariable[] coordinates, IntegerVariable startTime, IntegerVariable durationTime, IntegerVariable endTime, int radius) {
+        this.dim = dim;
+        this.objectId = objectId;
+        this.shapeId = shapeId;
+        this.addVariable(shapeId);
+        this.coordinates = coordinates;
+        ArrayList<Variable> list = new ArrayList<Variable>(Arrays.asList(coordinates));
+        this.addVariables(list);
+        this.startTime = startTime;
+        this.addVariable(startTime);
+        this.durationTime = durationTime;
+        this.addVariable(durationTime);
+        this.endTime = endTime;
+        this.addVariable(endTime);
+        this.radius = radius;
     }
 
     public String pretty() {
@@ -104,5 +101,13 @@ public class GeostObject extends MultipleVariables{
 
     public IntegerVariable getEndTime() {
         return endTime;
+    }
+
+    public int getRadius() {
+        return radius;
+    }
+
+    public boolean isSphere() {
+        return (radius!=-1);
     }
 }

@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -22,68 +22,88 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.variables.geost;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  * This is the class that represents a Shifted Box. Each shifted box belongs to a shape (therefore the shape id variable) and has two lists
  * that specify its offset (basically origin, lower left corner) and its size in every dimension.
  */
-public class ShiftedBox {
-	
+public class ShiftedBox implements Serializable {
+
 	private int sid; //shape Id
 	private int[] t; //the offset
 	private int[] l; //the size
-	
+
 	public ShiftedBox(int shapeId, int[] offset, int[] size)
 	{
 		this.sid = shapeId;
 		this.t = offset;
 		this.l = size;
 	}
-	
+
 	public ShiftedBox(){}
-	
+
 	public void setOffset(int index, int value)
 	{
 		this.t[index] = value;
 	}
-	
+
 	public void setOffset(int[] off)
 	{
 		this.t = off;
 	}
-	
+
 	public int getOffset(int index)
 	{
 		return this.t[index];
 	}
-	
-	public void setSize(int index, int value)
+
+    public int[] getOffset()
+    {
+        return this.t;
+    }
+
+
+    public void setSize(int index, int value)
 	{
 		this.l[index] = value;
 	}
-	
+
 	public void setSize(int[] s)
 	{
 		this.l = s;
 	}
-	
+
 	public int getSize(int index)
 	{
 		return this.l[index];
 	}
-	
-	public int getShapeId()
+
+    public int[] getSize()
+    {
+        return this.l;
+    }
+
+    public int getShapeId()
 	{
 		return this.sid;
 	}
-	
+
 	public void setShapeId(int id)
 	{
 		this.sid = id;
 	}
 
-	@Override
+    public void print()
+    {
+        System.out.print("sid="+sid+" ");
+        for (int i=0; i<t.length; i++) System.out.print("t["+i+"]:"+t[i]+" ");
+        for (int i=0; i<l.length; i++) System.out.print("l["+i+"]:"+l[i]+" ");
+        System.out.println("");
+    }
+
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
@@ -101,6 +121,6 @@ public class ShiftedBox {
 		return true;
 	}
 
-	
+
 
 }
