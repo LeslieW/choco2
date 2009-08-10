@@ -85,4 +85,9 @@ public class DisTest {
     public void test9(){
         qt.queen0(9);
     }
+
+    @Test
+    public void test10(){
+        qt.queen0(10);
+    }
 }

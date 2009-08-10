@@ -1,4 +1,6 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
+/*
+*/
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -20,6 +22,7 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
+/*
 package choco.model.constraints.global;
 
 import choco.Choco;
@@ -553,3 +556,4 @@ public class GeostTest {
 		LOGGER.info(s.pretty());
 	}
 }
+*/
