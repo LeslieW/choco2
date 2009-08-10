@@ -4,11 +4,13 @@ import choco.cp.solver.constraints.global.geost.dataStructures.HeapAscending;
 import choco.cp.solver.constraints.global.geost.dataStructures.HeapDescending;
 import choco.cp.solver.constraints.global.geost.externalConstraints.ExternalConstraint;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Obj;
-import choco.cp.solver.constraints.global.geost.geometricPrim.Point;
+import choco.kernel.model.constraints.geost.GeostOptions;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.solver.Solver;
 
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -19,75 +21,10 @@ import java.util.*;
 public class Setup {
 	Constants cst;
 
+    public GeostOptions opt = new GeostOptions();
 
 
-    public static long timeFixObj=0L;
-    public static long timeFixAllObj=0L;
-    public static long timePruneFix=0L;
-    public static long timeGetFR=0L;
-    public static long timeIsFeasible=0L;
 
-    public static long GetFRCalled=0L;
-    public static long PruneFixCalled=0L;
-    public static long timefilterWithGreedyMode=0L;
-    public static long timefilterWithoutGreedyMode=0L;
-    public static long handleSolution1 = 0L;
-    public static long handleSolution2 = 0L;
-    public static long handleSolution3 = 0L;
-    public static boolean[][] memo_objects;
-    public static boolean clipping=false;
-    public static int interval_size=-1;//size of the interval in IntervalBranching
-//    public static long sum_jumps=0; 
-    public static long GetFRCalls=0;
-    public static long deltaOne=0;
-    public static long deltaZero=0;
-    public static HashMap<Integer,HashMap<Integer,Integer>> delta= new HashMap<Integer, HashMap<Integer,Integer>>();
-    public static HashMap<Integer,HashMap<Integer,Vector<Integer>>> succDelta= new HashMap<Integer, HashMap<Integer,Vector<Integer>>>();
-
-    public static ObjectOutput serial=null;
-    public static FileOutputStream fileSerial=null;
-    public static double[][] prop={{0.66,0.66,0.66}};
-    //public static double[][] prop={{0.25,0.75,1.0},{0.75,0.25,1.0},{0.33,0.66,1.0},{0.66,0.33,1.0},{0.33,0.33},{0.66,0.66},{0.25,0.25},{0.75,0.75},{0.2,0.8},{0.8,0.2},{1.0,0.5},{0.5,1.0},{1.0,0.2},{0.2,1.0},{1.0,0.8},{0.8,1.0}};
-    //public static double[][] prop={{1.0,0.8}};
-
-    //public static double[] prop={0.1,0.2,0.33,0.4,0.5,0.66,0.75,0.8,0.9};
-    //public static double[] prop={0.1,0.2,0.33,0.4,0.5,0.66,0.75,0.8,0.9};
-    //public static double[] prop={0.001,0.002,0.003,0.004,0.005,0.006,0.007,0.008,0.009};
-    //public static double[] prop={0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09};
-
-    public static boolean boxModeOnly=true;
-    public static boolean propModeOnly=false;
-    public static boolean deltaModeOnly=false;
-    public static boolean circleRandom=false;
-    public static boolean vizuRandom=false;
-    public static boolean firstTimeGetDeltaFR=false;
-    public static boolean debug=false;
-    public static boolean findboxinterout =false;
-    public static boolean findboxinteroutonly =false;
-    public static boolean findboxtriangle=false;
-    public static boolean singleboxonly=false;
-    public static boolean mixmode=false;
-    public static boolean intersection=false;
-    public static boolean deltasucc=false;
-    public static boolean usevectorbox=false;
-    public static boolean useinterbox=false;
-    public static boolean processing=false;
-    public static boolean unaryCirclePackingHeuristic=false;
-    public static boolean viewsol=false;
-
-
-    public static int phase=1;
-    public static int nbr_jumps=0;
-    public static int max_nbr_jumps=0; //maximum nbr of jumps for all propagations steps
-    public static int sum_jumps=0; //maximum nbr of jumps for all propagations steps
-    public static long sum_square_jumps=0; //maximum nbr of jumps for all propagations steps
-    public static int nbr_propagations=0;
-
-    public static Point worst_point=null; //sweep point where the maximum nbr of jumps has been observed 
-    public static boolean worst_increase=true; //associated with 'worst_point'; indicates wether increase was true or false when worst point was detected
-
-    public static int state_FR=0;
-    public static int nbr_steps=0;
 
     /**
 	 * Creates a Setup instance for a given Constants class
@@ -451,8 +388,8 @@ public class Setup {
 	}
 
     public Solver getSolver() {
-        if (debug) if (getObject(0)==null) { System.out.println("Setup:getSolver():no object defined, unable to return solver."); System.exit(-1); }
-        if (debug) if (getObject(0).getCoord(0)==null) { System.out.println("Setup:getSolver():no coord associated with object 0 defined, unable to return solver."); System.exit(-1); }
+        if (opt.debug) if (getObject(0)==null) { System.out.println("Setup:getSolver():no object defined, unable to return solver."); System.exit(-1); }
+        if (opt.debug) if (getObject(0).getCoord(0)==null) { System.out.println("Setup:getSolver():no coord associated with object 0 defined, unable to return solver."); System.exit(-1); }
         return getObject(0).getCoord(0).getSolver();
     }
 

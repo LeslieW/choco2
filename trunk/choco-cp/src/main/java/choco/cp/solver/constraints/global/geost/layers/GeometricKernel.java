@@ -36,10 +36,6 @@ public class GeometricKernel {
     MemoStore memo;
     boolean memo_active;
     HashMap<Pair<Integer,Integer>, Boolean> included;
-    public Long timeFixObj;                 
-    public Long timeFixAllObj;
-    public Long timePruneFix;
-    public Long timeGetFR;
     int get_fr_ptr_a = 0;
     int get_fr_ptr_b = 0;
 
@@ -55,7 +51,7 @@ public class GeometricKernel {
 	 * @param extrL
 	 * @param intermL
 	 */
-	public GeometricKernel(Constants c, Setup s, ExternalLayer extrL, IntermediateLayer intermL, boolean memo_, HashMap<Pair<Integer,Integer>,Boolean> included_, Long a, Long b)
+	public GeometricKernel(Constants c, Setup s, ExternalLayer extrL, IntermediateLayer intermL, boolean memo_, HashMap<Pair<Integer,Integer>,Boolean> included_)
 	{
 		cst = c;
 		stp = s;
@@ -69,10 +65,6 @@ public class GeometricKernel {
         memo.listObj = new Vector<Vector<Obj> >(0);
         memo.m = new HashMap<int[],Integer>();
         included=included_;
-        timePruneFix=a;
-        timeGetFR=b;
-        timeFixAllObj=0L;
-        timeFixObj=0L;
 
         System.out.println("memo_active="+memo_active);
     }
@@ -92,7 +84,7 @@ public class GeometricKernel {
 	 */
 	public Vector GetFR(int d, int k, Obj o, Point c, Point jump, Vector<InternalConstraint> ACTRS, boolean increase)
 	{
-        stp.GetFRCalled++;
+        stp.opt.GetFRCalled++;
 
 		Vector<Object> result = new Vector<Object>();
 		Vector v = new Vector();
@@ -104,7 +96,7 @@ public class GeometricKernel {
                 long tmpTime = System.nanoTime() / 1000000;
                 //System.out.println(ACTRS.elementAt(i)   );
                 v = intermediateLayer.IsFeasible(ACTRS.elementAt(i), true, d, k, o, c, jump);
-                stp.timeIsFeasible += (System.nanoTime() / 1000000) - tmpTime; 
+                stp.opt.timeIsFeasible += (System.nanoTime() / 1000000) - tmpTime;
 
                 if (((Boolean) v.elementAt(0)).booleanValue() == false)
 				{
@@ -128,7 +120,7 @@ public class GeometricKernel {
                 long tmpTime = System.nanoTime() / 1000000;
 
                 v = intermediateLayer.IsFeasible(ACTRS.elementAt(i), false, d, k, o, c, jump);
-                stp.timeIsFeasible += (System.nanoTime() / 1000000) - tmpTime;
+                stp.opt.timeIsFeasible += (System.nanoTime() / 1000000) - tmpTime;
                 
 				if (((Boolean) v.elementAt(0)).booleanValue() == false)
 				{
@@ -158,13 +150,13 @@ public class GeometricKernel {
 	 */
 	public boolean FilterCtrs(int k, int[] oIDs, Vector<ExternalConstraint> ectrs) throws ContradictionException
 	{
-        if (stp.serial!=null) {
+        if (stp.opt.serial!=null) {
             try {
-                Vector<Obj> tmp=new Vector<Obj>(); for (int i = 0; i < oIDs.length; i++) tmp.add(stp.getObject(i)); stp.serial.writeObject(tmp);
+                Vector<Obj> tmp=new Vector<Obj>(); for (int i = 0; i < oIDs.length; i++) tmp.add(stp.getObject(i)); stp.opt.serial.writeObject(tmp);
             } catch(Exception e) { System.out.println("PruneMin:unable to serialize parameters"); System.exit(-1); }
         }
 
-        if (stp.debug) System.out.println("FilterCtrs:");
+        if (stp.opt.debug) System.out.println("FilterCtrs:");
         boolean nonFix = true;
 		while (nonFix) {
 			nonFix = false;
@@ -175,10 +167,10 @@ public class GeometricKernel {
 			for (int i = 0; i < oIDs.length; i++)
 			{
 				Obj o = stp.getObject(oIDs[i]);
-                if (stp.debug) System.out.print("Considering object "+oIDs[i]+" "+o+" --> ");
+                if (stp.opt.debug) System.out.print("Considering object "+oIDs[i]+" "+o+" --> ");
                 int domainsSize = o.calculateDomainSize();
 				if (!FilterObjWP(k, oIDs[i]))  {
-                    if (stp.debug) System.out.println("Returning false;");
+                    if (stp.opt.debug) System.out.println("Returning false;");
                     return false;
                 }
                 else
@@ -202,7 +194,7 @@ public class GeometricKernel {
                         //has to saturate once again
 						nonFix = true;
 					}
-                    if (stp.debug) System.out.println("***Result of FilterCstrs:"+o);
+                    if (stp.opt.debug) System.out.println("***Result of FilterCstrs:"+o);
                 }
 
             }
@@ -298,7 +290,7 @@ public class GeometricKernel {
 	public boolean FilterObj(int k, int oid) throws ContradictionException
 	// In the technical report we pass the Frame also however there is no need here since the Frame is part of the external constraint
 	{
-        if (stp.debug) System.out.println("GeometricKernel:FilterObj()");
+        if (stp.opt.debug) System.out.println("GeometricKernel:FilterObj()");
         Obj o = stp.getObject(oid);
 		o.getRelatedInternalConstraints().clear();
 
@@ -312,8 +304,8 @@ public class GeometricKernel {
 			}
 		}
 
-        if ((stp.processing)){
-            System.out.println("\n/*Processing*/endchunk();\n/*Processing*/break;"+"case "+(stp.phase++)+":\n/*Processing*/beginchunk();");
+        if ((stp.opt.processing)){
+            System.out.println("\n/*Processing*/endchunk();\n/*Processing*/break;"+"case "+(stp.opt.phase++)+":\n/*Processing*/beginchunk();");
             System.out.println("\n/*Processing*/domain("+o.getObjectId()+","+o.getCoord(0).getInf()+","+o.getCoord(0).getSup()+","+o.getCoord(1).getInf()+","+o.getCoord(1).getSup()+");");
             
             //Draw objects that are instantiated
@@ -349,15 +341,15 @@ public class GeometricKernel {
 		{
 			if(o.getRelatedInternalConstraints().size()>0)
 			{
-                if (stp.boxModeOnly) {
+                if (stp.opt.boxModeOnly) {
                      if ((!PruneMin(o, d, k, o.getRelatedInternalConstraints()))|| (!PruneMax(o, d, k, o.getRelatedInternalConstraints())))
 				        return false;
                 }
-                else if (stp.propModeOnly){
+                else if (stp.opt.propModeOnly){
                     if ((!NewPruneMin(o, d, k, o.getRelatedInternalConstraints()))|| (!NewPruneMax(o, d, k, o.getRelatedInternalConstraints())))
                        return false;                     
                 }
-                else if (stp.deltaModeOnly) {
+                else if (stp.opt.deltaModeOnly) {
                     if ((!NewDeltaPruneMin(o, d, k, o.getRelatedInternalConstraints()))|| (!NewDeltaPruneMax(o, d, k, o.getRelatedInternalConstraints())))
                     return false;
               }
@@ -383,12 +375,12 @@ public class GeometricKernel {
 	public boolean PruneMin(Obj o, int d, int k, Vector<InternalConstraint> ictrs) throws ContradictionException
 	{
         //System.out.println("PruneMin in");
-        if (stp.serial!=null) {
+        if (stp.opt.serial!=null) {
             try {
-                stp.serial.writeObject(o);
-                stp.serial.writeObject(d);
-                stp.serial.writeObject(k);
-                stp.serial.writeObject(ictrs);                
+                stp.opt.serial.writeObject(o);
+                stp.opt.serial.writeObject(d);
+                stp.opt.serial.writeObject(k);
+                stp.opt.serial.writeObject(ictrs);
             } catch(Exception e) { System.out.println("PruneMin:unable to serialize parameters param in"); System.exit(-1); }
         }
 
@@ -411,13 +403,13 @@ public class GeometricKernel {
         boolean infeasible = ((Boolean) forbidRegion.elementAt(0)).booleanValue();
 		Region f = (Region) forbidRegion.elementAt(1);
 
-        if (stp.serial!=null) {
+        if (stp.opt.serial!=null) {
             try {                                         
-                stp.serial.writeObject(c);
-                stp.serial.writeObject(n);
-                stp.serial.writeObject(b);
-                stp.serial.writeObject(infeasible);
-                stp.serial.writeObject(f);
+                stp.opt.serial.writeObject(c);
+                stp.opt.serial.writeObject(n);
+                stp.opt.serial.writeObject(b);
+                stp.opt.serial.writeObject(infeasible);
+                stp.opt.serial.writeObject(f);
             } catch(Exception e) { System.out.println("PruneMin:unable to serialize parameters first iter"); System.exit(-1); }
         }
 
@@ -441,8 +433,8 @@ public class GeometricKernel {
 			n = (Point) adjUp.elementAt(1);
 			b = ((Boolean) adjUp.elementAt(2)).booleanValue();   
 
-//            if (stp.delta.get(ddeltadelt)==null) stp.delta.put(d,new HashMap<Integer,Integer>());
-//            HashMap<Integer,Integer> curDelta= stp.delta.get(d);
+//            if (stp.opt.delta.get(ddeltadelt)==null) stp.opt.delta.put(d,new HashMap<Integer,Integer>());
+//            HashMap<Integer,Integer> curDelta= stp.opt.delta.get(d);
 //            int delta=Math.abs(c.getCoord(d)-initial_c.getCoord(d));
 //            if (curDelta.get(delta)==null) curDelta.put(delta,0);
 //            curDelta.put(delta,curDelta.get(delta)+1);
@@ -454,13 +446,13 @@ public class GeometricKernel {
 			infeasible = ((Boolean) forbidRegion.elementAt(0)).booleanValue();
 			f = (Region) forbidRegion.elementAt(1);
             
-            if (stp.serial!=null) {
+            if (stp.opt.serial!=null) {
                 try {
-                    stp.serial.writeObject(c);
-                    stp.serial.writeObject(n);
-                    stp.serial.writeObject(b);
-                    stp.serial.writeObject(infeasible);
-                    stp.serial.writeObject(f);
+                    stp.opt.serial.writeObject(c);
+                    stp.opt.serial.writeObject(n);
+                    stp.opt.serial.writeObject(b);
+                    stp.opt.serial.writeObject(infeasible);
+                    stp.opt.serial.writeObject(f);
                 } catch(Exception e) { System.out.println("PruneMin:unable to serialize parameters second iter"); System.exit(-1); }
             }
 
@@ -470,19 +462,19 @@ public class GeometricKernel {
 		{
 //            System.out.println(initial_c+" -> "+c);
 //
-//            stp.sum_jumps+=Math.abs(c.getCoord(d)-initial_c.getCoord(d));
+//            stp.opt.sum_jumps+=Math.abs(c.getCoord(d)-initial_c.getCoord(d));
 //
-//            stp.GetFRCalls++;
+//            stp.opt.GetFRCalls++;
 //
             o.getCoord(d).updateInf(c.getCoord(d), -1);
 //            cst.nbOfUpdates++;
 		}
 
 
-        if (stp.serial!=null) {
+        if (stp.opt.serial!=null) {
             try {
-                stp.serial.writeObject(o);
-                stp.serial.writeObject(b);
+                stp.opt.serial.writeObject(o);
+                stp.opt.serial.writeObject(b);
             } catch(Exception e) { System.out.println("PruneMin:unable to serialize parameters param out"); System.exit(-1); }
         }
         //System.out.println("PruneMin out");
@@ -566,8 +558,8 @@ public class GeometricKernel {
 			n = (Point) adjDown.elementAt(1);
 			b = ((Boolean) adjDown.elementAt(2)).booleanValue();
 
-//            if (stp.delta.get(d)==null) stp.delta.put(d,new HashMap<Integer,Integer>());
-//            HashMap<Integer,Integer> curDelta= stp.delta.get(d);
+//            if (stp.opt.delta.get(d)==null) stp.opt.delta.put(d,new HashMap<Integer,Integer>());
+//            HashMap<Integer,Integer> curDelta= stp.opt.delta.get(d);
 //            int delta=Math.abs(c.getCoord(d)-initial_c.getCoord(d));
 //            if (curDelta.get(delta)==null) curDelta.put(delta,0);
 //            curDelta.put(delta,curDelta.get(delta)+1);
@@ -643,7 +635,7 @@ public class GeometricKernel {
 
             //long tmpTimeFixObj = System.nanoTime() / 1000000;
             boolean b=FixObj(k, oIDs[i], ctrlVs.elementAt(m));
-            //stp.timeFixObj += ((System.nanoTime() / 1000000) - tmpTimeFixObj);
+            //stp.opt.timeFixObj += ((System.nanoTime() / 1000000) - tmpTimeFixObj);
 
 			if (!b)
 				return false;
@@ -778,7 +770,7 @@ public class GeometricKernel {
 
                 long tmpTimePruneFix = System.nanoTime() / 1000000;
                 boolean b = PruneFix(o, k, ctrlV, ICTRS);//do not use o internal constraints
-                stp.timePruneFix += ((System.nanoTime() / 1000000) - tmpTimePruneFix);
+                stp.opt.timePruneFix += ((System.nanoTime() / 1000000) - tmpTimePruneFix);
             if (!b) return false;
 
             //Update Relative Forbidden Region incrementally
@@ -868,7 +860,7 @@ public class GeometricKernel {
         
 
         int x =    o2.getShapeId().getDomain().getSup(); int y = o1.getShapeId().getDomain().getSup();
-        if ( (stp.memo_objects[o1.getObjectId()][o2.getObjectId()]) &&
+        if ( (stp.opt.memo_objects[o1.getObjectId()][o2.getObjectId()]) &&
                 included.get(new Pair(x,y)) && old_c.lexGreaterThan(c,ctrlV)) //if the old object is after the current one (wrt ctrlV), then we got a domination.
               return true;
         return false;
@@ -907,7 +899,7 @@ public class GeometricKernel {
 	 */
 	public boolean PruneFix(Obj o, int k, int[] ctrlV, Vector<InternalConstraint> ictrs) throws ContradictionException
 	{
-        stp.PruneFixCalled++;
+        stp.opt.PruneFixCalled++;
         if (o.coordInstantiated()) return true;
         boolean printit=false;
 
@@ -936,7 +928,7 @@ public class GeometricKernel {
 
         long tmpTimeGetFr = (System.nanoTime() / 1000000);
         Vector forbidRegion = GetFR(Math.abs(ctrlV[1]) -2, k, o, c,n, ictrs,true);
-        stp.timeGetFR += ((System.nanoTime()/1000000) - tmpTimeGetFr);
+        stp.opt.timeGetFR += ((System.nanoTime()/1000000) - tmpTimeGetFr);
         boolean infeasible = ((Boolean) forbidRegion.elementAt(0)).booleanValue();
 		Region f = (Region) forbidRegion.elementAt(1);
         if (printit) System.out.println("getFR region:"+f.toString());
@@ -1007,7 +999,7 @@ public class GeometricKernel {
             c.print();            }
             tmpTimeGetFr = (System.nanoTime() / 1000000);
             forbidRegion = GetFR(Math.abs(ctrlV[1]) - 2, k, o, c, n, ictrs, true);
-            stp.timeGetFR += ((System.nanoTime()/1000000) - tmpTimeGetFr);
+            stp.opt.timeGetFR += ((System.nanoTime()/1000000) - tmpTimeGetFr);
 
             infeasible = ((Boolean) forbidRegion.elementAt(0)).booleanValue();
 			f = (Region) forbidRegion.elementAt(1);
@@ -1305,13 +1297,13 @@ public class GeometricKernel {
 //        }
 //        System.out.println("}");
 
-        if (stp.serial!=null) {
+        if (stp.opt.serial!=null) {
             System.out.println("COUCOU");
             try {
-                stp.serial.writeObject(o);
-                stp.serial.writeObject(d);
-                stp.serial.writeObject(k);
-                stp.serial.writeObject(ictrs);
+                stp.opt.serial.writeObject(o);
+                stp.opt.serial.writeObject(d);
+                stp.opt.serial.writeObject(k);
+                stp.opt.serial.writeObject(ictrs);
             } catch(Exception e) { System.out.println("PruneMin:unable to serialize parameters param in"); System.exit(-1); }
         }
 
@@ -1331,9 +1323,9 @@ public class GeometricKernel {
 
         //System.out.println("In Figure \\ref{fig:jumpone:"+(phase)+"},%NEXT FIGURE--------"); phase++;
         //System.out.println("\\begin{itemize}");
-        //System.out.print("\\item GetBestFR$(d="+d+",k="+k+", o=o3, c="+c+",n="+n+",ICTRS=\\{c_1,c_2\\},increase=\\TRUE,mode="+mode+",prop="+stp.prop+")$ ");
+        //System.out.print("\\item GetBestFR$(d="+d+",k="+k+", o=o3, c="+c+",n="+n+",ICTRS=\\{c_1,c_2\\},increase=\\TRUE,mode="+mode+",prop="+stp.opt.prop+")$ ");
         //double[] prop = { 0.66, 0.5, 0.33};
-        Vector forbidRegion = GetBestFR(d, k, o, c, n, ACTRS, true,mode,stp.prop);
+        Vector forbidRegion = GetBestFR(d, k, o, c, n, ACTRS, true,mode,stp.opt.prop);
         //System.out.println(" returns $[infeasible="+forbidRegion.get(0)+",f="+forbidRegion.get(1)+"]$ ");
 
 
@@ -1343,7 +1335,7 @@ public class GeometricKernel {
 
 
             System.out.println();
-            System.out.print("if (phase=="+(stp.phase)+"){");
+            System.out.print("if (phase=="+(stp.opt.phase)+"){");
             System.out.print("sphereList.clear(); container_size("+stp.getObject(3).getCoord(0).getInf()*2+","+stp.getObject(3).getCoord(1).getInf()*2+","+stp.getObject(3).getCoord(2).getInf()*2+");");
             for (Integer l : stp.getObjectKeySet()) {
                 Obj otmp=stp.getObject(l);
@@ -1398,17 +1390,17 @@ public class GeometricKernel {
                 else System.out.print(c.getCoord(i)+");");
             }
 
-            System.out.print("}"); System.out.println(); stp.phase++;
+            System.out.print("}"); System.out.println(); stp.opt.phase++;
         }
 
 
-        if (stp.serial!=null) {
+        if (stp.opt.serial!=null) {
             try {
-                stp.serial.writeObject(c);
-                stp.serial.writeObject(n);
-                stp.serial.writeObject(b);
-                stp.serial.writeObject(infeasible);
-                stp.serial.writeObject(f);
+                stp.opt.serial.writeObject(c);
+                stp.opt.serial.writeObject(n);
+                stp.opt.serial.writeObject(b);
+                stp.opt.serial.writeObject(infeasible);
+                stp.opt.serial.writeObject(f);
             } catch(Exception e) { System.out.println("PruneMin:unable to serialize parameters first iter"); System.exit(-1); }
         }
 
@@ -1434,8 +1426,8 @@ public class GeometricKernel {
             mode = (Boolean) adjUp.elementAt(3);
             adjUp=null;
 
-            if (stp.delta.get(d)==null) stp.delta.put(d,new HashMap<Integer,Integer>());
-            HashMap<Integer,Integer> curDelta= stp.delta.get(d);
+            if (stp.opt.delta.get(d)==null) stp.opt.delta.put(d,new HashMap<Integer,Integer>());
+            HashMap<Integer,Integer> curDelta= stp.opt.delta.get(d);
             int delta=Math.abs(c.getCoord(d)-initial_c.getCoord(d));
             if (curDelta.get(delta)==null) curDelta.put(delta,0);
             curDelta.put(delta,curDelta.get(delta)+1);
@@ -1443,13 +1435,13 @@ public class GeometricKernel {
 //            System.out.println("\\end{itemize}");
 //            System.out.println("In Figure \\ref{fig:jumpone:"+(phase)+"},%NEXT FIGURE--------");phase++;
 //            System.out.println("\\begin{itemize}");
-            //System.out.print("\\item GetBestFR$(d="+d+",k="+k+", o=o3, c="+c+",n="+n+",ICTRS=\\{c_1,c_2\\},increase=\\TRUE,mode="+mode+",prop="+stp.prop+")$ ");
+            //System.out.print("\\item GetBestFR$(d="+d+",k="+k+", o=o3, c="+c+",n="+n+",ICTRS=\\{c_1,c_2\\},increase=\\TRUE,mode="+mode+",prop="+stp.opt.prop+")$ ");
             //double[] prop2 = { 0.66, 0.5, 0.33};
-            forbidRegion = GetBestFR(d, k, o, c, n, ACTRS, true, mode, stp.prop);
+            forbidRegion = GetBestFR(d, k, o, c, n, ACTRS, true, mode, stp.opt.prop);
             //System.out.println(" returns $[infeasible="+forbidRegion.get(0)+",f="+forbidRegion.get(1)+"]$ ");
             if (processing) {
 
-            System.out.print("if (phase=="+(stp.phase)+"){");
+            System.out.print("if (phase=="+(stp.opt.phase)+"){");
             System.out.print("sphereList.clear();");
 
             for (Integer l : stp.getObjectKeySet()) {
@@ -1502,19 +1494,19 @@ public class GeometricKernel {
                     else System.out.print(c.getCoord(i)+");");
                 }
 
-            System.out.print("}"); System.out.println(); stp.phase++;
+            System.out.print("}"); System.out.println(); stp.opt.phase++;
             }
 
             infeasible = ((Boolean) forbidRegion.elementAt(0)).booleanValue();
             f = (Region) forbidRegion.elementAt(1);
             forbidRegion=null;
-            if (stp.serial!=null) {
+            if (stp.opt.serial!=null) {
                 try {
-                    stp.serial.writeObject(c);
-                    stp.serial.writeObject(n);
-                    stp.serial.writeObject(b);
-                    stp.serial.writeObject(infeasible);
-                    stp.serial.writeObject(f);
+                    stp.opt.serial.writeObject(c);
+                    stp.opt.serial.writeObject(n);
+                    stp.opt.serial.writeObject(b);
+                    stp.opt.serial.writeObject(infeasible);
+                    stp.opt.serial.writeObject(f);
                 } catch(Exception e) { System.out.println("PruneMin:unable to serialize parameters second iter"); System.exit(-1); }
             }
 
@@ -1528,10 +1520,10 @@ public class GeometricKernel {
         }
 
 
-        if (stp.serial!=null) {
+        if (stp.opt.serial!=null) {
             try {
-                stp.serial.writeObject(o);
-                stp.serial.writeObject(b);
+                stp.opt.serial.writeObject(o);
+                stp.opt.serial.writeObject(b);
             } catch(Exception e) { System.out.println("PruneMin:unable to serialize parameters param out"); System.exit(-1); }
         }
 //        System.out.println(" PruneMin out");
@@ -1556,7 +1548,7 @@ public class GeometricKernel {
             n.setCoord(i, o.getCoord(i).getInf() - 1); // Lower limits - 1 in the different dimensions
         }
 
-        Vector forbidRegion = GetBestFR(d, k, o, c, n, ACTRS, false, mode,stp.prop);
+        Vector forbidRegion = GetBestFR(d, k, o, c, n, ACTRS, false, mode,stp.opt.prop);
         boolean infeasible = ((Boolean) forbidRegion.elementAt(0)).booleanValue();
         Region f = (Region) forbidRegion.elementAt(1);
         while (b && infeasible)
@@ -1577,15 +1569,15 @@ public class GeometricKernel {
             mode = (Boolean) adjDown.elementAt(3);
             adjDown=null;
 
-            if (stp.delta.get(d)==null) stp.delta.put(d,new HashMap<Integer,Integer>());
-            HashMap<Integer,Integer> curDelta= stp.delta.get(d);
+            if (stp.opt.delta.get(d)==null) stp.opt.delta.put(d,new HashMap<Integer,Integer>());
+            HashMap<Integer,Integer> curDelta= stp.opt.delta.get(d);
             int delta=Math.abs(c.getCoord(d)-initial_c.getCoord(d));
             if (curDelta.get(delta)==null) curDelta.put(delta,0);
             curDelta.put(delta,curDelta.get(delta)+1);
 
 
             
-            forbidRegion = GetBestFR(d, k, o, c, n, ACTRS, false,mode,stp.prop);
+            forbidRegion = GetBestFR(d, k, o, c, n, ACTRS, false,mode,stp.opt.prop);
             infeasible = (Boolean) forbidRegion.elementAt(0);
             f = (Region) forbidRegion.elementAt(1);
             forbidRegion=null;
@@ -1675,13 +1667,13 @@ public class GeometricKernel {
 
 
     Point Extend(Point p, int d, int k, Point n, ForbiddenRegion ictr, boolean increase) {
-        if (stp.debug) {
+        if (stp.opt.debug) {
             if (!(ictr.insideForbidden(p))) {
                 System.out.println("GeometricKernel:Extend():Invariant 1 failed:p:"+p+" is not segInsideForbidden of ictr:"+ictr);
                 System.exit(-1);
             }
         }
-//        if (stp.debug) {
+//        if (stp.opt.debug) {
 //            int i=d;
 //                boolean condition = (( increase && (p.getCoord(i)<n.getCoord(i) )) || ( (!increase) && (p.getCoord(i)>n.getCoord(i ))));
 //                if (!(condition)) {
@@ -1700,7 +1692,7 @@ public class GeometricKernel {
     }
 
     Point Extend2(Point p, int d, int k, Point cut_point, ForbiddenRegion ictr1,ForbiddenRegion ictr2, boolean increase) {
-        if (stp.debug) {
+        if (stp.opt.debug) {
             if (!(ictr1!=ictr2)) { //TODO: compare the contect of the internal constraints
                 System.out.println("GeometricKernel:Extend2():Invariant 1 failed:(ictr!=ictr2)");
                 System.exit(-1);
@@ -1723,7 +1715,7 @@ public class GeometricKernel {
 //                System.exit(-1);
 //
 //            }
-       }//end stp.debug
+       }//end stp.opt.debug
 
         Region box= new Region(p);
         Point result = new Point(p);
@@ -1829,15 +1821,15 @@ public class GeometricKernel {
     }
 
     Region  SelectionCriteria(int d_prune, int k, boolean increase, Region box1, Region box2) {
-        if (stp.debug) System.out.println("/*debug*/SelectionCriteria(d_prune="+d_prune+", k="+k+", increase="+increase+" box1="+box1+" ,box2="+box2+")");
-        if (box1==null) {if (stp.debug) System.out.println("/*debug*/SelectionCriteria() returns null"); return box2; }
-        if (box2==null) {if (stp.debug) System.out.println("/*debug*/SelectionCriteria() returns null"); return box1; }     
+        if (stp.opt.debug) System.out.println("/*debug*/SelectionCriteria(d_prune="+d_prune+", k="+k+", increase="+increase+" box1="+box1+" ,box2="+box2+")");
+        if (box1==null) {if (stp.opt.debug) System.out.println("/*debug*/SelectionCriteria() returns null"); return box2; }
+        if (box2==null) {if (stp.opt.debug) System.out.println("/*debug*/SelectionCriteria() returns null"); return box1; }
 //        if ((box1==null) && (box2==null)) return null;
         int won1=0; int won2=0;
 
         if ((box1.ratio() <= 0.1) && (box2.ratio()<=0.1) && ((!box1.included(box2)) && (!box2.included(box1)))) {
             Region tmp=LargestLexBox(d_prune,k,increase,box1,box2);
-            if (stp.debug) System.out.println("/*debug*/SelectionCriteria() returns "+tmp);
+            if (stp.opt.debug) System.out.println("/*debug*/SelectionCriteria() returns "+tmp);
             return tmp;
         }
 
@@ -1873,27 +1865,27 @@ public class GeometricKernel {
         if (won1==won2) {
             if (not_same) {
                 if (first_box) {
-                    if (stp.debug) System.out.println("/*debug*/SelectionCriteria() returns "+box1);
+                    if (stp.opt.debug) System.out.println("/*debug*/SelectionCriteria() returns "+box1);
                     return box1;
                 } else {
-                    if (stp.debug) System.out.println("/*debug*/SelectionCriteria() returns "+box2);
+                    if (stp.opt.debug) System.out.println("/*debug*/SelectionCriteria() returns "+box2);
 
                     return box2;
                 }
             }
             else {
                 Region tmp=LargestInvLexBox(d_prune,k,increase,box1,box2);
-                if (stp.debug) System.out.println("/*debug*/SelectionCriteria() returns "+tmp);
+                if (stp.opt.debug) System.out.println("/*debug*/SelectionCriteria() returns "+tmp);
                 return tmp;
             }
         }
 
         if (won1>won2) {
-            if (stp.debug) System.out.println("/*debug*/SelectionCriteria() returns "+box1);
+            if (stp.opt.debug) System.out.println("/*debug*/SelectionCriteria() returns "+box1);
             return box1;
         }
 
-        if (stp.debug) System.out.println("/*debug*/SelectionCriteria() returns "+box2);
+        if (stp.opt.debug) System.out.println("/*debug*/SelectionCriteria() returns "+box2);
         return box2;
     }
 
@@ -2041,7 +2033,7 @@ public class GeometricKernel {
 //        boolean b = (Boolean) r.fst; int inter = (Integer) r.snd;  //inter is a position in d_prev_least
 //
 //        if (b) {
-//            if (stp.debug) { System.out.println("\n/*Processing*/intersection("+d_prune+","+inter+");"); };
+//            if (stp.opt.debug) { System.out.println("\n/*Processing*/intersection("+d_prune+","+inter+");"); };
 //
 //            return BuildInterBox(d_prune,d_least,d_prev_least,k,c,n,increase,ictr_c,pos_p,inter);
 //        }
@@ -2050,7 +2042,7 @@ public class GeometricKernel {
 //    }
 
 //    Pair<Integer,Integer> GetExtensions(int d_prune,int d_least,int d_prev_least,int k, Point c,boolean increase,ForbiddenRegion ictr_c, ForbiddenRegion ictr_g,int pos_p, int pos_l) {
-//        if (stp.debug) {
+//        if (stp.opt.debug) {
 //
 //        }
 //        //if (k==3) {
@@ -2186,7 +2178,7 @@ public class GeometricKernel {
     }
 
     Region FindBoxInter(int d_prune, int d_least, int d_prev_least, int k, Point c, Point g, Point n, boolean increase, ForbiddenRegion ictr_c, ForbiddenRegion ictr_g, int pos_p) {
-        if (stp.debug) System.out.println("/*debug*/FindBoxInter(d_prune="+d_prune+", d_least="+d_least+", d_prev_least="+d_prev_least+", k="+k+", c="+c+", g="+g+", n="+n+", increase"+increase+", ictr_c="+ictr_c+", ictr_g="+ictr_g+", pos_p="+pos_p+")");
+        if (stp.opt.debug) System.out.println("/*debug*/FindBoxInter(d_prune="+d_prune+", d_least="+d_least+", d_prev_least="+d_prev_least+", k="+k+", c="+c+", g="+g+", n="+n+", increase"+increase+", ictr_c="+ictr_c+", ictr_g="+ictr_g+", pos_p="+pos_p+")");
         if (!((increase && (c.getCoord(d_least)<=g.getCoord(d_least))) || ((!increase) && (c.getCoord(d_least)>=g.getCoord(d_least))))) {
             System.out.println("GeometricKernel:Region FindBoxInterIn():invariant1");
             System.exit(-1);
@@ -2211,14 +2203,14 @@ public class GeometricKernel {
 //        }
 
         if (b) {
-            if (stp.processing) { System.out.println("\n/*Processing*/intersection("+d_prune+","+inter+");"); };
+            if (stp.opt.processing) { System.out.println("\n/*Processing*/intersection("+d_prune+","+inter+");"); };
             //if ((d_prev_least!=d_prune) && (k==2)) {System.out.println("GeometricKernel:FindBoxInter():invariant"); }
             Region rbox=GetGreedyBoxFromJumpVector(d_prev_least,d_prune,k,c,n,inter,ictr_c,increase,pos_p);
             rbox.father="FindBoxInter";
-            if (stp.debug) System.out.println("/*debug*/FindBoxInter() returns "+rbox);
+            if (stp.opt.debug) System.out.println("/*debug*/FindBoxInter() returns "+rbox);
             return rbox;
         }
-            if (stp.debug) System.out.println("/*debug*/FindBoxInter() returns null");
+            if (stp.opt.debug) System.out.println("/*debug*/FindBoxInter() returns null");
         return null;
     }
 
@@ -2282,7 +2274,7 @@ public class GeometricKernel {
 
 
     Vector LongestCommonInterval(int d, int k, Point p, ForbiddenRegion ictr, ForbiddenRegion ictr2, Point jump, boolean increase) {
-        if (stp.debug) System.out.println("/*debug*/LongestCommonInterval(d="+d+", k="+k+", p="+p+", ictr="+ictr+", ictr2="+ictr2+", jump="+jump+", increase="+increase+")");
+        if (stp.opt.debug) System.out.println("/*debug*/LongestCommonInterval(d="+d+", k="+k+", p="+p+", ictr="+ictr+", ictr2="+ictr2+", jump="+jump+", increase="+increase+")");
         Vector result=new Vector();
         boolean inIctr=ictr.insideForbidden(p);
         boolean inIctr2=ictr2.insideForbidden(p);
@@ -2292,7 +2284,7 @@ public class GeometricKernel {
             max = Extend2(p,d,k,jump,ictr,ictr2,increase);
             min = new Point(p);
             result.add(true); result.add(min); result.add(max);
-            if (stp.debug)  System.out.println("/*debug*/LongestCommonInterval() returns "+result);
+            if (stp.opt.debug)  System.out.println("/*debug*/LongestCommonInterval() returns "+result);
             return result;
         }
         ForbiddenRegion startingIctr;
@@ -2314,17 +2306,17 @@ public class GeometricKernel {
         }
         else {
             result.add(false);  result.add(min); result.add(max);
-            if (stp.debug) System.out.println("/*debug*/LongestCommonInterval() returns "+result);
+            if (stp.opt.debug) System.out.println("/*debug*/LongestCommonInterval() returns "+result);
             return result;
         }
 
         result.add(true); result.add(min); result.add(max);
-        if (stp.debug) System.out.println("/*debug*/LongestCommonInterval() returns "+result);
+        if (stp.opt.debug) System.out.println("/*debug*/LongestCommonInterval() returns "+result);
         return result;
     }
 
     boolean InfeasibleTriangle(Point a, Point b, Point c, ForbiddenRegion ictr, int k) {
-        if (stp.debug) System.out.println("/*debug*/InfeasibleTriangle(a="+a+", b="+b+", c="+c+", ictr="+ictr+", k="+k+")");
+        if (stp.opt.debug) System.out.println("/*debug*/InfeasibleTriangle(a="+a+", b="+b+", c="+c+", ictr="+ictr+", k="+k+")");
         if (ictr instanceof DistGeqIC) {
             DistGeqIC dgeqic = (DistGeqIC) ictr;
             boolean r=(
@@ -2332,7 +2324,7 @@ public class GeometricKernel {
                     dgeqic.insideForbidden(b) &&
                     dgeqic.insideForbidden(c)
                     );
-            if (stp.debug) System.out.println("/*debug*/InfeasibleTriangle() returns "+r);
+            if (stp.opt.debug) System.out.println("/*debug*/InfeasibleTriangle() returns "+r);
 
             return r;
         }                       
@@ -2347,7 +2339,7 @@ public class GeometricKernel {
                     dleqic.segInsideForbidden(b,c) &&
                     dleqic.segInsideForbidden(c,a)
                    );
-            if (stp.debug) System.out.println("/*debug*/InfeasibleTriangle() returns "+r);
+            if (stp.opt.debug) System.out.println("/*debug*/InfeasibleTriangle() returns "+r);
 
             return r;
         }
@@ -2454,7 +2446,7 @@ public class GeometricKernel {
 
     Region FindBoxTriangleDicho1(int d_prune, int d_dicho_ext, int d_dicho_int, int k, Point Pra, Point Pdiag, Point n,
                                               boolean increase, ForbiddenRegion ictr_pradiag, ForbiddenRegion ictr_pdiag, int pos_p) {
-        if (stp.debug) System.out.println("/*debug*/FindBoxTriangleDicho1(d_prune="+d_prune+", d_dicho_ext="+d_dicho_ext+", d_dicho_int"+d_dicho_int+"=, k="+k+", Pra="+Pra+", Pdiag="+Pdiag+", n="+n+", increase="+increase+", ictr_pradiag="+ictr_pradiag+", ictr_pdiag="+ictr_pdiag+", pos_p="+pos_p+")");
+        if (stp.opt.debug) System.out.println("/*debug*/FindBoxTriangleDicho1(d_prune="+d_prune+", d_dicho_ext="+d_dicho_ext+", d_dicho_int"+d_dicho_int+"=, k="+k+", Pra="+Pra+", Pdiag="+Pdiag+", n="+n+", increase="+increase+", ictr_pradiag="+ictr_pradiag+", ictr_pdiag="+ictr_pdiag+", pos_p="+pos_p+")");
         //Invariant
         if ((!(ictr_pradiag.insideForbidden(Pra))) || (!(ictr_pradiag.insideForbidden(Pdiag))) || (!(ictr_pdiag.insideForbidden(Pdiag)))) {
             System.out.println("Precondition of GeometricKernel.FindBoxTriangleDicho1() not verified. Pra in ictr_pradiag:"+ictr_pradiag.insideForbidden(Pra)+"; Pdiag in ictr_pradiag "+ictr_pradiag.insideForbidden(Pdiag)+"; Pdiag in ictr_pdiag:"+ ictr_pdiag.insideForbidden(Pdiag)  ); System.exit(-1);
@@ -2468,7 +2460,7 @@ public class GeometricKernel {
         Point initial_low=new Point(low); Point initial_up=new Point(up);
 
         if (!found) {
-            if (stp.debug) System.out.println("/*debug*/FindBoxTriangleDicho1() returns null");
+            if (stp.opt.debug) System.out.println("/*debug*/FindBoxTriangleDicho1() returns null");
             return null;
         }
         String laststr=new String("");
@@ -2522,16 +2514,16 @@ public class GeometricKernel {
             result.setType("diagonal");
             result.father=new String("FindBoxTriangleDicho1");
             result.info=laststr;
-            if (stp.debug) System.out.println("/*debug*/FindBoxTriangleDicho1() returns "+result);
+            if (stp.opt.debug) System.out.println("/*debug*/FindBoxTriangleDicho1() returns "+result);
             return result;
         }
-        if (stp.debug) System.out.println("/*debug*/FindBoxTriangleDicho1() returns null");        
+        if (stp.opt.debug) System.out.println("/*debug*/FindBoxTriangleDicho1() returns null");
         return null;
     }
 
     Region FindBoxTriangleDicho2(int d_prune, int d_dicho_ext, int d_dicho_int, int k, Point Pra, Point Pdiag, Point n,
                                               boolean increase, ForbiddenRegion ictr_pradiag, ForbiddenRegion ictr_pdiag, int pos_p) {
-        if (stp.debug) System.out.println("/*debug*/FindBoxTriangleDicho2(d_prune="+d_prune+", d_dicho_ext="+d_dicho_ext+", d_dicho_int="+d_dicho_int+", k="+k+", Pra="+Pra+", Pdiag="+Pdiag+", n="+n+", increase="+increase+", ictr_pradiag="+ictr_pradiag+", ictr_pdiag="+ictr_pdiag+", pos_p="+pos_p+")");         
+        if (stp.opt.debug) System.out.println("/*debug*/FindBoxTriangleDicho2(d_prune="+d_prune+", d_dicho_ext="+d_dicho_ext+", d_dicho_int="+d_dicho_int+", k="+k+", Pra="+Pra+", Pdiag="+Pdiag+", n="+n+", increase="+increase+", ictr_pradiag="+ictr_pradiag+", ictr_pdiag="+ictr_pdiag+", pos_p="+pos_p+")");
         //Invariant
         if ((!(ictr_pradiag.insideForbidden(Pra))) || (!(ictr_pradiag.insideForbidden(Pdiag))) || (!(ictr_pdiag.insideForbidden(Pdiag)))) {
             System.out.println("Precondition of GeometricKernel.FindBoxTriangleDicho2() not verified."); System.exit(-1);
@@ -2630,10 +2622,10 @@ public class GeometricKernel {
             result.father=new String("FindBoxTriangleDicho2");
             result.info=laststr;
             result.case_a_or_c=case_a_or_c;
-            if (stp.debug) System.out.println("/*debug*/FindBoxTriangleDicho2() returns "+result);
+            if (stp.opt.debug) System.out.println("/*debug*/FindBoxTriangleDicho2() returns "+result);
             return result;
         }
-        if (stp.debug) System.out.println("/*debug*/FindBoxTriangleDicho2() returns null");
+        if (stp.opt.debug) System.out.println("/*debug*/FindBoxTriangleDicho2() returns null");
         return null;
     }
 
@@ -2652,7 +2644,7 @@ public class GeometricKernel {
 
     Region CheckTriangleDDicho(int d_prune, int d_dicho_ext, int d_dicho_int, int k, Point Pra, Point Pdiag, Point n,
                                               boolean increase, ForbiddenRegion ictr_pradiag, ForbiddenRegion ictr_pdiag, int pos_p, int mid) {
-        if (stp.debug) System.out.println("/*debug*/CheckTriangleDDicho(d_prune="+d_prune+", d_dicho_ext="+d_dicho_ext+", d_dicho_int="+d_dicho_int+", k="+k+", Pra="+Pra+", Pdiag="+Pdiag+", n="+n+", increase="+increase+", ictr_pradiag="+ictr_pradiag+", ictr_pdiag="+ictr_pdiag+", pos_p="+pos_p+", mid="+mid+")");
+        if (stp.opt.debug) System.out.println("/*debug*/CheckTriangleDDicho(d_prune="+d_prune+", d_dicho_ext="+d_dicho_ext+", d_dicho_int="+d_dicho_int+", k="+k+", Pra="+Pra+", Pdiag="+Pdiag+", n="+n+", increase="+increase+", ictr_pradiag="+ictr_pradiag+", ictr_pdiag="+ictr_pdiag+", pos_p="+pos_p+", mid="+mid+")");
 
         Region box=null;
         ForbiddenRegion ictr=null;
@@ -2719,14 +2711,14 @@ public class GeometricKernel {
                 }
             }
         }
-        if (stp.debug) System.out.println("/*debug*/CheckTriangleDDicho() returns "+box);
+        if (stp.opt.debug) System.out.println("/*debug*/CheckTriangleDDicho() returns "+box);
         return box;
     }
 
 
     Region FindBoxTriangleDDicho(int d_prune, int d_dicho_ext, int d_dicho_int, int k, Point Pra, Point Pdiag, Point n,
                                  boolean increase, ForbiddenRegion ictr_pradiag, ForbiddenRegion ictr_pdiag, int pos_p) {
-        if (stp.debug) System.out.println("/*debug*/FindBoxTriangleDDicho(int d_prune="+d_prune+", int d_dicho_ext="+d_dicho_ext+", int d_dicho_int="+d_dicho_int+", int k="+k+", Point Pra="+Pra+", Point Pdiag="+Pdiag+", Point n="+n+",boolean increase="+increase+", ForbiddenRegion ictr_pradiag="+ictr_pradiag+", ForbiddenRegion ictr_pdiag="+ictr_pdiag+", int pos_p="+pos_p+")");
+        if (stp.opt.debug) System.out.println("/*debug*/FindBoxTriangleDDicho(int d_prune="+d_prune+", int d_dicho_ext="+d_dicho_ext+", int d_dicho_int="+d_dicho_int+", int k="+k+", Point Pra="+Pra+", Point Pdiag="+Pdiag+", Point n="+n+",boolean increase="+increase+", ForbiddenRegion ictr_pradiag="+ictr_pradiag+", ForbiddenRegion ictr_pdiag="+ictr_pdiag+", int pos_p="+pos_p+")");
         
         Pdiag=new Point(Pdiag);//Ensure parameter caller is not modified
         Region best_box=null;
@@ -2922,7 +2914,7 @@ public class GeometricKernel {
             }
             best_sem.case_a_or_c=CASE_A_OR_C;
         }
-        if (stp.debug) System.out.println("/*debug*/FindBoxTriangleDDicho() returns "+best_sem);
+        if (stp.opt.debug) System.out.println("/*debug*/FindBoxTriangleDDicho() returns "+best_sem);
 
         return best_sem;
     }
@@ -2971,11 +2963,11 @@ public class GeometricKernel {
         return false;
     }
     Pair<Boolean,Region> GetDeltaFR(int d_prune, int k, Obj o, Point c, Point n, Vector<InternalConstraint> ictrs, boolean increase, int delta_prune, int mode) {
-        //stp.state_FR=0 normal state
-        //stp.state_FR=1 trashing
-        //stp.state_FR=2 try to exit
+        //stp.opt.state_FR=0 normal state
+        //stp.opt.state_FR=1 trashing
+        //stp.opt.state_FR=2 try to exit
         boolean infeasible;Region b;
-        if ((mode==1)|| (stp.singleboxonly)) {
+        if ((mode==1)|| (stp.opt.singleboxonly)) {
             Pair <Boolean,Region> p=GetDeltaFRSingle(d_prune,k,o,c,n,ictrs,increase,delta_prune);
             infeasible=p.fst; b=p.snd;
             if (!infeasible) return p;
@@ -3016,7 +3008,7 @@ public class GeometricKernel {
             
         }
 
-        if (stp.debug) {
+        if (stp.opt.debug) {
             System.out.println("best_b:"+b);
             System.out.println("/*example*/b:"+b);
         }
@@ -3063,7 +3055,7 @@ public class GeometricKernel {
 
         //if ((b.father.indexOf("Dicho2")!=-1) && (!b.case_a_or_c) && (b.dicho_ext==1) && (increase==true) ) {
         if (b.father.indexOf("GreedyPoint")!=-1) {
-            if (stp.debug) System.out.println("*** box:"+b+";b.father:"+b.father+";b.mid:"+b.mid+";b.info:"+b.info+";b.case_a_or_c:"+b.case_a_or_c+";b.dicho_ext:"+b.dicho_ext+";volume:"+b.volume()+";c="+c+";increase="+increase);
+            if (stp.opt.debug) System.out.println("*** box:"+b+";b.father:"+b.father+";b.mid:"+b.mid+";b.info:"+b.info+";b.case_a_or_c:"+b.case_a_or_c+";b.dicho_ext:"+b.dicho_ext+";volume:"+b.volume()+";c="+c+";increase="+increase);
         }
 
 
@@ -3071,7 +3063,7 @@ public class GeometricKernel {
     }
 
     Pair<Boolean,Region> GetDeltaFRSingle(int d_prune, int k, Obj o, Point c, Point n, Vector<InternalConstraint> ictrs, boolean increase, int delta_prune) {
-        if (stp.processing) {
+        if (stp.opt.processing) {
             System.out.println("\n/*Processing*/sweep_point("+c.getCoord(0)+","+c.getCoord(1)+");");
         };
         int d_least = (k-1+d_prune)%k; if (d_least<0) d_least=d_least+k;
@@ -3080,7 +3072,7 @@ public class GeometricKernel {
         int pos_p=0;
 
         Vector<ForbiddenRegion> C_c = SetOfCstrsOnPt(c,k,ictrs);
-        if (stp.debug) { System.out.print("Set Of Cstrs On c:"); for (ForbiddenRegion fr:C_c) System.out.print(fr+" ");}
+        if (stp.opt.debug) { System.out.print("Set Of Cstrs On c:"); for (ForbiddenRegion fr:C_c) System.out.print(fr+" ");}
         if (C_c.size()==0) return new Pair<Boolean,Region>(false,null);
 
         for (ForbiddenRegion ictr_c : C_c) {
@@ -3098,21 +3090,21 @@ public class GeometricKernel {
             best_greedy = SelectionCriteria(d_prune,k,increase,box_greedy,best_greedy);
         }
         //writeBox(best_greedy,increase,false);
-        if (stp.debug) System.out.println("/*example*/returns (true,"+best_greedy+")");
+        if (stp.opt.debug) System.out.println("/*example*/returns (true,"+best_greedy+")");
 
         return new Pair<Boolean,Region>(true,best_greedy);
     }
 
     Pair<Boolean,Region> GetDeltaFRMultiple(int d_prune, int k, Obj o, Point c, Point n, Vector<InternalConstraint> ictrs, boolean increase, int delta_prune) {
-        if (stp.debug) System.out.println("/*debug*/GetDeltaFRMultiple(d_prune="+d_prune+", k="+k+", o="+o+", c="+c+", n="+n+", ictrs="+ictrs+", increase="+increase+", delta_prune="+delta_prune+")");
+        if (stp.opt.debug) System.out.println("/*debug*/GetDeltaFRMultiple(d_prune="+d_prune+", k="+k+", o="+o+", c="+c+", n="+n+", ictrs="+ictrs+", increase="+increase+", delta_prune="+delta_prune+")");
         
-        if (stp.processing) { System.out.println("\n/*Processing*/sweep_point("+c.getCoord(0)+","+c.getCoord(1)+");"); };
+        if (stp.opt.processing) { System.out.println("\n/*Processing*/sweep_point("+c.getCoord(0)+","+c.getCoord(1)+");"); };
         boolean trace=false;
 
         Vector<ForbiddenRegion> C_c = SetOfCstrsOnPt(c,k,ictrs);
-        if (stp.debug) { System.out.print("Set Of Cstrs On c:"); for (ForbiddenRegion fr:C_c) System.out.print(fr+" ");}
+        if (stp.opt.debug) { System.out.print("Set Of Cstrs On c:"); for (ForbiddenRegion fr:C_c) System.out.print(fr+" ");}
         if (C_c.size()==0) {
-            if (stp.debug) System.out.println("/*debug*/GetDeltaFRMultiple() returns ("+false+",null)");
+            if (stp.opt.debug) System.out.println("/*debug*/GetDeltaFRMultiple() returns ("+false+",null)");
             return new Pair<Boolean,Region>(false,null);
 
         }
@@ -3129,18 +3121,18 @@ public class GeometricKernel {
                 Region box=BuildBox(k,c,g);
                 box.setType("single");
                 //writeBox(box,increase,false);
-                if (stp.debug) System.out.println("/*debug*/GetDeltaFRMultiple() returns (true"+box+")");
+                if (stp.opt.debug) System.out.println("/*debug*/GetDeltaFRMultiple() returns (true"+box+")");
                 return new Pair(true,box);                
             }
             Point gpl = Extend(c,d_prev_least,k,n,ictr_c,increase);            
             Vector<ForbiddenRegion> C_g = SetOfCstrsOnPt(g,k,ictrs);
-            if ((C_g.size()>1) && stp.firstTimeGetDeltaFR) { stp.firstTimeGetDeltaFR=false; System.out.println("Relevant.");};
+            if ((C_g.size()>1) && stp.opt.firstTimeGetDeltaFR) { stp.opt.firstTimeGetDeltaFR=false; System.out.println("Relevant.");};
 
             for (ForbiddenRegion ictr_g : C_g) {
                 if (ictr_g!=ictr_c) {
 
                     Region box_inter = null;
-                    if (stp.useinterbox) box_inter=FindBoxInter(d_prune,d_least,d_prev_least,k,c,g,n,increase,ictr_c,ictr_g,pos_p);
+                    if (stp.opt.useinterbox) box_inter=FindBoxInter(d_prune,d_least,d_prev_least,k,c,g,n,increase,ictr_c,ictr_g,pos_p);
                     if (box_inter!=null) box_inter.setType("inter_in");
 
                     //best_sem = LargestInvLexBox(d_prune,k,increase,best_sem,box_inter);
@@ -3160,7 +3152,7 @@ public class GeometricKernel {
                     //best_sem = BestVolume2(d_prune,d_prev_least,d_least,k,increase,best_sem,box_inter);
                     //best_sem = BestVolume2(d_prune,d_prev_least,d_least,k,increase,box_inter,best_sem);
 
-                    if (stp.processing) System.out.println("/*Processing*///Dicho1");
+                    if (stp.opt.processing) System.out.println("/*Processing*///Dicho1");
                     if (!(ictr_g.insideForbidden(g))) {System.out.println("GeometricKernel:GetBestFR():g not in ictr_g");System.exit(-1);};
 
                     Region box_tri = FindBoxTriangleDDicho(d_prune,d_least,d_prev_least,k,c,g,n,increase,ictr_c,ictr_g,pos_p);
@@ -3184,7 +3176,7 @@ public class GeometricKernel {
             }//endfor
     
             Vector<ForbiddenRegion> C_gpl = SetOfCstrsOnPt(gpl,k,ictrs);//new Vector<ForbiddenRegion>();
-            if ((C_gpl.size()>1) && stp.firstTimeGetDeltaFR) { stp.firstTimeGetDeltaFR=false; System.out.println("Relevant.");};
+            if ((C_gpl.size()>1) && stp.opt.firstTimeGetDeltaFR) { stp.opt.firstTimeGetDeltaFR=false; System.out.println("Relevant.");};
 
             for (ForbiddenRegion ictr_gpl : C_gpl) {
                 if (ictr_gpl!=ictr_c) {
@@ -3217,7 +3209,7 @@ public class GeometricKernel {
 
             for (ForbiddenRegion ictr_c_prime : C_c) {//Point c plays the role of diagonal
                 if (ictr_c!=ictr_c_prime) {
-                    if (stp.processing) System.out.println("/*Processing*///Dicho3");
+                    if (stp.opt.processing) System.out.println("/*Processing*///Dicho3");
                     Region box = FindBoxTriangleDDicho(d_prune,d_least,d_prev_least,k,g,c,n,increase,ictr_c,ictr_c_prime,pos_p);
                     writeBox(box,increase,true);
                     best_box = SelectionCriteria(d_prune,k,increase,best_box,box);
@@ -3225,7 +3217,7 @@ public class GeometricKernel {
                     //best_sem = BestVolume2(d_prune,d_prev_least,d_least,k,increase,best_sem,box);
                     //best_sem = BestVolume2(d_prune,d_prev_least,d_least,k,increase,box,best_sem);
 
-                    if (stp.processing) System.out.println("/*Processing*///Dicho4");
+                    if (stp.opt.processing) System.out.println("/*Processing*///Dicho4");
                     if (!(ictr_c_prime.insideForbidden(c))) {System.out.println("GeometricKernel:GetBestFR():c not in ictr_c_prime");System.exit(-1);};
 
                     box = FindBoxTriangleDDicho(d_prune,d_prev_least,d_least,k,gpl,c,n,increase,ictr_c,ictr_c_prime,pos_p);
@@ -3265,7 +3257,7 @@ public class GeometricKernel {
             if ((d_prev_least!=d_prune) && (k==2)) {System.out.println("GeometricKernel:GetDeltaFRMultiple():invariant (d_prev_least!=d_prune) && (k==2)"); }
             
             Region box_vector=null;
-            if (stp.usevectorbox) 
+            if (stp.opt.usevectorbox)
                 box_vector=GetGreedyBoxFromJumpVector(d_prev_least,d_prune,k,c,n,n.getCoord(d_prev_least),ictr_c,increase,pos_p);
 
 
@@ -3290,7 +3282,7 @@ public class GeometricKernel {
 
         }//endfor
 
-        if (stp.debug) {
+        if (stp.opt.debug) {
         System.out.println("best_box:"+best_box);
         }
 
@@ -3303,7 +3295,7 @@ public class GeometricKernel {
             //chosen_box=BestVolume2(d_prune,d_prev_least,d_least,k,increase,best_sem,best_greedy);
         //else chosen_box=best_volume;
 
-        //if (stp.debug) writeBox(best_box,increase,false);
+        //if (stp.opt.debug) writeBox(best_box,increase,false);
 
         
 
@@ -3315,7 +3307,7 @@ public class GeometricKernel {
 //                chosen_box.setMinimumBoundary(d_least,chosen_box.getMinimumBoundary(d_least)+1);
 //        }
         
-        if (stp.debug) System.out.println("/*debug*/GetDeltaFRMultiple() returns (true,"+best_box+")");
+        if (stp.opt.debug) System.out.println("/*debug*/GetDeltaFRMultiple() returns (true,"+best_box+")");
         return new Pair<Boolean,Region>(true,best_box);
 
     }
@@ -3324,7 +3316,7 @@ public class GeometricKernel {
 
 
 //    Pair<Boolean,Region> GetDeltaFROld(int d_prune, int k, Obj o, Point c, Point n, Vector<InternalConstraint> ictrs, boolean increase, int delta_prune) {
-//        if (stp.debug) { System.out.println("\n/*Processing*/sweep_point("+c.getCoord(0)+","+c.getCoord(1)+");"); };
+//        if (stp.opt.debug) { System.out.println("\n/*Processing*/sweep_point("+c.getCoord(0)+","+c.getCoord(1)+");"); };
 //        boolean trace=false;
 //        Region best_box=null;
 //        boolean inter_in=false; boolean inter_out=false;
@@ -3412,7 +3404,7 @@ public class GeometricKernel {
 //                        if ((best_box!=r.snd)) {
 //                            best_box=r.snd;
 //                            if (inter_in) best_box.setType("inter_in"); if (inter_out) best_box.setType("inter_out");
-//                            if (stp.debug) { System.out.println("\n/*Processing*/intersection("+d_prune+","+inter+");"); };
+//                            if (stp.opt.debug) { System.out.println("\n/*Processing*/intersection("+d_prune+","+inter+");"); };
 //                        }
 //                    }
 //                }
@@ -3422,7 +3414,7 @@ public class GeometricKernel {
 //
 //            for (ForbiddenRegion ictr_c_prime : C_c) {
 //                if (ictr_c!=ictr_c_prime) {
-////                    if (stp.findboxtriangle) {
+////                    if (stp.opt.findboxtriangle) {
 ////                        Pair<Boolean,Region> rresult = FindBoxTriangle(d_prune,d_least,d_prev_least,k,g,c,n,increase,ictr_c,ictr_c_prime,0);
 ////                        boolean found_triangle=rresult.fst;
 ////                        if (found_triangle) {
@@ -3466,7 +3458,7 @@ public class GeometricKernel {
 //            }
 //        }//endfor
 //
-//        if (stp.debug) {
+//        if (stp.opt.debug) {
 //            System.out.println("\n/*Processing*/fr("+best_box.getMinimumBoundary(0)+","+best_box.getMaximumBoundary(0)+","+best_box.getMinimumBoundary(1)+","+best_box.getMaximumBoundary(1)+",\""+best_box.getType()+"\");");
 //        }
 //
@@ -3491,7 +3483,7 @@ public class GeometricKernel {
 
 
     void writeBox(Region chosen_box, boolean increase, boolean temp) {
-        if (stp.processing) {
+        if (stp.opt.processing) {
         //if (temp) return;
         String function="";
         if (temp) function=new String("fr_temp"); else function=new String("fr");
@@ -3555,7 +3547,7 @@ public class GeometricKernel {
 
     Pair<Integer,Integer> DealWithSucc(int d, int last_dprune, int last_diff, int diff_counter, Point c, Point initial_c, int k) {
         int diff=-1;
-        if (stp.deltasucc) {
+        if (stp.opt.deltasucc) {
             //D�tecter la dim. la plus importante qui a �t� modif�e.
             int d_prune=d;
             int d_current=0;
@@ -3571,12 +3563,12 @@ public class GeometricKernel {
 
 
            diff=Math.abs(c.getCoord(d_current)-initial_c.getCoord(d_current));
-           if (stp.debug) System.out.println("last_diff:"+last_diff+";diff:"+diff+"d:"+d_prune+";d_current"+d_current);
+           if (stp.opt.debug) System.out.println("last_diff:"+last_diff+";diff:"+diff+"d:"+d_prune+";d_current"+d_current);
 
 
             //stp.delta stores the for each diff d the number of diff of size d jumped
-           if (stp.delta.get(d_current)==null) stp.delta.put(d_current,new HashMap<Integer,Integer>());
-           HashMap<Integer,Integer> curDelta= stp.delta.get(d_current);
+           if (stp.opt.delta.get(d_current)==null) stp.opt.delta.put(d_current,new HashMap<Integer,Integer>());
+           HashMap<Integer,Integer> curDelta= stp.opt.delta.get(d_current);
            if (curDelta.get(diff)==null) curDelta.put(diff,0);
            curDelta.put(diff,curDelta.get(diff)+1);
 
@@ -3592,8 +3584,8 @@ public class GeometricKernel {
                     if ((last_diff!=-1) && (diff_counter!=0) && (last_dprune!=-1)) { //There was a sucession on the same dim.
                         //stp.succDelta stores for each diff and for the current pruning dimension d,
                         //the list of the number of time a diff happened, for each diff.
-                        if (stp.succDelta.get(last_dprune)==null) stp.succDelta.put(d,new HashMap<Integer,Vector<Integer>>());
-                        HashMap<Integer,Vector<Integer>> curSuccDelta= stp.succDelta.get(last_dprune);
+                        if (stp.opt.succDelta.get(last_dprune)==null) stp.opt.succDelta.put(d,new HashMap<Integer,Vector<Integer>>());
+                        HashMap<Integer,Vector<Integer>> curSuccDelta= stp.opt.succDelta.get(last_dprune);
                         if (curSuccDelta.get(last_diff)==null) curSuccDelta.put(last_diff,new Vector<Integer>());
                         Vector<Integer> succ_list=curSuccDelta.get(last_diff);
                         succ_list.add(diff_counter);
@@ -3608,7 +3600,7 @@ public class GeometricKernel {
             }
 
 
-        } //if (stp.debug)
+        } //if (stp.opt.debug)
 
         return new Pair<Integer,Integer>(diff,diff_counter);
 
@@ -3704,8 +3696,8 @@ public class GeometricKernel {
         Point c = new Point(k); for (int i=0; i<k; i++) c.setCoord(i,o.getCoord(i).getInf());
         Point n = new Point(k); for (int i=0; i<k; i++) n.setCoord(i,o.getCoord(i).getSup()+1);
         Point c0 = new Point(c);
-        if ((stp.processing)){
-            System.out.println("\n/*Processing*/endchunk();\n/*Processing*/break;"+"case "+(stp.phase++)+":\n/*Processing*/beginchunk();");
+        if ((stp.opt.processing)){
+            System.out.println("\n/*Processing*/endchunk();\n/*Processing*/break;"+"case "+(stp.opt.phase++)+":\n/*Processing*/beginchunk();");
             //Draw objects that are instantiated
             for (Integer i : stp.getObjectKeySet()) {
                 Obj tmp = stp.getObject(i);
@@ -3750,13 +3742,13 @@ public class GeometricKernel {
         Pair<Boolean,Region> r=GetDeltaFR(d,k,o,c,n,ICTRS,true,c.getCoord(d)+delta,mode);
         boolean infeasible=r.fst; Region f=r.snd;
         //INVARIANT:forbidden region contains no feasible pt
-        if ((stp.debug) && (infeasible) && (feasiblePtInRegion(f,ICTRS))) {
+        if ((stp.opt.debug) && (infeasible) && (feasiblePtInRegion(f,ICTRS))) {
             System.out.println("GeometricKernel:NewDeltaPruneMin():feasiblePtInRegion is true"); System.exit(-1);
         }
         //END INVARIANT
         Point initial_c = new Point(c);
 
-        if (infeasible) stp.nbr_propagations++;
+        if (infeasible) stp.opt.nbr_propagations++;
 
                   
         while (b && infeasible) {
@@ -3764,23 +3756,23 @@ public class GeometricKernel {
             initial_c = new Point(c);     //create a copy
 
 
-            if (stp.debug) System.out.println("/*example*/Adjustup(c="+c+",n="+n+",o="+o+",d="+d+",k="+k+")");
+            if (stp.opt.debug) System.out.println("/*example*/Adjustup(c="+c+",n="+n+",o="+o+",d="+d+",k="+k+")");
             Vector adjUp = AdjustUp(c, n, o, d, k); // update the position of c to check
-            if (stp.debug) System.out.println("/*example*/returns c="+c+",n="+n+",b="+b);
+            if (stp.opt.debug) System.out.println("/*example*/returns c="+c+",n="+n+",b="+b);
 
             c = (Point) adjUp.elementAt(0);
             n = (Point) adjUp.elementAt(1);
             b = (Boolean) adjUp.elementAt(2);
-            stp.nbr_jumps++; local_nbr_jumps++;
-            if (stp.mixmode) {
+            stp.opt.nbr_jumps++; local_nbr_jumps++;
+            if (stp.opt.mixmode) {
             Vector rcts = CheckTrashingState_dl(c,d,k,cdpl,f,bad_ratio,nbr_steps,mode);
             bad_ratio=(Boolean)rcts.elementAt(0);
             nbr_steps=(Integer)rcts.elementAt(1);
             mode=(Integer)rcts.elementAt(2);
             cdpl=c.getCoord(d_prev_least);
             }
-            if ((stp.processing) &&(Math.abs(c.getCoord(d)-initial_c.getCoord(d))!=0)) {
-                System.out.println("\n/*Processing*/endchunk();\n/*Processing*/break;"+"case "+(stp.phase++)+":\n/*Processing*/beginchunk();");
+            if ((stp.opt.processing) &&(Math.abs(c.getCoord(d)-initial_c.getCoord(d))!=0)) {
+                System.out.println("\n/*Processing*/endchunk();\n/*Processing*/break;"+"case "+(stp.opt.phase++)+":\n/*Processing*/beginchunk();");
                 //Draw objects that are instantiated
                 for (Integer i : stp.getObjectKeySet()) {
                     Obj tmp = stp.getObject(i);
@@ -3848,7 +3840,7 @@ public class GeometricKernel {
 
             Pair forbidRegion = GetDeltaFR(d, k, o, c, n, ICTRS,true,c.getCoord(d)+delta,mode);
             infeasible=(Boolean)forbidRegion.fst; f=(Region)forbidRegion.snd;
-            if ((stp.debug) &&(infeasible) &&  (feasiblePtInRegion(f,ICTRS))) {
+            if ((stp.opt.debug) &&(infeasible) &&  (feasiblePtInRegion(f,ICTRS))) {
                 System.out.println("GeometricKernel:NewDeltaPruneMin():feasiblePtInRegion is true"); System.exit(-1);
             }
             
@@ -3857,13 +3849,13 @@ public class GeometricKernel {
         Pair<Integer,Integer> p=DealWithSucc(d, last_dprune, last_diff, diff_counter, c, initial_c, k);
         last_diff=p.fst; last_dprune=d; diff_counter=p.snd;
 
-        if (local_nbr_jumps>stp.max_nbr_jumps) {stp.max_nbr_jumps=local_nbr_jumps; stp.worst_increase=true; stp.worst_point=new Point(c0); }
-        stp.sum_jumps+=local_nbr_jumps;
-        stp.sum_square_jumps+=(local_nbr_jumps*local_nbr_jumps);
+        if (local_nbr_jumps>stp.opt.max_nbr_jumps) {stp.opt.max_nbr_jumps=local_nbr_jumps; stp.opt.worst_increase=true; /*stp.opt.worst_point=new Point(c0);*/ }
+        stp.opt.sum_jumps+=local_nbr_jumps;
+        stp.opt.sum_square_jumps+=(local_nbr_jumps*local_nbr_jumps);
 
         
         if (b) o.getCoord(d).updateInf(c.getCoord(d), -1);
-//        if (stp.debug) {
+//        if (stp.opt.debug) {
 //            System.out.println("\n/*Processing*/break;"+"case "+(stp.phase++)+":");
 //        }
         
@@ -3878,8 +3870,8 @@ public class GeometricKernel {
         Point n = new Point(k); for (int i=0; i<k; i++) n.setCoord(i,o.getCoord(i).getInf()-1);
         Point c0 = new Point(c);
 
-        if ((stp.processing)){
-            System.out.println("\n/*Processing*/endchunk();\n/*Processing*/break;"+"case "+(stp.phase++)+":\n/*Processing*/beginchunk();");
+        if ((stp.opt.processing)){
+            System.out.println("\n/*Processing*/endchunk();\n/*Processing*/break;"+"case "+(stp.opt.phase++)+":\n/*Processing*/beginchunk();");
             //Draw objects that are instantiated
             for (Integer i : stp.getObjectKeySet()) {
                 Obj tmp = stp.getObject(i);
@@ -3920,25 +3912,25 @@ public class GeometricKernel {
         int delta_prev=delta, nj_prev=nj;        
         Pair<Boolean,Region> r=GetDeltaFR(d,k,o,c,n,ICTRS,false,c.getCoord(d)-delta,mode);
         boolean infeasible=r.fst; Region f=r.snd;
-        if ((stp.debug) &&(infeasible) &&  (feasiblePtInRegion(f,ICTRS))) {
+        if ((stp.opt.debug) &&(infeasible) &&  (feasiblePtInRegion(f,ICTRS))) {
             System.out.println("GeometricKernel:NewDeltaPruneMax():feasiblePtInRegion is true"); System.exit(-1);
         }
 
         Point initial_c = new Point(c);
 
-        if (infeasible) stp.nbr_propagations++;
+        if (infeasible) stp.opt.nbr_propagations++;
 
         while (b && infeasible) {
             for (int i=0; i<k; i++) n.setCoord(i,Math.max(n.getCoord(i),f.getMinimumBoundary(i)-1));
             initial_c = new Point(c);     //create a copy
 
             Vector adjUp = AdjustDown(c, n, o, d, k); // update the position of c to check
-            stp.nbr_jumps++; local_nbr_jumps++;
+            stp.opt.nbr_jumps++; local_nbr_jumps++;
             //System.out.println(" returns $[c="+adjUp.get(0)+",n="+adjUp.get(1)+",b="+adjUp.get(2)+",mode="+adjUp.get(3)+"]$ ");
             c = (Point) adjUp.elementAt(0);
             n = (Point) adjUp.elementAt(1);
             b = (Boolean) adjUp.elementAt(2);
-            if (stp.mixmode) {
+            if (stp.opt.mixmode) {
             Vector rcts = CheckTrashingState_dl(c,d,k,cdpl,f,bad_ratio,nbr_steps,mode);
             bad_ratio=(Boolean)rcts.elementAt(0);
             nbr_steps=(Integer)rcts.elementAt(1);
@@ -3947,8 +3939,8 @@ public class GeometricKernel {
             }
 
 
-            if ((stp.processing) && (Math.abs(c.getCoord(d)-initial_c.getCoord(d))!=0)){
-                System.out.println("\n/*Processing*/endchunk();\n/*Processing*/break;"+"case "+(stp.phase++)+":\n/*Processing*/beginchunk();");
+            if ((stp.opt.processing) && (Math.abs(c.getCoord(d)-initial_c.getCoord(d))!=0)){
+                System.out.println("\n/*Processing*/endchunk();\n/*Processing*/break;"+"case "+(stp.opt.phase++)+":\n/*Processing*/beginchunk();");
 
                 //Draw objects that are instantiated
                 for (Integer i : stp.getObjectKeySet()) {
@@ -4015,7 +4007,7 @@ public class GeometricKernel {
 
             Pair forbidRegion = GetDeltaFR(d, k, o, c, n, ICTRS,false,c.getCoord(d)-delta,mode);
             infeasible=(Boolean)forbidRegion.fst; f=(Region)forbidRegion.snd;
-            if ((stp.debug) &&(infeasible) &&  (feasiblePtInRegion(f,ICTRS))) {
+            if ((stp.opt.debug) &&(infeasible) &&  (feasiblePtInRegion(f,ICTRS))) {
                 System.out.println("GeometricKernel:NewDeltaPruneMax():feasiblePtInRegion is true"); System.exit(-1);
             }
             
@@ -4024,13 +4016,13 @@ public class GeometricKernel {
         last_diff=p.fst; last_dprune=d; diff_counter=p.snd;
 
         if (b) o.getCoord(d).updateSup(c.getCoord(d), -1);
- //       if (stp.debug) {
+ //       if (stp.opt.debug) {
  //           System.out.println("\n/*Processing*/break;"+"case "+(stp.phase++)+":");
   //      }
 
-        if (local_nbr_jumps>stp.max_nbr_jumps) {stp.max_nbr_jumps=local_nbr_jumps; stp.worst_increase=false; stp.worst_point=new Point(c0); }
-        stp.sum_jumps+=local_nbr_jumps;
-        stp.sum_square_jumps+=local_nbr_jumps*local_nbr_jumps;
+        if (local_nbr_jumps>stp.opt.max_nbr_jumps) {stp.opt.max_nbr_jumps=local_nbr_jumps; stp.opt.worst_increase=false; /*stp.opt.worst_point=new Point(c0);*/ }
+        stp.opt.sum_jumps+=local_nbr_jumps;
+        stp.opt.sum_square_jumps+=local_nbr_jumps*local_nbr_jumps;
 
         return b;
     }

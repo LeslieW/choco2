@@ -75,7 +75,7 @@ public class DistGeqIC extends ForbiddenRegion {
     //Algorithm 162 p.259 sweep.pdf r108
     public int maximizeSizeOfFBox(boolean min, int d, int k, Region f) {
         //System.out.println("ENTERING maximizeSizeOfFBox DistGeqIC");
-        if (stp.debug) {
+        if (stp.opt.debug) {
             if (!insideForbidden(f.pointMin())) {System.out.println("Error precondition pointMin in DistGeqIC"); System.exit(-1);}
             if (!insideForbidden(f.pointMax())) {System.out.println("Error precondition pointMax in DistGeqIC"); System.exit(-1);}
         }
@@ -138,7 +138,7 @@ public class DistGeqIC extends ForbiddenRegion {
                 int r=1;
                 for (int j=0; j<q; j++) r*=Math.abs(m.getCoord(i));
                 sum+=r;
-                if (stp.debug) {if (sum<0) {System.out.println("DestLeqIC:q_sum():double limit reached"); System.exit(-1);}}
+                if (stp.opt.debug) {if (sum<0) {System.out.println("DestLeqIC:q_sum():double limit reached"); System.exit(-1);}}
             }
         }
 
@@ -217,7 +217,7 @@ public class DistGeqIC extends ForbiddenRegion {
     public void updateDistance(int k) throws ContradictionException {
         if (DVar!=null) {
                 DVar.updateSup(EvaluateMaximumDistance(k),0);
-                if (stp.debug) { System.out.println("DistGeqIC:"+this+" updateDistance:["+DVar.getInf()+","+DVar.getSup()+"]"); };
+                if (stp.opt.debug) { System.out.println("DistGeqIC:"+this+" updateDistance:["+DVar.getInf()+","+DVar.getSup()+"]"); };
                 if ((DVar.getInf()>DVar.getSup()) || (DVar.getSup()<DVar.getInf())) throw new ContradictionException(null,0);
         }
     }

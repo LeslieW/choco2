@@ -357,7 +357,7 @@ public class ExternalLayer {
                             }
 
                            //clipping
-                            if (stp.clipping) {
+                            if (stp.opt.clipping) {
                             //   t[j] = Math.max(minObj, t[j]);
                            //     s[j] = Math.min(maxObj, t[j] + s[j]) - t[j]  ;
                             }

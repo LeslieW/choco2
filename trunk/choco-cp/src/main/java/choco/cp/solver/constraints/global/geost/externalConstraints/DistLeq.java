@@ -41,6 +41,7 @@ public class DistLeq extends ExternalConstraint implements Externalizable {
     public DistLeq(int ectrID, int[] dimensions, int[] objectIdentifiers, int D_, int q_, IntDomainVar var)
     {
         super(ectrID, dimensions, null);
+        System.out.println(objectIdentifiers.length);
         int[] oids = new int[1];
 
         D=D_;
