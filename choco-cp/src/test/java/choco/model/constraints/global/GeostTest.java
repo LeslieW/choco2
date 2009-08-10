@@ -1,5 +1,4 @@
-/*
-*/
+
 /* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
@@ -22,14 +21,13 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-/*
+
 package choco.model.constraints.global;
 
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.geost.Constants;
-import choco.cp.solver.constraints.global.geost.externalConstraints.NonOverlapping;
 import choco.cp.solver.constraints.global.geost.util.InputParser;
 import choco.cp.solver.constraints.global.geost.util.RandomProblemGenerator;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
@@ -37,8 +35,9 @@ import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.geost.externalConstraints.IExternalConstraint;
+import choco.kernel.model.constraints.geost.externalConstraints.NonOverlappingModel;
 import choco.kernel.model.variables.geost.GeostObject;
-import choco.kernel.model.variables.geost.IExternalConstraint;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -122,7 +121,7 @@ public class GeostTest {
             }
 
             //create the external constraint of type non overlapping
-            NonOverlapping n2 = new NonOverlapping(Constants.NON_OVERLAPPING, ectrDim2, objOfEctr2);
+            NonOverlappingModel n2 = new NonOverlappingModel(Constants.NON_OVERLAPPING, ectrDim2, objOfEctr2);
             //add the external constraint to the vector
             ectr2.add(n2);
 
@@ -144,11 +143,12 @@ public class GeostTest {
     @Ignore
     public void RandomProblemGeneration() {
 
-        for (int seed = 0; seed < 20; seed++) {
+        for (int seed = 0; seed < /*20*/5; seed++) {
             //nb of objects, shapes, shifted boxes and maxLength respectively
             //The nb of Obj should be equal to nb Of shapes for NOW. as For the number of the shifted Boxes it should be greater or equal to thhe nb of Objects
 
             RandomProblemGenerator rp = new RandomProblemGenerator(this.dim, 7, 7, 9, 25);
+
             rp.generateProb();
 
             Model m = rp.getModel();
@@ -163,7 +163,7 @@ public class GeostTest {
                 objOfEctr[i] = rp.getObjects().elementAt(i).getObjectId();
             }
 
-            NonOverlapping n = new NonOverlapping(Constants.NON_OVERLAPPING, ectrDim, objOfEctr);
+            NonOverlappingModel n = new NonOverlappingModel(Constants.NON_OVERLAPPING, ectrDim, objOfEctr);
             ectr.add(n);
 
 
@@ -229,9 +229,9 @@ public class GeostTest {
                 objOfEctr[i] = parser.getObjects().elementAt(i).getObjectId();
             }
 
-            // Create the external constraint, in our case it is the NonOverlapping
+            // Create the external constraint, in our case it is the NonOverlappingModel
             // constraint (it is the only one implemented for now)
-            NonOverlapping n = new NonOverlapping(Constants.NON_OVERLAPPING, ectrDim, objOfEctr);
+            NonOverlappingModel n = new NonOverlappingModel(Constants.NON_OVERLAPPING, ectrDim, objOfEctr);
 
             // add the created external constraint to the vector we created
             ectr.add(n);
@@ -333,7 +333,7 @@ public class GeostTest {
             objOfEctr2[d] = obj2.elementAt(d).getObjectId();
         }
 
-        NonOverlapping n2 = new NonOverlapping(Constants.NON_OVERLAPPING, ectrDim2, objOfEctr2);
+        NonOverlappingModel n2 = new NonOverlappingModel(Constants.NON_OVERLAPPING, ectrDim2, objOfEctr2);
         ectr2.add(n2);
 
         Constraint geost2 = Choco.geost(this.dim, obj2, sb2, ectr2);
@@ -432,7 +432,7 @@ public class GeostTest {
         }
 
 //		create the external constraint of type non overlapping
-        NonOverlapping n = new NonOverlapping(Constants.NON_OVERLAPPING, ectrDim, objOfEctr);
+        NonOverlappingModel n = new NonOverlappingModel(Constants.NON_OVERLAPPING, ectrDim, objOfEctr);
         //add the external constraint to the vector
         ectr.add(n);
 
@@ -531,7 +531,7 @@ public class GeostTest {
 		}
 
 		// create the external constraint of non overlapping type
-		NonOverlapping n = new NonOverlapping(Constants.NON_OVERLAPPING,
+		NonOverlappingModel n = new NonOverlappingModel(Constants.NON_OVERLAPPING,
 				ectrDim, objOfEctr);
 		// add the external constraint to the ectr vector
 		ectr.add(n);
@@ -556,4 +556,4 @@ public class GeostTest {
 		LOGGER.info(s.pretty());
 	}
 }
-*/
+
