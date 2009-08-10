@@ -45,7 +45,7 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 	 * @param ctrlVs A list of controlling vectors used in the greedy mode
 	 */
 
-	public Geost_Constraint(IntDomainVar[] vars, int k, Vector<Obj> objects, Vector<ShiftedBox> shiftedBoxes, Vector<ExternalConstraint> ectr, Vector<int[]> ctrlVs, boolean memo_active, HashMap<Pair<Integer,Integer>,Boolean> included, Long a, Long b,
+	public Geost_Constraint(IntDomainVar[] vars, int k, Vector<Obj> objects, Vector<ShiftedBox> shiftedBoxes, Vector<ExternalConstraint> ectr, Vector<int[]> ctrlVs, boolean memo_active, HashMap<Pair<Integer,Integer>,Boolean> included,
                             boolean increment_)
 	{
 
@@ -55,7 +55,7 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 		stp = new Setup(cst);
 		intermediateLayer = new IntermediateLayer();
 		externalLayer = new ExternalLayer(cst, stp);
-		geometricKernel = new GeometricKernel(cst, stp, externalLayer, intermediateLayer,memo_active,included,a,b);
+		geometricKernel = new GeometricKernel(cst, stp, externalLayer, intermediateLayer,memo_active,included);
 
 		cst.setDIM(k);
         this.ctrlVs = ctrlVs;
@@ -88,7 +88,7 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 	 * @param ectr A vector containing the External Constraints in our problem
 	 */
 
-	public Geost_Constraint(IntDomainVar[] vars, int k, Vector<Obj> objects, Vector<ShiftedBox> shiftedBoxes, Vector<ExternalConstraint> ectr, boolean memo, HashMap<Pair<Integer,Integer>, Boolean> included, Long a, Long b)
+	public Geost_Constraint(IntDomainVar[] vars, int k, Vector<Obj> objects, Vector<ShiftedBox> shiftedBoxes, Vector<ExternalConstraint> ectr, boolean memo, HashMap<Pair<Integer,Integer>, Boolean> included)
 	{
         super(vars);
 
@@ -96,7 +96,7 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 		stp = new Setup(cst);
 		intermediateLayer = new IntermediateLayer();
 		externalLayer = new ExternalLayer(cst, stp);
-		geometricKernel = new GeometricKernel(cst, stp, externalLayer, intermediateLayer, memo, included, a, b);
+		geometricKernel = new GeometricKernel(cst, stp, externalLayer, intermediateLayer, memo, included);
 
 		cst.setDIM(k);
 
@@ -120,31 +120,31 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 	  else {          
         long tmpTime = (System.nanoTime() / 1000000);
         filterWithGreedyMode();
-        stp.timefilterWithGreedyMode += ((System.nanoTime()/1000000) - tmpTime);
+        stp.opt.timefilterWithGreedyMode += ((System.nanoTime()/1000000) - tmpTime);
       }
 
 	}
 
 	private void filterWithGreedyMode() throws ContradictionException{
-        if (stp.debug) System.out.println("Geost_Constraint:filterWithGreedyMode()");
+        if (stp.opt.debug) System.out.println("Geost_Constraint:filterWithGreedyMode()");
         s.worldPush();    //Starts a new branch in the search tree
         boolean result = false;
 
         if (!increment) {
             long tmpTimeFixAllObj = System.nanoTime() / 1000000;
             result=geometricKernel.FixAllObjs(cst.getDIM(), oIDs, stp.getConstraints(), this.ctrlVs);            
-            stp.timeFixAllObj += ((System.nanoTime() / 1000000) - tmpTimeFixAllObj);
+            stp.opt.timeFixAllObj += ((System.nanoTime() / 1000000) - tmpTimeFixAllObj);
         }
         else {
             long tmpTimeFixAllObj = System.nanoTime() / 1000000;
             result=geometricKernel.FixAllObjs_incr(cst.getDIM(), oIDs, stp.getConstraints(), this.ctrlVs);
-            stp.timeFixAllObj += ((System.nanoTime() / 1000000) - tmpTimeFixAllObj);
+            stp.opt.timeFixAllObj += ((System.nanoTime() / 1000000) - tmpTimeFixAllObj);
         }
         if (!result){
 			s.worldPop();
             long tmpTime = (System.nanoTime() / 1000000);
 			filterWithoutGreedyMode();
-            stp.timefilterWithoutGreedyMode += ((System.nanoTime()/1000000) - tmpTime);
+            stp.opt.timefilterWithoutGreedyMode += ((System.nanoTime()/1000000) - tmpTime);
 
 		}
 		else{
@@ -162,21 +162,21 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 
                 //}
             }
-            stp.handleSolution1 += ((System.nanoTime()/1000000) - tmpTime);
+            stp.opt.handleSolution1 += ((System.nanoTime()/1000000) - tmpTime);
             tmpTime = (System.nanoTime() / 1000000);
 			s.worldPop();  //Come back to the state before propagation
-            stp.handleSolution2 += ((System.nanoTime()/1000000) - tmpTime);
+            stp.opt.handleSolution2 += ((System.nanoTime()/1000000) - tmpTime);
             tmpTime = (System.nanoTime() / 1000000);
             //s.getSearchStrategy().restoreBestSolution();
 
             s.restoreSolution(sol);//Restore the solution
-            stp.handleSolution3 += ((System.nanoTime()/1000000) - tmpTime);
+            stp.opt.handleSolution3 += ((System.nanoTime()/1000000) - tmpTime);
 		}
 	}
 
 
 	private void filterWithoutGreedyMode() throws ContradictionException{
-        if (stp.debug) System.out.println("Geost_Constraint:filterWithoutGreedyMode()");        
+        if (stp.opt.debug) System.out.println("Geost_Constraint:filterWithoutGreedyMode()");
         if(!geometricKernel.FilterCtrs(cst.getDIM(), oIDs, stp.getConstraints()))
 			this.fail();
 	}
@@ -200,7 +200,7 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 //        for (int i=0; i<l; i++)
 //            System.out.println("Geost_Constraint:propagate():vars["+i+"]:"+vars[i]+","+vars[i].getInf()+","+vars[i].getSup());
 //        System.out.println("----propagate");          ^
-        if (stp.debug) System.out.println("GeostConstraint:propagate()");
+        if (stp.opt.debug) System.out.println("GeostConstraint:propagate()");
 		filter();
 	}
 

@@ -45,9 +45,9 @@ public class DistLeqIC extends ForbiddenRegion {
     /* sweep.tex r108 Chapter 7 - Algorithm 156 'InsideForbidden'
      * returns true if p belongs to the forbidden region F and false otherwise */
     public boolean insideForbidden(Point p) {
-             boolean save_stp_debug=stp.debug;
-        stp.debug=false;
-            if (stp.debug) System.out.println("/*debug*/segInsideForbidden("+p+")");
+             boolean save_stp_debug=stp.opt.debug;
+        stp.opt.debug=false;
+            if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden("+p+")");
 
             if (DVar!=null) D=DVar.getSup();
 //           System.out.println("segInsideForbidden("+p+") call");
@@ -71,9 +71,9 @@ public class DistLeqIC extends ForbiddenRegion {
                m.setCoord(i,Math.max(0,m1-m2)); /*line 5:m[i]<-...*/
            }
 
-            if (stp.debug) System.out.println("/*debug*/segInsideForbidden(): "+m+" norm(m,q)="+norm(m,q)+">D="+D);
-            if (stp.debug) System.out.println("/*debug*/segInsideForbidden() returns "+(norm(m,q)>D));
-             stp.debug=save_stp_debug;
+            if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden(): "+m+" norm(m,q)="+norm(m,q)+">D="+D);
+            if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden() returns "+(norm(m,q)>D));
+             stp.opt.debug=save_stp_debug;
             return (norm(m,q)>D); /*line 7-11*/
     }
 
@@ -82,7 +82,7 @@ public class DistLeqIC extends ForbiddenRegion {
 
         //Preconfition : c is inside the forbidden Region
         //if (f.isPoint()) if (!segInsideForbidden(f.point())) {System.out.println("Error precondition in DistLeqIC"); System.exit(-1);};
-        if (stp.debug) {
+        if (stp.opt.debug) {
             if (!insideForbidden(f.pointMin())) {System.out.println("Error precondition pointMin in DistLeqIC"); System.exit(-1);};
             if (!insideForbidden(f.pointMax())) {System.out.println("Error precondition pointMax in DistLeqIC"); System.exit(-1);};
         }
@@ -136,12 +136,12 @@ public class DistLeqIC extends ForbiddenRegion {
         if (min) { /*line 8*/
             if ((norm>D) || (f_min_d+s1_t_d>=o2_x_d_lb+s2_t_d-s1_l_d)) /*line 9*/ {
                 int result=plus_infinity;
-                if (stp.debug) {if (result<f_min_d) {System.out.println("Error1 in DistLeqIC"); System.exit(-1);};}
+                if (stp.opt.debug) {if (result<f_min_d) {System.out.println("Error1 in DistLeqIC"); System.exit(-1);};}
                 return plus_infinity; /*line 10:return +infinity*/
             }
             else    {
                 int result=((int) Math.ceil(o2_x_d_lb+s1_t_d-s1_l_d-term)) - 1 - s1_t_d; /*line 12*/
-                if (stp.debug) {if (result<f_min_d) {System.out.println("Error2 in DistLeqIC"); System.exit(-1);};}
+                if (stp.opt.debug) {if (result<f_min_d) {System.out.println("Error2 in DistLeqIC"); System.exit(-1);};}
                 return ((int) Math.ceil(o2_x_d_lb+s1_t_d-s1_l_d-term)) - 1 - s1_t_d; /*line 12*/
             }
         }
@@ -160,7 +160,7 @@ public class DistLeqIC extends ForbiddenRegion {
                 int r=1;
                 for (int j=0; j<q; j++) r*=Math.abs(m.getCoord(i));
                 sum+=r;
-                if (stp.debug) {if (sum<0) {System.out.println("DestLeqIC:q_sum():double limit reached"); System.exit(-1);}}
+                if (stp.opt.debug) {if (sum<0) {System.out.println("DestLeqIC:q_sum():double limit reached"); System.exit(-1);}}
                 
             }
         }
@@ -178,7 +178,7 @@ public class DistLeqIC extends ForbiddenRegion {
                 double r=1;
                 for (int j=0; j<q; j++) r*=Math.abs(m[i]);
                 sum+=r;
-                if (stp.debug) {if (sum<0) {System.out.println("DestLeqIC:q_sum():double limit reached"); System.exit(-1);}}
+                if (stp.opt.debug) {if (sum<0) {System.out.println("DestLeqIC:q_sum():double limit reached"); System.exit(-1);}}
 
             }
         }
@@ -396,19 +396,19 @@ public class DistLeqIC extends ForbiddenRegion {
 
 
     public boolean segInsideForbidden(Point c0, Point c1) {
-         if (stp.debug) System.out.println("/*debug*/segInsideForbiden(c0="+c0+",c1="+c1+")");
+         if (stp.opt.debug) System.out.println("/*debug*/segInsideForbiden(c0="+c0+",c1="+c1+")");
         if (DVar!=null) D=DVar.getSup();
 
          if ((!insideForbidden(c0)) || (!insideForbidden(c1))) {
-             if (stp.debug) System.out.println("/*debug*/segInsideForbiden returns "+false);
+             if (stp.opt.debug) System.out.println("/*debug*/segInsideForbiden returns "+false);
              return false;
          }
         
         //Does the order of c0, c1 matter?
         double[] beta=PiecesOfLin(c0,c1);
-        if (stp.debug) System.out.print("/*debug*/segInsideForbiden: beta["+beta.length+"]=[");
-        if (stp.debug) { for (int ind=0; ind<beta.length;ind++) { System.out.print(beta[ind]+" ");  }; }
-        if (stp.debug) { System.out.println("]"); }
+        if (stp.opt.debug) System.out.print("/*debug*/segInsideForbiden: beta["+beta.length+"]=[");
+        if (stp.opt.debug) { for (int ind=0; ind<beta.length;ind++) { System.out.print(beta[ind]+" ");  }; }
+        if (stp.opt.debug) { System.out.println("]"); }
 
 //        double[] beta2=PiecesOfLin(c1,c0);
 //        double[] beta = new double[beta1.length+beta2.length-2];
@@ -472,13 +472,13 @@ public class DistLeqIC extends ForbiddenRegion {
                     }
                 }
             } //end of the 'for i'; a and b are computed
-            if (stp.debug) System.out.println("/*debug*/segInsideForbidden(): a="+a+" b="+b);
+            if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden(): a="+a+" b="+b);
             int num = 0; for (int i=0; i<k; i++) num+=a.getCoord(i)*b.getCoord(i);
             int den = 0; for (int i=0; i<k; i++) den+=a.getCoord(i)*a.getCoord(i);
             double beta_star;
             double beta_j=beta[j];
             double beta_j_plus_1=beta[j+1];
-            if (stp.debug) System.out.println("/*debug*/segInsideForbidden(): num="+num+", den="+den+", beta_j="+beta_j+", beta_j_plus_1="+beta_j_plus_1);                            
+            if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden(): num="+num+", den="+den+", beta_j="+beta_j+", beta_j_plus_1="+beta_j_plus_1);
 
             if (den!=0) {
                 beta_star = -(((double)num)/((double)den));
@@ -486,40 +486,40 @@ public class DistLeqIC extends ForbiddenRegion {
             else {
                 beta_star=beta_j_plus_1+1.0;
             }
-            if (stp.debug) System.out.println("/*debug*/segInsideForbidden(): beta_star="+beta_star);                            
+            if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden(): beta_star="+beta_star);
 
             //System.out.println("beta_star:"+beta_star);
             //System.out.println("b_j:"+beta[j]+" b_{j+1}:"+beta[j+1]);
 
             
 //            if ((beta_star>=beta_j) && (beta_star<=beta_j_plus_1)) {
-            if (stp.debug) System.out.println("/*debug*/segInsideForbidden(): beta_star:"+beta_star+" >= beta_j:"+beta_j+":"+(beta_j-beta_star<=epsilon));
-            if (stp.debug) System.out.println("/*debug*/segInsideForbidden(): beta_star:"+beta_star+" <= beta_j_plus_1:"+beta_j_plus_1+":"+(beta_star-beta_j_plus_1<=epsilon));
+            if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden(): beta_star:"+beta_star+" >= beta_j:"+beta_j+":"+(beta_j-beta_star<=epsilon));
+            if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden(): beta_star:"+beta_star+" <= beta_j_plus_1:"+beta_j_plus_1+":"+(beta_star-beta_j_plus_1<=epsilon));
 
             if ((beta_j-beta_star<=epsilon) && (beta_star-beta_j_plus_1<=epsilon)) {
                 double[] V_beta_star = vOf(beta_star,c0,c1,beta_j,beta_j_plus_1);
                 //for (int i=0; i<k; i++) V_beta_star.setCoord(i,((int) (mult(((double)a.getCoord(i)),beta_star)+b.getCoord(i))));
-                if (stp.debug) System.out.print("/*debug*/segInsideForbidden(): norm(V_beta_star:[");
-                if (stp.debug) { for (int ind=0; ind<V_beta_star.length;ind++) { System.out.print(V_beta_star[ind]+" ");  }; }                
-                if (stp.debug) System.out.println("],2)="+norm(V_beta_star,2)+"<=D:"+D);
+                if (stp.opt.debug) System.out.print("/*debug*/segInsideForbidden(): norm(V_beta_star:[");
+                if (stp.opt.debug) { for (int ind=0; ind<V_beta_star.length;ind++) { System.out.print(V_beta_star[ind]+" ");  }; }
+                if (stp.opt.debug) System.out.println("],2)="+norm(V_beta_star,2)+"<=D:"+D);
 
                 if (norm(V_beta_star,2)<=D) {
-                    if (stp.debug) System.out.println("/*debug*/segInsideForbidden() returns false");
+                    if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden() returns false");
                     return false;
                 }
             }
             else {
                 double[] V_beta_j_plus_1 = vOf(beta_j_plus_1,c0,c1,beta_j,beta_j_plus_1);
                 //for (int i=0; i<k; i++) V_beta_j_plus_1.setCoord(i,((int) (mult(((double)a.getCoord(i)),beta_j_plus_1)+b.getCoord(i))));
-                if (stp.debug) System.out.println("/*debug*/segInsideForbidden(): beta_j_plus_1:"+beta_j_plus_1+";norm(V_beta_j_plus_1:["+V_beta_j_plus_1[0]+","+V_beta_j_plus_1[1]+"],2)="+norm(V_beta_j_plus_1,2)+"<=D:"+D);
+                if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden(): beta_j_plus_1:"+beta_j_plus_1+";norm(V_beta_j_plus_1:["+V_beta_j_plus_1[0]+","+V_beta_j_plus_1[1]+"],2)="+norm(V_beta_j_plus_1,2)+"<=D:"+D);
 
                 if (norm(V_beta_j_plus_1,2)<=D) {
-                    if (stp.debug) System.out.println("/*debug*/segInsideForbidden() returns false");
+                    if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden() returns false");
                     return false;
                 }
             }
         }
-        if (stp.debug) System.out.println("/*debug*/segInsideForbidden() returns true");
+        if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden() returns true");
 
         return true;
     }
@@ -608,7 +608,7 @@ public class DistLeqIC extends ForbiddenRegion {
     public void updateDistance(int k) throws ContradictionException {
         if (DVar!=null) {
                 DVar.updateInf(EvaluateMinimumDistance(k),0);
-                if (stp.debug) { System.out.println("DistLeqIC:"+this+" updateDistance:["+DVar.getInf()+","+DVar.getSup()+"]"); };            
+                if (stp.opt.debug) { System.out.println("DistLeqIC:"+this+" updateDistance:["+DVar.getInf()+","+DVar.getSup()+"]"); };
                 if ((DVar.getInf()>DVar.getSup()) || (DVar.getSup()<DVar.getInf())) throw new ContradictionException(null,0);
         }
     }

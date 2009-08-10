@@ -4,11 +4,12 @@ import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.Geost_Constraint;
+import choco.cp.solver.constraints.global.geost.externalConstraints.DistGeq;
 import choco.cp.solver.constraints.global.geost.externalConstraints.DistLeq;
 import choco.cp.solver.constraints.global.geost.externalConstraints.ExternalConstraint;
 import choco.cp.solver.constraints.global.geost.externalConstraints.NonOverlapping;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Obj;
-import choco.kernel.common.util.objects.Pair;
+import choco.kernel.model.constraints.geost.GeostOptions;
 import choco.kernel.model.constraints.geost.externalConstraints.DistGeqModel;
 import choco.kernel.model.constraints.geost.externalConstraints.DistLeqModel;
 import choco.kernel.model.constraints.geost.externalConstraints.IExternalConstraint;
@@ -20,7 +21,6 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Vector;
 
@@ -50,12 +50,8 @@ public class GeostManager extends IntConstraintManager {
                 Vector<IExternalConstraint> ectr = (Vector<IExternalConstraint>)params[2];
                 Vector<GeostObject> vgo = (Vector<GeostObject>)params[3];
                 Vector<int[]> ctrlVs = (Vector<int[]>)params[4];
-                
-                boolean memo_active = ((Vector<Boolean>)params[5]).get(0);
-                HashMap<Pair<Integer,Integer>, Boolean>  included = (HashMap<Pair<Integer,Integer>, Boolean>)params[6];
-                Long a = (Long) params[7];
-                Long b = (Long) params[8];
-                boolean increment = ((Vector<Boolean>)params[9]).get(0);
+                GeostOptions opt = (GeostOptions) params[5];
+                if (opt==null) { opt=new GeostOptions(); }
 
                 //Transformation of Geost Objects (model) to interval geost object (constraint)
                 Vector<Obj> vo = new Vector<Obj>(vgo.size());
@@ -87,9 +83,9 @@ public class GeostManager extends IntConstraintManager {
                     if (iectr instanceof DistGeqModel) {
                         DistGeqModel dgm = (DistGeqModel) iectr;
                         if (dgm.hasDistanceVar())
-                            ectrs.add(new DistLeq(dgm.getEctrID(), dgm.getDim(), dgm.getObjectIds(), dgm.D, dgm.q, solver.getVar(dgm.getDistanceVar() )));
+                            ectrs.add(new DistGeq(dgm.getEctrID(), dgm.getDim(), dgm.getObjectIds(), dgm.D, dgm.q, solver.getVar(dgm.getDistanceVar() )));
                         else
-                            ectrs.add(new DistLeq(dgm.getEctrID(), dgm.getDim(), dgm.getObjectIds(), dgm.D, dgm.q));
+                            ectrs.add(new DistGeq(dgm.getEctrID(), dgm.getDim(), dgm.getObjectIds(), dgm.D, dgm.q));
                     }
 
                     if (iectr instanceof NonOverlappingModel) {
@@ -101,9 +97,9 @@ public class GeostManager extends IntConstraintManager {
 
 
                 if (ctrlVs == null) {
-                    return new Geost_Constraint(solver.getVar((IntegerVariable[])variables)/*solver variables*/, dim, vo, shiftedBoxes, ectrs,false, included,a,b);
+                    return new Geost_Constraint(solver.getVar((IntegerVariable[])variables)/*solver variables*/, dim, vo, shiftedBoxes, ectrs,false, opt.included);
                 } else {
-                    return new Geost_Constraint(solver.getVar((IntegerVariable[])variables), dim, vo, shiftedBoxes, ectrs, ctrlVs,memo_active, included,a,b,increment);
+                    return new Geost_Constraint(solver.getVar((IntegerVariable[])variables), dim, vo, shiftedBoxes, ectrs, ctrlVs,opt.memoisation, opt.included,opt.increment);
                 }
                         }
                     }

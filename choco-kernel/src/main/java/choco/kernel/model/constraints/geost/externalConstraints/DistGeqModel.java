@@ -19,27 +19,22 @@ public class DistGeqModel extends IExternalConstraint {
 
 	public DistGeqModel(int ectrID, int[] dimensions, int[] objectIdentifiers, int D_, int q_)
 	{
-        super(ectrID, dimensions, null);
-        int[] oids = new int[1];
-        oids[0] = objectIdentifiers[0];
-
-        setObjectIds(oids); //Prune only the first object!
-        D=D_;
-        o1=objectIdentifiers[0];
-        o2=objectIdentifiers[1];
-        q=q_;
+        this(ectrID,dimensions,objectIdentifiers,D_,q_,null);
 	}
 
     public DistGeqModel(int ectrID, int[] dimensions, int[] objectIdentifiers, int D_, int q_, IntegerVariable var)
     {
         super(ectrID, dimensions, null);
-        int[] oids = new int[1];
+        int[] oids = new int[2];
         oids[0] = objectIdentifiers[0];
+        oids[1] = objectIdentifiers[1];
+
         setObjectIds(oids); //Prune only the first object!
         D=D_;
         o1=objectIdentifiers[0];
         o2=objectIdentifiers[1];
         q=q_;
+        setObjectIds(oids);
         modelDVar=var;
     }
 
