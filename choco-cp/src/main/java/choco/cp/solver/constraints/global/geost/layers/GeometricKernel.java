@@ -7,9 +7,9 @@ import choco.cp.solver.constraints.global.geost.geometricPrim.Obj;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Point;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Region;
 import choco.cp.solver.constraints.global.geost.internalConstraints.*;
+import choco.kernel.common.util.objects.Pair;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.solver.ContradictionException;
-import com.sun.tools.javac.util.Pair;
 
 import java.util.HashMap;
 import java.util.Vector;
@@ -3556,7 +3556,7 @@ public class GeometricKernel {
     Pair<Integer,Integer> DealWithSucc(int d, int last_dprune, int last_diff, int diff_counter, Point c, Point initial_c, int k) {
         int diff=-1;
         if (stp.deltasucc) {
-            //DŽtecter la dim. la plus importante qui a ŽtŽ modifŽe.
+            //Dï¿½tecter la dim. la plus importante qui a ï¿½tï¿½ modifï¿½e.
             int d_prune=d;
             int d_current=0;
             //select the most important dim. that has changed (store it in d_current)

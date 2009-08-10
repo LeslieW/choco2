@@ -24,6 +24,7 @@ package choco;
 
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.objects.Pair;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.*;
@@ -53,7 +54,6 @@ import choco.kernel.model.variables.tree.TreeParametersObject;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.global.scheduling.RscData;
 import choco.kernel.solver.constraints.integer.extension.*;
-import com.sun.tools.javac.util.Pair;
 import gnu.trove.TIntArrayList;
 
 import static java.lang.System.arraycopy;

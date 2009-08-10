@@ -8,6 +8,7 @@ import choco.cp.solver.constraints.global.geost.externalConstraints.DistLeq;
 import choco.cp.solver.constraints.global.geost.externalConstraints.ExternalConstraint;
 import choco.cp.solver.constraints.global.geost.externalConstraints.NonOverlapping;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Obj;
+import choco.kernel.common.util.objects.Pair;
 import choco.kernel.model.constraints.geost.externalConstraints.DistGeqModel;
 import choco.kernel.model.constraints.geost.externalConstraints.DistLeqModel;
 import choco.kernel.model.constraints.geost.externalConstraints.IExternalConstraint;
@@ -18,7 +19,6 @@ import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
-import com.sun.tools.javac.util.Pair;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -105,8 +105,8 @@ public class GeostManager extends IntConstraintManager {
                 } else {
                     return new Geost_Constraint(solver.getVar((IntegerVariable[])variables), dim, vo, shiftedBoxes, ectrs, ctrlVs,memo_active, included,a,b,increment);
                 }
-            }
-        }
+                        }
+                    }
         if (Choco.DEBUG) {
             System.err.println("Could not found implementation for Geost !");
         }

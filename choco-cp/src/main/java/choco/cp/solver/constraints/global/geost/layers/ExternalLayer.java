@@ -11,8 +11,8 @@ import choco.cp.solver.constraints.global.geost.frames.NonOverlappingFrame;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Obj;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Region;
 import choco.cp.solver.constraints.global.geost.internalConstraints.*;
+import choco.kernel.common.util.objects.Pair;
 import choco.kernel.model.variables.geost.ShiftedBox;
-import com.sun.tools.javac.util.Pair;
 
 import java.util.Iterator;
 import java.util.Vector;
