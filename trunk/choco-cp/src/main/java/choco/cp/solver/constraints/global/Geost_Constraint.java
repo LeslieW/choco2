@@ -11,13 +11,13 @@ import choco.cp.solver.constraints.global.geost.layers.GeometricKernel;
 import choco.cp.solver.constraints.global.geost.layers.IntermediateLayer;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.objects.Pair;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import com.sun.tools.javac.util.Pair;
 
 import java.util.HashMap;
 import java.util.Vector;
