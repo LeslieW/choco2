@@ -22,21 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
-import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.Geost_Constraint;
-import choco.cp.solver.constraints.global.geost.externalConstraints.ExternalConstraint;
-import choco.cp.solver.constraints.global.geost.geometricPrim.Obj;
 import choco.kernel.model.variables.Variable;
-import choco.kernel.model.variables.geost.GeostObject;
-import choco.kernel.model.variables.geost.ShiftedBox;
-import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 
 import java.util.HashSet;
-import java.util.Vector;
 
 /**
  * Created by IntelliJ IDEA.
@@ -56,7 +47,7 @@ public class GeostManager extends IntConstraintManager {
      * @return
      */
     public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
-        if (solver instanceof CPSolver) {
+        /*if (solver instanceof CPSolver) {
             if(parameters instanceof Object[]){
                 Object[] params = (Object[])parameters;
                 int dim = (Integer)params[0];
@@ -84,7 +75,7 @@ public class GeostManager extends IntConstraintManager {
         }
         if (Choco.DEBUG) {
             LOGGER.severe("Could not found implementation for Geost !");
-        }
+        }*/
         return null;
     }
 

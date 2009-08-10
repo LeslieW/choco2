@@ -123,7 +123,7 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
     }
 
     public void addConstraint(Constraint c) {
-        if (variables == null) {
+        if (variables.length == 0) {
             constraints.add(c);
         } else {
             for(Variable v : variables){
@@ -133,7 +133,7 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
     }
 
     public void removeConstraint(Constraint c) {
-        if (variables == null) {
+        if (variables.length == 0) {
             constraints.remove(c);
         } else {
             for(Variable v : variables){
@@ -146,7 +146,7 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
     public Iterator<Constraint> getConstraintIterator() {
         return new Iterator<Constraint>(){
             int n = 0;
-            Iterator<Constraint> it = (variables !=null? variables[n].getConstraintIterator():constraints.iterator());
+            Iterator<Constraint> it = (variables.length > 0? variables[n].getConstraintIterator():constraints.iterator());
 
             public boolean hasNext() {
                 if (it == null) {
@@ -174,7 +174,7 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
     public Iterator<Constraint> getConstraintIterator(final Model m) {
         return new Iterator<Constraint>(){
             int n = 0;
-            Iterator<Constraint> it = (variables !=null? variables[n].getConstraintIterator(m):constraints.iterator());
+            Iterator<Constraint> it = (variables.length > 0? variables[n].getConstraintIterator(m):constraints.iterator());
             Constraint c = null;
 
             public boolean hasNext() {
@@ -227,7 +227,7 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
 
     @Deprecated
     public int getNbConstraint() {
-        if (variables == null) {
+        if (variables.length == 0) {
             return constraints.size();
         } else {
             int sum = 0;
@@ -240,7 +240,7 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
 
     public int getNbConstraint(Model m) {
         int sum = 0;
-        if (variables == null) {
+        if (variables.length == 0) {
             for(Constraint c: constraints){
                 if(Boolean.TRUE.equals(m.contains(c))){
                     sum++;
@@ -312,7 +312,7 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
      * @return a readable string representation of the object
      */
     public String pretty() {
-        if (variables == null) {
+        if (variables.length == 0) {
             return name;
         } else {
             StringBuffer st = new StringBuffer();

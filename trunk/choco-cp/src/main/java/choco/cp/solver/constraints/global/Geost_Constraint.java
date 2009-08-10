@@ -1,4 +1,7 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
+/*
+
+*/
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -20,6 +23,7 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
+/*
 package choco.cp.solver.constraints.global;
 
 
@@ -55,7 +59,8 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
     private int greedyMode = 0;
     Vector<int[]> ctrlVs ;
 
-	/**
+	*/
+/**
 	 * Creates a geost constraint with the given parameters.
 	 * @param vars Array of Variables for choco
 	 * @param k Dimension of the problem we are working with
@@ -64,6 +69,7 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 	 * @param ectr A vector containing the External Constraints in our problem
 	 * @param ctrlVs A list of controlling vectors used in the greedy mode
 	 */
+/*
 
 
 	public Geost_Constraint(IntDomainVar[] vars, int k, Vector<Obj> objects, Vector<ShiftedBox> shiftedBoxes, Vector<ExternalConstraint> ectr, Vector<int[]> ctrlVs)
@@ -92,7 +98,8 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 	}
 
 
-	/**
+	*/
+/**
 	 * Creates a geost constraint with the given parameters.
 	 * @param vars Array of Variables for choco
 	 * @param k Dimension of the problem we are working with
@@ -100,6 +107,7 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 	 * @param shiftedBoxes A vector containing the shifted boxes
 	 * @param ectr A vector containing the External Constraints in our problem
 	 */
+/*
 
 
 	public Geost_Constraint(IntDomainVar[] vars, int k, Vector<Obj> objects, Vector<ShiftedBox> shiftedBoxes, Vector<ExternalConstraint> ectr)
@@ -248,3 +256,4 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 
 
 }
+*/

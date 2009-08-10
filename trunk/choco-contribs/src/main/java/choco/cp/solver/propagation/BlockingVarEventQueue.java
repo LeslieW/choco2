@@ -45,7 +45,7 @@ import java.util.Queue;
 * to
 *   private int eventQueueType = EventQueueFactory.BLOCKING;
 *
-* - Run QueenTest#test9()
+* - Run DisTest class
 * 
 */
 public class BlockingVarEventQueue implements VarEventQueue {
