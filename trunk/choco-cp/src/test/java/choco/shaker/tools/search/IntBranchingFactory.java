@@ -24,7 +24,7 @@ package choco.shaker.tools.search;
 
 import choco.cp.solver.search.integer.branching.*;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.branch.AbstractIntBranching;
+import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
@@ -98,7 +98,7 @@ public class IntBranchingFactory {
      * @param r random
      * @return value selector
      */
-    public AbstractIntBranching make(Random r, Solver s, IntDomainVar[] vars){
+    public AbstractIntBranchingStrategy make(Random r, Solver s, IntDomainVar[] vars){
         return make(any(r), r, s, vars);
     }
 
@@ -108,9 +108,9 @@ public class IntBranchingFactory {
      * @param r random
      * @return value selector
      */
-    public AbstractIntBranching make(V v, Random r, Solver s, IntDomainVar[] vars) {
+    public AbstractIntBranchingStrategy make(V v, Random r, Solver s, IntDomainVar[] vars) {
         //Otherwise, select a new val selector
-        AbstractIntBranching ib = null;
+        AbstractIntBranchingStrategy ib = null;
 
         switch (v) {
             case ASSIGNORFORBID:

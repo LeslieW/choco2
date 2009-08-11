@@ -31,6 +31,7 @@ import choco.kernel.memory.IStateVector;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.*;
@@ -571,7 +572,7 @@ public class CostRegular extends AbstractLargeIntSConstraint
             int pgcP = s.pgcP.get();
             if(pgcP < cVar.getSup())
             {
-                cVar.updateSup(pgcP,-1/*cIndices[myVars.length]*/);
+                cVar.updateSup(pgcP,VarEvent.domOverWDegIdx(cIndices[myVars.length]));
             }
         }
         for (State s : layer[myVars.length+1].values())
@@ -579,7 +580,7 @@ public class CostRegular extends AbstractLargeIntSConstraint
             int pccS = s.pccS.get();
             if(pccS > cVar.getInf())
             {
-                cVar.updateInf(pccS,-1/*cIndices[myVars.length]*/);
+                cVar.updateInf(pccS, VarEvent.domOverWDegIdx(cIndices[myVars.length]));
             }
         }
 

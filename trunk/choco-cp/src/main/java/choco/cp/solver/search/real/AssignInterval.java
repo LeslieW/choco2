@@ -24,7 +24,7 @@ package choco.cp.solver.search.real;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
-import choco.kernel.solver.branch.AbstractIntBranching;
+import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.real.RealVarSelector;
@@ -35,7 +35,7 @@ import choco.kernel.solver.variables.real.RealVar;
  * A binary branching assigning interval to subinterval.
  */
 
-public final class AssignInterval extends AbstractIntBranching{
+public final class AssignInterval extends AbstractIntBranchingStrategy {
 
 	protected RealVarSelector varSelector;
 	protected ValIterator valIterator;

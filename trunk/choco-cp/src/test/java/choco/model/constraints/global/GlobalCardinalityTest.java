@@ -40,6 +40,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
+import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.Assert;
 import static org.junit.Assert.*;
@@ -187,9 +188,9 @@ public class GlobalCardinalityTest {
 		CPSolver s = new CPSolver();
 		s.read(pb);
 		try {
-			s.getVar(v4).removeVal(2,-1);
-			s.getVar(v5).removeVal(2,-1);
-			s.getVar(v6).removeVal(2,-1);
+			s.getVar(v4).removeVal(2, VarEvent.NOCAUSE);
+			s.getVar(v5).removeVal(2, VarEvent.NOCAUSE);
+			s.getVar(v6).removeVal(2, VarEvent.NOCAUSE);
 			s.propagate();
 			assertTrue(s.getVar(v1).isInstantiatedTo(2));
 			assertTrue(s.getVar(v2).isInstantiatedTo(2));
@@ -218,9 +219,9 @@ public class GlobalCardinalityTest {
 		CPSolver s = new CPSolver();
 		s.read(pb);
 		try {
-			s.getVar(v4).removeVal(2,-1);
-			s.getVar(v5).removeVal(2,-1);
-			s.getVar(v6).removeVal(2,-1);
+			s.getVar(v4).removeVal(2, VarEvent.NOCAUSE);
+			s.getVar(v5).removeVal(2, VarEvent.NOCAUSE);
+			s.getVar(v6).removeVal(2, VarEvent.NOCAUSE);
 			s.propagate();
 		} catch (ContradictionException e) {
 			assertTrue(true);

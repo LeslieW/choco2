@@ -3,6 +3,7 @@ package choco.cp.solver.constraints.integer.bool.sat;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TLongIntHashMap;
 
@@ -193,10 +194,10 @@ public class  ClauseStore extends AbstractLargeIntSConstraint {
 
 	public void propagateUnitClause() throws ContradictionException {
 		for (IntDomainVar v : instToOne) {
-			v.instantiate(1, -1);
+			v.instantiate(1, VarEvent.NOCAUSE);
 		}
 		for (IntDomainVar v : instToZero) {
-			v.instantiate(0, -1);
+			v.instantiate(0, VarEvent.NOCAUSE);
 		}
 	}
 

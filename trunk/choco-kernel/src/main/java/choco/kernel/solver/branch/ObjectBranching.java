@@ -28,7 +28,7 @@ package choco.kernel.solver.branch;
  * ObjectBranching objects are specific branching objects where each branch is labeled with an Object.
  * This is typically useful for palm control objects (where the label happens to be a List of Constraint).
  */
-public interface ObjectBranching extends Branching {
+public interface ObjectBranching extends BranchingStrategy {
   /**
    * Computes decisions that can be taken on the specified item by the strategy.
    *

@@ -24,12 +24,6 @@ package choco.solver.search;
 
 import static choco.Choco.allDifferent;
 import static choco.Choco.makeIntVarArray;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
@@ -38,6 +32,10 @@ import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.limit.Limit;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author Arnaud Malapert
@@ -86,7 +84,7 @@ public class LimitTest {
 
 	@Test
 	public void testFailTimeLimit() {
-		solver.setFailLimit(SIZE/10);
+        solver.setFailLimit(SIZE/10);
 		check(Limit.FAIL);
 	}
 

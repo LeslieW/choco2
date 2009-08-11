@@ -26,7 +26,6 @@ import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.branch.AbstractBinIntBranching;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.SConstraintType;
@@ -241,9 +240,8 @@ public class DomOverWDegBinBranching extends AbstractAssignOrForbidBranching {
 
 
 	public void contradictionOccured(ContradictionException e) {
-		Object cause = e.getContradictionCause();
-		if (cause != null
-				&& e.getContradictionType() == ContradictionException.CONSTRAINT) {
+		Object cause = e.getDomOverDegContradictionCause();
+		if (cause != null) {
 			final AbstractSConstraint causeCstr = (AbstractSConstraint) cause;
 			if (SConstraintType.INTEGER.equals(causeCstr.getConstraintType())) {
 				try {

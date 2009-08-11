@@ -37,6 +37,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
+import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.shaker.tools.factory.CPModelFactory;
 import choco.shaker.tools.factory.MetaConstraintFactory;
@@ -451,7 +452,7 @@ public class ConstraintTest {
         while(itv.hasNext()){
             v = itv.next();
             if(!v.canBeInstantiatedTo(values[vars.get(v)])){
-                throw new ContradictionException("stillInstanciable", -1);
+                throw new ContradictionException("stillInstanciable", ContradictionException.Type.UNKNOWN);
             }
         }
     }
@@ -485,14 +486,14 @@ public class ConstraintTest {
         switch (event) {
             case 0: // INSTANTIATION
                 if(print)LOGGER.info(var.getName()+" = "+value);
-                var.instantiate(value, -1);
+                var.instantiate(value, VarEvent.NOCAUSE);
                 break;
             case 1: // LOWER BOUND
                 if(value > var.getInf()){
                     v = value - var.getInf();
                     v = value - r.nextInt(v);
                     if(print)LOGGER.info(var.getName()+" >= "+v);
-                    var.updateInf(v, -1);
+                    var.updateInf(v, VarEvent.NOCAUSE);
                 }
                 break;
             case 2: // UPPER BOUND
@@ -500,7 +501,7 @@ public class ConstraintTest {
                     v = var.getSup() - value;
                     v = value + r.nextInt(v);
                     if(print)LOGGER.info(var.getName()+" <= "+v);
-                    var.updateSup(v, -1);
+                    var.updateSup(v, VarEvent.NOCAUSE);
                 }
                 break;
             case 3: // REMOVAL
@@ -510,7 +511,7 @@ public class ConstraintTest {
                         v = getRandomValue(var, r);
                     }
                     if(print)LOGGER.info(var.getName()+" != "+v);
-                    var.removeVal(v, -1);
+                    var.removeVal(v, VarEvent.NOCAUSE);
                 }
                 break;
         }

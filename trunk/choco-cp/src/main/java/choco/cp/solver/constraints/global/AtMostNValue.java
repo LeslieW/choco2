@@ -26,6 +26,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.objects.IntList;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -107,8 +108,8 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
 		int newInf = allowedDomain.nextSetBit(0) + offset;
 		int newSup = allowedDomain.length() + offset;
 		//LOGGER.log(Level.INFO, "{0} updateInf {1} of {2}", new Object[]{db, newInf, v});
-		v.updateInf(newInf, -1);
-		v.updateSup(newSup, -1);
+		v.updateInf(newInf, VarEvent.NOCAUSE);
+		v.updateSup(newSup, VarEvent.NOCAUSE);
 		if (v.hasEnumeratedDomain()) {
 			IntDomain dom = v.getDomain();
 			DisposableIntIterator it = dom.getIterator();
@@ -117,7 +118,7 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
                     int val = it.next();
                     if (!allowedDomain.get(val - offset)) {
                         //LOGGER.log(Level.INFO, "2 remove value {0} from {1}", new Object[]{val, v});
-                        v.removeVal(val, -1);
+                        v.removeVal(val, VarEvent.NOCAUSE);
                     }
                 }
             }finally {

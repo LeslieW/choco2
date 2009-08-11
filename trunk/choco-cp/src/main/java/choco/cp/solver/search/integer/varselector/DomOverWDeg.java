@@ -102,8 +102,8 @@ public class DomOverWDeg extends DoubleHeuristicIntVarSelector implements Propag
 	}
 
 	public void contradictionOccured(ContradictionException e) {
-		Object cause = e.getContradictionCause();
-		if (cause != null && e.getContradictionType() == ContradictionException.CONSTRAINT) {
+		Object cause = e.getDomOverDegContradictionCause();
+		if (cause != null) {
 			reuseCstr = (AbstractSConstraint) cause;
             if(SConstraintType.INTEGER.equals(reuseCstr.getConstraintType())){
 			    ((DomOverWDegConstraintExtension) reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure++;

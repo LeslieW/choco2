@@ -44,6 +44,7 @@ import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import gnu.trove.TIntObjectHashMap;
@@ -768,7 +769,7 @@ public class PreProcessCPSolver extends CPSolver {
 						boolean cont = false;
 						worldPush();
 						try {
-							v.instantiate(val, -1);
+							v.instantiate(val, VarEvent.NOCAUSE);
 							propagate();
 						} catch (ContradictionException e) {
 							cont = true;

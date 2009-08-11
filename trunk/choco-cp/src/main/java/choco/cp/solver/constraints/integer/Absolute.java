@@ -27,6 +27,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
+import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -139,7 +140,7 @@ public class Absolute extends AbstractBinIntSConstraint {
 			if (!v1.getDomain().isEnumerated()
 					&& v1.getInf() > -v0.getInf() /* v0.getInf() > 0 by definition */
 					&& v1.getInf() < v0.getInf() /* v0.getInf() > cste by fefinition */) {
-				v1.updateInf(v0.getInf(), -1);
+				v1.updateInf(v0.getInf(), VarEvent.domOverWDegIdx(cIdx1));
 			} else if (v1.getInf() >= 0) {
 				v0.updateInf(v1.getInf(), cIdx0);
 				v0.updateSup(v1.getSup(), cIdx0);
@@ -170,7 +171,7 @@ public class Absolute extends AbstractBinIntSConstraint {
 				// Y.sup cannot remain in the gap (-(X.inf) .. X.inf)
 				// -> finish to cross this gap before calling back awakeOnSup
 				//    (because the cause is set to -1)
-				v1.updateSup(-v0.getInf(), -1);
+				v1.updateSup(-v0.getInf(), VarEvent.domOverWDegIdx(cIdx1));
 			} else if (v1.getInf() >= 0) {
 				v0.updateSup(v1.getSup(), cIdx0);
 				v0.updateInf(v1.getInf(), cIdx0);

@@ -30,6 +30,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public class Occurrence extends AbstractLargeIntSConstraint {
@@ -156,10 +157,12 @@ public class Occurrence extends AbstractLargeIntSConstraint {
         if (constrainOnInfNumber) {
             vars[nbListVars].updateSup(nbPossible.get(), cIndices[nbListVars]);
             if (vars[nbListVars].getInf() == nbPossible.get()) {
-                for (IntDomainVar aRelevantVar : relevantVar) {
+                for(int i = 0; i < relevantVar.length; i++){
+                //for (IntDomainVar aRelevantVar : relevantVar) {
+                    IntDomainVar aRelevantVar = relevantVar[i];
                     if (aRelevantVar.getDomain().contains(cste) && !aRelevantVar.isInstantiated()) {
                         //nbSure.add(1); // must be dealed by the event listener not here !!
-                        aRelevantVar.instantiate(cste, -1 /*cIndices[i]*/);
+                        aRelevantVar.instantiate(cste, VarEvent.domOverWDegIdx(cIndices[i]) /*cIndices[i]*/);
                     }
                 }
             }
@@ -170,10 +173,12 @@ public class Occurrence extends AbstractLargeIntSConstraint {
         if (constrainOnSupNumber) {
             vars[nbListVars].updateInf(nbSure.get(), cIndices[nbListVars]);
             if (vars[nbListVars].getSup() == nbSure.get()) {
-                for (IntDomainVar aRelevantVar : relevantVar) {
+                for(int i = 0; i< relevantVar.length; i++){
+//                for (IntDomainVar aRelevantVar : relevantVar) {
+                    IntDomainVar aRelevantVar = relevantVar[i];
                     if (aRelevantVar.getDomain().contains(cste) && !aRelevantVar.isInstantiated()) {
                         //nbPossible.add(-1);
-                        aRelevantVar.removeVal(cste, -1 /*cIndices[i]*/);
+                        aRelevantVar.removeVal(cste, VarEvent.domOverWDegIdx(cIndices[i]) /*cIndices[i]*/);
                     }
                 }
             }

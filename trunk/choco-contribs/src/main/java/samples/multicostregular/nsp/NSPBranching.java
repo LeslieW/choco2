@@ -1,7 +1,7 @@
 package samples.multicostregular.nsp;
 
-import choco.kernel.solver.branch.AbstractLargeIntBranching;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.branch.AbstractLargeIntBranchingStrategy;
 import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -11,7 +11,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date: Dec 9, 2008
  * Time: 1:03:46 PM
  */
-public class NSPBranching extends AbstractLargeIntBranching {
+public class NSPBranching extends AbstractLargeIntBranchingStrategy {
 
 	NSPVarSelector varselec;
 	NSPValSelector valselec;

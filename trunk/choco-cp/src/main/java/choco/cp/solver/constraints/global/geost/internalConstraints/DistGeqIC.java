@@ -5,12 +5,13 @@ import choco.cp.solver.constraints.global.geost.Setup;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Point;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Region;
 import choco.kernel.solver.ContradictionException;
+import static choco.kernel.solver.ContradictionException.Type.UNKNOWN;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
  * Created by IntelliJ IDEA.
  * User: szampelli
- * Date: 4 fŽvr. 2009
+ * Date: 4 f?vr. 2009
  * Time: 10:11:25
  * To change this template use File | Settings | File Templates.
  */
@@ -218,7 +219,7 @@ public class DistGeqIC extends ForbiddenRegion {
         if (DVar!=null) {
                 DVar.updateSup(EvaluateMaximumDistance(k),0);
                 if (stp.opt.debug) { System.out.println("DistGeqIC:"+this+" updateDistance:["+DVar.getInf()+","+DVar.getSup()+"]"); };
-                if ((DVar.getInf()>DVar.getSup()) || (DVar.getSup()<DVar.getInf())) throw new ContradictionException(null,0);
+                if ((DVar.getInf()>DVar.getSup()) || (DVar.getSup()<DVar.getInf())) throw new ContradictionException(null, UNKNOWN);
         }
     }
 

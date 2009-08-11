@@ -35,6 +35,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.*;
@@ -408,11 +409,11 @@ public class Regular extends AbstractLargeIntSConstraint {
         if (!vars[idx].hasEnumeratedDomain()){
             StoredIndexedBipartiteSet supports = getQij(idx, vars[idx].getInf());
             if (supports.isEmpty()) {
-                vars[idx].removeVal(vars[idx].getInf(),-1);
+                vars[idx].removeVal(vars[idx].getInf(), VarEvent.domOverWDegIdx(cIndices[idx]));
             }
             supports = getQij(idx, vars[idx].getSup());
             if (supports.isEmpty()) {
-                vars[idx].removeVal(vars[idx].getSup(),-1);           
+                vars[idx].removeVal(vars[idx].getSup(),VarEvent.domOverWDegIdx(cIndices[idx]));           
             }
         }
     }

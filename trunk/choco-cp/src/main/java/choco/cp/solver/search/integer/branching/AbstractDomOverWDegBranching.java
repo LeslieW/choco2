@@ -1,16 +1,9 @@
 package choco.cp.solver.search.integer.branching;
 
-import gnu.trove.TIntArrayList;
-
-import java.util.Iterator;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.branch.AbstractLargeIntBranching;
+import choco.kernel.solver.branch.AbstractLargeIntBranchingStrategy;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.SConstraintType;
@@ -18,9 +11,15 @@ import choco.kernel.solver.propagation.PropagationEngineListener;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import gnu.trove.TIntArrayList;
+
+import java.util.Iterator;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class AbstractDomOverWDegBranching extends
-AbstractLargeIntBranching implements PropagationEngineListener, IRandomBreakTies {
+        AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomBreakTies {
 
 	//*****************************************************************//
 	//*********** computing weighted degrees and couting failures ****//
@@ -247,8 +246,8 @@ AbstractLargeIntBranching implements PropagationEngineListener, IRandomBreakTies
 	}
 
 	public void contradictionOccured(ContradictionException e) {
-		if (e.getContradictionType() == ContradictionException.CONSTRAINT && e.getContradictionCause() != null) {
-			addFailure(e.getContradictionCause());
+		if (e.getDomOverDegContradictionCause() != null) {
+			addFailure(e.getDomOverDegContradictionCause());
 		}
 	}
 

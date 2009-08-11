@@ -24,6 +24,7 @@ package choco.kernel.solver.constraints;
 
 import choco.kernel.memory.IStateBool;
 import choco.kernel.solver.ContradictionException;
+import static choco.kernel.solver.ContradictionException.Type.CONSTRAINT;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.propagation.*;
 import choco.kernel.solver.variables.Var;
@@ -268,7 +269,7 @@ public abstract class AbstractSConstraint implements Propagator {
    * @throws ContradictionException contradiction exception
    */
   public void fail() throws ContradictionException {
-    solver.getPropagationEngine().raiseContradiction(this, ContradictionException.CONSTRAINT);
+    solver.getPropagationEngine().raiseContradiction(this, CONSTRAINT);
   }
 
     /**

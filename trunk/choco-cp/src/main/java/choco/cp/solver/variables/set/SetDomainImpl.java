@@ -205,11 +205,8 @@ public final class SetDomainImpl implements SetDomain {
   // Si promotion, il faut annuler la cause
 	protected boolean _remFromEnveloppe(int x, int idx) throws ContradictionException {
 		if (kernel.contains(x)) {
-			if (idx == -1)
-        this.getSolver().getPropagationEngine().raiseContradiction(this.variable, ContradictionException.VARIABLE);
-			else
-        this.getSolver().getPropagationEngine().raiseContradiction(variable.getConstraintVector().get(idx), ContradictionException.CONSTRAINT);
-      return true; // just for compilation
+			this.getSolver().getPropagationEngine().raiseContradiction(idx, variable);
+            return true; // just for compilation
 		} else if (enveloppe.contains(x)) {
 			enveloppe.remove(x);
 			return true;
@@ -220,10 +217,7 @@ public final class SetDomainImpl implements SetDomain {
 	// Si promotion, il faut annuler la cause
 	protected boolean _addToKernel(int x, int idx) throws ContradictionException {
 		if (!enveloppe.contains(x)) {
-			if (idx == -1)
-        this.getSolver().getPropagationEngine().raiseContradiction(this.variable, ContradictionException.VARIABLE);
-			else
-        this.getSolver().getPropagationEngine().raiseContradiction(variable.getConstraintVector().get(idx), ContradictionException.CONSTRAINT);
+		    this.getSolver().getPropagationEngine().raiseContradiction(idx, variable);
       return true; // just for compilation
 		} else if (!kernel.contains(x)) {
 			kernel.add(x);
@@ -235,20 +229,14 @@ public final class SetDomainImpl implements SetDomain {
 	protected boolean _instantiate(int[] values, int idx) throws ContradictionException {
 		if (isInstantiated()) {
 			if (!isInstantiatedTo(values)) {
-				if (idx == -1)
-        this.getSolver().getPropagationEngine().raiseContradiction(this.variable, ContradictionException.VARIABLE);
-			else
-        this.getSolver().getPropagationEngine().raiseContradiction(variable.getConstraintVector().get(idx), ContradictionException.CONSTRAINT);
-      return true; // just for compilation
+				this.getSolver().getPropagationEngine().raiseContradiction(idx, variable);
+                return true; // just for compilation
 			} else
 				return true;
 		} else {
 			if (!canBeInstantiatedTo(values)) {
-				if (idx == -1)
-        this.getSolver().getPropagationEngine().raiseContradiction(this.variable, ContradictionException.VARIABLE);
-			else
-        this.getSolver().getPropagationEngine().raiseContradiction(variable.getConstraintVector().get(idx), ContradictionException.CONSTRAINT);
-      return true; // just for compilation
+				this.getSolver().getPropagationEngine().raiseContradiction(idx, variable);
+                return true; // just for compilation
 			} else {
 				for (int i = 0; i < values.length; i++) // TODO: ajouter un restrict(int[] val) dans le BitSetEnumeratedDomain
 					kernel.add(values[i]);

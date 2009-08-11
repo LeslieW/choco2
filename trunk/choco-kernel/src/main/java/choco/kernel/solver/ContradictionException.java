@@ -41,15 +41,26 @@ public class ContradictionException extends Exception {
 	 */
 	private static final long serialVersionUID = 1542770449283056616L;
 
-	public static final int UNKNOWN = -1;
+    public enum Type{
+        UNKNOWN(-1), VARIABLE(1), CONSTRAINT(2), DOMAIN(3), SEARCH_LIMIT(4);
+        final int value;
+
+        Type(int value) {
+            this.value = value;
+        }
+    }
+
+	/*public static final int UNKNOWN = -1;
 	public static final int VARIABLE=1;
 	public static final int CONSTRAINT=2;
 	public static final int DOMAIN=3;
-	public static final int SEARCH_LIMIT =4;
+	public static final int SEARCH_LIMIT =4;*/
 
 	private Object contradictionCause;
-    private int contradictionType;
+    private Type contradictionType;
     private int contradictionMove;
+
+    private Object domOverDegContradictionCause;
 
     /**
 	 * An exception may have a local cause (the last variable
@@ -59,36 +70,49 @@ public class ContradictionException extends Exception {
 	/**
 	 * Constructs a new contradiction with the specified cause.
 	 *
-	 * @param cause the the last object variable responsible
-	 *              for the failure of propagation
 	 */
-
 	public ContradictionException() {
-		this(null,UNKNOWN);
+		this(null,Type.UNKNOWN);
 	}
 	
 	
-
+    /**
+	 * Constructs a new contradiction with the specified cause.
+	 *
+	 * @param contradictionCause the the last object variable responsible
+	 *              for the failure of propagation
+     * @param contradictionType type of contradiction
+	 */
 	public ContradictionException(Object contradictionCause,
-			int contradictionType) {
+			Type contradictionType) {
 		super();
 		this.contradictionCause = contradictionCause;
 		this.contradictionType = contradictionType;
 		this.contradictionMove = AbstractGlobalSearchStrategy.UP_BRANCH;
+        domOverDegContradictionCause = null;
 	}
 
 
 
-	public final void set(Object cause, int type) {
+	public final void set(Object cause, Type type) {
 		contradictionCause = cause;
         contradictionType = type;
+        domOverDegContradictionCause = null;
 		contradictionMove = AbstractGlobalSearchStrategy.UP_BRANCH;
 	}
-	
-	public final void set(Object cause, int type, int move) {
+
+    public final void set(Object cause, Type type, Object dCause) {
+		contradictionCause = cause;
+        contradictionType = type;
+        domOverDegContradictionCause = dCause;
+		contradictionMove = AbstractGlobalSearchStrategy.UP_BRANCH;
+	}
+
+	public final void set(Object cause, Type type, int move) {
 		contradictionCause = cause;
         contradictionType = type;
 		contradictionMove = move;
+        domOverDegContradictionCause = null;
 	}
 
 	@Override
@@ -100,14 +124,18 @@ public class ContradictionException extends Exception {
 		return contradictionCause;
 	}
 
+    public final Object getDomOverDegContradictionCause(){
+        return domOverDegContradictionCause;
+    }
+
     public final int getContradictionMove(){
         return contradictionMove;
     }
 
-	public final int getContradictionType() {
-		return contradictionType;
-	}
-  
+    public final boolean isSearchLimitCause(){
+        return Type.SEARCH_LIMIT.equals(contradictionType);
+    }
+     
     
 }
 

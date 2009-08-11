@@ -23,6 +23,7 @@
 package choco.cp.solver.constraints.real.exp;
 
 import choco.kernel.solver.ContradictionException;
+import static choco.kernel.solver.ContradictionException.Type.DOMAIN;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.real.RealExp;
 import choco.kernel.solver.constraints.real.exp.AbstractRealUnTerm;
@@ -50,7 +51,7 @@ public class RealSin extends AbstractRealUnTerm {
   public void project() throws ContradictionException {
     RealInterval res = RealMath.asin_wrt(this, exp1);
     if (res.getInf() > res.getSup()) {
-      this.solver.getPropagationEngine().raiseContradiction(this, ContradictionException.DOMAIN);
+      this.solver.getPropagationEngine().raiseContradiction(this, DOMAIN);
     }
     exp1.intersect(res);
   }

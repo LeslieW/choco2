@@ -26,6 +26,7 @@ import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -69,19 +70,19 @@ public class BooleanVariableTest {
 
         s.worldPush();
 
-        Assert.assertFalse("update inf 0",v1.updateInf(0, -1));
+        Assert.assertFalse("update inf 0",v1.updateInf(0, VarEvent.NOCAUSE));
         Assert.assertEquals("lower bound",0,v1.getInf());
         Assert.assertEquals("upper bound",1,v1.getSup());
         Assert.assertEquals("domain size",2,v1.getDomainSize());
 
-        Assert.assertTrue("update inf 1",v1.updateInf(1, -1));
+        Assert.assertTrue("update inf 1",v1.updateInf(1, VarEvent.NOCAUSE));
         Assert.assertEquals("lower bound",1,v1.getInf());
         Assert.assertEquals("upper bound",1,v1.getSup());
         Assert.assertEquals("domain size",1,v1.getDomainSize());
         Assert.assertTrue("instantiated", v1.isInstantiatedTo(1));
 
         try{
-            v1.updateInf(2, -1);
+            v1.updateInf(2, VarEvent.NOCAUSE);
             Assert.fail("update inf 2");
         }catch (ContradictionException e){
 
@@ -90,19 +91,19 @@ public class BooleanVariableTest {
         s.worldPop();
         s.worldPush();
 
-        Assert.assertFalse("update sup 1",v1.updateSup(1, -1));
+        Assert.assertFalse("update sup 1",v1.updateSup(1, VarEvent.NOCAUSE));
         Assert.assertEquals("lower bound",0,v1.getInf());
         Assert.assertEquals("upper bound",1,v1.getSup());
         Assert.assertEquals("domain size",2,v1.getDomainSize());
 
-        Assert.assertTrue("update sup 0",v1.updateSup(0, -1));
+        Assert.assertTrue("update sup 0",v1.updateSup(0, VarEvent.NOCAUSE));
         Assert.assertEquals("lower bound",0,v1.getInf());
         Assert.assertEquals("upper bound",0,v1.getSup());
         Assert.assertEquals("domain size",1,v1.getDomainSize());
         Assert.assertTrue("instantiated", v1.isInstantiatedTo(0));
 
         try{
-            v1.updateInf(2, -1);
+            v1.updateInf(2, VarEvent.NOCAUSE);
             Assert.fail("update sup -1");
         }catch (ContradictionException e){
 
@@ -112,19 +113,19 @@ public class BooleanVariableTest {
         s.worldPop();
         s.worldPush();
 
-        Assert.assertFalse("remove 2",v1.removeVal(2, -1));
+        Assert.assertFalse("remove 2",v1.removeVal(2, VarEvent.NOCAUSE));
         Assert.assertEquals("lower bound",0,v1.getInf());
         Assert.assertEquals("upper bound",1,v1.getSup());
         Assert.assertEquals("domain size",2,v1.getDomainSize());
 
-        Assert.assertTrue("remove 1",v1.removeVal(1, -1));
+        Assert.assertTrue("remove 1",v1.removeVal(1, VarEvent.NOCAUSE));
         Assert.assertEquals("lower bound",0,v1.getInf());
         Assert.assertEquals("upper bound",0,v1.getSup());
         Assert.assertEquals("domain size",1,v1.getDomainSize());
         Assert.assertTrue("instantiated", v1.isInstantiatedTo(0));
 
         try{
-            v1.removeVal(0, -1);
+            v1.removeVal(0, VarEvent.NOCAUSE);
             Assert.fail("remove 0");
         }catch (ContradictionException ex){
         }
@@ -132,19 +133,19 @@ public class BooleanVariableTest {
         s.worldPop();
         s.worldPush();
 
-        Assert.assertFalse("remove -1",v1.removeVal(-1, -1));
+        Assert.assertFalse("remove -1",v1.removeVal(-1, VarEvent.NOCAUSE));
         Assert.assertEquals("lower bound",0,v1.getInf());
         Assert.assertEquals("upper bound",1,v1.getSup());
         Assert.assertEquals("domain size",2,v1.getDomainSize());
 
-        Assert.assertTrue("remove 0",v1.removeVal(0, -1));
+        Assert.assertTrue("remove 0",v1.removeVal(0, VarEvent.NOCAUSE));
         Assert.assertEquals("lower bound",1,v1.getInf());
         Assert.assertEquals("upper bound",1,v1.getSup());
         Assert.assertEquals("domain size",1,v1.getDomainSize());
         Assert.assertTrue("instantiated", v1.isInstantiatedTo(1));
 
         try{
-            v1.removeVal(1, -1);
+            v1.removeVal(1, VarEvent.NOCAUSE);
             Assert.fail("remove 1");
         }catch (ContradictionException ex){
         }
@@ -152,7 +153,7 @@ public class BooleanVariableTest {
         s.worldPop();
         s.worldPush();
 
-        Assert.assertTrue("instantiate 0",v1.instantiate(0, -1));
+        Assert.assertTrue("instantiate 0",v1.instantiate(0, VarEvent.NOCAUSE));
         Assert.assertEquals("lower bound",0,v1.getInf());
         Assert.assertEquals("upper bound",0,v1.getSup());
         Assert.assertEquals("domain size",1,v1.getDomainSize());
@@ -161,7 +162,7 @@ public class BooleanVariableTest {
         s.worldPop();
         s.worldPush();
 
-        Assert.assertTrue("instantiate 1",v1.instantiate(1, -1));
+        Assert.assertTrue("instantiate 1",v1.instantiate(1, VarEvent.NOCAUSE));
         Assert.assertEquals("lower bound",1,v1.getInf());
         Assert.assertEquals("upper bound",1,v1.getSup());
         Assert.assertEquals("domain size",1,v1.getDomainSize());
@@ -171,12 +172,12 @@ public class BooleanVariableTest {
         s.worldPush();
 
         try{
-            Assert.assertFalse("instantiate 2",v1.instantiate(2, -1));
+            Assert.assertFalse("instantiate 2",v1.instantiate(2, VarEvent.NOCAUSE));
             Assert.fail("unknown value");
         }catch (ContradictionException ex){
         }
         try{
-            Assert.assertFalse("instantiate -1",v1.instantiate(-1, -1));
+            Assert.assertFalse("instantiate -1",v1.instantiate(-1, VarEvent.NOCAUSE));
             Assert.fail("unknown value");
         }catch (ContradictionException ex){
         }

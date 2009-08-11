@@ -20,29 +20,25 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-
 package choco.kernel.solver.branch;
 
-import java.util.logging.Logger;
+import choco.kernel.solver.search.IntBranchingDecision;
 
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.solver.ContradictionException;
-
-/**
- * Branching objects are responsible for controlling the execution of the program at a point where
- * the control flow may be split between different branches
- */
-public interface Branching {
-
-	/**
-	 * an object for logging trace statements
-	 */
-	public final static Logger LOGGER = ChocoLogging.getBranchingLogger();
+public abstract class AbstractBinIntBranchingStrategy extends AbstractIntBranchingStrategy {
 	
-	/**
-	 * selecting the object under scrutiny (that object on which an alternative will be set)
-	 *
-	 * @return the object on which an alternative will be set (often  a variable)
-	 */
-	public Object selectBranchingObject() throws ContradictionException;
+	
+	public AbstractBinIntBranchingStrategy() {
+		super();
+		
+	}
+
+	public final void setNextBranch(final IntBranchingDecision ctx) {
+		assert ctx.getBranchIndex() == 0;
+	}
+
+	public final boolean finishedBranching(final IntBranchingDecision ctx) {
+		return ctx.getBranchIndex() > 0;
+	}
+	
+
 }

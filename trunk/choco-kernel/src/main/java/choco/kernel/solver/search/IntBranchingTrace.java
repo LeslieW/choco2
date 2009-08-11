@@ -25,7 +25,7 @@ package choco.kernel.solver.search;
 
 import choco.IPretty;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.branch.AbstractIntBranching;
+import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.integer.IntVar;
 import choco.kernel.solver.variables.real.RealVar;
@@ -37,7 +37,7 @@ import choco.kernel.solver.variables.set.SetVar;
  */
 public class IntBranchingTrace implements IntBranchingDecision {
 
-	private AbstractIntBranching branching;
+	private AbstractIntBranchingStrategy branching;
 
 	private Object branchingObject;
 
@@ -53,7 +53,7 @@ public class IntBranchingTrace implements IntBranchingDecision {
 
 
 
-	public IntBranchingTrace(AbstractIntBranching branching,
+	public IntBranchingTrace(AbstractIntBranchingStrategy branching,
 			Object branchingObject, int branchIndex, int branchingValue) {
 		super();
 		this.branching = branching;
@@ -64,11 +64,11 @@ public class IntBranchingTrace implements IntBranchingDecision {
 
 
 
-	public final AbstractIntBranching getBranching() {
+	public final AbstractIntBranchingStrategy getBranching() {
 		return branching;
 	}
 
-	public final void setBranching(AbstractIntBranching branching) {
+	public final void setBranching(AbstractIntBranchingStrategy branching) {
 		this.branching = branching;
 	}
 

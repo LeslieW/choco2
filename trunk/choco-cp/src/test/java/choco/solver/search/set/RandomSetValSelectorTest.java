@@ -31,6 +31,7 @@ import choco.kernel.model.Model;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.set.SetVar;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
@@ -62,7 +63,7 @@ public class RandomSetValSelectorTest {
                 SetVar s = t.selectSetVar();
                 int i = p.getBestVal(s);
                 try {
-                    s.remFromEnveloppe(i, -1);
+                    s.remFromEnveloppe(i, VarEvent.NOCAUSE);
                     n++;
                 } catch (ContradictionException e) {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

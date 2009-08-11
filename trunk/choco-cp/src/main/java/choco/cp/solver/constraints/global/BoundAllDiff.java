@@ -28,6 +28,7 @@ import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public class BoundAllDiff extends AbstractLargeIntSConstraint {
@@ -251,7 +252,7 @@ public class BoundAllDiff extends AbstractLargeIntSConstraint {
             if (vars[i].isInstantiated()) {
                 for (int j = 0; j < vars.length; j++) {
                     if (i != j) {
-                        vars[j].removeVal(vars[i].getVal(), -1);
+                        vars[j].removeVal(vars[i].getVal(), VarEvent.domOverWDegIdx(cIndices[j]));
                     }
                 }
             }
@@ -279,7 +280,7 @@ public class BoundAllDiff extends AbstractLargeIntSConstraint {
             for (int j = 0; j < vars.length; j++) {
                 if (j != i && vars[j].isInstantiated()) {
                     if (vars[j].getVal() == vars[i].getInf()) {
-						vars[i].updateInf(vars[j].getVal() + 1, -1);
+						vars[i].updateInf(vars[j].getVal() + 1, VarEvent.domOverWDegIdx(cIndices[i]));
 					}
                 }
             }
@@ -294,7 +295,7 @@ public class BoundAllDiff extends AbstractLargeIntSConstraint {
             for (int j = 0; j < vars.length; j++) {
                 if (j != i && vars[j].isInstantiated()) {
                     if (vars[j].getVal() == vars[i].getSup()) {
-						vars[i].updateSup(vars[j].getVal() - 1, -1);
+						vars[i].updateSup(vars[j].getVal() - 1, VarEvent.domOverWDegIdx(cIndices[i]));
 					}
                 }
             }
@@ -310,7 +311,7 @@ public class BoundAllDiff extends AbstractLargeIntSConstraint {
             int val = vars[i].getVal();
             for (int j = 0; j < vars.length; j++) {
                 if (j != i) {
-                    this.getIntVar(j).removeVal(val, -1);
+                    vars[j].removeVal(val, VarEvent.domOverWDegIdx(cIndices[j]));
                 }
             }
         }

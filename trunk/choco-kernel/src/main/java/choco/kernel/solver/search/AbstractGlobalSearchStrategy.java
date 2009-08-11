@@ -28,17 +28,17 @@
 //**************************************************
 package choco.kernel.solver.search;
 
-import java.util.logging.Level;
-
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
-import choco.kernel.solver.branch.AbstractBranching;
-import choco.kernel.solver.branch.AbstractIntBranching;
+import choco.kernel.solver.branch.AbstractBranchingStrategy;
+import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.measures.ISearchMeasures;
+
+import java.util.logging.Level;
 
 /**
  * An abstract class for controlling tree search in various ways
@@ -111,7 +111,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 * /**
 	 * the goal that needs be solved to drive the exploration
 	 */
-	public AbstractIntBranching mainGoal;
+	public AbstractIntBranchingStrategy mainGoal;
 
 	/**
 	 * the index of the world where the search started
@@ -134,7 +134,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	public void initMainGoal(SConstraint c) {
 		if (mainGoal != null) {
 			mainGoal.initConstraintForBranching(c);
-			AbstractBranching branch = mainGoal.getNextBranching();
+			AbstractBranchingStrategy branch = mainGoal.getNextBranching();
 			while(branch != null) {
 				branch.initConstraintForBranching(c);
 				branch = branch.getNextBranching();

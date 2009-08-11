@@ -1,117 +1,235 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * *
- *          _       _                            *
- *         |  °(..)  |                           *
- *         |_  J||L _|        CHOCO solver       *
- *                                               *
- *    Choco is a java library for constraint     *
- *    satisfaction problems (CSP), constraint    *
- *    programming (CP) and explanation-based     *
- *    constraint solving (e-CP). It is built     *
- *    on a event-based propagation mechanism     *
- *    with backtrackable structures.             *
- *                                               *
- *    Choco is an open-source software,          *
- *    distributed under a BSD licence            *
- *    and hosted by sourceforge.net              *
- *                                               *
- *    + website : http://choco.emn.fr            *
- *    + support : choco@emn.fr                   *
- *                                               *
- *    Copyright (C) F. Laburthe,                 *
- *                  N. Jussien    1999-2008      *
- * * * * * * * * * * * * * * * * * * * * * * * * */
+/* ************************************************
+ *           _       _                            *
+ *          |  °(..)  |                           *
+ *          |_  J||L _|        CHOCO solver       *
+ *                                                *
+ *     Choco is a java library for constraint     *
+ *     satisfaction problems (CSP), constraint    *
+ *     programming (CP) and explanation-based     *
+ *     constraint solving (e-CP). It is built     *
+ *     on a event-based propagation mechanism     *
+ *     with backtrackable structures.             *
+ *                                                *
+ *     Choco is an open-source software,          *
+ *     distributed under a BSD licence            *
+ *     and hosted by sourceforge.net              *
+ *                                                *
+ *     + website : http://choco.emn.fr            *
+ *     + support : choco@emn.fr                   *
+ *                                                *
+ *     Copyright (C) F. Laburthe,                 *
+ *                   N. Jussien    1999-2009      *
+ **************************************************/
 package choco.kernel.solver.branch;
 
-
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.IntBranchingDecision;
 
+import java.util.logging.Logger;
+
+/*
+* User : charles
+* Mail : cprudhom(a)emn.fr
+* Date : 7 août 2009
+* Since : Choco 2.1.0
+* Update : Choco 2.1.0
+*
+*
+* An abstract class for all implementations of branching objets (objects controlling the tree search)
+*
+* This class is ensuring use of old branching strategies
+* See AbstractIntBranchingStrategy to upgrade your branching
+*/
+@Deprecated
+public abstract class AbstractIntBranching extends AbstractIntBranchingStrategy {
+
+    /**
+     * the main control object (responsible for the whole exploration, while the branching object
+     * is responsible only at the choice point level
+     */
+    protected AbstractGlobalSearchStrategy manager;
+    /**
+     * a link towards the next branching object (once this one is exhausted)
+     */
+    protected AbstractBranchingStrategy nextBranching;
+    /**
+     * an object for logging trace statements
+     */
+    protected static Logger logger = Logger.getLogger("choco.kernel.solver.search.branching");
+
+    public static String LOG_DOWN_MSG = "down branch ";
+    public static String LOG_UP_MSG = "up branch ";
+    public String[] LOG_DECISION_MSG = {""};
 
 
-/**
- * An abstract class for all implementations of branching objets (objects controlling the tree search)
- *
- * See OldAbstractIntBranching to use old branching tools
- */
-public abstract class AbstractIntBranching extends AbstractBranching implements IntBranching {
+    public void setSolver(AbstractGlobalSearchStrategy s) {
+        manager = s;
+    }
+
+    /**
+     * used for logging messages related to the search tree
+     *
+     * @param branchIndex is the index of the branching
+     * @return an string that will be printed between the branching object and the branch index
+     *         Suggested implementations return LOG_DECISION_MSG[0] or LOG_DECISION_MSG[branchIndex]
+     */
+    public abstract String getDecisionLogMsg(int branchIndex);
+
+    /**
+     * This method is called before launching the search. it may be used to intialiaze data structures or counters for
+     * instance.
+     */
+    public void initBranching() {
+        // Nothing to do by default
+    }
+
+    /**
+     * this method is used to build the data structure in the branching for
+     * the given constraint. This is used when the constraint was not present
+     * at the initialization of the branching, for example a cut
+     *
+     * @param c
+     */
+    public void initConstraintForBranching(SConstraint c) {
+        //nothing to do by default
+    }
 
 
-	//	private static final String LOG_MSG_FORMAT = "{0} {1} {2} {3} {4}";
-	//	
-	//	private static final String LOG_MSG_FORMAT_WITH_BRANCH = "{0} {1} {2} {3} {4} branch {5}";
-	//	
-	//	public void goDownBranch(Object x, int i) throws ContradictionException {
-	//		logDownBranch(x, i);
-	//	}
-	//
-	//	public void goUpBranch(Object x, int i) throws ContradictionException {
-	//		logUpBranch(x, i);
-	//	}
-	//
-	//	protected Object getVariableLogParameter(final Object x) {
-	//		return x;
-	//	}
-	//
-	//	protected Object getValueLogParameter(final Object x, final int branch) {
-	//		return Integer.valueOf(branch);
-	//	}
-	//
-	//
-	//	@Override
-	//	public String getDecisionLogMsg(int branchIndex) {
-	//		return LOG_DECISION_MSG_ASSIGN;
-	//	}
-	//
-	//	protected final String getDefaultLogMessage() {
-	//		return LOG_MSG_FORMAT;
-	//	}
-	//
-	//	protected final String getLogMessageWithBranch() {
-	//		return LOG_MSG_FORMAT_WITH_BRANCH;
-	//	}
-	//
-	//	/**
-	//	 * a log message using java.util logging {} arguments </br>
-	//	 * {0}: world index (formatter arguments)</br>
-	//	 * {1}: Up or Down message </br>
-	//	 * {2}: Branching var </br>
-	//	 * {3}: decision msg </br>
-	//	 * {4}: Branching val </br>
-	//	 * {5}: Branch index </br>
-	//	 * 
-	//	 * @return
-	//	 */
-	//	protected String getLogMessage() {
-	//		return getDefaultLogMessage();
-	//	}
-	//
-	//	protected final void logDownBranch(final Object x, final int i) {
-	//		if (LOGGER.isLoggable(Level.INFO)) {
-	//			final WorldFormatter wl = new WorldFormatter(manager);
-	//			if ( wl.isLoggable(manager)) {
-	//				LOGGER.log(Level.INFO, getLogMessage(), new Object[]{wl, LOG_DOWN_MSG, getVariableLogParameter(x), getDecisionLogMsg(i), getValueLogParameter(x,i), Integer.valueOf(i)});
-	//			}
-	//		}
-	//	}
-	//
-	//	protected final void logUpBranch(final Object x, final int i) {
-	//		if (LOGGER.isLoggable(Level.INFO)) {
-	//			final WorldFormatter wl = new WorldFormatter(manager, 1);
-	//			if ( wl.isLoggable(manager)) {
-	//				LOGGER.log(Level.INFO, getLogMessage(), new Object[]{wl, LOG_UP_MSG, getVariableLogParameter(x), getDecisionLogMsg(i), getValueLogParameter(x,i), Integer.valueOf(i)});
-	//			}
-	//		}
-	//	}
+    /**
+     * selecting the object under scrutiny (that object on which an alternative will be set)
+     *
+     * @return the object on which an alternative will be set (often  a variable)
+     */
 
-	public static String getDefaultAssignMsg(IntBranchingDecision decision) {
-		return decision.getBranchingObject() + 
-		LOG_DECISION_MSG_ASSIGN + 
-		decision.getBranchingValue();
-	}
+    public abstract Object selectBranchingObject() throws ContradictionException;
 
-	public static String getDefaultAssignOrForbidMsg(IntBranchingDecision decision) {
-		return decision.getBranchingObject() + 
-		(decision.getBranchIndex() == 0 ? LOG_DECISION_MSG_ASSIGN : LOG_DECISION_MSG_REMOVE) + 
-		decision.getBranchingValue();
-	}
+    /**
+     * Performs the action,
+     * so that we go down a branch from the current choice point.
+     *
+     * @param x the object on which the alternative is set
+     * @param i the label of the branch that we want to go down
+     * @throws choco.kernel.solver.ContradictionException
+     *          if a domain empties or a contradiction is
+     *          infered
+     */
+    public abstract void goDownBranch(Object x, int i) throws ContradictionException;
 
+    /**
+     * Performs the action,
+     * so that we go up the current branch to the father choice point.
+     *
+     * @param x the object on which the alternative has been set
+     *          at the father choice point
+     * @param i the label of the branch that has been travelled down
+     *          from the father choice point
+     * @throws choco.kernel.solver.ContradictionException
+     *          if a domain empties or a contradiction is
+     *          infered
+     */
+
+    public abstract void goUpBranch(Object x, int i) throws ContradictionException;
+
+
+    /**
+     * Computes the search index of the first branch of the choice point.
+     *
+     * @param x the object on which the alternative is set
+     * @return the index of the first branch
+     */
+    public abstract int getFirstBranch(Object x);
+
+    /**
+     * Computes the search index of the next branch of the choice point.
+     *
+     * @param x the object on which the alternative is set
+     * @param i the index of the current branch
+     * @return the index of the next branch
+     */
+    public abstract int getNextBranch(Object x, int i);
+
+    /**
+     * Checks whether all branches have already been explored at the
+     * current choice point.
+     *
+     * @param x the object on which the alternative is set
+     * @param i the index of the last branch
+     * @return true if no more branches can be generated
+     */
+    public abstract boolean finishedBranching(Object x, int i);
+
+
+    /**
+     * Performs the action,
+     * so that we go down a branch from the current choice point.
+     *
+     * @param decision the decision to apply.
+     * @throws choco.kernel.solver.ContradictionException
+     *          if a domain empties or a contradiction is
+     *          infered
+     */
+    @Override
+    public final void goDownBranch(IntBranchingDecision decision) throws ContradictionException {
+        goDownBranch(decision.getBranchingObject(), decision.getBranchingValue());
+    }
+
+    /**
+     * Performs the action,
+     * so that we go up the current branch to the father choice point.
+     *
+     * @param decision the decision that has been set at the father choice point
+     * @throws choco.kernel.solver.ContradictionException
+     *          if a domain empties or a contradiction is
+     *          infered
+     */
+    @Override
+    public final void goUpBranch(IntBranchingDecision decision) throws ContradictionException {
+        goUpBranch(decision.getBranchingObject(), decision.getBranchingValue());
+    }
+
+    /**
+     * compute the first decision by setting a branching value or modifying the branching object
+     *
+     * @param decision the current decision
+     */
+    @Override
+    public final void setFirstBranch(IntBranchingDecision decision) {
+        decision.setBranchingValue(getFirstBranch(decision.getBranchingObject()));
+    }
+
+    /**
+     * compute the next decision by setting a branching value or modifying the branching object
+     *
+     * @param decision the current decision
+     */
+    @Override
+    public final void setNextBranch(IntBranchingDecision decision) {
+        decision.setBranchingValue(getNextBranch(decision.getBranchingObject(), decision.getBranchIndex()));
+    }
+
+    /**
+     * Checks whether all branches have already been explored at the
+     * current choice point.
+     *
+     * @param decision the last decision applied
+     * @return true if no more branches can be generated
+     */
+    @Override
+    public final boolean finishedBranching(IntBranchingDecision decision) {
+        return finishedBranching(decision.getBranchingObject(), decision.getBranchIndex());
+    }
+
+    /**
+     * The logging message associated with the current decision.
+     *
+     * @param decision current decision
+     * @return logging message.
+     */
+    @Override
+    public final String getDecisionLogMessage(IntBranchingDecision decision) {
+        return getDecisionLogMsg(decision.getBranchIndex());
+    }
 }
+

@@ -22,28 +22,24 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.branching;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.limit.TimeCacheThread;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.branch.AbstractLargeIntBranching;
+import choco.kernel.solver.branch.AbstractLargeIntBranchingStrategy;
 import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.*;
 
 /**
  * Impact based branchging based on the code from Hadrien
  * <p/>
  * Written by Guillaumme on 17 may 2008
  */
-public final class ImpactBasedBranching extends AbstractLargeIntBranching {
+public final class ImpactBasedBranching extends AbstractLargeIntBranchingStrategy {
 	Solver _solver;
 	IntDomainVar[] _vars;
 	AbstractImpactStrategy _ibs;

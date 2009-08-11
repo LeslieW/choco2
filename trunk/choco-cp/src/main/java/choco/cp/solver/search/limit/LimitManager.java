@@ -1,19 +1,18 @@
 package choco.cp.solver.search.limit;
 
 
-import static choco.kernel.solver.ContradictionException.SEARCH_LIMIT;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.RESTART;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.STOP;
-
-import java.util.logging.Logger;
-
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
+import static choco.kernel.solver.ContradictionException.Type.SEARCH_LIMIT;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.RESTART;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.STOP;
 import choco.kernel.solver.search.GlobalSearchLimit;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.restart.NoRestartStrategy;
 import choco.kernel.solver.search.restart.UniversalRestartStrategy;
+
+import java.util.logging.Logger;
 
 public class LimitManager implements GlobalSearchLimit {
 

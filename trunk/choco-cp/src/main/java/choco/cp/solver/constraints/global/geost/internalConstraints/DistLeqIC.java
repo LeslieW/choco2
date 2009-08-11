@@ -5,6 +5,7 @@ import choco.cp.solver.constraints.global.geost.Setup;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Point;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Region;
 import choco.kernel.solver.ContradictionException;
+import static choco.kernel.solver.ContradictionException.Type.UNKNOWN;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.Arrays;
@@ -609,7 +610,7 @@ public class DistLeqIC extends ForbiddenRegion {
         if (DVar!=null) {
                 DVar.updateInf(EvaluateMinimumDistance(k),0);
                 if (stp.opt.debug) { System.out.println("DistLeqIC:"+this+" updateDistance:["+DVar.getInf()+","+DVar.getSup()+"]"); };
-                if ((DVar.getInf()>DVar.getSup()) || (DVar.getSup()<DVar.getInf())) throw new ContradictionException(null,0);
+                if ((DVar.getInf()>DVar.getSup()) || (DVar.getSup()<DVar.getInf())) throw new ContradictionException(null, UNKNOWN);
         }
     }
 

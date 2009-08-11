@@ -28,6 +28,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.solver.ContradictionException;
+import static choco.kernel.solver.ContradictionException.Type.DOMAIN;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.integer.IntSConstraint;
 import choco.kernel.solver.propagation.VarEvent;
@@ -203,7 +204,7 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 	}
 
 	public final void wipeOut() throws ContradictionException {
-		this.getSolver().getPropagationEngine().raiseContradiction(this, ContradictionException.DOMAIN);
+		this.getSolver().getPropagationEngine().raiseContradiction(this, DOMAIN);
 	}
 
 	public boolean hasEnumeratedDomain() {

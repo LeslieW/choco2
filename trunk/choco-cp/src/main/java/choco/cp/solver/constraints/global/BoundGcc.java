@@ -70,15 +70,15 @@ public class BoundGcc extends BoundGccVar {
 	}
 
 
-	@Override
-	public void updateSup(IntDomainVar v, int nsup, int idx) throws ContradictionException {
-		v.updateSup(nsup, -1);//cIndices[idx]);
-	}
-
-	@Override
-	public void updateInf(IntDomainVar v, int ninf, int idx) throws ContradictionException {
-		v.updateInf(ninf, -1);//cIndices[idx]);
-	}
+//	@Override
+//	public void updateSup(IntDomainVar v, int nsup, int idx) throws ContradictionException {
+//		v.updateSup(nsup, VarEvent.domOverWDegIdx(cIndices[idx]));//cIndices[idx]);
+//	}
+//
+//	@Override
+//	public void updateInf(IntDomainVar v, int ninf, int idx) throws ContradictionException {
+//		v.updateInf(ninf, VarEvent.domOverWDegIdx(cIndices[idx]));//cIndices[idx]);
+//	}
 
 
 	@Override

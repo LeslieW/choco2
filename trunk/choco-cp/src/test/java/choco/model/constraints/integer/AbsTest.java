@@ -27,10 +27,10 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
-import choco.cp.solver.search.limit.NodeLimit;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.propagation.VarEvent;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -134,7 +134,7 @@ public class AbsTest {
         s.read(m);
         try {
             s.propagate();
-            s.getVar(x).updateSup(2,-1);
+            s.getVar(x).updateSup(2,VarEvent.NOCAUSE);
             s.propagate();
         } catch (ContradictionException e) {
             e.printStackTrace();
@@ -160,7 +160,7 @@ public class AbsTest {
         s.read(m);
         try {
             s.propagate();
-            s.getVar(x).updateInf(7,-1);
+            s.getVar(x).updateInf(7, VarEvent.NOCAUSE);
             //s.getVar(y).updateSup(2,-1);
             s.propagate();
         } catch (ContradictionException e) {

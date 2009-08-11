@@ -25,7 +25,7 @@ package choco.cp.solver.search.integer.branching;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.branch.AbstractLargeIntBranching;
+import choco.kernel.solver.branch.AbstractLargeIntBranchingStrategy;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.SConstraintType;
@@ -55,7 +55,7 @@ import java.util.logging.Logger;
  * at the beginning !!
  * @deprecated use {@link DomOverWDegBranching2}
  */
-public class DomOverWDegBranching extends AbstractLargeIntBranching implements PropagationEngineListener {
+public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy implements PropagationEngineListener {
 	protected static final int ABSTRACTCONTRAINT_EXTENSION =
 		AbstractSConstraint.getAbstractSConstraintExtensionNumber("choco.cp.cpsolver.search.integer.varselector.DomOverWDeg");
 
@@ -348,8 +348,8 @@ public class DomOverWDegBranching extends AbstractLargeIntBranching implements P
 	}
 
 	public void contradictionOccured(ContradictionException e) {
-		Object cause = e.getContradictionCause();
-		if (cause != null && e.getContradictionType() == ContradictionException.CONSTRAINT) {
+		Object cause = e.getDomOverDegContradictionCause();
+		if (cause != null) {
 			reuseCstr = (AbstractSConstraint) cause;
 			if (SConstraintType.INTEGER.equals(reuseCstr.getConstraintType())) {
 				try {

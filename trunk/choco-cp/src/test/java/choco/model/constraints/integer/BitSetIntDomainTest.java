@@ -39,6 +39,7 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomain;
 import org.junit.After;
 import static org.junit.Assert.*;
@@ -91,13 +92,13 @@ public class BitSetIntDomainTest {
             logger.finest("First step passed");
 
             s.getEnvironment().worldPush();
-            yDom.removeVal(2, -1);
+            yDom.removeVal(2, VarEvent.NOCAUSE);
             assertEquals(1, yDom.getInf());
             assertEquals(15, yDom.getSup());
             assertEquals(14, yDom.getSize());
             logger.finest("Second step passed");
 
-            yDom.removeVal(1, -1);
+            yDom.removeVal(1, VarEvent.NOCAUSE);
             assertEquals(3, yDom.getInf());
             assertEquals(15, yDom.getSup());
             assertEquals(13, yDom.getSize());
@@ -121,10 +122,10 @@ public class BitSetIntDomainTest {
         logger.finer("test2");
         try {
 
-            yDom.removeVal(10,-1);
-            yDom.removeVal(12,-1);
-            yDom.removeVal(14,-1);
-            yDom.removeVal(13,-1);
+            yDom.removeVal(10,VarEvent.NOCAUSE);
+            yDom.removeVal(12,VarEvent.NOCAUSE);
+            yDom.removeVal(14,VarEvent.NOCAUSE);
+            yDom.removeVal(13,VarEvent.NOCAUSE);
             yDom.updateSup(14);
             assertEquals(1, yDom.getInf());
             assertEquals(11, yDom.getSup());
@@ -137,7 +138,7 @@ public class BitSetIntDomainTest {
             assertEquals(3, yDom.getSize());
             logger.finest("Second step passed");
 
-            yDom.removeVal(11, -1);
+            yDom.removeVal(11, VarEvent.NOCAUSE);
             assertEquals(8, yDom.getInf());
             assertEquals(9, yDom.getSup());
             assertEquals(2, yDom.getSize());
@@ -197,12 +198,12 @@ public class BitSetIntDomainTest {
     public void test4() {
         logger.finer("test2");
         try {
-        yDom.removeVal(10,-1);
-        yDom.removeVal(12,-1);
-        yDom.removeVal(14,-1);
-        yDom.removeVal(13,-1);
+        yDom.removeVal(10,VarEvent.NOCAUSE);
+        yDom.removeVal(12,VarEvent.NOCAUSE);
+        yDom.removeVal(14,VarEvent.NOCAUSE);
+        yDom.removeVal(13,VarEvent.NOCAUSE);
         yDom.updateSup(14);
-        yDom.instantiate(7,-1);
+        yDom.instantiate(7, VarEvent.NOCAUSE);
         assertEquals(7, yDom.getInf());
         assertEquals(7, yDom.getSup());
         assertEquals(1, yDom.getSize());

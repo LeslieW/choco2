@@ -425,10 +425,7 @@ public class BooleanDomain extends AbstractIntDomain {
     }
 
     private void failOnIndex(int idx) throws ContradictionException {
-        if (idx == -1)
-            this.getSolver().getPropagationEngine().raiseContradiction(this.variable, ContradictionException.VARIABLE);
-        else
-            this.getSolver().getPropagationEngine().raiseContradiction(variable.getConstraintVector().get(idx), ContradictionException.CONSTRAINT);
+        this.getSolver().getPropagationEngine().raiseContradiction(idx, variable);
     }
     
 
