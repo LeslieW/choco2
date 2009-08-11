@@ -30,6 +30,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -539,7 +540,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 	public void propagateLEQ() throws ContradictionException {
 		for (int i = 0; i < nbNegCoef; i++) {
 			if (lb.get() - sCoeffs[i] > rmemb.getSupRight()) {
-				vars[i].instantiate(1, -1);
+				vars[i].instantiate(1, VarEvent.domOverWDegIdx(cIndices[i]));
 			}
 
 			if (vars[i].isInstantiated()) {
@@ -548,7 +549,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 		}
 		for (int i = nbNegCoef; i < cste; i++) {
 			if (lb.get() + sCoeffs[i] > rmemb.getSupRight()) {
-				vars[i].instantiate(0, -1);
+				vars[i].instantiate(0, VarEvent.domOverWDegIdx(cIndices[i]));
 			}
 			if (vars[i].isInstantiated()) {
 				awakeOnInst(i);

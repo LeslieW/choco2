@@ -24,13 +24,10 @@ package choco.cp.solver.search.integer.branching;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
-import choco.kernel.solver.branch.AbstractBinIntBranching;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.IntBranchingDecision;
-import choco.kernel.solver.search.integer.IntVarValPair;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.search.integer.VarValPairSelector;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
  * A class for branching schemes that consider two branches: - one assigning a

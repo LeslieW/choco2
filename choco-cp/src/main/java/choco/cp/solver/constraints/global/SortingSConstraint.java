@@ -23,13 +23,14 @@
 package choco.cp.solver.constraints.global;
 
 
-import java.util.Arrays;
-import java.util.logging.Level;
-
 import choco.kernel.solver.ContradictionException;
+import static choco.kernel.solver.ContradictionException.Type.CONSTRAINT;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.integer.IntVar;
+
+import java.util.Arrays;
+import java.util.logging.Level;
 
 /**
  * <code>SortingConstraint</code> is a constraint that ensures
@@ -260,11 +261,11 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
 
 	private int computeF(int j) throws ContradictionException {
 		if (this.pQueue.isEmpty()) {
-			this.getSolver().getPropagationEngine().raiseContradiction(this, ContradictionException.CONSTRAINT);
+			this.getSolver().getPropagationEngine().raiseContradiction(this, CONSTRAINT);
 		}
 		int i = this.pQueue.pop();
 		if (x[i].getSup() < y[j].getInf()) {
-			this.getSolver().getPropagationEngine().raiseContradiction(this, ContradictionException.CONSTRAINT);
+			this.getSolver().getPropagationEngine().raiseContradiction(this, CONSTRAINT);
 		}
 
 		return i;
@@ -272,11 +273,11 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
 
 	private int computeFPrime(int j) throws ContradictionException {
 		if (this.pQueue.isEmpty()) {
-			this.getSolver().getPropagationEngine().raiseContradiction(this, ContradictionException.CONSTRAINT);
+			this.getSolver().getPropagationEngine().raiseContradiction(this, CONSTRAINT);
 		}
 		int i = this.pQueue.pop();
 		if (x[i].getInf() > y[j].getSup()) {
-			this.getSolver().getPropagationEngine().raiseContradiction(this, ContradictionException.CONSTRAINT);
+			this.getSolver().getPropagationEngine().raiseContradiction(this, CONSTRAINT);
 		}
 
 		return i;

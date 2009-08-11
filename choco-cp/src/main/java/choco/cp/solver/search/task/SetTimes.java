@@ -29,7 +29,7 @@ import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.branch.AbstractLargeIntBranching;
+import choco.kernel.solver.branch.AbstractLargeIntBranchingStrategy;
 import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.search.task.RandomizedTaskSelector;
 import choco.kernel.solver.search.task.TaskSelector;
@@ -129,7 +129,7 @@ class SetTimesNode implements IPretty {
  *
  * @author Arnaud Malapert
  */
-public class SetTimes extends AbstractLargeIntBranching {
+public class SetTimes extends AbstractLargeIntBranchingStrategy {
 
 
 	/** The flags wich indicates the last starting time of non selectable task. */
@@ -248,7 +248,7 @@ public class SetTimes extends AbstractLargeIntBranching {
 	 *
 	 * @throws ContradictionException the contradiction exception
 	 *
-	 * @see choco.kernel.solver.branch.AbstractIntBranching#goDownBranch(java.lang.Object, int)
+	 * @see choco.kernel.solver.branch.AbstractIntBranchingStrategy#goDownBranch(java.lang.Object, int)
 	 */
 	@Override
 	public void goDownBranch(final IntBranchingDecision decision) throws ContradictionException {

@@ -24,7 +24,7 @@ package choco.cp.solver.search.set;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.IntBranchingDecision;
-import choco.kernel.solver.search.set.AbstractSetBranching;
+import choco.kernel.solver.search.set.AbstractSetBranchingStrategy;
 import choco.kernel.solver.search.set.SetValSelector;
 import choco.kernel.solver.search.set.SetVarSelector;
 
@@ -36,7 +36,7 @@ import choco.kernel.solver.search.set.SetVarSelector;
 // *     for Research and Education                 *
 // **************************************************
 
-public final class AssignSetVar extends AbstractSetBranching {
+public final class AssignSetVar extends AbstractSetBranchingStrategy {
 
 	SetVarSelector varselector;
 	SetValSelector valselector;

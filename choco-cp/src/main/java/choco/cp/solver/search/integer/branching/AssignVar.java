@@ -25,14 +25,14 @@ package choco.cp.solver.search.integer.branching;
 
 import choco.cp.solver.search.integer.varselector.DomOverWDeg;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.branch.AbstractLargeIntBranching;
+import choco.kernel.solver.branch.AbstractLargeIntBranchingStrategy;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
 
-public class AssignVar extends AbstractLargeIntBranching {
+public class AssignVar extends AbstractLargeIntBranchingStrategy {
 	private VarSelector varHeuristic;
 	private ValIterator valHeuristic;
 	private ValSelector valSHeuristic;

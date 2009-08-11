@@ -25,6 +25,7 @@ package choco.cp.solver.variables.real;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateDouble;
 import choco.kernel.solver.ContradictionException;
+import static choco.kernel.solver.ContradictionException.Type.DOMAIN;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.real.RealDomain;
@@ -95,7 +96,7 @@ public class RealDomainImpl implements RealDomain {
 
 	public void intersect(RealInterval interval, int index) throws ContradictionException {
 		if ((interval.getInf() > this.getSup()) || (interval.getSup() < this.getInf())) {
-			this.getSolver().getPropagationEngine().raiseContradiction(this, ContradictionException.DOMAIN);
+			this.getSolver().getPropagationEngine().raiseContradiction(this, DOMAIN);
 		}
 
 		double old_width = this.getSup() - this.getInf();

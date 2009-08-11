@@ -20,32 +20,9 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.solver.search;
+package choco.kernel.solver.branch;
 
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
-import choco.kernel.solver.branch.IntBranching;
+public abstract class AbstractLargeIntBranchingStrategy extends AbstractIntBranchingStrategy {
 
-/**
- * An abstract class for all heuristics (variable, value, branching heuristics) related to search
- */
-public abstract class AbstractSearchHeuristic {
-  /**
-   * the branching object owning the variable heuristic
-   */
-  protected AbstractIntBranchingStrategy branching;
-
-  /**
-   * the model to which the heuristic is related
-   */
-  protected Solver solver;
-
-  /**
-   * each IVarSelector is associated to a branching strategy
-   *
-   * @return the associated branching strategy
-   */
-  public IntBranching getBranching() {
-    return branching;
-  }
 }
+

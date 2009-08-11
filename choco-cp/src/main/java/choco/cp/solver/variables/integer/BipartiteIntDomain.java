@@ -267,10 +267,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
             if (x == infv) {
                 int possibleninf = x + 1;
                 if (possibleninf > supv) {
-                    if (idx == -1)
-                        this.getSolver().getPropagationEngine().raiseContradiction(this.variable, ContradictionException.VARIABLE);
-                    else
-                        this.getSolver().getPropagationEngine().raiseContradiction(variable.getConstraintVector().get(idx), ContradictionException.CONSTRAINT);
+                    this.getSolver().getPropagationEngine().raiseContradiction(idx, variable);
                 }
                 int min = Integer.MAX_VALUE;
                 for (int i = valuesInDomainNumber.get(); i >= 0; i--) {
@@ -284,10 +281,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
             } else if (x == supv) {
                 int possiblesup = x - 1;
                 if (possiblesup < infv) {
-                    if (idx == -1)
-                        this.getSolver().getPropagationEngine().raiseContradiction(this.variable, ContradictionException.VARIABLE);
-                    else
-                        this.getSolver().getPropagationEngine().raiseContradiction(variable.getConstraintVector().get(idx), ContradictionException.CONSTRAINT);
+                    this.getSolver().getPropagationEngine().raiseContradiction(idx, variable);
                 }
                 int max = Integer.MIN_VALUE;
                 for (int i = valuesInDomainNumber.get(); i >= 0; i--) {

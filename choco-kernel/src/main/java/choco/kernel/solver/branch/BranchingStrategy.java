@@ -20,32 +20,29 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.solver.search;
 
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
-import choco.kernel.solver.branch.IntBranching;
+package choco.kernel.solver.branch;
+
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.solver.ContradictionException;
+
+import java.util.logging.Logger;
 
 /**
- * An abstract class for all heuristics (variable, value, branching heuristics) related to search
+ * Branching objects are responsible for controlling the execution of the program at a point where
+ * the control flow may be split between different branches
  */
-public abstract class AbstractSearchHeuristic {
-  /**
-   * the branching object owning the variable heuristic
-   */
-  protected AbstractIntBranchingStrategy branching;
+public interface BranchingStrategy {
 
-  /**
-   * the model to which the heuristic is related
-   */
-  protected Solver solver;
-
-  /**
-   * each IVarSelector is associated to a branching strategy
-   *
-   * @return the associated branching strategy
-   */
-  public IntBranching getBranching() {
-    return branching;
-  }
+	/**
+	 * an object for logging trace statements
+	 */
+	public final static Logger LOGGER = ChocoLogging.getBranchingLogger();
+	
+	/**
+	 * selecting the object under scrutiny (that object on which an alternative will be set)
+	 *
+	 * @return the object on which an alternative will be set (often  a variable)
+	 */
+	public Object selectBranchingObject() throws ContradictionException;
 }

@@ -42,9 +42,17 @@ public interface PropagationEngine {
 	/**
 	 * Raising a contradiction with a cause.
 	 */
-	public void raiseContradiction(Object cause, int type) throws ContradictionException;
+	public void raiseContradiction(Object cause, ContradictionException.Type type) throws ContradictionException;
 
-	public void raiseContradiction(Object cause, int type, int move) throws ContradictionException;
+    /**
+	 * Raising a contradiction with a cause and a movement
+	 */
+	public void raiseContradiction(Object cause, ContradictionException.Type type, int move) throws ContradictionException;
+
+    /**
+	 * Raising a contradiction with a variable.
+	 */
+    public void raiseContradiction(int cidx, Var variable) throws ContradictionException;
 
 	/**
 	 * Retrieving the cause of the last contradiction.

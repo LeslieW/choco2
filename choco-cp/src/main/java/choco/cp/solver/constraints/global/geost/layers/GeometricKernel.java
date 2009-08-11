@@ -10,6 +10,7 @@ import choco.cp.solver.constraints.global.geost.internalConstraints.*;
 import choco.kernel.common.util.objects.Pair;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.propagation.VarEvent;
 
 import java.util.HashMap;
 import java.util.Vector;
@@ -243,7 +244,7 @@ public class GeometricKernel {
 	            // We call FilterObj with the fixed shape sid. To avoid the creation of another object we use worldPush and worldPop. Actually, by doing so, the object o
 				//is modified between worldPush() and worldPop() (where we collect the information we interested to : b, max, min) and restored into its state after worldPop
 				o.getCoord(0).getSolver().worldPushDuringPropagation();
-			    o.getShapeId().instantiate(sid, -1);
+			    o.getShapeId().instantiate(sid, VarEvent.NOCAUSE);
 
 
 				b = FilterObj(k, oid);
@@ -259,7 +260,7 @@ public class GeometricKernel {
 				o.getCoord(0).getSolver().worldPopDuringPropagation();
 
 				if (!b)
-					o.getShapeId().removeVal(sid, -1);
+					o.getShapeId().removeVal(sid, VarEvent.NOCAUSE);
 				else
 				{
                     //Take the union of the pruning, that is consider the greatest forbidden region.
@@ -272,8 +273,8 @@ public class GeometricKernel {
 			}
 			for (int d = 0; d < k; d++)
 			{
-				o.getCoord(d).updateInf(minG[d], -1);
-				o.getCoord(d).updateSup(maxG[d], -1);
+				o.getCoord(d).updateInf(minG[d], VarEvent.NOCAUSE);
+				o.getCoord(d).updateSup(maxG[d], VarEvent.NOCAUSE);
 			}
 			return true;
 		}
@@ -466,7 +467,7 @@ public class GeometricKernel {
 //
 //            stp.opt.GetFRCalls++;
 //
-            o.getCoord(d).updateInf(c.getCoord(d), -1);
+            o.getCoord(d).updateInf(c.getCoord(d), VarEvent.NOCAUSE);
 //            cst.nbOfUpdates++;
 		}
 
@@ -571,7 +572,7 @@ public class GeometricKernel {
 		}
 
 		if (b) {
-			o.getCoord(d).updateSup(c.getCoord(d), -1);
+			o.getCoord(d).updateSup(c.getCoord(d), VarEvent.NOCAUSE);
 			cst.nbOfUpdates++;
 		}
 
@@ -734,9 +735,9 @@ public class GeometricKernel {
             int[] ctrlV = ctrlVs.elementAt(m);
 
             if (ctrlV[0] < 0)
-                o.getShapeId().instantiate(o.getShapeId().getInf(), -1);
+                o.getShapeId().instantiate(o.getShapeId().getInf(), VarEvent.NOCAUSE);
             else
-                o.getShapeId().instantiate(o.getShapeId().getSup(), -1);
+                o.getShapeId().instantiate(o.getShapeId().getSup(), VarEvent.NOCAUSE);
 
             boolean has_same_sid = ( (sid_prime!=null) && (o.getShapeId().getVal() == sid_prime) );
             boolean has_same_domain = ( (domain_prime!=null) && (same_domain(domain_prime, o)) );
@@ -821,9 +822,9 @@ public class GeometricKernel {
 	{
 		Obj o = stp.getObject(oid);
 		if (ctrlV[0] < 0)
-			o.getShapeId().instantiate(o.getShapeId().getInf(), -1);
+			o.getShapeId().instantiate(o.getShapeId().getInf(), VarEvent.NOCAUSE);
 		else
-			o.getShapeId().instantiate(o.getShapeId().getSup(), -1);
+			o.getShapeId().instantiate(o.getShapeId().getSup(), VarEvent.NOCAUSE);
 
 		o.getRelatedInternalConstraints().clear();
 // Holes are not addded for now!
@@ -1008,7 +1009,7 @@ public class GeometricKernel {
 		}
 
         for (int d = 0; d < k; d++)
-			o.getCoord(d).instantiate(c.getCoord(d), -1);
+			o.getCoord(d).instantiate(c.getCoord(d), VarEvent.NOCAUSE);
 
         if (memo.active) {
             if (memo.m.get(ctrlV)==null) {
@@ -1515,7 +1516,7 @@ public class GeometricKernel {
 
         if (b)
         {
-            o.getCoord(d).updateInf(c.getCoord(d), -1);
+            o.getCoord(d).updateInf(c.getCoord(d), VarEvent.NOCAUSE);
             if (trace) System.out.println("//out:o:"+o);
         }
 
@@ -1584,7 +1585,7 @@ public class GeometricKernel {
         }
 
         if (b) {
-            o.getCoord(d).updateSup(c.getCoord(d), -1);
+            o.getCoord(d).updateSup(c.getCoord(d), VarEvent.NOCAUSE);
         }
         return b;
     }
@@ -3854,7 +3855,7 @@ public class GeometricKernel {
         stp.opt.sum_square_jumps+=(local_nbr_jumps*local_nbr_jumps);
 
         
-        if (b) o.getCoord(d).updateInf(c.getCoord(d), -1);
+        if (b) o.getCoord(d).updateInf(c.getCoord(d), VarEvent.NOCAUSE);
 //        if (stp.opt.debug) {
 //            System.out.println("\n/*Processing*/break;"+"case "+(stp.phase++)+":");
 //        }
@@ -4015,7 +4016,7 @@ public class GeometricKernel {
         Pair<Integer,Integer> p=DealWithSucc(d, last_dprune, last_diff, diff_counter, c, initial_c, k);
         last_diff=p.fst; last_dprune=d; diff_counter=p.snd;
 
-        if (b) o.getCoord(d).updateSup(c.getCoord(d), -1);
+        if (b) o.getCoord(d).updateSup(c.getCoord(d), VarEvent.NOCAUSE);
  //       if (stp.opt.debug) {
  //           System.out.println("\n/*Processing*/break;"+"case "+(stp.phase++)+":");
   //      }

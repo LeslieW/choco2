@@ -24,6 +24,7 @@ package choco.cp.solver.constraints.real;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
+import static choco.kernel.solver.ContradictionException.Type.CONSTRAINT;
 import choco.kernel.solver.constraints.real.AbstractBinRealIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.real.RealIntervalConstant;
@@ -107,7 +108,7 @@ public class MixedCstElt extends AbstractBinRealIntSConstraint{
     while (values[inf] < v0.getInf()) {
       inf++;
     }
-    if (inf > v1.getSup()) this.solver.getPropagationEngine().raiseContradiction(this, ContradictionException.CONSTRAINT);
+    if (inf > v1.getSup()) this.solver.getPropagationEngine().raiseContradiction(this, CONSTRAINT);
     v1.updateInf(inf, cIdx1);
   }
 
@@ -116,7 +117,7 @@ public class MixedCstElt extends AbstractBinRealIntSConstraint{
     while (values[sup] > v0.getSup()) {
       sup--;
     }
-    if (sup < v1.getInf()) this.solver.getPropagationEngine().raiseContradiction(this, ContradictionException.CONSTRAINT);
+    if (sup < v1.getInf()) this.solver.getPropagationEngine().raiseContradiction(this, CONSTRAINT);
     v1.updateSup(sup, cIdx1);
   }
 

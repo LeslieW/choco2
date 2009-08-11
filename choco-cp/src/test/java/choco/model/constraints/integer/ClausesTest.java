@@ -30,7 +30,6 @@ import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.memory.recomputation.EnvironmentRecomputation;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -253,7 +252,8 @@ public class ClausesTest {
         int nbsol = computeNbSol3();
         for (int seed = 0; seed < 1; seed++) {
             CPModel mod = new CPModel();
-            CPSolver s = new CPSolver(new EnvironmentRecomputation());
+            CPSolver s = new CPSolver(/*new EnvironmentRecomputation()*/);
+            s.setRecomputationGap(10);
             IntegerVariable[] vars = makeIntVarArray("b", 3, 0, 1, "cp:binary");
             mod.addVariables(vars);
             s.read(mod);

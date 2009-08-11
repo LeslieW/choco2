@@ -233,7 +233,7 @@ public class ElementV extends AbstractLargeIntSConstraint {
         }
       } else if (idxVar.canBeInstantiatedTo(idx - cste)) {  //otherwise the variable is not in scope
         if (!valVar.canBeEqualTo(vars[idx])) {
-          idxVar.removeVal(idx - cste, VarEvent.NOCAUSE);
+          idxVar.removeVal(idx - cste, VarEvent.domOverWDegIdx(cIndices[idx]));
           // NOCAUSE because if it changes the domain of IndexVar (what is not sure if idxVar
           // uses an interval approximated domain) then it must cause updateValueFromIndex(c)
         } else if (vars[idx].getInf() > valVar.getInf()) {
@@ -245,7 +245,7 @@ public class ElementV extends AbstractLargeIntSConstraint {
             minval = Math.min(minval, vars[feasibleIndex].getInf());
           }
             it.dispose();
-          valVar.updateInf(minval, VarEvent.NOCAUSE);
+          valVar.updateInf(minval, VarEvent.domOverWDegIdx(cIndices[vars.length - 1]));
           // NOCAUSE because if valVar takes a new min, then it can have consequence
           // on the constraint itself (ie remove indices such that l[i].sup < value.inf)
         }
@@ -277,7 +277,7 @@ public class ElementV extends AbstractLargeIntSConstraint {
         }
       } else if (idxVar.canBeInstantiatedTo(idx - cste)) {  //otherwise the variable is not in scope
         if (!valVar.canBeEqualTo(vars[idx])) {
-          idxVar.removeVal(idx - cste, VarEvent.NOCAUSE);
+          idxVar.removeVal(idx - cste, VarEvent.domOverWDegIdx(cIndices[idx]));
           // NOCAUSE because if it changes the domain of IndexVar (what is not sure if idxVar
           // uses an interval approximated domain) then it must cause updateValueFromIndex(c)
         } else if (vars[idx].getSup() < valVar.getSup()) {
@@ -289,7 +289,7 @@ public class ElementV extends AbstractLargeIntSConstraint {
             maxval = Math.max(maxval, vars[feasibleIndex].getSup());
           }
             it.dispose();
-          valVar.updateSup(maxval, VarEvent.NOCAUSE);
+          valVar.updateSup(maxval, VarEvent.domOverWDegIdx(cIndices[vars.length - 1]));
           // NOCAUSE because if valVar takes a new min, then it can have consequence
           // on the constraint itself (ie remove indices such that l[i].sup < value.inf)
         }
@@ -317,7 +317,7 @@ public class ElementV extends AbstractLargeIntSConstraint {
         }
       } else if (idxVar.canBeInstantiatedTo(idx - cste)) {  //otherwise the variable is not in scope
         if (!valVar.canBeEqualTo(vars[idx])) {
-          idxVar.removeVal(idx - cste, VarEvent.NOCAUSE);
+          idxVar.removeVal(idx - cste, VarEvent.domOverWDegIdx(cIndices[idx]));
           // NOCAUSE because if it changes the domain of IndexVar (what is not sure if idxVar
           // uses an interval approximated domain) then it must cause updateValueFromIndex(c)
         } else {
@@ -356,7 +356,7 @@ public class ElementV extends AbstractLargeIntSConstraint {
         }
           it.dispose();
         if (!existsSupport) {
-          valVar.removeVal(x, VarEvent.NOCAUSE);
+          valVar.removeVal(x, VarEvent.domOverWDegIdx(cIndices[vars.length - 1]));
         }
       }
     }

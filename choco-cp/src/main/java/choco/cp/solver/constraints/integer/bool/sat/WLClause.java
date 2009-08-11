@@ -1,6 +1,7 @@
 package choco.cp.solver.constraints.integer.bool.sat;
 
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.propagation.VarEvent;
 
 /**
  * A clause is a set of litterals used within the watched literals
@@ -102,9 +103,9 @@ public class WLClause {
 
     public void updateDomain() throws ContradictionException {
         if (lits[0] > 0) {
-            voc.boolvars[lits[0]].instantiate(1, -1);//propagator.cIndices[lits[0] - 1]);
+            voc.boolvars[lits[0]].instantiate(1, VarEvent.NOCAUSE);//propagator.cIndices[lits[0] - 1]);
         } else {
-            voc.boolvars[-lits[0]].instantiate(0, -1);//propagator.cIndices[-lits[0] - 1]);
+            voc.boolvars[-lits[0]].instantiate(0, VarEvent.NOCAUSE);//propagator.cIndices[-lits[0] - 1]);
         }
     }
 

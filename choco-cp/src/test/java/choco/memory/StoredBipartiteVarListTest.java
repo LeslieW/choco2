@@ -28,6 +28,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.StoredBipartiteVarList;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.After;
 import org.junit.Assert;
@@ -81,7 +82,7 @@ public class StoredBipartiteVarListTest {
         checkIterator(it, var);
 
         env.worldPush();
-        var[1].instantiate(0, -1);
+        var[1].instantiate(0, VarEvent.NOCAUSE);
 
 //        ar.isInstanciated(var[1]);
 
@@ -93,7 +94,7 @@ public class StoredBipartiteVarListTest {
         checkIterator(it, new IntDomainVar[]{var[0], var[3], var[2]});
 
         env.worldPush();
-        var[0].instantiate(0, -1);
+        var[0].instantiate(0, VarEvent.NOCAUSE);
 //        ar.isInstanciated(var[0]);
 
         it = ar.quickIterator();
@@ -116,29 +117,29 @@ public class StoredBipartiteVarListTest {
         }
 
         s.worldPush();
-        var[0].instantiate(0,-1);
+        var[0].instantiate(0,VarEvent.NOCAUSE);
 
         s.worldPush();
-        var[3].instantiate(0,-1);
-        var[1].instantiate(0,-1);
-        var[2].instantiate(0,-1);
+        var[3].instantiate(0,VarEvent.NOCAUSE);
+        var[1].instantiate(0,VarEvent.NOCAUSE);
+        var[2].instantiate(0,VarEvent.NOCAUSE);
 
         s.worldPop();
         s.worldPush();
-        var[3].instantiate(0,-1);
-        var[1].instantiate(0,-1);
-        var[2].instantiate(0,-1);
+        var[3].instantiate(0,VarEvent.NOCAUSE);
+        var[1].instantiate(0,VarEvent.NOCAUSE);
+        var[2].instantiate(0,VarEvent.NOCAUSE);
 
         s.worldPop();
         s.worldPop();
 
         s.worldPush();
-        var[0].instantiate(0,-1);
-        var[1].instantiate(0,-1);
+        var[0].instantiate(0,VarEvent.NOCAUSE);
+        var[1].instantiate(0,VarEvent.NOCAUSE);
 
         s.worldPush();
-        var[2].instantiate(0,-1);
-        var[3].instantiate(0,-1);
+        var[2].instantiate(0,VarEvent.NOCAUSE);
+        var[3].instantiate(0,VarEvent.NOCAUSE);
 
         s.worldPop();
         Iterator it = ar.quickIterator();

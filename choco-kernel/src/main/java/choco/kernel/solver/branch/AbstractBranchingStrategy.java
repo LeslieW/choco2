@@ -25,7 +25,7 @@ package choco.kernel.solver.branch;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 
-public abstract class AbstractBranching implements Branching {
+public abstract class AbstractBranchingStrategy implements BranchingStrategy {
 
 	/**
 	 * the main control object (responsible for the whole exploration, while Eqthe branching object
@@ -35,7 +35,7 @@ public abstract class AbstractBranching implements Branching {
 	/**
 	 * a link towards the next branching object (once this one is exhausted)
 	 */
-	private AbstractBranching nextBranching;
+	private AbstractBranchingStrategy nextBranching;
 
 
 	public final static String LOG_DOWN_MSG = "down branch ";
@@ -57,7 +57,7 @@ public abstract class AbstractBranching implements Branching {
 	 * Gets the next branching.
 	 * @return the next branching
 	 */
-	public final AbstractBranching getNextBranching() {
+	public final AbstractBranchingStrategy getNextBranching() {
 		return nextBranching;
 	}
 
@@ -65,7 +65,7 @@ public abstract class AbstractBranching implements Branching {
 	 * Sets the next branching.
 	 * @param nextBranching the next branching
 	 */
-	public final void setNextBranching(AbstractBranching nextBranching) {
+	public final void setNextBranching(AbstractBranchingStrategy nextBranching) {
 		this.nextBranching = nextBranching;
 	}
 

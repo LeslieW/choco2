@@ -31,7 +31,7 @@ import choco.kernel.solver.search.IntBranchingDecision;
  * is labeled with an integer.
  * This is typically useful for choice points in search trees.
  */
- public interface IntBranching extends Branching {
+ public interface IntBranching extends BranchingStrategy {
 
   /**
    * Performs the action, 
@@ -87,7 +87,7 @@ import choco.kernel.solver.search.IntBranchingDecision;
 // * is labeled with an integer.
 // * This is typically useful for choice points in search trees.
 // */
-//public interface IntBranching extends Branching {
+//public interface IntBranching extends BranchingStrategy {
 //
 //  /**
 //   * Performs the action, 

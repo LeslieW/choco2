@@ -27,6 +27,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -139,7 +140,7 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
             if (isEntailed) {
                 vars[0].instantiate(1, cIndices[0]);
             } else {
-                vars[0].instantiate(0, -1);//cIndices[0]);
+                vars[0].instantiate(0, VarEvent.domOverWDegIdx(cIndices[0]));//cIndices[0]);
             }
         }
     }

@@ -22,10 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 import choco.IPretty;
 import choco.kernel.common.IndexFactory;
 import choco.kernel.memory.IEnvironment;
@@ -36,7 +32,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.real.RealVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.model.variables.set.SetVariable;
-import choco.kernel.solver.branch.AbstractIntBranching;
+import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.IntExp;
@@ -63,6 +59,10 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
 import choco.kernel.visu.IVisu;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 
 /**
  * Created by IntelliJ IDEA.
@@ -81,9 +81,9 @@ public interface Solver extends IMeasures, IPretty {
 
 	public void generateSearchStrategy();
 
-	public void attachGoal(AbstractIntBranching branching);
+	public void attachGoal(AbstractIntBranchingStrategy branching);
 
-	public void addGoal(AbstractIntBranching branching);
+	public void addGoal(AbstractIntBranchingStrategy branching);
 
 
     /**

@@ -264,6 +264,7 @@ public abstract class AbstractIntDomain implements IntDomain {
    * a real modification or not
    *
    * @param x the new instantiate value
+   * @param idx constraint idx
    * @return wether it is a real modification or not
    * @throws ContradictionException contradiction exception
    */
@@ -271,20 +272,14 @@ public abstract class AbstractIntDomain implements IntDomain {
   protected boolean _instantiate(int x, int idx) throws ContradictionException {
     if (variable.isInstantiated()) {
       if (variable.getVal() != x) {
-        if (idx == -1)
-          this.getSolver().getPropagationEngine().raiseContradiction(this.variable, ContradictionException.VARIABLE);
-        else
-          this.getSolver().getPropagationEngine().raiseContradiction(variable.getConstraintVector().get(idx), ContradictionException.CONSTRAINT);
+        this.getSolver().getPropagationEngine().raiseContradiction(idx, this.variable);
         return true; // Just for compilation !
       } else return false;
     } else {
       if (x < getInf() || x > getSup() || !contains(x)) { // GRT : we need to check bounds
         // since contains suppose trivial bounds
         // are containing tested value !!
-        if (idx == -1)
-          this.getSolver().getPropagationEngine().raiseContradiction(this.variable, ContradictionException.VARIABLE);
-        else
-          this.getSolver().getPropagationEngine().raiseContradiction(variable.getConstraintVector().get(idx), ContradictionException.CONSTRAINT);
+        this.getSolver().getPropagationEngine().raiseContradiction(idx, this.variable);
         return true; // Just for compilation !
       } else {
         restrict(x);
@@ -298,6 +293,7 @@ public abstract class AbstractIntDomain implements IntDomain {
    * Improving the lower bound.
    *
    * @param x the new lower bound
+   * @param idx constraint idx
    * @return a boolean indicating wether the update has been done
    * @throws ContradictionException contradiction exception
    */
@@ -306,10 +302,7 @@ public abstract class AbstractIntDomain implements IntDomain {
   protected boolean _updateInf(int x, int idx) throws ContradictionException {
     if (x > getInf()) {
       if (x > getSup()) {
-        if (idx == -1)
-          this.getSolver().getPropagationEngine().raiseContradiction(this.variable, ContradictionException.VARIABLE);
-        else
-          this.getSolver().getPropagationEngine().raiseContradiction(variable.getConstraintVector().get(idx), ContradictionException.CONSTRAINT);
+        this.getSolver().getPropagationEngine().raiseContradiction(idx, this.variable);
         return true; // Just for compilation !
       } else {
         updateInf(x);
@@ -325,16 +318,14 @@ public abstract class AbstractIntDomain implements IntDomain {
    * Improving the upper bound.
    *
    * @param x the new upper bound
+   * @param idx constraint idx
    * @return wether the update has been done
    * @throws ContradictionException contradiction exception
    */
   protected boolean _updateSup(int x, int idx) throws ContradictionException {
     if (x < getSup()) {
       if (x < getInf()) {
-        if (idx == -1)
-          this.getSolver().getPropagationEngine().raiseContradiction(this.variable, ContradictionException.VARIABLE);
-        else
-          this.getSolver().getPropagationEngine().raiseContradiction(variable.getConstraintVector().get(idx), ContradictionException.CONSTRAINT);
+        this.getSolver().getPropagationEngine().raiseContradiction(idx, this.variable);
         return true; // Just for compilation !
       } else {
         updateSup(x);
@@ -350,6 +341,7 @@ public abstract class AbstractIntDomain implements IntDomain {
    * was a real modification on the domain.
    *
    * @param x the value to remove
+   * @param idx constraint idx
    * @return wether the removal has been done
    * @throws ContradictionException contradiction excpetion
    */

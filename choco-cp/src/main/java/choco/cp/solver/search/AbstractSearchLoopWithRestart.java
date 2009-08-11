@@ -24,8 +24,8 @@ package choco.cp.solver.search;
 
 import choco.cp.solver.search.restart.IKickRestart;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.branch.AbstractBranching;
-import choco.kernel.solver.branch.AbstractIntBranching;
+import choco.kernel.solver.branch.AbstractBranchingStrategy;
+import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.*;
 import choco.kernel.solver.search.IntBranchingTrace;
@@ -98,7 +98,7 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 		super.initialize();
 	}
 
-	private AbstractBranching br;
+	private AbstractBranchingStrategy br;
 
 	@Override
 	public void initSearch() {
@@ -142,7 +142,7 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 
 	private Object branchingObj;
 
-	private AbstractIntBranching currentBranching;
+	private AbstractIntBranchingStrategy currentBranching;
 
 	@Override
 	public void openNode() {
@@ -154,7 +154,7 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 				branchingObj = currentBranching.selectBranchingObject();
 				if( branchingObj == null) {
 					//the branching is achieved, check next branching
-					currentBranching = (AbstractIntBranching) currentBranching.getNextBranching(); 
+					currentBranching = (AbstractIntBranchingStrategy) currentBranching.getNextBranching();
 				}else {
 					//create the node associated with the branching object
 					ctx = searchStrategy.pushTrace();

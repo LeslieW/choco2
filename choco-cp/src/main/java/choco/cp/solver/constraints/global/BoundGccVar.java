@@ -25,6 +25,7 @@ package choco.cp.solver.constraints.global;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -147,13 +148,13 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         return card[i].getInf();
     }
 
-    public void updateSup(IntDomainVar v, int nsup, int idx) throws ContradictionException {
-        v.updateSup(nsup, -1);//cIndices[idx]); //<hca> why is it not idempotent ?
-    }
-
-    public void updateInf(IntDomainVar v, int ninf, int idx) throws ContradictionException {
-        v.updateInf(ninf, -1);//cIndices[idx]); //<hca> why is it not idempotent ?
-    }
+//    public void updateSup(IntDomainVar v, int nsup, int idx) throws ContradictionException {
+//        v.updateSup(nsup, VarEvent.domOverWDegIdx(cIndices[idx]));//cIndices[idx]); //<hca> why is it not idempotent ?
+//    }
+//
+//    public void updateInf(IntDomainVar v, int ninf, int idx) throws ContradictionException {
+//        v.updateInf(ninf, VarEvent.domOverWDegIdx(cIndices[idx]));//cIndices[idx]); //<hca> why is it not idempotent ?
+//    }
 
     //factorize this code with the boundalldiff
     protected void sortmin() {
@@ -279,7 +280,8 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
             }
             if (h[x] > x) {
                 w = pathmax(h, h[x]);
-                updateInf(maxsorted[i].var, bounds[w], maxsorted[i].idx);
+//                updateInf(maxsorted[i].var, bounds[w], maxsorted[i].idx);
+                maxsorted[i].var.updateInf(bounds[w], VarEvent.domOverWDegIdx(maxsorted[i].idx));
                 pathset(h, x, w, w);
             }
             if (d[z] == u.sum(bounds[y], bounds[z] - 1)) {
@@ -314,7 +316,8 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
             }
             if (h[x] < x) {
                 w = pathmin(h, h[x]);
-                updateSup(minsorted[i].var, bounds[w] - 1, minsorted[i].idx);
+//                updateSup(minsorted[i].var, bounds[w] - 1, minsorted[i].idx);
+                minsorted[i].var.updateSup(bounds[w] - 1, minsorted[i].idx);
                 pathset(h, x, w, w);
             }
             if (d[z] == u.sum(bounds[z], bounds[y] - 1)) {
@@ -423,7 +426,8 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
             x = maxsorted[i].minrank;
             y = maxsorted[i].maxrank;
             if ((stableInterval[x] <= x) || (y > stableInterval[x])) {
-                updateInf(maxsorted[i].var, l.skipNonNullElementsRight(bounds[newMin[i]]), -1);//maxsorted[i].idx);
+//                updateInf(maxsorted[i].var, l.skipNonNullElementsRight(bounds[newMin[i]]), maxsorted[i].idx);
+                maxsorted[i].var.updateInf(l.skipNonNullElementsRight(bounds[newMin[i]]), maxsorted[i].idx);
             }
         }
     }
@@ -491,7 +495,8 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
             int x = minsorted[i].minrank;
             int y = minsorted[i].maxrank;
             if ((stableInterval[x] <= x) || (y > stableInterval[x])) {
-                updateSup(minsorted[i].var, l.skipNonNullElementsLeft(bounds[newMin[i]] - 1), -1);//minsorted[i].idx);
+//                updateSup(minsorted[i].var, l.skipNonNullElementsLeft(bounds[newMin[i]] - 1), minsorted[i].idx);
+                minsorted[i].var.updateSup(l.skipNonNullElementsLeft(bounds[newMin[i]] - 1), minsorted[i].idx);
             }
         }
 
@@ -594,7 +599,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
             nbInf--;
         }
         if (nbInf == getMaxOcc(inf - offset)) {
-            vars[i].updateInf(inf + 1, -1);
+            vars[i].updateInf(inf + 1, VarEvent.domOverWDegIdx(cIndices[i]));
         }
     }
 
@@ -616,7 +621,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
             nbSup--;
         }
         if (nbSup == getMaxOcc(sup - offset)) {
-            vars[i].updateSup(sup - 1, -1);
+            vars[i].updateSup(sup - 1, VarEvent.domOverWDegIdx(cIndices[i]));
         }
     }
 
@@ -651,7 +656,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         } else if (nbvalsure == getMaxOcc(val - offset)) {
             for (int j = 0; j < nbVars; j++) {
                 if (!vars[j].isInstantiatedTo(val)) {
-                    vars[j].removeVal(val, -1);// cIndices[j]); not idempotent because data structure is maintained in awakeOnX methods
+                    vars[j].removeVal(val, VarEvent.domOverWDegIdx(cIndices[j]));// cIndices[j]); not idempotent because data structure is maintained in awakeOnX methods
                 }
             }
         }
@@ -664,7 +669,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         } else if (nbpos == getMinOcc(val - offset)) {
             for (int j = 0; j < nbVars; j++) {
                 if (vars[j].canBeInstantiatedTo(val)) {
-                    vars[j].instantiate(val, -1);// cIndices[j]); not idempotent because data structure is maintained in awakeOnX methods
+                    vars[j].instantiate(val, VarEvent.domOverWDegIdx(cIndices[j]));// cIndices[j]); not idempotent because data structure is maintained in awakeOnX methods
                 }
             }
         }
@@ -680,7 +685,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
     public void awakeOnRem(int idx, int i) throws ContradictionException {
         if (idx < nbVars) {
             val_maxOcc[i - offset].add(-1);
-            card[i - offset].updateSup(val_maxOcc[i - offset].get(), -1);
+            card[i - offset].updateSup(val_maxOcc[i - offset].get(), VarEvent.domOverWDegIdx(cIndices[idx]));
         }
     }
 

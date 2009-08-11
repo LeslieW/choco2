@@ -23,7 +23,7 @@
 package choco.kernel.solver.search.set;
 
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.branch.AbstractBinIntBranching;
+import choco.kernel.solver.branch.AbstractBinIntBranchingStrategy;
 import choco.kernel.solver.search.IntBranchingDecision;
 
 //**************************************************
@@ -35,7 +35,7 @@ import choco.kernel.solver.search.IntBranchingDecision;
 //**************************************************
 
 
-public abstract class AbstractSetBranching extends AbstractBinIntBranching {
+public abstract class AbstractSetBranchingStrategy extends AbstractBinIntBranchingStrategy {
 
 	public final static String[] LOG_DECISION_MSG = new String[]{"contains ", "contains not "};
 	
@@ -54,7 +54,7 @@ public abstract class AbstractSetBranching extends AbstractBinIntBranching {
 
 	/**
 	 * nothing to do
-	 * @see choco.kernel.solver.branch.AbstractIntBranching#goUpBranch(java.lang.Object, int)
+	 * @see choco.kernel.solver.branch.AbstractIntBranchingStrategy#goUpBranch(java.lang.Object, int)
 	 */
 	@Override
 	public void goUpBranch(final IntBranchingDecision ctx) throws ContradictionException {

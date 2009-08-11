@@ -31,6 +31,7 @@ import choco.cp.solver.constraints.global.matching.AllDifferent;
 import choco.cp.solver.constraints.global.scheduling.Disjunctive;
 import choco.cp.solver.constraints.integer.*;
 import choco.cp.solver.constraints.integer.bool.BoolIntLinComb;
+import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
 import choco.cp.solver.constraints.integer.extension.CspLargeSConstraint;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
 import choco.cp.solver.variables.integer.*;
@@ -1198,5 +1199,36 @@ public class ConstraintsDetectionTest {
 
         }
     }
+
+    @Test
+       public void detectClauses(){
+           Model m;
+           CPSolver s;
+           Random r;
+
+           for(int seed = 0; seed < 20; seed++){
+               r = new Random(seed);
+               m = new CPModel();
+               m.setDefaultExpressionDecomposition(true);
+               IntegerVariable[] vars = Choco.makeIntVarArray("v", 10, 0,1);
+               Constraint[] cs = new Constraint[10];
+               for(int c = 0; c < 10; c++){
+                   cs[c] = eq(vars[c], r.nextInt(2));
+               }
+               m.addConstraint(or(cs));
+
+               s = new CPSolver();
+               s.read(m);
+
+               Iterator<SConstraint> it = s.getIntConstraintIterator();
+               while(it.hasNext()){
+                   SConstraint c = it.next();
+                   boolean t = c instanceof ClauseStore;
+                   Assert.assertTrue("unexpected type of constraint", t);
+               }
+
+           }
+       }
+
 
 }

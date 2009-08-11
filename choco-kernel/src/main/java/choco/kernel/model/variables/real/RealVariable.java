@@ -41,7 +41,7 @@ public class RealVariable extends RealExpressionVariable {
 
 	public RealVariable(String name, VariableType type, double lowB, double uppB) {
         //noinspection NullArgumentToVariableArgMethod
-        super(new double[]{lowB, uppB}, Operator.NONE, type, null);
+        super(new double[]{lowB, uppB}, Operator.NONE, type);
 		this.name = name;
 		this.setLowB(lowB);
 		this.setUppB(uppB);

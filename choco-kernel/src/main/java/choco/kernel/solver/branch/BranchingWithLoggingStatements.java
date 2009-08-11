@@ -22,15 +22,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.branch;
 
-import java.util.logging.Level;
-
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.IntBranchingDecision;
 
-public class BranchingWithLoggingStatements extends AbstractIntBranching {
+import java.util.logging.Level;
+
+public class BranchingWithLoggingStatements extends AbstractIntBranchingStrategy {
 	
 	/**
 	 * prefixes for log statements (visualize search depth)
@@ -40,12 +40,12 @@ public class BranchingWithLoggingStatements extends AbstractIntBranching {
 
 	public final static Level LOGGING_LEVEL = Level.INFO;
 
-	public AbstractIntBranching internalBranching;
+	public AbstractIntBranchingStrategy internalBranching;
 
 
 
 
-	public BranchingWithLoggingStatements(AbstractIntBranching internalBranching) {
+	public BranchingWithLoggingStatements(AbstractIntBranchingStrategy internalBranching) {
 		super();
 		this.internalBranching = internalBranching;
 		this.setSolver(internalBranching.manager);
@@ -132,11 +132,11 @@ public class BranchingWithLoggingStatements extends AbstractIntBranching {
 		internalBranching.initConstraintForBranching(c);
 	}
 
-	public final static AbstractIntBranching setLoggingStatement(AbstractIntBranching goal) {
-		AbstractIntBranching res = new BranchingWithLoggingStatements(goal);
+	public final static AbstractIntBranchingStrategy setLoggingStatement(AbstractIntBranchingStrategy goal) {
+		AbstractIntBranchingStrategy res = new BranchingWithLoggingStatements(goal);
 		if (goal.getNextBranching() != null) {
-			if(goal.getNextBranching() instanceof AbstractIntBranching) {
-				res.setNextBranching(setLoggingStatement((AbstractIntBranching) goal.getNextBranching()));
+			if(goal.getNextBranching() instanceof AbstractIntBranchingStrategy) {
+				res.setNextBranching(setLoggingStatement((AbstractIntBranchingStrategy) goal.getNextBranching()));
 			}else {
 				throw new SolverException("cant set logging statements");
 			}

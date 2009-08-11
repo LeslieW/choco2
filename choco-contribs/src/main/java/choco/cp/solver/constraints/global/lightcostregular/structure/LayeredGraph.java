@@ -1,17 +1,18 @@
 package choco.cp.solver.constraints.global.lightcostregular.structure;
 
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
-import choco.kernel.memory.IStateInt;
+import choco.Choco;
+import choco.cp.model.CPModel;
+import choco.cp.solver.CPSolver;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
-import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.memory.IStateInt;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
-import choco.cp.solver.CPSolver;
-import choco.cp.model.CPModel;
-import choco.Choco;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.propagation.VarEvent;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.*;
 
@@ -404,7 +405,7 @@ public class LayeredGraph {
             IStateInt tmp = this.Q.get(idx);
             if (tmp == null || tmp.get() == 0)
             {
-                vars[i].removeVal(j,-1);
+                vars[i].removeVal(j,VarEvent.NOCAUSE);
             }
         }
     }
@@ -585,7 +586,7 @@ public class LayeredGraph {
             IStateInt tmp = getQ(i,j);
             tmp.add(-1);
             if (tmp.get() == 0)
-                vars[i].removeVal(j,-1);
+                vars[i].removeVal(j, VarEvent.NOCAUSE);
         }
 
     }

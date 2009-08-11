@@ -23,15 +23,15 @@
 package choco.kernel.solver.goals.choice;
 
 
-import java.util.logging.Level;
-
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.branch.AbstractBranching;
-import choco.kernel.solver.branch.AbstractIntBranching;
+import choco.kernel.solver.branch.AbstractBranchingStrategy;
+import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 import choco.kernel.solver.branch.BranchingWithLoggingStatements;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.logging.Level;
 
 /**
  * Created by IntelliJ IDEA.
@@ -59,7 +59,7 @@ public final class SetVal implements Goal {
 		if (LOGGER.isLoggable(Level.INFO)) { 
 			final int ws = s.getWorldIndex();
 			if( ws <= s.getLoggingMaxDepth() ) {
-				LOGGER.log(Level.INFO, "{0}{1} {2} {3} {4}", new Object[]{BranchingWithLoggingStatements.makeLoggingMsgPrefix(ws), AbstractBranching.LOG_DOWN_MSG, var, AbstractIntBranching.LOG_DECISION_MSG_ASSIGN, val});
+				LOGGER.log(Level.INFO, "{0}{1} {2} {3} {4}", new Object[]{BranchingWithLoggingStatements.makeLoggingMsgPrefix(ws), AbstractBranchingStrategy.LOG_DOWN_MSG, var, AbstractIntBranchingStrategy.LOG_DECISION_MSG_ASSIGN, val});
 			}
 		}
 		var.setVal(val);

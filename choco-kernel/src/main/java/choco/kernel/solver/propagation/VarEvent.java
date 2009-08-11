@@ -55,6 +55,12 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
   public final static int NOCAUSE = -1;
 
   /**
+   * Semantic of the cause of an event: -1 means that the event is active without
+   * any precise cause. (Equivalent of 0 in Claire version)
+   */
+  public final static int DOWDCAUSE = Integer.MIN_VALUE;
+
+  /**
    * Cause of this basic var.
    */
   protected int cause = NOEVENT;
@@ -189,6 +195,25 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
     public int getEventType() {
         return eventType;
     }
+
+    /**
+     * Compute the constraint idx to inform only DomOverWDegBranching of contradiction.
+     * @param idx constraint idx
+     * @return constraint idx for DomOverWDeg
+     */
+    public static int domOverWDegIdx(int idx){
+        return DOWDCAUSE + idx;
+    }
+
+    /**
+     * Recompute the inital constraint idx for DomOverWDegBranching.
+     * @param idx modified constraint idx
+     * @return initial constraint idx 
+     */
+    public static int domOverWDegInitialIdx(int idx){
+        return idx - DOWDCAUSE;
+    }
+
 
     /**
    * tests whether the event is currently active (present in some queue) or not

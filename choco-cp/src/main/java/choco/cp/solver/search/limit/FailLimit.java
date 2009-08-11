@@ -56,6 +56,6 @@ public final class FailLimit extends AbstractGlobalSearchLimit implements Propag
 	}
 
 	public void contradictionOccured(ContradictionException e) {
-		if( e.getContradictionType() != ContradictionException.SEARCH_LIMIT) {nb++;}
+		if(!e.isSearchLimitCause()) {nb++;}
 	}
 }
