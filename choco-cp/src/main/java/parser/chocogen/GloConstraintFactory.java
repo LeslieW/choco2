@@ -23,7 +23,6 @@
 package parser.chocogen;
 
 import static choco.Choco.*;
-import choco.cp.solver.constraints.global.matching.GlobalCardinality;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
@@ -318,9 +317,9 @@ public class GloConstraintFactory extends ObjectFactory {
 		}else if(pgc instanceof PGlobalCardinality){
 			return makeGlobalCardinality((PGlobalCardinality)pgc);
 		}else if(pgc instanceof PLexLess){
-			makeLexLess( (PLexLess)pgc);
+			return makeLexLess( (PLexLess)pgc);
 		}else if(pgc instanceof PLexLessEq){
-			makeLexLessEq( (PLexLessEq)pgc);
+			return makeLexLessEq( (PLexLessEq)pgc);
 		} 
 		throw new ModelException("Unknown global constraint");
 	}
