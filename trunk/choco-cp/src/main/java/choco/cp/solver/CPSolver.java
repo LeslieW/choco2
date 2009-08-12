@@ -892,40 +892,6 @@ public class CPSolver implements Solver {
 		}
 	}
 
-	/**
-	 * Check wether every decisions variables are instantiated
-	 *
-	 * @return true if all variables are instantiated
-	 */
-	public boolean checkDecisionVariables() {
-		if (intDecisionVars != null) {
-			for (IntDomainVar intDecisionVar : intDecisionVars) {
-				if (!intDecisionVar.isInstantiated()) {
-					return false;
-				}
-			}
-		}
-
-		if (setDecisionVars != null) {
-			for (SetVar setDecisionVar : setDecisionVars) {
-				if (!setDecisionVar.isInstantiated()) {
-					return false;
-				}
-
-			}
-		}
-
-		if (floatDecisionVars != null) {
-			for (RealVar floatDecisionVar : floatDecisionVars) {
-				if (!floatDecisionVar.isInstantiated()) {
-					return false;
-				}
-
-			}
-		}
-		return true;
-	}
-
 	// protected void generateGoal() {
 	// //default strategy choice for integer
 	// boolean first = true;
@@ -2218,41 +2184,169 @@ public class CPSolver implements Solver {
 		return getSearchStrategy().nextSolution();
 	}
 
+    /**
+	 * Solution checker. Usefull for debug and development.
+     * Check also constraints with not instantiated variables
+	 *
+     * @param logged pretty print
+	 * @return a boolean indicating wether the solution is correct or not.
+	 */
+	public Boolean checkSolution(boolean logged) {
+        return checkSolution(logged, true);
+    }
+
 	/**
 	 * Solution checker. Usefull for debug and development.
 	 *
+     * @param logged pretty print
+     * @param enableConsistency check also constraints with not instantiated variables
 	 * @return a boolean indicating wether the solution is correct or not.
 	 */
-	public Boolean checkSolution(boolean printAll) {
+	public Boolean checkSolution(boolean logged, boolean enableConsistency) {
 		Boolean isSolution = true;
 		StringBuffer st = new StringBuffer("~~~~~SOLUTION CHECKER~~~~~")
 		.append("\n");
 		st.append("(check wether every constraints define isSatisfied())")
 		.append("\n");
-		// Check variable
-		Iterator<SConstraint> ctit = this.getIntConstraintIterator();
-		while (ctit.hasNext()) {
-			SConstraint c = ctit.next();
-			if (c.isSatisfied()) {
-				st.append(c.pretty()).append(" - ok").append("\n");
-			} else {
-				st.append("WARNINNG - ").append(c.pretty()).append(" - ko")
-				.append("\n");
-				isSolution = false;
-			}
-		}
+
+		// Check variables
+        isSolution &= checkDecisionVariables(st);
+
+        // Check constraints
+        isSolution &= checkConstraints(st, enableConsistency);
+
 		st.append("\n");
 		if (isSolution) {
 			st.append("This solution satisfies every constraints.");
 		} else {
 			st.append("One or more constraint is not satisfied.").append("\n")
-			.append("Or the search is not finished.");
+			.append("Or one or more constraint is not consistent.\n")
+            .append("Or the search is not finished.");
 		}
 
 		st.append("\n").append("~~~~~~~~~~~~~~~~~~~~~~~~~~").append("\n");
-		if(printAll)LOGGER.log(Level.FINE, st.toString());
+		if(logged)LOGGER.log(Level.FINE, st.toString());
 		return isSolution;
 	}
+
+    /**
+	 * Check wether every decisions variables are instantiated
+	 *
+	 * @return true if all variables are instantiated
+	 */
+	public boolean checkDecisionVariables() {
+        return checkDecisionVariables(new StringBuffer());
+    }
+
+    /**
+	 * Check wether every decisions variables are instantiated
+	 *
+     * @param st a stringbuffer to get the log
+	 * @return true if all variables are instantiated
+	 */
+	private boolean checkDecisionVariables(StringBuffer st) {
+        boolean isOk = true;
+		if (intDecisionVars != null) {
+			for (IntDomainVar intDecisionVar : intDecisionVars) {
+				if (!intDecisionVar.isInstantiated()) {
+                    st.append(StringUtils.pad(""+intDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
+					isOk = false;
+				}else{
+                    st.append(StringUtils.pad(""+intDecisionVar.getName(), 100, ".")).append("ok\n");
+                }
+			}
+		}
+
+		if (setDecisionVars != null) {
+			for (SetVar setDecisionVar : setDecisionVars) {
+				if (!setDecisionVar.isInstantiated()) {
+                    st.append(StringUtils.pad(""+setDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
+					isOk = false;
+				}else{
+                    st.append(StringUtils.pad(""+setDecisionVar.getName(), 100, ".")).append("ok\n");
+                }
+			}
+		}
+
+		if (floatDecisionVars != null) {
+			for (RealVar floatDecisionVar : floatDecisionVars) {
+				if (!floatDecisionVar.isInstantiated()) {
+                    st.append(StringUtils.pad(""+floatDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
+					isOk = false;
+				}else{
+                    st.append(StringUtils.pad(""+floatDecisionVar.getName(), 100, ".")).append("ok\n");
+                }
+			}
+		}
+		return isOk;
+	}
+
+    /**
+     * Check the constraints
+     * @param enableConsistency check also constraints with not instantiated variables
+     * @return boolean
+     */
+    public boolean checkConstraints(boolean enableConsistency){
+        return checkConstraints(new StringBuffer(), enableConsistency);
+    }
+
+    /**
+     * Check the constraints
+     * @param st a string buffer for the log
+     * @param enableConsistency check also constraints with not instantiated variables
+     * @return boolean
+     */
+    private boolean checkConstraints(StringBuffer st, boolean enableConsistency){
+        boolean isOk = true;
+        // Checck constraints
+		Iterator<SConstraint> ctit = this.getIntConstraintIterator();
+		while (ctit.hasNext()) {
+			SConstraint c = ctit.next();
+            if(c instanceof AbstractIntSConstraint){
+                AbstractIntSConstraint ic = (AbstractIntSConstraint)c;
+                int[] tuple = new int[c.getNbVars()];
+                int[] tupleL = new int[c.getNbVars()];
+                int[] tupleU = new int[c.getNbVars()];
+                boolean fullInstantiated = true;
+                for(int i = 0; i < c.getNbVars(); i++){
+                    IntDomainVar v = (IntDomainVar)c.getVar(i);
+                    if(v.isInstantiated()){
+                        tuple[i] = v.getVal();
+                        tupleL[i] = tuple[i];
+                        tupleU[i] = tuple[i];
+                    }else{
+                        fullInstantiated = false;
+                        tupleL[i] = v.getInf();
+                        tupleU[i] = v.getSup();
+                    }
+                }
+                if(fullInstantiated){
+                    if(ic.isSatisfied(tuple)){
+                        st.append(StringUtils.pad(""+ic.pretty(), 200, ".")).append("ok\n");
+                    }else{
+                        st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ko <= WARNING!\n");
+				        isOk = false;
+                    }
+                }else if(enableConsistency){
+                    if(ic.isSatisfied(tupleL) && ic.isSatisfied(tupleU)){
+                        st.append(StringUtils.pad(""+ic.pretty(), 200, ".")).append("ok\n");
+                    }else{
+                        st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ko <= WARNING!\n");
+                        st.append("=> NOT CONSISTENT\n");
+				        isOk = false;
+                    }
+                }
+            }else{
+                if(c.isSatisfied()){
+                    st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ok\n");
+                }else{
+                    st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ko <= WARNING!\n");
+                    isOk = false;
+                }
+		    }
+        }
+        return isOk;
+    }
 
 	/**
 	 * Displays all the runtime statistics.

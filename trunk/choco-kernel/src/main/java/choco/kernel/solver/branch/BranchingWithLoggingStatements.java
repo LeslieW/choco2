@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.branch;
 
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.SConstraint;
@@ -69,7 +70,8 @@ public class BranchingWithLoggingStatements extends AbstractIntBranchingStrategy
 
 	public final static StringBuilder makeLoggingMsgPrefix(int worldStamp) {
 		StringBuilder b  =new StringBuilder();
-		b.append(LOG_PREFIX[worldStamp % (LOG_PREFIX.length)]);
+//		b.append(LOG_PREFIX[worldStamp % (LOG_PREFIX.length)]);
+        b.append(StringUtils.pad("", worldStamp, "."));
 		b.append('[').append(worldStamp).append(']');
 		return b;
 	}
