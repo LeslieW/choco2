@@ -1,0 +1,1975 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE flatzinc SYSTEM "flatzinc.dtd">
+
+<flatzinc model="./minizinc-1.0.2/fzn/queens008">
+
+<var_decl>
+  <type>
+    <int/>
+  </type>
+  <id name="n"/>
+  <expr>
+    <int_lit value="8"/>
+  </expr>
+</var_decl>
+
+<var_decl>
+  <type>
+    <array>
+      <int_lit value="8"/>
+      <var>
+        <int_range lo="1" hi="8"/>
+      </var>
+    </array>
+  </type>
+  <id name="q"/>
+  <annotation name="output_array">
+    <expr>
+      <array_lit>
+        <set_lit>
+          <int_range lo="1" hi="8"/>
+        </set_lit>
+      </array_lit>
+    </expr>
+  </annotation>
+</var_decl>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="1"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="2"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="1"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="1"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="2"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="1"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="2"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-1"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="1"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="3"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="2"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="1"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="3"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="1"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="3"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-2"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="1"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="4"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="3"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="1"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="4"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="1"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="4"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-3"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="1"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="5"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="4"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="1"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="5"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="1"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="5"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-4"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="1"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="6"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="5"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="1"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="6"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="1"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="6"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-5"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="1"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="7"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="6"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="1"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="7"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="1"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="7"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-6"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="1"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="8"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="7"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="1"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="8"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="1"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="8"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-7"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="2"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="3"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="1"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="2"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="3"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="2"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="3"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-1"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="2"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="4"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="2"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="2"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="4"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="2"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="4"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-2"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="2"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="5"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="3"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="2"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="5"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="2"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="5"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-3"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="2"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="6"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="4"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="2"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="6"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="2"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="6"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-4"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="2"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="7"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="5"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="2"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="7"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="2"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="7"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-5"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="2"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="8"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="6"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="2"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="8"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="2"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="8"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-6"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="3"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="4"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="1"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="3"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="4"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="3"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="4"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-1"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="3"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="5"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="2"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="3"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="5"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="3"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="5"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-2"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="3"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="6"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="3"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="3"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="6"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="3"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="6"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-3"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="3"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="7"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="4"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="3"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="7"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="3"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="7"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-4"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="3"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="8"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="5"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="3"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="8"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="3"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="8"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-5"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="4"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="5"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="1"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="4"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="5"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="4"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="5"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-1"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="4"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="6"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="2"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="4"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="6"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="4"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="6"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-2"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="4"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="7"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="3"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="4"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="7"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="4"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="7"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-3"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="4"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="8"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="4"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="4"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="8"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="4"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="8"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-4"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="5"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="6"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="1"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="5"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="6"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="5"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="6"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-1"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="5"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="7"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="2"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="5"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="7"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="5"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="7"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-2"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="5"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="8"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="3"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="5"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="8"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="5"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="8"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-3"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="6"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="7"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="1"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="6"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="7"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="6"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="7"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-1"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="6"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="8"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="2"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="6"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="8"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="6"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="8"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-2"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="7"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="8"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="1"/>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_ne">
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="7"/>
+      </array_access>
+    </expr>
+    <expr>
+      <array_access>
+        <id name="q"/>
+        <int_lit value="8"/>
+      </array_access>
+    </expr>
+  </pred>
+</constraint>
+
+<constraint>
+  <pred name="int_lin_ne">
+    <expr>
+      <array_lit>
+        <int_lit value="1"/>
+        <int_lit value="-1"/>
+      </array_lit>
+    </expr>
+    <expr>
+      <array_lit>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="7"/>
+        </array_access>
+        <array_access>
+          <id name="q"/>
+          <int_lit value="8"/>
+        </array_access>
+      </array_lit>
+    </expr>
+    <expr>
+      <int_lit value="-1"/>
+    </expr>
+  </pred>
+</constraint>
+
+<solve>
+  <satisfy/>
+</solve>
+
+</flatzinc>
+
