@@ -1,4 +1,5 @@
 <assembly>
+    <id>full</id>
   <formats>
     <format>jar</format>
   </formats>
@@ -9,6 +10,8 @@
             <includes>
                 <include>choco:choco-kernel</include>
                 <include>choco:choco-cp</include>
+                <include>choco:choco-visu</include>
+                <include>choco:choco-contribs</include>
             </includes>
           <binaries/>
         </moduleSet>

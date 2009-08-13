@@ -302,9 +302,8 @@
                 <configuration>
                     <descriptors>
                         <descriptor>./src/main/assembly/basic.xml</descriptor>
-<!--                        <descriptor>./src/main/assembly/basic+visu.xml</descriptor>-->
-<!--                        <descriptor>./src/main/assembly/basic+old.xml</descriptor>-->
-                        <descriptor>./src/main/assembly/beta.xml</descriptor>
+                        <descriptor>./src/main/assembly/full.xml</descriptor>
+                        <descriptor>./src/main/assembly/src.xml</descriptor>
                     </descriptors>
                     <archive>
                         <manifest>
