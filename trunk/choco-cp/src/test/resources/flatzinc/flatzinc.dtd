@@ -1,0 +1,127 @@
+<!-- XML-FlatZinc DTD Version 1 -->
+<!-- Authors: Peter Stuckey, Julien Fischer, Sam Abousaid -->
+
+<!-- ========================================================================
+     FlatZinc model instances
+     ========================================================================
+-->
+
+<!ELEMENT flatzinc       (pred_decl*,var_decl*,constraint*,solve,output?)>   
+<!ATTLIST flatzinc model CDATA #REQUIRED>
+
+<!-- ========================================================================
+     Items
+     ========================================================================
+-->
+
+<!-- Predicate declaration items -->
+<!ELEMENT pred_decl   (pred_decl_arg)*>
+<!ATTLIST pred_decl name CDATA #REQUIRED>
+
+<!-- Parameter and variable declaration items -->
+<!ELEMENT var_decl    (type,id,annotation*,expr?)>
+
+<!-- Constraint items -->
+<!ELEMENT constraint  ((pred|id|array_access),annotation*)> 
+
+<!-- Solve items -->
+<!ELEMENT solve       (annotation*, (satisfy|minimize|maximize))>
+
+<!-- ========================================================================
+     Predicate declaration arguments
+     ========================================================================
+-->
+
+<!-- 
+    The names of the arguments of a predicate declaration are not included
+    in XML-FlatZinc.  The rationale for this is that those names are not
+    use by FlatZinc and tools can assign arbitrary names to the arguments
+    when converting from XML-FlatZinc.
+
+    Also, not that in addition to the usual types, FlatZinc allows types
+    like:
+            array[int] of int
+
+    in predicate declarations.
+-->
+
+<!ELEMENT pred_decl_arg         (arg_type)>
+<!ATTLIST pred_decl_arg name    CDATA #REQUIRED>
+<!ELEMENT arg_type              (array_in_pred_decl|set|int|int_range|int_set|float|float_range|bool|var)>
+<!ELEMENT array_in_pred_decl    ((int_lit|int), (set|int|int_range|int_set|float|float_range|bool|var))>
+
+<!-- ========================================================================
+     Types 
+     ========================================================================
+-->
+
+<!ELEMENT type        (array|set|int|int_range|int_set|float|float_range|bool|var)>
+<!ELEMENT var         (int|int_range|int_set|float|float_range|bool|set)>
+<!ELEMENT array       (int_lit, (set|int|int_range|int_set|float|float_range|bool|var))>
+<!ELEMENT set         (int|int_range|int_set|bool|float|float_range)>
+
+<!ELEMENT int         EMPTY>
+<!ELEMENT int_range   EMPTY>
+<!ATTLIST int_range lo CDATA #REQUIRED
+                    hi CDATA #REQUIRED
+>
+<!ELEMENT int_set  (int_lit)*>
+
+<!ELEMENT float       EMPTY>
+<!ELEMENT float_range EMPTY>
+<!ATTLIST float_range lo CDATA #REQUIRED
+                      hi CDATA #REQUIRED
+>
+<!ELEMENT bool        EMPTY>
+
+<!-- ========================================================================
+     Expressions 
+     ========================================================================
+-->
+
+<!ELEMENT expr         (id|bool_lit|int_lit|float_lit|set_lit|array_lit|array_access)>
+
+<!ELEMENT bool_lit       EMPTY>
+<!ATTLIST bool_lit value (true|false) #REQUIRED>
+
+<!ELEMENT int_lit       EMPTY>
+<!ATTLIST int_lit value CDATA #REQUIRED>
+
+<!ELEMENT float_lit    EMPTY>
+<!ATTLIST float_lit value CDATA #REQUIRED>
+
+<!ELEMENT id      EMPTY>
+<!ATTLIST id name CDATA #REQUIRED>
+
+<!ELEMENT array_access (id, (id|int_lit))>
+<!ELEMENT set_lit      ( ((id|bool_lit|int_lit|float_lit)*|int_range))>
+<!ELEMENT array_lit    ( (id|bool_lit|int_lit|float_lit|set_lit|array_access)* )>
+
+<!-- ========================================================================
+     Constraints
+     ========================================================================
+-->
+
+<!ELEMENT pred  (expr+)>
+<!ATTLIST pred  name CDATA #REQUIRED>
+
+<!-- ========================================================================
+     Solve expressions
+     ========================================================================
+-->
+
+<!ELEMENT satisfy     EMPTY>
+<!ELEMENT minimize    (id|array_access|lin_expr)>
+<!ELEMENT maximize    (id|array_access|lin_expr)>
+<!ELEMENT lin_expr    (expr+)>  
+<!ATTLIST lin_expr    name CDATA #REQUIRED>
+
+<!-- ========================================================================
+     Annotations
+     ========================================================================
+-->
+
+<!ELEMENT annotation    (expr|annotation|string_lit)*>
+<!ATTLIST annotation    name CDATA #REQUIRED>
+
+<!-- End of XML-FlatZinc DTD -->
