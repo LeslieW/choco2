@@ -132,7 +132,13 @@ public class ContradictionException extends Exception {
         return contradictionMove;
     }
 
-    public final boolean isSearchLimitCause(){
+    
+    public final Type getContradictionType() {
+		return contradictionType;
+	}
+
+
+	public final boolean isSearchLimitCause(){
         return Type.SEARCH_LIMIT.equals(contradictionType);
     }
      
