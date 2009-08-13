@@ -1,0 +1,22 @@
+<assembly>
+    <id>src</id>
+  <formats>
+    <format>jar</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+
+  <fileSets>
+    <fileSet>
+      <directory>choco-kernel/src/main/java</directory>
+      <outputDirectory>/</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>choco-cp/src/main/java</directory>
+      <outputDirectory>/</outputDirectory>
+      <excludes>
+        <exclude>**/samples/**</exclude>
+      </excludes>
+    </fileSet>
+  </fileSets>
+
+</assembly>
