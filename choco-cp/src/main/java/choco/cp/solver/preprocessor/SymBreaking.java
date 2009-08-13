@@ -27,6 +27,7 @@ import choco.cp.model.CPModel;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
+import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 
 import java.util.Iterator;
@@ -95,12 +96,31 @@ public class SymBreaking {
         Iterator<Constraint> it = m.getConstraintIterator();
         for (; it.hasNext();) {
             Constraint ct =  it.next();
-            if (ct.getConstraintType() != ConstraintType.NEQ &&
-                ct.getConstraintType() != ConstraintType.ALLDIFFERENT) {
+            if (ct.getConstraintType() != ConstraintType.ALLDIFFERENT &&
+                (ct.getConstraintType() != ConstraintType.NEQ ||
+                isComplexNeq(ct))) {
                 return false;
             }
+
         }
         return true;
+    }
+
+    /**
+     * Check wether a constraint is a neq constraint and is only made of IntegerVariable or not
+     * @param ct the constraint
+     * @return false if it is a simple neq constraint
+     */
+    private boolean isComplexNeq(Constraint ct) {
+        if(ct.getConstraintType().equals(ConstraintType.NEQ)){
+            Iterator<Variable> it = ct.getVariableIterator();
+            while(it.hasNext()){
+                if(!(it.next() instanceof IntegerVariable)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }
