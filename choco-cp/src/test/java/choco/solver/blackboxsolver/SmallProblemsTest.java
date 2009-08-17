@@ -84,6 +84,24 @@ public class SmallProblemsTest {
 
     }
 
+    @Test
+    public void testSimpleNeq(){
+        int n = 2;
+        Model m = new CPModel();
+        IntegerVariable[] x = Choco.makeIntVarArray("q", n, 1, n);
+
+        for(int i = 0; i < n; i++){
+            for(int j = i+1; j < n; j++){
+                m.addConstraints(neq(x[i], plus(x[j],3)));
+            }
+        }
+        CPSolver s = new CPSolver();
+        s.read(m);
+        System.out.println(s.pretty());
+        s.solve();
+        Assert.assertTrue(s.getNbSolutions()>0);
+    }
+
     private Constraint[] noAttack(int i, int j, IntegerVariable Qi, IntegerVariable Qj) {
         Constraint[] cs = new Constraint[3];
         cs[0] = Choco.neq(Qi, Qj);

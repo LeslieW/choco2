@@ -115,7 +115,7 @@ public class CspLargeSConstraint extends AbstractLargeIntSConstraint {
 
 	@Override
 	public boolean isSatisfied(int[] tuple) {
-		return relation.isConsistent(tuple);
+        return relation.isConsistent(tuple);
 	}
 
 	@Override
@@ -127,7 +127,7 @@ public class CspLargeSConstraint extends AbstractLargeIntSConstraint {
 				sb.append(", ");
 			}
 			IntDomainVar var = vars[i];
-			sb.append(", ");
+			sb.append(var + ", ");
 		}
 		sb.append("})");
 		return sb.toString();

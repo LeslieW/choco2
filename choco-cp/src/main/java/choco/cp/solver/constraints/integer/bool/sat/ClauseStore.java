@@ -229,7 +229,21 @@ public class  ClauseStore extends AbstractLargeIntSConstraint {
 		return true;
 	}
 
-	//by default, no information is known
+    public boolean isSatisfied(int[] tuple) {
+		for (WLClause cl : listclause) {
+            int[] lit = cl.getLits();
+            int[] clt = new int[lit.length];
+            for (int i = 0; i < lit.length; i++) {
+                //the literals are offset by one (thus the -1 and +1)
+                clt[i] = tuple[lit[i] > 0 ? lit[i] - 1 : -lit[i] + 1];
+            }
+            if (!cl.isSatisfied(clt))
+				return false;
+		}
+		return true;
+	}
+
+    //by default, no information is known
 	public int getFineDegree(int idx) {
 		return fineDegree[idx];    //To change body of overridden methods use File | Settings | File Templates.
 	}
