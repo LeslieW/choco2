@@ -61,6 +61,14 @@ public class Lits {
         }
     }
 
+    public boolean isSatisfied(int lit, int val) {
+        if (lit < 0) {
+            return val == 0;
+        } else {
+            return val == 1;
+        }
+    }
+
     public boolean isPositive(int lit) {
         return lit > 0;
     }

@@ -178,6 +178,13 @@ public class WLClause {
         return false;
     }
 
+    public boolean isSatisfied(int[] tuple) {
+        for (int i = 0; i < lits.length; i++) {
+            if (voc.isSatisfied(lits[i], tuple[i])) return true;
+        }
+        return false;
+    }
+
     public boolean isRegistered() {
         return isreg;
     }
