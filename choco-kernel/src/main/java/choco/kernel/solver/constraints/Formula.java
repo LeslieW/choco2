@@ -38,21 +38,21 @@ public class Formula implements SConstraint {
 
   public Solver solver;
   /** possible static values for the constraintOperator field */
-  public static int EQUAL_XC = 0;
-  public static int NOT_EQUAL_XC = 1;
-  public static int GREATER_OR_EQUAL_XC = 2;
-  public static int LESS_OR_EQUAL_XC = 3;
+  public final static int EQUAL_XC = 0;
+  public final static int NOT_EQUAL_XC = 1;
+  public final static int GREATER_OR_EQUAL_XC = 2;
+  public final static int LESS_OR_EQUAL_XC = 3;
 
-  public static int EQUAL_XYC = 4;
-  public static int NOT_EQUAL_XYC = 5;
-  public static int GREATER_OR_EQUAL_XYC = 6;
-  public static int TIMES_XYZ = 12;
+  public final static int EQUAL_XYC = 4;
+  public final static int NOT_EQUAL_XYC = 5;
+  public final static int GREATER_OR_EQUAL_XYC = 6;
+  public final static int TIMES_XYZ = 12;
 
-  public static int INT_LIN_COMB = 7;
-  public static int OCCURRENCE = 8;
-  public static int ALL_DIFFERENT = 9;
-  public static int GLOBAL_CARDINALITY = 10;
-  public static int NTH = 11;
+  public final static int INT_LIN_COMB = 7;
+  public final static int OCCURRENCE = 8;
+  public final static int ALL_DIFFERENT = 9;
+  public final static int GLOBAL_CARDINALITY = 10;
+  public final static int NTH = 11;
 
   /**
    * this slots characterizes the type of formula being stored (the predicate/relation/operator)

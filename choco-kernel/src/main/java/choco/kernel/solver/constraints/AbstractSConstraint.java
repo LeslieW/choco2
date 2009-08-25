@@ -388,7 +388,7 @@ public abstract class AbstractSConstraint implements Propagator {
      */
     public int getNbVarNotInst() {
         int notInst = 0;
-        int nbVars = this.getNbVars();
+        final int nbVars = this.getNbVars();
         for (int i = 0; i < nbVars; i++) {
           if (!this.getVar(i).isInstantiated()) {
             notInst++;

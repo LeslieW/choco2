@@ -41,6 +41,7 @@ public enum ConstraintType {
     CST("cst"),
     COSTREGULAR("costregular", "constraint.costregular"),
     CUMULATIVE("cumulative", "constraint.cumulative"),
+    DISJOINT("disjoint", "constraint.disjoint"),
     DISJUNCTIVE("disjunctive", "constraint.disjunctive"),
     DISTANCE("distance", "constraint.distance"),
     EQ("eq", "constraint.eq"),

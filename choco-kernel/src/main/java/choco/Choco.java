@@ -60,6 +60,7 @@ import static java.lang.System.arraycopy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -101,7 +102,7 @@ public class Choco{
 	 * @param lowB : lower bound of the variable
 	 * @param uppB : upper bound of the variable
 	 * @param options : options of the variable
-     * @return an integer variable
+	 * @return an integer variable
 	 *
 	 * <p/>
 	 *                Options of CPModel must be prefix with "cp:".
@@ -128,9 +129,9 @@ public class Choco{
 	public static IntegerVariable makeIntVar(String name, int lowB, int uppB, String... options) {
 		checkIntVarBounds(lowB, uppB);
 		IntegerVariable v = new IntegerVariable(name, VariableType.INTEGER, lowB, uppB);
-        for (String option : options) {
-            v.addOption(option);
-        }
+		for (String option : options) {
+			v.addOption(option);
+		}
 		return v;
 	}
 
@@ -140,8 +141,8 @@ public class Choco{
 	 * BEWARE: bigger domain have unexpected behaviour
 	 *
 	 * @param name : name of the variable
-     * @param options : options of the variable
-     * @return an integer variable
+	 * @param options : options of the variable
+	 * @return an integer variable
 	 *
 	 * <p/>
 	 *                Options of CPModel must be prefix with "cp:".
@@ -166,7 +167,7 @@ public class Choco{
 	 * @param name       : name of the variable
 	 * @param valuesList : list of unsorted values
 	 * @param options : options of the variable
-     * @return an integer variable
+	 * @return an integer variable
 	 *
 	 * <p/>
 	 *                Options of CPModel must be prefix with "cp:".
@@ -194,9 +195,9 @@ public class Choco{
 		int[] values = ArrayUtils.getNonRedundantSortedValues(valuesList);
 		checkIntVarBounds(values[0], values[values.length-1]);
 		IntegerVariable v = new IntegerVariable(name, VariableType.INTEGER, values);
-        for (String option : options) {
-            v.addOption(option);
-        }
+		for (String option : options) {
+			v.addOption(option);
+		}
 		return v;
 	}
 
@@ -205,7 +206,7 @@ public class Choco{
 	 *
 	 * @param name        : name of the variable
 	 * @param valuesArray : array of values
-     * @param options : options of the variable
+	 * @param options : options of the variable
 	 * @return an integer variable
 	 *
 	 * <p/>
@@ -234,9 +235,9 @@ public class Choco{
 		int[] values = ArrayUtils.getNonRedundantSortedValues(valuesArray);
 		checkIntVarBounds(values[0], values[values.length-1]);
 		IntegerVariable v = new IntegerVariable(name, VariableType.INTEGER, values);
-        for (String option : options) {
-            v.addOption(option);
-        }
+		for (String option : options) {
+			v.addOption(option);
+		}
 		return v;
 	}
 
@@ -245,7 +246,7 @@ public class Choco{
 	 * Make a boolean variable
 	 *
 	 * @param name        : name of the variable
-     * @param options : options of the variable
+	 * @param options : options of the variable
 	 * @return a boolean variable
 	 *
 	 * <p/>
@@ -263,9 +264,9 @@ public class Choco{
 	 */
 	public static IntegerVariable makeBooleanVar(String name, String... options) {
 		IntegerVariable v = new IntegerVariable(name, VariableType.INTEGER, 0,1);
-        for (String option : options) {
-            v.addOption(option);
-        }
+		for (String option : options) {
+			v.addOption(option);
+		}
 		return v;
 	}
 
@@ -273,8 +274,8 @@ public class Choco{
 	 * Make an array of boolean variables
 	 *
 	 * @param name      : name of the variable
-     * @param dim       : dimension of the array
-     * @param options   : options of the variable
+	 * @param dim       : dimension of the array
+	 * @param options   : options of the variable
 	 * @return a boolean variable
 	 *
 	 * <p/>
@@ -304,7 +305,7 @@ public class Choco{
 	 * @param dim  : dimension of the array
 	 * @param lowB : lower bound of each variable
 	 * @param uppB : upper bound of each variable
-     * @param options : options of the variable
+	 * @param options : options of the variable
 	 * @return an array of integer variables
 	 *
 	 * <p/>
@@ -345,8 +346,8 @@ public class Choco{
 	 *
 	 * @param name : name of the variable
 	 * @param dim   : dimension of the array
-     * @param options : options of the variable
-     * @return an integer variable
+	 * @param options : options of the variable
+	 * @return an integer variable
 	 *
 	 * <p/>
 	 *                Options of CPModel must be prefix with "cp:".
@@ -371,7 +372,7 @@ public class Choco{
 	 * @param name        : prefix name of each variable
 	 * @param dim         : dimension of the array
 	 * @param valuesArray : values of each variable
-     * @param options : options of the variable
+	 * @param options : options of the variable
 	 * @return an array of integer variables
 	 *
 	 * <p/>
@@ -412,7 +413,7 @@ public class Choco{
 	 * @param dim2 : second dimension of the matrix
 	 * @param lowB : lower bound of each variable
 	 * @param uppB : upper bound of each variable
-     * @param options : options of the variable
+	 * @param options : options of the variable
 	 * @return an array of integer variables
 	 *
 	 * <p/>
@@ -451,9 +452,9 @@ public class Choco{
 	 * BEWARE: bigger domain have unexpected behaviour
 	 *
 	 * @param name : name of the variable
-     * @param dim1 : first dimension of the matrix
-     * @param dim2 : second dimension of the matrix
-     * @param options : options of the variable
+	 * @param dim1 : first dimension of the matrix
+	 * @param dim2 : second dimension of the matrix
+	 * @param options : options of the variable
 	 * @return an integer variable
 	 *
 	 * <p/>
@@ -480,7 +481,7 @@ public class Choco{
 	 * @param dim1        : first dimension of the matrix
 	 * @param dim2        : second dimension of the matrix
 	 * @param valuesArray : values of each variable
-     * @param options : options of the variable
+	 * @param options : options of the variable
 	 * @return an array of integer variables
 	 *
 	 * <p/>
@@ -520,7 +521,7 @@ public class Choco{
 	 * @param name : name of the variable
 	 * @param lowB : lower bound of the variable
 	 * @param uppB : upper bound of the variable
-     * @param options : options of the variable
+	 * @param options : options of the variable
 	 * @return a set variable
 	 *
 	 * <p/>
@@ -545,9 +546,9 @@ public class Choco{
 		int c = uppB - lowB + 1;
 		IntegerVariable card = makeIntVar(name, 0, c, options);
 		SetVariable var = new SetVariable(name, VariableType.SET, lowB, uppB, card);
-        for (String option : options) {
-            var.addOption(option);
-        }
+		for (String option : options) {
+			var.addOption(option);
+		}
 		return var;
 	}
 
@@ -556,7 +557,7 @@ public class Choco{
 	 *
 	 * @param name : name of the variable
 	 * @param valuesArray : array of values
-     * @param options : options of the variable
+	 * @param options : options of the variable
 	 * @return a set variable
 	 *
 	 * <p/>
@@ -584,9 +585,9 @@ public class Choco{
 		int c = values2.length;
 		IntegerVariable card = makeIntVar("|"+name+"|", 0, c, options);
 		SetVariable var = new SetVariable(name, VariableType.SET, values2, card);
-        for (String option : options) {
-            var.addOption(option);
-        }
+		for (String option : options) {
+			var.addOption(option);
+		}
 		return var;
 	}
 
@@ -598,7 +599,7 @@ public class Choco{
 	 * @param dim  : dimension of the array
 	 * @param lowB : lower bound of the variable
 	 * @param uppB : upper bound of the variable
-     * @param options : options of the variable
+	 * @param options : options of the variable
 	 * @return a set variable
 	 *
 	 * <p/>
@@ -633,7 +634,7 @@ public class Choco{
 	 * @param name : name of the variable
 	 * @param lowB : lower bound of the variable
 	 * @param uppB : upper bound of the variable
-     * @param options : options of the variable
+	 * @param options : options of the variable
 	 * @return a real variable
 	 *
 	 * <p/>
@@ -654,9 +655,9 @@ public class Choco{
 			throw new ModelException("makeRealVar : lowB > uppB");
 		}
 		RealVariable v = new RealVariable(name, VariableType.REAL, lowB, uppB);
-        for (String option : options) {
-            v.addOption(option);
-        }
+		for (String option : options) {
+			v.addOption(option);
+		}
 		return v;
 	}
 
@@ -708,7 +709,7 @@ public class Choco{
 	 * @param bsup due date (latest completion time)
 	 * @param duration duration of the task.
 	 * @param options options are also added to the start and end variables.
-     * @return a task variable
+	 * @return a task variable
 	 */
 	public static TaskVariable makeTaskVar(final String name,final int binf,final int bsup,final IntegerVariable duration, String... options) {
 		final IntegerVariable start = makeIntVar("start-"+name, binf, bsup, options);
@@ -735,8 +736,8 @@ public class Choco{
 	 * @param starts start variables
 	 * @param ends end variables (could be null)
 	 * @param durations duration variables
-     * @param options options are also added to the start and end variables.
-     * @return a task variable
+	 * @param options options are also added to the start and end variables.
+	 * @return a task variable
 	 */
 	public static TaskVariable[] makeTaskVarArray(final String prefix,final IntegerVariable[] starts, final IntegerVariable[] ends, final IntegerVariable[] durations, String... options) {
 		if(starts != null && durations != null && starts.length == durations.length) {
@@ -765,8 +766,8 @@ public class Choco{
 	 * @param binf release times (earliest starting time)
 	 * @param bsup due dates (latest completion time)
 	 * @param durations duration variables
-     * @param options options are also added to the start and end variables.
-     * @return a task variable
+	 * @param options options are also added to the start and end variables.
+	 * @return a task variable
 	 */
 	public static TaskVariable[] makeTaskVarArray(final String name, final int binf,final int bsup,final IntegerVariable[] durations, String... options) {
 		final int n = durations.length;
@@ -803,12 +804,12 @@ public class Choco{
 	 * ***** Constant **********
 	 */
 
-    /**
-     * Create a constant set variable
-     * @param name name of the constant
-     * @param value value of the constant
-     * @return the set constant
-     */
+	/**
+	 * Create a constant set variable
+	 * @param name name of the constant
+	 * @param value value of the constant
+	 * @return the set constant
+	 */
 	public static SetVariable constant(String name, int... value) {
 		return ConstantFactory.getConstant(name, value);
 	}
@@ -1271,7 +1272,7 @@ public class Choco{
 	 * @param v1  : first variable
 	 * @param v2  : second variable
 	 * @param mat : the list of tuples defining the relation (the infeasible pairs)
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint infeasPairAC(IntegerVariable v1, IntegerVariable v2, List<int[]> mat) {
 		return makePairAC(null, v1, v2, mat, false);
@@ -1289,7 +1290,7 @@ public class Choco{
 	 *                "cp:ac32"   to get ac3 with residues (ac2001 where the support is not stored)
 	 *                "cp:ac322"  to get ac3 with the used of BitSet to know if a support still exists
 	 * @param mat     : the list of tuples defining the relation (the infeasible pairs)
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint infeasPairAC(String options, IntegerVariable v1, IntegerVariable v2, List<int[]> mat) {
 		return makePairAC(options, v1, v2, mat, false);
@@ -1302,7 +1303,7 @@ public class Choco{
 	 * @param v1  : first variable
 	 * @param v2  : second variable
 	 * @param mat : the list of tuples defining the relation (the feasible pairs)
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint feasPairAC(IntegerVariable v1, IntegerVariable v2, List<int[]> mat) {
 		return makePairAC(null, v1, v2, mat, true);
@@ -1320,7 +1321,7 @@ public class Choco{
 	 *                "cp:ac32"   to get ac3 with residues (ac2001 where the support is not stored)
 	 *                "cp:ac322"  to get ac3 with the used of BitSet to know if a support still exists
 	 * @param mat     : the list of tuples defining the relation (the feasible pairs)
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint feasPairAC(String options, IntegerVariable v1, IntegerVariable v2, List<int[]> mat) {
 		return makePairAC(options, v1, v2, mat, true);
@@ -1333,7 +1334,7 @@ public class Choco{
 	 * @param v1  : first variable
 	 * @param v2  : second variable
 	 * @param mat : a boolean matrice indicating the consistency relation (the infeasible pairs)
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint infeasPairAC(IntegerVariable v1, IntegerVariable v2, boolean[][] mat) {
 		return makePairAC(null, v1, v2, mat, false);
@@ -1351,7 +1352,7 @@ public class Choco{
 	 *                "cp:ac32"   to get ac3 with residues (ac2001 where the support is not stored)
 	 *                "cp:ac322"  to get ac3 with the used of BitSet to know if a support still exists
 	 * @param mat     : a boolean matrice indicating the consistency relation (the infeasible pairs)
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint infeasPairAC(String options, IntegerVariable v1, IntegerVariable v2, boolean[][] mat) {
 		return makePairAC(options, v1, v2, mat, false);
@@ -1364,7 +1365,7 @@ public class Choco{
 	 * @param v1      : first variable
 	 * @param v2      : second variable
 	 * @param mat     : a boolean matrice indicating the consistency relation (the feasible pairs)       *
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint feasPairAC(IntegerVariable v1, IntegerVariable v2, boolean[][] mat) {
 		return makePairAC(null, v1, v2, mat, true);
@@ -1382,7 +1383,7 @@ public class Choco{
 	 *                "cp:ac32"   to get ac3 with residues (ac2001 where the support is not stored)
 	 *                "cp:ac322"  to get ac3 with the used of BitSet to know if a support still exists
 	 * @param mat     : a boolean matrice indicating the consistency relation (the feasible pairs)
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint feasPairAC(String options, IntegerVariable v1, IntegerVariable v2, boolean[][] mat) {
 		return makePairAC(options, v1, v2, mat, true);
@@ -1396,7 +1397,7 @@ public class Choco{
 	 * @param v2      : second variable
 	 * @param binR : a binary relation standing for the consistency relation. Notice that the same relation can therefore
 	 *                   be shared among constraints.
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint relationPairAC(IntegerVariable v1, IntegerVariable v2, BinRelation binR) {
 		return makePairAC(null, v1, v2, binR, false);
@@ -1415,7 +1416,7 @@ public class Choco{
 	 *                "cp:ac322"  to get ac3 with the used of BitSet to know if a support still exists
 	 * @param binR : a binary relation standing for the consistency relation. Notice that the same relation can therefore
 	 *                   be shared among constraints.
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint relationPairAC(String options, IntegerVariable v1, IntegerVariable v2, BinRelation binR) {
 		return makePairAC(options, v1, v2, binR, false);
@@ -1474,12 +1475,12 @@ public class Choco{
 			relation = new IterTuplesTable(tuples, offsets, sizes);
 		} else if (scheme == 1) {
 			relation = new TuplesTable(feas, offsets, sizes);
-            for (int[] tuple : tuples) {
-                if (tuple.length != n) {
-                    throw new SolverException("Wrong dimension : " + tuple.length + " for a tuple (should be " + n + ")");
-                }
-                ((TuplesTable) relation).setTuple(tuple);
-            }
+			for (int[] tuple : tuples) {
+				if (tuple.length != n) {
+					throw new SolverException("Wrong dimension : " + tuple.length + " for a tuple (should be " + n + ")");
+				}
+				((TuplesTable) relation).setTuple(tuple);
+			}
 		} else {
 			relation = new TuplesList(tuples);
 		}
@@ -1507,8 +1508,8 @@ public class Choco{
 	 * of infeasible tuples
 	 *
 	 * @param tuples :  a list of int[] corresponding to infeasible tuples
-     * @param vars : scope of variables
-     * @return Constraint
+	 * @param vars : scope of variables
+	 * @return Constraint
 	 */
 	public static Constraint infeasTupleFC(List<int[]> tuples, IntegerVariable... vars) {
 		return makeTupleACFC("cp:fc", vars, tuples, false);
@@ -1519,8 +1520,8 @@ public class Choco{
 	 * of feasible tuples
 	 *
 	 * @param tuples :  a list of int[] corresponding to feasible tuples
-     * @param vars : scope of variables
-     * @return Constraint
+	 * @param vars : scope of variables
+	 * @return Constraint
 	 */
 	public static Constraint feasTupleFC(List<int[]> tuples, IntegerVariable... vars) {
 		return makeTupleACFC("cp:fc", vars, tuples, true);
@@ -1531,8 +1532,8 @@ public class Choco{
 	 * of infeasible tuples
 	 *
 	 * @param tuples :  a list of int[] corresponding to infeasible tuples
-     * @param vars : scope of variables
-     * @return Constraint
+	 * @param vars : scope of variables
+	 * @return Constraint
 	 */
 	public static Constraint infeasTupleAC(List<int[]> tuples, IntegerVariable... vars) {
 		return makeTupleACFC("cp:ac32", vars, tuples, false);
@@ -1543,8 +1544,8 @@ public class Choco{
 	 * of feasible tuples
 	 *
 	 * @param tuples :  a list of int[] corresponding to feasible tuples
-     * @param vars : scope of variables
-     * @return Constraint
+	 * @param vars : scope of variables
+	 * @return Constraint
 	 */
 	public static Constraint feasTupleAC(List<int[]> tuples, IntegerVariable... vars) {
 		return makeTupleACFC("cp:ac32", vars, tuples, true);
@@ -1556,9 +1557,9 @@ public class Choco{
 	 *
 	 * @param options :      specifies the desired ac algorithm : 32 or 2001
 	 * @param tuples  :  a list of int[] corresponding to infeasible tuples
-     * @param vars : scope variables
-     * @return Constraint
-     */
+	 * @param vars : scope variables
+	 * @return Constraint
+	 */
 	public static Constraint infeasTupleAC(String options, List<int[]> tuples, IntegerVariable... vars) {
 		return makeTupleACFC(options, vars, tuples, false);
 	}
@@ -1569,8 +1570,8 @@ public class Choco{
 	 *
 	 * @param options :      specifies the desired ac algorithm among : 32 or 2001
 	 * @param tuples :  a list of int[] corresponding to feasible tuples
-     * @param vars : scope of variables
-     * @return Constraint
+	 * @param vars : scope of variables
+	 * @return Constraint
 	 */
 	public static Constraint feasTupleAC(String options, List<int[]> tuples, IntegerVariable... vars) {
 		return makeTupleACFC(options, vars, tuples, true);
@@ -1597,7 +1598,7 @@ public class Choco{
 	 *
 	 * @param vs array of variables
 	 * @param rela relation
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint relationTupleAC(IntegerVariable[] vs, LargeRelation rela) {
 		return makeTupleACFC(null, vs, rela, false);
@@ -1614,7 +1615,7 @@ public class Choco{
 	 * @param x the first variable
 	 * @param y the second variable
 	 * @param c : the distance
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint distanceEQ(IntegerVariable x, IntegerVariable y, int c) {
 		return new ComponentConstraint(ConstraintType.DISTANCE, 0, new IntegerVariable[]{x, y, constant(c)});
@@ -1626,7 +1627,7 @@ public class Choco{
 	 * @param x the first variable
 	 * @param y the second variable
 	 * @param c : the distance
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint distanceNEQ(IntegerVariable x, IntegerVariable y, int c) {
 		return new ComponentConstraint(ConstraintType.DISTANCE, 3, new IntegerVariable[]{x, y, constant(c)});
@@ -1639,7 +1640,7 @@ public class Choco{
 	 * @param x the first variable
 	 * @param y the second variable
 	 * @param c : the distance
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint distanceLT(IntegerVariable x, IntegerVariable y, int c) {
 		return new ComponentConstraint(ConstraintType.DISTANCE, 1, new IntegerVariable[]{x, y, constant(c)});
@@ -1651,7 +1652,7 @@ public class Choco{
 	 * @param x the first variable
 	 * @param y the second variable
 	 * @param c : the distance
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint distanceGT(IntegerVariable x, IntegerVariable y, int c) {
 		return new ComponentConstraint(ConstraintType.DISTANCE, 2, new IntegerVariable[]{x, y, constant(c)});
@@ -1662,9 +1663,9 @@ public class Choco{
 	 *
 	 * @param x the first variable
 	 * @param y the second variable
-     * @param z = the third variable
+	 * @param z = the third variable
 	 * @param c : the constant
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint distanceEQ(IntegerVariable x, IntegerVariable y, IntegerVariable z, int c) {
 		return new ComponentConstraint(ConstraintType.DISTANCE, 0, new IntegerVariable[]{x, y, z, constant(c)});
@@ -1675,8 +1676,8 @@ public class Choco{
 	 *
 	 * @param x the first variable
 	 * @param y the second variable
-     * @param z the third variable
-     * @return Constraint
+	 * @param z the third variable
+	 * @return Constraint
 	 */
 	public static Constraint distanceEQ(IntegerVariable x, IntegerVariable y, IntegerVariable z) {
 		return new ComponentConstraint(ConstraintType.DISTANCE, 0, new IntegerVariable[]{x, y, z, constant(0)});
@@ -1688,9 +1689,9 @@ public class Choco{
 	 *
 	 * @param x the first variable
 	 * @param y the second variable
-     * @param z the third variable
-     * @param c the constant
-     * @return Constraint
+	 * @param z the third variable
+	 * @param c the constant
+	 * @return Constraint
 	 */
 	public static Constraint distanceLT(IntegerVariable x, IntegerVariable y, IntegerVariable z, int c) {
 		return new ComponentConstraint(ConstraintType.DISTANCE, 1, new IntegerVariable[]{x, y, z, constant(c)});
@@ -1701,8 +1702,8 @@ public class Choco{
 	 *
 	 * @param x the first variable
 	 * @param y the second variable
-     * @param z the third variable
-     * @return Constraint
+	 * @param z the third variable
+	 * @return Constraint
 	 */
 	public static Constraint distanceLT(IntegerVariable x, IntegerVariable y, IntegerVariable z) {
 		return new ComponentConstraint(ConstraintType.DISTANCE, 1, new IntegerVariable[]{x, y, z, constant(0)});
@@ -1713,9 +1714,9 @@ public class Choco{
 	 *
 	 * @param x the first variable
 	 * @param y the second variable
-     * @param z the third variable
-     * @param c the constant
-     * @return Constraint
+	 * @param z the third variable
+	 * @param c the constant
+	 * @return Constraint
 	 */
 	public static Constraint distanceGT(IntegerVariable x, IntegerVariable y, IntegerVariable z, int c) {
 		return new ComponentConstraint(ConstraintType.DISTANCE, 2, new IntegerVariable[]{x, y, z, constant(c)});
@@ -1726,8 +1727,8 @@ public class Choco{
 	 *
 	 * @param x the first variable
 	 * @param y the second variable
-     * @param z the third variable
-     * @return Constraint
+	 * @param z the third variable
+	 * @return Constraint
 	 */
 	public static Constraint distanceGT(IntegerVariable x, IntegerVariable y, IntegerVariable z) {
 		return new ComponentConstraint(ConstraintType.DISTANCE, 2, new IntegerVariable[]{x, y, z, constant(0)});
@@ -1738,7 +1739,7 @@ public class Choco{
 	 *
 	 * @param x the first variable
 	 * @param y the second variable
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint abs(IntegerVariable x, IntegerVariable y) {
 		return new ComponentConstraint(ConstraintType.ABS, null, new IntegerVariable[]{x, y});
@@ -1765,7 +1766,7 @@ public class Choco{
 	 *
 	 * @param vars List of variables
 	 * @param min  Variable to represent the minimum among vars
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint min(IntegerVariable[] vars, IntegerVariable min) {
 		Variable[] tmp = new Variable[vars.length + 1];
@@ -1797,7 +1798,7 @@ public class Choco{
 	 *
 	 * @param vars List of variables
 	 * @param max  Variable to represent the maximum among vars
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint max(IntegerVariable[] vars, IntegerVariable max) {
 		Variable[] tmp = new Variable[vars.length + 1];
@@ -1811,9 +1812,9 @@ public class Choco{
 	 * of x and y.
 	 *
 	 * @param x the first variable
-     * @param y the second variable
-     * @param min Variable to represent the minimum among vars
-     * @return Constraint
+	 * @param y the second variable
+	 * @param min Variable to represent the minimum among vars
+	 * @return Constraint
 	 */
 	public static Constraint min(IntegerVariable x, IntegerVariable y, IntegerVariable min) {
 		return new ComponentConstraint(ConstraintType.MIN, true, new IntegerVariable[]{x, y, min});
@@ -1824,9 +1825,9 @@ public class Choco{
 	 * of x and y.
 	 *
 	 * @param x the first variable
-     * @param y the second variable
-     * @param min Variable to represent the minimum among vars
-     * @return Constraint
+	 * @param y the second variable
+	 * @param min Variable to represent the minimum among vars
+	 * @return Constraint
 	 */
 	public static Constraint min(int x, IntegerVariable y, IntegerVariable min) {
 		return new ComponentConstraint(ConstraintType.MIN, true, new IntegerVariable[]{constant(x), y, min});
@@ -1837,9 +1838,9 @@ public class Choco{
 	 * of x and y.
 	 *
 	 * @param x the first variable
-     * @param y the second variable
-     * @param min Variable to represent the minimum among vars
-     * @return Constraint
+	 * @param y the second variable
+	 * @param min Variable to represent the minimum among vars
+	 * @return Constraint
 	 */
 	public static Constraint min(IntegerVariable x, int y, IntegerVariable min) {
 		return new ComponentConstraint(ConstraintType.MIN, true, new IntegerVariable[]{x, constant(y), min});
@@ -1850,9 +1851,9 @@ public class Choco{
 	 * of x and y.
 	 *
 	 * @param x the first variable
-     * @param y the second variable
-     * @param max Variable to represent the maximum among vars
-     * @return Constraint
+	 * @param y the second variable
+	 * @param max Variable to represent the maximum among vars
+	 * @return Constraint
 	 */
 	public static Constraint max(IntegerVariable x, IntegerVariable y, IntegerVariable max) {
 		return new ComponentConstraint(ConstraintType.MAX, false, new IntegerVariable[]{x, y, max});
@@ -1863,9 +1864,9 @@ public class Choco{
 	 * of x and y.
 	 *
 	 * @param x the first variable
-     * @param y the second variable
-     * @param max Variable to represent the maximum among vars
-     * @return Constraint
+	 * @param y the second variable
+	 * @param max Variable to represent the maximum among vars
+	 * @return Constraint
 	 */
 	public static Constraint max(int x, IntegerVariable y, IntegerVariable max) {
 		return new ComponentConstraint(ConstraintType.MAX, false, new IntegerVariable[]{constant(x), y, max});
@@ -1876,9 +1877,9 @@ public class Choco{
 	 * of x and y.
 	 *
 	 * @param x the first variable
-     * @param y the second variable
-     * @param max Variable to represent the maximum among vars
-     * @return Constraint
+	 * @param y the second variable
+	 * @param max Variable to represent the maximum among vars
+	 * @return Constraint
 	 */
 	public static Constraint max(IntegerVariable x, int y, IntegerVariable max) {
 		return new ComponentConstraint(ConstraintType.MAX, false, new IntegerVariable[]{x, constant(y), max});
@@ -1888,10 +1889,10 @@ public class Choco{
 	 * Ensures that the occurrence variable contains the number of occurrences of the given value in the list of
 	 * variables
 	 *
-     * @param value : the observed value
-     * @param vars       List of variables where the value can appear
-     * @param occurrence The variable that should contain the occurence number
-     * @return Constraint
+	 * @param value : the observed value
+	 * @param vars       List of variables where the value can appear
+	 * @param occurrence The variable that should contain the occurence number
+	 * @return Constraint
 	 */
 
 	public static Constraint occurrence(int value, IntegerVariable occurrence, IntegerVariable... vars) {
@@ -1905,11 +1906,11 @@ public class Choco{
 	/**
 	 * Ensures that the lower bound of occurrence is at least equal to the number of occurrences
 	 * size{forall v in vars | v = value} <= occurence
-     * @param value the observed value
-     * @param occurrence the variable that should contain the occurence numbre
-     * @param vars list of variable where the value can appear
-     * @return Constraint
-     */
+	 * @param value the observed value
+	 * @param occurrence the variable that should contain the occurence numbre
+	 * @param vars list of variable where the value can appear
+	 * @return Constraint
+	 */
 	public static Constraint occurrenceMin(int value, IntegerVariable occurrence, IntegerVariable... vars) {
 		IntegerVariable[] variables = new IntegerVariable[vars.length + 2];
 		variables[0] = constant(value);
@@ -1921,11 +1922,11 @@ public class Choco{
 	/**
 	 * Ensures that the upper bound of occurrence is at most equal to the number of occurrences
 	 * size{forall v in vars | v = value} >= occurence
-     * @param value the observed value
-     * @param occurrence the variable that should contain the occurence numbre
-     * @param vars list of variable where the value can appear
-     * @return Constraint
-     */
+	 * @param value the observed value
+	 * @param occurrence the variable that should contain the occurence numbre
+	 * @param vars list of variable where the value can appear
+	 * @return Constraint
+	 */
 	public static Constraint occurrenceMax(int value, IntegerVariable occurrence, IntegerVariable... vars) {
 		IntegerVariable[] variables = new IntegerVariable[vars.length + 2];
 		variables[0] = constant(value);
@@ -1936,11 +1937,11 @@ public class Choco{
 
 	/**
 	 * subscript constraint: accessing an array with a variable index
-     * @param index the index variable
-     * @param values the possible value
-     * @param val the indexth value
-     * @return Constraint
-     */
+	 * @param index the index variable
+	 * @param values the possible value
+	 * @param val the indexth value
+	 * @return Constraint
+	 */
 	public static Constraint nth(IntegerVariable index, int[] values, IntegerVariable val) {
 		return nth(index, values, val, 0);
 	}
@@ -1948,12 +1949,12 @@ public class Choco{
 	/**
 	 * subscript constraint: accessing an array with a variable index
 	 * The offset can be used when the index variable needs to be shifted of a given value (the offset)
-    * @param index the index variable
-     * @param values the possible value
-     * @param offset the offset value
-     * @param val the indexth value
-     * @return Constraint
-     */
+	 * @param index the index variable
+	 * @param values the possible value
+	 * @param offset the offset value
+	 * @param val the indexth value
+	 * @return Constraint
+	 */
 	public static Constraint nth(IntegerVariable index, int[] values, IntegerVariable val, int offset) {
 		IntegerVariable[] vars = new IntegerVariable[values.length+2];
 		for (int i = 0; i < values.length; i++) {
@@ -1967,11 +1968,11 @@ public class Choco{
 
 	/**
 	 * subscript constraint: accessing an array of variables with a variable index
-     * @param index the index variable
-     * @param varArray array of possible variables
-     * @param val indexth variable
-     * @return Constraint
-     */
+	 * @param index the index variable
+	 * @param varArray array of possible variables
+	 * @param val indexth variable
+	 * @return Constraint
+	 */
 	public static Constraint nth(IntegerVariable index, IntegerVariable[] varArray, IntegerVariable val) {
 		IntegerVariable[] vars = ArrayUtils.append(varArray, new IntegerVariable[]{index, val});
 		return new ComponentConstraint(ConstraintType.NTH, 0, vars);
@@ -1979,12 +1980,12 @@ public class Choco{
 
 	/**
 	 * subscript constraint: accessing a matix of variables with two variables indexes
-     * @param index variable index in the first dimension
-     * @param index2 variable index in the first dimension
-     * @param varArray matrix of value
-     * @param val the resulting variable
-     * @return Constraint
-     */
+	 * @param index variable index in the first dimension
+	 * @param index2 variable index in the first dimension
+	 * @param varArray matrix of value
+	 * @param val the resulting variable
+	 * @return Constraint
+	 */
 	public static Constraint nth(IntegerVariable index, IntegerVariable index2, int[][] varArray, IntegerVariable val) {
 		return new ComponentConstraint(ConstraintType.NTH, varArray, new IntegerVariable[]{index, index2, val});
 	}
@@ -1992,12 +1993,12 @@ public class Choco{
 	/**
 	 * subscript constraint: accessing an array of variables with a variable index
 	 * The offset can be used when the index variable needs to be shifted of a given value (the offset)
-     * @param index index variable in the array
-     * @param varArray array of variables
-     * @param val resulting variable
-     * @param offset the offset value
-     * @return Constraint
-     */
+	 * @param index index variable in the array
+	 * @param varArray array of variables
+	 * @param val resulting variable
+	 * @param offset the offset value
+	 * @return Constraint
+	 */
 	public static Constraint nth(IntegerVariable index, IntegerVariable[] varArray, IntegerVariable val, int offset) {
 		IntegerVariable[] vars = ArrayUtils.append(varArray, new IntegerVariable[]{index, val});
 		return new ComponentConstraint(ConstraintType.NTH, offset, vars);
@@ -2011,7 +2012,7 @@ public class Choco{
 	 * @param b : a boolean variable
 	 * @param x : an integer variable
 	 * @param j : the value such that b = 1 ssi x = j, and b = 0 otherwise
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint boolChanneling(IntegerVariable b, IntegerVariable x, int j) {
 		return new ComponentConstraint(ConstraintType.CHANNELING, ConstraintType.CHANNELING, new IntegerVariable[]{b, x, constant(j)});
@@ -2020,10 +2021,10 @@ public class Choco{
 	/**
 	 * State a channeling bewteen two arrays of integer variables x and y with the same domain which enforces
 	 * x[i] = j <=> y[j] = i
-     * @param x the first array of variables
-     * @param y the second array of variables
-     * @return Constraint
-     */
+	 * @param x the first array of variables
+	 * @param y the second array of variables
+	 * @return Constraint
+	 */
 	public static Constraint inverseChanneling(IntegerVariable[] x, IntegerVariable[] y) {
 		if (y.length != x.length) {
 			throw new SolverException("not a valid inverse channeling constraint with two arrays of different sizes");
@@ -2037,9 +2038,9 @@ public class Choco{
 	 * v1 != v2, v1 != v3, v2 != v3 ... For each (i,j), v_i != v_j
 	 * If vars is a table of BoundIntegerVariable a dedicated algorithm is used. In case
 	 * of EnumIntegerVariable it is the regin alldifferent.
-     * @param vars list of variables
-     * @return Constraint
-     */
+	 * @param vars list of variables
+	 * @return Constraint
+	 */
 	public static Constraint allDifferent(IntegerVariable... vars) {
 		return new ComponentConstraint(ConstraintType.ALLDIFFERENT, null, vars);
 	}
@@ -2056,44 +2057,44 @@ public class Choco{
 	 * constraint. IJCAI-2003.
 	 * <li> cp:clique for propagating the clique of differences
 	 * </ul>
-     * @param options options of the constraint
-     * @param vars list of variables
-     * @return Constraint
-     */
+	 * @param options options of the constraint
+	 * @param vars list of variables
+	 * @return Constraint
+	 */
 	public static Constraint allDifferent(String options, IntegerVariable... vars) {
 		Constraint c = allDifferent(vars);
 		c.addOption(options);
 		return c;
 	}
 
-    private static int getMinOfLowB(IntegerVariable[] vars) {
-        int minval = Integer.MAX_VALUE;
-        for (IntegerVariable var : vars) {
-            if (var.getLowB() < minval)
-                minval = var.getLowB();
-        }
-        return minval;
-    }
+	private static int getMinOfLowB(IntegerVariable[] vars) {
+		int minval = Integer.MAX_VALUE;
+		for (IntegerVariable var : vars) {
+			if (var.getLowB() < minval)
+				minval = var.getLowB();
+		}
+		return minval;
+	}
 
-    private static int getMaxOfUppB(IntegerVariable[] vars) {
-        int maxval = Integer.MIN_VALUE;
-        for (IntegerVariable var : vars) {
-            if (var.getUppB() > maxval)
-                maxval = var.getUppB();
-        }
-        return maxval;
-    }
+	private static int getMaxOfUppB(IntegerVariable[] vars) {
+		int maxval = Integer.MIN_VALUE;
+		for (IntegerVariable var : vars) {
+			if (var.getUppB() > maxval)
+				maxval = var.getUppB();
+		}
+		return maxval;
+	}
 
-    private static void globalCardinalityTest(IntegerVariable[] vars, int min, int max, int[] low, int[] up){
-        int minval = getMinOfLowB(vars);
-        int maxval = getMaxOfUppB(vars);
-        if (minval != min) {
-            throw new ModelException("globalCardinality : the min value should be " + minval + " you entered " + min);
-        }
-        if (maxval != max) {
-            throw new ModelException("globalCardinality : the max value should be " + maxval + " you entered " + max);
-        }
-        if (low.length != up.length) {
+	private static void globalCardinalityTest(IntegerVariable[] vars, int min, int max, int[] low, int[] up){
+		int minval = getMinOfLowB(vars);
+		int maxval = getMaxOfUppB(vars);
+		if (minval != min) {
+			throw new ModelException("globalCardinality : the min value should be " + minval + " you entered " + min);
+		}
+		if (maxval != max) {
+			throw new ModelException("globalCardinality : the max value should be " + maxval + " you entered " + max);
+		}
+		if (low.length != up.length) {
 			throw new ModelException("globalCardinality : low and up do not have same size");
 		}
 		if (low.length != max - min + 1) {
@@ -2131,20 +2132,20 @@ public class Choco{
 	 * C.-G. Quimper, P. van Beek, A. Lopez-Ortiz, A. Golynski, and S.B. Sadjad.
 	 * An efficient bounds consistency algorithm for the global cardinality constraint.
 	 * CP-2003.
-     * @param vars list of variables
-     * @param min minimum allowed value
-     * @param max maximum allowed value
-     * @param low array of lower occurence
-     * @param up array of upper occurence
-     * @return Constraint
-     * @deprecated
-     * @see Choco#globalCardinality(IntegerVariable[] vars, int[] low, int[] up)
-     */
+	 * @param vars list of variables
+	 * @param min minimum allowed value
+	 * @param max maximum allowed value
+	 * @param low array of lower occurence
+	 * @param up array of upper occurence
+	 * @return Constraint
+	 * @deprecated
+	 * @see Choco#globalCardinality(IntegerVariable[] vars, int[] low, int[] up)
+	 */
 
 	public static Constraint globalCardinality(IntegerVariable[] vars, int min, int max, int[] low, int[] up) {
 		globalCardinalityTest(vars, min, max, low, up);
 		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY,
-                new Object[]{ConstraintType.GLOBALCARDINALITYMAX, min, max, low, up}, vars);
+				new Object[]{ConstraintType.GLOBALCARDINALITYMAX, min, max, low, up}, vars);
 	}
 
 	/**
@@ -2169,19 +2170,19 @@ public class Choco{
 	 * <i>cp:ac for Regin impelmentation</i>
 	 * <i>cp:bc for bound consistency</i>
 	 * </ul>
-     * @param options options of the constraint
-     * @param vars list of variables
-     * @param min minimum allowed value
-     * @param max maximum allowed value
-     * @param low array of lower occurence
-     * @param up array of upper occurence
-     * @return Constraint
-     * @deprecated
-     * @see Choco#globalCardinality(String options, IntegerVariable[] vars, int[] low, int[] up)
-     */
+	 * @param options options of the constraint
+	 * @param vars list of variables
+	 * @param min minimum allowed value
+	 * @param max maximum allowed value
+	 * @param low array of lower occurence
+	 * @param up array of upper occurence
+	 * @return Constraint
+	 * @deprecated
+	 * @see Choco#globalCardinality(String options, IntegerVariable[] vars, int[] low, int[] up)
+	 */
 	public static Constraint globalCardinality(String options, IntegerVariable[] vars, int min, int max, int[] low, int[] up) {
 		@SuppressWarnings({"deprecation"})
-        Constraint c = globalCardinality(vars, min, max, low, up);
+		Constraint c = globalCardinality(vars, min, max, low, up);
 		c.addOption(options);
 		return c;
 	}
@@ -2208,21 +2209,21 @@ public class Choco{
 	 * <i>cp:ac for Regin impelmentation</i>
 	 * <i>cp:bc for bound consistency</i>
 	 * </ul>
-     * @param vars list of variables
-     * @param low array of lower occurence
-     * @param up array of upper occurence
-     * @return Constraint
-     */
+	 * @param vars list of variables
+	 * @param low array of lower occurence
+	 * @param up array of upper occurence
+	 * @return Constraint
+	 */
 	public static Constraint globalCardinality(IntegerVariable[] vars, int[] low, int[] up) {
-        int min  = getMinOfLowB(vars);
-        int max = getMaxOfUppB(vars);
-        globalCardinalityTest(vars, min, max, low, up);
+		int min  = getMinOfLowB(vars);
+		int max = getMaxOfUppB(vars);
+		globalCardinalityTest(vars, min, max, low, up);
 		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY,
-                new Object[]{ConstraintType.GLOBALCARDINALITYMAX, min, max, low, up}, vars);
+				new Object[]{ConstraintType.GLOBALCARDINALITYMAX, min, max, low, up}, vars);
 	}
 
-    /**
-     * Concerns GCC and boundGCC
+	/**
+	 * Concerns GCC and boundGCC
 	 * <p/>
 	 * Global cardinality : Given an array of variables vars, the constraint ensures that the number of occurences
 	 * of the value i among the variables is between low[i - min] and up[i - min]. Note that the length
@@ -2243,12 +2244,12 @@ public class Choco{
 	 * <i>cp:ac for Regin impelmentation</i>
 	 * <i>cp:bc for bound consistency</i>
 	 * </ul>
-     * @param options options of the constraint
-     * @param vars list of variables
-     * @param low array of lower occurence
-     * @param up array of upper occurence
-     * @return Constraint
-     */
+	 * @param options options of the constraint
+	 * @param vars list of variables
+	 * @param low array of lower occurence
+	 * @param up array of upper occurence
+	 * @return Constraint
+	 */
 	public static Constraint globalCardinality(String options, IntegerVariable[] vars, int[] low, int[] up) {
 		Constraint c = globalCardinality(vars, low, up);
 		c.addOption(options);
@@ -2265,14 +2266,14 @@ public class Choco{
 	 * can occur
 	 * - maintain the lowerbound of card by counting the number of variables instantiated to a value
 	 * - enforce card[0] + ... + card[m] = n (n = the number of variables, m = number of values)
-     *
-     * @param vars list of variables
-     * @param min minimum allowed value
-     * @param max maximum allowed value
-     * @param card array of cardinality variables
-     * @return Constraint
-     * @deprecated
-     * @see Choco#globalCardinality(IntegerVariable[] vars, IntegerVariable[] card)
+	 *
+	 * @param vars list of variables
+	 * @param min minimum allowed value
+	 * @param max maximum allowed value
+	 * @param card array of cardinality variables
+	 * @return Constraint
+	 * @deprecated
+	 * @see Choco#globalCardinality(IntegerVariable[] vars, IntegerVariable[] card)
 	 */
 	public static Constraint globalCardinality(IntegerVariable[] vars, int min, int max, IntegerVariable[] card) {
 		int n = vars.length;
@@ -2282,7 +2283,7 @@ public class Choco{
 		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY, new Object[]{ConstraintType.GLOBALCARDINALITYVAR, min, max, n}, variables);
 	}
 
-    /**
+	/**
 	 * * Bound Global cardinality : Given an array of variables vars, an array of variables card to represent the cardinalities, the constraint ensures that the number of occurences
 	 * of the value i among the variables is equal to card[i].
 	 * this constraint enforces :
@@ -2291,10 +2292,10 @@ public class Choco{
 	 * can occur
 	 * - maintain the lowerbound of card by counting the number of variables instantiated to a value
 	 * - enforce card[0] + ... + card[m] = n (n = the number of variables, m = number of values)
-     *
-     * @param vars list of variables
-     * @param card array of cardinality variables
-     * @return Constraint
+	 *
+	 * @param vars list of variables
+	 * @param card array of cardinality variables
+	 * @return Constraint
 	 */
 	public static Constraint globalCardinality(IntegerVariable[] vars, IntegerVariable[] card) {
 		int n = vars.length;
@@ -2302,7 +2303,7 @@ public class Choco{
 		arraycopy(vars, 0, variables, 0, n);
 		arraycopy(card, 0, variables, n, card.length);
 		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY,
-                new Object[]{ConstraintType.GLOBALCARDINALITYVAR, getMinOfLowB(vars), getMaxOfUppB(vars), n}, variables);
+				new Object[]{ConstraintType.GLOBALCARDINALITYVAR, getMinOfLowB(vars), getMaxOfUppB(vars), n}, variables);
 	}
 
 	/**
@@ -2314,7 +2315,7 @@ public class Choco{
 	 * @param stretchesParameters : a list of triples of integers :
 	 *                            (value, occmin, occmax) denoting for each value the minimal and maximal
 	 *                            lenght of any stretch of the corresponding value.
-     * @return Constraint
+	 * @return Constraint
 	 */
 	public static Constraint stretchPath(List<int[]> stretchesParameters, IntegerVariable... vars) {
 		return new ComponentConstraint(ConstraintType.STRETCHPATH, stretchesParameters, vars);
@@ -2375,15 +2376,28 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint cumulative(String name, TaskVariable[] tasks, IntegerVariable[] heights, IntegerVariable[] usages, IntegerVariable consumption, IntegerVariable capacity, IntegerVariable uppBound, String... options) {
-		if(tasks.length == heights.length && consumption!= null && capacity!=null) {
-			RscData param = new RscData(name, tasks, usages, uppBound);
-			final Variable[] vars=  ArrayUtils.append(tasks, heights, usages, new Variable[]{consumption, capacity}, uppBound == null ? null : new Variable[]{uppBound});
-			final ComponentConstraint c=new ComponentConstraint(ConstraintType.CUMULATIVE, param,vars);
-			c.addOptions(options);
-			return c;
-		}else {
-			throw new ModelException("can't build cumulative constraint : invalid arguments.");
+		//check parameters
+		if(tasks == null || heights == null || tasks.length == 0 || tasks.length != heights.length) {
+			throw new ModelException("can't build cumulative constraint "+name+" : Tasks and heights arrays are nil or have different size.");
 		}
+		if( usages != null && usages.length > tasks.length) {
+			throw new ModelException("can't build cumulative constraint "+name+" : usage array have a greater length than task array.");
+		}
+		if(consumption == null) {
+			LOGGER.log(Level.WARNING, "replace nil consumption in cumulative {0}", name);
+			consumption = constant(0);
+		}
+		if(capacity == null) {
+			LOGGER.log(Level.WARNING, "replace nil capacity in cumulative {0}", name);
+			consumption = constant(MAX_UPPER_BOUND);
+		}
+		//build constraint
+		RscData param = new RscData(name, tasks, usages, uppBound);
+		final Variable[] vars=  ArrayUtils.append(tasks, heights, usages, new Variable[]{consumption, capacity}, uppBound == null ? null : new Variable[]{uppBound});
+		final ComponentConstraint c=new ComponentConstraint(ConstraintType.CUMULATIVE, param,vars);
+		c.addOptions(options);
+		return c;
+
 	}
 
 	public static Constraint cumulative(String name, TaskVariable[] tasks, IntegerVariable[] heights, IntegerVariable[] usages, IntegerVariable consumption, IntegerVariable capacity, String... options) {
@@ -2442,26 +2456,26 @@ public class Choco{
 	@Deprecated
 	public static Constraint cumulative(IntegerVariable[] starts, IntegerVariable[] ends, IntegerVariable[] durations, IntegerVariable[] heights, IntegerVariable capa, String... options) {
 		TaskVariable[] t = new TaskVariable[starts.length];
-        for(int i = 0; i < starts.length; i++){
-            t[i] = makeTaskVar("", starts[i], ends[i], durations[i]);
-        }
-        return cumulative(null, t, heights, constant(0), capa, options);
+		for(int i = 0; i < starts.length; i++){
+			t[i] = makeTaskVar("", starts[i], ends[i], durations[i]);
+		}
+		return cumulative(null, t, heights, constant(0), capa, options);
 	}
 	@Deprecated
 	public static Constraint cumulative(IntegerVariable[] starts, IntegerVariable[] ends, IntegerVariable[] durations, int[] heights, int capa, String... options) {
-        TaskVariable[] t = new TaskVariable[starts.length];
-        for(int i = 0; i < starts.length; i++){
-            t[i] = makeTaskVar("", starts[i], ends[i], durations[i]);
-        }
-        return cumulative(null, t, constantArray(heights), constant(0), constant(capa), options);
+		TaskVariable[] t = new TaskVariable[starts.length];
+		for(int i = 0; i < starts.length; i++){
+			t[i] = makeTaskVar("", starts[i], ends[i], durations[i]);
+		}
+		return cumulative(null, t, constantArray(heights), constant(0), constant(capa), options);
 	}
 	@Deprecated
 	public static Constraint cumulative(IntegerVariable[] starts, IntegerVariable[] durations, IntegerVariable[] heights, IntegerVariable capa, String... options) {
 		TaskVariable[] t = new TaskVariable[starts.length];
-        for(int i = 0; i < starts.length; i++){
-            t[i] = makeTaskVar("", starts[i], durations[i]);
-        }
-        return cumulative(null, t, heights, constant(0),capa, options);
+		for(int i = 0; i < starts.length; i++){
+			t[i] = makeTaskVar("", starts[i], durations[i]);
+		}
+		return cumulative(null, t, heights, constant(0),capa, options);
 	}
 
 
@@ -2472,33 +2486,33 @@ public class Choco{
 	 * @param starts to schedule
 	 * @param durations of each task
 	 * @param options options of the variable
-     * @return the disjunctive constraint
+	 * @return the disjunctive constraint
 	 */
 	@Deprecated
 	public static Constraint disjunctive(IntegerVariable[] starts, int[] durations,String...options) {
-        TaskVariable[] t = new TaskVariable[starts.length];
-        for(int i = 0; i < starts.length; i++){
-            t[i] = makeTaskVar("", starts[i], constant(durations[i]));
-        }
+		TaskVariable[] t = new TaskVariable[starts.length];
+		for(int i = 0; i < starts.length; i++){
+			t[i] = makeTaskVar("", starts[i], constant(durations[i]));
+		}
 		return disjunctive(null, t,  null, options);
 	}
 
 	@Deprecated
 	public static Constraint disjunctive(IntegerVariable[] starts, IntegerVariable[] durations, String... options) {
 		TaskVariable[] t = new TaskVariable[starts.length];
-        for(int i = 0; i < starts.length; i++){
-            t[i] = makeTaskVar("", starts[i], durations[i]);
-        }
-        return disjunctive(null, t,  null, options);
+		for(int i = 0; i < starts.length; i++){
+			t[i] = makeTaskVar("", starts[i], durations[i]);
+		}
+		return disjunctive(null, t,  null, options);
 	}
 
 	@Deprecated
 	public static Constraint disjunctive(IntegerVariable[] starts, IntegerVariable[] ends, IntegerVariable[] durations,String... options) {
 		TaskVariable[] t = new TaskVariable[starts.length];
-        for(int i = 0; i < starts.length; i++){
-            t[i] = makeTaskVar("", starts[i], ends[i], durations[i]);
-        }
-        return disjunctive(null, t,  null, options);
+		for(int i = 0; i < starts.length; i++){
+			t[i] = makeTaskVar("", starts[i], ends[i], durations[i]);
+		}
+		return disjunctive(null, t,  null, options);
 	}
 
 	@Deprecated
@@ -2535,12 +2549,20 @@ public class Choco{
 	 */
 	public static Constraint disjunctive(String name, TaskVariable[] tasks,IntegerVariable[] usages, IntegerVariable uppBound, String... options) {
 		RscData param = new RscData(name, tasks, usages, uppBound);
-		Variable[] vars = uppBound==null ? ArrayUtils.append((Variable[]) tasks, usages) :   ArrayUtils.append(tasks, usages, new Variable[]{ uppBound});
+		Variable[] vars = uppBound==null ? ArrayUtils.<Variable>append(tasks, usages) :   ArrayUtils.append(tasks, usages, new Variable[]{ uppBound});
 		final ComponentConstraint c=new ComponentConstraint(ConstraintType.DISJUNCTIVE, param,vars);
 		c.addOptions(options);
 		return c;
 	}
 
+	/**
+	 * Each task of the collection tasks1 should not overlap any task of the collection tasks2.
+	 * The solver decomposes the constraint because the coloured cumulative is not implemented.
+	 * @see http://www.emn.fr/x-info/sdemasse/gccat/Cdisjoint_tasks.html#uid11633
+	 */
+	public static Constraint disjoint(TaskVariable[] tasks1,TaskVariable[] tasks2) {
+		return new ComponentConstraint(ConstraintType.DISJOINT, Integer.valueOf(tasks1.length), ArrayUtils.<Variable>append(tasks1, tasks2));		
+	}
 
 	public static Constraint preceding(IntegerVariable v1, int dur1, IntegerVariable v2, int dur2, IntegerVariable bool) {
 		return new ComponentConstraint(ConstraintType.PRECEDING, Boolean.FALSE, new Variable[]{v1, constant(dur1), v2, constant(dur2), bool});
@@ -2578,85 +2600,85 @@ public class Choco{
 	}
 
 	public static Constraint geost(int dim, Vector<GeostObject> objects, Vector<ShiftedBox> shiftedBoxes, Vector<IExternalConstraint> eCtrs, Vector<int[]> ctrlVs) {
-        return geost(dim, objects, shiftedBoxes, eCtrs, ctrlVs, null);
+		return geost(dim, objects, shiftedBoxes, eCtrs, ctrlVs, null);
 
-//		int originOfObjects = objects.size() * dim; //Number of domain variables to represent the origin of all objects
-//		int otherVariables = objects.size() * 4; //each object has 4 other variables: shapeId, start, duration; end
-//		//vars will be stored as follows: object 1 coords(so k coordinates), sid, start, duration, end,
-//		//                                object 2 coords(so k coordinates), sid, start, duration, end and so on ........
-//		//To retrieve the index of a certain variable, the formula is (nb of the object in question = objId assuming objIds are consecutive and start from 0) * (k + 4) + number of the variable wanted
-//		//the number of the variable wanted is decided as follows: 0 ... k-1 (the coords), k (the sid), k+1 (start), k+2 (duration), k+3 (end)
-//		IntegerVariable[] vars = new IntegerVariable[originOfObjects + otherVariables];
-//        for(int i = 0; i < objects.size(); i++)
-//		{
-//			for (int j = 0; j < dim; j++)
-//			{
-//				vars[(i * (dim + 4)) + j] = objects.elementAt(i).getCoordinates()[j];
-//			}
-//			vars[(i * (dim + 4)) + dim] = objects.elementAt(i).getShapeId();
-//			vars[(i * (dim + 4)) + dim + 1] = objects.elementAt(i).getStartTime();
-//			vars[(i * (dim + 4)) + dim + 2] = objects.elementAt(i).getDurationTime();
-//			vars[(i * (dim + 4)) + dim + 3] = objects.elementAt(i).getEndTime();
-//		}
-//
-//		return new ComponentConstraint(ConstraintType.GEOST, new Object[]{dim, shiftedBoxes, eCtrs, objects, ctrlVs}, vars);
-//		//return new GeostConstraint(dim, objects, shiftedBoxes, eCtrs, ctrlVs);
+		//		int originOfObjects = objects.size() * dim; //Number of domain variables to represent the origin of all objects
+		//		int otherVariables = objects.size() * 4; //each object has 4 other variables: shapeId, start, duration; end
+		//		//vars will be stored as follows: object 1 coords(so k coordinates), sid, start, duration, end,
+		//		//                                object 2 coords(so k coordinates), sid, start, duration, end and so on ........
+		//		//To retrieve the index of a certain variable, the formula is (nb of the object in question = objId assuming objIds are consecutive and start from 0) * (k + 4) + number of the variable wanted
+		//		//the number of the variable wanted is decided as follows: 0 ... k-1 (the coords), k (the sid), k+1 (start), k+2 (duration), k+3 (end)
+		//		IntegerVariable[] vars = new IntegerVariable[originOfObjects + otherVariables];
+		//        for(int i = 0; i < objects.size(); i++)
+		//		{
+		//			for (int j = 0; j < dim; j++)
+		//			{
+		//				vars[(i * (dim + 4)) + j] = objects.elementAt(i).getCoordinates()[j];
+		//			}
+		//			vars[(i * (dim + 4)) + dim] = objects.elementAt(i).getShapeId();
+		//			vars[(i * (dim + 4)) + dim + 1] = objects.elementAt(i).getStartTime();
+		//			vars[(i * (dim + 4)) + dim + 2] = objects.elementAt(i).getDurationTime();
+		//			vars[(i * (dim + 4)) + dim + 3] = objects.elementAt(i).getEndTime();
+		//		}
+		//
+		//		return new ComponentConstraint(ConstraintType.GEOST, new Object[]{dim, shiftedBoxes, eCtrs, objects, ctrlVs}, vars);
+		//		//return new GeostConstraint(dim, objects, shiftedBoxes, eCtrs, ctrlVs);
 	}
 
-//    public static Constraint geost(int dim, Vector<GeostObject> objects, Vector<ShiftedBox> shiftedBoxes, Vector<IExternalConstraint> eCtrs, boolean memo, HashMap<Pair<Integer,Integer>, Boolean> included, Long a, Long b) {
-//        return geost(dim, objects, shiftedBoxes, eCtrs, null,memo,included,a,b,false);
-//    }
+	//    public static Constraint geost(int dim, Vector<GeostObject> objects, Vector<ShiftedBox> shiftedBoxes, Vector<IExternalConstraint> eCtrs, boolean memo, HashMap<Pair<Integer,Integer>, Boolean> included, Long a, Long b) {
+	//        return geost(dim, objects, shiftedBoxes, eCtrs, null,memo,included,a,b,false);
+	//    }
 
-    public static Constraint geost(int dim, Vector<GeostObject> objects, Vector<ShiftedBox> shiftedBoxes, Vector<IExternalConstraint> eCtrs, Vector<int[]> ctrlVs, GeostOptions opt) {
-        int originOfObjects = objects.size() * dim; //Number of domain variables to represent the origin of all objects
-        int otherVariables = objects.size() * 4; //each object has 4 other variables: shapeId, start, duration; end
+	public static Constraint geost(int dim, Vector<GeostObject> objects, Vector<ShiftedBox> shiftedBoxes, Vector<IExternalConstraint> eCtrs, Vector<int[]> ctrlVs, GeostOptions opt) {
+		int originOfObjects = objects.size() * dim; //Number of domain variables to represent the origin of all objects
+		int otherVariables = objects.size() * 4; //each object has 4 other variables: shapeId, start, duration; end
 
-        /*Collect distance variales due to ditance constraints*/
-        Vector<Integer> distVars = new Vector<Integer>();
-        for (int i=0; i< eCtrs.size(); i++) {
-            IExternalConstraint ectr=eCtrs.elementAt(i);
-            if ((ectr instanceof DistLeqModel) && (((DistLeqModel) ectr).hasDistanceVar()))
-                distVars.add(i);
-            if ((ectr instanceof DistGeqModel) && (((DistGeqModel) ectr).hasDistanceVar()))
-                distVars.add(i);
-        }
+		/*Collect distance variales due to ditance constraints*/
+		Vector<Integer> distVars = new Vector<Integer>();
+		for (int i=0; i< eCtrs.size(); i++) {
+			IExternalConstraint ectr=eCtrs.elementAt(i);
+			if ((ectr instanceof DistLeqModel) && (((DistLeqModel) ectr).hasDistanceVar()))
+				distVars.add(i);
+			if ((ectr instanceof DistGeqModel) && (((DistGeqModel) ectr).hasDistanceVar()))
+				distVars.add(i);
+		}
 
 
-        //vars will be stored as follows: object 1 coords(so k coordinates), sid, start, duration, end,
-        //                                object 2 coords(so k coordinates), sid, start, duration, end and so on ........
-        //To retrieve the index of a certain variable, the formula is (nb of the object in question = objId assuming objIds are consecutive and start from 0) * (k + 4) + number of the variable wanted
-        //the number of the variable wanted is decided as follows: 0 ... k-1 (the coords), k (the sid), k+1 (start), k+2 (duration), k+3 (end)
-        /*IntegerVariable model variable*/
-        IntegerVariable[] vars = new IntegerVariable[originOfObjects + otherVariables + distVars.size()];
-        int k = 0;
-        for(int i = 0; i < objects.size(); i++)
-        {
-            for (int j = 0; j < dim; j++)
-            {
-                vars[(i * (dim + 4)) + j] = objects.elementAt(i).getCoordinates()[j];
-            }
-            vars[(i * (dim + 4)) + dim] = objects.elementAt(i).getShapeId();
-            vars[(i * (dim + 4)) + dim + 1] = objects.elementAt(i).getStartTime();
-            vars[(i * (dim + 4)) + dim + 2] = objects.elementAt(i).getDurationTime();
-            vars[(i * (dim + 4)) + dim + 3] = objects.elementAt(i).getEndTime();
-        }
+		//vars will be stored as follows: object 1 coords(so k coordinates), sid, start, duration, end,
+		//                                object 2 coords(so k coordinates), sid, start, duration, end and so on ........
+		//To retrieve the index of a certain variable, the formula is (nb of the object in question = objId assuming objIds are consecutive and start from 0) * (k + 4) + number of the variable wanted
+		//the number of the variable wanted is decided as follows: 0 ... k-1 (the coords), k (the sid), k+1 (start), k+2 (duration), k+3 (end)
+		/*IntegerVariable model variable*/
+		IntegerVariable[] vars = new IntegerVariable[originOfObjects + otherVariables + distVars.size()];
+		int k = 0;
+		for(int i = 0; i < objects.size(); i++)
+		{
+			for (int j = 0; j < dim; j++)
+			{
+				vars[(i * (dim + 4)) + j] = objects.elementAt(i).getCoordinates()[j];
+			}
+			vars[(i * (dim + 4)) + dim] = objects.elementAt(i).getShapeId();
+			vars[(i * (dim + 4)) + dim + 1] = objects.elementAt(i).getStartTime();
+			vars[(i * (dim + 4)) + dim + 2] = objects.elementAt(i).getDurationTime();
+			vars[(i * (dim + 4)) + dim + 3] = objects.elementAt(i).getEndTime();
+		}
 
-        for (int i : distVars) {
-            IExternalConstraint ectr=eCtrs.elementAt(i);
-            if (ectr instanceof DistLeqModel) {
-                vars[originOfObjects + otherVariables  +i] = (( DistLeqModel) ectr).getDistanceVar();
-                System.out.println("Adding "+((DistLeqModel) ectr).modelDVar+" for "+((DistLeqModel) ectr));
-            }
-            if (ectr instanceof DistGeqModel) {
-                vars[originOfObjects + otherVariables  +i] = (( DistGeqModel) ectr).getDistanceVar();
-                System.out.println("Adding "+((DistGeqModel) ectr).modelDVar+" for "+((DistGeqModel) ectr));
-            }
+		for (int i : distVars) {
+			IExternalConstraint ectr=eCtrs.elementAt(i);
+			if (ectr instanceof DistLeqModel) {
+				vars[originOfObjects + otherVariables  +i] = (( DistLeqModel) ectr).getDistanceVar();
+				System.out.println("Adding "+((DistLeqModel) ectr).modelDVar+" for "+((DistLeqModel) ectr));
+			}
+			if (ectr instanceof DistGeqModel) {
+				vars[originOfObjects + otherVariables  +i] = (( DistGeqModel) ectr).getDistanceVar();
+				System.out.println("Adding "+((DistGeqModel) ectr).modelDVar+" for "+((DistGeqModel) ectr));
+			}
 
-        }
+		}
 
-        return new ComponentConstraint(ConstraintType.GEOST, new Object[]{dim, shiftedBoxes, eCtrs, objects, ctrlVs, opt}, vars);
-        //return new GeostConstraint(dim, objects, shiftedBoxes, eCtrs, ctrlVs);
-    }
+		return new ComponentConstraint(ConstraintType.GEOST, new Object[]{dim, shiftedBoxes, eCtrs, objects, ctrlVs, opt}, vars);
+		//return new GeostConstraint(dim, objects, shiftedBoxes, eCtrs, ctrlVs);
+	}
 
 	/**
 	 * Enforce a lexicographic ordering on two vectors of integer
@@ -2753,10 +2775,10 @@ public class Choco{
 	 * Let x and x' be two vectors of variables, and v be an instantiation.
 	 * The constraint Leximin(x, x') holds on the set of variables belonging to x or x', and is satisfied by v if and only if v(x) <leximin v(x').
 	 * [Frisch et al. 2003]	A. Frisch, B. Hnich, Z. Kiziltan, I. Miguel, and T. Walsh. Multiset ordering constraints. In Proc. of IJCAI'03. Acapulco, Mexico, 2003.
-     * @param v1 the first array of variables
-     * @param v2 the second array of variables
-     * @return Constraint
-     */
+	 * @param v1 the first array of variables
+	 * @param v2 the second array of variables
+	 * @return Constraint
+	 */
 	public static Constraint leximin(IntegerVariable[] v1, IntegerVariable[] v2) {
 		IntegerVariable[] vars = new IntegerVariable[v1.length + v2.length];
 		arraycopy(v1, 0, vars, 0, v1.length);
@@ -2774,10 +2796,10 @@ public class Choco{
 	 * Let x and x' be two vectors of variables, and v be an instantiation.
 	 * The constraint Leximin(x, x') holds on the set of variables belonging to x or x', and is satisfied by v if and only if v(x) <leximin v(x').
 	 * [Frisch et al. 2003]	A. Frisch, B. Hnich, Z. Kiziltan, I. Miguel, and T. Walsh. Multiset ordering constraints. In Proc. of IJCAI'03. Acapulco, Mexico, 2003.
-     * @param v1 array of values
-     * @param v2 array of variables
-     * @return Constraint
-     */
+	 * @param v1 array of values
+	 * @param v2 array of variables
+	 * @return Constraint
+	 */
 	public static Constraint leximin(int[] v1, IntegerVariable[] v2) {
 		return new ComponentConstraint(ConstraintType.LEXIMIN,
 				v1, v2);
@@ -2785,10 +2807,10 @@ public class Choco{
 
 	/**
 	 * Enforce the number of distinct values among vars to be less than nvalue;
-     * @param vars list of variables
-     * @param nvalue number of distinct values
-     * @return Constraint
-     */
+	 * @param vars list of variables
+	 * @param nvalue number of distinct values
+	 * @return Constraint
+	 */
 	public static Constraint atMostNValue(IntegerVariable[] vars, IntegerVariable nvalue) {
 		IntegerVariable[] tmp = new IntegerVariable[vars.length + 1];
 		arraycopy(vars, 0, tmp, 0, vars.length);
@@ -2797,13 +2819,13 @@ public class Choco{
 	}
 
 	// ------------- Constraints over sets -------------------------------
-    /**
+	/**
 	 * Enforce a set to be the intersection of two others.
 	 *
 	 * @param sv1 the first set variable
-     * @param sv2 the second set variable
-     * @param inter the intersection of sv1 and sv2
-     * @return Constraint
+	 * @param sv2 the second set variable
+	 * @param inter the intersection of sv1 and sv2
+	 * @return Constraint
 	 */
 	public static Constraint setInter(SetVariable sv1, SetVariable sv2, SetVariable inter) {
 		return new ComponentConstraint(ConstraintType.SETINTER, null, new Variable[]{sv1, sv2, inter});
@@ -2812,8 +2834,8 @@ public class Choco{
 	/**
 	 * Enforce a set to be the union of two others
 	 *
-     * @param sv1 the first set variable
-     * @param sv2 the second set variable
+	 * @param sv1 the first set variable
+	 * @param sv2 the second set variable
 	 * @param union the union of sv1 and sv2
 	 * @return the union constraint
 	 */
@@ -2821,12 +2843,12 @@ public class Choco{
 		return new ComponentConstraint(ConstraintType.SETUNION, null, new Variable[]{sv1, sv2, union});
 	}
 
-    //UNDERDEVELOPMENT
-/*
+	//UNDERDEVELOPMENT
+	/*
     public static Constraint setUnion(SetVariable[] sv, SetVariable union) {
 		return new ComponentConstraint(ConstraintType.SETUNION, null, UtilAlgo.append(new SetVariable[]{union}, sv));
 	}
-*/
+	 */
 
 	/**
 	 * Return a constraint that ensures sv1 == sv2
@@ -2903,12 +2925,12 @@ public class Choco{
 		return new ComponentConstraint(ConstraintType.SETDISJOINT, null, new Variable[]{sv1, sv2});
 	}
 
-    // UNDERDEVELOPMENT
-/*
+	// UNDERDEVELOPMENT
+	/*
     public static Constraint setDisjoint(SetVariable[] sv) {
 		return new ComponentConstraint(ConstraintType.SETDISJOINT, null, sv);
 	}
-*/
+	 */
 
 	/**
 	 * Ensures that a value is contained in a set variable.
@@ -3127,7 +3149,7 @@ public class Choco{
 				ArrayUtils.append(vars, new IntegerVariable[]{cvar}));
 	}
 
-    	/**
+	/**
 	 * Constructs a new CostRegular constraint
 	 * This constraint ensures that the sequence of variables values
 	 * will follow a pattern defined by a DFA and that this sequence has a cost bounded by the cost variable
@@ -3141,7 +3163,7 @@ public class Choco{
 		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,costs},
 				ArrayUtils.append(vars, cvar));
 	}
-     /**
+	/**
 	 * Constructs a new CostRegular constraint
 	 * This constraint ensures that the sequence of variables values
 	 * will follow a pattern defined by a DFA and that this sequence has a cost bounded by the cost variable
@@ -3343,11 +3365,11 @@ public class Choco{
 		return new IntegerExpressionVariable(null, Operator.DIV, n1, n2);
 	}
 
-    public static IntegerExpressionVariable div(IntegerExpressionVariable n1, int n2) {
+	public static IntegerExpressionVariable div(IntegerExpressionVariable n1, int n2) {
 		return new IntegerExpressionVariable(null, Operator.DIV, n1, constant(n2));
 	}
 
-    public static IntegerExpressionVariable div(int n1, IntegerExpressionVariable n2) {
+	public static IntegerExpressionVariable div(int n1, IntegerExpressionVariable n2) {
 		return new IntegerExpressionVariable(null, Operator.DIV, constant(n1), n2);
 	}
 
@@ -3467,18 +3489,18 @@ public class Choco{
 
 	/**
 	 * Cosinus of an expression.
-     * @param exp the real expression
-     * @return RealExpression
-     */
+	 * @param exp the real expression
+	 * @return RealExpression
+	 */
 	public static RealExpressionVariable cos(RealExpressionVariable exp) {
 		return new RealExpressionVariable(null, Operator.COS, exp);
 	}
 
 	/**
 	 * Sinus of an expression.
-     * @param exp the real expression
-     * @return RealExpression
-     */
+	 * @param exp the real expression
+	 * @return RealExpression
+	 */
 	public static RealExpressionVariable sin(RealExpressionVariable exp) {
 		return new RealExpressionVariable(null, Operator.SIN, exp);
 	}
@@ -3541,21 +3563,21 @@ public class Choco{
 
 	/**
 	 * 	This task ends between min and max
-     * @param t the task
-     * @param min the minimum ending time
-     * @param max the maximum ending time
-     * @return Constraint
-     */
+	 * @param t the task
+	 * @param min the minimum ending time
+	 * @param max the maximum ending time
+	 * @return Constraint
+	 */
 	public static  Constraint endsBetween(final TaskVariable t, final int min, final int max) 	{
 		return timeWindow(t.end(), min, max);
 	}
 
 	/**
 	 * This task ends between min and max
-     * @param t the task
-     * @param min the minimum starting time
-     * @param max the maximum starting time
-     * @return Constraint
+	 * @param t the task
+	 * @param min the minimum starting time
+	 * @param max the maximum starting time
+	 * @return Constraint
 	 */
 	public static Constraint startsBetween(final TaskVariable t, final int min, final int max) 	{
 		return timeWindow(t.start(), min, max);
@@ -3563,9 +3585,9 @@ public class Choco{
 
 	/**
 	 * 	This task ends before max
-     * @param t the task
-     * @param max the maximum ending time
-     * @return Constraint
+	 * @param t the task
+	 * @param max the maximum ending time
+	 * @return Constraint
 	 */
 	public static Constraint endsBefore(final TaskVariable t, final int max) 	{
 		return leq(t.end(),max);
@@ -3573,9 +3595,9 @@ public class Choco{
 
 	/**
 	 * 	This task starts before max
-     * @param t the task
-     * @param max the maximum starting time
-     * @return Constraint
+	 * @param t the task
+	 * @param max the maximum starting time
+	 * @return Constraint
 	 */
 	public static Constraint startsBefore(final TaskVariable t, final int max) 	{
 		return leq(t.start(),max);
@@ -3583,9 +3605,9 @@ public class Choco{
 
 	/**
 	 * 	This task ends after min
-     * @param t the task
-     * @param min the minimum ending time
-     * @return Constraint
+	 * @param t the task
+	 * @param min the minimum ending time
+	 * @return Constraint
 	 */
 	public static Constraint endsAfter(final TaskVariable t, final int min) 	{
 		return geq(t.end(),min);
@@ -3593,9 +3615,9 @@ public class Choco{
 
 	/**
 	 * 	This task begins before max
-     * @param t the task
-     * @param min the minimum starting time
-     * @return Constraint
+	 * @param t the task
+	 * @param min the minimum starting time
+	 * @return Constraint
 	 */
 	public static Constraint startsAfter(final TaskVariable t, final int min) 	{
 		return geq(t.start(),min);
@@ -3607,20 +3629,20 @@ public class Choco{
 	////////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * Temporal constraint : start(t1) +delta <= start(s2)
-     * @param t1 the first task
-     * @param t2 the second task
-     * @param delta the delta
-     * @return Constraint
-     */
+	 * @param t1 the first task
+	 * @param t2 the second task
+	 * @param delta the delta
+	 * @return Constraint
+	 */
 	public static  Constraint startsBeforeBegin(final TaskVariable t1,final TaskVariable t2, final int delta) {
 		return new MetaTaskConstraint(new Variable[]{t1, t2}, leq(plus(t1.start(), delta),t2.start()));
 	}
 
 	/**
 	 * Temporal constraint : start(t1) <= start(s2)
-     * @param t1 the first task
-     * @param t2 the second task
-     * @return Constraint
+	 * @param t1 the first task
+	 * @param t2 the second task
+	 * @return Constraint
 	 */
 	public static Constraint startsBeforeBegin(final TaskVariable t1,final TaskVariable t2) {
 		return startsBeforeBegin(t1,t2,0);
@@ -3628,10 +3650,10 @@ public class Choco{
 
 	/**
 	 * Temporal constraint : start(t1) >= start(t2) +delta
-     * @param t1 the first task
-     * @param t2 the second task
-     * @param delta the delta
-     * @return Constraint
+	 * @param t1 the first task
+	 * @param t2 the second task
+	 * @param delta the delta
+	 * @return Constraint
 	 */
 	public static Constraint startsAfterBegin(final TaskVariable t1, final TaskVariable t2, final int delta) 	{
 		return startsBeforeBegin(t2, t1, delta);
@@ -3639,9 +3661,9 @@ public class Choco{
 
 	/**
 	 * Temporal constraint : start(t1) >= start(t2)
-     * @param t1 the first task
-     * @param t2 the second task
-     * @return Constraint
+	 * @param t1 the first task
+	 * @param t2 the second task
+	 * @return Constraint
 	 */
 	public static Constraint startsAfterBegin(final TaskVariable t1, final TaskVariable t2) 	{
 		return startsAfterBegin(t1,t2,0);
@@ -3650,10 +3672,10 @@ public class Choco{
 	////////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * Temporal constraint: start(t1) >= end(t2)  + delta
-     * @param t1 the first task
-     * @param t2 the second task
-     * @param delta the delta
-     * @return Constraint
+	 * @param t1 the first task
+	 * @param t2 the second task
+	 * @param delta the delta
+	 * @return Constraint
 	 */
 	public static Constraint startsAfterEnd(final TaskVariable t1, final TaskVariable t2, final int delta) {
 		return new MetaTaskConstraint(new Variable[]{t1, t2}, geq(t1.start(), plus(t2.end(), delta)));
@@ -3661,9 +3683,9 @@ public class Choco{
 
 	/**
 	 * Temporal constraint: start(t1) >= end(t2)
-     * @param t1 the first task
-     * @param t2 the second task
-     * @return Constraint
+	 * @param t1 the first task
+	 * @param t2 the second task
+	 * @return Constraint
 	 */
 	public static Constraint startsAfterEnd(final TaskVariable t1, final TaskVariable t2) {
 		return preceding(t2, t1);
@@ -3672,10 +3694,10 @@ public class Choco{
 
 	/**
 	 *  Temporal constraint: end(t1) + delta <= start(t2)
-     * @param t1 the first task
-     * @param t2 the second task
-     * @param delta the delta
-     * @return Constraint
+	 * @param t1 the first task
+	 * @param t2 the second task
+	 * @param delta the delta
+	 * @return Constraint
 	 */
 	public static Constraint endsBeforeBegin(final TaskVariable t1, final TaskVariable t2, final int delta) 	{
 		return startsAfterEnd(t2, t1, delta);
@@ -3683,9 +3705,9 @@ public class Choco{
 
 	/**
 	 *  Temporal constraint: end(t1)<= start(t2)
-     * @param t1 the first task
-     * @param t2 the second task
-     * @return Constraint
+	 * @param t1 the first task
+	 * @param t2 the second task
+	 * @return Constraint
 	 */
 	public static Constraint endsBeforeBegin(final TaskVariable t1, final TaskVariable t2) 	{
 		return preceding(t1, t2);
@@ -3695,10 +3717,10 @@ public class Choco{
 	////////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * Temporal constraint : start(t1) + delta <= end(t2)
-     * @param t1 the first task
-     * @param t2 the second task
-     * @param delta the delta
-     * @return Constraint
+	 * @param t1 the first task
+	 * @param t2 the second task
+	 * @param delta the delta
+	 * @return Constraint
 	 */
 	public static Constraint startsBeforeEnd(final TaskVariable t1, final TaskVariable t2, final int delta) {
 		return new MetaTaskConstraint(new Variable[]{t1, t2}, leq( plus(t1.start(), delta), t2.end()));
@@ -3706,9 +3728,9 @@ public class Choco{
 
 	/**
 	 * Temporal constraint : start(t1) + delta <= end(t2)
-     * @param t1 the first task
-     * @param t2 the second task
-     * @return Constraint
+	 * @param t1 the first task
+	 * @param t2 the second task
+	 * @return Constraint
 	 */
 	public static Constraint startsBeforeEnd(final TaskVariable t1, final TaskVariable t2) 	{
 		return startsBeforeEnd(t1,t2,0);
@@ -3716,21 +3738,21 @@ public class Choco{
 
 	/**
 	 * Temporal constraint: end(t1) >= start(t2) + delta
-     * @param t1 the first task
-     * @param t2 the second task
-     * @param delta the delta
-     * @return Constraint
+	 * @param t1 the first task
+	 * @param t2 the second task
+	 * @param delta the delta
+	 * @return Constraint
 	 */
 	public static Constraint endsAfterBegin(final TaskVariable t1, final TaskVariable t2, final int delta) {
 		return  startsBeforeEnd(t2, t1, delta);
 	}
 
-    /**
-     *  This task ends after the start of the task 2
-     * @param t1 the first task
-     * @param t2 the second task
-     * @return Constraint
-     */
+	/**
+	 *  This task ends after the start of the task 2
+	 * @param t1 the first task
+	 * @param t2 the second task
+	 * @return Constraint
+	 */
 	public static Constraint endsAfterBegin(final TaskVariable t1, final TaskVariable t2) {
 		return endsAfterBegin(t1,t2,0);
 	}
@@ -3738,10 +3760,10 @@ public class Choco{
 	////////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * Temporal constraint: end(t1) + delta <= end(t2)
-     * @param t1 the first task
-     * @param t2 the second task
-     * @param delta the delta
-     * @return Constraint
+	 * @param t1 the first task
+	 * @param t2 the second task
+	 * @param delta the delta
+	 * @return Constraint
 	 */
 	public static  Constraint endsBeforeEnd(final TaskVariable t1, final TaskVariable t2, final int delta) {
 		return  new MetaTaskConstraint(new Variable[]{t1, t2},leq(t1.end(), plus(t2.end(), delta)));
@@ -3749,9 +3771,9 @@ public class Choco{
 
 	/**
 	 * Temporal constraint: end(t1) <= end(t2)
-     * @param t1 the first task
-     * @param t2 the second task
-     * @return Constraint
+	 * @param t1 the first task
+	 * @param t2 the second task
+	 * @return Constraint
 	 */
 	public static Constraint endsBeforeEnd(final TaskVariable t1, final TaskVariable t2) {
 		return endsBeforeEnd(t1,t2,0);
@@ -3759,10 +3781,10 @@ public class Choco{
 
 	/**
 	 * Temporal constraint: end(t1) >= end(t2) + delta
-     * @param t1 the first task
-     * @param t2 the second task
-     * @param delta the delta
-     * @return Constraint
+	 * @param t1 the first task
+	 * @param t2 the second task
+	 * @param delta the delta
+	 * @return Constraint
 	 */
 	public static Constraint endsAfterEnd(final TaskVariable t1, final TaskVariable t2, final int delta) {
 		return endsBeforeEnd(t2, t1,delta);
@@ -3770,9 +3792,9 @@ public class Choco{
 
 	/**
 	 * Temporal constraint: end(t1) >= end(t2)
-     * @param t1 the first task
-     * @param t2 the second task
-     * @return Constraint
+	 * @param t1 the first task
+	 * @param t2 the second task
+	 * @return Constraint
 	 */
 	public static Constraint endsAfterEnd(final TaskVariable t1, final TaskVariable t2) 	{
 		return endsAfterEnd(t1,t2,0);

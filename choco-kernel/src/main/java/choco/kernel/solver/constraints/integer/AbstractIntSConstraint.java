@@ -82,7 +82,7 @@ public abstract class AbstractIntSConstraint extends AbstractSConstraint impleme
    */
 
   public boolean isCompletelyInstantiated() {
-    int n = getNbVars();
+    final int n = getNbVars();
     for (int i = 0; i < n; i++) {
       if (!(getIntVar(i).isInstantiated())) {
 		return false;
@@ -113,7 +113,7 @@ public abstract class AbstractIntSConstraint extends AbstractSConstraint impleme
    */
   @Deprecated
 public int getSelfIndex() {
-    Solver solver = getSolver();
+    final Solver solver = getSolver();
     for (int i = 0; i < solver.getNbIntConstraints(); i++) {
       SConstraint c = solver.getIntConstraint(i);
       if (c == this) {
@@ -129,7 +129,7 @@ public int getSelfIndex() {
 	 * @return
 	 */
 	public boolean isSatisfied() {
-		int[] tuple = new int[getNbVars()];
+		final int[] tuple = new int[getNbVars()];
 		for (int i = 0; i < tuple.length; i++) {
 			assert(getIntVar(i).isInstantiated());
 			tuple[i] = getIntVar(i).getVal();

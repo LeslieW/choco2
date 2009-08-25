@@ -22,9 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.constraints;
 
-import choco.kernel.solver.propagation.Propagator;
-
 import java.util.Collection;
+import java.util.Iterator;
+
+import choco.kernel.solver.propagation.Propagator;
 
 /**
  * An interface for handling collections (sets/sequences) of constraints.
@@ -95,4 +96,9 @@ public interface SConstraintCollection {
    * currentElement inclusion
    */
   boolean containsAll(SConstraintCollection collec);
+  
+  /**
+   * get an iterator over the collection of constraint.
+   */
+  Iterator<Propagator> iterator();
 }

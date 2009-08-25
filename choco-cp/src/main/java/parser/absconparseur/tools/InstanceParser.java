@@ -50,7 +50,7 @@ public class InstanceParser {
 
 	public static final String VERSION = "version 2.1.4 (November 4, 2008)";
 
-	private Document document;
+	public Document document;
 
 	private String type;
 
