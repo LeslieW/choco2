@@ -23,12 +23,14 @@
 package choco.model.constraints.integer;
 
 import static choco.Choco.makeIntVar;
-import static choco.Choco.nth;
+import static choco.Choco.*;
+import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -67,7 +69,6 @@ public class ElementTest {
 
 	@Test
 	public void test1() {
-
 		int[] values = new int[]{1, 2, 0, 4, 3};
 		IntegerVariable index = makeIntVar("index", -3, 10);
 		IntegerVariable var = makeIntVar("value", -20, 20);
@@ -361,6 +362,17 @@ public class ElementTest {
 			assertEquals(nbSol,72);
 		}
 
+	}
+	
+	@Test
+	public void testNthManager() {
+		IntegerVariable I = makeIntVar("index", 0, 2);
+		IntegerVariable V = makeIntVar("V", 0, 5);
+		m.addConstraint(nth(I, new IntegerVariable[]{constant(0),constant(1), makeIntVar("VV",2,3)}, V));
+		s.read(m);
+		ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+		s.solveAll();
+		assertEquals(6, s.getSolutionCount());	
 	}
 
 }
