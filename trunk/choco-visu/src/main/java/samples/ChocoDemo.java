@@ -42,7 +42,7 @@ public final class ChocoDemo {
 		cppack.setTimelimit(TIME_LIMIT);
 		cppack.cpPack();
 		final String title = "Bin Packing Constraint Visualization 1";
-		demo(title,ChocoChartFactory.createPackChart(title, cppack.getSolver(),cppack.getModeler()));
+		ChocoDemo.demo(title,ChocoChartFactory.createPackChart(title, cppack.getSolver(),cppack.getModeler()));
 	}
 
 	public static void packDemo2() {

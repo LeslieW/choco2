@@ -145,6 +145,7 @@ public final class XMLManager {
 			}
 		}
 
+		
 		public static Document load(File file, URL schemaUrl) {
 			try {
 				return load(new FileInputStream(file), schemaUrl);
