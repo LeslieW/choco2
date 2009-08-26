@@ -237,6 +237,10 @@ public interface Solver extends IMeasures, IPretty {
 	 * @param objective variable to optimize
 	 */
 	public void setObjective(Var objective);
+	
+	public Var getObjective();
+	
+	public boolean isOptimizationSolver();
 
 	public Number getOptimumValue();
 	

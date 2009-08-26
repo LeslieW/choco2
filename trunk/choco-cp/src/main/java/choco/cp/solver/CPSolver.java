@@ -1551,6 +1551,15 @@ public class CPSolver implements Solver {
 		this.objective = objective;
 	}
 	
+	@Override
+	public Var getObjective() {
+		return objective;
+	}
+
+	@Override
+	public boolean isOptimizationSolver() {
+		return objective != null && ( strategy == null || strategy instanceof AbstractOptimize);
+	}
 
 	@Deprecated
 	public Number getOptimumValue() {

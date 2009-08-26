@@ -1,5 +1,6 @@
 package choco.kernel.common.util.tools;
 
+import static choco.Choco.*;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -220,6 +221,17 @@ public final class VariableUtils {
   	//*****************************************************************//
 	//*******************  TaskVariable  ********************************//
 	//***************************************************************//
+    public static IntegerVariable createDirectionVar(TaskVariable t1, TaskVariable t2, String... boolOptions) {
+    	return makeBooleanVar("dir-"+t1.getName()+"-"+t2.getName(), boolOptions);
+    }
+    
+    public static IntDomainVar createDirectionVar(TaskVar t1, TaskVar t2) {
+    	String name = "dir-"+t1.getName()+"-"+t2.getName();
+    	return t1.getSolver() == null ? 
+    			( t2.getSolver() == null ? null : t2.getSolver().createBooleanVar(name) )
+    			: t1.getSolver().createBooleanVar(name);
+    }
+    
     public static IntegerVariable[] getStartVars(TaskVariable... tasks) {
         final IntegerVariable[] vars = new IntegerVariable[tasks.length];
         for (int i = 0; i < tasks.length; i++) {
