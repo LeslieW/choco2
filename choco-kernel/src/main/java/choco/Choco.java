@@ -25,6 +25,7 @@ package choco;
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.*;
 import choco.kernel.model.constraints.automaton.DFA;
@@ -94,6 +95,9 @@ public class Choco{
 			LOGGER.warning("WARNING! Domains over ["+MIN_LOWER_BOUND+", "+MAX_UPPER_BOUND+"] are strongly inadvisable ! ");
 		}
 	}
+	
+	
+	
 
 	/**
 	 * Make an integer variable
@@ -2555,13 +2559,21 @@ public class Choco{
 		return c;
 	}
 
+	
 	/**
 	 * Each task of the collection tasks1 should not overlap any task of the collection tasks2.
-	 * The solver decomposes the constraint because the coloured cumulative is not implemented.
+	 * The model only provides a decomposition with reified precedences because the coloured cumulative is not available.
 	 * @see http://www.emn.fr/x-info/sdemasse/gccat/Cdisjoint_tasks.html#uid11633
 	 */
-	public static Constraint disjoint(TaskVariable[] tasks1,TaskVariable[] tasks2) {
-		return new ComponentConstraint(ConstraintType.DISJOINT, Integer.valueOf(tasks1.length), ArrayUtils.<Variable>append(tasks1, tasks2));		
+	public static Constraint[] disjoint(TaskVariable[] tasks1,TaskVariable[] tasks2) {
+		final Constraint[] decomp = new Constraint[tasks1.length * tasks2.length];
+		int idx = 0;
+		for (TaskVariable t1 : tasks1) {
+			for (TaskVariable t2 : tasks2) {
+				decomp[idx++] = preceding(t1, t2, VariableUtils.createDirectionVar(t1, t2));
+			}	
+		}
+		return decomp;		
 	}
 
 	public static Constraint preceding(IntegerVariable v1, int dur1, IntegerVariable v2, int dur2, IntegerVariable bool) {
@@ -2573,18 +2585,39 @@ public class Choco{
 	}
 
 	public static Constraint preceding(TaskVariable t1, TaskVariable t2, IntegerVariable direction) {
+		return preceding(t1, t2, direction, 0, 0);
+	}
+	/**
+	 * represents a disjunction or reified precedence with setup times:
+	 * <ul>
+	 * <li> direction = 1 => t1.end() + forwardSetup <= t2.start() (T1 << T2);
+	 * <li> direction = 0 => t2.end() + backwardSetup <= t1.start() (T2 << T1);
+	 * </ul>  
+	 * @param t1 a task
+	 * @param t2 the other task
+	 * @param direction a boolean variable which reified the precedence. 
+	 * @param forwardSetup setup times between t1 and t2
+	 * @param backwardSetup setup times between t2 and t1
+	 */
+	public static Constraint preceding(TaskVariable t1, TaskVariable t2, IntegerVariable direction, int forwardSetup, int backwardSetup) {
 		if(direction.isBoolean()) {
+			if (forwardSetup != 0 || backwardSetup != 0) {
+				LOGGER.warning("reified precedence setup are not yet implemented");
+			}
 			return new ComponentConstraint(ConstraintType.PRECEDING, Boolean.TRUE, new Variable[]{t1, t2, direction});
-		}else { throw new ModelException("direction is not boolean !");}
+		}else { 
+			LOGGER.log(Level.SEVERE, "Reified Precedence ({0}, {1}, {2}: {0} is not a boolean variable.", new Object[]{direction, t1, t2});
+			throw new ModelException(direction.getName()+" is not boolean variable.");
+		}
 	}
 
-	public static Constraint[] preceding(TaskVariable[] clique, String prefix, String... boolvarOptions) {
+	public static Constraint[] preceding(TaskVariable[] clique, String... boolvarOptions) {
 		final int n = clique.length;
 		Constraint[] cstr = new Constraint[ (n * (n-1) )/2];
 		int idx = 0;
 		for (int i = 0; i < n; i++) {
 			for (int j = i+1; j < n; j++) {
-				cstr[idx++] = preceding(clique[i], clique[j], makeBooleanVar(prefix+"_"+i+"_"+j, boolvarOptions));
+				cstr[idx++] = preceding(clique[i], clique[j], VariableUtils.createDirectionVar(clique[i], clique[j], boolvarOptions));
 			}
 		}
 		return cstr;
@@ -3672,13 +3705,14 @@ public class Choco{
 	////////////////////////////////////////////////////////////////////////////////////////////
 	/**
 	 * Temporal constraint: start(t1) >= end(t2)  + delta
-	 * @param t1 the first task
-	 * @param t2 the second task
-	 * @param delta the delta
+	 * @param t1 the starting task
+	 * @param t2 the ending task
+	 * @param delta the setup time between t1 and t2
 	 * @return Constraint
 	 */
 	public static Constraint startsAfterEnd(final TaskVariable t1, final TaskVariable t2, final int delta) {
-		return new MetaTaskConstraint(new Variable[]{t1, t2}, geq(t1.start(), plus(t2.end(), delta)));
+		//return new MetaTaskConstraint(new Variable[]{t1, t2}, geq(t1.start(), plus(t2.end(), delta)));
+		return endsBeforeBegin(t2, t1, delta);
 	}
 
 	/**
@@ -3688,19 +3722,18 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint startsAfterEnd(final TaskVariable t1, final TaskVariable t2) {
-		return preceding(t2, t1);
-		//return startsAfterEnd(t1, t2, 0);
+		return startsAfterEnd(t1, t2, 0);
 	}
 
 	/**
 	 *  Temporal constraint: end(t1) + delta <= start(t2)
-	 * @param t1 the first task
-	 * @param t2 the second task
-	 * @param delta the delta
-	 * @return Constraint
+	 * @param t1 the ending task
+	 * @param t2 the starting task
+	 * @param delta the setup between t1 and t2
 	 */
 	public static Constraint endsBeforeBegin(final TaskVariable t1, final TaskVariable t2, final int delta) 	{
-		return startsAfterEnd(t2, t1, delta);
+		//return startsAfterEnd(t2, t1, delta);
+		return preceding(t1,t2, constant(1), delta, 0);
 	}
 
 	/**
@@ -3710,8 +3743,8 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint endsBeforeBegin(final TaskVariable t1, final TaskVariable t2) 	{
-		return preceding(t1, t2);
-		//return endsBeforeBegin(t1, t2, 0);
+		//return preceding(t1, t2);
+		return endsBeforeBegin(t1, t2, 0);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////
