@@ -17,6 +17,7 @@ import java.io.ObjectOutput;
  */
 public class DistLeq extends ExternalConstraint implements Externalizable {
 
+    public int id;
     public int D;
     public int o1;
     public int o2;
@@ -27,22 +28,15 @@ public class DistLeq extends ExternalConstraint implements Externalizable {
 
 	public DistLeq(int ectrID, int[] dimensions, int[] objectIdentifiers, int D_, int q_)
 	{
-		super(ectrID, dimensions, null);
-        int[] oids = new int[1];
-
-        D=D_;
-        o1=objectIdentifiers[0];
-        o2=objectIdentifiers[1];
-        q=q_;
-        oids[0]=o1;
-        setObjectIds(oids); //only the first object is pruned.
+        this(ectrID,dimensions,objectIdentifiers,D_,q_,null);
 	}
 
     public DistLeq(int ectrID, int[] dimensions, int[] objectIdentifiers, int D_, int q_, IntDomainVar var)
     {
         super(ectrID, dimensions, null);
-        System.out.println(objectIdentifiers.length);
         int[] oids = new int[1];
+        id=super.maxId; super.maxId++;
+
 
         D=D_;
         o1=objectIdentifiers[0];
@@ -97,6 +91,10 @@ public class DistLeq extends ExternalConstraint implements Externalizable {
     public boolean hasDistanceVar() { return (DVar!=null); }
 
     public IntDomainVar getDistanceVar() { return DVar; }
-    
+
+    public int getCstrId() {
+        return id;
+    }
+
     
 }

@@ -155,13 +155,17 @@ public class DistLeqIC extends ForbiddenRegion {
 
     private double q_sum(Point m, int d) {
         int k=m.getCoords().length;
-        int sum=0;
+        double sum=0;
         for (int i=k-1; i>=0; i--) {
             if (i!=d) {
-                int r=1;
-                for (int j=0; j<q; j++) r*=Math.abs(m.getCoord(i));
+                double r=1;
+                for (int j=0; j<q; j++) {
+                    r*=Math.abs(m.getCoord(i));
+                    if (r==Double.POSITIVE_INFINITY){System.out.println("DestLeqIC:q_sum():r:double limit reached"); System.exit(-1);}
+                }
+
                 sum+=r;
-                if (stp.opt.debug) {if (sum<0) {System.out.println("DestLeqIC:q_sum():double limit reached"); System.exit(-1);}}
+                if (sum==Double.POSITIVE_INFINITY) {System.out.println("DestLeqIC:q_sum():sum:double limit reached"); System.exit(-1);}
                 
             }
         }
@@ -177,9 +181,11 @@ public class DistLeqIC extends ForbiddenRegion {
         for (int i=k-1; i>=0; i--) {
             if (i!=d) {
                 double r=1;
-                for (int j=0; j<q; j++) r*=Math.abs(m[i]);
+                for (int j=0; j<q; j++) {r*=Math.abs(m[i]);
+                    if (r==Double.POSITIVE_INFINITY){System.out.println("DestLeqIC:q_sum():r:double limit reached"); System.exit(-1);}
+                }
                 sum+=r;
-                if (stp.opt.debug) {if (sum<0) {System.out.println("DestLeqIC:q_sum():double limit reached"); System.exit(-1);}}
+                if (sum==Double.POSITIVE_INFINITY) {System.out.println("DestLeqIC:q_sum():sum:double limit reached"); System.exit(-1);}
 
             }
         }
@@ -209,19 +215,21 @@ public class DistLeqIC extends ForbiddenRegion {
 
     private void checkSqrt(double value, double result) {
         //First check if the value to be square rooted is an integer
-        int ivalue = (int) value;
+        double ivalue = Math.floor(value);
         if (ivalue != value) {
-            System.out.println("checkSqrt: sqrt value is not an integer");
+            System.out.println("DistLeqIC.checkSqrt(): sqrt value is not an integer");
             System.exit(-1);
         }
-        int lb = (int) Math.floor(result);
-        int ub = (int) Math.ceil(result);
+
+        long lb = (int) Math.floor(result);
+        long ub = (int) Math.ceil(result);
+        
         if (lb*lb>ivalue){
             System.out.println("DistLeqIC.checkSqrt(): lb is wrong:value:"+value+" result:"+result+" lb:"+lb+" ivalue="+ivalue);
             System.exit(-1);
         }
         if (ub*ub<ivalue){
-            System.out.println("DistLeqIC.checkSqrt(): ub is wrong:value:"+value+" result:"+result+" ub:"+ub+" ivalue="+ivalue);
+            System.out.println("DistLeqIC.checkSqrt(): ub is wrong:value:"+value+" result:"+result+" ub:"+ub+" ub*ub:"+(ub*ub));
             System.exit(-1);
         }
     }
@@ -606,14 +614,24 @@ public class DistLeqIC extends ForbiddenRegion {
 
     }
 
-    public void updateDistance(int k) throws ContradictionException {
+
+
+    public boolean updateDistance(int k) throws ContradictionException {
         if (DVar!=null) {
-                DVar.updateInf(EvaluateMinimumDistance(k),0);
+                int oldInf=DVar.getInf();
+                int newInf=EvaluateMinimumDistance(k);
+                if (oldInf>=newInf) return false;
+                DVar.updateInf(newInf,0);
                 if (stp.opt.debug) { System.out.println("DistLeqIC:"+this+" updateDistance:["+DVar.getInf()+","+DVar.getSup()+"]"); };
                 if ((DVar.getInf()>DVar.getSup()) || (DVar.getSup()<DVar.getInf())) throw new ContradictionException(null, UNKNOWN);
+                return true;
         }
+        return false;
     }
 
+    public boolean hasDistanceVar() { return (DVar!=null); }
+
+    public IntDomainVar getDistanceVar() { return DVar; }
 
 
 }

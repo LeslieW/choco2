@@ -4,16 +4,10 @@ import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.Geost_Constraint;
-import choco.cp.solver.constraints.global.geost.externalConstraints.DistGeq;
-import choco.cp.solver.constraints.global.geost.externalConstraints.DistLeq;
-import choco.cp.solver.constraints.global.geost.externalConstraints.ExternalConstraint;
-import choco.cp.solver.constraints.global.geost.externalConstraints.NonOverlapping;
+import choco.cp.solver.constraints.global.geost.externalConstraints.*;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Obj;
 import choco.kernel.model.constraints.geost.GeostOptions;
-import choco.kernel.model.constraints.geost.externalConstraints.DistGeqModel;
-import choco.kernel.model.constraints.geost.externalConstraints.DistLeqModel;
-import choco.kernel.model.constraints.geost.externalConstraints.IExternalConstraint;
-import choco.kernel.model.constraints.geost.externalConstraints.NonOverlappingModel;
+import choco.kernel.model.constraints.geost.externalConstraints.*;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.geost.GeostObject;
 import choco.kernel.model.variables.geost.ShiftedBox;
@@ -91,6 +85,11 @@ public class GeostManager extends IntConstraintManager {
                     if (iectr instanceof NonOverlappingModel) {
                          NonOverlappingModel ctr = (NonOverlappingModel) iectr;
                          ectrs.add(new NonOverlapping(ctr.getEctrID(),ctr.getDim(),ctr.getObjectIds()));
+                    }
+
+                    if (iectr instanceof DistLinearModel) {
+                         DistLinearModel ctr = (DistLinearModel) iectr;
+                         ectrs.add(new DistLinear(ctr.getEctrID(),ctr.getDim(),ctr.getObjectIds(), ctr.a, ctr.b));
                     }
 
                 }
