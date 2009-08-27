@@ -86,6 +86,11 @@ public class GeostOptions {
     public static boolean increment=false;
     public HashMap<Pair<Integer,Integer>, Boolean> included=null;
 
+    public boolean propag_failed=false;//Used in CirclePackingHeuristics and GeometricKernel only
+    public boolean try_propagation=false;
+    public int tried_propagation=0;
+    public boolean useNumericEngine=false;
+
     /*
       public static long timeFixObj=0L;
       public static long timeFixAllObj=0L;

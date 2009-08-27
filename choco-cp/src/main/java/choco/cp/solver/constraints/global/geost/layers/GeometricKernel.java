@@ -3,6 +3,7 @@ package choco.cp.solver.constraints.global.geost.layers;
 import choco.cp.solver.constraints.global.geost.Constants;
 import choco.cp.solver.constraints.global.geost.Setup;
 import choco.cp.solver.constraints.global.geost.externalConstraints.*;
+import choco.cp.solver.constraints.global.geost.frames.ForbiddenRegionFrame;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Obj;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Point;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Region;
@@ -11,6 +12,7 @@ import choco.kernel.common.util.objects.Pair;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.propagation.VarEvent;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashMap;
 import java.util.Vector;
@@ -39,6 +41,9 @@ public class GeometricKernel {
     HashMap<Pair<Integer,Integer>, Boolean> included;
     int get_fr_ptr_a = 0;
     int get_fr_ptr_b = 0;
+    IntDomainVar[] E=null;
+    IntDomainVar[] D=null;
+    GeostNumeric engine=null;
 
 
 
@@ -66,6 +71,9 @@ public class GeometricKernel {
         memo.listObj = new Vector<Vector<Obj> >(0);
         memo.m = new HashMap<int[],Integer>();
         included=included_;
+
+
+
 
         System.out.println("memo_active="+memo_active);
     }
@@ -151,16 +159,67 @@ public class GeometricKernel {
 	 */
 	public boolean FilterCtrs(int k, int[] oIDs, Vector<ExternalConstraint> ectrs) throws ContradictionException
 	{
+
+
+
+        stp.opt.propag_failed=true;
+
         if (stp.opt.serial!=null) {
             try {
                 Vector<Obj> tmp=new Vector<Obj>(); for (int i = 0; i < oIDs.length; i++) tmp.add(stp.getObject(i)); stp.opt.serial.writeObject(tmp);
-            } catch(Exception e) { System.out.println("PruneMin:unable to serialize parameters"); System.exit(-1); }
+            } catch(Exception e) { System.out.println("Prune:unable to serialize parameters"); System.exit(-1); }
         }
 
         if (stp.opt.debug) System.out.println("FilterCtrs:");
         boolean nonFix = true;
+        //?????
+        //Ensure that all internal constraint containing a variable
+        //update those variables based on the new domain of the objects.
+        for (ExternalConstraint ectr : ectrs) {
+            if (ectr instanceof DistLeq) {
+                DistLeq dl = (DistLeq) ectr;
+                ForbiddenRegionFrame f=(ForbiddenRegionFrame) externalLayer.InitFrameExternalConstraint(ectr, oIDs);
+                DistLeqIC ic = new DistLeqIC(stp,f.q,f.D,f.s1,f.s2,f.o1,f.o2,dl.getDistanceVar());
+                nonFix = nonFix || ic.updateDistance(k);
+            }
+
+            if (ectr instanceof DistGeq) {
+                DistGeq dg = (DistGeq) ectr;
+                ForbiddenRegionFrame f=(ForbiddenRegionFrame) externalLayer.InitFrameExternalConstraint(ectr, oIDs);
+                DistGeqIC ic = new DistGeqIC(stp,f.q,f.D,f.s1,f.s2,f.o1,f.o2,dg.getDistanceVar());
+                nonFix = nonFix || ic.updateDistance(k);
+            }
+
+
+        }
+        
 		while (nonFix) {
-			nonFix = false;
+
+            nonFix = false;  //Suppose there will be no updates
+
+            //?????
+            //Ensure that all internal constraint containing a variable
+            //update those variables based on the new domain of the objects.
+            for (ExternalConstraint ectr : ectrs) {
+                if (ectr instanceof DistLeq) {
+                    DistLeq dl = (DistLeq) ectr;
+                    ForbiddenRegionFrame f=(ForbiddenRegionFrame) externalLayer.InitFrameExternalConstraint(ectr, oIDs);
+                    DistLeqIC ic = new DistLeqIC(stp,f.q,f.D,f.s1,f.s2,f.o1,f.o2,dl.getDistanceVar());
+                    nonFix = nonFix || ic.updateDistance(k);
+                }
+
+                if (ectr instanceof DistGeq) {
+                    DistGeq dg = (DistGeq) ectr;
+                    ForbiddenRegionFrame f=(ForbiddenRegionFrame) externalLayer.InitFrameExternalConstraint(ectr, oIDs);
+                    DistGeqIC ic = new DistGeqIC(stp,f.q,f.D,f.s1,f.s2,f.o1,f.o2,dg.getDistanceVar());
+                    nonFix = nonFix || ic.updateDistance(k);
+                }
+
+
+            }
+
+            //nonFix=nonFix || propagDistConstraints();
+            
 			for (int i = 0; i < ectrs.size(); i++)
 			{
 				ectrs.elementAt(i).setFrame(externalLayer.InitFrameExternalConstraint(ectrs.elementAt(i), oIDs));
@@ -199,7 +258,34 @@ public class GeometricKernel {
                 }
 
             }
+
+            //?????
+            //Ensure that all internal constraint containing a variable
+            //update those variables based on the new domain of the objects.
+            for (ExternalConstraint ectr : ectrs) {
+                if (ectr instanceof DistLeq) {
+                    DistLeq dl = (DistLeq) ectr;
+                    ForbiddenRegionFrame f=(ForbiddenRegionFrame) externalLayer.InitFrameExternalConstraint(ectr, oIDs);
+                    DistLeqIC ic = new DistLeqIC(stp,f.q,f.D,f.s1,f.s2,f.o1,f.o2,dl.getDistanceVar());
+                    nonFix = nonFix || ic.updateDistance(k);
+                }
+
+                if (ectr instanceof DistGeq) {
+                    DistGeq dg = (DistGeq) ectr;
+                    ForbiddenRegionFrame f=(ForbiddenRegionFrame) externalLayer.InitFrameExternalConstraint(ectr, oIDs);
+                    DistGeqIC ic = new DistGeqIC(stp,f.q,f.D,f.s1,f.s2,f.o1,f.o2,dg.getDistanceVar());
+                    nonFix = nonFix || ic.updateDistance(k);
+                }
+
+
+            }
+            
 		}
+
+        stp.opt.propag_failed=false;
+
+        if (stp.opt.try_propagation) throw new ContradictionException();
+
 		return true;
 	}
 
@@ -293,8 +379,8 @@ public class GeometricKernel {
 	{
         if (stp.opt.debug) System.out.println("GeometricKernel:FilterObj()");
         Obj o = stp.getObject(oid);
-		o.getRelatedInternalConstraints().clear();
 
+		o.getRelatedInternalConstraints().clear();
 
 		for (int i = 0; i < o.getRelatedExternalConstraints().size(); i++)
 		{
@@ -321,34 +407,26 @@ public class GeometricKernel {
 
         }
 
-        for (InternalConstraint ictr: o.getRelatedInternalConstraints()) {
-            if (ictr instanceof DistGeqIC) {
-                DistGeqIC dg = (DistGeqIC) ictr;
-                //System.out.println(dg);
-                dg.updateDistance(k);
-                //System.out.println(dg);
+        if (stp.opt.useNumericEngine) {
+            if (engine==null) {
+                System.out.println("engine==null");
+                engine = new GeostNumeric(stp,100);
             }
-
-            if (ictr instanceof DistLeqIC) {
-                DistLeqIC dl = (DistLeqIC) ictr;
-                //System.out.println(dl);
-                dl.updateDistance(k);
-                //System.out.println(dl);                
-            }
+            engine.Prune(o,k,o.getRelatedInternalConstraints()); //throws a contradiction exception in case of failure    
         }
 
-        
         for (int d = 0; d < k; d++)
 		{
+
 			if(o.getRelatedInternalConstraints().size()>0)
 			{
                 if (stp.opt.boxModeOnly) {
                      if ((!PruneMin(o, d, k, o.getRelatedInternalConstraints()))|| (!PruneMax(o, d, k, o.getRelatedInternalConstraints())))
-				        return false;
+				        return false; //means that a placement was not found
                 }
                 else if (stp.opt.propModeOnly){
                     if ((!NewPruneMin(o, d, k, o.getRelatedInternalConstraints()))|| (!NewPruneMax(o, d, k, o.getRelatedInternalConstraints())))
-                       return false;                     
+                       return false;
                 }
                 else if (stp.opt.deltaModeOnly) {
                     if ((!NewDeltaPruneMin(o, d, k, o.getRelatedInternalConstraints()))|| (!NewDeltaPruneMax(o, d, k, o.getRelatedInternalConstraints())))
@@ -375,14 +453,14 @@ public class GeometricKernel {
 	 */
 	public boolean PruneMin(Obj o, int d, int k, Vector<InternalConstraint> ictrs) throws ContradictionException
 	{
-        //System.out.println("PruneMin in");
+        //System.out.println("Prune in");
         if (stp.opt.serial!=null) {
             try {
                 stp.opt.serial.writeObject(o);
                 stp.opt.serial.writeObject(d);
                 stp.opt.serial.writeObject(k);
                 stp.opt.serial.writeObject(ictrs);
-            } catch(Exception e) { System.out.println("PruneMin:unable to serialize parameters param in"); System.exit(-1); }
+            } catch(Exception e) { System.out.println("Prune:unable to serialize parameters param in"); System.exit(-1); }
         }
 
         boolean b = true;
@@ -411,7 +489,7 @@ public class GeometricKernel {
                 stp.opt.serial.writeObject(b);
                 stp.opt.serial.writeObject(infeasible);
                 stp.opt.serial.writeObject(f);
-            } catch(Exception e) { System.out.println("PruneMin:unable to serialize parameters first iter"); System.exit(-1); }
+            } catch(Exception e) { System.out.println("Prune:unable to serialize parameters first iter"); System.exit(-1); }
         }
 
 
@@ -454,7 +532,7 @@ public class GeometricKernel {
                     stp.opt.serial.writeObject(b);
                     stp.opt.serial.writeObject(infeasible);
                     stp.opt.serial.writeObject(f);
-                } catch(Exception e) { System.out.println("PruneMin:unable to serialize parameters second iter"); System.exit(-1); }
+                } catch(Exception e) { System.out.println("Prune:unable to serialize parameters second iter"); System.exit(-1); }
             }
 
 		}
@@ -476,9 +554,9 @@ public class GeometricKernel {
             try {
                 stp.opt.serial.writeObject(o);
                 stp.opt.serial.writeObject(b);
-            } catch(Exception e) { System.out.println("PruneMin:unable to serialize parameters param out"); System.exit(-1); }
+            } catch(Exception e) { System.out.println("Prune:unable to serialize parameters param out"); System.exit(-1); }
         }
-        //System.out.println("PruneMin out");
+        //System.out.println("Prune out");
         return b;
 	}
 
@@ -1305,7 +1383,7 @@ public class GeometricKernel {
                 stp.opt.serial.writeObject(d);
                 stp.opt.serial.writeObject(k);
                 stp.opt.serial.writeObject(ictrs);
-            } catch(Exception e) { System.out.println("PruneMin:unable to serialize parameters param in"); System.exit(-1); }
+            } catch(Exception e) { System.out.println("Prune:unable to serialize parameters param in"); System.exit(-1); }
         }
 
         boolean b = true;
@@ -1402,7 +1480,7 @@ public class GeometricKernel {
                 stp.opt.serial.writeObject(b);
                 stp.opt.serial.writeObject(infeasible);
                 stp.opt.serial.writeObject(f);
-            } catch(Exception e) { System.out.println("PruneMin:unable to serialize parameters first iter"); System.exit(-1); }
+            } catch(Exception e) { System.out.println("Prune:unable to serialize parameters first iter"); System.exit(-1); }
         }
 
 
@@ -1508,7 +1586,7 @@ public class GeometricKernel {
                     stp.opt.serial.writeObject(b);
                     stp.opt.serial.writeObject(infeasible);
                     stp.opt.serial.writeObject(f);
-                } catch(Exception e) { System.out.println("PruneMin:unable to serialize parameters second iter"); System.exit(-1); }
+                } catch(Exception e) { System.out.println("Prune:unable to serialize parameters second iter"); System.exit(-1); }
             }
 
 
@@ -1525,9 +1603,9 @@ public class GeometricKernel {
             try {
                 stp.opt.serial.writeObject(o);
                 stp.opt.serial.writeObject(b);
-            } catch(Exception e) { System.out.println("PruneMin:unable to serialize parameters param out"); System.exit(-1); }
+            } catch(Exception e) { System.out.println("Prune:unable to serialize parameters param out"); System.exit(-1); }
         }
-//        System.out.println(" PruneMin out");
+//        System.out.println(" Prune out");
 
         return b;
     }
@@ -3716,14 +3794,25 @@ public class GeometricKernel {
                     if (fr instanceof DistLeqIC) {
                         DistLeqIC dlic=(DistLeqIC) fr;
                         if (stp.getObject(dlic.o2).coordInstantiated()) {
+                            if (dlic.hasDistanceVar())
+                                System.out.println("\n/*Processing*/constraint("+stp.getObject(dlic.o2).getCoord(0).getSup()+","+stp.getObject(dlic.o2).getCoord(1).getSup()+","+dlic.getDistanceVar().getSup()+",\"LeqVar\");");
+                            else
                             System.out.println("\n/*Processing*/constraint("+stp.getObject(dlic.o2).getCoord(0).getSup()+","+stp.getObject(dlic.o2).getCoord(1).getSup()+","+dlic.D+",\"Leq\");");
                         }
                     }
                     if (fr instanceof DistGeqIC) {
                         DistGeqIC dlic=(DistGeqIC) fr;
                         if (stp.getObject(dlic.o2).coordInstantiated()) {
-                            System.out.println("\n/*Processing*/constraint("+stp.getObject(dlic.o2).getCoord(0).getSup()+","+stp.getObject(dlic.o2).getCoord(1).getSup()+","+dlic.D+",\"Geq\");");
+                            if (dlic.hasDistanceVar())
+                                System.out.println("\n/*Processing*/constraint("+stp.getObject(dlic.o2).getCoord(0).getSup()+","+stp.getObject(dlic.o2).getCoord(1).getSup()+","+dlic.getDistanceVar().getInf()+",\"GeqVar\");");                                
+                            else
+                                System.out.println("\n/*Processing*/constraint("+stp.getObject(dlic.o2).getCoord(0).getSup()+","+stp.getObject(dlic.o2).getCoord(1).getSup()+","+dlic.D+",\"Geq\");");
                         }
+                    }
+
+                    if (fr instanceof DistLinearIC) {
+                        DistLinearIC dlic = (DistLinearIC) fr;                        
+                        System.out.println("\n/*Processing*/constraint("+dlic.a[0]+","+dlic.a[1]+","+dlic.b+",\"Linear\");");
                     }
 
                 }
@@ -3802,6 +3891,11 @@ public class GeometricKernel {
                                 System.out.println("\n/*Processing*/constraint("+stp.getObject(dlic.o2).getCoord(0).getSup()+","+stp.getObject(dlic.o2).getCoord(1).getSup()+","+dlic.D+",\"Geq\");");
                             }
                         }
+                        if (fr instanceof DistLinearIC) {
+                            DistLinearIC dlic = (DistLinearIC) fr;
+                            System.out.println("\n/*Processing*/constraint("+dlic.a[0]+","+dlic.a[1]+","+dlic.b+",\"Linear\");");
+                        }
+
 
                     }
                 }
@@ -3900,6 +3994,12 @@ public class GeometricKernel {
                         }
                     }
 
+                    if (fr instanceof DistLinearIC) {
+                        DistLinearIC dlic = (DistLinearIC) fr;
+                        System.out.println("\n/*Processing*/constraint("+dlic.a[0]+","+dlic.a[1]+","+dlic.b+",\"Linear\");");
+                    }
+
+
                 }
             }
             System.out.println("\n/*Processing*/sweep_point("+c.getCoord(0)+","+c.getCoord(1)+");");
@@ -3969,6 +4069,11 @@ public class GeometricKernel {
                                 System.out.println("\n/*Processing*/constraint("+stp.getObject(dlic.o2).getCoord(0).getSup()+","+stp.getObject(dlic.o2).getCoord(1).getSup()+","+dlic.D+",\"Geq\");");
                             }
                         }
+                        if (fr instanceof DistLinearIC) {
+                            DistLinearIC dlic = (DistLinearIC) fr;
+                            System.out.println("\n/*Processing*/constraint("+dlic.a[0]+","+dlic.a[1]+","+dlic.b+",\"Linear\");");
+                        }
+
 
                     }
                 }
@@ -4074,6 +4179,97 @@ public class GeometricKernel {
 
         return listOfPoints;
         
+    }
+
+    IntDomainVar getE(int oid) {
+    //Check for a variable E associated with a constraint <=(c_{oid},.,E)
+    //stops if no exists and if two exists
+    //creates a caching in order to compute the search only once
+
+        if (this.E==null) {
+            this.E=new IntDomainVar[stp.getObjectKeySet().size()];
+            for (int i=0; i<stp.getObjectKeySet().size(); i++) this.E[i]=null;
+        }
+
+        IntDomainVar found=null;
+
+        if (this.E[oid]!=null) found=this.E[oid];
+        else {
+
+
+
+            for (ExternalConstraint ectr : stp.getConstraints()) {
+                if (ectr instanceof DistLeq) {
+                    DistLeq dl = (DistLeq) ectr;
+                    if ((dl.hasDistanceVar() && (dl.getObjectIds()[0]==oid))) {
+                        if (found==null) { found=dl.getDistanceVar(); continue; }
+                        else { System.out.println("GeometricKernel:getE():Two E variables for variable oid "+oid+"."); System.exit(-1);};
+                    }
+                }
+            }
+        }
+
+        if (found==null) { System.out.println("GeometricKernel:getE():No E variables for variable oid "+oid+"."); System.exit(-1);};
+
+        this.E[oid]=found;
+
+        return found;
+    }
+
+    IntDomainVar getD(int oid) {
+    //Check for a variable E associated with a constraint <=(c_{oid},.,E)
+    //stops if no exists and if two exists
+    //creates a caching in order to compute the search only once
+
+        if (this.D==null) {
+            this.D=new IntDomainVar[stp.getObjectKeySet().size()];
+            for (int i=0; i<stp.getObjectKeySet().size(); i++) this.D[i]=null;
+        }
+
+        IntDomainVar found=null;
+
+        if (this.D[oid]!=null) found=this.D[oid];
+        else {
+            for (ExternalConstraint ectr : stp.getConstraints()) {
+                if (ectr instanceof DistGeq) {
+                    DistGeq dl = (DistGeq) ectr;
+                    if ((dl.hasDistanceVar() && (dl.getObjectIds()[0]==oid))) {
+                        if (found==null) { found=dl.getDistanceVar(); continue; }
+                        else { System.out.println("GeometricKernel:getD():Two D variables for variable oid "+oid+"."); System.exit(-1);};
+                    }
+                }
+            }
+        }
+
+        if (found==null) { System.out.println("GeometricKernel:getD():No D variables for variable oid "+oid+"."); System.exit(-1);};
+
+        this.D[oid]=found;
+
+        return found;
+    }
+
+    boolean propagDistConstraints() throws ContradictionException {
+        //Propagate |E_{i-1}-D_i|>=r_small, returns true if any update
+
+        boolean nonFix=false;
+
+        for (int i=1; i<stp.getObjectKeySet().size()-1; i++) { //last one is the center circle, supp. a strict order on objects!
+            IntDomainVar Dprec=getD(i-1);
+            if (Dprec.isInstantiated()) {
+                System.out.println("D of oid:"+(i-1)+" is instantiated:"+Dprec);
+                IntDomainVar D=getD(i);
+                int oldSup=D.getSup();
+                int newSup=Dprec.getVal()-(stp.getObject(i).getRadius()+stp.getObject(i-1).getRadius());
+                System.out.println("D:["+D.getInf()+","+D.getSup()+"] oldSup:"+oldSup+" newSup:"+newSup);
+                if (newSup>=oldSup) continue;
+                D.setSup(newSup);
+                nonFix=nonFix || true;
+            }
+
+        }
+
+        return nonFix;
+
     }
 
 

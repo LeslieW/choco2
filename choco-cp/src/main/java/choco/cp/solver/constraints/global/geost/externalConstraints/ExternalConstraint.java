@@ -13,6 +13,7 @@ public class ExternalConstraint {
 	protected int[] dim;
 	protected int[] objectIds;
 	protected Frame frame;
+    public static int maxId=0;
 
 
 

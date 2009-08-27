@@ -2696,17 +2696,19 @@ public class Choco{
 			vars[(i * (dim + 4)) + dim + 3] = objects.elementAt(i).getEndTime();
 		}
 
-		for (int i : distVars) {
-			IExternalConstraint ectr=eCtrs.elementAt(i);
-			if (ectr instanceof DistLeqModel) {
-				vars[originOfObjects + otherVariables  +i] = (( DistLeqModel) ectr).getDistanceVar();
-				System.out.println("Adding "+((DistLeqModel) ectr).modelDVar+" for "+((DistLeqModel) ectr));
-			}
-			if (ectr instanceof DistGeqModel) {
-				vars[originOfObjects + otherVariables  +i] = (( DistGeqModel) ectr).getDistanceVar();
-				System.out.println("Adding "+((DistGeqModel) ectr).modelDVar+" for "+((DistGeqModel) ectr));
-			}
+        int ind=0;
+        for (int i : distVars) {
+            IExternalConstraint ectr=eCtrs.elementAt(i);
+            if (ectr instanceof DistLeqModel) {
+                vars[originOfObjects + otherVariables  +ind] = (( DistLeqModel) ectr).getDistanceVar();
+                System.out.println("Adding "+((DistLeqModel) ectr).modelDVar+" for "+((DistLeqModel) ectr));
+            }
+            if (ectr instanceof DistGeqModel) {
+                vars[originOfObjects + otherVariables  +ind] = (( DistGeqModel) ectr).getDistanceVar();
+                System.out.println("Adding "+((DistGeqModel) ectr).modelDVar+" for "+((DistGeqModel) ectr));
+            }
 
+            ind++;
 		}
 
 		return new ComponentConstraint(ConstraintType.GEOST, new Object[]{dim, shiftedBoxes, eCtrs, objects, ctrlVs, opt}, vars);

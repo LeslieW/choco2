@@ -133,13 +133,17 @@ public class DistGeqIC extends ForbiddenRegion {
     private double q_sum(Point m, int d) {
         int k=m.getCoords().length;
         //System.out.println("m:"+m+",d:"+d);
-        int sum=0;
+        double sum=0;
         for (int i=k-1; i>=0; i--) {
             if (i!=d) {
-                int r=1;
-                for (int j=0; j<q; j++) r*=Math.abs(m.getCoord(i));
+                double r=1;
+                for (int j=0; j<q; j++)  {
+                    r*=Math.abs(m.getCoord(i));
+                    if (r==Double.POSITIVE_INFINITY) {System.out.println("DestGeqIC:q_sum():r:double limit reached"); System.exit(-1);}
+                }
+
                 sum+=r;
-                if (stp.opt.debug) {if (sum<0) {System.out.println("DestLeqIC:q_sum():double limit reached"); System.exit(-1);}}
+                if (sum==Double.POSITIVE_INFINITY) {System.out.println("DestGeqIC:q_sum():sum:double limit reached"); System.exit(-1);}
             }
         }
 
@@ -166,19 +170,21 @@ public class DistGeqIC extends ForbiddenRegion {
             System.out.println("DistGeqIC:checkSqrt(): value is negative:"+value);
             System.exit(-1);
         }
-        int ivalue = (int) value;
+
+        double ivalue=Math.floor(value);
+
         if (ivalue != value) {
-            System.out.println("checkSqrt: sqrt value is not an integer");
+            System.out.println("DistGeqIC:checkSqrt(): sqrt value is not an integer double value:"+value+" integer value:"+ivalue);
             System.exit(-1);
         }
-        int lb = (int) Math.floor(result);
-        int ub = (int) Math.ceil(result);
+        long lb = (int) Math.floor(result);
+        long ub = (int) Math.ceil(result);
         if (lb*lb>ivalue){
             System.out.println("DistGeqIC:checkSqrt(): lb is wrong:"+value+","+result);
             System.exit(-1);
         }
         if (ub*ub<ivalue){
-            System.out.println("checkSqrt: ub is wrong");
+            System.out.println("DistGeqIC:checkSqrt(): ub is wrong:ub:"+ub+" value:"+value+","+result+" ub*ub:"+ub*ub+"<ivalue:"+ivalue);
             System.exit(-1);
         }
     }
@@ -215,13 +221,22 @@ public class DistGeqIC extends ForbiddenRegion {
 
     }
 
-    public void updateDistance(int k) throws ContradictionException {
+    public boolean updateDistance(int k) throws ContradictionException {
+        //returns true if disntace has been updated
         if (DVar!=null) {
-                DVar.updateSup(EvaluateMaximumDistance(k),0);
+                int oldSup = DVar.getSup();
+                int newSup = EvaluateMaximumDistance(k);
+                if (oldSup<=newSup) return false;
+                DVar.updateSup(newSup,0);
                 if (stp.opt.debug) { System.out.println("DistGeqIC:"+this+" updateDistance:["+DVar.getInf()+","+DVar.getSup()+"]"); };
                 if ((DVar.getInf()>DVar.getSup()) || (DVar.getSup()<DVar.getInf())) throw new ContradictionException(null, UNKNOWN);
+                return true;
         }
+        return false;
     }
+    public boolean hasDistanceVar() { return (DVar!=null); }
+
+    public IntDomainVar getDistanceVar() { return DVar; }
 
 
 }

@@ -22,7 +22,7 @@ public class DistLeqModel extends IExternalConstraint {
         this(ectrID,dimensions,objectIdentifiers,D_,q_,null);
     }
 
-    public DistLeqModel(int ectrID, int[] dimensions, int[] objectIdentifiers, int D_, int q_, IntegerVariable var)
+    public DistLeqModel(int ectrID, int[] dimensions, int[] objectIdentifiers, int D_, int q_,IntegerVariable var)
     {
         super(ectrID, dimensions, null);
         int[] oids = new int[2];

@@ -17,7 +17,7 @@ import java.util.Vector;
  * Time: 10:11:25
  * To change this template use File | Settings | File Templates.
  */
-public class DistLinearIC extends InternalConstraint {
+public class DistLinearIC extends ForbiddenRegion {
 
     public int o1;
     public int[] a;
@@ -26,11 +26,12 @@ public class DistLinearIC extends InternalConstraint {
     public int D;
 
     public DistLinearIC(Setup stp_, int[] a, int o1, int b) {
-        super(Constants.DIST_LINEAR_FR);
+        this.setIctrID(Constants.DIST_LINEAR_FR);
         stp=stp_;this.a=a;this.b=b;this.o1=o1;
+        this.D=b;
     }
 
-    /* sweep.tex r108 Chapter 7 - Algorithm 177 'isFeasible'
+    /* sweep.tex r108 Chapter 7 page 277 - Algorithm 177 'isFeasible'
      * false if p notin F, otherwise computes the forbidden box f */
     public Vector isFeasible(boolean min, int dim, int k, Obj o, Point p, Point jump) {
         System.out.println("-- ENTERING DistLinearIC.isFeasible;p:"+p+";jump:"+jump);
@@ -141,10 +142,10 @@ public class DistLinearIC extends InternalConstraint {
     /* sweep.tex r108 Chapter 7 - Algorithm 174 'InsideForbidden'
      * returns true if p belongs to the forbidden region F and false otherwise */
     public boolean insideForbidden(Point p) {
-           System.out.println("-- ENTERING DistLinear.segInsideForbidden");
-           System.out.println("DistLinear.segInsideForbidden("+p+") call");
-           System.out.println("o1:"+stp.getObject(o1));
-           System.out.println("-- EXITING DistLinear.segInsideForbidden : "+a+" "+p+"product(a,p):"+product(a,p)+":"+(product(a,p)>D));
+//           System.out.println("-- ENTERING DistLinear.segInsideForbidden");
+//           System.out.println("DistLinear.segInsideForbidden("+p+") call");
+//           System.out.println("o1:"+stp.getObject(o1));
+//           System.out.println("-- EXITING DistLinear.segInsideForbidden : "+a+" "+p+"product(a,p):"+product(a,p)+":"+(product(a,p)>D));
            return (product(a,p) > D);
     }
 
@@ -152,6 +153,64 @@ public class DistLinearIC extends InternalConstraint {
         int result=0;
         for (int i=0; i<v.length; i++) result+=v[i]*p.getCoord(i);
         return result;
+    }
+
+    //Algorithm 177 p.280 r204
+    @Override
+    public int maximizeSizeOfFBox(boolean min, int d, int k, Region f) {
+        int[] m = new int[a.length];
+        //1: for i = 0 to k - 1 do
+        for (int i=0; i<k-1; i++) {
+            //2: if a[i] > 0 then
+            if (a[i]>0) {
+                //3: m[i] <- a[i] . f.min [i]
+                m[i] = a[i]*f.getMinimumBoundary(i);
+
+            }
+            else //4:else
+            {
+                //5: m[i] <- a[i] . f.max [i]
+                m[i] = a[i]*f.getMaximumBoundary(i);
+            }
+        }
+
+
+        //8:if min then
+        if (min) {
+            //9:if a[d]>=0 then
+            if (a[d]>=0) {
+                //10:return +inf
+                return stp.getObject(o1).getCoord(d).getSup();
+            }
+            else //11:else
+            {
+                //12:return ...
+                D=b;
+                int r=0;
+                for (int j=0; j<k; j++) if (k!=d) r+=m[j];
+                double num=(double) (D-r);
+                double den=(double) a[d];
+                return ((int) Math.ceil(num/den))-1;
+            }
+        }
+        //14:else
+        else {
+            //15:if a[d]<=0 then
+            if (a[d]<=0) {
+                //16:return -inf
+                return stp.getObject(o1).getCoord(d).getInf();
+            }
+            else { //17:else
+                //18: return ...
+                D=b;
+                int r=0;
+                for (int j=0; j<k; j++) if (k!=d) r+=m[j];
+
+                double num=(double) (D-r);
+                double den=(double) a[d];
+                return ((int) Math.floor(num/den))+1;
+            }
+        }
     }
 
 }

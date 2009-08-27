@@ -54,6 +54,18 @@ public class Region implements Externalizable {
 		this.max = new int[this.dim];
 	}
 
+    public Region(int dim, Obj o)
+    {
+        this.dim = dim;
+        this.oid = o.getObjectId();
+        this.min = new int[this.dim];
+        this.max = new int[this.dim];
+        for (int i=0; i<this.dim; i++) {
+            min[i]=o.getCoord(i).getInf();
+            max[i]=o.getCoord(i).getSup();            
+        }
+    }
+
 
     public Region(Region toCopy)
     {
