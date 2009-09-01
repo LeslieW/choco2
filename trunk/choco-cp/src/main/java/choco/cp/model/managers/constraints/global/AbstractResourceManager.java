@@ -51,7 +51,7 @@ public abstract class AbstractResourceManager extends IntConstraintManager {
 	
 
 	protected IntDomainVar getUppBound(CPSolver solver, RscData param) {
-		return  param.getUppBound() == null ? solver.getScheduler().createMakespan() : solver.getVar( param.getUppBound());
+		return  param.getUppBound() == null ? solver.getSchedulerConfiguration().createMakespan(solver) : solver.getVar( param.getUppBound());
 	}
 
 	protected IntDomainVar[] readIntVar(final CPSolver solver, final Variable[] source, final int begin, final int length) {

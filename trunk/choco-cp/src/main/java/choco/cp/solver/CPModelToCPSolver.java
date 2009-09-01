@@ -263,7 +263,7 @@ public class CPModelToCPSolver {
 			cpsolver.setObjective(var);
 		}
 		if(v.getOptions().contains("cp:makespan")){
-			cpsolver.getScheduler().setMakespan( (IntDomainVar) var);
+			cpsolver.getSchedulerConfiguration().setMakespan( (IntDomainVar) var);
 		}
 	}
 	/**

@@ -83,6 +83,7 @@ public final class SchedUtilities {
 		int bestTime = Integer.MAX_VALUE;
 		for (int i = 0; i < solvers.length; i++) {
 			final Solver s=solvers[i];
+			//System.out.println(s.pretty());
 			s.solveAll();
 			final String str = label +" index "+i;
 			message(str,"",s);
@@ -94,9 +95,9 @@ public final class SchedUtilities {
 				bests.add(i);
 			}
 			if(nbsol>=0) {
-				assertEquals("check-cmp NbSols "+str,nbsol,s.getNbSolutions());
+				assertEquals("check-cmp NbSols "+str,nbsol,s.getSolutionCount());
 			}else if(i>0){
-				assertEquals("check-cmp NbSols "+str,solvers[i-1].getNbSolutions(),s.getNbSolutions());
+				assertEquals("check-cmp NbSols "+str,solvers[i-1].getSolutionCount(),s.getSolutionCount());
 			}
 			if(nbNodes>=0) {
 				assertEquals("check-cmp NbNodes "+str,nbNodes,s.getNodeCount());

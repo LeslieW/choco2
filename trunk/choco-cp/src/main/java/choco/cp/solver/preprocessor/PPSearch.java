@@ -95,7 +95,7 @@ public class PPSearch {
 
     public boolean isMixedScheduling() {
         return mod.getNbConstraintByType(ConstraintType.DISJUNCTIVE) +
-                mod.getNbConstraintByType(ConstraintType.PRECEDING) +
+                mod.getNbConstraintByType(ConstraintType.PRECEDENCE_DISJOINT) +
                 mod.getNbConstraintByType(ConstraintType.LEQ) +
                 mod.getNbConstraintByType(ConstraintType.LT) +
                 mod.getNbConstraintByType(ConstraintType.GT) +

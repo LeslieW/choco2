@@ -67,7 +67,7 @@ public class FlatZincTest {
         boolean hasFailed = false;
         String directory = args[1];
         int nbpb=Integer.parseInt((String) properties.get("pb.nbpb"));
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+        //ChocoLogging.setVerbosity(Verbosity.SOLUTION);
         ChocoLogging.setLevel(Level.INFO, LOGGER);
         for(int i = 1; i < nbpb+1; i++){
             String fname = directory + "/"+ properties.get("pb."+i+".name")+".xml";

@@ -411,7 +411,7 @@ public class PreProcessCPSolver extends CPSolver {
                     for (int k = j + 1; k < cl.length; k++) {
                         if (!precedenceAlreadyAdded[idxs[j]].get(idxs[k])) {
                             IntegerVariable b = makeIntVar("" + (dur[j] + dur[k]), 0, 1);
-                            m.addConstraint(preceding(cl[j], dur[j], cl[k], dur[k], b));
+                            m.addConstraint(Choco.precedenceDisjoint(cl[j], dur[j], cl[k], dur[k], b));
                             precedenceAlreadyAdded[idxs[j]].set(idxs[k]);
                             precedenceAlreadyAdded[idxs[k]].set(idxs[j]);
                         }
