@@ -120,15 +120,14 @@ public class RehearsalProblem extends PatternExample {
 			_m.addConstraint(Choco.disjunctive(musicPieces));
 		}else {
 			//define all possible precedence between tasks
-			_m.addConstraints( Choco.preceding(musicPieces, "dir", isPrecOnlyDecision ? "cp:decision" :""));
-			_m.addConstraints( Choco.preceding(musicPieces, "dir", isPrecOnlyDecision ? "cp:decision" :""));
+			_m.addConstraints( Choco.precedenceDisjoint(musicPieces, isPrecOnlyDecision ? "cp:decision" :""));
 		}
 	}
 
 	@Override
 	public void buildSolver() {
 		CPSolver s = new CPSolver();
-		s.getScheduler().setPrecedenceNetwork(true);
+		s.getSchedulerConfiguration().setPrecedenceNetwork(true);
 		s.read(_m);
 		_s = s;
 	}

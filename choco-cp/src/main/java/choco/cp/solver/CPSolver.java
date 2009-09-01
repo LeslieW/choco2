@@ -49,9 +49,12 @@ import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.configure.LimitConfiguration;
 import choco.cp.solver.configure.RestartConfiguration;
+import choco.cp.solver.configure.SchedulerConfiguration;
 import choco.cp.solver.constraints.ConstantSConstraint;
 import choco.cp.solver.constraints.global.Occurrence;
-import choco.cp.solver.constraints.global.scheduling.SchedulerConfig;
+import choco.cp.solver.constraints.global.scheduling.PrecedenceDisjoint;
+import choco.cp.solver.constraints.global.scheduling.PrecedenceVDisjoint;
+import choco.cp.solver.constraints.global.scheduling.PrecedenceVSDisjoint;
 import choco.cp.solver.constraints.integer.EqualXC;
 import choco.cp.solver.constraints.integer.EqualXYC;
 import choco.cp.solver.constraints.integer.GreaterOrEqualXC;
@@ -356,7 +359,7 @@ public class CPSolver implements Solver {
 	protected boolean doMaximize;
 
 
-	protected final SchedulerConfig scheduler;
+	protected final SchedulerConfiguration schedulerConfiguration = new SchedulerConfiguration();
 
 	/**
 	 * A global constraint to manage nogoods (as clauses)
@@ -502,7 +505,6 @@ public class CPSolver implements Solver {
 		this.environment = env;
 		this.constraints = env.makePartiallyStoredVector();
 		indexfactory = new IndexFactory();
-		scheduler = new SchedulerConfig(this);
 		if (env instanceof EnvironmentRecomputation) {
 			setRecomputation(true);
 		}
@@ -1550,7 +1552,7 @@ public class CPSolver implements Solver {
 	public final void setObjective(Var objective) {
 		this.objective = objective;
 	}
-	
+
 	@Override
 	public Var getObjective() {
 		return objective;
@@ -1575,31 +1577,37 @@ public class CPSolver implements Solver {
 
 
 
-	public final SchedulerConfig getScheduler() {
-		return scheduler;
+	public final SchedulerConfiguration getSchedulerConfiguration() {
+		return schedulerConfiguration;
 	}
 
 	public final void setHorizon(int horizon) {
-		scheduler.setMakespan(horizon);
+		schedulerConfiguration.setHorizon(horizon);
 	}
 
 	public final IntDomainVar getMakespan() {
-		return scheduler.getMakespan();
+		return schedulerConfiguration.getMakespan();
 	}
 
 	public final int getMakespanValue() {
-		return scheduler.getMakespanValue();
+		return schedulerConfiguration.getMakespanValue();
 	}
 
 	public final void postMakespanConstraint() {
 		if (getMakespan()!= null) {
-			// create makespan constraint : makespan = max (end(T)
-			IntDomainVar[] vars = new IntDomainVar[getNbTaskVars() + 1];
-			vars[0] = getMakespan();
-			for (int i = 0; i < getNbTaskVars(); i++) {
-				vars[i + 1] = getTaskVar(i).end();
+			if( getNbTaskVars() > 0) {
+				// create makespan constraint : makespan = max (end(T)
+				IntDomainVar[] vars = new IntDomainVar[getNbTaskVars() + 1];
+				vars[0] = getMakespan();
+				for (int i = 0; i < getNbTaskVars(); i++) {
+					vars[i + 1] = getTaskVar(i).end();
+				}
+				post(new MaxOfAList(vars));
+			}else {
+				if( getMakespan().getNbConstraints() == 0) {
+
+				}
 			}
-			post(new MaxOfAList(vars));
 		}
 	}
 
@@ -1607,7 +1615,7 @@ public class CPSolver implements Solver {
 	 * Post the redundant constraint that captures the reasonnings on tasks consistency.
 	 */
 	public final void postRedundantTaskConstraints() {
-		if (scheduler.isRedundantReasonningsOnTasks()) {
+		if (schedulerConfiguration.isRedundantReasonningsOnTasks()) {
 			for (int i = 0; i < getNbTaskVars(); i++) {
 				postRedundantTaskConstraint(getTaskVar(i));
 			}
@@ -1972,7 +1980,7 @@ public class CPSolver implements Solver {
 			}
 		} else {
 			throw new SolverException(
-			"impossible to post to a Model constraints : " + cc.getClass().getSimpleName());
+					"impossible to post to a Model constraints : " + cc.getClass().getSimpleName());
 		}
 	}
 
@@ -2266,22 +2274,22 @@ public class CPSolver implements Solver {
 		return getSearchStrategy().nextSolution();
 	}
 
-    /**
+	/**
 	 * Solution checker. Usefull for debug and development.
-     * Check also constraints with not instantiated variables
+	 * Check also constraints with not instantiated variables
 	 *
-     * @param logged pretty print
+	 * @param logged pretty print
 	 * @return a boolean indicating wether the solution is correct or not.
 	 */
 	public Boolean checkSolution(boolean logged) {
-        return checkSolution(logged, true);
-    }
+		return checkSolution(logged, true);
+	}
 
 	/**
 	 * Solution checker. Usefull for debug and development.
 	 *
-     * @param logged pretty print
-     * @param enableConsistency check also constraints with not instantiated variables
+	 * @param logged pretty print
+	 * @param enableConsistency check also constraints with not instantiated variables
 	 * @return a boolean indicating wether the solution is correct or not.
 	 */
 	public Boolean checkSolution(boolean logged, boolean enableConsistency) {
@@ -2292,10 +2300,10 @@ public class CPSolver implements Solver {
 		.append("\n");
 
 		// Check variables
-        isSolution &= checkDecisionVariables(st);
+		isSolution &= checkDecisionVariables(st);
 
-        // Check constraints
-        isSolution &= checkConstraints(st, enableConsistency);
+		// Check constraints
+		isSolution &= checkConstraints(st, enableConsistency);
 
 		st.append("\n");
 		if (isSolution) {
@@ -2303,7 +2311,7 @@ public class CPSolver implements Solver {
 		} else {
 			st.append("One or more constraint is not satisfied.").append("\n")
 			.append("Or one or more constraint is not consistent.\n")
-            .append("Or the search is not finished.");
+			.append("Or the search is not finished.");
 		}
 
 		st.append("\n").append("~~~~~~~~~~~~~~~~~~~~~~~~~~").append("\n");
@@ -2311,124 +2319,124 @@ public class CPSolver implements Solver {
 		return isSolution;
 	}
 
-    /**
+	/**
 	 * Check wether every decisions variables are instantiated
 	 *
 	 * @return true if all variables are instantiated
 	 */
 	public boolean checkDecisionVariables() {
-        return checkDecisionVariables(new StringBuffer());
-    }
+		return checkDecisionVariables(new StringBuffer());
+	}
 
-    /**
+	/**
 	 * Check wether every decisions variables are instantiated
 	 *
-     * @param st a stringbuffer to get the log
+	 * @param st a stringbuffer to get the log
 	 * @return true if all variables are instantiated
 	 */
 	private boolean checkDecisionVariables(StringBuffer st) {
-        boolean isOk = true;
+		boolean isOk = true;
 		if (intDecisionVars != null) {
 			for (IntDomainVar intDecisionVar : intDecisionVars) {
 				if (!intDecisionVar.isInstantiated()) {
-                    st.append(StringUtils.pad(""+intDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
+					st.append(StringUtils.pad(""+intDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
 					isOk = false;
 				}else{
-                    st.append(StringUtils.pad(""+intDecisionVar.getName(), 100, ".")).append("ok\n");
-                }
+					st.append(StringUtils.pad(""+intDecisionVar.getName(), 100, ".")).append("ok\n");
+				}
 			}
 		}
 
 		if (setDecisionVars != null) {
 			for (SetVar setDecisionVar : setDecisionVars) {
 				if (!setDecisionVar.isInstantiated()) {
-                    st.append(StringUtils.pad(""+setDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
+					st.append(StringUtils.pad(""+setDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
 					isOk = false;
 				}else{
-                    st.append(StringUtils.pad(""+setDecisionVar.getName(), 100, ".")).append("ok\n");
-                }
+					st.append(StringUtils.pad(""+setDecisionVar.getName(), 100, ".")).append("ok\n");
+				}
 			}
 		}
 
 		if (floatDecisionVars != null) {
 			for (RealVar floatDecisionVar : floatDecisionVars) {
 				if (!floatDecisionVar.isInstantiated()) {
-                    st.append(StringUtils.pad(""+floatDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
+					st.append(StringUtils.pad(""+floatDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
 					isOk = false;
 				}else{
-                    st.append(StringUtils.pad(""+floatDecisionVar.getName(), 100, ".")).append("ok\n");
-                }
+					st.append(StringUtils.pad(""+floatDecisionVar.getName(), 100, ".")).append("ok\n");
+				}
 			}
 		}
 		return isOk;
 	}
 
-    /**
-     * Check the constraints
-     * @param enableConsistency check also constraints with not instantiated variables
-     * @return boolean
-     */
-    public boolean checkConstraints(boolean enableConsistency){
-        return checkConstraints(new StringBuffer(), enableConsistency);
-    }
+	/**
+	 * Check the constraints
+	 * @param enableConsistency check also constraints with not instantiated variables
+	 * @return boolean
+	 */
+	public boolean checkConstraints(boolean enableConsistency){
+		return checkConstraints(new StringBuffer(), enableConsistency);
+	}
 
-    /**
-     * Check the constraints
-     * @param st a string buffer for the log
-     * @param enableConsistency check also constraints with not instantiated variables
-     * @return boolean
-     */
-    private boolean checkConstraints(StringBuffer st, boolean enableConsistency){
-        boolean isOk = true;
-        // Checck constraints
+	/**
+	 * Check the constraints
+	 * @param st a string buffer for the log
+	 * @param enableConsistency check also constraints with not instantiated variables
+	 * @return boolean
+	 */
+	private boolean checkConstraints(StringBuffer st, boolean enableConsistency){
+		boolean isOk = true;
+		// Checck constraints
 		Iterator<SConstraint> ctit = this.getIntConstraintIterator();
 		while (ctit.hasNext()) {
 			SConstraint c = ctit.next();
-            if(c instanceof AbstractIntSConstraint){
-                AbstractIntSConstraint ic = (AbstractIntSConstraint)c;
-                int[] tuple = new int[c.getNbVars()];
-                int[] tupleL = new int[c.getNbVars()];
-                int[] tupleU = new int[c.getNbVars()];
-                boolean fullInstantiated = true;
-                for(int i = 0; i < c.getNbVars(); i++){
-                    IntDomainVar v = (IntDomainVar)c.getVar(i);
-                    if(v.isInstantiated()){
-                        tuple[i] = v.getVal();
-                        tupleL[i] = tuple[i];
-                        tupleU[i] = tuple[i];
-                    }else{
-                        fullInstantiated = false;
-                        tupleL[i] = v.getInf();
-                        tupleU[i] = v.getSup();
-                    }
-                }
-                if(fullInstantiated){
-                    if(ic.isSatisfied(tuple)){
-                        st.append(StringUtils.pad(""+ic.pretty(), 200, ".")).append("ok\n");
-                    }else{
-                        st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ko <= WARNING!\n");
-				        isOk = false;
-                    }
-                }else if(enableConsistency){
-                    if(ic.isSatisfied(tupleL) && ic.isSatisfied(tupleU)){
-                        st.append(StringUtils.pad(""+ic.pretty(), 200, ".")).append("ok\n");
-                    }else{
-                        st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ko <= WARNING!\n");
-                        st.append("=> NOT CONSISTENT\n");
-				        isOk = false;
-                    }
-                }
-            }else{
-                if(c.isSatisfied()){
-                    st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ok\n");
-                }else{
-                    st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ko <= WARNING!\n");
-                    isOk = false;
-                }
-		    }
-        }
-        return isOk;
-    }
+			if(c instanceof AbstractIntSConstraint){
+				AbstractIntSConstraint ic = (AbstractIntSConstraint)c;
+				int[] tuple = new int[c.getNbVars()];
+				int[] tupleL = new int[c.getNbVars()];
+				int[] tupleU = new int[c.getNbVars()];
+				boolean fullInstantiated = true;
+				for(int i = 0; i < c.getNbVars(); i++){
+					IntDomainVar v = (IntDomainVar)c.getVar(i);
+					if(v.isInstantiated()){
+						tuple[i] = v.getVal();
+						tupleL[i] = tuple[i];
+						tupleU[i] = tuple[i];
+					}else{
+						fullInstantiated = false;
+						tupleL[i] = v.getInf();
+						tupleU[i] = v.getSup();
+					}
+				}
+				if(fullInstantiated){
+					if(ic.isSatisfied(tuple)){
+						st.append(StringUtils.pad(""+ic.pretty(), 200, ".")).append("ok\n");
+					}else{
+						st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ko <= WARNING!\n");
+						isOk = false;
+					}
+				}else if(enableConsistency){
+					if(ic.isSatisfied(tupleL) && ic.isSatisfied(tupleU)){
+						st.append(StringUtils.pad(""+ic.pretty(), 200, ".")).append("ok\n");
+					}else{
+						st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ko <= WARNING!\n");
+						st.append("=> NOT CONSISTENT\n");
+						isOk = false;
+					}
+				}
+			}else{
+				if(c.isSatisfied()){
+					st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ok\n");
+				}else{
+					st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ko <= WARNING!\n");
+					isOk = false;
+				}
+			}
+		}
+		return isOk;
+	}
 
 	/**
 	 * Displays all the runtime statistics.
@@ -2589,7 +2597,7 @@ public class CPSolver implements Solver {
 	 * @param treas redundant reasonning on tasks
 	 */
 	public void setTaskReasoning(boolean treas) {
-		scheduler.setRedundantReasonningsOnTasks(treas);
+		schedulerConfiguration.setRedundantReasonningsOnTasks(treas);
 	}
 
 	/**
@@ -2657,10 +2665,15 @@ public class CPSolver implements Solver {
 	// LOGGERS MANAGEMENT
 	// **********************************************************************
 
+	@Deprecated
 	public static final int SILENT = 0;
+	@Deprecated
 	public static final int SOLUTION = 1;
+	@Deprecated
 	public static final int SEARCH = 2;
+	@Deprecated
 	public static final int PROPAGATION = 3;
+	@Deprecated
 	public static final int FINEST = 4;
 
 
@@ -3420,6 +3433,47 @@ public class CPSolver implements Solver {
 		System.arraycopy(vars, 0, tmpvars, 0, vars.length);
 		tmpvars[tmpvars.length - 1] = occ;
 		return new Occurrence(tmpvars, value, true, true);
+	}
+
+
+	public SConstraint preceding(TaskVar t1, int k1, TaskVar t2) {
+		//post precedence between starting times if possible
+		return leq(
+				(t1.duration().isInstantiated() ? plus(t1.start(), t1.duration().getVal() + k1) : plus(t1.end(), k1)),
+				t2.start()
+		);
+	}
+
+	public SConstraint preceding(IntDomainVar direction, TaskVar t1, int k1, TaskVar t2, int k2) {
+		if( direction == null) {
+			direction = VariableUtils.createDirectionVar(t1, t2);
+		}else if( ! direction.hasBooleanDomain()) {
+			throw new SolverException("The direction variable "+direction.pretty()+"is not a boolean variable for the precedence ("+t1+","+t2+")");
+		}
+		if(direction.isInstantiatedTo(1)) {
+			//forward precedence
+			return preceding(t1, k1, t2);
+		}else if(direction.isInstantiatedTo(0)) {
+			//bakcward precedence
+			return preceding(t2, k2, t1);
+		}else {
+			//disjunction
+			if( t1.duration().isInstantiated() && t2.duration().isInstantiated()) {
+				//both tasks have fixed duration
+				return new PrecedenceDisjoint(
+						t1, t1.duration().getVal() + k1,
+						t2, t2.duration().getVal() + k2,
+						direction
+				);
+			}else {
+				//at least one task has a variable duration
+				if(k1 != 0 || k2 != 0) {
+					return new PrecedenceVSDisjoint(direction, t1, k1, t2, k2);
+				}else {
+					return new PrecedenceVDisjoint(direction, t1, t2);
+				}
+			}
+		}
 	}
 
 	// rewriting utility: remove all null coefficients

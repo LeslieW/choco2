@@ -146,7 +146,7 @@ public class EqTest {
         Model m  = new CPModel();
         m.addConstraint(c);
         m.setDefaultExpressionDecomposition(true);
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+        //ChocoLogging.setVerbosity(Verbosity.SOLUTION);
 
         Solver s = new CPSolver();
         s.read(m);

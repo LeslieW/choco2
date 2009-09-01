@@ -370,7 +370,7 @@ public class ElementTest {
 		IntegerVariable V = makeIntVar("V", 0, 5);
 		m.addConstraint(nth(I, new IntegerVariable[]{constant(0),constant(1), makeIntVar("VV",2,3)}, V));
 		s.read(m);
-		ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+		//ChocoLogging.setVerbosity(Verbosity.SOLUTION);
 		s.solveAll();
 		assertEquals(6, s.getSolutionCount());	
 	}

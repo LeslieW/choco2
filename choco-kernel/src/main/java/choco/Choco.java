@@ -22,12 +22,26 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco;
 
+import static java.lang.System.arraycopy;
+import gnu.trove.TIntArrayList;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.model.ModelException;
-import choco.kernel.model.constraints.*;
+import choco.kernel.model.constraints.ComponentConstraint;
+import choco.kernel.model.constraints.ComponentConstraintWithSubConstraints;
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.ConstraintType;
+import choco.kernel.model.constraints.MetaConstraint;
+import choco.kernel.model.constraints.MetaTaskConstraint;
 import choco.kernel.model.constraints.automaton.DFA;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.model.constraints.geost.GeostOptions;
@@ -54,15 +68,15 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.model.variables.tree.TreeParametersObject;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.global.scheduling.RscData;
-import choco.kernel.solver.constraints.integer.extension.*;
-import gnu.trove.TIntArrayList;
-
-import static java.lang.System.arraycopy;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import choco.kernel.solver.constraints.integer.extension.BinRelation;
+import choco.kernel.solver.constraints.integer.extension.CouplesBitSetTable;
+import choco.kernel.solver.constraints.integer.extension.CouplesTable;
+import choco.kernel.solver.constraints.integer.extension.ExtensionalBinRelation;
+import choco.kernel.solver.constraints.integer.extension.IterTuplesTable;
+import choco.kernel.solver.constraints.integer.extension.LargeRelation;
+import choco.kernel.solver.constraints.integer.extension.TuplesList;
+import choco.kernel.solver.constraints.integer.extension.TuplesTable;
+import choco.kernel.solver.variables.scheduling.TaskVar;
 
 /**
  * Created by IntelliJ IDEA.
@@ -82,11 +96,17 @@ public class Choco{
 	public final static int MIN_LOWER_BOUND  = Integer.MIN_VALUE / 100;
 
 	public final static int MAX_UPPER_BOUND  = Integer.MAX_VALUE / 100;
+	
+	
 
 	// ############################################################################################################
 	// ######                                        VARIABLES                                                  ###
 	// ############################################################################################################
 
+	public final static IntegerVariable ZERO = constant(0);
+	
+	public final static IntegerVariable ONE= constant(1);
+	
 	private static void checkIntVarBounds(int lowB, int uppB) {
 		if (lowB > uppB) {
 			throw new ModelException("makeIntVar : lowB > uppB");
@@ -2570,64 +2590,149 @@ public class Choco{
 		int idx = 0;
 		for (TaskVariable t1 : tasks1) {
 			for (TaskVariable t2 : tasks2) {
-				decomp[idx++] = preceding(t1, t2, VariableUtils.createDirectionVar(t1, t2));
+				decomp[idx++] = precedenceDisjoint(t1, t2, VariableUtils.createDirectionVar(t1, t2));
 			}	
 		}
 		return decomp;		
 	}
 
-	public static Constraint preceding(IntegerVariable v1, int dur1, IntegerVariable v2, int dur2, IntegerVariable bool) {
-		return new ComponentConstraint(ConstraintType.PRECEDING, Boolean.FALSE, new Variable[]{v1, constant(dur1), v2, constant(dur2), bool});
-	}
-
-	public static Constraint preceding(TaskVariable t1, TaskVariable t2) {
-		return preceding(t1, t2, constant(1));
-	}
-
-	public static Constraint preceding(TaskVariable t1, TaskVariable t2, IntegerVariable direction) {
-		return preceding(t1, t2, direction, 0, 0);
-	}
+	
+	
 	/**
-	 * represents a disjunction or reified precedence with setup times:
+	 * @see {@link Choco#precedence(TaskVariable, TaskVariable)}
+	 */
+	@Deprecated 
+	public static Constraint preceding(TaskVariable t1, TaskVariable t2) {
+		return precedenceDisjoint(t1, t2, constant(1));
+	}
+	
+	
+	/**
+	 * T1 ends before t2 starts or t1 precedes t2.
+	 */
+	public static Constraint precedence(TaskVariable t1, TaskVariable t2) {
+		return precedenceDisjoint(t1, t2, ONE);
+	}
+
+	/**
+	 * @see {@link Choco#precedenceDisjoint(IntegerVariable, int, IntegerVariable, int, IntegerVariable)}
+	 */
+	@Deprecated 
+	public static Constraint preceding(IntegerVariable v1, int dur1, IntegerVariable v2, int dur2, IntegerVariable bool) {
+		return precedenceDisjoint(v1, dur1, v2, dur2, bool);
+	}
+	
+	
+	/**
+	 * 
+	 * <ul>
+	 * <li> direction = 1 => v1 + dur1 <= v2 (T1 << T2);
+	 * <li> direction = 0 => v2 + dur2 <= v1 (T2 << T1);
+	 * </ul>  
+	 */
+	public static Constraint precedenceDisjoint(IntegerVariable v1, int dur1, IntegerVariable v2, int dur2, IntegerVariable bool) {
+		return new ComponentConstraint(ConstraintType.PRECEDENCE_DISJOINT, Boolean.FALSE, new Variable[]{v1, constant(dur1), v2, constant(dur2), bool});
+	}
+
+	
+	/**
+	 * @see {@link Choco#precedenceDisjoint(TaskVariable, TaskVariable, IntegerVariable)}
+	 */
+	@Deprecated 
+	public static Constraint preceding(TaskVariable t1, TaskVariable t2, IntegerVariable direction) {
+		return precedenceDisjoint(t1, t2, direction);
+	}
+
+
+	/**
+	 * represents a disjunction without setup times
+	 */
+	public static Constraint precedenceDisjoint(TaskVariable t1, TaskVariable t2, IntegerVariable direction) {
+		return precedenceDisjoint(t1, t2, direction, 0, 0);
+	}
+
+	
+	/**
+	 * precedence disjoint with setup times:
 	 * <ul>
 	 * <li> direction = 1 => t1.end() + forwardSetup <= t2.start() (T1 << T2);
 	 * <li> direction = 0 => t2.end() + backwardSetup <= t1.start() (T2 << T1);
 	 * </ul>  
 	 * @param t1 a task
 	 * @param t2 the other task
-	 * @param direction a boolean variable which reified the precedence. 
+	 * @param direction  boolean variable which reified the precedence relation. 
 	 * @param forwardSetup setup times between t1 and t2
-	 * @param backwardSetup setup times between t2 and t1
+	 * @param backwardSetup setup times between t2 and t1.
 	 */
-	public static Constraint preceding(TaskVariable t1, TaskVariable t2, IntegerVariable direction, int forwardSetup, int backwardSetup) {
-		if(direction.isBoolean()) {
-			if (forwardSetup != 0 || backwardSetup != 0) {
-				LOGGER.warning("reified precedence setup are not yet implemented");
-			}
-			return new ComponentConstraint(ConstraintType.PRECEDING, Boolean.TRUE, new Variable[]{t1, t2, direction});
-		}else { 
-			LOGGER.log(Level.SEVERE, "Reified Precedence ({0}, {1}, {2}: {0} is not a boolean variable.", new Object[]{direction, t1, t2});
-			throw new ModelException(direction.getName()+" is not boolean variable.");
-		}
+	public static Constraint precedenceDisjoint(TaskVariable t1, TaskVariable t2, IntegerVariable direction, int forwardSetup, int backwardSetup) {
+		return new ComponentConstraint(ConstraintType.PRECEDENCE_DISJOINT, Boolean.TRUE, new Variable[]{t1,constant(forwardSetup), t2, constant(backwardSetup), direction});
 	}
 
-	public static Constraint[] preceding(TaskVariable[] clique, String... boolvarOptions) {
+	
+	public static Constraint[] precedenceDisjoint(TaskVariable[] clique, String... boolvarOptions) {
 		final int n = clique.length;
 		Constraint[] cstr = new Constraint[ (n * (n-1) )/2];
 		int idx = 0;
 		for (int i = 0; i < n; i++) {
 			for (int j = i+1; j < n; j++) {
-				cstr[idx++] = preceding(clique[i], clique[j], VariableUtils.createDirectionVar(clique[i], clique[j], boolvarOptions));
+				cstr[idx++] = precedenceDisjoint(clique[i], clique[j], VariableUtils.createDirectionVar(clique[i], clique[j], boolvarOptions));
 			}
 		}
 		return cstr;
 	}
-
-	public static Constraint precedenceReified(IntegerVariable x0, int k, IntegerVariable x1, IntegerVariable b) {
-		return new ComponentConstraint(ConstraintType.PRECEDENCEREIFIED, null, new Variable[]{x0, constant(k), x1, b});
+	
+	
+	
+	/**
+	 * represents a reidied precedence: 
+	 * <ul>
+	 * <li> b = 1 => x1 + k1 <= x2
+	 * <li> b = 0 => x1 + k1 > x2
+	 * </ul>  
+	 * @param x2 the first integer variable.
+	 * @param k1 the duration of the precedence.
+	 * @param t2 the other integer variable.
+	 * @param b the reification boolean variable
+	 *
+	 */
+	public static Constraint precedenceReified(IntegerVariable x1, int k1, IntegerVariable x2, IntegerVariable b) {
+		return new ComponentConstraint(ConstraintType.PRECEDENCE_REIFIED, Boolean.FALSE, new Variable[]{x1, constant(k1), x2, ZERO, b});
+	}
+	
+	/**
+	 * represents a reidied precedence with setup times between a pair of tasks: 
+	 * <ul>
+	 * <li> b = 1 => e1 + k1 <= s2
+	 * <li> b = 0 => e1 + k1 > s2
+	 * </ul>  
+	 */
+	public static Constraint precedenceReified(TaskVariable t1, int k1, TaskVariable t2, IntegerVariable b) {
+		return new ComponentConstraint(ConstraintType.PRECEDENCE_REIFIED, Boolean.TRUE, new Variable[]{t1, constant(k1), t2, ZERO, b});
+	}
+	
+	/**
+	 * represents an implied precedence: 
+	 * <ul>
+	 * <li> b = 1 => x1 + k1 <= x2
+	 * <li> b = 0 => TRUE
+	 * </ul>  
+	  */
+	public static Constraint precedenceImplied(IntegerVariable x1, int k1, IntegerVariable x2, IntegerVariable b) {
+		return new ComponentConstraint(ConstraintType.PRECEDENCE_IMPLIED, Boolean.FALSE, new Variable[]{x1, constant(k1), x2, ZERO, b});
+	}
+	
+	/**
+	 * represents a reidied precedence with setup times between a pair of tasks: 
+	 * <ul>
+	 * <li> b = 1 => e1 + k1 <= s2
+	 * <li> b = 0 => TRUE;
+	 * </ul>  
+	 */
+	public static Constraint precedenceImplied(TaskVariable t1, int k1, TaskVariable t2, IntegerVariable b) {
+		return new ComponentConstraint(ConstraintType.PRECEDENCE_IMPLIED, Boolean.TRUE, new Variable[]{t1, constant(k1), t2, ZERO, b});
 	}
 
-
+	
 	public static Constraint geost(int dim, Vector<GeostObject> objects, Vector<ShiftedBox> shiftedBoxes, Vector<IExternalConstraint> eCtrs) {
 		return geost(dim, objects, shiftedBoxes, eCtrs, null);
 	}
@@ -3735,7 +3840,7 @@ public class Choco{
 	 */
 	public static Constraint endsBeforeBegin(final TaskVariable t1, final TaskVariable t2, final int delta) 	{
 		//return startsAfterEnd(t2, t1, delta);
-		return preceding(t1,t2, constant(1), delta, 0);
+		return precedenceDisjoint(t1,t2, ONE, delta, 0);
 	}
 
 	/**

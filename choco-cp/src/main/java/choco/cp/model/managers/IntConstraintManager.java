@@ -57,7 +57,11 @@ public abstract class IntConstraintManager implements ConstraintManager {
     }
 
 
-
+    protected final SConstraint makeNullConstraint(String name) {
+    	LOGGER.severe("Could not found an implementation of "+name+" !");
+    	return null;
+    }
+    
     protected int[] getACFavoriteIntDomains() {
         return new int[]{IntDomainVar.BITSET,
                 IntDomainVar.LINKEDLIST,

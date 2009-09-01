@@ -1,18 +1,7 @@
 package choco.cp.solver.constraints.global.scheduling;
 
-import static choco.Choco.makeIntVar;
-import choco.cp.model.CPModel;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
-import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
-import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.logging.Level;
 
 /**
  *  Let b be a boolean variables; x0, x1 be two integer variables and k1, k2 two integers.
@@ -20,38 +9,23 @@ import java.util.logging.Level;
  * b0 = 1 <=> x0 + d0 <= x1
  * b0 = 0 <=> x1 + d1 <= x0
  * */
-public class VariablePrecedenceDisjoint extends AbstractLargeIntSConstraint {
+public class VariablePrecedenceDisjoint extends AbstractPrecedenceConstraint {
 
-
-    public static IntDomainVar[] makeVars(IntDomainVar b,
-                                          IntDomainVar s0, IntDomainVar d0,
-                                          IntDomainVar s1, IntDomainVar d1) {
-        IntDomainVar[] vars = new IntDomainVar[5];
-        vars[0] = b;
-        vars[1] = s0;
-        vars[2] = d0;
-        vars[3] = s1;
-        vars[4] = d1;
-        return vars;
-    }
-
-    /**
-     *
-     * @param vars
-     */
+	private final static int[] FILTERED_EVENT_MASKS = makeMasksArray(5);
+	
     public VariablePrecedenceDisjoint(IntDomainVar b, IntDomainVar s0, IntDomainVar d0,
                                       IntDomainVar s1, IntDomainVar d1) {
-        super(makeVars(b,s0,d0,s1,d1));
+        super(new IntDomainVar[]{b,s0,d0,s1,d1});
     }
 
     @Override
     public int getFilteredEventMask(int idx) {
-        if(idx == 0){
-            return IntVarEvent.INSTINTbitvector;
-        }else return IntVarEvent.BOUNDSbitvector;
+       return FILTERED_EVENT_MASKS[idx];
     }
 
+    
     // propagate x0 + d0 <= x1 (b0 = 1)
+	@Override
 	public void propagateP1() throws ContradictionException {
 		boolean b = true;
         while(b) {
@@ -63,7 +37,8 @@ public class VariablePrecedenceDisjoint extends AbstractLargeIntSConstraint {
     }
 
     // propagate x1 + d1 <= x0 (b0 = 0)
-    public void propagateP2() throws ContradictionException {
+    @Override
+	public void propagateP2() throws ContradictionException {
 		boolean b = true;
         while(b) {
             b = false;
@@ -73,6 +48,7 @@ public class VariablePrecedenceDisjoint extends AbstractLargeIntSConstraint {
         }
     }
 
+	@Override
 	public Boolean isP1Entailed() {
 		if (vars[1].getSup() + vars[2].getSup() <= vars[3].getInf())
 			return Boolean.TRUE;
@@ -81,6 +57,7 @@ public class VariablePrecedenceDisjoint extends AbstractLargeIntSConstraint {
 		return null;
 	}
 
+	@Override
 	public Boolean isP2Entailed() {
 		if (vars[3].getSup() + vars[4].getSup() <= vars[1].getInf())
 			return Boolean.TRUE;
@@ -89,126 +66,18 @@ public class VariablePrecedenceDisjoint extends AbstractLargeIntSConstraint {
 		return null;
 	}
 
-	public void awakeOnInst(int idx) throws ContradictionException {
-		if (idx == 0) {        // booleen de decision
-			int val = vars[0].getVal();
-			if (val == 1) {
-				propagateP1();
-			} else {
-				propagateP2();
-			}
-		} else {
-			filterOnP1P2TowardsB();
-		}
-	}
 
-	//idx = 1 ou idx = 2
-	public void filterOnP1P2TowardsB() throws ContradictionException {
-		Boolean b = isP1Entailed();
-		if (b != null) {
-			if (b) {
-				vars[0].instantiate(1, cIndices[0]);
-			} else {
-				vars[0].instantiate(0, cIndices[0]);
-                propagateP2();
-			}
-		}
-		b = isP2Entailed();
-		if (b != null) {
-			if (b) {
-				vars[0].instantiate(0, cIndices[0]);
-			} else {
-				vars[0].instantiate(1, cIndices[0]);
-                propagateP1();
-			}
-        }
-	}
-
-    public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
-        if (vars[0].isInstantiatedTo(0))
-            propagateP2();
-        else if (vars[0].isInstantiatedTo(1))
-            propagateP1();
-        else filterOnP1P2TowardsB(); //idx ne peut pas valoir 0 ici
-    }
-
-
-	public void awakeOnSup(int idx) throws ContradictionException {
-		if (vars[0].isInstantiatedTo(0))
-			propagateP2();
-		else if (vars[0].isInstantiatedTo(1))
-			propagateP1();
-		else filterOnP1P2TowardsB(); //idx ne peut pas valoir 0 ici
-	}
-
-	public void awakeOnInf(int idx) throws ContradictionException {
-		if (vars[0].isInstantiatedTo(0))
-			propagateP2();
-		else if (vars[0].isInstantiatedTo(1))
-			propagateP1();
-		else filterOnP1P2TowardsB(); //idx ne peut pas valoir 0 ici
-	}
-
-    public void awakeOnBounds(int idx) throws ContradictionException {
-        if (vars[0].isInstantiatedTo(0))
-			propagateP2();
-		else if (vars[0].isInstantiatedTo(1))
-			propagateP1();
-		else filterOnP1P2TowardsB(); //idx ne peut pas valoir 0 ici
-    }
-
-    public void propagate() throws ContradictionException {
-		if (vars[0].isInstantiatedTo(0))
-			propagateP2();
-		else if (vars[0].isInstantiatedTo(1))
-			propagateP1();
-		else filterOnP1P2TowardsB(); //idx ne peut pas valoir 0 ici
-	}
-
+	@Override
 	public boolean isSatisfied() {
-		if (vars[0].isInstantiatedTo(1))
+		if (vars[BIDX].isInstantiatedTo(1))
 			return vars[1].getVal() + vars[2].getVal() <= vars[3].getVal();
 		else return vars[3].getVal() + vars[4].getVal() <= vars[1].getVal();
 	}
 
-	public String toString() {
+	@Override
+	public String pretty() {
 		return "VDisjunction " + vars[1] +","+ vars[2]+ " - " + vars[3] + "," + vars[4];
 	}
 
-	public static void main(String[] args) {
-		for (int i = 0; i < 10; i++) {
-		  CPModel m = new CPModel();
-	      IntegerVariable k1 = makeIntVar("dx",2,7);
-          IntegerVariable k2 = makeIntVar("dy",2,7);
-          IntegerVariable x = makeIntVar("x", 1, 10);
-		  IntegerVariable y = makeIntVar("y", 1, 10);
-          IntegerVariable z = makeIntVar("z", 0, 1);
-          m.addVariables("cp:bound", x, y, k1, k2, z);
-
-//          m.addConstraints(Choco.implies(Choco.eq(z,1),Choco.leq(Choco.plus(x,k1),y)));
-//          m.addConstraints(Choco.implies(Choco.eq(z,0),Choco.leq(Choco.plus(y,k2),x)));
-
-
-          CPSolver s = new CPSolver();
-          s.read(m);
-
-		  s.post(new VariablePrecedenceDisjoint(s.getVar(z),s.getVar(x),s.getVar(k1),
-                                                s.getVar(y),s.getVar(k2)));
-
-		  s.setVarIntSelector(new RandomIntVarSelector(s, i));
-		  s.setValIntSelector(new RandomIntValSelector(i + 1));
-
-		  s.solve();
-		  do {
-          } while (s.nextSolution() == Boolean.TRUE);
-
-           if (s.getNbSolutions() != 1392) {
-			  throw new Error("wrong number of solutions " + s.getNbSolutions());
-		  }
-		  LOGGER.log(Level.INFO, "Nb solution : {0} {1}" , new Object[]{s.getNbSolutions(), s.getNodeCount()});
-
-		  //assertEquals( s.getNbSolutions(), 14);
-		}
-
-	}
+	
 }
