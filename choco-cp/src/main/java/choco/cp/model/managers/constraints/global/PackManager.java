@@ -22,8 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
-import choco.Choco;
+import static choco.kernel.common.util.tools.VariableUtils.getIntVar;
+import static choco.kernel.common.util.tools.VariableUtils.getSetVar;
+
+import java.util.HashSet;
+
+import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.constraints.global.pack.PrimalDualPack;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -31,16 +37,13 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
-
-import java.util.HashSet;
-
 /**
  * Created by IntelliJ IDEA.
  * User: charles
  * Date: 8 août 2008
  * Time: 20:08:04
  */
-public class PackManager extends AbstractResourceManager {
+public class PackManager extends IntConstraintManager {
 
 	/**
 	 * Build a constraint for the given solver and "model variables"
@@ -52,26 +55,31 @@ public class PackManager extends AbstractResourceManager {
 	 * @return
 	 */
 	public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
-
 		if(solver instanceof CPSolver){
 			CPSolver s = (CPSolver) solver;
 			if(parameters instanceof Object[]){
 				Object[] params = (Object[])parameters;
-				final int n = (Integer)params[0]; //items
-				final int m = (Integer)params[1]; //bins
-				SetVar[] itemSets = readSetVar(s, variables, 0, m);
-				IntDomainVar[] loads = readIntVar(s, variables, m, m);
-				IntDomainVar[] bins = readIntVar(s, variables, 2*m,n);
-				IntDomainVar[] sizes = readIntVar(s, variables, 2*m+n,n);
-				IntDomainVar  nbNonEmpty = solver.getVar( (IntegerVariable) variables[2*(m+n)]);
-				return new PrimalDualPack(itemSets, loads, sizes, bins, nbNonEmpty, readPackSettings(options));
+				final int n = (Integer) params[0]; //nb items
+				final int m = (Integer) params[1]; //nb bins
+				final int v1 = 2 * m;
+				final int v2 = v1 + n;
+				final int v3 = v2 + n;
+				SetVar[] itemSets = getSetVar(s, variables, 0, m);
+				IntDomainVar[] loads = getIntVar(s, variables, m, v1);
+				IntDomainVar[] bins = getIntVar(s, variables, v1, v2);
+				IntDomainVar[] sizes = getIntVar(s, variables, v2, v3);
+				IntDomainVar  nbNonEmpty = solver.getVar( (IntegerVariable) variables[v3]);
+				BitFlags flags = new BitFlags();
+				flags.readPackOptions(options);
+				return new PrimalDualPack(itemSets, loads, sizes, bins, nbNonEmpty, flags);
 			}
 		}
-		if(Choco.DEBUG){
-			LOGGER.severe("Could not found implementation for BinPacking1D");
-		}
-		return null;
+		return fail("pack");
 	}
 
+	@Override
+	public int[] getFavoriteDomains(final HashSet<String> options) {
+		return getBCFavoriteIntDomains();
+	}
 
 }

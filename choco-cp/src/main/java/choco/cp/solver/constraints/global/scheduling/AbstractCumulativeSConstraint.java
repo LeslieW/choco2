@@ -50,8 +50,6 @@ public abstract class AbstractCumulativeSConstraint extends AbstractResourceSCon
 	private final IStateBool regularWithNegativeHeight;
 
 
-
-
 	protected final int indexConsumption;
 
 	protected final int indexCapacity;

@@ -33,7 +33,7 @@ public class AltCumulative extends Cumulative {
 
 	@Override
 	protected final int getUsageIndex(int taskIdx) {
-		return usageOffset + taskIdx;
+		return taskIdx < nbRequired ? indexUnit : usageOffset + taskIdx - nbRequired;
 	}
 
 	

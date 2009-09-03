@@ -22,18 +22,29 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.scheduling;
 
+import static choco.cp.solver.SettingType.DEFAULT_FILTERING;
+import static choco.cp.solver.SettingType.DETECTABLE_PRECEDENCE;
+import static choco.cp.solver.SettingType.EDGE_FINDING_D;
+import static choco.cp.solver.SettingType.NF_NL;
+import static choco.cp.solver.SettingType.OVERLOAD_CHECKING;
+import static choco.cp.solver.SettingType.VILIM_FILTERING;
+
+import java.util.logging.Logger;
+
+import junit.framework.Assert;
+
+import org.junit.Test;
+
+import samples.scheduling.DisjunctiveWebEx;
 import choco.Choco;
 import choco.cp.solver.CPSolver;
-import static choco.cp.solver.SettingType.*;
 import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.constraints.global.scheduling.Disjunctive;
 import choco.cp.solver.constraints.global.scheduling.Disjunctive.Rule;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import org.junit.Test;
-
-import java.util.logging.Logger;
 
 
 class DisjProblem extends AbstractTestProblem {
@@ -189,7 +200,7 @@ public class TestDisjunctive {
                 for (int size : sizes) {
                     LOGGER.info("sizes=" + size);
                     aPb.setRandomProblem(size);
-                    launchAllRules(aPb, Math.max(NB_TESTS / 2, 1), factorielle(size));
+                    launchAllRules(aPb, Math.max(NB_TESTS / 2, 1),(int) MathUtils.factoriel(size));
                 }
             }
         }
@@ -227,13 +238,14 @@ public class TestDisjunctive {
 	}
 
 
-
-	public static int factorielle(final int n) {
-		if (n > 1) {
-			return n * factorielle(n - 1);
-		} else {
-			return 1;
-		}
+	
+	@Test
+	public void testExampleDisjunctiveWebSite() {
+		final DisjunctiveWebEx cwe = new DisjunctiveWebEx();
+		cwe.execute(Boolean.FALSE);
+		final Number obj = cwe._s.getObjectiveValue();
+		cwe.execute(Boolean.TRUE);
+		Assert.assertEquals("Disjunctive Website Example",obj, cwe._s.getObjectiveValue());
 	}
 
 }

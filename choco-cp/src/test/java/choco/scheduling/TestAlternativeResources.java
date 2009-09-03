@@ -309,8 +309,8 @@ public class TestAlternativeResources {
 		int[] durations = ArrayUtils.oneToN(n);
 		int[] heights = new int[n];
 		Arrays.fill(heights, n/2);
-		testAltCumulative(5, durations, heights, n, n*(n+1)/4-1, 1);
-		testAltCumulative(5, durations, heights, n, n*(n+1)/4+3, 2);	
+		testAltCumulative(2, durations, heights, n, n*(n+1)/4-1, 1);
+		testAltCumulative(2, durations, heights, n, n*(n+1)/4+3, 2);	
 	}
 	
 	@Test
@@ -319,9 +319,9 @@ public class TestAlternativeResources {
 		int[] durations = ArrayUtils.oneToN(n);
 		int[] heights = new int[n];
 		Arrays.fill(heights, n/2);
-		testAltCumulative(3, durations, heights, n, n*(n+1)/4-2, 1);
-		testAltCumulative(2, durations, heights, n, n*(n+1)/4+2, 1);
-		testAltCumulative(2, durations, heights, n, n*(n+1)/4, 2);
+		testAltCumulative(1, durations, heights, n, n*(n+1)/4-2, 1);
+		testAltCumulative(1, durations, heights, n, n*(n+1)/4+2, 1);
+		testAltCumulative(1, durations, heights, n, n*(n+1)/4, 2);
 	}
 	
 

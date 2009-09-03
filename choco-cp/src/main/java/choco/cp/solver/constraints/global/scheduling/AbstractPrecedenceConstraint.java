@@ -195,7 +195,7 @@ public abstract class AbstractPrecedenceConstraint extends AbstractLargeIntSCons
 	}
 	
 	protected final String pretty(String name, String trueStr, String falseStr) {
-		return name + " "+vars[BIDX]+"( "+trueStr+" | "+falseStr+" )";
+		return name + " "+vars[BIDX]+"( "+trueStr+" || "+falseStr+" )";
 	}
 
 	@Override

@@ -1,3 +1,25 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * 
+ *          _       _                            *
+ *         |  °(..)  |                           *
+ *         |_  J||L _|        CHOCO solver       *
+ *                                               *
+ *    Choco is a java library for constraint     *
+ *    satisfaction problems (CSP), constraint    *
+ *    programming (CP) and explanation-based     *
+ *    constraint solving (e-CP). It is built     *
+ *    on a event-based propagation mechanism     *
+ *    with backtrackable structures.             *
+ *                                               *
+ *    Choco is an open-source software,          *
+ *    distributed under a BSD licence            *
+ *    and hosted by sourceforge.net              *
+ *                                               *
+ *    + website : http://choco.emn.fr            *
+ *    + support : choco@emn.fr                   *
+ *                                               *
+ *    Copyright (C) F. Laburthe,                 *
+ *                  N. Jussien    1999-2008      *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
 import choco.kernel.solver.ContradictionException;
@@ -6,7 +28,7 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
 
 /**
  * if b is true then t1 ends before t2, otherwise t2 ends before t1.
- * The replace {@link PrecedenceDisjoint} when at least one tasks has a variable duration.
+ * same as {@link PrecedenceDisjoint} when at least one tasks has a variable duration.
  * b = 1 <=> e1 <= s2
  * b = 0 <=> e2 <= s1
  */ 

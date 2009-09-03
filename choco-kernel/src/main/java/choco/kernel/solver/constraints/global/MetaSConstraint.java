@@ -1,33 +1,52 @@
 package choco.kernel.solver.constraints.global;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
+import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.global.scheduling.IResource;
 import choco.kernel.solver.variables.Var;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
-public class MetaSConstraint implements SConstraint {
+public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 
 	private final static TaskVar[] EMPTY_TASK_ARRAY = new TaskVar[0];
-	
+
+	private final static IntDomainVar[] EMPTY_INTVAR_ARRAY = new IntDomainVar[0];
+
+	public final IntDomainVar[] vars;
+
 	public final TaskVar[] tasks;
 
 	public final SConstraint[] constraints;
 
 	public Solver solver;
 
-	public MetaSConstraint(SConstraint[] constraints) {
-		this(constraints, null);
-	}
-	
-	public MetaSConstraint(SConstraint[] constraints, TaskVar[] tasks) {
+	protected String name;
+
+	public MetaSConstraint(SConstraint[] constraints, TaskVar[] tasks, IntDomainVar[] vars) {
 		if(constraints == null || constraints.length == 0) {
 			throw new SolverException("Empty MetaConstraint !?");
 		}
 		this.constraints = constraints;
+		this.vars = vars == null ? EMPTY_INTVAR_ARRAY : vars;
 		this.tasks = tasks == null ? EMPTY_TASK_ARRAY : tasks ;
+	}
+
+	public final String getName() {
+		return name;
+	}
+
+	public final void setName(String name) {
+		this.name = name;
 	}
 
 	/**
@@ -36,12 +55,12 @@ public class MetaSConstraint implements SConstraint {
 	 * @param dynamicAddition
 	 */
 	public void addListener(final boolean dynamicAddition) {
-		for (TaskVar t : tasks) {
-			t.addConstraint(this, -1, dynamicAddition);
-		}
+		//		for (TaskVar t : tasks) {
+		//			t.addConstraint(this, -1, dynamicAddition);
+		//		}
 	}
-	
-	
+
+
 	@Override
 	public final int getConstraintIdx(int idx) {
 		return -1;
@@ -54,7 +73,7 @@ public class MetaSConstraint implements SConstraint {
 
 	@Override
 	public final int getNbVars() {
-		return tasks.length;
+		return vars.length + tasks.length;
 	}
 
 	@Override
@@ -64,10 +83,10 @@ public class MetaSConstraint implements SConstraint {
 
 	@Override
 	public final Var getVar(int i) {
-		return tasks[i];
+		return i < tasks.length ? tasks[i] : vars[i];
 	}
 
-	public final Var getTask(int i) {
+	public final TaskVar getTask(int i) {
 		return tasks[i];
 	}
 
@@ -101,15 +120,15 @@ public class MetaSConstraint implements SConstraint {
 
 	@Override
 	public AbstractSConstraint opposite() {
-		 throw new UnsupportedOperationException("opposite is not supported");
+		throw new UnsupportedOperationException("opposite is not supported");
 	}
 
 	@Override
 	public final void setConstraintIndex(int i, int idx) {
-		//throw new UnsupportedOperationException("index is useless");
+		throw new UnsupportedOperationException("index is useless");
 	}
 
-	
+
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
@@ -122,14 +141,38 @@ public class MetaSConstraint implements SConstraint {
 
 	@Override
 	public final void setVar(int i, Var v) {
-		if (v instanceof TaskVar) {
-			tasks[i] = (TaskVar) v;
-		}
+		throw new UnsupportedOperationException("cant change the scope of a meta constraint.");
 	}
 
 	@Override
 	public String pretty() {
-		return "tasks:"+StringUtils.pretty(tasks)+" subconstraints:"+StringUtils.pretty(constraints);
+		return "intvars"+StringUtils.pretty(vars)+"\ntasks"+StringUtils.pretty(tasks)+"\nsubconstraints"+StringUtils.pretty(constraints);
 	}
+
+	@Override
+	public List<TaskVar> asList() {
+		return Arrays.asList(tasks);
+	}
+
+	@Override
+	public int getNbTasks() {
+		return tasks.length;
+	}
+
+	@Override
+	public String getRscName() {
+		return name;
+	}
+
+	@Override
+	public IRTask getRTask(int idx) {
+		return null;
+	}
+
+	@Override
+	public Iterator<TaskVar> getTaskIterator() {
+		return IteratorUtils.iterator(tasks);
+	}
+
 
 }

@@ -51,10 +51,10 @@ public class TestBranching {
 			//LOGGER.info(s.pretty());
 			s.launch();
 			if(! s.isEncounteredLimit()) {
-				if(obj==-1) { obj =s.getOptimumValue().intValue();}
+				if(obj==-1) { obj =s.getObjectiveValue().intValue();}
 				n++;
 			}
-			SchedUtilities.message("solver "+i, s.getOptimumValue(), s);
+			SchedUtilities.message("solver "+i, s.getObjectiveValue(), s);
 		}
 		//check
 		if(n==0) {LOGGER.severe("no optimal found");}
@@ -62,9 +62,9 @@ public class TestBranching {
 			if(n==1) {LOGGER.severe("only one optimal solution");}
 			for (int i = 0; i < solvers.length; i++) {
 				if(solvers[i].isEncounteredLimit()) {
-					Assert.assertTrue("solver "+i, solvers[i].getOptimumValue().intValue() >= obj );
+					Assert.assertTrue("solver "+i, solvers[i].getObjectiveValue().intValue() >= obj );
 				}else {
-					Assert.assertEquals("solver "+i, obj,solvers[i].getOptimumValue().intValue() );
+					Assert.assertEquals("solver "+i, obj,solvers[i].getObjectiveValue().intValue() );
 				}
 			}
 		}

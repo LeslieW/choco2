@@ -3,6 +3,7 @@ package choco.kernel.solver.constraints.global.scheduling;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public final class RscData implements IResourceData {
 
@@ -42,7 +43,9 @@ public final class RscData implements IResourceData {
 		this.uppBound = uppBound;
 	}
 	
-	
+	public boolean isAlternative() {
+		return nbOpt > 0;
+	}
 	@Override
 	public int getNbOptionalTasks() {
 		return nbOpt;
@@ -68,6 +71,15 @@ public final class RscData implements IResourceData {
 		return uppBound;
 	}
 
+
+	@Override
+	public String toString() {
+		return name +"("+nbReq+", "+nbOpt+")";
+	}
+
+//	public final IntDomainVar getUppBound(CPSolver s) {
+//		return uppBound == null ? s.getSchedulerConfiguration().createMakespan(s) : s.getVar( uppBound);
+//	}
 
 	
 	

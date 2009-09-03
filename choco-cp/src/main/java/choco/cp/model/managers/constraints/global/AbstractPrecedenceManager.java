@@ -68,7 +68,7 @@ public abstract class AbstractPrecedenceManager extends IntConstraintManager {
 				LOGGER.severe("unknown constraint parameters: "+parameters);
 			}
 		}
-		return makeNullConstraint("precedence");
+		return fail("Precedence (Implied|Reified|Disjoint)");
 	}
 
 	@Override

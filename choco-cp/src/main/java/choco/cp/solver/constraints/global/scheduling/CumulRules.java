@@ -22,15 +22,28 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+
 import choco.cp.solver.constraints.global.scheduling.trees.CumTreeT;
 import choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.comparator.TaskComparators;
+import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.util.tools.StringUtils;
+import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
-
-import java.util.*;
 
 /**
  * @author Arnaud Malapert</br> 
@@ -59,7 +72,7 @@ public class CumulRules implements ICumulRules {
 
 	public final AbstractCumulativeSConstraint rsc;
 
-	protected final List<IRTask> tasksLX;
+	protected final LinkedList<IRTask> tasksLX;
 
 	protected final List<IRTask> tasksLY;
 
@@ -179,40 +192,44 @@ public class CumulRules implements ICumulRules {
 		final long diff = endI - startI;		   //avoid integer overload
 		final long capaMaxDiff = rsc.getMaxCapacity() * diff;
 		if (capaMaxDiff < energy) {
+			//SConstraint.LOGGER.warning("fail");
+			ChocoLogging.flushLogs();
+			System.out.println(StringUtils.pretty(tasksLY));
 			rsc.fail();
 		}
 	}
 
 
 	public void slowTaskIntervals() throws ContradictionException {
-		int endI = Integer.MIN_VALUE;
+		long e, tote;
+		int startI, endI = Integer.MIN_VALUE;
 		for (IRTask i : tasksLY) {
-			if(endI != i.getTaskVar().getLCT()) {
+			if(endI > i.getTaskVar().getLCT()) {
 				endI = i.getTaskVar().getLCT(); // D is the end of this interval
-				long tote = 0; // energy
-				long lastTote = 0;
-				int startI = tasksLX.get(0).getTaskVar().getEST();
+				startI = endI;
+				tote = 0; // energy
 				final ListIterator<IRTask> iter=tasksLX.listIterator(tasksLX.size());
 				while(iter.hasPrevious()) {
 					final IRTask crt=iter.previous();
 					final TaskVar t= crt.getTaskVar();
 					//insert consumption
-					long e= 0;
+					e= 0;
 					//positive height
 					if (t.getLCT() <= endI) {
 						//task is fully inside
-						e= crt.getMinConsumption();
+						e= crt.getMinHeight() * crt.getTaskVar().getMinDuration();
 					}else if(t.getLST() < endI) {
 						// part of the task is outside
 						e = (endI - t.getLST()) * crt.getMinHeight();
 					}
-					if(t.getEST() != startI) {
-						if(tote != lastTote) {checkInterval(startI, endI, tote);}
+					if(t.getEST() < startI) {
+						checkInterval(startI, endI, tote);
 						startI = t.getEST();
 					}
+					//ChocoLogging.getSolverLogger().info(t.pretty()+ ": "+tote+"+="+e);
 					tote += e;
 				}
-				if(tote != lastTote) {checkInterval(startI, endI, tote);} //last check, for example est_i = e and lct_i =d.
+				checkInterval(startI, endI, tote); //last check, for example est_i = e and lct_i =d.
 			}
 		}
 	}

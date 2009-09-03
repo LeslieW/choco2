@@ -186,6 +186,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 	 * a simple task Wrapper for required task with unit height.
 	 * 
 	 */
+	//TODO optimize index access
 	public class RTask extends AbstractRTask {
 
 				

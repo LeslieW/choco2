@@ -29,6 +29,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.model.ModelException;
@@ -60,7 +61,7 @@ public class PackTest {
 
 	public final static int MAX_ITEMS=13;
 
-	public final static int NB_TESTS=8;
+	public final static int NB_TESTS=5;
 
 	private final static Random RND=new Random();
 
@@ -77,8 +78,6 @@ public class PackTest {
 	protected List<CPModel> models = new ArrayList<CPModel>();
 
 	protected List<CPSolver> solvers = new ArrayList<CPSolver>();
-
-
 
 
 	private CPModel initializeModel(Constraint[] cstr,SettingType... options) {
@@ -155,9 +154,6 @@ public class PackTest {
 			}
 		}
 	}
-
-
-
 
 
 
