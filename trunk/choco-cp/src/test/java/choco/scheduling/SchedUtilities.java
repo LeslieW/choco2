@@ -22,6 +22,18 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.scheduling;
 
+import static org.junit.Assert.assertEquals;
+
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -33,18 +45,13 @@ import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.global.MetaSConstraint;
 import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.AbstractTask;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
-import static org.junit.Assert.assertEquals;
-
-import java.awt.*;
-import java.util.*;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -108,10 +115,15 @@ public final class SchedUtilities {
 		LOGGER.log(Level.INFO,"Best solver: index {0} in {1}ms", new Object[]{bests,bestTime});
 	}
 
-	public static void solveRandom(CPSolver solver,int nbsol,int nbNodes,String label) {
+	public static void solveRandom(CPSolver solver,int nbsol,int nbNodes, String label) {
+		solveRandom(solver, nbsol, nbNodes, null, label);
+	}
+	
+	public static void solveRandom(CPSolver solver,int nbsol,int nbNodes, Integer seed, String label) {
 		Choco.DEBUG=true;
-		solver.setLoggingMaxDepth(10000);
-		solver.setRandomSelectors();
+		//solver.setLoggingMaxDepth(10000);
+		if(seed == null) solver.setRandomSelectors();
+		else solver.setRandomSelectors(seed.longValue());
 		Boolean r=solver.solveAll();
 		message(label, "solve (random) : ", solver);
 		checkRandom(solver, r, nbsol, nbNodes, label);
@@ -179,9 +191,15 @@ abstract class AbstractTestProblem {
 	}
 
 	public final void setFlags(BitFlags flags) {
-		final AbstractResourceSConstraint cstr = (AbstractResourceSConstraint) solver.getCstr(this.rsc);
-		cstr.getFlags().clear();
-		cstr.getFlags().set(flags);
+		final SConstraint cstr = solver.getCstr(this.rsc);
+		BitFlags dest = null;
+		if (cstr instanceof AbstractResourceSConstraint) {
+			 dest = ( (AbstractResourceSConstraint) cstr).getFlags();
+		} else if (cstr instanceof MetaSConstraint) {
+			 dest = ( (AbstractResourceSConstraint) ( (MetaSConstraint) cstr).getSubConstraints(0)).getFlags();
+		}
+		dest.clear();
+		dest.set(flags);
 	}
 
 	public void generateSolver() {

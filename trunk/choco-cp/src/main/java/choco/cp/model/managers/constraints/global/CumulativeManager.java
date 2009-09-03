@@ -22,23 +22,22 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
+import static choco.kernel.common.util.tools.VariableUtils.getIntVar;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.global.scheduling.AltCumulative;
 import choco.cp.solver.constraints.global.scheduling.AltDisjunctive;
 import choco.cp.solver.constraints.global.scheduling.Cumulative;
 import choco.cp.solver.constraints.global.scheduling.Disjunctive;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.global.scheduling.RscData;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
-
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 
 
 
@@ -49,60 +48,131 @@ import java.util.List;
  */
 public class CumulativeManager extends AbstractResourceManager {
 
+	protected IntDomainVar capacity, consumption;
+
+	protected IntDomainVar[] heights;
+
+	protected final List<TaskVar> dtasks = new ArrayList<TaskVar>();
+
+	protected final List<IntDomainVar> dusages = new ArrayList<IntDomainVar>();
+
 	@Override
-	public SConstraint makeConstraint(Solver solver, Variable[] variables,
-			Object parameters, HashSet<String> options) {
-		if (solver instanceof CPSolver) {
-			final CPSolver s = (CPSolver) solver;
-			final RscData param =  (RscData) parameters;
-			final int n = param.getNbTasks();
-			final int no = param.getNbOptionalTasks();
-			final TaskVar[] tasks = readTaskVar(s, variables, 0, n);
-			final IntDomainVar[] heights = readIntVar(s, variables, n, n);
-			final IntDomainVar[]  usages = readIntVar(s, variables, 2*n, no);
-			final IntDomainVar uppBound =  getUppBound(s, param);
-			final IntDomainVar consumption = s.getVar( (IntegerVariable) variables[2*n + no]);
-			final IntDomainVar capacity =  s.getVar( (IntegerVariable) variables[2*n + no + 1]);
-			
-			//redundant cons <= capa constraint
-			if(consumption.getSup()> capacity.getInf()) {
-				solver.post(s.leq(consumption, capacity));
-			}
-			//build cumulative
-			final Cumulative cstr = usages.length == 0 ? new Cumulative(param.getRscName(), tasks, heights, consumption, capacity, uppBound) :
-				new AltCumulative(param.getRscName(), tasks, heights, usages, consumption, capacity, uppBound);
-			//read settings
-			readCumulativeSettings(options, cstr.getFlags());
-			if(cstr.getFlags().isEmpty() && usages.length == 0 && cstr.hasOnlyPosisiveHeights()) {
-				//default settings when not a producer/consumer or alternative resource
-				cstr.getFlags().set(SettingType.TASK_INTERVAL);
-			}
-			//extract implied disjunctive if the resource is not a producer/consumer resource.
-			//otherwise producers break the disjunctive condition
-			if(options.contains(SettingType.EXTRACT_DISJ.getOptionName())
-			   && cstr.hasOnlyPosisiveHeights()	) {
-				List<TaskVar> vars = new LinkedList<TaskVar>();
-				List<IntDomainVar> usg = new LinkedList<IntDomainVar>();
-				final int limit = capacity.getSup()/2;
-				for (int i = 0; i < heights.length; i++) {
-					if(heights[i].getInf() > limit) { 
-						vars.add(tasks[i]);
-						if(i>= param.getNbRequiredTasks()) {usg.add(usages[i]);}
-					}
-				}
-				if(vars.size()>2) {
-					TaskVar[] dtasks = vars.toArray(new TaskVar[vars.size()]);	
-					Disjunctive disj = usg.isEmpty() ? new Disjunctive("exDisj-"+param.getRscName(), dtasks, uppBound) :
-						new AltDisjunctive("exDisj-"+param.getRscName(), dtasks, usg.toArray(new IntDomainVar[usg.size()]), uppBound);
-					 readDisjunctiveSettings(options, disj.getFlags());
-					 s.post(disj);
-				}
-			}
-			return cstr;
-		}
-		return null;
+	protected void initialize(CPSolver s,
+			Variable[] variables, RscData rdata) {
+		super.initialize(s, variables, rdata);
+		final int b = rdata.getNbTasks() + rdata.getNbOptionalTasks();
+		final int e = b + rdata.getNbTasks();
+		heights = getIntVar(s, variables, b ,e);
+		consumption = s.getVar( (IntegerVariable) variables[e]);
+		capacity =  s.getVar( (IntegerVariable) variables[e + 1]);
 	}
-	
-	
+
+
+
+	private final void clearClique() {
+		dtasks.clear();
+		dusages.clear();
+
+	}
+	protected final void initializeDecomposition(RscData rdata) {
+		clearClique();
+		final int limit = capacity.getSup()/2;
+		if(limit > 0) {
+			final int n  = rdata.getNbTasks();
+			final int nreq = rdata.getNbRequiredTasks();
+			//required tasks			
+			for (int i = 0; i < nreq; i++) {
+				final int h = heights[i].getInf();
+				if( h > limit) {
+					dtasks.add(tasks[i]);
+				}else if( h < 0) {
+					//the height is negative (producer tasks): cancel disjunction.					
+					clearClique();
+					return;
+				}
+			}
+			//optional tasks
+			for (int i = nreq; i < n; i++) {
+				final int h = heights[i].getInf();
+				if( h > limit) {
+					dtasks.add(tasks[i]);
+					dusages.add(usages[ i - nreq]);
+				}else if( h < 0) {
+					//the height is negative (producer tasks): cancel disjunction.					
+					clearClique();
+					return;
+				}
+			}
+		}
+	}
+
+	protected final void makeDisjunctions(CPSolver solver) {
+		final int n = dtasks.size() - dusages.size();
+		for (int i = 0; i < n; i++) {
+			for (int j = i + 1; j < n; j++) {
+				constraints.add( solver.preceding(null, dtasks.get(i), 0, dtasks.get(j), 0));
+			}
+		}
+	}
+
+	protected final void makeDisjunctive(CPSolver solver, RscData rdata, HashSet<String> options) {
+		final int n = dtasks.size();
+		final int no = dusages.size();
+		if(n > 2) {
+			final TaskVar[] tv = dtasks.toArray(new TaskVar[n]);
+			Disjunctive cstr;
+			if( no > 0) {
+				final IntDomainVar[] uv = dusages.toArray(new IntDomainVar[no]);
+				cstr = new AltDisjunctive("disj-"+rdata.getRscName(), tv, uv, uppBound);
+			}else {
+				cstr = new Disjunctive("disj-"+rdata.getRscName(), tv, uppBound);
+			}
+			cstr.getFlags().readDisjunctiveOptions(options);
+			constraints.add(cstr);
+		}else if( n == 2 && no == 0) {
+			constraints.add( solver.preceding(null, dtasks.get(0), 0, dtasks.get(1), 0));
+		}
+	}
+
+	protected final void makeCumulative(RscData rdata, HashSet<String> options) {
+		final Cumulative cstr = (
+				rdata.getNbOptionalTasks() > 0 ? 
+						new AltCumulative(rdata.getRscName(), tasks, heights, usages, consumption, capacity, uppBound) : 
+							new Cumulative(rdata.getRscName(), tasks, heights ,  consumption, capacity, uppBound)
+		);
+		cstr.getFlags().readCumulativeOptions(options);
+		constraints.addFirst(cstr);
+	}
+
+	protected final void makeConsCapaConstraint(CPSolver s) {
+		if(consumption.getSup()> capacity.getInf()) {
+			constraints.add(s.leq(consumption, capacity));
+		}
+	}
+
+	@Override
+	protected void makeDecompositionConstraint(CPSolver solver,
+			Variable[] variables, RscData rdata, HashSet<String> options) {
+		initializeDecomposition(rdata);
+		makeDisjunctions(solver);
+		makeGlobalConstraint(solver, variables, rdata, options);
+	}
+
+	@Override
+	protected void makeGlobalConstraint(CPSolver solver,
+			Variable[] variables, RscData rdata, HashSet<String> options) {
+		makeConsCapaConstraint(solver);
+		makeCumulative(rdata, options);
+	}
+
+	@Override
+	protected void makeMixedConstraint(CPSolver solver,
+			Variable[] variables, RscData rdata, HashSet<String> options) {
+		initializeDecomposition(rdata);
+		makeDisjunctive(solver, rdata, options);
+		makeGlobalConstraint(solver, variables, rdata, options);
+	}
+
+
 
 }

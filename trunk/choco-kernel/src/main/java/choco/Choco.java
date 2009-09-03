@@ -2417,7 +2417,7 @@ public class Choco{
 		}
 		//build constraint
 		RscData param = new RscData(name, tasks, usages, uppBound);
-		final Variable[] vars=  ArrayUtils.append(tasks, heights, usages, new Variable[]{consumption, capacity}, uppBound == null ? null : new Variable[]{uppBound});
+		final Variable[] vars=  ArrayUtils.append(tasks, usages, heights, new Variable[]{consumption, capacity}, uppBound == null ? null : new Variable[]{uppBound});
 		final ComponentConstraint c=new ComponentConstraint(ConstraintType.CUMULATIVE, param,vars);
 		c.addOptions(options);
 		return c;

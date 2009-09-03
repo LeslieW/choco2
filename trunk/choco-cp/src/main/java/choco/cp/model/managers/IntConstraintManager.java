@@ -22,20 +22,21 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.reified.leaves.ConstraintLeaf;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintManager;
-import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.Variable;
+import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /*
  * Created by IntelliJ IDEA.
@@ -56,9 +57,13 @@ public abstract class IntConstraintManager implements ConstraintManager {
         return getACFavoriteIntDomains();
     }
 
-
-    protected final SConstraint makeNullConstraint(String name) {
-    	LOGGER.severe("Could not found an implementation of "+name+" !");
+    protected final SConstraint fail() {
+    	return fail("?");
+    }
+    
+    protected final SConstraint fail(String cname) {
+    	LOGGER.severe("Could not found an implementation of "+cname+".");
+    	ChocoLogging.flushLogs();
     	return null;
     }
     

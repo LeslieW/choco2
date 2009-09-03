@@ -101,6 +101,7 @@ public class Cumulative extends AbstractCumulativeSConstraint  {
 				//1-) Ensure first E-feasability, also called overload checking (Vilim)
 				if(flags.contains(TASK_INTERVAL_SLOW) ) {
 					cumulRules.slowTaskIntervals();
+					//( (CumulRules) cumulRules).oldSlowTaskIntervals();
 				}else {
 					cumulRules.taskIntervals();
 				}

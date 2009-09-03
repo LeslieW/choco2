@@ -23,19 +23,30 @@
 package samples.seminar.binpacking;
 
 
-import static choco.Choco.*;
+import static choco.Choco.cumulativeMax;
+import static choco.Choco.eq;
+import static choco.Choco.geq;
+import static choco.Choco.leq;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.makeTaskVarArray;
+import static choco.Choco.scalar;
+import static choco.Choco.sum;
+import static java.text.MessageFormat.format;
+
+import java.util.Random;
+import java.util.logging.Logger;
+
+import samples.pack.CPpack;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.Solver;
-
-import static java.text.MessageFormat.format;
-import java.util.Random;
-import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -155,7 +166,6 @@ public class ExBinPacking {
         IntegerVariable[] debut = new IntegerVariable[n];
         IntegerVariable[] duree = new IntegerVariable[n];
         IntegerVariable[] fin = new IntegerVariable[n];
-
         int nbBinMin = computeLB(instance, capaBin);
         for (int i = 0; i < n; i++) {
             debut[i] = makeIntVar("debut " + i, 0, n);
@@ -163,7 +173,8 @@ public class ExBinPacking {
             fin[i] = makeIntVar("fin " + i, 0, n);
         }
         IntegerVariable obj = makeIntVar("nbBin ", nbBinMin, n);
-        m.addConstraint(cumulative(debut, fin, duree, instance, capaBin));
+        TaskVariable[] tasks = makeTaskVarArray("t", debut, fin, duree);
+        m.addConstraint(cumulativeMax(tasks, instance, capaBin));
         for (int i = 0; i < n; i++) {
             m.addConstraint(geq(obj, debut[i]));
         }
@@ -198,12 +209,22 @@ public class ExBinPacking {
         }
     }
 
+    public void binPacking3(int n, int capaBin, int seed) {
+        int[] instance = getRandomPackingPb(n, capaBin, seed);
+        CPpack pack = new CPpack(instance, capaBin, -1);
+        pack.cpPack();
+        
+    }
+    
     public static void main(String[] args) {
+    	ChocoLogging.setVerbosity(Verbosity.VERBOSE);
         ExBinPacking tp2 = new ExBinPacking();
         LOGGER.info("************** Modèle Booléen **************");
         tp2.binPacking1(10, 13, 1);
         LOGGER.info("");
         LOGGER.info("************** Modèle Cumulatif ***************");
         tp2.binPacking2(10, 13, 1);
+        LOGGER.info("************** Modèle Pack ***************");
+        tp2.binPacking3(10, 13, 1);
     }
 }
