@@ -22,6 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
 import choco.cp.solver.constraints.BitFlags;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.IteratorUtils;
@@ -33,11 +37,6 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.AbstractRTask;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 
 /**
@@ -55,9 +54,9 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 	protected final BitFlags flags;
 
 	protected final int indexUnit;
-	
+
 	protected final int indexUB;
-	
+
 	/**
 	 * 
 	 * Create a ressource constraint.
@@ -68,27 +67,33 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 	 */
 	public AbstractResourceSConstraint(String name, final TaskVar[] taskvars, final IntDomainVar uppBound, final IntDomainVar... otherVars) {
 		super(taskvars, createIntVarArray(otherVars, uppBound));
-		this.rtasks = new IRTask[getNbTasks()];
+		this.rtasks = new RTask[getNbTasks()];
 		this.name = name;
-		this.indexUB = getNbVars()-2;
 		this.indexUnit = getNbVars()-1;
+		this.indexUB = indexUnit - 1;
 		this.flags = new BitFlags();
-		
 		for (int i = 0; i < taskvars.length; i++) {
 			rtasks[i] = new RTask(i);
 		}
 	}
 
 	
+	
 	@Override
 	public final IRTask getRTask(final int idx) {
 		return rtasks[idx];
 	}
-	
+
+	/**
+	 * do not use subclass fields to compute the index because the function is called by the constructor.
+	 */
 	protected int getUsageIndex(final int taskIdx) {
 		return indexUnit;
 	}
 	
+	/**
+	 * do not use subclass fields to compute the index because the function is called by the constructor.
+	 */
 	protected int getHeightIndex(final int taskIdx) {
 		return indexUnit;
 	}
@@ -98,7 +103,11 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		super.setSolver(solver);
 	}
 
-	
+	public final void ensureTaskConsistency() throws ContradictionException {
+		for (IRTask rt : rtasks) {
+			rt.updateCompulsoryPart();
+		}
+	}
 	private final static IntDomainVar[] createIntVarArray(final IntDomainVar[] otherVars,final IntDomainVar uppBound) {
 		if(uppBound == null) {
 			throw new SolverException("no makepsan specified for a resource constraint");
@@ -107,11 +116,9 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		return ArrayUtils.append(otherVars, new IntDomainVar[]{uppBound, unit});
 	}
 
-	
-	protected void updateMakespan(final int value) throws ContradictionException {
-		if(indexUB >= 0) {
-			getIntVar(indexUB).updateInf(value, cIndices[indexUB]);
-		}
+
+	protected final void updateMakespan(final int value) throws ContradictionException {
+		vars[indexUB].updateInf(value, cIndices[indexUB]);
 	}	
 
 
@@ -127,8 +134,16 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 	}
 
 	private final void checkTask(final int varIdx) throws ContradictionException {
-		if(varIdx < taskIntVarOffset) {updateCompulsoryPart(varIdx % getNbTasks() );}
+		if(varIdx < taskIntVarOffset) {rtasks[varIdx % getNbTasks()].updateCompulsoryPart();}
 	}
+
+	
+	@Override
+	public void awakeOnBounds(int varIndex) throws ContradictionException {
+		checkTask(varIndex);
+		super.awakeOnBounds(varIndex);
+	}
+
 
 	@Override
 	public void awakeOnInf(final int varIdx) throws ContradictionException {
@@ -149,7 +164,17 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		super.awakeOnSup(varIdx);
 	}
 
-
+	/**
+	 * returns (s_i + p_i = e_i)
+	 */
+	protected final boolean isTaskSatisfied(int[] tuple, int tidx) {
+		return tuple[tidx] + tuple[endOffset + tidx] == tuple[startOffset + tidx];
+	}
+	
+	protected boolean isRegular(int[] tuple, int tidx) {
+		return true;
+	}
+	
 
 
 	//*****************************************************************//
@@ -159,7 +184,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 	@Override
 	public String pretty() {
-		return super.pretty();
+		return getRscName()+": "+super.pretty();
 	}
 
 
@@ -169,10 +194,10 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 	}
 
 
-	
+
 	@Override
 	public List<TaskVar> asList() {
-		return Collections.unmodifiableList(Arrays.asList(taskvars));
+		return Arrays.asList(taskvars);
 	}
 
 
@@ -186,152 +211,154 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 	 * a simple task Wrapper for required task with unit height.
 	 * 
 	 */
-	//TODO optimize index access
-	public class RTask extends AbstractRTask {
+	public final class RTask extends AbstractRTask {
 
-				
+		private final int eidx, didx, uidx, hidx;		
+
 		public RTask(final int taskidx) {
 			super(taskidx);
+			eidx = startOffset + taskIdx;
+			didx = endOffset + taskIdx;
+			uidx = getUsageIndex(taskIdx);
+			hidx = getHeightIndex(taskIdx);
 		}
 
 		@Override
-		public TaskVar getTaskVar() {
+		public final TaskVar getTaskVar() {
 			return taskvars[taskIdx];
 		}
 
+
 		@Override
 		public boolean schedule(final int startingTime, final int duration)
-				throws ContradictionException {
-			if( taskvars[taskIdx].start().instantiate(startingTime, getCIndiceStart(taskIdx)) ||
-					taskvars[taskIdx].duration().instantiate(duration, getCIndiceDuration(taskIdx))	) {
-				updateCompulsoryPart(taskIdx);
-				return true;
-			}
-			return false;
+		throws ContradictionException {
+			return 	vars[taskIdx].instantiate(startingTime, cIndices[taskIdx]) ||
+			vars[didx].instantiate(duration, cIndices[didx]) ||
+			vars[eidx].instantiate(startingTime + duration, cIndices[eidx]);
 		}
 
 		@Override
 		public boolean setDuration(final int duration) throws ContradictionException {
-			if( taskvars[taskIdx].duration().instantiate(duration, getCIndiceDuration(taskIdx))	) {
-				updateCompulsoryPart(taskIdx);
-				return true;
-			}
-			return false;
+			return vars[didx].instantiate(duration, cIndices[didx]);
 		}
 
 		@Override
 		public boolean setStartingTime(final int startingTime)
+		throws ContradictionException {
+			return vars[taskIdx].instantiate(startingTime, cIndices[taskIdx]);
+		}
+		
+		
+		@Override
+		public boolean setEndingTime(int startingTime)
 				throws ContradictionException {
-			if( taskvars[taskIdx].start().instantiate(startingTime, getCIndiceStart(taskIdx))) {
-				updateCompulsoryPart(taskIdx);
-				return true;
-			}
-			return false;
+			return vars[eidx].instantiate(startingTime, cIndices[eidx]);
 		}
 
 		@Override
-		public boolean updateECT(final int val) throws ContradictionException {
-			if( taskvars[taskIdx].end().updateInf(val, getCIndiceEnd(taskIdx)) ) {
-				updateCompulsoryPart(taskIdx);
-				return true;
-			}
-			return false;
+		public boolean setEndNotIn(int a, int b)
+				throws ContradictionException {
+			return vars[eidx].removeInterval(a, b, cIndices[eidx]);
 		}
 
 		@Override
-		public boolean updateEST(final int val) throws ContradictionException {
-			if( taskvars[taskIdx].start().updateInf(val, getCIndiceStart(taskIdx)) ) {
-				updateCompulsoryPart(taskIdx);
-				return true;
-			}
-			return false;
-		}
-
-		@Override
-		public boolean updateLCT(final int val) throws ContradictionException {
-			if( taskvars[taskIdx].end().updateSup(val, getCIndiceEnd(taskIdx)) ) {
-				updateCompulsoryPart(taskIdx);
-				return true;
-			}
-			return false;
-		}
-
-		@Override
-		public boolean updateLST(final int val) throws ContradictionException {
-			if( taskvars[taskIdx].start().updateSup(val, getCIndiceStart(taskIdx)) ) {
-				updateCompulsoryPart(taskIdx);
-				return true;
-			}
-			return false;
-		}
-
-		@Override
-		public boolean updateMaxDuration(final int val) throws ContradictionException {
-			if( taskvars[taskIdx].duration().updateSup(val, getCIndiceDuration(taskIdx)) ) {
-				updateCompulsoryPart(taskIdx);
-				return true;
-			}
-			return false;
-		}
-
-		@Override
-		public boolean updateMinDuration(final int val) throws ContradictionException {
-			if( taskvars[taskIdx].duration().updateInf(val, getCIndiceDuration(taskIdx)) ) {
-				updateCompulsoryPart(taskIdx);
-				return true;
-			}
-			return false;
+		public boolean setStartNotIn(int min, int max)
+				throws ContradictionException {
+			return vars[taskIdx].removeInterval(min, max, cIndices[taskIdx]);
 		}
 
 		
+		@Override
+		public boolean setECT(final int val) throws ContradictionException {
+			return vars[eidx].updateInf(val, cIndices[eidx]);
+		}
+
+		@Override
+		public boolean setEST(final int val) throws ContradictionException {
+			return vars[taskIdx].updateInf(val, cIndices[taskIdx]);
+		}
+
+		@Override
+		public boolean setLCT(final int val) throws ContradictionException {
+			return vars[eidx].updateSup(val, cIndices[eidx]);
+		}
+
+		@Override
+		public boolean setLST(final int val) throws ContradictionException {
+			return vars[taskIdx].updateSup(val, cIndices[taskIdx]);
+		}
+
+		@Override
+		public boolean setMaxDuration(final int val) throws ContradictionException {
+			return vars[didx].updateSup(val, cIndices[didx]);
+		}
+
+		@Override
+		public boolean setMinDuration(final int val) throws ContradictionException {
+			return vars[didx].updateInf(val, cIndices[didx]);
+		}
+
+		public final void updateCompulsoryPart()	throws ContradictionException {
+			final IntDomainVar s = vars[taskIdx];
+			final IntDomainVar e = vars[eidx];
+			final IntDomainVar d = vars[didx];
+			boolean fixPoint;
+			do {
+				fixPoint = false;
+				fixPoint |= s.updateInf(e.getInf() - d.getSup(), taskIdx);
+				fixPoint |= s.updateSup(e.getSup() - d.getInf(), taskIdx);
+				fixPoint |= e.updateInf(s.getInf() + d.getInf(), eidx);
+				fixPoint |= e.updateSup(s.getSup() + d.getSup(), eidx);
+				fixPoint |= d.updateInf(e.getInf() - s.getSup(), didx);
+				fixPoint |= d.updateSup(e.getSup() - s.getInf(), didx);
+			}while (fixPoint);
+		}
+
+
 		@Override
 		public void fail() throws ContradictionException {
 			AbstractResourceSConstraint.this.fail();
 		}
 
-		
+
 		@Override
 		public boolean assign() throws ContradictionException {
-			final int idx = getUsageIndex(taskIdx);
-			return vars[idx].instantiate(1, cIndices[idx]);
+			return vars[uidx].instantiate(1, cIndices[uidx]);
 		}
 
 		@Override
 		public boolean isOptional() {
-			return !vars[getUsageIndex(taskIdx)].isInstantiated();
+			return ! vars[uidx].isInstantiated();
 		}
 
 		@Override
 		public boolean isRegular() {
-			return vars[getUsageIndex(taskIdx)].isInstantiatedTo(1);
+			return vars[uidx].isInstantiatedTo(1);
 		}
-		
+
 		@Override
 		public boolean isEliminated() {
-			return vars[getUsageIndex(taskIdx)].isInstantiatedTo(0);
+			return vars[uidx].isInstantiatedTo(0);
 		}
 
 		@Override
 		public boolean remove() throws ContradictionException {
-			final int idx = getUsageIndex(taskIdx);
-			return vars[idx].instantiate(0, cIndices[idx]);
+			return vars[uidx].instantiate(0, cIndices[uidx]);
 		}
 
 		@Override
 		public IntDomainVar getHeight() {
-			return vars[getHeightIndex(taskIdx)];
+			return vars[hidx];
 		}
 
 		@Override
 		public boolean updateMaxHeight(final int val) throws ContradictionException {
-			final int idx = getHeightIndex(taskIdx);
-			return vars[idx].updateSup(val, cIndices[idx]);
+			return vars[hidx].updateSup(val, cIndices[hidx]);
 		}
 
 		@Override
 		public boolean updateMinHeight(final int val) throws ContradictionException {
-			final int idx = getHeightIndex(taskIdx);
-			return vars[idx].updateInf(val, cIndices[idx]);
+			return vars[hidx].updateInf(val, cIndices[hidx]);
 		}
 
 		@Override
@@ -343,9 +370,6 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		public String pretty() {
 			return getTaskVar().pretty();
 		}
-		
-		
-		
 	}
 
 }

@@ -33,20 +33,26 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
  */
 public class AltDisjunctive extends Disjunctive {
 
-	public final int nbRequired;
-
+	protected final int nbRequired;
+	
 	public AltDisjunctive(final String name, final TaskVar[] taskvars,final IntDomainVar[] usages, final IntDomainVar makespan) {
 		super(name, taskvars, makespan, usages);
-		nbRequired = getNbTasks() - usages.length;
-		rules = new AltDisjRules(taskvars[0].getSolver().getEnvironment(),rtasks);
+		nbRequired = computeNbRequired();
+		rules = new AltDisjRules(rtasks);
 	}
 
 	@Override
 	protected final int getUsageIndex(final int taskIdx) {
-		return  taskIdx < nbRequired ? indexUnit : getTaskIntVarOffset() + taskIdx - nbRequired;
+		return  getUsageIndex(taskIdx, computeNbRequired());
+	}
+
+	private final int computeNbRequired() {
+		return 4 * taskvars.length + 2 - vars.length;
 	}
 	
-		
+	private final int getUsageIndex(int tidx, int nbRequired) {
+		return  tidx < nbRequired ? indexUnit : taskIntVarOffset + tidx - nbRequired;
+	}
 
 	@Override
 	protected final boolean hasOverloadChecking() {
@@ -57,15 +63,21 @@ public class AltDisjunctive extends Disjunctive {
 	public void awakeOnInst(final int idx) throws ContradictionException {
 		if( idx < getTaskIntVarOffset()) {
 			//TaskVar event
-			updateCompulsoryPart(idx % getNbTasks());
-			
+			rtasks[idx % getNbTasks()].updateCompulsoryPart();
 		} else if(vars[idx].isInstantiatedTo(0) && idx!=indexUB) {
 			//removal, update data structure
 			final int taskIdx = idx - getTaskIntVarOffset() + nbRequired;
 			rules.remove(rtasks[taskIdx]);
 		}
 		this.constAwake(false);
-		// removal, nothing to do
 	}
+
+	@Override
+	protected final boolean isRegular(int[] tuple, int tidx) {
+		return tuple[ getUsageIndex(tidx, nbRequired)] == 1;
+	}
+	
+	
+	
 
 }

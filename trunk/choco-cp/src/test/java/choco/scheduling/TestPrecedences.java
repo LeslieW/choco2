@@ -50,6 +50,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.configure.SchedulerConfiguration;
 import choco.cp.solver.constraints.global.scheduling.VariablePrecedenceDisjoint;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
@@ -76,18 +77,19 @@ public class TestPrecedences {
 		CPSolver[] solvers= new CPSolver[n];
 		for (int i = 0; i < solvers.length; i++) {
 			solvers[i] = new CPSolver();
-			solvers[i].setHorizon(Choco.MAX_UPPER_BOUND);
+			solvers[i].getSchedulerConfiguration().setForceMakespan(true);
+			//solvers[i].setHorizon(Choco.MAX_UPPER_BOUND);
 		}
-				int cpt =0;
-				SchedulerConfiguration cnf = solvers[cpt].getSchedulerConfiguration();
-				cnf.setPrecedenceNetwork(true);
-				cnf.setIncrementalPert(false);
-				cpt++;
-				cnf = solvers[cpt].getSchedulerConfiguration();
-				cnf.setPrecedenceNetwork(true);
-				cnf.setIncrementalPert(true);
-
-
+		int cpt =0;
+		SchedulerConfiguration cnf = solvers[cpt].getSchedulerConfiguration();
+		cnf.setPrecedenceNetwork(true);
+		cnf.setIncrementalPert(false);
+		cpt++;
+		cnf = solvers[cpt].getSchedulerConfiguration();
+		cnf.setPrecedenceNetwork(true);
+		cnf.setIncrementalPert(true);
+		
+		//LOGGER.setLevel(Level.INFO);
 		for (CPSolver s : solvers) {
 			s.read(m);
 			//LOGGER.info(s.pretty());
@@ -101,6 +103,11 @@ public class TestPrecedences {
 		m=new CPModel();
 		m.addVariable(makeTaskVar("alone",20, 5, "cp:bound"));
 		solve(16,"project ");
+		s = new CPSolver();
+		s.setHorizon(15);
+		s.read(m);
+		s.solveAll();
+		assertEquals("nbsols with horizon", 11, s.getSolutionCount());
 	}
 
 
@@ -164,7 +171,7 @@ public class TestPrecedences {
 		m.addConstraint(precedenceImplied(x,k1,y,z));
 		solve(115, "prec. reified");
 	}
-	
+
 
 	@Test
 	public void testPrecedenceVDisjoint() {
@@ -291,26 +298,26 @@ public class TestPrecedences {
 	@Test
 	public void testIlogExample() {
 		DeterministicPert ex=new DeterministicPert(17);
-		m=ex.getModel();
-		solve(0,"Ilog ex.");
-
-		ex=new DeterministicPert(18);
-		m=ex.getModel();
-		solve(154,"Ilog ex.");
+//		m=ex.getModel();
+//		solve(0,"Ilog ex.");
+//
+//		ex=new DeterministicPert(18);
+//		m=ex.getModel();
+//		solve(154,"Ilog ex.");
 
 		ex=new DeterministicPert(19);
 		m=ex.getModel();
 		solve(1764,"Ilog ex.");
 
-		ex=new DeterministicPert(28);
-		ex.requireUnaryResource();
-		m=ex.getModel();
-		solve(0,"Ilog ex.");
-
-		ex=new DeterministicPert(29);
-		ex.requireUnaryResource();
-		m=ex.getModel();
-		solve(112,"Ilog ex.");
+//		ex=new DeterministicPert(28);
+//		ex.requireUnaryResource();
+//		m=ex.getModel();
+//		solve(0,"Ilog ex.");
+//
+//		ex=new DeterministicPert(29);
+//		ex.requireUnaryResource();
+//		m=ex.getModel();
+//		solve(112,"Ilog ex.");
 	}
 
 
@@ -327,7 +334,7 @@ public class TestPrecedences {
 
 	private int k1 = -1, k2 = -2;
 	private IntegerVariable b =  makeBooleanVar("b");
-	
+
 	protected Constraint makeConstraint(TaskVariable[] vars, int type) {
 		switch(type) {
 		case 1: return endsBeforeBegin(vars[2], vars[3]);
@@ -374,15 +381,15 @@ public class TestPrecedences {
 		if(LOGGER.isLoggable(Level.INFO)) LOGGER.info("Number Of Solutions Vector: "+Arrays.toString(nbsols));
 		return nbsols;
 	}
-	
-	
+
+
 	private void sum(int[] tab1, int[] tab2)  {
 		for (int i = 0; i < tab1.length; i++) {
 			tab1[i] += tab2[i];
 		}
 	}
-	
-	
+
+
 
 	@Test
 	public void testExImplied() {

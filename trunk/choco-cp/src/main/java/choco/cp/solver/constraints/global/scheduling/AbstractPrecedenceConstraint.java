@@ -46,6 +46,10 @@ public abstract class AbstractPrecedenceConstraint extends AbstractLargeIntSCons
 	public final TaskVar getTask2() {
 		return task2;
 	}
+	
+	public final IntDomainVar getBooleanVar() {
+		return vars[BIDX];
+	}
 
 	/**
 	 * propagate vars[idx1] <= vars[idx2]

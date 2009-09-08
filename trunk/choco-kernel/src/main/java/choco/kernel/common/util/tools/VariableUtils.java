@@ -1,6 +1,10 @@
 package choco.kernel.common.util.tools;
 
-import static choco.Choco.*;
+import static choco.Choco.makeBooleanVar;
+
+import java.util.List;
+import java.util.ListIterator;
+
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -11,9 +15,6 @@ import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
-
-import java.util.List;
-import java.util.ListIterator;
 
 public final class VariableUtils {
 
@@ -100,7 +101,8 @@ public final class VariableUtils {
 		}
 		return null;
 	}
-
+	
+	
     //****************************************************************//
     //********* TYPE *******************************************//
     //****************************************************************//
@@ -221,6 +223,8 @@ public final class VariableUtils {
   	//*****************************************************************//
 	//*******************  TaskVariable  ********************************//
 	//***************************************************************//
+    
+    
     public static IntegerVariable createDirectionVar(TaskVariable t1, TaskVariable t2, String... boolOptions) {
     	return makeBooleanVar("dir-"+t1.getName()+"-"+t2.getName(), boolOptions);
     }
@@ -287,6 +291,16 @@ public final class VariableUtils {
     //*****************************************************************//
 	//*******************  TaskVar  ********************************//
 	//***************************************************************//
+   
+    public static TaskVar[] getTaskVars(Solver solver) {
+    	final int n = solver.getNbTaskVars();
+    	final TaskVar[] vars = new TaskVar[n];
+    	for (int i = 0; i < n; i++) {
+			vars[i] = solver.getTaskVar(i);
+		}
+        return vars;
+    }
+    
     public static IntDomainVar[] getStartVars(TaskVar... tasks) {
         final IntDomainVar[] vars = new IntDomainVar[tasks.length];
         for (int i = 0; i < tasks.length; i++) {

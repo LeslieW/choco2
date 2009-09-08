@@ -112,11 +112,11 @@ public enum SettingType {
 
 	//////////////////////// ////////////////////////
 
-	DECOMP("Decomposition Of Global Constraint","DGC","cp:prop:decomp"),
+	DECOMP("Decomposition Of Global Constraint","DGC","cp:decomp"),
 	
-	GLOBAL("Global Constraint Only","GCO","cp:prop:global"),
+	GLOBAL("Global Constraint Only","GCO","cp:global"),
 	
-	MIXED("Mixed Decomposition and Global Constraint","MDGC","cp:prop:mixed");
+	MIXED("Mixed Decomposition and Global Constraint","MDGC","cp:mixed");
 	
 	private final String optionName;
 

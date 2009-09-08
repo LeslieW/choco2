@@ -23,13 +23,13 @@
 package choco.cp.solver.configure;
 
 import choco.Choco;
+import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.scheduling.IncrementalPertSConstraint;
 import choco.cp.solver.constraints.global.scheduling.PertSConstraint;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.global.scheduling.IPrecedenceNetwork;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.scheduling.TaskVar;
 
 /**
  * @author Arnaud Malapert</br> 
@@ -38,10 +38,12 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
  */
 public class SchedulerConfiguration {
 
-	
+
 	private int origin = 0;
+
+	protected boolean forceMakespan;
 	
-	private int horizon = Choco.MAX_UPPER_BOUND;
+	protected int horizon = Choco.MAX_UPPER_BOUND;
 	/**
 	 * The variable modelling the makespan
 	 */
@@ -51,7 +53,7 @@ public class SchedulerConfiguration {
 	 * the precedence constraint network, if any;
 	 */
 	protected IPrecedenceNetwork precedenceNetwork;
-	
+
 	/**
 	 * <code>true</code> ensure that a global constraint handle precedences, 
 	 * otherwise precedence constraint are linear and reified constraints 
@@ -75,6 +77,17 @@ public class SchedulerConfiguration {
 		super();
 	}
 
+	
+	public final boolean isForceMakespan() {
+		return forceMakespan;
+	}
+
+
+	public final void setForceMakespan(boolean forceMakespan) {
+		this.forceMakespan = forceMakespan;
+	}
+
+
 	public final int getMakespanValue() {
 		return makespan == null ? Choco.MAX_UPPER_BOUND: makespan.getVal();
 	}
@@ -82,7 +95,7 @@ public class SchedulerConfiguration {
 	public final IntDomainVar getMakespan() {
 		return makespan;
 	}
-
+	
 	public final IntDomainVar createMakespan(Solver solver) {
 		if(makespan == null) {
 			this.makespan = solver.createBoundIntVar("makespan", origin, horizon);
@@ -100,7 +113,7 @@ public class SchedulerConfiguration {
 		this.makespan = makespan;
 	}
 
-	
+
 	public final int getOrigin() {
 		return origin;
 	}
@@ -112,18 +125,15 @@ public class SchedulerConfiguration {
 	public final int getHorizon() {
 		return horizon;
 	}
-	
+
 	public final void setHorizon(int horizon) {
 		this.horizon = horizon;
 	}
-	
 
 
 	public final IPrecedenceNetwork getPrecedenceNetwork() {
 		return precedenceNetwork;
 	}
-
-
 
 	public final boolean isUsingPrecedenceNetwork() {
 		return usePrecedenceNetwork;
@@ -141,20 +151,25 @@ public class SchedulerConfiguration {
 		this.incrementalPert = incrementalPert;
 	}
 
-	public final IPrecedenceNetwork createPrecedenceNetwork(Solver solver) {
-		if(usePrecedenceNetwork) {
-			if( precedenceNetwork == null) {
-				final TaskVar[] tasks = new TaskVar[solver.getNbTaskVars()];
-				for (int i = 0; i < solver.getNbTaskVars(); i++) {
-					tasks[i] = solver.getTaskVar(i);
-				}
-				createMakespan(solver);
-				PertSConstraint cstr = isIncrementalPert() ? new IncrementalPertSConstraint(solver, makespan) : new PertSConstraint(solver, makespan);
-				solver.post(cstr);
-				precedenceNetwork = cstr;
-			}
-			return precedenceNetwork;
-		}else {return null;}
+	public final boolean isSetPrecedenceNetwork() {
+		return precedenceNetwork == null;
+	}
+
+	public final void setPrecedenceNetwork(IPrecedenceNetwork precedenceNetwork) {
+		this.precedenceNetwork = precedenceNetwork;
+	}
+
+	public final IPrecedenceNetwork makePrecedenceNetwork(CPSolver solver) {
+		if( precedenceNetwork == null) {
+			createMakespan(solver);
+			final PertSConstraint cstr = ( isIncrementalPert() ?
+					new IncrementalPertSConstraint(solver, makespan) : 
+						new PertSConstraint(solver, makespan)
+			);
+			solver.post(cstr);
+			precedenceNetwork = cstr;
+		}
+		return precedenceNetwork;
 	}
 
 	public final boolean isRedundantReasonningsOnTasks() {

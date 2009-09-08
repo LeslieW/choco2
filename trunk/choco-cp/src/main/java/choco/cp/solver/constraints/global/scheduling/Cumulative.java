@@ -22,15 +22,18 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
-import static choco.cp.solver.SettingType.*;
+import static choco.cp.solver.SettingType.TASK_INTERVAL;
+import static choco.cp.solver.SettingType.TASK_INTERVAL_SLOW;
+import static choco.cp.solver.SettingType.VHM_CEF_ALGO_N2K;
+import static choco.cp.solver.SettingType.VILIM_CEF_ALGO;
+
+import java.util.Arrays;
+
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
-
-import java.util.Arrays;
-import java.util.logging.Level;
 
 
 
@@ -47,7 +50,7 @@ public class Cumulative extends AbstractCumulativeSConstraint  {
 	protected boolean noFixPoint;
 
 	protected Cumulative(String name, final TaskVar[] taskvars,final IntDomainVar[] heights, IntDomainVar consumption, IntDomainVar capacity, IntDomainVar uppBound, IntDomainVar... otherVars) {
-		super(name,taskvars,heights,consumption,capacity, uppBound,otherVars);
+		super(name,taskvars,heights,consumption,capacity,uppBound,otherVars);
 	}
 
 	public Cumulative(String name, final TaskVar[] taskvars,final IntDomainVar[] heights, IntDomainVar consumption, IntDomainVar capacity, IntDomainVar uppBound) {
@@ -64,12 +67,8 @@ public class Cumulative extends AbstractCumulativeSConstraint  {
 	public final ICumulRules getRules() {
 		return cumulRules;
 	}
-	
 
-	@Override
-	protected final int getHeightIndex(final int taskIdx) {
-		return getTaskIntVarOffset() + taskIdx;
-	}
+
 
 	protected void checkRulesRequirement() {
 		if( !hasOnlyPosisiveHeights()) {
@@ -155,34 +154,67 @@ public class Cumulative extends AbstractCumulativeSConstraint  {
 		filter();
 	}
 
-
-
 	@Override
-	public boolean isSatisfied() {
+	public boolean isSatisfied(int tuple[]) {
+		if(tuple[indexCapacity] < tuple[indexConsumption]) return false;
+
 		int start = Integer.MAX_VALUE, end = Integer.MIN_VALUE;
-		for ( IRTask crt : rtasks) {
-			if(crt.isRegular()) {
-				final TaskVar t = crt.getTaskVar();
-				start = Math.min(start,  t.start().getVal());
-				end = Math.max(end,  t.end().getVal());
+		final int n = getNbTasks();
+		//compute execution interval.
+		for (int tidx = 0; tidx < n; tidx++) {
+			if( ! isTaskSatisfied(tuple, tidx)) return false;
+			else {
+				start = Math.min(start,  tuple[tidx]);
+				end = Math.max(end,  tuple[startOffset + tidx]);
 			}
 		}
-
-		int[] load = new int[end - start];
-		for (IRTask t : rtasks) {
-			if(t.isRegular()) {
-				for(int i = t.getTaskVar().start().getVal(); i < t.getTaskVar().end().getVal(); i++) {
-					load[i - start] += t.getHeight().getVal();
+		if(start < end) {
+			//compute the profile
+			int[] load = new int[end - start];
+			for (int tidx = 0; tidx < n; tidx++) {
+				if( isRegular(tuple, tidx)) {
+					for(int i = tuple[tidx]; i < tuple[startOffset + tidx]; i++) {
+						load[i - start] += tuple[taskIntVarOffset + tidx];
+					}
+				}
+			}
+			//check profile
+			for (int aLoad : load) {
+				if ( aLoad > tuple[indexCapacity] ||
+						(aLoad != 0 && aLoad < tuple[indexConsumption]) ) {
+					return false;
 				}
 			}
 		}
-        for (int aLoad : load) {
-            if (aLoad > this.getMaxCapacity()) {
-                return false;
-            }
-        }
 		return true;
 	}
+
+//	@Override
+//	public boolean isSatisfied() {
+//		int start = Integer.MAX_VALUE, end = Integer.MIN_VALUE;
+//		for ( IRTask crt : rtasks) {
+//			if(crt.isRegular()) {
+//				final TaskVar t = crt.getTaskVar();
+//				start = Math.min(start,  t.start().getVal());
+//				end = Math.max(end,  t.end().getVal());
+//			}
+//		}
+//
+//		int[] load = new int[end - start];
+//		for (IRTask t : rtasks) {
+//			if(t.isRegular()) {
+//				for(int i = t.getTaskVar().start().getVal(); i < t.getTaskVar().end().getVal(); i++) {
+//					load[i - start] += t.getHeight().getVal();
+//				}
+//			}
+//		}
+//		for (int aLoad : load) {
+//			if (aLoad > this.getCapacity().getVal()) {
+//				return false;
+//			}
+//		}
+//		return true;
+//	}
 
 
 	@Override

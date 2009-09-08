@@ -113,10 +113,12 @@ public class Precedence  extends AbstractTaskSConstraint {
 		network.firePrecedenceAdded(taskvars[i], taskvars[j]);
 	}
 
-	protected final void notifySolver(int i, int j) throws ContradictionException {
+	protected final void notifySolver(int i, int j) {
 		//notify propagation engine
-		solver.getPropagationEngine().postUpdateInf(taskvars[i].start(), getCIndiceStart(i));
-		solver.getPropagationEngine().postUpdateSup(taskvars[j].start(), getCIndiceStart(j));
+		final int idxI = getStartIndex(i);
+		final int idxJ = getStartIndex(j);
+		solver.getPropagationEngine().postUpdateInf(vars[idxI], cIndices[idxI]);
+		solver.getPropagationEngine().postUpdateSup(vars[idxJ], cIndices[idxJ]);
 	}
 
 	protected final void notifyDecision() throws ContradictionException {
@@ -214,12 +216,6 @@ public class Precedence  extends AbstractTaskSConstraint {
 		}
 	}
 
-
-
-
-
-
-
 	@Override
 	public boolean isSatisfied() {
 		int dest = vars[DIR_IDX].getVal();
@@ -262,6 +258,15 @@ public class Precedence  extends AbstractTaskSConstraint {
 	public String toString() {
 		return taskvars[ORIG].getName()+getSign()+taskvars[DEST].getName();
 	}
+
+	@Override
+	public boolean isSatisfied(int[] tuple) {
+		if(tuple[DIR_IDX] == 1) return tuple[startOffset + ORIG] <= tuple[DEST];
+		else if(tuple[DIR_IDX] == 0) return tuple[startOffset + DEST] <= tuple[ORIG];
+		else return false;
+	}
+	
+	
 }
 
 

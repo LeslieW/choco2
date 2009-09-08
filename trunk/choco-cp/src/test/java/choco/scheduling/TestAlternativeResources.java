@@ -22,7 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.scheduling;
 
-import choco.Choco;
+import java.util.Arrays;
+import java.util.logging.Logger;
+
+import static org.junit.Assert.*;
+import org.junit.Test;
+
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -30,13 +36,8 @@ import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
-import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.logging.Logger;
 
 /**
  * @author Arnaud Malapert</br>
@@ -52,20 +53,20 @@ class AltDisjProblem extends DisjProblem {
 	protected final int type;
 
 	public AltDisjProblem(int[] durations, int type) {
-		super(Choco.constantArray(durations));
+		super(constantArray(durations));
 		this.type = type;
 	}
 
 	@Override
 	protected Constraint[] generateConstraints() {
-		return new Constraint[]{ Choco.disjunctive(tasks, usages)};
+		return new Constraint[]{ disjunctive(tasks, usages)};
 	}
 
 	@Override
 	public void initializeModel() {
-		usages = Choco.makeBooleanVarArray("U", durations.length);
+		usages = makeBooleanVarArray("U", durations.length);
 		super.initializeModel();
-		model.addConstraint(Choco.eq(Choco.sum(usages), tasks.length - type));
+		model.addConstraint(eq(sum(usages), tasks.length - type));
 
 	}
 
@@ -86,14 +87,14 @@ class AltCumulProblem extends CumulProblem {
 
 	@Override
 	protected Constraint[] generateConstraints() {
-		return new Constraint[]{ Choco.cumulative(null, tasks, heights, usages, consumption, capacity)};
+		return new Constraint[]{ cumulative(null, tasks, heights, usages, consumption, capacity)};
 	}
 
 	@Override
 	public void initializeModel() {
-		usages = Choco.makeBooleanVarArray("U", durations.length);
+		usages = makeBooleanVarArray("U", durations.length);
 		super.initializeModel();
-		model.addConstraint(Choco.eq(Choco.sum(usages), tasks.length - type));
+		model.addConstraint(eq(sum(usages), tasks.length - type));
 
 	}
 
@@ -217,14 +218,14 @@ public class TestAlternativeResources {
 	}
 
 	protected int solveDisjSubProblems(int[] durations, int makespan, int type) {
-		final TaskVariable[] tasks = Choco.makeTaskVarArray("T", 0, makespan,
+		final TaskVariable[] tasks = makeTaskVarArray("T", 0, makespan,
 				durations);
 		TaskVariable[][] subsets = createTaskSubsets(tasks, type);
 		int[] factors = getNbSolutionFactors(durations, makespan, type);
 		int nbSols = 0;
 		for (int i = 0; i < factors.length; i++) {
 			Model m = new CPModel();
-			m.addConstraint(Choco.disjunctive(subsets[i]));
+			m.addConstraint(disjunctive(subsets[i]));
 			CPSolver solver = new CPSolver();
 			solver.setHorizon(makespan);
 			solver.read(m);
@@ -240,7 +241,7 @@ public class TestAlternativeResources {
 	}
 
 	protected int solveCumulSubProblems(int[] durations, int[] heights, int capa, int makespan, int type) {
-		final TaskVariable[] tasks = Choco.makeTaskVarArray("T", 0, makespan,
+		final TaskVariable[] tasks = makeTaskVarArray("T", 0, makespan,
 				durations);
 		TaskVariable[][] subsets = createTaskSubsets(tasks, type);
 		int[][] hsubsets = createHeightSubsets(heights, type);
@@ -248,7 +249,7 @@ public class TestAlternativeResources {
 		int nbSols = 0;
 		for (int i = 0; i < factors.length; i++) {
 			Model m = new CPModel();
-			m.addConstraint(Choco.cumulativeMax(subsets[i], hsubsets[i], capa));
+			m.addConstraint(cumulativeMax(subsets[i], hsubsets[i], capa));
 			CPSolver solver = new CPSolver();
 			solver.setHorizon(makespan);
 			solver.read(m);
@@ -324,44 +325,74 @@ public class TestAlternativeResources {
 		testAltCumulative(1, durations, heights, n, n*(n+1)/4, 2);
 	}
 	
+	private int horizon = 22;
+	private TaskVariable JobA = makeTaskVar("JobA", 0, horizon, 4);
+	private TaskVariable JobB = makeTaskVar("JobB", 0, horizon, 6);
+	private TaskVariable JobC = makeTaskVar("JobC", 0, horizon, 8);
+
+	
+	private IntegerVariable JobA_Res1 = makeBooleanVar("JobA_Res1");
+	private IntegerVariable JobA_Res2 = makeBooleanVar("JobA_Res2");
+	private IntegerVariable JobB_Res1 = makeBooleanVar("JobB_Res1");
+	private IntegerVariable JobB_Res2 = makeBooleanVar("JobB_Res2");
+	private IntegerVariable JobC_Res1 = makeBooleanVar("JobC_Res1");
+	private IntegerVariable JobC_Res2 = makeBooleanVar("JobC_Res2");
+	
+	protected final CPModel createModelJobARes1Res2() {
+		CPModel model = new CPModel();
+		model.addConstraint(eq(plus(JobA_Res1, JobA_Res2), 1));
+		model.addConstraint(eq(plus(JobB_Res1, JobB_Res2), 1));
+		model.addConstraint(eq(plus(JobC_Res1, JobC_Res2), 1));
+
+		model.addConstraint(disjunctive( new TaskVariable[]{JobA, JobB, JobC}, 
+				new IntegerVariable[] {JobA_Res1, JobB_Res1, JobC_Res1})) ; 
+		model.addConstraint(disjunctive( new TaskVariable[]{JobA, JobB, JobC}, 
+				new IntegerVariable[] {JobA_Res2, JobB_Res2, JobC_Res2})) ;
+		return model;
+	}
+	
+	protected final CPModel createModelJobARes1() {
+		CPModel model = new CPModel();
+		model.addConstraint(eq(plus(JobB_Res1, JobB_Res2), 1));
+		model.addConstraint(eq(plus(JobC_Res1, JobC_Res2), 1));
+
+		model.addConstraint(disjunctive( new TaskVariable[]{JobA, JobB, JobC}, 
+				new IntegerVariable[] {JobB_Res1, JobC_Res1})) ; 
+		model.addConstraint(disjunctive( new TaskVariable[]{JobB, JobC}, 
+				new IntegerVariable[] {JobB_Res2, JobC_Res2})) ;
+		return model;
+	}
+	
+	protected int minimizeMakespan(CPModel model) {
+		CPSolver solver = new CPSolver();
+		solver.setHorizon(horizon);
+		solver.read(model);
+		solver.setRandomSelectors();
+		solver.setObjective(solver.getMakespan());
+		solver.minimize(false);
+		assertTrue("did not prove optimum ", solver.isObjectiveOptimal());
+		return solver.getObjectiveValue().intValue();
+	}
+	
+	protected int solveAll(CPModel model) {
+		CPSolver solver = new CPSolver();
+		solver.setHorizon(horizon);
+		solver.read(model);
+		solver.setRandomSelectors();
+		solver.solveAll();
+		assertTrue("is infeasible", solver.isFeasible());
+		return solver.getSolutionCount();
+	}
 
 	@Test
 	public void CosmicTest() {
-		
-		int maxDuration = 28;
-		CPModel model = new CPModel();
-
-		TaskVariable JobA = Choco.makeTaskVar("JobA", 0, maxDuration, 4);
-		TaskVariable JobB = Choco.makeTaskVar("JobB", 0, maxDuration, 6);
-		TaskVariable JobC = Choco.makeTaskVar("JobC", 0, maxDuration, 8);
-
-		
-		IntegerVariable JobA_Res1 = Choco.makeIntVar("JobA_Res1", 0, 1, "cp:binary");
-		IntegerVariable JobA_Res2 = Choco.makeIntVar("JobA_Res2", 0, 1, "cp:binary");
-		IntegerVariable JobB_Res1 = Choco.makeIntVar("JobB_Res1", 0, 1, "cp:binary");
-		IntegerVariable JobB_Res2 = Choco.makeIntVar("JobB_Res2", 0, 1, "cp:binary");
-		IntegerVariable JobC_Res1 = Choco.makeIntVar("JobC_Res1", 0, 1, "cp:binary");
-		IntegerVariable JobC_Res2 = Choco.makeIntVar("JobC_Res2", 0, 1, "cp:binary");
-
-		model.addConstraint(Choco.eq(Choco.plus(JobA_Res1, JobA_Res2), 1));
-		model.addConstraint(Choco.eq(Choco.plus(JobB_Res1, JobB_Res2), 1));
-		model.addConstraint(Choco.eq(Choco.plus(JobC_Res1, JobC_Res2), 1));
-
-		model.addConstraint(Choco.disjunctive( new TaskVariable[]{JobA, JobB, JobC}, 
-				new IntegerVariable[] {JobA_Res1, JobB_Res1, JobC_Res1})) ; 
-		model.addConstraint(Choco.disjunctive( new TaskVariable[]{JobA, JobB, JobC}, 
-				new IntegerVariable[] {JobA_Res2, JobB_Res2, JobC_Res2})) ; 
-
-		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
-		CPSolver solver = new CPSolver();
-		solver.setHorizon(maxDuration);
-		solver.read(model);
-
-		solver.setDoMaximize(false);
-		solver.setObjective(solver.getMakespan());
-		solver.setRestart(false);
-		solver.setFirstSolution(false);
-		solver.solveAll();
+		//ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+		CPModel model = createModelJobARes1();
+		int obj = minimizeMakespan(model);
+		int nbsols = solveAll(model);
+		model = createModelJobARes1Res2();
+		assertEquals("SymBreak vs Simple", obj, minimizeMakespan(model));
+		assertEquals("SymBreak vs Simple nbsols", 2 * nbsols, solveAll(model));
 	}
 
 }

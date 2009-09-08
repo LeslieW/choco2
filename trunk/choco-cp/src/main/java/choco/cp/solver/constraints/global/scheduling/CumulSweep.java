@@ -22,11 +22,17 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+
+import choco.cp.solver.constraints.global.scheduling.AbstractResourceSConstraint.RTask;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
-
-import java.util.*;
 
 
 /**
@@ -211,11 +217,17 @@ public class CumulSweep implements ICumulSweep {
 				|| capaSumHeight - capaContributions[idx] > rsc.getMaxCapacity() ) { //needed to not exceed capacity
 			rtask.assign();
 			final TaskVar t = rtask.getTaskVar();
-			modified |= t.start().updateInf(up - t.getMaxDuration() + 1, rsc.getCIndiceStart(idx));
-			modified |= t.start().updateSup(low, rsc.getCIndiceStart(idx));
-			modified |= t.end().updateSup( low + t.getMaxDuration(), rsc.getCIndiceEnd(idx));
-			modified |= t.end().updateInf( up +1, rsc.getCIndiceEnd(idx));
-			modified |= t.duration().updateInf(Math.min( up - t.start().getSup() + 1, t.end().getInf()-low), rsc.getCIndiceEnd(idx));
+			modified |= rtask.setEST(up - t.getMaxDuration() + 1);
+			//modified |= t.start().updateInf(up - t.getMaxDuration() + 1, rsc.getCIndiceStart(idx));
+			modified |= rtask.setLST(low);
+			//modified |= t.start().updateSup(low, rsc.getCIndiceStart(idx));
+			modified |= rtask.setLCT(low + t.getMaxDuration());
+			//modified |= t.end().updateSup( low + t.getMaxDuration(), rsc.getCIndiceEnd(idx));
+			modified |= rtask.setECT(up +1);
+			//modified |= t.end().updateInf( up +1, rsc.getCIndiceEnd(idx));
+			modified |= rtask.setMinDuration(Math.min( up - t.start().getSup() + 1, t.end().getInf()-low));
+			//modified |= t.duration().updateInf(Math.min( up - t.start().getSup() + 1, t.end().getInf()-low), rsc.getCIndiceDuration(idx));
+			if(modified) rtask.updateCompulsoryPart();
 		}
 		return modified;
 	}
@@ -232,12 +244,14 @@ public class CumulSweep implements ICumulSweep {
 				rtask.remove();
 			}else if(rtask.isRegular() && t.getMinDuration()>0) {
 				// call removeInterval on start since some starting time are not possible anymore
-				modified |= t.start().removeInterval(low - t.getMinDuration() + 1, up, rsc.getCIndiceStart(idx));
-				//this second removeInterval is only relevant if a duration variable exists
-				modified |= t.end().removeInterval(low + 1, up + t.getMinDuration(), rsc.getCIndiceEnd(idx));
-				final int maxd = Math.max(Math.max(low - t.getEST(), 0), t.getLCT() - up - 1);
-				modified |= rtask.updateMaxDuration(maxd); // t is either to the left or to the right of this interval -> it has an impact on the duration !
-				if(modified) {rsc.updateCompulsoryPart(idx);}
+				modified = rtask.setStartNotIn(low - t.getMinDuration() + 1, up);
+				if( ! t.duration().isInstantiated()) {
+					//this second removeInterval is only relevant if a duration variable exists
+					modified |= rtask.setEndNotIn(low + 1, up + t.getMinDuration());
+					final int maxd = Math.max(Math.max(low - t.getEST(), 0), t.getLCT() - up - 1);
+					modified |= rtask.setMaxDuration(maxd);  // t is either to the left or to the right of this interval -> it has an impact on the duration !
+				}
+				if(modified) {rtask.updateCompulsoryPart();}
 			}
 		}
 		return modified;

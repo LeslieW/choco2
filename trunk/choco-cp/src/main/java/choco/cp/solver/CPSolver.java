@@ -160,6 +160,7 @@ import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.global.MetaSConstraint;
+import choco.kernel.solver.constraints.global.scheduling.IPrecedenceNetwork;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.integer.IntExp;
 import choco.kernel.solver.constraints.integer.IntSConstraint;
@@ -607,6 +608,7 @@ public class CPSolver implements Solver {
 	protected void initReading(){
 		//0- create data structure for boolean variable
 		this.getEnvironment().createSharedBipartiteSet(model.getNbBoolVar());
+
 	}
 
 
@@ -1580,7 +1582,9 @@ public class CPSolver implements Solver {
 	public final SchedulerConfiguration getSchedulerConfiguration() {
 		return schedulerConfiguration;
 	}
-
+	/**
+	 * set the value before reading the model
+	 */
 	public final void setHorizon(int horizon) {
 		schedulerConfiguration.setHorizon(horizon);
 	}
@@ -1593,21 +1597,44 @@ public class CPSolver implements Solver {
 		return schedulerConfiguration.getMakespanValue();
 	}
 
+	/**
+	 * // create makespan constraint : makespan = max (end(T)
+	 */
+	protected final SConstraint makeMapespanConstraint() {
+		IntDomainVar[] vars = new IntDomainVar[getNbTaskVars() + 1];
+		vars[0] = getMakespan();
+		for (int i = 0; i < getNbTaskVars(); i++) {
+			vars[i + 1] = getTaskVar(i).end();
+		}
+		return new MaxOfAList(vars);
+	}
+
+
 	public final void postMakespanConstraint() {
-		if (getMakespan()!= null) {
-			if( getNbTaskVars() > 0) {
+		IntDomainVar m = getMakespan();
+		if( getNbTaskVars() > 0) {
+			if(m == null && schedulerConfiguration.isForceMakespan()) {
+				m = schedulerConfiguration.createMakespan(this);
+			}
+			if( m != null) {
 				// create makespan constraint : makespan = max (end(T)
 				IntDomainVar[] vars = new IntDomainVar[getNbTaskVars() + 1];
-				vars[0] = getMakespan();
+				vars[0] = m;
 				for (int i = 0; i < getNbTaskVars(); i++) {
 					vars[i + 1] = getTaskVar(i).end();
 				}
 				post(new MaxOfAList(vars));
 			}else {
-				if( getMakespan().getNbConstraints() == 0) {
-
+				final int h = schedulerConfiguration.getHorizon();
+				if( h != Choco.MAX_UPPER_BOUND) {
+					// create makespan constraint : horizon >= end(T)
+					for (TaskVar t : taskVars) {
+						if(t.getLCT() > h) post( leq(t.end(), h));
+					}
 				}
 			}
+		} else if ( m != null) {
+			LOGGER.log(Level.WARNING, "useless makespan variable {0}", m);
 		}
 	}
 
@@ -3442,6 +3469,10 @@ public class CPSolver implements Solver {
 				(t1.duration().isInstantiated() ? plus(t1.start(), t1.duration().getVal() + k1) : plus(t1.end(), k1)),
 				t2.start()
 		);
+	}
+
+	public SConstraint preceding(IntDomainVar direction, TaskVar t1, TaskVar t2) {
+		return preceding(direction, t1, 0, t2, 0);
 	}
 
 	public SConstraint preceding(IntDomainVar direction, TaskVar t1, int k1, TaskVar t2, int k2) {
