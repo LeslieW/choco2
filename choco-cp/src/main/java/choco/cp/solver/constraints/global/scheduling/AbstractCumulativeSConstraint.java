@@ -61,7 +61,7 @@ public abstract class AbstractCumulativeSConstraint extends AbstractResourceSCon
 		if(taskvars.length != heights.length) {
 			throw new SolverException("tasks and heights array have different length.");
 		}
-		indexConsumption = getTaskIntVarOffset() + heights.length;
+		indexConsumption = taskIntVarOffset + heights.length;
 		indexCapacity = indexConsumption + 1;
 		IEnvironment env = getVar(0).getSolver().getEnvironment();
 		fixedHeights = env.makeBool(false);
@@ -70,9 +70,10 @@ public abstract class AbstractCumulativeSConstraint extends AbstractResourceSCon
 
 
 	}
-
-	public final int getCIndiceHeight(final int taskIdx) {
-		return cIndices[getTaskIntVarOffset() + taskIdx];
+	
+	@Override
+	protected final int getHeightIndex(final int taskIdx) {
+		return taskIntVarOffset + taskIdx;
 	}
 
 	public boolean updateMinCapacity(final int val) throws ContradictionException {

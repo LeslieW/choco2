@@ -7,18 +7,13 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
 
 public class AltCumulative extends Cumulative {
 
-	private final int usageOffset;
-	
-	public final int nbRequired;
-	
+
 	public AltCumulative(String name, TaskVar[] taskvars,
 			IntDomainVar[] heights, IntDomainVar[] usages,
 			IntDomainVar consumption, IntDomainVar capacity,
 			IntDomainVar uppBound) {
 		super(name, taskvars, heights, consumption, capacity, uppBound,
 				usages);
-		nbRequired = getNbTasks() - usages.length;
-		usageOffset = getTaskIntVarOffset() + getNbTasks() + 2;
 		cumulSweep = new CumulSweep(this, Arrays.asList(rtasks));
 	}
 	
@@ -30,12 +25,21 @@ public class AltCumulative extends Cumulative {
 	}
 
 
-
 	@Override
-	protected final int getUsageIndex(int taskIdx) {
-		return taskIdx < nbRequired ? indexUnit : usageOffset + taskIdx - nbRequired;
+	protected final int getUsageIndex(int tidx) {
+		final int nbRequired = computeNbRequired();
+		return  tidx < nbRequired ? indexUnit : 4 * startOffset+ 2 +  tidx - nbRequired;
 	}
 
+	private final int computeNbRequired() {
+		return 5 * taskvars.length + 4 - vars.length;
+	}
+	
+	@Override
+	protected boolean isRegular(int[] tuple, int tidx) {
+		return tuple[ getUsageIndex(tidx)] == 1;
+	}
+	
 	
 
 }

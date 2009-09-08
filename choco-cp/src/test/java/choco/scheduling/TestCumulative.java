@@ -39,7 +39,7 @@ import static choco.cp.solver.SettingType.TASK_INTERVAL;
 import static choco.cp.solver.SettingType.TASK_INTERVAL_SLOW;
 import static choco.cp.solver.SettingType.VHM_CEF_ALGO_N2K;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.logging.Logger;
@@ -470,6 +470,30 @@ public class TestCumulative {
 		assertEquals(2, v.getInf());
 	}
 
+	@Test
+	public void testDisjCliques() {
+		int[] p = new int[]{2, 3, 2, 2, 1,2};
+		int[] h = new int[]{4, 3, 2, 2, 1,1};
+		CumulProblem cp = new CumulProblem(p, h);
+		cp.setCapacity(4);
+		cp.setHorizon(7);
+		cp.initializeModel();
+		cp.rsc.addOption(SettingType.DECOMP.getOptionName());
+		cp.generateSolver();
+		cp.solver.solveAll();
+		assertEquals("Decomposition", 5, cp.solver.getNbIntConstraints());
+		assertEquals("Nb Solutions", 12, cp.solver.getSolutionCount());
+		
+		cp.setCapacity(5);
+		cp.initializeModel();
+		cp.rsc.addOption(SettingType.DECOMP.getOptionName());
+		cp.generateSolver();
+		cp.solver.solveAll();
+		assertEquals("Decomposition", 3, cp.solver.getNbIntConstraints());
+		assertTrue("Is Feasible", cp.solver.isFeasible());
+		assertTrue("more than one solution", cp.solver.getSolutionCount() > 12);
+	}
+	
 	@Ignore
 	@Test
 	public void testTaskIntervalBug() {
@@ -538,7 +562,7 @@ public class TestCumulative {
 
 	@Test
 	public void testCumulativeMin() {
-		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+		//ChocoLogging.setVerbosity(Verbosity.VERBOSE);
 		testCumulativeMin(3, 4, true);
 		testCumulativeMin(2, 6, true);
 		testCumulativeMin(1, 8, false);
@@ -622,63 +646,5 @@ public class TestCumulative {
 		final Number obj = cwe._s.getObjectiveValue();
 		cwe.execute(Boolean.TRUE);
 		assertEquals("Cumulative Website Example",obj, cwe._s.getObjectiveValue());
-//		 CPModel m = new CPModel();
-//
-//	        // data
-//	        int n = 11 + 3; //number of tasks (include the three fake tasks)
-//	        int[] heights_data = new int[]{2, 1, 4, 2, 3, 1, 5, 6, 2, 1, 3, 1, 1, 2};
-//	        int[] durations_data = new int[]{1, 1, 1, 2, 1, 3, 1, 1, 3, 4, 2, 3, 1, 1};
-//
-//	        // variables
-//	        IntegerVariable capa = constant(7);
-//	        IntegerVariable[] starts = makeIntVarArray("start", n, 0, 5, "cp:bound");
-//	        IntegerVariable[] ends = makeIntVarArray("end", n, 0, 6, "cp:bound");
-//
-//	        IntegerVariable[] duration = new IntegerVariable[n];
-//	        IntegerVariable[] height = new IntegerVariable[n];
-//	        for (int i = 0; i < height.length; i++) {
-//	            duration[i] = constant(durations_data[i]);
-//	            height[i] = makeIntVar("height " + i, new int[]{0, heights_data[i]});
-//	        }
-//
-//	        IntegerVariable[] bool = makeIntVarArray("taskIn?", n, 0, 1);
-//	        IntegerVariable obj = makeIntVar("obj", 0, n, "cp:bound", "cp:objective");
-//
-//	        //post the cumulative
-//	        m.addConstraint(cumulative(starts, ends, duration, height, capa, ""));
-//
-//	        //post the channeling to know if the task is scheduled or not
-//	        for (int i = 0; i < n; i++) {
-//	            m.addConstraint(boolChanneling(bool[i], height[i], heights_data[i]));
-//	        }
-//	        //state the objective function
-//	        m.addConstraint(eq(sum(bool), obj));
-//
-//	        // maximize the number of tasks placed in this profile
-//
-//	        CPSolver s = new CPSolver();
-//	        s.read(m);
-//
-//	        //set the fake tasks to establish the profile capacity of the ressource
-//	        try {
-//	            s.getVar(starts[0]).setVal(1);
-//	            s.getVar(ends[0]).setVal(2);
-//	            s.getVar(height[0]).setVal(2);
-//	            s.getVar(starts[1]).setVal(2);
-//	            s.getVar(ends[1]).setVal(3);
-//	            s.getVar(height[1]).setVal(1);
-//	            s.getVar(starts[2]).setVal(3);
-//	            s.getVar(ends[2]).setVal(4);
-//	            s.getVar(height[2]).setVal(4);
-//	        } catch (ContradictionException e) {
-//	            System.out.println("error, no contradiction expected at this stage");
-//	        }
-//
-//	        s.maximize(s.getVar(obj),false);
-//	        System.out.println("Objective : " + (s.getVar(obj).getVal() - 3));
-//	        for (int i = 3; i < starts.length; i++) {
-//	            if (s.getVar(height[i]).getVal() != 0)
-//	                System.out.println("[" + s.getVar(starts[i]).getVal() + " - " + (s.getVar(ends[i]).getVal() - 1) + "]:" + s.getVar(height[i]).getVal());
-//	        }
 	}
 }

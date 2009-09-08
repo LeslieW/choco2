@@ -23,6 +23,7 @@
 package choco.scheduling;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -111,6 +112,7 @@ public final class SchedUtilities {
 			}else if(nbNodes == CHECK_NODES && i>0){
 				assertEquals("check-cmp NbNodes "+str,solvers[i-1].getNodeCount(),s.getNodeCount());
 			}
+			assertEquals("solution checker",s.isFeasible(), s.checkSolution(false));
 		}
 		LOGGER.log(Level.INFO,"Best solver: index {0} in {1}ms", new Object[]{bests,bestTime});
 	}
@@ -139,6 +141,7 @@ public final class SchedUtilities {
 			if(nbNodes>=0) {
 				assertEquals(jmsg("check nb nodes",label),nbNodes,solver.getNodeCount());
 			}
+			assertEquals("solution checker",solver.isFeasible(), solver.checkSolution(false));
 		}
 	}
 

@@ -58,6 +58,7 @@ public class DeterministicPert {
 
 	public final static int NB_TASKS=10;
 
+	protected final int horizon;
 	protected final CPModel model;
 	protected CPSolver solver;
 
@@ -75,6 +76,7 @@ public class DeterministicPert {
 	public DeterministicPert(int horizon,IntegerVariable[] durations) {
 		super();
 		model=new CPModel();
+		this.horizon = horizon;
 		this.durations=durations;
 		/* CREATE THE ACTIVITIES. */
 		masonry=makeTaskVar("masonry", horizon, durations[0], "cp:bound");
@@ -111,7 +113,6 @@ public class DeterministicPert {
 				Choco.startsAfterEnd(moving,garden),
 				Choco.startsAfterEnd(moving,painting)
 		);
-		//model.addConstraint(Scheduling.pert());
 	}
 
 	/**
@@ -131,6 +132,7 @@ public class DeterministicPert {
 
 	protected void criticalPathMethod(CPSolver solver) {
 		//precedence are represente with linear constraints
+		solver.setHorizon(horizon);
 		solver.read(model);
 		solver.postMakespanConstraint();
 		try {

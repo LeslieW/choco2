@@ -62,7 +62,7 @@ public class IncrementalPertSConstraint extends PertSConstraint {
 	public void awakeOnInf(int varIdx) throws ContradictionException {
 		if(varIdx < taskIntVarOffset) {
 			final int tidx = varIdx % getNbTasks();
-			updateCompulsoryPart( tidx);
+			rtasks[tidx].updateCompulsoryPart();
 			tasksToPropagateOnInf.set(tidx);
 			propagationControlInf.set(true);
 			this.constAwake(false);
@@ -75,7 +75,7 @@ public class IncrementalPertSConstraint extends PertSConstraint {
 	public void awakeOnInst(int idx) throws ContradictionException {
 		if(idx < taskIntVarOffset) {
 			final int tidx = idx % getNbTasks();
-			updateCompulsoryPart(tidx);
+			rtasks[tidx].updateCompulsoryPart();
 			propagationControlInf.set(true);
 			tasksToPropagateOnInf.set(tidx);
 			propagationControlSup.set(true);
@@ -89,7 +89,7 @@ public class IncrementalPertSConstraint extends PertSConstraint {
 	public void awakeOnSup(int varIdx) throws ContradictionException {
 		if(varIdx < taskIntVarOffset) {
 			final int tidx = varIdx % getNbTasks();
-			updateCompulsoryPart(tidx);
+			rtasks[tidx].updateCompulsoryPart();
 			propagationControlSup.set(true);
 			tasksToPropagateOnSup.set(tidx);
 		} else {propagationControlMakespan.set(true);}
@@ -112,10 +112,12 @@ public class IncrementalPertSConstraint extends PertSConstraint {
 			TIntArrayList succ = network.getSuccessors(task);
 			for (int j = 0; j < succ.size(); j++) {
 				final int dest = succ.get(j);
-				final boolean modified= taskvars[dest].start().updateInf( taskvars[task].getECT(), getCIndiceStart(dest));
+				//final boolean modified= taskvars[dest].start().updateInf( taskvars[task].getECT(), getCIndiceStart(dest));
+				final int sidx = getStartIndex(dest);
+				final boolean modified= rtasks[sidx].setEST( taskvars[task].getECT());
 				updateDuration(task, dest);
 				if(modified) {
-					updateCompulsoryPart(dest);
+					rtasks[dest].updateCompulsoryPart();
 					subgraph.set(index[dest]);
 				}
 			}
@@ -140,10 +142,10 @@ public class IncrementalPertSConstraint extends PertSConstraint {
 			TIntArrayList pred = network.getPredecessors(task);
 			for (int j = 0; j < pred.size(); j++) {
 				final int orig = pred.get(j);
-				final boolean modified= taskvars[orig].start().updateSup( taskvars[task].getLST() - taskvars[orig].getMinDuration(), getCIndiceStart(orig));
-				updateDuration(task, orig);
+				final boolean modified= rtasks[orig].setLST( taskvars[task].getLST() - taskvars[orig].getMinDuration());
+				updateDuration(orig, task);
 				if(modified) {
-					updateCompulsoryPart(orig);
+					rtasks[orig].updateCompulsoryPart();
 					subgraph.set(n -1 - index[orig]);
 				}
 			}

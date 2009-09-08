@@ -44,7 +44,7 @@ public class DisTest {
 
     @Before
     public void b(){
-        ChocoLogging.setVerbosity(Verbosity.FINEST);
+        //ChocoLogging.setVerbosity(Verbosity.FINEST);
         qt = new QueensTest();
         qt.m = new CPModel();
         BlockingVarEventQueue._LOG = true;

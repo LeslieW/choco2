@@ -59,9 +59,8 @@ public class PrecedenceDisjointManager extends AbstractPrecedenceManager {
 	@Override
 	protected SConstraint makeTaskConstraintB0(CPSolver s, TaskVar t1, int k1,
 			TaskVar t2, int k2) {
-		final IPrecedenceNetwork n = s.getSchedulerConfiguration().getPrecedenceNetwork();
-		if( n != null && k2 != 0) {
-			n.addStaticPrecedence(t2, t1);
+		if( s.getSchedulerConfiguration().isUsingPrecedenceNetwork() && k2 == 0) {
+			s.getSchedulerConfiguration().makePrecedenceNetwork(s).addStaticPrecedence(t2, t1);
 			return CPSolver.TRUE;
 		}
 		return s.preceding(t2, k2, t1);
@@ -70,9 +69,8 @@ public class PrecedenceDisjointManager extends AbstractPrecedenceManager {
 	@Override
 	protected SConstraint makeTaskConstraintB1(CPSolver s, TaskVar t1, int k1,
 			TaskVar t2, int k2) {
-		final IPrecedenceNetwork n = s.getSchedulerConfiguration().getPrecedenceNetwork();
-		if( n != null && k1 != 0) {
-			n.addStaticPrecedence(t1, t2);
+		if( s.getSchedulerConfiguration().isUsingPrecedenceNetwork() && k1 == 0) {
+			s.getSchedulerConfiguration().makePrecedenceNetwork(s).addStaticPrecedence(t1, t2);
 			return CPSolver.TRUE;
 		}
 		return s.preceding(t1, k1, t2);
@@ -82,10 +80,9 @@ public class PrecedenceDisjointManager extends AbstractPrecedenceManager {
 	@Override
 	protected SConstraint makeTaskConstraint(CPSolver s, TaskVar t1, int k1,
 			TaskVar t2, int k2, IntDomainVar dir) {
-		final IPrecedenceNetwork n = s.getSchedulerConfiguration().getPrecedenceNetwork();
-		if( n != null && k1 == 0 && k2 == 0) {
+		if( s.getSchedulerConfiguration().isUsingPrecedenceNetwork() && k1 == 0 && k2 == 0) {
 			//post into the precedence network
-			return new Precedence(n, t1, t2, dir);
+			return new Precedence(s.getSchedulerConfiguration().makePrecedenceNetwork(s), t1, t2, dir);
 		}else {
 			//post into solver constraints;
 			return s.preceding(dir, t1, k1, t2, k2);

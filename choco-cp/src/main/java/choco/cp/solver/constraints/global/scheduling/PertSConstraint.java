@@ -36,6 +36,7 @@ import choco.kernel.solver.constraints.global.scheduling.IPrecedenceNetwork;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import gnu.trove.TIntArrayList;
+import gnu.trove.TIntProcedure;
 
 public class PertSConstraint extends AbstractResourceSConstraint implements IPrecedenceNetwork {
 
@@ -67,7 +68,7 @@ public class PertSConstraint extends AbstractResourceSConstraint implements IPre
 		propagationControlMakespan = env.makeBool(false);
 		allpaths = new int[n];
 	}
-	
+
 
 	@Override
 	public void awake() throws ContradictionException {
@@ -87,18 +88,13 @@ public class PertSConstraint extends AbstractResourceSConstraint implements IPre
 				updateDuration(orig,idx);
 				allpaths[idx] = Math.max(allpaths[idx], allpaths[orig]+ taskvars[orig].getMinDuration());
 			}
-			if(taskvars[idx].start().updateInf(allpaths[idx], getCIndiceStart(idx))) {
-				updateCompulsoryPart(idx);
-			}
+			rtasks[idx].updateEST(allpaths[idx]);
 		}
 		propagationControlInf.set(false);
 	}
 
 	protected void updateDuration(final int i, final int j) throws ContradictionException {
-		IntDomainVar d = taskvars[i].duration();
-		if(! taskvars[i].duration().isInstantiated()) {
-			d.updateSup( taskvars[j].getLST() - taskvars[i].getEST(), getCIndiceDuration(i));
-		}
+		rtasks[i].updateMaxDuration(taskvars[j].getLST() - taskvars[i].getEST());		
 	}
 
 	public final void propagateUpperBounds() throws ContradictionException {
@@ -112,9 +108,7 @@ public class PertSConstraint extends AbstractResourceSConstraint implements IPre
 				updateDuration(idx, dest);
 				allpaths[idx] = Math.min(allpaths[idx], allpaths[dest]- taskvars[idx].getMinDuration());
 			}
-			if(taskvars[idx].start().updateSup(allpaths[idx], getCIndiceStart(idx))) {
-				updateCompulsoryPart(idx);
-			}
+			rtasks[idx].updateLST(allpaths[idx]);
 		}
 		propagationControlMakespan.set(false);
 		propagationControlSup.set(false);
@@ -126,7 +120,7 @@ public class PertSConstraint extends AbstractResourceSConstraint implements IPre
 	@Override
 	public void awakeOnInf(int varIdx) throws ContradictionException {
 		if(varIdx < taskIntVarOffset) {
-			updateCompulsoryPart(varIdx % getNbTasks() );
+			rtasks[varIdx % getNbTasks()].updateCompulsoryPart();
 			propagationControlInf.set(true);
 			this.constAwake(false);
 		}
@@ -136,7 +130,7 @@ public class PertSConstraint extends AbstractResourceSConstraint implements IPre
 	@Override
 	public void awakeOnInst(int idx) throws ContradictionException {
 		if(idx < taskIntVarOffset) {
-			updateCompulsoryPart(idx % getNbTasks() );
+			rtasks[idx % getNbTasks()].updateCompulsoryPart();
 			propagationControlInf.set(true);
 			propagationControlSup.set(true);
 		}else {propagationControlMakespan.set(true);}
@@ -147,7 +141,7 @@ public class PertSConstraint extends AbstractResourceSConstraint implements IPre
 	@Override
 	public void awakeOnSup(int varIdx) throws ContradictionException {
 		if(varIdx < taskIntVarOffset) {
-			updateCompulsoryPart(varIdx % getNbTasks() );
+			rtasks[varIdx % getNbTasks()].updateCompulsoryPart();
 			propagationControlSup.set(true);
 		}else {propagationControlMakespan.set(true);}
 		this.constAwake(false);
@@ -225,6 +219,26 @@ public class PertSConstraint extends AbstractResourceSConstraint implements IPre
 	}
 
 
+	@Override
+	public boolean isSatisfied(final int[] tuple) {
+		final int[] order= network.getTopologicalOrder();
+		for (int i = 0; i < order.length; i++) {
+			final int idx=order[i];
+			//allpaths[idx]=this.taskvars[idx].getEST();
+			final TIntArrayList pred = network.getPredecessors(idx);
+			if(!pred.isEmpty()) {
+				TIntProcedure checkPred = new TIntProcedure() {
+					@Override
+					public boolean execute(int arg0) {
+						return tuple[idx] >= tuple[startOffset + arg0];
+					}
+				};
+				if( ! pred.forEach(checkPred)) {return false;}
+			}
+		}
+		return true;
+	}
+
 
 	@Override
 	public String toDotty() {
@@ -237,6 +251,7 @@ public class PertSConstraint extends AbstractResourceSConstraint implements IPre
 		buffer.append(network.toDotty());
 		return new String(buffer);
 	}
+
 
 
 

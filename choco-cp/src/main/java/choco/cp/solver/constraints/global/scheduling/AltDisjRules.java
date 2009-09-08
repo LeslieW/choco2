@@ -51,9 +51,9 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 
 	protected AltDisjTreeTL altDisjTreeTL;
 
-	public AltDisjRules(final IEnvironment env, final IRTask[] rtasks) {
+	public AltDisjRules(final IRTask[] rtasks) {
 		super(rtasks);
-		size = env.makeIntProcedure(this, rtasks.length);
+		size = rtasks[0].getTaskVar().getSolver().getEnvironment().makeIntProcedure(this, rtasks.length);
 		rqueue = new AltBipartiteQueue<IRTask>(rtasks);
 		altDisjTreeTL = new AltDisjTreeTL(Arrays.asList(getTaskArray()));
 	}

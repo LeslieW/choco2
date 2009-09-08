@@ -187,22 +187,24 @@ public class Disjunctive extends AbstractResourceSConstraint {
 		}
 	}
 
+
+	
+	
 	@Override
 	public boolean isSatisfied(int[] tuple) {
 		final int n = getNbTasks();
 		IPermutation permutation = PermutationUtils.getSortingPermuation(Arrays.copyOf(tuple, n));
-		int last = 0, sidx, end;
+		int last = 0, tidx;
 		for (int i = 0; i < n; i++) {
-			sidx = permutation.getOriginalIndex(i);
-			end = tuple[sidx + n];
-			if( tuple[sidx] < last || //starts after the previous task.
-					tuple[sidx] + tuple[sidx + 2* n] != end //s_i + p_i != e_i !
-			) {
-				return false;
+			tidx = permutation.getOriginalIndex(i);
+			if( !isTaskSatisfied(tuple, tidx)) return false; //s_i + p_i != e_i
+			else if(isRegular(tuple, tidx)) {
+				//check that a regular task does not overlap with the previous one
+				if( tuple[tidx] < last) return false;
+				last = tuple[ startOffset + tidx];
 			}
-			last = end;
 		}
-		if(last > tuple[tuple.length - 2]) {return false;} //check makespan
+		if(last > tuple[indexUB]) {return false;} //check makespan
 		return true;
 	}
 
