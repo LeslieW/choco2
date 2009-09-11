@@ -185,8 +185,9 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 	@Override
 	public String pretty() {
 		StringBuilder b = new StringBuilder();
-		b.append(this.toString());
-		b.append("tasks");
+		b.append("impl ");
+		b.append(this.getClass().getSimpleName());
+		b.append(" tasks");
 		b.append(StringUtils.pretty(taskvars));
 		if( vars.length > taskIntVarOffset) {
 			b.append("\nintvars");

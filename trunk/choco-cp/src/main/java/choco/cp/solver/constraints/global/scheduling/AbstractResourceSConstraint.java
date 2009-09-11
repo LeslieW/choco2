@@ -305,12 +305,12 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 			boolean fixPoint;
 			do {
 				fixPoint = false;
-				fixPoint |= s.updateInf(e.getInf() - d.getSup(), taskIdx);
-				fixPoint |= s.updateSup(e.getSup() - d.getInf(), taskIdx);
-				fixPoint |= e.updateInf(s.getInf() + d.getInf(), eidx);
-				fixPoint |= e.updateSup(s.getSup() + d.getSup(), eidx);
-				fixPoint |= d.updateInf(e.getInf() - s.getSup(), didx);
-				fixPoint |= d.updateSup(e.getSup() - s.getInf(), didx);
+				fixPoint |= s.updateInf(e.getInf() - d.getSup(), cIndices[taskIdx]);
+				fixPoint |= s.updateSup(e.getSup() - d.getInf(), cIndices[taskIdx]);
+				fixPoint |= e.updateInf(s.getInf() + d.getInf(), cIndices[eidx]);
+				fixPoint |= e.updateSup(s.getSup() + d.getSup(), cIndices[eidx]);
+				fixPoint |= d.updateInf(e.getInf() - s.getSup(), cIndices[didx]);
+				fixPoint |= d.updateSup(e.getSup() - s.getInf(), cIndices[didx]);
 			}while (fixPoint);
 		}
 
