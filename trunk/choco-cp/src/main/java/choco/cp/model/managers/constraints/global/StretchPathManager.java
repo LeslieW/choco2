@@ -57,14 +57,14 @@ public class StretchPathManager extends IntConstraintManager {
         if (solver instanceof CPSolver) {
 
             if (parameters instanceof List) {
-                List stretchParameters = (List)parameters;
+                List<int[]> stretchParameters = (List<int[]>)parameters;
 
                 IntDomainVar[] vars = solver.getVar((IntegerVariable[]) variables);
 
                 IntDomainVar[] tmpVars = new IntDomainVar[vars.length];
                 System.arraycopy(vars, 0, tmpVars, 0, vars.length);
 
-                ArrayList alphabet = new ArrayList();
+                ArrayList<Integer> alphabet = new ArrayList<Integer>();
                 for (int i = 0; i < vars.length; i++) {
                     DisposableIntIterator it = tmpVars[i].getDomain().getIterator();
                     for ( ; it.hasNext();) {
@@ -77,14 +77,12 @@ public class StretchPathManager extends IntConstraintManager {
                 }
 
                 int nbStates = 1;
-                Hashtable tab = new Hashtable();
+                Hashtable<Integer, Integer> tab = new Hashtable<Integer, Integer>();
                 List<Transition> t = new LinkedList<Transition>();
                 List<Integer> fs = new LinkedList<Integer>();
                 fs.add(0);
 
-                for (int i = 0; i < stretchParameters.size(); i++) {
-                    int[] stretchParameter1 = (int[]) stretchParameters.get(i);
-                    int[] vals = stretchParameter1;
+                for (int[] vals : stretchParameters) {
                     int valState = nbStates++;
                     tab.put(vals[0], valState);
                     t.add(new Transition(0, vals[0], valState));
@@ -93,18 +91,14 @@ public class StretchPathManager extends IntConstraintManager {
                     }
                 }
 
-                for (int i = 0; i < alphabet.size(); i++) {
-                    Object anAlphabet1 = alphabet.get(i);
-                    int val = (Integer) anAlphabet1;
+                for (Integer val : alphabet) {
                     if (!tab.containsKey(val)) {
                         t.add(new Transition(0, val, 0));
                     }
                 }
 
-                for (int i = 0; i < stretchParameters.size(); i++) {
-                    int[] stretchParameter = (int[]) stretchParameters.get(i);
-                    int[] vals = stretchParameter;
-                    int lastState = (Integer) tab.get(vals[0]);
+                for (int[] vals : stretchParameters) {
+                    int lastState = tab.get(vals[0]);
                     for (int j = 2; j <= vals[2]; j++) {
                         int newState = nbStates++;
                         t.add(new Transition(lastState, vals[0], newState));
@@ -114,7 +108,7 @@ public class StretchPathManager extends IntConstraintManager {
                                 int val = (Integer) anAlphabet;
                                 if ((vals[0] != val)) {
                                     if (tab.containsKey(val)) {
-                                        int dest = (Integer) tab.get(val);
+                                        int dest = tab.get(val);
                                         t.add(new Transition(lastState, val, dest));
                                     } else {
                                         t.add(new Transition(lastState, val, 0));
@@ -129,12 +123,10 @@ public class StretchPathManager extends IntConstraintManager {
                         lastState = newState;
                     }
 
-                    for (int i1 = 0; i1 < alphabet.size(); i1++) {
-                        Object anAlphabet = alphabet.get(i1);
-                        int val = (Integer) anAlphabet;
+                    for (Integer val : alphabet) {
                         if (vals[0] != val) {
                             if (tab.containsKey(val)) {
-                                int dest = (Integer) tab.get(val);
+                                int dest = tab.get(val);
                                 t.add(new Transition(lastState, val, dest));
                             } else {
                                 t.add(new Transition(lastState, val, 0));

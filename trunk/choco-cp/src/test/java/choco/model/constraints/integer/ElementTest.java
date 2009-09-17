@@ -22,15 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.integer;
 
-import static choco.Choco.makeIntVar;
 import static choco.Choco.*;
-import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -365,6 +362,7 @@ public class ElementTest {
 	}
 	
 	@Test
+    //BUG ID: 2860512
 	public void testNthManager() {
 		IntegerVariable I = makeIntVar("index", 0, 2);
 		IntegerVariable V = makeIntVar("V", 0, 5);
@@ -373,6 +371,30 @@ public class ElementTest {
 		//ChocoLogging.setVerbosity(Verbosity.SOLUTION);
 		s.solveAll();
 		assertEquals(6, s.getSolutionCount());	
+	}
+
+    @Test
+    //BUG ID: 2860512
+    public void testNthManager2() {
+        IntegerVariable I = makeIntVar("index", 0, 2);
+        IntegerVariable V = makeIntVar("V", 0, 5);
+        m.addConstraint(nth(I, new IntegerVariable[]{constant(0),constant(1), constant(2)}, V));
+        s.read(m);
+        //ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+        s.solveAll();
+        assertEquals(3, s.getSolutionCount());
+    }
+
+    @Test
+    //BUG ID: 2860512
+	public void testNthManager3() {
+		IntegerVariable I = makeIntVar("index", 0, 2);
+		IntegerVariable V = makeIntVar("V", 0, 5);
+		m.addConstraint(nth(I, new IntegerVariable[]{makeIntVar("VV",0,1), makeIntVar("VV",1,2), makeIntVar("VV",2,3)}, V));
+		s.read(m);
+		//ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+		s.solveAll();
+		assertEquals(24, s.getSolutionCount());
 	}
 
 }
