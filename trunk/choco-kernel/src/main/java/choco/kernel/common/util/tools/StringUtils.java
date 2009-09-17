@@ -46,17 +46,18 @@ public class StringUtils {
      * @param str    string to be padded
      * @param padlen length of pad (+ve = pad on right, -ve pad on left)
      * @param pad    character
+     * @return padded string
      */
     public static String pad(String str, int padlen, String pad) {
-        String padding = new String();
-        int len = Math.abs(padlen) - str.length();
+        final StringBuffer padding = new StringBuffer();
+        final int len = Math.abs(padlen) - str.length();
         if (len < 1) {
             return str;
         }
         for (int i = 0; i < len; ++i) {
-            padding = padding + pad;
+            padding.append(pad);
         }
-        return (padlen < 0 ? padding + str : str + padding);
+        return (padlen < 0 ? padding.append(str).toString() : padding.insert(0,str).toString());
     }//*****************************************************************//
 
     //*******************  Pretty  ********************************//
