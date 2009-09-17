@@ -882,4 +882,44 @@ public class RegularTest {
         }
     }
 
+    @Test
+    /**
+     * BUG ID: 2859126
+     */
+    public void stretchPath1() {
+        Model model = new CPModel();
+        Solver solver = new CPSolver();
+
+        IntegerVariable[] vars = makeIntVarArray("int", 2, 1,2);
+
+        List<int[]> tuples = new ArrayList<int[]>();
+        tuples.add(new int[]{1, 1, 1});
+        tuples.add(new int[]{2, 1, 1});
+
+        model.addConstraint(stretchPath(tuples, vars));
+        solver.read(model);
+        solver.solveAll();
+        Assert.assertEquals(2, solver.getNbSolutions());
+    }
+
+    @Test
+    /**
+     * BUG ID: 2859126
+     */
+    public void stretchPath2() {
+        Model model = new CPModel();
+        Solver solver = new CPSolver();
+
+        IntegerVariable[] vars = makeIntVarArray("int", 2, 1,2);
+
+        List<int[]> tuples = new ArrayList<int[]>();
+        tuples.add(new int[]{1, 1, 1});
+
+        model.addConstraint(stretchPath(tuples, vars));
+        solver.read(model);
+        solver.solveAll();
+
+        Assert.assertEquals(3, solver.getNbSolutions());
+    }
+
 }

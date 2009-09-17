@@ -28,13 +28,14 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.Element;
 import choco.cp.solver.constraints.integer.Element2D;
 import choco.cp.solver.constraints.integer.ElementV;
+import choco.cp.solver.constraints.reified.ExpressionSConstraint;
+import choco.cp.solver.constraints.reified.leaves.VariableLeaf;
 import choco.cp.solver.constraints.reified.leaves.bool.AndNode;
 import choco.cp.solver.constraints.reified.leaves.bool.EqNode;
-import choco.cp.solver.constraints.reified.leaves.bool.OrNode;
 import choco.cp.solver.constraints.reified.leaves.bool.NeqNode;
-import choco.cp.solver.constraints.reified.leaves.VariableLeaf;
-import choco.cp.solver.constraints.reified.ExpressionSConstraint;
+import choco.cp.solver.constraints.reified.leaves.bool.OrNode;
 import choco.kernel.model.variables.Variable;
+import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -68,11 +69,18 @@ public class ElementManager extends IntConstraintManager{
                 int offset = (Integer)parameters;
                 IntDomainVar index = solver.getVar((IntegerVariable)variables[variables.length-2]);
                 IntDomainVar val = solver.getVar((IntegerVariable)variables[variables.length-1]);
-                if(variables[0] instanceof IntegerConstantVariable){
-                    int[] values = new int[variables.length-2];
-                    for(int i = 0; i < variables.length-2; i++){
+                // BUG 2860512 : check every type is mandatory
+                int[] values = new int[variables.length-2];
+                boolean areConstants = true;
+                for(int i = 0; i < variables.length-2; i++){
+                    if(variables[i].getVariableType().equals(VariableType.CONSTANT_INTEGER)){
                         values[i] = ((IntegerConstantVariable)variables[i]).getValue();
+                    }else{
+                        areConstants = false;
+                        break;
                     }
+                }
+                if(areConstants){
                     return new Element(index, values, val, offset);
                 }else{
                     if (index.hasEnumeratedDomain()) {
