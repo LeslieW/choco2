@@ -5,13 +5,25 @@
     <version>2.1.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>choco-cp</artifactId>
+  <artifactId>choco-parsers</artifactId>
   <packaging>jar</packaging>
-  <name>CHOCO Constraint Programming</name>
+  <name>CHOCO Parsers</name>
   <dependencies>
     <dependency>
       <groupId>choco</groupId>
-      <artifactId>choco-kernel</artifactId>
+      <artifactId>choco-cp</artifactId>
+    </dependency>
+      <dependency>
+        <groupId>org.apache.axis2</groupId>
+        <artifactId>axis2-xmlbeans</artifactId>
+        <version>1.4.1</version>
+        <scope>compile</scope>
+    </dependency>
+      <dependency>
+        <groupId>minizinc</groupId>
+        <artifactId>flatzinc-jtypes</artifactId>
+        <version>1.0</version>
+        <scope>compile</scope>
     </dependency>
   </dependencies>
   <reporting>
@@ -66,7 +78,7 @@
   <distributionManagement>
 	<site>
             <id>choco-repo</id>
-            <url>${choco-dir}/choco-cp</url>
+            <url>${choco-dir}/choco-parser</url>
         </site>
   </distributionManagement>
 </project>

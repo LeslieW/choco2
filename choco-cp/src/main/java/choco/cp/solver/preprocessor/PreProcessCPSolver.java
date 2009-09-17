@@ -48,7 +48,6 @@ import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import gnu.trove.TIntObjectHashMap;
-import parser.chocogen.XmlModel;
 
 import java.util.*;
 
@@ -750,8 +749,8 @@ public class PreProcessCPSolver extends CPSolver {
      * @param timelimit the time limit to respect
      * @return boolean
      */
-	public boolean rootNodeSingleton(int timelimit) {
-		if (!XmlModel.doSingleton()) return true;
+	public boolean rootNodeSingleton(boolean doSingleton, int timelimit) {
+		if (!doSingleton) return true;
         boolean sched = isScheduling();
         int time = (int) System.currentTimeMillis();
         if (proptime <= 1500) {
