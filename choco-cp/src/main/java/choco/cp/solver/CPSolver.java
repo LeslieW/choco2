@@ -2263,10 +2263,10 @@ public class CPSolver implements Solver {
 		.append("\n");
 
 		// Check variables
-		isSolution &= checkDecisionVariables(st);
+        isSolution &= checkDecisionVariables((logged?st:null));
 
 		// Check constraints
-		isSolution &= checkConstraints(st, enableConsistency);
+		isSolution &= checkConstraints((logged?st:null), enableConsistency);
 
 		st.append("\n");
 		if (isSolution) {
@@ -2288,8 +2288,8 @@ public class CPSolver implements Solver {
 	 * @return true if all variables are instantiated
 	 */
 	public boolean checkDecisionVariables() {
-		return checkDecisionVariables(new StringBuffer());
-	}
+        return checkDecisionVariables(null);
+    }
 
 	/**
 	 * Check wether every decisions variables are instantiated
@@ -2302,32 +2302,32 @@ public class CPSolver implements Solver {
 		if (intDecisionVars != null) {
 			for (IntDomainVar intDecisionVar : intDecisionVars) {
 				if (!intDecisionVar.isInstantiated()) {
-					st.append(StringUtils.pad(""+intDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
+                    if(st!=null)st.append(StringUtils.pad(""+intDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
 					isOk = false;
 				}else{
-					st.append(StringUtils.pad(""+intDecisionVar.getName(), 100, ".")).append("ok\n");
-				}
+                    if(st!=null)st.append(StringUtils.pad(""+intDecisionVar.getName(), 100, ".")).append("ok\n");
+                }
 			}
 		}
 
 		if (setDecisionVars != null) {
 			for (SetVar setDecisionVar : setDecisionVars) {
 				if (!setDecisionVar.isInstantiated()) {
-					st.append(StringUtils.pad(""+setDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
+                    if(st!=null)st.append(StringUtils.pad(""+setDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
 					isOk = false;
 				}else{
-					st.append(StringUtils.pad(""+setDecisionVar.getName(), 100, ".")).append("ok\n");
-				}
+                    if(st!=null)st.append(StringUtils.pad(""+setDecisionVar.getName(), 100, ".")).append("ok\n");
+                }
 			}
 		}
 
 		if (floatDecisionVars != null) {
 			for (RealVar floatDecisionVar : floatDecisionVars) {
 				if (!floatDecisionVar.isInstantiated()) {
-					st.append(StringUtils.pad(""+floatDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
+					if(st!=null)st.append(StringUtils.pad(""+floatDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
 					isOk = false;
 				}else{
-					st.append(StringUtils.pad(""+floatDecisionVar.getName(), 100, ".")).append("ok\n");
+					if(st!=null)st.append(StringUtils.pad(""+floatDecisionVar.getName(), 100, ".")).append("ok\n");
 				}
 			}
 		}
@@ -2340,7 +2340,7 @@ public class CPSolver implements Solver {
 	 * @return boolean
 	 */
 	public boolean checkConstraints(boolean enableConsistency){
-		return checkConstraints(new StringBuffer(), enableConsistency);
+		return checkConstraints(null, enableConsistency);
 	}
 
 	/**
@@ -2375,25 +2375,25 @@ public class CPSolver implements Solver {
 				}
 				if(fullInstantiated){
 					if(ic.isSatisfied(tuple)){
-						st.append(StringUtils.pad(""+ic.pretty(), 200, ".")).append("ok\n");
+						if(st!=null)st.append(StringUtils.pad(""+ic.pretty(), 200, ".")).append("ok\n");
 					}else{
-						st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ko <= WARNING!\n");
+						if(st!=null)st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ko <= WARNING!\n");
 						isOk = false;
 					}
 				}else if(enableConsistency){
 					if(ic.isSatisfied(tupleL) && ic.isSatisfied(tupleU)){
-						st.append(StringUtils.pad(""+ic.pretty(), 200, ".")).append("ok\n");
+						if(st!=null)st.append(StringUtils.pad(""+ic.pretty(), 200, ".")).append("ok\n");
 					}else{
-						st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ko <= WARNING!\n");
-						st.append("=> NOT CONSISTENT\n");
+						if(st!=null)st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ko <= WARNING!\n");
+						if(st!=null)st.append("=> NOT CONSISTENT\n");
 						isOk = false;
 					}
 				}
 			}else{
 				if(c.isSatisfied()){
-					st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ok\n");
+					if(st!=null)st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ok\n");
 				}else{
-					st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ko <= WARNING!\n");
+					if(st!=null)st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ko <= WARNING!\n");
 					isOk = false;
 				}
 			}
