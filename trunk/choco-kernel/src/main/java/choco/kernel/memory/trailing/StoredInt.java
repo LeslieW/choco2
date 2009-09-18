@@ -44,16 +44,11 @@ public class StoredInt extends AbstractStoredObject implements IStateInt {
 	 * Note: this constructor should not be used directly: one should instead
 	 * use the IEnvironment factory
 	 */
-
-	public StoredInt(EnvironmentTrailing env, int i) {
+    public StoredInt(EnvironmentTrailing env, int i) {
 		super(env);
 		currentValue = i;
 		trail = (StoredIntTrail) this.environment.getTrail(choco.kernel.memory.IEnvironment.INT_TRAIL);
 	}
-
-
-
-
 
 	@Override
 	public final void add(final int delta) {

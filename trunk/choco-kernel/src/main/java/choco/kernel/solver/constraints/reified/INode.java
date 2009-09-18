@@ -50,6 +50,8 @@ public abstract class INode implements IPretty {
 
     private final NodeType type;
 
+    private IntDomainVar[] scope;
+
     public INode(NodeType type) {
         this.type = type;
     }
@@ -71,21 +73,25 @@ public abstract class INode implements IPretty {
     /**
      * Compute the set of solver variable involved in this predicat
      *
-     * @return
+     * @param s container solver
+     * @return array of variable in the scope
      */
     public IntDomainVar[] getScope(Solver s) {
         if (subtrees == null) {
             return null;
         }
-        if (subtrees.length == 1) {
-            return subtrees[0].getScope(s);
-        } else {
-            IntDomainVar[] vars = union(subtrees[0].getScope(s), subtrees[1].getScope(s));
-            for (int i = 2; i < subtrees.length; i++) {
-                vars = union(vars, subtrees[i].getScope(s));
+        if(scope==null){
+            if (subtrees.length == 1) {
+                scope = subtrees[0].getScope(s);
+            } else {
+                IntDomainVar[] vars = union(subtrees[0].getScope(s), subtrees[1].getScope(s));
+                for (int i = 2; i < subtrees.length; i++) {
+                    vars = union(vars, subtrees[i].getScope(s));
+                }
+                scope =vars;
             }
-            return vars;
         }
+        return scope;
     }
 
 
@@ -130,19 +136,20 @@ public abstract class INode implements IPretty {
      * @return
      */
     public IntDomainVar[] union(IntDomainVar[] t1, IntDomainVar[] t2) {
-        TLongArrayList indexes = new TLongArrayList();
-        IntDomainVar[] unionset = new IntDomainVar[(t1==null?0:t1.length)+(t2==null?0:t2.length)];
+
+        TLongArrayList indexes = new TLongArrayList(t1.length + t2.length);
+        IntDomainVar[] unionset = new IntDomainVar[t1.length + t2.length];
         int indice = 0;
-        for (int i = 0; t1 != null && i < t1.length; i++) {
-            if (t1[i]!=null && !indexes.contains(t1[i].getIndex())) {
-                indexes.add(t1[i].getIndex());
-                unionset[indice++] = t1[i];
+        for (IntDomainVar var : t1) {
+            if (!indexes.contains(var.getIndex())) {
+                indexes.add(var.getIndex());
+                unionset[indice++] = var;
             }
         }
-        for (int i = 0; t2 != null && i < t2.length; i++) {
-            if (t2[i]!=null && !indexes.contains(t2[i].getIndex())) {
-                indexes.add(t2[i].getIndex());
-                unionset[indice++] = t2[i];
+        for (IntDomainVar var : t2) {
+            if (!indexes.contains(var.getIndex())) {
+                indexes.add(var.getIndex());
+                unionset[indice++] = var;
             }
         }
         IntDomainVar[] uniontab = new IntDomainVar[indice];

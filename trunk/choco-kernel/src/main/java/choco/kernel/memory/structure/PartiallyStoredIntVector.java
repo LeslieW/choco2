@@ -36,8 +36,8 @@ import choco.kernel.memory.IStateInt;
  * manner, as if they were in a StoredIntVector
  */
 public class PartiallyStoredIntVector {
-  public static final int INITIAL_STATIC_CAPACITY = 16;
-  public static final int INITIAL_STORED_CAPACITY = 16;
+  static final int INITIAL_STATIC_CAPACITY = 16;
+  static final int INITIAL_STORED_CAPACITY = 16;
   public static final int STORED_OFFSET = 1000000;
 
   protected int[] staticInts;
