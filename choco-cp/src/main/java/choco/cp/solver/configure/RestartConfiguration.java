@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.configure;
 
+import choco.IPretty;
 import choco.kernel.solver.search.restart.GeometricalRestartStrategy;
 import choco.kernel.solver.search.restart.LubyRestartStrategy;
 import choco.kernel.solver.search.restart.UniversalRestartStrategy;
@@ -30,7 +31,7 @@ import choco.kernel.solver.search.restart.UniversalRestartStrategy;
  * @since 27 juil. 2009 version 2.1.1</br>
  * @version 2.1.1</br>
  */
-public class RestartConfiguration {
+public class RestartConfiguration implements IPretty {
 
 	/**
 	 * do we want to learn nogood from restart <br>
@@ -41,14 +42,14 @@ public class RestartConfiguration {
 	 * 
 	 */
 	public boolean recordNogoodFromRestart = false;
-	
+
 
 	/**
 	 * Do we want to restart a new search after each solution. This is relevant
 	 * in the context of optimization
 	 */
 	public boolean restartAfterEachSolution = false;
-	
+
 	/**
 	 * should we reinitialize the search (branching) after a restart. 
 	 * For example, this is relevant with Dom/WDeg search heuristics.
@@ -84,9 +85,6 @@ public class RestartConfiguration {
 		this.restartAfterEachSolution = restartAfterEachSolution;
 	}
 
-	public final UniversalRestartStrategy getRestartPolicy() {
-		return restartStrategy;
-	}
 
 	public final void setLubyRestartPolicy(int base, int grow) {
 		this.restartStrategy = new LubyRestartStrategy(base, grow);
@@ -100,7 +98,7 @@ public class RestartConfiguration {
 		this.restartStrategy = restartPolicy;
 	}
 
-	
+
 
 	public final boolean isInitializingSearchAfterRestart() {
 		return initializeSearchAfterRestart;
@@ -121,10 +119,29 @@ public class RestartConfiguration {
 		initializeSearchAfterRestart = true;
 		setRecordNogoodFromRestart(false);
 	}
-	
+
 	public final void reset() {
 		cancelRestarts();
 		recordNogoodFromRestart = false;
 	}
+
+	@Override
+	public String pretty() {
+		if( restartAfterEachSolution || restartStrategy != null) {
+			final StringBuilder b = new StringBuilder();
+			if(restartStrategy != null) b.append(restartStrategy.pretty()).append(' ');
+			if(restartAfterEachSolution) b.append("FROM_SOLUTION ");
+			if( recordNogoodFromRestart) b.append("NOGOOD_RECORDING ");
+			return b.toString();
+		} else return "NO_RESTARTS";
+	}
+
+	@Override
+	public String toString() {
+		return pretty();
+	}
+
+
+
 
 }

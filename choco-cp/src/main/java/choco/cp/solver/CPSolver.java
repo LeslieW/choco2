@@ -792,7 +792,7 @@ public class CPSolver implements Solver {
 		limitManager.setRestartLimit(limitConfig.makeRestartLimit(strategy)); //controlling the restart
 		//controlling the restart strategy
 		limitManager.setRestartStrategy(
-				restartConfig.getRestartPolicy(), 
+				restartConfig.getRestartStrategy(), 
 				limitConfig.createLimit(strategy,limitConfig.getRestartStrategyLimitType(), Integer.MAX_VALUE)
 		); 
 		strategy.setLimitManager(limitManager);
@@ -1470,6 +1470,12 @@ public class CPSolver implements Solver {
 	 */
 	public void setRestart(boolean restart) {
 		restartConfig.setRestartAfterEachSolution(restart);
+	}
+	
+	
+
+	public final RestartConfiguration getRestartConfiguration() {
+		return restartConfig;
 	}
 
 	/**
