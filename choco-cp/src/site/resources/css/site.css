@@ -12,10 +12,11 @@
 }
 .xleft, #bannerLeft img {
   float:left;
-  color:#900
+  color:#d9bb7a;
   text-shadow: #7CFC00 1px 1px 1px;
 }
 .xright, #bannerRight {
   float:right;
+  color:#d9bb7a;
   text-shadow: #7CFC00 1px 1px 1px;
 }

@@ -26,7 +26,6 @@ import choco.kernel.common.HashCoding;
 import choco.kernel.common.IndexFactory;
 import choco.kernel.model.ModelException;
 
-import java.util.Arrays;
 import java.util.HashSet;
 
 
@@ -56,10 +55,13 @@ public abstract class AbstractVariable implements Variable, Comparable{
 	}
 
     public void addOption(String opts) {
-		if (opts != null && !"".equals(opts)) {
-			String[] optionsStrings = opts.split(" ");
-            options.addAll(Arrays.asList(optionsStrings));
-		}
+        int d = 0;
+        int f = opts.indexOf(" ", d);
+        while(f!=-1){
+            options.add(opts.substring(d,f));
+            d = f;
+        }
+        options.add(opts.substring(d));
 	}
 
     public final void addOptions(String[] options) {
