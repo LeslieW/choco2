@@ -39,12 +39,12 @@ public class PartiallyStoredVector<E> {
     /**
      * Initial capacity of array of static objects
      */
-  public static final int INITIAL_STATIC_CAPACITY = 16;
+  static final int INITIAL_STATIC_CAPACITY = 16;
 
     /**
      * Initial capacity of the array of stored objects
      */
-  public static final int INITIAL_STORED_CAPACITY = 16;
+  static final int INITIAL_STORED_CAPACITY = 16;
 
     /**
      * Default offset.
@@ -55,21 +55,21 @@ public class PartiallyStoredVector<E> {
     /**
      * objects stored statically
      */
-  protected E[] staticObjects;
+  E[] staticObjects;
     /**
      * objects stored dynamically
      */
-  protected E[] storedObjects;
+  E[] storedObjects;
 
     /**
      * Number of static objects
      */
-  protected int nStaticObjects;
+  int nStaticObjects;
 
     /**
      * number of stored objects
      */
-  protected IStateInt nStoredObjects;
+  IStateInt nStoredObjects;
 
     /**
      * Constructor
