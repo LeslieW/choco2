@@ -96,10 +96,10 @@ public class PackModeler {
 		this.maxCapacity=capacity;
 		this.nbItems = sizes.length;
 		this.nbBins = nbBins;
-		this.bins = makeIntVarArray("bin-"+name, nbItems, 0, this.nbBins-1, "cp:enum");
+		this.bins = makeIntVarArray("B"+name, nbItems, 0, this.nbBins-1, "cp:enum");
 		//this.bins = makeIntVarArray("bin"+name, nbItems, 0, this.nbBins-1, "cp:bound");
-		this.itemSets = makeSetVarArray("itemSet-"+name, this.nbBins, 0, this.nbItems-1,"cp:bound");
-		this.loads = makeIntVarArray("load-"+name, this.nbBins, 0,this.maxCapacity, "cp:bound");
+		this.itemSets = makeSetVarArray("S"+name, this.nbBins, 0, this.nbItems-1,"cp:bound");
+		this.loads = makeIntVarArray("L"+name, this.nbBins, 0,this.maxCapacity, "cp:bound");
 		this.nbNonEmpty = makeIntVar("nbNonEmpty-"+name,0, this.nbBins, "cp:bound");
 		this.nbEmpty = makeIntVar("nbEmpty-"+name,0, this.nbBins, "cp:bound");
 		//handle permutation

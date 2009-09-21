@@ -422,7 +422,22 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 
 	@Override
 	public boolean isSatisfied() {
-		return filtering.availableBins.isEmpty();
+		
+		int[] l = new int[loads.length];
+		int[] c = new int[loads.length];
+		for (int i = 0; i < bins.length; i++) {
+			final int b =  bins[i].getVal();
+				if( ! svars[b].isInDomainKernel(i)) return false; //check channeling
+				l[b] += sizes[i].getVal();
+				c[b] ++;
+		}
+		int nbb = 0;
+		for (int i = 0; i < loads.length; i++) {
+			if( svars[i].getCard().getVal() != c[i]) return false; //check cardinality
+			if( loads[i].getVal() != l[i]) return false; //check load
+			if( c[i] != 0) {nbb++;}
+		}
+		return ivars[ivars.length-1].getVal() == nbb; //check number of bins
 	}
 
 
