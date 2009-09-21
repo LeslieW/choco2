@@ -176,7 +176,7 @@ public class TestCumulative {
 			solve(cp, nbSol, nbNodes);
 			setOption(cp, MIXED);
 			solve(cp, nbSol, nbNodes);
-
+			
 		}
 	}
 

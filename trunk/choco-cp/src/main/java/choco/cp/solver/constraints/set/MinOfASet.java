@@ -273,6 +273,19 @@ public class MinOfASet extends AbstractBoundOfASet {
 			}
 		}
 	}
+	
+	@Override
+	public boolean isSatisfied() {
+		DisposableIntIterator iter = svars[SET_INDEX].getDomain().getKernelIterator();
+		if( iter.hasNext()) {
+			int v = Integer.MAX_VALUE;
+			while(iter.hasNext()) {
+				v = Math.min(v, ivars[VARS_OFFSET +iter.next()].getVal());
+			}
+			return v == ivars[BOUND_INDEX].getVal(); 
+		}
+		return true;
+	}
 
 	@Override
 	public String pretty() {

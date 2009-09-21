@@ -59,7 +59,7 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 	public static final int VARS_OFFSET = 1;
 
 	protected final static int SET_EVENTMASK = SetVarEvent.INSTSETEVENT + SetVarEvent.KEREVENT + SetVarEvent.ENVEVENT;
-	
+
 	protected final static int INT_EVENTMASK = IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
 
 	public AbstractBoundOfASet(IntVar[] intvars, SetVar setvar) {
@@ -69,7 +69,7 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 		}
 	}
 
-	
+
 
 	@Override
 	public int getFilteredEventMask(int idx) {
@@ -147,16 +147,11 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 	}
 
 
-
 	@Override
 	public boolean isConsistent() {
 		return false;
 	}
 
-	@Override
-	public boolean isSatisfied() {
-		return false;
-	}
 
 
 	protected String pretty(String operator) {
@@ -209,7 +204,7 @@ public class MaxOfASet extends AbstractBoundOfASet {
 		while(iter.hasNext()) {
 			removeGreaterFromEnv(iter.next(), maxValue);
 		}
-        iter.dispose();
+		iter.dispose();
 		return update;
 	}
 
@@ -230,7 +225,7 @@ public class MaxOfASet extends AbstractBoundOfASet {
 				maxMax2 = val;
 			}
 		}
-        iter.dispose();
+		iter.dispose();
 		if (maxMax2 < ivars[BOUND_INDEX].getInf()) {
 			this.indexOfMaximumVariable.set(maxMaxIdx);
 
@@ -267,7 +262,7 @@ public class MaxOfASet extends AbstractBoundOfASet {
 			int val = ivars[VARS_OFFSET+iter.next()].getInf();
 			if(val>max) {max=val;}
 		}
-        iter.dispose();
+		iter.dispose();
 		return max;
 	}
 
@@ -281,7 +276,7 @@ public class MaxOfASet extends AbstractBoundOfASet {
 				int val = ivars[VARS_OFFSET+iter.next()].getSup();
 				if(val>max) {max=val;}
 			}
-            iter.dispose();
+			iter.dispose();
 			return max;
 		}else {
 			return Integer.MAX_VALUE;
@@ -295,7 +290,7 @@ public class MaxOfASet extends AbstractBoundOfASet {
 			final int i = VARS_OFFSET+iter.next();
 			ivars[i].updateSup(maxValue, int_cIndices[i]);
 		}
-        iter.dispose();
+		iter.dispose();
 	}
 
 	/**
@@ -432,6 +427,19 @@ public class MaxOfASet extends AbstractBoundOfASet {
 		}
 	}
 
+
+	@Override
+	public boolean isSatisfied() {
+		DisposableIntIterator iter = svars[SET_INDEX].getDomain().getKernelIterator();
+		if( iter.hasNext()) {
+			int v = Integer.MIN_VALUE;
+			while(iter.hasNext()) {
+				v = Math.max(v, ivars[VARS_OFFSET +iter.next()].getVal());
+			}
+			return v == ivars[BOUND_INDEX].getVal(); 
+		}
+		return true;
+	}
 
 	@Override
 	public String pretty() {

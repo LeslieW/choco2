@@ -291,13 +291,13 @@ public final class ChocoLogging {
 
 
 	private static void setCommon() {
-		setLevel(Level.FINEST, getChocoLogger(),getKernelLogger(),getAPILogger());
 		setLevel(Level.WARNING, getBranchingLogger(), getTestLogger(), getEngineLogger());
 		setLevel(Level.INFO, 
 				getSearchLogger(), 
 				getUserLogger(), getSamplesLogger(), 
 				getAPILogger(),getModelLogger(),getSolverLogger(),getParserLogger()
 		);
+		setLevel(Level.FINEST, getChocoLogger(),getKernelLogger(),getAPILogger());
 	}
 	
 
@@ -328,7 +328,7 @@ public final class ChocoLogging {
 		}
 		case VERBOSE: {
 			setCommon();
-			setLevel(Level.CONFIG,getSearchLogger());
+			setLevel(Level.CONFIG,getSearchLogger(), getParserLogger());
 			break;
 		}
 		case SOLUTION: { 
