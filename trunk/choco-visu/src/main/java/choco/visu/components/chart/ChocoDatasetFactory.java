@@ -1,7 +1,6 @@
 package choco.visu.components.chart;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -19,7 +18,7 @@ import org.jfree.data.time.TimeTableXYDataset;
 import org.jfree.data.xy.XYSeries;
 
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.pack.PrimalDualPack;
+import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.constraints.pack.PackModeler;
@@ -29,7 +28,6 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
 import choco.kernel.solver.constraints.global.scheduling.IResource;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.ITask;
@@ -165,7 +163,7 @@ public final class ChocoDatasetFactory {
 		Iterator<Constraint> cstr = s.getModel().getConstraintByType(ConstraintType.PACK);
 		CategoryDataset[] datasets = new CategoryDataset[n];
 		for (int i = 0; i < n; i++) {
-			PrimalDualPack pack = (PrimalDualPack) s.getCstr(cstr.next());
+			PackSConstraint pack = (PackSConstraint) s.getCstr(cstr.next());
 			datasets[i] = createPackDataset(pack.getNbBins(), pack.getBins(), pack.getSizes());
 		}
 		return datasets;

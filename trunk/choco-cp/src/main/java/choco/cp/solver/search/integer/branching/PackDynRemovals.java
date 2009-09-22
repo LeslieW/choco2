@@ -22,10 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.branching;
 
-import choco.cp.solver.constraints.global.pack.PrimalDualPack;
+import static choco.kernel.solver.ContradictionException.Type.UNKNOWN;
+import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
-import static choco.kernel.solver.ContradictionException.Type.UNKNOWN;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.search.integer.ValSelector;
@@ -41,11 +41,11 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public final class PackDynRemovals extends AssignVar {
 
-	public final PrimalDualPack pack;
+	public final PackSConstraint pack;
 
 
 	public PackDynRemovals(VarSelector varSel, ValSelector valHeuri,
-			PrimalDualPack pack) {
+			PackSConstraint pack) {
 		super(varSel, valHeuri);
 		this.pack = pack;
 	}

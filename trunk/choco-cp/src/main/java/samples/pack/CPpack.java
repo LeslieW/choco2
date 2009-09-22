@@ -22,11 +22,17 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.pack;
 
-import static choco.Choco.*;
+import static choco.Choco.geq;
+import static choco.Choco.leq;
+import static choco.Choco.pack;
+
+import java.util.Arrays;
+import java.util.logging.Logger;
+
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
-import choco.cp.solver.constraints.global.pack.PrimalDualPack;
+import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.branching.PackDynRemovals;
 import choco.cp.solver.search.integer.valselector.BestFit;
@@ -42,9 +48,6 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.integer.ValSelector;
-
-import java.util.Arrays;
-import java.util.logging.Logger;
 
 /**
  * @author Arnaud Malapert</br>
@@ -167,7 +170,7 @@ public class CPpack {
 
 
 	public void makeBranching(Solver s) {
-		final PrimalDualPack cstr = (PrimalDualPack) s.getCstr(pack);
+		final PackSConstraint cstr = (PackSConstraint) s.getCstr(pack);
 		VarSelector varsel = new StaticVarOrder(s.getVar(modeler.bins));
 		ValSelector valsel= branching==Branching.BASIC ? new MinVal() : new BestFit(cstr);
 		s.attachGoal( branching==Branching.DYN_RM ?

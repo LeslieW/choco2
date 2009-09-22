@@ -30,7 +30,7 @@ import java.util.HashSet;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.BitFlags;
-import choco.cp.solver.constraints.global.pack.PrimalDualPack;
+import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -71,7 +71,7 @@ public class PackManager extends IntConstraintManager {
 				IntDomainVar  nbNonEmpty = solver.getVar( (IntegerVariable) variables[v3]);
 				BitFlags flags = new BitFlags();
 				flags.readPackOptions(options);
-				return new PrimalDualPack(itemSets, loads, sizes, bins, nbNonEmpty, flags);
+				return new PackSConstraint(itemSets, loads, sizes, bins, nbNonEmpty, flags);
 			}
 		}
 		return fail("pack");
