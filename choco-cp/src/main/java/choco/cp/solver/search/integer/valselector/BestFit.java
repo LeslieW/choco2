@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.valselector;
 
-import choco.cp.solver.constraints.global.pack.PrimalDualPack;
+import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -34,9 +34,9 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public class BestFit implements ValSelector {
 
-	public final PrimalDualPack pack;
+	public final PackSConstraint pack;
 
-	public BestFit(PrimalDualPack cstr) {
+	public BestFit(PackSConstraint cstr) {
 		super();
 		this.pack = cstr;
 	}

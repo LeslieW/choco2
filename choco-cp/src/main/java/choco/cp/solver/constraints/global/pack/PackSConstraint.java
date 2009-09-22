@@ -38,18 +38,19 @@ import choco.kernel.solver.constraints.set.AbstractLargeSetIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
 import gnu.trove.TIntArrayList;
+import gnu.trove.TIntProcedure;
 
 import java.util.Arrays;
 
 /**
- * <b>{@link PrimalDualPack} which maintains a primal-dual packing domain.</b><br>
+ * <b>{@link Pack} which maintains a primal-dual packing model.</b><br>
  * The primal model consists of {@link bins} variables. {@link bins}[item] = bin means that item is packed into bin.<br>
  * The dual model consists of {@link svars} variables. item is in {@link svars}[bin] also means that item is packed into bin.
  * @author Arnaud Malapert</br>
  * @since 5 déc. 2008 version 2.0.1</br>
  * @version 2.1.0</br>
  */
-public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IPackSConstraint {
+public class PackSConstraint extends AbstractLargeSetIntSConstraint implements IPackSConstraint {
 
 	public final PackFiltering filtering;
 
@@ -70,7 +71,7 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 
 	public final BitFlags flags;
 
-	public PrimalDualPack(SetVar[] itemSets, IntDomainVar[] loads, IntDomainVar[] sizes,
+	public PackSConstraint(SetVar[] itemSets, IntDomainVar[] loads, IntDomainVar[] sizes,
 			IntDomainVar[] bins,IntDomainVar nbNonEmpty, BitFlags  flags) {
 		super(ArrayUtils.append(loads,sizes,bins,new IntDomainVar[]{nbNonEmpty}),itemSets);
 		this.loads=loads;
@@ -85,14 +86,14 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 	public final boolean isEmpty(int bin) {
 		return svars[bin].getKernelDomainSize()==0;
 	}
-	
+
 	public final int getRequiredSpace(int bin) {
 		DisposableIntIterator iter= svars[bin].getDomain().getKernelIterator();
 		int load = 0;
 		while(iter.hasNext()) {
 			load+= sizes[iter.next()].getVal();
 		}
-        iter.dispose();
+		iter.dispose();
 		return load;
 	}
 
@@ -128,8 +129,8 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 			constAwake(false);
 		}
 	}
-	
-	
+
+
 
 	public final IntDomainVar[] getBins() {
 		return bins;
@@ -180,16 +181,16 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 		if(bins[item].canBeInstantiatedTo(bin)) {
 			final DisposableIntIterator iter = bins[item].getDomain().getIterator();
 			//remove from other env
-            try{
-                while(iter.hasNext()) {
-                    final int b= iter.next();
-                    if(bin!=b) {
-                        res |= svars[b].remFromEnveloppe(item, set_cIndices[b]);
-                    }
-                }
-            }finally {
-                iter.dispose();
-            }
+			try{
+				while(iter.hasNext()) {
+					final int b= iter.next();
+					if(bin!=b) {
+						res |= svars[b].remFromEnveloppe(item, set_cIndices[b]);
+					}
+				}
+			}finally {
+				iter.dispose();
+			}
 			res |= bins[item].instantiate(bin, getItemCindice(item));
 		}else {
 			LOGGER.warning("should not raise a contradiction here.");
@@ -220,18 +221,18 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 	public final boolean updateNbNonEmpty(int min, int max) throws ContradictionException {
 		boolean res = false;
 		final int idx = ivars.length-1;
-		ivars[idx].updateInf(min, int_cIndices[idx]);
+		ivars[idx].updateInf( min, int_cIndices[idx]);
 		if( ivars[idx].updateSup(max, int_cIndices[idx])
 				&& flags.contains(SettingType.LAST_BINS_EMPTY)) {
 			for (int b = max; b < getNbBins(); b++) {
 				final DisposableIntIterator iter = svars[b].getDomain().getEnveloppeIterator();
 				try{
-                    while(iter.hasNext()) {
-                        res |= remove(iter.next(), b);
-                    }
-                }finally {
-                    iter.dispose();
-                }
+					while(iter.hasNext()) {
+						res |= remove(iter.next(), b);
+					}
+				}finally {
+					iter.dispose();
+				}
 			}
 		}
 		return res;
@@ -324,14 +325,14 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 	protected void checkDeltaDomain(int item) throws ContradictionException {
 		final DisposableIntIterator iter=bins[item].getDomain().getDeltaIterator();
 		if(iter.hasNext()) {
-            try{
-                while(iter.hasNext()) {
-                    final int b=iter.next();
-                    svars[b].remFromEnveloppe(item, set_cIndices[b]);
-                }
-            }finally {
-                iter.dispose();
-            }
+			try{
+				while(iter.hasNext()) {
+					final int b=iter.next();
+					svars[b].remFromEnveloppe(item, set_cIndices[b]);
+				}
+			}finally {
+				iter.dispose();
+			}
 		}else {
 			throw new SolverException("empty delta domain: "+bins[item].pretty());
 		}
@@ -358,16 +359,16 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 	public void awakeOnInst(int varIdx) throws ContradictionException {
 		if(isSetEvent(varIdx)) {
 			DisposableIntIterator iter= svars[varIdx].getDomain().getKernelIterator();
-            try{
-                while(iter.hasNext()) {
-                    final int item=iter.next();
-                    if(! bins[item].isInstantiated()) {
-                        pack(item,varIdx);
-                    }
-                }
-            }finally {
-                iter.dispose();
-            }
+			try{
+				while(iter.hasNext()) {
+					final int item=iter.next();
+					if(! bins[item].isInstantiated()) {
+						pack(item,varIdx);
+					}
+				}
+			}finally {
+				iter.dispose();
+			}
 			iter= svars[varIdx].getDomain().getEnveloppeDomain().getDeltaIterator();
 			while(iter.hasNext()) {
 				final int item=iter.next();
@@ -414,22 +415,22 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 		do {
 			filtering.propagate();
 			//feasibility test (DDFF)
-			bounds.reset();
-		}while( updateNbNonEmpty(bounds.getMinimumNumberOfBins( flags.contains(DYNAMIC_LB)), bounds.getMaximumNumberOfBins()));
+			if ( ! bounds.computeBounds(flags.contains(DYNAMIC_LB)) ) fail();
+		}while( updateNbNonEmpty(bounds.getMinimumNumberOfBins(), bounds.getMaximumNumberOfBins()));
 
 
 	}
 
 	@Override
 	public boolean isSatisfied() {
-		
+
 		int[] l = new int[loads.length];
 		int[] c = new int[loads.length];
 		for (int i = 0; i < bins.length; i++) {
 			final int b =  bins[i].getVal();
-				if( ! svars[b].isInDomainKernel(i)) return false; //check channeling
-				l[b] += sizes[i].getVal();
-				c[b] ++;
+			if( ! svars[b].isInDomainKernel(i)) return false; //check channeling
+			l[b] += sizes[i].getVal();
+			c[b] ++;
 		}
 		int nbb = 0;
 		for (int i = 0; i < loads.length; i++) {
@@ -442,15 +443,21 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 
 
 
-	final class BoundNumberOfBins {
-
-		private final int[] itemsLB;
-
-		private final TIntArrayList binsLB;
+	protected final class BoundNumberOfBins {
 
 		private final int[] remainingSpace;
+		
+		private final int[] itemsMLB;
 
-		private int nextIndex;
+		private int sizeMLB;
+		
+		protected int capacityMLB;
+		
+		private final TIntArrayList binsMLB;
+
+		private int totalSizeCLB;
+
+		private final TIntArrayList binsCLB;
 
 		protected int nbEmpty;
 
@@ -458,100 +465,151 @@ public class PrimalDualPack extends AbstractLargeSetIntSConstraint implements IP
 
 		protected int nbFull;
 
-		protected int nbBinsLB;
-
-
-
-		protected int capacityLB;
+		protected int nbNewCLB;
 
 		public BoundNumberOfBins() {
 			super();
-			itemsLB=new int[getNbBins() + getNbItems()];
-			binsLB = new TIntArrayList(getNbBins());
+			itemsMLB=new int[getNbBins() + getNbItems()];
+			binsMLB = new TIntArrayList(getNbBins());
+			binsCLB = new TIntArrayList(getNbBins());
 			remainingSpace = new int[getNbBins()];
 		}
 
 
 		public void reset() {
+			Arrays.fill(remainingSpace, 0);
+			sizeMLB = 0;
+			capacityMLB=0;
+			binsMLB.clear();
+			totalSizeCLB = 0;
+			binsCLB.clear();
 			nbEmpty=0;
 			nbSome = 0;
 			nbFull=0;
-			nbBinsLB=0;
-			capacityLB=0;
-			Arrays.fill(remainingSpace, 0);
-			binsLB.clear();
-			this.initialize();
+			nbNewCLB = 0;
 		}
 
-		private void initialize() {
-			for (int b = 0; b < getNbBins(); b++) {
-				if(svars[b].isInstantiated()) {
-					if(loads[b].isInstantiatedTo(0)) {nbEmpty++;}
-					else {nbFull++;}
-				}else {
-					binsLB.add(b);
-					remainingSpace[b] += loads[b].getSup();
-					capacityLB = Math.max(capacityLB, remainingSpace[b]);
-					if(svars[b].getKernelDomainSize()>0) {
-						nbSome++;
-					}
-				}
-			}
-			nbBinsLB = binsLB.size();
-		}
-
-		private int setBinItems(int[] dest, int begin) {
-			int idx=begin;
-			for (int b = 0; b < binsLB.size(); b++) {
-				final int s = capacityLB - remainingSpace[binsLB.getQuick(b)];
-				if(s > 0) {
-					dest[idx++] = s;
-				}
-			}
-			return idx;
-		}
-
-		private int setUnpackedItems(int[] dest, int begin) {
-			int idx=begin;
-			for (int i = 0; i < bins.length; i++) {
+		/**
+		 * add unpacked items (MLB) compute their total size (CLB).
+		 */
+		private void handleItems() {
+			final int n = getNbItems();
+			for (int i = 0; i < n; i++) {
+				final int s = sizes[i].getVal();
 				if(bins[i].isInstantiated()) {
-					if( ! svars[bins[i].getVal()].isInstantiated()) {
-						remainingSpace[bins[i].getVal()] -= sizes[i].getVal();
-					}
+					remainingSpace[bins[i].getVal()] -= s;
 				}else {
-					dest[idx++] = sizes[i].getVal();
+					totalSizeCLB += s;
+					itemsMLB[sizeMLB++] = s;
 				}
 			}
-			return idx;
 		}
 
-		private int[] getItems() {
-			return Arrays.copyOf(itemsLB, nextIndex);
+
+		/**
+		 * compute the remaining space in each bin and the cardinality of sets (empty, partially filled, full)
+		 */
+		private void handleBins() {
+			final int n = getNbBins();
+			//compute the number of empty, partially filled and closed bins
+			//also compute the remaining space in each open bins
+			for (int b = 0; b < n; b++) {
+				if(svars[b].isInstantiated()) {
+					//we ignore closed bins
+					if(loads[b].isInstantiatedTo(0)) nbEmpty++;
+					else nbFull++;
+				}else {
+					//the bins is used by the modified lower bound
+					binsMLB.add(b);
+					remainingSpace[b] += loads[b].getSup();
+					capacityMLB = Math.max(capacityMLB, remainingSpace[b]);
+					if(svars[b].getKernelDomainSize()>0) {
+						//partially filled
+						nbSome++;
+						totalSizeCLB -= remainingSpace[b]; //fill partially filled bin before empty ones
+					} else {
+						//still empty
+						binsCLB.add(remainingSpace[b]); //record empty bins to fill them later
+					}
+				}
+			}
 		}
 
-		private void computeItems() {
-			nextIndex=0;
-			nextIndex= setUnpackedItems(itemsLB, nextIndex);
-			nextIndex= setBinItems(itemsLB, nextIndex);
+		/**
+		 * compute fake top-items which fills the bin until the current capacity.
+		 */
+		private void createFakeItems() {
+			binsMLB.forEach( new TIntProcedure() {
+				@Override
+				public boolean execute(int arg0) {
+					final int s = capacityMLB - remainingSpace[arg0];
+					if( s > 0) itemsMLB[sizeMLB++]  = s;
+					return true;
+				}
+			});
+		}
+
+		private void computeMinimumNumberOfNewBins() {
+			binsCLB.sort();
+			binsCLB.forEachDescending( new TIntProcedure() {
+				@Override
+				public boolean execute(int arg0) {
+					nbNewCLB++;
+					if( totalSizeCLB <= arg0) {
+						return false;
+					}
+					totalSizeCLB -= arg0;
+					return true;
+				}
+			});
+		}
+
+		/**
+		 * 
+		 * @param useDDFF do we use advanced and costly bounding procedure for a feaasibility test.
+		 * @return <code>false</code>  if the current state is infeasible.
+		 */
+		public boolean computeBounds(boolean useDDFF) {
+			reset();
+			//the order of the following calls is important
+			handleItems();
+			handleBins();
+			if( sizeMLB > 0) {
+				if( sizeMLB < maximumNumberOfNewBins.get() ) maximumNumberOfNewBins.set(sizeMLB); 
+				//there is unpacked items
+				//handleBins();
+				if( totalSizeCLB > 0) {
+					//compute an estimation of the minimal number of additional bins.
+					if( binsCLB.isEmpty()) return false;  //no more available bins for remaining unpacked items
+					computeMinimumNumberOfNewBins();
+				}
+				if( getMinimumNumberOfBins() > ivars[ivars.length - 1].getSup()) return false; //the continous bound prove infeasibility
+				if( useDDFF) {	
+					createFakeItems(); 
+					int[] items = getItems();
+					final int ub=new BestFit1BP(items,capacityMLB,AbstractHeurisic1BP.SORT).computeUB();
+					if( ub > binsMLB.size()) {
+						//the heuristics solution is infeasible
+						//so, the lower bound could also be infeasible
+						final int lb = LowerBoundFactory.computeL_DFF_1BP(items, capacityMLB,ub);
+						if( lb > binsMLB.size()) return false;
+					}//otherwise, the modified instance is feasible with best fit heuristics
+				}
+			}
+			return true;
+		}
+
+
+		public int[] getItems() {
+			return Arrays.copyOf(itemsMLB, sizeMLB);
 		}
 
 		public int getMaximumNumberOfBins() {
 			return Math.min(getNbBins() -nbEmpty, nbFull + nbSome + maximumNumberOfNewBins.get());
 		}
 
-		public int getMinimumNumberOfBins(boolean useDDFF) {
-			if( useDDFF) {
-				computeItems();
-				if(nextIndex>0) {
-					final int[] items=getItems();
-					final int ub=new BestFit1BP(items,capacityLB,AbstractHeurisic1BP.SORT).computeUB();
-					if(ub>nbBinsLB) {
-						//heuristic solution is not feasible
-						return nbFull + LowerBoundFactory.computeL_DFF_1BP(items, capacityLB,ub);
-					}
-				}
-			}
-			return nbFull + nbSome;
+		public int getMinimumNumberOfBins() {
+			return nbFull + nbSome + nbNewCLB;
 		}
 	}
 

@@ -295,8 +295,9 @@ public final class ChocoLogging {
 		setLevel(Level.INFO, 
 				getSearchLogger(), 
 				getUserLogger(), getSamplesLogger(), 
-				getAPILogger(),getModelLogger(),getSolverLogger(),getParserLogger()
+				getAPILogger(),getModelLogger(),getSolverLogger()
 		);
+		setLevel(Level.CONFIG, getParserLogger());
 		setLevel(Level.FINEST, getChocoLogger(),getKernelLogger(),getAPILogger());
 	}
 	
@@ -324,11 +325,11 @@ public final class ChocoLogging {
 		case DEFAULT: {
 			setCommon();
 			setLevel(Level.WARNING,getModelLogger(), getSolverLogger());
+			setLevel(Level.INFO, getParserLogger());
 			break;
 		}
 		case VERBOSE: {
 			setCommon();
-			setLevel(Level.CONFIG,getSearchLogger(), getParserLogger());
 			break;
 		}
 		case SOLUTION: { 

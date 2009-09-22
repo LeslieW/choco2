@@ -22,8 +22,23 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.global;
 
+import static choco.Choco.constantArray;
+import static choco.Choco.eq;
+import static choco.Choco.geq;
+import static choco.Choco.leq;
+import static choco.Choco.pack;
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.junit.Ignore;
+import org.junit.Test;
+
 import choco.Choco;
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
@@ -36,15 +51,7 @@ import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.pack.PackModeler;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
-import static org.junit.Assert.assertEquals;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import choco.kernel.model.variables.integer.IntegerVariable;
 
 /**
  *
@@ -185,6 +192,7 @@ public class PackTest {
 
 	@Test
 	public void sat() {
+		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
 		int[] s1={2,3,6,4,3};
 		initializeModels(s1, 3, 10);
 		testAll(138);
@@ -255,6 +263,8 @@ public class PackTest {
 		initializeModels(modeler.symBreakEqualSizedItems());
 		initializeModels(new Constraint[]{modeler.redundantCstrAllDiffLargeItems()});
 	}
+	
+	
 
 	protected void testRandom() {
 		LOGGER.info("%%%%%%%% TEST RANDOM %%%%%%%%");

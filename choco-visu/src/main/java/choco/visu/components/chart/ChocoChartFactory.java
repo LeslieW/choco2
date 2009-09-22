@@ -2,7 +2,6 @@ package choco.visu.components.chart;
 
 import static choco.visu.components.chart.ChocoDatasetFactory.createPackDataset;
 import static choco.visu.components.chart.ChocoDatasetFactory.createSolutionCategoryDataset;
-import static choco.visu.components.chart.ChocoDatasetFactory.createTaskCollection;
 import static choco.visu.components.chart.ChocoDatasetFactory.createUnaryRscTaskCollection;
 
 import java.awt.Color;
@@ -55,7 +54,7 @@ import org.jfree.ui.RectangleInsets;
 import org.jfree.ui.TextAnchor;
 
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.pack.PrimalDualPack;
+import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.constraints.pack.PackModeler;
@@ -154,13 +153,13 @@ public final class ChocoChartFactory {
 		Iterator<Constraint> cstr = s.getModel().getConstraintByType(ConstraintType.PACK);
 		CategoryDataset[] datasets = new CategoryDataset[n];
 		for (int i = 0; i < n; i++) {
-			PrimalDualPack pack = (PrimalDualPack) s.getCstr(cstr.next());
+			PackSConstraint pack = (PackSConstraint) s.getCstr(cstr.next());
 			datasets[i] = createPackDataset(pack.getNbBins(), pack.getBins(), pack.getSizes());
 		}
 		return createPackChart(title, datasets, null, false);
 	}
 
-	public static JFreeChart createPackChart(String title, PrimalDualPack pack) {
+	public static JFreeChart createPackChart(String title, PackSConstraint pack) {
 		return createPackChart(title, createPackDataset(pack.getNbBins(), pack.getBins(), pack.getSizes()), -1, false);
 	}
 

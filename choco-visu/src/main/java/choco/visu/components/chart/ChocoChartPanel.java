@@ -1,6 +1,32 @@
 package choco.visu.components.chart;
 
-import choco.cp.solver.constraints.global.pack.PrimalDualPack;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTree;
+import javax.swing.UIManager;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeSelectionModel;
+
+import org.jfree.chart.ChartPanel;
+import org.jfree.data.general.Dataset;
+import org.jfree.ui.ApplicationFrame;
+import org.jfree.ui.RefineryUtilities;
+
+import samples.pack.BinPackingExample;
+import samples.pack.CPpack;
+import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -9,23 +35,6 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.visu.components.chart.renderer.MyXYBarRenderer.ResourceRenderer;
-
-import org.jfree.chart.ChartPanel;
-import org.jfree.data.general.Dataset;
-import org.jfree.ui.ApplicationFrame;
-import org.jfree.ui.RefineryUtilities;
-import samples.pack.BinPackingExample;
-import samples.pack.CPpack;
-
-import javax.swing.*;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeSelectionModel;
-import java.awt.*;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ChocoChartPanel extends JPanel implements TreeSelectionListener {
     
@@ -163,9 +172,9 @@ public class ChocoChartPanel extends JPanel implements TreeSelectionListener {
 
 	private static class PackView extends AbstractResourceView {
 
-		private final PrimalDualPack pack;
+		private final PackSConstraint pack;
 
-		public PackView(String name, PrimalDualPack pack) {
+		public PackView(String name, PackSConstraint pack) {
 			super(name);
 			this.pack = pack;
 		}
@@ -224,7 +233,7 @@ public class ChocoChartPanel extends JPanel implements TreeSelectionListener {
 		final int n = model.getNbConstraintByType(ConstraintType.PACK);
 		Iterator<Constraint> cstr = model.getConstraintByType(ConstraintType.PACK);
 		for (int i = 0; i < n; i++) {
-			pack.add(new DefaultMutableTreeNode(new PackView("pack "+i, (PrimalDualPack) solver.getCstr(cstr.next()))));
+			pack.add(new DefaultMutableTreeNode(new PackView("pack "+i, (PackSConstraint) solver.getCstr(cstr.next()))));
 		}
 	}
 	
