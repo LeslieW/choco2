@@ -28,6 +28,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -273,7 +274,7 @@ public class ExQueen {
 
 	public static void main(String[] args) {
 		int nbQueens = 20;
-
+		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
 		LOGGER.info("************* Nqueens naif *************");
 		nQueensNaif(nbQueens); // (1)
 		LOGGER.info("");
@@ -309,6 +310,7 @@ public class ExQueen {
 		LOGGER.info("");
 		LOGGER.info("****************************************");
 		LOGGER.info("");
+		ChocoLogging.flushLogs();
 	}
 
 }
