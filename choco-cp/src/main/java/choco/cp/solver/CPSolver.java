@@ -1040,6 +1040,7 @@ public class CPSolver implements Solver {
 	 */
 	public void launch() {
 		// strategy.run();
+		//TODO remove flush ?
 		ChocoLogging.flushLogs();
 		strategy.incrementalRun();
 		ChocoLogging.flushLogs();

@@ -27,13 +27,6 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.measures.IMeasures;
-import choco.kernel.solver.search.restart.NoRestartStrategy;
-import choco.kernel.solver.search.restart.UniversalRestartStrategy;
-import db.beans.DbInstanceBean;
-import db.beans.DbProblemBean;
-import db.dao.DbInstance;
-import db.dao.DbProblem;
-import db.dao.DbStrategy;
 
 
 public class DbManager {
@@ -44,7 +37,7 @@ public class DbManager {
 
 	public final DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
-	SingleConnectionDataSource sdataSource;
+	public final SingleConnectionDataSource sdataSource;
 
 	protected final JdbcTemplate jdbcTemplate;
 
@@ -52,13 +45,11 @@ public class DbManager {
 
 	private Integer environmentID;
 
-	private Integer defaultExecutionID;
-
 	public DbManager(File databaseDir, String databaseName) {
 		this(DbUrlFactory.makeEmbeddedURL(databaseDir, databaseName));
 	}
 
-	
+
 	public DbManager(String url) {
 		super();
 		LOGGER.info("fetching data source ...");
@@ -75,7 +66,7 @@ public class DbManager {
 	public final void shutdown() {
 		jdbcTemplate.execute("SHUTDOWN");
 	}
-	
+
 	public final void commit() {
 		jdbcTemplate.execute("COMMIT");
 	}
@@ -145,90 +136,55 @@ public class DbManager {
 
 
 
-	//*****************************************************************//
-	//*******************  T_INSTANCES  ********************************//
-	//***************************************************************//
-
-
-	public void safeProblemInsertion(DbProblem problem) {
-		insertEntryIfAbsentPK(DbTables.T_PROBLEMS, new BeanPropertySqlParameterSource(problem));
-	}
-
-	public void safeInstanceInsertion(DbInstance instance) {
-		safeProblemInsertion(instance.getProblem());
-		insertEntryIfAbsentPK(DbTables.T_INSTANCES, new BeanPropertySqlParameterSource(instance));
-		if(instance.getBounds() != null) {
-			insertEntryIfAbsentPK(DbTables.T_BOUNDS, new BeanPropertySqlParameterSource(instance.getBounds()));
-		}
-
-	}
-
 
 	//*****************************************************************//
 	//*******************  T_SOLVERS  *********************************//
 	//***************************************************************//
 
-
+	
 	protected final Integer getModelID(Solver solver) {
-		return retrieveGPKOrInsertEntry(DbTables.T_MODELS, new BeanPropertySqlParameterSource(solver));
+		return solver == null ?
+				retrieveGPKOrInsertEntry(DbTables.T_MODELS, DbConstants.EMPTY_MODEL) :		
+					retrieveGPKOrInsertEntry(DbTables.T_MODELS, new BeanPropertySqlParameterSource(solver));
 	}
 
 
-	protected final Integer getStrategyID(Solver solver) {
-		DbStrategy strat = DbConstants.NO_STRATEGY;
-		return retrieveGPKOrInsertEntry(DbTables.T_STRATEGIES, new BeanPropertySqlParameterSource(strat));
+
+
+	public final void insertConfiguration(Integer solverID,  String description) {
+		jdbcTemplate.update(DbTables.T_CONFIGURATIONS.createInsertQuery(true), new Object[] { solverID, description});
 	}
 
-	protected final Integer getRestartStrategyID(Solver solver) {
-		UniversalRestartStrategy restarts = NoRestartStrategy.SINGLOTON;
-		if (solver instanceof CPSolver) {
-			final CPSolver cps = (CPSolver) solver;
-			if ( cps.restartConfig.getRestartStrategy() != null) {
-				restarts = cps.restartConfig.getRestartStrategy();
-			}
-		}
-		return retrieveGPKOrInsertEntry(DbTables.T_RESTARTS, new BeanPropertySqlParameterSource(restarts));
+	public final void insertDiagnostic(Integer solverID,  String description) {
+		jdbcTemplate.update(DbTables.T_DIAGNOSTICS.createInsertQuery(true), new Object[] { solverID, description});
 	}
 
-	protected final void insertMeasures(Integer solverID, IMeasures m) {
+	
+	public final void insertMeasures(Integer solverID, IMeasures m) {
 		Integer measuresID = insertEntryAndRetrieveGPK(DbTables.T_MEASURES, new BeanPropertySqlParameterSource(m));
 		jdbcTemplate.update(DbTables.T_LIMITS.createInsertQuery(false), new Object[] { measuresID, solverID});
 	}
 
-	public final Integer safeSolverInsertion(Solver solver,  DbInstance instance) {
-		return safeSolverInsertion(solver, null, instance, null, null);
-	}
 
-	public final Integer safeSolverInsertion(Solver solver,  DbInstance instance, Integer seed) {
-		return safeSolverInsertion(solver, null, instance, null, seed);
+	public final Integer insertSolver(Solver solver, String instanceName) {
+		return insertSolver(solver, instanceName, String.valueOf(solver.isFeasible()), solver.getTimeCount()/1000D, null, null);
 	}
-
-	public final Integer safeSolverInsertion(Solver solver,  DbInstance instance, String description, Integer seed) {
-		return safeSolverInsertion(solver, null, instance, description, seed);
-	}
-
-	public final Integer safeSolverInsertion(Solver solver,  Integer executionID, DbInstance instance, String description, Integer seed) {
-		//find execution
-		if( executionID == null) {
-			executionID = getExecutionID(null);
-		}
+	
+	public final Integer insertSolver(Solver solver, String instanceName, String status, double runtime, String values, Long seed) {
 		//insert solver
-		safeInstanceInsertion(instance);
-		int solverID = insertEntryAndRetrieveGPK(DbTables.T_SOLVERS, new Object[]{
-				executionID, instance.getName(), solver.isEncounteredLimit(),
-				getModelID(solver), getStrategyID(solver), getRestartStrategyID(solver), description, seed
-		});
-		//insert measures
-		for (Solution sol : solver.getSearchStrategy().getStoredSolutions()) {
-			insertMeasures(solverID, sol.getMeasures());
+		final Integer solverID = insertEntryAndRetrieveGPK(DbTables.T_SOLVERS, 
+				new Object[]{ instanceName, status, runtime, values,
+				getModelID(solver), getEnvironmentID(), seed, new Date(System.currentTimeMillis())}
+		);
+		if( solver != null) {
+			//insert measures
+			for (Solution sol : solver.getSearchStrategy().getStoredSolutions()) {
+				insertMeasures(solverID, sol.getMeasures());
+			}
+			insertMeasures(solverID, solver);
 		}
-		insertMeasures(solverID, solver);
 		return solverID;
 	}
-
-
-
-
 
 
 	//*****************************************************************//
@@ -284,23 +240,7 @@ public class DbManager {
 		return environmentID;
 	}
 
-	protected Integer insertExecution(Date date, Integer seed) {
-		return insertEntryAndRetrieveGPK(DbTables.T_EXECUTIONS, 
-				new Object[]{ getEnvironmentID(), new Date(System.currentTimeMillis()), seed});
-	}
-
-	public final Integer getExecutionID(Integer seed) {
-		final Date date = new Date(System.currentTimeMillis());
-		if( seed == null) {
-			if(defaultExecutionID == null) {
-				defaultExecutionID = insertExecution(date, null);
-			}
-			return defaultExecutionID;
-		}else {
-			return insertEntryAndRetrieveGPK(DbTables.T_EXECUTIONS, 
-					new Object[]{ getEnvironmentID(), date, seed});
-		}
-	}
+	
 
 
 	//*****************************************************************//
@@ -368,39 +308,7 @@ public class DbManager {
 		LOGGER.info(displayTable("T_RUNTIMES"));
 		LOGGER.info(displayTable("T_ENVIRONMENTS"));
 
-		getExecutionID(null);
-		getExecutionID(1);
-		LOGGER.info(displayTable(DbTables.T_EXECUTIONS));
-
-		safeInstanceInsertion(DbConstants.UNKNOWN_INSTANCE);
-		DbProblem os = new DbProblemBean("OS","Open-Shop", "scheduling");
-		DbProblem js = new DbProblemBean("JS","Job-Shop", "scheduling");
-		DbInstanceBean inst = new DbInstanceBean("osp1", os);
-		inst.setBounds(0, 1, false);
-		safeInstanceInsertion(inst);
-		safeInstanceInsertion(inst);
-		//
-		//	safeProblemInsertion("OS", "Open-Shop", "Scheduling");
-		//		safeProblemInsertion("OS", "Open-sHop", "scheduling");
-		//		safeProblemInsertion("JS", "Job-Shop", "scheduling");
-		//		
-		//safeInstanceInsertion("osp1", "OS", 20, 20);
-		//		safeInstanceInsertion("osp1", "OS", 20, 20); //doublons
-		//		safeInstanceInsertion("osp2", "OS", 20, 20);
-		//		safeInstanceInsertion("jsp1", "JS", 10, 20);
-		//		safeInstanceInsertion("jsp1", "JS", 10, 20);//doublons
-		//		safeInstanceInsertion("jsp2", "JS", 10, 30); 
-		LOGGER.info(displayTable("T_PROBLEMS"));
-		LOGGER.info(displayTable("T_INSTANCES"));
-		LOGGER.info(displayTable("T_BOUNDS"));
-		//
-		//		safeBoundsInsertion("osp1", 1000, 1010, false);
-		//		safeBoundsInsertion("jsp1", 1000, 1010, false);
-		//		safeBoundsInsertion("jsp1", 1000, 1010, false);
-		//		safeBoundsInsertion("jsp2", 1000, 1000, false);
-		//		//insertBounds("jsp2345", 1000, 1000, false);
-
-		//
+		
 		Solver s = new CPSolver();
 		LOGGER.log(Level.INFO,"MODEL ID: {0}",getModelID(s));
 		s.createBoundIntVar("v1", 0, 5);
@@ -417,7 +325,7 @@ public class DbManager {
 
 
 		s.solveAll();
-		safeSolverInsertion(s, inst);
+		insertSolver(s, "UNKNOWN", "UNKNOWN", 0, null, null);
 		printTable(DbTables.T_SOLVERS);
 		printTable(DbTables.T_MEASURES);
 		//		LOGGER.info(""+insertMeasures(s));
@@ -463,9 +371,4 @@ public class DbManager {
 
 	}
 
-	public static void main(String[] args) {
-		DbManager dbm = new DbManager(DbUrlFactory.makeLocalhostURL("cdb"));
-		dbm.printTable(DbTables.T_SOLVERS);
-		dbm.shutdown();
-	}
 }

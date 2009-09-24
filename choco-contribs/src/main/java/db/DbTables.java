@@ -1,11 +1,5 @@
 package db;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import org.springframework.jdbc.core.PreparedStatementSetter;
-
-import choco.kernel.solver.search.measures.IMeasures;
 
 public final class DbTables {
 
@@ -26,22 +20,19 @@ public final class DbTables {
 			}
 	);
 
-	public final static DbTableView T_RESTARTS = new DbTableView (
-			"T_RESTARTS",
-			new String[]{"ID", "POLICY", "SCALE_FACTOR", "GEOM_FACTOR"},
-			new String[]{null, "name", "scaleFactor", "geometricalFactor"}
+	public final static DbTableView T_CONFIGURATIONS = new DbTableView (
+			"T_CONFIGURATIONS",
+			new String[] {"ID","SOLVER_ID", "DESCRIPTION"}
 	);
-
-
-	public final static DbTableView T_STRATEGIES = new DbTableView (
-			"T_STRATEGIES",
-			new String[]{"ID","BRANCHING", "VAR_SELECTOR", "VAL_SELECTOR"},
-			new String[]{ null,"branching", "varSelector", "valSelector"}
+	
+	public final static DbTableView T_DIAGNOSTICS = new DbTableView (
+			"T_DIAGNOSTICS",
+			new String[] {"ID","SOLVER_ID", "DESCRIPTION"}
 	);
 
 	public final static DbTableView T_SOLVERS = new DbTableView (
 			"T_SOLVERS",
-			"ID", "EXECUTION_ID","INSTANCE_NAME", "HAS_ENCOUNTERED_LIMIT", "MODEL_ID", "STRATEGY_ID", "RESTART_ID", "DESCRIPTION", "SEED"
+			"ID","INSTANCE_NAME", "STATUS", "RUNTIME", "SOLUTION", "MODEL_ID", "ENVIRONMENT_ID", "SEED", "TIMESTAMP"
 	);
 
 
@@ -93,40 +84,6 @@ public final class DbTables {
 			"ID", "RUNTIME_ID", "OS_ID", "JVM_ID"
 	);
 
-	//*****************************************************************//
-	//*******************  T_EXECUTIONS  *****************************//
-	//***************************************************************//
-	
-	public final static DbTableView T_EXECUTIONS = new DbTableView (
-			"T_EXECUTIONS",
-			"ID", "ENVIRONMENT_ID", "TIMESTAMP", "SEED"
-	);
-	
-	//*****************************************************************//
-	//*******************  T_INSTANCES  ******************//
-	//***************************************************************//
-	
-	public final static DbTableView T_PROBLEMS = new DbTableView (
-			"T_PROBLEMS",
-			new String[] {"LABEL","NAME", "CATEGORY"},
-			new String[] {"label","name", "category"}
-	);
-	
-	
-	public final static DbTableView T_BOUNDS = new DbTableView (
-			"T_BOUNDS",
-			new String[] {"INSTANCE_NAME","LOWER_BOUND", "UPPER_BOUND","IS_OPTIMAL"},
-			new String[]{ "instanceName", "lowerBound", "upperBound", "optimal"}
-	);
-	
-	
-	public final static DbTableView T_INSTANCES = new DbTableView (
-			"T_INSTANCES",
-			new String[] {"NAME", "PROBLEM_LABEL", "SIZE1","SIZE2"},
-			new String[] {"name", "problemLabel", "size1", "size2"}
-	);
-	
-	
 
 
 

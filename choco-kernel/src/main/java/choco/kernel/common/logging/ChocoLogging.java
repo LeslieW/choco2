@@ -290,10 +290,12 @@ public final class ChocoLogging {
 	}
 
 
+	/**
+	 * ignore the search logger.
+	 */
 	private static void setCommon() {
 		setLevel(Level.WARNING, getBranchingLogger(), getTestLogger(), getEngineLogger());
 		setLevel(Level.INFO, 
-				getSearchLogger(), 
 				getUserLogger(), getSamplesLogger(), 
 				getAPILogger(),getModelLogger(),getSolverLogger()
 		);
@@ -325,11 +327,12 @@ public final class ChocoLogging {
 		case DEFAULT: {
 			setCommon();
 			setLevel(Level.WARNING,getModelLogger(), getSolverLogger());
-			setLevel(Level.INFO, getParserLogger());
+			setLevel(Level.INFO, getSearchLogger(), getParserLogger());
 			break;
 		}
 		case VERBOSE: {
 			setCommon();
+			setLevel(Level.CONFIG,getSearchLogger());
 			break;
 		}
 		case SOLUTION: { 

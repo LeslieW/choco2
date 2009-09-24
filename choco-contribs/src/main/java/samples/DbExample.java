@@ -16,43 +16,31 @@ import choco.kernel.common.logging.ChocoLogging;
 import db.DbManager;
 import db.DbTables;
 import db.OdbConnector;
-import db.beans.DbInstanceBean;
-import db.beans.DbProblemBean;
 
 public class DbExample implements Example {
 
 
 	public void solveGolombRulers(DbManager manager) {
-		DbInstanceBean inst =new DbInstanceBean("gr", new DbProblemBean("GR", "Golomb Ruler", "PUZZLE"));
 		final GolombRuler ruler = new GolombRuler();
 		for (int i = 0; i < OPTIMAL_RULER.length - 2; i++) {
 			ruler.execute(new Object[]{OPTIMAL_RULER[i][0], OPTIMAL_RULER[i][1], true});
-			inst.setName("ruler-"+i);
-			inst.setSize1(ruler.m);
-			inst.setSize1(ruler.length);
-			manager.safeSolverInsertion(ruler._s, inst);
+			manager.insertSolver(ruler._s, "Golomb Ruler "+OPTIMAL_RULER[i][0]);
 		}
 	}
 
 	public void solveQueens(DbManager manager) {
-		DbInstanceBean inst =new DbInstanceBean("nq", new DbProblemBean("NQ", "N-Queens", "PUZZLE"));
 		PatternExample queens = new Queen();
 		for (int i = 5; i < 10; i++) {
-			inst.setName("queens-"+i);
 			queens.execute(i);
-			inst.setSize1(i);
-			manager.safeSolverInsertion(queens._s, inst);
+			manager.insertSolver(queens._s, "N-Queens-"+i);
 		}
 	}
 
 	public void solveMED(DbManager manager) {
-		DbInstanceBean inst =new DbInstanceBean("med", new DbProblemBean("MED", "Minimum Edge Deletion", "Boolean Optimization"));
 		PatternExample med = new MinimumEdgeDeletion();
 		for (int i = 5; i < 10; i++) {
-			inst.setName("med-"+i);
 			med.execute(new Object[]{i,0.5,i});
-			inst.setSize1(i);
-			manager.safeSolverInsertion(med._s, inst, Integer.valueOf(i));
+			manager.insertSolver(med._s, "Minimum Edge Deletion "+i);
 		}
 	}
 
@@ -76,7 +64,7 @@ public class DbExample implements Example {
 			LOGGER.info("request connection to database.");
 			DbManager manager = new DbManager(dbDir, dbName);
 			LOGGER.info("solving instances ...");
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < 3; i++) {
 				solveGolombRulers(manager); //solve instances
 				solveQueens(manager);
 				solveMED(manager);
