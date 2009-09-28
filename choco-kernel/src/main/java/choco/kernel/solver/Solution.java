@@ -180,9 +180,6 @@ public class Solution {
 		public int getSolutionCount() {
 			return solutionCount;
 		}
-
-
-
 	}
 
 

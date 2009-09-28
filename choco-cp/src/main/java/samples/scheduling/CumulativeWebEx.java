@@ -82,7 +82,7 @@ public class CumulativeWebEx extends PatternExample {
 			heights = constantArray(HEIGHTS_DATA);
 			//post the cumulative
 			_m.addConstraint(cumulativeMax("unique renewable resource", TASKS, heights, usages, CAPACITY, ""));
-			//set fake tasks to establish the profile capacit
+			//set fake tasks to establish the profile capacity
 			_m.addConstraints(
 					eq(TASKS[0].start(), 1),
 					eq(TASKS[1].start(), 2),

@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.Level;
 
+import org.apache.xmlbeans.impl.xb.xsdschema.PatternDocument.Pattern;
+
 import samples.Examples.Example;
 import samples.Examples.GolombRuler;
 import samples.Examples.MinimumEdgeDeletion;
@@ -19,28 +21,43 @@ import db.OdbConnector;
 
 public class DbExample implements Example {
 
+	public final static int NB_RUNS = 3; //5 seconds
+	
+	public final static int TIME_LIMIT = 5000; //5 seconds
 
-	public void solveGolombRulers(DbManager manager) {
-		final GolombRuler ruler = new GolombRuler();
-		for (int i = 0; i < OPTIMAL_RULER.length - 2; i++) {
-			ruler.execute(new Object[]{OPTIMAL_RULER[i][0], OPTIMAL_RULER[i][1], true});
-			manager.insertSolver(ruler._s, "Golomb Ruler "+OPTIMAL_RULER[i][0]);
+	public final static ExampleWrapper EX_WRAPPER = new ExampleWrapper();
+	
+	public DbManager manager;
+	
+	public void executeEx(String name, Object args) {
+		EX_WRAPPER.execute(args);
+		manager.insertSolver(EX_WRAPPER._s, name);
+	}
+	
+	public void solveGolombRulers() {
+		EX_WRAPPER.setSource(new GolombRuler());
+		for (int i = 0; i < OPTIMAL_RULER.length-1; i++) {
+			executeEx(
+					"Golomb-"+OPTIMAL_RULER[i][0], 
+					new Object[]{OPTIMAL_RULER[i][0], OPTIMAL_RULER[i][1], true}
+			);
 		}
 	}
 
-	public void solveQueens(DbManager manager) {
-		PatternExample queens = new Queen();
-		for (int i = 5; i < 10; i++) {
-			queens.execute(i);
-			manager.insertSolver(queens._s, "N-Queens-"+i);
+	public void solveQueens() {
+		EX_WRAPPER.setSource(new Queen());
+		for (int i = 2; i < 5; i++) {
+			executeEx("N-Queens-"+i, i);
+		}
+		for (int i = 40; i < 45; i++) {
+			executeEx("N-Queens-"+i, i);
 		}
 	}
 
-	public void solveMED(DbManager manager) {
-		PatternExample med = new MinimumEdgeDeletion();
-		for (int i = 5; i < 10; i++) {
-			med.execute(new Object[]{i,0.5,i});
-			manager.insertSolver(med._s, "Minimum Edge Deletion "+i);
+	public void solveMED() {
+		EX_WRAPPER.setSource( new MinimumEdgeDeletion());
+		for (int i = 12; i < 15; i++) {
+			executeEx("med-"+i, new Object[]{i,0.5,i});
 		}
 	}
 
@@ -62,12 +79,12 @@ public class DbExample implements Example {
 			String dbName = "testdb";
 			OdbConnector.extractDatabaseHSQLDB( odbStream, dbDir, dbName);
 			LOGGER.info("request connection to database.");
-			DbManager manager = new DbManager(dbDir, dbName);
+			manager = new DbManager(dbDir, dbName);
 			LOGGER.info("solving instances ...");
 			for (int i = 0; i < 3; i++) {
-				solveGolombRulers(manager); //solve instances
-				solveQueens(manager);
-				solveMED(manager);
+				solveGolombRulers(); //solve instances
+				solveQueens();
+				solveMED();
 			}
 			manager.printTable(DbTables.T_SOLVERS);
 			manager.shutdown();
@@ -84,4 +101,54 @@ public class DbExample implements Example {
 	}
 
 
+	static class ExampleWrapper extends PatternExample {
+
+		public PatternExample source;
+
+
+		public final PatternExample getSource() {
+			return source;
+		}
+
+		public final void setSource(PatternExample source) {
+			this.source = source;
+		}
+
+		
+		@Override
+		public void buildModel() {
+			source.buildModel();
+			_m = source._m;
+
+		}
+
+		@Override
+		public void buildSolver() {
+			source.buildSolver();
+			_s = source._s;
+			_s.setTimeLimit(TIME_LIMIT);
+
+		}
+
+		@Override
+		public void prettyOut() {
+			source.prettyOut();
+
+		}
+
+		@Override
+		public void setUp(Object parameters) {
+			source.setUp(parameters);
+		}
+
+		@Override
+		public void solve() {
+			source.solve();
+
+		}
+
+
+
+
+	}
 }

@@ -132,7 +132,7 @@ class SetTimesNode implements IPretty {
 public class SetTimes extends AbstractLargeIntBranchingStrategy {
 
 
-	/** The flags wich indicates the last starting time of non selectable task. */
+	/** The flags which indicates the last starting time of non selectable task. */
 	protected final IStateInt[] flags;
 
 	/** The subset of selectable tasks. */
