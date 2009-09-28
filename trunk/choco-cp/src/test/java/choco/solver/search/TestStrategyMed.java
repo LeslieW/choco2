@@ -155,7 +155,6 @@ public class TestStrategyMed {
 				if(recomputation) {b.append(" recomputation ;");}
 				LOGGER.info(new String(b));
 			}
-			_s.generateSearchStrategy();
 		}
 	}
 }

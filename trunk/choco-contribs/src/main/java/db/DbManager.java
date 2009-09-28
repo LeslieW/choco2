@@ -9,6 +9,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -79,7 +80,7 @@ public class DbManager {
 	protected final boolean containsPrimaryKey(final DbTableView dbTable, Object pkValue) {
 		final int count = jdbcTemplate.queryForInt( dbTable.createCountPKQuery(), new Object[]{pkValue});
 		if( count > 1) {
-			LOGGER.warning("invalid query: find duplicate primary key.");
+			LOGGER.warning("query_db...[DUPLICATE PRIMARY KEY].");
 		}
 		return count > 0;
 	}
@@ -87,7 +88,7 @@ public class DbManager {
 	protected final boolean containsPrimaryKey(final DbTableView dbTable, SqlParameterSource parameters) {
 		final int count = namedParameterJdbcTemplate.queryForInt( dbTable.createCountPKQuery(), parameters);
 		if( count > 1) {
-			LOGGER.warning("invalid query: find duplicate primary key.");
+			LOGGER.warning("query_db...[DUPLICATE PRIMARY KEY].");
 		}
 		return count > 0;
 	}
@@ -174,7 +175,7 @@ public class DbManager {
 		//insert solver
 		final Integer solverID = insertEntryAndRetrieveGPK(DbTables.T_SOLVERS, 
 				new Object[]{ instanceName, status, runtime, values,
-				getModelID(solver), getEnvironmentID(), seed, new Date(System.currentTimeMillis())}
+				getModelID(solver), getEnvironmentID(), seed, new Timestamp(System.currentTimeMillis())}
 		);
 		if( solver != null) {
 			//insert measures
@@ -370,5 +371,5 @@ public class DbManager {
 		shutdown();
 
 	}
-
+	
 }

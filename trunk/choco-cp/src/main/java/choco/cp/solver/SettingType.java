@@ -58,10 +58,6 @@ public enum SettingType {
 	 */
 	VHM_CEF_ALGO_N2K("cumulative edge finding", "scEF","cp:cumul:scef"),
 
-	/**
-	 * Automatic extraction of a disjunctive constraint (if any) from a cumulative constraint
-	 */
-	EXTRACT_DISJ("automatic disjunctive extraction","ADE","cp:cumul:ade"),
 
 	//////////////////////// DISJUNCTIVE ////////////////////////
 	/**
