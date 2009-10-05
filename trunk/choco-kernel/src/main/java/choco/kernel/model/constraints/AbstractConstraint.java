@@ -247,15 +247,11 @@ public abstract class AbstractConstraint implements Constraint, Comparable {
 
     public Object loadManager(String manager) {
          //We get it by reflection !
-        Class componentClass = null;
         try {
-          componentClass = Class.forName(manager);
+          return Class.forName(manager).newInstance();
         } catch (ClassNotFoundException e) {
           LOGGER.severe("Component class could not be found: " + manager);
           System.exit(-1);
-        }
-        try {
-          return componentClass.newInstance();
         } catch (InstantiationException e) {
           LOGGER.severe("Component class could not be instantiated: " + manager);
           System.exit(-1);

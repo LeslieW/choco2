@@ -27,6 +27,7 @@ import choco.kernel.visu.components.IVisuVariable;
 import static choco.visu.components.ColorConstant.WHITE;
 import choco.visu.components.bricks.AChocoBrick;
 import choco.visu.components.bricks.NodeBrick;
+import processing.core.PApplet;
 import processing.core.PFont;
 import traer.animation.Smoother3D;
 import traer.physics.Particle;
@@ -63,6 +64,8 @@ public final class TreeSearchPApplet extends AChocoPApplet {
     public LinkedList<NodeBrick.CParticle> q;
     public HashMap<Particle, Object[]> settings;
     public int tswidth = 0, tsdepth = 0;
+    public float sval= (float)1.0;
+    public float nmx, nmy;
 
 
     public TreeSearchPApplet(final Object parameters) {
@@ -130,15 +133,29 @@ public final class TreeSearchPApplet extends AChocoPApplet {
      * For exemple, the sudoku grid is considered as a back side
      */
     public final void drawBackSide() {
+
+        if(this.mousePressed){
+            sval += 0.05;
+          }
+          else {
+            sval -= 0.1;
+          }
+        sval = PApplet.constrain(sval, (float)1.0, (float)2.5);
+
         physics.tick((float) 1.0);
         if (physics.numberOfParticles() > 1)
             updateCentroid();
         centroid.tick();
 
         background(WHITE);
-        translate(width / 2, height / 2);
-        scale(centroid.z());
+        if(mousePressed){
+            translate(mouseX, mouseY);
+        }else{
+            translate(width/2, height/2);
+        }
+        scale(sval * centroid.z());
         translate(-centroid.x(), -centroid.y());
+
     }
 
     /**

@@ -23,9 +23,9 @@
 package choco.kernel.common.util.objects;
 
 import choco.kernel.common.logging.ChocoLogging;
+import gnu.trove.TObjectIntHashMap;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -62,7 +62,8 @@ public class BipartiteSet<E> {
    * Maps the element objects to the corresponding index.
    */
 
-  HashMap<E,Integer> indices = new HashMap<E,Integer>();
+  TObjectIntHashMap<E> indices;
+  //HashMap<E,Integer> indices = new HashMap<E,Integer>();
 
 
   /**
@@ -71,7 +72,8 @@ public class BipartiteSet<E> {
 
   public BipartiteSet() {
     this.objects = new ArrayList<E>();
-    this.indices = new HashMap<E,Integer>();
+    /*this.indices = new HashMap<E,Integer>();*/
+      this.indices = new TObjectIntHashMap<E>();
   }
 
 
@@ -150,7 +152,8 @@ public class BipartiteSet<E> {
    */
 
   public void addRight(E object) {
-    if (this.indices.get(object) != null) {
+//    if (this.indices.get(object) != null) {
+   if (this.indices.containsKey(object)) {
       if (LOGGER.isLoggable(Level.SEVERE))
         LOGGER.logp(Level.SEVERE, "BipartiteSet", "addRight", object + "already in the set bipartite set ");
     } else {
@@ -192,7 +195,7 @@ public class BipartiteSet<E> {
    */
 
   public boolean isIn(E object) {
-    return (this.indices.get(object) != null);
+    return (this.indices.containsKey(object));
   }
 
 

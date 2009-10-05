@@ -54,7 +54,7 @@ public class ConstantLeaf extends INode implements ArithmNode {
 		//nothing to do here as there is no variable
 	}
 
-	public IntDomainVar[] getScope(Solver s) {
+	public final IntDomainVar[] getScope(Solver s) {
 		return new IntDomainVar[0];
 	}
 

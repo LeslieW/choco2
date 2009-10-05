@@ -22,10 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.visu;
 
+import choco.Choco;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
+import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.Model;
@@ -541,11 +543,41 @@ public class ExamplesTest {
         }
 
         Solver s = new CPSolver();
-        s.read(m);
+        s.read(m);                                                                                
 
         Visu v = Visu.createVisu(700, 700);
         v.addPanel(new VarChocoPanel("Damier", queens, QueenBoardPApplet.class, "./images/damier.svg"));
         v.addPanel(new VarChocoPanel("TreeSearch", queens, TREESEARCH, null));
+        v.addPanel(new VarChocoPanel("Domain", queens, FULLDOMAIN, null));
+
+        s.setFirstSolution(false);
+        s.generateSearchStrategy();
+        s.visualize(v);
+        s.launch();
+        v.kill();
+
+    }
+
+    @Test
+       public void xyz(){
+//    public static void main(String [] ars){
+        Model m = new CPModel();
+        int n = 3;
+        IntegerVariable x = Choco.makeIntVar("x", 0, 3);
+        IntegerVariable y = Choco.makeIntVar("y", 0, 3);
+        IntegerVariable z = Choco.makeIntVar("z", 0, 3);
+        IntegerVariable[] vars = new IntegerVariable[]{x,y,z};
+
+        m.addConstraint(Choco.gt(x,y));
+        m.addConstraint(Choco.gt(y, z));
+
+        Solver s = new CPSolver();
+        s.read(m);
+        s.setVarIntSelector(new StaticVarOrder(s.getVar(vars)));
+
+        Visu v = Visu.createVisu(700, 700);
+        v.addPanel(new VarChocoPanel("Domain", vars, FULLDOMAIN, null));
+        v.addPanel(new VarChocoPanel("TreeSearch", vars, TREESEARCH, null));
 
         s.setFirstSolution(false);
         s.generateSearchStrategy();

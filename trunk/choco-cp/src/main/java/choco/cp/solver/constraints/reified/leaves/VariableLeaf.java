@@ -75,7 +75,7 @@ public class VariableLeaf extends INode implements ArithmNode {
 		}
 	}
 
-	public IntDomainVar[] getScope(Solver s) {
+	public final IntDomainVar[] getScope(Solver s) {
 		if (ivar != null) var = s.getVar(ivar);
 		return new IntDomainVar[]{var};
 	}
