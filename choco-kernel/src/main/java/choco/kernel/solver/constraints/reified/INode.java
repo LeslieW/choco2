@@ -128,19 +128,23 @@ public abstract class INode implements IPretty {
      * @return
      */
     public IntDomainVar[] union(IntDomainVar[] t1, IntDomainVar[] t2) {
-        TLongArrayList indexes = new TLongArrayList(t1.length + t2.length);
-        IntDomainVar[] unionset = new IntDomainVar[t1.length + t2.length];
+        TLongArrayList indexes = new TLongArrayList((t1==null?0:t1.length) + (t2==null?0:t2.length));
+        IntDomainVar[] unionset = new IntDomainVar[(t1==null?0:t1.length) + (t2==null?0:t2.length)];
         int indice = 0;
-        for (IntDomainVar var : t1) {
-            if (!indexes.contains(var.getIndex())) {
-                indexes.add(var.getIndex());
-                unionset[indice++] = var;
+        if(t1!=null){
+            for (IntDomainVar var : t1) {
+                if (!indexes.contains(var.getIndex())) {
+                    indexes.add(var.getIndex());
+                    unionset[indice++] = var;
+                }
             }
         }
-        for (IntDomainVar var : t2) {
-            if (!indexes.contains(var.getIndex())) {
-                indexes.add(var.getIndex());
-                unionset[indice++] = var;
+        if(t2!=null){
+            for (IntDomainVar var : t2) {
+                if (!indexes.contains(var.getIndex())) {
+                    indexes.add(var.getIndex());
+                    unionset[indice++] = var;
+                }
             }
         }
         IntDomainVar[] uniontab = new IntDomainVar[indice];
