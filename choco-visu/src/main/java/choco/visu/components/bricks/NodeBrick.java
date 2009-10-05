@@ -90,6 +90,7 @@ public final class NodeBrick extends AChocoBrick {
 
                     break;
                 case END:
+                    break;
                 case RESTART:
                     while(((TreeSearchPApplet) chopapplet).q.size() > 1) {
                         ((TreeSearchPApplet) chopapplet).q.removeLast();

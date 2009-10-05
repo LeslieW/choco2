@@ -50,8 +50,6 @@ public abstract class INode implements IPretty {
 
     private final NodeType type;
 
-    private IntDomainVar[] scope;
-
     public INode(NodeType type) {
         this.type = type;
     }
@@ -77,21 +75,15 @@ public abstract class INode implements IPretty {
      * @return array of variable in the scope
      */
     public IntDomainVar[] getScope(Solver s) {
-        if (subtrees == null) {
+        try {
+            IntDomainVar[] scope = subtrees[0].getScope(s);
+            for (int i = 1; i < subtrees.length; i++) {
+                scope = union(scope, subtrees[i].getScope(s));
+            }
+            return scope;
+        } catch (NullPointerException e) {
             return null;
         }
-        if(scope==null){
-            if (subtrees.length == 1) {
-                scope = subtrees[0].getScope(s);
-            } else {
-                IntDomainVar[] vars = union(subtrees[0].getScope(s), subtrees[1].getScope(s));
-                for (int i = 2; i < subtrees.length; i++) {
-                    vars = union(vars, subtrees[i].getScope(s));
-                }
-                scope =vars;
-            }
-        }
-        return scope;
     }
 
 
@@ -136,7 +128,6 @@ public abstract class INode implements IPretty {
      * @return
      */
     public IntDomainVar[] union(IntDomainVar[] t1, IntDomainVar[] t2) {
-
         TLongArrayList indexes = new TLongArrayList(t1.length + t2.length);
         IntDomainVar[] unionset = new IntDomainVar[t1.length + t2.length];
         int indice = 0;

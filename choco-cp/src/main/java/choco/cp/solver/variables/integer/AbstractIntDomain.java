@@ -27,6 +27,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomain;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
  * History:
@@ -44,7 +45,7 @@ public abstract class AbstractIntDomain implements IntDomain {
 	/**
 	 * The involved variable.
 	 */
-	protected IntDomainVarImpl variable;
+	protected IntDomainVar variable;
 
 	/**
 	 * for the delta domain: current value of the inf (domain lower bound) when the bound started beeing propagated

@@ -78,6 +78,7 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
         this.variables = vars;
     }
 
+    
     public String getComponentClass() {
         return variableManager;
     }
@@ -276,26 +277,22 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
             return vm;
         }
 
-        public Object loadManager(String manager) {
+    public Object loadManager(String manager) {
              //We get it by reflection !
-            Class componentClass = null;
-            try {
-              componentClass = Class.forName(manager);
-            } catch (ClassNotFoundException e) {
-              LOGGER.severe("Component class could not be found: " + manager);
-              System.exit(-1);
-            }
-            try {
-              return componentClass.newInstance();
-            } catch (InstantiationException e) {
-              LOGGER.severe("Component class could not be instantiated: " + manager);
-              System.exit(-1);
-            } catch (IllegalAccessException e) {
-              LOGGER.severe("Component class could not be accessed: " + manager);
-              System.exit(-1);
-            }
-            return null;
+        try {
+            return Class.forName(manager).newInstance();
+        } catch (InstantiationException e) {
+            LOGGER.severe("Component class could not be instantiated: " + manager);
+            System.exit(-1);
+        } catch (IllegalAccessException e) {
+            LOGGER.severe("Component class could not be accessed: " + manager);
+            System.exit(-1);
+        } catch (ClassNotFoundException e) {
+            LOGGER.severe("Component class could not be found: " + manager);
+            System.exit(-1);
         }
+        return null;
+    }
 
 
     public ExpressionManager getEm() {
