@@ -432,8 +432,12 @@ public interface Solver extends IMeasures, IPretty {
     public void setSolutionPoolCapacity(int capacity);
     
     public void printRuntimeSatistics();
-    
+
+    // bug 2874124
+    @Deprecated
     public String runtimeSatistics();
+
+    public String runtimeStatistics();
     /**
 	 * set the maximal search depth for logging statements
 	 */

@@ -80,12 +80,6 @@ public class GlobalCardinality extends AbstractBipartiteFlow implements IntSCons
         if (low.length != up.length) {
             throw new SolverException("globalCardinality : low and up do not have same size");
         }
-        if (low.length != max - min + 1) {
-            throw new SolverException("globalCardinality : low.length != max - min + 1");
-        }
-        if (up.length != max - min + 1) {
-            throw new SolverException("globalCardinality : up.length != max - min + 1");
-        }
         int sumL = 0;
         for(int i = 0; i < low.length; i++){
             sumL += low[i];
