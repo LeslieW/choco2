@@ -1099,4 +1099,29 @@ public class GlobalCardinalityTest {
 		solver.solve();
 		Assert.assertEquals("solution found", 0, solver.getNbSolutions());
     }
+
+    /**
+     * Bug 2871359
+     */
+    @Test
+    public void testMenana1() {
+        int[] occmin = {1, 1, 0, 0};
+        int[] occmax = {2, 2, 0, 0};
+
+        IntegerVariable[] v = makeIntVarArray("x", 4, 0, 2);
+
+        Constraint c2 = globalCardinality(v, occmin, occmax);    // nouvelle api, ne passe pas le test low.length != max - min + 1
+
+        Model m = new CPModel();
+
+        m.addConstraints(c2);
+
+
+        Solver s = new CPSolver();
+
+        s.read(m);
+
+        s.solve();
+        Assert.assertTrue(s.getNbSolutions()>0);
+    }
 }

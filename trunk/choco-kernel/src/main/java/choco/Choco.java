@@ -22,26 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco;
 
-import static java.lang.System.arraycopy;
-import gnu.trove.TIntArrayList;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.model.ModelException;
-import choco.kernel.model.constraints.ComponentConstraint;
-import choco.kernel.model.constraints.ComponentConstraintWithSubConstraints;
-import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.ConstraintType;
-import choco.kernel.model.constraints.MetaConstraint;
-import choco.kernel.model.constraints.MetaTaskConstraint;
+import choco.kernel.model.constraints.*;
 import choco.kernel.model.constraints.automaton.DFA;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.model.constraints.geost.GeostOptions;
@@ -68,15 +54,15 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.model.variables.tree.TreeParametersObject;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.global.scheduling.RscData;
-import choco.kernel.solver.constraints.integer.extension.BinRelation;
-import choco.kernel.solver.constraints.integer.extension.CouplesBitSetTable;
-import choco.kernel.solver.constraints.integer.extension.CouplesTable;
-import choco.kernel.solver.constraints.integer.extension.ExtensionalBinRelation;
-import choco.kernel.solver.constraints.integer.extension.IterTuplesTable;
-import choco.kernel.solver.constraints.integer.extension.LargeRelation;
-import choco.kernel.solver.constraints.integer.extension.TuplesList;
-import choco.kernel.solver.constraints.integer.extension.TuplesTable;
-import choco.kernel.solver.variables.scheduling.TaskVar;
+import choco.kernel.solver.constraints.integer.extension.*;
+import gnu.trove.TIntArrayList;
+
+import static java.lang.System.arraycopy;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -2109,23 +2095,9 @@ public class Choco{
 		return maxval;
 	}
 
-	private static void globalCardinalityTest(IntegerVariable[] vars, int min, int max, int[] low, int[] up){
-		int minval = getMinOfLowB(vars);
-		int maxval = getMaxOfUppB(vars);
-		if (minval != min) {
-			throw new ModelException("globalCardinality : the min value should be " + minval + " you entered " + min);
-		}
-		if (maxval != max) {
-			throw new ModelException("globalCardinality : the max value should be " + maxval + " you entered " + max);
-		}
+	private static void globalCardinalityTest(IntegerVariable[] vars, int[] low, int[] up){
 		if (low.length != up.length) {
 			throw new ModelException("globalCardinality : low and up do not have same size");
-		}
-		if (low.length != max - min + 1) {
-			throw new ModelException("globalCardinality : low.length != max - min + 1");
-		}
-		if (up.length != max - min + 1) {
-			throw new ModelException("globalCardinality : up.length != max - min + 1");
 		}
 		int sumL = 0;
 		for(int i = 0; i < low.length; i++){
@@ -2167,7 +2139,7 @@ public class Choco{
 	 */
 
 	public static Constraint globalCardinality(IntegerVariable[] vars, int min, int max, int[] low, int[] up) {
-		globalCardinalityTest(vars, min, max, low, up);
+		globalCardinalityTest(vars, low, up);
 		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY,
 				new Object[]{ConstraintType.GLOBALCARDINALITYMAX, min, max, low, up}, vars);
 	}
@@ -2241,7 +2213,7 @@ public class Choco{
 	public static Constraint globalCardinality(IntegerVariable[] vars, int[] low, int[] up) {
 		int min  = getMinOfLowB(vars);
 		int max = getMaxOfUppB(vars);
-		globalCardinalityTest(vars, min, max, low, up);
+		globalCardinalityTest(vars, low, up);
 		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY,
 				new Object[]{ConstraintType.GLOBALCARDINALITYMAX, min, max, low, up}, vars);
 	}
@@ -2689,9 +2661,9 @@ public class Choco{
 	 * <li> b = 1 => x1 + k1 <= x2
 	 * <li> b = 0 => x1 + k1 > x2
 	 * </ul>  
-	 * @param x2 the first integer variable.
+	 * @param x1 the first integer variable.
 	 * @param k1 the duration of the precedence.
-	 * @param t2 the other integer variable.
+	 * @param x2 the other integer variable.
 	 * @param b the reification boolean variable
 	 *
 	 */
