@@ -59,7 +59,8 @@ public abstract class AbstractVariable implements Variable, Comparable{
         int f = opts.indexOf(" ", d);
         while(f!=-1){
             options.add(opts.substring(d,f));
-            d = f;
+            d = f+1;
+            f = opts.indexOf(" ", d);
         }
         options.add(opts.substring(d));
 	}
