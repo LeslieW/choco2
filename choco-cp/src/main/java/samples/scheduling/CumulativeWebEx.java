@@ -33,6 +33,7 @@ import static choco.Choco.makeTaskVarArray;
 import static choco.Choco.minus;
 import static choco.Choco.sum;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 
 import samples.Examples.PatternExample;
@@ -41,7 +42,7 @@ import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
-import edu.emory.mathcs.backport.java.util.Arrays;
+
 
 public class CumulativeWebEx extends PatternExample {
 

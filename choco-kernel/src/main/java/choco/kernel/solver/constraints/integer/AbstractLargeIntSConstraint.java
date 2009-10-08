@@ -50,7 +50,6 @@ public abstract class AbstractLargeIntSConstraint extends AbstractIntSConstraint
   /**
    * The search constant attached to the constraint.
    */
-
   public int cste;
 
   /**

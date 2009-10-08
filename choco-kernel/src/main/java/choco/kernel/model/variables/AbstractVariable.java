@@ -55,14 +55,14 @@ public abstract class AbstractVariable implements Variable, Comparable{
 	}
 
     public void addOption(String opts) {
-        int d = 0;
-        int f = opts.indexOf(" ", d);
-        while(f!=-1){
-            options.add(opts.substring(d,f));
-            d = f+1;
-            f = opts.indexOf(" ", d);
-        }
-        options.add(opts.substring(d));
+    	int d = 0;
+		int f = opts.indexOf(" ", d);
+		while (f != -1) {
+			if( f > d) options.add(opts.substring(d,f));
+			d = f+1;
+			f = opts.indexOf(" ", d);
+		}
+		if( d < opts.length()) options.add(opts.substring(d));
 	}
 
     public final void addOptions(String[] options) {
