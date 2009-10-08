@@ -22,8 +22,26 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.variables;
 
+import static choco.Choco.constant;
+import static choco.Choco.makeIntVarArray;
+import static choco.Choco.makeSetVar;
+import static choco.Choco.makeSetVarArray;
+import static choco.Choco.neq;
+import static java.text.MessageFormat.format;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import choco.Choco;
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntVarEvent;
@@ -36,15 +54,6 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import static junit.framework.Assert.*;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import static java.text.MessageFormat.format;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * @author Arnaud Malapert
@@ -166,6 +175,21 @@ public class VariablesTest {
 		assertEquals("only one int decision var",1,l.size());
 		assertEquals("number of integer constants",2,solver.getNbIntConstants());
 		assertTrue("check decision var",l.contains(solver.getVar(s2.getCard())));
+	}
+	
+	private void checkOptions(Set<String> options, int nb, int length) {
+		assertEquals("Nb Options", nb, options.size());
+		for (String str : options) {
+			assertEquals("Option lenght: |"+str+"|", length, str.length());
+		}
+	}
+	@Test
+	public void testOptions() {
+//		final IntegerVariable v = Choco.makeBooleanVar("b", "  foo  bar   foo fou");
+//		checkOptions(v.getOptions(), 3, 3);
+		final SetVariable s = Choco.makeSetVar("s", 0, 18, "     foo   bar","   bar    foo    ");
+		checkOptions(s.getOptions(), 2, 3);
+		
 	}
 
     @Test

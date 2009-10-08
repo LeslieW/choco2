@@ -89,10 +89,30 @@ public final class MathUtils {
 		return max;
 	}
 	
+	public static int max(int[][] values) {
+		int max = Integer.MIN_VALUE;
+		for (int i = 0; i < values.length; i++) {
+			for (int j = 0; j < values[i].length; j++) {
+				if(values[i][j] > max) {max = values[i][j];}
+			}
+		}
+		return max;
+	}
+	
 	public static int min(int[] values) {
 		int min = Integer.MAX_VALUE;
 		for (int i = 0; i < values.length; i++) {
 			if(values[i] < min) {min = values[i];}
+		}
+		return min;
+	}
+	
+	public static int min(int[][] values) {
+		int min = Integer.MAX_VALUE;
+		for (int i = 0; i < values.length; i++) {
+			for (int j = 0; j < values[i].length; j++) {
+				if(values[i][j] < min) {min = values[i][j];}
+			}
 		}
 		return min;
 	}
