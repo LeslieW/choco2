@@ -25,12 +25,13 @@ package choco.memory;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
-import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.recomputation.EnvironmentRecomputation;
+import choco.kernel.memory.copy.EnvironmentCopying;
 import choco.kernel.model.Model;
 import choco.kernel.solver.Solver;
-import org.junit.*;
-import static samples.seminar.ExDonaldGeraldRobert.*;
+import org.junit.Assert;
+import org.junit.Test;
+import samples.Examples.Queen;
+import samples.seminar.ExDonaldGeraldRobert;
 
 /**
  * Created by IntelliJ IDEA.
@@ -41,28 +42,19 @@ import static samples.seminar.ExDonaldGeraldRobert.*;
  */
 public class RecomputationTest {
 
-    IEnvironment env;
-
-        @Before
-        public void before(){
-            env = new EnvironmentRecomputation();
-        }
-
-        @After
-        public void after(){
-            env = null;
-        }
-
         @Test
-        @Ignore
         public void donaldGeraldRobert(){
            //ChocoLogging.setVerbosity(Verbosity.SOLUTION);
-        	Model m = modelIt1();
-            Solver s = new CPSolver(env);
+        	Model m = ExDonaldGeraldRobert.modelIt1();
+            CPSolver s = new CPSolver();
+            s.setRecomputation(true);
+            s.setRecomputationGap(2);
             Solver _s = new CPSolver();
             // Read the model
             s.read(m);
             _s.read(m);
+
+            ChocoLogging.setVerbosity(Verbosity.SOLUTION);
 
             // Then solve it
             s.solve();
@@ -70,10 +62,51 @@ public class RecomputationTest {
             _s.solve();
             //ChocoLogging.flushLogs();
             // Print name value
-            Assert.assertEquals("donald is not equal",_s.getVar(_donald).getVal(),s.getVar(_donald).getVal());
-            Assert.assertEquals("gerald is not equal",_s.getVar(_gerald).getVal(),s.getVar(_gerald).getVal());
-            Assert.assertEquals("robert is not equal",_s.getVar(_robert).getVal(),s.getVar(_robert).getVal());
+
+            Assert.assertEquals("donald is not equal",_s.getVar(ExDonaldGeraldRobert._donald).getVal(),s.getVar(ExDonaldGeraldRobert._donald).getVal());
+            Assert.assertEquals("gerald is not equal",_s.getVar(ExDonaldGeraldRobert._gerald).getVal(),s.getVar(ExDonaldGeraldRobert._gerald).getVal());
+            Assert.assertEquals("robert is not equal",_s.getVar(ExDonaldGeraldRobert._robert).getVal(),s.getVar(ExDonaldGeraldRobert._robert).getVal());
         }
+
+    @Test
+        public void nQueen() {
+        //ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+        Queen pb = new Queen();
+        pb.setUp(12);
+        pb.buildModel();
+
+        Solver _s = new CPSolver();
+        Solver _sc = new CPSolver(new EnvironmentCopying());
+
+        CPSolver s = new CPSolver();
+        CPSolver sc = new CPSolver(new EnvironmentCopying());
+
+        s.setRecomputation(true);
+        s.setRecomputationGap(10);
+
+        sc.setRecomputation(true);
+        sc.setRecomputationGap(10);
+        // Read the model
+        s.read(pb._m);
+        sc.read(pb._m);
+        _s.read(pb._m);
+        _sc.read(pb._m);
+//        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+
+        // Then solve it
+        s.solveAll();
+        sc.solveAll();
+        //ChocoLogging.flushLogs();
+        _s.solveAll();
+        _sc.solveAll();
+
+        //ChocoLogging.flushLogs();
+        // Print name value
+
+        Assert.assertEquals("nb solutions", s.getNbSolutions(), _s.getNbSolutions());
+        Assert.assertEquals("nb nodes", s.getNodeCount(), _s.getNodeCount());
+    }
         
         
 
