@@ -25,8 +25,6 @@
 package choco.cp.solver.constraints.integer;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
@@ -34,9 +32,9 @@ import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
- * Implements a constraint X !== Y + C, with X and Y two variables and C a constant.
+ * Implements a constraint X + Y >= C, with X and Y two variables and C a constant.
  */
-public final class NotEqualXYC extends AbstractBinIntSConstraint {
+public final class GreaterOrEqualXY_C extends AbstractBinIntSConstraint {
 
 	/**
 	 * The search constant of the constraint
@@ -46,70 +44,88 @@ public final class NotEqualXYC extends AbstractBinIntSConstraint {
 	/**
 	 * Constructs the constraint with the specified variables and constant.
 	 *
-	 * @param x0 first IntDomainVar
-	 * @param x1 second IntDomainVar
-	 * @param c  The search constant used in the disequality.
+	 * @param x0 Should be greater than <code>x0+c</code>.
+	 * @param x1 Should be less than <code>x0-c</code>.
+	 * @param c  The search constant used in the inequality.
 	 */
 
-	public NotEqualXYC(IntDomainVar x0, IntDomainVar x1, int c) {
+	public GreaterOrEqualXY_C(IntDomainVar x0, IntDomainVar x1, int c) {
 		super(x0, x1);
 		this.cste = c;
 	}
 
 
-
 	@Override
 	public int getFilteredEventMask(int idx) {
-		assert(idx == 0);
-		return v0.hasEnumeratedDomain() ? 
-				IntVarEvent.INSTINTbitvector : IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
+		return IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
+		// return 0x0B;
 	}
 
-	private final void removeValV0() throws ContradictionException {
-		v0.removeVal(v1.getVal() + this.cste, this.cIdx0);
+
+	private final void updateInfV0() throws ContradictionException {
+		v0.updateInf(cste - v1.getSup(), this.cIdx0);
 	}
 
-	private final void removeValV1() throws ContradictionException {
-		v1.removeVal(v0.getVal() - this.cste, this.cIdx1);
+	private final void updateInfV1() throws ContradictionException {
+		v1.updateInf( cste - v0.getSup(), this.cIdx1);
 	}
-
 	/**
-	 * The one and only propagation method, using foward checking
+	 * The propagation on constraint awake events.
+	 *
+	 * @throws choco.kernel.solver.ContradictionException
+	 *
 	 */
 
-	public final void propagate() throws ContradictionException {
-		if (v0.isInstantiated()) removeValV1();
-		else if (v1.isInstantiated()) removeValV0();
+	public void propagate() throws ContradictionException {
+		updateInfV0();
+		updateInfV1();
 	}
+
+
+	/**
+	 * Propagation when a minimal bound of a variable was modified.
+	 *
+	 * @param idx The index of the variable.
+	 * @throws choco.kernel.solver.ContradictionException
+	 *
+	 */
 
 	@Override
 	public void awakeOnInf(int idx) throws ContradictionException {
-		propagate();
+		if( v0.getInf() + v1.getInf() >= cste) setEntailed();
 	}
+
+
+	/**
+	 * Propagation when a maximal bound of a variable was modified.
+	 *
+	 * @param idx The index of the variable.
+	 * @throws choco.kernel.solver.ContradictionException
+	 *
+	 */
 
 	@Override
 	public void awakeOnSup(int idx) throws ContradictionException {
-		propagate();
-	}
-
-	@Override
-	public final void awakeOnInst(int idx) throws ContradictionException {
-		if (idx == 0) removeValV1();
-		else assert (idx == 1); removeValV0();
+		if (idx == 0) updateInfV1();
+		else assert(idx == 1); updateInfV0();
 	}
 
 
+	/**
+	 * Propagation when a variable is instantiated.
+	 *
+	 * @param idx The index of the variable.
+	 * @throws choco.kernel.solver.ContradictionException
+	 *
+	 */
 
 	@Override
-	public void awakeOnRem(int varIdx, int val) throws ContradictionException {}
-
-
-
-	@Override
-	public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain)
-	throws ContradictionException {}
-
-
+	public void awakeOnInst(int idx) throws ContradictionException {
+		if (idx == 0) updateInfV1();
+		else updateInfV0();
+		assert(v0.getInf() + v1.getInf() >= this.cste);
+		this.setEntailed();
+	}
 
 	/**
 	 * Checks if the listeners must be checked or must fail.
@@ -117,24 +133,23 @@ public final class NotEqualXYC extends AbstractBinIntSConstraint {
 
 	@Override
 	public Boolean isEntailed() {
-		if ((v0.getSup() < v1.getInf() + this.cste) ||
-				(v1.getSup() < v0.getInf() - this.cste))
-			return Boolean.TRUE;
-		else if ( v0.isInstantiated() 
-				&& v1.isInstantiated() 
-				&& v0.getInf() == v1.getInf() + this.cste)
+		if (v0.getSup() + v1.getSup() < this.cste)
 			return Boolean.FALSE;
-		else
-			return null;
+		else if (v0.getInf() + v1.getInf() >= this.cste)
+			return Boolean.TRUE;
+		return null;
 	}
+
 
 	/**
 	 * Checks if the constraint is satisfied when the variables are instantiated.
+	 *
+	 * @return true if the constraint is satisfied
 	 */
 
 	@Override
 	public boolean isSatisfied(int[] tuple) {
-		return (tuple[0] != tuple[1] + this.cste);
+		return tuple[0] + tuple[1] >= this.cste;
 	}
 
 	/**
@@ -144,27 +159,20 @@ public final class NotEqualXYC extends AbstractBinIntSConstraint {
 	 */
 	@Override
 	public boolean isConsistent() {
-		return ((v0.isInstantiated()) ?
-				((v1.hasEnumeratedDomain()) ?
-						(!v1.canBeInstantiatedTo(v0.getVal())) :
-							((v1.getInf() != v0.getVal()) && (v1.getSup() != v0.getVal()))) :
-								((!v1.isInstantiated()) || ((v0.hasEnumeratedDomain()) ?
-										(!v0.canBeInstantiatedTo(v1.getVal())) :
-											((v0.getInf() != v1.getVal()) && (v0.getSup() != v1.getVal())))));
+		return ((v0.getInf() + v1.getSup() >=  this.cste) && (v0.getSup() + v1.getInf() >= this.cste));
 	}
 
 	@Override
 	public AbstractSConstraint opposite() {
 		final Solver solver = getSolver();
-		return (AbstractSConstraint) solver.eq(v0, solver.plus(v1, cste));
+		return (AbstractSConstraint) solver.lt(solver.plus(v0, v1),cste);
 	}
-
 
 	@Override
 	public String pretty() {
 		StringBuffer sb = new StringBuffer();
-		sb.append(v0).append(" != ");
-		sb.append(v1).append(StringUtils.pretty(this.cste));
+		sb.append(v0).append(" + ").append(v1);
+		sb.append(" >= ").append(this.cste);
 		return sb.toString();
 	}
 

@@ -31,12 +31,13 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
+import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
- * Implements a constraint X == Y + C, with X and Y two variables and C a constant.
+ * Implements a constraint X + Y == C, with X and Y two variables and C a constant.
  */
-public final class EqualXYC extends AbstractBinIntSConstraint {
+public class EqualXY_C extends AbstractBinIntSConstraint {
 
 	/**
 	 * The search constant of the constraint
@@ -44,7 +45,7 @@ public final class EqualXYC extends AbstractBinIntSConstraint {
 	protected final int cste;
 	
 	private DisposableIntIterator reuseIter;
-
+	
 	/**
 	 * Constructs the constraint with the specified variables and constant.
 	 *
@@ -53,7 +54,7 @@ public final class EqualXYC extends AbstractBinIntSConstraint {
 	 * @param c  The search constant used in the disequality.
 	 */
 
-	public EqualXYC(IntDomainVar x0, IntDomainVar x1, int c) {
+	public EqualXY_C(IntDomainVar x0, IntDomainVar x1, int c) {
 		super(x0, x1);
 		this.cste = c;
 	}
@@ -75,86 +76,82 @@ public final class EqualXYC extends AbstractBinIntSConstraint {
 		}
 	}
 
+	
 	private final void updateInfV0() throws ContradictionException {
-		v0.updateInf(v1.getInf() + cste, cIdx0);
+		v0.updateInf(cste - v1.getSup(), cIdx0);
 	}
-
+	
 	private final void updateInfV1() throws ContradictionException {
-		v1.updateInf(v0.getInf() - cste, cIdx1);
+		v1.updateInf(cste - v0.getSup(), cIdx1);
 	}
-
+	
 	private final void updateSupV0() throws ContradictionException {
-		v0.updateSup(v1.getSup() + cste, cIdx0);
+		v0.updateSup(cste - v1.getInf(), cIdx0);
 	}
-
+	
 	private final void updateSupV1() throws ContradictionException {
-		v1.updateSup(v0.getSup() - cste, cIdx1);
+		v1.updateSup(cste - v0.getInf(), cIdx1);
 	}
-
-
 	/**
 	 * The one and only propagation method, using foward checking
 	 */
+
 	public void propagate() throws ContradictionException {
 		updateInfV0();
 		updateSupV0();
 		updateInfV1();
 		updateSupV1();
-		// ensure that, in case of enumerated domains,  holes are also propagated
+		// ensure that, in case of enumerated domains, holes are also propagated
+		reuseIter = v0.getDomain().getIterator();
 		int val;
-		if (v1.hasEnumeratedDomain() && v0.hasEnumeratedDomain()) {
-			reuseIter = v0.getDomain().getIterator();
-			try {
-				while (reuseIter.hasNext()) {
-					val = reuseIter.next();
-					if (!(v1.canBeInstantiatedTo(val - cste))) {
-						v0.removeVal(val, cIdx0);
-					}
+		try{
+			while (reuseIter.hasNext()) {
+				val = reuseIter.next();
+				if ( ! v1.canBeInstantiatedTo( cste - val)) {
+					v0.removeVal(val, cIdx0);
 				}
-			} finally {
-				reuseIter.dispose();	
 			}
-			reuseIter = v1.getDomain().getIterator();
-			try{
-				while (reuseIter.hasNext()) {
-					val = reuseIter.next();
-					if (!(v0.canBeInstantiatedTo(val + cste))) {
-						v1.removeVal(val, cIdx1);
-					}
+		}finally{ 
+			reuseIter.dispose();
+		}
+		reuseIter = v1.getDomain().getIterator();
+		try{
+			while (reuseIter.hasNext()) {
+				val = reuseIter.next();
+				if ( ! v0.canBeInstantiatedTo( cste - val)) {
+					v1.removeVal(val, cIdx1);
 				}
-			}finally{
-				reuseIter.dispose();
 			}
+		}finally{
+			reuseIter.dispose();
 		}
 	}
 
 
 	@Override
 	public final void awakeOnInf(int idx) throws ContradictionException {
+		if (idx == 0) updateSupV1();
+		else updateSupV0();
+	}
+
+
+	@Override
+	public final void awakeOnSup(int idx) throws ContradictionException {
 		if (idx == 0) updateInfV1();
 		else updateInfV0();
 	}
 
 	@Override
-	public final void awakeOnSup(int idx) throws ContradictionException {
-		if (idx == 0) updateSupV1();
-		else updateSupV0();
-	}
-
-	@Override
 	public final void awakeOnInst(int idx) throws ContradictionException {
-		if (idx == 0) v1.instantiate(v0.getVal() - cste, cIdx1);
-		else v0.instantiate(v1.getVal() + cste, cIdx0);
+		if (idx == 0) v1.instantiate(cste - v0.getVal(), cIdx1);
+		else v0.instantiate(cste - v1.getVal(), cIdx0);
 	}
 
 
 	@Override
 	public void awakeOnRem(int idx, int x) throws ContradictionException {
-		if (idx == 0) v1.removeVal(x - cste, cIdx1);
-		else {
-			assert(idx == 1);
-			v0.removeVal(x + cste, cIdx0);
-		}
+		if (idx == 0) v1.removeVal( cste - x, cIdx1);
+		else v0.removeVal( cste - x, cIdx0);
 	}
 
 	/**
@@ -163,8 +160,8 @@ public final class EqualXYC extends AbstractBinIntSConstraint {
 
 	@Override
 	public final Boolean isEntailed() {
-		if ((v0.getSup() < v1.getInf() + cste) ||
-				(v0.getInf() > v1.getSup() + cste))
+		if ((v0.getSup() + v1.getSup() < cste) ||
+				(v0.getInf() + v1.getInf() > cste))
 			return Boolean.FALSE;
 		else if (v0.isInstantiated() &&
 				v1.isInstantiated() &&
@@ -180,7 +177,7 @@ public final class EqualXYC extends AbstractBinIntSConstraint {
 
 	@Override
 	public final boolean isSatisfied(int[] tuple) {
-		return (tuple[0] == tuple[1] + this.cste);
+		return (tuple[0] + tuple[1] == this.cste);
 	}
 
 	/**
@@ -190,23 +187,24 @@ public final class EqualXYC extends AbstractBinIntSConstraint {
 	 */
 	@Override
 	public final boolean isConsistent() {
-		return ((v0.getInf() == v1.getInf() + cste) && (v0.getSup() == v1.getSup() + cste));
+		return ((v0.getInf()  + v1.getSup() == cste) && (v0.getSup() + v1.getInf() == cste));
 	}
 
 	@Override
 	public final AbstractSConstraint opposite() {
-		Solver solver = getSolver();
-		return (AbstractSConstraint) solver.neq(v0, solver.plus(v1, cste));
+		final Solver solver = getSolver();
+		return (AbstractSConstraint) solver.neq(solver.plus(v0, v1), cste);
 	}
 
 
 	@Override
 	public final String pretty() {
 		StringBuffer sb = new StringBuffer();
-		sb.append(v0);
+		sb.append(v0.toString());
+		sb.append(" + ");
+		sb.append(v1.toString());
 		sb.append(" = ");
-		sb.append(v1);
-		sb.append(StringUtils.pretty(this.cste));
+		sb.append(this.cste);
 		return sb.toString();
 	}
 

@@ -222,6 +222,18 @@ public final class ArrayUtils {
 		  }
 		  return ret;
 	  }
+	  
+	  public static int[] flatten(int[][] matrix) {
+		  int sz = 0;
+		  for (int[] t : matrix) sz += t.length;
+		  final int[] ret = new int[sz];
+		  int k = 0;
+		  for (int[] ta : matrix) {
+			  for (int t : ta)
+				  ret[k++] = t;
+		  }
+		  return ret;
+	  }
 
 	  /**
 	   * create a new array which contains sorted distinct values;

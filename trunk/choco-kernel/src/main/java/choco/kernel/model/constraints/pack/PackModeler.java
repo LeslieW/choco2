@@ -171,6 +171,7 @@ public class PackModeler {
 			cstr.add( eq(bins[nbPack],nbPack));
 			nbPack++;
 		}
+		//TODO add one more item with s= c/2 if c is even.
 		if(leqCstr) {
 			int m = Math.min(nbBins, nbItems);
 			while(nbPack<m) {
