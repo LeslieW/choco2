@@ -11,15 +11,20 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 
 public class MagicSquare extends PatternExample {
 	/** order of the magic square */
-	public int n = 5;
+	public int n;
 
 	public int magicSum;
 
 	protected IntegerVariable[][] vars;
+	
 	@Override
 	public void setUp(Object parameters) {
 		n = (Integer) parameters;
-		magicSum = n * (n * n + 1) / 2;
+		magicSum = getMagicSum(n);
+	}
+	
+	public static int getMagicSum(int n) {
+		return n * (n * n + 1) / 2;
 	}
 
 	@Override

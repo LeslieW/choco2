@@ -318,12 +318,7 @@ public class EqManager extends IntConstraintManager {
                         c = ((IntegerConstantVariable) v2).getValue();
                         return new NotEqualXC(s.getVar(v1), c);
                     case INTEGER:
-                        if (s.getVar(v1).hasEnumeratedDomain() &&
-                                s.getVar(v2).hasEnumeratedDomain()) {
-                            return new NotEqualXYCEnum(s.getVar(v1), s.getVar(v2), 0);
-                        } else {
-                            return new NotEqualXYC(s.getVar(v1), s.getVar(v2), 0);
-                        }
+                    	return new NotEqualXYC(s.getVar(v1), s.getVar(v2), 0);
                 }
         }
         return null;

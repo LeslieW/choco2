@@ -30,12 +30,10 @@ import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractUnIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.logging.Level;
-
 /**
  * Implements a constraint X = C, with X a variable and C a constant.
  */
-public class EqualXC extends AbstractUnIntSConstraint {
+public final class EqualXC extends AbstractUnIntSConstraint {
 
 	/**
 	 * The search constant of the constraint
@@ -58,10 +56,6 @@ public class EqualXC extends AbstractUnIntSConstraint {
 	@Override
 	public int getFilteredEventMask(int idx) {
 		return IntVarEvent.INSTINTbitvector;
-	}
-
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
 	}
 
 	/**
@@ -109,6 +103,7 @@ public class EqualXC extends AbstractUnIntSConstraint {
 	 * Checks if the listeners must be checked or must fail.
 	 */
 
+	@Override
 	public Boolean isEntailed() {
 		if (!v0.canBeInstantiatedTo(cste)) {
 			return Boolean.FALSE;
@@ -124,6 +119,7 @@ public class EqualXC extends AbstractUnIntSConstraint {
 	 * Checks if the constraint is satisfied when the variables are instantiated.
 	 */
 
+	@Override
 	public boolean isSatisfied(int[] tuple) {
 		return (tuple[0] == this.cste);
 	}
@@ -134,13 +130,14 @@ public class EqualXC extends AbstractUnIntSConstraint {
 	 *
 	 * @return true iff the constraint is bound consistent (same as arc consistent)
 	 */
+	@Override
 	public boolean isConsistent() {
 		return (v0.isInstantiatedTo(this.cste));
 	}
 
+	@Override
 	public AbstractSConstraint opposite() {
 		return (AbstractSConstraint) getSolver().neq(v0, cste);
-		// return NotEqualXC(v0, cste);
 	}
 
 

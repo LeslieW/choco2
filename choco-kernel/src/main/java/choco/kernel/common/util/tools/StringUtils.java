@@ -140,15 +140,9 @@ public class StringUtils {
     }
 
     public static String pretty(int c) {
-        StringBuffer sb = new StringBuffer();
-        if (c > 0) {
-            sb.append(" + ");
-            sb.append(c);
-        } else if (c < 0) {
-            sb.append(" - ");
-            sb.append(-(c));
-        }
-        return sb.toString();
+    	if (c > 0) return " + "+c;
+        else if (c < 0) return " - "+c;
+        else return "";
     }
 
     /**

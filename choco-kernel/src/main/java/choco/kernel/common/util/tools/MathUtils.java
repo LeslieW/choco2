@@ -81,6 +81,24 @@ public final class MathUtils {
 		return Math.round( log(value, exponent) * ROUNDED_LOG_PRECISION) / ROUNDED_LOG_PRECISION;
 	}
 	
+	public static int sum(int[] values) {
+		int s = 0;
+		for (int i = 0; i < values.length; i++) {
+			s+= values[i];
+		}
+		return s;
+	}
+	
+	public static int sum(int[][] values) {
+		int s = 0;
+		for (int i = 0; i < values.length; i++) {
+			for (int j = 0; j < values[i].length; j++) {
+				s+= values[i][j];
+			}
+		}
+		return s;
+	}
+	
 	public static int max(int[] values) {
 		int max = Integer.MIN_VALUE;
 		for (int i = 0; i < values.length; i++) {

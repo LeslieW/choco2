@@ -33,9 +33,9 @@ import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
- * Implements a constraint X > Y + C, with X and Y two variables and C a constant.
+ * Implements a constraint X >= Y + C, with X and Y two variables and C a constant.
  */
-public class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
+public final class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
 
     /**
      * The search constant of the constraint
@@ -56,16 +56,20 @@ public class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
     }
 
 
-    public int getFilteredEventMask(int idx) {
+    @Override
+	public int getFilteredEventMask(int idx) {
         return IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
         // return 0x0B;
     }
 
-
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    
+    private final void updateInfV0() throws ContradictionException {
+    	 v0.updateInf(v1.getInf() + this.cste, this.cIdx0);
     }
-
+    
+    private final void updateSupV1() throws ContradictionException {
+    	  v1.updateSup(v0.getSup() - this.cste, this.cIdx1);
+    }
     /**
      * The propagation on constraint awake events.
      *
@@ -74,11 +78,11 @@ public class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
      */
 
     public void propagate() throws ContradictionException {
-        this.awakeOnInf(1);
-        this.awakeOnSup(0);
+        updateInfV0();
+        updateSupV1();
     }
 
- // /!\  Logging statements decrease performances
+ 
     /**
      * Propagation when a minimal bound of a variable was modified.
      *
@@ -87,14 +91,10 @@ public class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
      *
      */
 
-    public void awakeOnInf(int idx) throws ContradictionException {
-
-        if (idx == 1) {
-//            if (LOGGER.isLoggable(Level.FINEST))
-//            {LOGGER.log(Level.FINEST, "INF({0}) >= INF({1}) + {2}", new Object[]{v0.toString(), v1.toString(), this.cste});}
-            v0.updateInf(v1.getInf() + this.cste, this.cIdx0);
-        } else if (v0.getInf() >= v1.getSup() + this.cste)
-            this.setEntailed();
+    @Override
+	public void awakeOnInf(int idx) throws ContradictionException {
+    	if (idx == 1) updateInfV0();
+        else if (v0.getInf() >= v1.getSup() + this.cste) setEntailed();
     }
 
 
@@ -106,13 +106,10 @@ public class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
      *
      */
 
-    public void awakeOnSup(int idx) throws ContradictionException {
-        if (idx == 0) {
-//            if (LOGGER.isLoggable(Level.FINEST))
-//            {LOGGER.log(Level.FINEST, "SUP({0}) <= SUP({1}) - {2}", new Object[]{v1.toString(), v0.toString(), this.cste});}
-            v1.updateSup(v0.getSup() - this.cste, this.cIdx1);
-        } else if (v0.getInf() >= v1.getSup() + this.cste)
-            this.setEntailed();
+    @Override
+	public void awakeOnSup(int idx) throws ContradictionException {
+        if (idx == 0) updateSupV1();
+        else if (v0.getInf() >= v1.getSup() + this.cste) setEntailed();
     }
 
 
@@ -124,16 +121,10 @@ public class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
      *
      */
 
-    public void awakeOnInst(int idx) throws ContradictionException {
-        if (idx == 0) {
-//            if (LOGGER.isLoggable(Level.FINEST))
-//            {LOGGER.log(Level.FINEST, "SUP({0}) <= SUP({1}) - {2}", new Object[]{v1.toString(), v0.toString(), this.cste});}
-            v1.updateSup(v0.getSup() - this.cste, this.cIdx1);
-        } else if (idx == 1) {
-//            if (LOGGER.isLoggable(Level.FINEST))
-//            {LOGGER.log(Level.FINEST, "INF({0}) >= INF({1}) + {2}", new Object[]{v0.toString(), v1.toString(), this.cste});}
-            v0.updateInf(v1.getInf() + this.cste, this.cIdx0);
-        }
+    @Override
+	public void awakeOnInst(int idx) throws ContradictionException {
+        if (idx == 0) updateSupV1();
+        else updateInfV0();
         if (v0.getInf() >= v1.getSup() + this.cste)
             this.setEntailed();
     }
@@ -142,7 +133,8 @@ public class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
      * Checks if the listeners must be checked or must fail.
      */
 
-    public Boolean isEntailed() {
+    @Override
+	public Boolean isEntailed() {
         if (v0.getSup() < v1.getInf() + this.cste)
             return Boolean.FALSE;
         else if (v0.getInf() >= v1.getSup() + this.cste)
@@ -157,7 +149,8 @@ public class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
      * @return true if the constraint is satisfied
      */
 
-    public boolean isSatisfied(int[] tuple) {
+    @Override
+	public boolean isSatisfied(int[] tuple) {
         return tuple[0] >= tuple[1] + this.cste;
     }
 
@@ -166,17 +159,20 @@ public class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
      *
      * @return true iff the constraint is bound consistent (weaker than arc consistent)
      */
-    public boolean isConsistent() {
+    @Override
+	public boolean isConsistent() {
         return ((v0.getInf() >= v1.getInf() + this.cste) && (v1.getSup() <= v0.getSup() - this.cste));
     }
 
-    public AbstractSConstraint opposite() {
-        Solver solver = getSolver();
+    @Override
+	public AbstractSConstraint opposite() {
+        final Solver solver = getSolver();
         return (AbstractSConstraint) solver.lt(v0, solver.plus(v1, cste));
 //    return new GreaterOrEqualXYC(v1, v0, 1 - cste);
     }
 
-    public int getVarIdxInOpposite(int i) {
+    @Override
+	public int getVarIdxInOpposite(int i) {
         if (i == 0)
             return 1;
         else if (i == 1)
@@ -186,12 +182,11 @@ public class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
     }
 
 
-    public String pretty() {
+    @Override
+	public String pretty() {
         StringBuffer sb = new StringBuffer();
-        sb.append(v0.toString());
-        sb.append(" >= ");
-        sb.append(v1.toString());
-        sb.append(StringUtils.pretty(this.cste));
+        sb.append(v0).append(" >= ");
+        sb.append(v1).append(StringUtils.pretty(this.cste));
         return sb.toString();
     }
 

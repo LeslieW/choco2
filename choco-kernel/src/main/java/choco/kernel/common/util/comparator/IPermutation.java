@@ -22,6 +22,8 @@
  **************************************************/
 package choco.kernel.common.util.comparator;
 
+import java.util.List;
+
 /**
  * Modelize a sorting permutation of a set.
  * @author Arnaud Malapert</br>
@@ -37,6 +39,8 @@ public interface IPermutation {
 	 * @param dest the permuted array
 	 */
 	public <T> void applyPermutation(T[] source,T[] dest);
+	
+	public <T> void applyPermutation(List<T> source,T[] dest);
 
 	/**
 	 * apply the permutation to the integer array

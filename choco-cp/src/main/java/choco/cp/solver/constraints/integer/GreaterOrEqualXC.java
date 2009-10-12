@@ -30,12 +30,10 @@ import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractUnIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.logging.Level;
-
 /**
  * Implements a constraint X >= C, with X a variable and C a constant.
  */
-public class GreaterOrEqualXC extends AbstractUnIntSConstraint {
+public final class GreaterOrEqualXC extends AbstractUnIntSConstraint {
 
 	/**
 	 * The search constant of the constraint
@@ -60,19 +58,16 @@ public class GreaterOrEqualXC extends AbstractUnIntSConstraint {
 		return IntVarEvent.INSTINTbitvector;
 	}
 
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
 
 	/**
 	 * Pretty print of the constraint.
 	 */
 
+	@Override
 	public String pretty() {
 		return this.v0 + " >= " + cste;
 	}
 
-	///!\  Logging statements decrease performances
 
 	/**
 	 * The one and only propagation method. <br>
@@ -81,19 +76,15 @@ public class GreaterOrEqualXC extends AbstractUnIntSConstraint {
 	 */
 
 	public void propagate() throws ContradictionException {
-//		if (LOGGER.isLoggable(Level.FINEST))
-//			LOGGER.log(Level.FINEST, "VAL({0}) >= {1}", new Object[]{v0.toString(), this.cste});
 		v0.updateInf(this.cste, this.cIdx0);
 		this.setEntailed();
 	}
 
 
+	@Override
 	public void awakeOnInst(int idx) throws ContradictionException {
 		assert(idx == 0);
-//		if (LOGGER.isLoggable(Level.FINEST))
-//			LOGGER.log(Level.FINEST, "VAL({0}) >= {1}", new Object[]{v0.toString(), this.cste});
-		if (v0.getVal() < this.cste)
-			this.fail();
+		if (v0.getVal() < this.cste) this.fail();
 	}
 
 	/**
@@ -101,6 +92,7 @@ public class GreaterOrEqualXC extends AbstractUnIntSConstraint {
 	 * we know for sure whether the constraint will be satisfied or not
 	 */
 
+	@Override
 	public Boolean isEntailed() {
 		if (v0.getInf() >= this.cste)
 			return Boolean.TRUE;
@@ -114,6 +106,7 @@ public class GreaterOrEqualXC extends AbstractUnIntSConstraint {
 	 * tests if the constraint is satisfied when the variables are instantiated.
 	 */
 
+	@Override
 	public boolean isSatisfied(int[] tuple) {
 		assert(v0.isInstantiated());
 		return (tuple[0] >= this.cste);
@@ -124,10 +117,12 @@ public class GreaterOrEqualXC extends AbstractUnIntSConstraint {
 	 *
 	 * @return true iff the constraint is bound consistent (same as arc consistent)
 	 */
+	@Override
 	public boolean isConsistent() {
 		return (v0.getInf() >= this.cste);
 	}
 
+	@Override
 	public AbstractSConstraint opposite() {
 		return (AbstractSConstraint) getSolver().lt(v0, cste);
 		//    return new LessOrEqualXC(v0, cste - 1);

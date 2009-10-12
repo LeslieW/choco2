@@ -31,107 +31,102 @@ import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractUnIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.logging.Level;
-
 /**
  * Implements a constraint X <= C, with X a variable and C a constant.
  */
-public class LessOrEqualXC extends AbstractUnIntSConstraint {
+public final class LessOrEqualXC extends AbstractUnIntSConstraint {
 
-  /**
-   * The search constant of the constraint
-   */
-  protected final int cste;
+	/**
+	 * The search constant of the constraint
+	 */
+	protected final int cste;
 
-  /**
-   * Constructs the constraint with the specified variables and constant.
-   *
-   * @param x0 the search valued domain variable
-   * @param c  the search constant used in the inequality.
-   */
+	/**
+	 * Constructs the constraint with the specified variables and constant.
+	 *
+	 * @param x0 the search valued domain variable
+	 * @param c  the search constant used in the inequality.
+	 */
 
-  public LessOrEqualXC(IntDomainVar x0, int c) {
-      super(x0);
-    this.v0 = x0;
-    this.cste = c;
-  }
+	public LessOrEqualXC(IntDomainVar x0, int c) {
+		super(x0);
+		this.v0 = x0;
+		this.cste = c;
+	}
 
-    @Override
-    public int getFilteredEventMask(int idx) {
-        return IntVarEvent.INSTINTbitvector;
-    }
-
-  public Object clone() throws CloneNotSupportedException {
-    return super.clone();
-  }
-
-  /**
-   * Pretty print of the constraint.
-   */
-
-  public String pretty() {
-    return this.v0 + " <= " + cste;
-  }
-
-///!\  Logging statements decrease performances
-  /**
-   * The one and only propagation method. <br>
-   * Note that after the first propagation, the constraint is set passive
-   * (to prevent from further calls to propagation methods)
-   */
-
-  public void propagate() throws ContradictionException {
-//    if (LOGGER.isLoggable(Level.FINEST))
-//    {LOGGER.log(Level.FINEST, "VAL({0}) <= {1}", new Object[]{v0.toString(), this.cste});}
-    v0.updateSup(this.cste, this.cIdx0);
-    this.setEntailed();
-  }
+	@Override
+	public int getFilteredEventMask(int idx) {
+		return IntVarEvent.INSTINTbitvector;
+	}
 
 
-  public void awakeOnInst(int idx) throws ContradictionException {
-    assert(idx == 0);
-//    if (LOGGER.isLoggable(Level.FINEST))
-//    {LOGGER.log(Level.FINEST, "VAL({0} <= {1}", new Object[]{v0.toString(),this.cste});}
-    if (v0.getVal() > this.cste)
-      this.fail();
-  }
 
-  /**
-   * When the whole domain of <code>v0</code> is below or above <code>cste</code>,
-   * we know for sure whether the constraint will be satisfied or not
-   */
+	/**
+	 * Pretty print of the constraint.
+	 */
 
-  public Boolean isEntailed() {
-    if (v0.getSup() <= this.cste)
-      return Boolean.TRUE;
-    else if (v0.getInf() > this.cste)
-      return Boolean.FALSE;
-    else
-      return null;
-  }
+	@Override
+	public String pretty() {
+		return this.v0 + " <= " + cste;
+	}
 
-  /**
-   * tests if the constraint is satisfied when the variables are instantiated.
-   */
+	/**
+	 * The one and only propagation method. <br>
+	 * Note that after the first propagation, the constraint is set passive
+	 * (to prevent from further calls to propagation methods)
+	 */
 
-  public boolean isSatisfied(int[] tuple) {
-    return (tuple[0] <= this.cste);
-  }
+	public void propagate() throws ContradictionException {
+		v0.updateSup(this.cste, this.cIdx0);
+		this.setEntailed();
+	}
 
-  /**
-   * tests if the constraint is consistent with respect to the current state of domains
-   *
-   * @return true iff the constraint is bound consistent (same as arc consistent)
-   */
-  public boolean isConsistent() {
-    return (v0.getSup() <= this.cste);
-  }
 
-  public AbstractSConstraint opposite() {
-//    return new GreaterOrEqualXC(v0, cste + 1);
-    Solver solver = getSolver();
-    return (AbstractSConstraint) solver.gt(v0, cste);
-  }
+	@Override
+	public void awakeOnInst(int idx) throws ContradictionException {
+		assert(idx == 0);
+		if (v0.getVal() > this.cste) this.fail();
+	}
+
+	/**
+	 * When the whole domain of <code>v0</code> is below or above <code>cste</code>,
+	 * we know for sure whether the constraint will be satisfied or not
+	 */
+
+	@Override
+	public Boolean isEntailed() {
+		if (v0.getSup() <= this.cste)
+			return Boolean.TRUE;
+		else if (v0.getInf() > this.cste)
+			return Boolean.FALSE;
+		else
+			return null;
+	}
+
+	/**
+	 * tests if the constraint is satisfied when the variables are instantiated.
+	 */
+
+	@Override
+	public boolean isSatisfied(int[] tuple) {
+		return (tuple[0] <= this.cste);
+	}
+
+	/**
+	 * tests if the constraint is consistent with respect to the current state of domains
+	 *
+	 * @return true iff the constraint is bound consistent (same as arc consistent)
+	 */
+	@Override
+	public boolean isConsistent() {
+		return (v0.getSup() <= this.cste);
+	}
+
+	@Override
+	public AbstractSConstraint opposite() {
+		final Solver solver = getSolver();
+		return (AbstractSConstraint) solver.gt(v0, cste);
+	}
 
 
 }

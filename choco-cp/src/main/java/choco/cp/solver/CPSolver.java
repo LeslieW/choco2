@@ -504,7 +504,7 @@ public class CPSolver implements Solver {
 			Object floatVar = floatVars.get(i1);
 			RealVar realVar = (RealVar) floatVar;
 			buf.append(realVar.pretty());
-            buf.append("\n");
+			buf.append("\n");
 		}
 		for (int i = 0; i < setVars.size(); i++) {
 			buf.append(getSetVar(i).pretty());
@@ -1472,8 +1472,8 @@ public class CPSolver implements Solver {
 	public void setRestart(boolean restart) {
 		restartConfig.setRestartAfterEachSolution(restart);
 	}
-	
-	
+
+
 
 	public final RestartConfiguration getRestartConfiguration() {
 		return restartConfig;
@@ -2270,7 +2270,7 @@ public class CPSolver implements Solver {
 		.append("\n");
 
 		// Check variables
-        isSolution &= checkDecisionVariables((logged?st:null));
+		isSolution &= checkDecisionVariables((logged?st:null));
 
 		// Check constraints
 		isSolution &= checkConstraints((logged?st:null), enableConsistency);
@@ -2295,8 +2295,8 @@ public class CPSolver implements Solver {
 	 * @return true if all variables are instantiated
 	 */
 	public boolean checkDecisionVariables() {
-        return checkDecisionVariables(null);
-    }
+		return checkDecisionVariables(null);
+	}
 
 	/**
 	 * Check wether every decisions variables are instantiated
@@ -2309,22 +2309,22 @@ public class CPSolver implements Solver {
 		if (intDecisionVars != null) {
 			for (IntDomainVar intDecisionVar : intDecisionVars) {
 				if (!intDecisionVar.isInstantiated()) {
-                    if(st!=null)st.append(StringUtils.pad(""+intDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
+					if(st!=null)st.append(StringUtils.pad(""+intDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
 					isOk = false;
 				}else{
-                    if(st!=null)st.append(StringUtils.pad(""+intDecisionVar.getName(), 100, ".")).append("ok\n");
-                }
+					if(st!=null)st.append(StringUtils.pad(""+intDecisionVar.getName(), 100, ".")).append("ok\n");
+				}
 			}
 		}
 
 		if (setDecisionVars != null) {
 			for (SetVar setDecisionVar : setDecisionVars) {
 				if (!setDecisionVar.isInstantiated()) {
-                    if(st!=null)st.append(StringUtils.pad(""+setDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
+					if(st!=null)st.append(StringUtils.pad(""+setDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
 					isOk = false;
 				}else{
-                    if(st!=null)st.append(StringUtils.pad(""+setDecisionVar.getName(), 100, ".")).append("ok\n");
-                }
+					if(st!=null)st.append(StringUtils.pad(""+setDecisionVar.getName(), 100, ".")).append("ok\n");
+				}
 			}
 		}
 
@@ -2415,21 +2415,21 @@ public class CPSolver implements Solver {
 		getSearchStrategy().printRuntimeStatistics();
 	}
 
-    /**
-     * bug 2874124
-     * Print run time statistics
-     * @return
-     * @see choco.cp.solver.CPSolver#runtimeStatistics() 
-     */
-    @Deprecated
-    public String runtimeSatistics() {
-        return this.runtimeStatistics();
-    }
+	/**
+	 * bug 2874124
+	 * Print run time statistics
+	 * @return
+	 * @see choco.cp.solver.CPSolver#runtimeStatistics() 
+	 */
+	@Deprecated
+	public String runtimeSatistics() {
+		return this.runtimeStatistics();
+	}
 
-    /**
-     * Print runtime statistics
-     * @return
-     */
+	/**
+	 * Print runtime statistics
+	 * @return
+	 */
 	public String runtimeStatistics() {
 		return getSearchStrategy().runtimeStatistics();
 	}
@@ -3355,13 +3355,8 @@ public class CPSolver implements Solver {
 					&& (t.getCoefficient(0) + t.getCoefficient(1) == 0)) {
 				IntDomainVar v1 = (IntDomainVar) t.getVariable(0);
 				IntDomainVar v2 = (IntDomainVar) t.getVariable(1);
-				if (v1.hasEnumeratedDomain() && v2.hasEnumeratedDomain()) {
-					return new NotEqualXYCEnum(v1, v2, (c - t.getConstant())
-							/ t.getCoefficient(0));
-				} else {
-					return new NotEqualXYC(v1, v2, (c - t.getConstant())
-							/ t.getCoefficient(0));
-				}
+				return new NotEqualXYC(v1, v2, (c - t.getConstant())
+						/ t.getCoefficient(0));
 			} else {
 				return makeIntLinComb(((IntTerm) x).getVariables(),
 						((IntTerm) x).getCoefficients(), -(c), IntLinComb.NEQ);
@@ -3384,14 +3379,7 @@ public class CPSolver implements Solver {
 			if (y instanceof IntTerm) {
 				return neq(minus(x, y), 0);
 			} else if (y instanceof IntVar) {
-				if (((IntDomainVar) x).hasEnumeratedDomain()
-						&& ((IntDomainVar) y).hasEnumeratedDomain()) {
-					return new NotEqualXYCEnum((IntDomainVar) x,
-							(IntDomainVar) y, 0);
-				} else {
-					return new NotEqualXYC((IntDomainVar) x, (IntDomainVar) y,
-							0);
-				}
+				return new NotEqualXYC((IntDomainVar) x, (IntDomainVar) y, 0);
 			} else if (y == null) {
 				return neq(x, 0);
 			} else {

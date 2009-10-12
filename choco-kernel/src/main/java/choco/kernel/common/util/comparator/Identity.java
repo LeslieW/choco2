@@ -22,6 +22,8 @@
  **************************************************/
 package choco.kernel.common.util.comparator;
 
+import java.util.List;
+
 /**
  * identity permutation.
  * @author Arnaud Malapert</br>
@@ -51,7 +53,13 @@ public class Identity implements IPermutation {
 				dest[i]=source[i];
 			}
 		}
+	}
+	
+	
 
+	@Override
+	public <T> void applyPermutation(List<T> source, T[] dest) {
+		source.toArray(dest);		
 	}
 
 	@Override

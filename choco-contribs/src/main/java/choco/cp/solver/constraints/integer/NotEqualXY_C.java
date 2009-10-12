@@ -36,7 +36,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /**
  * Implements a constraint X !== Y + C, with X and Y two variables and C a constant.
  */
-public final class NotEqualXYC extends AbstractBinIntSConstraint {
+public final class NotEqualXY_C extends AbstractBinIntSConstraint {
 
 	/**
 	 * The search constant of the constraint
@@ -51,7 +51,7 @@ public final class NotEqualXYC extends AbstractBinIntSConstraint {
 	 * @param c  The search constant used in the disequality.
 	 */
 
-	public NotEqualXYC(IntDomainVar x0, IntDomainVar x1, int c) {
+	public NotEqualXY_C(IntDomainVar x0, IntDomainVar x1, int c) {
 		super(x0, x1);
 		this.cste = c;
 	}
@@ -66,11 +66,11 @@ public final class NotEqualXYC extends AbstractBinIntSConstraint {
 	}
 
 	private final void removeValV0() throws ContradictionException {
-		v0.removeVal(v1.getVal() + this.cste, this.cIdx0);
+		v0.removeVal(cste - v1.getVal(), this.cIdx0);
 	}
 
 	private final void removeValV1() throws ContradictionException {
-		v1.removeVal(v0.getVal() - this.cste, this.cIdx1);
+		v1.removeVal(cste - v0.getVal(), this.cIdx1);
 	}
 
 	/**
@@ -97,8 +97,8 @@ public final class NotEqualXYC extends AbstractBinIntSConstraint {
 		if (idx == 0) removeValV1();
 		else assert (idx == 1); removeValV0();
 	}
-
-
+	
+	
 
 	@Override
 	public void awakeOnRem(int varIdx, int val) throws ContradictionException {}
@@ -107,7 +107,7 @@ public final class NotEqualXYC extends AbstractBinIntSConstraint {
 
 	@Override
 	public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain)
-	throws ContradictionException {}
+			throws ContradictionException {}
 
 
 
@@ -117,12 +117,12 @@ public final class NotEqualXYC extends AbstractBinIntSConstraint {
 
 	@Override
 	public Boolean isEntailed() {
-		if ((v0.getSup() < v1.getInf() + this.cste) ||
-				(v1.getSup() < v0.getInf() - this.cste))
+		if ((v0.getSup() + v1.getSup() < cste) ||
+				(v1.getInf() + v0.getInf() > cste))
 			return Boolean.TRUE;
 		else if ( v0.isInstantiated() 
 				&& v1.isInstantiated() 
-				&& v0.getInf() == v1.getInf() + this.cste)
+				&& v0.getInf() + v1.getInf() == this.cste)
 			return Boolean.FALSE;
 		else
 			return null;
@@ -134,7 +134,7 @@ public final class NotEqualXYC extends AbstractBinIntSConstraint {
 
 	@Override
 	public boolean isSatisfied(int[] tuple) {
-		return (tuple[0] != tuple[1] + this.cste);
+		return (tuple[0] + tuple[1] != this.cste);
 	}
 
 	/**
@@ -144,27 +144,29 @@ public final class NotEqualXYC extends AbstractBinIntSConstraint {
 	 */
 	@Override
 	public boolean isConsistent() {
-		return ((v0.isInstantiated()) ?
-				((v1.hasEnumeratedDomain()) ?
-						(!v1.canBeInstantiatedTo(v0.getVal())) :
-							((v1.getInf() != v0.getVal()) && (v1.getSup() != v0.getVal()))) :
-								((!v1.isInstantiated()) || ((v0.hasEnumeratedDomain()) ?
-										(!v0.canBeInstantiatedTo(v1.getVal())) :
-											((v0.getInf() != v1.getVal()) && (v0.getSup() != v1.getVal())))));
+		//TODO not really easy to invert from X != Y + C
+//		return ((v0.isInstantiated()) ?
+//				((v1.hasEnumeratedDomain()) ?
+//						(!v1.canBeInstantiatedTo(v0.getVal())) :
+//							((v1.getInf() != v0.getVal()) && (v1.getSup() != v0.getVal()))) :
+//								((!v1.isInstantiated()) || ((v0.hasEnumeratedDomain()) ?
+//										(!v0.canBeInstantiatedTo(v1.getVal())) :
+//											((v0.getInf() != v1.getVal()) && (v0.getSup() != v1.getVal())))));
+		return false;
 	}
 
 	@Override
 	public AbstractSConstraint opposite() {
 		final Solver solver = getSolver();
-		return (AbstractSConstraint) solver.eq(v0, solver.plus(v1, cste));
+		return (AbstractSConstraint) solver.eq(solver.plus(v0, v1), cste);
 	}
 
 
 	@Override
 	public String pretty() {
 		StringBuffer sb = new StringBuffer();
-		sb.append(v0).append(" != ");
-		sb.append(v1).append(StringUtils.pretty(this.cste));
+		sb.append(v0).append(" + ").append(v1);
+		sb.append(" != ").append(StringUtils.pretty(this.cste));
 		return sb.toString();
 	}
 

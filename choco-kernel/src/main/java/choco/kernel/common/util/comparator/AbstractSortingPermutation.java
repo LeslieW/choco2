@@ -25,6 +25,8 @@ package choco.kernel.common.util.comparator;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
+import java.util.ListIterator;
 
 /*
 * User : charles
@@ -73,7 +75,19 @@ public abstract class AbstractSortingPermutation implements IPermutation, Compar
 		}
 
 	}
-
+	
+	@Override
+	public <T> void applyPermutation(List<T> source, T[] dest) {
+		if(source.size() != orderingPermutation.length || source.size() != dest.length) {
+			throw new ArrayIndexOutOfBoundsException("the two arguments should have the same length than the permutation array");
+		}else {
+			int k = 0;
+			for (T s : source) {
+				dest[k++]= s;
+			}
+		}
+		
+	}
 
 	@Override
 	public int[] applyPermutation(int[] source) {
