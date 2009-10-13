@@ -354,8 +354,41 @@ public class IntLinCombTest {
         m.addConstraint(eq(scalar(a, zeroCoef), 0));
         s.read(m);
         s.solve();
+        System.out.println(s.pretty());
         assertTrue(s.isFeasible());
     }
+    
+    @Test
+    public void test10() {
+        IntegerVariable[] a = {x1, x2};
+        int[] zeroCoef = new int[2];
+        m.addConstraint(eq(scalar(a, zeroCoef), 0));
+        s.read(m);
+        s.solve();
+        System.out.println(s.pretty());
+        assertTrue(s.isFeasible());
+    }
+    
+    @Test
+    public void test11() {
+    	IntegerVariable[] a = {x1, x2, x2, x1};
+        int[] zeroCoef = {1,2,-2,-1};
+        m.addConstraint(eq(scalar(a, zeroCoef), 0));
+        s.read(m);
+        s.solve();
+        assertTrue(s.isFeasible());
+    }
+    
+    @Test
+    public void test12() {
+    	IntegerVariable[] a = {x1, x2, x2, x3, x3, x1};
+        int[] zeroCoef = {1,2,-2,3, -3, -1};
+        m.addConstraint(eq(scalar(a, zeroCoef), 0));
+        s.read(m);
+        s.solve();
+        assertTrue(s.isFeasible());
+    }
+    
 }
 
 /*

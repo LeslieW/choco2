@@ -28,6 +28,23 @@
  *************************************************/
 package choco.cp.solver;
 
+import static choco.kernel.solver.search.SolutionPoolFactory.makeDefaultSolutionPool;
+import gnu.trove.TLongObjectHashMap;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.configure.LimitConfiguration;
@@ -38,21 +55,55 @@ import choco.cp.solver.constraints.global.Occurrence;
 import choco.cp.solver.constraints.global.scheduling.PrecedenceDisjoint;
 import choco.cp.solver.constraints.global.scheduling.PrecedenceVDisjoint;
 import choco.cp.solver.constraints.global.scheduling.PrecedenceVSDisjoint;
-import choco.cp.solver.constraints.integer.*;
+import choco.cp.solver.constraints.integer.EqualXC;
+import choco.cp.solver.constraints.integer.EqualXYC;
+import choco.cp.solver.constraints.integer.GreaterOrEqualXC;
+import choco.cp.solver.constraints.integer.GreaterOrEqualXYC;
+import choco.cp.solver.constraints.integer.IntLinComb;
+import choco.cp.solver.constraints.integer.LessOrEqualXC;
+import choco.cp.solver.constraints.integer.MaxOfAList;
+import choco.cp.solver.constraints.integer.NotEqualXC;
+import choco.cp.solver.constraints.integer.NotEqualXYC;
 import choco.cp.solver.constraints.integer.bool.BoolIntLinComb;
 import choco.cp.solver.constraints.integer.bool.BoolSum;
 import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
 import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
-import choco.cp.solver.constraints.integer.extension.*;
+import choco.cp.solver.constraints.integer.extension.AC2001BinSConstraint;
+import choco.cp.solver.constraints.integer.extension.AC3BinSConstraint;
+import choco.cp.solver.constraints.integer.extension.AC3rmBinSConstraint;
+import choco.cp.solver.constraints.integer.extension.AC3rmBitBinSConstraint;
+import choco.cp.solver.constraints.integer.extension.CspLargeSConstraint;
+import choco.cp.solver.constraints.integer.extension.GAC2001LargeSConstraint;
+import choco.cp.solver.constraints.integer.extension.GAC2001PositiveLargeConstraint;
+import choco.cp.solver.constraints.integer.extension.GAC3rmLargeConstraint;
+import choco.cp.solver.constraints.integer.extension.GAC3rmPositiveLargeConstraint;
+import choco.cp.solver.constraints.integer.extension.GACstrPositiveLargeSConstraint;
 import choco.cp.solver.constraints.real.Equation;
 import choco.cp.solver.constraints.real.MixedEqXY;
-import choco.cp.solver.constraints.real.exp.*;
+import choco.cp.solver.constraints.real.exp.RealCos;
+import choco.cp.solver.constraints.real.exp.RealIntegerPower;
+import choco.cp.solver.constraints.real.exp.RealMinus;
+import choco.cp.solver.constraints.real.exp.RealMult;
+import choco.cp.solver.constraints.real.exp.RealPlus;
+import choco.cp.solver.constraints.real.exp.RealSin;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
-import choco.cp.solver.constraints.set.*;
+import choco.cp.solver.constraints.set.Disjoint;
+import choco.cp.solver.constraints.set.IsIncluded;
+import choco.cp.solver.constraints.set.MemberXY;
+import choco.cp.solver.constraints.set.SetCard;
+import choco.cp.solver.constraints.set.SetEq;
+import choco.cp.solver.constraints.set.SetIntersection;
+import choco.cp.solver.constraints.set.SetNotEq;
+import choco.cp.solver.constraints.set.SetUnion;
 import choco.cp.solver.goals.GoalSearchSolver;
 import choco.cp.solver.propagation.ChocEngine;
 import choco.cp.solver.propagation.EventQueueFactory;
-import choco.cp.solver.search.*;
+import choco.cp.solver.search.AbstractSearchLoopWithRestart;
+import choco.cp.solver.search.BranchAndBound;
+import choco.cp.solver.search.DefaultStrategyMeasures;
+import choco.cp.solver.search.GlobalSearchStrategy;
+import choco.cp.solver.search.SearchLoop;
+import choco.cp.solver.search.SearchLoopWithRecomputation;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.branching.DomOverWDegBinBranching2;
 import choco.cp.solver.search.integer.branching.DomOverWDegBranching2;
@@ -68,7 +119,11 @@ import choco.cp.solver.search.real.RealIncreasingDomain;
 import choco.cp.solver.search.restart.BasicKickRestart;
 import choco.cp.solver.search.restart.IKickRestart;
 import choco.cp.solver.search.restart.NogoodKickRestart;
-import choco.cp.solver.search.set.*;
+import choco.cp.solver.search.set.AssignSetVar;
+import choco.cp.solver.search.set.MinDomSet;
+import choco.cp.solver.search.set.MinEnv;
+import choco.cp.solver.search.set.RandomSetValSelector;
+import choco.cp.solver.search.set.RandomSetVarSelector;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntTerm;
@@ -107,16 +162,30 @@ import choco.kernel.solver.constraints.global.MetaSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.integer.IntExp;
 import choco.kernel.solver.constraints.integer.IntSConstraint;
-import choco.kernel.solver.constraints.integer.extension.*;
+import choco.kernel.solver.constraints.integer.extension.BinRelation;
+import choco.kernel.solver.constraints.integer.extension.CouplesBitSetTable;
+import choco.kernel.solver.constraints.integer.extension.CouplesTable;
+import choco.kernel.solver.constraints.integer.extension.ExtensionalBinRelation;
+import choco.kernel.solver.constraints.integer.extension.IterLargeRelation;
+import choco.kernel.solver.constraints.integer.extension.IterTuplesTable;
+import choco.kernel.solver.constraints.integer.extension.LargeRelation;
+import choco.kernel.solver.constraints.integer.extension.TuplesList;
+import choco.kernel.solver.constraints.integer.extension.TuplesTable;
 import choco.kernel.solver.constraints.real.RealExp;
 import choco.kernel.solver.constraints.set.SetSConstraint;
 import choco.kernel.solver.goals.Goal;
-import choco.kernel.solver.propagation.*;
+import choco.kernel.solver.propagation.AbstractPropagationEngine;
+import choco.kernel.solver.propagation.ConstraintEvent;
+import choco.kernel.solver.propagation.ConstraintEventQueue;
+import choco.kernel.solver.propagation.EventQueue;
+import choco.kernel.solver.propagation.PropagationEngine;
+import choco.kernel.solver.propagation.PropagationEngineListener;
+import choco.kernel.solver.propagation.Propagator;
+import choco.kernel.solver.propagation.VarEventQueue;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.AbstractOptimize;
 import choco.kernel.solver.search.AbstractSearchStrategy;
 import choco.kernel.solver.search.ISolutionPool;
-import static choco.kernel.solver.search.SolutionPoolFactory.makeDefaultSolutionPool;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
@@ -137,12 +206,6 @@ import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
 import choco.kernel.visu.IVisu;
-import gnu.trove.TLongObjectHashMap;
-
-import java.lang.reflect.Array;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -2849,53 +2912,6 @@ public class CPSolver implements Solver {
 	// CONSTRAINTS DECLARATION
 	// ************************************************************************
 
-	// /**
-	// * Cumulative : Given a set of tasks defined by their starting dates,
-	// ending dates, durations and
-	// * consumptions/heights, the cumulative ensures that at any time t, the
-	// sum of the heights of the tasks
-	// * which are executed at time t does not exceed a given limit C (the
-	// capacity of the ressource).
-	// * The notion of task does not exist yet in choco. The cumulative takes
-	// therefore as input three arrays
-	// * of integer variables (of same size n) denoting the starting, ending,
-	// and duration of each task.
-	// * The heights of the tasks are considered constant and given via an array
-	// of size n of positive integers.
-	// * The last parameter Capa denotes the Capacity of the cumulative (of the
-	// ressource).
-	// * The implementation is based on the paper of Bediceanu and al :
-	// * "A new multi-resource cumulatives constraint with negative heights" in
-	// CP02
-	// */
-	// public SConstraint cumulative(IntDomainVar[] starts, IntDomainVar[] ends,
-	// IntDomainVar[] durations, IntDomainVar[] heigths, IntDomainVar capa) {
-	// //create tasks;
-	// TaskVar[] tasks=new TaskVar[heigths.length];
-	// for (int i = 0; i < tasks.length; i++) {
-	// tasks[i]=createTaskVar("internal-Task", starts[i], ends[i],
-	// durations[i]);
-	// }
-	// CumulativeSResource rsc=new
-	// CumulativeSResource("internal-cumul-resource",
-	// capa,tasks,heigths,manager.getDefaultSettings());
-	// return new Cumulative(rsc);
-	// }
-	//
-	// public SConstraint cumulative(IntDomainVar[] starts, IntDomainVar[] ends,
-	// IntDomainVar[] durations, int[] heigths, int capa) {
-	// IntDomainVar[] h = new IntDomainVar[heigths.length];
-	// for (int j = 0; j < heigths.length; j++) {
-	// h[j] = makeConstantIntVar(heigths[j]);
-	// }
-	// return cumulative(starts, ends, durations, h, makeConstantIntVar(capa));
-	// }
-	//
-	// // public SConstraint disjunctive(TaskVar[] tasks) {
-	// // UnarySResource rsc = new UnarySResource("internal rsc",
-	// manager.getDefaultSettings(), tasks);
-	// // return new Disjunctive(rsc);
-	// // }
 
 	public SConstraint eq(IntExp x, IntExp y) {
 		if (x instanceof IntVar && y instanceof IntVar) {
@@ -2919,22 +2935,18 @@ public class CPSolver implements Solver {
 			int c2 = c - t.getConstant();
 			if (t.getSize() == 1) {
 				if(t.getCoefficient(0) == 0){
-					if(c2 == 0){
-						return TRUE;
-					}else{
-						return FALSE;
-					}
+					if(c2 == 0) return TRUE;
+					else return FALSE;
 				}
 				if (c2 % t.getCoefficient(0) == 0) {
-					return new EqualXC((IntDomainVar) t.getVariable(0), c2
+					return new EqualXC( t.getIntDVar(0), c2
 							/ t.getCoefficient(0));
 				} else {
 					return FALSE;
 				}
 			} else if ((nbvars == 2)
 					&& (t.getCoefficient(0) + t.getCoefficient(1) == 0)) {
-				return new EqualXYC((IntDomainVar) t.getVariable(0),
-						(IntDomainVar) t.getVariable(1), c2
+				return new EqualXYC(t.getIntDVar(0), t.getIntDVar(1), c2
 						/ t.getCoefficient(0));
 			} else {
 				return makeIntLinComb(t.getVariables(), t.getCoefficients(),
@@ -2943,7 +2955,7 @@ public class CPSolver implements Solver {
 		} else if (x instanceof IntVar) {
 			return new EqualXC((IntDomainVar) x, c);
 		} else {
-			throw new SolverException("IntExp not a term, not a var");
+			throw new SolverException("IntExp "+ x+":not a term, not a var");
 		}
 	}
 
@@ -2998,18 +3010,15 @@ public class CPSolver implements Solver {
 			if ((t.getSize() == 2)
 					&& (t.getCoefficient(0) + t.getCoefficient(1) == 0)) {
 				if (t.getCoefficient(0) > 0) {
-					return new GreaterOrEqualXYC((IntDomainVar) t
-							.getVariable(0), (IntDomainVar) t.getVariable(1),
+					return new GreaterOrEqualXYC( t.getIntDVar(0), t.getIntDVar(1),
 							(c - t.getConstant()) / t.getCoefficient(0));
 				} else {
-					return new GreaterOrEqualXYC((IntDomainVar) t
-							.getVariable(1), (IntDomainVar) t.getVariable(0),
+					return new GreaterOrEqualXYC(t.getIntDVar(1),  t.getIntDVar(0),
 							(c - t.getConstant()) / t.getCoefficient(1));
 				}
 			} else {
-				return makeIntLinComb(((IntTerm) x).getVariables(),
-						((IntTerm) x).getCoefficients(), ((IntTerm) x)
-						.getConstant()
+				return makeIntLinComb(t.getVariables(),
+						t.getCoefficients(), t.getConstant()
 						- c, IntLinComb.GEQ);
 			}
 		} else if (x instanceof IntVar) {
@@ -3027,14 +3036,9 @@ public class CPSolver implements Solver {
 
 	public SConstraint geq(int c, IntExp x) {
 		if (x instanceof IntTerm) {
-			int[] coeffs = ((IntTerm) x).getCoefficients();
-			int n = coeffs.length;
-			int[] oppcoeffs = new int[n];
-			for (int i = 0; i < n; i++) {
-				oppcoeffs[i] = -(coeffs[i]);
-			}
-			return makeIntLinComb(((IntTerm) x).getVariables(), oppcoeffs, c
-					- ((IntTerm) x).getConstant(), IntLinComb.GEQ);
+			final IntTerm t = (IntTerm) x;
+			return makeIntLinComb(t.getVariables(), t.getOppositeCoefficients(), c
+					- t.getConstant(), IntLinComb.GEQ);
 		} else if (x instanceof IntVar) {
 			return new LessOrEqualXC((IntDomainVar) x, c);
 		} else if (x == null) {
@@ -3106,58 +3110,34 @@ public class CPSolver implements Solver {
 		return gt(v2, v1);
 	}
 
+
 	/**
 	 * Subtracting two terms one from another
 	 *
-	 * @param t1
+	 * @param v1
 	 *            first term
-	 * @param t2
+	 * @param v2
 	 *            second term
 	 * @return the term (a fresh one)
 	 */
-	public IntExp minus(IntExp t1, IntExp t2) {
-		if (t1 == ZERO) {
-			return mult(-1, t2);
-		}
-		if (t2 == ZERO) {
-			return t1;
-		}
-		if (t1 instanceof IntTerm) {
-			if (t2 instanceof IntTerm) {
-				int[] coeffs2 = ((IntTerm) t2).getCoefficients();
-				int n2 = coeffs2.length;
-				int[] oppcoeffs2 = new int[n2];
-				for (int i = 0; i < n2; i++) {
-					oppcoeffs2[i] = -(coeffs2[i]);
-				}
-				return plus(((IntTerm) t1).getCoefficients(), ((IntTerm) t1)
-						.getVariables(), ((IntTerm) t1).getConstant(),
-						oppcoeffs2, ((IntTerm) t2).getVariables(),
-						-((IntTerm) t2).getConstant());
-			} else if (t2 instanceof IntVar) {
-				return plus(((IntTerm) t1).getCoefficients(), ((IntTerm) t1)
-						.getVariables(), ((IntTerm) t1).getConstant(),
-						new int[] { -1 }, new IntVar[] { (IntVar) t2 }, 0);
-			} else {
-				throw new SolverException("IntExp not a term, not a var");
-			}
-		} else if (t1 instanceof IntVar) {
-			if (t2 instanceof IntTerm) {
-				int[] coeffs2 = ((IntTerm) t2).getCoefficients();
-				int n2 = coeffs2.length;
-				int[] oppcoeffs2 = new int[n2];
-				for (int i = 0; i < n2; i++) {
-					oppcoeffs2[i] = -(coeffs2[i]);
-				}
-				return plus(new int[] { 1 }, new IntVar[] { (IntVar) t1 }, 0,
-						oppcoeffs2, ((IntTerm) t2).getVariables(),
-						-((IntTerm) t2).getConstant());
-			} else if (t2 instanceof IntVar) {
-				IntTerm t = new IntTerm(2);
+	public IntExp minus(IntExp v1, IntExp v2) {
+		if (v1 == ZERO) return mult(-1, v2);
+		if (v2 == ZERO) return v1;
+		
+		if (v1 instanceof IntTerm) {
+			final IntTerm t1 = (IntTerm) v1;
+			if (v2 instanceof IntTerm) return IntTerm.minus(t1, (IntTerm) v2);
+			else if (v2 instanceof IntVar) return IntTerm.plus(t1, -1, (IntVar) v2, false);
+			else throw new SolverException("IntExp not a term, not a var");
+		} else if (v1 instanceof IntVar) {
+			if (v2 instanceof IntTerm) {
+				return IntTerm.minus(1, (IntVar) v1, (IntTerm) v2);
+			} else if (v2 instanceof IntVar) {
+				final IntTerm t = new IntTerm(2);
 				t.setCoefficient(0, 1);
 				t.setCoefficient(1, -1);
-				t.setVariable(0, (IntVar) t1);
-				t.setVariable(1, (IntVar) t2);
+				t.setVariable(0, (IntVar) v1);
+				t.setVariable(1, (IntVar) v2);
 				t.setConstant(0);
 				return t;
 			} else {
@@ -3190,9 +3170,9 @@ public class CPSolver implements Solver {
 
 	public IntExp minus(int c, IntExp t) {
 		if (t instanceof IntTerm) {
-			IntTerm t1 = (IntTerm) t;
-			int n = t1.getSize();
-			IntTerm t2 = new IntTerm(n);
+			final IntTerm t1 = (IntTerm) t;
+			final int n = t1.getSize();
+			final IntTerm t2 = new IntTerm(n);
 			for (int i = 0; i < n; i++) {
 				t2.setCoefficient(i, -t1.getCoefficient(i));
 				t2.setVariable(i, t1.getVariable(i));
@@ -3200,7 +3180,7 @@ public class CPSolver implements Solver {
 			t2.setConstant(c - t1.getConstant());
 			return t2;
 		} else if (t instanceof IntVar) {
-			IntTerm t2 = new IntTerm(1);
+			final IntTerm t2 = new IntTerm(1);
 			t2.setCoefficient(0, -1);
 			t2.setVariable(0, (IntVar) t);
 			t2.setConstant(c);
@@ -3213,43 +3193,33 @@ public class CPSolver implements Solver {
 	/**
 	 * Adding two terms one to another
 	 *
-	 * @param t1
+	 * @param v1
 	 *            first term
-	 * @param t2
+	 * @param v2
 	 *            second term
 	 * @return the term (a fresh one)
 	 */
-	public IntExp plus(IntExp t1, IntExp t2) {
-		if (t1 == ZERO) {
-			return t2;
+	public IntExp plus(IntExp v1, IntExp v2) {
+		if (v1 == ZERO) {
+			return v2;
 		}
-		if (t2 == ZERO) {
-			return t1;
+		if (v2 == ZERO) {
+			return v1;
 		}
-		if (t1 instanceof IntTerm) {
-			if (t2 instanceof IntTerm) {
-				return plus(((IntTerm) t1).getCoefficients(), ((IntTerm) t1)
-						.getVariables(), ((IntTerm) t1).getConstant(),
-						((IntTerm) t2).getCoefficients(), ((IntTerm) t2)
-						.getVariables(), ((IntTerm) t2).getConstant());
-			} else if (t2 instanceof IntVar) {
-				return plus(((IntTerm) t1).getCoefficients(), ((IntTerm) t1)
-						.getVariables(), ((IntTerm) t1).getConstant(),
-						new int[] { 1 }, new IntVar[] { (IntVar) t2 }, 0);
-			} else {
-				throw new SolverException("IntExp not a term, not a var");
-			}
-		} else if (t1 instanceof IntVar) {
-			if (t2 instanceof IntTerm) {
-				return plus(new int[] { 1 }, new IntVar[] { (IntVar) t1 }, 0,
-						((IntTerm) t2).getCoefficients(), ((IntTerm) t2)
-						.getVariables(), ((IntTerm) t2).getConstant());
-			} else if (t2 instanceof IntVar) {
-				IntTerm t = new IntTerm(2);
+		if (v1 instanceof IntTerm) {
+			final IntTerm t1 = (IntTerm) v1;
+			if (v2 instanceof IntTerm) return IntTerm.plus(t1, (IntTerm) v2);
+			else if (v2 instanceof IntVar) return IntTerm.plus(t1, 1, (IntVar) v2, false);
+			else throw new SolverException("IntExp not a term, not a var");
+		} else if (v1 instanceof IntVar) {
+			if (v2 instanceof IntTerm) {
+				return IntTerm.plus((IntTerm) v2, 1, (IntVar) v1, true);
+			} else if (v2 instanceof IntVar) {
+				final IntTerm t = new IntTerm(2);
 				t.setCoefficient(0, 1);
 				t.setCoefficient(1, 1);
-				t.setVariable(0, (IntVar) t1);
-				t.setVariable(1, (IntVar) t2);
+				t.setVariable(0, (IntVar) v1);
+				t.setVariable(1, (IntVar) v2);
 				t.setConstant(0);
 				return t;
 			} else {
@@ -3353,13 +3323,11 @@ public class CPSolver implements Solver {
 			IntTerm t = (IntTerm) x;
 			if ((t.getSize() == 2)
 					&& (t.getCoefficient(0) + t.getCoefficient(1) == 0)) {
-				IntDomainVar v1 = (IntDomainVar) t.getVariable(0);
-				IntDomainVar v2 = (IntDomainVar) t.getVariable(1);
-				return new NotEqualXYC(v1, v2, (c - t.getConstant())
+				return new NotEqualXYC( t.getIntDVar(0), t.getIntDVar(1), (c - t.getConstant())
 						/ t.getCoefficient(0));
 			} else {
-				return makeIntLinComb(((IntTerm) x).getVariables(),
-						((IntTerm) x).getCoefficients(), -(c), IntLinComb.NEQ);
+				return makeIntLinComb(t.getVariables(),
+						t.getCoefficients(), -(c), IntLinComb.NEQ);
 			}
 		} else if (x instanceof IntVar) {
 			return new NotEqualXC((IntDomainVar) x, c);
@@ -3826,18 +3794,25 @@ public class CPSolver implements Solver {
 	 * @return the term
 	 */
 	public IntExp scalar(int[] lc, IntDomainVar[] lv) {
-		int n = lc.length;
-		assert (lv.length == n);
-		IntTerm t = new IntTerm(n);
-		for (int i = 0; i < n; i++) {
-			t.setCoefficient(i, lc[i]);
-			if (lv[i] instanceof IntVar) {
-				t.setVariable(i, lv[i]);
-			} else {
-				throw new SolverException("unknown kind of IntDomainVar");
-			}
+		int nbNonNullCoeffs = 0;
+		for (int i = 0; i < lc.length; i++) {
+			if( lc[i] != 0) nbNonNullCoeffs++;
 		}
-		return t;
+		
+		if( nbNonNullCoeffs == 0) return ZERO;
+		else if( nbNonNullCoeffs == lc.length) return new IntTerm(lc, lv);
+		else {
+			final IntTerm res = new IntTerm(nbNonNullCoeffs);
+			int idx = 0;
+			for (int i = 0; i < lc.length; i++) {
+				if( lc[i] != 0) {
+					res.setCoefficient(idx, lc[i]);
+					res.setVariable(idx, lv[i]);
+					idx++;
+				}
+			}
+			return res;
+		}
 	}
 
 	/**
@@ -3851,6 +3826,17 @@ public class CPSolver implements Solver {
 	 */
 	public final IntExp scalar(IntDomainVar[] lv, int[] lc) {
 		return scalar(lc, lv);
+	}
+
+	/**
+	 * Building a term from a sum of integer variables
+	 *
+	 * @param lv
+	 *            the array of integer variables
+	 * @return the term
+	 */
+	public IntExp sum(IntVar... lv) {
+		return new IntTerm(lv);
 	}
 
 	/**

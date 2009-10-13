@@ -54,7 +54,7 @@ public class RecomputationTest {
             s.read(m);
             _s.read(m);
 
-            ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+           // ChocoLogging.setVerbosity(Verbosity.SOLUTION);
 
             // Then solve it
             s.solve();
