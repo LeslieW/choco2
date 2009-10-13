@@ -134,6 +134,7 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.memory.IEnvironment;
@@ -2913,6 +2914,23 @@ public class CPSolver implements Solver {
 	// ************************************************************************
 
 
+
+	private final boolean isDivisorOf(int a, int b) {
+		return b % a == 0;
+	}
+
+	private final SConstraint eq(int cste) {
+		return cste == 0 ? TRUE : FALSE;
+	}
+
+	private final SConstraint geq(int cste) {
+		return cste <= 0 ? TRUE : FALSE;
+	}
+
+	private SConstraint neq(int cste) {
+		return cste != 0 ? TRUE : FALSE;
+	}
+
 	public SConstraint eq(IntExp x, IntExp y) {
 		if (x instanceof IntVar && y instanceof IntVar) {
 			return new EqualXYC((IntDomainVar) x, (IntDomainVar) y, 0);
@@ -2930,30 +2948,28 @@ public class CPSolver implements Solver {
 
 	public SConstraint eq(IntExp x, int c) {
 		if (x instanceof IntTerm) {
-			IntTerm t = (IntTerm) x;
-			int nbvars = t.getSize();
-			int c2 = c - t.getConstant();
-			if (t.getSize() == 1) {
-				if(t.getCoefficient(0) == 0){
-					if(c2 == 0) return TRUE;
+			final IntTerm t = (IntTerm) x;
+			final int cste = c - t.getConstant();
+			if(t.isConstant()) return eq(cste);
+			else {
+				final int coeff = t.getCoefficient(0);
+				if (t.isUnary() ) {
+					if( coeff == 0) return eq(cste);
+					else if ( isDivisorOf(coeff, cste)) return new EqualXC( t.getIntDVar(0), cste/coeff);
 					else return FALSE;
+				} else if ( t.isBinary() ) {
+					if( t.isBinaryMinus() && isDivisorOf(coeff, cste) ) {	
+						return new EqualXYC(t.getIntDVar(0), t.getIntDVar(1), cste/coeff);
+					} else if( t.isBinaryPlus() ) { 
+						if( isDivisorOf(coeff, cste) ) ; //TODO add EqualXY-C
+						else return FALSE;
+					}
 				}
-				if (c2 % t.getCoefficient(0) == 0) {
-					return new EqualXC( t.getIntDVar(0), c2
-							/ t.getCoefficient(0));
-				} else {
-					return FALSE;
-				}
-			} else if ((nbvars == 2)
-					&& (t.getCoefficient(0) + t.getCoefficient(1) == 0)) {
-				return new EqualXYC(t.getIntDVar(0), t.getIntDVar(1), c2
-						/ t.getCoefficient(0));
-			} else {
-				return makeIntLinComb(t.getVariables(), t.getCoefficients(),
-						-(c2), IntLinComb.EQ);
+				return makeIntLinComb(t, -cste, IntLinComb.EQ);
 			}
-		} else if (x instanceof IntVar) {
+		} else if (x instanceof IntDomainVar) {
 			return new EqualXC((IntDomainVar) x, c);
+		} else if (x == null ) { return eq(c);
 		} else {
 			throw new SolverException("IntExp "+ x+":not a term, not a var");
 		}
@@ -3004,31 +3020,37 @@ public class CPSolver implements Solver {
 	 * @return the linear inequality constraint
 	 */
 	public SConstraint geq(IntExp x, int c) {
-
 		if (x instanceof IntTerm) {
-			IntTerm t = (IntTerm) x;
-			if ((t.getSize() == 2)
-					&& (t.getCoefficient(0) + t.getCoefficient(1) == 0)) {
-				if (t.getCoefficient(0) > 0) {
-					return new GreaterOrEqualXYC( t.getIntDVar(0), t.getIntDVar(1),
-							(c - t.getConstant()) / t.getCoefficient(0));
-				} else {
-					return new GreaterOrEqualXYC(t.getIntDVar(1),  t.getIntDVar(0),
-							(c - t.getConstant()) / t.getCoefficient(1));
+			final IntTerm t = (IntTerm) x;
+			final int cste = c - t.getConstant();
+			if(t.isConstant()) return geq(cste);
+			else {
+				final int coeff = t.getCoefficient(0);
+				if( t.isUnary()) {
+					if(coeff > 0) {
+						return new GreaterOrEqualXC( t.getIntDVar(0), MathUtils.divCeil(cste, coeff));
+					}else if( coeff < 0){
+						return new LessOrEqualXC( t.getIntDVar(0), MathUtils.divFloor(cste, coeff));
+					} else {
+						assert(coeff == 0); 
+						return cste >= 0 ? TRUE : FALSE;
+					}
+				} else if ( t.isBinary() ) {
+					if( t.isBinaryMinus() && isDivisorOf(coeff, cste)) {
+						if( coeff > 0) new GreaterOrEqualXYC( t.getIntDVar(0), t.getIntDVar(1), cste/coeff);
+						else if( coeff < 0) new GreaterOrEqualXYC( t.getIntDVar(1), t.getIntDVar(0), -cste/coeff);
+						else throw new SolverException("IntExp is a binary scalar with at least one null coefficient");
+					} else if(t.isBinaryPlus()) {
+						//TODO GreaterOrEqualXY-C
+					}
+
 				}
-			} else {
-				return makeIntLinComb(t.getVariables(),
-						t.getCoefficients(), t.getConstant()
-						- c, IntLinComb.GEQ);
+				return makeIntLinComb(t, -cste, IntLinComb.GEQ);
 			}
-		} else if (x instanceof IntVar) {
+		} else if (x instanceof IntDomainVar) {
 			return new GreaterOrEqualXC((IntDomainVar) x, c);
 		} else if (x == null) {
-			if (c <= 0) {
-				return TRUE;
-			} else {
-				return FALSE;
-			}
+			return geq(c);
 		} else {
 			throw new SolverException("IntExp not a term, not a var");
 		}
@@ -3036,17 +3058,11 @@ public class CPSolver implements Solver {
 
 	public SConstraint geq(int c, IntExp x) {
 		if (x instanceof IntTerm) {
-			final IntTerm t = (IntTerm) x;
-			return makeIntLinComb(t.getVariables(), t.getOppositeCoefficients(), c
-					- t.getConstant(), IntLinComb.GEQ);
+			return geq( IntTerm.opposite((IntTerm) x), -c);			
 		} else if (x instanceof IntVar) {
 			return new LessOrEqualXC((IntDomainVar) x, c);
 		} else if (x == null) {
-			if (c <= 0) {
-				return TRUE;
-			} else {
-				return FALSE;
-			}
+			return geq(c);
 		} else {
 			throw new SolverException("IntExp not a term, not a var");
 		}
@@ -3123,7 +3139,7 @@ public class CPSolver implements Solver {
 	public IntExp minus(IntExp v1, IntExp v2) {
 		if (v1 == ZERO) return mult(-1, v2);
 		if (v2 == ZERO) return v1;
-		
+
 		if (v1 instanceof IntTerm) {
 			final IntTerm t1 = (IntTerm) v1;
 			if (v2 instanceof IntTerm) return IntTerm.minus(t1, (IntTerm) v2);
@@ -3320,18 +3336,30 @@ public class CPSolver implements Solver {
 	 */
 	public SConstraint neq(IntExp x, int c) {
 		if (x instanceof IntTerm) {
-			IntTerm t = (IntTerm) x;
-			if ((t.getSize() == 2)
-					&& (t.getCoefficient(0) + t.getCoefficient(1) == 0)) {
-				return new NotEqualXYC( t.getIntDVar(0), t.getIntDVar(1), (c - t.getConstant())
-						/ t.getCoefficient(0));
+			final IntTerm t = (IntTerm) x;
+			final int cste = c - t.getConstant();
+			if( t.isConstant()) { 
+				return neq(cste);
 			} else {
-				return makeIntLinComb(t.getVariables(),
-						t.getCoefficients(), -(c), IntLinComb.NEQ);
+				final int coeff = t.getCoefficient(0); 
+				if( t.isUnary()) {
+					if( coeff == 0) return neq(cste);
+					else if( cste % coeff == 0) return new NotEqualXC(t.getIntDVar(0), cste /coeff); 
+					else return TRUE;					
+				}else if( t.isBinary() ) {
+					if( t.isBinaryMinus() && isDivisorOf(coeff, cste)) {
+						return new NotEqualXYC( t.getIntDVar(0), t.getIntDVar(1), cste/ coeff);
+					} else if(t.isBinaryPlus()) {
+						; //TODO NotEqualXY_C
+					}
+				}
+				return makeIntLinComb(t, -cste, IntLinComb.NEQ);
 			}
 		} else if (x instanceof IntVar) {
 			return new NotEqualXC((IntDomainVar) x, c);
-		} else {
+		} else if (x == null) {
+			return neq(c);
+		}else {
 			throw new SolverException("IntExp not a term, not a var");
 		}
 	}
@@ -3434,56 +3462,63 @@ public class CPSolver implements Solver {
 		return nbNonNull;
 	}
 
+
+	/**
+	 * does not consider IntTerm.getConstant() anymore.
+	 */
+	protected final SConstraint makeIntLinComb(IntTerm t, int c,
+			int linOperator) {
+		return makeIntLinComb(t.getVariables(), t.getCoefficients(), c, linOperator);
+	}
+
+	
+	
 	protected SConstraint makeIntLinComb(IntVar[] lvars, int[] lcoeffs, int c,
 			int linOperator) {
 		int nbNonNullCoeffs = countNonNullCoeffs(lcoeffs);
-		int nbPositiveCoeffs;
-		int[] sortedCoeffs = new int[nbNonNullCoeffs];
-		IntVar[] sortedVars = new IntVar[nbNonNullCoeffs];
-
-		int j = 0;
-		// fill it up with the coefficients and variables in the right order
-		for (int i = 0; i < lvars.length; i++) {
-			if (lcoeffs[i] > 0) {
-				sortedVars[j] = lvars[i];
-				sortedCoeffs[j] = lcoeffs[i];
-				j++;
-			}
-		}
-		nbPositiveCoeffs = j;
-
-		for (int i = 0; i < lvars.length; i++) {
-			if (lcoeffs[i] < 0) {
-				sortedVars[j] = lvars[i];
-				sortedCoeffs[j] = lcoeffs[i];
-				j++;
-			}
-		}
 		if (nbNonNullCoeffs == 0) { // All coefficients of the linear
-			// combination are null !
-			if (linOperator == IntLinComb.EQ && c == 0) {
-				return TRUE;
-			} else if (linOperator == IntLinComb.GEQ && 0 <= c) {
-				return TRUE;
-			} else if (linOperator == IntLinComb.LEQ && 0 >= c) {
-				return TRUE;
-			} else {
-				return FALSE;
+			switch (linOperator) {
+			case IntLinComb.EQ: return eq(c);
+			case IntLinComb.GEQ: return geq(c);
+			case IntLinComb.NEQ: return neq(c);
+			default: return FALSE;
 			}
+		} else {
+			int posIdx = 0;
+			int negIidx = nbNonNullCoeffs - 1;
+			int[] sortedCoeffs = new int[nbNonNullCoeffs];
+			IntDomainVar[] sortedVars = new IntDomainVar[nbNonNullCoeffs];
+			// fill it up with the coefficients and variables in the right order
+			for (int i = 0; i < lvars.length; i++) {
+				if (lcoeffs[i] > 0) {
+					//insert positive coeffs at the beginning
+					sortedVars[posIdx] = (IntDomainVar) lvars[i];
+					sortedCoeffs[posIdx] = lcoeffs[i];
+					posIdx++;
+				}else if (lcoeffs[i] < 0) {
+					//insert negative coeffs at the end in reverse order
+					//avoid another loop to insert coeffs in original order.
+					sortedVars[negIidx] = (IntDomainVar) lvars[i];
+					sortedCoeffs[negIidx] = lcoeffs[i];
+					negIidx--;
+				}
+			}
+			return createIntLinComb(sortedVars, sortedCoeffs, posIdx, c,
+					linOperator);
 		}
-		return createIntLinComb(sortedVars, sortedCoeffs, nbPositiveCoeffs, c,
-				linOperator);
 	}
 
-	protected SConstraint createIntLinComb(IntVar[] sortedVars,
+	protected SConstraint createIntLinComb(IntDomainVar[] sortedVars,
 			int[] sortedCoeffs, int nbPositiveCoeffs, int c, int linOperator) {
-		IntDomainVar[] tmpVars = new IntDomainVar[sortedVars.length];
 		//noinspection SuspiciousSystemArraycopy
-		System.arraycopy(sortedVars, 0, tmpVars, 0, sortedVars.length);
-		if (isBoolLinComb(tmpVars, sortedCoeffs, linOperator)) {
-			return createBoolLinComb(tmpVars, sortedCoeffs, c, linOperator);
+		//should be useless because the original array (user) are always copied in the IntTerm !
+		//Furthermore, we sort the array before calling this function and we still copy the variable in the constraint.
+		//IntDomainVar[] tmpVars = new IntDomainVar[sortedVars.length];
+		//System.arraycopy(sortedVars, 0, tmpVars, 0, sortedVars.length);
+		if (isBoolLinComb(sortedVars, sortedCoeffs, linOperator)) {
+			return createBoolLinComb(sortedVars, sortedCoeffs, c, linOperator);
 		} else {
-			return new IntLinComb(tmpVars, sortedCoeffs, nbPositiveCoeffs, c,
+			return new IntLinComb(sortedVars, sortedCoeffs, nbPositiveCoeffs, c,
 					linOperator);
 		}
 	}
@@ -3798,7 +3833,7 @@ public class CPSolver implements Solver {
 		for (int i = 0; i < lc.length; i++) {
 			if( lc[i] != 0) nbNonNullCoeffs++;
 		}
-		
+
 		if( nbNonNullCoeffs == 0) return ZERO;
 		else if( nbNonNullCoeffs == lc.length) return new IntTerm(lc, lv);
 		else {

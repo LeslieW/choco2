@@ -202,18 +202,14 @@ class CPSolver2 extends CPSolver {
 	}
 	
 	@Override
-	protected SConstraint createIntLinComb(IntVar[] sortedVars,
+	protected SConstraint createIntLinComb(IntDomainVar[] sortedVars,
 			int[] sortedCoeffs, int nbPositiveCoeffs, int c, int linOperator) {
-		// TODO Auto-generated method stub
-		IntDomainVar[] tmpVars = new IntDomainVar[sortedVars.length];
-		//noinspection SuspiciousSystemArraycopy
-		System.arraycopy(sortedVars, 0, tmpVars, 0, sortedVars.length);
-		if (isBoolLinComb(tmpVars, sortedCoeffs, linOperator)) {
-			return createBoolLinComb(tmpVars, sortedCoeffs, c, linOperator);
+		if (isBoolLinComb(sortedVars, sortedCoeffs, linOperator)) {
+			return createBoolLinComb(sortedVars, sortedCoeffs, c, linOperator);
 		} else if ( isIntSum(sortedCoeffs, nbPositiveCoeffs)) {
-			return new IntSum(tmpVars, sortedCoeffs, nbPositiveCoeffs, c);
+			return new IntSum(sortedVars, sortedCoeffs, nbPositiveCoeffs, c);
 		} else {
-			return new IntLinComb2(tmpVars, sortedCoeffs, nbPositiveCoeffs, c);
+			return new IntLinComb2(sortedVars, sortedCoeffs, nbPositiveCoeffs, c);
 		}
 	}
 

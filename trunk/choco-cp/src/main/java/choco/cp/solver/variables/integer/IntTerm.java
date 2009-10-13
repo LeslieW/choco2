@@ -108,6 +108,15 @@ public class IntTerm implements IntExp {
 	}
 	
 	
+	public final static IntTerm opposite(IntTerm t1) {
+		final int n = t1.getSize();
+		IntTerm res = new IntTerm(n);
+		arraycopy(t1.variables, 0, res.variables, 0, n);
+		buildOpposite(t1, res, 0);
+		res.constant = -t1.constant;
+		return res ;
+	}
+	
 	public final static IntTerm plus(IntTerm t1, int coeff, IntVar var, boolean varFirst) {
 		IntTerm res = new IntTerm( t1, 1, varFirst);
 		final int idx = varFirst ? 0 : res.nbVars - 1;
@@ -155,6 +164,10 @@ public class IntTerm implements IntExp {
 		}
 	}
 
+	public final boolean isConstant() {
+		return nbVars == 0;
+	}
+	
 	public final boolean isUnary() {
 		return nbVars == 1;
 	}
@@ -171,17 +184,25 @@ public class IntTerm implements IntExp {
 		return coefficients[0] - coefficients[1] == 0;
 	}
 
-	public final boolean isCoefficientNull(int i) {
-		return coefficients[i] == 0;
-	}
-
-	public final boolean isCoefficientDivisorOf(int i, int val) {
-		return val % coefficients[i] == 0;
-	}
-
-	public final int diviseByCoefficient(int val, int i) {
-		return val / coefficients[i];
-	}
+//	public final boolean isCoefficientNull(int i) {
+//		return coefficients[i] == 0;
+//	}
+//	
+//	public final boolean isCoefficientPositive(int i) {
+//		return coefficients[i] > 0;
+//	}
+//	
+//	public final boolean isCoefficientNegative(int i) {
+//		return coefficients[i] < 0;
+//	}
+//
+//	public final boolean isCoefficientDivisorOf(int i, int val) {
+//		return val % coefficients[i] == 0;
+//	}
+//
+//	public final int diviseByCoefficient(int val, int i) {
+//		return val / coefficients[i];
+//	}
 
 	/**
 	 * Pretty print of the expression

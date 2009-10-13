@@ -108,7 +108,6 @@ public final class GreaterOrEqualXC extends AbstractUnIntSConstraint {
 
 	@Override
 	public boolean isSatisfied(int[] tuple) {
-		assert(v0.isInstantiated());
 		return (tuple[0] >= this.cste);
 	}
 

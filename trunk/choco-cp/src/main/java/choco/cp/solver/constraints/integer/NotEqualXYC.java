@@ -56,12 +56,12 @@ public final class NotEqualXYC extends AbstractBinIntSConstraint {
 		this.cste = c;
 	}
 
-
-
 	@Override
 	public int getFilteredEventMask(int idx) {
-		assert(idx == 0);
-		return v0.hasEnumeratedDomain() ? 
+		//Principle : if v0 is instantiated and v1 is enumerated, then awakeOnInst(0) performs all needed pruning
+		//Otherwise, we must check if we can remove the value from v1 when the bounds has changed.
+		final IntDomainVar v = idx == 0 ? v1 : v0;
+		return v.hasEnumeratedDomain() ? 
 				IntVarEvent.INSTINTbitvector : IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
 	}
 
