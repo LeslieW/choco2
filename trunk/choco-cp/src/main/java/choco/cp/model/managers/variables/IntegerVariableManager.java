@@ -70,8 +70,8 @@ public class IntegerVariableManager implements VariableManager {
     /**
      * Build a integer variable for the given solver
      *
-     * @param solver
-     * @param var
+     * @param solver the solver defining the variable
+     * @param var model variable
      * @return an integer variable
      */
     public Var makeVariable(Solver solver, Variable var) {
@@ -87,7 +87,7 @@ public class IntegerVariableManager implements VariableManager {
             }else
             if (iv.getValues() == null) {
                 if (iv.getLowB() != iv.getUppB()) {
-                    int type = -1; // default type
+                    int type; // default type
                     if (iv.getOptions().contains("cp:enum")) {
                         type = IntDomainVar.BITSET;
                     } else if (iv.getOptions().contains("cp:bound")) {
@@ -130,10 +130,10 @@ public class IntegerVariableManager implements VariableManager {
     /**
      * Build a expression node
      *
-     * @param solver
+     * @param solver associated solver
      * @param cstrs  constraints
      * @param vars   variables
-     * @return
+     * @return a variable leaf or constant leaf (for expression tree)
      */
     public INode makeNode(Solver solver, Constraint[] cstrs, IntegerExpressionVariable[] vars) {
         if (vars[0] instanceof IntegerConstantVariable) {
@@ -149,10 +149,15 @@ public class IntegerVariableManager implements VariableManager {
      * try to find the most suitable domain for v regarding constraints wish
      * a simple heuristic is applied to rank the domains
      *
-     * @param v
-     * @return
+     * @param v unknown domain type variable
+     * @return a domain type
      */
     public int getIntelligentDomain(IntegerVariable v) {
+        // specific case, deal with unbounded domain
+        if(v.getLowB()<= Choco.MIN_LOWER_BOUND && v.getUppB() >= Choco.MAX_UPPER_BOUND){
+            return IntDomainVar.BOUNDS;
+        }
+
         int[] scoreForDomain = new int[10]; // assume there is no more than 10 kind of domains
 
         //all type of domains are initially possible
