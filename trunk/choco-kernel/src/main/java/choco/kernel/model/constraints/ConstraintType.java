@@ -58,6 +58,7 @@ public enum ConstraintType {
     IFTHENELSE("ifthenelse", "constraint.ifthenelse"),
     IMPLIES("implies", "constraint.implies"),
     INVERSECHANNELING("inverse channeling", "constraint.channeling"),
+    INVERSE_SET("inverse set", "constraint.inverseset"),
     ISINCLUDED("isIncluded", "constraint.isIncluded"),
     ISNOTINCLUDED("isNotIncluded", "constraint.isNotIncluded"),
     LEQ("leq", "constraint.leq"),
