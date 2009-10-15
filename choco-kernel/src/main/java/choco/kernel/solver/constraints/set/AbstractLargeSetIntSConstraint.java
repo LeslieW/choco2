@@ -140,12 +140,35 @@ public abstract class AbstractLargeSetIntSConstraint extends AbstractMixedSetInt
 	/**
 	 * Returns the number of variables.
 	 */
-	public int getNbVars() {
+	public final int getNbVars() {
 		return nbvar;
 	}
 
+	public final int getNbSetVars() {
+		return svars.length;
+	}
+	
+	public final int getNbIntVars() {
+		return ivars.length;
+	}
+	
+	/**
+	 * @return the relative index of an integer variable
+	 */
+	protected int getIntVarIndex (int i) {
+	    return i - svars.length;
+	}
 
-	public SetVar getSetVar(int i) {
+	public final boolean isSetVarIndex(int i) {
+		return i < svars.length;
+	}
+	
+	public final boolean isIntVarIndex(int i) {
+		return i >= svars.length;
+	}
+
+	public final SetVar getSetVar(int i) {
+		//FIXME is is really good to check index as we are gonna raise an null pointer exception !
 		if (i >= 0 && i < svars.length) {
 				return svars[i];
 		} else {
@@ -153,7 +176,7 @@ public abstract class AbstractLargeSetIntSConstraint extends AbstractMixedSetInt
 		}
 	}
 
-	public IntDomainVar getIntVar(int i) {
+	public final IntDomainVar getIntVar(int i) {
 		if (i >= 0 && i < ivars.length) {
 				return ivars[i];
 		} else {

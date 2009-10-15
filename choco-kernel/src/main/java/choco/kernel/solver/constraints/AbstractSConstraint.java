@@ -334,7 +334,7 @@ public abstract class AbstractSConstraint implements Propagator {
      * @return the opposite constraint
      */
   public AbstractSConstraint opposite() {
-    throw new UnsupportedOperationException();
+	  throw new UnsupportedOperationException();
   }
 
     /**

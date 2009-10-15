@@ -33,7 +33,7 @@ public class TestBinaryExpression {
 
 	public static final int MAX = 100;
 
-	public static final int NB_TESTS = 20;
+	public static final int NB_TESTS = 50;
 
 	public int c0, c1, cste;
 
@@ -134,19 +134,26 @@ public class TestBinaryExpression {
 
 	
 	protected final void testSum(IConstraintBuilder builder) {
-		for (int i = 0; i < NB_TESTS; i++) {
+		testSum(NB_TESTS, builder);
+	}
+	protected final void testSum(int nbIter, IConstraintBuilder builder) {
+		for (int i = 0; i < nbIter; i++) {
 			generateData(i);
 			test(-1, builder.makeConstraints());
 		}
 	}
 	
 	protected final void testScalar(IConstraintBuilder builder) {
+		testScalar(NB_TESTS, builder);
+	}
+	
+	protected final void testScalar(int nbIter,IConstraintBuilder builder) {
 		generateData(-1);
 		c0 = 0;
 		test(-1, builder.makeConstraints());
 		c1 = 0;
 		test(-1, builder.makeConstraints());
-		for (int i = 0; i < NB_TESTS; i++) {
+		for (int i = 0; i < nbIter; i++) {
 			generateData(i);
 			test(-1, builder.makeConstraints());
 		}
@@ -197,7 +204,7 @@ public class TestBinaryExpression {
 
 	@Test
 	public final void testSumNeq() {
-		testSum(neqSumBuilder);
+		testSum(Math.max(1,NB_TESTS/2), neqSumBuilder);
 	}
 
 	@Test
@@ -212,7 +219,7 @@ public class TestBinaryExpression {
 
 	@Test
 	public final void testScalarNeq() {
-		testScalar(neqScalarBuilder);
+		testScalar(Math.max(1,NB_TESTS/2), neqSumBuilder);
 	}
 
 	@Test
