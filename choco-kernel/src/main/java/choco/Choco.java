@@ -82,17 +82,17 @@ public class Choco{
 	public final static int MIN_LOWER_BOUND  = Integer.MIN_VALUE / 100;
 
 	public final static int MAX_UPPER_BOUND  = Integer.MAX_VALUE / 100;
-	
-	
+
+
 
 	// ############################################################################################################
 	// ######                                        VARIABLES                                                  ###
 	// ############################################################################################################
 
 	public final static IntegerVariable ZERO = constant(0);
-	
+
 	public final static IntegerVariable ONE= constant(1);
-	
+
 	private static void checkIntVarBounds(int lowB, int uppB) {
 		if (lowB > uppB) {
 			throw new ModelException("makeIntVar : lowB > uppB");
@@ -101,9 +101,9 @@ public class Choco{
 			LOGGER.warning("WARNING! Domains over ["+MIN_LOWER_BOUND+", "+MAX_UPPER_BOUND+"] are strongly inadvisable ! ");
 		}
 	}
-	
-	
-	
+
+
+
 
 	/**
 	 * Make an integer variable
@@ -2551,7 +2551,7 @@ public class Choco{
 		return c;
 	}
 
-	
+
 	/**
 	 * Each task of the collection tasks1 should not overlap any task of the collection tasks2.
 	 * The model only provides a decomposition with reified precedences because the coloured cumulative is not available.
@@ -2568,8 +2568,8 @@ public class Choco{
 		return decomp;		
 	}
 
-	
-	
+
+
 	/**
 	 * @see {@link Choco#precedence(TaskVariable, TaskVariable)}
 	 */
@@ -2577,8 +2577,8 @@ public class Choco{
 	public static Constraint preceding(TaskVariable t1, TaskVariable t2) {
 		return precedenceDisjoint(t1, t2, constant(1));
 	}
-	
-	
+
+
 	/**
 	 * T1 ends before t2 starts or t1 precedes t2.
 	 */
@@ -2593,8 +2593,8 @@ public class Choco{
 	public static Constraint preceding(IntegerVariable v1, int dur1, IntegerVariable v2, int dur2, IntegerVariable bool) {
 		return precedenceDisjoint(v1, dur1, v2, dur2, bool);
 	}
-	
-	
+
+
 	/**
 	 * 
 	 * <ul>
@@ -2606,7 +2606,7 @@ public class Choco{
 		return new ComponentConstraint(ConstraintType.PRECEDENCE_DISJOINT, Boolean.FALSE, new Variable[]{v1, constant(dur1), v2, constant(dur2), bool});
 	}
 
-	
+
 	/**
 	 * @see {@link Choco#precedenceDisjoint(TaskVariable, TaskVariable, IntegerVariable)}
 	 */
@@ -2623,7 +2623,7 @@ public class Choco{
 		return precedenceDisjoint(t1, t2, direction, 0, 0);
 	}
 
-	
+
 	/**
 	 * precedence disjoint with setup times:
 	 * <ul>
@@ -2640,7 +2640,7 @@ public class Choco{
 		return new ComponentConstraint(ConstraintType.PRECEDENCE_DISJOINT, Boolean.TRUE, new Variable[]{t1,constant(forwardSetup), t2, constant(backwardSetup), direction});
 	}
 
-	
+
 	public static Constraint[] precedenceDisjoint(TaskVariable[] clique, String... boolvarOptions) {
 		final int n = clique.length;
 		Constraint[] cstr = new Constraint[ (n * (n-1) )/2];
@@ -2652,9 +2652,9 @@ public class Choco{
 		}
 		return cstr;
 	}
-	
-	
-	
+
+
+
 	/**
 	 * represents a reidied precedence: 
 	 * <ul>
@@ -2670,7 +2670,7 @@ public class Choco{
 	public static Constraint precedenceReified(IntegerVariable x1, int k1, IntegerVariable x2, IntegerVariable b) {
 		return new ComponentConstraint(ConstraintType.PRECEDENCE_REIFIED, Boolean.FALSE, new Variable[]{x1, constant(k1), x2, ZERO, b});
 	}
-	
+
 	/**
 	 * represents a reidied precedence with setup times between a pair of tasks: 
 	 * <ul>
@@ -2681,18 +2681,18 @@ public class Choco{
 	public static Constraint precedenceReified(TaskVariable t1, int k1, TaskVariable t2, IntegerVariable b) {
 		return new ComponentConstraint(ConstraintType.PRECEDENCE_REIFIED, Boolean.TRUE, new Variable[]{t1, constant(k1), t2, ZERO, b});
 	}
-	
+
 	/**
 	 * represents an implied precedence: 
 	 * <ul>
 	 * <li> b = 1 => x1 + k1 <= x2
 	 * <li> b = 0 => TRUE
 	 * </ul>  
-	  */
+	 */
 	public static Constraint precedenceImplied(IntegerVariable x1, int k1, IntegerVariable x2, IntegerVariable b) {
 		return new ComponentConstraint(ConstraintType.PRECEDENCE_IMPLIED, Boolean.FALSE, new Variable[]{x1, constant(k1), x2, ZERO, b});
 	}
-	
+
 	/**
 	 * represents a reidied precedence with setup times between a pair of tasks: 
 	 * <ul>
@@ -2704,7 +2704,7 @@ public class Choco{
 		return new ComponentConstraint(ConstraintType.PRECEDENCE_IMPLIED, Boolean.TRUE, new Variable[]{t1, constant(k1), t2, ZERO, b});
 	}
 
-	
+
 	public static Constraint geost(int dim, Vector<GeostObject> objects, Vector<ShiftedBox> shiftedBoxes, Vector<IExternalConstraint> eCtrs) {
 		return geost(dim, objects, shiftedBoxes, eCtrs, null);
 	}
@@ -2773,19 +2773,19 @@ public class Choco{
 			vars[(i * (dim + 4)) + dim + 3] = objects.elementAt(i).getEndTime();
 		}
 
-        int ind=0;
-        for (int i : distVars) {
-            IExternalConstraint ectr=eCtrs.elementAt(i);
-            if (ectr instanceof DistLeqModel) {
-                vars[originOfObjects + otherVariables  +ind] = (( DistLeqModel) ectr).getDistanceVar();
-                System.out.println("Adding "+((DistLeqModel) ectr).modelDVar+" for "+((DistLeqModel) ectr));
-            }
-            if (ectr instanceof DistGeqModel) {
-                vars[originOfObjects + otherVariables  +ind] = (( DistGeqModel) ectr).getDistanceVar();
-                System.out.println("Adding "+((DistGeqModel) ectr).modelDVar+" for "+((DistGeqModel) ectr));
-            }
+		int ind=0;
+		for (int i : distVars) {
+			IExternalConstraint ectr=eCtrs.elementAt(i);
+			if (ectr instanceof DistLeqModel) {
+				vars[originOfObjects + otherVariables  +ind] = (( DistLeqModel) ectr).getDistanceVar();
+				System.out.println("Adding "+((DistLeqModel) ectr).modelDVar+" for "+((DistLeqModel) ectr));
+			}
+			if (ectr instanceof DistGeqModel) {
+				vars[originOfObjects + otherVariables  +ind] = (( DistGeqModel) ectr).getDistanceVar();
+				System.out.println("Adding "+((DistGeqModel) ectr).modelDVar+" for "+((DistGeqModel) ectr));
+			}
 
-            ind++;
+			ind++;
 		}
 
 		return new ComponentConstraint(ConstraintType.GEOST, new Object[]{dim, shiftedBoxes, eCtrs, objects, ctrlVs, opt}, vars);
@@ -3138,6 +3138,18 @@ public class Choco{
 				null, new Variable[]{sv1, var});
 	}
 
+	/**
+	 * A constraint stating that value j belongs to the sv[i] set variable iff integer variable iv[j] equals to i.
+	 * This constraint models the inverse s: I -> P(J) of a function x: J -> I (I and J sets of integers)
+	 * adapted from InverseChanneling, see gccat.
+	 * @param iv the integer variables
+	 * @param sv the set variables 
+	 * @return the new constraint
+	 */
+	public static Constraint inverseSet(IntegerVariable[] iv, SetVariable[] sv) {
+		return new ComponentConstraint(ConstraintType.INVERSE_SET,
+				Integer.valueOf(iv.length), ArrayUtils.<Variable>append(iv, sv));
+	}
 	/**
 	 * Ensure that the two variables are not equal (not exactly the same values in the set)
 	 *

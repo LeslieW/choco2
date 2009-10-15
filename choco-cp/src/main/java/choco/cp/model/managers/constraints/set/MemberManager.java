@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.set;
 
+import java.util.HashSet;
+
 import choco.Choco;
 import choco.cp.model.managers.SetConstraintManager;
 import choco.cp.solver.CPSolver;
@@ -31,9 +33,8 @@ import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.SConstraint;
-
-import java.util.HashSet;
 
 /**
  * Created by IntelliJ IDEA.
@@ -62,7 +63,7 @@ public class MemberManager extends SetConstraintManager {
             }
         }
         if (Choco.DEBUG) {
-            throw new RuntimeException("Could not found implementation for Member !");
+            throw new SolverException("Could not found implementation for Member !");
         }
         return null;
     }
