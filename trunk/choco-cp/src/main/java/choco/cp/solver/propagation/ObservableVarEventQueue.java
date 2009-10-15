@@ -38,6 +38,15 @@ public class ObservableVarEventQueue extends BasicVarEventQueue implements IObse
     }
 
     /**
+     * Clear datastructures for safe reuses
+     */
+    @Override
+    public void clear() {
+        super.clear();
+        this.obs.clear();
+    }
+
+    /**
    * Pops an event to propagate.
    */
   public PropagationEvent popEvent() {

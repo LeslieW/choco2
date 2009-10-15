@@ -22,26 +22,22 @@
  **************************************************/
 package choco.solver;
 
-import static java.text.MessageFormat.format;
-
-import java.util.logging.Logger;
-
-import org.junit.Ignore;
-import org.junit.Test;
-
 import static choco.Choco.*;
-import static org.junit.Assert.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import static org.junit.Assert.assertEquals;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import static java.text.MessageFormat.format;
+import java.util.logging.Logger;
 
 /*
  * User : charles
@@ -117,6 +113,7 @@ public class SolverTest {
 	CPSolver solver = new CPSolver();  
 
 	private void checkAndSolve(Boolean res) {
+        solver.clear();
 		solver.read(model);
 		assertEquals("check nb Constraint after read()", model.getNbConstraints(), solver.getNbIntConstraints());
 		assertEquals("check nb variables after read()", model.getNbIntVars(), solver.getNbIntVars());

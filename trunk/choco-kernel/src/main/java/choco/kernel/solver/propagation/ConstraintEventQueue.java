@@ -57,6 +57,13 @@ public class ConstraintEventQueue implements EventQueue {
     this.partition = new BipartiteSet<PropagationEvent>();
   }
 
+    /**
+     * Clear datastructures for safe reuses
+     */
+    public void clear(){
+        partition.clear();
+    }
+
 
   /**
    * Checks if the queue is empty.

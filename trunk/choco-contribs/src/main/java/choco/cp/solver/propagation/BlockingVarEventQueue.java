@@ -28,6 +28,7 @@ import choco.kernel.solver.propagation.PropagationEvent;
 import choco.kernel.solver.propagation.VarEventQueue;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Queue;
 
 /*
@@ -63,6 +64,15 @@ public class BlockingVarEventQueue implements VarEventQueue {
 
     public BlockingVarEventQueue() {
         queue = new ArrayDeque<PropagationEvent>();
+    }
+
+    /**
+     * Clear datastructures for safe reuses
+     */
+    public void clear(){
+        queue.clear();
+        Arrays.fill(robbers, null);
+        cex = null;
     }
 
     /**

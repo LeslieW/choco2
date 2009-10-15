@@ -76,6 +76,14 @@ public class BipartiteSet<E> {
       this.indices = new TObjectIntHashMap<E>();
   }
 
+    /**
+     * Clear datastructures for safe reuses
+     */
+    public void clear(){
+        this.objects.clear();
+        this.indices.clear();
+    }
+
 
   /**
    * Swaps two elements in the list containing all the objects of the set.
