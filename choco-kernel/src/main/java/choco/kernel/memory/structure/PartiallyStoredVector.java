@@ -27,6 +27,8 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.MemoryException;
 
+import java.util.Arrays;
+
 /**
  * A class implementing a vector with two kind of storage:
  * standard static storage in an array, and backtrackable storage.
@@ -81,6 +83,16 @@ public class PartiallyStoredVector<E> {
     nStaticObjects = 0;
     nStoredObjects = env.makeInt(0);
   }
+
+    /**
+     * Clear datastructures for safe reuses
+     */
+    public void clear(IEnvironment env){
+        Arrays.fill(staticObjects, null);
+        Arrays.fill(storedObjects, null);
+        nStaticObjects = 0;
+        nStoredObjects.set(0);
+    }
 
     /**
      * Check wether an object is stored.

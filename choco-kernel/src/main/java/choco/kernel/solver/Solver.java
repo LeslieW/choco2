@@ -73,6 +73,12 @@ import java.util.List;
  */
 public interface Solver extends IMeasures, IPretty {
 
+    /**
+     * Removes all of the elements from this solver (optional operation).
+     * The solver will be 'empty' after this call returns.
+     */
+    public void clear();
+
     public IndexFactory getIndexfactory();
 
     public Model getModel();

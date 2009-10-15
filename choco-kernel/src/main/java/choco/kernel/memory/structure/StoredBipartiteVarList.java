@@ -65,6 +65,15 @@ public final class StoredBipartiteVarList<E extends Var> extends StoredBipartite
     }
 
     /**
+     * Clear datastructures for safe reuses
+     */
+    @Override
+    public void clear() {
+        Arrays.fill(varsNotInstanciated, null);
+        size = 0;
+    }
+
+    /**
      * Add a variable to the structure.
      * @param e the new variable
      * @return the index of the variable in the variable

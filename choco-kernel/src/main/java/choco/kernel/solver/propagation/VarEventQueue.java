@@ -27,6 +27,11 @@ import choco.kernel.solver.ContradictionException;
 
 public interface VarEventQueue extends EventQueue {
 
+    /**
+     * Clear datastructures for safe reuses
+     */
+    public void clear();
+
   /**
    * Checks if the queue is empty.
    */

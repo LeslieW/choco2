@@ -109,6 +109,19 @@ public class CPModelToCPSolver {
 		this.expDetect = new ExpressionDetector();
 	}
 
+    /**
+     * Clear datastructures for safe reuses
+     */
+    public void clear(){
+        this.intDecisionVar.clear();
+        this.intNoDecisionVar.clear();
+        this.setDecisionVar.clear();
+        this.setNoDecisionVar.clear();
+        this.realDecisionVar.clear();
+        this.realNoDecisionVar.clear();
+        this.taskDecisionVar.clear();
+        this.taskNoDecisionVar.clear();
+    }
 	//************************************************* CONCERNING VARIABLES ***********************************************
 
 	/**

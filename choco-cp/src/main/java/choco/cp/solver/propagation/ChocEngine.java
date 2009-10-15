@@ -89,6 +89,18 @@ public class ChocEngine extends AbstractPropagationEngine {
 		nbPendingInitConstAwakeEvent = 0;
 	}
 
+    /**
+     * Clear datastructures for safe reuses
+     */
+    public void clear(){
+		for (int i = 0; i < NB_CONST_QUEUES; i++) {
+			constEventQueues[i].clear();
+		}
+		for (int i = 0; i < NB_VAR_QUEUES; i++) {
+			varEventQueue[i].clear();
+		}
+		nbPendingInitConstAwakeEvent = 0;
+    }
 
 	/**
 	 * Posts an IncInf event

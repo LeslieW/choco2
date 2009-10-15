@@ -49,7 +49,13 @@ public class BasicVarEventQueue implements VarEventQueue {
 	 */
 	protected PropagationEvent lastPopped = null;
 
-
+   /**
+     * Clear datastructures for safe reuses
+     */
+    public void clear(){
+        queue.clear();
+        lastPopped = null;
+    }
 
 	/**
 	 * Checks if the queue is empty.
