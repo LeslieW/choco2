@@ -2875,11 +2875,6 @@ public class CPSolver implements Solver {
 	// ************************************************************************
 
 
-
-	private final boolean isDivisorOf(int a, int b) {
-		return b % a == 0;
-	}
-
 	private final SConstraint eq(int cste) {
 		return cste == 0 ? TRUE : FALSE;
 	}
@@ -2907,27 +2902,37 @@ public class CPSolver implements Solver {
 		}
 	}
 
+	/** always succeeds to build the constraint */
+	protected final SConstraint eq(int c0, IntDomainVar v0, int cste) {
+		if( c0 == 0) return eq(cste);
+		else if ( cste % c0 == 0) return new EqualXC( v0, cste/c0);
+		else return FALSE;
+	}
+
+	/** could fail to build a binary constraint and give the hand to IntLinComb */
+	protected final SConstraint eq(int c0, IntDomainVar v0, int c1, IntDomainVar v1, int cste) {
+		assert(c0 != 0 && c1 != 0);	
+		if( c0 == -c1  && cste % c0 == 0) {	
+			return new EqualXYC(v0, v1, cste/c0);
+		} else if( c0 == c1) { 
+			return cste % c0 == 0 ? 
+					new EqualXY_C(v0, v1, cste/c0) : FALSE;
+		}
+		return null;
+	}
+
+
 	public SConstraint eq(IntExp x, int c) {
 		if (x instanceof IntTerm) {
 			final IntTerm t = (IntTerm) x;
 			final int cste = c - t.getConstant();
 			if(t.isConstant()) return eq(cste);
-			else {
-				final int coeff = t.getCoefficient(0);
-				if (t.isUnary() ) {
-					if( coeff == 0) return eq(cste);
-					else if ( isDivisorOf(coeff, cste)) return new EqualXC( t.getIntDVar(0), cste/coeff);
-					else return FALSE;
-				} else if ( t.isBinary() ) {
-					if( t.isBinaryMinus() && isDivisorOf(coeff, cste) ) {	
-						return new EqualXYC(t.getIntDVar(0), t.getIntDVar(1), cste/coeff);
-					} else if( t.isBinaryPlus() ) { 
-						if( isDivisorOf(coeff, cste) ) ; //TODO add EqualXY-C
-						else return FALSE;
-					}
-				}
-				return makeIntLinComb(t, -cste, IntLinComb.EQ);
+			else if (t.isUnary() ) return eq( t.getCoefficient(0), t.getIntDVar(0), cste); 
+			else if (t.isBinary() ) {
+				final SConstraint cstr = eq( t.getCoefficient(0), t.getIntDVar(0), t.getCoefficient(1), t.getIntDVar(1), cste);
+				if( cstr != null) return cstr;
 			}
+			return makeIntLinComb(t, -cste, IntLinComb.EQ);
 		} else if (x instanceof IntDomainVar) {
 			return new EqualXC((IntDomainVar) x, c);
 		} else if (x == null ) { return eq(c);
@@ -2970,6 +2975,31 @@ public class CPSolver implements Solver {
 		}
 	}
 
+	/** could fail to build a binary constraint and give the hand to IntLinComb */
+	protected final SConstraint geq(int c0, IntDomainVar v0, int c1, IntDomainVar v1, int cste) {
+		if(  c0 == -c1 && cste % c0 == 0) {
+			if( c0 > 0) return new GreaterOrEqualXYC( v0, v1, cste/c0);
+			assert( c0 < 0);
+			return new GreaterOrEqualXYC( v1, v0, cste/c1);
+		} else if( c0 == c1) {
+			if( c0 > 0) return new GreaterOrEqualXY_C( v0, v1, MathUtils.divCeil(cste, c0));
+			assert( c0 < 0);
+			return new LessOrEqualXY_C(v0, v1, MathUtils.divFloor(cste, c0));
+		}
+		return null;
+	}
+
+	/** always succeeds to build the constraint */
+	protected final SConstraint geq(int c0, IntDomainVar v0, int cste) {
+		if(c0 > 0) {
+			return new GreaterOrEqualXC( v0, MathUtils.divCeil(cste, c0));
+		}else if( c0 < 0){
+			return new LessOrEqualXC( v0, MathUtils.divFloor(cste, c0));
+		} else {
+			assert(c0 == 0);
+			return geq(cste);
+		}
+	}
 	/**
 	 * Creates a constraint by stating that a term is greater or equal than a
 	 * constant
@@ -2984,30 +3014,13 @@ public class CPSolver implements Solver {
 		if (x instanceof IntTerm) {
 			final IntTerm t = (IntTerm) x;
 			final int cste = c - t.getConstant();
-			if(t.isConstant()) return geq(cste);
-			else {
-				final int coeff = t.getCoefficient(0);
-				if( t.isUnary()) {
-					if(coeff > 0) {
-						return new GreaterOrEqualXC( t.getIntDVar(0), MathUtils.divCeil(cste, coeff));
-					}else if( coeff < 0){
-						return new LessOrEqualXC( t.getIntDVar(0), MathUtils.divFloor(cste, coeff));
-					} else {
-						assert(coeff == 0); 
-						return cste >= 0 ? TRUE : FALSE;
-					}
-				} else if ( t.isBinary() ) {
-					if( t.isBinaryMinus() && isDivisorOf(coeff, cste)) {
-						if( coeff > 0) new GreaterOrEqualXYC( t.getIntDVar(0), t.getIntDVar(1), cste/coeff);
-						else if( coeff < 0) new GreaterOrEqualXYC( t.getIntDVar(1), t.getIntDVar(0), -cste/coeff);
-						else throw new SolverException("IntExp is a binary scalar with at least one null coefficient");
-					} else if(t.isBinaryPlus()) {
-						//TODO GreaterOrEqualXY-C
-					}
-
-				}
-				return makeIntLinComb(t, -cste, IntLinComb.GEQ);
+			if( t.isConstant() ) return geq(cste);
+			else if( t.isUnary() ) return geq( t.getCoefficient(0), t.getIntDVar(0), cste);
+			else if ( t.isBinary() ) {
+				final SConstraint cstr = geq( t.getCoefficient(0), t.getIntDVar(0), t.getCoefficient(1), t.getIntDVar(1), cste);
+				if( cstr != null) return cstr;
 			}
+			return makeIntLinComb(t, -cste, IntLinComb.GEQ);
 		} else if (x instanceof IntDomainVar) {
 			return new GreaterOrEqualXC((IntDomainVar) x, c);
 		} else if (x == null) {
@@ -3286,6 +3299,25 @@ public class CPSolver implements Solver {
 		}
 	}
 
+
+	/** could fail to build a binary constraint and give the hand to IntLinComb */
+	protected final SConstraint neq(int c0, IntDomainVar v0, int c1, IntDomainVar v1, int cste) {
+		assert( c0 != 0 && c1 != 0);
+		if( c0 == -c1 && cste % c0 == 0) {
+			return new NotEqualXYC( v0, v1, cste/ c0);
+		} else if( c0 == c1) {
+			return cste % c0 == 0 ? new NotEqualXY_C( v0, v1, cste/ c0) : TRUE;
+		}
+		return null;
+	}
+
+	/** always succeeds to build the constraint */
+	protected final SConstraint neq(int c0, IntDomainVar v0, int cste) {
+		if( c0 == 0) return neq(cste);
+		else if( cste % c0 == 0) return new NotEqualXC(v0, cste /c0); 
+		else return TRUE;	
+	}
+
 	/**
 	 * Creates a constraint by stating that a term is not equal than a constant
 	 *
@@ -3299,23 +3331,13 @@ public class CPSolver implements Solver {
 		if (x instanceof IntTerm) {
 			final IntTerm t = (IntTerm) x;
 			final int cste = c - t.getConstant();
-			if( t.isConstant()) { 
-				return neq(cste);
-			} else {
-				final int coeff = t.getCoefficient(0); 
-				if( t.isUnary()) {
-					if( coeff == 0) return neq(cste);
-					else if( cste % coeff == 0) return new NotEqualXC(t.getIntDVar(0), cste /coeff); 
-					else return TRUE;					
-				}else if( t.isBinary() ) {
-					if( t.isBinaryMinus() && isDivisorOf(coeff, cste)) {
-						return new NotEqualXYC( t.getIntDVar(0), t.getIntDVar(1), cste/ coeff);
-					} else if(t.isBinaryPlus()) {
-						; //TODO NotEqualXY_C
-					}
-				}
-				return makeIntLinComb(t, -cste, IntLinComb.NEQ);
+			if( t.isConstant()) return neq(cste);
+			else if ( t.isUnary() ) return neq(t.getCoefficient(0), t.getIntDVar(0), cste);
+			else if ( t.isBinary() ) {
+				final SConstraint cstr = neq(t.getCoefficient(0), t.getIntDVar(0), t.getCoefficient(1), t.getIntDVar(1), cste);
+				if( cstr != null) return cstr;
 			}
+			return makeIntLinComb(t, -cste, IntLinComb.NEQ);
 		} else if (x instanceof IntVar) {
 			return new NotEqualXC((IntDomainVar) x, c);
 		} else if (x == null) {
@@ -3432,8 +3454,8 @@ public class CPSolver implements Solver {
 		return makeIntLinComb(t.getVariables(), t.getCoefficients(), c, linOperator);
 	}
 
-	
-	
+
+
 	protected SConstraint makeIntLinComb(IntVar[] lvars, int[] lcoeffs, int c,
 			int linOperator) {
 		int nbNonNullCoeffs = countNonNullCoeffs(lcoeffs);

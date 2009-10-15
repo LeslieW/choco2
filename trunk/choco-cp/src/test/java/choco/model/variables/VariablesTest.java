@@ -185,8 +185,8 @@ public class VariablesTest {
 	}
 	@Test
 	public void testOptions() {
-//		final IntegerVariable v = Choco.makeBooleanVar("b", "  foo  bar   foo fou");
-//		checkOptions(v.getOptions(), 3, 3);
+		final IntegerVariable v = Choco.makeBooleanVar("b", "  foo  bar   foo fou");
+		checkOptions(v.getOptions(), 3, 3);
 		final SetVariable s = Choco.makeSetVar("s", 0, 18, "     foo   bar","   bar    foo    ");
 		checkOptions(s.getOptions(), 2, 3);
 		
