@@ -16,12 +16,4 @@
 \end{itemize}
 
 \textbf{Example}:
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s = new CPSolver();
-	SetVariable v1 = makeSetVar("v1", 3, 4);
-	SetVariable v2 = makeSetVar("v2", 3, 8);
-	m.addConstraint(isNotIncluded(v1, v2));
-	s.read(m);
-	s.solveAll();
-\end{lstlisting} 
+\lstinputlisting{java/cisnotincluded.j2t} 

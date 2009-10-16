@@ -16,17 +16,4 @@ $$c_1\iff c_2$$
 \end{itemize}
 
 \textbf{Example}:
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s = new CPSolver();
-	
-	IntegerVariable x = makeIntVar("x", 1, 3);
-	IntegerVariable y = makeIntVar("y", 1, 3);
-	IntegerVariable z = makeIntVar("z", 1, 3);
-	m.addVariable("cp:bound",x ,y, z);
-	
-	m.addConstraint(ifOnlyIf(lt(x, y), lt(y, z)));
-	
-	s.read(m);
-	s.solveAll();
-\end{lstlisting}
+\lstinputlisting{java/cifonlyif.j2t}

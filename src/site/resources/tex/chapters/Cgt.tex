@@ -23,12 +23,4 @@ $$x>y$$
 \end{itemize}
 
 \textbf{Example:}
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s = new CPSolver();
-	int c = 1;
-	IntegerVariable v = makeIntVar("v", 0, 2);
-	m.addConstraint(gt(v, c));
-	s.read(m);
-	s.solve();
-\end{lstlisting}
+\lstinputlisting{java/cgt.j2t}

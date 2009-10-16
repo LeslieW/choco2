@@ -16,17 +16,7 @@ Returns an expression variable equals to the smaller value of the argument (\(mi
 \end{itemize}
 
 \textbf{Example}:
-\begin{lstlisting}
-	Model m = new CPModel();
-	m.setDefaultExpressionDecomposition(true);
-	IntegerVariable[] v = makeIntVarArray("v", 3, -3, 3);
-	IntegerVariable maxv = makeIntVar("max", -3, 3);
-	Constraint c = eq(maxv, min(v));
-	m.addConstraint(c);
-	Solver s = new CPSolver();
-	s.read(m);
-	s.solveAll();
-\end{lstlisting}
+\lstinputlisting{java/omin.j2t}
 
 %%% Local Variables: 
 %%% mode: latex

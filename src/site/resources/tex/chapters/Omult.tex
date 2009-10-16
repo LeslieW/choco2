@@ -25,20 +25,4 @@ Returns an expression variable that corresponding to the product of variables in
 \end{itemize}
 
 \textbf{Example}
-\begin{lstlisting}
-	CPModel m = new CPModel();
-	IntegerVariable x = makeIntVar("x", -10, 10);
-	IntegerVariable z = makeIntVar("z", -10, 10);
-	IntegerVariable w = makeIntVar("w", -10, 10);
-	m.addVariable(x, z, w);
-	
-	CPSolver s = new CPSolver();
-	// x >= z * w
-	Constraint exp = geq(x, mult(z,w));
-	
-	m.setDefaultExpressionDecomposition(true);
-	m.addConstraint(exp);
-	
-	s.read(m);
-	s.solveAll();
-\end{lstlisting}
+\lstinputlisting{java/omult.j2t}

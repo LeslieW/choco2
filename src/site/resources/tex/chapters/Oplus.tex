@@ -31,15 +31,7 @@ Returns an expression variable that corresponding to the sum of the two argument
 % 	\item example1:
 % \end{itemize}
 
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s = new CPSolver();
-	IntegerVariable a = makeIntVar("a", 0, 4);
-    // a + 1 = 2
-	m.addConstraint(eq(plus(a, 1), 2));
-	s.read(m);
-	s.solve();
-\end{lstlisting}
+\lstinputlisting{java/oplus.j2t}
 
 % \begin{itemize}
 % 	\item example2:

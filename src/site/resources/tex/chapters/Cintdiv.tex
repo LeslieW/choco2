@@ -16,14 +16,4 @@ $$z = \lfloor x / y \rfloor$$
 \end{itemize}
 
 \textbf{Example}:
-\begin{lstlisting}
-	Model m = new CPModel();
-	IntegerVariable x = makeIntVar("x", 3, 5);
-	IntegerVariable y = makeIntVar("y", 1, 2);
-	IntegerVariable z = makeIntVar("z", 0, 5);
-	m.addConstraint(intDiv(x, y, z));
-	s.setVarIntSelector(new RandomIntVarSelector(s, i));
-	s.setValIntSelector(new RandomIntValSelector(i + 1));
-	s.read(m);
-	s.solve();
-\end{lstlisting}
+\lstinputlisting{java/cintdiv.j2t}

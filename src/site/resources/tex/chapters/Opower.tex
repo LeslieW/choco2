@@ -23,13 +23,4 @@ Returns an expression variable that represents the first argument raised to the 
 \end{itemize}
 
 \textbf{Example} : 
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s = new CPSolver();
-	IntegerVariable x = makeIntVar("x", 0, 10);
-	IntegerVariable y = makeIntVar("y", 2, 4);
-	IntegerVariable z = makeIntVar("z", 28, 80);
-	m.addConstraint(eq(z, power(x, y)));
-	s.read(m);
-	s.solve();
-\end{lstlisting}
+\lstinputlisting{java/opower.j2t}

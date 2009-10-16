@@ -16,20 +16,4 @@
 \end{itemize}
 
 \textbf{Example}:
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s = new CPSolver();
-	IntegerVariable x = makeIntVar("x", 1, 5);
-	IntegerVariable y = makeIntVar("y", 1, 5);
-	IntegerVariable z = makeIntVar("z", 1, 5);
-	
-	ArrayList forbiddenTuples = new ArrayList();
-	forbiddenTuples.add(new int[]{1, 1, 1});
-	forbiddenTuples.add(new int[]{2, 2, 2});
-	forbiddenTuples.add(new int[]{2, 5, 3});
-	
-	m.addConstraint(infeasTupleFC(forbiddenTuples, new IntegerVariable[]{x, y, z}));
-	
-	s.read(m);
-	s.solveAll();
-\end{lstlisting}
+\lstinputlisting{java/cinfeastuplefc.j2t}

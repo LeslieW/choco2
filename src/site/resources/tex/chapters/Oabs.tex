@@ -9,16 +9,7 @@ Returns an expression variable that represents the absolute value of the argumen
 \end{itemize}
 
 \textbf{Example}:
-\begin{lstlisting}
-	CPModel m = new CPModel();
-	IntegerVariable x = makeIntVar("x", 1, 5, "cp:enum");
-	IntegerVariable y = makeIntVar("y", -5, 5, "cp:enum");
-	m.addConstraint(eq(abs(x), y));
-	CPSolver s = new CPSolver();
-	s.read(m);
-	s.solve();
-	Assert.assertEquals(s.getVar(x).getVal(),Math.abs(s.getVar(y).getVal()));
-\end{lstlisting}
+\lstinputlisting{java/oabs.j2t}
 
 %%% Local Variables: 
 %%% mode: latex
