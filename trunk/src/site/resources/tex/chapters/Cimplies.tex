@@ -16,19 +16,4 @@ $$c_1\implies c_2$$
 \end{itemize}
 
 \textbf{Example}:
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s = new CPSolver();
-	
-	IntegerVariable x = makeIntVar("x", 1, 2);
-	IntegerVariable y = makeIntVar("y", 1, 2);
-	IntegerVariable z = makeIntVar("z", 1, 2);
-	
-	m.addVariable("cp:bound",x ,y, z);
-	
-	Constraint e1 = implies(leq(x, y), leq(x, z));
-	m.addConstraint(e1);
-	
-	s.read(m);
-	s.solveAll();
-\end{lstlisting}
+\lstinputlisting{java/cimplies.j2t}

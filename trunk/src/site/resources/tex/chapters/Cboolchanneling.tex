@@ -17,13 +17,4 @@ It acts as an observer of value $v$. Imagine a bin packing problem where variabl
 \end{itemize}
 
 \textbf{Example}:
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s = new CPSolver();
-	IntegerVariable bool = makeIntVar("bool", 0, 1);
-	IntegerVariable x = makeIntVar("x", 0, 5);
-	m.addConstraint(boolChanneling(bool, x, 4));
-	s.read(m);
-	s.solveAll();
-	assertEquals(6, s.getNbSolutions());
-\end{lstlisting}
+\lstinputlisting{java/cboolchanneling.j2t}

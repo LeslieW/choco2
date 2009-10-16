@@ -18,16 +18,4 @@ Returns an expression variable that represents the \(integer quotient\) of the d
 \end{itemize}
 
 \textbf{Example}:
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s = new CPSolver();
-	
-	IntegerVariable x = makeIntVar("x", 1, 10);
-	IntegerVariable w = makeIntVar("w", 22, 44);
-	IntegerVariable z = makeIntVar("z", 12, 21);
-	
-	m.addConstraint(eq(z, div(w,x)));
-	
-	s.read(m);
-	s.solve();
-\end{lstlisting}
+\lstinputlisting{java/odiv.j2t}

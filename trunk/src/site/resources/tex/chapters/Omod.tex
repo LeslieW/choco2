@@ -15,18 +15,7 @@ Returns an expression variable that represents the integer remainder of the divi
 \end{itemize}
 
 \textbf{Example}:
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s = new CPSolver();
-	
-	IntegerVariable x = makeIntVar("x", 1, 10);
-	IntegerVariable w = makeIntVar("w", 22, 44);
-	
-	m.addConstraint(eq(1, mod(w,x)));
-	
-	s.read(m);
-	s.solve();
-\end{lstlisting}
+\lstinputlisting{java/omod.j2t}
 
 %%% Local Variables: 
 %%% mode: latex
