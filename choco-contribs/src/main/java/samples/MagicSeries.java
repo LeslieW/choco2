@@ -44,7 +44,7 @@ public class MagicSeries extends PatternExample {
 
 	@Override
 	public void buildSolver() {
-		_s = new CPSolver();
+		_s = new CPSolver2();
 		_s.read(_m);
 
 	}

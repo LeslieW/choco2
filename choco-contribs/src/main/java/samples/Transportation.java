@@ -8,6 +8,7 @@ import samples.Examples.PatternExample;
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.integer.IntLinComb;
 import choco.cp.solver.constraints.integer.IntLinComb2;
 import choco.cp.solver.constraints.integer.IntSum;
 import choco.cp.solver.search.integer.valselector.MaxVal;
@@ -24,7 +25,6 @@ import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.integer.IntVar;
 
 /**
  * Assume that a product is to be shipped in the amounts u1, ... , um, from each of m shipping origins, and received in amounts v1, ... , vn, by each of n shipping destinations. 
@@ -179,7 +179,7 @@ public class Transportation extends PatternExample {
 	}
 
 } 
-//
+//37138 ms
 
 class CPSolver2 extends CPSolver {
 

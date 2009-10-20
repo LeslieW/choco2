@@ -171,7 +171,14 @@ public class PackModeler {
 			cstr.add( eq(bins[nbPack],nbPack));
 			nbPack++;
 		}
-		//TODO add one more item with s= c/2 if c is even.
+		if( nbPack < nbItems &&
+				sizes[nbPack].getValue() == maxCapacity/2 && 
+				maxCapacity % 2 == 0) {
+			//the capacity is even and the size of the item is C/2.
+			//So, for any previous items s_i + s_j >= C/2 (C/2+1) >= C+1
+			cstr.add( eq(bins[nbPack],nbPack));
+			nbPack++;
+		}
 		if(leqCstr) {
 			int m = Math.min(nbBins, nbItems);
 			while(nbPack<m) {
