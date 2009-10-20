@@ -1,3 +1,25 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * 
+ *          _       _                            *
+ *         |  °(..)  |                           *
+ *         |_  J||L _|        CHOCO solver       *
+ *                                               *
+ *    Choco is a java library for constraint     *
+ *    satisfaction problems (CSP), constraint    *
+ *    programming (CP) and explanation-based     *
+ *    constraint solving (e-CP). It is built     *
+ *    on a event-based propagation mechanism     *
+ *    with backtrackable structures.             *
+ *                                               *
+ *    Choco is an open-source software,          *
+ *    distributed under a BSD licence            *
+ *    and hosted by sourceforge.net              *
+ *                                               *
+ *    + website : http://choco.emn.fr            *
+ *    + support : choco@emn.fr                   *
+ *                                               *
+ *    Copyright (C) F. Laburthe,                 *
+ *                  N. Jussien    1999-2008      *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
 package db;
 
 import static java.lang.System.getProperty;
@@ -47,7 +69,7 @@ public class DbManager {
 	private Integer environmentID;
 
 	public DbManager(File databaseDir, String databaseName) {
-		this(DbUrlFactory.makeEmbeddedURL(databaseDir, databaseName));
+		this(OdbHsqldbBridge.makeEmbeddedURL(databaseDir, databaseName));
 	}
 
 
@@ -107,12 +129,12 @@ public class DbManager {
 
 	public final Integer insertEntryAndRetrieveGPK(final DbTableView dbTable,final SqlParameterSource parameters) {
 		namedParameterJdbcTemplate.update(dbTable.createInsertQuery(true), parameters);
-		return (Integer) jdbcTemplate.queryForObject(DbConstants.CALL_IDENTITY, Integer.class);
+		return (Integer) jdbcTemplate.queryForObject(DbTables.CALL_IDENTITY, Integer.class);
 	}
 
 	public final Integer insertEntryAndRetrieveGPK(final DbTableView dbTable,final Object... values) {
 		jdbcTemplate.update(dbTable.createInsertQuery(true), values);
-		return (Integer) jdbcTemplate.queryForObject(DbConstants.CALL_IDENTITY, Integer.class);
+		return (Integer) jdbcTemplate.queryForObject(DbTables.CALL_IDENTITY, Integer.class);
 	}
 
 
@@ -145,7 +167,7 @@ public class DbManager {
 	
 	protected final Integer getModelID(Solver solver) {
 		return solver == null ?
-				retrieveGPKOrInsertEntry(DbTables.T_MODELS, DbConstants.EMPTY_MODEL) :		
+				retrieveGPKOrInsertEntry(DbTables.T_MODELS, DbTables.EMPTY_MODEL) :		
 					retrieveGPKOrInsertEntry(DbTables.T_MODELS, new BeanPropertySqlParameterSource(solver));
 	}
 
@@ -196,7 +218,7 @@ public class DbManager {
 	 * return the maximum memory in Mo.
 	 */
 	protected final static Integer getMaxMemory() {
-		return Integer.valueOf( (int) (Runtime.getRuntime().maxMemory()/DbConstants.Mo));
+		return Integer.valueOf( (int) (Runtime.getRuntime().maxMemory()/DbTables.Mo));
 	}
 
 

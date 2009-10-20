@@ -25,6 +25,7 @@ package choco.cp.solver.constraints.integer.bool;
 import choco.cp.solver.constraints.integer.IntLinComb;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
@@ -166,11 +167,11 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 		}
 
 		public int getNewInfForObj() {
-			return divCeil(lb.get(), objCoef);
+			return MathUtils.divCeil(lb.get(), objCoef);
 		}
 
 		public int getNewSupForObj() {
-			return divFloor(ub.get(), objCoef);
+			return MathUtils.divFloor(ub.get(), objCoef);
 		}
 	}
 
@@ -198,13 +199,6 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 
 	}
 
-	public static int divCeil(int a, int b) {
-		return (int) Math.ceil((double) a / (double) b);
-	}
-
-	public static int divFloor(int a, int b) {
-		return (int) Math.floor((double) a / (double) b);
-	}
 
 
 	/************************************************************************/

@@ -1,8 +1,45 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * 
+ *          _       _                            *
+ *         |  °(..)  |                           *
+ *         |_  J||L _|        CHOCO solver       *
+ *                                               *
+ *    Choco is a java library for constraint     *
+ *    satisfaction problems (CSP), constraint    *
+ *    programming (CP) and explanation-based     *
+ *    constraint solving (e-CP). It is built     *
+ *    on a event-based propagation mechanism     *
+ *    with backtrackable structures.             *
+ *                                               *
+ *    Choco is an open-source software,          *
+ *    distributed under a BSD licence            *
+ *    and hosted by sourceforge.net              *
+ *                                               *
+ *    + website : http://choco.emn.fr            *
+ *    + support : choco@emn.fr                   *
+ *                                               *
+ *    Copyright (C) F. Laburthe,                 *
+ *                  N. Jussien    1999-2008      *
+ * * * * * * * * * * * * * * * * * * * * * * * * */
 package db;
 
 
 public final class DbTables {
 
+	//*****************************************************************//
+	//*******************  CONSTANTS  ********************************//
+	//***************************************************************//
+	/**
+	 * Number of bytes per Mo.
+	 */
+	public static final int Mo = 1048576;
+
+	public static final String ID = "ID";
+
+	public static final String NULL = "NULL";
+
+	public final static String CALL_IDENTITY = "CALL IDENTITY()";
+
+	public final static Object[] EMPTY_MODEL = {0, 0, 0, 0, 0, 0};
 	
 	//*****************************************************************//
 	//*******************  T_SOLVERS  ********************************//
@@ -83,6 +120,8 @@ public final class DbTables {
 			"T_ENVIRONMENTS",
 			"ID", "RUNTIME_ID", "OS_ID", "JVM_ID"
 	);
+
+
 
 
 

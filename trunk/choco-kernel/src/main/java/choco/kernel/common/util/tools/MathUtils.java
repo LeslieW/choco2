@@ -41,7 +41,7 @@ public final class MathUtils {
 		//do nothing
 	}
 
-    /**
+	/**
 	 * simple recursive version of factorielle
 	 */
 	public static long factoriel(int n) {
@@ -80,7 +80,7 @@ public final class MathUtils {
 	public static double roundedLog(double value,double exponent){
 		return Math.round( log(value, exponent) * ROUNDED_LOG_PRECISION) / ROUNDED_LOG_PRECISION;
 	}
-	
+
 	public static int sum(int[] values) {
 		int s = 0;
 		for (int i = 0; i < values.length; i++) {
@@ -88,7 +88,7 @@ public final class MathUtils {
 		}
 		return s;
 	}
-	
+
 	public static int sum(int[][] values) {
 		int s = 0;
 		for (int i = 0; i < values.length; i++) {
@@ -98,7 +98,7 @@ public final class MathUtils {
 		}
 		return s;
 	}
-	
+
 	public static int max(int[] values) {
 		int max = Integer.MIN_VALUE;
 		for (int i = 0; i < values.length; i++) {
@@ -106,7 +106,7 @@ public final class MathUtils {
 		}
 		return max;
 	}
-	
+
 	public static int max(int[][] values) {
 		int max = Integer.MIN_VALUE;
 		for (int i = 0; i < values.length; i++) {
@@ -116,7 +116,7 @@ public final class MathUtils {
 		}
 		return max;
 	}
-	
+
 	public static int min(int[] values) {
 		int min = Integer.MAX_VALUE;
 		for (int i = 0; i < values.length; i++) {
@@ -124,7 +124,7 @@ public final class MathUtils {
 		}
 		return min;
 	}
-	
+
 	public static int min(int[][] values) {
 		int min = Integer.MAX_VALUE;
 		for (int i = 0; i < values.length; i++) {
@@ -134,34 +134,32 @@ public final class MathUtils {
 		}
 		return min;
 	}
-	
+
 	public static Point bounds(int[] values) {
 		if(values == null || values.length == 0) {return new Point(Integer.MAX_VALUE, Integer.MIN_VALUE);}
 		else {
 			final Point b = new Point(values[0], values[0]);
 			for (int i = 1; i < values.length; i++) {
-			if(values[i] < b.x) {b.x= values[i];}
-			else if(values[i] > b.y) {b.y= values[i];}
-		}
-		return b;
+				if(values[i] < b.x) {b.x= values[i];}
+				else if(values[i] > b.y) {b.y= values[i];}
+			}
+			return b;
 		}
 	}
 
-    public static int divFloor(int a, int b) {
-      if (b < 0) return divFloor(-a, -b);
-      if (b == 0) return Integer.MAX_VALUE;
-      if (a >= 0)
-        return (a / b);
-      else // if (a < 0)
-        return (a - b + 1) / b;
-    }
+	public static int divFloor(int a, int b) {
+		if (b < 0) return divFloor(-a, -b);
+		else if( b > 0) { 
+			if (a >= 0) return (a / b);
+			else return (a - b + 1) / b;
+		} else assert(a==0); return Integer.MAX_VALUE;
+	}
 
-    public static int divCeil(int a, int b) {
-      if (b < 0) return divCeil(-a, -b);
-      if (b == 0) return Integer.MIN_VALUE;
-      if (a >= 0)
-        return ((a + b - 1) / b);
-      else // if (a < 0)
-        return a / b;
-    }
+	public static int divCeil(int a, int b) {
+		if (b < 0) return divCeil(-a, -b);
+		else if( b > 0) {
+			if (a >= 0) return ((a + b - 1) / b);
+			else return a / b;
+		}else assert(a == 0); return Integer.MIN_VALUE;
+	}
 }

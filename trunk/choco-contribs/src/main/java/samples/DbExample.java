@@ -4,10 +4,7 @@ import static samples.Examples.GolombRuler.OPTIMAL_RULER;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.logging.Level;
-
-import org.apache.xmlbeans.impl.xb.xsdschema.PatternDocument.Pattern;
 
 import samples.Examples.Example;
 import samples.Examples.GolombRuler;
@@ -17,23 +14,23 @@ import samples.Examples.Queen;
 import choco.kernel.common.logging.ChocoLogging;
 import db.DbManager;
 import db.DbTables;
-import db.OdbConnector;
+import db.EmbeddedChocoDb;
 
 public class DbExample implements Example {
 
 	public final static int NB_RUNS = 3; //5 seconds
-	
+
 	public final static int TIME_LIMIT = 5000; //5 seconds
 
-	public final static ExampleWrapper EX_WRAPPER = new ExampleWrapper();
-	
+	public final static TimeLimitWrapper EX_WRAPPER = new TimeLimitWrapper();
+
 	public DbManager manager;
-	
+
 	public void executeEx(String name, Object args) {
 		EX_WRAPPER.execute(args);
 		manager.insertSolver(EX_WRAPPER._s, name);
 	}
-	
+
 	public void solveGolombRulers() {
 		EX_WRAPPER.setSource(new GolombRuler());
 		for (int i = 0; i < OPTIMAL_RULER.length-1; i++) {
@@ -68,30 +65,22 @@ public class DbExample implements Example {
 
 	@Override
 	public void execute(Object parameters) {
-		LOGGER.info("extract database from internal resource");
-		try {
-			InputStream odbStream = getClass().getResourceAsStream("/chocodb.odb");
-			File dbDir = File.createTempFile("database-", "");
-			//File dbDir = new File("/tmp/database");
-			dbDir.delete();
-			dbDir.mkdir();
-			dbDir.deleteOnExit();
-			String dbName = "testdb";
-			OdbConnector.extractDatabaseHSQLDB( odbStream, dbDir, dbName);
-			LOGGER.info("request connection to database.");
-			manager = new DbManager(dbDir, dbName);
-			LOGGER.info("solving instances ...");
+
+		EmbeddedChocoDb edb = new EmbeddedChocoDb();
+		edb.setUp();
+		if(edb.isSetup()) {
+			manager = edb.getManager();
 			for (int i = 0; i < 3; i++) {
 				solveGolombRulers(); //solve instances
 				solveQueens();
 				solveMED();
 			}
 			manager.printTable(DbTables.T_SOLVERS);
-			manager.shutdown();
-			odbStream = getClass().getResourceAsStream("/chocodb.odb");
-			OdbConnector.exportDatabase(odbStream, dbDir, dbName,File.createTempFile(dbName+"-", ".odb")); //export database to odb
-		} catch (IOException e) {
-			LOGGER.log(Level.SEVERE, "IO failure", e);
+			try {
+				edb.tearDown(File.createTempFile("testdb-", ".odb")); //export database to odb
+			} catch (IOException e) {
+				LOGGER.log(Level.SEVERE, "dbex...[export:FAIL]", e);
+			}
 		}
 		ChocoLogging.flushLogs();
 	}
@@ -101,7 +90,7 @@ public class DbExample implements Example {
 	}
 
 
-	static class ExampleWrapper extends PatternExample {
+	static class TimeLimitWrapper extends PatternExample {
 
 		public PatternExample source;
 
@@ -114,7 +103,7 @@ public class DbExample implements Example {
 			this.source = source;
 		}
 
-		
+
 		@Override
 		public void buildModel() {
 			source.buildModel();
