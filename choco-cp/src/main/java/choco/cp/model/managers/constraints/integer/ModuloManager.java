@@ -28,13 +28,11 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.ModuloXYC2;
 import choco.cp.solver.constraints.reified.leaves.arithm.ModNode;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashSet;
 
@@ -47,11 +45,10 @@ import java.util.HashSet;
  */
 public class ModuloManager extends IntConstraintManager {
 
-    public SConstraint makeConstraint(Solver solver, Variable[] vars, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] vars, Object parameters, HashSet<String> options) {
         if (solver instanceof CPSolver) {
             if (vars.length == 3) {
-                IntDomainVar[] vs = solver.getVar((IntegerVariable[]) vars);
-                return new ModuloXYC2(vs[0], vs[1], vs[2].getInf());
+                return new ModuloXYC2(solver.getVar(vars[0]), solver.getVar(vars[1]), vars[2].getLowB());
             }
         }
         return null;

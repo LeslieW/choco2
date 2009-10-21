@@ -29,7 +29,6 @@ import choco.cp.solver.constraints.global.regular.Regular;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.constraints.automaton.DFA;
 import choco.kernel.model.constraints.automaton.Transition;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -54,13 +53,13 @@ import java.util.List;
  * A manager to build new regular constraint
  */
 public class RegularManager extends IntConstraintManager {
-    public SConstraint makeConstraint(Solver solver, Variable[] vars, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] vars, Object parameters, HashSet<String> options) {
         if (solver instanceof CPSolver) {
             IntDomainVar[] variables = solver.getVar((IntegerVariable[]) vars);
             if (parameters instanceof int[][]) {
                 int[] coefs = ((int[][]) parameters)[0];
                 int value = ((int[][]) parameters)[1][0];
-                return knapsack(solver, (IntegerVariable[]) vars, value, coefs);
+                return knapsack(solver, vars, value, coefs);
             } else if (parameters instanceof Object[]) { // List of tuples, min and max lists
                 Object[] params = (Object[]) parameters;
                 return new Regular(new DFA((List<int[]>) params[0], (int[]) params[1], (int[]) params[2]), variables);

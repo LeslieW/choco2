@@ -30,7 +30,7 @@ import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
-import choco.kernel.solver.variables.AbstractVar;
+import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 
@@ -73,7 +73,7 @@ public class Generate implements Goal {
   }
 
   public Goal execute(Solver s) throws ContradictionException {
-		AbstractVar var;
+		Var var;
 		var = varSelector.selectVar();
 		if (var == null) {
       return null;

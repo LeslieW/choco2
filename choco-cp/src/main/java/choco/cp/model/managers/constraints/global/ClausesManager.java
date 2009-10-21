@@ -23,7 +23,7 @@
 package choco.cp.model.managers.constraints.global;
 
 import choco.Choco;
-import choco.cp.model.managers.IntConstraintManager;
+import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
 import choco.kernel.model.constraints.ComponentConstraint;
@@ -43,7 +43,7 @@ import java.util.HashSet;
 * Since : Choco 2.0.1
 * Update : Choco 2.0.1
 */
-public class ClausesManager extends IntConstraintManager{
+public class ClausesManager extends MixedConstraintManager {
 
     public SConstraint makeConstraint(Solver solver, Variable[] vars, Object parameters, HashSet<String> options) {
         if (solver instanceof CPSolver) {
@@ -59,7 +59,7 @@ public class ClausesManager extends IntConstraintManager{
                     if(v < offset){
                         posLits[v] = (IntegerVariable)clause.getVariables()[v];
                     }else{
-                        negLits[v-offset] = (IntegerVariable)clause.getVariables()[v];
+                        negLits[v-offset] = (IntegerVariable) clause.getVariables()[v];
                     }
                 }
                 cs.addClause(solver.getVar(posLits), solver.getVar(negLits));

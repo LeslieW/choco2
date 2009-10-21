@@ -26,7 +26,6 @@ import choco.Choco;
 import choco.cp.model.managers.SetConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.set.Disjoint;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -50,11 +49,11 @@ public class DisjunctionManager extends SetConstraintManager{
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, SetVariable[] variables, Object parameters, HashSet<String> options) {
 
         if(solver instanceof CPSolver){
             if(parameters == null){
-                return new Disjoint(solver.getVar((SetVariable)variables[0]), solver.getVar((SetVariable)variables[1]));
+                return new Disjoint(solver.getVar(variables[0]), solver.getVar(variables[1]));
             }
         }
 

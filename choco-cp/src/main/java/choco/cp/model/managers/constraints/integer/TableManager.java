@@ -28,10 +28,8 @@ import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.constraints.integer.extension.*;
 import choco.cp.solver.variables.integer.BitSetIntDomain;
 import choco.kernel.model.ModelException;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.extension.*;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -57,7 +55,7 @@ public class TableManager extends IntConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, Variable[] vars, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] vars, Object parameters, HashSet<String> options) {
         Object[] ps = (Object[]) parameters;
         IntegerVariable[] vars2 = new IntegerVariable[vars.length];
         System.arraycopy(vars,0,vars2,0,vars.length);

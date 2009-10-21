@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.global;
 
+import choco.Choco;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -31,6 +32,7 @@ import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -249,5 +251,47 @@ public class AllDifferentTest{
         }catch (Exception e){
             Assert.fail();
         }
+    }
+
+    @Test
+    public void dummyTest1(){
+
+        Model m  = new CPModel();
+        IntegerVariable[] vars = new IntegerVariable[5];
+        vars[0] = Choco.makeIntVar("v2", 0, 3);
+        vars[1] = Choco.makeIntVar("v3", -1, 2);
+        vars[2] = Choco.makeIntVar("v4", -1, -1);
+        vars[3] = Choco.makeIntVar("v5", 2, 3);
+        vars[4] = Choco.makeIntVar("v6", 0, 1);
+
+        int[] low = new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+        int[] upp = new int[]{1,1,1,1,1,1,1,1,1,1,1,1,1,1};
+
+        Constraint c = Choco.allDifferent(vars);
+        m.addConstraint(
+                c
+        );
+        Solver s1 = new CPSolver();
+        s1.read(m);
+        s1.post(s1.eq(s1.getVar(vars[4]), 0));
+        s1.solve();
+
+        Assert.assertTrue(s1.isFeasible());
+
+        Solver s2 = new CPSolver();
+        s2.read(m);
+
+        try {
+            ((AbstractIntSConstraint)s2.getCstr(c)).awake();
+            s2.getVar(vars[4]).removeVal(1, -1);
+        } catch (ContradictionException e) {
+            Assert.fail();
+        }
+        try {
+            s2.propagate();
+        } catch (ContradictionException e) {
+            Assert.fail("Removing 1 from v6 should not lead to a fail!!");
+        }
+
     }
 }

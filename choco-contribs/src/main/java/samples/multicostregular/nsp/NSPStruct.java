@@ -1,15 +1,14 @@
 package samples.multicostregular.nsp;
 
-import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
-import choco.kernel.solver.constraints.SConstraint;
+import choco.cp.model.managers.IntConstraintManager;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.IStateInt;
+import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.memory.IStateInt;
-import choco.kernel.model.variables.Variable;
-import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.cp.model.managers.IntConstraintManager;
 
 import java.util.HashSet;
 
@@ -135,13 +134,12 @@ public class NSPStruct extends AbstractLargeIntSConstraint {
     public static class NSPStrucManager extends IntConstraintManager
     {
 
-        public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
 
-            IntegerVariable[] vs = (IntegerVariable[]) variables;
             if (parameters instanceof NSPInstance)
             {
                 NSPInstance instance = (NSPInstance) parameters;
-                return new NSPStruct(solver.getVar(vs),instance);
+                return new NSPStruct(solver.getVar(variables),instance);
             }
             return null;
         }

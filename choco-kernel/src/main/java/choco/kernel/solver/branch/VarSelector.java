@@ -23,7 +23,7 @@
 package choco.kernel.solver.branch;
 
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.AbstractVar;
+import choco.kernel.solver.variables.Var;
 
 /**
  * an interface for objects controlling the selection of a variable (for heuristic purposes)
@@ -34,6 +34,7 @@ public interface VarSelector {
    *
    * @return the associated branching strategy
    */
+  @Deprecated
   public IntBranching getBranching();
 
   /**
@@ -41,5 +42,5 @@ public interface VarSelector {
    *
    * @return a variable on whose domain an alternative can be set (such as a non instantiated search variable)
    */
-  public AbstractVar selectVar() throws ContradictionException;
+  public Var selectVar() throws ContradictionException;
 }

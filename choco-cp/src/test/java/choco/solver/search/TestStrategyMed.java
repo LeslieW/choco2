@@ -3,26 +3,19 @@
  */
 package choco.solver.search;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import choco.Choco;
+import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import junit.framework.Assert;
-
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-
 import samples.Examples.MinimumEdgeDeletion;
-import choco.Choco;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.integer.branching.AssignVar;
-import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
-import choco.cp.solver.search.integer.varselector.MinDomain;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
-import choco.kernel.memory.recomputation.EnvironmentRecomputation;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class TestStrategyMed {
@@ -84,7 +77,7 @@ public class TestStrategyMed {
 
 	@Test
 	public void recomputationMedTest() {
-		ChocoLogging.setVerbosity(Verbosity.SEARCH);
+//		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
 		recomputation = true;
 		restartAfterSolution = true;
 		restartPolicy = false;

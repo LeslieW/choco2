@@ -25,7 +25,6 @@ package choco.cp.model.managers.constraints.global;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.constraints.global.costregular.CostRegular;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -42,7 +41,7 @@ import java.util.HashSet;
 */
 public class CostRegularManager extends IntConstraintManager {
 
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
 
             if (parameters instanceof Object[] && ((Object[])parameters).length == 2)
             {

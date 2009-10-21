@@ -26,7 +26,6 @@ import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -46,9 +45,9 @@ import java.util.HashSet;
 public class IsOdd extends AbstractUnIntSConstraint {
 
     public static class IsOddManager extends IntConstraintManager {
-        public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
             if(solver instanceof CPSolver){
-                return new IsOdd(solver.getVar((IntegerVariable)variables[0]));
+                return new IsOdd(solver.getVar(variables[0]));
             }
             return null;
         }

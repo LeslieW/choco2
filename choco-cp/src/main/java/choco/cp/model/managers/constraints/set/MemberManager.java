@@ -22,10 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.set;
 
-import java.util.HashSet;
-
 import choco.Choco;
-import choco.cp.model.managers.SetConstraintManager;
+import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.set.MemberX;
 import choco.cp.solver.constraints.set.MemberXY;
@@ -36,13 +34,15 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.SConstraint;
 
+import java.util.HashSet;
+
 /**
  * Created by IntelliJ IDEA.
  * User: charles
  * Date: 11 août 2008
  * Time: 13:09:59
  */
-public class MemberManager extends SetConstraintManager {
+public class MemberManager extends MixedConstraintManager {
 
     /**
      * Build a constraint for the given solver and "model variables"

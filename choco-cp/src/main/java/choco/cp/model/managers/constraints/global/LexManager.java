@@ -29,7 +29,6 @@ import choco.cp.solver.constraints.global.Lex;
 import choco.kernel.model.constraints.ConstraintType;
 import static choco.kernel.model.constraints.ConstraintType.LEX;
 import static choco.kernel.model.constraints.ConstraintType.LEXEQ;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -57,16 +56,16 @@ public class LexManager extends IntConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
 
         if(solver instanceof CPSolver){
             if(parameters instanceof Object[]){
                 ConstraintType type = (ConstraintType)((Object[])parameters)[0];
                 int offset = (Integer)((Object[])parameters)[1];
                 if(type.equals(LEX)){
-                    return new Lex(solver.getVar((IntegerVariable[])variables), offset, true);
+                    return new Lex(solver.getVar(variables), offset, true);
                 }else if(type.equals(LEXEQ)){
-                    return new Lex(solver.getVar((IntegerVariable[])variables), offset, false);
+                    return new Lex(solver.getVar(variables), offset, false);
                 }
             }
         }

@@ -32,7 +32,6 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -56,10 +55,10 @@ public class UsersConstraintTest {
     protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     public static class MyConstraintEqualManager extends IntConstraintManager {
-        public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
             if(solver instanceof CPSolver){
-                IntDomainVar x = solver.getVar((IntegerVariable)variables[0]);
-                IntDomainVar y = solver.getVar((IntegerVariable)variables[1]);
+                IntDomainVar x = solver.getVar(variables[0]);
+                IntDomainVar y = solver.getVar(variables[1]);
                 int c = ((IntegerConstantVariable)variables[2]).getValue();
                 return new EqualXYC(x, y, c);
             }
@@ -113,7 +112,7 @@ public class UsersConstraintTest {
     }
 
     public static class MyConstraintAllDifferentManager extends IntConstraintManager{
-        public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
             if(solver instanceof CPSolver){
                 return new AllDifferent(solver.getVar((IntegerVariable[])variables));
             }

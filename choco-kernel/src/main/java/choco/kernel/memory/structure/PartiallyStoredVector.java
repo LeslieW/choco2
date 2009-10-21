@@ -165,7 +165,7 @@ public class PartiallyStoredVector<E> {
      * @throws choco.kernel.memory.MemoryException when trying to remove unknown object or stored object
      */
   public int remove(Object o) {
-    for (int i = 0; i < staticObjects.length; i++) {
+    for (int i = 0; i < nStaticObjects; i++) {
       Object staticObject = staticObjects[i];
       if (staticObject == o) {
         staticRemove(i);

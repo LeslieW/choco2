@@ -30,7 +30,6 @@ import choco.cp.solver.constraints.global.BoundGccVar;
 import choco.cp.solver.constraints.global.matching.GlobalCardinality;
 import choco.kernel.model.constraints.ConstraintType;
 import static choco.kernel.model.constraints.ConstraintType.*;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -55,7 +54,7 @@ import java.util.HashSet;
 public class GlobalCardinalityManager extends IntConstraintManager {
 
 
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
         if(solver instanceof CPSolver){
             if(parameters instanceof Object[]){
                 Object[] params = (Object[])parameters;
@@ -65,7 +64,7 @@ public class GlobalCardinalityManager extends IntConstraintManager {
                     int max = (Integer)params[2];
                     int[] low = (int[])params[3];
                     int[] up = (int[])params[4];
-                    IntDomainVar[] vars = solver.getVar((IntegerVariable[])variables);
+                    IntDomainVar[] vars = solver.getVar(variables);
                     if(options.contains("cp:ac")){
                         return new GlobalCardinality(vars, min, max, low, up);
                     }
@@ -81,7 +80,7 @@ public class GlobalCardinalityManager extends IntConstraintManager {
                 if(GLOBALCARDINALITY.equals(type)){
                     int[] low = (int[])params[1];
                     int[] up = (int[])params[2];
-                    IntDomainVar[] vars = solver.getVar((IntegerVariable[])variables);
+                    IntDomainVar[] vars = solver.getVar(variables);
                     if(options.contains("cp:ac")){
                         return new GlobalCardinality(vars, 1, low.length, low, up);
                     }
@@ -98,7 +97,7 @@ public class GlobalCardinalityManager extends IntConstraintManager {
                     int min = (Integer)params[1];
                     int max = (Integer)params[2];
                     int n = (Integer)params[3];
-                    IntDomainVar[] vars = solver.getVar((IntegerVariable[])variables);
+                    IntDomainVar[] vars = solver.getVar(variables);
                     IntDomainVar[] varT = new IntDomainVar[n];
                     IntDomainVar[] card = new IntDomainVar[vars.length-n];
                     System.arraycopy(vars, 0, varT, 0, n);

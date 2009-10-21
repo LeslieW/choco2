@@ -26,7 +26,6 @@ import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.LexChain;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -49,13 +48,13 @@ import java.util.HashSet;
  */
 public class LexChainManager extends IntConstraintManager {
 
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
         if(solver instanceof CPSolver){
             if(parameters instanceof Object[]){
                 Object[] params = (Object[]) parameters;
                 boolean type = (Boolean)params[0];
                 int size = (Integer)params[1];
-                return new LexChain(solver.getVar((IntegerVariable[])variables), size, type);
+                return new LexChain(solver.getVar(variables), size, type);
             }
         }
         if(Choco.DEBUG){

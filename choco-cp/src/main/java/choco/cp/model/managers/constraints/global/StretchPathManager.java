@@ -29,7 +29,6 @@ import choco.cp.solver.constraints.global.regular.Regular;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.constraints.automaton.DFA;
 import choco.kernel.model.constraints.automaton.Transition;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -53,13 +52,13 @@ import java.util.*;
  */
 public class StretchPathManager extends IntConstraintManager {
 
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
         if (solver instanceof CPSolver) {
 
             if (parameters instanceof List) {
                 List<int[]> stretchParameters = (List<int[]>)parameters;
 
-                IntDomainVar[] vars = solver.getVar((IntegerVariable[]) variables);
+                IntDomainVar[] vars = solver.getVar(variables);
 
                 IntDomainVar[] tmpVars = new IntDomainVar[vars.length];
                 System.arraycopy(vars, 0, tmpVars, 0, vars.length);

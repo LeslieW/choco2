@@ -27,12 +27,11 @@ import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.DistanceXYC;
 import choco.cp.solver.constraints.integer.DistanceXYZ;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashSet;
 
@@ -55,19 +54,19 @@ public class DistanceManager extends IntConstraintManager {
     private static final int NEQ = 3;
 
 
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
         if (solver instanceof CPSolver) {
             if (parameters instanceof Integer) {
                 int type = (Integer) parameters;
                 if (variables.length == 3) {
-                    return new DistanceXYC(solver.getVar((IntegerVariable) variables[0]),
-                            solver.getVar((IntegerVariable) variables[1]),
+                    return new DistanceXYC(solver.getVar(variables[0]),
+                            solver.getVar(variables[1]),
                             ((IntegerConstantVariable) variables[2]).getValue(), type);
                 } else {
                     if (type != NEQ) {
-                        return new DistanceXYZ(solver.getVar((IntegerVariable) variables[0]),
-                                solver.getVar((IntegerVariable) variables[1]),
-                                solver.getVar((IntegerVariable) variables[2]),
+                        return new DistanceXYZ(solver.getVar(variables[0]),
+                                solver.getVar(variables[1]),
+                                solver.getVar(variables[2]),
                                 ((IntegerConstantVariable) variables[3]).getValue(),
                                 type);
                     }
@@ -90,7 +89,7 @@ public class DistanceManager extends IntConstraintManager {
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
     @Override
-    public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
         SConstraint[] cs = new SConstraint[2];
         if (solver instanceof CPSolver) {
             if (parameters instanceof Integer) {
@@ -99,7 +98,7 @@ public class DistanceManager extends IntConstraintManager {
                     return super.makeConstraintAndOpposite(solver, variables, parameters, options);
                 } else {
                     IntDomainVar Y;
-                    final IntDomainVar X = solver.getVar((IntegerVariable) variables[2]);
+                    final IntDomainVar X = solver.getVar(variables[2]);
                     // Introduces a intermediary variable
                     if(X.hasBooleanDomain()){
                         Y = solver.createBooleanVar("Y_opp");
@@ -109,8 +108,8 @@ public class DistanceManager extends IntConstraintManager {
                         Y = solver.createBoundIntVar("Y_opp", X.getInf(), X.getSup());
                     }
                     if (type != NEQ) {
-                        solver.post(new DistanceXYZ(solver.getVar((IntegerVariable) variables[0]),
-                                solver.getVar((IntegerVariable) variables[1]),
+                        solver.post(new DistanceXYZ(solver.getVar(variables[0]),
+                                solver.getVar(variables[1]),
                                 Y,
                                 ((IntegerConstantVariable) variables[3]).getValue(),
                                 type));

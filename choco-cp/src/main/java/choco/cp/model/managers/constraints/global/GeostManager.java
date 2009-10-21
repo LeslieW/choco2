@@ -8,7 +8,6 @@ import choco.cp.solver.constraints.global.geost.externalConstraints.*;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Obj;
 import choco.kernel.model.constraints.geost.GeostOptions;
 import choco.kernel.model.constraints.geost.externalConstraints.*;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.geost.GeostObject;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -35,7 +34,7 @@ public class GeostManager extends IntConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, Variable[] variables/*variables model*/, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables/*variables model*/, Object parameters, HashSet<String> options) {
         if (solver instanceof CPSolver) {
             if(parameters instanceof Object[]){
                 Object[] params = (Object[])parameters;

@@ -28,7 +28,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.tree.TreeSConstraint;
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.Node;
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.TreeParameters;
-import choco.kernel.model.variables.Variable;
+import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.tree.TreeNodeObject;
 import choco.kernel.model.variables.tree.TreeParametersObject;
 import choco.kernel.solver.Solver;
@@ -51,7 +51,7 @@ public class TreeManager extends IntConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
         if(solver instanceof CPSolver){
 
             if(parameters instanceof TreeParametersObject){

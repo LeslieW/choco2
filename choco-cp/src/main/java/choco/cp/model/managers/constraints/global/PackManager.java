@@ -22,28 +22,27 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
-import static choco.kernel.common.util.tools.VariableUtils.getIntVar;
-import static choco.kernel.common.util.tools.VariableUtils.getSetVar;
-
-import java.util.HashSet;
-
-import choco.cp.model.managers.IntConstraintManager;
+import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.constraints.global.pack.PackSConstraint;
+import static choco.kernel.common.util.tools.VariableUtils.getIntVar;
+import static choco.kernel.common.util.tools.VariableUtils.getSetVar;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
+
+import java.util.HashSet;
 /**
  * Created by IntelliJ IDEA.
  * User: charles
  * Date: 8 août 2008
  * Time: 20:08:04
  */
-public class PackManager extends IntConstraintManager {
+public class PackManager extends MixedConstraintManager {
 
 	/**
 	 * Build a constraint for the given solver and "model variables"
@@ -68,7 +67,7 @@ public class PackManager extends IntConstraintManager {
 				IntDomainVar[] loads = getIntVar(s, variables, m, v1);
 				IntDomainVar[] bins = getIntVar(s, variables, v1, v2);
 				IntDomainVar[] sizes = getIntVar(s, variables, v2, v3);
-				IntDomainVar  nbNonEmpty = solver.getVar( (IntegerVariable) variables[v3]);
+				IntDomainVar  nbNonEmpty = solver.getVar((IntegerVariable)variables[v3]);
 				BitFlags flags = new BitFlags();
 				flags.readPackOptions(options);
 				return new PackSConstraint(itemSets, loads, sizes, bins, nbNonEmpty, flags);

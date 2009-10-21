@@ -57,9 +57,7 @@ public class RandomIntValSelector implements ValSelector {
         iterator.dispose();
         return res;
     } else {
-        int val = (random.nextInt(2));
-        if (val == 0) return x.getInf();
-        else return x.getSup();
+        return random.nextBoolean()?x.getInf():x.getSup();
     }
   }
 }

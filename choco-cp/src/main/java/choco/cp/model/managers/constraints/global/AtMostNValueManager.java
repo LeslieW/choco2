@@ -26,7 +26,6 @@ import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.AtMostNValue;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -50,11 +49,11 @@ public class AtMostNValueManager extends IntConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
         if (solver instanceof CPSolver) {
             IntegerVariable[] vars = new IntegerVariable[variables.length-1];
             System.arraycopy(variables, 0, vars, 0, vars.length);
-             return new AtMostNValue(solver.getVar(vars), solver.getVar((IntegerVariable)variables[variables.length-1]));
+             return new AtMostNValue(solver.getVar(vars), solver.getVar(variables[variables.length-1]));
         }
         if (Choco.DEBUG) {
             LOGGER.severe("Could not found an implementation of atMostNValue !");

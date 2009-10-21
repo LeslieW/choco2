@@ -23,7 +23,7 @@
 package choco.cp.model.managers.constraints.set;
 
 import choco.Choco;
-import choco.cp.model.managers.IntConstraintManager;
+import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.set.NotMemberX;
 import choco.cp.solver.constraints.set.NotMemberXY;
@@ -50,7 +50,7 @@ import java.util.HashSet;
 /**
  * A manager to build new NotMember constraint
  */
-public class NotMemberManager extends IntConstraintManager {
+public class NotMemberManager extends MixedConstraintManager {
   public SConstraint makeConstraint(Solver solver, Variable[] vars, Object parameters, HashSet<String> options) {
     if (solver instanceof CPSolver) {
         if(vars[0] instanceof SetVariable){

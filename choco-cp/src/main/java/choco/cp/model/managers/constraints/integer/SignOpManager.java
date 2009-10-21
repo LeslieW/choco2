@@ -23,7 +23,7 @@
 package choco.cp.model.managers.constraints.integer;
 
 import choco.Choco;
-import choco.cp.model.managers.IntConstraintManager;
+import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.SignOp;
 import choco.cp.solver.constraints.reified.leaves.bool.OppSignNode;
@@ -53,13 +53,12 @@ import java.util.HashSet;
 /**
  * A manager to build new signop constraint
  */
-public class SignOpManager extends IntConstraintManager {
+public class SignOpManager extends MixedConstraintManager {
   public SConstraint makeConstraint(Solver solver, Variable[] vars, Object parameters, HashSet<String> options) {
     if (solver instanceof CPSolver) {
-        Boolean same = (Boolean) parameters;
         return new SignOp(
-          solver.getVar((IntegerVariable) vars[0]),
-          solver.getVar((IntegerVariable) vars[1]),
+          solver.getVar((IntegerVariable)vars[0]),
+          solver.getVar((IntegerVariable)vars[1]),
           (parameters == Boolean.TRUE) ? true : false);
     }
     if (Choco.DEBUG) {

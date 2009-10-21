@@ -22,16 +22,11 @@
  **************************************************/
 package choco.kernel.common.util.tools;
 
+import choco.kernel.common.IIndex;
 import gnu.trove.TIntArrayList;
 import gnu.trove.TLongHashSet;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-
-import choco.kernel.common.IIndex;
+import java.util.*;
 
 /*
  * User : charles
@@ -163,7 +158,7 @@ public final class ArrayUtils {
 
 	 public static <T> void reverse(T[] tab) {
 		 T tmp;
-		 final int n = tab.length;
+		 final int n = tab.length-1;
 		 for (int i = 0; i < n / 2; i++) {
 			 tmp = tab[i];
 			 tab[i] = tab[n - i];
