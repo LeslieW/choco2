@@ -73,7 +73,11 @@ private static final int OFFSET = 1;
 }
 // ITEMS
 model			
-	:	(pred_decl_item SEMICOLON)* 
+	:	
+		{
+		FlatZincHelper.init(memory);
+		}
+		(pred_decl_item SEMICOLON)* 
 		(var_decl_item SEMICOLON)* 
 		(constraint_item SEMICOLON)* 
 		solve_item SEMICOLON 
@@ -89,24 +93,27 @@ var_decl_item
 	:	VAR natet=non_array_ti_expr_tail COLON name=ident_anns (EQUAL nafe=non_array_flat_expr)?
 		{
 		// CREATE A VARIABLE (there is 'VAR' keyword see 'Specifications of FlatZinc, §5.4
-		
+		FlatZincHelper.buildVar(natet, name, nafe);
 		}
 		| natet=non_array_ti_expr_tail COLON name=ident_anns EQUAL nafe=non_array_flat_expr
 		{
 		// CREATE A PARAMETER (there is not 'VAR' keyword
-		
+		FlatZincHelper.buildPar(natet, name, nafe);
 		}
 		| ARRAY LBOX f=INT_LITERAL DOTDOT t=INT_LITERAL RBOX OF adt=array_decl_tail
 		{
-				
+		// CREATE AN ARRAY OF VARIABLES/PARAMETERS
+		FlatZincHelper.buildArray(Integer.valueOf(f.getText()), Integer.valueOf(t.getText()), adt);		
 		}
 		;
-array_decl_tail	
+array_decl_tail	returns [FlatZincHelper.ArrayDecl adt]	
 	:	natet=non_array_ti_expr_tail COLON name=ident_anns EQUAL al=array_literal
 		{
+		$adt=FlatZincHelper.build(natet, name, al,true);
 		}
-		| VAR natet=non_array_ti_expr_tail COLON ia=ident_anns ( EQUAL al=array_literal)?
+		| VAR natet=non_array_ti_expr_tail COLON name=ident_anns ( EQUAL al=array_literal)?
 		{
+		$adt=FlatZincHelper.build(natet, name, al, false);
 		};
 ident_anns		returns [String value]
 	:	IDENT annotations 
