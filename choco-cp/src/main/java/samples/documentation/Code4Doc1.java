@@ -29,7 +29,6 @@ import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import org.junit.Assert;
 
 /*
 * User : charles
@@ -69,7 +68,6 @@ public class Code4Doc1 {
         s.read(m);
         s.solve();
         //totex
-        Assert.assertEquals(s.getVar(x).getVal(), Math.abs(s.getVar(y).getVal()));
     }
 
     public void odiv() {
