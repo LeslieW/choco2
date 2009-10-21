@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g 2009-10-20 14:15:48
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g 2009-10-21 15:06:08
 
 package parser.chocogen.mzn;
 
@@ -1123,10 +1123,10 @@ public class FlatZincLexer extends Lexer {
         try {
             int _type = INT_LITERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:345:14: ( ( '-' )? ( ( DIGIT )+ | ( HEX_DIGIT )+ | ( OCT_DIGIT )+ ) )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:345:16: ( '-' )? ( ( DIGIT )+ | ( HEX_DIGIT )+ | ( OCT_DIGIT )+ )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:14: ( ( '-' )? ( ( DIGIT )+ | ( HEX_DIGIT )+ | ( OCT_DIGIT )+ ) )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:16: ( '-' )? ( ( DIGIT )+ | ( HEX_DIGIT )+ | ( OCT_DIGIT )+ )
             {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:345:16: ( '-' )?
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:16: ( '-' )?
             int alt1=2;
             int LA1_0 = input.LA(1);
 
@@ -1135,7 +1135,7 @@ public class FlatZincLexer extends Lexer {
             }
             switch (alt1) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:345:17: '-'
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:17: '-'
                     {
                     match('-'); 
 
@@ -1144,7 +1144,7 @@ public class FlatZincLexer extends Lexer {
 
             }
 
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:345:23: ( ( DIGIT )+ | ( HEX_DIGIT )+ | ( OCT_DIGIT )+ )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:23: ( ( DIGIT )+ | ( HEX_DIGIT )+ | ( OCT_DIGIT )+ )
             int alt5=3;
             int LA5_0 = input.LA(1);
 
@@ -1175,9 +1175,9 @@ public class FlatZincLexer extends Lexer {
             }
             switch (alt5) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:345:24: ( DIGIT )+
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:24: ( DIGIT )+
                     {
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:345:24: ( DIGIT )+
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:24: ( DIGIT )+
                     int cnt2=0;
                     loop2:
                     do {
@@ -1191,7 +1191,7 @@ public class FlatZincLexer extends Lexer {
 
                         switch (alt2) {
                     	case 1 :
-                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:345:24: DIGIT
+                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:24: DIGIT
                     	    {
                     	    mDIGIT(); 
 
@@ -1211,9 +1211,9 @@ public class FlatZincLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:345:31: ( HEX_DIGIT )+
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:31: ( HEX_DIGIT )+
                     {
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:345:31: ( HEX_DIGIT )+
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:31: ( HEX_DIGIT )+
                     int cnt3=0;
                     loop3:
                     do {
@@ -1227,7 +1227,7 @@ public class FlatZincLexer extends Lexer {
 
                         switch (alt3) {
                     	case 1 :
-                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:345:31: HEX_DIGIT
+                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:31: HEX_DIGIT
                     	    {
                     	    mHEX_DIGIT(); 
 
@@ -1247,9 +1247,9 @@ public class FlatZincLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:345:43: ( OCT_DIGIT )+
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:43: ( OCT_DIGIT )+
                     {
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:345:43: ( OCT_DIGIT )+
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:43: ( OCT_DIGIT )+
                     int cnt4=0;
                     loop4:
                     do {
@@ -1263,7 +1263,7 @@ public class FlatZincLexer extends Lexer {
 
                         switch (alt4) {
                     	case 1 :
-                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:345:43: OCT_DIGIT
+                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:43: OCT_DIGIT
                     	    {
                     	    mOCT_DIGIT(); 
 
@@ -1301,10 +1301,10 @@ public class FlatZincLexer extends Lexer {
         try {
             int _type = FLOAT_LITERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:346:16: ( ( '-' )? ( DIGIT )+ ( '.' | ( '.' ( DIGIT )+ )? ( 'E' | 'e' ) ( '-' | '+' )? ) ( DIGIT )+ )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:346:18: ( '-' )? ( DIGIT )+ ( '.' | ( '.' ( DIGIT )+ )? ( 'E' | 'e' ) ( '-' | '+' )? ) ( DIGIT )+
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:16: ( ( '-' )? ( DIGIT )+ ( '.' | ( '.' ( DIGIT )+ )? ( 'E' | 'e' ) ( '-' | '+' )? ) ( DIGIT )+ )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:18: ( '-' )? ( DIGIT )+ ( '.' | ( '.' ( DIGIT )+ )? ( 'E' | 'e' ) ( '-' | '+' )? ) ( DIGIT )+
             {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:346:18: ( '-' )?
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:18: ( '-' )?
             int alt6=2;
             int LA6_0 = input.LA(1);
 
@@ -1313,7 +1313,7 @@ public class FlatZincLexer extends Lexer {
             }
             switch (alt6) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:346:19: '-'
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:19: '-'
                     {
                     match('-'); 
 
@@ -1322,7 +1322,7 @@ public class FlatZincLexer extends Lexer {
 
             }
 
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:346:25: ( DIGIT )+
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:25: ( DIGIT )+
             int cnt7=0;
             loop7:
             do {
@@ -1336,7 +1336,7 @@ public class FlatZincLexer extends Lexer {
 
                 switch (alt7) {
             	case 1 :
-            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:346:25: DIGIT
+            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:25: DIGIT
             	    {
             	    mDIGIT(); 
 
@@ -1352,21 +1352,21 @@ public class FlatZincLexer extends Lexer {
                 cnt7++;
             } while (true);
 
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:346:31: ( '.' | ( '.' ( DIGIT )+ )? ( 'E' | 'e' ) ( '-' | '+' )? )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:31: ( '.' | ( '.' ( DIGIT )+ )? ( 'E' | 'e' ) ( '-' | '+' )? )
             int alt11=2;
             alt11 = dfa11.predict(input);
             switch (alt11) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:346:32: '.'
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:32: '.'
                     {
                     match('.'); 
 
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:346:36: ( '.' ( DIGIT )+ )? ( 'E' | 'e' ) ( '-' | '+' )?
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:36: ( '.' ( DIGIT )+ )? ( 'E' | 'e' ) ( '-' | '+' )?
                     {
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:346:36: ( '.' ( DIGIT )+ )?
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:36: ( '.' ( DIGIT )+ )?
                     int alt9=2;
                     int LA9_0 = input.LA(1);
 
@@ -1375,10 +1375,10 @@ public class FlatZincLexer extends Lexer {
                     }
                     switch (alt9) {
                         case 1 :
-                            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:346:37: '.' ( DIGIT )+
+                            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:37: '.' ( DIGIT )+
                             {
                             match('.'); 
-                            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:346:40: ( DIGIT )+
+                            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:40: ( DIGIT )+
                             int cnt8=0;
                             loop8:
                             do {
@@ -1392,7 +1392,7 @@ public class FlatZincLexer extends Lexer {
 
                                 switch (alt8) {
                             	case 1 :
-                            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:346:40: DIGIT
+                            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:40: DIGIT
                             	    {
                             	    mDIGIT(); 
 
@@ -1423,7 +1423,7 @@ public class FlatZincLexer extends Lexer {
                         recover(mse);
                         throw mse;}
 
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:346:57: ( '-' | '+' )?
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:57: ( '-' | '+' )?
                     int alt10=2;
                     int LA10_0 = input.LA(1);
 
@@ -1455,7 +1455,7 @@ public class FlatZincLexer extends Lexer {
 
             }
 
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:346:68: ( DIGIT )+
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:68: ( DIGIT )+
             int cnt12=0;
             loop12:
             do {
@@ -1469,7 +1469,7 @@ public class FlatZincLexer extends Lexer {
 
                 switch (alt12) {
             	case 1 :
-            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:346:68: DIGIT
+            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:68: DIGIT
             	    {
             	    mDIGIT(); 
 
@@ -1501,11 +1501,11 @@ public class FlatZincLexer extends Lexer {
         try {
             int _type = STRING_LITERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:347:17: ( DQUOTE (~ ( '\\n' | '\\r' | '\\f' ) )* DQUOTE )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:347:19: DQUOTE (~ ( '\\n' | '\\r' | '\\f' ) )* DQUOTE
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:354:17: ( DQUOTE (~ ( '\\n' | '\\r' | '\\f' ) )* DQUOTE )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:354:19: DQUOTE (~ ( '\\n' | '\\r' | '\\f' ) )* DQUOTE
             {
             mDQUOTE(); 
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:347:26: (~ ( '\\n' | '\\r' | '\\f' ) )*
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:354:26: (~ ( '\\n' | '\\r' | '\\f' ) )*
             loop13:
             do {
                 int alt13=2;
@@ -1527,7 +1527,7 @@ public class FlatZincLexer extends Lexer {
 
                 switch (alt13) {
             	case 1 :
-            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:347:27: ~ ( '\\n' | '\\r' | '\\f' )
+            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:354:27: ~ ( '\\n' | '\\r' | '\\f' )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='\t')||input.LA(1)=='\u000B'||(input.LA(1)>='\u000E' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
@@ -1564,11 +1564,11 @@ public class FlatZincLexer extends Lexer {
         try {
             int _type = IDENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:348:9: ( LIT ( LIT | DIGIT | '_' )* )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:348:11: LIT ( LIT | DIGIT | '_' )*
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:355:9: ( LIT ( LIT | DIGIT | '_' )* )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:355:11: LIT ( LIT | DIGIT | '_' )*
             {
             mLIT(); 
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:348:15: ( LIT | DIGIT | '_' )*
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:355:15: ( LIT | DIGIT | '_' )*
             loop14:
             do {
                 int alt14=2;
@@ -1615,8 +1615,8 @@ public class FlatZincLexer extends Lexer {
     // $ANTLR start "DIGIT"
     public final void mDIGIT() throws RecognitionException {
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:350:18: ( '0' .. '9' )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:350:20: '0' .. '9'
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:357:18: ( '0' .. '9' )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:357:20: '0' .. '9'
             {
             matchRange('0','9'); 
 
@@ -1631,12 +1631,12 @@ public class FlatZincLexer extends Lexer {
     // $ANTLR start "HEX_DIGIT"
     public final void mHEX_DIGIT() throws RecognitionException {
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:351:21: ( '0x' ( DIGIT | 'A' .. 'F' | 'a' .. 'f' )+ )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:351:23: '0x' ( DIGIT | 'A' .. 'F' | 'a' .. 'f' )+
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:358:21: ( '0x' ( DIGIT | 'A' .. 'F' | 'a' .. 'f' )+ )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:358:23: '0x' ( DIGIT | 'A' .. 'F' | 'a' .. 'f' )+
             {
             match("0x"); 
 
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:351:28: ( DIGIT | 'A' .. 'F' | 'a' .. 'f' )+
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:358:28: ( DIGIT | 'A' .. 'F' | 'a' .. 'f' )+
             int cnt15=0;
             loop15:
             do {
@@ -1686,12 +1686,12 @@ public class FlatZincLexer extends Lexer {
     // $ANTLR start "OCT_DIGIT"
     public final void mOCT_DIGIT() throws RecognitionException {
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:21: ( '0o' ( '0' .. '7' )+ )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:23: '0o' ( '0' .. '7' )+
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:359:21: ( '0o' ( '0' .. '7' )+ )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:359:23: '0o' ( '0' .. '7' )+
             {
             match("0o"); 
 
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:28: ( '0' .. '7' )+
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:359:28: ( '0' .. '7' )+
             int cnt16=0;
             loop16:
             do {
@@ -1705,7 +1705,7 @@ public class FlatZincLexer extends Lexer {
 
                 switch (alt16) {
             	case 1 :
-            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:29: '0' .. '7'
+            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:359:29: '0' .. '7'
             	    {
             	    matchRange('0','7'); 
 
@@ -1733,7 +1733,7 @@ public class FlatZincLexer extends Lexer {
     // $ANTLR start "LIT"
     public final void mLIT() throws RecognitionException {
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:16: ( 'A' .. 'Z' | 'a' .. 'z' )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:360:16: ( 'A' .. 'Z' | 'a' .. 'z' )
             // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:
             {
             if ( (input.LA(1)>='A' && input.LA(1)<='Z')||(input.LA(1)>='a' && input.LA(1)<='z') ) {
@@ -2195,7 +2195,7 @@ public class FlatZincLexer extends Lexer {
             this.transition = DFA11_transition;
         }
         public String getDescription() {
-            return "346:31: ( '.' | ( '.' ( DIGIT )+ )? ( 'E' | 'e' ) ( '-' | '+' )? )";
+            return "353:31: ( '.' | ( '.' ( DIGIT )+ )? ( 'E' | 'e' ) ( '-' | '+' )? )";
         }
     }
     static final String DFA17_eotS =
