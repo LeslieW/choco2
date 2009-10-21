@@ -23,7 +23,6 @@
 package samples.multicostregular.planner;
 
 import choco.cp.model.managers.IntConstraintManager;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -136,8 +135,9 @@ public class SimpleChannelling extends AbstractBinIntSConstraint {
     public static class SimpleManager extends IntConstraintManager
     {
 
-        public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
-            return new SimpleChannelling(solver.getVar((IntegerVariable)variables[0]),solver.getVar((IntegerVariable)variables[1]));
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+            return new SimpleChannelling(solver.getVar(variables[0]),solver.getVar(
+                    variables[1]));
 
         }
     }

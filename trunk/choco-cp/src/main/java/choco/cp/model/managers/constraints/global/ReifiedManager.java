@@ -23,7 +23,7 @@
 package choco.cp.model.managers.constraints.global;
 
 import choco.Choco;
-import choco.cp.model.managers.IntConstraintManager;
+import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
 import choco.kernel.model.constraints.Constraint;
@@ -41,7 +41,7 @@ import java.util.HashSet;
  * Date: 11 août 2008
  * Time: 11:39:38
  */
-public class ReifiedManager extends IntConstraintManager {
+public class ReifiedManager extends MixedConstraintManager {
 
     /**
      * Build a constraint for the given solver and "model variables"

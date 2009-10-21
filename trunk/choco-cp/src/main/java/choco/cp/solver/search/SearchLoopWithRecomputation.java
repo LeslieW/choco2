@@ -64,24 +64,34 @@ public class SearchLoopWithRecomputation extends AbstractSearchLoopWithRestart {
 	public void initialize() {
 		super.initialize();
 		savedTraceIndex.reset();
-		lastSavedTraceIndex = 0;
+		lastSavedTraceIndex = searchStrategy.getCurrentTraceIndex();
         savedTraceIndex.push(lastSavedTraceIndex);
         ctxIndices.push(contexts.size());
 		searchStrategy.solver.worldPush();
 	}
 
+    /**
+     * perform the restart.
+     */
+    @Override
+    public void restart() {
+        cpt = 0;
+        super.restart();
+    }
 
-
-
-	@Override
+    @Override
 	protected void worldPop() {
-		cpt--;
+//		cpt--; // not necessary, because, goUpBranch is called just after and set cpt to 0
 		//should we pop the delegated environment
 		searchStrategy.solver.worldPop();
-		if(searchStrategy.getCurrentTraceIndex() == lastSavedTraceIndex) {
-			savedTraceIndex.pop();
-			lastSavedTraceIndex = savedTraceIndex.peek();
-			searchStrategy.solver.worldPop();
+        // lastSavedTraceIndex  == 0 means we are juste after the root node
+        // we do not want to pop to the root node (=> constraints are inactive!!)
+        if(lastSavedTraceIndex!=0){
+            if(searchStrategy.getCurrentTraceIndex() == lastSavedTraceIndex) {
+                savedTraceIndex.pop();
+                lastSavedTraceIndex = savedTraceIndex.peek();
+                searchStrategy.solver.worldPop();
+            }
         }
         int ind = ctxIndices.pop();
         while(contexts.size()>ind){
@@ -94,6 +104,11 @@ public class SearchLoopWithRecomputation extends AbstractSearchLoopWithRestart {
 	protected void goUpBranch() throws ContradictionException {
 		searchStrategy.postDynamicCut();
 		LOGGER.finest("recomputation ...");
+        /*
+           BEWARE, propagation after applying each decision is MANDATORY in order
+           to deal with bound variables and ValSelector, when the strategy returns the
+           last tested and removed value from the domain which was not a bounds!
+         */
 		for (int i = lastSavedTraceIndex; i < searchStrategy.getCurrentTraceIndex() ; i++) {
 			ctx = searchStrategy.getTrace(i);
 			ctx.getBranching().goDownBranch(ctx);
@@ -102,6 +117,10 @@ public class SearchLoopWithRecomputation extends AbstractSearchLoopWithRestart {
 		ctx = searchStrategy.topTrace();
 		LOGGER.finest("backtrack ...");
         int ind = ctxIndices.peek();
+        /*
+           BEWARE, propagation after applying each decision is MANDATORY in order
+           to retrieve all solutions! Otherwise it loops over the first one infinitely
+         */
         for(int i = ind; i < contexts.size(); i++){
         	ctx.getBranching().goUpBranch(contexts.get(i));
             searchStrategy.solver.propagate();
@@ -110,14 +129,19 @@ public class SearchLoopWithRecomputation extends AbstractSearchLoopWithRestart {
 		LOGGER.finest("continue ...");
 		searchStrategy.solver.propagate();
         contexts.push(ctx.copy());
+        // state cpt to 0 to force backup at next down branch
+        // to speed up search by saving when there is a fail
+        cpt = 0;
+
 	}
 
-	@Override
+    @Override
 	protected void worldPush() {
 		if( cpt % gap == 0) {
 			searchStrategy.solver.worldPush();
 			lastSavedTraceIndex = searchStrategy.getCurrentTraceIndex();
 			savedTraceIndex.push(lastSavedTraceIndex);
+            cpt=0;
 		}
         ctxIndices.push(contexts.size());
         cpt++;

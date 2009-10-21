@@ -22,13 +22,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.constraints;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashSet;
 
-public interface ConstraintManager extends ExpressionManager{
+public abstract class ConstraintManager <V extends Variable> implements ExpressionManager{
 
 
     /**
@@ -39,7 +41,7 @@ public interface ConstraintManager extends ExpressionManager{
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options);
+    public abstract SConstraint makeConstraint(Solver solver, V[] variables, Object parameters, HashSet<String> options);
 
     /**
      * Build a constraint and its opposite for the given solver and "model variables"
@@ -49,14 +51,42 @@ public interface ConstraintManager extends ExpressionManager{
      * @param options
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
-    public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, HashSet<String> options);
+    public abstract SConstraint[] makeConstraintAndOpposite(Solver solver, V[] variables, Object parameters, HashSet<String> options);
 
     /**
      * @param options : the set of options on the constraint (Typically the level of consistency)
      * @return a list of domains accepted by the constraint and sorted
      *         by order of preference
      */
-    public int[] getFavoriteDomains(HashSet<String> options);
+    public abstract int[] getFavoriteDomains(HashSet<String> options);
+
+    protected static int[] getACFavoriteIntDomains() {
+        return new int[]{IntDomainVar.BITSET,
+                IntDomainVar.LINKEDLIST,
+                IntDomainVar.BIPARTITELIST,
+                IntDomainVar.BINARYTREE,
+                IntDomainVar.BOUNDS,
+        };
+    }
+
+    protected static int[] getBCFavoriteIntDomains() {
+        return new int[]{IntDomainVar.BOUNDS,
+                IntDomainVar.BINARYTREE,
+                IntDomainVar.BITSET,
+                IntDomainVar.BIPARTITELIST,
+                IntDomainVar.LINKEDLIST,
+        };
+    }
+
+    protected static SConstraint fail() {
+    	return fail("?");
+    }
+
+    protected static SConstraint fail(String cname) {
+    	LOGGER.severe("Could not found an implementation of "+cname+".");
+    	ChocoLogging.flushLogs();
+    	return null;
+    }
 
 
 }

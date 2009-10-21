@@ -31,8 +31,12 @@ import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.set.SetVar;
+import org.junit.After;
 import static org.junit.Assert.assertEquals;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -49,6 +53,22 @@ import java.util.logging.Logger;
 public class SolverTest {
 
 	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+
+    Model model;
+
+	CPSolver solver;
+
+    @Before
+    public void before(){
+        model = new CPModel();
+        solver = new CPSolver();
+    }
+
+    @After
+    public void after(){
+        model = null;
+        solver = null;
+    }
 
 	@Test
 	@Ignore
@@ -108,9 +128,6 @@ public class SolverTest {
 		}
 	}
 
-	Model model = new CPModel(); 
-	
-	CPSolver solver = new CPSolver();  
 
 	private void checkAndSolve(Boolean res) {
         solver.clear();
@@ -159,6 +176,19 @@ public class SolverTest {
 		assertEquals("nb Constraint", 4, model.getNbConstraints());
 		checkAndSolve(Boolean.FALSE); 
 
-	} 
+	}
+
+    @Test
+    public void testDeletSetConstraint(){
+        SetVar sv = solver.createBoundSetVar("sv", 0, 10);
+        IntDomainVar iv = solver.createEnumIntVar("sv", 0, 10);
+        final AbstractSConstraint c1 = (AbstractSConstraint)solver.eq(iv, 3);
+        final AbstractSConstraint c2 = (AbstractSConstraint)solver.eqCard(sv, 3);
+        solver.post(c1);
+        solver.post(c2);
+        c1.delete();
+        c2.delete();
+
+    }
 
 }

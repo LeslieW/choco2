@@ -27,25 +27,25 @@ import choco.kernel.model.variables.Variable;
 
 import java.util.Iterator;
 
-public class ComponentConstraint extends AbstractConstraint {
+public class ComponentConstraint <V extends Variable> extends AbstractConstraint {
 
-    protected Variable[] variables;
+    protected V[] variables;
     protected Object parameters;
 
 
-    public ComponentConstraint(final ConstraintType constraintType, final Object parameters, final Variable[] variables) {
+    public ComponentConstraint(final ConstraintType constraintType, final Object parameters, final V[] variables) {
         super(constraintType);
         this.variables = variables;
         this.parameters = parameters;
     }
 
-    public ComponentConstraint(final String componentClassName, final Object parameters, final Variable[] variables) {
+    public ComponentConstraint(final String componentClassName, final Object parameters, final V[] variables) {
         super(componentClassName);
         this.variables = variables;
         this.parameters = parameters;
     }
 
-    public ComponentConstraint(final Class componentClass, final Object parameters, final Variable[] variables) {
+    public ComponentConstraint(final Class componentClass, final Object parameters, final V[] variables) {
         super(componentClass.getName());
         this.variables = variables;
         this.parameters = parameters;
@@ -56,11 +56,11 @@ public class ComponentConstraint extends AbstractConstraint {
     }
 
     @Override
-	public Variable[] getVariables() {
+	public V[] getVariables() {
         return variables;
     }
 
-    public final Variable getVariable(final int idx) {
+    public final V getVariable(final int idx) {
         return variables[idx];
     }
     /**

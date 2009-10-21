@@ -23,7 +23,6 @@
 package samples.multicostregular.planner;
 
 import choco.cp.model.managers.IntConstraintManager;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -151,7 +150,7 @@ public class SubSetChannelling extends AbstractLargeIntSConstraint {
     public static class SubSetManager extends IntConstraintManager
     {
 
-        public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
             if (parameters == null)
             {
                 IntDomainVar[] vs = solver.getVar((IntegerVariable[]) variables);

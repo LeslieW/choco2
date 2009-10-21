@@ -32,7 +32,6 @@ import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -52,9 +51,9 @@ import java.util.HashSet;
 public class ScalarAtMost extends AbstractLargeIntSConstraint {
 
     public static class ScalarAtMostManager extends IntConstraintManager {
-        public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
             int[] params = (int[])parameters;
-            return new ScalarAtMost(solver.getVar((IntegerVariable[])variables), params[0], params[1]);
+            return new ScalarAtMost(solver.getVar(variables), params[0], params[1]);
         }
     }
 

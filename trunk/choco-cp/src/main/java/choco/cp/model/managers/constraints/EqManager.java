@@ -23,7 +23,7 @@
 package choco.cp.model.managers.constraints;
 
 import choco.Choco;
-import choco.cp.model.managers.IntConstraintManager;
+import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.model.managers.RealConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.ConstantSConstraint;
@@ -59,7 +59,7 @@ import java.util.HashSet;
  * User:    charles
  * Date:    22 août 2008
  */
-public class EqManager extends IntConstraintManager {
+public class EqManager extends MixedConstraintManager {
 
     /**
      * Build a constraint for the given solver and "model variables"
@@ -173,6 +173,21 @@ public class EqManager extends IntConstraintManager {
         return null;
     }
 
+    /**
+     * Build a constraint and its opposite for the given solver and "model variables"
+     *
+     * @param solver
+     * @param variables
+     * @param parameters
+     * @param options
+     * @return array of 2 SConstraint object, the constraint and its opposite
+     */
+    @Override
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+        SConstraint c = this.makeConstraint(solver, variables, parameters, options);
+        SConstraint opp = c.opposite();
+        return new SConstraint[]{c, opp};
+    }
 
     /**
      * Build arithm node from a IntegerExpressionVariable

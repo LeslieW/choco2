@@ -1265,11 +1265,11 @@ public class Choco{
 		if (options == null) {
 			return new ComponentConstraint(ConstraintType.TABLE,
 					new Object[]{feas, mat},
-					new Variable[]{v1, v2});
+					new IntegerVariable[]{v1, v2});
 		} else {
 			Constraint c = new ComponentConstraint(ConstraintType.TABLE,
 					new Object[]{feas, mat},
-					new Variable[]{v1, v2});
+					new IntegerVariable[]{v1, v2});
 			c.addOption(options);
 			return c;
 		}
@@ -2039,8 +2039,7 @@ public class Choco{
 		if (y.length != x.length) {
 			throw new SolverException("not a valid inverse channeling constraint with two arrays of different sizes");
 		}
-		IntegerVariable[] vars = ArrayUtils.append(x, y);
-		return new ComponentConstraint(ConstraintType.INVERSECHANNELING, ConstraintType.INVERSECHANNELING, vars);
+		return new ComponentConstraint(ConstraintType.INVERSECHANNELING, ConstraintType.INVERSECHANNELING, ArrayUtils.append(x, y));
 	}
 
 	/**
@@ -2389,7 +2388,7 @@ public class Choco{
 		}
 		//build constraint
 		RscData param = new RscData(name, tasks, usages, uppBound);
-		final Variable[] vars=  ArrayUtils.append(tasks, usages, heights, new Variable[]{consumption, capacity}, uppBound == null ? null : new Variable[]{uppBound});
+		final Variable[] vars=  ArrayUtils.append(tasks, usages, heights, new IntegerVariable[]{consumption, capacity}, uppBound == null ? null : new IntegerVariable[]{uppBound});
 		final ComponentConstraint c=new ComponentConstraint(ConstraintType.CUMULATIVE, param,vars);
 		c.addOptions(options);
 		return c;
@@ -2545,7 +2544,7 @@ public class Choco{
 	 */
 	public static Constraint disjunctive(String name, TaskVariable[] tasks,IntegerVariable[] usages, IntegerVariable uppBound, String... options) {
 		RscData param = new RscData(name, tasks, usages, uppBound);
-		Variable[] vars = uppBound==null ? ArrayUtils.<Variable>append(tasks, usages) :   ArrayUtils.append(tasks, usages, new Variable[]{ uppBound});
+		Variable[] vars = uppBound==null ? ArrayUtils.<Variable>append(tasks, usages) :   ArrayUtils.append(tasks, usages, new IntegerVariable[]{ uppBound});
 		final ComponentConstraint c=new ComponentConstraint(ConstraintType.DISJUNCTIVE, param,vars);
 		c.addOptions(options);
 		return c;
@@ -2555,7 +2554,7 @@ public class Choco{
 	/**
 	 * Each task of the collection tasks1 should not overlap any task of the collection tasks2.
 	 * The model only provides a decomposition with reified precedences because the coloured cumulative is not available.
-	 * @see http://www.emn.fr/x-info/sdemasse/gccat/Cdisjoint_tasks.html#uid11633
+	 * @see {http://www.emn.fr/x-info/sdemasse/gccat/Cdisjoint_tasks.html#uid11633}
 	 */
 	public static Constraint[] disjoint(TaskVariable[] tasks1,TaskVariable[] tasks2) {
 		final Constraint[] decomp = new Constraint[tasks1.length * tasks2.length];
@@ -2603,7 +2602,7 @@ public class Choco{
 	 * </ul>  
 	 */
 	public static Constraint precedenceDisjoint(IntegerVariable v1, int dur1, IntegerVariable v2, int dur2, IntegerVariable bool) {
-		return new ComponentConstraint(ConstraintType.PRECEDENCE_DISJOINT, Boolean.FALSE, new Variable[]{v1, constant(dur1), v2, constant(dur2), bool});
+		return new ComponentConstraint(ConstraintType.PRECEDENCE_DISJOINT, Boolean.FALSE, new IntegerVariable[]{v1, constant(dur1), v2, constant(dur2), bool});
 	}
 
 
@@ -2668,7 +2667,7 @@ public class Choco{
 	 *
 	 */
 	public static Constraint precedenceReified(IntegerVariable x1, int k1, IntegerVariable x2, IntegerVariable b) {
-		return new ComponentConstraint(ConstraintType.PRECEDENCE_REIFIED, Boolean.FALSE, new Variable[]{x1, constant(k1), x2, ZERO, b});
+		return new ComponentConstraint(ConstraintType.PRECEDENCE_REIFIED, Boolean.FALSE, new IntegerVariable[]{x1, constant(k1), x2, ZERO, b});
 	}
 
 	/**
@@ -2690,7 +2689,7 @@ public class Choco{
 	 * </ul>  
 	 */
 	public static Constraint precedenceImplied(IntegerVariable x1, int k1, IntegerVariable x2, IntegerVariable b) {
-		return new ComponentConstraint(ConstraintType.PRECEDENCE_IMPLIED, Boolean.FALSE, new Variable[]{x1, constant(k1), x2, ZERO, b});
+		return new ComponentConstraint(ConstraintType.PRECEDENCE_IMPLIED, Boolean.FALSE, new IntegerVariable[]{x1, constant(k1), x2, ZERO, b});
 	}
 
 	/**
@@ -2802,8 +2801,7 @@ public class Choco{
 	 */
 	public static Constraint lexeq(IntegerVariable[] v1, IntegerVariable[] v2) {
 		int offset = v1.length;
-		IntegerVariable[] vars = ArrayUtils.append(v1, v2);
-		return new ComponentConstraint(ConstraintType.LEX, new Object[]{ConstraintType.LEXEQ, offset}, vars);
+		return new ComponentConstraint(ConstraintType.LEX, new Object[]{ConstraintType.LEXEQ, offset}, ArrayUtils.append(v1, v2));
 	}
 
 	/**
@@ -2816,8 +2814,7 @@ public class Choco{
 	 */
 	public static Constraint lex(IntegerVariable[] v1, IntegerVariable[] v2) {
 		int offset = v1.length;
-		IntegerVariable[] vars = ArrayUtils.append(v1, v2);
-		return new ComponentConstraint(ConstraintType.LEX, new Object[]{ConstraintType.LEX, offset}, vars);
+		return new ComponentConstraint(ConstraintType.LEX, new Object[]{ConstraintType.LEX, offset}, ArrayUtils.append(v1, v2));
 	}
 
 
@@ -2940,7 +2937,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint setInter(SetVariable sv1, SetVariable sv2, SetVariable inter) {
-		return new ComponentConstraint(ConstraintType.SETINTER, null, new Variable[]{sv1, sv2, inter});
+		return new ComponentConstraint(ConstraintType.SETINTER, null, new SetVariable[]{sv1, sv2, inter});
 	}
 
 	/**
@@ -2952,7 +2949,7 @@ public class Choco{
 	 * @return the union constraint
 	 */
 	public static Constraint setUnion(SetVariable sv1, SetVariable sv2, SetVariable union) {
-		return new ComponentConstraint(ConstraintType.SETUNION, null, new Variable[]{sv1, sv2, union});
+		return new ComponentConstraint(ConstraintType.SETUNION, null, new SetVariable[]{sv1, sv2, union});
 	}
 
 	//UNDERDEVELOPMENT
@@ -2969,7 +2966,7 @@ public class Choco{
 	 * @return a constraint that ensures sv1 == sv2
 	 */
 	public static Constraint eq(SetVariable sv1, SetVariable sv2) {
-		return new ComponentConstraint(ConstraintType.EQ, ConstraintType.EQ, new Variable[]{sv1, sv2});
+		return new ComponentConstraint(ConstraintType.EQ, ConstraintType.EQ, new SetVariable[]{sv1, sv2});
 	}
 
 	/**
@@ -3034,7 +3031,7 @@ public class Choco{
 	}
 
 	public static Constraint setDisjoint(SetVariable sv1, SetVariable sv2) {
-		return new ComponentConstraint(ConstraintType.SETDISJOINT, null, new Variable[]{sv1, sv2});
+		return new ComponentConstraint(ConstraintType.SETDISJOINT, null, new SetVariable[]{sv1, sv2});
 	}
 
 	// UNDERDEVELOPMENT
@@ -3160,7 +3157,7 @@ public class Choco{
 	public static Constraint neq(SetVariable sv1, SetVariable sv2) {
 		//return new GenericConstraint<Variable>(ConstraintType.NEQ, sv1, sv2);
 		return new ComponentConstraint(ConstraintType.NEQ,
-				ConstraintType.NEQ, new Variable[]{sv1, sv2});
+				ConstraintType.NEQ, new SetVariable[]{sv1, sv2});
 	}
 
 	/**
@@ -3173,7 +3170,7 @@ public class Choco{
 	public static Constraint isIncluded(SetVariable sv1, SetVariable sv2) {
 		//return new GenericConstraint<Variable>(ConstraintType.ISINCLUDED, sv, in);
 		return new ComponentConstraint(ConstraintType.ISINCLUDED,
-				null, new Variable[]{sv1, sv2});
+				null, new SetVariable[]{sv1, sv2});
 	}
 
 	/**
@@ -3186,7 +3183,7 @@ public class Choco{
 	public static Constraint isNotIncluded(SetVariable sv1, SetVariable sv2) {
 		//return new GenericConstraint<Variable>(ConstraintType.ISNOTINCLUDED, sv, in);
 		return new ComponentConstraint(ConstraintType.ISNOTINCLUDED,
-				null, new Variable[]{sv1, sv2});
+				null, new SetVariable[]{sv1, sv2});
 	}
 
 
@@ -3334,7 +3331,7 @@ public class Choco{
 	}
 
 	public static Constraint reifiedIntConstraint(IntegerVariable binVar, Constraint cst) {
-		Variable[] vars = ArrayUtils.append(new Variable[]{binVar}, cst.getVariables());
+		Variable[] vars = ArrayUtils.append(new IntegerVariable[]{binVar}, cst.getVariables());
 		return new ComponentConstraintWithSubConstraints(ConstraintType.REIFIEDINTCONSTRAINT, vars, null, cst);
 	}
 

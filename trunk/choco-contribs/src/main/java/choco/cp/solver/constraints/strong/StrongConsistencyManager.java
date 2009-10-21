@@ -22,10 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.strong;
 
+import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.ConstraintManager;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
@@ -43,7 +43,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class StrongConsistencyManager implements ConstraintManager {
+public class StrongConsistencyManager extends IntConstraintManager {
 
     @Override
     public int[] getFavoriteDomains(HashSet<String> options) {
@@ -52,7 +52,7 @@ public class StrongConsistencyManager implements ConstraintManager {
     }
 
     @Override
-    public SConstraint makeConstraint(Solver solver, Variable[] variables,
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables,
             Object parameters, HashSet<String> options) {
         final Class<? extends AbstractStrongConsistency> scImplementation;
         final Constraint[] modelConstraints;
@@ -134,7 +134,7 @@ public class StrongConsistencyManager implements ConstraintManager {
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
     @Override
-    public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
         SConstraint c = makeConstraint(solver, variables, parameters, options);
         SConstraint opp = c.opposite();
         return new SConstraint[]{c, opp};

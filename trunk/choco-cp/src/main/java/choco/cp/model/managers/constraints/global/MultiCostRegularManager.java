@@ -25,12 +25,11 @@ package choco.cp.model.managers.constraints.global;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.multicostregular.MultiCostRegular;
-import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.model.variables.Variable;
-import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashSet;
 
@@ -44,7 +43,7 @@ import java.util.HashSet;
 public class MultiCostRegularManager extends IntConstraintManager
 {
 
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options)
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options)
     {
         if (solver instanceof CPSolver && parameters instanceof Object[])
         {

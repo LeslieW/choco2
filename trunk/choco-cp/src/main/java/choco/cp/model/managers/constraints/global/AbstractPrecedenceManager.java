@@ -1,8 +1,6 @@
 package choco.cp.model.managers.constraints.global;
 
-import java.util.HashSet;
-
-import choco.cp.model.managers.IntConstraintManager;
+import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -13,7 +11,9 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
-public abstract class AbstractPrecedenceManager extends IntConstraintManager {
+import java.util.HashSet;
+
+public abstract class AbstractPrecedenceManager extends MixedConstraintManager {
 
 	
 	protected abstract SConstraint makeIntConstraintB0(CPSolver s, IntDomainVar x1, int k1, IntDomainVar x2, int k2);

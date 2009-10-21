@@ -42,7 +42,7 @@ import java.util.HashSet;
  * Date: 11 août 2008
  * Time: 13:00:17
  */
-public class BooleanManager implements ConstraintManager {
+public class BooleanManager extends ConstraintManager<Variable> {
 
     /**
      * Build a constraint for the given solver and "model variables"

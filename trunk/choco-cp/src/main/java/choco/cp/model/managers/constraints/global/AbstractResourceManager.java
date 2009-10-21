@@ -22,16 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
-import static choco.kernel.common.util.tools.VariableUtils.getIntVar;
-import static choco.kernel.common.util.tools.VariableUtils.getTaskVar;
-
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.logging.Level;
-
-import choco.cp.model.managers.IntConstraintManager;
+import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
+import static choco.kernel.common.util.tools.VariableUtils.getIntVar;
+import static choco.kernel.common.util.tools.VariableUtils.getTaskVar;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -40,13 +35,17 @@ import choco.kernel.solver.constraints.global.scheduling.RscData;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.logging.Level;
+
 
 /**
  * @author Arnaud Malapert</br> 
  * @since 27 janv. 2009 version 2.0.0</br>
  * @version 2.0.3</br>
  */
-public abstract class AbstractResourceManager extends IntConstraintManager {
+public abstract class AbstractResourceManager extends MixedConstraintManager {
 
 
 
@@ -105,7 +104,7 @@ public abstract class AbstractResourceManager extends IntConstraintManager {
 		 makeGlobalConstraint(solver, variables, rdata, options);
 	}
 
-	private final IntDomainVar getUppBound(CPSolver s, RscData p) {
+	private IntDomainVar getUppBound(CPSolver s, RscData p) {
 		return  p.getUppBound() == null ? s.getSchedulerConfiguration().createMakespan(s) : s.getVar( p.getUppBound());
 	}
 

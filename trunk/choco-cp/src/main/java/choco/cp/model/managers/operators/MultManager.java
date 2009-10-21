@@ -29,9 +29,9 @@ import choco.cp.solver.constraints.real.exp.RealMult;
 import choco.cp.solver.constraints.reified.leaves.arithm.MultNode;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ExpressionManager;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.real.RealExpressionVariable;
+import choco.kernel.model.variables.real.RealVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.real.RealExp;
@@ -54,7 +54,7 @@ public class MultManager extends RealConstraintManager implements ExpressionMana
      * @return
      */
     @Override
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, RealVariable[] variables, Object parameters, HashSet<String> options) {
         return null;
     }
 

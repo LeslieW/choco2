@@ -30,7 +30,6 @@ import choco.cp.solver.constraints.integer.channeling.BooleanChanneling;
 import choco.kernel.model.constraints.ConstraintType;
 import static choco.kernel.model.constraints.ConstraintType.CHANNELING;
 import static choco.kernel.model.constraints.ConstraintType.INVERSECHANNELING;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -57,14 +56,14 @@ import java.util.HashSet;
 public class ChannelingManager extends IntConstraintManager {
 
 
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
         if(solver instanceof CPSolver){
             if(parameters instanceof ConstraintType){
                 ConstraintType type = (ConstraintType)parameters;
                 IntDomainVar[] var;
                 if(CHANNELING.equals(type)){
-                    IntDomainVar yij = solver.getVar((IntegerVariable)variables[0]);
-                    IntDomainVar xi = solver.getVar((IntegerVariable)variables[1]);
+                    IntDomainVar yij = solver.getVar(variables[0]);
+                    IntDomainVar xi = solver.getVar(variables[1]);
                     int j = ((IntegerConstantVariable)variables[2]).getValue();
                     IntDomainVar boolv, intv;
                     if ((yij.getInf() >= 0) && (yij.getSup() <= 1)) {

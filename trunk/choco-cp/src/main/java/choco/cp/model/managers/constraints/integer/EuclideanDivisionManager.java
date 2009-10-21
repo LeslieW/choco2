@@ -26,7 +26,6 @@ import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.EuclideanDivisionXYZ;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -57,7 +56,7 @@ import java.util.HashSet;
  */
 public class EuclideanDivisionManager extends IntConstraintManager {
 
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
         if(solver instanceof CPSolver){
             IntDomainVar[] vs = solver.getVar((IntegerVariable[]) variables);
             return new EuclideanDivisionXYZ(vs[0],vs[1],vs[2]);

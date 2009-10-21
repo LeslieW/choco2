@@ -27,7 +27,6 @@ import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.TimesXYZ;
 import choco.cp.solver.constraints.integer.bool.BoolTimesXYZ;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -51,7 +50,7 @@ import java.util.HashSet;
  */
 public class TimesManager extends IntConstraintManager {
 
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
         if(solver instanceof CPSolver){
             IntDomainVar[] vs = solver.getVar((IntegerVariable[]) variables);
 

@@ -22,21 +22,19 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.reified.leaves.ConstraintLeaf;
-import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintManager;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
+import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /*
  * Created by IntelliJ IDEA.
@@ -45,7 +43,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Since : Choco 2.0.0
  *
  */
-public abstract class IntConstraintManager implements ConstraintManager {
+public abstract class IntConstraintManager extends ConstraintManager<IntegerVariable> {
 
 
     /**
@@ -57,35 +55,8 @@ public abstract class IntConstraintManager implements ConstraintManager {
         return getACFavoriteIntDomains();
     }
 
-    protected final SConstraint fail() {
-    	return fail("?");
-    }
-    
-    protected final SConstraint fail(String cname) {
-    	LOGGER.severe("Could not found an implementation of "+cname+".");
-    	ChocoLogging.flushLogs();
-    	return null;
-    }
-    
-    protected int[] getACFavoriteIntDomains() {
-        return new int[]{IntDomainVar.BITSET,
-                IntDomainVar.LINKEDLIST,
-                IntDomainVar.BIPARTITELIST,
-                IntDomainVar.BINARYTREE,
-                IntDomainVar.BOUNDS,
-        };
-    }
 
-    protected int[] getBCFavoriteIntDomains() {
-        return new int[]{IntDomainVar.BOUNDS,
-                IntDomainVar.BINARYTREE,
-                IntDomainVar.BITSET,
-                IntDomainVar.BIPARTITELIST,
-                IntDomainVar.LINKEDLIST,
-        };
-    }
-
-    public final static void readSetting(Set<String> source, Set<SettingType> dest, SettingType setting) {
+    public static void readSetting(Set<String> source, Set<SettingType> dest, SettingType setting) {
 		if(source.contains(setting.getOptionName()) ) {dest.add(setting);}
 	}
 
@@ -111,7 +82,7 @@ public abstract class IntConstraintManager implements ConstraintManager {
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
     @Override
-    public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
         SConstraint c = makeConstraint(solver, variables, parameters, options);
         SConstraint opp = c.opposite();
         return new SConstraint[]{c, opp};

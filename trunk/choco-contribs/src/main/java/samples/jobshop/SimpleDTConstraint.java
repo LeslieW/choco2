@@ -1,11 +1,8 @@
 package samples.jobshop;
 
-import java.util.HashSet;
-
+import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.constraints.strong.ISpecializedConstraint;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.ConstraintManager;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -14,6 +11,8 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.HashSet;
 
 public class SimpleDTConstraint extends AbstractBinIntSConstraint implements
         ISpecializedConstraint {
@@ -95,7 +94,7 @@ public class SimpleDTConstraint extends AbstractBinIntSConstraint implements
 //        }
 //    }
 
-    public static class SimpleDTConstraintManager implements ConstraintManager {
+    public static class SimpleDTConstraintManager extends IntConstraintManager {
 
         @Override
         public int[] getFavoriteDomains(HashSet<String> options) {
@@ -103,7 +102,7 @@ public class SimpleDTConstraint extends AbstractBinIntSConstraint implements
         }
 
         @Override
-        public SConstraint makeConstraint(Solver solver, Variable[] variables,
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables,
                 Object parameters, HashSet<String> options) {
             final int[] durations = (int[]) parameters;
             final IntDomainVar[] sv = new IntDomainVar[variables.length];
@@ -124,7 +123,7 @@ public class SimpleDTConstraint extends AbstractBinIntSConstraint implements
          * @return array of 2 SConstraint object, the constraint and its opposite
          */
         @Override
-        public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+        public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
             SConstraint c = makeConstraint(solver, variables, parameters, options);
             SConstraint opp = c.opposite();
             return new SConstraint[]{c, opp};

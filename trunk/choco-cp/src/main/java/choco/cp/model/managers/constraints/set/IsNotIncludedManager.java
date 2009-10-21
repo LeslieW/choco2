@@ -26,7 +26,6 @@ import choco.Choco;
 import choco.cp.model.managers.SetConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.set.IsNotIncluded;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -48,9 +47,9 @@ import java.util.HashSet;
  * A manager to build new IsNotIncluded constraint
  */
 public class IsNotIncludedManager extends SetConstraintManager {
-  public SConstraint makeConstraint(Solver solver, Variable[] vars, Object parameters, HashSet<String> options) {
+  public SConstraint makeConstraint(Solver solver, SetVariable[] vars, Object parameters, HashSet<String> options) {
     if (solver instanceof CPSolver) {
-      return new IsNotIncluded(solver.getVar((SetVariable)vars[0]), solver.getVar((SetVariable)vars[1]));
+      return new IsNotIncluded(solver.getVar(vars[0]), solver.getVar(vars[1]));
     }
     if (Choco.DEBUG) {
       LOGGER.severe("Could not found an implementation of isnotincluded !");

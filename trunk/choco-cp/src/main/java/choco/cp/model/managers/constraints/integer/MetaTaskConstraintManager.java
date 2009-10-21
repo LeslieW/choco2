@@ -4,7 +4,7 @@
 package choco.cp.model.managers.constraints.integer;
 
 import choco.Choco;
-import choco.cp.model.managers.IntConstraintManager;
+import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
@@ -18,7 +18,7 @@ import java.util.HashSet;
  * @since 28 janv. 2009 version 2.0.3</br>
  * @version 2.0.3</br>
  */
-public class MetaTaskConstraintManager extends IntConstraintManager {
+public class MetaTaskConstraintManager extends MixedConstraintManager {
 
 	/**
 	 * @see choco.kernel.model.constraints.ConstraintManager#makeConstraint(choco.kernel.solver.Solver, choco.kernel.model.variables.Variable[], java.lang.Object, java.util.HashSet)

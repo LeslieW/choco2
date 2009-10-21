@@ -28,7 +28,6 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.Absolute;
 import choco.cp.solver.constraints.reified.leaves.arithm.AbsNode;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -54,10 +53,10 @@ public class AbsoluteManager extends IntConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
         if(solver instanceof CPSolver){
             if(parameters == null){
-                return new Absolute(solver.getVar((IntegerVariable)variables[0]), solver.getVar((IntegerVariable)variables[1]));
+                return new Absolute(solver.getVar(variables[0]), solver.getVar(variables[1]));
             }
         }
 

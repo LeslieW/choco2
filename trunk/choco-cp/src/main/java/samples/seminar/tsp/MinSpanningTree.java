@@ -26,7 +26,6 @@ import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateInt;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -43,11 +42,11 @@ import java.util.Set;
 public class MinSpanningTree extends AbstractLargeIntSConstraint {
 
     public static class MinSpanningTreeManager extends IntConstraintManager {
-        public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
             if(solver instanceof CPSolver){
                 Object[] p = (Object[]) parameters;
                 int[][] dist = (int[][])(p[0]);
-                IntDomainVar[] vars = solver.getVar((IntegerVariable[])variables);
+                IntDomainVar[] vars = solver.getVar(variables);
                 return new MinSpanningTree(vars, dist);
             }
 

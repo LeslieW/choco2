@@ -23,7 +23,6 @@
 package parser;
 
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -158,7 +157,7 @@ public class ResolutionTest {
     public void aTest() {
         XmlModel xm = new XmlModel();
         args[1] = args[1] + "/protein.xml";
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
+//        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
         try {
             xm.generate(args);
         } catch (Exception e) {

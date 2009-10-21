@@ -25,7 +25,6 @@ package choco.cp.solver.constraints.global.costregular;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -991,7 +990,7 @@ public class RegularI extends AbstractLargeIntSConstraint
     public static class RegularIManager extends IntConstraintManager
     {
 
-        public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
             if (parameters instanceof Automaton)
             {
                 Automaton auto = (Automaton) parameters;

@@ -34,7 +34,6 @@ import choco.cp.solver.constraints.reified.leaves.bool.AndNode;
 import choco.cp.solver.constraints.reified.leaves.bool.EqNode;
 import choco.cp.solver.constraints.reified.leaves.bool.NeqNode;
 import choco.cp.solver.constraints.reified.leaves.bool.OrNode;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -63,12 +62,12 @@ public class ElementManager extends IntConstraintManager{
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
         if(solver instanceof CPSolver){
             if(parameters instanceof Integer){
                 int offset = (Integer)parameters;
-                IntDomainVar index = solver.getVar((IntegerVariable)variables[variables.length-2]);
-                IntDomainVar val = solver.getVar((IntegerVariable)variables[variables.length-1]);
+                IntDomainVar index = solver.getVar(variables[variables.length-2]);
+                IntDomainVar val = solver.getVar(variables[variables.length-1]);
                 // BUG 2860512 : check every type is mandatory
                 int[] values = new int[variables.length-2];
                 boolean areConstants = true;
@@ -91,9 +90,9 @@ public class ElementManager extends IntConstraintManager{
                 }
             }else if(parameters instanceof int[][]){
                 int[][] varArray = (int[][])parameters;
-                IntDomainVar index = solver.getVar((IntegerVariable)variables[0]);
-                IntDomainVar index2 = solver.getVar((IntegerVariable)variables[1]);
-                IntDomainVar val = solver.getVar((IntegerVariable)variables[2]);
+                IntDomainVar index = solver.getVar(variables[0]);
+                IntDomainVar index2 = solver.getVar(variables[1]);
+                IntDomainVar val = solver.getVar(variables[2]);
                 return new Element2D(index, index2, val, varArray);
             }
         }
@@ -114,14 +113,14 @@ public class ElementManager extends IntConstraintManager{
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
     @Override
-    public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
 
         SConstraint[] cs = new SConstraint[2];
         if(solver instanceof CPSolver){
             if(parameters instanceof Integer){
                 int offset = (Integer)parameters;
                 IntDomainVar Y;
-                final IntDomainVar X = solver.getVar((IntegerVariable)variables[variables.length-2]);
+                final IntDomainVar X = solver.getVar(variables[variables.length-2]);
                 // Introduces a intermediary variable
                 if(X.hasBooleanDomain()){
                     Y = solver.createBooleanVar("Y_opp");
@@ -131,7 +130,7 @@ public class ElementManager extends IntConstraintManager{
                     Y = solver.createBoundIntVar("Y_opp", X.getInf(), X.getSup());
                 }
 
-                IntDomainVar val = solver.getVar((IntegerVariable)variables[variables.length-1]);
+                IntDomainVar val = solver.getVar(variables[variables.length-1]);
                 if(variables[0] instanceof IntegerConstantVariable){
                     int[] values = new int[variables.length-2];
                     for(int i = 0; i < variables.length-2; i++){
@@ -152,8 +151,8 @@ public class ElementManager extends IntConstraintManager{
             }else if(parameters instanceof int[][]){
                 IntDomainVar Y1, Y2;
                 int[][] varArray = (int[][])parameters;
-                final IntDomainVar X1 = solver.getVar((IntegerVariable)variables[0]);
-                final IntDomainVar X2 = solver.getVar((IntegerVariable)variables[1]);
+                final IntDomainVar X1 = solver.getVar(variables[0]);
+                final IntDomainVar X2 = solver.getVar(variables[1]);
                 if(X1.hasBooleanDomain()){
                     Y1 = solver.createBooleanVar("Y1_opp");
                 }else if(X1.hasEnumeratedDomain()){
@@ -169,7 +168,7 @@ public class ElementManager extends IntConstraintManager{
                     Y2 = solver.createBoundIntVar("Y2_opp", X2.getInf(), X2.getSup());
                 }
 
-                IntDomainVar val = solver.getVar((IntegerVariable)variables[2]);
+                IntDomainVar val = solver.getVar(variables[2]);
                 solver.post(new Element2D(Y1, Y2, val, varArray));
                 cs[0] = new ExpressionSConstraint(
                         new AndNode(new EqNode(new INode[]{new VariableLeaf(Y1), new VariableLeaf(X1)}),

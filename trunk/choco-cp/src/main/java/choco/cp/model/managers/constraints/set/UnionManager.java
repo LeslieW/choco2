@@ -26,7 +26,6 @@ import choco.Choco;
 import choco.cp.model.managers.SetConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.set.SetUnion;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -50,11 +49,11 @@ public class UnionManager extends SetConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, SetVariable[] variables, Object parameters, HashSet<String> options) {
 
         if(solver instanceof CPSolver){
             if(parameters == null){
-                return new SetUnion(solver.getVar((SetVariable)variables[0]), solver.getVar((SetVariable)variables[1]), solver.getVar((SetVariable)variables[2]));
+                return new SetUnion(solver.getVar(variables[0]), solver.getVar(variables[1]), solver.getVar(variables[2]));
             }
         }
         

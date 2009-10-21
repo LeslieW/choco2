@@ -27,7 +27,6 @@ import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.Occurrence;
 import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -56,12 +55,12 @@ public class OccurrenceManager extends IntConstraintManager {
     private static final int MIN = -1;
     private static final int MAX = 1;
 
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
         if(solver instanceof CPSolver){
             if(parameters instanceof Integer){
                 int type = (Integer)parameters;
                 IntegerVariable[] vars = new IntegerVariable[variables.length-1];
-                vars[vars.length-1] = (IntegerVariable)variables[1];
+                vars[vars.length-1] = variables[1];
                 //noinspection SuspiciousSystemArraycopy
                 System.arraycopy(variables, 2, vars, 0, vars.length-1);
                 if(type == NOR){
@@ -91,13 +90,13 @@ public class OccurrenceManager extends IntConstraintManager {
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
     @Override
-    public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
         SConstraint[] cs = new SConstraint[2];
         if (solver instanceof CPSolver) {
 			if(parameters instanceof Integer){
                 int type = (Integer)parameters;
                 IntDomainVar Y;
-                final IntDomainVar X = solver.getVar((IntegerVariable)variables[1]);
+                final IntDomainVar X = solver.getVar(variables[1]);
                 // Introduces a intermediary variable
                 if(X.hasBooleanDomain()){
                     Y = solver.createBooleanVar("Y_opp");

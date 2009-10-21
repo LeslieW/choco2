@@ -23,7 +23,7 @@
 package choco.cp.model.managers.constraints.integer;
 
 import choco.Choco;
-import choco.cp.model.managers.IntConstraintManager;
+import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.MaxOfAList;
 import choco.cp.solver.constraints.integer.MaxXYZ;
@@ -35,10 +35,9 @@ import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.variables.Var;
-import choco.kernel.solver.variables.set.SetVar;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.set.SetVar;
 
 import java.util.HashSet;
 
@@ -46,7 +45,7 @@ import java.util.HashSet;
 /**
  * A manager to build min or max constraints
  */
-public class MinMaxManager extends IntConstraintManager {
+public class MinMaxManager extends MixedConstraintManager {
 
 
 
