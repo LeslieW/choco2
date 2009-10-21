@@ -1,0 +1,256 @@
+/* ************************************************
+ *           _       _                            *
+ *          |  °(..)  |                           *
+ *          |_  J||L _|        CHOCO solver       *
+ *                                                *
+ *     Choco is a java library for constraint     *
+ *     satisfaction problems (CSP), constraint    *
+ *     programming (CP) and explanation-based     *
+ *     constraint solving (e-CP). It is built     *
+ *     on a event-based propagation mechanism     *
+ *     with backtrackable structures.             *
+ *                                                *
+ *     Choco is an open-source software,          *
+ *     distributed under a BSD licence            *
+ *     and hosted by sourceforge.net              *
+ *                                                *
+ *     + website : http://choco.emn.fr            *
+ *     + support : choco@emn.fr                   *
+ *                                                *
+ *     Copyright (C) F. Laburthe,                 *
+ *                   N. Jussien    1999-2009      *
+ **************************************************/
+package samples.jobshop;
+
+import choco.Choco;
+import static choco.Choco.*;
+import choco.cp.model.CPModel;
+import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
+import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.model.Model;
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.variables.VariableType;
+import choco.kernel.model.variables.integer.IntegerExpressionVariable;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.model.variables.scheduling.TaskVariable;
+import choco.kernel.solver.Solver;
+
+import java.io.IOException;
+import java.util.Random;
+
+/*
+* User : charles
+* Mail : cprudhom(a)emn.fr
+* Date : 20 oct. 2009
+* Since : Choco 2.1.1
+* Update : Choco 2.1.1
+*/
+public class TaskPlanif {
+    private static final int NBPERIODES = 900;
+
+    private static final int NBTACHES = 3;
+
+    IntegerVariable pipeau = makeIntVar("debutTache", 0, NBPERIODES, new String[0]);
+
+    public class myIntegerVariable
+            extends IntegerVariable {
+
+        /**
+         * @param name
+         * @param type
+         * @param binf
+         * @param bsup
+         */
+        public myIntegerVariable(String name, VariableType type, int binf, int bsup) {
+            super(name, type, binf, bsup);
+            // TODO Auto-generated constructor stub
+        }
+
+        public Constraint contraintes() {
+            System.out.println("contraintes neq exécutée ...");
+            // return Choco.neq( pipeau, pipeau );
+            return TRUE;
+
+
+        }
+
+    }
+
+    public static void main(String[] args) {
+        try {
+            System.out.println(new TaskPlanif().demo());
+        }
+        catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public String demo() throws IOException {
+        Random r = new Random(10);
+
+
+        // 1- Create the model
+        Model m = new CPModel();
+        //
+
+          Solver s = new CPSolver();
+//        Solver s = new PreProcessCPSolver();
+//         2- declaration of variables
+        // public static IntegerVariable[] makeIntVarArray(String name, int dim, int lowB, int uppB, String... options)
+        // {
+
+        int iTache, iPeriode;
+
+        // La date de fin d'une tâche, si elle commenece à "t" allant de 0 à NBPERIODES
+        // à une valeur definie dans FinMinTache
+        // IntegerConstantVariable[][] FinMinTache = new IntegerConstantVariable[NBTACHES][NBPERIODES];
+        int[][] FinMinTache = new int[NBTACHES][NBPERIODES];
+        System.out.println("");
+        for (iTache = 0; iTache < NBTACHES; iTache++) {
+            System.out.println("Valeur de duree pour la tache de numéro " + iTache);
+            for (iPeriode = 0; iPeriode < NBPERIODES; iPeriode++) {
+                // FinMinTache[iTache][iPeriode] = new IntegerConstantVariable( ( ( iTache + 1 ) * iPeriode ) % 10 );
+                FinMinTache[iTache][iPeriode] = (int) (iPeriode + r.nextDouble()* 10 + 1);
+
+                // FinMinTache[iTache][iPeriode] = ( ( ( iTache + 1 ) * iPeriode ) % 10 ) + 1;
+                System.out.print(FinMinTache[iTache][iPeriode] + ",");
+
+            }
+            System.out.println("");
+
+        }
+
+        IntegerVariable[] debutTache = makeIntVarArray("debutTache", NBTACHES, 0, NBPERIODES);
+        IntegerVariable[] dureeTache = makeIntVarArray("dureeTache", NBTACHES, 0, NBPERIODES);
+        IntegerVariable[] finTache = makeIntVarArray("finTache", NBTACHES, 0, NBPERIODES);
+
+        TaskVariable[] tasks = makeTaskVarArray("t", debutTache, finTache, dureeTache, "cp:decision");
+
+        IntegerVariable[] FinMinTachePeriodeCourante =
+                makeIntVarArray("FinMinTachePeriodeCourante", NBTACHES, 0, NBPERIODES);
+        m.addVariables("cp:no_decision", FinMinTachePeriodeCourante);
+
+//        IntegerVariable[] DureeEffectiveTachePeriodeCourante =
+//                Choco.makeIntVarArray("DureeEffectiveTachePeriodeCourante", NBTACHES, 0, NBPERIODES);
+//        m.addVariables("cp:no_decision", DureeEffectiveTachePeriodeCourante);
+
+        for (iTache = 0; iTache < NBTACHES; iTache++) {
+
+            m.addConstraint(nth(debutTache[iTache], FinMinTache[iTache], FinMinTachePeriodeCourante[iTache]));
+
+            m.addConstraint(Choco.geq(finTache[iTache], FinMinTachePeriodeCourante[iTache]));
+//            m.addConstraint(Choco.eq(DureeEffectiveTachePeriodeCourante[iTache], Choco.minus(finTache[iTache],
+//                    debutTache[iTache])));
+        }
+
+        // dans ce tableau, on s'indexe donc, pour une tache donné, avec la durée estimée, et la valeur
+        // est la date de début prévue
+
+        // = Choco.makeIntVarArray( "debutTache", NBTACHES, 0, NBPERIODES, new String[0] );
+
+
+        for (iTache = 0; iTache < NBTACHES; iTache++) {
+
+            if (iTache != (NBTACHES - 1))
+//                m.addConstraint(gt(debutTache[iTache], finTache[iTache + 1]));
+            m.addConstraint(startsAfterEnd(tasks[iTache], tasks[iTache+1]));
+
+            for (iPeriode = 0; iPeriode < NBPERIODES; iPeriode++) {
+                // Avec la contrainte suivante commentée, plantage "IndexoutOfBounds 140" (14à =
+                // 2*NBPERIODES) ?????????????????
+
+                // m.addConstraint( Choco.geq( finTache[iTache], Choco.sum( new IntegerVariable[] {
+                // Choco.constant( iPeriode ), debutTacheIndexParCharge[iTache][iPeriode] } ) ) );
+
+            }
+        }
+
+        IntegerVariable objectiveMission = makeIntVar("objectiveMission", 0, NBPERIODES, "cp:bound"); // OK;
+
+        IntegerExpressionVariable objectiveMissionExpression;
+
+        IntegerVariable[] vars = ArrayUtils.append(debutTache, finTache);
+        int[] coeffs = new int[]{-1,-1,-1,1,1,1};
+
+        int n = 1;
+        switch (n) {
+
+            case 1:
+                // O1 minimiser la durée totale du projet:
+                objectiveMissionExpression = minus(max(finTache), min(debutTache));
+                break;
+            case 2:
+                // O2 : minimiser la date de fin de mission:
+                objectiveMissionExpression = max(finTache);
+                break;
+            case 3:
+                // O3 : minimiser la somme des charges effectuées :
+//                objectiveMissionExpression = Choco.sum(DureeEffectiveTachePeriodeCourante);
+//                objectiveMissionExpression = minus(sum(finTache), sum(debutTache));
+                objectiveMissionExpression = scalar(coeffs, vars);
+                break;
+            default:
+                objectiveMissionExpression = min(debutTache);
+                break;
+        }
+
+        // to force decomposition on that constraint
+        m.addConstraint(/*"cp:decomp", */eq(objectiveMissionExpression, objectiveMission));
+
+        m.addVariables("cp:objective", objectiveMission);
+
+       // 5- read the model and solve it
+        s.read(m);
+
+        System.out.println("Lecture MODEL  CHOCO .. ");
+
+        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+        System.out.println("Lancement Solver CHOCO ............ ");
+        s.setTimeLimit(120 * 80000); // 2*80 secondes
+        s.monitorTimeLimit(true);
+        s.minimize(false);
+
+
+        if (s.isFeasible()) {
+            System.out.println("Nb_sol  : " + s.getNbSolutions() + "timecount" + s.getTimeCount());
+            // Commentaire : il
+            // s'agit ici du nombre total de solution trouvées. cependant, comem on a fixé un objectif
+            // (maximize ou minimize), il n'een reste plus qu'une seule dans le parcours des
+            // solution qui suit. Quand on ne fixe pas d'objectif, le parcour suivant donne autant de
+            // solutions que getNbSolutions
+            // Le flushLogs, avec vebosity "SOLUTION" permet d'anamyser toutes les solutions rencontrées
+            //
+            do {
+
+                System.out.println("Nb_sol  : " + s.getNbSolutions());
+
+
+                for (iTache = 0; iTache < NBTACHES; iTache++) {
+                    System.out.println("debutTache [" + iTache + "] = " + s.getVar(debutTache[iTache]).getVal());
+                    System.out.println("finTache [" + iTache + "] = " + s.getVar(finTache[iTache]).getVal());
+
+                    // System.out.println( "debutTache1=" + s.getVar( debutTache1 ).getVal() );
+
+
+                }
+                System.out.println("objectiveMission = " + +s.getVar(objectiveMission).getVal());
+
+            }
+
+            while (s.nextSolution());
+        } else {
+            System.out.println("Pas de solution !!!!!! ");
+            // System.out.println( "FinMinTache = " + +s.getVar( FinMinTache[0][5] ).getVal() );
+        }
+        // 6- Print the number of solutions found
+        System.out.println("Nb_sol 2 : " + s.getNbSolutions());
+
+
+        return "end";
+    }
+
+
+}
