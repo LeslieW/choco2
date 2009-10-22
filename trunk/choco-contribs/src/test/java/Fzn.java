@@ -38,7 +38,9 @@ import org.antlr.runtime.RecognitionException;
 import parser.chocogen.mzn.FlatZincLexer;
 import parser.chocogen.mzn.FlatZincParser;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 
@@ -47,9 +49,26 @@ public class Fzn {
     static Logger LOGGER = ChocoLogging.getParserLogger();
 
     public static void main(String[] args) throws IOException {
-//        CharStream cs = new ANTLRFileStream("/media/Documents/c-choco/minizinc/antlr/fzn/queens04.fzn");
-//        CharStream cs = new ANTLRFileStream("/media/Documents/c-choco/minizinc/antlr/fzn/latin-squares-lp03.fzn");
-        CharStream cs = new ANTLRFileStream("/media/Documents/c-choco/minizinc/antlr/fzn/bibd03_03_01.fzn");
+        args = new String[]{"/home/charles/Choco/minizinc/fzn/"};
+        scan(new File(args[0]));
+    }
+
+    private static void scan(File dir) throws IOException {
+        if(dir.isFile()){
+            flatzincIt(dir.getAbsolutePath());
+        }else{
+            File[] ts = dir.listFiles();
+            Arrays.sort(ts);
+            for(File sd : ts){
+                scan(sd);
+            }
+        }
+    }
+
+    private static void flatzincIt(String filename) throws IOException {
+
+        LOGGER.info(filename);
+        CharStream cs = new ANTLRFileStream(filename);
 
         FlatZincLexer fznLex = new FlatZincLexer(cs);
 
@@ -62,6 +81,7 @@ public class Fzn {
         } catch (RecognitionException e) {
             e.printStackTrace();
         }
+        LOGGER.info("done");
     }
 
 }
