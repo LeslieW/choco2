@@ -57,7 +57,9 @@ package parser.chocogen.mzn;
 import java.util.HashMap;
 import choco.cp.model.CPModel;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
-import static choco.Choco.*;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.model.variables.real.RealVariable;
+import choco.kernel.model.variables.set.SetVariable;
 }
 
 @lexer::header{
@@ -75,7 +77,8 @@ private static final int OFFSET = 1;
 model			
 	:	
 		{
-		FlatZincHelper.init(memory);
+		FZVariableBuilder.init(memory);
+		FZConstraintBuilder.init(memory, model);
 		}
 		(pred_decl_item SEMICOLON)* 
 		(var_decl_item SEMICOLON)* 
@@ -93,27 +96,27 @@ var_decl_item
 	:	VAR natet=non_array_ti_expr_tail COLON name=ident_anns (EQUAL nafe=non_array_flat_expr)?
 		{
 		// CREATE A VARIABLE (there is 'VAR' keyword see 'Specifications of FlatZinc, §5.4
-		FlatZincHelper.buildVar(natet, name, nafe);
+		FZVariableBuilder.buildVar(natet, name, nafe);
 		}
 		| natet=non_array_ti_expr_tail COLON name=ident_anns EQUAL nafe=non_array_flat_expr
 		{
 		// CREATE A PARAMETER (there is not 'VAR' keyword
-		FlatZincHelper.buildPar(natet, name, nafe);
+		FZVariableBuilder.buildPar(natet, name, nafe);
 		}
 		| ARRAY LBOX f=INT_LITERAL DOTDOT t=INT_LITERAL RBOX OF adt=array_decl_tail
 		{
 		// CREATE AN ARRAY OF VARIABLES/PARAMETERS
-		FlatZincHelper.buildArray(Integer.valueOf(f.getText()), Integer.valueOf(t.getText()), adt);		
+		FZVariableBuilder.buildArray(Integer.valueOf(f.getText()), Integer.valueOf(t.getText()), adt);		
 		}
 		;
-array_decl_tail	returns [FlatZincHelper.ArrayDecl adt]	
+array_decl_tail	returns [FZVariableBuilder.ArrayDecl adt]	
 	:	natet=non_array_ti_expr_tail COLON name=ident_anns EQUAL al=array_literal
 		{
-		$adt=FlatZincHelper.build(natet, name, al,true);
+		$adt=FZVariableBuilder.build(natet, name, al,true);
 		}
 		| VAR natet=non_array_ti_expr_tail COLON name=ident_anns ( EQUAL al=array_literal)?
 		{
-		$adt=FlatZincHelper.build(natet, name, al, false);
+		$adt=FZVariableBuilder.build(natet, name, al, false);
 		};
 ident_anns		returns [String value]
 	:	IDENT annotations 
@@ -122,13 +125,17 @@ ident_anns		returns [String value]
 		};
 constraint_item	
 	:	CONSTRAINT constraint_elem annotations;
-//		{model.addConstraint($constraint_elem.value);};
 constraint_elem	//returns[Constraint value]
-	:	IDENT LP flat_expr (COMA flat_expr)*RP
+	:	name=IDENT {List<FZVariableBuilder.ValType> list = new ArrayList<FZVariableBuilder.ValType>();}LP e1=flat_expr{list.add(e1);} (COMA e2=flat_expr{list.add(e2);})*RP
+		{
+		FZVariableBuilder.ValType[] arrays = new FZVariableBuilder.ValType[list.size()];
+	        list.toArray(arrays);
+		FZConstraintBuilder.build(name.getText(), arrays);
+		}
 		| variable_expr
 		{System.err.println("constraint_elem : not yet implemented");};
 solve_item	
-	:	{solver.read(model);}SOLVE annotations solve_kind;
+	:	{solver.read(model);}SOLVE annotations solve_kind{System.out.println(solver.pretty());};
 solve_kind			
 	:	SATISFY 		
 		{solver.solve();}
@@ -144,7 +151,7 @@ output_elem
 		| STRING_LITERAL;
 
 // TYPE-INST EXPRESSIONS TAILS
-non_array_ti_expr_tail	returns [FlatZincHelper.VarType vt]
+non_array_ti_expr_tail	returns [FZVariableBuilder.VarType vt]
 	:	sc=scalar_ti_expr_tail
 		{
 		$vt=sc;
@@ -155,12 +162,12 @@ non_array_ti_expr_tail	returns [FlatZincHelper.VarType vt]
 		}
 		;
 
-bool_ti_expr_tail	returns [FlatZincHelper.VarType vt]
+bool_ti_expr_tail	returns [FZVariableBuilder.VarType vt]
 	:	BOOL
 		{
-		$vt = FlatZincHelper.build(FlatZincHelper.EnumVar.bBool, null);
+		$vt = FZVariableBuilder.build(FZVariableBuilder.EnumVar.bBool, null);
 		};
-scalar_ti_expr_tail	returns  [FlatZincHelper.VarType vt]
+scalar_ti_expr_tail	returns  [FZVariableBuilder.VarType vt]
 	:	b=bool_ti_expr_tail
 		{
 		$vt = b;
@@ -174,40 +181,40 @@ scalar_ti_expr_tail	returns  [FlatZincHelper.VarType vt]
 		$vt=f;
 		}
 		;
-int_ti_expr_tail	returns [FlatZincHelper.VarType vt]
+int_ti_expr_tail	returns [FZVariableBuilder.VarType vt]
 	:	INT
 		{
-		$vt = FlatZincHelper.build(FlatZincHelper.EnumVar.iInt, null);
+		$vt = FZVariableBuilder.build(FZVariableBuilder.EnumVar.iInt, null);
 		}
 		| i1=INT_LITERAL DOTDOT i2=INT_LITERAL
 		{
 		int s=Integer.valueOf($i1.text);
 		int e=Integer.valueOf($i2.text);
-		$vt = FlatZincHelper.build(FlatZincHelper.EnumVar.iBounds, new int[]{s,e});
+		$vt = FZVariableBuilder.build(FZVariableBuilder.EnumVar.iBounds, new int[]{s,e});
 		}		
 		| {List<Integer> values = new ArrayList<Integer>();}LB e1=INT_LITERAL {values.add(Integer.valueOf($e1.text));}(COMA e2=INT_LITERAL{values.add(Integer.valueOf($e2.text));})* RB
 		{
-		$vt = FlatZincHelper.build(FlatZincHelper.EnumVar.iValues, values.toArray(new Integer[values.size()]));
+		$vt = FZVariableBuilder.build(FZVariableBuilder.EnumVar.iValues, values.toArray(new Integer[values.size()]));
 		};
-float_ti_expr_tail	returns [FlatZincHelper.VarType vt]
+float_ti_expr_tail	returns [FZVariableBuilder.VarType vt]
 	:	FLOAT
 		{
-		$vt = FlatZincHelper.build(FlatZincHelper.EnumVar.fFloat, null);
+		$vt = FZVariableBuilder.build(FZVariableBuilder.EnumVar.fFloat, null);
 		}
 		| f1=FLOAT_LITERAL DOTDOT f2=FLOAT_LITERAL
 		{
 		double s=Double.valueOf($f1.text);
 		double e=Double.valueOf($f2.text);
-		$vt = FlatZincHelper.build(FlatZincHelper.EnumVar.iBounds, new double[]{s,e});
+		$vt = FZVariableBuilder.build(FZVariableBuilder.EnumVar.iBounds, new double[]{s,e});
 		};
-set_ti_expr_tail	returns[FlatZincHelper.VarType vt]
+set_ti_expr_tail	returns[FZVariableBuilder.VarType vt]
 	:	SET OF so=scalar_ti_expr_tail
 		{
-		$vt = FlatZincHelper.build(FlatZincHelper.EnumVar.setOf, so);
+		$vt = FZVariableBuilder.build(FZVariableBuilder.EnumVar.setOf, so);
 		};
 
 // EXPRESSIONS
-non_array_flat_expr	returns [FlatZincHelper.ValType nafe]
+non_array_flat_expr	returns [FZVariableBuilder.ValType nafe]
 	:	sfe=scalar_flat_expr
 		{
 		$nafe=sfe;
@@ -216,10 +223,11 @@ non_array_flat_expr	returns [FlatZincHelper.ValType nafe]
 		{
 		$nafe=sl;
 		};
-scalar_flat_expr	returns [FlatZincHelper.ValType sfe]
+scalar_flat_expr	returns [FZVariableBuilder.ValType sfe]
 	:	 IDENT
 		{
-		$sfe=FlatZincHelper.build(FlatZincHelper.EnumVal.sString, $IDENT.text);
+		Object val = memory.get($IDENT.text);
+		$sfe=FZVariableBuilder.build(FZVariableBuilder.getType(val), val);
 		}
 		| aae=array_access_expr
 		{
@@ -227,58 +235,49 @@ scalar_flat_expr	returns [FlatZincHelper.ValType sfe]
 		}
 		| bl=bool_literal
 		{
-		$sfe=FlatZincHelper.build(FlatZincHelper.EnumVal.bBool, bl);
+		$sfe=FZVariableBuilder.build(FZVariableBuilder.EnumVal.bBool, bl);
 		}
 		| INT_LITERAL
 		{
-		$sfe=FlatZincHelper.build(FlatZincHelper.EnumVal.iInt, new Integer($INT_LITERAL.text));
+		$sfe=FZVariableBuilder.build(FZVariableBuilder.EnumVal.iInt, new Integer($INT_LITERAL.text));
 		}
 		| FLOAT_LITERAL
 		{
-		$sfe=FlatZincHelper.build(FlatZincHelper.EnumVal.fFloat, new Double($FLOAT_LITERAL.text));
+		$sfe=FZVariableBuilder.build(FZVariableBuilder.EnumVal.fFloat, new Double($FLOAT_LITERAL.text));
 		}
 		| STRING_LITERAL
 		{
-		$sfe=FlatZincHelper.build(FlatZincHelper.EnumVal.sString, $STRING_LITERAL.text);
+		$sfe=FZVariableBuilder.build(FZVariableBuilder.EnumVal.sString, $STRING_LITERAL.text);
 		};
-int_flat_expr		returns [FlatZincHelper.ValType ife]
+int_flat_expr		returns [FZVariableBuilder.ValType ife]
 	:	 aae=array_access_expr
 		{
 		$ife=aae;
 		}
 		|IDENT
 		{
-		$ife=FlatZincHelper.build(FlatZincHelper.EnumVal.sString, $IDENT.text);
+		$ife=FZVariableBuilder.build(FZVariableBuilder.EnumVal.sString, $IDENT.text);
 		}
 		| INT_LITERAL
 		{
-		$ife=FlatZincHelper.build(FlatZincHelper.EnumVal.iInt, $INT_LITERAL.text);
+		$ife=FZVariableBuilder.build(FZVariableBuilder.EnumVal.iInt, $INT_LITERAL.text);
 		};
-variable_expr		returns[FlatZincHelper.ValType ve]
+variable_expr		returns[FZVariableBuilder.ValType ve]
 	:	IDENT
 		{
-		$ve=FlatZincHelper.build(FlatZincHelper.EnumVal.sString, $IDENT.text);
+		$ve=FZVariableBuilder.build(FZVariableBuilder.EnumVal.sString, $IDENT.text);
 		}
 		| aae=array_access_expr
 		{
 		$ve=aae;
 		};
-array_access_expr	returns [FlatZincHelper.ValType aae]
+array_access_expr	returns [FZVariableBuilder.ValType aae]
 	:	IDENT LBOX i=int_index_expr RBOX
 		{
-		Object[] tab = (Object[])memory.get($IDENT.text);
-		Object val = tab[i-OFFSET];
-		FlatZincHelper.EnumVal type = null;
-		if(val instanceof Integer){
-		type=FlatZincHelper.EnumVal.iInt;
-		}else if(val instanceof Boolean){
-		type=FlatZincHelper.EnumVal.bBool;
-		}else if(val instanceof Double){
-		type=FlatZincHelper.EnumVal.fFloat;
-		}else if(val instanceof String){
-		type=FlatZincHelper.EnumVal.sString;		
-		}
-		$aae = FlatZincHelper.build(type, tab[i]);
+		// build name
+		String name = $IDENT.text+FZVariableBuilder.NAME_SEPARATOR+i;
+		Object val = memory.get(name);
+		$aae = FZVariableBuilder.build(FZVariableBuilder.getType(val), val);
 		};
 int_index_expr	returns [int value]
 	:	INT_LITERAL  
@@ -299,23 +298,23 @@ bool_literal		returns [boolean value]
 		$value = true;
 		}
 		;		
-set_literal		returns[FlatZincHelper.ValType sl]
-	:	LB {List<FlatZincHelper.ValType> list = new ArrayList<FlatZincHelper.ValType>();}(sfe1=scalar_flat_expr {list.add(sfe1);}(COMA sfe2=scalar_flat_expr{list.add(sfe2);})*)? RB
+set_literal		returns[FZVariableBuilder.ValType sl]
+	:	LB {List<FZVariableBuilder.ValType> list = new ArrayList<FZVariableBuilder.ValType>();}(sfe1=scalar_flat_expr {list.add(sfe1);}(COMA sfe2=scalar_flat_expr{list.add(sfe2);})*)? RB
 		{
-		FlatZincHelper.ValType[] array = new FlatZincHelper.ValType[list.size()];
+		FZVariableBuilder.ValType[] array = new FZVariableBuilder.ValType[list.size()];
 		list.toArray(array);
-		$sl=FlatZincHelper.build(FlatZincHelper.EnumVal.array, array);
+		$sl=FZVariableBuilder.build(FZVariableBuilder.EnumVal.array, array);
 		}
 		| i1=int_flat_expr DOTDOT i2=int_flat_expr
 		{
-		$sl=FlatZincHelper.build(FlatZincHelper.EnumVal.interval, new FlatZincHelper.ValType[]{i1,i2});
+		$sl=FZVariableBuilder.build(FZVariableBuilder.EnumVal.interval, new FZVariableBuilder.ValType[]{i1,i2});
 		};
-array_literal		returns [FlatZincHelper.ValType al]
-	:	LBOX {List<FlatZincHelper.ValType> list = new ArrayList<FlatZincHelper.ValType>();}(nafe1=non_array_flat_expr {list.add(nafe1);}(COMA nafe2=non_array_flat_expr {list.add(nafe2);})* )? RBOX
+array_literal		returns [FZVariableBuilder.ValType al]
+	:	LBOX {List<FZVariableBuilder.ValType> list = new ArrayList<FZVariableBuilder.ValType>();}(nafe1=non_array_flat_expr {list.add(nafe1);}(COMA nafe2=non_array_flat_expr {list.add(nafe2);})* )? RBOX
 		{
-		FlatZincHelper.ValType[] array = new FlatZincHelper.ValType[list.size()];
+		FZVariableBuilder.ValType[] array = new FZVariableBuilder.ValType[list.size()];
 		list.toArray(array);
-		$al=FlatZincHelper.build(FlatZincHelper.EnumVal.array, array);
+		$al=FZVariableBuilder.build(FZVariableBuilder.EnumVal.array, array);
 		};
 
 annotations	
@@ -325,7 +324,7 @@ annotation
 ann_expr	
 	:	IDENT LP ann_expr (COMA ann_expr)* RP
 		|  flat_expr;
-flat_expr		returns[FlatZincHelper.ValType vt]
+flat_expr		returns[FZVariableBuilder.ValType vt]
 	:	nafe=non_array_flat_expr
 		{
 		$vt=nafe;
@@ -334,10 +333,10 @@ flat_expr		returns[FlatZincHelper.ValType vt]
 		{
 		$vt=al;
 		};
-solve_expr		returns[FlatZincHelper.ValType vt]
+solve_expr		returns[FZVariableBuilder.ValType vt]
 	:	IDENT
 		{
-		$vt = FlatZincHelper.build(FlatZincHelper.EnumVal.sString, $IDENT.text);
+		$vt = FZVariableBuilder.build(FZVariableBuilder.EnumVal.sString, $IDENT.text);
 		}
 		| aae=array_access_expr
 		{
@@ -358,3 +357,4 @@ fragment DIGIT 		:	'0'..'9';
 fragment HEX_DIGIT		:	'0x' (DIGIT | 'A'..'F' | 'a'..'f')+;
 fragment OCT_DIGIT		:	'0o' ('0'..'7')+;
 fragment LIT			:	'A'..'Z'|'a'..'z';
+
