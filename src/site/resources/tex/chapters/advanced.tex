@@ -5,6 +5,21 @@
 
 \chapter{Advanced uses of Choco}\label{advanced:advancedusesofchoco}\hypertarget{advanced:advancedusesofchoco}{}
 
+\section{Environment}\label{advanced:environment}\hypertarget{advanced:environment}{}
+
+Environment is a central object of the backtracking system. It defines the notion of \textit{world}. A world contains values of storable objects or operations that permit to \textit{backtrack} to its state. The environment \textit{pushes} and \textit{pops} worlds.
+
+There are \textit{primitive} data types (\texttt{IstateBitSet, IStateBool, IStateDouble, IStateInt, IStateLong}) and \textit{objects} data types (\texttt{IStateBinarytree, IStateIntInterval, IStateIntProcedure, IStateIntVector, IStateObject, IStateVector}).
+
+There are two different environments: \textit{EnvironmentTrailing} and \textit{EnvironmentCopying}.
+
+\subsection{Copying}\label{advanced:copying}\hypertarget{advanced:copying}{}
+In that environment, each data type is defined by a value (primitive or object) and a timestamp. Every time a world is pushed, each value is copied in an array (one array per data type), with finite indice. When a world is popped, every value is restored. 
+
+\subsection{Trailing}\label{advanced:trailing}\hypertarget{advanced:trailing}{}
+In that environment, data types are defined by its value. Every operation applied to a data type is pushed in a \textit{trailer}. When a world is pushed, the indice of the last operation is stored. When a world is popped, these operations are popped and \textit{unapplied} until reaching the last operation of the previous world.\\\textit{Default one in CPSolver}
+
+
 \section{Define your own limit search space}\label{advanced:defineyourownlimitsearchspace}\hypertarget{advanced:defineyourownlimitsearchspace}{}
 
 To define your own limits/statistics (notice that a limit object can be used only to get statistics about the search), you can create a limit object by extending the \texttt{AbstractGlobalSearchLimit} class or implementing directly the interface \texttt{IGlobalSearchLimit}. Limits are managed at each node of the tree search and are updated each time a node is open or closed. Notice that limits are therefore time consuming. Implementing its own limit need only to specify to the following interface :
@@ -179,6 +194,10 @@ You can add your value selector to the solver as common variable selector, using
 \begin{lstlisting}
   solver.setValIntSelector(new MyValSelector(...));
 \end{lstlisting}
+
+\begin{note}
+Using a value selector with bounded domain variable is strongly inadvised, except if it pick up bounds value. If the value selector pick up a value that is not a bound, when it goes up in the tree search, that value could be not removed and picked twice (or more)!
+\end{note} 
 
 \subsubsection{Values iterator}\label{advanced:valuesiterator}\hypertarget{advanced:valuesiterator}{}
 We give here an example of an \texttt{ValIterator} with the implementation of an increasing domain iterator:
