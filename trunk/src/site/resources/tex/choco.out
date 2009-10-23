@@ -54,20 +54,23 @@
 \BOOKMARK [2][-]{subsection.3.5.1}{Solver settings}{section.3.5}
 \BOOKMARK [2][-]{subsection.3.5.2}{Optimization}{section.3.5}
 \BOOKMARK [0][-]{chapter.4}{Advanced uses of Choco}{part.1}
-\BOOKMARK [1][-]{section.4.1}{Define your own limit search space}{chapter.4}
-\BOOKMARK [1][-]{section.4.2}{Define your own search strategy}{chapter.4}
-\BOOKMARK [2][-]{subsection.4.2.1}{Define your own variable selection}{section.4.2}
-\BOOKMARK [2][-]{subsection.4.2.2}{Define your own value selection}{section.4.2}
-\BOOKMARK [2][-]{subsection.4.2.3}{How does a search loop work ?}{section.4.2}
-\BOOKMARK [2][-]{subsection.4.2.4}{How to define your own Branching object}{section.4.2}
-\BOOKMARK [1][-]{section.4.3}{Define your own constraint}{chapter.4}
-\BOOKMARK [2][-]{subsection.4.3.1}{The constraint hierarchy}{section.4.3}
-\BOOKMARK [2][-]{subsection.4.3.2}{Example: implement and add the IsOdd constraint}{section.4.3}
-\BOOKMARK [2][-]{subsection.4.3.3}{Example of an empty constraint}{section.4.3}
-\BOOKMARK [1][-]{section.4.4}{Define your own operator}{chapter.4}
-\BOOKMARK [1][-]{section.4.5}{Define your own variable}{chapter.4}
-\BOOKMARK [1][-]{section.4.6}{Backtrackable structures}{chapter.4}
-\BOOKMARK [1][-]{section.4.7}{Logging System}{chapter.4}
+\BOOKMARK [1][-]{section.4.1}{Environment}{chapter.4}
+\BOOKMARK [2][-]{subsection.4.1.1}{Copying}{section.4.1}
+\BOOKMARK [2][-]{subsection.4.1.2}{Trailing}{section.4.1}
+\BOOKMARK [1][-]{section.4.2}{Define your own limit search space}{chapter.4}
+\BOOKMARK [1][-]{section.4.3}{Define your own search strategy}{chapter.4}
+\BOOKMARK [2][-]{subsection.4.3.1}{Define your own variable selection}{section.4.3}
+\BOOKMARK [2][-]{subsection.4.3.2}{Define your own value selection}{section.4.3}
+\BOOKMARK [2][-]{subsection.4.3.3}{How does a search loop work ?}{section.4.3}
+\BOOKMARK [2][-]{subsection.4.3.4}{How to define your own Branching object}{section.4.3}
+\BOOKMARK [1][-]{section.4.4}{Define your own constraint}{chapter.4}
+\BOOKMARK [2][-]{subsection.4.4.1}{The constraint hierarchy}{section.4.4}
+\BOOKMARK [2][-]{subsection.4.4.2}{Example: implement and add the IsOdd constraint}{section.4.4}
+\BOOKMARK [2][-]{subsection.4.4.3}{Example of an empty constraint}{section.4.4}
+\BOOKMARK [1][-]{section.4.5}{Define your own operator}{chapter.4}
+\BOOKMARK [1][-]{section.4.6}{Define your own variable}{chapter.4}
+\BOOKMARK [1][-]{section.4.7}{Backtrackable structures}{chapter.4}
+\BOOKMARK [1][-]{section.4.8}{Logging System}{chapter.4}
 \BOOKMARK [0][-]{chapter.5}{Applications with global constraints}{part.1}
 \BOOKMARK [1][-]{section.5.1}{Scheduling and use of the cumulative constraint}{chapter.5}
 \BOOKMARK [1][-]{section.5.2}{Placement and use of the Geost constraint}{chapter.5}

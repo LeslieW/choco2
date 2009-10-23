@@ -67,27 +67,30 @@
 \contentsline {subsubsection}{Logs}{35}{section*.15}
 \contentsline {subsection}{\numberline {3.5.2}Optimization}{36}{subsection.3.5.2}
 \contentsline {chapter}{\numberline {4}Advanced uses of Choco}{37}{chapter.4}
-\contentsline {section}{\numberline {4.1}Define your own limit search space}{37}{section.4.1}
-\contentsline {section}{\numberline {4.2}Define your own search strategy}{38}{section.4.2}
-\contentsline {subsection}{\numberline {4.2.1}Define your own variable selection}{38}{subsection.4.2.1}
-\contentsline {subsection}{\numberline {4.2.2}Define your own value selection}{39}{subsection.4.2.2}
-\contentsline {subsubsection}{Value selector}{39}{section*.16}
-\contentsline {subsubsection}{Values iterator}{39}{section*.17}
-\contentsline {subsection}{\numberline {4.2.3}How does a search loop work ?}{40}{subsection.4.2.3}
-\contentsline {subsection}{\numberline {4.2.4}How to define your own Branching object}{41}{subsection.4.2.4}
-\contentsline {section}{\numberline {4.3}Define your own constraint}{41}{section.4.3}
-\contentsline {subsection}{\numberline {4.3.1}The constraint hierarchy}{41}{subsection.4.3.1}
-\contentsline {subsubsection}{How do I add my constraint to the Model ?}{43}{section*.18}
-\contentsline {subsection}{\numberline {4.3.2}Example: implement and add the \texttt {IsOdd} constraint}{43}{subsection.4.3.2}
-\contentsline {subsection}{\numberline {4.3.3}Example of an empty constraint}{44}{subsection.4.3.3}
-\contentsline {section}{\numberline {4.4}Define your own operator}{46}{section.4.4}
-\contentsline {section}{\numberline {4.5}Define your own variable}{46}{section.4.5}
-\contentsline {section}{\numberline {4.6}Backtrackable structures}{46}{section.4.6}
-\contentsline {section}{\numberline {4.7}Logging System}{46}{section.4.7}
-\contentsline {subsubsection}{Verbosity.}{47}{section*.19}
-\contentsline {subsubsection}{How to write logging statements ?}{47}{section*.20}
-\contentsline {subsubsection}{Handlers.}{47}{section*.21}
-\contentsline {subsubsection}{Define your own logger.}{47}{section*.22}
+\contentsline {section}{\numberline {4.1}Environment}{37}{section.4.1}
+\contentsline {subsection}{\numberline {4.1.1}Copying}{37}{subsection.4.1.1}
+\contentsline {subsection}{\numberline {4.1.2}Trailing}{37}{subsection.4.1.2}
+\contentsline {section}{\numberline {4.2}Define your own limit search space}{37}{section.4.2}
+\contentsline {section}{\numberline {4.3}Define your own search strategy}{39}{section.4.3}
+\contentsline {subsection}{\numberline {4.3.1}Define your own variable selection}{39}{subsection.4.3.1}
+\contentsline {subsection}{\numberline {4.3.2}Define your own value selection}{39}{subsection.4.3.2}
+\contentsline {subsubsection}{Value selector}{40}{section*.16}
+\contentsline {subsubsection}{Values iterator}{40}{section*.17}
+\contentsline {subsection}{\numberline {4.3.3}How does a search loop work ?}{41}{subsection.4.3.3}
+\contentsline {subsection}{\numberline {4.3.4}How to define your own Branching object}{41}{subsection.4.3.4}
+\contentsline {section}{\numberline {4.4}Define your own constraint}{41}{section.4.4}
+\contentsline {subsection}{\numberline {4.4.1}The constraint hierarchy}{42}{subsection.4.4.1}
+\contentsline {subsubsection}{How do I add my constraint to the Model ?}{44}{section*.18}
+\contentsline {subsection}{\numberline {4.4.2}Example: implement and add the \texttt {IsOdd} constraint}{44}{subsection.4.4.2}
+\contentsline {subsection}{\numberline {4.4.3}Example of an empty constraint}{45}{subsection.4.4.3}
+\contentsline {section}{\numberline {4.5}Define your own operator}{47}{section.4.5}
+\contentsline {section}{\numberline {4.6}Define your own variable}{47}{section.4.6}
+\contentsline {section}{\numberline {4.7}Backtrackable structures}{47}{section.4.7}
+\contentsline {section}{\numberline {4.8}Logging System}{47}{section.4.8}
+\contentsline {subsubsection}{Verbosity.}{48}{section*.19}
+\contentsline {subsubsection}{How to write logging statements ?}{48}{section*.20}
+\contentsline {subsubsection}{Handlers.}{48}{section*.21}
+\contentsline {subsubsection}{Define your own logger.}{48}{section*.22}
 \contentsline {chapter}{\numberline {5}Applications with global constraints}{49}{chapter.5}
 \contentsline {section}{\numberline {5.1}Scheduling and use of the cumulative constraint}{49}{section.5.1}
 \contentsline {section}{\numberline {5.2}Placement and use of the Geost constraint}{51}{section.5.2}
