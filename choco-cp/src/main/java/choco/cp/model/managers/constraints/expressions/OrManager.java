@@ -22,7 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.expressions;
 
+import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
+import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.integer.bool.BinOr;
+import choco.cp.solver.constraints.integer.bool.LargeOr;
 import choco.cp.solver.constraints.reified.leaves.bool.OrNode;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.MetaConstraint;
@@ -72,6 +76,20 @@ public class OrManager extends IntConstraintManager {
      * @return
      */
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+        if(solver instanceof CPSolver){
+            if(parameters == null){
+                if(variables.length==2){
+                    return new BinOr(solver.getVar(variables[0]), solver.getVar(variables[1]));
+                }
+                else{
+                    return new LargeOr(solver.getVar(variables));    
+                }
+            }
+        }
+
+        if(Choco.DEBUG){
+            throw new RuntimeException("Could not found implementation for Or");
+        }
         return null;
     }
 
