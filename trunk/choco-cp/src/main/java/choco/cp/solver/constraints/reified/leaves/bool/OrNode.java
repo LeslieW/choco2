@@ -25,6 +25,7 @@ package choco.cp.solver.constraints.reified.leaves.bool;
 import choco.cp.solver.constraints.integer.bool.BinOr;
 import choco.cp.solver.constraints.integer.bool.LargeOr;
 import choco.cp.solver.constraints.integer.channeling.ReifiedLargeOr;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.BoolNode;
@@ -62,7 +63,8 @@ public class OrNode extends AbstractBoolNode implements BoolNode {
         }
         if (vs.length > 1) {
             IntDomainVar v = s.createBooleanVar("reifiedOr");
-            s.post(new ReifiedLargeOr(v, vs));
+            IntDomainVar[] vars = ArrayUtils.append(new IntDomainVar[]{v}, vs);
+            s.post(new ReifiedLargeOr(vars));
             return v;
         } else {
             return vs[0];
