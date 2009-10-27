@@ -12,33 +12,26 @@ public abstract class AbstractPrecedenceConstraint extends AbstractLargeIntSCons
 	protected final static int BIDX = 0;
 
 	protected TaskVar task1, task2;
-	
+
 	protected int k1, k2;
-	
+
 	public AbstractPrecedenceConstraint(IntDomainVar[] vars) {
 		super(vars);
 	}
 
-	
-	protected final static int[] makeMasksArray(final int n) {
-		if(n > 0) {
-			int[] masks = new int[n];
-			masks[0] = IntVarEvent.INSTINTbitvector;
-			for (int i = 1; i < masks.length; i++) {
-				masks[i] = IntVarEvent.BOUNDSbitvector;
-			}
-			return masks;
-		}
-		return null;
+	@Override
+	public int getFilteredEventMask(int idx) {
+		return idx == 0 ? IntVarEvent.INSTINTbitvector : IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
 	}
-	
+
+
 	public final void setTasks(final TaskVar t1, final TaskVar t2) {
 		this.task1 = t1;
 		this.task2 = t2;
 	}
 	//TODO record tasks in the constraint list ? 
 	//In this case, change the postRedundantTaskConstraint
-	
+
 	public final TaskVar getTask1() {
 		return task1;
 	}
@@ -46,7 +39,7 @@ public abstract class AbstractPrecedenceConstraint extends AbstractLargeIntSCons
 	public final TaskVar getTask2() {
 		return task2;
 	}
-	
+
 	public final IntDomainVar getBooleanVar() {
 		return vars[BIDX];
 	}
@@ -58,7 +51,7 @@ public abstract class AbstractPrecedenceConstraint extends AbstractLargeIntSCons
 		vars[idx2].updateInf(vars[idx1].getInf(), cIndices[idx2]);
 		vars[idx1].updateSup(vars[idx2].getSup(), cIndices[idx1]);
 	}
-	
+
 	/**
 	 * propagate vars[idx1] + k1 <= vars[idx2]
 	 */
@@ -67,11 +60,11 @@ public abstract class AbstractPrecedenceConstraint extends AbstractLargeIntSCons
 		vars[idx1].updateSup(vars[idx2].getSup() - k1, cIndices[idx1]);
 	}
 
-	
+
 	public abstract void propagateP1() throws ContradictionException;
 
 	public abstract void propagateP2() throws ContradictionException;
-	
+
 	/**
 	 * isEntailed vars[idx1] <= vars[idx2]
 	 */
@@ -81,13 +74,13 @@ public abstract class AbstractPrecedenceConstraint extends AbstractLargeIntSCons
 		if (vars[idx1].getInf() > vars[idx2].getSup())
 			return Boolean.FALSE;
 		return null;
-		
+
 	}
-	
+
 	/**
 	 * isEntailed vars[idx1] + k1 <= vars[idx2]
 	 */
-	
+
 	protected final Boolean isEntailed(final int idx1, final int k1, final int idx2) {
 		if (vars[idx1].getSup() + k1 <= vars[idx2].getInf())
 			return Boolean.TRUE;
@@ -95,9 +88,9 @@ public abstract class AbstractPrecedenceConstraint extends AbstractLargeIntSCons
 			return Boolean.FALSE;
 		return null;
 	}
-	
-		
-	
+
+
+
 	public abstract Boolean isP1Entailed();
 
 
@@ -107,11 +100,11 @@ public abstract class AbstractPrecedenceConstraint extends AbstractLargeIntSCons
 	protected final boolean isSatisfied(final int idx1, final int idx2) {
 		return vars[idx1].getVal() <= vars[idx2].getVal();
 	}
-	
+
 	protected final boolean isSatisfied(final int idx1, final int k1, final int idx2) {
 		return vars[idx1].getVal() + k1 <= vars[idx2].getVal();
 	}
-	
+
 	@Override
 	public void awakeOnInst(int idx) throws ContradictionException {
 		if (idx == 0) {        // booleen de decision
@@ -193,11 +186,11 @@ public abstract class AbstractPrecedenceConstraint extends AbstractLargeIntSCons
 	protected final String pretty(final int idx1, final int k1, final int idx2) {
 		return vars[idx1]+" + "+k1+" <= "+vars[idx2];
 	}
-	
+
 	protected final String pretty(final int idx1, final int idx2) {
 		return vars[idx1]+" <= "+vars[idx2];
 	}
-	
+
 	protected final String pretty(String name, String trueStr, String falseStr) {
 		return name + " "+vars[BIDX]+"( "+trueStr+" || "+falseStr+" )";
 	}
@@ -207,5 +200,5 @@ public abstract class AbstractPrecedenceConstraint extends AbstractLargeIntSCons
 		return pretty();
 	}
 
-	
+
 }

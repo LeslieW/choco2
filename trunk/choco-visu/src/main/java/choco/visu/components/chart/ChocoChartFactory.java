@@ -1,9 +1,10 @@
 package choco.visu.components.chart;
 
-import static choco.visu.components.chart.ChocoDatasetFactory.createPackDataset;
+import static choco.visu.components.chart.ChocoDatasetFactory.*;
 import static choco.visu.components.chart.ChocoDatasetFactory.createSolutionCategoryDataset;
-import static choco.visu.components.chart.ChocoDatasetFactory.createUnaryRscTaskCollection;
+import static choco.visu.components.chart.ChocoDatasetFactory.createUnaryTaskCollection;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.text.DateFormat;
@@ -24,6 +25,7 @@ import org.jfree.chart.axis.LogAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.axis.SymbolAxis;
+import org.jfree.chart.axis.TickUnitSource;
 import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
@@ -89,30 +91,25 @@ public final class ChocoChartFactory {
 		theme.setShadowVisible(false);
 		theme.setErrorIndicatorPaint(Color.RED);
 		theme.setAxisOffset(new RectangleInsets());
-		//		theme.setDrawingSupplier(new DefaultDrawingSupplier( (new ColorPalette(2,2)).getSequence(),
-		//				DEFAULT_FILL_PAINT_SEQUENCE,
-		//				DEFAULT_OUTLINE_PAINT_SEQUENCE,
-		//				DEFAULT_STROKE_SEQUENCE,
-		//				DEFAULT_OUTLINE_STROKE_SEQUENCE,
-		//				DEFAULT_SHAPE_SEQUENCE)
-		//		);
+		theme.setDrawingSupplier( ChocoColor.createDefaultDrawingSupplier());
 		return theme;
 	}
 
 	public static DateFormat getIntegerDateFormat() {
 		return INTEGER_DATE_FORMAT;
 	}
-	protected final static Marker createMarker(int value, String label, Color color) {
+	public final static Marker createCapacityMarker(int value, String label, Color color) {
 		return createMarker(value, label, color, TextAnchor.BASELINE_LEFT, LengthAdjustmentType.EXPAND);
 	}
 
-	protected final static Marker createMarker(int value, String label, Color color, TextAnchor anchor, LengthAdjustmentType adjust) {
+	public final static Marker createMarker(int value, String label, Color color, TextAnchor anchor, LengthAdjustmentType adjust) {
 		final Marker lbMarker = new ValueMarker(value);
 		if(label!=null) {
 			lbMarker.setLabel(label);
 			lbMarker.setLabelTextAnchor(anchor);
 			lbMarker.setLabelOffsetType(adjust);
 		}
+		lbMarker.setStroke(new BasicStroke(3));
 		lbMarker.setPaint(color);
 		return lbMarker;
 	}
@@ -173,7 +170,7 @@ public final class ChocoChartFactory {
 		setPackRendererSettings(renderer);
 		plot.setRenderer(renderer);
 		if(capacity>0) {
-			Marker capaMarker = createMarker(capacity, "Capacity", Color.lightGray);
+			Marker capaMarker = createCapacityMarker(capacity, "Capacity", Color.lightGray);
 			plot.addRangeMarker(0, capaMarker, Layer.FOREGROUND);
 		}
 		CHOCO_THEME.apply(chart);
@@ -198,7 +195,7 @@ public final class ChocoChartFactory {
 			final CategoryPlot subplot = new CategoryPlot(datasets[i],null, laxis,renderer);
 			int w =1;
 			if(capacity==null || capacity[i]>0) {
-				Marker capaMarker = createMarker(capacity[i], "Capacity", Color.lightGray);
+				Marker capaMarker = createCapacityMarker(capacity[i], "Capacity", Color.lightGray);
 				plot.addRangeMarker(0, capaMarker, Layer.FOREGROUND);
 				w =capacity[i];
 			}
@@ -244,10 +241,9 @@ public final class ChocoChartFactory {
 	}
 
 
-	protected static void generateAxis(MyXYTaskDataset dataset,XYPlot plot, String[] rscAxisLabels, boolean intDate) {
-		DateAxis daxis = new DateAxis("Date/Time");
-		if(intDate) {daxis.setDateFormatOverride(INTEGER_DATE_FORMAT);}
-		SymbolAxis raxis =  new SymbolAxis("Resources", 
+	protected static void generateAxis(MyXYTaskDataset dataset,XYPlot plot, String[] rscAxisLabels) {
+		final DateAxis daxis = createDateAxis();
+		final SymbolAxis raxis =  new SymbolAxis("Resources", 
 				rscAxisLabels==null ? generateRscLabels(dataset) : rscAxisLabels) ;
 		raxis.setGridBandsVisible(false);
 		if(dataset.isTransposed()) {
@@ -259,59 +255,45 @@ public final class ChocoChartFactory {
 		}
 	}
 
-	//FIXME move or remove method	
-	//	public static JFreeChart createUnaryRscChart(String title, BSolution bsol, boolean isMachineChart) {
-	//		final TaskSeriesCollection coll = isMachineChart ? createJobsTaskCollection(bsol) : createJobsTaskCollection(bsol);
-	//		final MyXYTaskDataset dataset = new MyXYTaskDataset(coll);
-	//		dataset.setTransposed(true);
-	//		dataset.setInverted(true);
-	//		return createUnaryRscChart(title, dataset, true, false, null);
-	//	}
-
+	public static DateAxis createDateAxis() {
+		DateAxis domainAxis = new DateAxis("Time");
+		domainAxis.setPositiveArrowVisible(true);
+		domainAxis.setDateFormatOverride(ChocoChartFactory.INTEGER_DATE_FORMAT);
+		return domainAxis;
+	}
 	
-	public static JFreeChart createUnaryRscChart(String title, Solver scheduler, ResourceRenderer type) {
-		final TaskSeriesCollection coll = createUnaryRscTaskCollection(scheduler);
+	public static NumberAxis createIntegerAxis(String title) {
+		NumberAxis rangeAxis = new NumberAxis(title);
+		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+		rangeAxis.setPositiveArrowVisible(true);
+		return rangeAxis;		
+	}
+	
+	public static JFreeChart createUnaryChart(String title, Solver scheduler, ResourceRenderer type) {
+		final TaskSeriesCollection coll = createUnaryTaskCollection(scheduler);
 		final MyXYTaskDataset dataset = new MyXYTaskDataset(coll);
 		dataset.setTransposed(true);
 		dataset.setInverted(false);
-		return createUnaryRscChart(title, dataset, true, false, type, null);
+		return createUnaryChart(title, dataset, false, type, null);
 
 	}
 
+	public static JFreeChart createShopChart(String title, Solver scheduler, Constraint[] resources) {
+		final TaskSeriesCollection coll = createTaskCollection(scheduler, resources);
+		final MyXYTaskDataset dataset = new MyXYTaskDataset(coll);
+		dataset.setTransposed(true);
+		dataset.setInverted(false);
+		return createUnaryChart(title, dataset, false, ResourceRenderer.COLUMN , null);
+	}
 
 
-	//	public static JFreeChart createUnaryRscChart(String title, GenericShopProblem shop, boolean isMachineChart) {
-	//		final TaskSeriesCollection coll = new TaskSeriesCollection();
-	//		//create axis labels
-	//		IResource<TaskVar>[] tmp =  isMachineChart ? shop.machines: shop.jobs;
-	//		String[] labs = null;
-	//		if(tmp!=null) {
-	//			labs = new String[tmp.length];
-	//			for (int i = 0; i < labs.length; i++) {
-	//				labs[i]= tmp[i].getRscName();
-	//			}
-	//		}
-	//		//create dataset
-	//		tmp =  isMachineChart ? shop.jobs : shop.machines;
-	//		final Scheduler s= (Scheduler) shop.getSolver();
-	//		for (UnaryResource rsc : tmp) {
-	//			coll.add(createTaskSeries( (UnarySResource) s.getCstr(rsc)));
-	//		}
-	//
-	//		final MyXYTaskDataset dataset = new MyXYTaskDataset(coll);
-	//		dataset.setTransposed(true);
-	//		dataset.setInverted(true);
-	//		return createUnaryRscChart(title, dataset, true, false, labs);
-	//		throw new UnsupportedOperationException("regression");
-	//	}
-
-	public static JFreeChart createUnaryRscChart(String title,MyXYTaskDataset dataset,boolean intDate, boolean legend, ResourceRenderer type, String[] rscAxisLabels) {
+	public static JFreeChart createUnaryChart(String title,MyXYTaskDataset dataset,boolean legend, ResourceRenderer type, String[] rscAxisLabels) {
 		JFreeChart chart = ChartFactory.createXYBarChart(title,
 				"Date/Time", true, "Resources", dataset, PlotOrientation.VERTICAL,
 				legend, false, false);
 
 		XYPlot plot = chart.getXYPlot();
-		generateAxis(dataset, plot, rscAxisLabels,intDate);
+		generateAxis(dataset, plot, rscAxisLabels);
 		//Renderer
 		XYBarRenderer renderer = new MyXYBarRenderer(type);
 		renderer.setBaseItemLabelGenerator(new TaskLabelGenerator("{0}"));
@@ -350,16 +332,6 @@ public final class ChocoChartFactory {
 	}
 
 	public static JFreeChart createCumulativeChart(String title, TableXYDataset dataset, int capacity,boolean legend, DateFormat format,XYToolTipGenerator tooltip) {
-		DateAxis domainAxis = new DateAxis("Time");
-		if(format!=null) {domainAxis.setDateFormatOverride(INTEGER_DATE_FORMAT);}
-		domainAxis.setPositiveArrowVisible(true);
-		//domainAxis.setLowerMargin(0);
-		//domainAxis.setAutoRange(true);
-		//domainAxis.setTickUnit(new DateTickUnit(DateTickUnit.MILLISECOND,5));		// Задаем отступ от графика
-		NumberAxis rangeAxis = new NumberAxis("Load");
-		//rangeAxis.setStandardTickUnits(NumberAxis.createStandardTickUnits());
-		rangeAxis.setTickUnit(new NumberTickUnit(1));
-		rangeAxis.setPositiveArrowVisible(true);
 		// Renderer
 		StackedXYBarRenderer renderer = new StackedXYBarRenderer();
 		renderer.setShadowVisible(false);
@@ -372,10 +344,10 @@ public final class ChocoChartFactory {
 		renderer.setBaseItemLabelGenerator(new StandardXYItemLabelGenerator("{0}",new SimpleDateFormat(), NumberFormat.getInstance()));
 		renderer.setBaseItemLabelsVisible(true);
 		// Plot
-		XYPlot plot =  new XYPlot(dataset,domainAxis,rangeAxis,renderer);
+		XYPlot plot =  new XYPlot(dataset, createDateAxis(), createIntegerAxis("Load"), renderer);
 		//Marker
 		if(capacity>0) {
-			Marker capaMarker = createMarker(capacity, "Capacity", Color.red);
+			Marker capaMarker = createCapacityMarker(capacity, "Capacity", Color.red);
 			plot.addRangeMarker(0, capaMarker, Layer.FOREGROUND);
 		}
 		// Chart

@@ -100,7 +100,7 @@ public final class ChocoDatasetFactory {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static TaskSeriesCollection createTaskCollection(Solver s, Constraint... resources) {
+	public static TaskSeriesCollection createTaskCollection(Solver s, Constraint[] resources) {
 		TaskSeriesCollection c = new TaskSeriesCollection();
 		for (Constraint rsc : resources) {
 			c.add(createTaskSeries((IResource<TaskVar>) s.getCstr(rsc)));
@@ -109,13 +109,13 @@ public final class ChocoDatasetFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static TaskSeriesCollection createUnaryRscTaskCollection(Solver s) {
-		final TaskSeriesCollection c = new TaskSeriesCollection();
+	public static TaskSeriesCollection createUnaryTaskCollection(Solver s) {
+		final TaskSeriesCollection coll = new TaskSeriesCollection();
 		final Iterator<Constraint> iter = s.getModel().getConstraintByType(ConstraintType.DISJUNCTIVE);
 		while(iter.hasNext()) {
-			c.add(createTaskSeries((IResource<TaskVar>) s.getCstr(iter.next())));
+			coll.add(createTaskSeries((IResource<TaskVar>) s.getCstr(iter.next())));
 		}
-		return c;
+		return coll;
 	}
 
 	

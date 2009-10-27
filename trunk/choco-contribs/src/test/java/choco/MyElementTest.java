@@ -1,6 +1,6 @@
 /* ************************************************
  *           _       _                            *
- *          |  °(..)  |                           *
+ *          |  ï¿½(..)  |                           *
  *          |_  J||L _|        CHOCO solver       *
  *                                                *
  *     Choco is a java library for constraint     *
@@ -23,6 +23,13 @@
 package choco;
 
 import static choco.Choco.makeIntVar;
+import static org.junit.Assert.assertEquals;
+
+import java.util.logging.Logger;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.MyElementManager;
@@ -32,11 +39,6 @@ import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import static org.junit.Assert.assertEquals;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.util.logging.Logger;
 
 /*
 * User : charles
@@ -64,7 +66,7 @@ public class MyElementTest {
 		IntegerVariable index = makeIntVar("index", -3, 10);
 		IntegerVariable var = makeIntVar("value", -20, 20);
 
-        // actions normalement effectuées dans Choco.java
+        // actions normalement effectuï¿½es dans Choco.java
         // debut
         IntegerVariable[] vars = new IntegerVariable[values.length+2];
 		for (int i = 0; i < values.length; i++) {

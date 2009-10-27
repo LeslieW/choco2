@@ -31,7 +31,7 @@ import choco.kernel.memory.IStateInt;
  */
 public class StaticVarOrder extends AbstractIntVarSelector {
 
-  IStateInt last;
+  private final IStateInt last;
 
   public StaticVarOrder(IntDomainVar[] vars) {
     this.last = vars[0].getSolver().getEnvironment().makeInt(0);

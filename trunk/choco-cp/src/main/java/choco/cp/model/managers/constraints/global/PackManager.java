@@ -53,6 +53,7 @@ public class PackManager extends MixedConstraintManager {
 	 * @param options
 	 * @return
 	 */
+	@Override
 	public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
 		if(solver instanceof CPSolver){
 			CPSolver s = (CPSolver) solver;

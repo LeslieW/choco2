@@ -27,8 +27,10 @@ import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.InverseChanneling;
 import choco.cp.solver.constraints.integer.channeling.BooleanChanneling;
+import choco.cp.solver.constraints.integer.channeling.DomainChanneling;
+import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.model.constraints.ConstraintType;
-import static choco.kernel.model.constraints.ConstraintType.CHANNELING;
+import static choco.kernel.model.constraints.ConstraintType.*;
 import static choco.kernel.model.constraints.ConstraintType.INVERSECHANNELING;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -79,9 +81,14 @@ public class ChannelingManager extends IntConstraintManager {
                         throw new SolverException(yij + " should be a boolean variable and " + j + " should belongs to the domain of " + xi);
                     }
                 }
-                if(INVERSECHANNELING.equals(type)){
-                    var  = solver.getVar((IntegerVariable[])variables);
+                else if(INVERSECHANNELING.equals(type)){
+                    var  = solver.getVar(variables);
                     return new InverseChanneling(var, var.length/2);
+                } else if(DOMAIN_CHANNELING.equals(type)){
+                	return new DomainChanneling(
+                			VariableUtils.getIntVar(solver, variables, 0, variables.length - 1), 
+                			solver.getVar(variables[variables.length - 1])
+                	);
                 }
             }
         }

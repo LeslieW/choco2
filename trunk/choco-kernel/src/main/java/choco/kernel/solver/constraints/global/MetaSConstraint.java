@@ -22,6 +22,7 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 
 	private final static IntDomainVar[] EMPTY_INTVAR_ARRAY = new IntDomainVar[0];
 
+	
 	public final IntDomainVar[] vars;
 
 	public final TaskVar[] tasks;
@@ -32,6 +33,12 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 
 	protected String name;
 
+
+	public MetaSConstraint(String name, SConstraint[] constraints, TaskVar[] tasks, IntDomainVar[] vars) {
+		this(constraints, tasks, vars);
+		this.name = name;
+	}
+	
 	public MetaSConstraint(SConstraint[] constraints, TaskVar[] tasks, IntDomainVar[] vars) {
 		if(constraints == null || constraints.length == 0) {
 			throw new SolverException("Empty MetaConstraint !?");
