@@ -2,6 +2,7 @@ package choco.cp.solver.constraints.global.scheduling;
 
 import java.util.Arrays;
 
+import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
@@ -19,6 +20,15 @@ public class AltCumulative extends Cumulative {
 	
 	
 	
+	
+	@Override
+	public int getFilteredEventMask(int idx) {
+		return idx < 4* taskvars.length ? EVENT_MASK : IntVarEvent.INSTINTbitvector;
+	}
+
+
+
+
 	@Override
 	protected void checkRulesRequirement() {
 		throw new UnsupportedOperationException("Alternative Task Intervals and Edge finding remain to be done");

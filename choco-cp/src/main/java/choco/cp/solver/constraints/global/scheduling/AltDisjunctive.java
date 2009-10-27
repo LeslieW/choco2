@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 import static choco.cp.solver.SettingType.OVERLOAD_CHECKING;
+import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
@@ -40,6 +41,13 @@ public class AltDisjunctive extends Disjunctive {
 		nbRequired = computeNbRequired();
 		rules = new AltDisjRules(rtasks);
 	}
+
+	
+	@Override
+	public int getFilteredEventMask(int idx) {
+		return idx < taskIntVarOffset ? EVENT_MASK : IntVarEvent.INSTINTbitvector;
+	}
+
 
 	@Override
 	protected final int getUsageIndex(final int taskIdx) {

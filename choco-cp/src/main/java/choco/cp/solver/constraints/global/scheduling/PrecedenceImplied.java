@@ -33,7 +33,6 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public final class PrecedenceImplied extends AbstractPrecedenceConstraint {
 
-	private final static int[] FILTERED_EVENT_MASKS = makeMasksArray(3);
 
 	/**
 	 * b = 1 => x1 + k1 <= x2
@@ -43,11 +42,6 @@ public final class PrecedenceImplied extends AbstractPrecedenceConstraint {
 		this.k1 = k1;
 	}
 	
-
-	@Override
-	public int getFilteredEventMask(int idx) {
-		return FILTERED_EVENT_MASKS[idx];
-	}
 
 	@Override
 	public void propagateP1() throws ContradictionException {

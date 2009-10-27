@@ -216,7 +216,7 @@ public class ChocoChartPanel extends JPanel implements TreeSelectionListener {
 
 		@Override
 		protected JComponent createViewPanel() {
-			return new ChartPanel(ChocoChartFactory.createUnaryRscChart(this.toString(), solver, ResourceRenderer.COORD));
+			return new ChartPanel(ChocoChartFactory.createUnaryChart(this.toString(), solver, ResourceRenderer.COORD));
 		}
 
 	}

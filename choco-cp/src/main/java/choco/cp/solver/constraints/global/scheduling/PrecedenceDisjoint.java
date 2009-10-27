@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
+import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
@@ -35,8 +36,6 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
  **/
 public final class PrecedenceDisjoint extends AbstractPrecedenceConstraint {
 
-	private final static int[] FILTERED_EVENT_MASKS = makeMasksArray(3);
-	
 	/**
 	 * b = 1 <=> x1 + k1 <= x2
 	 * b = 0 <=> x2 + k2 <= x1
@@ -52,11 +51,7 @@ public final class PrecedenceDisjoint extends AbstractPrecedenceConstraint {
 		setTasks(t1, t2);
 	}
 
-	@Override
-	public int getFilteredEventMask(int idx) {
-		return FILTERED_EVENT_MASKS[idx];
-	}
-
+	
 	@Override
 	public final void propagateP1() throws ContradictionException {
 		propagate(1, k1, 2);

@@ -2041,6 +2041,18 @@ public class Choco{
 		}
 		return new ComponentConstraint<IntegerVariable>(ConstraintType.INVERSECHANNELING, ConstraintType.INVERSECHANNELING, ArrayUtils.append(x, y));
 	}
+	
+	/**
+	 * state a channeling between the domain of the variable x and the array of boolean variables b which enforce:
+	 * x = i <=> b[i] = 1
+	 */
+	public static Constraint domainConstraint(IntegerVariable x, IntegerVariable[] b) {
+		return new ComponentConstraint<IntegerVariable>(
+				ConstraintType.DOMAIN_CHANNELING, ConstraintType.DOMAIN_CHANNELING, 
+				ArrayUtils.append(b, new IntegerVariable[]{x}));
+	}
+	
+	
 
 	/**
 	 * All different constraints with a global filtering :

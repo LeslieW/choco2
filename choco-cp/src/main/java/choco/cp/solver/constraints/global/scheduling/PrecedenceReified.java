@@ -34,18 +34,11 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public final class PrecedenceReified extends AbstractPrecedenceConstraint {
 
-	private final static int[] FILTERED_EVENT_MASKS = makeMasksArray(3);
-
 	/**
 	 */
 	public PrecedenceReified(IntDomainVar x1, int k1, IntDomainVar x2, IntDomainVar b) {
 		super( new IntDomainVar[]{b, x1, x2});
 		this.k1 = k1;
-	}
-
-	@Override
-	public int getFilteredEventMask(int idx) {
-		return FILTERED_EVENT_MASKS[idx];
 	}
 
 

@@ -133,10 +133,10 @@ public final class ChocoDemo {
 	}
 
 	public static void main(String[] args) {
-		packDemo1();
+		//packDemo1();
 		//packDemo2();
 		//unaryDemo();
 		//deviationDemo();
-		//cumulativeDemo();
+		cumulativeDemo();
 	}
 }

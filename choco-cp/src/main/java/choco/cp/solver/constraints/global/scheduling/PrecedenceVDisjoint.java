@@ -34,8 +34,6 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
  */ 
 public final class PrecedenceVDisjoint extends AbstractPrecedenceConstraint {
 
-	private final static int[] FILTERED_EVENT_MASKS = makeMasksArray(5);
-	
 	public PrecedenceVDisjoint(IntDomainVar b, 
 			IntDomainVar s1, IntDomainVar e1,
 			IntDomainVar s2, IntDomainVar e2
@@ -48,11 +46,7 @@ public final class PrecedenceVDisjoint extends AbstractPrecedenceConstraint {
 		setTasks(t1, t2);
 	}
 	
-	@Override
-	public int getFilteredEventMask(int idx) {
-		return FILTERED_EVENT_MASKS[idx];
-	}
-
+	
 	@Override
 	public Boolean isP1Entailed() {
 		return isEntailed(3,2);

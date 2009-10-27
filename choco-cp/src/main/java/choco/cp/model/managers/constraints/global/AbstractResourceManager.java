@@ -56,6 +56,8 @@ public abstract class AbstractResourceManager extends MixedConstraintManager {
 	protected IntDomainVar[] usages;
 
 	protected IntDomainVar uppBound;
+	
+	protected String name;
 
 	protected void initialize(CPSolver solver, Variable[] variables, RscData rdata) {
 		final int n = rdata.getNbTasks();
@@ -63,6 +65,7 @@ public abstract class AbstractResourceManager extends MixedConstraintManager {
 		tasks = getTaskVar(solver, variables, 0, n);
 		usages = getIntVar(solver, variables, n, n + rdata.getNbOptionalTasks());
 		uppBound =  getUppBound(solver, rdata);
+		name =rdata.getRscName();
 
 	}
 
@@ -91,7 +94,7 @@ public abstract class AbstractResourceManager extends MixedConstraintManager {
 		final int n = constraints.size();
 		if( n == 0) return fail("resource constraint");
 		else if(n == 1) return constraints.getFirst();
-		else return new MetaSConstraint( constraints.toArray(new SConstraint[n]), tasks, null);
+		else return new MetaSConstraint( name, constraints.toArray(new SConstraint[n]), tasks, null);
 	}
 
 	protected abstract void makeDecompositionConstraint(CPSolver solver, Variable[] variables, RscData rdata, HashSet<String> options);

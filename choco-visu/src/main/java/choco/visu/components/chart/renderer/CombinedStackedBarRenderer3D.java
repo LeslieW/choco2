@@ -21,7 +21,7 @@ import org.jfree.chart.renderer.category.StackedBarRenderer3D;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.util.BooleanUtilities;
 
-public class CombinedStackedBarRenderer3D extends StackedBarRenderer3D {
+class CombinedStackedBarRenderer3D extends StackedBarRenderer3D {
 
 	private static final long serialVersionUID = 3553006088256129486L;
 	

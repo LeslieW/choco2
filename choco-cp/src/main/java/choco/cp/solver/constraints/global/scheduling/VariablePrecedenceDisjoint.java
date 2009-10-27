@@ -33,19 +33,13 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * */
 public class VariablePrecedenceDisjoint extends AbstractPrecedenceConstraint {
 
-	private final static int[] FILTERED_EVENT_MASKS = makeMasksArray(5);
-	
+		
     public VariablePrecedenceDisjoint(IntDomainVar b, IntDomainVar s0, IntDomainVar d0,
                                       IntDomainVar s1, IntDomainVar d1) {
         super(new IntDomainVar[]{b,s0,d0,s1,d1});
     }
 
-    @Override
-    public int getFilteredEventMask(int idx) {
-       return FILTERED_EVENT_MASKS[idx];
-    }
-
-    
+        
     // propagate x0 + d0 <= x1 (b0 = 1)
 	@Override
 	public void propagateP1() throws ContradictionException {
