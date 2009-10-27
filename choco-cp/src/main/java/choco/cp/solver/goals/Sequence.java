@@ -22,9 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.goals;
 
+import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.GoalSearchLoop;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.goals.Goal;
+import choco.kernel.solver.goals.GoalType;
 
 
 /*
@@ -54,11 +57,25 @@ public class Sequence implements Goal {
   }
 
   public Goal execute(Solver s) throws ContradictionException {
-    GoalSearchSolver gss = (GoalSearchSolver) s.getSearchStrategy();
-    for (int i = sequence.length - 1; i >= 0; i--) {
-      Goal goal = sequence[i];
-      gss.pushGoal(goal);
+    if(CPSolver.GOAL){
+        GoalSearchSolver gsl = (GoalSearchSolver) s.getSearchStrategy();
+        for (int i = sequence.length - 1; i >= 0; i--) {
+          Goal goal = sequence[i];
+          gsl.pushGoal(goal);
+        }
+    }else{
+
+      GoalSearchLoop gsl = (GoalSearchLoop) s.getSearchStrategy().searchLoop;
+        for (int i = sequence.length - 1; i >= 0; i--) {
+            Goal goal = sequence[i];
+            gsl.pushGoal(goal);
+        }
     }
-    return null;
+      return null;
   }
+
+    @Override
+    public GoalType getType() {
+        return GoalType.SEQ;
+    }
 }

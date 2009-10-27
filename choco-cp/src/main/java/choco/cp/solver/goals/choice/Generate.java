@@ -28,6 +28,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.goals.Goal;
+import choco.kernel.solver.goals.GoalType;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.variables.Var;
@@ -85,4 +86,9 @@ public class Generate implements Goal {
       else return GoalHelper.and(new Instantiate((IntDomainVar) var), this);
     }
 	}
+
+    @Override
+    public GoalType getType() {
+        return GoalType.GEN;
+    }
 }

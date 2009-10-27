@@ -22,10 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.goals;
 
+import choco.cp.solver.search.GoalSearchLoop;
 import choco.kernel.solver.ContradictionException;
 import static choco.kernel.solver.ContradictionException.Type.UNKNOWN;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.goals.Goal;
+import choco.kernel.solver.goals.GoalType;
 
 
 /*
@@ -42,9 +44,15 @@ public class GlobalFail implements Goal {
   }
 
   public Goal execute(Solver solver) throws ContradictionException {
-    ((GoalSearchSolver)solver.getSearchStrategy()).setGlobalContradiction();
+    //((GoalSearchSolver)solver.getSearchStrategy()).setGlobalContradiction();
+      ((GoalSearchLoop)solver.getSearchStrategy().searchLoop).setGlobalContradiction();
     solver.getPropagationEngine().raiseContradiction(null, UNKNOWN);
     return null;
     //throw new ContradictionException(solver);
   }
+
+    @Override
+    public GoalType getType() {
+        return GoalType.FAIL;
+    }
 }

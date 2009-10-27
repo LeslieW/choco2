@@ -28,7 +28,6 @@ import choco.cp.model.CPModel;
 import choco.cp.model.managers.operators.SqrtManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
-import choco.cp.solver.constraints.integer.channeling.ReifiedLargeOr;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
@@ -684,12 +683,10 @@ public class ReifiedSomeTest {
             IntegerVariable[] tab = makeIntVarArray("t", 10, 0, 1);
             m.addVariables(tab);
             m.addVariable(b);
+
+            m.addConstraint(reifiedOr(b, tab));
+
             s.read(m);
-            IntDomainVar[] tabs = new IntDomainVar[tab.length];
-            for (int i = 0; i < tabs.length; i++) {
-                tabs[i] = s.getVar(tab[i]);
-            }
-            s.post(new ReifiedLargeOr(s.getVar(b), tabs));
 
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
             s.setValIntSelector(new RandomIntValSelector(seed + 1));

@@ -25,7 +25,7 @@ package choco.cp.model.managers.constraints.global;
 import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.integer.channeling.ReifiedLargeAnd;
+import choco.cp.solver.constraints.integer.channeling.ReifiedBinXor;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -39,27 +39,26 @@ import java.util.HashSet;
 * Since : Choco 2.1.1
 * Update : Choco 2.1.1
 */
-public class ReifiedLargeAndManager extends IntConstraintManager {
+public class ReifiedXorManager extends IntConstraintManager {
 
     /**
      * Build a constraint for the given solver and "model variables"
      *
      * @param solver associated solver
-     * @param variables reified variable + literals
+     * @param variables reified variable and literals variables
      * @param parameters : a "hook" to attach any kind of parameters to constraints
-     * @param options Options
+     * @param options options
      * @return SConstraint
      */
     @Override
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
         if (solver instanceof CPSolver) {
             if (parameters == null) {
-                return new ReifiedLargeAnd(solver.getVar(variables));
+                return new ReifiedBinXor(solver.getVar(variables[0]), solver.getVar(variables[1]), solver.getVar(variables[2]));
             }
         }
-
         if (Choco.DEBUG) {
-            throw new RuntimeException("Could not found implementation for ReifiedAnd");
+            throw new RuntimeException("Could not found implementation for ReifiedXor");
         }
         return null;
     }

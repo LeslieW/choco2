@@ -27,6 +27,7 @@ import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.goals.Goal;
+import choco.kernel.solver.goals.GoalType;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -82,4 +83,9 @@ public class Instantiate implements Goal {
     return GoalHelper.or(GoalHelper.setVal(var, val),
 				GoalHelper.and(GoalHelper.remVal(var, val), this));
 	}
+
+    @Override
+    public GoalType getType() {
+        return GoalType.INST;
+    }
 }

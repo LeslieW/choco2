@@ -22,9 +22,9 @@
 **************************************************/
 package choco.cp.solver.constraints.integer.bool;
 
-import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /*
@@ -33,70 +33,56 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 * Date : 26 oct. 2009
 * Since : Choco 2.1.1
 * Update : Choco 2.1.1
+*
+* b0 XOR b1
 */
-public class LargeAnd extends AbstractLargeIntSConstraint {
+public class BinXor extends AbstractBinIntSConstraint {
 
-    /**
-     * A constraint to ensure :
-     * b = AND_{i} vars[i]
-     *
-     * @param vars boolean variables
-     */
-    public LargeAnd(IntDomainVar[] vars) {
-        super(vars);
+    public BinXor(IntDomainVar b0, IntDomainVar b1) {
+        super(b0, b1);
     }
 
     @Override
     public int getFilteredEventMask(int idx) {
-        return 0;
-        // return 0x0B;
+        return IntVarEvent.INSTINTbitvector;
     }
+
 
     public void propagate() throws ContradictionException {
-        for(int i = 0; i < vars.length; i++){
-            vars[i].instantiate(1, cIndices[i]);
+		if (v0.isInstantiated()){
+            v1.instantiate(Math.abs(v0.getVal()-1), cIdx1);
         }
-    }
-
-    @Override
-    public void awakeOnInst(int idx) throws ContradictionException {
-    }
-
-    @Override
-    public void awakeOnInf(int varIdx) throws ContradictionException {
-
-    }
-    @Override
-    public void awakeOnSup(int varIdx) throws ContradictionException {
-
-    }
-    @Override
-    public void awakeOnBounds(int varIndex) throws ContradictionException {
-
-    }
-    @Override
-    public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
-
-    }
-
-    @Override
-    public boolean isSatisfied(int[] tuple) {
-        for (int aTuple : tuple) {
-            if (aTuple == 0) return false;
+        if (v1.isInstantiated()){
+            v0.instantiate(Math.abs(v1.getVal()-1), cIdx0);
         }
-        return true;
-    }
+	}
 
-    @Override
-    public Boolean isEntailed() {
-        for (IntDomainVar var : vars) {
-            if (var.isInstantiatedTo(0))
-                return Boolean.FALSE;
-        }
-        for (IntDomainVar var : vars) {
-            if (var.fastCanBeInstantiatedTo(1))
-                return null;
-        }
-        return Boolean.TRUE;
-    }
+	public void awakeOnInst(int idx) throws ContradictionException {
+		if (idx == 0) {
+			v1.instantiate(Math.abs(v0.getVal()-1), cIdx1);
+		} else {
+			v0.instantiate(Math.abs(v1.getVal()-1), cIdx0);
+		}
+	}
+
+  public void awakeOnInf(int varIdx) throws ContradictionException {
+  }
+
+  public void awakeOnSup(int varIdx) throws ContradictionException {
+  }
+
+  public void awakeOnRem(int varIdx, int val) throws ContradictionException {
+  }
+
+  public boolean isSatisfied(int[] tuple) {
+		return tuple[0] != tuple[1];
+	}
+
+	public Boolean isEntailed() {
+		if (v0.isInstantiated() &&
+				v1.isInstantiated())
+			return v0.getVal() != v1.getVal();
+		else return null;
+	}
+
 }
