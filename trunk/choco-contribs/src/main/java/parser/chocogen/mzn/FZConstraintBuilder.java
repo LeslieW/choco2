@@ -339,13 +339,13 @@ public class FZConstraintBuilder {
             } else if (name.contains(_le)) {
                 c = (leq(vars[0], vars[1]));
             } else if (name.contains(_and)) {
-                c = (reifiedIntConstraint(vars[2], and(eq(vars[0], 1), eq(vars[1], 1))));
+                c = (reifiedAnd(vars[2], vars[0], vars[1]));
             } else if (name.contains(_or)) {
-                c = (reifiedIntConstraint(vars[2], or(eq(vars[0], 1), eq(vars[1], 1))));
+                c = (reifiedOr(vars[2], vars[0], vars[1]));
             } else if (name.contains(_xor)) {
-                c = (reifiedIntConstraint(vars[2], or(and(eq(vars[0], 1), eq(vars[1], 0)), and(eq(vars[0], 0), eq(vars[1], 1)))));
+                c = (reifiedXor(vars[2], vars[0],vars[1]));
             } else if (name.contains(_not)) {
-                c = (reifiedIntConstraint(vars[2], not(eq(vars[0], vars[1]))));
+                c = (reifiedIntConstraint(vars[2], neq(vars[0], vars[1])));
             }
         }
         if(c!=null){
