@@ -64,5 +64,7 @@ public enum NodeType {
     SQUARE,
     TRUE,
     VARIABLELEAF,
+    XNOR,
+    XOR,
     ;
 }

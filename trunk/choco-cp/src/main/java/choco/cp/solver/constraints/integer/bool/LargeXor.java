@@ -22,6 +22,7 @@
 **************************************************/
 package choco.cp.solver.constraints.integer.bool;
 
+import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
@@ -30,36 +31,56 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /*
 * User : charles
 * Mail : cprudhom(a)emn.fr
-* Date : 26 oct. 2009
+* Date : 27 oct. 2009
 * Since : Choco 2.1.1
 * Update : Choco 2.1.1
 */
-public class LargeAnd extends AbstractLargeIntSConstraint {
+public class LargeXor extends AbstractLargeIntSConstraint {
 
     /**
      * A constraint to ensure :
-     * b = AND_{i} vars[i]
+     * b = XOR_{i} vars[i]
      *
      * @param vars boolean variables
      */
-    public LargeAnd(IntDomainVar[] vars) {
+    public LargeXor(IntDomainVar[] vars) {
         super(vars);
     }
 
     @Override
     public int getFilteredEventMask(int idx) {
-        return 0;
-        // return 0x0B;
+        return IntVarEvent.INSTINTbitvector;
     }
 
-    public void propagate() throws ContradictionException {
+    /**
+     * Default initial propagation: full constraint re-propagation.
+     */
+    @Override
+    public void awake() throws ContradictionException {
         for(int i = 0; i < vars.length; i++){
-            vars[i].instantiate(1, cIndices[i]);
+            if(vars[i].isInstantiated()){
+                filter(i);
+                break;
+            }
+        }
+    }
+
+    private void filter(int idx) throws ContradictionException {
+        int val = Math.abs(vars[idx].getVal()-1);
+        for(int i = 0; i < vars.length; i++){
+            if(idx!=i){
+                vars[i].instantiate(val, cIndices[i]);
+            }
         }
     }
 
     @Override
+    public void propagate() throws ContradictionException {
+    }
+
+    @Override
     public void awakeOnInst(int idx) throws ContradictionException {
+        filter(idx);
     }
 
     @Override
@@ -81,22 +102,25 @@ public class LargeAnd extends AbstractLargeIntSConstraint {
 
     @Override
     public boolean isSatisfied(int[] tuple) {
-        for (int aTuple : tuple) {
-            if (aTuple == 0) return false;
+        int cnt = 0;
+        for (int i = 0; i < tuple.length && cnt <=1; i++ ) {
+            if (tuple[i]== 1) cnt++;
         }
-        return true;
+        return cnt==1;
     }
 
     @Override
     public Boolean isEntailed() {
-        for (IntDomainVar var : vars) {
-            if (var.isInstantiatedTo(0))
-                return Boolean.FALSE;
-        }
-        for (IntDomainVar var : vars) {
-            if (var.fastCanBeInstantiatedTo(1))
+        int cnt = 0;
+        for (int i = 0; i < vars.length && cnt <= 1; i++) {
+            if (vars[i].isInstantiated()){
+                if(vars[i].getVal()==1){
+                    cnt++;
+                }
+            }else{
                 return null;
+            }
         }
-        return Boolean.TRUE;
+        return cnt==1;
     }
 }

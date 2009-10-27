@@ -22,16 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.solver.goals;
 
-import static choco.Choco.makeIntVar;
-import static choco.Choco.minus;
-import static choco.Choco.neq;
-import static choco.Choco.plus;
-import static org.junit.Assert.*;
-
-import java.util.logging.Logger;
-
-import org.junit.Test;
-
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.goals.choice.Generate;
@@ -42,6 +33,10 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+
+import java.util.logging.Logger;
 
 
 /**
@@ -95,10 +90,8 @@ public class SearchTest {
 			s.setIlogGoal(new Generate(s.getVar(vars)));
 		}
 
-		s.solve();
-		while (s.nextSolution()) {
-		}
-		LOGGER.info("Nb solutions = " + s.getNbSolutions());
+		s.solveAll();
+		LOGGER.warning("Nb solutions = " + s.getNbSolutions());
 
 		s.printRuntimeSatistics();
 		return s.getNodeCount();

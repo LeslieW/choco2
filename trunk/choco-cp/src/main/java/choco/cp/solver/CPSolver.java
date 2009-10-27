@@ -738,6 +738,9 @@ public class CPSolver implements Solver {
 	}
 
 
+    //TODO: remove when GoalSearchLoop is OK
+    private static boolean GOAL =false;
+
 	/**
 	 * Generate a search strategy to run over the tree search. The search
 	 * strategy is build, according to the choice of the user :
@@ -757,13 +760,17 @@ public class CPSolver implements Solver {
 			// There is no objective to reach
 			if (null == objective) {
 				// an ilogGoal has been defined
-				if (ilogGoal != null) {
-					strategy = new GoalSearchSolver(this, ilogGoal);
-				}
-				// Basic search strategy
-				else {
-					strategy = new GlobalSearchStrategy(this);
-				}
+				if(GOAL){
+                    if (ilogGoal != null) {
+                        strategy = new GoalSearchSolver(this, ilogGoal);
+                    }
+                    // Basic search strategy
+                    else {
+                        strategy = new GlobalSearchStrategy(this);
+                    }
+                }else{
+                    strategy = new GlobalSearchStrategy(this);
+                }
 			}
 			// there is an objective to reach
 			else {
@@ -796,7 +803,7 @@ public class CPSolver implements Solver {
 		);
 
 
-		if (ilogGoal == null) {
+        if(ilogGoal==null){
 			if (tempGoal == null) {
 				generateGoal();
 			} else {
@@ -824,20 +831,35 @@ public class CPSolver implements Solver {
 		return limitManager;
 	}
 
-	protected AbstractSearchLoopWithRestart generateSearchLoop() {
+	protected AbstractSearchLoop generateSearchLoop() {
 		final IKickRestart kickRestart = ( 
 				restartConfig.isRecordNogoodFromRestart() ? 
 						new NogoodKickRestart(strategy) : 
 							new BasicKickRestart(strategy)
 		); 
 
-		final AbstractSearchLoopWithRestart searchLoop =  (
-				useRecomputation() ? 
-						new SearchLoopWithRecomputation(strategy, kickRestart, getRecomputationGap()):
-							new SearchLoop(strategy, kickRestart) )
-							;
-		searchLoop.setRestartAfterEachSolution(restartConfig.isRestartAfterEachSolution());
-		searchLoop.setInitializeSearchAfterRestart(restartConfig.isInitializingSearchAfterRestart());
+        final AbstractSearchLoop searchLoop;
+        if(!GOAL){
+            if(ilogGoal!=null){
+                searchLoop = new GoalSearchLoop(strategy, ilogGoal);
+            }else{
+                searchLoop =  (
+                    useRecomputation() ?
+                            new SearchLoopWithRecomputation(strategy, kickRestart, getRecomputationGap()):
+                                new SearchLoop(strategy, kickRestart) )
+                                ;
+            ((AbstractSearchLoopWithRestart)searchLoop).setRestartAfterEachSolution(restartConfig.isRestartAfterEachSolution());
+            ((AbstractSearchLoopWithRestart)searchLoop).setInitializeSearchAfterRestart(restartConfig.isInitializingSearchAfterRestart());
+            }
+        }else{
+            searchLoop =  (
+                    useRecomputation() ?
+                            new SearchLoopWithRecomputation(strategy, kickRestart, getRecomputationGap()):
+                                new SearchLoop(strategy, kickRestart) )
+                                ;
+            ((AbstractSearchLoopWithRestart)searchLoop).setRestartAfterEachSolution(restartConfig.isRestartAfterEachSolution());
+            ((AbstractSearchLoopWithRestart)searchLoop).setInitializeSearchAfterRestart(restartConfig.isInitializingSearchAfterRestart());
+        }
 		strategy.setSearchLoop(searchLoop);
 		return searchLoop;
 	}

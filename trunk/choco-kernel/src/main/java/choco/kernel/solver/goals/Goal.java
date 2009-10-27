@@ -22,12 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.goals;
 
-import java.util.logging.Logger;
-
 import choco.IPretty;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+
+import java.util.logging.Logger;
 
 /*
  * Created by IntelliJ IDEA.
@@ -38,7 +38,10 @@ import choco.kernel.solver.Solver;
  */
 public interface Goal extends IPretty {
 
+
 	public final static Logger LOGGER = ChocoLogging.getBranchingLogger();
 
 	public Goal execute(Solver solver) throws ContradictionException;
+
+    public GoalType getType();
 }

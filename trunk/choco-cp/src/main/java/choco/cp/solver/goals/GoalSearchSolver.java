@@ -23,16 +23,16 @@
 package choco.cp.solver.goals;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-
 import choco.cp.solver.goals.choice.Generate;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.goals.solver.ChoicePoint;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Created by IntelliJ IDEA.
@@ -41,6 +41,7 @@ import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
  * Time: 09:10:43
  * To change this template use File | Settings | File Templates.
  */
+@Deprecated
 public class GoalSearchSolver extends AbstractGlobalSearchStrategy {
 
 

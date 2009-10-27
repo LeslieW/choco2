@@ -89,6 +89,8 @@ public enum ConstraintType {
     REIFIEDAND("reifiedAnd", "constraint.reifiedAnd"),
     REIFIEDINTCONSTRAINT("reifiedintconstraint", "constraint.reifiedintconstraint"),
     REIFIEDOR("reifiedOr", "constraint.reifiedOr"),
+    REIFIEDXNOR("reifiedXnor", "constraint.reifiedXnor"),
+    REIFIEDXOR("reifiedXor", "constraint.reifiedXor"),
     SETDISJOINT("setDisjoint", "constraint.setDisjoint"),
     SETINTER("setInter", "constraint.setInter"),
     SETUNION("union", "constraint.union"),
@@ -99,8 +101,10 @@ public enum ConstraintType {
     METATASKCONSTRAINT("Meta Task Constraint","constraint.metaTaskConstraint"),
     TIMES("times", "constraint.times"),
     TREE("tree", "constraint.tree"),
-    TRUE("true", "constraint.true"),;
-
+    TRUE("true", "constraint.true"),
+    XNOR("xnor", "constraint.xnor"),
+    XOR("xor", "constraint.xor"),
+    ;
 
     public final String name;
     public final String property;

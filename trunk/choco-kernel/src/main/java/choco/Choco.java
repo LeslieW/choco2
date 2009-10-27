@@ -2037,7 +2037,7 @@ public class Choco{
 	 */
 	public static Constraint inverseChanneling(IntegerVariable[] x, IntegerVariable[] y) {
 		if (y.length != x.length) {
-			throw new SolverException("not a valid inverse channeling constraint with two arrays of different sizes");
+			throw new ModelException("not a valid inverse channeling constraint with two arrays of different sizes");
 		}
 		return new ComponentConstraint<IntegerVariable>(ConstraintType.INVERSECHANNELING, ConstraintType.INVERSECHANNELING, ArrayUtils.append(x, y));
 	}
@@ -2045,6 +2045,9 @@ public class Choco{
 	/**
 	 * state a channeling between the domain of the variable x and the array of boolean variables b which enforce:
 	 * x = i <=> b[i] = 1
+     * @param x  domain variable
+     * @param b 0-1 variables for potential values
+     * @return DomainConstraint
 	 */
 	public static Constraint domainConstraint(IntegerVariable x, IntegerVariable[] b) {
 		return new ComponentConstraint<IntegerVariable>(
@@ -2054,7 +2057,7 @@ public class Choco{
 	
 	
 
-	/**
+    /**
 	 * All different constraints with a global filtering :
 	 * v1 != v2, v1 != v3, v2 != v3 ... For each (i,j), v_i != v_j
 	 * If vars is a table of BoundIntegerVariable a dedicated algorithm is used. In case
@@ -3365,6 +3368,7 @@ public class Choco{
 
     /**
      * A constraint for logical disjunction between boolean variables
+     * lit1 OR lit2 OR ... OR litn
      * @param literals list of boolean variables
      * @return Constraint
      */
@@ -3377,6 +3381,7 @@ public class Choco{
 
     /**
      * A reified constraint for logical disjunction between boolean variables
+     * binVar = lit1 OR lit2 OR ... OR litn
      * @param binVar reified variable
      * @param literals list of boolean variables
      * @return Constraint
@@ -3391,6 +3396,7 @@ public class Choco{
 
     /**
      * A constraint for logical conjunction between boolean variables
+     * lit1 AND lit2 AND ... AND litn
      * @param literals list of boolean variables
      * @return Constraint
      */
@@ -3403,6 +3409,7 @@ public class Choco{
 
     /**
      * A reified constraint for logical conjunction between boolean variables
+     * binVar = lit1 AND lit2 AND ... AND litn
      * @param binVar reified variable
      * @param literals list of boolean variables
      * @return Constraint
@@ -3413,6 +3420,83 @@ public class Choco{
             if(!var.isBoolean())throw new ModelException("reifiedOr constraint must be used with boolean variables");
         }
         return new ComponentConstraint<IntegerVariable>(ConstraintType.REIFIEDAND, null, vars);
+    }
+
+    /**
+     * A reified constraint for logical negation
+     * binVar = NOT(lit)
+     * @param binVar reified variable
+     * @param lit literal
+     * @return Constraint
+     */
+    public static Constraint reifiedNot(IntegerVariable binVar, IntegerVariable lit) {
+		IntegerVariable[] vars = new IntegerVariable[]{binVar, lit};
+        for(IntegerVariable var : vars){
+            if(!var.isBoolean())throw new ModelException("xor constraint must be used with boolean variables");
+        }
+        return new ComponentConstraint<IntegerVariable>(ConstraintType.XOR, null, vars);
+	}
+
+    /**
+     * A reified constraint for logical exclusive disjunctive
+     * lit1 XOR lit2
+     * @param lit1 literal
+     * @param lit2 literal
+     * @return Constraint
+     */
+    public static Constraint xor(IntegerVariable lit1, IntegerVariable lit2) {
+		IntegerVariable[] lits = new IntegerVariable[]{lit1, lit2};
+        for(IntegerVariable var : lits){
+            if(!var.isBoolean())throw new ModelException("xor constraint must be used with boolean variables");
+        }
+        return new ComponentConstraint<IntegerVariable>(ConstraintType.XOR, null, lits);
+	}
+
+    /**
+     * A reified constraint for logical exclusive disjunction between boolean variables
+     * binVar = lit1 XOR lit2
+     * @param binVar reified variable
+     * @param lit1 literal
+     * @param lit2 literal
+     * @return Constraint
+     */
+    public static Constraint reifiedXor(IntegerVariable binVar, IntegerVariable lit1, IntegerVariable lit2){
+        IntegerVariable[] vars = new IntegerVariable[]{binVar, lit1, lit2};
+        for(IntegerVariable var : vars){
+            if(!var.isBoolean())throw new ModelException("reifiedXor constraint must be used with boolean variables");
+        }
+        return new ComponentConstraint<IntegerVariable>(ConstraintType.REIFIEDXOR, null, vars);
+    }
+
+    /**
+     * A reified constraint for logical equality
+     * lit1 XNOR lit2
+     * @param lit1 literal
+     * @param lit2 literal
+     * @return Constraint
+     */
+    public static Constraint xnor(IntegerVariable lit1, IntegerVariable lit2) {
+		IntegerVariable[] lits = new IntegerVariable[]{lit1, lit2};
+        for(IntegerVariable var : lits){
+            if(!var.isBoolean())throw new ModelException("xnor constraint must be used with boolean variables");
+        }
+        return new ComponentConstraint<IntegerVariable>(ConstraintType.XNOR, null, lits);
+	}
+
+    /**
+     * A reified constraint for logical equality
+     * binVar = lit1 XNOR lit2
+     * @param binVar reified variable
+     * @param lit1 literal
+     * @param lit2 literal
+     * @return Constraint
+     */
+    public static Constraint reifiedXnor(IntegerVariable binVar, IntegerVariable lit1, IntegerVariable lit2){
+        IntegerVariable[] vars = new IntegerVariable[]{binVar, lit1, lit2};
+        for(IntegerVariable var : vars){
+            if(!var.isBoolean())throw new ModelException("reifiedXnor constraint must be used with boolean variables");
+        }
+        return new ComponentConstraint<IntegerVariable>(ConstraintType.REIFIEDXNOR, null, vars);
     }
 
 	// ############################################################################################################

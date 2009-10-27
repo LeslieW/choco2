@@ -25,6 +25,7 @@ package choco.kernel.solver.goals.solver;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.goals.Goal;
+import choco.kernel.solver.goals.GoalType;
 
 
 /*
@@ -58,7 +59,12 @@ public class ChoicePoint implements Goal {
     return null;
   }
 
-  public Goal getChoice(int choiceIndex) {
+    @Override
+    public GoalType getType() {
+        return GoalType.CHOICE;
+    }
+
+    public Goal getChoice(int choiceIndex) {
     return choices[choiceIndex];
   }
 

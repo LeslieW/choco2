@@ -56,7 +56,7 @@ public class ReifiedLargeAnd  extends AbstractLargeIntSConstraint {
 
     /**
      * A constraint to ensure :
-     * b = OR_{i} vars[i]
+     * b = AND_{i} vars[i]
      *
      * @param vars boolean variables, first one is the reified variable
      */

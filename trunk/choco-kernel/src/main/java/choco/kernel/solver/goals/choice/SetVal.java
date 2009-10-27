@@ -29,6 +29,7 @@ import choco.kernel.solver.branch.AbstractBranchingStrategy;
 import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 import choco.kernel.solver.branch.BranchingWithLoggingStatements;
 import choco.kernel.solver.goals.Goal;
+import choco.kernel.solver.goals.GoalType;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.logging.Level;
@@ -65,4 +66,9 @@ public final class SetVal implements Goal {
 		var.setVal(val);
 		return null;
 	}
+
+    @Override
+    public GoalType getType() {
+        return GoalType.SET;
+    }
 }
