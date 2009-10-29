@@ -22,13 +22,5 @@ $$x<y$$
       global constraint catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Clt.html}{lt}
 \end{itemize}
 
-\textbf{Example:}
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s = new CPSolver();
-	int c = 1;
-	IntegerVariable v = makeIntVar("v", 0, 2);
-	m.addConstraint(lt(v, c));
-	s.read(m);
-	s.solve();
-\end{lstlisting}
+\textbf{Example}:
+\lstinputlisting{java/clt.j2t}

@@ -33,6 +33,8 @@ import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 
 import java.util.ArrayList;
 
@@ -97,7 +99,7 @@ public class Code4Doc3 {
         }
         int[] LB2 = {0, 1, 1, 0, 3};
         int[] UB2 = {0, 1, 1, 0, 3};
-        m.addConstraint("cp:bc", globalCardinality(vars, 1, n, LB2, UB2));
+        m.addConstraint("cp:bc", globalCardinality(vars, LB2, UB2));
         s.read(m);
         s.solve();
         //totex
@@ -125,6 +127,7 @@ public class Code4Doc3 {
         m.addVariables("cp:bound",x ,y, z);
         m.addConstraint(ifOnlyIf(lt(x, y), lt(y, z)));
         s.read(m);
+        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
         s.solveAll();
         //totex
     }
@@ -183,11 +186,11 @@ public class Code4Doc3 {
         IntegerVariable x = makeIntVar("x", 1, 5);
         IntegerVariable y = makeIntVar("y", 1, 5);
         IntegerVariable z = makeIntVar("z", 1, 5);
-        ArrayList forbiddenTuples = new ArrayList();
+        ArrayList<int[]> forbiddenTuples = new ArrayList<int[]>();
         forbiddenTuples.add(new int[]{1, 1, 1});
         forbiddenTuples.add(new int[]{2, 2, 2});
         forbiddenTuples.add(new int[]{2, 5, 3});
-        m.addConstraint(infeasTupleAC(forbiddenTuples, new IntegerVariable[]{x, y, z}));
+        m.addConstraint(infeasTupleAC(forbiddenTuples, x, y, z));
         s.read(m);
         s.solveAll();
         //totex
@@ -200,11 +203,11 @@ public class Code4Doc3 {
         IntegerVariable x = makeIntVar("x", 1, 5);
         IntegerVariable y = makeIntVar("y", 1, 5);
         IntegerVariable z = makeIntVar("z", 1, 5);
-        ArrayList forbiddenTuples = new ArrayList();
+        ArrayList<int[]> forbiddenTuples = new ArrayList<int[]>();
         forbiddenTuples.add(new int[]{1, 1, 1});
         forbiddenTuples.add(new int[]{2, 2, 2});
         forbiddenTuples.add(new int[]{2, 5, 3});
-        m.addConstraint(infeasTupleFC(forbiddenTuples, new IntegerVariable[]{x, y, z}));
+        m.addConstraint(infeasTupleFC(forbiddenTuples, x, y, z));
         s.read(m);
         s.solveAll();        
         //totex
@@ -318,17 +321,53 @@ public class Code4Doc3 {
         //totex clex
         Model m = new CPModel();
         Solver s = new CPSolver();
-        int n1 = 8;
+        int n = 4;
         int k = 2;
-        IntegerVariable[] vs1 = new IntegerVariable[n1 / 2];
-        IntegerVariable[] vs2 = new IntegerVariable[n1 / 2];
-        for (int i = 0; i < n1 / 2; i++) {
+        IntegerVariable[] vs1 = new IntegerVariable[n];
+        IntegerVariable[] vs2 = new IntegerVariable[n];
+        for (int i = 0; i < n; i++) {
            vs1[i] = makeIntVar("" + i, 0, k);
            vs2[i] = makeIntVar("" + i, 0, k);
         }
         m.addConstraint(lex(vs1, vs2));
         s.read(m);
         s.solve();        
+        //totex
+    }
+
+    public void clexchain(){
+        //totex clexchain
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+        int n = 4;
+        int k = 2;
+        IntegerVariable[] vs1 = new IntegerVariable[n];
+        IntegerVariable[] vs2 = new IntegerVariable[n];
+        for (int i = 0; i < n; i++) {
+           vs1[i] = makeIntVar("" + i, 0, k);
+           vs2[i] = makeIntVar("" + i, 0, k);
+        }
+        m.addConstraint(lexChain(vs1, vs2));
+        s.read(m);
+        s.solve();
+        //totex
+    }
+
+    public void clexchaineq(){
+        //totex clexchaineq
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+        int n = 4;
+        int k = 2;
+        IntegerVariable[] vs1 = new IntegerVariable[n];
+        IntegerVariable[] vs2 = new IntegerVariable[n];
+        for (int i = 0; i < n; i++) {
+           vs1[i] = makeIntVar("" + i, 0, k);
+           vs2[i] = makeIntVar("" + i, 0, k);
+        }
+        m.addConstraint(lexChainEq(vs1, vs2));
+        s.read(m);
+        s.solve();
         //totex
     }
 }

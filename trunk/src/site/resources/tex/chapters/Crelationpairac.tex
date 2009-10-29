@@ -30,23 +30,6 @@ The API is duplicated to allow definition of options.
 \end{itemize}
 
 \textbf{Example}:
-\begin{lstlisting}
-	private class MyEquality extends CouplesTest {
-	
-	    public boolean checkCouple(int x, int y) {
-	    return x == y;
-	    }
-	
-	    public void example(){
-	        Model m = new CPModel();
-	        Solver s = new CPSolver();
-	        IntegerVariable v1 = makeIntVar("v1", 1, 4);
-	        IntegerVariable v2 = makeIntVar("v2", 1, 4);    
-	        IntegerVariable v3 = makeIntVar("v3", 3, 6);
-	        m.addConstraint(relationPairAC("cp:ac32",v1, v2, new MyEquality()));
-	        m.addConstraint(relationPairAC("cp:ac32",v2, v3, new MyEquality()));
-	        s.read(m);
-	        s.solveAll();
-	   }
-	}
-\end{lstlisting} 
+\lstinputlisting{java/crelationpairac_import.j2t}
+\lstinputlisting{java/ccoupletest.j2t}
+\lstinputlisting{java/crelationpairac.j2t}

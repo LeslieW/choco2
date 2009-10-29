@@ -21,20 +21,5 @@ $$\exists\ j\in\{1,\ldots,n\}\ |\qquad x_j\le y_j\quad \land\quad x_i=y_i\ (\for
 \end{itemize}
 
 \textbf{Example}:
-\begin{lstlisting}
-	Model pb = new CPModel();
-	Solver s = new CPSolver();
-	
-	int n1 = 8;
-	int k = 2;
-	IntegerVariable[] vs1 = new IntegerVariable[n1 / 2];
-	IntegerVariable[] vs2 = new IntegerVariable[n1 / 2];
-	for (int i = 0; i < n1 / 2; i++) {
-	   vs1[i] = makeIntVar("" + i, 0, k);
-	   vs2[i] = makeIntVar("" + i, 0, k);
-	}
-	
-	m.addConstraint(lexeq(vs1, vs2));
-	s.read(m);
-	s.solve();
-\end{lstlisting} 
+\textbf{Example}:
+\lstinputlisting{java/clexeq.j2t}

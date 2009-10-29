@@ -27,17 +27,7 @@ $$z = \min(x_1, x_2, ..., x_n).$$
 \end{itemize}
 
 \textbf{Example}:
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s= new CPSolver();
-	IntegerVariable x = makeIntVar("x", 1, 5);
-	IntegerVariable y = makeIntVar("y", 1, 5);
-	IntegerVariable z = makeIntVar("z", 1, 5);
-	m.addVariable("cp:bound", x, y, z);
-	m.addConstraint(min(y, z, x));
-	s.read(m);
-	s.solve();
-\end{lstlisting}
+\lstinputlisting{java/cmin1.j2t}
 
 \subsection{min of a set}\label{min:minofaset}\hypertarget{min:minofaset}{}
 
@@ -56,13 +46,5 @@ $$z = \min_{i\in s}( x_i ).$$
 	\item \textbf{favorite domain} : \emph{to complete}
 \end{itemize}
 
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s= new CPSolver();
-	IntegerVariable[] x = constantArray(new int[]{5,7,9,10,12,3,2});
-	IntegerVariable min = makeIntVar("min", 1, 100);
-	SetVariable set = makeSetVar("set", 0, x.length-1);
-	m.addConstraints(min(set, x, max), leqCard(set, constant(5)));
-	s.read(m);
-	s.solve();
-\end{lstlisting}
+\textbf{Example}:
+\lstinputlisting{java/cmin2.j2t}

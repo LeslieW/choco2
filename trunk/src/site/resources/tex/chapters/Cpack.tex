@@ -44,10 +44,5 @@ $$ i\in\mathtt{items}[b]\ \iff\ \mathtt{bin}[i]=b,\quad\forall \text{ bin } b,\ 
 \textbf{Example}:
 
 Take a look at \emph{choco.samples.pack} to see advanced use of the constraint.
-\begin{lstlisting}
-	Model m = new CPModel();
-	m.addConstraint(Choco.pack(new int[]{5,3,2,6,8,5},5,10, SettingType.ADDITIONAL_RULES.getOptionName()));
-	Solver s = new CPSolver();
-	s.read(m);
-	s.solve();
-\end{lstlisting} 
+\lstinputlisting{java/cpack_import.j2t}
+\lstinputlisting{java/cpack.j2t}

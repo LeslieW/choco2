@@ -26,14 +26,4 @@ $$x\in s.$$
 \end{itemize}
 
 \textbf{Example}:
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s = new CPSolver();
-	int x = 3;
-	int card = 2;
-	SetVariable y = makeSetVar("y", 2, 4);
-	m.addConstraint(member(y, x));
-	m.addConstraint(eqCard(y, card));
-	s.read(m);
-	s.solveAll();
-\end{lstlisting} 
+\lstinputlisting{java/cmember.j2t}

@@ -26,30 +26,8 @@ $$ b_1=1 \lor b_2=1 \lor\ldots\lor b_n=1$$
 \begin{itemize}
 	\item example1:
 \end{itemize}
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s = new CPSolver();
-	
-	IntegerVariable v1 = makeIntVar("v1", 0, 1);
-	IntegerVariable v2 = makeIntVar("v2", 0, 1);
-	
-	m.addConstraint(or(eq(v1, 1), eq(v2, 1)));
-	
-	s.read(m);
-	s.solve();
-\end{lstlisting}
+\lstinputlisting{java/cor1.j2t}
 \begin{itemize}
 	\item example2
 \end{itemize}
-\begin{lstlisting}
-public void cand2() {
-        //totex cor2
-        Model m = new CPModel();
-        Solver s = new CPSolver();
-        IntegerVariable[] vars = makeBooleanVarArray("b", 10);
-        m.addConstraint(or(vars));
-        s.read(m);
-        s.solve();
-        //totex
-    }
-\end{lstlisting}
+\lstinputlisting{java/cor2.j2t}

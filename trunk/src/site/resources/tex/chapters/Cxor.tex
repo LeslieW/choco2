@@ -5,7 +5,7 @@
 \section{xor (constraint)}\label{xor:xorconstraint}\hypertarget{xor:xorconstraint}{}
 \begin{notedef}
     \texttt{xor}$(b_1,b_2)$ states that the 0-1 variables in arguments take distinct value:
-$$ (b_1=1 \lxor b_2=0) \lor (b_1=0 \lxor b_2=1)$$
+$$ (b_1=1 \land b_2=0) \lor (b_1=0 \land b_2=1)$$
 \end{notedef}
 
 \begin{itemize}
@@ -16,12 +16,4 @@ $$ (b_1=1 \lxor b_2=0) \lor (b_1=0 \lxor b_2=1)$$
 \end{itemize}
 
 \textbf{Examples:}
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s = new CPSolver();
-	IntegerVariable v1 = makeIntVar("v1", 0, 1);
-	IntegerVariable v2 = makeIntVar("v2", 0, 1);
-	m.addConstraint(xor(v1,v2)));
-	s.read(m);
-	s.solve();
-\end{lstlisting}
+\lstinputlisting{java/cxor.j2t}

@@ -3,3 +3,21 @@
 \hypertarget{neqcard}{}
 
 \section{neqCard (constraint)}\label{neqcard:neqcardconstraint}\hypertarget{neqcard:neqcardconstraint}{}
+\begin{notedef}
+  \texttt{neqCard}$(s,x)$ states that the cardinality of set $s$ is not equal to $x$:
+$$|s| != x$$
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} :
+	\begin{itemize}
+		\item \mylst{neqCard(SetVariable s, IntegerVariable x)}
+		\item \mylst{neqCard(SetVariable s, int x)}
+	\end{itemize}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : \emph{to complete}
+\end{itemize}
+
+\textbf{Example}:
+\lstinputlisting{java/cneqcard.j2t}
