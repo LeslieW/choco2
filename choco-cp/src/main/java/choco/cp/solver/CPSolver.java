@@ -739,7 +739,7 @@ public class CPSolver implements Solver {
 
 
     //TODO: remove when GoalSearchLoop is OK
-    private static boolean GOAL =false;
+    public static boolean GOAL =false;
 
 	/**
 	 * Generate a search strategy to run over the tree search. The search
