@@ -21,15 +21,4 @@ $$x_3=x_1\times x_2.$$
 \end{itemize}
 
 \textbf{Example}:
-\begin{lstlisting}
-	Model m = new CPModel();
-	IntegerVariable x = makeIntVar("x", 1, 2);
-	IntegerVariable y = makeIntVar("y", 3, 5);
-	IntegerVariable z = makeIntVar("z", 3, 10);
-	m.addConstraint(times(x, y, z));
-	s.setVarIntSelector(new RandomIntVarSelector(s, i));
-	s.setValIntSelector(new RandomIntValSelector(i + 1));
-	s.read(m);
-	s.solve();
-\end{lstlisting}
-
+\lstinputlisting{java/ctimes.j2t}

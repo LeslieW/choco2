@@ -27,17 +27,7 @@ $$z = \max(x_1, x_2, ..., x_n)$$
 \end{itemize}
 
 \textbf{Example}:
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s= new CPSolver();
-	IntegerVariable x = makeIntVar("x", 1, 5);
-	IntegerVariable y = makeIntVar("y", 1, 5);
-	IntegerVariable z = makeIntVar("z", 1, 5);
-	m.addVariable("cp:bound", x, y, z);
-	m.addConstraint(max(y, z, x));
-	s.read(m);
-	s.solve();
-\end{lstlisting}
+\lstinputlisting{java/cmax1.j2t}
 
 \subsection{max of a set}\label{max:maxofaset}\hypertarget{max:maxofaset}{}
 
@@ -56,13 +46,5 @@ $$z = \max_{i\in s}( x_i )$$
 	\item \textbf{favorite domain} : \emph{to complete}
 \end{itemize}
 
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s= new CPSolver();
-	IntegerVariable[] x = constantArray(new int[]{5,7,9,10,12,3,2});
-	IntegerVariable max = makeIntVar("max", 1, 100);
-	SetVariable set = makeSetVar("set", 0, x.length-1);
-	m.addConstraints(max(set, x, max), leqCard(set, constant(5)));
-	s.read(m);
-	s.solve();
-\end{lstlisting}
+\textbf{Example}:
+\lstinputlisting{java/cmax2.j2t}

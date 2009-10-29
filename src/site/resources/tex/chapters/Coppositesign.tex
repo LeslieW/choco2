@@ -4,12 +4,16 @@
 
 \section{oppositeSign (constraint)}\label{oppositesign:oppositesignconstraint}\hypertarget{oppositesign:oppositesignconstraint}{}
 
-\todo{verify case 0}
 
 \begin{notedef}
   \texttt{oppositeSign}$(x,y)$ states that the two arguments have opposite signs:
 $$xy\le 0$$
 \end{notedef}
+
+\begin{notedef}
+  0 is considered as both sign, if one argument is equal to 0, the constraint is not satisfied.
+\end{notedef}
+
 
 \begin{itemize}
 	\item \textbf{API} : \mylst{oppositeSign(IntegerExpressionVariable x, IntegerExpressionVariable y)}
@@ -19,15 +23,4 @@ $$xy\le 0$$
 \end{itemize}
 
 \textbf{Example}:
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s = new CPSolver();
-	IntegerVariable x = makeIntVar("x", -1, 1);
-	IntegerVariable y = makeIntVar("y", -1, 1);
-	IntegerVariable z = makeIntVar("z", 0, 1000);
-	m.addConstraint(oppositeSign(x,y));
-	m.addConstraint(eq(z, plus(mult(x, -425), mult(y, 391))));
-	s.read(m);
-	s.solve();
-	System.out.println(s.getVar(z).getVal());
-\end{lstlisting} 
+\lstinputlisting{java/coppositesign.j2t} 

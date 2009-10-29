@@ -30,17 +30,4 @@ The second API attends to reify user-defined constraints as it allows the user t
 
 \textbf{Example}:
 
-\begin{lstlisting}
-	CPModel m = new CPModel();
-	CPSolver s = new CPSolver();
-	
-	IntegerVariable b = makeIntVar("b", 0, 1);
-	IntegerVariable x = makeIntVar("x", 0, 10);
-	IntegerVariable y = makeIntVar("y", 0, 10);
-	
-    // reified constraint (x<=y)
-    m.addConstraint(reifiedIntConstraint(b, leq(x, y)));
-	
-	s.read(m);
-	s.solveAll();
-\end{lstlisting}
+\lstinputlisting{java/creifiedintconstraint.j2t}

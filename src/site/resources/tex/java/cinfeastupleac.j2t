@@ -3,10 +3,10 @@
         IntegerVariable x = makeIntVar("x", 1, 5);
         IntegerVariable y = makeIntVar("y", 1, 5);
         IntegerVariable z = makeIntVar("z", 1, 5);
-        ArrayList forbiddenTuples = new ArrayList();
+        ArrayList<int[]> forbiddenTuples = new ArrayList<int[]>();
         forbiddenTuples.add(new int[]{1, 1, 1});
         forbiddenTuples.add(new int[]{2, 2, 2});
         forbiddenTuples.add(new int[]{2, 5, 3});
-        m.addConstraint(infeasTupleAC(forbiddenTuples, new IntegerVariable[]{x, y, z}));
+        m.addConstraint(infeasTupleAC(forbiddenTuples, x, y, z));
         s.read(m);
         s.solveAll();

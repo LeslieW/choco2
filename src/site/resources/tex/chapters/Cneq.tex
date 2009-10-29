@@ -27,27 +27,10 @@ $$x \neq y.$$
 	\item example1:
 \end{itemize}
 
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s = new CPSolver();
-	int c = 1;
-	IntegerVariable v = makeIntVar("v", 0, 2);
-	m.addConstraint(neq(v, c));
-	s.read(m);
-	s.solve();
-\end{lstlisting}
+\lstinputlisting{java/cneq1.j2t}
+
 \begin{itemize}
 	\item example2
 \end{itemize}
 
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s = new CPSolver();
-	IntegerVariable v1 = makeIntVar("v1", 0, 2);
-	IntegerVariable v2 = makeIntVar("v2", 0, 2);
-	IntegerExpressionVariable w1 = plus(v1, 1);
-	IntegerExpressionVariable w2 = minus(v2, 1);
-	m.addConstraint(neq(w1, w2));
-	s.read(m);
-	s.solve();
-\end{lstlisting}
+\lstinputlisting{java/cneq2.j2t}

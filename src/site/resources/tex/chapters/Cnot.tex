@@ -15,13 +15,4 @@ $$\neg c$$
 \end{itemize}
 
 \textbf{Example} : 
-\begin{lstlisting}
-	Model m = new CPModel();
-	Solver s = new CPSolver();
-	IntegerVariable x = makeIntVar("x", 1, 10);
-	// x < 3
-	m.addConstraint(not(geq(x, 3)));
-	
-	s.read(m);
-	s.solve();
-\end{lstlisting}
+\lstinputlisting{java/cnot.j2t}
