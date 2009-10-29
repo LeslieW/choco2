@@ -101,13 +101,24 @@ public class Code4Doc2 {
         //totex
     }
 
-    public void cand() {
-        //totex cand
+    public void cand1() {
+        //totex cand1
         Model m = new CPModel();
         Solver s = new CPSolver();
         IntegerVariable v1 = makeIntVar("v1", 0, 1);
         IntegerVariable v2 = makeIntVar("v2", 0, 1);
         m.addConstraint(and(eq(v1, 1), eq(v2, 1)));
+        s.read(m);
+        s.solve();
+        //totex
+    }
+
+    public void cand2() {
+        //totex cand2
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+        IntegerVariable[] vars = makeBooleanVarArray("b", 10);
+        m.addConstraint(and(vars));
         s.read(m);
         s.solve();
         //totex
@@ -242,6 +253,18 @@ public class Code4Doc2 {
         IntegerVariable v0 = makeIntVar("v0", 0, 5);
         IntegerVariable v1 = makeIntVar("v1", 0, 5);
         m.addConstraint(distanceNEQ(v0, v1, 0));
+        s.read(m);
+        s.solveAll();
+        //totex
+    }
+
+    public void cdomainconstraint(){
+        //totex cdomainconstraint
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+        IntegerVariable bVar = makeIntVar("bVar", 0, 10);
+        IntegerVariable[] values = makeBooleanVarArray("value", 10);
+        m.addConstraint(domainConstraint(bVar, values));
         s.read(m);
         s.solveAll();
         //totex

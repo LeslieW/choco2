@@ -199,7 +199,7 @@
     </faq>  
 
     <faq id="maven">
-      <question>How do I install CHOCO using Maven</question>
+      <question>How do I install CHOCO using Maven?</question>
       <answer>
         <p>
 	Once you obtained the latest sources, there are a few steps you can do to deal with those. 
@@ -211,7 +211,7 @@
 	<ul>
 	<li>To install CHOCO, run the maven command:</li>
 	<code>
-		mvn clean install
+		mvn clean install -Dmaven.test.skip=true
 	</code>
 	<li>To build the project for your IDE:</li>
 		<ul>
@@ -247,7 +247,20 @@
 	Please refer to the <a href="http://maven.apache.org/" target="_blank">Maven web site</a> for other life cycle command.
 	</p>
       </answer>
-    </faq>  
+    </faq>
+
+     <faq id="eclipse_source">
+      <question>I'm working with the sources in Eclipse environment, and I get "new sun.security.action.GetPropertyAction("line.separator"));" error</question>
+      <answer>
+        <p>
+	You have to define an <i>access rule</i> to allow the access of the constructor GetPropertyAction(String) to Eclipse.
+	</p>
+	<ul>
+	<li>Go into <b>Project/Properties/Java build path</b>, on the <b>Librairies</b> tab</li>
+	<li>Select your JRE and left-clic on <b>Access rules</b></li>
+	<li>Edit this entry to set <i>sun.security.action</i> accessible</li>
+      </answer>
+    </faq>
   </part>
 </faqs>
 
