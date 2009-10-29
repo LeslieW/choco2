@@ -1,0 +1,23 @@
+%\part{domainconstraint}
+\label{domainconstraint}
+\hypertarget{domainconstraint}{}
+
+\section{domainconstraint (constraint)}\label{domainconstraint:domainconstraintconstraint}\hypertarget{domainconstraint:domainconstraintconstraint}{}
+\begin{notedef}  
+\texttt{domainConstraint}$(bVar,values)$ states that $values[i]$ is equal to 1 if and only if $bVar$ is equal to $i$ (0 otherwise):
+$$values[i]=1\quad\iff\quad (bVar=i)$$ 
+\end{notedef}
+
+It makes the link between a domain variable $bVar$ and those 0-1 variables that are associated with each potential value of $bVar$: the 0-1 variable associated with the value that is taken by variable $bVar$ is equal to 1, while the remaining 0-1 variables are all equal to 0.
+
+\begin{itemize}
+	\item \textbf{API} : \mylst{domainConstraint(IntegerVariable bVar, IntegerVariable[] values)}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : enumerated for $bVar$
+	\item \textbf{references} :\\
+	  global constraint catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Cdomain_constraint.html}{\tt domainConstraint}
+\end{itemize}
+
+\textbf{Example}:
+\lstinputlisting{java/cdomainconstraint.j2t}

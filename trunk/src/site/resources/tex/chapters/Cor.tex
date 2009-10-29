@@ -6,16 +6,26 @@
 \begin{notedef}
   \texttt{or}$(c_1,\ldots,c_n)$ states that one or more of the constraints in arguments are satisfied:
 $$ c_1 \lor c_2 \lor\ldots\lor c_n$$
+
+  \texttt{or}$(b_1,\ldots,b_n)$ states that one or more of the 0-1  variables in arguments are true (equal to 1):
+$$ b_1=1 \lor b_2=1 \lor\ldots\lor b_n=1$$
 \end{notedef}
 
 \begin{itemize}
-	\item \textbf{API} : \mylst{or(Constraint... c)}
+\item \textbf{API} : 
+\begin{itemize}
+\item \mylst{or(Constraint... c)}
+\item \mylst{or(IntegerVariable... b)}
+\end{itemize}
 	\item \textbf{return type} : \texttt{Constraint}
 	\item \textbf{options} : \emph{n/a}
 	\item \textbf{favorite domain} : \emph{n/a}
 \end{itemize}
 
-\textbf{Example}:
+\textbf{Examples:}
+\begin{itemize}
+	\item example1:
+\end{itemize}
 \begin{lstlisting}
 	Model m = new CPModel();
 	Solver s = new CPSolver();
@@ -27,4 +37,19 @@ $$ c_1 \lor c_2 \lor\ldots\lor c_n$$
 	
 	s.read(m);
 	s.solve();
+\end{lstlisting}
+\begin{itemize}
+	\item example2
+\end{itemize}
+\begin{lstlisting}
+public void cand2() {
+        //totex cor2
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+        IntegerVariable[] vars = makeBooleanVarArray("b", 10);
+        m.addConstraint(or(vars));
+        s.read(m);
+        s.solve();
+        //totex
+    }
 \end{lstlisting}
