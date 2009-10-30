@@ -62,9 +62,9 @@ public class DbManager {
 
 	public final SingleConnectionDataSource sdataSource;
 
-	protected final JdbcTemplate jdbcTemplate;
+	public final JdbcTemplate jdbcTemplate;
 
-	protected final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+	public final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 	private Integer environmentID;
 
@@ -164,15 +164,12 @@ public class DbManager {
 	//*******************  T_SOLVERS  *********************************//
 	//***************************************************************//
 
-	
-	protected final Integer getModelID(Solver solver) {
+
+	public final Integer getModelID(Solver solver) {
 		return solver == null ?
 				retrieveGPKOrInsertEntry(DbTables.T_MODELS, DbTables.EMPTY_MODEL) :		
 					retrieveGPKOrInsertEntry(DbTables.T_MODELS, new BeanPropertySqlParameterSource(solver));
 	}
-
-
-
 
 	public final void insertConfiguration(Integer solverID,  String description) {
 		jdbcTemplate.update(DbTables.T_CONFIGURATIONS.createInsertQuery(true), new Object[] { solverID, description});
@@ -182,32 +179,57 @@ public class DbManager {
 		jdbcTemplate.update(DbTables.T_DIAGNOSTICS.createInsertQuery(true), new Object[] { solverID, description});
 	}
 
+
+	public final void insertMeasures(Integer solverID) {
 	
+	}
+
+
 	public final void insertMeasures(Integer solverID, IMeasures m) {
 		Integer measuresID = insertEntryAndRetrieveGPK(DbTables.T_MEASURES, new BeanPropertySqlParameterSource(m));
 		jdbcTemplate.update(DbTables.T_LIMITS.createInsertQuery(false), new Object[] { measuresID, solverID});
 	}
 
 
+
 	public final Integer insertSolver(Solver solver, String instanceName) {
-		return insertSolver(solver, instanceName, String.valueOf(solver.isFeasible()), solver.getTimeCount()/1000D, null, null);
+		return insertSolver(solver, instanceName, false);
 	}
 	
-	public final Integer insertSolver(Solver solver, String instanceName, String status, double runtime, String values, Long seed) {
+	public final Integer insertSolver(Solver solver, String instanceName, boolean enableSolution) {
 		//insert solver
-		final Integer solverID = insertEntryAndRetrieveGPK(DbTables.T_SOLVERS, 
-				new Object[]{ instanceName, status, runtime, values,
-				getModelID(solver), getEnvironmentID(), seed, new Timestamp(System.currentTimeMillis())}
+		final Integer solverID = insertEntryAndRetrieveGPK(DbTables.T_SOLVERS, new Object[]{ 
+				instanceName, solver.isFeasible(), solver.getTimeCount(), 
+				enableSolution ? solver.solutionToString() : "",
+				getModelID(solver), getEnvironmentID(), null, new Timestamp(System.currentTimeMillis())}
 		);
-		if( solver != null) {
-			//insert measures
-			for (Solution sol : solver.getSearchStrategy().getStoredSolutions()) {
-				insertMeasures(solverID, sol.getMeasures());
-			}
-			insertMeasures(solverID, solver);
+		//measure insertion order is important in database.
+		//insert measures
+		for (Solution sol : solver.getSearchStrategy().getStoredSolutions()) {
+			insertMeasures(solverID, sol.getMeasures());
 		}
+		insertMeasures(solverID, solver);
 		return solverID;
+
 	}
+
+//
+//	public final Integer insertSolver(Solver solver, String instanceName, String status, double runtime, String values, Long seed) {
+//		//insert solver
+//		final Integer solverID = insertEntryAndRetrieveGPK(DbTables.T_SOLVERS, 
+//				new Object[]{ instanceName, status, runtime, values,
+//				getModelID(solver), getEnvironmentID(), seed, new Timestamp(System.currentTimeMillis())}
+//		);
+//		//order is important in database.
+//		if( solver != null) {
+//			//insert measures
+//			for (Solution sol : solver.getSearchStrategy().getStoredSolutions()) {
+//				insertMeasures(solverID, sol.getMeasures());
+//			}
+//			insertMeasures(solverID, solver);
+//		}
+//		return solverID;
+//	}
 
 
 	//*****************************************************************//
@@ -263,7 +285,7 @@ public class DbManager {
 		return environmentID;
 	}
 
-	
+
 
 
 	//*****************************************************************//
@@ -331,7 +353,7 @@ public class DbManager {
 		LOGGER.info(displayTable("T_RUNTIMES"));
 		LOGGER.info(displayTable("T_ENVIRONMENTS"));
 
-		
+
 		Solver s = new CPSolver();
 		LOGGER.log(Level.INFO,"MODEL ID: {0}",getModelID(s));
 		s.createBoundIntVar("v1", 0, 5);
@@ -348,7 +370,7 @@ public class DbManager {
 
 
 		s.solveAll();
-		insertSolver(s, "UNKNOWN", "UNKNOWN", 0, null, null);
+		insertSolver(s, "UNKNOWN");
 		printTable(DbTables.T_SOLVERS);
 		printTable(DbTables.T_MEASURES);
 		//		LOGGER.info(""+insertMeasures(s));
@@ -393,5 +415,5 @@ public class DbManager {
 		shutdown();
 
 	}
-	
+
 }

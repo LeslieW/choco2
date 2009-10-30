@@ -33,6 +33,8 @@ import choco.kernel.solver.search.restart.UniversalRestartStrategy;
  */
 public class RestartConfiguration implements IPretty {
 
+	public final static String NO_RESTART = "NO_RESTART";
+	
 	/**
 	 * do we want to learn nogood from restart <br>
 	 * @see Lecoutre, C.; Sais, L.; Tabary, S. & Vidal, <br>
@@ -133,7 +135,7 @@ public class RestartConfiguration implements IPretty {
 			if(restartAfterEachSolution) b.append("FROM_SOLUTION ");
 			if( recordNogoodFromRestart) b.append("NOGOOD_RECORDING ");
 			return b.toString();
-		} else return "NO_RESTARTS";
+		} else return NO_RESTART;
 	}
 
 	@Override

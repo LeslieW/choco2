@@ -1,6 +1,6 @@
 /* ************************************************
 *           _       _                            *
-*          |  °(..)  |                           *
+*          |  ï¿½(..)  |                           *
 *          |_  J||L _|        CHOCO solver       *
 *                                                *
 *     Choco is a java library for constraint     *
@@ -170,8 +170,7 @@ public class GoalSearchLoop extends AbstractSearchLoop {
             currentChoice = null;
             currentChoiceIndex = -1;
         } else {
-            GoalTrace trace = goalTraceStack.get(l - 1);
-            goalTraceStack.remove(l - 1);
+            GoalTrace trace = goalTraceStack.remove(l - 1);            
             currentGoalStack = trace.goalStack;
             currentChoice = trace.choicePoint;
             currentChoiceIndex = trace.choiceIndex;

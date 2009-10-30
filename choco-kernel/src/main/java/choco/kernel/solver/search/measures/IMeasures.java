@@ -27,6 +27,5 @@ package choco.kernel.solver.search.measures;
 
 public interface IMeasures extends ISolutionMeasures, IOptimizationMeasures, ISearchMeasures {
 	
-	
-	
+		
 }

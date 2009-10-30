@@ -22,37 +22,67 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package db;
 
+import static db.OdbHsqldbBridge.DBNAME;
+import static db.OdbHsqldbBridge.exportDatabase;
+import static db.OdbHsqldbBridge.getDefaultOdbPattern;
+import static db.OdbHsqldbBridge.makeEmbeddedURL;
+import static db.OdbHsqldbBridge.uncompressDatabase;
+
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static db.OdbHsqldbBridge.*;
+
 import choco.kernel.common.logging.ChocoLogging;
 
-public class EmbeddedChocoDb {
+
+
+
+public class EmbeddedDbConnector implements IDbConnector {
 
 	private File dbDir;
-
+	
 	private DbManager dbManager;
-
-	public final static Logger LOGGER= ChocoLogging.getParserLogger();
-
+	
+	private File odbFile;
 	
 	
+
+
+	public EmbeddedDbConnector() {
+		super();
+	}
+
+
+	public EmbeddedDbConnector(File odbFile) {
+		super();
+		this.odbFile = odbFile;
+	}
+
+
 	public final File getDirectory() {
 		return dbDir;
 	}
 
 
-	public final DbManager getManager() {
+	public final File getOdbFile() {
+		return odbFile;
+	}
+
+
+	public final void setOdbFile(File odbFile) {
+		this.odbFile = odbFile;
+	}
+
+
+	public final DbManager getDatabaseManager() {
 		return dbManager;
 	}
 
 	public boolean isSetup() {
 		return dbManager != null;
 	}
-	
+
 	public void setUp() {
 		try {
 			dbDir = File.createTempFile("hsqldb-","");
@@ -66,19 +96,17 @@ public class EmbeddedChocoDb {
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE,"hsqldb...[init-embedded-database][FAIL]", e);
 			dbDir = null;
+			dbManager = null;
 		}
 	}
 
-	public final void tearDown() {
-		tearDown(null);
-	}
-	
-	public void tearDown(File output) {
-		if( isSetup()) {
+
+	public void tearDown() {
+		if( dbManager != null) {
 			dbManager.shutdown();
-			if( output != null) {
+			if( odbFile != null) {
 				try {
-					exportDatabase(getDefaultOdbPattern(this), dbDir,DBNAME, output);
+					exportDatabase(getDefaultOdbPattern(this), dbDir,DBNAME, odbFile);
 				} catch (IOException e) {
 					LOGGER.log(Level.SEVERE,"hsqldb...[export-embedded-database][FAIL]", e);
 				}

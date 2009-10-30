@@ -189,7 +189,7 @@ public final class OdbHsqldbBridge {
 	 * The host name or adress should begin with /.
 	 */
 	public final static String makeNetworkURL(String host, String dbName) {
-		return "jdbc:hsqldb:hsql:/"+host+"/"+dbName+HSQLDB_OPTIONS;
+		return "jdbc:hsqldb:hsql://"+host+"/"+dbName+HSQLDB_OPTIONS;
 	}
 
 
@@ -197,7 +197,7 @@ public final class OdbHsqldbBridge {
 	 * The host name or adress should begin with /.
 	 */
 	public final static String makeNetworkURL(String host, int port, String dbName) {
-		return "jdbc:hsqldb:hsql:/"+host+":"+port+"/"+dbName+HSQLDB_OPTIONS;
+		return "jdbc:hsqldb:hsql://"+host+":"+port+"/"+dbName+HSQLDB_OPTIONS;
 	}
 
 

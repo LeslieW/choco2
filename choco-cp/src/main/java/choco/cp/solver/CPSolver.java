@@ -741,6 +741,7 @@ public class CPSolver implements Solver {
     //TODO: remove when GoalSearchLoop is OK
     public static boolean GOAL =false;
 
+
 	/**
 	 * Generate a search strategy to run over the tree search. The search
 	 * strategy is build, according to the choice of the user :
@@ -1083,14 +1084,12 @@ public class CPSolver implements Solver {
 	}
 
 	/**
-	 * commands the strategy to start
+	 * commands the strategy to start.
+	 * Use {@link ChocoLogging#flushLogs()} to flush search logs. 
 	 */
 	public void launch() {
 		// strategy.run();
-		//TODO remove flush ?
-		ChocoLogging.flushLogs();
 		strategy.incrementalRun();
-		ChocoLogging.flushLogs();
 	}
 
 	/**
@@ -2332,7 +2331,7 @@ public class CPSolver implements Solver {
 		}
 
 		st.append("\n").append("~~~~~~~~~~~~~~~~~~~~~~~~~~").append("\n");
-		if(logged)LOGGER.log(Level.FINE, st.toString());
+		if(logged)LOGGER.log(Level.INFO, st.toString());
 		return isSolution;
 	}
 

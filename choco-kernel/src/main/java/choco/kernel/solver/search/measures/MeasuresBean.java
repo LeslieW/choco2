@@ -25,20 +25,26 @@ package choco.kernel.solver.search.measures;
 
 public class MeasuresBean extends AbstractMeasures {
 
-	public int timeCount= -1;
+	public int timeCount;
 	
-	public int nodeCount = -1;
+	public int nodeCount ;
 	
-	public int backtrackCount = -1;
+	public int backtrackCount;
 	
-	public int iterationCount = -1;
+	public int iterationCount;
 	
-	public int failCount= -1;
-	
-	
+	public int failCount;
 	
 	public MeasuresBean() {
 		super();
+	}
+	
+	public final void reset() {
+		timeCount = 0;
+		nodeCount = 0;
+		backtrackCount = 0; 
+		iterationCount = 0;
+		failCount = 0;
 	}
 	
 	public final void copy(ISearchMeasures toCopy) {
