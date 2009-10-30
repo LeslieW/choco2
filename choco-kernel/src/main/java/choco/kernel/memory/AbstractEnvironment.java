@@ -23,7 +23,6 @@
 package choco.kernel.memory;
 
 import choco.kernel.memory.structure.*;
-import choco.kernel.memory.trailing.IndexedObject;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,6 +1,6 @@
 package choco.cp.solver.constraints.global.multicostregular.structure;
 
-import choco.kernel.memory.trailing.IndexedObject;
+import choco.kernel.memory.structure.IndexedObject;
 
 import java.util.Comparator;/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
