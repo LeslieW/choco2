@@ -117,12 +117,12 @@ public class HsqldbServerCmd extends AbstractCmdLine {
 			final StringBuilder b  =new StringBuilder();
 			b.append("\nconnection to the database using jdbc:");
 			b.append("\n\t-Embedded: ").append(makeEmbeddedURL(dbDir, dbName));
-			b.append("\n\t-Server:\n\t\t/").append(makeNetworkURL("localhost", dbName));
+			b.append("\n\t-Server:\n\t\t").append(makeNetworkURL("localhost", dbName));
 			try {
 				Enumeration<NetworkInterface> en =	NetworkInterface.getNetworkInterfaces();
 				while(en.hasMoreElements()) {
 					final String inet_adress = en.nextElement().getInterfaceAddresses().get(1).getAddress().toString();
-					b.append("\n\t\t/").append(makeNetworkURL(inet_adress, dbName));
+					b.append("\n\t\t").append(makeNetworkURL(inet_adress, dbName));
 				}
 			} catch (SocketException e) {
 				LOGGER.log(Level.WARNING, "cant display network connection urls",e);

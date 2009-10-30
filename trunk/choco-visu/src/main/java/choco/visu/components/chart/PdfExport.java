@@ -24,6 +24,14 @@ public final class PdfExport {
 	private PdfExport() {
 		super();
 	}
+	
+	public static void saveChartAsPDF(File file,
+			JFreeChart chart,
+			int width,
+			int height) throws IOException {
+		saveChartAsPDF(file, chart, width, height, new DefaultFontMapper());
+	}
+	
 	/**
 	 * Saves a chart to a PDF file.
 	 *
@@ -42,12 +50,7 @@ public final class PdfExport {
 		out.close();
 	}
 	
-	public static void saveChartAsPDF(File file,
-			JFreeChart chart,
-			int width,
-			int height) throws IOException {
-		saveChartAsPDF(file, chart, width, height, new DefaultFontMapper());
-	}
+	
 	/**
 	 * Writes a chart to an output stream in PDF format.
 	 *
@@ -67,7 +70,7 @@ public final class PdfExport {
 		try {
 			PdfWriter writer = PdfWriter.getInstance(document, out);
 			document.addAuthor("Choco Team");
-			document.addSubject("Resource visualization");
+			document.addSubject("Choco Solver Chart");
 			document.open();
 			PdfContentByte cb = writer.getDirectContent();
 			PdfTemplate tp = cb.createTemplate(width, height);

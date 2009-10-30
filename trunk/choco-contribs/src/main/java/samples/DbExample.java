@@ -14,7 +14,9 @@ import samples.Examples.Queen;
 import choco.kernel.common.logging.ChocoLogging;
 import db.DbManager;
 import db.DbTables;
-import db.EmbeddedChocoDb;
+import db.EmbeddedDbConnector;
+import db.IDbConnector;
+import db.RemoteDbConnector;
 
 public class DbExample implements Example {
 
@@ -24,11 +26,11 @@ public class DbExample implements Example {
 
 	public final static TimeLimitWrapper EX_WRAPPER = new TimeLimitWrapper();
 
-	public DbManager manager;
+	public IDbConnector dbConnector;
 
 	public void executeEx(String name, Object args) {
 		EX_WRAPPER.execute(args);
-		manager.insertSolver(EX_WRAPPER._s, name);
+		dbConnector.getDatabaseManager().insertSolver(EX_WRAPPER._s, name);
 	}
 
 	public void solveGolombRulers() {
@@ -63,30 +65,38 @@ public class DbExample implements Example {
 		execute(null);
 	}
 
+	protected void executeBenchmark() {
+		solveGolombRulers(); //solve instances
+		solveQueens();
+		solveMED();
+	}
+
 	@Override
 	public void execute(Object parameters) {
-
-		EmbeddedChocoDb edb = new EmbeddedChocoDb();
-		edb.setUp();
-		if(edb.isSetup()) {
-			manager = edb.getManager();
-			for (int i = 0; i < 3; i++) {
-				solveGolombRulers(); //solve instances
-				solveQueens();
-				solveMED();
-			}
-			manager.printTable(DbTables.T_SOLVERS);
+		if (parameters instanceof String) {
+			//network database
+			dbConnector = new RemoteDbConnector( (String) parameters);
+		}else {
 			try {
-				edb.tearDown(File.createTempFile("testdb-", ".odb")); //export database to odb
+				File output = File.createTempFile("testdb-", ".odb");
+				dbConnector = new EmbeddedDbConnector(output);
 			} catch (IOException e) {
 				LOGGER.log(Level.SEVERE, "dbex...[export:FAIL]", e);
+				dbConnector = new EmbeddedDbConnector();
 			}
 		}
+		dbConnector.setUp();
+		executeBenchmark();
+		executeBenchmark();
+		dbConnector.getDatabaseManager().printTable(DbTables.T_SOLVERS);
+		dbConnector.tearDown();
 		ChocoLogging.flushLogs();
 	}
 
 	public static void main(String[] args) {
-		new DbExample().execute();
+		final DbExample dbex = new DbExample();
+		if( args.length == 0) dbex.execute();
+		else dbex.execute(args[0]);
 	}
 
 

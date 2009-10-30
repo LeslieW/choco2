@@ -49,7 +49,7 @@ public abstract class AbstractCmdLine {
 	
 	public final static Logger LOGGER= ChocoLogging.getParserLogger();
 	
-	public final static int NONE=-1;
+	public final static int NONE= Integer.MIN_VALUE;
 	
 	/**
 	 *  receives other command line parameters than options
