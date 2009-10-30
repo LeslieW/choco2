@@ -23,8 +23,8 @@
 package choco.cp.solver.constraints.global.multicostregular.structure.list;
 
 import choco.cp.solver.constraints.global.multicostregular.structure.AbstractNode;
-import choco.kernel.memory.trailing.IndexedObject;
 import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.structure.IndexedObject;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 
 import java.util.ArrayList;

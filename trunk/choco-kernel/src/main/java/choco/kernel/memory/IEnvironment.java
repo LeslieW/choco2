@@ -23,10 +23,10 @@
 package choco.kernel.memory;
 
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.memory.structure.IndexedObject;
 import choco.kernel.memory.structure.IntInterval;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
-import choco.kernel.memory.trailing.IndexedObject;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;

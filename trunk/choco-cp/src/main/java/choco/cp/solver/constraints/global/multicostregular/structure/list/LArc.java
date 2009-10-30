@@ -22,11 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.multicostregular.structure.list;
 
-import choco.cp.solver.constraints.global.multicostregular.structure.IArc;
 import choco.cp.solver.constraints.global.multicostregular.structure.AbstractArc;
 import choco.cp.solver.constraints.global.multicostregular.structure.INode;
-import choco.cp.solver.constraints.global.multicostregular.structure.bitset.BNode;
-import choco.kernel.memory.trailing.IndexedObject;
+import choco.kernel.memory.structure.IndexedObject;
 
 /**
  * Created by IntelliJ IDEA.
