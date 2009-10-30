@@ -38,4 +38,12 @@ public class RemoteDbConnector implements IDbConnector {
 		dbManager = null;
 		databaseURL = null;
 	}
+
+
+	@Override
+	public String toString() {
+		return databaseURL;
+	}
+	
+	
 }
