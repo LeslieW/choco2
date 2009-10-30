@@ -62,10 +62,6 @@ public final class DbTables {
 			new String[] {"ID","SOLVER_ID", "DESCRIPTION"}
 	);
 	
-	public final static DbTableView T_DIAGNOSTICS = new DbTableView (
-			"T_DIAGNOSTICS",
-			new String[] {"ID","SOLVER_ID", "DESCRIPTION"}
-	);
 
 	public final static DbTableView T_SOLVERS = new DbTableView (
 			"T_SOLVERS",

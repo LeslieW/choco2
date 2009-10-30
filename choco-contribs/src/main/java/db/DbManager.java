@@ -175,22 +175,11 @@ public class DbManager {
 		jdbcTemplate.update(DbTables.T_CONFIGURATIONS.createInsertQuery(true), new Object[] { solverID, description});
 	}
 
-	public final void insertDiagnostic(Integer solverID,  String description) {
-		jdbcTemplate.update(DbTables.T_DIAGNOSTICS.createInsertQuery(true), new Object[] { solverID, description});
-	}
-
-
-	public final void insertMeasures(Integer solverID) {
-	
-	}
-
 
 	public final void insertMeasures(Integer solverID, IMeasures m) {
 		Integer measuresID = insertEntryAndRetrieveGPK(DbTables.T_MEASURES, new BeanPropertySqlParameterSource(m));
 		jdbcTemplate.update(DbTables.T_LIMITS.createInsertQuery(false), new Object[] { measuresID, solverID});
 	}
-
-
 
 	public final Integer insertSolver(Solver solver, String instanceName) {
 		return insertSolver(solver, instanceName, false);
