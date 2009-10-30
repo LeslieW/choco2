@@ -115,4 +115,9 @@ public class EmbeddedDbConnector implements IDbConnector {
 		dbDir = null;
 		dbManager = null;
 	}
+	
+	@Override
+	public String toString() {
+		return odbFile.toString();
+	}
 }
