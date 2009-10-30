@@ -287,3 +287,4 @@
 \contentsline {subsection}{\numberline {15.2.2}Human reasoning principles}{176}{subsection.15.2.2}
 \contentsline {subsection}{\numberline {15.2.3}Towards Constraint Programming}{177}{subsection.15.2.3}
 \contentsline {section}{\numberline {15.3}See also}{178}{section.15.3}
+\contentsline {part}{Bibliography}{179}{section.15.3}
