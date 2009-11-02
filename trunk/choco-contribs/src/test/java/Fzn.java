@@ -31,6 +31,7 @@
 
 
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import org.antlr.runtime.ANTLRFileStream;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -41,6 +42,7 @@ import parser.chocogen.mzn.FlatZincParser;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -49,13 +51,14 @@ public class Fzn {
     static Logger LOGGER = ChocoLogging.getParserLogger();
 
     public static void main(String[] args) throws IOException {
+        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
         args = new String[]{"/home/charles/Choco/minizinc/fzn/"};
         scan(new File(args[0]));
     }
 
     private static void scan(File dir) throws IOException {
         if(dir.isFile()){
-            flatzincIt(dir.getAbsolutePath());
+            flatzincIt(dir);
         }else{
             File[] ts = dir.listFiles();
             Arrays.sort(ts);
@@ -65,9 +68,14 @@ public class Fzn {
         }
     }
 
-    private static void flatzincIt(String filename) throws IOException {
+    private static void flatzincIt(File file) throws IOException {
 
-        LOGGER.info(filename);
+
+//        File f = File.createTempFile(file.getName(), ".log");
+//        ChocoLogging.setFileHandler(f);
+        String filename = file.getAbsolutePath();
+
+        LOGGER.log(Level.INFO, "========================================================\nTraitement de :{0}", file.getName());
         CharStream cs = new ANTLRFileStream(filename);
 
         FlatZincLexer fznLex = new FlatZincLexer(cs);
@@ -77,11 +85,10 @@ public class Fzn {
 
         FlatZincParser fzn = new FlatZincParser(tokens);
         try {
-            fzn.model();
+            Boolean ok = fzn.model();
         } catch (RecognitionException e) {
             e.printStackTrace();
         }
-        LOGGER.info("done");
     }
 
 }

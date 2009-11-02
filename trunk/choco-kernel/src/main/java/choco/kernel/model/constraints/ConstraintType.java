@@ -87,6 +87,7 @@ public enum ConstraintType {
     PRECEDENCE_DISJOINT("precedence disjoint", "constraint.precedencedisjoint"),
     REGULAR("regular", "constraint.regular"),
     REIFIEDAND("reifiedAnd", "constraint.reifiedAnd"),
+    REIFIEDIMPLICATION("reifiedImplication", "constraint.reifiedImplication"),
     REIFIEDINTCONSTRAINT("reifiedintconstraint", "constraint.reifiedintconstraint"),
     REIFIEDOR("reifiedOr", "constraint.reifiedOr"),
     REIFIEDXNOR("reifiedXnor", "constraint.reifiedXnor"),

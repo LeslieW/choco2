@@ -3499,6 +3499,38 @@ public class Choco{
         return new ComponentConstraint<IntegerVariable>(ConstraintType.REIFIEDXNOR, null, vars);
     }
 
+    /**
+     * A reified constraint for reverse implication
+     * binVar = lit1 implies lit2
+     * @param binVar reified variable
+     * @param lit1 literal
+     * @param lit2 literal
+     * @return Constraint
+     */
+    public static Constraint reifiedLeftImp(IntegerVariable binVar, IntegerVariable lit1, IntegerVariable lit2){
+        IntegerVariable[] vars = new IntegerVariable[]{binVar, lit1, lit2};
+        for(IntegerVariable var : vars){
+            if(!var.isBoolean())throw new ModelException("reifiedLeftImpl constraint must be used with boolean variables");
+        }
+        return new ComponentConstraint<IntegerVariable>(ConstraintType.REIFIEDIMPLICATION, null, vars);
+    }
+
+    /**
+     * A reified constraint for forward implication
+     * binVar = lit2 implies lit1
+     * @param binVar reified variable
+     * @param lit1 literal
+     * @param lit2 literal
+     * @return Constraint
+     */
+    public static Constraint reifiedRightImp(IntegerVariable binVar, IntegerVariable lit1, IntegerVariable lit2){
+        IntegerVariable[] vars = new IntegerVariable[]{binVar, lit2, lit1};
+        for(IntegerVariable var : vars){
+            if(!var.isBoolean())throw new ModelException("reifiedRightImp constraint must be used with boolean variables");
+        }
+        return new ComponentConstraint<IntegerVariable>(ConstraintType.REIFIEDIMPLICATION, null, vars);
+    }
+
 	// ############################################################################################################
 	// ######                                       EXPRESSIONS                                                 ###
 	// ############################################################################################################

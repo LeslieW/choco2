@@ -60,6 +60,8 @@ import choco.cp.solver.preprocessor.PreProcessCPSolver;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.real.RealVariable;
 import choco.kernel.model.variables.set.SetVariable;
+import choco.kernel.common.logging.ChocoLogging;
+import java.util.logging.Logger;
 }
 
 @lexer::header{
@@ -72,19 +74,67 @@ static HashMap<String, Object> memory = new HashMap<String, Object>();
 CPModel model = new CPModel();
 PreProcessCPSolver solver = new PreProcessCPSolver();
 private static final int OFFSET = 1;
+static Logger LOGGER = ChocoLogging.getParserLogger();
+private Boolean isFeasible = null;
+    private int nbnode = 0;
+    private int nbback = 0;
+    private static long[] time = new long[4];
+
+public void init() {
+        time = new long[4];
+        isFeasible = null;
+        nbback = 0;
+        nbnode = 0;
+	time[0] = System.currentTimeMillis();
+    }
 }
 // ITEMS
-model			
+model		returns[Boolean isSatisified]			
 	:	
 		{
 		FZVariableBuilder.init(memory);
 		FZConstraintBuilder.init(memory, model);
+		init();
 		}
 		(pred_decl_item SEMICOLON)* 
 		(var_decl_item SEMICOLON)* 
 		(constraint_item SEMICOLON)* 
-		solve_item SEMICOLON 
-		(output_item SEMICOLON)?;
+		isSatisfied=solve_item SEMICOLON 
+		(output_item SEMICOLON)?
+		{
+		if (isFeasible == Boolean.TRUE
+                    && ((!solver.checkDecisionVariables())
+                    || solver.checkSolution(false) != Boolean.TRUE)) {
+                isFeasible = null;
+            }
+            StringBuffer res = new StringBuffer("c ");
+            if (isFeasible == null) {
+                res.append("TIMEOUT");
+                LOGGER.info("s UNKNOWN");
+            } else if (!isFeasible) {
+                res.append("UNSAT");
+                LOGGER.info("s UNSATISFIABLE");
+            } else {
+                res.append("SAT");
+                LOGGER.info("s SATISFIABLE");
+                String sol = "v ";
+                LOGGER.info(sol);
+            }
+            double rtime = (double) (time[3] - time[0]) / 1000D;
+            res.append(" ").append(rtime).append(" TIME     ");
+            res.append(" ").append(nbnode).append(" NDS   ");
+            res.append(" ").append(time[1] - time[0]).append(" PARSTIME     ");
+            res.append(" ").append(time[2] - time[1]).append(" BUILDPB      ");
+            res.append(" ").append(time[3] - time[2]).append(" RES      ");
+            LOGGER.info("d RUNTIME " + rtime);
+            LOGGER.info("d NODES " + nbnode);
+            LOGGER.info("d NODES/s " + Math.round((double) nbnode / rtime));
+            LOGGER.info("d BACKTRACKS " + nbback);
+            LOGGER.info("d BACKTRACKS/s " + Math.round((double) nbback / rtime));
+         
+            LOGGER.info("" + res);
+            ChocoLogging.flushLogs();
+		};
 pred_decl_item		
 	:	PREDICATE IDENT LP pred_arg (COMA pred_arg)* RP;
 pred_arg 	
@@ -134,15 +184,30 @@ constraint_elem	//returns[Constraint value]
 		}
 		| variable_expr
 		{System.err.println("constraint_elem : not yet implemented");};
-solve_item	
-	:	{solver.read(model);}SOLVE annotations solve_kind{System.out.println(solver.pretty());};
+solve_item	returns[Boolean isSatisifed]
+	:	{
+		time[1] = System.currentTimeMillis();
+		solver.read(model);
+		solver.setTimeLimit(10000);
+		time[2] = System.currentTimeMillis();
+		}
+		SOLVE annotations solve_kind
+		{
+		time[3] = System.currentTimeMillis();
+		};
 solve_kind			
 	:	SATISFY 		
-		{solver.solve();}
-		| MINIMIZE solve_expr 	
-		{solver.minimize(true);}
-		| MAXIMIZE solve_expr 	
-		{solver.maximize(true);};	
+		{isFeasible = solver.solve();}
+		| MINIMIZE obj=solve_expr 	
+		{
+		IntegerVariable objective = (IntegerVariable)memory.get((String)obj.obj);
+		isFeasible = solver.minimize(solver.getVar(objective), true);
+		}
+		| MAXIMIZE obj=solve_expr 	
+		{
+		IntegerVariable objective = (IntegerVariable)memory.get((String)obj.obj);
+		isFeasible = solver.maximize(solver.getVar(objective), true);
+		};	
 output_item	
 	:	OUTPUT LBOX output_elem (COMA output_elem)* RBOX;
 output_elem	
@@ -350,11 +415,11 @@ solve_expr		returns[FZVariableBuilder.ValType vt]
 
 INT_LITERAL		:	('-')? (DIGIT+|HEX_DIGIT+| OCT_DIGIT+);
 FLOAT_LITERAL		:	('-')? DIGIT+('.'|('.'DIGIT+)?('E'|'e')('-'|'+')?)DIGIT+;
-STRING_LITERAL		:	DQUOTE (~('\n'| '\r'| '\f'))* DQUOTE;
+STRING_LITERAL		:	DQUOTE (~('\n'| '\r'| '\f' | ' ' ))* DQUOTE;
 IDENT			:	LIT (LIT|DIGIT|'_')*;
+WS : (' '|'\n')+ {skip();} ;
 // FRAGMENT
 fragment DIGIT 		:	'0'..'9';
 fragment HEX_DIGIT		:	'0x' (DIGIT | 'A'..'F' | 'a'..'f')+;
 fragment OCT_DIGIT		:	'0o' ('0'..'7')+;
 fragment LIT			:	'A'..'Z'|'a'..'z';
-

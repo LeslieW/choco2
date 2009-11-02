@@ -70,7 +70,7 @@ public class Mzn2fzn {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        args = new String[]{"/home/charles/Bureau/minizinc-1.0.2/benchmarks/cars", "/home/charles/Choco/minizinc/fzn/"};
+        args = new String[]{"/home/charles/Bureau/minizinc-1.0.2/benchmarks/golfers", "/home/charles/Choco/minizinc/fzn/"};
         File dir = new File(args[0]);
         _FZNDIR = args[1];
         massiveConvert(dir);

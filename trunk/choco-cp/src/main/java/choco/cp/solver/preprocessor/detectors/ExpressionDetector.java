@@ -152,8 +152,8 @@ public class ExpressionDetector {
         IntDomainVar[] scope = e.getVars();
         INode expr = e.getRootNode();
         if (scope.length == 2 &&
-            scope[0].canBeInstantiatedTo(0) ||
-            scope[0].canBeInstantiatedTo(0)) //safety test with the value 0
+            (scope[0].canBeInstantiatedTo(0) ||
+            scope[0].canBeInstantiatedTo(0))) //safety test with the value 0
             return null;
         if (expr.getType().equals(NodeType.GEQ)) {
             if (testXMultYAndCste(expr, 0, 1, 0)

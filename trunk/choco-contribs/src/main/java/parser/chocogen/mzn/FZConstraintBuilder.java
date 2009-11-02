@@ -28,6 +28,7 @@ import choco.cp.model.CPModel;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.model.variables.set.SetVariable;
 
 import java.util.HashMap;
 import java.util.logging.Logger;
@@ -55,6 +56,7 @@ public class FZConstraintBuilder {
     private static final String _float = "float";
     private static final String _bool = "bool";
     private static final String _set = "set";
+    private static final String _var = "_var";
 
     // COMPARISONS OPERATIONS
     private static final String _eq = "_eq";
@@ -128,25 +130,65 @@ public class FZConstraintBuilder {
         System.exit(-1);
     }
 
+    private static int getInt(FZVariableBuilder.ValType vt){
+        try{
+            return (Integer) vt.obj;
+        }catch (ClassCastException ee){
+            return Integer.parseInt((String) vt.obj);
+        }
+    }
+
+    public static int[] getInts(FZVariableBuilder.ValType vt){
+        if(vt.type.equals(FZVariableBuilder.EnumVal.objects)){
+            Integer[] ints = (Integer[])vt.obj;
+            int[] pints = new int[ints.length];
+            for (int i = 0; i < pints.length; i++) {
+                //noinspection UnnecessaryUnboxing
+                pints[i] = ints[i].intValue();
+            }
+            return pints;
+        }else{
+            FZVariableBuilder.ValType[] vts = (FZVariableBuilder.ValType[])vt.obj;
+            int[] ints = new int[vts.length];
+            for (int i = 0; i < ints.length; i++) {
+                ints[i] = getInt(vts[i]);
+            }
+            return ints;
+        }
+    }
+
+    public static IntegerVariable getIntVar(FZVariableBuilder.ValType vt){
+        try {
+            return (IntegerVariable) vt.obj;
+        } catch (ClassCastException cc) {
+            return Choco.constant((Integer) vt.obj);
+        }
+    }
+
+    public static IntegerVariable[] getIntVars(FZVariableBuilder.ValType vt)throws ClassCastException{
+        if(vt.type.equals(FZVariableBuilder.EnumVal.objects)){
+                return (IntegerVariable[])vt.obj;
+        }else{
+            return getIntVars((FZVariableBuilder.ValType[])vt.obj);
+        }
+    }
+
+    public static IntegerVariable[] getIntVars(FZVariableBuilder.ValType[] vts){
+        IntegerVariable[] vars = new IntegerVariable[vts.length];
+        for (int i = 0; i < vts.length; i++) {
+                vars[i] = getIntVar(vts[i]);
+            }
+        return vars;
+    }
+
     private static void buildInt(String name, FZVariableBuilder.ValType[] vts) {
         Constraint c = null;
         if (name.contains(_lin)) {
-            // get coeffs
-            FZVariableBuilder.ValType[] vttmp = ((FZVariableBuilder.ValType[]) vts[0].obj);
-            int[] coeffs = new int[vttmp.length];
-            for (int i = 0; i < coeffs.length; i++) {
-                coeffs[i] = (Integer) vttmp[i].obj;
-            }
-            vttmp = ((FZVariableBuilder.ValType[]) vts[1].obj);
-            IntegerVariable[] vars = new IntegerVariable[vttmp.length];
-            for (int i = 0; i < vars.length; i++) {
-                try {
-                    vars[i] = (IntegerVariable) vttmp[i].obj;
-                } catch (ClassCastException cc) {
-                    vars[i] = Choco.constant((Integer) vttmp[i].obj);
-                }
-            }
+
+            int[] coeffs = getInts(vts[0]);
+            IntegerVariable[] vars = getIntVars(vts[1]);
             int result = (Integer) vts[2].obj;
+
             if (name.contains(_eq)) {
                 c = (eq(scalar(coeffs, vars), result));
             } else if (name.contains(_ne)) {
@@ -161,17 +203,24 @@ public class FZConstraintBuilder {
                 c = (leq(scalar(coeffs, vars), result));
             }
         } else if (name.contains(_array) && name.contains(_element)) {
-
+            IntegerVariable index = getIntVar(vts[0]);
+            IntegerVariable val = getIntVar(vts[2]);
+            if(name.contains(_var)){
+                try{
+                    IntegerVariable[] values = getIntVars(vts[1]);
+                    c = nth(index, values, val, -1);
+                }catch (ClassCastException e){
+                    int[] values = getInts(vts[1]);
+                    c = nth(index, values, val, -1);
+                }
+            }else{
+                int[] values = getInts(vts[1]);
+                c = nth(index, values, val, -1);
+            }
 
         } else {
-            IntegerVariable[] vars = new IntegerVariable[vts.length];
-            for (int i = 0; i < vars.length; i++) {
-                try {
-                    vars[i] = (IntegerVariable) vts[i].obj;
-                } catch (ClassCastException cc) {
-                    vars[i] = Choco.constant((Integer) vts[i].obj);
-                }
-            }
+            IntegerVariable[] vars = getIntVars(vts);
+
             if (name.contains(_eq)) {
                 c = (eq(vars[0], vars[1]));
             } else if (name.contains(_ne)) {
@@ -249,6 +298,34 @@ public class FZConstraintBuilder {
     }
 
 
+    private static IntegerVariable getBoolVar(FZVariableBuilder.ValType vt) {
+        try {
+            return (IntegerVariable) vt.obj;
+        } catch (ClassCastException cc) {
+            try {
+                return Choco.constant((Integer) vt.obj);
+            } catch (ClassCastException cce) {
+                return Choco.constant(((Boolean) vt.obj) ? 1 : 0);
+            }
+        }
+    }
+
+    public static IntegerVariable[] getBoolVars(FZVariableBuilder.ValType vt){
+        if(vt.type.equals(FZVariableBuilder.EnumVal.objects)){
+            return (IntegerVariable[])vt.obj;
+        }else{
+            return getBoolVars((FZVariableBuilder.ValType[])vt.obj);
+        }
+    }
+
+    public static IntegerVariable[] getBoolVars(FZVariableBuilder.ValType[] vts){
+        IntegerVariable[] vars = new IntegerVariable[vts.length];
+        for (int i = 0; i < vts.length; i++) {
+                vars[i] = getBoolVar(vts[i]);
+            }
+        return vars;
+    }
+
     /**
      * FYI : bool == 1 is true
      * @param name
@@ -256,74 +333,49 @@ public class FZConstraintBuilder {
      */
     private static void buildBool(String name, FZVariableBuilder.ValType[] vts) {
         Constraint c = null;
-        if(name.contains((_array))){
-            FZVariableBuilder.ValType[] vttmp = ((FZVariableBuilder.ValType[]) vts[0].obj);
-            IntegerVariable[] vars = new IntegerVariable[vttmp.length];
-            Constraint[] eqs = new Constraint[vttmp.length];
-            for (int i = 0; i < vars.length; i++) {
-                try {
-                    vars[i] = (IntegerVariable) vttmp[i].obj;
-                } catch (ClassCastException cc) {
-                    vars[i] = Choco.constant((Integer) vttmp[i].obj);
+        if (name.contains((_array))) {
+            if (name.contains(_element)) {
+                if (name.contains(_var)) {
+                    IntegerVariable index = getIntVar(vts[0]);
+                    IntegerVariable[] values = getBoolVars(vts[1]);
+                    IntegerVariable val = getBoolVar(vts[2]);
+                    c = nth(index, values, val);
+                } else {
+                    IntegerVariable index = getIntVar(vts[0]);
+                    int[] values = getInts(vts[1]);
+                    IntegerVariable val = getBoolVar(vts[2]);
+                    c = nth(index, values, val);
                 }
-                eqs[i] = eq(vars[i], 1);
-            }
-            IntegerVariable result;
-            try {
-                result = (IntegerVariable) vts[1].obj;
-            } catch (ClassCastException cc) {
-                result = Choco.constant((Integer) vts[1].obj);
-            }
-            if(name.contains(_and)){
-                c = (reifiedIntConstraint(result, and(eqs)));
-            }else
-            if(name.contains(_or)){
-                c = (reifiedIntConstraint(result, or(eqs)));
-            }
-        }else
-        if(name.contains(_clause)){
-            FZVariableBuilder.ValType[] vttmp = ((FZVariableBuilder.ValType[]) vts[0].obj);
-            IntegerVariable[] posLits = new IntegerVariable[vttmp.length];
-            for (int i = 0; i < posLits.length; i++) {
-                try {
-                    posLits[i] = (IntegerVariable) vttmp[i].obj;
-                } catch (ClassCastException cc) {
-                    posLits[i] = Choco.constant((Integer) vttmp[i].obj);
+            } else {
+
+                IntegerVariable[] vars = getBoolVars(vts[0]);
+                IntegerVariable result = getBoolVar(vts[1]);
+
+                if (name.contains(_and)) {
+                    c = (reifiedAnd(result, vars));
+                } else if (name.contains(_or)) {
+                    c = (reifiedOr(result, vars));
                 }
             }
-            vttmp = ((FZVariableBuilder.ValType[]) vts[1].obj);
-            IntegerVariable[] negLits = new IntegerVariable[vttmp.length];
-            for (int i = 0; i < negLits.length; i++) {
-                try {
-                    negLits[i] = (IntegerVariable) vttmp[i].obj;
-                } catch (ClassCastException cc) {
-                    negLits[i] = Choco.constant((Integer) vttmp[i].obj);
-                }
-            }
+        } else if (name.contains(_clause)) {
+
+            IntegerVariable[] posLits = getBoolVars(vts[0]);
+            IntegerVariable[] negLits = getBoolVars(vts[1]);
+
             c = (clause(posLits, negLits));
-        }else
-        {
+        } else {
             IntegerVariable[] vars = new IntegerVariable[vts.length];
             for (int i = 0; i < vars.length; i++) {
-                try {
-                    vars[i] = (IntegerVariable) vts[i].obj;
-                } catch (ClassCastException cc) {
-                    try{
-                        vars[i] = Choco.constant((Integer) vts[i].obj);
-                    } catch (ClassCastException ce) {
-                        Boolean b = (Boolean) vts[i].obj;
-                        vars[i] = Choco.constant(b?1:0);
-                    }
-                }
+                vars[i] = getBoolVar(vts[i]);
             }
             if (name.contains(_eq)) {
                 // 2 or 3 arguments...
-                switch (vars.length){
+                switch (vars.length) {
                     case 2:
                         c = (eq(vars[0], vars[1]));
                         break;
                     case 3:
-                        c = (reifiedIntConstraint(vars[2], eq(vars[0], vars[1])));
+                        c = (reifiedXnor(vars[2], vars[0], vars[1]));
                         break;
                     default:
                         break;
@@ -343,22 +395,57 @@ public class FZConstraintBuilder {
             } else if (name.contains(_or)) {
                 c = (reifiedOr(vars[2], vars[0], vars[1]));
             } else if (name.contains(_xor)) {
-                c = (reifiedXor(vars[2], vars[0],vars[1]));
+                c = (reifiedXor(vars[2], vars[0], vars[1]));
             } else if (name.contains(_not)) {
                 c = (reifiedIntConstraint(vars[2], neq(vars[0], vars[1])));
+            } else if (name.contains(_right_imp)) {
+                c = (reifiedRightImp(vars[2], vars[0], vars[1]));
+            } else if (name.contains(_left_imp)) {
+                c = (reifiedLeftImp(vars[2], vars[0], vars[1]));
             }
         }
-        if(c!=null){
+        if (c != null) {
             if (!name.contains(_reif)) {
                 model.addConstraint(c);
             } else {
-                IntegerVariable vr = (IntegerVariable) vts[vts.length-1].obj;
+                IntegerVariable vr = (IntegerVariable) vts[vts.length - 1].obj;
                 model.addConstraint(reifiedIntConstraint(vr, c));
             }
             return;
         }
         LOGGER.severe("buildBool::ERROR:: unknown type :" + name);
         System.exit(-1);
+    }
+
+    private static SetVariable getSetVar(FZVariableBuilder.ValType vt) {
+        if(vt.type.equals(FZVariableBuilder.EnumVal.interval)){
+            FZVariableBuilder.ValType[] vts = (FZVariableBuilder.ValType[])vt.obj;
+            int i1 = getInt(vts[0]);
+            int i2 = getInt(vts[1]);
+            int[] values = new int[i2-i1+1];
+            for(int i = i1; i <= i2; i++){
+                values[i-i1] = i;
+            }
+            return constant(values);
+        }
+
+        return (SetVariable) vt.obj;
+    }
+
+    public static SetVariable[] getSetVars(FZVariableBuilder.ValType vt){
+        if(vt.type.equals(FZVariableBuilder.EnumVal.objects)){
+            return (SetVariable[])vt.obj;
+        }else{
+            return getSetVars((FZVariableBuilder.ValType[])vt.obj);
+        }
+    }
+
+    public static SetVariable[] getSetVars(FZVariableBuilder.ValType[] vts){
+        SetVariable[] vars = new SetVariable[vts.length];
+        for (int i = 0; i < vts.length; i++) {
+                vars[i] = getSetVar(vts[i]);
+            }
+        return vars;
     }
 
     private static void buildSet(String name, FZVariableBuilder.ValType[] vts) {
@@ -368,7 +455,9 @@ public class FZConstraintBuilder {
         } else if (name.contains(_ne)) {
 
         } else if (name.contains(_in)) {
-
+            IntegerVariable iv = getIntVar(vts[0]);
+            SetVariable sv = getSetVar(vts[1]);
+            c = member(iv, sv);
         } else if (name.contains(_subset)) {
 
         } else if (name.contains(_superset)) {
