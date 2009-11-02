@@ -37,6 +37,7 @@ import choco.kernel.model.variables.real.RealVariable;
 import choco.kernel.model.variables.set.SetConstantVariable;
 import choco.kernel.model.variables.set.SetVariable;
 
+import java.lang.reflect.Array;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -72,7 +73,7 @@ public class FZVariableBuilder {
     }
 
     public enum EnumVal {
-        iInt, bBool, fFloat, sString, array, interval, vInt, vFloat, vSet, vBool
+        iInt, bBool, fFloat, sString, array, interval, vInt, vFloat, vSet, vBool, objects
     }
 
     public static class ValType {
@@ -122,9 +123,9 @@ public class FZVariableBuilder {
             // Build a simple variable
             switch (natet.type) {
                 case iInt:
-                    LOGGER.severe("buildVar::iInt:: ERROR");
-                    System.exit(-1);
-                    break;
+                    IntegerVariable ib0 = Choco.makeIntVar(name);
+                    memory.put(name, ib0);
+                    return;
                 case bBool:
                     IntegerVariable ib1 = Choco.makeBooleanVar(name);
                     memory.put(name, ib1);
@@ -171,8 +172,10 @@ public class FZVariableBuilder {
         } else {
             // more complicated case...
             switch (nafe.type) {
-                case sString:
                 case vInt:
+                    memory.put(name, nafe.obj);
+                    return;
+                case sString:
                 case vFloat:
                 case vSet:
                 case vBool:
@@ -277,13 +280,13 @@ public class FZVariableBuilder {
                     break;
                 case iBounds:
                     // build an array of constant
-                    int[] bounds = (int[])natet.obj;
                     switch (nafe.type){
                         case iInt:
-                            for(int i = bounds[0]; i <= bounds[1]; i++){
-                                int j = (Integer)nafe.obj;
-                                memory.put(name+NAME_SEPARATOR+i, j);
-                            }
+//                            for(int i = bounds[0]; i <= bounds[1]; i++){
+//                                int j = (Integer)nafe.obj;
+//                                memory.put(name+NAME_SEPARATOR+i, j);
+//                            }
+                            memory.put(name, nafe.obj);
                             return;
                         default:
                           LOGGER.severe("buildInt:: ERROR");
@@ -318,7 +321,6 @@ public class FZVariableBuilder {
             for (int i = from; i <= to; i++) {
                 buildPar(adt.var, adt.name + NAME_SEPARATOR + i, adt.val);
             }
-            return;
             }else{
                 switch (adt.val.type){
                     case array:
@@ -326,12 +328,11 @@ public class FZVariableBuilder {
                         for (int i = from; i <= to; i++) {
                             buildPar(adt.var, adt.name + NAME_SEPARATOR + i, objects[i-from]);
                         }
-                        return;
+                        break;
                     default:
                         for (int i = from; i <= to; i++) {
                             buildPar(adt.var, adt.name + NAME_SEPARATOR + i, adt.val);
                         }
-                        return;
                 }
             }
         } else {
@@ -339,7 +340,6 @@ public class FZVariableBuilder {
                 for (int i = from; i <= to; i++) {
                     buildVar(adt.var, adt.name + NAME_SEPARATOR + i, adt.val);
                 }
-                return;
             }else{
                 switch (adt.val.type){
                     case array:
@@ -347,15 +347,26 @@ public class FZVariableBuilder {
                         for (int i = from; i <= to; i++) {
                             buildVar(adt.var, adt.name + NAME_SEPARATOR + i, objects[i-from]);
                         }
-                        return;
+                        break;
                     default:
                         for (int i = from; i <= to; i++) {
                             buildVar(adt.var, adt.name + NAME_SEPARATOR + i, adt.val);
                         }
-                        return;
                 }
             }
         }
+        String clazz = getClassType(memory.get(adt.name+NAME_SEPARATOR+from));
+        Object[] array = null;
+        try {
+            array = (Object[])Array.newInstance(Class.forName(clazz), to-from+1);
+        } catch (ClassNotFoundException e) {
+            LOGGER.severe("buildArray::class not found ERROR");
+            System.exit(-1);
+        }
+        for(int i =0; i < array.length; i++){
+            array[i] = memory.get(adt.name+NAME_SEPARATOR+(from+i));
+        }
+        memory.put(adt.name, array);
     }
 
     /**
@@ -378,6 +389,34 @@ public class FZVariableBuilder {
             return FZVariableBuilder.EnumVal.vFloat;
         } else if (val instanceof SetVariable) {
             return FZVariableBuilder.EnumVal.vSet;
+        } else if(val instanceof Object[]){
+            return FZVariableBuilder.EnumVal.objects;
+        }
+        return null;
+    }
+
+    /**
+     * Define the type of an object by casting it...
+     * @param val unknown type object
+     * @return EnumVal
+     */
+    public static String getClassType(Object val) {
+        if (val instanceof Integer) {
+            return Integer.class.getName();
+        } else if (val instanceof Boolean) {
+            return Boolean.class.getName();
+        } else if (val instanceof Double) {
+            return Double.class.getName();
+        } else if (val instanceof String) {
+            return String.class.getName();
+        } else if (val instanceof IntegerVariable) {
+            return IntegerVariable.class.getName();
+        } else if (val instanceof RealVariable) {
+            return RealVariable.class.getName();
+        } else if (val instanceof SetVariable) {
+            return SetVariable.class.getName();
+        } else if(val instanceof Object[]){
+            return Array.class.getName();
         }
         return null;
     }

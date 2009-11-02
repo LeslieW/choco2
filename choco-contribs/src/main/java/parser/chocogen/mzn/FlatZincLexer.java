@@ -1,4 +1,4 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g 2009-10-21 18:27:31
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g 2009-11-02 18:49:18
 
 package parser.chocogen.mzn;
 
@@ -56,6 +56,7 @@ public class FlatZincLexer extends Lexer {
     public static final int COLONCOLON=4;
     public static final int SHOWCOND=44;
     public static final int ANY=19;
+    public static final int WS=62;
     public static final int ENUM=27;
     public static final int TEST=47;
     public static final int LB=14;
@@ -1123,10 +1124,10 @@ public class FlatZincLexer extends Lexer {
         try {
             int _type = INT_LITERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:351:14: ( ( '-' )? ( ( DIGIT )+ | ( HEX_DIGIT )+ | ( OCT_DIGIT )+ ) )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:351:16: ( '-' )? ( ( DIGIT )+ | ( HEX_DIGIT )+ | ( OCT_DIGIT )+ )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:416:14: ( ( '-' )? ( ( DIGIT )+ | ( HEX_DIGIT )+ | ( OCT_DIGIT )+ ) )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:416:16: ( '-' )? ( ( DIGIT )+ | ( HEX_DIGIT )+ | ( OCT_DIGIT )+ )
             {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:351:16: ( '-' )?
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:416:16: ( '-' )?
             int alt1=2;
             int LA1_0 = input.LA(1);
 
@@ -1135,7 +1136,7 @@ public class FlatZincLexer extends Lexer {
             }
             switch (alt1) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:351:17: '-'
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:416:17: '-'
                     {
                     match('-'); 
 
@@ -1144,7 +1145,7 @@ public class FlatZincLexer extends Lexer {
 
             }
 
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:351:23: ( ( DIGIT )+ | ( HEX_DIGIT )+ | ( OCT_DIGIT )+ )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:416:23: ( ( DIGIT )+ | ( HEX_DIGIT )+ | ( OCT_DIGIT )+ )
             int alt5=3;
             int LA5_0 = input.LA(1);
 
@@ -1175,9 +1176,9 @@ public class FlatZincLexer extends Lexer {
             }
             switch (alt5) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:351:24: ( DIGIT )+
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:416:24: ( DIGIT )+
                     {
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:351:24: ( DIGIT )+
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:416:24: ( DIGIT )+
                     int cnt2=0;
                     loop2:
                     do {
@@ -1191,7 +1192,7 @@ public class FlatZincLexer extends Lexer {
 
                         switch (alt2) {
                     	case 1 :
-                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:351:24: DIGIT
+                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:416:24: DIGIT
                     	    {
                     	    mDIGIT(); 
 
@@ -1211,9 +1212,9 @@ public class FlatZincLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:351:31: ( HEX_DIGIT )+
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:416:31: ( HEX_DIGIT )+
                     {
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:351:31: ( HEX_DIGIT )+
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:416:31: ( HEX_DIGIT )+
                     int cnt3=0;
                     loop3:
                     do {
@@ -1227,7 +1228,7 @@ public class FlatZincLexer extends Lexer {
 
                         switch (alt3) {
                     	case 1 :
-                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:351:31: HEX_DIGIT
+                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:416:31: HEX_DIGIT
                     	    {
                     	    mHEX_DIGIT(); 
 
@@ -1247,9 +1248,9 @@ public class FlatZincLexer extends Lexer {
                     }
                     break;
                 case 3 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:351:43: ( OCT_DIGIT )+
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:416:43: ( OCT_DIGIT )+
                     {
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:351:43: ( OCT_DIGIT )+
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:416:43: ( OCT_DIGIT )+
                     int cnt4=0;
                     loop4:
                     do {
@@ -1263,7 +1264,7 @@ public class FlatZincLexer extends Lexer {
 
                         switch (alt4) {
                     	case 1 :
-                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:351:43: OCT_DIGIT
+                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:416:43: OCT_DIGIT
                     	    {
                     	    mOCT_DIGIT(); 
 
@@ -1301,10 +1302,10 @@ public class FlatZincLexer extends Lexer {
         try {
             int _type = FLOAT_LITERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:16: ( ( '-' )? ( DIGIT )+ ( '.' | ( '.' ( DIGIT )+ )? ( 'E' | 'e' ) ( '-' | '+' )? ) ( DIGIT )+ )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:18: ( '-' )? ( DIGIT )+ ( '.' | ( '.' ( DIGIT )+ )? ( 'E' | 'e' ) ( '-' | '+' )? ) ( DIGIT )+
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:417:16: ( ( '-' )? ( DIGIT )+ ( '.' | ( '.' ( DIGIT )+ )? ( 'E' | 'e' ) ( '-' | '+' )? ) ( DIGIT )+ )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:417:18: ( '-' )? ( DIGIT )+ ( '.' | ( '.' ( DIGIT )+ )? ( 'E' | 'e' ) ( '-' | '+' )? ) ( DIGIT )+
             {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:18: ( '-' )?
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:417:18: ( '-' )?
             int alt6=2;
             int LA6_0 = input.LA(1);
 
@@ -1313,7 +1314,7 @@ public class FlatZincLexer extends Lexer {
             }
             switch (alt6) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:19: '-'
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:417:19: '-'
                     {
                     match('-'); 
 
@@ -1322,7 +1323,7 @@ public class FlatZincLexer extends Lexer {
 
             }
 
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:25: ( DIGIT )+
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:417:25: ( DIGIT )+
             int cnt7=0;
             loop7:
             do {
@@ -1336,7 +1337,7 @@ public class FlatZincLexer extends Lexer {
 
                 switch (alt7) {
             	case 1 :
-            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:25: DIGIT
+            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:417:25: DIGIT
             	    {
             	    mDIGIT(); 
 
@@ -1352,21 +1353,21 @@ public class FlatZincLexer extends Lexer {
                 cnt7++;
             } while (true);
 
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:31: ( '.' | ( '.' ( DIGIT )+ )? ( 'E' | 'e' ) ( '-' | '+' )? )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:417:31: ( '.' | ( '.' ( DIGIT )+ )? ( 'E' | 'e' ) ( '-' | '+' )? )
             int alt11=2;
             alt11 = dfa11.predict(input);
             switch (alt11) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:32: '.'
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:417:32: '.'
                     {
                     match('.'); 
 
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:36: ( '.' ( DIGIT )+ )? ( 'E' | 'e' ) ( '-' | '+' )?
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:417:36: ( '.' ( DIGIT )+ )? ( 'E' | 'e' ) ( '-' | '+' )?
                     {
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:36: ( '.' ( DIGIT )+ )?
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:417:36: ( '.' ( DIGIT )+ )?
                     int alt9=2;
                     int LA9_0 = input.LA(1);
 
@@ -1375,10 +1376,10 @@ public class FlatZincLexer extends Lexer {
                     }
                     switch (alt9) {
                         case 1 :
-                            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:37: '.' ( DIGIT )+
+                            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:417:37: '.' ( DIGIT )+
                             {
                             match('.'); 
-                            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:40: ( DIGIT )+
+                            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:417:40: ( DIGIT )+
                             int cnt8=0;
                             loop8:
                             do {
@@ -1392,7 +1393,7 @@ public class FlatZincLexer extends Lexer {
 
                                 switch (alt8) {
                             	case 1 :
-                            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:40: DIGIT
+                            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:417:40: DIGIT
                             	    {
                             	    mDIGIT(); 
 
@@ -1423,7 +1424,7 @@ public class FlatZincLexer extends Lexer {
                         recover(mse);
                         throw mse;}
 
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:57: ( '-' | '+' )?
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:417:57: ( '-' | '+' )?
                     int alt10=2;
                     int LA10_0 = input.LA(1);
 
@@ -1455,7 +1456,7 @@ public class FlatZincLexer extends Lexer {
 
             }
 
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:68: ( DIGIT )+
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:417:68: ( DIGIT )+
             int cnt12=0;
             loop12:
             do {
@@ -1469,7 +1470,7 @@ public class FlatZincLexer extends Lexer {
 
                 switch (alt12) {
             	case 1 :
-            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:68: DIGIT
+            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:417:68: DIGIT
             	    {
             	    mDIGIT(); 
 
@@ -1501,11 +1502,11 @@ public class FlatZincLexer extends Lexer {
         try {
             int _type = STRING_LITERAL;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:17: ( DQUOTE (~ ( '\\n' | '\\r' | '\\f' ) )* DQUOTE )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:19: DQUOTE (~ ( '\\n' | '\\r' | '\\f' ) )* DQUOTE
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:418:17: ( DQUOTE (~ ( '\\n' | '\\r' | '\\f' | ' ' ) )* DQUOTE )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:418:19: DQUOTE (~ ( '\\n' | '\\r' | '\\f' | ' ' ) )* DQUOTE
             {
             mDQUOTE(); 
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:26: (~ ( '\\n' | '\\r' | '\\f' ) )*
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:418:26: (~ ( '\\n' | '\\r' | '\\f' | ' ' ) )*
             loop13:
             do {
                 int alt13=2;
@@ -1514,22 +1515,22 @@ public class FlatZincLexer extends Lexer {
                 if ( (LA13_0=='\"') ) {
                     int LA13_1 = input.LA(2);
 
-                    if ( ((LA13_1>='\u0000' && LA13_1<='\t')||LA13_1=='\u000B'||(LA13_1>='\u000E' && LA13_1<='\uFFFF')) ) {
+                    if ( ((LA13_1>='\u0000' && LA13_1<='\t')||LA13_1=='\u000B'||(LA13_1>='\u000E' && LA13_1<='\u001F')||(LA13_1>='!' && LA13_1<='\uFFFF')) ) {
                         alt13=1;
                     }
 
 
                 }
-                else if ( ((LA13_0>='\u0000' && LA13_0<='\t')||LA13_0=='\u000B'||(LA13_0>='\u000E' && LA13_0<='!')||(LA13_0>='#' && LA13_0<='\uFFFF')) ) {
+                else if ( ((LA13_0>='\u0000' && LA13_0<='\t')||LA13_0=='\u000B'||(LA13_0>='\u000E' && LA13_0<='\u001F')||LA13_0=='!'||(LA13_0>='#' && LA13_0<='\uFFFF')) ) {
                     alt13=1;
                 }
 
 
                 switch (alt13) {
             	case 1 :
-            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:353:27: ~ ( '\\n' | '\\r' | '\\f' )
+            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:418:27: ~ ( '\\n' | '\\r' | '\\f' | ' ' )
             	    {
-            	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='\t')||input.LA(1)=='\u000B'||(input.LA(1)>='\u000E' && input.LA(1)<='\uFFFF') ) {
+            	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='\t')||input.LA(1)=='\u000B'||(input.LA(1)>='\u000E' && input.LA(1)<='\u001F')||(input.LA(1)>='!' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
 
             	    }
@@ -1564,11 +1565,11 @@ public class FlatZincLexer extends Lexer {
         try {
             int _type = IDENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:354:9: ( LIT ( LIT | DIGIT | '_' )* )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:354:11: LIT ( LIT | DIGIT | '_' )*
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:419:9: ( LIT ( LIT | DIGIT | '_' )* )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:419:11: LIT ( LIT | DIGIT | '_' )*
             {
             mLIT(); 
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:354:15: ( LIT | DIGIT | '_' )*
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:419:15: ( LIT | DIGIT | '_' )*
             loop14:
             do {
                 int alt14=2;
@@ -1612,38 +1613,22 @@ public class FlatZincLexer extends Lexer {
     }
     // $ANTLR end "IDENT"
 
-    // $ANTLR start "DIGIT"
-    public final void mDIGIT() throws RecognitionException {
+    // $ANTLR start "WS"
+    public final void mWS() throws RecognitionException {
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:356:18: ( '0' .. '9' )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:356:20: '0' .. '9'
+            int _type = WS;
+            int _channel = DEFAULT_TOKEN_CHANNEL;
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:420:4: ( ( ' ' | '\\n' )+ )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:420:6: ( ' ' | '\\n' )+
             {
-            matchRange('0','9'); 
-
-            }
-
-        }
-        finally {
-        }
-    }
-    // $ANTLR end "DIGIT"
-
-    // $ANTLR start "HEX_DIGIT"
-    public final void mHEX_DIGIT() throws RecognitionException {
-        try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:357:21: ( '0x' ( DIGIT | 'A' .. 'F' | 'a' .. 'f' )+ )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:357:23: '0x' ( DIGIT | 'A' .. 'F' | 'a' .. 'f' )+
-            {
-            match("0x"); 
-
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:357:28: ( DIGIT | 'A' .. 'F' | 'a' .. 'f' )+
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:420:6: ( ' ' | '\\n' )+
             int cnt15=0;
             loop15:
             do {
                 int alt15=2;
                 int LA15_0 = input.LA(1);
 
-                if ( ((LA15_0>='0' && LA15_0<='9')||(LA15_0>='A' && LA15_0<='F')||(LA15_0>='a' && LA15_0<='f')) ) {
+                if ( (LA15_0=='\n'||LA15_0==' ') ) {
                     alt15=1;
                 }
 
@@ -1652,7 +1637,7 @@ public class FlatZincLexer extends Lexer {
             	case 1 :
             	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:
             	    {
-            	    if ( (input.LA(1)>='0' && input.LA(1)<='9')||(input.LA(1)>='A' && input.LA(1)<='F')||(input.LA(1)>='a' && input.LA(1)<='f') ) {
+            	    if ( input.LA(1)=='\n'||input.LA(1)==' ' ) {
             	        input.consume();
 
             	    }
@@ -1674,6 +1659,25 @@ public class FlatZincLexer extends Lexer {
                 cnt15++;
             } while (true);
 
+            skip();
+
+            }
+
+            state.type = _type;
+            state.channel = _channel;
+        }
+        finally {
+        }
+    }
+    // $ANTLR end "WS"
+
+    // $ANTLR start "DIGIT"
+    public final void mDIGIT() throws RecognitionException {
+        try {
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:422:18: ( '0' .. '9' )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:422:20: '0' .. '9'
+            {
+            matchRange('0','9'); 
 
             }
 
@@ -1681,33 +1685,41 @@ public class FlatZincLexer extends Lexer {
         finally {
         }
     }
-    // $ANTLR end "HEX_DIGIT"
+    // $ANTLR end "DIGIT"
 
-    // $ANTLR start "OCT_DIGIT"
-    public final void mOCT_DIGIT() throws RecognitionException {
+    // $ANTLR start "HEX_DIGIT"
+    public final void mHEX_DIGIT() throws RecognitionException {
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:358:21: ( '0o' ( '0' .. '7' )+ )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:358:23: '0o' ( '0' .. '7' )+
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:423:21: ( '0x' ( DIGIT | 'A' .. 'F' | 'a' .. 'f' )+ )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:423:23: '0x' ( DIGIT | 'A' .. 'F' | 'a' .. 'f' )+
             {
-            match("0o"); 
+            match("0x"); 
 
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:358:28: ( '0' .. '7' )+
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:423:28: ( DIGIT | 'A' .. 'F' | 'a' .. 'f' )+
             int cnt16=0;
             loop16:
             do {
                 int alt16=2;
                 int LA16_0 = input.LA(1);
 
-                if ( ((LA16_0>='0' && LA16_0<='7')) ) {
+                if ( ((LA16_0>='0' && LA16_0<='9')||(LA16_0>='A' && LA16_0<='F')||(LA16_0>='a' && LA16_0<='f')) ) {
                     alt16=1;
                 }
 
 
                 switch (alt16) {
             	case 1 :
-            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:358:29: '0' .. '7'
+            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:
             	    {
-            	    matchRange('0','7'); 
+            	    if ( (input.LA(1)>='0' && input.LA(1)<='9')||(input.LA(1)>='A' && input.LA(1)<='F')||(input.LA(1)>='a' && input.LA(1)<='f') ) {
+            	        input.consume();
+
+            	    }
+            	    else {
+            	        MismatchedSetException mse = new MismatchedSetException(null,input);
+            	        recover(mse);
+            	        throw mse;}
+
 
             	    }
             	    break;
@@ -1728,12 +1740,59 @@ public class FlatZincLexer extends Lexer {
         finally {
         }
     }
+    // $ANTLR end "HEX_DIGIT"
+
+    // $ANTLR start "OCT_DIGIT"
+    public final void mOCT_DIGIT() throws RecognitionException {
+        try {
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:424:21: ( '0o' ( '0' .. '7' )+ )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:424:23: '0o' ( '0' .. '7' )+
+            {
+            match("0o"); 
+
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:424:28: ( '0' .. '7' )+
+            int cnt17=0;
+            loop17:
+            do {
+                int alt17=2;
+                int LA17_0 = input.LA(1);
+
+                if ( ((LA17_0>='0' && LA17_0<='7')) ) {
+                    alt17=1;
+                }
+
+
+                switch (alt17) {
+            	case 1 :
+            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:424:29: '0' .. '7'
+            	    {
+            	    matchRange('0','7'); 
+
+            	    }
+            	    break;
+
+            	default :
+            	    if ( cnt17 >= 1 ) break loop17;
+                        EarlyExitException eee =
+                            new EarlyExitException(17, input);
+                        throw eee;
+                }
+                cnt17++;
+            } while (true);
+
+
+            }
+
+        }
+        finally {
+        }
+    }
     // $ANTLR end "OCT_DIGIT"
 
     // $ANTLR start "LIT"
     public final void mLIT() throws RecognitionException {
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:359:16: ( 'A' .. 'Z' | 'a' .. 'z' )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:425:16: ( 'A' .. 'Z' | 'a' .. 'z' )
             // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:
             {
             if ( (input.LA(1)>='A' && input.LA(1)<='Z')||(input.LA(1)>='a' && input.LA(1)<='z') ) {
@@ -1755,10 +1814,10 @@ public class FlatZincLexer extends Lexer {
     // $ANTLR end "LIT"
 
     public void mTokens() throws RecognitionException {
-        // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:1:8: ( COLONCOLON | COLON | COMA | DOTDOT | EQUAL | SEMICOLON | LP | RP | RBOX | LBOX | LB | RB | DQUOTE | FALSE | TRUE | ANY | ARRAY | BOOL | CASE | CONSTRAINT | ELSE | ELSEIF | ENDIF | ENUM | FLOAT | FUNCTION | IF | INCLUDE | INT | LET | MAXIMIZE | MINIMIZE | OF | SATISFY | OUTPUT | PAR | PREDICATE | RECORD | SET | SHOW | SHOWCOND | SOLVE | STRING | TEST | THEN | TUPLE | TYPE | VAR | VARIANT_RECORD | WHERE | INT_LITERAL | FLOAT_LITERAL | STRING_LITERAL | IDENT )
-        int alt17=54;
-        alt17 = dfa17.predict(input);
-        switch (alt17) {
+        // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:1:8: ( COLONCOLON | COLON | COMA | DOTDOT | EQUAL | SEMICOLON | LP | RP | RBOX | LBOX | LB | RB | DQUOTE | FALSE | TRUE | ANY | ARRAY | BOOL | CASE | CONSTRAINT | ELSE | ELSEIF | ENDIF | ENUM | FLOAT | FUNCTION | IF | INCLUDE | INT | LET | MAXIMIZE | MINIMIZE | OF | SATISFY | OUTPUT | PAR | PREDICATE | RECORD | SET | SHOW | SHOWCOND | SOLVE | STRING | TEST | THEN | TUPLE | TYPE | VAR | VARIANT_RECORD | WHERE | INT_LITERAL | FLOAT_LITERAL | STRING_LITERAL | IDENT | WS )
+        int alt18=55;
+        alt18 = dfa18.predict(input);
+        switch (alt18) {
             case 1 :
                 // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:1:10: COLONCOLON
                 {
@@ -2137,6 +2196,13 @@ public class FlatZincLexer extends Lexer {
 
                 }
                 break;
+            case 55 :
+                // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:1:364: WS
+                {
+                mWS(); 
+
+                }
+                break;
 
         }
 
@@ -2144,7 +2210,7 @@ public class FlatZincLexer extends Lexer {
 
 
     protected DFA11 dfa11 = new DFA11(this);
-    protected DFA17 dfa17 = new DFA17(this);
+    protected DFA18 dfa18 = new DFA18(this);
     static final String DFA11_eotS =
         "\3\uffff\1\4\1\uffff";
     static final String DFA11_eofS =
@@ -2195,28 +2261,28 @@ public class FlatZincLexer extends Lexer {
             this.transition = DFA11_transition;
         }
         public String getDescription() {
-            return "352:31: ( '.' | ( '.' ( DIGIT )+ )? ( 'E' | 'e' ) ( '-' | '+' )? )";
+            return "417:31: ( '.' | ( '.' ( DIGIT )+ )? ( 'E' | 'e' ) ( '-' | '+' )? )";
         }
     }
-    static final String DFA17_eotS =
-        "\1\uffff\1\41\12\uffff\1\42\17\37\1\uffff\2\104\5\uffff\17\37\1"+
-        "\126\4\37\1\134\13\37\2\uffff\10\37\1\160\7\37\1\uffff\1\37\1\171"+
-        "\1\172\2\37\1\uffff\2\37\1\177\3\37\1\u0083\2\37\1\u0087\4\37\1"+
-        "\u008c\1\u008d\1\u008e\1\37\1\u0090\1\uffff\1\37\1\u0092\1\u0093"+
-        "\1\37\1\u0096\1\37\1\u0098\1\37\2\uffff\4\37\1\uffff\1\u009f\2\37"+
-        "\1\uffff\3\37\1\uffff\1\37\1\u00a6\1\u00a7\1\37\3\uffff\1\u00a9"+
-        "\1\uffff\1\u00aa\2\uffff\2\37\1\uffff\1\u00ad\1\uffff\6\37\1\uffff"+
-        "\1\u00b4\4\37\1\u00b9\2\uffff\1\37\2\uffff\1\37\1\u00bc\1\uffff"+
-        "\3\37\1\u00c0\2\37\1\uffff\1\u00c3\1\37\1\u00c5\1\37\1\uffff\2\37"+
-        "\1\uffff\1\u00c9\2\37\1\uffff\1\u00cc\1\37\1\uffff\1\37\1\uffff"+
-        "\1\37\1\u00d0\1\37\1\uffff\1\u00d2\1\u00d3\1\uffff\3\37\1\uffff"+
-        "\1\37\2\uffff\1\u00d8\1\u00d9\1\37\1\u00db\2\uffff\1\37\1\uffff"+
-        "\3\37\1\u00e0\1\uffff";
-    static final String DFA17_eofS =
-        "\u00e1\uffff";
-    static final String DFA17_minS =
-        "\1\42\1\72\12\uffff\1\0\1\141\1\145\1\156\1\157\1\141\1\154\1\146"+
-        "\1\145\1\141\1\146\2\141\1\145\1\141\1\150\1\60\2\56\5\uffff\1\154"+
+    static final String DFA18_eotS =
+        "\1\uffff\1\42\12\uffff\1\43\17\37\1\uffff\2\105\6\uffff\17\37\1"+
+        "\127\4\37\1\135\13\37\2\uffff\10\37\1\161\7\37\1\uffff\1\37\1\172"+
+        "\1\173\2\37\1\uffff\2\37\1\u0080\3\37\1\u0084\2\37\1\u0088\4\37"+
+        "\1\u008d\1\u008e\1\u008f\1\37\1\u0091\1\uffff\1\37\1\u0093\1\u0094"+
+        "\1\37\1\u0097\1\37\1\u0099\1\37\2\uffff\4\37\1\uffff\1\u00a0\2\37"+
+        "\1\uffff\3\37\1\uffff\1\37\1\u00a7\1\u00a8\1\37\3\uffff\1\u00aa"+
+        "\1\uffff\1\u00ab\2\uffff\2\37\1\uffff\1\u00ae\1\uffff\6\37\1\uffff"+
+        "\1\u00b5\4\37\1\u00ba\2\uffff\1\37\2\uffff\1\37\1\u00bd\1\uffff"+
+        "\3\37\1\u00c1\2\37\1\uffff\1\u00c4\1\37\1\u00c6\1\37\1\uffff\2\37"+
+        "\1\uffff\1\u00ca\2\37\1\uffff\1\u00cd\1\37\1\uffff\1\37\1\uffff"+
+        "\1\37\1\u00d1\1\37\1\uffff\1\u00d3\1\u00d4\1\uffff\3\37\1\uffff"+
+        "\1\37\2\uffff\1\u00d9\1\u00da\1\37\1\u00dc\2\uffff\1\37\1\uffff"+
+        "\3\37\1\u00e1\1\uffff";
+    static final String DFA18_eofS =
+        "\u00e2\uffff";
+    static final String DFA18_minS =
+        "\1\12\1\72\12\uffff\1\0\1\141\1\145\1\156\1\157\1\141\1\154\1\146"+
+        "\1\145\1\141\1\146\2\141\1\145\1\141\1\150\1\60\2\56\6\uffff\1\154"+
         "\1\157\1\156\1\165\1\163\1\145\2\160\1\171\1\162\1\157\1\163\1\156"+
         "\1\163\1\144\1\60\1\143\1\164\1\170\1\156\1\60\3\164\1\157\1\154"+
         "\2\162\1\145\1\143\1\162\1\145\2\uffff\1\163\1\141\1\143\1\145\1"+
@@ -2233,9 +2299,9 @@ public class FlatZincLexer extends Lexer {
         "\1\uffff\1\164\1\uffff\1\137\1\60\1\156\1\uffff\2\60\1\uffff\1\144"+
         "\1\145\1\162\1\uffff\1\164\2\uffff\2\60\1\145\1\60\2\uffff\1\143"+
         "\1\uffff\1\157\1\162\1\144\1\60\1\uffff";
-    static final String DFA17_maxS =
+    static final String DFA18_maxS =
         "\1\175\1\72\12\uffff\1\uffff\1\165\1\171\1\162\2\157\2\156\1\145"+
-        "\1\151\1\165\1\164\1\162\1\145\1\141\1\150\1\71\2\145\5\uffff\1"+
+        "\1\151\1\165\1\164\1\162\1\145\1\141\1\150\1\71\2\145\6\uffff\1"+
         "\154\1\157\1\156\1\165\1\163\1\145\2\160\1\171\1\162\1\157\1\163"+
         "\1\156\1\163\1\165\1\172\2\164\1\170\1\156\1\172\3\164\1\157\1\154"+
         "\2\162\1\145\1\143\1\162\1\145\2\uffff\1\163\1\141\1\143\1\145\1"+
@@ -2252,25 +2318,25 @@ public class FlatZincLexer extends Lexer {
         "\1\156\1\uffff\1\164\1\uffff\1\137\1\172\1\156\1\uffff\2\172\1\uffff"+
         "\1\144\1\145\1\162\1\uffff\1\164\2\uffff\2\172\1\145\1\172\2\uffff"+
         "\1\143\1\uffff\1\157\1\162\1\144\1\172\1\uffff";
-    static final String DFA17_acceptS =
+    static final String DFA18_acceptS =
         "\2\uffff\1\3\1\4\1\5\1\6\1\7\1\10\1\11\1\12\1\13\1\14\23\uffff\1"+
-        "\66\1\1\1\2\1\15\1\65\40\uffff\1\63\1\64\20\uffff\1\33\5\uffff\1"+
-        "\41\23\uffff\1\20\10\uffff\1\35\1\36\4\uffff\1\47\3\uffff\1\44\3"+
-        "\uffff\1\60\4\uffff\1\17\1\54\1\55\1\uffff\1\57\1\uffff\1\22\1\23"+
-        "\2\uffff\1\25\1\uffff\1\30\6\uffff\1\50\6\uffff\1\16\1\31\1\uffff"+
+        "\66\1\67\1\1\1\2\1\15\1\65\40\uffff\1\63\1\64\20\uffff\1\33\5\uffff"+
+        "\1\41\23\uffff\1\20\10\uffff\1\35\1\36\4\uffff\1\47\3\uffff\1\44"+
+        "\3\uffff\1\60\4\uffff\1\17\1\54\1\55\1\uffff\1\57\1\uffff\1\22\1"+
+        "\23\2\uffff\1\25\1\uffff\1\30\6\uffff\1\50\6\uffff\1\16\1\31\1\uffff"+
         "\1\56\1\21\2\uffff\1\27\6\uffff\1\52\4\uffff\1\62\2\uffff\1\26\3"+
         "\uffff\1\43\2\uffff\1\53\1\uffff\1\46\3\uffff\1\34\2\uffff\1\42"+
         "\3\uffff\1\32\1\uffff\1\37\1\40\4\uffff\1\51\1\45\1\uffff\1\24\4"+
         "\uffff\1\61";
-    static final String DFA17_specialS =
-        "\14\uffff\1\0\u00d4\uffff}>";
-    static final String[] DFA17_transitionS = {
-            "\1\14\5\uffff\1\6\1\7\2\uffff\1\2\1\34\1\3\1\uffff\1\35\11\36"+
-            "\1\1\1\5\1\uffff\1\4\3\uffff\32\37\1\11\1\uffff\1\10\3\uffff"+
-            "\1\17\1\20\1\21\1\37\1\22\1\15\2\37\1\23\2\37\1\24\1\25\1\37"+
-            "\1\26\1\30\1\37\1\31\1\27\1\16\1\37\1\32\1\33\3\37\1\12\1\uffff"+
-            "\1\13",
-            "\1\40",
+    static final String DFA18_specialS =
+        "\14\uffff\1\0\u00d5\uffff}>";
+    static final String[] DFA18_transitionS = {
+            "\1\40\25\uffff\1\40\1\uffff\1\14\5\uffff\1\6\1\7\2\uffff\1\2"+
+            "\1\34\1\3\1\uffff\1\35\11\36\1\1\1\5\1\uffff\1\4\3\uffff\32"+
+            "\37\1\11\1\uffff\1\10\3\uffff\1\17\1\20\1\21\1\37\1\22\1\15"+
+            "\2\37\1\23\2\37\1\24\1\25\1\37\1\26\1\30\1\37\1\31\1\27\1\16"+
+            "\1\37\1\32\1\33\3\37\1\12\1\uffff\1\13",
+            "\1\41",
             "",
             "",
             "",
@@ -2281,31 +2347,31 @@ public class FlatZincLexer extends Lexer {
             "",
             "",
             "",
-            "\12\43\1\uffff\1\43\2\uffff\ufff2\43",
-            "\1\44\12\uffff\1\45\10\uffff\1\46",
-            "\1\50\2\uffff\1\51\11\uffff\1\47\2\uffff\1\52\3\uffff\1\53",
-            "\1\54\3\uffff\1\55",
-            "\1\56",
-            "\1\57\15\uffff\1\60",
-            "\1\61\1\uffff\1\62",
-            "\1\63\7\uffff\1\64",
-            "\1\65",
-            "\1\66\7\uffff\1\67",
-            "\1\70\16\uffff\1\71",
-            "\1\72\3\uffff\1\73\2\uffff\1\74\6\uffff\1\75\4\uffff\1\76",
-            "\1\77\20\uffff\1\100",
-            "\1\101",
+            "\12\44\1\uffff\1\44\2\uffff\22\44\1\uffff\uffdf\44",
+            "\1\45\12\uffff\1\46\10\uffff\1\47",
+            "\1\51\2\uffff\1\52\11\uffff\1\50\2\uffff\1\53\3\uffff\1\54",
+            "\1\55\3\uffff\1\56",
+            "\1\57",
+            "\1\60\15\uffff\1\61",
+            "\1\62\1\uffff\1\63",
+            "\1\64\7\uffff\1\65",
+            "\1\66",
+            "\1\67\7\uffff\1\70",
+            "\1\71\16\uffff\1\72",
+            "\1\73\3\uffff\1\74\2\uffff\1\75\6\uffff\1\76\4\uffff\1\77",
+            "\1\100\20\uffff\1\101",
             "\1\102",
             "\1\103",
+            "\1\104",
             "\1\35\11\36",
-            "\1\105\1\uffff\12\36\13\uffff\1\105\37\uffff\1\105",
-            "\1\105\1\uffff\12\36\13\uffff\1\105\37\uffff\1\105",
+            "\1\106\1\uffff\12\36\13\uffff\1\106\37\uffff\1\106",
+            "\1\106\1\uffff\12\36\13\uffff\1\106\37\uffff\1\106",
             "",
             "",
             "",
             "",
             "",
-            "\1\106",
+            "",
             "\1\107",
             "\1\110",
             "\1\111",
@@ -2319,14 +2385,14 @@ public class FlatZincLexer extends Lexer {
             "\1\121",
             "\1\122",
             "\1\123",
-            "\1\124\20\uffff\1\125",
+            "\1\124",
+            "\1\125\20\uffff\1\126",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
-            "\1\127\20\uffff\1\130",
-            "\1\131",
+            "\1\130\20\uffff\1\131",
             "\1\132",
             "\1\133",
+            "\1\134",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
-            "\1\135",
             "\1\136",
             "\1\137",
             "\1\140",
@@ -2337,9 +2403,9 @@ public class FlatZincLexer extends Lexer {
             "\1\145",
             "\1\146",
             "\1\147",
-            "",
-            "",
             "\1\150",
+            "",
+            "",
             "\1\151",
             "\1\152",
             "\1\153",
@@ -2347,70 +2413,71 @@ public class FlatZincLexer extends Lexer {
             "\1\155",
             "\1\156",
             "\1\157",
+            "\1\160",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
-            "\1\161",
             "\1\162",
             "\1\163",
             "\1\164",
             "\1\165",
             "\1\166",
             "\1\167",
-            "",
             "\1\170",
-            "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
-            "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
-            "\1\173",
-            "\1\174",
             "",
-            "\1\175",
-            "\1\176",
+            "\1\171",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
-            "\1\u0080",
+            "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
+            "\1\174",
+            "\1\175",
+            "",
+            "\1\176",
+            "\1\177",
+            "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
             "\1\u0081",
             "\1\u0082",
+            "\1\u0083",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
-            "\1\u0084",
             "\1\u0085",
-            "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\10\37\1\u0086\21"+
+            "\1\u0086",
+            "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\10\37\1\u0087\21"+
             "\37",
-            "\1\u0088",
             "\1\u0089",
             "\1\u008a",
             "\1\u008b",
+            "\1\u008c",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
-            "\1\u008f",
+            "\1\u0090",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
             "",
-            "\1\u0091",
+            "\1\u0092",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
-            "\1\u0094",
-            "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\10\37\1\u0095\21"+
+            "\1\u0095",
+            "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\10\37\1\u0096\21"+
             "\37",
-            "\1\u0097",
+            "\1\u0098",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
-            "\1\u0099",
-            "",
-            "",
             "\1\u009a",
+            "",
+            "",
             "\1\u009b",
             "\1\u009c",
             "\1\u009d",
+            "\1\u009e",
             "",
-            "\12\37\7\uffff\32\37\4\uffff\1\u009e\1\uffff\32\37",
-            "\1\u00a0",
+            "\12\37\7\uffff\32\37\4\uffff\1\u009f\1\uffff\32\37",
             "\1\u00a1",
-            "",
             "\1\u00a2",
+            "",
             "\1\u00a3",
             "\1\u00a4",
-            "",
             "\1\u00a5",
+            "",
+            "\1\u00a6",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
-            "\1\u00a8",
+            "\1\u00a9",
             "",
             "",
             "",
@@ -2419,134 +2486,134 @@ public class FlatZincLexer extends Lexer {
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
             "",
             "",
-            "\1\u00ab",
             "\1\u00ac",
+            "\1\u00ad",
             "",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
             "",
-            "\1\u00ae",
             "\1\u00af",
             "\1\u00b0",
             "\1\u00b1",
             "\1\u00b2",
             "\1\u00b3",
+            "\1\u00b4",
             "",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
-            "\1\u00b5",
             "\1\u00b6",
             "\1\u00b7",
             "\1\u00b8",
+            "\1\u00b9",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
-            "",
-            "",
-            "\1\u00ba",
             "",
             "",
             "\1\u00bb",
+            "",
+            "",
+            "\1\u00bc",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
             "",
-            "\1\u00bd",
             "\1\u00be",
             "\1\u00bf",
+            "\1\u00c0",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
-            "\1\u00c1",
             "\1\u00c2",
+            "\1\u00c3",
             "",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
-            "\1\u00c4",
+            "\1\u00c5",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
-            "\1\u00c6",
-            "",
             "\1\u00c7",
+            "",
             "\1\u00c8",
+            "\1\u00c9",
             "",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
-            "\1\u00ca",
             "\1\u00cb",
+            "\1\u00cc",
             "",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
-            "\1\u00cd",
-            "",
             "\1\u00ce",
             "",
             "\1\u00cf",
+            "",
+            "\1\u00d0",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
-            "\1\u00d1",
+            "\1\u00d2",
             "",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
             "",
-            "\1\u00d4",
             "\1\u00d5",
             "\1\u00d6",
-            "",
             "\1\u00d7",
             "",
+            "\1\u00d8",
+            "",
             "",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
-            "\1\u00da",
+            "\1\u00db",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
             "",
-            "",
-            "\1\u00dc",
             "",
             "\1\u00dd",
+            "",
             "\1\u00de",
             "\1\u00df",
+            "\1\u00e0",
             "\12\37\7\uffff\32\37\4\uffff\1\37\1\uffff\32\37",
             ""
     };
 
-    static final short[] DFA17_eot = DFA.unpackEncodedString(DFA17_eotS);
-    static final short[] DFA17_eof = DFA.unpackEncodedString(DFA17_eofS);
-    static final char[] DFA17_min = DFA.unpackEncodedStringToUnsignedChars(DFA17_minS);
-    static final char[] DFA17_max = DFA.unpackEncodedStringToUnsignedChars(DFA17_maxS);
-    static final short[] DFA17_accept = DFA.unpackEncodedString(DFA17_acceptS);
-    static final short[] DFA17_special = DFA.unpackEncodedString(DFA17_specialS);
-    static final short[][] DFA17_transition;
+    static final short[] DFA18_eot = DFA.unpackEncodedString(DFA18_eotS);
+    static final short[] DFA18_eof = DFA.unpackEncodedString(DFA18_eofS);
+    static final char[] DFA18_min = DFA.unpackEncodedStringToUnsignedChars(DFA18_minS);
+    static final char[] DFA18_max = DFA.unpackEncodedStringToUnsignedChars(DFA18_maxS);
+    static final short[] DFA18_accept = DFA.unpackEncodedString(DFA18_acceptS);
+    static final short[] DFA18_special = DFA.unpackEncodedString(DFA18_specialS);
+    static final short[][] DFA18_transition;
 
     static {
-        int numStates = DFA17_transitionS.length;
-        DFA17_transition = new short[numStates][];
+        int numStates = DFA18_transitionS.length;
+        DFA18_transition = new short[numStates][];
         for (int i=0; i<numStates; i++) {
-            DFA17_transition[i] = DFA.unpackEncodedString(DFA17_transitionS[i]);
+            DFA18_transition[i] = DFA.unpackEncodedString(DFA18_transitionS[i]);
         }
     }
 
-    class DFA17 extends DFA {
+    class DFA18 extends DFA {
 
-        public DFA17(BaseRecognizer recognizer) {
+        public DFA18(BaseRecognizer recognizer) {
             this.recognizer = recognizer;
-            this.decisionNumber = 17;
-            this.eot = DFA17_eot;
-            this.eof = DFA17_eof;
-            this.min = DFA17_min;
-            this.max = DFA17_max;
-            this.accept = DFA17_accept;
-            this.special = DFA17_special;
-            this.transition = DFA17_transition;
+            this.decisionNumber = 18;
+            this.eot = DFA18_eot;
+            this.eof = DFA18_eof;
+            this.min = DFA18_min;
+            this.max = DFA18_max;
+            this.accept = DFA18_accept;
+            this.special = DFA18_special;
+            this.transition = DFA18_transition;
         }
         public String getDescription() {
-            return "1:1: Tokens : ( COLONCOLON | COLON | COMA | DOTDOT | EQUAL | SEMICOLON | LP | RP | RBOX | LBOX | LB | RB | DQUOTE | FALSE | TRUE | ANY | ARRAY | BOOL | CASE | CONSTRAINT | ELSE | ELSEIF | ENDIF | ENUM | FLOAT | FUNCTION | IF | INCLUDE | INT | LET | MAXIMIZE | MINIMIZE | OF | SATISFY | OUTPUT | PAR | PREDICATE | RECORD | SET | SHOW | SHOWCOND | SOLVE | STRING | TEST | THEN | TUPLE | TYPE | VAR | VARIANT_RECORD | WHERE | INT_LITERAL | FLOAT_LITERAL | STRING_LITERAL | IDENT );";
+            return "1:1: Tokens : ( COLONCOLON | COLON | COMA | DOTDOT | EQUAL | SEMICOLON | LP | RP | RBOX | LBOX | LB | RB | DQUOTE | FALSE | TRUE | ANY | ARRAY | BOOL | CASE | CONSTRAINT | ELSE | ELSEIF | ENDIF | ENUM | FLOAT | FUNCTION | IF | INCLUDE | INT | LET | MAXIMIZE | MINIMIZE | OF | SATISFY | OUTPUT | PAR | PREDICATE | RECORD | SET | SHOW | SHOWCOND | SOLVE | STRING | TEST | THEN | TUPLE | TYPE | VAR | VARIANT_RECORD | WHERE | INT_LITERAL | FLOAT_LITERAL | STRING_LITERAL | IDENT | WS );";
         }
         public int specialStateTransition(int s, IntStream _input) throws NoViableAltException {
             IntStream input = _input;
         	int _s = s;
             switch ( s ) {
                     case 0 : 
-                        int LA17_12 = input.LA(1);
+                        int LA18_12 = input.LA(1);
 
                         s = -1;
-                        if ( ((LA17_12>='\u0000' && LA17_12<='\t')||LA17_12=='\u000B'||(LA17_12>='\u000E' && LA17_12<='\uFFFF')) ) {s = 35;}
+                        if ( ((LA18_12>='\u0000' && LA18_12<='\t')||LA18_12=='\u000B'||(LA18_12>='\u000E' && LA18_12<='\u001F')||(LA18_12>='!' && LA18_12<='\uFFFF')) ) {s = 36;}
 
-                        else s = 34;
+                        else s = 35;
 
                         if ( s>=0 ) return s;
                         break;
             }
             NoViableAltException nvae =
-                new NoViableAltException(getDescription(), 17, _s, input);
+                new NoViableAltException(getDescription(), 18, _s, input);
             error(nvae);
             throw nvae;
         }

@@ -1,18 +1,21 @@
-// $ANTLR 3.2 Sep 23, 2009 12:02:23 /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g 2009-10-21 18:27:30
+// $ANTLR 3.2 Sep 23, 2009 12:02:23 /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g 2009-11-02 18:49:17
 
 package parser.chocogen.mzn;
 
 import choco.cp.model.CPModel;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.model.variables.integer.IntegerVariable;
 import org.antlr.runtime.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class FlatZincParser extends Parser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "COLONCOLON", "COLON", "COMA", "DOTDOT", "EQUAL", "SEMICOLON", "LP", "RP", "RBOX", "LBOX", "LB", "RB", "DQUOTE", "FALSE", "TRUE", "ANY", "ARRAY", "BOOL", "CASE", "CONSTRAINT", "ELSE", "ELSEIF", "ENDIF", "ENUM", "FLOAT", "FUNCTION", "IF", "INCLUDE", "INT", "LET", "MAXIMIZE", "MINIMIZE", "OF", "SATISFY", "OUTPUT", "PAR", "PREDICATE", "RECORD", "SET", "SHOW", "SHOWCOND", "SOLVE", "STRING", "TEST", "THEN", "TUPLE", "TYPE", "VAR", "VARIANT_RECORD", "WHERE", "IDENT", "INT_LITERAL", "STRING_LITERAL", "FLOAT_LITERAL", "DIGIT", "HEX_DIGIT", "OCT_DIGIT", "LIT"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "COLONCOLON", "COLON", "COMA", "DOTDOT", "EQUAL", "SEMICOLON", "LP", "RP", "RBOX", "LBOX", "LB", "RB", "DQUOTE", "FALSE", "TRUE", "ANY", "ARRAY", "BOOL", "CASE", "CONSTRAINT", "ELSE", "ELSEIF", "ENDIF", "ENUM", "FLOAT", "FUNCTION", "IF", "INCLUDE", "INT", "LET", "MAXIMIZE", "MINIMIZE", "OF", "SATISFY", "OUTPUT", "PAR", "PREDICATE", "RECORD", "SET", "SHOW", "SHOWCOND", "SOLVE", "STRING", "TEST", "THEN", "TUPLE", "TYPE", "VAR", "VARIANT_RECORD", "WHERE", "IDENT", "INT_LITERAL", "STRING_LITERAL", "FLOAT_LITERAL", "DIGIT", "HEX_DIGIT", "OCT_DIGIT", "LIT", "WS"
     };
     public static final int FUNCTION=29;
     public static final int WHERE=53;
@@ -63,6 +66,7 @@ public class FlatZincParser extends Parser {
     public static final int COLON=5;
     public static final int SHOWCOND=44;
     public static final int COLONCOLON=4;
+    public static final int WS=62;
     public static final int ANY=19;
     public static final int ENUM=27;
     public static final int TEST=47;
@@ -96,21 +100,40 @@ public class FlatZincParser extends Parser {
     CPModel model = new CPModel();
     PreProcessCPSolver solver = new PreProcessCPSolver();
     private static final int OFFSET = 1;
+    static Logger LOGGER = ChocoLogging.getParserLogger();
+    private Boolean isFeasible = null;
+        private int nbnode = 0;
+        private int nbback = 0;
+        private static long[] time = new long[4];
+
+    public void init() {
+            time = new long[4];
+            isFeasible = null;
+            nbback = 0;
+            nbnode = 0;
+    	time[0] = System.currentTimeMillis();
+        }
 
 
 
     // $ANTLR start "model"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:77:1: model : ( pred_decl_item SEMICOLON )* ( var_decl_item SEMICOLON )* ( constraint_item SEMICOLON )* solve_item SEMICOLON ( output_item SEMICOLON )? ;
-    public final void model() throws RecognitionException {
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:92:1: model returns [Boolean isSatisified] : ( pred_decl_item SEMICOLON )* ( var_decl_item SEMICOLON )* ( constraint_item SEMICOLON )* isSatisfied= solve_item SEMICOLON ( output_item SEMICOLON )? ;
+    public final Boolean model() throws RecognitionException {
+        Boolean isSatisified = null;
+
+        Boolean isSatisfied = null;
+
+
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:78:2: ( ( pred_decl_item SEMICOLON )* ( var_decl_item SEMICOLON )* ( constraint_item SEMICOLON )* solve_item SEMICOLON ( output_item SEMICOLON )? )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:79:3: ( pred_decl_item SEMICOLON )* ( var_decl_item SEMICOLON )* ( constraint_item SEMICOLON )* solve_item SEMICOLON ( output_item SEMICOLON )?
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:93:2: ( ( pred_decl_item SEMICOLON )* ( var_decl_item SEMICOLON )* ( constraint_item SEMICOLON )* isSatisfied= solve_item SEMICOLON ( output_item SEMICOLON )? )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:94:3: ( pred_decl_item SEMICOLON )* ( var_decl_item SEMICOLON )* ( constraint_item SEMICOLON )* isSatisfied= solve_item SEMICOLON ( output_item SEMICOLON )?
             {
 
             		FZVariableBuilder.init(memory);
             		FZConstraintBuilder.init(memory, model);
+            		init();
             		
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:83:3: ( pred_decl_item SEMICOLON )*
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:99:3: ( pred_decl_item SEMICOLON )*
             loop1:
             do {
                 int alt1=2;
@@ -123,14 +146,14 @@ public class FlatZincParser extends Parser {
 
                 switch (alt1) {
             	case 1 :
-            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:83:4: pred_decl_item SEMICOLON
+            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:99:4: pred_decl_item SEMICOLON
             	    {
-            	    pushFollow(FOLLOW_pred_decl_item_in_model494);
+            	    pushFollow(FOLLOW_pred_decl_item_in_model498);
             	    pred_decl_item();
 
             	    state._fsp--;
 
-            	    match(input,SEMICOLON,FOLLOW_SEMICOLON_in_model496); 
+            	    match(input,SEMICOLON,FOLLOW_SEMICOLON_in_model500); 
 
             	    }
             	    break;
@@ -140,7 +163,7 @@ public class FlatZincParser extends Parser {
                 }
             } while (true);
 
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:84:3: ( var_decl_item SEMICOLON )*
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:100:3: ( var_decl_item SEMICOLON )*
             loop2:
             do {
                 int alt2=2;
@@ -153,14 +176,14 @@ public class FlatZincParser extends Parser {
 
                 switch (alt2) {
             	case 1 :
-            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:84:4: var_decl_item SEMICOLON
+            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:100:4: var_decl_item SEMICOLON
             	    {
-            	    pushFollow(FOLLOW_var_decl_item_in_model504);
+            	    pushFollow(FOLLOW_var_decl_item_in_model508);
             	    var_decl_item();
 
             	    state._fsp--;
 
-            	    match(input,SEMICOLON,FOLLOW_SEMICOLON_in_model506); 
+            	    match(input,SEMICOLON,FOLLOW_SEMICOLON_in_model510); 
 
             	    }
             	    break;
@@ -169,7 +192,8 @@ public class FlatZincParser extends Parser {
             	    break loop2;
                 }
             } while (true);
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:85:3: ( constraint_item SEMICOLON )*
+
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:101:3: ( constraint_item SEMICOLON )*
             loop3:
             do {
                 int alt3=2;
@@ -182,14 +206,14 @@ public class FlatZincParser extends Parser {
 
                 switch (alt3) {
             	case 1 :
-            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:85:4: constraint_item SEMICOLON
+            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:101:4: constraint_item SEMICOLON
             	    {
-            	    pushFollow(FOLLOW_constraint_item_in_model514);
+            	    pushFollow(FOLLOW_constraint_item_in_model518);
             	    constraint_item();
 
             	    state._fsp--;
 
-            	    match(input,SEMICOLON,FOLLOW_SEMICOLON_in_model516); 
+            	    match(input,SEMICOLON,FOLLOW_SEMICOLON_in_model520); 
 
             	    }
             	    break;
@@ -199,13 +223,13 @@ public class FlatZincParser extends Parser {
                 }
             } while (true);
 
-            pushFollow(FOLLOW_solve_item_in_model523);
-            solve_item();
+            pushFollow(FOLLOW_solve_item_in_model529);
+            isSatisfied=solve_item();
 
             state._fsp--;
 
-            match(input,SEMICOLON,FOLLOW_SEMICOLON_in_model525); 
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:87:3: ( output_item SEMICOLON )?
+            match(input,SEMICOLON,FOLLOW_SEMICOLON_in_model531); 
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:103:3: ( output_item SEMICOLON )?
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -214,20 +238,54 @@ public class FlatZincParser extends Parser {
             }
             switch (alt4) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:87:4: output_item SEMICOLON
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:103:4: output_item SEMICOLON
                     {
-                    pushFollow(FOLLOW_output_item_in_model531);
+                    pushFollow(FOLLOW_output_item_in_model537);
                     output_item();
 
                     state._fsp--;
 
-                    match(input,SEMICOLON,FOLLOW_SEMICOLON_in_model533); 
+                    match(input,SEMICOLON,FOLLOW_SEMICOLON_in_model539); 
 
                     }
                     break;
 
             }
 
+
+            		if (isFeasible == Boolean.TRUE
+                                && ((!solver.checkDecisionVariables())
+                                || solver.checkSolution(false) != Boolean.TRUE)) {
+                            isFeasible = null;
+                        }
+                        StringBuffer res = new StringBuffer("c ");
+                        if (isFeasible == null) {
+                            res.append("TIMEOUT");
+                            LOGGER.info("s UNKNOWN");
+                        } else if (!isFeasible) {
+                            res.append("UNSAT");
+                            LOGGER.info("s UNSATISFIABLE");
+                        } else {
+                            res.append("SAT");
+                            LOGGER.info("s SATISFIABLE");
+                            String sol = "v ";
+                            LOGGER.info(sol);
+                        }
+                        double rtime = (double) (time[3] - time[0]) / 1000D;
+                        res.append(" ").append(rtime).append(" TIME     ");
+                        res.append(" ").append(nbnode).append(" NDS   ");
+                        res.append(" ").append(time[1] - time[0]).append(" PARSTIME     ");
+                        res.append(" ").append(time[2] - time[1]).append(" BUILDPB      ");
+                        res.append(" ").append(time[3] - time[2]).append(" RES      ");
+                        LOGGER.info("d RUNTIME " + rtime);
+                        LOGGER.info("d NODES " + nbnode);
+                        LOGGER.info("d NODES/s " + Math.round((double) nbnode / rtime));
+                        LOGGER.info("d BACKTRACKS " + nbback);
+                        LOGGER.info("d BACKTRACKS/s " + Math.round((double) nbback / rtime));
+                     
+                        LOGGER.info("" + res);
+                        ChocoLogging.flushLogs();
+            		
 
             }
 
@@ -238,27 +296,27 @@ public class FlatZincParser extends Parser {
         }
         finally {
         }
-        return ;
+        return isSatisified;
     }
     // $ANTLR end "model"
 
 
     // $ANTLR start "pred_decl_item"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:88:1: pred_decl_item : PREDICATE IDENT LP pred_arg ( COMA pred_arg )* RP ;
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:138:1: pred_decl_item : PREDICATE IDENT LP pred_arg ( COMA pred_arg )* RP ;
     public final void pred_decl_item() throws RecognitionException {
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:89:2: ( PREDICATE IDENT LP pred_arg ( COMA pred_arg )* RP )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:89:4: PREDICATE IDENT LP pred_arg ( COMA pred_arg )* RP
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:139:2: ( PREDICATE IDENT LP pred_arg ( COMA pred_arg )* RP )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:139:4: PREDICATE IDENT LP pred_arg ( COMA pred_arg )* RP
             {
-            match(input,PREDICATE,FOLLOW_PREDICATE_in_pred_decl_item545); 
-            match(input,IDENT,FOLLOW_IDENT_in_pred_decl_item547); 
-            match(input,LP,FOLLOW_LP_in_pred_decl_item549); 
-            pushFollow(FOLLOW_pred_arg_in_pred_decl_item551);
+            match(input,PREDICATE,FOLLOW_PREDICATE_in_pred_decl_item555); 
+            match(input,IDENT,FOLLOW_IDENT_in_pred_decl_item557); 
+            match(input,LP,FOLLOW_LP_in_pred_decl_item559); 
+            pushFollow(FOLLOW_pred_arg_in_pred_decl_item561);
             pred_arg();
 
             state._fsp--;
 
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:89:32: ( COMA pred_arg )*
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:139:32: ( COMA pred_arg )*
             loop5:
             do {
                 int alt5=2;
@@ -271,10 +329,10 @@ public class FlatZincParser extends Parser {
 
                 switch (alt5) {
             	case 1 :
-            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:89:33: COMA pred_arg
+            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:139:33: COMA pred_arg
             	    {
-            	    match(input,COMA,FOLLOW_COMA_in_pred_decl_item554); 
-            	    pushFollow(FOLLOW_pred_arg_in_pred_decl_item556);
+            	    match(input,COMA,FOLLOW_COMA_in_pred_decl_item564); 
+            	    pushFollow(FOLLOW_pred_arg_in_pred_decl_item566);
             	    pred_arg();
 
             	    state._fsp--;
@@ -288,7 +346,7 @@ public class FlatZincParser extends Parser {
                 }
             } while (true);
 
-            match(input,RP,FOLLOW_RP_in_pred_decl_item560); 
+            match(input,RP,FOLLOW_RP_in_pred_decl_item570); 
 
             }
 
@@ -305,10 +363,10 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "pred_arg"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:90:1: pred_arg : ( non_array_ti_expr_tail COLON IDENT | ARRAY LBOX INT_LITERAL DOTDOT INT_LITERAL RBOX OF array_decl_tail COLON IDENT | ARRAY LBOX INT RBOX OF array_decl_tail COLON IDENT );
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:140:1: pred_arg : ( non_array_ti_expr_tail COLON IDENT | ARRAY LBOX INT_LITERAL DOTDOT INT_LITERAL RBOX OF array_decl_tail COLON IDENT | ARRAY LBOX INT RBOX OF array_decl_tail COLON IDENT );
     public final void pred_arg() throws RecognitionException {
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:91:2: ( non_array_ti_expr_tail COLON IDENT | ARRAY LBOX INT_LITERAL DOTDOT INT_LITERAL RBOX OF array_decl_tail COLON IDENT | ARRAY LBOX INT RBOX OF array_decl_tail COLON IDENT )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:141:2: ( non_array_ti_expr_tail COLON IDENT | ARRAY LBOX INT_LITERAL DOTDOT INT_LITERAL RBOX OF array_decl_tail COLON IDENT | ARRAY LBOX INT RBOX OF array_decl_tail COLON IDENT )
             int alt6=3;
             int LA6_0 = input.LA(1);
 
@@ -349,53 +407,53 @@ public class FlatZincParser extends Parser {
             }
             switch (alt6) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:91:4: non_array_ti_expr_tail COLON IDENT
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:141:4: non_array_ti_expr_tail COLON IDENT
                     {
-                    pushFollow(FOLLOW_non_array_ti_expr_tail_in_pred_arg570);
+                    pushFollow(FOLLOW_non_array_ti_expr_tail_in_pred_arg580);
                     non_array_ti_expr_tail();
 
                     state._fsp--;
 
-                    match(input,COLON,FOLLOW_COLON_in_pred_arg572); 
-                    match(input,IDENT,FOLLOW_IDENT_in_pred_arg574); 
+                    match(input,COLON,FOLLOW_COLON_in_pred_arg582); 
+                    match(input,IDENT,FOLLOW_IDENT_in_pred_arg584); 
 
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:92:5: ARRAY LBOX INT_LITERAL DOTDOT INT_LITERAL RBOX OF array_decl_tail COLON IDENT
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:142:5: ARRAY LBOX INT_LITERAL DOTDOT INT_LITERAL RBOX OF array_decl_tail COLON IDENT
                     {
-                    match(input,ARRAY,FOLLOW_ARRAY_in_pred_arg581); 
-                    match(input,LBOX,FOLLOW_LBOX_in_pred_arg583); 
-                    match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_pred_arg585); 
-                    match(input,DOTDOT,FOLLOW_DOTDOT_in_pred_arg587); 
-                    match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_pred_arg589); 
-                    match(input,RBOX,FOLLOW_RBOX_in_pred_arg591); 
-                    match(input,OF,FOLLOW_OF_in_pred_arg593); 
-                    pushFollow(FOLLOW_array_decl_tail_in_pred_arg595);
+                    match(input,ARRAY,FOLLOW_ARRAY_in_pred_arg591); 
+                    match(input,LBOX,FOLLOW_LBOX_in_pred_arg593); 
+                    match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_pred_arg595); 
+                    match(input,DOTDOT,FOLLOW_DOTDOT_in_pred_arg597); 
+                    match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_pred_arg599); 
+                    match(input,RBOX,FOLLOW_RBOX_in_pred_arg601); 
+                    match(input,OF,FOLLOW_OF_in_pred_arg603); 
+                    pushFollow(FOLLOW_array_decl_tail_in_pred_arg605);
                     array_decl_tail();
 
                     state._fsp--;
 
-                    match(input,COLON,FOLLOW_COLON_in_pred_arg597); 
-                    match(input,IDENT,FOLLOW_IDENT_in_pred_arg600); 
+                    match(input,COLON,FOLLOW_COLON_in_pred_arg607); 
+                    match(input,IDENT,FOLLOW_IDENT_in_pred_arg610); 
 
                     }
                     break;
                 case 3 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:93:5: ARRAY LBOX INT RBOX OF array_decl_tail COLON IDENT
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:143:5: ARRAY LBOX INT RBOX OF array_decl_tail COLON IDENT
                     {
-                    match(input,ARRAY,FOLLOW_ARRAY_in_pred_arg606); 
-                    match(input,LBOX,FOLLOW_LBOX_in_pred_arg608); 
-                    match(input,INT,FOLLOW_INT_in_pred_arg610); 
-                    match(input,RBOX,FOLLOW_RBOX_in_pred_arg612); 
-                    match(input,OF,FOLLOW_OF_in_pred_arg614); 
-                    pushFollow(FOLLOW_array_decl_tail_in_pred_arg616);
+                    match(input,ARRAY,FOLLOW_ARRAY_in_pred_arg616); 
+                    match(input,LBOX,FOLLOW_LBOX_in_pred_arg618); 
+                    match(input,INT,FOLLOW_INT_in_pred_arg620); 
+                    match(input,RBOX,FOLLOW_RBOX_in_pred_arg622); 
+                    match(input,OF,FOLLOW_OF_in_pred_arg624); 
+                    pushFollow(FOLLOW_array_decl_tail_in_pred_arg626);
                     array_decl_tail();
 
                     state._fsp--;
 
-                    match(input,COLON,FOLLOW_COLON_in_pred_arg618); 
-                    match(input,IDENT,FOLLOW_IDENT_in_pred_arg620); 
+                    match(input,COLON,FOLLOW_COLON_in_pred_arg628); 
+                    match(input,IDENT,FOLLOW_IDENT_in_pred_arg630); 
 
                     }
                     break;
@@ -414,7 +472,7 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "var_decl_item"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:95:1: var_decl_item : ( VAR natet= non_array_ti_expr_tail COLON name= ident_anns ( EQUAL nafe= non_array_flat_expr )? | natet= non_array_ti_expr_tail COLON name= ident_anns EQUAL nafe= non_array_flat_expr | ARRAY LBOX f= INT_LITERAL DOTDOT t= INT_LITERAL RBOX OF adt= array_decl_tail );
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:145:1: var_decl_item : ( VAR natet= non_array_ti_expr_tail COLON name= ident_anns ( EQUAL nafe= non_array_flat_expr )? | natet= non_array_ti_expr_tail COLON name= ident_anns EQUAL nafe= non_array_flat_expr | ARRAY LBOX f= INT_LITERAL DOTDOT t= INT_LITERAL RBOX OF adt= array_decl_tail );
     public final void var_decl_item() throws RecognitionException {
         Token f=null;
         Token t=null;
@@ -428,7 +486,7 @@ public class FlatZincParser extends Parser {
 
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:96:2: ( VAR natet= non_array_ti_expr_tail COLON name= ident_anns ( EQUAL nafe= non_array_flat_expr )? | natet= non_array_ti_expr_tail COLON name= ident_anns EQUAL nafe= non_array_flat_expr | ARRAY LBOX f= INT_LITERAL DOTDOT t= INT_LITERAL RBOX OF adt= array_decl_tail )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:146:2: ( VAR natet= non_array_ti_expr_tail COLON name= ident_anns ( EQUAL nafe= non_array_flat_expr )? | natet= non_array_ti_expr_tail COLON name= ident_anns EQUAL nafe= non_array_flat_expr | ARRAY LBOX f= INT_LITERAL DOTDOT t= INT_LITERAL RBOX OF adt= array_decl_tail )
             int alt8=3;
             switch ( input.LA(1) ) {
             case VAR:
@@ -461,21 +519,21 @@ public class FlatZincParser extends Parser {
 
             switch (alt8) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:96:4: VAR natet= non_array_ti_expr_tail COLON name= ident_anns ( EQUAL nafe= non_array_flat_expr )?
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:146:4: VAR natet= non_array_ti_expr_tail COLON name= ident_anns ( EQUAL nafe= non_array_flat_expr )?
                     {
-                    match(input,VAR,FOLLOW_VAR_in_var_decl_item631); 
-                    pushFollow(FOLLOW_non_array_ti_expr_tail_in_var_decl_item635);
+                    match(input,VAR,FOLLOW_VAR_in_var_decl_item641); 
+                    pushFollow(FOLLOW_non_array_ti_expr_tail_in_var_decl_item645);
                     natet=non_array_ti_expr_tail();
 
                     state._fsp--;
 
-                    match(input,COLON,FOLLOW_COLON_in_var_decl_item637); 
-                    pushFollow(FOLLOW_ident_anns_in_var_decl_item641);
+                    match(input,COLON,FOLLOW_COLON_in_var_decl_item647); 
+                    pushFollow(FOLLOW_ident_anns_in_var_decl_item651);
                     name=ident_anns();
 
                     state._fsp--;
 
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:96:59: ( EQUAL nafe= non_array_flat_expr )?
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:146:59: ( EQUAL nafe= non_array_flat_expr )?
                     int alt7=2;
                     int LA7_0 = input.LA(1);
 
@@ -484,10 +542,10 @@ public class FlatZincParser extends Parser {
                     }
                     switch (alt7) {
                         case 1 :
-                            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:96:60: EQUAL nafe= non_array_flat_expr
+                            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:146:60: EQUAL nafe= non_array_flat_expr
                             {
-                            match(input,EQUAL,FOLLOW_EQUAL_in_var_decl_item644); 
-                            pushFollow(FOLLOW_non_array_flat_expr_in_var_decl_item648);
+                            match(input,EQUAL,FOLLOW_EQUAL_in_var_decl_item654); 
+                            pushFollow(FOLLOW_non_array_flat_expr_in_var_decl_item658);
                             nafe=non_array_flat_expr();
 
                             state._fsp--;
@@ -506,21 +564,21 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:101:5: natet= non_array_ti_expr_tail COLON name= ident_anns EQUAL nafe= non_array_flat_expr
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:151:5: natet= non_array_ti_expr_tail COLON name= ident_anns EQUAL nafe= non_array_flat_expr
                     {
-                    pushFollow(FOLLOW_non_array_ti_expr_tail_in_var_decl_item662);
+                    pushFollow(FOLLOW_non_array_ti_expr_tail_in_var_decl_item672);
                     natet=non_array_ti_expr_tail();
 
                     state._fsp--;
 
-                    match(input,COLON,FOLLOW_COLON_in_var_decl_item664); 
-                    pushFollow(FOLLOW_ident_anns_in_var_decl_item668);
+                    match(input,COLON,FOLLOW_COLON_in_var_decl_item674); 
+                    pushFollow(FOLLOW_ident_anns_in_var_decl_item678);
                     name=ident_anns();
 
                     state._fsp--;
 
-                    match(input,EQUAL,FOLLOW_EQUAL_in_var_decl_item670); 
-                    pushFollow(FOLLOW_non_array_flat_expr_in_var_decl_item674);
+                    match(input,EQUAL,FOLLOW_EQUAL_in_var_decl_item680); 
+                    pushFollow(FOLLOW_non_array_flat_expr_in_var_decl_item684);
                     nafe=non_array_flat_expr();
 
                     state._fsp--;
@@ -533,16 +591,16 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:106:5: ARRAY LBOX f= INT_LITERAL DOTDOT t= INT_LITERAL RBOX OF adt= array_decl_tail
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:156:5: ARRAY LBOX f= INT_LITERAL DOTDOT t= INT_LITERAL RBOX OF adt= array_decl_tail
                     {
-                    match(input,ARRAY,FOLLOW_ARRAY_in_var_decl_item684); 
-                    match(input,LBOX,FOLLOW_LBOX_in_var_decl_item686); 
-                    f=(Token)match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_var_decl_item690); 
-                    match(input,DOTDOT,FOLLOW_DOTDOT_in_var_decl_item692); 
-                    t=(Token)match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_var_decl_item696); 
-                    match(input,RBOX,FOLLOW_RBOX_in_var_decl_item698); 
-                    match(input,OF,FOLLOW_OF_in_var_decl_item700); 
-                    pushFollow(FOLLOW_array_decl_tail_in_var_decl_item704);
+                    match(input,ARRAY,FOLLOW_ARRAY_in_var_decl_item694); 
+                    match(input,LBOX,FOLLOW_LBOX_in_var_decl_item696); 
+                    f=(Token)match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_var_decl_item700); 
+                    match(input,DOTDOT,FOLLOW_DOTDOT_in_var_decl_item702); 
+                    t=(Token)match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_var_decl_item706); 
+                    match(input,RBOX,FOLLOW_RBOX_in_var_decl_item708); 
+                    match(input,OF,FOLLOW_OF_in_var_decl_item710); 
+                    pushFollow(FOLLOW_array_decl_tail_in_var_decl_item714);
                     adt=array_decl_tail();
 
                     state._fsp--;
@@ -569,7 +627,7 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "array_decl_tail"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:112:1: array_decl_tail returns [FZVariableBuilder.ArrayDecl adt] : (natet= non_array_ti_expr_tail COLON name= ident_anns EQUAL al= array_literal | VAR natet= non_array_ti_expr_tail COLON name= ident_anns ( EQUAL al= array_literal )? );
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:162:1: array_decl_tail returns [FZVariableBuilder.ArrayDecl adt] : (natet= non_array_ti_expr_tail COLON name= ident_anns EQUAL al= array_literal | VAR natet= non_array_ti_expr_tail COLON name= ident_anns ( EQUAL al= array_literal )? );
     public final FZVariableBuilder.ArrayDecl array_decl_tail() throws RecognitionException {
         FZVariableBuilder.ArrayDecl adt = null;
 
@@ -581,7 +639,7 @@ public class FlatZincParser extends Parser {
 
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:113:2: (natet= non_array_ti_expr_tail COLON name= ident_anns EQUAL al= array_literal | VAR natet= non_array_ti_expr_tail COLON name= ident_anns ( EQUAL al= array_literal )? )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:163:2: (natet= non_array_ti_expr_tail COLON name= ident_anns EQUAL al= array_literal | VAR natet= non_array_ti_expr_tail COLON name= ident_anns ( EQUAL al= array_literal )? )
             int alt10=2;
             int LA10_0 = input.LA(1);
 
@@ -599,21 +657,21 @@ public class FlatZincParser extends Parser {
             }
             switch (alt10) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:113:4: natet= non_array_ti_expr_tail COLON name= ident_anns EQUAL al= array_literal
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:163:4: natet= non_array_ti_expr_tail COLON name= ident_anns EQUAL al= array_literal
                     {
-                    pushFollow(FOLLOW_non_array_ti_expr_tail_in_array_decl_tail726);
+                    pushFollow(FOLLOW_non_array_ti_expr_tail_in_array_decl_tail736);
                     natet=non_array_ti_expr_tail();
 
                     state._fsp--;
 
-                    match(input,COLON,FOLLOW_COLON_in_array_decl_tail728); 
-                    pushFollow(FOLLOW_ident_anns_in_array_decl_tail732);
+                    match(input,COLON,FOLLOW_COLON_in_array_decl_tail738); 
+                    pushFollow(FOLLOW_ident_anns_in_array_decl_tail742);
                     name=ident_anns();
 
                     state._fsp--;
 
-                    match(input,EQUAL,FOLLOW_EQUAL_in_array_decl_tail734); 
-                    pushFollow(FOLLOW_array_literal_in_array_decl_tail738);
+                    match(input,EQUAL,FOLLOW_EQUAL_in_array_decl_tail744); 
+                    pushFollow(FOLLOW_array_literal_in_array_decl_tail748);
                     al=array_literal();
 
                     state._fsp--;
@@ -625,21 +683,21 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:117:5: VAR natet= non_array_ti_expr_tail COLON name= ident_anns ( EQUAL al= array_literal )?
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:167:5: VAR natet= non_array_ti_expr_tail COLON name= ident_anns ( EQUAL al= array_literal )?
                     {
-                    match(input,VAR,FOLLOW_VAR_in_array_decl_tail748); 
-                    pushFollow(FOLLOW_non_array_ti_expr_tail_in_array_decl_tail752);
+                    match(input,VAR,FOLLOW_VAR_in_array_decl_tail758); 
+                    pushFollow(FOLLOW_non_array_ti_expr_tail_in_array_decl_tail762);
                     natet=non_array_ti_expr_tail();
 
                     state._fsp--;
 
-                    match(input,COLON,FOLLOW_COLON_in_array_decl_tail754); 
-                    pushFollow(FOLLOW_ident_anns_in_array_decl_tail758);
+                    match(input,COLON,FOLLOW_COLON_in_array_decl_tail764); 
+                    pushFollow(FOLLOW_ident_anns_in_array_decl_tail768);
                     name=ident_anns();
 
                     state._fsp--;
 
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:117:60: ( EQUAL al= array_literal )?
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:167:60: ( EQUAL al= array_literal )?
                     int alt9=2;
                     int LA9_0 = input.LA(1);
 
@@ -648,10 +706,10 @@ public class FlatZincParser extends Parser {
                     }
                     switch (alt9) {
                         case 1 :
-                            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:117:62: EQUAL al= array_literal
+                            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:167:62: EQUAL al= array_literal
                             {
-                            match(input,EQUAL,FOLLOW_EQUAL_in_array_decl_tail762); 
-                            pushFollow(FOLLOW_array_literal_in_array_decl_tail766);
+                            match(input,EQUAL,FOLLOW_EQUAL_in_array_decl_tail772); 
+                            pushFollow(FOLLOW_array_literal_in_array_decl_tail776);
                             al=array_literal();
 
                             state._fsp--;
@@ -683,18 +741,18 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "ident_anns"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:121:1: ident_anns returns [String value] : IDENT annotations ;
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:171:1: ident_anns returns [String value] : IDENT annotations ;
     public final String ident_anns() throws RecognitionException {
         String value = null;
 
         Token IDENT1=null;
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:122:2: ( IDENT annotations )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:122:4: IDENT annotations
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:172:2: ( IDENT annotations )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:172:4: IDENT annotations
             {
-            IDENT1=(Token)match(input,IDENT,FOLLOW_IDENT_in_ident_anns785); 
-            pushFollow(FOLLOW_annotations_in_ident_anns787);
+            IDENT1=(Token)match(input,IDENT,FOLLOW_IDENT_in_ident_anns795); 
+            pushFollow(FOLLOW_annotations_in_ident_anns797);
             annotations();
 
             state._fsp--;
@@ -718,19 +776,19 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "constraint_item"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:126:1: constraint_item : CONSTRAINT constraint_elem annotations ;
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:176:1: constraint_item : CONSTRAINT constraint_elem annotations ;
     public final void constraint_item() throws RecognitionException {
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:127:2: ( CONSTRAINT constraint_elem annotations )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:127:4: CONSTRAINT constraint_elem annotations
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:177:2: ( CONSTRAINT constraint_elem annotations )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:177:4: CONSTRAINT constraint_elem annotations
             {
-            match(input,CONSTRAINT,FOLLOW_CONSTRAINT_in_constraint_item801); 
-            pushFollow(FOLLOW_constraint_elem_in_constraint_item803);
+            match(input,CONSTRAINT,FOLLOW_CONSTRAINT_in_constraint_item811); 
+            pushFollow(FOLLOW_constraint_elem_in_constraint_item813);
             constraint_elem();
 
             state._fsp--;
 
-            pushFollow(FOLLOW_annotations_in_constraint_item805);
+            pushFollow(FOLLOW_annotations_in_constraint_item815);
             annotations();
 
             state._fsp--;
@@ -751,7 +809,7 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "constraint_elem"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:128:1: constraint_elem : (name= IDENT LP e1= flat_expr ( COMA e2= flat_expr )* RP | variable_expr );
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:178:1: constraint_elem : (name= IDENT LP e1= flat_expr ( COMA e2= flat_expr )* RP | variable_expr );
     public final void constraint_elem() throws RecognitionException {
         Token name=null;
         FZVariableBuilder.ValType e1 = null;
@@ -760,7 +818,7 @@ public class FlatZincParser extends Parser {
 
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:129:2: (name= IDENT LP e1= flat_expr ( COMA e2= flat_expr )* RP | variable_expr )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:179:2: (name= IDENT LP e1= flat_expr ( COMA e2= flat_expr )* RP | variable_expr )
             int alt12=2;
             int LA12_0 = input.LA(1);
 
@@ -788,18 +846,18 @@ public class FlatZincParser extends Parser {
             }
             switch (alt12) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:129:4: name= IDENT LP e1= flat_expr ( COMA e2= flat_expr )* RP
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:179:4: name= IDENT LP e1= flat_expr ( COMA e2= flat_expr )* RP
                     {
-                    name=(Token)match(input,IDENT,FOLLOW_IDENT_in_constraint_elem816); 
+                    name=(Token)match(input,IDENT,FOLLOW_IDENT_in_constraint_elem826); 
                     List<FZVariableBuilder.ValType> list = new ArrayList<FZVariableBuilder.ValType>();
-                    match(input,LP,FOLLOW_LP_in_constraint_elem819); 
-                    pushFollow(FOLLOW_flat_expr_in_constraint_elem823);
+                    match(input,LP,FOLLOW_LP_in_constraint_elem829); 
+                    pushFollow(FOLLOW_flat_expr_in_constraint_elem833);
                     e1=flat_expr();
 
                     state._fsp--;
 
                     list.add(e1);
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:129:130: ( COMA e2= flat_expr )*
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:179:130: ( COMA e2= flat_expr )*
                     loop11:
                     do {
                         int alt11=2;
@@ -812,10 +870,10 @@ public class FlatZincParser extends Parser {
 
                         switch (alt11) {
                     	case 1 :
-                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:129:131: COMA e2= flat_expr
+                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:179:131: COMA e2= flat_expr
                     	    {
-                    	    match(input,COMA,FOLLOW_COMA_in_constraint_elem827); 
-                    	    pushFollow(FOLLOW_flat_expr_in_constraint_elem831);
+                    	    match(input,COMA,FOLLOW_COMA_in_constraint_elem837); 
+                    	    pushFollow(FOLLOW_flat_expr_in_constraint_elem841);
                     	    e2=flat_expr();
 
                     	    state._fsp--;
@@ -830,7 +888,7 @@ public class FlatZincParser extends Parser {
                         }
                     } while (true);
 
-                    match(input,RP,FOLLOW_RP_in_constraint_elem835); 
+                    match(input,RP,FOLLOW_RP_in_constraint_elem845); 
 
                     		FZVariableBuilder.ValType[] arrays = new FZVariableBuilder.ValType[list.size()];
                     	        list.toArray(arrays);
@@ -840,9 +898,9 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:135:5: variable_expr
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:185:5: variable_expr
                     {
-                    pushFollow(FOLLOW_variable_expr_in_constraint_elem845);
+                    pushFollow(FOLLOW_variable_expr_in_constraint_elem855);
                     variable_expr();
 
                     state._fsp--;
@@ -866,25 +924,34 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "solve_item"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:137:1: solve_item : SOLVE annotations solve_kind ;
-    public final void solve_item() throws RecognitionException {
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:187:1: solve_item returns [Boolean isSatisifed] : SOLVE annotations solve_kind ;
+    public final Boolean solve_item() throws RecognitionException {
+        Boolean isSatisifed = null;
+
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:138:2: ( SOLVE annotations solve_kind )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:138:4: SOLVE annotations solve_kind
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:188:2: ( SOLVE annotations solve_kind )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:188:4: SOLVE annotations solve_kind
             {
-            solver.read(model);
-            match(input,SOLVE,FOLLOW_SOLVE_in_solve_item859); 
-            pushFollow(FOLLOW_annotations_in_solve_item861);
+
+            		time[1] = System.currentTimeMillis();
+            		solver.read(model);
+            		solver.setTimeLimit(10000);
+            		time[2] = System.currentTimeMillis();
+            		
+            match(input,SOLVE,FOLLOW_SOLVE_in_solve_item874); 
+            pushFollow(FOLLOW_annotations_in_solve_item876);
             annotations();
 
             state._fsp--;
 
-            pushFollow(FOLLOW_solve_kind_in_solve_item863);
+            pushFollow(FOLLOW_solve_kind_in_solve_item878);
             solve_kind();
 
             state._fsp--;
 
-            System.out.println(solver.pretty());
+
+            		time[3] = System.currentTimeMillis();
+            		
 
             }
 
@@ -895,16 +962,19 @@ public class FlatZincParser extends Parser {
         }
         finally {
         }
-        return ;
+        return isSatisifed;
     }
     // $ANTLR end "solve_item"
 
 
     // $ANTLR start "solve_kind"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:139:1: solve_kind : ( SATISFY | MINIMIZE solve_expr | MAXIMIZE solve_expr );
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:198:1: solve_kind : ( SATISFY | MINIMIZE obj= solve_expr | MAXIMIZE obj= solve_expr );
     public final void solve_kind() throws RecognitionException {
+        FZVariableBuilder.ValType obj = null;
+
+
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:140:2: ( SATISFY | MINIMIZE solve_expr | MAXIMIZE solve_expr )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:199:2: ( SATISFY | MINIMIZE obj= solve_expr | MAXIMIZE obj= solve_expr )
             int alt13=3;
             switch ( input.LA(1) ) {
             case SATISFY:
@@ -931,36 +1001,42 @@ public class FlatZincParser extends Parser {
 
             switch (alt13) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:140:4: SATISFY
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:199:4: SATISFY
                     {
-                    match(input,SATISFY,FOLLOW_SATISFY_in_solve_kind875); 
-                    solver.solve();
+                    match(input,SATISFY,FOLLOW_SATISFY_in_solve_kind893); 
+                    isFeasible = solver.solve();
 
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:142:5: MINIMIZE solve_expr
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:201:5: MINIMIZE obj= solve_expr
                     {
-                    match(input,MINIMIZE,FOLLOW_MINIMIZE_in_solve_kind888); 
-                    pushFollow(FOLLOW_solve_expr_in_solve_kind890);
-                    solve_expr();
+                    match(input,MINIMIZE,FOLLOW_MINIMIZE_in_solve_kind906); 
+                    pushFollow(FOLLOW_solve_expr_in_solve_kind910);
+                    obj=solve_expr();
 
                     state._fsp--;
 
-                    solver.minimize(true);
+
+                    		IntegerVariable objective = (IntegerVariable)memory.get((String)obj.obj);
+                    		isFeasible = solver.minimize(solver.getVar(objective), true);
+                    		
 
                     }
                     break;
                 case 3 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:144:5: MAXIMIZE solve_expr
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:206:5: MAXIMIZE obj= solve_expr
                     {
-                    match(input,MAXIMIZE,FOLLOW_MAXIMIZE_in_solve_kind902); 
-                    pushFollow(FOLLOW_solve_expr_in_solve_kind904);
-                    solve_expr();
+                    match(input,MAXIMIZE,FOLLOW_MAXIMIZE_in_solve_kind922); 
+                    pushFollow(FOLLOW_solve_expr_in_solve_kind926);
+                    obj=solve_expr();
 
                     state._fsp--;
 
-                    solver.maximize(true);
+
+                    		IntegerVariable objective = (IntegerVariable)memory.get((String)obj.obj);
+                    		isFeasible = solver.maximize(solver.getVar(objective), true);
+                    		
 
                     }
                     break;
@@ -979,20 +1055,20 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "output_item"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:146:1: output_item : OUTPUT LBOX output_elem ( COMA output_elem )* RBOX ;
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:211:1: output_item : OUTPUT LBOX output_elem ( COMA output_elem )* RBOX ;
     public final void output_item() throws RecognitionException {
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:147:2: ( OUTPUT LBOX output_elem ( COMA output_elem )* RBOX )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:147:4: OUTPUT LBOX output_elem ( COMA output_elem )* RBOX
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:212:2: ( OUTPUT LBOX output_elem ( COMA output_elem )* RBOX )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:212:4: OUTPUT LBOX output_elem ( COMA output_elem )* RBOX
             {
-            match(input,OUTPUT,FOLLOW_OUTPUT_in_output_item920); 
-            match(input,LBOX,FOLLOW_LBOX_in_output_item922); 
-            pushFollow(FOLLOW_output_elem_in_output_item924);
+            match(input,OUTPUT,FOLLOW_OUTPUT_in_output_item942); 
+            match(input,LBOX,FOLLOW_LBOX_in_output_item944); 
+            pushFollow(FOLLOW_output_elem_in_output_item946);
             output_elem();
 
             state._fsp--;
 
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:147:28: ( COMA output_elem )*
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:212:28: ( COMA output_elem )*
             loop14:
             do {
                 int alt14=2;
@@ -1005,10 +1081,10 @@ public class FlatZincParser extends Parser {
 
                 switch (alt14) {
             	case 1 :
-            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:147:29: COMA output_elem
+            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:212:29: COMA output_elem
             	    {
-            	    match(input,COMA,FOLLOW_COMA_in_output_item927); 
-            	    pushFollow(FOLLOW_output_elem_in_output_item929);
+            	    match(input,COMA,FOLLOW_COMA_in_output_item949); 
+            	    pushFollow(FOLLOW_output_elem_in_output_item951);
             	    output_elem();
 
             	    state._fsp--;
@@ -1022,7 +1098,7 @@ public class FlatZincParser extends Parser {
                 }
             } while (true);
 
-            match(input,RBOX,FOLLOW_RBOX_in_output_item933); 
+            match(input,RBOX,FOLLOW_RBOX_in_output_item955); 
 
             }
 
@@ -1039,10 +1115,10 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "output_elem"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:148:1: output_elem : ( SHOW LP flat_expr RP | SHOWCOND LP flat_expr COMA flat_expr COMA flat_expr RP | STRING_LITERAL );
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:213:1: output_elem : ( SHOW LP flat_expr RP | SHOWCOND LP flat_expr COMA flat_expr COMA flat_expr RP | STRING_LITERAL );
     public final void output_elem() throws RecognitionException {
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:149:2: ( SHOW LP flat_expr RP | SHOWCOND LP flat_expr COMA flat_expr COMA flat_expr RP | STRING_LITERAL )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:214:2: ( SHOW LP flat_expr RP | SHOWCOND LP flat_expr COMA flat_expr COMA flat_expr RP | STRING_LITERAL )
             int alt15=3;
             switch ( input.LA(1) ) {
             case SHOW:
@@ -1069,49 +1145,49 @@ public class FlatZincParser extends Parser {
 
             switch (alt15) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:149:4: SHOW LP flat_expr RP
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:214:4: SHOW LP flat_expr RP
                     {
-                    match(input,SHOW,FOLLOW_SHOW_in_output_elem942); 
-                    match(input,LP,FOLLOW_LP_in_output_elem944); 
-                    pushFollow(FOLLOW_flat_expr_in_output_elem946);
+                    match(input,SHOW,FOLLOW_SHOW_in_output_elem964); 
+                    match(input,LP,FOLLOW_LP_in_output_elem966); 
+                    pushFollow(FOLLOW_flat_expr_in_output_elem968);
                     flat_expr();
 
                     state._fsp--;
 
-                    match(input,RP,FOLLOW_RP_in_output_elem948); 
+                    match(input,RP,FOLLOW_RP_in_output_elem970); 
 
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:150:5: SHOWCOND LP flat_expr COMA flat_expr COMA flat_expr RP
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:215:5: SHOWCOND LP flat_expr COMA flat_expr COMA flat_expr RP
                     {
-                    match(input,SHOWCOND,FOLLOW_SHOWCOND_in_output_elem954); 
-                    match(input,LP,FOLLOW_LP_in_output_elem956); 
-                    pushFollow(FOLLOW_flat_expr_in_output_elem958);
+                    match(input,SHOWCOND,FOLLOW_SHOWCOND_in_output_elem976); 
+                    match(input,LP,FOLLOW_LP_in_output_elem978); 
+                    pushFollow(FOLLOW_flat_expr_in_output_elem980);
                     flat_expr();
 
                     state._fsp--;
 
-                    match(input,COMA,FOLLOW_COMA_in_output_elem960); 
-                    pushFollow(FOLLOW_flat_expr_in_output_elem962);
+                    match(input,COMA,FOLLOW_COMA_in_output_elem982); 
+                    pushFollow(FOLLOW_flat_expr_in_output_elem984);
                     flat_expr();
 
                     state._fsp--;
 
-                    match(input,COMA,FOLLOW_COMA_in_output_elem964); 
-                    pushFollow(FOLLOW_flat_expr_in_output_elem966);
+                    match(input,COMA,FOLLOW_COMA_in_output_elem986); 
+                    pushFollow(FOLLOW_flat_expr_in_output_elem988);
                     flat_expr();
 
                     state._fsp--;
 
-                    match(input,RP,FOLLOW_RP_in_output_elem968); 
+                    match(input,RP,FOLLOW_RP_in_output_elem990); 
 
                     }
                     break;
                 case 3 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:151:5: STRING_LITERAL
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:216:5: STRING_LITERAL
                     {
-                    match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_output_elem974); 
+                    match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_output_elem996); 
 
                     }
                     break;
@@ -1130,7 +1206,7 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "non_array_ti_expr_tail"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:154:1: non_array_ti_expr_tail returns [FZVariableBuilder.VarType vt] : (sc= scalar_ti_expr_tail | se= set_ti_expr_tail );
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:219:1: non_array_ti_expr_tail returns [FZVariableBuilder.VarType vt] : (sc= scalar_ti_expr_tail | se= set_ti_expr_tail );
     public final FZVariableBuilder.VarType non_array_ti_expr_tail() throws RecognitionException {
         FZVariableBuilder.VarType vt = null;
 
@@ -1140,7 +1216,7 @@ public class FlatZincParser extends Parser {
 
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:155:2: (sc= scalar_ti_expr_tail | se= set_ti_expr_tail )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:220:2: (sc= scalar_ti_expr_tail | se= set_ti_expr_tail )
             int alt16=2;
             int LA16_0 = input.LA(1);
 
@@ -1158,9 +1234,9 @@ public class FlatZincParser extends Parser {
             }
             switch (alt16) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:155:4: sc= scalar_ti_expr_tail
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:220:4: sc= scalar_ti_expr_tail
                     {
-                    pushFollow(FOLLOW_scalar_ti_expr_tail_in_non_array_ti_expr_tail990);
+                    pushFollow(FOLLOW_scalar_ti_expr_tail_in_non_array_ti_expr_tail1012);
                     sc=scalar_ti_expr_tail();
 
                     state._fsp--;
@@ -1172,9 +1248,9 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:159:4: se= set_ti_expr_tail
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:224:4: se= set_ti_expr_tail
                     {
-                    pushFollow(FOLLOW_set_ti_expr_tail_in_non_array_ti_expr_tail1001);
+                    pushFollow(FOLLOW_set_ti_expr_tail_in_non_array_ti_expr_tail1023);
                     se=set_ti_expr_tail();
 
                     state._fsp--;
@@ -1200,15 +1276,15 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "bool_ti_expr_tail"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:165:1: bool_ti_expr_tail returns [FZVariableBuilder.VarType vt] : BOOL ;
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:230:1: bool_ti_expr_tail returns [FZVariableBuilder.VarType vt] : BOOL ;
     public final FZVariableBuilder.VarType bool_ti_expr_tail() throws RecognitionException {
         FZVariableBuilder.VarType vt = null;
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:166:2: ( BOOL )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:166:4: BOOL
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:231:2: ( BOOL )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:231:4: BOOL
             {
-            match(input,BOOL,FOLLOW_BOOL_in_bool_ti_expr_tail1021); 
+            match(input,BOOL,FOLLOW_BOOL_in_bool_ti_expr_tail1043); 
 
             		vt = FZVariableBuilder.build(FZVariableBuilder.EnumVar.bBool, null);
             		
@@ -1228,7 +1304,7 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "scalar_ti_expr_tail"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:170:1: scalar_ti_expr_tail returns [FZVariableBuilder.VarType vt] : (b= bool_ti_expr_tail | i= int_ti_expr_tail | f= float_ti_expr_tail );
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:235:1: scalar_ti_expr_tail returns [FZVariableBuilder.VarType vt] : (b= bool_ti_expr_tail | i= int_ti_expr_tail | f= float_ti_expr_tail );
     public final FZVariableBuilder.VarType scalar_ti_expr_tail() throws RecognitionException {
         FZVariableBuilder.VarType vt = null;
 
@@ -1240,7 +1316,7 @@ public class FlatZincParser extends Parser {
 
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:171:2: (b= bool_ti_expr_tail | i= int_ti_expr_tail | f= float_ti_expr_tail )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:236:2: (b= bool_ti_expr_tail | i= int_ti_expr_tail | f= float_ti_expr_tail )
             int alt17=3;
             switch ( input.LA(1) ) {
             case BOOL:
@@ -1270,9 +1346,9 @@ public class FlatZincParser extends Parser {
 
             switch (alt17) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:171:4: b= bool_ti_expr_tail
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:236:4: b= bool_ti_expr_tail
                     {
-                    pushFollow(FOLLOW_bool_ti_expr_tail_in_scalar_ti_expr_tail1040);
+                    pushFollow(FOLLOW_bool_ti_expr_tail_in_scalar_ti_expr_tail1062);
                     b=bool_ti_expr_tail();
 
                     state._fsp--;
@@ -1284,9 +1360,9 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:175:4: i= int_ti_expr_tail
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:240:4: i= int_ti_expr_tail
                     {
-                    pushFollow(FOLLOW_int_ti_expr_tail_in_scalar_ti_expr_tail1051);
+                    pushFollow(FOLLOW_int_ti_expr_tail_in_scalar_ti_expr_tail1073);
                     i=int_ti_expr_tail();
 
                     state._fsp--;
@@ -1298,9 +1374,9 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:179:4: f= float_ti_expr_tail
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:244:4: f= float_ti_expr_tail
                     {
-                    pushFollow(FOLLOW_float_ti_expr_tail_in_scalar_ti_expr_tail1062);
+                    pushFollow(FOLLOW_float_ti_expr_tail_in_scalar_ti_expr_tail1084);
                     f=float_ti_expr_tail();
 
                     state._fsp--;
@@ -1326,7 +1402,7 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "int_ti_expr_tail"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:184:1: int_ti_expr_tail returns [FZVariableBuilder.VarType vt] : ( INT | i1= INT_LITERAL DOTDOT i2= INT_LITERAL | LB e1= INT_LITERAL ( COMA e2= INT_LITERAL )* RB );
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:249:1: int_ti_expr_tail returns [FZVariableBuilder.VarType vt] : ( INT | i1= INT_LITERAL DOTDOT i2= INT_LITERAL | LB e1= INT_LITERAL ( COMA e2= INT_LITERAL )* RB );
     public final FZVariableBuilder.VarType int_ti_expr_tail() throws RecognitionException {
         FZVariableBuilder.VarType vt = null;
 
@@ -1336,7 +1412,7 @@ public class FlatZincParser extends Parser {
         Token e2=null;
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:185:2: ( INT | i1= INT_LITERAL DOTDOT i2= INT_LITERAL | LB e1= INT_LITERAL ( COMA e2= INT_LITERAL )* RB )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:250:2: ( INT | i1= INT_LITERAL DOTDOT i2= INT_LITERAL | LB e1= INT_LITERAL ( COMA e2= INT_LITERAL )* RB )
             int alt19=3;
             switch ( input.LA(1) ) {
             case INT:
@@ -1363,9 +1439,9 @@ public class FlatZincParser extends Parser {
 
             switch (alt19) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:185:4: INT
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:250:4: INT
                     {
-                    match(input,INT,FOLLOW_INT_in_int_ti_expr_tail1081); 
+                    match(input,INT,FOLLOW_INT_in_int_ti_expr_tail1103); 
 
                     		vt = FZVariableBuilder.build(FZVariableBuilder.EnumVar.iInt, null);
                     		
@@ -1373,11 +1449,11 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:189:5: i1= INT_LITERAL DOTDOT i2= INT_LITERAL
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:254:5: i1= INT_LITERAL DOTDOT i2= INT_LITERAL
                     {
-                    i1=(Token)match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_int_ti_expr_tail1093); 
-                    match(input,DOTDOT,FOLLOW_DOTDOT_in_int_ti_expr_tail1095); 
-                    i2=(Token)match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_int_ti_expr_tail1099); 
+                    i1=(Token)match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_int_ti_expr_tail1115); 
+                    match(input,DOTDOT,FOLLOW_DOTDOT_in_int_ti_expr_tail1117); 
+                    i2=(Token)match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_int_ti_expr_tail1121); 
 
                     		int s=Integer.valueOf((i1!=null?i1.getText():null));
                     		int e=Integer.valueOf((i2!=null?i2.getText():null));
@@ -1387,13 +1463,13 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:195:5: LB e1= INT_LITERAL ( COMA e2= INT_LITERAL )* RB
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:260:5: LB e1= INT_LITERAL ( COMA e2= INT_LITERAL )* RB
                     {
                     List<Integer> values = new ArrayList<Integer>();
-                    match(input,LB,FOLLOW_LB_in_int_ti_expr_tail1112); 
-                    e1=(Token)match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_int_ti_expr_tail1116); 
+                    match(input,LB,FOLLOW_LB_in_int_ti_expr_tail1134); 
+                    e1=(Token)match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_int_ti_expr_tail1138); 
                     values.add(Integer.valueOf((e1!=null?e1.getText():null)));
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:195:113: ( COMA e2= INT_LITERAL )*
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:260:113: ( COMA e2= INT_LITERAL )*
                     loop18:
                     do {
                         int alt18=2;
@@ -1406,10 +1482,10 @@ public class FlatZincParser extends Parser {
 
                         switch (alt18) {
                     	case 1 :
-                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:195:114: COMA e2= INT_LITERAL
+                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:260:114: COMA e2= INT_LITERAL
                     	    {
-                    	    match(input,COMA,FOLLOW_COMA_in_int_ti_expr_tail1120); 
-                    	    e2=(Token)match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_int_ti_expr_tail1124); 
+                    	    match(input,COMA,FOLLOW_COMA_in_int_ti_expr_tail1142); 
+                    	    e2=(Token)match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_int_ti_expr_tail1146); 
                     	    values.add(Integer.valueOf((e2!=null?e2.getText():null)));
 
                     	    }
@@ -1420,7 +1496,7 @@ public class FlatZincParser extends Parser {
                         }
                     } while (true);
 
-                    match(input,RB,FOLLOW_RB_in_int_ti_expr_tail1129); 
+                    match(input,RB,FOLLOW_RB_in_int_ti_expr_tail1151); 
 
                     		vt = FZVariableBuilder.build(FZVariableBuilder.EnumVar.iValues, values.toArray(new Integer[values.size()]));
                     		
@@ -1442,7 +1518,7 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "float_ti_expr_tail"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:199:1: float_ti_expr_tail returns [FZVariableBuilder.VarType vt] : ( FLOAT | f1= FLOAT_LITERAL DOTDOT f2= FLOAT_LITERAL );
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:264:1: float_ti_expr_tail returns [FZVariableBuilder.VarType vt] : ( FLOAT | f1= FLOAT_LITERAL DOTDOT f2= FLOAT_LITERAL );
     public final FZVariableBuilder.VarType float_ti_expr_tail() throws RecognitionException {
         FZVariableBuilder.VarType vt = null;
 
@@ -1450,7 +1526,7 @@ public class FlatZincParser extends Parser {
         Token f2=null;
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:200:2: ( FLOAT | f1= FLOAT_LITERAL DOTDOT f2= FLOAT_LITERAL )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:265:2: ( FLOAT | f1= FLOAT_LITERAL DOTDOT f2= FLOAT_LITERAL )
             int alt20=2;
             int LA20_0 = input.LA(1);
 
@@ -1468,9 +1544,9 @@ public class FlatZincParser extends Parser {
             }
             switch (alt20) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:200:4: FLOAT
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:265:4: FLOAT
                     {
-                    match(input,FLOAT,FOLLOW_FLOAT_in_float_ti_expr_tail1145); 
+                    match(input,FLOAT,FOLLOW_FLOAT_in_float_ti_expr_tail1167); 
 
                     		vt = FZVariableBuilder.build(FZVariableBuilder.EnumVar.fFloat, null);
                     		
@@ -1478,11 +1554,11 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:204:5: f1= FLOAT_LITERAL DOTDOT f2= FLOAT_LITERAL
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:269:5: f1= FLOAT_LITERAL DOTDOT f2= FLOAT_LITERAL
                     {
-                    f1=(Token)match(input,FLOAT_LITERAL,FOLLOW_FLOAT_LITERAL_in_float_ti_expr_tail1157); 
-                    match(input,DOTDOT,FOLLOW_DOTDOT_in_float_ti_expr_tail1159); 
-                    f2=(Token)match(input,FLOAT_LITERAL,FOLLOW_FLOAT_LITERAL_in_float_ti_expr_tail1163); 
+                    f1=(Token)match(input,FLOAT_LITERAL,FOLLOW_FLOAT_LITERAL_in_float_ti_expr_tail1179); 
+                    match(input,DOTDOT,FOLLOW_DOTDOT_in_float_ti_expr_tail1181); 
+                    f2=(Token)match(input,FLOAT_LITERAL,FOLLOW_FLOAT_LITERAL_in_float_ti_expr_tail1185); 
 
                     		double s=Double.valueOf((f1!=null?f1.getText():null));
                     		double e=Double.valueOf((f2!=null?f2.getText():null));
@@ -1506,7 +1582,7 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "set_ti_expr_tail"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:210:1: set_ti_expr_tail returns [FZVariableBuilder.VarType vt] : SET OF so= scalar_ti_expr_tail ;
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:275:1: set_ti_expr_tail returns [FZVariableBuilder.VarType vt] : SET OF so= scalar_ti_expr_tail ;
     public final FZVariableBuilder.VarType set_ti_expr_tail() throws RecognitionException {
         FZVariableBuilder.VarType vt = null;
 
@@ -1514,12 +1590,12 @@ public class FlatZincParser extends Parser {
 
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:211:2: ( SET OF so= scalar_ti_expr_tail )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:211:4: SET OF so= scalar_ti_expr_tail
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:276:2: ( SET OF so= scalar_ti_expr_tail )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:276:4: SET OF so= scalar_ti_expr_tail
             {
-            match(input,SET,FOLLOW_SET_in_set_ti_expr_tail1178); 
-            match(input,OF,FOLLOW_OF_in_set_ti_expr_tail1180); 
-            pushFollow(FOLLOW_scalar_ti_expr_tail_in_set_ti_expr_tail1184);
+            match(input,SET,FOLLOW_SET_in_set_ti_expr_tail1200); 
+            match(input,OF,FOLLOW_OF_in_set_ti_expr_tail1202); 
+            pushFollow(FOLLOW_scalar_ti_expr_tail_in_set_ti_expr_tail1206);
             so=scalar_ti_expr_tail();
 
             state._fsp--;
@@ -1543,7 +1619,7 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "non_array_flat_expr"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:217:1: non_array_flat_expr returns [FZVariableBuilder.ValType nafe] : (sfe= scalar_flat_expr | sl= set_literal );
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:282:1: non_array_flat_expr returns [FZVariableBuilder.ValType nafe] : (sfe= scalar_flat_expr | sl= set_literal );
     public final FZVariableBuilder.ValType non_array_flat_expr() throws RecognitionException {
         FZVariableBuilder.ValType nafe = null;
 
@@ -1553,7 +1629,7 @@ public class FlatZincParser extends Parser {
 
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:218:2: (sfe= scalar_flat_expr | sl= set_literal )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:283:2: (sfe= scalar_flat_expr | sl= set_literal )
             int alt21=2;
             switch ( input.LA(1) ) {
             case IDENT:
@@ -1623,17 +1699,17 @@ public class FlatZincParser extends Parser {
                     }
                     }
                     break;
+                case DOTDOT:
+                    {
+                    alt21=2;
+                    }
+                    break;
                 case COMA:
                 case SEMICOLON:
                 case RP:
                 case RBOX:
                     {
                     alt21=1;
-                    }
-                    break;
-                case DOTDOT:
-                    {
-                    alt21=2;
                     }
                     break;
                 default:
@@ -1657,11 +1733,11 @@ public class FlatZincParser extends Parser {
                 {
                 int LA21_3 = input.LA(2);
 
-                if ( (LA21_3==COMA||LA21_3==SEMICOLON||(LA21_3>=RP && LA21_3<=RBOX)) ) {
-                    alt21=1;
-                }
-                else if ( (LA21_3==DOTDOT) ) {
+                if ( (LA21_3==DOTDOT) ) {
                     alt21=2;
+                }
+                else if ( (LA21_3==COMA||LA21_3==SEMICOLON||(LA21_3>=RP && LA21_3<=RBOX)) ) {
+                    alt21=1;
                 }
                 else {
                     NoViableAltException nvae =
@@ -1685,9 +1761,9 @@ public class FlatZincParser extends Parser {
 
             switch (alt21) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:218:4: sfe= scalar_flat_expr
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:283:4: sfe= scalar_flat_expr
                     {
-                    pushFollow(FOLLOW_scalar_flat_expr_in_non_array_flat_expr1204);
+                    pushFollow(FOLLOW_scalar_flat_expr_in_non_array_flat_expr1226);
                     sfe=scalar_flat_expr();
 
                     state._fsp--;
@@ -1699,9 +1775,9 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:222:5: sl= set_literal
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:287:5: sl= set_literal
                     {
-                    pushFollow(FOLLOW_set_literal_in_non_array_flat_expr1216);
+                    pushFollow(FOLLOW_set_literal_in_non_array_flat_expr1238);
                     sl=set_literal();
 
                     state._fsp--;
@@ -1727,7 +1803,7 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "scalar_flat_expr"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:226:1: scalar_flat_expr returns [FZVariableBuilder.ValType sfe] : ( IDENT | aae= array_access_expr | bl= bool_literal | INT_LITERAL | FLOAT_LITERAL | STRING_LITERAL );
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:291:1: scalar_flat_expr returns [FZVariableBuilder.ValType sfe] : ( IDENT | aae= array_access_expr | bl= bool_literal | INT_LITERAL | FLOAT_LITERAL | STRING_LITERAL );
     public final FZVariableBuilder.ValType scalar_flat_expr() throws RecognitionException {
         FZVariableBuilder.ValType sfe = null;
 
@@ -1741,7 +1817,7 @@ public class FlatZincParser extends Parser {
 
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:227:2: ( IDENT | aae= array_access_expr | bl= bool_literal | INT_LITERAL | FLOAT_LITERAL | STRING_LITERAL )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:292:2: ( IDENT | aae= array_access_expr | bl= bool_literal | INT_LITERAL | FLOAT_LITERAL | STRING_LITERAL )
             int alt22=6;
             switch ( input.LA(1) ) {
             case IDENT:
@@ -1792,9 +1868,9 @@ public class FlatZincParser extends Parser {
 
             switch (alt22) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:227:5: IDENT
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:292:5: IDENT
                     {
-                    IDENT2=(Token)match(input,IDENT,FOLLOW_IDENT_in_scalar_flat_expr1233); 
+                    IDENT2=(Token)match(input,IDENT,FOLLOW_IDENT_in_scalar_flat_expr1255); 
 
                     		Object val = memory.get((IDENT2!=null?IDENT2.getText():null));
                     		sfe =FZVariableBuilder.build(FZVariableBuilder.getType(val), val);
@@ -1803,9 +1879,9 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:232:5: aae= array_access_expr
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:297:5: aae= array_access_expr
                     {
-                    pushFollow(FOLLOW_array_access_expr_in_scalar_flat_expr1245);
+                    pushFollow(FOLLOW_array_access_expr_in_scalar_flat_expr1267);
                     aae=array_access_expr();
 
                     state._fsp--;
@@ -1817,9 +1893,9 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:236:5: bl= bool_literal
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:301:5: bl= bool_literal
                     {
-                    pushFollow(FOLLOW_bool_literal_in_scalar_flat_expr1257);
+                    pushFollow(FOLLOW_bool_literal_in_scalar_flat_expr1279);
                     bl=bool_literal();
 
                     state._fsp--;
@@ -1831,9 +1907,9 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 4 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:240:5: INT_LITERAL
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:305:5: INT_LITERAL
                     {
-                    INT_LITERAL3=(Token)match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_scalar_flat_expr1267); 
+                    INT_LITERAL3=(Token)match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_scalar_flat_expr1289); 
 
                     		sfe =FZVariableBuilder.build(FZVariableBuilder.EnumVal.iInt, new Integer((INT_LITERAL3!=null?INT_LITERAL3.getText():null)));
                     		
@@ -1841,9 +1917,9 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 5 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:244:5: FLOAT_LITERAL
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:309:5: FLOAT_LITERAL
                     {
-                    FLOAT_LITERAL4=(Token)match(input,FLOAT_LITERAL,FOLLOW_FLOAT_LITERAL_in_scalar_flat_expr1277); 
+                    FLOAT_LITERAL4=(Token)match(input,FLOAT_LITERAL,FOLLOW_FLOAT_LITERAL_in_scalar_flat_expr1299); 
 
                     		sfe =FZVariableBuilder.build(FZVariableBuilder.EnumVal.fFloat, new Double((FLOAT_LITERAL4!=null?FLOAT_LITERAL4.getText():null)));
                     		
@@ -1851,9 +1927,9 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 6 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:248:5: STRING_LITERAL
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:313:5: STRING_LITERAL
                     {
-                    STRING_LITERAL5=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_scalar_flat_expr1287); 
+                    STRING_LITERAL5=(Token)match(input,STRING_LITERAL,FOLLOW_STRING_LITERAL_in_scalar_flat_expr1309); 
 
                     		sfe =FZVariableBuilder.build(FZVariableBuilder.EnumVal.sString, (STRING_LITERAL5!=null?STRING_LITERAL5.getText():null));
                     		
@@ -1875,7 +1951,7 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "int_flat_expr"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:252:1: int_flat_expr returns [FZVariableBuilder.ValType ife] : (aae= array_access_expr | IDENT | INT_LITERAL );
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:317:1: int_flat_expr returns [FZVariableBuilder.ValType ife] : (aae= array_access_expr | IDENT | INT_LITERAL );
     public final FZVariableBuilder.ValType int_flat_expr() throws RecognitionException {
         FZVariableBuilder.ValType ife = null;
 
@@ -1885,7 +1961,7 @@ public class FlatZincParser extends Parser {
 
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:253:2: (aae= array_access_expr | IDENT | INT_LITERAL )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:318:2: (aae= array_access_expr | IDENT | INT_LITERAL )
             int alt23=3;
             int LA23_0 = input.LA(1);
 
@@ -1916,9 +1992,9 @@ public class FlatZincParser extends Parser {
             }
             switch (alt23) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:253:5: aae= array_access_expr
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:318:5: aae= array_access_expr
                     {
-                    pushFollow(FOLLOW_array_access_expr_in_int_flat_expr1307);
+                    pushFollow(FOLLOW_array_access_expr_in_int_flat_expr1329);
                     aae=array_access_expr();
 
                     state._fsp--;
@@ -1930,9 +2006,9 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:257:4: IDENT
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:322:4: IDENT
                     {
-                    IDENT6=(Token)match(input,IDENT,FOLLOW_IDENT_in_int_flat_expr1316); 
+                    IDENT6=(Token)match(input,IDENT,FOLLOW_IDENT_in_int_flat_expr1338); 
 
                     		ife =FZVariableBuilder.build(FZVariableBuilder.EnumVal.sString, (IDENT6!=null?IDENT6.getText():null));
                     		
@@ -1940,9 +2016,9 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:261:5: INT_LITERAL
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:326:5: INT_LITERAL
                     {
-                    INT_LITERAL7=(Token)match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_int_flat_expr1326); 
+                    INT_LITERAL7=(Token)match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_int_flat_expr1348); 
 
                     		ife =FZVariableBuilder.build(FZVariableBuilder.EnumVal.iInt, (INT_LITERAL7!=null?INT_LITERAL7.getText():null));
                     		
@@ -1964,7 +2040,7 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "variable_expr"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:265:1: variable_expr returns [FZVariableBuilder.ValType ve] : ( IDENT | aae= array_access_expr );
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:330:1: variable_expr returns [FZVariableBuilder.ValType ve] : ( IDENT | aae= array_access_expr );
     public final FZVariableBuilder.ValType variable_expr() throws RecognitionException {
         FZVariableBuilder.ValType ve = null;
 
@@ -1973,7 +2049,7 @@ public class FlatZincParser extends Parser {
 
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:266:2: ( IDENT | aae= array_access_expr )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:331:2: ( IDENT | aae= array_access_expr )
             int alt24=2;
             int LA24_0 = input.LA(1);
 
@@ -2001,9 +2077,9 @@ public class FlatZincParser extends Parser {
             }
             switch (alt24) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:266:4: IDENT
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:331:4: IDENT
                     {
-                    IDENT8=(Token)match(input,IDENT,FOLLOW_IDENT_in_variable_expr1342); 
+                    IDENT8=(Token)match(input,IDENT,FOLLOW_IDENT_in_variable_expr1364); 
 
                     		ve =FZVariableBuilder.build(FZVariableBuilder.EnumVal.sString, (IDENT8!=null?IDENT8.getText():null));
                     		
@@ -2011,9 +2087,9 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:270:5: aae= array_access_expr
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:335:5: aae= array_access_expr
                     {
-                    pushFollow(FOLLOW_array_access_expr_in_variable_expr1354);
+                    pushFollow(FOLLOW_array_access_expr_in_variable_expr1376);
                     aae=array_access_expr();
 
                     state._fsp--;
@@ -2039,7 +2115,7 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "array_access_expr"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:274:1: array_access_expr returns [FZVariableBuilder.ValType aae] : IDENT LBOX i= int_index_expr RBOX ;
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:339:1: array_access_expr returns [FZVariableBuilder.ValType aae] : IDENT LBOX i= int_index_expr RBOX ;
     public final FZVariableBuilder.ValType array_access_expr() throws RecognitionException {
         FZVariableBuilder.ValType aae = null;
 
@@ -2048,17 +2124,17 @@ public class FlatZincParser extends Parser {
 
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:275:2: ( IDENT LBOX i= int_index_expr RBOX )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:275:4: IDENT LBOX i= int_index_expr RBOX
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:340:2: ( IDENT LBOX i= int_index_expr RBOX )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:340:4: IDENT LBOX i= int_index_expr RBOX
             {
-            IDENT9=(Token)match(input,IDENT,FOLLOW_IDENT_in_array_access_expr1370); 
-            match(input,LBOX,FOLLOW_LBOX_in_array_access_expr1372); 
-            pushFollow(FOLLOW_int_index_expr_in_array_access_expr1376);
+            IDENT9=(Token)match(input,IDENT,FOLLOW_IDENT_in_array_access_expr1392); 
+            match(input,LBOX,FOLLOW_LBOX_in_array_access_expr1394); 
+            pushFollow(FOLLOW_int_index_expr_in_array_access_expr1398);
             i=int_index_expr();
 
             state._fsp--;
 
-            match(input,RBOX,FOLLOW_RBOX_in_array_access_expr1378); 
+            match(input,RBOX,FOLLOW_RBOX_in_array_access_expr1400); 
 
             		// build name
             		String name = (IDENT9!=null?IDENT9.getText():null)+FZVariableBuilder.NAME_SEPARATOR+i;
@@ -2081,7 +2157,7 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "int_index_expr"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:282:1: int_index_expr returns [int value] : ( INT_LITERAL | IDENT );
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:347:1: int_index_expr returns [int value] : ( INT_LITERAL | IDENT );
     public final int int_index_expr() throws RecognitionException {
         int value = 0;
 
@@ -2089,7 +2165,7 @@ public class FlatZincParser extends Parser {
         Token IDENT11=null;
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:283:2: ( INT_LITERAL | IDENT )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:348:2: ( INT_LITERAL | IDENT )
             int alt25=2;
             int LA25_0 = input.LA(1);
 
@@ -2107,9 +2183,9 @@ public class FlatZincParser extends Parser {
             }
             switch (alt25) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:283:4: INT_LITERAL
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:348:4: INT_LITERAL
                     {
-                    INT_LITERAL10=(Token)match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_int_index_expr1394); 
+                    INT_LITERAL10=(Token)match(input,INT_LITERAL,FOLLOW_INT_LITERAL_in_int_index_expr1416); 
 
                     		value = Integer.parseInt((INT_LITERAL10!=null?INT_LITERAL10.getText():null));
                     		
@@ -2117,9 +2193,9 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:287:5: IDENT
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:352:5: IDENT
                     {
-                    IDENT11=(Token)match(input,IDENT,FOLLOW_IDENT_in_int_index_expr1406); 
+                    IDENT11=(Token)match(input,IDENT,FOLLOW_IDENT_in_int_index_expr1428); 
 
                     		value = (Integer)memory.get((IDENT11!=null?IDENT11.getText():null));
                     		
@@ -2141,12 +2217,12 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "bool_literal"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:291:1: bool_literal returns [boolean value] : ( FALSE | TRUE );
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:356:1: bool_literal returns [boolean value] : ( FALSE | TRUE );
     public final boolean bool_literal() throws RecognitionException {
         boolean value = false;
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:292:2: ( FALSE | TRUE )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:357:2: ( FALSE | TRUE )
             int alt26=2;
             int LA26_0 = input.LA(1);
 
@@ -2164,9 +2240,9 @@ public class FlatZincParser extends Parser {
             }
             switch (alt26) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:292:4: FALSE
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:357:4: FALSE
                     {
-                    match(input,FALSE,FOLLOW_FALSE_in_bool_literal1425); 
+                    match(input,FALSE,FOLLOW_FALSE_in_bool_literal1447); 
 
                     		value = false;
                     		
@@ -2174,9 +2250,9 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:296:5: TRUE
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:361:5: TRUE
                     {
-                    match(input,TRUE,FOLLOW_TRUE_in_bool_literal1436); 
+                    match(input,TRUE,FOLLOW_TRUE_in_bool_literal1458); 
 
                     		value = true;
                     		
@@ -2198,7 +2274,7 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "set_literal"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:301:1: set_literal returns [FZVariableBuilder.ValType sl] : ( LB (sfe1= scalar_flat_expr ( COMA sfe2= scalar_flat_expr )* )? RB | i1= int_flat_expr DOTDOT i2= int_flat_expr );
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:366:1: set_literal returns [FZVariableBuilder.ValType sl] : ( LB (sfe1= scalar_flat_expr ( COMA sfe2= scalar_flat_expr )* )? RB | i1= int_flat_expr DOTDOT i2= int_flat_expr );
     public final FZVariableBuilder.ValType set_literal() throws RecognitionException {
         FZVariableBuilder.ValType sl = null;
 
@@ -2212,7 +2288,7 @@ public class FlatZincParser extends Parser {
 
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:302:2: ( LB (sfe1= scalar_flat_expr ( COMA sfe2= scalar_flat_expr )* )? RB | i1= int_flat_expr DOTDOT i2= int_flat_expr )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:367:2: ( LB (sfe1= scalar_flat_expr ( COMA sfe2= scalar_flat_expr )* )? RB | i1= int_flat_expr DOTDOT i2= int_flat_expr )
             int alt29=2;
             int LA29_0 = input.LA(1);
 
@@ -2230,11 +2306,11 @@ public class FlatZincParser extends Parser {
             }
             switch (alt29) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:302:4: LB (sfe1= scalar_flat_expr ( COMA sfe2= scalar_flat_expr )* )? RB
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:367:4: LB (sfe1= scalar_flat_expr ( COMA sfe2= scalar_flat_expr )* )? RB
                     {
-                    match(input,LB,FOLLOW_LB_in_set_literal1458); 
+                    match(input,LB,FOLLOW_LB_in_set_literal1480); 
                     List<FZVariableBuilder.ValType> list = new ArrayList<FZVariableBuilder.ValType>();
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:302:91: (sfe1= scalar_flat_expr ( COMA sfe2= scalar_flat_expr )* )?
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:367:91: (sfe1= scalar_flat_expr ( COMA sfe2= scalar_flat_expr )* )?
                     int alt28=2;
                     int LA28_0 = input.LA(1);
 
@@ -2243,15 +2319,15 @@ public class FlatZincParser extends Parser {
                     }
                     switch (alt28) {
                         case 1 :
-                            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:302:92: sfe1= scalar_flat_expr ( COMA sfe2= scalar_flat_expr )*
+                            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:367:92: sfe1= scalar_flat_expr ( COMA sfe2= scalar_flat_expr )*
                             {
-                            pushFollow(FOLLOW_scalar_flat_expr_in_set_literal1464);
+                            pushFollow(FOLLOW_scalar_flat_expr_in_set_literal1486);
                             sfe1=scalar_flat_expr();
 
                             state._fsp--;
 
                             list.add(sfe1);
-                            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:302:131: ( COMA sfe2= scalar_flat_expr )*
+                            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:367:131: ( COMA sfe2= scalar_flat_expr )*
                             loop27:
                             do {
                                 int alt27=2;
@@ -2264,10 +2340,10 @@ public class FlatZincParser extends Parser {
 
                                 switch (alt27) {
                             	case 1 :
-                            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:302:132: COMA sfe2= scalar_flat_expr
+                            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:367:132: COMA sfe2= scalar_flat_expr
                             	    {
-                            	    match(input,COMA,FOLLOW_COMA_in_set_literal1468); 
-                            	    pushFollow(FOLLOW_scalar_flat_expr_in_set_literal1472);
+                            	    match(input,COMA,FOLLOW_COMA_in_set_literal1490); 
+                            	    pushFollow(FOLLOW_scalar_flat_expr_in_set_literal1494);
                             	    sfe2=scalar_flat_expr();
 
                             	    state._fsp--;
@@ -2288,7 +2364,7 @@ public class FlatZincParser extends Parser {
 
                     }
 
-                    match(input,RB,FOLLOW_RB_in_set_literal1479); 
+                    match(input,RB,FOLLOW_RB_in_set_literal1501); 
 
                     		FZVariableBuilder.ValType[] array = new FZVariableBuilder.ValType[list.size()];
                     		list.toArray(array);
@@ -2298,15 +2374,15 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:308:5: i1= int_flat_expr DOTDOT i2= int_flat_expr
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:373:5: i1= int_flat_expr DOTDOT i2= int_flat_expr
                     {
-                    pushFollow(FOLLOW_int_flat_expr_in_set_literal1491);
+                    pushFollow(FOLLOW_int_flat_expr_in_set_literal1513);
                     i1=int_flat_expr();
 
                     state._fsp--;
 
-                    match(input,DOTDOT,FOLLOW_DOTDOT_in_set_literal1493); 
-                    pushFollow(FOLLOW_int_flat_expr_in_set_literal1497);
+                    match(input,DOTDOT,FOLLOW_DOTDOT_in_set_literal1515); 
+                    pushFollow(FOLLOW_int_flat_expr_in_set_literal1519);
                     i2=int_flat_expr();
 
                     state._fsp--;
@@ -2332,7 +2408,7 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "array_literal"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:312:1: array_literal returns [FZVariableBuilder.ValType al] : LBOX (nafe1= non_array_flat_expr ( COMA nafe2= non_array_flat_expr )* )? RBOX ;
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:377:1: array_literal returns [FZVariableBuilder.ValType al] : LBOX (nafe1= non_array_flat_expr ( COMA nafe2= non_array_flat_expr )* )? RBOX ;
     public final FZVariableBuilder.ValType array_literal() throws RecognitionException {
         FZVariableBuilder.ValType al = null;
 
@@ -2342,12 +2418,12 @@ public class FlatZincParser extends Parser {
 
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:313:2: ( LBOX (nafe1= non_array_flat_expr ( COMA nafe2= non_array_flat_expr )* )? RBOX )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:313:4: LBOX (nafe1= non_array_flat_expr ( COMA nafe2= non_array_flat_expr )* )? RBOX
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:378:2: ( LBOX (nafe1= non_array_flat_expr ( COMA nafe2= non_array_flat_expr )* )? RBOX )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:378:4: LBOX (nafe1= non_array_flat_expr ( COMA nafe2= non_array_flat_expr )* )? RBOX
             {
-            match(input,LBOX,FOLLOW_LBOX_in_array_literal1514); 
+            match(input,LBOX,FOLLOW_LBOX_in_array_literal1536); 
             List<FZVariableBuilder.ValType> list = new ArrayList<FZVariableBuilder.ValType>();
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:313:93: (nafe1= non_array_flat_expr ( COMA nafe2= non_array_flat_expr )* )?
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:378:93: (nafe1= non_array_flat_expr ( COMA nafe2= non_array_flat_expr )* )?
             int alt31=2;
             int LA31_0 = input.LA(1);
 
@@ -2356,15 +2432,15 @@ public class FlatZincParser extends Parser {
             }
             switch (alt31) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:313:94: nafe1= non_array_flat_expr ( COMA nafe2= non_array_flat_expr )*
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:378:94: nafe1= non_array_flat_expr ( COMA nafe2= non_array_flat_expr )*
                     {
-                    pushFollow(FOLLOW_non_array_flat_expr_in_array_literal1520);
+                    pushFollow(FOLLOW_non_array_flat_expr_in_array_literal1542);
                     nafe1=non_array_flat_expr();
 
                     state._fsp--;
 
                     list.add(nafe1);
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:313:138: ( COMA nafe2= non_array_flat_expr )*
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:378:138: ( COMA nafe2= non_array_flat_expr )*
                     loop30:
                     do {
                         int alt30=2;
@@ -2377,10 +2453,10 @@ public class FlatZincParser extends Parser {
 
                         switch (alt30) {
                     	case 1 :
-                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:313:139: COMA nafe2= non_array_flat_expr
+                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:378:139: COMA nafe2= non_array_flat_expr
                     	    {
-                    	    match(input,COMA,FOLLOW_COMA_in_array_literal1524); 
-                    	    pushFollow(FOLLOW_non_array_flat_expr_in_array_literal1528);
+                    	    match(input,COMA,FOLLOW_COMA_in_array_literal1546); 
+                    	    pushFollow(FOLLOW_non_array_flat_expr_in_array_literal1550);
                     	    nafe2=non_array_flat_expr();
 
                     	    state._fsp--;
@@ -2401,7 +2477,7 @@ public class FlatZincParser extends Parser {
 
             }
 
-            match(input,RBOX,FOLLOW_RBOX_in_array_literal1537); 
+            match(input,RBOX,FOLLOW_RBOX_in_array_literal1559); 
 
             		FZVariableBuilder.ValType[] array = new FZVariableBuilder.ValType[list.size()];
             		list.toArray(array);
@@ -2423,13 +2499,13 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "annotations"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:320:1: annotations : ( COLONCOLON annotation )* ;
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:385:1: annotations : ( COLONCOLON annotation )* ;
     public final void annotations() throws RecognitionException {
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:321:2: ( ( COLONCOLON annotation )* )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:321:4: ( COLONCOLON annotation )*
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:386:2: ( ( COLONCOLON annotation )* )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:386:4: ( COLONCOLON annotation )*
             {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:321:4: ( COLONCOLON annotation )*
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:386:4: ( COLONCOLON annotation )*
             loop32:
             do {
                 int alt32=2;
@@ -2442,10 +2518,10 @@ public class FlatZincParser extends Parser {
 
                 switch (alt32) {
             	case 1 :
-            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:321:5: COLONCOLON annotation
+            	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:386:5: COLONCOLON annotation
             	    {
-            	    match(input,COLONCOLON,FOLLOW_COLONCOLON_in_annotations1552); 
-            	    pushFollow(FOLLOW_annotation_in_annotations1554);
+            	    match(input,COLONCOLON,FOLLOW_COLONCOLON_in_annotations1574); 
+            	    pushFollow(FOLLOW_annotation_in_annotations1576);
             	    annotation();
 
             	    state._fsp--;
@@ -2475,14 +2551,14 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "annotation"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:322:1: annotation : IDENT ( LP ann_expr ( COMA ann_expr )* RP )? ;
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:387:1: annotation : IDENT ( LP ann_expr ( COMA ann_expr )* RP )? ;
     public final void annotation() throws RecognitionException {
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:323:2: ( IDENT ( LP ann_expr ( COMA ann_expr )* RP )? )
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:323:4: IDENT ( LP ann_expr ( COMA ann_expr )* RP )?
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:388:2: ( IDENT ( LP ann_expr ( COMA ann_expr )* RP )? )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:388:4: IDENT ( LP ann_expr ( COMA ann_expr )* RP )?
             {
-            match(input,IDENT,FOLLOW_IDENT_in_annotation1565); 
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:323:10: ( LP ann_expr ( COMA ann_expr )* RP )?
+            match(input,IDENT,FOLLOW_IDENT_in_annotation1587); 
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:388:10: ( LP ann_expr ( COMA ann_expr )* RP )?
             int alt34=2;
             int LA34_0 = input.LA(1);
 
@@ -2491,15 +2567,15 @@ public class FlatZincParser extends Parser {
             }
             switch (alt34) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:323:12: LP ann_expr ( COMA ann_expr )* RP
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:388:12: LP ann_expr ( COMA ann_expr )* RP
                     {
-                    match(input,LP,FOLLOW_LP_in_annotation1569); 
-                    pushFollow(FOLLOW_ann_expr_in_annotation1571);
+                    match(input,LP,FOLLOW_LP_in_annotation1591); 
+                    pushFollow(FOLLOW_ann_expr_in_annotation1593);
                     ann_expr();
 
                     state._fsp--;
 
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:323:24: ( COMA ann_expr )*
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:388:24: ( COMA ann_expr )*
                     loop33:
                     do {
                         int alt33=2;
@@ -2512,10 +2588,10 @@ public class FlatZincParser extends Parser {
 
                         switch (alt33) {
                     	case 1 :
-                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:323:25: COMA ann_expr
+                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:388:25: COMA ann_expr
                     	    {
-                    	    match(input,COMA,FOLLOW_COMA_in_annotation1574); 
-                    	    pushFollow(FOLLOW_ann_expr_in_annotation1576);
+                    	    match(input,COMA,FOLLOW_COMA_in_annotation1596); 
+                    	    pushFollow(FOLLOW_ann_expr_in_annotation1598);
                     	    ann_expr();
 
                     	    state._fsp--;
@@ -2529,7 +2605,7 @@ public class FlatZincParser extends Parser {
                         }
                     } while (true);
 
-                    match(input,RP,FOLLOW_RP_in_annotation1580); 
+                    match(input,RP,FOLLOW_RP_in_annotation1602); 
 
                     }
                     break;
@@ -2552,10 +2628,10 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "ann_expr"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:324:1: ann_expr : ( IDENT LP ann_expr ( COMA ann_expr )* RP | flat_expr );
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:389:1: ann_expr : ( IDENT LP ann_expr ( COMA ann_expr )* RP | flat_expr );
     public final void ann_expr() throws RecognitionException {
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:325:2: ( IDENT LP ann_expr ( COMA ann_expr )* RP | flat_expr )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:390:2: ( IDENT LP ann_expr ( COMA ann_expr )* RP | flat_expr )
             int alt36=2;
             int LA36_0 = input.LA(1);
 
@@ -2586,16 +2662,16 @@ public class FlatZincParser extends Parser {
             }
             switch (alt36) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:325:4: IDENT LP ann_expr ( COMA ann_expr )* RP
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:390:4: IDENT LP ann_expr ( COMA ann_expr )* RP
                     {
-                    match(input,IDENT,FOLLOW_IDENT_in_ann_expr1592); 
-                    match(input,LP,FOLLOW_LP_in_ann_expr1594); 
-                    pushFollow(FOLLOW_ann_expr_in_ann_expr1596);
+                    match(input,IDENT,FOLLOW_IDENT_in_ann_expr1614); 
+                    match(input,LP,FOLLOW_LP_in_ann_expr1616); 
+                    pushFollow(FOLLOW_ann_expr_in_ann_expr1618);
                     ann_expr();
 
                     state._fsp--;
 
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:325:22: ( COMA ann_expr )*
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:390:22: ( COMA ann_expr )*
                     loop35:
                     do {
                         int alt35=2;
@@ -2608,10 +2684,10 @@ public class FlatZincParser extends Parser {
 
                         switch (alt35) {
                     	case 1 :
-                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:325:23: COMA ann_expr
+                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:390:23: COMA ann_expr
                     	    {
-                    	    match(input,COMA,FOLLOW_COMA_in_ann_expr1599); 
-                    	    pushFollow(FOLLOW_ann_expr_in_ann_expr1601);
+                    	    match(input,COMA,FOLLOW_COMA_in_ann_expr1621); 
+                    	    pushFollow(FOLLOW_ann_expr_in_ann_expr1623);
                     	    ann_expr();
 
                     	    state._fsp--;
@@ -2625,14 +2701,14 @@ public class FlatZincParser extends Parser {
                         }
                     } while (true);
 
-                    match(input,RP,FOLLOW_RP_in_ann_expr1605); 
+                    match(input,RP,FOLLOW_RP_in_ann_expr1627); 
 
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:326:6: flat_expr
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:391:6: flat_expr
                     {
-                    pushFollow(FOLLOW_flat_expr_in_ann_expr1612);
+                    pushFollow(FOLLOW_flat_expr_in_ann_expr1634);
                     flat_expr();
 
                     state._fsp--;
@@ -2655,7 +2731,7 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "flat_expr"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:327:1: flat_expr returns [FZVariableBuilder.ValType vt] : (nafe= non_array_flat_expr | al= array_literal );
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:392:1: flat_expr returns [FZVariableBuilder.ValType vt] : (nafe= non_array_flat_expr | al= array_literal );
     public final FZVariableBuilder.ValType flat_expr() throws RecognitionException {
         FZVariableBuilder.ValType vt = null;
 
@@ -2665,7 +2741,7 @@ public class FlatZincParser extends Parser {
 
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:328:2: (nafe= non_array_flat_expr | al= array_literal )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:393:2: (nafe= non_array_flat_expr | al= array_literal )
             int alt37=2;
             int LA37_0 = input.LA(1);
 
@@ -2683,9 +2759,9 @@ public class FlatZincParser extends Parser {
             }
             switch (alt37) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:328:4: nafe= non_array_flat_expr
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:393:4: nafe= non_array_flat_expr
                     {
-                    pushFollow(FOLLOW_non_array_flat_expr_in_flat_expr1626);
+                    pushFollow(FOLLOW_non_array_flat_expr_in_flat_expr1648);
                     nafe=non_array_flat_expr();
 
                     state._fsp--;
@@ -2697,9 +2773,9 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:332:5: al= array_literal
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:397:5: al= array_literal
                     {
-                    pushFollow(FOLLOW_array_literal_in_flat_expr1638);
+                    pushFollow(FOLLOW_array_literal_in_flat_expr1660);
                     al=array_literal();
 
                     state._fsp--;
@@ -2725,7 +2801,7 @@ public class FlatZincParser extends Parser {
 
 
     // $ANTLR start "solve_expr"
-    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:336:1: solve_expr returns [FZVariableBuilder.ValType vt] : ( IDENT | aae= array_access_expr | IDENT LP flat_expr ( COMA flat_expr )* RP );
+    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:401:1: solve_expr returns [FZVariableBuilder.ValType vt] : ( IDENT | aae= array_access_expr | IDENT LP flat_expr ( COMA flat_expr )* RP );
     public final FZVariableBuilder.ValType solve_expr() throws RecognitionException {
         FZVariableBuilder.ValType vt = null;
 
@@ -2734,7 +2810,7 @@ public class FlatZincParser extends Parser {
 
 
         try {
-            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:337:2: ( IDENT | aae= array_access_expr | IDENT LP flat_expr ( COMA flat_expr )* RP )
+            // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:402:2: ( IDENT | aae= array_access_expr | IDENT LP flat_expr ( COMA flat_expr )* RP )
             int alt39=3;
             int LA39_0 = input.LA(1);
 
@@ -2771,9 +2847,9 @@ public class FlatZincParser extends Parser {
             }
             switch (alt39) {
                 case 1 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:337:4: IDENT
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:402:4: IDENT
                     {
-                    IDENT12=(Token)match(input,IDENT,FOLLOW_IDENT_in_solve_expr1654); 
+                    IDENT12=(Token)match(input,IDENT,FOLLOW_IDENT_in_solve_expr1676); 
 
                     		vt = FZVariableBuilder.build(FZVariableBuilder.EnumVal.sString, (IDENT12!=null?IDENT12.getText():null));
                     		
@@ -2781,9 +2857,9 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 2 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:341:5: aae= array_access_expr
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:406:5: aae= array_access_expr
                     {
-                    pushFollow(FOLLOW_array_access_expr_in_solve_expr1666);
+                    pushFollow(FOLLOW_array_access_expr_in_solve_expr1688);
                     aae=array_access_expr();
 
                     state._fsp--;
@@ -2795,16 +2871,16 @@ public class FlatZincParser extends Parser {
                     }
                     break;
                 case 3 :
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:345:5: IDENT LP flat_expr ( COMA flat_expr )* RP
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:410:5: IDENT LP flat_expr ( COMA flat_expr )* RP
                     {
-                    match(input,IDENT,FOLLOW_IDENT_in_solve_expr1676); 
-                    match(input,LP,FOLLOW_LP_in_solve_expr1678); 
-                    pushFollow(FOLLOW_flat_expr_in_solve_expr1680);
+                    match(input,IDENT,FOLLOW_IDENT_in_solve_expr1698); 
+                    match(input,LP,FOLLOW_LP_in_solve_expr1700); 
+                    pushFollow(FOLLOW_flat_expr_in_solve_expr1702);
                     flat_expr();
 
                     state._fsp--;
 
-                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:345:24: ( COMA flat_expr )*
+                    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:410:24: ( COMA flat_expr )*
                     loop38:
                     do {
                         int alt38=2;
@@ -2817,10 +2893,10 @@ public class FlatZincParser extends Parser {
 
                         switch (alt38) {
                     	case 1 :
-                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:345:25: COMA flat_expr
+                    	    // /media/Documents/c-choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/FlatZinc.g:410:25: COMA flat_expr
                     	    {
-                    	    match(input,COMA,FOLLOW_COMA_in_solve_expr1683); 
-                    	    pushFollow(FOLLOW_flat_expr_in_solve_expr1685);
+                    	    match(input,COMA,FOLLOW_COMA_in_solve_expr1705); 
+                    	    pushFollow(FOLLOW_flat_expr_in_solve_expr1707);
                     	    flat_expr();
 
                     	    state._fsp--;
@@ -2834,7 +2910,7 @@ public class FlatZincParser extends Parser {
                         }
                     } while (true);
 
-                    match(input,RP,FOLLOW_RP_in_solve_expr1689); 
+                    match(input,RP,FOLLOW_RP_in_solve_expr1711); 
 
                     		System.err.println("solve_epxr::IDENT LP flat_expr (COMA flat_expr)* RP:: ERREUR");
                     		
@@ -2859,193 +2935,193 @@ public class FlatZincParser extends Parser {
 
  
 
-    public static final BitSet FOLLOW_pred_decl_item_in_model494 = new BitSet(new long[]{0x0000000000000200L});
-    public static final BitSet FOLLOW_SEMICOLON_in_model496 = new BitSet(new long[]{0x0288250110B04000L});
-    public static final BitSet FOLLOW_var_decl_item_in_model504 = new BitSet(new long[]{0x0000000000000200L});
-    public static final BitSet FOLLOW_SEMICOLON_in_model506 = new BitSet(new long[]{0x0288240110B04000L});
-    public static final BitSet FOLLOW_constraint_item_in_model514 = new BitSet(new long[]{0x0000000000000200L});
-    public static final BitSet FOLLOW_SEMICOLON_in_model516 = new BitSet(new long[]{0x0288240110B04000L});
-    public static final BitSet FOLLOW_solve_item_in_model523 = new BitSet(new long[]{0x0000000000000200L});
-    public static final BitSet FOLLOW_SEMICOLON_in_model525 = new BitSet(new long[]{0x0000004000000002L});
-    public static final BitSet FOLLOW_output_item_in_model531 = new BitSet(new long[]{0x0000000000000200L});
-    public static final BitSet FOLLOW_SEMICOLON_in_model533 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_PREDICATE_in_pred_decl_item545 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_IDENT_in_pred_decl_item547 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_LP_in_pred_decl_item549 = new BitSet(new long[]{0x0280040110304000L});
-    public static final BitSet FOLLOW_pred_arg_in_pred_decl_item551 = new BitSet(new long[]{0x0000000000000840L});
-    public static final BitSet FOLLOW_COMA_in_pred_decl_item554 = new BitSet(new long[]{0x0280040110304000L});
-    public static final BitSet FOLLOW_pred_arg_in_pred_decl_item556 = new BitSet(new long[]{0x0000000000000840L});
-    public static final BitSet FOLLOW_RP_in_pred_decl_item560 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_non_array_ti_expr_tail_in_pred_arg570 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_COLON_in_pred_arg572 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_IDENT_in_pred_arg574 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ARRAY_in_pred_arg581 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_LBOX_in_pred_arg583 = new BitSet(new long[]{0x0080000000000000L});
-    public static final BitSet FOLLOW_INT_LITERAL_in_pred_arg585 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_DOTDOT_in_pred_arg587 = new BitSet(new long[]{0x0080000000000000L});
-    public static final BitSet FOLLOW_INT_LITERAL_in_pred_arg589 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_RBOX_in_pred_arg591 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_OF_in_pred_arg593 = new BitSet(new long[]{0x0288040110204000L});
-    public static final BitSet FOLLOW_array_decl_tail_in_pred_arg595 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_COLON_in_pred_arg597 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_IDENT_in_pred_arg600 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ARRAY_in_pred_arg606 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_LBOX_in_pred_arg608 = new BitSet(new long[]{0x0000000100000000L});
-    public static final BitSet FOLLOW_INT_in_pred_arg610 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_RBOX_in_pred_arg612 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_OF_in_pred_arg614 = new BitSet(new long[]{0x0288040110204000L});
-    public static final BitSet FOLLOW_array_decl_tail_in_pred_arg616 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_COLON_in_pred_arg618 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_IDENT_in_pred_arg620 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VAR_in_var_decl_item631 = new BitSet(new long[]{0x0280040110204000L});
-    public static final BitSet FOLLOW_non_array_ti_expr_tail_in_var_decl_item635 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_COLON_in_var_decl_item637 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_ident_anns_in_var_decl_item641 = new BitSet(new long[]{0x0000000000000102L});
-    public static final BitSet FOLLOW_EQUAL_in_var_decl_item644 = new BitSet(new long[]{0x03C0000000064000L});
-    public static final BitSet FOLLOW_non_array_flat_expr_in_var_decl_item648 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_non_array_ti_expr_tail_in_var_decl_item662 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_COLON_in_var_decl_item664 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_ident_anns_in_var_decl_item668 = new BitSet(new long[]{0x0000000000000100L});
-    public static final BitSet FOLLOW_EQUAL_in_var_decl_item670 = new BitSet(new long[]{0x03C0000000064000L});
-    public static final BitSet FOLLOW_non_array_flat_expr_in_var_decl_item674 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_ARRAY_in_var_decl_item684 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_LBOX_in_var_decl_item686 = new BitSet(new long[]{0x0080000000000000L});
-    public static final BitSet FOLLOW_INT_LITERAL_in_var_decl_item690 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_DOTDOT_in_var_decl_item692 = new BitSet(new long[]{0x0080000000000000L});
-    public static final BitSet FOLLOW_INT_LITERAL_in_var_decl_item696 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_RBOX_in_var_decl_item698 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_OF_in_var_decl_item700 = new BitSet(new long[]{0x0288040110204000L});
-    public static final BitSet FOLLOW_array_decl_tail_in_var_decl_item704 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_non_array_ti_expr_tail_in_array_decl_tail726 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_COLON_in_array_decl_tail728 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_ident_anns_in_array_decl_tail732 = new BitSet(new long[]{0x0000000000000100L});
-    public static final BitSet FOLLOW_EQUAL_in_array_decl_tail734 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_array_literal_in_array_decl_tail738 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_VAR_in_array_decl_tail748 = new BitSet(new long[]{0x0280040110204000L});
-    public static final BitSet FOLLOW_non_array_ti_expr_tail_in_array_decl_tail752 = new BitSet(new long[]{0x0000000000000020L});
-    public static final BitSet FOLLOW_COLON_in_array_decl_tail754 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_ident_anns_in_array_decl_tail758 = new BitSet(new long[]{0x0000000000000102L});
-    public static final BitSet FOLLOW_EQUAL_in_array_decl_tail762 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_array_literal_in_array_decl_tail766 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_ident_anns785 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_annotations_in_ident_anns787 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_CONSTRAINT_in_constraint_item801 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_constraint_elem_in_constraint_item803 = new BitSet(new long[]{0x0000000000000010L});
-    public static final BitSet FOLLOW_annotations_in_constraint_item805 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_constraint_elem816 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_LP_in_constraint_elem819 = new BitSet(new long[]{0x03C0000000066000L});
-    public static final BitSet FOLLOW_flat_expr_in_constraint_elem823 = new BitSet(new long[]{0x0000000000000840L});
-    public static final BitSet FOLLOW_COMA_in_constraint_elem827 = new BitSet(new long[]{0x03C0000000066000L});
-    public static final BitSet FOLLOW_flat_expr_in_constraint_elem831 = new BitSet(new long[]{0x0000000000000840L});
-    public static final BitSet FOLLOW_RP_in_constraint_elem835 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_variable_expr_in_constraint_elem845 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SOLVE_in_solve_item859 = new BitSet(new long[]{0x0000002C00000010L});
-    public static final BitSet FOLLOW_annotations_in_solve_item861 = new BitSet(new long[]{0x0000002C00000010L});
-    public static final BitSet FOLLOW_solve_kind_in_solve_item863 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SATISFY_in_solve_kind875 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MINIMIZE_in_solve_kind888 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_solve_expr_in_solve_kind890 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_MAXIMIZE_in_solve_kind902 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_solve_expr_in_solve_kind904 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_OUTPUT_in_output_item920 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_LBOX_in_output_item922 = new BitSet(new long[]{0x0100180000000000L});
-    public static final BitSet FOLLOW_output_elem_in_output_item924 = new BitSet(new long[]{0x0000000000001040L});
-    public static final BitSet FOLLOW_COMA_in_output_item927 = new BitSet(new long[]{0x0100180000000000L});
-    public static final BitSet FOLLOW_output_elem_in_output_item929 = new BitSet(new long[]{0x0000000000001040L});
-    public static final BitSet FOLLOW_RBOX_in_output_item933 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SHOW_in_output_elem942 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_LP_in_output_elem944 = new BitSet(new long[]{0x03C0000000066000L});
-    public static final BitSet FOLLOW_flat_expr_in_output_elem946 = new BitSet(new long[]{0x0000000000000800L});
-    public static final BitSet FOLLOW_RP_in_output_elem948 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SHOWCOND_in_output_elem954 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_LP_in_output_elem956 = new BitSet(new long[]{0x03C0000000066000L});
-    public static final BitSet FOLLOW_flat_expr_in_output_elem958 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_COMA_in_output_elem960 = new BitSet(new long[]{0x03C0000000066000L});
-    public static final BitSet FOLLOW_flat_expr_in_output_elem962 = new BitSet(new long[]{0x0000000000000040L});
-    public static final BitSet FOLLOW_COMA_in_output_elem964 = new BitSet(new long[]{0x03C0000000066000L});
-    public static final BitSet FOLLOW_flat_expr_in_output_elem966 = new BitSet(new long[]{0x0000000000000800L});
-    public static final BitSet FOLLOW_RP_in_output_elem968 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STRING_LITERAL_in_output_elem974 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_scalar_ti_expr_tail_in_non_array_ti_expr_tail990 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_ti_expr_tail_in_non_array_ti_expr_tail1001 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_BOOL_in_bool_ti_expr_tail1021 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_bool_ti_expr_tail_in_scalar_ti_expr_tail1040 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_int_ti_expr_tail_in_scalar_ti_expr_tail1051 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_float_ti_expr_tail_in_scalar_ti_expr_tail1062 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INT_in_int_ti_expr_tail1081 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INT_LITERAL_in_int_ti_expr_tail1093 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_DOTDOT_in_int_ti_expr_tail1095 = new BitSet(new long[]{0x0080000000000000L});
-    public static final BitSet FOLLOW_INT_LITERAL_in_int_ti_expr_tail1099 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LB_in_int_ti_expr_tail1112 = new BitSet(new long[]{0x0080000000000000L});
-    public static final BitSet FOLLOW_INT_LITERAL_in_int_ti_expr_tail1116 = new BitSet(new long[]{0x0000000000008040L});
-    public static final BitSet FOLLOW_COMA_in_int_ti_expr_tail1120 = new BitSet(new long[]{0x0080000000000000L});
-    public static final BitSet FOLLOW_INT_LITERAL_in_int_ti_expr_tail1124 = new BitSet(new long[]{0x0000000000008040L});
-    public static final BitSet FOLLOW_RB_in_int_ti_expr_tail1129 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FLOAT_in_float_ti_expr_tail1145 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FLOAT_LITERAL_in_float_ti_expr_tail1157 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_DOTDOT_in_float_ti_expr_tail1159 = new BitSet(new long[]{0x0200000000000000L});
-    public static final BitSet FOLLOW_FLOAT_LITERAL_in_float_ti_expr_tail1163 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_SET_in_set_ti_expr_tail1178 = new BitSet(new long[]{0x0000001000000000L});
-    public static final BitSet FOLLOW_OF_in_set_ti_expr_tail1180 = new BitSet(new long[]{0x0280000110204000L});
-    public static final BitSet FOLLOW_scalar_ti_expr_tail_in_set_ti_expr_tail1184 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_scalar_flat_expr_in_non_array_flat_expr1204 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_set_literal_in_non_array_flat_expr1216 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_scalar_flat_expr1233 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_array_access_expr_in_scalar_flat_expr1245 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_bool_literal_in_scalar_flat_expr1257 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INT_LITERAL_in_scalar_flat_expr1267 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FLOAT_LITERAL_in_scalar_flat_expr1277 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_STRING_LITERAL_in_scalar_flat_expr1287 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_array_access_expr_in_int_flat_expr1307 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_int_flat_expr1316 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INT_LITERAL_in_int_flat_expr1326 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_variable_expr1342 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_array_access_expr_in_variable_expr1354 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_array_access_expr1370 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_LBOX_in_array_access_expr1372 = new BitSet(new long[]{0x00C0000000000000L});
-    public static final BitSet FOLLOW_int_index_expr_in_array_access_expr1376 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_RBOX_in_array_access_expr1378 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_INT_LITERAL_in_int_index_expr1394 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_int_index_expr1406 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_FALSE_in_bool_literal1425 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_TRUE_in_bool_literal1436 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LB_in_set_literal1458 = new BitSet(new long[]{0x03C0000000068000L});
-    public static final BitSet FOLLOW_scalar_flat_expr_in_set_literal1464 = new BitSet(new long[]{0x0000000000008040L});
-    public static final BitSet FOLLOW_COMA_in_set_literal1468 = new BitSet(new long[]{0x03C0000000060000L});
-    public static final BitSet FOLLOW_scalar_flat_expr_in_set_literal1472 = new BitSet(new long[]{0x0000000000008040L});
-    public static final BitSet FOLLOW_RB_in_set_literal1479 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_int_flat_expr_in_set_literal1491 = new BitSet(new long[]{0x0000000000000080L});
-    public static final BitSet FOLLOW_DOTDOT_in_set_literal1493 = new BitSet(new long[]{0x03C0000000064000L});
-    public static final BitSet FOLLOW_int_flat_expr_in_set_literal1497 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_LBOX_in_array_literal1514 = new BitSet(new long[]{0x03C0000000065000L});
-    public static final BitSet FOLLOW_non_array_flat_expr_in_array_literal1520 = new BitSet(new long[]{0x0000000000001040L});
-    public static final BitSet FOLLOW_COMA_in_array_literal1524 = new BitSet(new long[]{0x03C0000000064000L});
-    public static final BitSet FOLLOW_non_array_flat_expr_in_array_literal1528 = new BitSet(new long[]{0x0000000000001040L});
-    public static final BitSet FOLLOW_RBOX_in_array_literal1537 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_COLONCOLON_in_annotations1552 = new BitSet(new long[]{0x0040000000000000L});
-    public static final BitSet FOLLOW_annotation_in_annotations1554 = new BitSet(new long[]{0x0000000000000012L});
-    public static final BitSet FOLLOW_IDENT_in_annotation1565 = new BitSet(new long[]{0x0000000000000402L});
-    public static final BitSet FOLLOW_LP_in_annotation1569 = new BitSet(new long[]{0x03C0000000066000L});
-    public static final BitSet FOLLOW_ann_expr_in_annotation1571 = new BitSet(new long[]{0x0000000000000840L});
-    public static final BitSet FOLLOW_COMA_in_annotation1574 = new BitSet(new long[]{0x03C0000000066000L});
-    public static final BitSet FOLLOW_ann_expr_in_annotation1576 = new BitSet(new long[]{0x0000000000000840L});
-    public static final BitSet FOLLOW_RP_in_annotation1580 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_ann_expr1592 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_LP_in_ann_expr1594 = new BitSet(new long[]{0x03C0000000066000L});
-    public static final BitSet FOLLOW_ann_expr_in_ann_expr1596 = new BitSet(new long[]{0x0000000000000840L});
-    public static final BitSet FOLLOW_COMA_in_ann_expr1599 = new BitSet(new long[]{0x03C0000000066000L});
-    public static final BitSet FOLLOW_ann_expr_in_ann_expr1601 = new BitSet(new long[]{0x0000000000000840L});
-    public static final BitSet FOLLOW_RP_in_ann_expr1605 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_flat_expr_in_ann_expr1612 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_non_array_flat_expr_in_flat_expr1626 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_array_literal_in_flat_expr1638 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_solve_expr1654 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_array_access_expr_in_solve_expr1666 = new BitSet(new long[]{0x0000000000000002L});
-    public static final BitSet FOLLOW_IDENT_in_solve_expr1676 = new BitSet(new long[]{0x0000000000000400L});
-    public static final BitSet FOLLOW_LP_in_solve_expr1678 = new BitSet(new long[]{0x03C0000000066000L});
-    public static final BitSet FOLLOW_flat_expr_in_solve_expr1680 = new BitSet(new long[]{0x0000000000000840L});
-    public static final BitSet FOLLOW_COMA_in_solve_expr1683 = new BitSet(new long[]{0x03C0000000066000L});
-    public static final BitSet FOLLOW_flat_expr_in_solve_expr1685 = new BitSet(new long[]{0x0000000000000840L});
-    public static final BitSet FOLLOW_RP_in_solve_expr1689 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_pred_decl_item_in_model498 = new BitSet(new long[]{0x0000000000000200L});
+    public static final BitSet FOLLOW_SEMICOLON_in_model500 = new BitSet(new long[]{0x0288250110B04000L});
+    public static final BitSet FOLLOW_var_decl_item_in_model508 = new BitSet(new long[]{0x0000000000000200L});
+    public static final BitSet FOLLOW_SEMICOLON_in_model510 = new BitSet(new long[]{0x0288240110B04000L});
+    public static final BitSet FOLLOW_constraint_item_in_model518 = new BitSet(new long[]{0x0000000000000200L});
+    public static final BitSet FOLLOW_SEMICOLON_in_model520 = new BitSet(new long[]{0x0288240110B04000L});
+    public static final BitSet FOLLOW_solve_item_in_model529 = new BitSet(new long[]{0x0000000000000200L});
+    public static final BitSet FOLLOW_SEMICOLON_in_model531 = new BitSet(new long[]{0x0000004000000002L});
+    public static final BitSet FOLLOW_output_item_in_model537 = new BitSet(new long[]{0x0000000000000200L});
+    public static final BitSet FOLLOW_SEMICOLON_in_model539 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_PREDICATE_in_pred_decl_item555 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_IDENT_in_pred_decl_item557 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_LP_in_pred_decl_item559 = new BitSet(new long[]{0x0280040110304000L});
+    public static final BitSet FOLLOW_pred_arg_in_pred_decl_item561 = new BitSet(new long[]{0x0000000000000840L});
+    public static final BitSet FOLLOW_COMA_in_pred_decl_item564 = new BitSet(new long[]{0x0280040110304000L});
+    public static final BitSet FOLLOW_pred_arg_in_pred_decl_item566 = new BitSet(new long[]{0x0000000000000840L});
+    public static final BitSet FOLLOW_RP_in_pred_decl_item570 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_non_array_ti_expr_tail_in_pred_arg580 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_COLON_in_pred_arg582 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_IDENT_in_pred_arg584 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ARRAY_in_pred_arg591 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_LBOX_in_pred_arg593 = new BitSet(new long[]{0x0080000000000000L});
+    public static final BitSet FOLLOW_INT_LITERAL_in_pred_arg595 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_DOTDOT_in_pred_arg597 = new BitSet(new long[]{0x0080000000000000L});
+    public static final BitSet FOLLOW_INT_LITERAL_in_pred_arg599 = new BitSet(new long[]{0x0000000000001000L});
+    public static final BitSet FOLLOW_RBOX_in_pred_arg601 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_OF_in_pred_arg603 = new BitSet(new long[]{0x0288040110204000L});
+    public static final BitSet FOLLOW_array_decl_tail_in_pred_arg605 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_COLON_in_pred_arg607 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_IDENT_in_pred_arg610 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ARRAY_in_pred_arg616 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_LBOX_in_pred_arg618 = new BitSet(new long[]{0x0000000100000000L});
+    public static final BitSet FOLLOW_INT_in_pred_arg620 = new BitSet(new long[]{0x0000000000001000L});
+    public static final BitSet FOLLOW_RBOX_in_pred_arg622 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_OF_in_pred_arg624 = new BitSet(new long[]{0x0288040110204000L});
+    public static final BitSet FOLLOW_array_decl_tail_in_pred_arg626 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_COLON_in_pred_arg628 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_IDENT_in_pred_arg630 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VAR_in_var_decl_item641 = new BitSet(new long[]{0x0280040110204000L});
+    public static final BitSet FOLLOW_non_array_ti_expr_tail_in_var_decl_item645 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_COLON_in_var_decl_item647 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_ident_anns_in_var_decl_item651 = new BitSet(new long[]{0x0000000000000102L});
+    public static final BitSet FOLLOW_EQUAL_in_var_decl_item654 = new BitSet(new long[]{0x03C0000000064000L});
+    public static final BitSet FOLLOW_non_array_flat_expr_in_var_decl_item658 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_non_array_ti_expr_tail_in_var_decl_item672 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_COLON_in_var_decl_item674 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_ident_anns_in_var_decl_item678 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_EQUAL_in_var_decl_item680 = new BitSet(new long[]{0x03C0000000064000L});
+    public static final BitSet FOLLOW_non_array_flat_expr_in_var_decl_item684 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_ARRAY_in_var_decl_item694 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_LBOX_in_var_decl_item696 = new BitSet(new long[]{0x0080000000000000L});
+    public static final BitSet FOLLOW_INT_LITERAL_in_var_decl_item700 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_DOTDOT_in_var_decl_item702 = new BitSet(new long[]{0x0080000000000000L});
+    public static final BitSet FOLLOW_INT_LITERAL_in_var_decl_item706 = new BitSet(new long[]{0x0000000000001000L});
+    public static final BitSet FOLLOW_RBOX_in_var_decl_item708 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_OF_in_var_decl_item710 = new BitSet(new long[]{0x0288040110204000L});
+    public static final BitSet FOLLOW_array_decl_tail_in_var_decl_item714 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_non_array_ti_expr_tail_in_array_decl_tail736 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_COLON_in_array_decl_tail738 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_ident_anns_in_array_decl_tail742 = new BitSet(new long[]{0x0000000000000100L});
+    public static final BitSet FOLLOW_EQUAL_in_array_decl_tail744 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_array_literal_in_array_decl_tail748 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_VAR_in_array_decl_tail758 = new BitSet(new long[]{0x0280040110204000L});
+    public static final BitSet FOLLOW_non_array_ti_expr_tail_in_array_decl_tail762 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_COLON_in_array_decl_tail764 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_ident_anns_in_array_decl_tail768 = new BitSet(new long[]{0x0000000000000102L});
+    public static final BitSet FOLLOW_EQUAL_in_array_decl_tail772 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_array_literal_in_array_decl_tail776 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_ident_anns795 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_annotations_in_ident_anns797 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_CONSTRAINT_in_constraint_item811 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_constraint_elem_in_constraint_item813 = new BitSet(new long[]{0x0000000000000010L});
+    public static final BitSet FOLLOW_annotations_in_constraint_item815 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_constraint_elem826 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_LP_in_constraint_elem829 = new BitSet(new long[]{0x03C0000000066000L});
+    public static final BitSet FOLLOW_flat_expr_in_constraint_elem833 = new BitSet(new long[]{0x0000000000000840L});
+    public static final BitSet FOLLOW_COMA_in_constraint_elem837 = new BitSet(new long[]{0x03C0000000066000L});
+    public static final BitSet FOLLOW_flat_expr_in_constraint_elem841 = new BitSet(new long[]{0x0000000000000840L});
+    public static final BitSet FOLLOW_RP_in_constraint_elem845 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_variable_expr_in_constraint_elem855 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SOLVE_in_solve_item874 = new BitSet(new long[]{0x0000002C00000010L});
+    public static final BitSet FOLLOW_annotations_in_solve_item876 = new BitSet(new long[]{0x0000002C00000010L});
+    public static final BitSet FOLLOW_solve_kind_in_solve_item878 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SATISFY_in_solve_kind893 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MINIMIZE_in_solve_kind906 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_solve_expr_in_solve_kind910 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_MAXIMIZE_in_solve_kind922 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_solve_expr_in_solve_kind926 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_OUTPUT_in_output_item942 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_LBOX_in_output_item944 = new BitSet(new long[]{0x0100180000000000L});
+    public static final BitSet FOLLOW_output_elem_in_output_item946 = new BitSet(new long[]{0x0000000000001040L});
+    public static final BitSet FOLLOW_COMA_in_output_item949 = new BitSet(new long[]{0x0100180000000000L});
+    public static final BitSet FOLLOW_output_elem_in_output_item951 = new BitSet(new long[]{0x0000000000001040L});
+    public static final BitSet FOLLOW_RBOX_in_output_item955 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SHOW_in_output_elem964 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_LP_in_output_elem966 = new BitSet(new long[]{0x03C0000000066000L});
+    public static final BitSet FOLLOW_flat_expr_in_output_elem968 = new BitSet(new long[]{0x0000000000000800L});
+    public static final BitSet FOLLOW_RP_in_output_elem970 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SHOWCOND_in_output_elem976 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_LP_in_output_elem978 = new BitSet(new long[]{0x03C0000000066000L});
+    public static final BitSet FOLLOW_flat_expr_in_output_elem980 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_COMA_in_output_elem982 = new BitSet(new long[]{0x03C0000000066000L});
+    public static final BitSet FOLLOW_flat_expr_in_output_elem984 = new BitSet(new long[]{0x0000000000000040L});
+    public static final BitSet FOLLOW_COMA_in_output_elem986 = new BitSet(new long[]{0x03C0000000066000L});
+    public static final BitSet FOLLOW_flat_expr_in_output_elem988 = new BitSet(new long[]{0x0000000000000800L});
+    public static final BitSet FOLLOW_RP_in_output_elem990 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STRING_LITERAL_in_output_elem996 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_scalar_ti_expr_tail_in_non_array_ti_expr_tail1012 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_ti_expr_tail_in_non_array_ti_expr_tail1023 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_BOOL_in_bool_ti_expr_tail1043 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_bool_ti_expr_tail_in_scalar_ti_expr_tail1062 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_int_ti_expr_tail_in_scalar_ti_expr_tail1073 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_float_ti_expr_tail_in_scalar_ti_expr_tail1084 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INT_in_int_ti_expr_tail1103 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INT_LITERAL_in_int_ti_expr_tail1115 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_DOTDOT_in_int_ti_expr_tail1117 = new BitSet(new long[]{0x0080000000000000L});
+    public static final BitSet FOLLOW_INT_LITERAL_in_int_ti_expr_tail1121 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LB_in_int_ti_expr_tail1134 = new BitSet(new long[]{0x0080000000000000L});
+    public static final BitSet FOLLOW_INT_LITERAL_in_int_ti_expr_tail1138 = new BitSet(new long[]{0x0000000000008040L});
+    public static final BitSet FOLLOW_COMA_in_int_ti_expr_tail1142 = new BitSet(new long[]{0x0080000000000000L});
+    public static final BitSet FOLLOW_INT_LITERAL_in_int_ti_expr_tail1146 = new BitSet(new long[]{0x0000000000008040L});
+    public static final BitSet FOLLOW_RB_in_int_ti_expr_tail1151 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FLOAT_in_float_ti_expr_tail1167 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FLOAT_LITERAL_in_float_ti_expr_tail1179 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_DOTDOT_in_float_ti_expr_tail1181 = new BitSet(new long[]{0x0200000000000000L});
+    public static final BitSet FOLLOW_FLOAT_LITERAL_in_float_ti_expr_tail1185 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_SET_in_set_ti_expr_tail1200 = new BitSet(new long[]{0x0000001000000000L});
+    public static final BitSet FOLLOW_OF_in_set_ti_expr_tail1202 = new BitSet(new long[]{0x0280000110204000L});
+    public static final BitSet FOLLOW_scalar_ti_expr_tail_in_set_ti_expr_tail1206 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_scalar_flat_expr_in_non_array_flat_expr1226 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_set_literal_in_non_array_flat_expr1238 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_scalar_flat_expr1255 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_array_access_expr_in_scalar_flat_expr1267 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_bool_literal_in_scalar_flat_expr1279 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INT_LITERAL_in_scalar_flat_expr1289 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FLOAT_LITERAL_in_scalar_flat_expr1299 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_STRING_LITERAL_in_scalar_flat_expr1309 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_array_access_expr_in_int_flat_expr1329 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_int_flat_expr1338 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INT_LITERAL_in_int_flat_expr1348 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_variable_expr1364 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_array_access_expr_in_variable_expr1376 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_array_access_expr1392 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_LBOX_in_array_access_expr1394 = new BitSet(new long[]{0x00C0000000000000L});
+    public static final BitSet FOLLOW_int_index_expr_in_array_access_expr1398 = new BitSet(new long[]{0x0000000000001000L});
+    public static final BitSet FOLLOW_RBOX_in_array_access_expr1400 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_INT_LITERAL_in_int_index_expr1416 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_int_index_expr1428 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_FALSE_in_bool_literal1447 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_TRUE_in_bool_literal1458 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LB_in_set_literal1480 = new BitSet(new long[]{0x03C0000000068000L});
+    public static final BitSet FOLLOW_scalar_flat_expr_in_set_literal1486 = new BitSet(new long[]{0x0000000000008040L});
+    public static final BitSet FOLLOW_COMA_in_set_literal1490 = new BitSet(new long[]{0x03C0000000060000L});
+    public static final BitSet FOLLOW_scalar_flat_expr_in_set_literal1494 = new BitSet(new long[]{0x0000000000008040L});
+    public static final BitSet FOLLOW_RB_in_set_literal1501 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_int_flat_expr_in_set_literal1513 = new BitSet(new long[]{0x0000000000000080L});
+    public static final BitSet FOLLOW_DOTDOT_in_set_literal1515 = new BitSet(new long[]{0x03C0000000064000L});
+    public static final BitSet FOLLOW_int_flat_expr_in_set_literal1519 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_LBOX_in_array_literal1536 = new BitSet(new long[]{0x03C0000000065000L});
+    public static final BitSet FOLLOW_non_array_flat_expr_in_array_literal1542 = new BitSet(new long[]{0x0000000000001040L});
+    public static final BitSet FOLLOW_COMA_in_array_literal1546 = new BitSet(new long[]{0x03C0000000064000L});
+    public static final BitSet FOLLOW_non_array_flat_expr_in_array_literal1550 = new BitSet(new long[]{0x0000000000001040L});
+    public static final BitSet FOLLOW_RBOX_in_array_literal1559 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_COLONCOLON_in_annotations1574 = new BitSet(new long[]{0x0040000000000000L});
+    public static final BitSet FOLLOW_annotation_in_annotations1576 = new BitSet(new long[]{0x0000000000000012L});
+    public static final BitSet FOLLOW_IDENT_in_annotation1587 = new BitSet(new long[]{0x0000000000000402L});
+    public static final BitSet FOLLOW_LP_in_annotation1591 = new BitSet(new long[]{0x03C0000000066000L});
+    public static final BitSet FOLLOW_ann_expr_in_annotation1593 = new BitSet(new long[]{0x0000000000000840L});
+    public static final BitSet FOLLOW_COMA_in_annotation1596 = new BitSet(new long[]{0x03C0000000066000L});
+    public static final BitSet FOLLOW_ann_expr_in_annotation1598 = new BitSet(new long[]{0x0000000000000840L});
+    public static final BitSet FOLLOW_RP_in_annotation1602 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_ann_expr1614 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_LP_in_ann_expr1616 = new BitSet(new long[]{0x03C0000000066000L});
+    public static final BitSet FOLLOW_ann_expr_in_ann_expr1618 = new BitSet(new long[]{0x0000000000000840L});
+    public static final BitSet FOLLOW_COMA_in_ann_expr1621 = new BitSet(new long[]{0x03C0000000066000L});
+    public static final BitSet FOLLOW_ann_expr_in_ann_expr1623 = new BitSet(new long[]{0x0000000000000840L});
+    public static final BitSet FOLLOW_RP_in_ann_expr1627 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_flat_expr_in_ann_expr1634 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_non_array_flat_expr_in_flat_expr1648 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_array_literal_in_flat_expr1660 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_solve_expr1676 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_array_access_expr_in_solve_expr1688 = new BitSet(new long[]{0x0000000000000002L});
+    public static final BitSet FOLLOW_IDENT_in_solve_expr1698 = new BitSet(new long[]{0x0000000000000400L});
+    public static final BitSet FOLLOW_LP_in_solve_expr1700 = new BitSet(new long[]{0x03C0000000066000L});
+    public static final BitSet FOLLOW_flat_expr_in_solve_expr1702 = new BitSet(new long[]{0x0000000000000840L});
+    public static final BitSet FOLLOW_COMA_in_solve_expr1705 = new BitSet(new long[]{0x03C0000000066000L});
+    public static final BitSet FOLLOW_flat_expr_in_solve_expr1707 = new BitSet(new long[]{0x0000000000000840L});
+    public static final BitSet FOLLOW_RP_in_solve_expr1711 = new BitSet(new long[]{0x0000000000000002L});
 
 }
