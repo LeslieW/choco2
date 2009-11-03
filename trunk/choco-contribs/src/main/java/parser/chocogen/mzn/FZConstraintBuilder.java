@@ -22,13 +22,14 @@
 **************************************************/
 package parser.chocogen.mzn;
 
-import choco.Choco;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.model.variables.set.SetVariable;
+import static parser.chocogen.mzn.FZVariableBuilder.*;
 
 import java.util.HashMap;
 import java.util.logging.Logger;
@@ -111,18 +112,40 @@ public class FZConstraintBuilder {
     private static final String _int2float = "int2float";
     private static final String _bool2int = "bool2int";
 
+    // GLOBAL CONSTRAINTS
+    private static final String _global = "global";
+    private static final String _allDifferent = "_allDifferent";
+    private static final String _cumulative = "_cumulative";
+    private static final String _setDisjoint = "_setDisjoint";
+    private static final String _elementBool = "_elementBool";
+    private static final String _elementInt = "_elementInt";
+    private static final String _globalCardinalityLowUp = "_globalCardinalityLowUp";
+    private static final String _globalCardinality = "_globalCardinality";
+    private static final String _inverseSet = "_inverseSet";
+    private static final String _lexEq = "_lexEq";
+    private static final String _lex = "_lex";
+    private static final String _member = "_member";
+    private static final String _sorting = "_sorting";
+
 
     public static void build(String name, FZVariableBuilder.ValType[] vts) {
+        if(name.contains(_global)){
+            buildGlobal(name, vts);
+            return;
+        }else
         if (name.contains(_int)) {
             buildInt(name, vts);
             return;
-        } else if (name.contains(_float)) {
+        } else
+        if (name.contains(_float)) {
             buildFloat(name, vts);
             return;
-        } else if (name.contains(_bool)) {
+        } else
+        if (name.contains(_bool)) {
             buildBool(name, vts);
             return;
-        } else if (name.contains(_set)) {
+        } else
+        if (name.contains(_set)) {
             buildSet(name, vts);
             return;
         } else
@@ -130,58 +153,13 @@ public class FZConstraintBuilder {
         System.exit(-1);
     }
 
-    private static int getInt(FZVariableBuilder.ValType vt){
-        try{
-            return (Integer) vt.obj;
-        }catch (ClassCastException ee){
-            return Integer.parseInt((String) vt.obj);
-        }
-    }
 
-    public static int[] getInts(FZVariableBuilder.ValType vt){
-        if(vt.type.equals(FZVariableBuilder.EnumVal.objects)){
-            Integer[] ints = (Integer[])vt.obj;
-            int[] pints = new int[ints.length];
-            for (int i = 0; i < pints.length; i++) {
-                //noinspection UnnecessaryUnboxing
-                pints[i] = ints[i].intValue();
-            }
-            return pints;
-        }else{
-            FZVariableBuilder.ValType[] vts = (FZVariableBuilder.ValType[])vt.obj;
-            int[] ints = new int[vts.length];
-            for (int i = 0; i < ints.length; i++) {
-                ints[i] = getInt(vts[i]);
-            }
-            return ints;
-        }
-    }
-
-    public static IntegerVariable getIntVar(FZVariableBuilder.ValType vt){
-        try {
-            return (IntegerVariable) vt.obj;
-        } catch (ClassCastException cc) {
-            return Choco.constant((Integer) vt.obj);
-        }
-    }
-
-    public static IntegerVariable[] getIntVars(FZVariableBuilder.ValType vt)throws ClassCastException{
-        if(vt.type.equals(FZVariableBuilder.EnumVal.objects)){
-                return (IntegerVariable[])vt.obj;
-        }else{
-            return getIntVars((FZVariableBuilder.ValType[])vt.obj);
-        }
-    }
-
-    public static IntegerVariable[] getIntVars(FZVariableBuilder.ValType[] vts){
-        IntegerVariable[] vars = new IntegerVariable[vts.length];
-        for (int i = 0; i < vts.length; i++) {
-                vars[i] = getIntVar(vts[i]);
-            }
-        return vars;
-    }
-
-    private static void buildInt(String name, FZVariableBuilder.ValType[] vts) {
+    /**
+     * Build a basic constraint based on int variables
+     * @param name name of the constraint
+     * @param vts parameters of the constraint
+     */
+    private static void buildInt(String name, ValType[] vts) {
         Constraint c = null;
         if (name.contains(_lin)) {
 
@@ -270,7 +248,12 @@ public class FZConstraintBuilder {
         System.exit(-1);
     }
 
-    private static void buildFloat(String name, FZVariableBuilder.ValType[] vts) {
+    /**
+     * Build a basic constraint based on float variables
+     * @param name name of the constraint
+     * @param vts parameters of the constraint
+     */
+    private static void buildFloat(String name, ValType[] vts) {
         /*if (name.contains(_eq)) {
 
         } else if (name.contains(_ne)) {
@@ -297,41 +280,13 @@ public class FZConstraintBuilder {
         }
     }
 
-
-    private static IntegerVariable getBoolVar(FZVariableBuilder.ValType vt) {
-        try {
-            return (IntegerVariable) vt.obj;
-        } catch (ClassCastException cc) {
-            try {
-                return Choco.constant((Integer) vt.obj);
-            } catch (ClassCastException cce) {
-                return Choco.constant(((Boolean) vt.obj) ? 1 : 0);
-            }
-        }
-    }
-
-    public static IntegerVariable[] getBoolVars(FZVariableBuilder.ValType vt){
-        if(vt.type.equals(FZVariableBuilder.EnumVal.objects)){
-            return (IntegerVariable[])vt.obj;
-        }else{
-            return getBoolVars((FZVariableBuilder.ValType[])vt.obj);
-        }
-    }
-
-    public static IntegerVariable[] getBoolVars(FZVariableBuilder.ValType[] vts){
-        IntegerVariable[] vars = new IntegerVariable[vts.length];
-        for (int i = 0; i < vts.length; i++) {
-                vars[i] = getBoolVar(vts[i]);
-            }
-        return vars;
-    }
-
     /**
+     * Build a basic constraint based on bool variables
      * FYI : bool == 1 is true
-     * @param name
-     * @param vts
+     * @param name name of the constraint
+     * @param vts parameters of the constraint
      */
-    private static void buildBool(String name, FZVariableBuilder.ValType[] vts) {
+    private static void buildBool(String name, ValType[] vts) {
         Constraint c = null;
         if (name.contains((_array))) {
             if (name.contains(_element)) {
@@ -417,38 +372,12 @@ public class FZConstraintBuilder {
         System.exit(-1);
     }
 
-    private static SetVariable getSetVar(FZVariableBuilder.ValType vt) {
-        if(vt.type.equals(FZVariableBuilder.EnumVal.interval)){
-            FZVariableBuilder.ValType[] vts = (FZVariableBuilder.ValType[])vt.obj;
-            int i1 = getInt(vts[0]);
-            int i2 = getInt(vts[1]);
-            int[] values = new int[i2-i1+1];
-            for(int i = i1; i <= i2; i++){
-                values[i-i1] = i;
-            }
-            return constant(values);
-        }
-
-        return (SetVariable) vt.obj;
-    }
-
-    public static SetVariable[] getSetVars(FZVariableBuilder.ValType vt){
-        if(vt.type.equals(FZVariableBuilder.EnumVal.objects)){
-            return (SetVariable[])vt.obj;
-        }else{
-            return getSetVars((FZVariableBuilder.ValType[])vt.obj);
-        }
-    }
-
-    public static SetVariable[] getSetVars(FZVariableBuilder.ValType[] vts){
-        SetVariable[] vars = new SetVariable[vts.length];
-        for (int i = 0; i < vts.length; i++) {
-                vars[i] = getSetVar(vts[i]);
-            }
-        return vars;
-    }
-
-    private static void buildSet(String name, FZVariableBuilder.ValType[] vts) {
+    /**
+     * Build a basic constraint based on set variables
+     * @param name name of the constraint
+     * @param vts parameters of the constraint
+     */
+    private static void buildSet(String name, ValType[] vts) {
         Constraint c = null;
         if (name.contains(_eq)) {
 
@@ -479,4 +408,105 @@ public class FZConstraintBuilder {
         LOGGER.severe("buildSet::ERROR:: unknown type :" + name);
         System.exit(-1);
     }
+
+    /**
+     * Build a global constraint
+     * @param name name of the constraint
+     * @param vts parameters of the constraint
+     */
+    private static void buildGlobal(String name, ValType[] vts){
+        Constraint c = null;
+        if(name.contains(_allDifferent)){
+            IntegerVariable[] vars = getIntVars(vts);
+            c = allDifferent(vars);
+        }else
+        if(name.contains(_cumulative)){
+            IntegerVariable[] starts = getIntVars(vts[0]);
+            IntegerVariable[] durations = getIntVars(vts[1]);
+            // build task variables
+            TaskVariable[] tvars = new TaskVariable[starts.length];
+            for(int i = 0; i < tvars.length; i++){
+                tvars[i] = makeTaskVar("t_"+i, starts[i], durations[i]);
+            }
+            IntegerVariable[] heights = getIntVars(vts[2]);
+            IntegerVariable capa = getIntVar(vts[3]);
+            c = cumulative(name, tvars, heights, null, constant(0), capa, (IntegerVariable)null, "");
+        }else
+        if(name.contains(_setDisjoint)){
+            SetVariable s1 = getSetVar(vts[0]);
+            SetVariable s2 = getSetVar(vts[1]);
+            c = setDisjoint(s1, s2);
+        }else
+        if(name.contains(_elementBool)){
+            IntegerVariable index = getIntVar(vts[0]);
+            IntegerVariable[] varArray = getIntVars(vts[1]);
+            IntegerVariable val = getIntVar(vts[2]);
+            c = nth(index, varArray, val);
+        }else
+        if(name.contains(_elementInt)){
+            IntegerVariable index = getIntVar(vts[0]);
+            IntegerVariable[] varArray = getIntVars(vts[1]);
+            IntegerVariable val = getIntVar(vts[2]);
+            c = nth(index, varArray, val);
+        }else
+        if(name.contains(_globalCardinalityLowUp)){
+            IntegerVariable[] vars = getIntVars(vts[0]);
+            IntegerVariable[] cards = getIntVars(vts[1]);
+            c = globalCardinality(vars, cards);
+        }else
+        if(name.contains(_globalCardinality)){
+            IntegerVariable[] vars = getIntVars(vts[0]);
+            //int[] covers = getInts(vts[1]);
+            int[] lbound = getInts(vts[2]);
+            int[] ubound = getInts(vts[3]);
+            c = globalCardinality(vars, lbound, ubound);
+        }else
+        if(name.contains(_inverseSet)){
+            IntegerVariable[] ivars = getIntVars(vts[0]);
+            SetVariable[] svars = getSetVars(vts[1]);
+            c = inverseSet(ivars, svars);
+        }else
+        if(name.contains(_lexEq)){
+            IntegerVariable[] xs = getIntVars(vts[0]);
+            IntegerVariable[] ys = getIntVars(vts[1]);
+            c = lexeq(xs, ys);
+        }else
+        if(name.contains(_lex)){
+            IntegerVariable[] xs = getIntVars(vts[0]);
+            IntegerVariable[] ys = getIntVars(vts[1]);
+            c = lex(xs, ys);
+        }else
+        if(name.contains(_max)){
+            IntegerVariable[] xs = getIntVars(vts[0]);
+            IntegerVariable max = getIntVar(vts[1]);
+            c = max(xs, max);
+        }else
+        if(name.contains(_member)){
+            IntegerVariable ivar = getIntVar(vts[0]);
+            SetVariable svar = getSetVar(vts[1]);
+            c = member(ivar, svar);
+        }else
+        if(name.contains(_min)){
+            IntegerVariable[] xs = getIntVars(vts[0]);
+            IntegerVariable min = getIntVar(vts[1]);
+            c = min(xs, min);
+        }else
+        if(name.contains(_sorting)){
+            IntegerVariable[] xs = getIntVars(vts[0]);
+            IntegerVariable[] ys = getIntVars(vts[1]);
+            c = sorting(xs, ys);
+        }
+        if (c != null) {
+            if (!name.contains(_reif)) {
+                model.addConstraint(c);
+            } else {
+                IntegerVariable vr = (IntegerVariable) vts[vts.length - 1].obj;
+                model.addConstraint(reifiedIntConstraint(vr, c));
+            }
+            return;
+        }
+        LOGGER.severe("buildGlob::ERROR:: unknown type :" + name);
+        System.exit(-1);
+    }
+
 }
