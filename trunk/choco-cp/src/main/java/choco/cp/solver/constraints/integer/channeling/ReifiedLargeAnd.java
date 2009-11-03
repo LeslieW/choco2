@@ -93,7 +93,8 @@ public class ReifiedLargeAnd  extends AbstractLargeIntSConstraint {
                 } else if (!vars[i].isInstantiated()) {
                     if (updateLit1 && lit1 > i) {
                         lit1 = i;
-                    } else if (updateLit2 && lit2 > i) {
+                    }
+                    if (updateLit2 && lit2 > i) {
                         lit2 = i;
                         break;
                     }
