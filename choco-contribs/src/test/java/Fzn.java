@@ -51,7 +51,6 @@ public class Fzn {
     static Logger LOGGER = ChocoLogging.getParserLogger();
 
     public static void main(String[] args) throws IOException {
-        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
         args = new String[]{"/home/charles/Choco/minizinc/fzn/"};
         scan(new File(args[0]));
     }
