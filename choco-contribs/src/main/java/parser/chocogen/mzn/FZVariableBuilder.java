@@ -31,7 +31,9 @@ package parser.chocogen.mzn;
 */
 
 import choco.Choco;
+import static choco.Choco.constant;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.real.RealVariable;
 import choco.kernel.model.variables.set.SetConstantVariable;
@@ -131,9 +133,15 @@ public class FZVariableBuilder {
                     memory.put(name, ib1);
                     return;
                 case iBounds:
-                    int[] bounds1 = (int[]) natet.obj;
-                    IntegerVariable iv1 = Choco.makeIntVar(name, bounds1[0], bounds1[1]);
-                    memory.put(name, iv1);
+                    try{
+                        int[] bounds1 = (int[]) natet.obj;
+                        IntegerVariable iv1 = Choco.makeIntVar(name, bounds1[0], bounds1[1]);
+                        memory.put(name, iv1);
+                    }catch (ClassCastException cce){
+                        double[] bounds1 = (double[]) natet.obj;
+                        RealVariable iv1 = Choco.makeRealVar(name, bounds1[0], bounds1[1]);
+                        memory.put(name, iv1);
+                    }
                     return;
                 case iValues:
                     int[] values1 = (int[]) natet.obj;
@@ -419,5 +427,136 @@ public class FZVariableBuilder {
             return Array.class.getName();
         }
         return null;
+    }
+
+    //******************************************************************************************************************
+    //************************************** VARIABLE GETTERS **********************************************************
+    //******************************************************************************************************************
+
+    static int getInt(FZVariableBuilder.ValType vt){
+        try{
+            return (Integer) vt.obj;
+        }catch (ClassCastException ee){
+            return Integer.parseInt((String) vt.obj);
+        }
+    }
+
+    static int[] getInts(FZVariableBuilder.ValType vt){
+        if(vt.type.equals(FZVariableBuilder.EnumVal.objects)){
+            Integer[] ints = (Integer[])vt.obj;
+            int[] pints = new int[ints.length];
+            for (int i = 0; i < pints.length; i++) {
+                //noinspection UnnecessaryUnboxing
+                pints[i] = ints[i].intValue();
+            }
+            return pints;
+        }else{
+            FZVariableBuilder.ValType[] vts = (FZVariableBuilder.ValType[])vt.obj;
+            int[] ints = new int[vts.length];
+            for (int i = 0; i < ints.length; i++) {
+                ints[i] = getInt(vts[i]);
+            }
+            return ints;
+        }
+    }
+
+    static IntegerVariable getIntVar(FZVariableBuilder.ValType vt){
+        switch (vt.type){
+            case sString:
+                return (IntegerVariable)memory.get((String)vt.obj);
+            case vInt:
+                    return (IntegerVariable) vt.obj;
+                case iInt:
+                    return Choco.constant((Integer) vt.obj);
+                default:
+                    LOGGER.severe("getIntVar::type not found ERROR");
+                    System.exit(-1);
+                    return null;
+        }
+    }
+
+    static IntegerVariable[] getIntVars(FZVariableBuilder.ValType vt)throws ClassCastException{
+        if(vt.type.equals(FZVariableBuilder.EnumVal.objects)){
+            try{
+                return (IntegerVariable[])vt.obj;
+            }catch (ClassCastException cce){
+                Integer[] ints = (Integer[])vt.obj;
+                IntegerConstantVariable[] cons = new IntegerConstantVariable[ints.length];
+                for (int i = 0; i < cons.length; i++) {
+                    //noinspection UnnecessaryUnboxing
+                    cons[i] = constant(ints[i].intValue());
+                }
+                return cons;
+            }
+        }else{
+            return getIntVars((FZVariableBuilder.ValType[])vt.obj);
+        }
+    }
+
+    static IntegerVariable[] getIntVars(FZVariableBuilder.ValType[] vts){
+        IntegerVariable[] vars = new IntegerVariable[vts.length];
+        for (int i = 0; i < vts.length; i++) {
+                vars[i] = getIntVar(vts[i]);
+            }
+        return vars;
+    }
+
+    static IntegerVariable getBoolVar(FZVariableBuilder.ValType vt) {
+        try {
+            return (IntegerVariable) vt.obj;
+        } catch (ClassCastException cc) {
+            try {
+                return Choco.constant((Integer) vt.obj);
+            } catch (ClassCastException cce) {
+                return Choco.constant(((Boolean) vt.obj) ? 1 : 0);
+            }
+        }
+    }
+
+    static IntegerVariable[] getBoolVars(FZVariableBuilder.ValType vt){
+        if(vt.type.equals(EnumVal.objects)){
+            return (IntegerVariable[])vt.obj;
+        }else{
+            return getBoolVars((FZVariableBuilder.ValType[])vt.obj);
+        }
+    }
+
+    static IntegerVariable[] getBoolVars(FZVariableBuilder.ValType[] vts){
+        IntegerVariable[] vars = new IntegerVariable[vts.length];
+        for (int i = 0; i < vts.length; i++) {
+                vars[i] = getBoolVar(vts[i]);
+            }
+        return vars;
+    }
+
+    static SetVariable getSetVar(FZVariableBuilder.ValType vt) {
+        if(vt.type.equals(EnumVal.interval)){
+            FZVariableBuilder.ValType[] vts = (FZVariableBuilder.ValType[])vt.obj;
+            int i1 = getInt(vts[0]);
+            int i2 = getInt(vts[1]);
+            int[] values = new int[i2-i1+1];
+            for(int i = i1; i <= i2; i++){
+                values[i-i1] = i;
+            }
+            return constant(values);
+        }
+
+        return (SetVariable) vt.obj;
+    }
+
+    static SetVariable[] getSetVars(FZVariableBuilder.ValType vt){
+        if(vt.type.equals(EnumVal.objects)){
+            return (SetVariable[])vt.obj;
+        }else{
+            return getSetVars((FZVariableBuilder.ValType[])vt.obj);
+        }
+    }
+
+    static SetVariable[] getSetVars(FZVariableBuilder.ValType[] vts){
+        SetVariable[] vars = new SetVariable[vts.length];
+        for (int i = 0; i < vts.length; i++) {
+                vars[i] = getSetVar(vts[i]);
+            }
+        return vars;
     }
 }

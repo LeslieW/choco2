@@ -78,8 +78,14 @@ public final class NotEqualXYC extends AbstractBinIntSConstraint {
 	 */
 
 	public final void propagate() throws ContradictionException {
-		if (v0.isInstantiated()) removeValV1();
-		else if (v1.isInstantiated()) removeValV0();
+		if (v0.isInstantiated()) {
+            removeValV1();
+            this.setEntailed();
+        }
+		else if (v1.isInstantiated()){
+            removeValV0();
+            this.setEntailed();
+        }
 	}
 
 	@Override
@@ -94,8 +100,15 @@ public final class NotEqualXYC extends AbstractBinIntSConstraint {
 
 	@Override
 	public final void awakeOnInst(int idx) throws ContradictionException {
-		if (idx == 0) removeValV1();
-		else assert (idx == 1); removeValV0();
+		if (idx == 0) {
+            removeValV1();
+            this.setEntailed();
+        }
+		else{
+            assert (idx == 1);
+            removeValV0();
+            this.setEntailed();
+        }
 	}
 
 

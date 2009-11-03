@@ -138,9 +138,9 @@ model		returns[Boolean isSatisified]
 pred_decl_item		
 	:	PREDICATE IDENT LP pred_arg (COMA pred_arg)* RP;
 pred_arg 	
-	:	non_array_ti_expr_tail COLON IDENT	
-		| ARRAY LBOX INT_LITERAL DOTDOT INT_LITERAL RBOX OF array_decl_tail COLON  IDENT
-		| ARRAY LBOX INT RBOX OF array_decl_tail COLON IDENT
+	:	VAR non_array_ti_expr_tail COLON ident_anns //COLON IDENT	
+		| ARRAY LBOX INT_LITERAL DOTDOT INT_LITERAL RBOX OF array_decl_tail //COLON  IDENT
+		| ARRAY LBOX INT RBOX OF array_decl_tail //COLON IDENT
 		;
 var_decl_item
 	:	VAR natet=non_array_ti_expr_tail COLON name=ident_anns (EQUAL nafe=non_array_flat_expr)?
@@ -423,3 +423,184 @@ fragment DIGIT 		:	'0'..'9';
 fragment HEX_DIGIT		:	'0x' (DIGIT | 'A'..'F' | 'a'..'f')+;
 fragment OCT_DIGIT		:	'0o' ('0'..'7')+;
 fragment LIT			:	'A'..'Z'|'a'..'z';
+
+//grammar FlatZinc;
+//tokens{
+//	COLONCOLON	=	'::';
+//	COLON		=	':';		
+//	COMA		=	',';
+//	DOTDOT		=	'..';
+//	EQUAL		=	'=';
+//	SEMICOLON	=	';';
+//	LP		=	'(';
+//	RP		=	')';
+//	RBOX		=	']';
+//	LBOX		=	'[';
+//	LB		=	'{';
+//	RB		=	'}';
+//	DQUOTE		=	'"';
+//	FALSE		=	'false';
+//	TRUE		=	'true';
+//	ANY		=	'any';
+//	ARRAY		=	'array';
+//	BOOL		=	'bool';
+//	CASE		=	'case';
+//	CONSTRAINT		=	'constraint';
+//	ELSE		=	'else';
+//	ELSEIF		=	'elseif';
+//	ENDIF		=	'endif';
+//	ENUM		=	'enum';
+//	FLOAT		=	'float';
+//	FUNCTION		=	'function';
+//	IF		=	'if';
+//	INCLUDE		=	'include';
+//	INT		=	'int';
+//	LET		=	'let';
+//	MAXIMIZE		=	'maximize';
+//	MINIMIZE 		=	'minimize';
+//	OF		=	'of';
+//	SATISFY		=	'satisfy';
+//	OUTPUT		=	'output';
+//	PAR		=	'par';
+//	PREDICATE		=	'predicate';
+//	RECORD		=	'record';
+//	SET		=	'set';
+//	SHOW		=	'show';
+//	SHOWCOND		=	'show_cond';
+//	SOLVE		=	'solve';
+//	STRING		=	'string';
+//	TEST		=	'test';
+//	THEN		=	'then';
+//	TUPLE		=	'tuple';
+//	TYPE		=	'type';
+//	VAR		=	'var';
+//	VARIANT_RECORD	=	'variant_record';
+//	WHERE		=	'where';
+//}
+//// ITEMS
+//model			
+//	:	
+//		(pred_decl_item SEMICOLON)* 
+//		(var_decl_item SEMICOLON)* 
+//		(constraint_item SEMICOLON)* 
+//		solve_item SEMICOLON 
+//		(output_item SEMICOLON)?
+//		;
+//pred_decl_item		
+//	:	PREDICATE IDENT LP pred_arg (COMA pred_arg)* RP;
+//pred_arg 	
+//	:	VAR non_array_ti_expr_tail COLON ident_anns //COLON IDENT	
+//		| ARRAY LBOX INT_LITERAL DOTDOT INT_LITERAL RBOX OF array_decl_tail //COLON  IDENT
+//		| ARRAY LBOX INT RBOX OF array_decl_tail //COLON IDENT
+//		;
+//var_decl_item
+//	:	VAR non_array_ti_expr_tail COLON ident_anns (EQUAL non_array_flat_expr)?
+//		| non_array_ti_expr_tail COLON ident_anns EQUAL non_array_flat_expr
+//		| ARRAY LBOX INT_LITERAL DOTDOT INT_LITERAL RBOX OF array_decl_tail
+//		;
+//array_decl_tail	
+//	:	non_array_ti_expr_tail COLON ident_anns EQUAL array_literal
+//		| VAR non_array_ti_expr_tail COLON ident_anns ( EQUAL array_literal)?;
+//ident_anns		
+//	:	IDENT annotations ;
+//constraint_item	
+//	:	CONSTRAINT constraint_elem annotations;
+//constraint_elem	
+//	:	IDENT LP flat_expr (COMA flat_expr)*RP
+//		| variable_expr;
+//solve_item	
+//	:	SOLVE annotations solve_kind;
+//solve_kind			
+//	:	SATISFY 		
+//		| MINIMIZE solve_expr 	
+//		| MAXIMIZE solve_expr 	;	
+//output_item	
+//	:	OUTPUT LBOX output_elem (COMA output_elem)* RBOX;
+//output_elem	
+//	:	SHOW LP flat_expr RP
+//		| SHOWCOND LP flat_expr COMA flat_expr COMA flat_expr RP
+//		| STRING_LITERAL;
+//
+//// TYPE-INST EXPRESSIONS TAILS
+//non_array_ti_expr_tail
+//	:	scalar_ti_expr_tail
+//		| set_ti_expr_tail
+//		;
+//
+//bool_ti_expr_tail	
+//	:	BOOL;
+//scalar_ti_expr_tail	
+//	:	bool_ti_expr_tail
+//		| int_ti_expr_tail
+//		| float_ti_expr_tail
+//		;
+//int_ti_expr_tail	
+//	:	INT
+//		| INT_LITERAL DOTDOT INT_LITERAL		
+//		|LB INT_LITERAL (COMA INT_LITERAL)* RB;
+//float_ti_expr_tail	
+//	:	FLOAT
+//		| FLOAT_LITERAL DOTDOT FLOAT_LITERAL;
+//set_ti_expr_tail	
+//	:	SET OF scalar_ti_expr_tail
+//		;
+//
+//// EXPRESSIONS
+//non_array_flat_expr	
+//	:	scalar_flat_expr
+//		| set_literal;
+//scalar_flat_expr	
+//	:	 IDENT
+//		| array_access_expr
+//		| bool_literal
+//		| INT_LITERAL
+//		| FLOAT_LITERAL
+//		| STRING_LITERAL;
+//int_flat_expr	
+//	:	array_access_expr
+//		|IDENT
+//		| INT_LITERAL;
+//variable_expr
+//	:	IDENT
+//		| array_access_expr;
+//array_access_expr
+//	:	IDENT LBOX int_index_expr RBOX;
+//int_index_expr
+//	:	INT_LITERAL  
+//		| IDENT  ;
+//bool_literal		
+//	:	FALSE 
+//		| TRUE 
+//		;		
+//set_literal	
+//	:	LB (scalar_flat_expr (COMA scalar_flat_expr)*)? RB
+//		| int_flat_expr DOTDOT i2=int_flat_expr;
+//array_literal		
+//	:	LBOX (non_array_flat_expr (COMA non_array_flat_expr )* )? RBOX;
+//
+//annotations	
+//	:	(COLONCOLON annotation)*;
+//annotation	
+//	:	IDENT ( LP ann_expr (COMA ann_expr)* RP )?;
+//ann_expr	
+//	:	IDENT LP ann_expr (COMA ann_expr)* RP
+//		|  flat_expr;
+//flat_expr		
+//	:	non_array_flat_expr
+//		| array_literal;
+//solve_expr		
+//	:	IDENT
+//		| array_access_expr
+//		| IDENT LP flat_expr (COMA flat_expr)* RP;		
+//
+//
+//INT_LITERAL		:	('-')? (DIGIT+|HEX_DIGIT+| OCT_DIGIT+);
+//FLOAT_LITERAL		:	('-')? DIGIT+('.'|('.'DIGIT+)?('E'|'e')('-'|'+')?)DIGIT+;
+//STRING_LITERAL		:	DQUOTE (~('\n'| '\r'| '\f' | ' ' ))* DQUOTE;
+//IDENT			:	LIT (LIT|DIGIT|'_')*;
+//WS : (' '|'\n')+ {skip();} ;
+//// FRAGMENT
+//fragment DIGIT 		:	'0'..'9';
+//fragment HEX_DIGIT		:	'0x' (DIGIT | 'A'..'F' | 'a'..'f')+;
+//fragment OCT_DIGIT		:	'0o' ('0'..'7')+;
+//fragment LIT			:	'A'..'Z'|'a'..'z';
