@@ -1708,7 +1708,38 @@ public class ReifiedSomeTest {
         }
     }
 
+    @Test
+    public void testSyzygy1(){
+        Model model = new CPModel();
+        IntegerVariable a = makeBooleanVar("a");
+        IntegerVariable i = makeIntVar("i", 0, 3, "");
+        IntegerVariable b1 = makeBooleanVar("b1");
+        IntegerVariable b2 = makeBooleanVar("b2");
+        IntegerVariable b3 = makeBooleanVar("b3");
 
+        model.addConstraint (
+            ifThenElse (
+                or (eq (b1, 1), eq (b2, 1), eq (b3, 1)),
+                eq (a, 1),
+                eq (a, 0)
+            )
+        );
+        model.addConstraint (ifThenElse (eq (i, 0), eq (b1, 1), eq (b1, 0)));
+        model.addConstraint (ifThenElse (eq (i, 1), eq (b2, 1), eq (b2, 0)));
+        model.addConstraint (ifThenElse (eq (i, 2), eq (b3, 1), eq (b3, 0)));
+        model.addConstraint (eq (a, 0));
+
+        Solver s1 = new CPSolver();
+        s1.read (model);
+        s1.solveAll();
+
+        Solver s2 = new CPSolver();
+        model.setDefaultExpressionDecomposition(true);
+        s2.read (model);
+        s2.solveAll();
+        Assert.assertEquals("nb sol", s1.getSolutionCount(), s2.getSolutionCount());
+
+    }
 
 
 

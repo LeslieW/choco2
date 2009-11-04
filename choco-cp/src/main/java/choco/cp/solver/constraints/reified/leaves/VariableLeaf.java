@@ -104,6 +104,10 @@ public class VariableLeaf extends INode implements ArithmNode {
         return true;
     }
 
+    public boolean isBoolean(){
+        return var.hasBooleanDomain();
+    }
+
     public boolean isAConstant() {
         return false;
     }
