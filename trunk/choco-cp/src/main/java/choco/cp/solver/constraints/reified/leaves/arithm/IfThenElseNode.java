@@ -119,8 +119,10 @@ public class IfThenElseNode extends AbstractBoolNode implements ArithmNode, Bool
   protected boolean checkIfConditionAlreadyABooleanVar() {
      return subtrees[0].getType().equals(NodeType.EQ) &&
             ((subtrees[0].getSubtree(0).isAVariable() &&
+              subtrees[0].getSubtree(0).isBoolean() &&
              subtrees[0].getSubtree(1).isCsteEqualTo(1)) ||
             (subtrees[0].getSubtree(1).isAVariable() &&
+             subtrees[0].getSubtree(1).isBoolean() &&
              subtrees[0].getSubtree(0).isCsteEqualTo(1)));
   }
 

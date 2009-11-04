@@ -239,6 +239,10 @@ public abstract class INode implements IPretty {
         return false;
     }
 
+    public boolean isBoolean() {
+        return false;
+    }
+
     public boolean isCsteEqualTo(int a) {
 		return false;
 	}
