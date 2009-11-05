@@ -6,7 +6,7 @@
       <question>Where can I download Choco?</question>
       <answer>
         <p>
-	Please refer to the <a href="http://sourceforge.net/project/showfiles.php?group_id=96738">Sourceforge download page</a> to get the latest version of Choco.
+	Please refer to the <a href="/choco-download.html">download page</a> to get the latest version of Choco.
         </p>
       </answer>
     </faq>
@@ -259,6 +259,7 @@
 	<li>Go into <b>Project/Properties/Java build path</b>, on the <b>Librairies</b> tab</li>
 	<li>Select your JRE and left-clic on <b>Access rules</b></li>
 	<li>Edit this entry to set <i>sun.security.action</i> accessible</li>
+	</ul>
       </answer>
     </faq>
   </part>

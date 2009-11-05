@@ -518,17 +518,18 @@ public class BipartiteIntDomain extends AbstractIntDomain {
     public String pretty() {
         StringBuffer buf = new StringBuffer("{");
         int maxDisplay = 15;
-        int count = 0;
-        DisposableIntIterator it = this.getIterator();
-        for (; (it.hasNext() && count < maxDisplay);) {
-            int val = it.next();
+        int count = 1;
+
+        int current = this.getInf();
+        buf.append(current);
+        while(count < maxDisplay && this.hasNextValue(current)){
+            current = this.getNextValue(current);
             count++;
-            if (count > 1) buf.append(", ");
-            buf.append(val);
+            if (count > 0) buf.append(", ");
+            buf.append(current);
         }
-        it.dispose();
         if (this.getSize() > maxDisplay) {
-            buf.append("..., ");
+            buf.append(", ..., ");
             buf.append(this.getSup());
         }
         buf.append("}");

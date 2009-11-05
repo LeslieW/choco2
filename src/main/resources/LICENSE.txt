@@ -20,4 +20,3 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2009      *
  * * * * * * * * * * * * * * * * * * * * * * * * *
-

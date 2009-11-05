@@ -27,7 +27,7 @@ package choco.memory;
 import choco.Choco;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.StringUtils;
-import choco.kernel.memory.structure.StoredBipartiteList;
+import choco.kernel.memory.structure.StoredBipartiteSet;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import org.junit.After;
@@ -49,7 +49,7 @@ public class StoredBipartiteListTest {
 	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
     private EnvironmentTrailing env;
    
-    private StoredBipartiteList<TaskVariable> iVectA;
+    private StoredBipartiteSet<TaskVariable> iVectA;
     private TaskVariable[] tasks;
     @Before
     public void setUp() {
@@ -57,7 +57,7 @@ public class StoredBipartiteListTest {
 
         env = new EnvironmentTrailing();
         tasks = Choco.makeTaskVarArray("T", 0, 20, new int[]{1, 2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 200});
-        iVectA = new StoredBipartiteList<TaskVariable>(env, tasks);
+        iVectA = new StoredBipartiteSet<TaskVariable>(env, tasks);
     }
 
     @After
