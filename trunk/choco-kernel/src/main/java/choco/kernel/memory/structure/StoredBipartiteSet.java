@@ -36,7 +36,7 @@ import java.util.*;
  * @version 2.0.3</br>
  * @param <E>
  */
-public class StoredBipartiteList<E> extends AbstractList<E> {
+public class StoredBipartiteSet<E> extends AbstractList<E> {
 
     static final int INITIAL_CAPACITY = 8;
 
@@ -50,7 +50,7 @@ public class StoredBipartiteList<E> extends AbstractList<E> {
 	 */
 	protected IStateInt last;
 
-    StoredBipartiteList(IEnvironment env) {
+    StoredBipartiteSet(IEnvironment env) {
         super();
         //noinspection unchecked
         elementData = (E[])new Var[INITIAL_CAPACITY];
@@ -58,13 +58,13 @@ public class StoredBipartiteList<E> extends AbstractList<E> {
     }
 
     @SuppressWarnings("unchecked")
-    public StoredBipartiteList(IEnvironment env, Collection<E>  coll) {
+    public StoredBipartiteSet(IEnvironment env, Collection<E>  coll) {
 		super();
 		this.elementData = (E[]) coll.toArray();
 		this.last = env.makeInt(elementData.length);
 	}
 
-	public StoredBipartiteList(IEnvironment env, E[] elementData) {
+	public StoredBipartiteSet(IEnvironment env, E[] elementData) {
 		super();
 		this.elementData = Arrays.copyOf(elementData, elementData.length);
 		this.last = env.makeInt(elementData.length);

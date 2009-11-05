@@ -10,9 +10,11 @@ import choco.cp.solver.variables.integer.AbstractIntDomain;
 import choco.cp.solver.variables.integer.BipartiteIntDomain;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -508,5 +510,20 @@ public class BipartiteIntDomainTest {
         //e.setDecomposeExp(true);
         return or(or(leq(plus((v0),
                 ifThenElse(eq((v2), (0)), constant(v3), constant(v4))), (v5)), leq(plus((v5), ifThenElse(eq((v7), (0)), constant(v8), constant(v9))), (v0))), or(leq(plus((v1), ifThenElse(eq((v2), constant(0)), constant(v4), constant(v3))), (v6)), leq(plus((v6), ifThenElse(eq((v7), (0)), constant(v9), constant(v8))), (v1))));
+    }
+
+
+    @Test
+    public void testPretty(){
+        Model m = new CPModel();
+        IntegerVariable v = Choco.makeIntVar("v", 1, 20, "cp:blist");
+        IntegerVariable w = Choco.makeIntVar("w", 1, 10, "cp:blist");
+        m.addVariables(v, w);
+        Solver s = new CPSolver();
+        s.read(m);
+        String stv = s.getVar(v).pretty();
+        Assert.assertEquals("v", "v:?[20]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, ..., 20}", stv);
+        String stw = s.getVar(w).pretty();
+        Assert.assertEquals("w", "w:?[10]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}", stw);
     }
 }

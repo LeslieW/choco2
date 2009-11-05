@@ -25,7 +25,7 @@ package choco.memory;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.structure.StoredBipartiteVarList;
+import choco.kernel.memory.structure.StoredBipartiteVarSet;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.propagation.VarEvent;
@@ -46,7 +46,7 @@ import java.util.Iterator;
 */
 public class StoredBipartiteVarListTest {
 
-    StoredBipartiteVarList<IntDomainVar> ar;
+    StoredBipartiteVarSet<IntDomainVar> ar;
     IEnvironment env;
     CPSolver s;
 
@@ -54,7 +54,7 @@ public class StoredBipartiteVarListTest {
     public void b(){
         env = new EnvironmentTrailing();
         s = new CPSolver(env);
-        ar = new StoredBipartiteVarList<IntDomainVar>(env);
+        ar = new StoredBipartiteVarSet<IntDomainVar>(env);
     }
 
     @After

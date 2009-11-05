@@ -1,56 +1,58 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <parent>
-    <groupId>choco</groupId>
-    <artifactId>choco</artifactId>
-    <version>2.1.1-SNAPSHOT</version>
-  </parent>
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>choco-contribs</artifactId>
-  <packaging>jar</packaging>
-  <name>CHOCO contributions</name>
-  <dependencies>
-    <dependency>
-      <groupId>choco</groupId>
-      <artifactId>choco-kernel</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>choco</groupId>
-      <artifactId>choco-cp</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>choco</groupId>
-      <artifactId>choco-parsers</artifactId>
-    </dependency>
-    <dependency>
-			<groupId>args4j</groupId>
-			<artifactId>args4j</artifactId>
-			<version>2.0.12</version>
-			<scope>compile</scope>
-		</dependency>
-    <dependency>
-    	<groupId>hsqldb</groupId>
-    	<artifactId>hsqldb</artifactId>
-    	<version>1.8.0.10</version>
-    </dependency>
-    <dependency>
-    	<groupId>org.springframework</groupId>
-    	<artifactId>spring-jdbc</artifactId>
-    	<version>2.5.6</version>
-    </dependency>
-    <dependency>
-    <groupId>net.sourceforge.jexcelapi</groupId>
-    <artifactId>jxl</artifactId>
-    <version>2.6.3</version>
-</dependency>
-      <dependency>
-          <groupId>org.antlr</groupId>
-          <artifactId>antlr-runtime</artifactId>
-          <version>3.1.3</version>
-      </dependency>
-  </dependencies>
-  <reporting>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>choco</groupId>
+        <artifactId>choco</artifactId>
+        <version>2.1.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>choco-contribs</artifactId>
+    <packaging>jar</packaging>
+    <name>CHOCO contributions</name>
+    <url>http://www.emn.fr/z-info/choco-solver/choco-contribs</url>
+    <dependencies>
+        <dependency>
+            <groupId>choco</groupId>
+            <artifactId>choco-kernel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>choco</groupId>
+            <artifactId>choco-cp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>choco</groupId>
+            <artifactId>choco-parsers</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>args4j</groupId>
+            <artifactId>args4j</artifactId>
+            <version>2.0.12</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>1.8.0.10</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>2.5.6</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sourceforge.jexcelapi</groupId>
+            <artifactId>jxl</artifactId>
+            <version>2.6.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr-runtime</artifactId>
+            <version>3.1.3</version>
+        </dependency>
+    </dependencies>
+    <reporting>
         <plugins>
- 	    <plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>
                     maven-project-info-reports-plugin
@@ -58,49 +60,50 @@
                 <reportSets>
                     <reportSet>
                         <reports>
-			<report>dependencies</report>
+                            <report>dependencies</report>
                         </reports>
                     </reportSet>
                 </reportSets>
             </plugin>
-   	    <plugin>
-	      <groupId>org.apache.maven.plugins</groupId>
-	      <artifactId>maven-javadoc-plugin</artifactId>
-	      <configuration>
-		<minmemory>128m</minmemory>
-		<maxmemory>512m</maxmemory>
-	      </configuration>
-	    </plugin>
-	    <!--<plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-checkstyle-plugin</artifactId>
-	   </plugin>-->
-	   <!--<plugin>
-	      <groupId>org.apache.maven.plugins</groupId>
-	      <artifactId>maven-pmd-plugin</artifactId>
-	   </plugin>-->
-	   <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-changelog-plugin</artifactId>
-	   </plugin>
-	   <!--<plugin>
-		<groupId>org.codehaus.mojo</groupId>
-		<artifactId>cobertura-maven-plugin</artifactId>
-	   </plugin>-->
-           <!--<plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <minmemory>128m</minmemory>
+                    <maxmemory>512m</maxmemory>
+                    <detectLinks>true</detectLinks>
+                </configuration>
+            </plugin>
+            <!--<plugin>
+           <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-checkstyle-plugin</artifactId>
+          </plugin>-->
+            <!--<plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-pmd-plugin</artifactId>
+          </plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-changelog-plugin</artifactId>
+            </plugin>
+            <!--<plugin>
+           <groupId>org.codehaus.mojo</groupId>
+           <artifactId>cobertura-maven-plugin</artifactId>
+          </plugin>-->
+            <!--<plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jdepend-maven-plugin</artifactId>
             </plugin>-->
-            <plugin>  
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jxr-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </reporting>
-  <distributionManagement>
-  <site>
-    <id>choco-repo</id>
-    <url>${choco-dir}/choco-contribs</url>
-  </site>
-  </distributionManagement>
+    <distributionManagement>
+        <site>
+            <id>choco-repo</id>
+            <url>${choco-dir}/choco-contribs</url>
+        </site>
+    </distributionManagement>
 </project>

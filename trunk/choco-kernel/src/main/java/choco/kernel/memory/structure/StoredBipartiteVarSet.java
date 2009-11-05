@@ -47,7 +47,7 @@ import java.util.List;
 * - an efficient iterator over not instanciated variables
 * - an iterator over instanciated variables
 */
-public final class StoredBipartiteVarList<E extends Var> extends StoredBipartiteList<E> implements IPretty {
+public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteSet<E> implements IPretty {
 
 
     private E[] varsNotInstanciated;
@@ -56,7 +56,7 @@ public final class StoredBipartiteVarList<E extends Var> extends StoredBipartite
 
     IEnvironment env;
 
-    public StoredBipartiteVarList(IEnvironment env) {
+    public StoredBipartiteVarSet(IEnvironment env) {
         super(env);
         this.env = env;
         //noinspection unchecked

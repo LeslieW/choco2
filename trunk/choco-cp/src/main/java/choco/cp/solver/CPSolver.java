@@ -86,7 +86,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.recomputation.EnvironmentRecomputation;
 import choco.kernel.memory.structure.PartiallyStoredVector;
-import choco.kernel.memory.structure.StoredBipartiteVarList;
+import choco.kernel.memory.structure.StoredBipartiteVarSet;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -233,17 +233,17 @@ public class CPSolver implements Solver {
 	/**
 	 * All the search intVars in the model.
 	 */
-	protected StoredBipartiteVarList<IntDomainVar> intVars;
+	protected StoredBipartiteVarSet<IntDomainVar> intVars;
 	/**
 	 * All the set intVars in the model.
 	 */
-	protected StoredBipartiteVarList<SetVar> setVars;
+	protected StoredBipartiteVarSet<SetVar> setVars;
 	/**
 	 * All the float vars in the model.
 	 */
-	protected StoredBipartiteVarList<RealVar> floatVars;
+	protected StoredBipartiteVarSet<RealVar> floatVars;
 
-	protected StoredBipartiteVarList<TaskVar> taskVars;
+	protected StoredBipartiteVarSet<TaskVar> taskVars;
 	/**
 	 * All the decision integer Vars in the model.
 	 */
@@ -428,10 +428,10 @@ public class CPSolver implements Solver {
 		mod2sol = new CPModelToCPSolver(this);
 		mapvariables = new TLongObjectHashMap<Var>();
 		mapconstraints = new TLongObjectHashMap<SConstraint>();
-		intVars = new StoredBipartiteVarList<IntDomainVar>(env);
-		setVars = new StoredBipartiteVarList<SetVar>(env);
-		floatVars = new StoredBipartiteVarList<RealVar>(env);
-		taskVars = new StoredBipartiteVarList<TaskVar>(env);
+		intVars = new StoredBipartiteVarSet<IntDomainVar>(env);
+		setVars = new StoredBipartiteVarSet<SetVar>(env);
+		floatVars = new StoredBipartiteVarSet<RealVar>(env);
+		taskVars = new StoredBipartiteVarSet<TaskVar>(env);
 		intDecisionVars = new ArrayList<IntDomainVar>();
 		setDecisionVars = new ArrayList<SetVar>();
 		floatDecisionVars = new ArrayList<RealVar>();

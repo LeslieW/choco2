@@ -84,13 +84,13 @@ public abstract class AbstractEnvironment implements IEnvironment {
     }
 
     @SuppressWarnings({"unchecked"})
-    public <E> StoredBipartiteList makeStoredBipartiteList(Collection<E> coll){
-        return new StoredBipartiteList(this, coll);
+    public <E> StoredBipartiteSet makeStoredBipartiteList(Collection<E> coll){
+        return new StoredBipartiteSet(this, coll);
     }
 
     @SuppressWarnings({"unchecked"})
-    public <E> StoredBipartiteList makeStoredBipartiteList2(E[] elm){
-        return new StoredBipartiteList(this, elm);
+    public <E> StoredBipartiteSet makeStoredBipartiteList2(E[] elm){
+        return new StoredBipartiteSet(this, elm);
     }
 
     public IStateIntVector makeBipartiteIntList(int[] entries) {
