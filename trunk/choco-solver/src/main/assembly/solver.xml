@@ -1,0 +1,18 @@
+<assembly>
+    <id>solver</id>
+  <formats>
+    <format>jar</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+
+    <moduleSets>
+        <moduleSet>
+            <includes>
+                <include>choco:choco-kernel</include>
+                <include>choco:choco-cp</include>
+            </includes>
+          <binaries/>
+        </moduleSet>
+      </moduleSets>
+
+</assembly>
