@@ -1,5 +1,5 @@
 <assembly>
-    <id>solver-src</id>
+    <id>src</id>
   <formats>
     <format>jar</format>
   </formats>

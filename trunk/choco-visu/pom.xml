@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>choco-visu</artifactId>
     <packaging>jar</packaging>
-    <name>CHOCO Visualizer</name>
+    <name>CHOCO Visualization Tools</name>
     <url>http://www.emn.fr/z-info/choco-solver/choco-visu</url>
     <dependencies>
         <dependency>
@@ -71,7 +71,6 @@
                 <configuration>
                     <minmemory>128m</minmemory>
                     <maxmemory>512m</maxmemory>
-                    <detectLinks>true</detectLinks>
                 </configuration>
             </plugin>
             <!--<plugin>
@@ -102,7 +101,7 @@
     </reporting>
     <distributionManagement>
         <site>
-            <id>choco-repo</id>
+            <id>visu-repo</id>
             <url>${choco-dir}/choco-visu</url>
         </site>
     </distributionManagement>

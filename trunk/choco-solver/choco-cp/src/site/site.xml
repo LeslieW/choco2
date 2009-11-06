@@ -20,6 +20,7 @@
     <links>
       <item name="Apache" href="http://www.apache.org/"/>
       <item name="Maven" href="http://maven.apache.org/"/>
+      <item name="Sourceforge" href="https://sourceforge.net/projects/choco/"/>
     </links>
 
     <menu name="About choco-cp">

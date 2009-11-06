@@ -1,5 +1,4 @@
 <assembly>
-    <id>full</id>
   <formats>
     <format>jar</format>
   </formats>
