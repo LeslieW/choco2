@@ -95,9 +95,8 @@
         </dependency>
     </dependencies>
     <modules>
-        <module>choco-kernel</module>
-        <module>choco-cp</module>
-        <module>choco-parsers</module>
+        <module>choco-solver</module>
+        <module>choco-tools</module>
         <module>choco-visu</module>
         <module>choco-contribs</module>
         <!--<module>choco-old_version</module>-->
@@ -107,16 +106,16 @@
             <uniqueVersion>false</uniqueVersion>
             <id>sourceforge.net</id>
             <name>Stable version</name>
-            <url>sftp://frs.sourceforge.net:/home/frs/project/c/ch/choco/releases</url>
-            <!--<url>${mvn-dir}</url>-->
+            <!--<url>sftp://frs.sourceforge.net:/home/frs/project/c/ch/choco/releases</url>-->
+            <url>${mvn-dir}</url>
             <layout>default</layout>
         </repository>
         <snapshotRepository>
             <uniqueVersion>false</uniqueVersion>
             <id>sourceforge.net</id>
             <name>Snapshot version</name>
-            <url>sftp://frs.sourceforge.net:/home/frs/project/c/ch/choco/snapshots</url>
-            <!--<url>${mvn-dir}</url>-->
+            <!--<url>sftp://frs.sourceforge.net:/home/frs/project/c/ch/choco/snapshots</url>-->
+            <url>${mvn-dir}</url>
             <layout>default</layout>
         </snapshotRepository>
     </distributionManagement>
@@ -155,8 +154,6 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptors>
-                        <descriptor>src/main/assembly/solver.xml</descriptor>
-                        <descriptor>src/main/assembly/solver-src.xml</descriptor>
                         <descriptor>src/main/assembly/full.xml</descriptor>
                         <descriptor>src/main/assembly/full-src.xml</descriptor>
                     </descriptors>
