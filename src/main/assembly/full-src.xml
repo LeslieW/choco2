@@ -1,5 +1,5 @@
 <assembly>
-    <id>full-src</id>
+    <id>src</id>
   <formats>
     <format>jar</format>
   </formats>

@@ -69,7 +69,7 @@
     </reporting>
     <distributionManagement>
         <site>
-            <id>choco-repo</id>
+            <id>kernel-repo</id>
             <url>${choco-dir}/choco-kernel</url>
         </site>
     </distributionManagement>

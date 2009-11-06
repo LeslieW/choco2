@@ -13,5 +13,7 @@
      <modules>
         <module>choco-db</module>
         <module>choco-parsers</module>
+         <module>choco-cli</module>
      </modules>
+
 </project>

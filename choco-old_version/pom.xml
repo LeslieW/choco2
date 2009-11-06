@@ -68,7 +68,7 @@
     </reporting>
   <distributionManagement>
   <site>
-            <id>choco-repo</id>
+            <id>ov-repo</id>
             <url>${choco-dir}/choco-old-version</url>
   </site>	
   </distributionManagement>

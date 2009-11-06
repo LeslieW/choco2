@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>choco-db</artifactId>
     <packaging>jar</packaging>
-    <name>CHOCO Database tools</name>
+    <name>CHOCO Database Tools</name>
     <url>http://www.emn.fr/z-info/choco-solver/choco-db</url>
     <dependencies>
         <dependency>
@@ -67,7 +67,7 @@
     </reporting>
     <distributionManagement>
         <site>
-            <id>choco-repo</id>
+            <id>db-repo</id>
             <url>${choco-dir}/choco-db</url>
         </site>
     </distributionManagement>
