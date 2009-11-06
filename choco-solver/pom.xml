@@ -1,0 +1,36 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>choco</groupId>
+        <artifactId>choco</artifactId>
+        <version>2.1.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>choco-solver</artifactId>
+    <name>CHOCO Solver</name>
+    <packaging>pom</packaging>
+    <url>http://www.emn.fr/z-info/choco-solver/choco-solver</url>
+     <modules>
+        <module>choco-kernel</module>
+        <module>choco-cp</module>
+    </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/solver.xml</descriptor>
+                        <descriptor>src/main/assembly/solver-src.xml</descriptor>
+                    </descriptors>
+                    <archive>
+                        <manifest>
+                            <mainClass>parser.chocogen.XmlModel</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
