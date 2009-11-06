@@ -26,9 +26,13 @@ Download CHOCO
 
         * <choco-parsers-X.x.x>,
 
+        * <choco-cli-X.x.x>,
+
         * <choco-visu-X.x.x>
         
-        * and <choco-contribs-X.x.x>.
+        * <choco-contribs-X.x.x>,
+
+        * and <samples-X.x.x>.
 
    These archives should be used if you want to integrate your own class-path.
 
@@ -65,11 +69,14 @@ Download CHOCO
 *---*---*---*
 | <<JAR>> | {{{mvn/repository/choco/choco-parsers/2.1.1-SNAPSHOT/choco-parsers-2.1.1-SNAPSHOT.jar} choco-parsers-2.1.1-SNAPSHOT.jar}}   | {{{mvn/repository/choco/choco-parsers/2.1.1-SNAPSHOT/choco-parsers-2.1.1-SNAPSHOT.jar.md5} choco-parsers-2.1.1-SNAPSHOT.jar.md5}} |
 *---*---*---*
+| <<JAR>> | {{{mvn/repository/choco/choco-cli/2.1.1-SNAPSHOT/choco-cli-2.1.1-SNAPSHOT.jar} choco-cli-2.1.1-SNAPSHOT.jar}}   | {{{mvn/repository/choco/choco-cli/2.1.1-SNAPSHOT/choco-cli-2.1.1-SNAPSHOT.jar.md5} choco-cli-2.1.1-SNAPSHOT.jar.md5}} |
+*---*---*---*
 | <<JAR>> | {{{mvn/repository/choco/choco-visu/2.1.1-SNAPSHOT/choco-visu-2.1.1-SNAPSHOT.jar} choco-visu-2.1.1-SNAPSHOT.jar}}            | {{{mvn/repository/choco/choco-visu/2.1.1-SNAPSHOT/choco-visu-2.1.1-SNAPSHOT.jar.md5} choco-visu-2.1.1-SNAPSHOT.jar.md5}} |
 *---*---*---*
 | <<JAR>> | {{{mvn/repository/choco/choco-contribs/2.1.1-SNAPSHOT/choco-contribs-2.1.1-SNAPSHOT.jar} choco-contribs-2.1.1-SNAPSHOT.jar}} | {{{mvn/repository/choco/choco-contribs/2.1.1-SNAPSHOT/choco-contribs-2.1.1-SNAPSHOT.jar.md5} choco-contribs-2.1.1-SNAPSHOT.jar.md5}} |
 *---*---*---*
-
+| <<JAR>> | {{{mvn/repository/choco/samples/2.1.1-SNAPSHOT/samples-2.1.1-SNAPSHOT.jar} samples-2.1.1-SNAPSHOT.jar}} | {{{mvn/repository/choco/samples/2.1.1-SNAPSHOT/samples-2.1.1-SNAPSHOT.jar.md5} samples-2.1.1-SNAPSHOT.jar.md5}} |
+*---*---*---*
 
    All the previous snapshots are available on the {{{mvn/repository/choco} snapshot repository}}.
 
