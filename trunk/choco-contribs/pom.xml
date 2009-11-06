@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>choco-contribs</artifactId>
     <packaging>jar</packaging>
-    <name>CHOCO contributions</name>
+    <name>CHOCO Contributions</name>
     <url>http://www.emn.fr/z-info/choco-solver/choco-contribs</url>
     <dependencies>
         <dependency>
