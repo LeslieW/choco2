@@ -191,7 +191,8 @@ public class SoftIntSConstraint extends AbstractLargeIntSConstraint {
     }
 
     public String pretty() {
-        StringBuffer sb = new StringBuffer("( 0");
+        StringBuffer sb = new StringBuffer("( ");
+        sb.append(vars[0].getName()).append(" =0 ");
         sb.append("<=>").append(cons.pretty()).append(" )");
         return sb.toString();
     }
