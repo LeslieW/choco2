@@ -24,6 +24,7 @@ package choco.cp.solver.constraints.reified.leaves.bool;
 
 import choco.cp.solver.constraints.integer.bool.BinXnor;
 import choco.cp.solver.constraints.integer.channeling.ReifiedBinXnor;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.BoolNode;
@@ -55,7 +56,7 @@ public class XnorNode extends AbstractBoolNode implements BoolNode {
             vs[i] = subtrees[i].extractResult(s);
         }
         if (vs.length == 1) {
-            IntDomainVar v = s.createBooleanVar("reifiedXnor");
+            IntDomainVar v = s.createBooleanVar(StringUtils.randomName());
             s.post(new ReifiedBinXnor(v, vs[0], vs[1]));
             return v;
         } else {

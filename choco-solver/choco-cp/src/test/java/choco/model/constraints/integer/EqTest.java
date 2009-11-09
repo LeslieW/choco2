@@ -26,8 +26,6 @@ import choco.Choco;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
@@ -139,9 +137,6 @@ public class EqTest {
         IntegerVariable F = Choco.makeIntVar("F", 2, 4);
 
         Constraint c = Choco.eq( Choco.power(E, F), Choco.mult( Choco.power( A, B) ,Choco.power( C, D) ) );
-
-        double b = Math.pow(-1.0, 2.0);
-        Assert.assertTrue(Double.compare(-2.0, b)==0);
 
         Model m  = new CPModel();
         m.addConstraint(c);

@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.reified.leaves.arithm;
 
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.ArithmNode;
 import choco.kernel.solver.constraints.reified.INode;
@@ -47,7 +48,7 @@ public class NegNode extends INode implements ArithmNode {
 
 	public IntDomainVar extractResult(Solver s) {
 		IntDomainVar v1 = subtrees[0].extractResult(s);
-		IntDomainVar v2 = null;
+		IntDomainVar v2;
 		int lb = Math.min(
                     Math.min(Math.min(v1.getInf(), -v1.getInf()),v1.getSup()),-v1.getSup());
 
@@ -55,12 +56,12 @@ public class NegNode extends INode implements ArithmNode {
                     Math.max(Math.max(v1.getInf(), -v1.getInf()),v1.getSup()),-v1.getSup());
 
         if(lb==0 && ub == 1){
-            v2 = s.createBooleanVar("iNeg");
+            v2 = s.createBooleanVar(StringUtils.randomName());
         }else
 		if (v1.hasEnumeratedDomain()) {
-			v2 = s.createEnumIntVar("iNeg", lb, ub);
+			v2 = s.createEnumIntVar(StringUtils.randomName(), lb, ub);
 		} else {
-			v2 = s.createBoundIntVar("iNeg", lb, ub);
+			v2 = s.createBoundIntVar(StringUtils.randomName(), lb, ub);
 		}
 		//s.post(new SignOp(v1,v2, false));
         s.post(s.eq(s.plus(v1, v2),0));//s.eq(0, s.scalar(new int[]{1,1},new IntDomainVar[]{v1,v2})));
@@ -72,8 +73,8 @@ public class NegNode extends INode implements ArithmNode {
     }
 
     public boolean isALinearTerm() {
-        for (int i = 0; i < subtrees.length; i++) {
-            if (!subtrees[i].isALinearTerm()) return false;
+        for (INode subtree : subtrees) {
+            if (!subtree.isALinearTerm()) return false;
         }
         return true;
     }

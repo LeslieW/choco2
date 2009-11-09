@@ -26,6 +26,7 @@ import choco.cp.solver.constraints.integer.bool.BinOr;
 import choco.cp.solver.constraints.integer.bool.LargeOr;
 import choco.cp.solver.constraints.integer.channeling.ReifiedLargeOr;
 import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.BoolNode;
@@ -47,8 +48,8 @@ public class OrNode extends AbstractBoolNode implements BoolNode {
     }
 
     public boolean checkTuple(int[] tuple) {
-        for (int i = 0; i < subtrees.length; i++) {
-            if (((BoolNode) subtrees[i]).checkTuple(tuple)) {
+        for (INode subtree : subtrees) {
+            if (((BoolNode) subtree).checkTuple(tuple)) {
                 return true;
             }
         }
@@ -62,7 +63,7 @@ public class OrNode extends AbstractBoolNode implements BoolNode {
             vs[i] = subtrees[i].extractResult(s);
         }
         if (vs.length > 1) {
-            IntDomainVar v = s.createBooleanVar("reifiedOr");
+            IntDomainVar v = s.createBooleanVar(StringUtils.randomName());
             IntDomainVar[] vars = ArrayUtils.append(new IntDomainVar[]{v}, vs);
             s.post(new ReifiedLargeOr(vars));
             return v;

@@ -23,6 +23,7 @@
 package choco.cp.solver.constraints.reified.leaves.bool;
 
 import choco.cp.solver.constraints.integer.DistanceXYZ;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.ArithmNode;
@@ -50,8 +51,8 @@ public class DistNeqNode extends AbstractBoolNode {
     /**
      * Extracts the sub constraint without reifying it !
      *
-     * @param s
-     * @return
+     * @param s solver
+     * @return Sconstraint
      */
     public SConstraint extractConstraint(Solver s) {
         //TODO : add distanceNEQ constraint with 4 parameters
@@ -66,12 +67,12 @@ public class DistNeqNode extends AbstractBoolNode {
 		int lb = min(min(min(a,b),c),d);
 		int ub = max(max(max(a,b),c),d);
         if(lb==0 && ub == 1){
-            v4 = s.createBooleanVar("intermin");
+            v4 = s.createBooleanVar(StringUtils.randomName());
         }else
 		if (v1.hasEnumeratedDomain() && v2.hasEnumeratedDomain()) {
-            v4 = s.createEnumIntVar("intermin", lb, ub);
+            v4 = s.createEnumIntVar(StringUtils.randomName(), lb, ub);
         } else {
-            v4 = s.createBoundIntVar("intermin", lb, ub);
+            v4 = s.createBoundIntVar(StringUtils.randomName(), lb, ub);
         }
         s.post(new DistanceXYZ(v1,v2,v4, 0, 0));
         return s.neq(v3, v4);

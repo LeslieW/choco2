@@ -24,6 +24,7 @@ package choco.cp.solver.constraints.reified.leaves.arithm;
 
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.Absolute;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.ArithmNode;
 import choco.kernel.solver.constraints.reified.INode;
@@ -61,15 +62,15 @@ public class DistNode extends INode implements ArithmNode {
 		int lb = min(min(min(a,b),c),d);
 		int ub = max(max(max(a,b),c),d);
         if(lb==0 && ub ==1){
-            v3 = s.createBooleanVar("intermin");
-            v4 = s.createBooleanVar("intermin_Abs");
+            v3 = s.createBooleanVar(StringUtils.randomName());
+            v4 = s.createBooleanVar(StringUtils.randomName());
         }else
 		if (v1.hasEnumeratedDomain() && v2.hasEnumeratedDomain()) {
-			v3 = s.createEnumIntVar("intermin", lb, ub);
-            v4 = s.createEnumIntVar("intermin_Abs", lb, ub);
+			v3 = s.createEnumIntVar(StringUtils.randomName(), lb, ub);
+            v4 = s.createEnumIntVar(StringUtils.randomName(), lb, ub);
         } else {
-			v3 = s.createBoundIntVar("intermin", lb, ub);
-            v4 = s.createBoundIntVar("intermin_Abs", lb, ub);
+			v3 = s.createBoundIntVar(StringUtils.randomName(), lb, ub);
+            v4 = s.createBoundIntVar(StringUtils.randomName(), lb, ub);
         }
 		s.post(s.eq(v3, ((CPSolver)s).minus(v1,v2)));
         s.post(new Absolute(v4, v3));

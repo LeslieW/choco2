@@ -67,14 +67,14 @@ public final class NotEqualXY_C extends AbstractBinIntSConstraint {
 				IntVarEvent.INSTINTbitvector : IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
 	}
 
-	private final void removeValV0() throws ContradictionException {
-		v0.removeVal(cste - v1.getVal(), this.cIdx0);
-        this.setEntailed();
+	private void removeValV0() throws ContradictionException {
+		if(v0.removeVal(cste - v1.getVal(), this.cIdx0))
+            this.setEntailed();
 	}
 
-	private final void removeValV1() throws ContradictionException {
-		v1.removeVal(cste - v0.getVal(), this.cIdx1);
-        this.setEntailed();
+	private void removeValV1() throws ContradictionException {
+		if(v1.removeVal(cste - v0.getVal(), this.cIdx1))
+            this.setEntailed();
 	}
 
 	/**
