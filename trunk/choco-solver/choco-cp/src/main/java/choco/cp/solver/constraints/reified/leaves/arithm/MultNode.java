@@ -23,6 +23,7 @@
 package choco.cp.solver.constraints.reified.leaves.arithm;
 
 import choco.cp.solver.constraints.integer.TimesXYZ;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.ArithmNode;
 import choco.kernel.solver.constraints.reified.INode;
@@ -48,7 +49,7 @@ public class MultNode extends INode implements ArithmNode {
     public IntDomainVar extractResult(Solver s) {
         IntDomainVar v1 = subtrees[0].extractResult(s);
         IntDomainVar v2 = subtrees[1].extractResult(s);
-        IntDomainVar v3 = null;
+        IntDomainVar v3;
         int a = v1.getInf() * v2.getInf();
         int b = v1.getInf() * v2.getSup();
         int c = v1.getSup() * v2.getInf();
@@ -56,12 +57,12 @@ public class MultNode extends INode implements ArithmNode {
         int lb = Math.min(Math.min(Math.min(a, b), c), d);
         int ub = Math.max(Math.max(Math.max(a, b), c), d);
         if(lb==0 && ub == 1){
-            v3 = s.createBooleanVar("intermult");
+            v3 = s.createBooleanVar(StringUtils.randomName());
         }else
         if (v1.hasEnumeratedDomain() && v2.hasEnumeratedDomain()) {
-            v3 = s.createEnumIntVar("intermult", lb, ub);
+            v3 = s.createEnumIntVar(StringUtils.randomName(), lb, ub);
         } else {
-            v3 = s.createBoundIntVar("intermult", lb, ub);
+            v3 = s.createBoundIntVar(StringUtils.randomName(), lb, ub);
         }
         s.post(new TimesXYZ(v1, v2, v3));
         return v3;

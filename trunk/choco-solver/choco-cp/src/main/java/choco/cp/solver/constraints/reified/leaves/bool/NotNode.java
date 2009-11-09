@@ -23,6 +23,7 @@
 package choco.cp.solver.constraints.reified.leaves.bool;
 
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.BoolNode;
@@ -50,7 +51,7 @@ public class NotNode extends AbstractBoolNode implements BoolNode {
 	@Override
 	public IntDomainVar extractResult(Solver s) {
 		IntDomainVar vs = subtrees[0].extractResult(s);
-		IntDomainVar v = s.createBooleanVar("reifiedNot");
+		IntDomainVar v = s.createBooleanVar(StringUtils.randomName());
 		s.post(s.neq(v,vs));
 		return v;
 	}

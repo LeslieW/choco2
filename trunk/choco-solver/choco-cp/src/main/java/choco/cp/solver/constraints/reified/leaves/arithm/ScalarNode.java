@@ -23,6 +23,7 @@
 package choco.cp.solver.constraints.reified.leaves.arithm;
 
 import choco.Choco;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.ArithmNode;
 import choco.kernel.solver.constraints.reified.INode;
@@ -75,7 +76,7 @@ public class ScalarNode extends INode implements ArithmNode {
             lb += coeffs[i] >= 0 ? vars[i].getInf() * coeffs[i] : vars[i].getSup() * coeffs[i];
             ub += coeffs[i] >= 0 ? vars[i].getSup() * coeffs[i] : vars[i].getInf() * coeffs[i];
         }
-        IntDomainVar sum = s.createBoundIntVar("iScalar", lb, ub);
+        IntDomainVar sum = s.createBoundIntVar(StringUtils.randomName(), lb, ub);
         s.post(s.eq(sum, s.scalar(coeffs, vars)));
         return sum;
     }
@@ -95,9 +96,9 @@ public class ScalarNode extends INode implements ArithmNode {
     }
 
     public boolean isALinearTerm() {
-       for (int i = 0; i < subtrees.length; i++) {
-           if (!subtrees[i].isALinearTerm()) return false;
-       }
+        for (INode subtree : subtrees) {
+            if (!subtree.isALinearTerm()) return false;
+        }
         return true;
     }
 

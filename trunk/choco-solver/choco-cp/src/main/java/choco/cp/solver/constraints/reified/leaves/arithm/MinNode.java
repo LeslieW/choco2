@@ -23,6 +23,7 @@
 package choco.cp.solver.constraints.reified.leaves.arithm;
 
 import choco.cp.solver.constraints.integer.MinOfAList;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.ArithmNode;
 import choco.kernel.solver.constraints.reified.INode;
@@ -44,20 +45,20 @@ public class MinNode extends INode implements ArithmNode {
 
 	public int eval(int[] tuple) {
 		int mineval = Integer.MAX_VALUE;
-		for (int i = 0; i < subtrees.length; i++) {
-			mineval = Math.min(((ArithmNode) subtrees[i]).eval(tuple), mineval);
-		}
+        for (INode subtree : subtrees) {
+            mineval = Math.min(((ArithmNode) subtree).eval(tuple), mineval);
+        }
 		return mineval;
 	}
 
 	public IntDomainVar extractResult(Solver s) {
 		IntDomainVar[] vs = new IntDomainVar[subtrees.length];
-        IntDomainVar vmin = null;
+        IntDomainVar vmin;
         boolean allenum = true;
         int lb, ub;
         for (int i = 0; i < subtrees.length; i++) {
             vs[i] = subtrees[i].extractResult(s);
-            allenum |= vs[i].hasEnumeratedDomain();
+            allenum &= vs[i].hasEnumeratedDomain();
         }
         if (vs.length == 1) return vs[0];
         lb = vs[0].getInf();
@@ -67,12 +68,12 @@ public class MinNode extends INode implements ArithmNode {
 			ub = Math.max (ub,vs[i].getSup());
 		}
         if(lb==0 && ub == 1){
-            vmin = s.createBooleanVar("intermin");
+            vmin = s.createBooleanVar(StringUtils.randomName());
         }else
 		if (allenum) {
-			vmin = s.createEnumIntVar("iMin", lb, ub);
+			vmin = s.createEnumIntVar(StringUtils.randomName(), lb, ub);
 		} else {
-			vmin = s.createBoundIntVar("iMin", lb, ub);
+			vmin = s.createBoundIntVar(StringUtils.randomName(), lb, ub);
 		}
 		IntDomainVar[] tmpVars = new IntDomainVar[vs.length + 1];
         tmpVars[0] = vmin;

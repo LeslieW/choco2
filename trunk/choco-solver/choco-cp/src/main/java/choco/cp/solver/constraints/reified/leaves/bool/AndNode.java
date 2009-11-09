@@ -25,6 +25,7 @@ package choco.cp.solver.constraints.reified.leaves.bool;
 import choco.cp.solver.constraints.global.Occurrence;
 import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
@@ -48,19 +49,19 @@ public class AndNode extends AbstractBoolNode{
 	}
 
 	public boolean checkTuple(int[] tuple) {
-		for (int i = 0; i < subtrees.length; i++) {
-	        if (!((BoolNode) subtrees[i]).checkTuple(tuple)) {
-				return false;
-			}
-		}
+        for (INode subtree : subtrees) {
+            if (!((BoolNode) subtree).checkTuple(tuple)) {
+                return false;
+            }
+        }
 		return true;
 	}
 
 	@Override
 	public IntDomainVar extractResult(Solver s) {
 		IntDomainVar[] vs = new IntDomainVar[subtrees.length];
-		IntDomainVar sand = s.createBoundIntVar("reifiedAnd",0,subtrees.length);
-		IntDomainVar v = s.createBooleanVar("reifiedAnd");
+		IntDomainVar sand = s.createBoundIntVar(StringUtils.randomName(),0,subtrees.length);
+		IntDomainVar v = s.createBooleanVar(StringUtils.randomName());
 		for (int i = 0; i < vs.length; i++) {
 			vs[i] = subtrees[i].extractResult(s);
 		}
@@ -72,15 +73,15 @@ public class AndNode extends AbstractBoolNode{
     /**
      * Extracts the sub constraint without reifying it !
      *
-     * @param s
-     * @return the constraint of that
+     * @param s solver
+     * @return the equivalent constraint
      */
     public SConstraint extractConstraint(Solver s) {
         IntDomainVar[] vs = new IntDomainVar[subtrees.length+1];
 		for (int i = 0; i < vs.length-1; i++) {
 			vs[i] = subtrees[i].extractResult(s);
 		}
-        vs[vs.length - 1] = new IntDomainVarImpl(s, "and_occurence", IntDomainVar.BOUNDS, subtrees.length, subtrees.length);
+        vs[vs.length - 1] = new IntDomainVarImpl(s, StringUtils.randomName(), IntDomainVar.BOUNDS, subtrees.length, subtrees.length);
         return new Occurrence(vs, 1, true, true);
     }
 

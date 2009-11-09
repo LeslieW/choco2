@@ -65,12 +65,12 @@ public final class NotEqualXYC extends AbstractBinIntSConstraint {
 				IntVarEvent.INSTINTbitvector : IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
 	}
 
-	private final void removeValV0() throws ContradictionException {
-		v0.removeVal(v1.getVal() + this.cste, this.cIdx0);
+	private void removeValV0() throws ContradictionException {
+        if(v0.removeVal(v1.getVal() + this.cste, this.cIdx0))this.setEntailed();
 	}
 
-	private final void removeValV1() throws ContradictionException {
-		v1.removeVal(v0.getVal() - this.cste, this.cIdx1);
+	private void removeValV1() throws ContradictionException {
+        if(v1.removeVal(v0.getVal() - this.cste, this.cIdx1))this.setEntailed();
 	}
 
 	/**
@@ -80,11 +80,9 @@ public final class NotEqualXYC extends AbstractBinIntSConstraint {
 	public final void propagate() throws ContradictionException {
 		if (v0.isInstantiated()) {
             removeValV1();
-            this.setEntailed();
         }
 		else if (v1.isInstantiated()){
             removeValV0();
-            this.setEntailed();
         }
 	}
 
@@ -102,12 +100,10 @@ public final class NotEqualXYC extends AbstractBinIntSConstraint {
 	public final void awakeOnInst(int idx) throws ContradictionException {
 		if (idx == 0) {
             removeValV1();
-            this.setEntailed();
         }
 		else{
             assert (idx == 1);
             removeValV0();
-            this.setEntailed();
         }
 	}
 

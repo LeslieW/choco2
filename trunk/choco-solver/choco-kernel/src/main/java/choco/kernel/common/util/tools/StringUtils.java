@@ -82,7 +82,9 @@ public class StringUtils {
     }
 
     /**
-     * @param iter
+     * Pretty print of elements on 1 line 
+     * @param iter iterator over element
+     * @return pretty print of elements into a String
      */
     public static String prettyOnePerLine(Iterator<? extends IPretty> iter) {
         final StringBuilder buffer = new StringBuilder();
@@ -206,4 +208,13 @@ public class StringUtils {
 
 		return b.toString();
 	}
+
+    private static long next = 0;
+    /**
+     * Return a generated short, random string
+     * @return String
+     */
+    public static String randomName(){
+        return "TMP_" + next++;
+    }
 }

@@ -24,6 +24,7 @@ package choco.cp.solver.constraints.reified.leaves.arithm;
 
 import choco.cp.solver.constraints.integer.channeling.IfThenElse;
 import choco.cp.solver.constraints.reified.leaves.bool.AbstractBoolNode;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
@@ -66,16 +67,16 @@ public class IfThenElseNode extends AbstractBoolNode implements ArithmNode, Bool
 		IntDomainVar v1 = subtrees[0].extractResult(s);
 		IntDomainVar v2 = subtrees[1].extractResult(s);
 		IntDomainVar v3 = subtrees[2].extractResult(s);
-		IntDomainVar v4 = null;
+		IntDomainVar v4;
 		int a = Math.min(v2.getInf(),v3.getInf());
 		int b = Math.max(v2.getSup(),v3.getSup());
         if(a==0 && b==1){
-            v4 = s.createBooleanVar("interIfThenElse");
+            v4 = s.createBooleanVar(StringUtils.randomName());
         }else
 		if (v1.hasEnumeratedDomain() || v2.hasEnumeratedDomain()) {
-			v4 = s.createEnumIntVar("interIfThenElse", a, b);
+			v4 = s.createEnumIntVar(StringUtils.randomName(), a, b);
 		} else {
-			v4 = s.createBoundIntVar("interIfThenElse", a, b);
+			v4 = s.createBoundIntVar(StringUtils.randomName(), a, b);
 		}
 		s.post(new IfThenElse(v1,(AbstractIntSConstraint) s.eq(v4,v2), (AbstractIntSConstraint) s.eq(v4,v3)));
         //((CPSolver)s).reifiedIntConstraint(v1,s.eq(v4,v2),s.eq(v4,v3)));
@@ -87,8 +88,8 @@ public class IfThenElseNode extends AbstractBoolNode implements ArithmNode, Bool
       if (checkIfConditionAlreadyABooleanVar()) {
         v1 = subtrees[0].getScope(s)[0];
       } else v1 = subtrees[0].extractResult(s);
-      SConstraint c1 = null;
-      SConstraint c2 = null;
+      SConstraint c1;
+      SConstraint c2;
       if(   subtrees[1] instanceof BoolNode
          && subtrees[2] instanceof BoolNode){
           c1 = ((BoolNode)subtrees[1]).extractConstraint(s);
@@ -96,13 +97,13 @@ public class IfThenElseNode extends AbstractBoolNode implements ArithmNode, Bool
       }else{
           IntDomainVar v2 = subtrees[1].extractResult(s);
           IntDomainVar v3 = subtrees[2].extractResult(s);
-          IntDomainVar v4 = null;
+          IntDomainVar v4;
           int a = Math.min(v2.getInf(), v3.getInf());
           int b = Math.max(v2.getSup(), v3.getSup());
           if (v1.hasEnumeratedDomain() || v2.hasEnumeratedDomain()) {
-              v4 = s.createEnumIntVar("interIfThenElse", a, b);
+              v4 = s.createEnumIntVar(StringUtils.randomName(), a, b);
           } else {
-              v4 = s.createBoundIntVar("interIfThenElse", a, b);
+              v4 = s.createBoundIntVar(StringUtils.randomName(), a, b);
           }
           c1 = s.eq(v4, v2);
           c2 = s.eq(v4, v3);
@@ -114,7 +115,7 @@ public class IfThenElseNode extends AbstractBoolNode implements ArithmNode, Bool
      * A common use of the If Then Else is to use
      * a boolean variable as a condition, in which cas it
      * is useless to introduce another one.
-     * @return
+     * @return true is one implicated variable is already a boolean variable
      */
   protected boolean checkIfConditionAlreadyABooleanVar() {
      return subtrees[0].getType().equals(NodeType.EQ) &&

@@ -23,6 +23,7 @@
 package choco.cp.solver.constraints.reified.leaves.bool;
 
 import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
@@ -38,7 +39,7 @@ public abstract class AbstractBoolNode extends INode implements BoolNode {
 
     @Override
     public IntDomainVar extractResult(Solver s) {
-        IntDomainVar var = s.createBooleanVar("interReified");
+        IntDomainVar var = s.createBooleanVar(StringUtils.randomName());
         s.post(new ReifiedIntSConstraint(var, (AbstractIntSConstraint) extractConstraint(s)));
         return var;
     }
