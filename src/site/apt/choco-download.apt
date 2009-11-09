@@ -122,7 +122,10 @@ choco
 |	|-- choco-db
 |	|	|-- pom.xml
 |	|	`-- src
-|	`-- choco-parsers
+|	|-- choco-parsers
+|	|	|-- pom.xml
+|	|	`-- src
+|	`-- choco-cli
 |		|-- pom.xml
 |		`-- src
 |----choco-visu
