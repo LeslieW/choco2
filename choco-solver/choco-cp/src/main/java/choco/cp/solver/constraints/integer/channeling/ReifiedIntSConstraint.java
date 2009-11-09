@@ -32,7 +32,6 @@ import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashSet;
-import java.util.Iterator;
 
 /**
  * A constraint that allows to reify another constraint into a boolean value.
@@ -63,8 +62,8 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
         consV.remove(bool);
         vars[0] = bool;
         int i = 1;
-        for (Iterator it = consV.iterator(); it.hasNext();) {
-            IntDomainVar intDomainVar = (IntDomainVar) it.next();
+        for (Object aConsV : consV) {
+            IntDomainVar intDomainVar = (IntDomainVar) aConsV;
             vars[i] = intDomainVar;
             i++;
         }
@@ -77,6 +76,8 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
      * b = 0 <=> oppositeCons is satisfied
      * if the opposite methode of the constraint is not defined, use the other constructor
      * by giving yourself the opposite constraint !
+     * @param bool reified variable
+     * @param cons the reified constraint
      */
     public ReifiedIntSConstraint(IntDomainVar bool, AbstractIntSConstraint cons) {
         super(makeTableVar(bool, cons, (AbstractIntSConstraint) cons.opposite()));
@@ -92,6 +93,9 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
      * <p/>
      * cons and oppositeCons do not need to be really the constraint and its
      * opposite, it can be two different constraints as well
+     * @param bool reified variable
+     * @param cons the reified constraint
+     * @param oppositeCons the opposite reified constraint
      */
     public ReifiedIntSConstraint(IntDomainVar bool, AbstractIntSConstraint cons, AbstractIntSConstraint oppositeCons) {
         super(makeTableVar(bool, cons, oppositeCons));
@@ -224,7 +228,7 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
 
 
     public String pretty() {
-        StringBuffer sb = new StringBuffer("");
+        StringBuffer sb = new StringBuffer("(");
         sb.append(" 1");
         sb.append("<=>").append(cons.pretty());
         if (oppositeCons != null) {
@@ -244,8 +248,8 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
      * to avoid bug using reified constraints in constraints
      * that have not been changed to fulfill this api yet !
      *
-     * @param tuple
-     * @return
+     * @param tuple value for each variable
+     * @return true if the tuple satisfies the constraint
      */
     public boolean isSatisfied(int[] tuple) {
         int val = tuple[0];
