@@ -15,6 +15,16 @@
             <groupId>choco</groupId>
             <artifactId>choco-cp</artifactId>
         </dependency>
+	<dependency>
+            <groupId>choco</groupId>
+            <artifactId>choco-db</artifactId>
+	    <version>${version}</version>
+        </dependency>
+	<dependency>
+  <groupId>commons-io</groupId>
+  <artifactId>commons-io</artifactId>
+  <version>1.4</version>
+</dependency>
     </dependencies>
     <reporting>
         <plugins>

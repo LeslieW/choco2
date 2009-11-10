@@ -38,18 +38,17 @@ public class AssignOrForbidIntVarVal extends AbstractAssignOrForbidBranching {
 	
 	private VarSelector varHeuristic;
 
-	private VarValPairSelector pairHeuristic;
-
 	public AssignOrForbidIntVarVal(VarSelector varHeuristic,
 			ValSelector valSHeuristic) {
 		super(valSHeuristic);
 		this.varHeuristic = varHeuristic;
 	}
 
+	/** replaced by {@link AssignOrForbidIntVarValPair} */
+	@Deprecated
 	public AssignOrForbidIntVarVal(VarValPairSelector pairh) {
 		super(null);
-		throw new SolverException("do we keep IntVarValPair ?");
-		//this.pairHeuristic = pairh;
+		throw new SolverException("replaced by AssignOrForbidIntVarValPair");
 	}
 
 
@@ -70,10 +69,6 @@ public class AssignOrForbidIntVarVal extends AbstractAssignOrForbidBranching {
      * @return the object on which an alternative will be set (often  a variable)
      */
     public Object selectBranchingObject() throws ContradictionException {
-		if (pairHeuristic != null) {
-			throw new SolverException("Do we keep VarValPair ?");
-			//return pairHeuristic.selectVarValPair();
-		}
 		return varHeuristic.selectVar();
 	}
 }

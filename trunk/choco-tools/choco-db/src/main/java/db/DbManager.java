@@ -45,7 +45,7 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
-import choco.cp.solver.CPSolver;
+//import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
@@ -188,8 +188,8 @@ public class DbManager {
 	public final Integer insertSolver(Solver solver, String instanceName, boolean enableSolution) {
 		//insert solver
 		final Integer solverID = insertEntryAndRetrieveGPK(DbTables.T_SOLVERS, new Object[]{ 
-				instanceName, solver.isFeasible(), solver.getTimeCount(), 
-				enableSolution ? solver.solutionToString() : "",
+				instanceName, solver.isFeasible() == null ? "UNKNOWN" : solver.isFeasible(), 
+				solver.getTimeCount(),	enableSolution ? solver.solutionToString() : "",
 				getModelID(solver), getEnvironmentID(), null, new Timestamp(System.currentTimeMillis())}
 		);
 		//measure insertion order is important in database.
@@ -334,75 +334,74 @@ public class DbManager {
 
 	}
 
-	public final void test() {
-
-		getEnvironmentID();		
-		LOGGER.info(displayTable("T_JVM"));
-		LOGGER.info(displayTable("T_OS"));
-		LOGGER.info(displayTable("T_RUNTIMES"));
-		LOGGER.info(displayTable("T_ENVIRONMENTS"));
-
-
-		Solver s = new CPSolver();
-		LOGGER.log(Level.INFO,"MODEL ID: {0}",getModelID(s));
-		s.createBoundIntVar("v1", 0, 5);
-		getModelID(s);
-		LOGGER.info(displayTable("T_MODELS"));
-		LOGGER.log(Level.INFO,"MODEL ID: {0}",getModelID(s));
-		s.createBoundIntVar("v2", 0, 5);
-		LOGGER.info(displayTable("T_MODELS"));
-		//getModelID(s);
-		//jdbcTemplate.execute("COMMIT");
-		LOGGER.log(Level.INFO,"MODEL ID: {0}",getModelID(s));
-		LOGGER.info(displayTable("T_MODELS"));
-
-
-
-		s.solveAll();
-		insertSolver(s, "UNKNOWN");
-		printTable(DbTables.T_SOLVERS);
-		printTable(DbTables.T_MEASURES);
-		//		LOGGER.info(""+insertMeasures(s));
-		//		for (Solution sol : s.getSearchStrategy().getStoredSolutions()) {
-		//			LOGGER.info(""+insertMeasures(sol));
-		//		}
-		//		
-		//
-		//		String sql = "select count(0) from T_MEASURES where OBJECTIVE = :objectiveValue";
-		//
-		//		SqlParameterSource namedParameters = new BeanPropertySqlParameterSource(s);
-		//
-		//		NamedParameterJdbcTemplate namedParameterJdbcTemplate = new  NamedParameterJdbcTemplate(dataSource);
-		//		LOGGER.info(displayTable("T_MEASURES"));
-		//
-		//		//LOGGER.info("contains PK :"+containsPrimaryKey("T_MEASURES", "ID", 1));
-		//		//LOGGER.info("contains PK :"+containsPrimaryKey("T_MEASURES", "ID", 10));
-		//		//LOGGER.info("contains PK :"+jdbcTemplate.queryForInt("SELECT COUNT(ID) FROM T_MEASURES WHERE ID=7"));
-		//		ChocoLogging.flushLogs();
-		//		//		LOGGER.info(getLastGeneratedKey().toString());
-		//		//		
-		//		//		Integer execID = getExecutionID("osp1", "SAT");
-		//		//		//insertSolver(s, execID, "");
-		//		//		
-		//		//		LOGGER.log(Level.INFO, "meas ID = {0}", insertMeasures(s));
-		//		//		LOGGER.info(displayTable("T_MEASURES"));
-		//		//		LOGGER.log(Level.INFO, "meas ID = {0}", insertMeasures(s));
-		//		//		LOGGER.info(displayTable("T_MEASURES"));
-		//		//		LOGGER.log(Level.INFO, "meas ID = {0}", insertMeasures(s));
-		//		//		LOGGER.info(displayTable("T_MEASURES"));
-		//		//getSolverID(execID, s);
-		//		//		getExecutionID("jsp1", "MIN", 2);
-		//		//		LOGGER.info(displayTable("T_RESTARTS"));
-		//		//		LOGGER.info(displayTable("T_STRATEGIES"));
-		//		//		LOGGER.info(displayTable("T_MODELS"));
-		//		//		LOGGER.info(displayTable("T_SOLVERS"));
-		//		//		LOGGER.info(displayTable("T_EXECUTIONS"));
-		//		//		LOGGER.info(displayTable("T_LIMITS"));
-		//
-
-		//jdbcTemplate.queryForObject("SELECT LABEL FROM T_PROBLEMS WHERE CATEGORY=NULL" , new Object[]{null}, new int[]{VARCHAR}, String.class);
-		shutdown();
-
-	}
+//	public final void test() {
+//
+//		getEnvironmentID();		
+//		LOGGER.info(displayTable("T_JVM"));
+//		LOGGER.info(displayTable("T_OS"));
+//		LOGGER.info(displayTable("T_RUNTIMES"));
+//		LOGGER.info(displayTable("T_ENVIRONMENTS"));
+//
+//
+//		Solver s = new CPSolver();
+//		LOGGER.log(Level.INFO,"MODEL ID: {0}",getModelID(s));
+//		s.createBoundIntVar("v1", 0, 5);
+//		getModelID(s);
+//		LOGGER.info(displayTable("T_MODELS"));
+//		LOGGER.log(Level.INFO,"MODEL ID: {0}",getModelID(s));
+//		s.createBoundIntVar("v2", 0, 5);
+//		LOGGER.info(displayTable("T_MODELS"));
+//		//getModelID(s);
+//		//jdbcTemplate.execute("COMMIT");
+//		LOGGER.log(Level.INFO,"MODEL ID: {0}",getModelID(s));
+//		LOGGER.info(displayTable("T_MODELS"));
+//
+//
+//
+//		s.solveAll();
+//		insertSolver(s, "UNKNOWN");
+//		printTable(DbTables.T_SOLVERS);
+//		printTable(DbTables.T_MEASURES);
+//		//		LOGGER.info(""+insertMeasures(s));
+//		//		for (Solution sol : s.getSearchStrategy().getStoredSolutions()) {
+//		//			LOGGER.info(""+insertMeasures(sol));
+//		//		}
+//		//		
+//		//
+//		//		String sql = "select count(0) from T_MEASURES where OBJECTIVE = :objectiveValue";
+//		//
+//		//		SqlParameterSource namedParameters = new BeanPropertySqlParameterSource(s);
+//		//
+//		//		NamedParameterJdbcTemplate namedParameterJdbcTemplate = new  NamedParameterJdbcTemplate(dataSource);
+//		//		LOGGER.info(displayTable("T_MEASURES"));
+//		//
+//		//		//LOGGER.info("contains PK :"+containsPrimaryKey("T_MEASURES", "ID", 1));
+//		//		//LOGGER.info("contains PK :"+containsPrimaryKey("T_MEASURES", "ID", 10));
+//		//		//LOGGER.info("contains PK :"+jdbcTemplate.queryForInt("SELECT COUNT(ID) FROM T_MEASURES WHERE ID=7"));
+//		//		ChocoLogging.flushLogs();
+//		//		//		LOGGER.info(getLastGeneratedKey().toString());
+//		//		//		
+//		//		//		Integer execID = getExecutionID("osp1", "SAT");
+//		//		//		//insertSolver(s, execID, "");
+//		//		//		
+//		//		//		LOGGER.log(Level.INFO, "meas ID = {0}", insertMeasures(s));
+//		//		//		LOGGER.info(displayTable("T_MEASURES"));
+//		//		//		LOGGER.log(Level.INFO, "meas ID = {0}", insertMeasures(s));
+//		//		//		LOGGER.info(displayTable("T_MEASURES"));
+//		//		//		LOGGER.log(Level.INFO, "meas ID = {0}", insertMeasures(s));
+//		//		//		LOGGER.info(displayTable("T_MEASURES"));
+//		//		//getSolverID(execID, s);
+//		//		//		getExecutionID("jsp1", "MIN", 2);
+//		//		//		LOGGER.info(displayTable("T_RESTARTS"));
+//		//		//		LOGGER.info(displayTable("T_STRATEGIES"));
+//		//		//		LOGGER.info(displayTable("T_MODELS"));
+//		//		//		LOGGER.info(displayTable("T_SOLVERS"));
+//		//		//		LOGGER.info(displayTable("T_EXECUTIONS"));
+//		//		//		LOGGER.info(displayTable("T_LIMITS"));
+//		//
+//
+//		//jdbcTemplate.queryForObject("SELECT LABEL FROM T_PROBLEMS WHERE CATEGORY=NULL" , new Object[]{null}, new int[]{VARCHAR}, String.class);
+//		shutdown();
+//	}
 
 }
