@@ -12,7 +12,6 @@ import samples.Examples.MinimumEdgeDeletion;
 import samples.Examples.PatternExample;
 import samples.Examples.Queen;
 import choco.kernel.common.logging.ChocoLogging;
-import db.DbManager;
 import db.DbTables;
 import db.EmbeddedDbConnector;
 import db.IDbConnector;

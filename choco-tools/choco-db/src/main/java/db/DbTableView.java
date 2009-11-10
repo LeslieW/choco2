@@ -48,7 +48,7 @@ public class DbTableView {
 		this.name = name;
 		this.attributes = attributes;
 		if( name ==null || attributes == null || attributes.length == 0) {
-			throw new DatabaseException("invalid table");
+			throw new IllegalArgumentException("Try to build an invalid table view");
 		}
 	}
 

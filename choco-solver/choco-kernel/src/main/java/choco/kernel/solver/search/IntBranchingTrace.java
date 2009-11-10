@@ -35,7 +35,7 @@ import choco.kernel.solver.variables.set.SetVar;
  * A class for keeping a trace of the search algorithm, through an IntBranching
  * (storing the current branching object, as well as the label of the current branch)
  */
-public class IntBranchingTrace implements IntBranchingDecision {
+public final class IntBranchingTrace implements IntBranchingDecision {
 
 	private AbstractIntBranchingStrategy branching;
 
