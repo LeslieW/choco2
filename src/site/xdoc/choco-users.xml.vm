@@ -8,13 +8,13 @@
 
 <section name="Information">
 <p>
-  If you are using CHOCO and want to appear on the website, please send a mail to <u>choco(a)emn.fr</u>.
+  If you are using <tt>choco</tt> and want to appear on the website, contact us at <A HREF="choco@emn.fr" TITLE="[USER]">users of <tt>choco</tt></A>.
 </p>
 </section>
 
 <section name="Education">
 <p>
-  They use Choco as education material : 
+  They use <tt>choco</tt> as education material :
 </p>
   <div style="vertical-align: bottom; text-align: center;">
 	<a href="http://www.mines-nantes.fr" target="_blank"><img src="images/logos/emnantes.jpg"/></a>
@@ -42,7 +42,7 @@
 </section>
 <section name="Research">
 <p>
-  They use Choco for their research : 
+  They use <tt>choco</tt> for their research :
 </p>
   <div style="vertical-align: bottom; text-align: center;">
 	<a href="http://www.mines-nantes.fr" target="_blank"><img src="images/logos/emnantes.jpg"/></a>
@@ -54,7 +54,7 @@
 </section>
 <section name="Industry">
 <p>
-  They trust Choco for real-world application : 
+  They trust <tt>choco</tt> for real-world application :
 </p>
   <div style="vertical-align: bottom; text-align: center;">
 	<a href="http://www.klsoptim.com/" target="_blank"><img src="images/logos/klsoptim.jpeg"/></a>
@@ -64,7 +64,7 @@
 </section>
 <section name="Contributors">
 <p>
-  They contribute to the development of Choco:
+  They contribute to the development of <tt>choco</tt>:
 </p>
   <div style="vertical-align: bottom; text-align: center;">
 	<a href="http://www.bouygues.com/" target="_blank"><img src="images/logos/bouygues.gif"/></a>

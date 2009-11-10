@@ -47,7 +47,6 @@
 		\item \emph{no option} : equivalent to option \texttt{cp:enum}
 		\item \texttt{cp:enum} : to force Solver to create enumerated domain for the variable. It is a domain in which holes can be created by the solver. It should be used when discrete and quite small domains are needed and when constraints performing Arc Consistency are added on the corresponding variables. Implemented by a \texttt{BitSet} object.
 		\item \texttt{cp:bound} : to force Solver to create bounded domain for the variable. It is a domain where only bound propagation can be done (no holes). It is very well suited when constraints performing only Bound Consistency are added on the corresponding variables. It must be used when large domains are needed. Implemented by two integers.
-		\item \texttt{cp:binary} : to force Solver to create binary domain for the variable. It is a [0,1] domain. Some operations are improved and leads to an direct instantiation, if necessary. It must be used with two size domain. Implemented by a shared \texttt{BitSet} object, common to each 32 binary variables (to deal with 64 bits bitset).
 		\item \texttt{cp:link} : to force Solver to create linked list domain for the variable. It is an enumerated domain where holes can be done and every values has a link to the previous value and to the next value. It is built by giving its name and its bounds: lower bound and upper bound. It must be used when the very small domains are needed, because although linked list domain consumes more memory than the \texttt{BitSet} implementation, it can provide good performance as iteration over the domain is made in constant time. Implemented by a \texttt{LinkedList} object.
 		\item \texttt{cp:btree} : to force Solver to create binary tree domain for the variable. \emph{Under development}.
 		\item \texttt{cp:blist} : to force Solver to create bipartite list domain for the variable. It is a domain where unavailable values are placed in the left part of the list, the other one on the right one.
@@ -66,5 +65,5 @@ A variable with $\{0,1\}$ domain is automatically considered as boolean domain.
 \begin{lstlisting}
   IntegerVariable ivar1 = makeIntVar("ivar1", -10, 10);
   IntegerVariable ivar2 = makeIntVar("ivar2", 0, 10000, "cp:bound", "cp:decision");
-  IntegerVariable bool = makeIntVar("bool", 0, 1, "cp:binary");
+  IntegerVariable bool = makeBooleanVar("bool");
 \end{lstlisting} 

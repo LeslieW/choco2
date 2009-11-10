@@ -10,13 +10,13 @@ Download CHOCO
    There are different <jar> files available:
 
     * A single <jar> that only contains the minimum required to solve CP problems : <choco-solver-X.x.x>. This archive should be used
-    if you want to integrate CHOCO as a library.
+    if you want to integrate <<<choco>>> as a library.
 
     * A single <jar> that contains the whole project and dependencies (every modules) : <choco-X.x.x> .
-     This archive should be used if you want to integrate CHOCO as a library and use graphical tools, parser tools and test beta
+     This archive should be used if you want to integrate <<<choco>>> as a library and use graphical tools, parser tools and test beta
      developments.
 
-    * A single <jar> for each module of CHOCO :
+    * A single <jar> for each module of <<<choco>>> :
 
         * <choco-kernel-X.x.x>,
 
@@ -82,9 +82,9 @@ Download CHOCO
 
 * Building from the sources
 
-   You can build CHOCO from sources using the repository. The methods to download the sources
-   are described on the {{{source-repository.html} repository page}}. CHOCO uses {{{http://maven.apache.org} Maven}} as the software project management system, it
-  is necessary to install it to build easily CHOCO.
+   You can build <<<choco>>> from sources using the repository. The methods to download the sources
+   are described on the {{{source-repository.html} repository page}}. <<<choco>>> uses {{{http://maven.apache.org} Maven}} as the software project management system, it
+  is necessary to install it to build easily <<<choco>>>.
 
   You can build the artifacts (the jar files)
   with the command "<mvn assembly:assembly>" in the root directory of the sources (this directory

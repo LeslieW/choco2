@@ -36,9 +36,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.5</version>
                 <configuration>
-                    <minmemory>128m</minmemory>
-                    <maxmemory>512m</maxmemory>
+                    <!--<aggregate>true</aggregate>
+                    <linksource>true</linksource>
+                    <doclet>org.jboss.apiviz.APIviz</doclet>
+                    <docletArtifact>
+                        <groupId>org.jboss.apiviz</groupId>
+                        <artifactId>apiviz</artifactId>
+                        <version>1.2.5.GA</version>
+                    </docletArtifact>-->
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
             <!--<plugin>
