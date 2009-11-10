@@ -69,8 +69,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <minmemory>128m</minmemory>
-                    <maxmemory>512m</maxmemory>
+                    <!--<minmemory>128m</minmemory>
+                    <maxmemory>512m</maxmemory>-->
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
             <!--<plugin>

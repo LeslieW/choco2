@@ -8,11 +8,11 @@
 
 <section name="About you">
 <p>
-  Before downloading the last version of Choco, take some few minutes to answer the following questions:
+  Before downloading the last version of <tt>choco</tt>, take some few minutes to answer the following questions:
 </p>  
 <p>
   <div align="center">
-  <form method="POST" action="choco/formmail.php" >
+  <form method="POST" action="formmail.php" >
   <input type="hidden" name="subject" value="enregistrement"/>
   <table>
   <tr><td>Name:</td>
@@ -21,7 +21,7 @@
     <td><input type="text" name="email" size="30"/></td></tr>
   <tr><td>Profession:</td>
     <td><input type="text" name="prof" size="30"/></td></tr>
-  <tr><td colspan="2">What are you going to use Choco-solver for?:</td>
+  <tr><td colspan="2">What are you going to use <tt>choco</tt> for?:</td>
   <td><textarea COLS="50" ROWS="6" name="comments"></textarea>
   </td></tr>
   </table>

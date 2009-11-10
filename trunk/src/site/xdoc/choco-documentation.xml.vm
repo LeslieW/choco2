@@ -9,13 +9,14 @@
 <section name="Documentation">
 
 <p>
-  In this documentation, we ensure that code parts are up-to-date but not the other part. If you find some typos, please mail us at <A HREF="choco@emn.fr" TITLE="[DOC][TYPO]">typos in documentation of choco-solver</A>.  
+  In this documentation, we ensure that code parts are up-to-date but not the other part. If you want to participate, or
+  find some typos, please mail us at <A HREF="choco@emn.fr" TITLE="[DOC]">documentation of <tt>choco</tt></A>.
 </p>  
 <p>
-  You can download the current <a href="./tex/choco.pdf" class="externalLink" target="_blank">documentation</a> in PDF format
-</p>  
+  You can download the current <a href="./tex/choco.pdf" class="externalLink" target="_blank">documentation of <tt>choco</tt></a> in PDF format
+</p>
 <p>
-  If you want to participate to the elaboration of the documentation of CHOCO, contact us: <u>choco@emn.fr</u>.
+  For further more informations, you can read the <a href="./pdf/choco-presentation.pdf" class="externalLink" target="_blank">white paper of <tt>choco</tt></a>.
 </p>
 </section>
 </body>

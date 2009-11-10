@@ -129,6 +129,17 @@
     </distributionManagement>
     <repositories>
         <repository>
+            <id>jboss.releases</id>
+            <name>JBoss releases</name>
+            <url>http://repository.jboss.org/maven2</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
             <id>central.repos</id>
             <url>http://repo1.maven.org/maven2/</url>
         </repository>
@@ -181,7 +192,6 @@
             </plugin>
         </plugins>
     </build>
-
     <developers>
         <developer>
             <name>Francois Laburthe</name>

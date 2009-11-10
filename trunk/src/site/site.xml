@@ -24,7 +24,7 @@
 
     <menu name="About CHOCO">
       <!--<item name="Welcome" href="index.html"/>-->
-      <item name="About" href="choco-about.html"/>
+      <item name="Welcome" href="index.html"/>
     </menu>
 
     <menu name="Get CHOCO">
@@ -34,6 +34,7 @@
 
     <menu name="Using CHOCO">
       <item name="Documentation" href="choco-documentation.html"/>
+        <item name="Materials" href="choco-materials.html"/>
       <!--<item name="Tutorials" href="choco-tutorials.html"/>-->
       <item name="FAQ" href="choco-faq.html"/>
     </menu>
@@ -46,9 +47,10 @@
       <item name="About you" href="choco-about-you.html"/>
     </menu>
 
-    <menu ref="modules" />
-
-    <menu ref="reports" />
+      ${modules}      
+    <!--<menu ref="modules" />-->
+      ${reports}
+    <!--<menu ref="reports" />-->
 
   </body>
 </project>

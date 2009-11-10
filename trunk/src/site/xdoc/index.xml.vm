@@ -9,9 +9,13 @@
 <section name="Welcome">
 
 <p>
- The CHOCO development team is eager to announce the release of the new version of its open-source constraint solver: CHOCO.
-</p><p>
- Choco is Java library that can be used for:
+  <tt>choco</tt> is a java library for constraint satisfaction problems (CSP),
+  constraint programming (CP) and explanation-based constraint solving (e-CP).<br/>
+  It is built on a event-based propagation mechanism with backtrackable structures.
+</p>
+
+<p>
+ <tt>choco</tt> can be used for:
 <ul>
 <li>
 teaching (a user-oriented constraint solver with open-source code)
@@ -20,23 +24,49 @@ teaching (a user-oriented constraint solver with open-source code)
 research (state-of-the-art algorithms and techniques, user-defined constraints, domains and variables)
 </li>
 <li>
-real-life applications (many application now embed choco)
+real-life applications (many application now embed <tt>choco</tt>)
 </li>
 </ul>      
 </p>
+
 <p>
- Choco is final-user oriented. It has been under heavy refactoring. New constraints, new features have been offered.
-</p>
-<p>
- Choco is available online with a complete documentation, tutorials, various materials, forums, etc.
-</p>
-<p>
- Please visit the web site for downloading and more information.  
-</p>
-<p>
- For further more informations, you can read the white paper of choco. 
+ Please visit the web site for downloading and more information.
 </p>
 
 </section>
+
+<section name="CHOCO's environment">
+<p>
+  <tt>choco</tt> is an open-source software, distributed under a <a href="licence.html">BSD Licence</a>
+  and hosted by <a href="http://sourceforge.net/projects/choco/">Sourceforge.net</a>.
+</p>
+
+<p>
+  <a href="http://www.jetbrains.com/idea/features/code_analysis.html" target="_blank">
+  <img src="http://www.jetbrains.com/idea/opensource/img/banners/idea468x60_white.gif"/></a>
+</p>
+
+</section>
+
+<section name="Learning about Choco">
+     <ul>
+     <li><a href="choco-documentation.html"><div class="header">Documentation</div></a>
+         Informations for those wanting to use <tt>choco</tt>. It introduces to Constraint Programming and <tt>choco</tt> and
+         describes how to solve problems using <tt>choco</tt>. It also provides tutorials and examples.
+     </li>
+     <li><a href="choco-faq.html"><div class="header">Frequently Asked Questions</div></a>
+         A list of frequently asked questions about <tt>choco</tt>.
+     </li>
+     <li><a href="team-list.html"><div class="header">The team</div></a>
+         List of the members involved in the development of <tt>choco</tt> with
+         contacts.
+     </li>
+     <li><a href="choco-users.html"><div class="header">Users</div></a>
+         Non exhaustive list of <tt>choco</tt>'s users.
+     </li>
+</ul>
+</section>
+
+
 </body>
 </document>
