@@ -123,7 +123,6 @@ public class Choco{
 	 *                <i> cp:btree to force Solver to create binary tree variables</i>
 	 *                <i> cp:blist to force Solver to create bipartite list variables</i>
 	 *                <i> cp:link to force Solver to create linked list variables</i>
-	 *                <i> cp:binary to force Solver to create boolean variables</i>
 	 *                </ul>
 	 *                <p/>
 	 *                Options for decisionnal/undecisionnal variables
@@ -188,7 +187,6 @@ public class Choco{
 	 *                <i> cp:btree to force Solver to create binary tree variables</i>
 	 *                <i> cp:blist to force Solver to create bipartite list variables</i>
 	 *                <i> cp:link to force Solver to create linked list variables</i>
-	 *                <i> cp:binary to force Solver to create boolean variables</i>
 	 *                </ul>
 	 *                <p/>
 	 *                Options for decisionnal/undecisionnal variables
@@ -228,7 +226,6 @@ public class Choco{
 	 *                <i> cp:btree to force Solver to create binary tree variables</i>
 	 *                <i> cp:blist to force Solver to create bipartite list variables</i>
 	 *                <i> cp:link to force Solver to create linked list variables</i>
-	 *                <i> cp:binary to force Solver to create boolean variables</i>
 	 *                </ul>
 	 *                <p/>
 	 *                Options for decisionnal/undecisionnal variables
@@ -327,7 +324,6 @@ public class Choco{
 	 *                <i> cp:btree to force Solver to create binary tree variables</i>
 	 *                <i> cp:blist to force Solver to create bipartite list variables</i>
 	 *                <i> cp:link to force Solver to create linked list variables</i>
-	 *                <i> cp:binary to force Solver to create boolean variables</i>
 	 *                </ul>
 	 *                <p/>
 	 *                Options for decisionnal/undecisionnal variables
@@ -394,7 +390,6 @@ public class Choco{
 	 *                <i> cp:btree to force Solver to create binary tree variables</i>
 	 *                <i> cp:blist to force Solver to create bipartite list variables</i>
 	 *                <i> cp:link to force Solver to create linked list variables</i>
-	 *                <i> cp:binary to force Solver to create boolean variables</i>
 	 *                </ul>
 	 *                <p/>
 	 *                Options for decisionnal/undecisionnal variables
@@ -435,7 +430,6 @@ public class Choco{
 	 *                <i> cp:btree to force Solver to create binary tree variables</i>
 	 *                <i> cp:blist to force Solver to create bipartite list variables</i>
 	 *                <i> cp:link to force Solver to create linked list variables</i>
-	 *                <i> cp:binary to force Solver to create boolean variables</i>
 	 *                </ul>
 	 *                <p/>
 	 *                Options for decisionnal/undecisionnal variables
@@ -503,7 +497,6 @@ public class Choco{
 	 *                <i> cp:btree to force Solver to create binary tree variables</i>
 	 *                <i> cp:blist to force Solver to create bipartite list variables</i>
 	 *                <i> cp:link to force Solver to create linked list variables</i>
-	 *                <i> cp:binary to force Solver to create boolean variables</i>
 	 *                </ul>
 	 *                <p/>
 	 *                Options for decisionnal/undecisionnal variables
@@ -2570,6 +2563,7 @@ public class Choco{
 	 * Each task of the collection tasks1 should not overlap any task of the collection tasks2.
 	 * The model only provides a decomposition with reified precedences because the coloured cumulative is not available.
 	 * @see {http://www.emn.fr/x-info/sdemasse/gccat/Cdisjoint_tasks.html#uid11633}
+     * @return Constraint disjoint
 	 */
 	public static Constraint[] disjoint(TaskVariable[] tasks1,TaskVariable[] tasks2) {
 		final Constraint[] decomp = new Constraint[tasks1.length * tasks2.length];

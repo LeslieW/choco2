@@ -59,7 +59,7 @@ public class ClausesTest {
         for (int seed = 0; seed < 20; seed++) {
             CPModel mod = new CPModel();
             CPSolver s = new CPSolver();
-            IntegerVariable[] vars = makeIntVarArray("b", 10, 0, 1, "cp:binary");
+            IntegerVariable[] vars = makeBooleanVarArray("b", 10);
             mod.addVariables(vars);
             s.read(mod);
             IntDomainVar[] bvs = s.getVar(vars);
@@ -82,7 +82,7 @@ public class ClausesTest {
         for (int seed = 0; seed < 20; seed++) {
             CPModel mod = new CPModel();
             CPSolver s = new CPSolver();
-            IntegerVariable[] vars = makeIntVarArray("b", 10, 0, 1, "cp:binary");
+            IntegerVariable[] vars = makeBooleanVarArray("b", 10);
             mod.addConstraint(clause(new IntegerVariable[]{vars[0], vars[3], vars[4]}, new IntegerVariable[]{vars[1], vars[2], vars[7]}));
             mod.addConstraint(clause(new IntegerVariable[]{vars[5], vars[3]}, new IntegerVariable[]{vars[1], vars[4], vars[5]}));
             mod.addConstraint(clause(new IntegerVariable[]{vars[8]}, new IntegerVariable[]{vars[4]}));
@@ -101,7 +101,7 @@ public class ClausesTest {
         //for (int seed = 0; seed < 20; seed++) {
         CPModel mod = new CPModel();
         CPSolver s = new CPSolver();
-        IntegerVariable[] vars = makeIntVarArray("b", 3, 0, 1, "cp:binary");
+        IntegerVariable[] vars = makeBooleanVarArray("b", 10);
         mod.addConstraint(clause(new IntegerVariable[]{vars[0], vars[1], vars[2]}, new IntegerVariable[]{}));
         s.read(mod);
         s.setGeometricRestart(1, 1.1);
@@ -123,7 +123,7 @@ public class ClausesTest {
         for (int seed = 0; seed < 20; seed++) {
             CPModel mod = new CPModel();
             CPSolver s = new CPSolver();
-            IntegerVariable[] vars = makeIntVarArray("b", 10, 0, 1, "cp:binary");
+            IntegerVariable[] vars = makeBooleanVarArray("b", 10);
             mod.addConstraint(clause(new IntegerVariable[]{vars[0], vars[0], vars[4]}, new IntegerVariable[]{vars[1], vars[2], vars[7]}));
             mod.addConstraint(clause(new IntegerVariable[]{vars[5], vars[3]}, new IntegerVariable[0]));
             mod.addConstraint(clause(new IntegerVariable[0], new IntegerVariable[]{vars[8]}));
@@ -143,7 +143,7 @@ public class ClausesTest {
     private int computeNbSol2() {
         CPModel mod = new CPModel();
         CPSolver s = new CPSolver();
-        IntegerVariable[] v = makeIntVarArray("b", 10, 0, 1, "cp:binary");
+        IntegerVariable[] v = makeBooleanVarArray("b", 10);
         mod.addVariables(v);
         mod.addConstraint(or(eq(v[0], 1), eq(v[0], 1), eq(v[4], 1), eq(v[1], 0), eq(v[2], 0), eq(v[7], 0)));
         mod.addConstraint(or(eq(v[5], 1), eq(v[3], 1)));
@@ -158,7 +158,7 @@ public class ClausesTest {
     private int computeNbSol() {
         CPModel mod = new CPModel();
         CPSolver s = new CPSolver();
-        IntegerVariable[] v = makeIntVarArray("b", 10, 0, 1, "cp:binary");
+        IntegerVariable[] v = makeBooleanVarArray("b", 10);
         mod.addVariables(v);
         mod.addConstraint(or(eq(v[0], 1), eq(v[3], 1), eq(v[4], 1), eq(v[1], 0), eq(v[2], 0), eq(v[7], 0)));
         mod.addConstraint(or(eq(v[5], 1), eq(v[3], 1), eq(v[1], 0), eq(v[5], 0), eq(v[4], 0)));
@@ -192,7 +192,7 @@ public class ClausesTest {
         CPSolver s = new CPSolver();
 
         Random rand = new Random(seed);
-        IntegerVariable[] vars = makeIntVarArray("b", nbvar, 0, 1, "cp:binary");
+        IntegerVariable[] vars = makeBooleanVarArray("b", nbvar);
         mod.addVariables(vars);
 
         for (int i = 0; i < nbc; i++) {
@@ -236,7 +236,7 @@ public class ClausesTest {
     public void testBooleanIssue() {
         CPModel mod = new CPModel();
         CPSolver s = new CPSolver();
-        IntegerVariable[] v = makeIntVarArray("b", 3, 0, 1, "cp:binary");
+        IntegerVariable[] v = makeBooleanVarArray("b", 3);
         mod.addVariables(v); //bug without it !
         mod.addConstraint(or(eq(v[2], 1), eq(v[1], 1), eq(v[1], 1)));
         mod.addConstraint(or(eq(v[2], 1), eq(v[1], 0), eq(v[2], 0), eq(v[1], 0)));
@@ -254,7 +254,7 @@ public class ClausesTest {
             CPModel mod = new CPModel();
             CPSolver s = new CPSolver(/*new EnvironmentRecomputation()*/);
             s.setRecomputationGap(10);
-            IntegerVariable[] vars = makeIntVarArray("b", 3, 0, 1, "cp:binary");
+            IntegerVariable[] vars = makeBooleanVarArray("b", 3);
             mod.addVariables(vars);
             s.read(mod);
             IntDomainVar[] bvs = s.getVar(vars);
@@ -271,7 +271,7 @@ public class ClausesTest {
     private int computeNbSol3() {
         CPModel mod = new CPModel();
         CPSolver s = new CPSolver(new EnvironmentTrailing());
-        IntegerVariable[] v = makeIntVarArray("b", 3, 0, 1, "cp:binary");
+        IntegerVariable[] v = makeBooleanVarArray("b", 3);
         mod.addVariables(v);
         mod.addConstraint(or(eq(v[0], 1), eq(v[1], 0), eq(v[2], 0)));
         s.read(mod);
