@@ -132,6 +132,9 @@ public class LimitManager implements GlobalSearchLimit {
 	public final void reset() {
 		//TODO create EndTreeSearch method to have maximal time precision when ending search.
 		updateTimeCount();
+		//reset the restart limit to allow diversification
+		//I notice that solutions appear sometimes in cluster, at least for shop-scheduling.
+		//should it be optional ?
 		restartStrategyLimit.setNbMax( restartStrategyLimit.getNb() + restartCutoff);
 	}
 

@@ -320,7 +320,7 @@ public class CPSolver implements Solver {
 	/**
 	 * maximal search depth for logging statements
 	 */
-	public int loggingMaxDepth = 10;
+	public int loggingMaxDepth = 25;
 
 	/**
 	 * set the number of stored solutions.
@@ -1189,7 +1189,7 @@ public class CPSolver implements Solver {
 
 	@Override
 	public int getLimitCount(Limit type) {
-		return strategy.getSearchMeasures().getLimitCount(type);
+		return strategy == null ? 0 : strategy.getSearchMeasures().getLimitCount(type);
 	}
 
 	/**
@@ -1198,7 +1198,7 @@ public class CPSolver implements Solver {
 	 * @return time count
 	 */
 	public int getTimeCount() {
-		return strategy.getSearchMeasures().getTimeCount();
+		return strategy == null ? 0 : strategy.getSearchMeasures().getTimeCount();
 	}
 
 
@@ -1208,16 +1208,16 @@ public class CPSolver implements Solver {
 	 * @return node count
 	 */
 	public int getNodeCount() {
-		return strategy.getSearchMeasures().getNodeCount();
+		return strategy == null ? 0 : strategy.getSearchMeasures().getNodeCount();
 	}
 
 	/**
 	 * Get the backtrack count of the search algorithm
 	 *
-	 * @return backtrack count
+	 * @return strategy == null ? 0 : backtrack count
 	 */
 	public int getBackTrackCount() {
-		return strategy.getSearchMeasures().getBackTrackCount();
+		return strategy == null ? 0 : strategy.getSearchMeasures().getBackTrackCount();
 	}
 
 	/**
@@ -1226,18 +1226,18 @@ public class CPSolver implements Solver {
 	 * @return fail count
 	 */
 	public int getFailCount() {
-		return strategy.getSearchMeasures().getFailCount();
+		return strategy == null ? 0 : strategy.getSearchMeasures().getFailCount();
 	}
 
 
 	@Override
 	public int getRestartCount() {
-		return strategy.getSearchMeasures().getRestartCount();
+		return strategy == null ? 0 : strategy.getSearchMeasures().getRestartCount();
 	}
 
 	@Override
 	public int getSolutionCount() {
-		return strategy.getSolutionCount();
+		return strategy == null ? 0 : strategy.getSolutionCount();
 	}
 
 	@Override
@@ -1255,7 +1255,7 @@ public class CPSolver implements Solver {
 
 	@Override
 	public boolean existsSolution() {
-		return strategy.existsSolution();
+		return strategy == null ? false : strategy.existsSolution();
 	}
 
 

@@ -80,7 +80,7 @@ public class RelationFactory extends ObjectFactory {
 			double nbt = prel.getNbTuples();
 			double tightness = 1 - nbt / matrixsize;
 			if (matrixsize >= 32000000 || tightness >= 0.98)
-				rel = Choco.makeLargeRelation(min, max, prel.getListTuples(), true, (XmlModel.getAcAlgo() == 2008) ? 2 : 0);
+				rel = Choco.makeLargeRelation(min, max, prel.getListTuples(), true, (algorithmAC == AC2008) ? 2 : 0);
 			else rel = Choco.makeLargeRelation(min, max, prel.getListTuples(), true, 1);
 		} else {
 			//define by infeasibility

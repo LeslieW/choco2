@@ -47,7 +47,7 @@ public abstract class AbstractCmdLine {
 
 	public final static String CMD = "java [-jar myCmd.jar| -cp myCmd.jar MyCmd.class] ";
 	
-	public final static Logger LOGGER= null; //ChocoLogging.getParserLogger();
+	public final static Logger LOGGER= ChocoLogging.getParserLogger();
 	
 	public final static int NONE= Integer.MIN_VALUE;
 	
