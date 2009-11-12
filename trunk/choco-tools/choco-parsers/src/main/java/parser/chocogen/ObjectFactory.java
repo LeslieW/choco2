@@ -35,6 +35,14 @@ import parser.absconparseur.tools.InstanceParser;
  */
 public abstract class ObjectFactory {
 
+	//ac
+	public static final int AC32 = 32;
+	public static final int AC2001 = 2001;
+	public static final int AC2008 = 2008;
+	
+	/** algo d'ac : 2001 ou 32 ou 2008 */
+	public static int algorithmAC = AC32;
+	
 	protected InstanceParser parser;
 
 	protected Model m;

@@ -81,6 +81,9 @@ public abstract class AbstractInstanceModel {
 	protected Solver solver;
 
 	//logs and reporting	
+
+	protected File outputDirectory;
+
 	protected DbManager dbManager;
 
 	protected final ReportFormatter logMsg = new ReportFormatter();
@@ -122,8 +125,13 @@ public abstract class AbstractInstanceModel {
 		return objective;
 	}
 
+	public final File getOutputDirectory() {
+		return outputDirectory;
+	}
 
-
+	public final void setOutputDirectory(File outputDirectory) {
+		this.outputDirectory = outputDirectory;
+	}
 
 	public final Boolean getDoMaximise() {
 		return doMaximize;
@@ -409,7 +417,7 @@ public abstract class AbstractInstanceModel {
 			}
 		}
 	}
-	
+
 
 	public void makeReports() {
 		consoleReport();
@@ -442,15 +450,17 @@ public abstract class AbstractInstanceModel {
 	public void databaseReport() {
 		//insert solver
 		Integer solverID = dbManager.insertEntryAndRetrieveGPK(DbTables.T_SOLVERS, 
-				new Object[]{ parser.getInstanceFile().getName(), status.getName(), getFullSecTime(), getValuesMessage(),
+				new Object[]{ parser.getInstanceFile().getName(), status.getName(), getFullSecTime(), "", //getValuesMessage(),
 				dbManager.getModelID(solver), dbManager.getEnvironmentID(), seed, new Timestamp(System.currentTimeMillis())}
 		);
 		//TODO remettre getModelID en protected quand dans choco
 		Integer measuresID;
 		if( solver != null) {
 			//insert measures
-			for (Solution sol : solver.getSearchStrategy().getStoredSolutions()) {
-				dbManager.insertMeasures(solverID, sol.getMeasures());
+			if(solver.existsSolution()) {
+				for (Solution sol : solver.getSearchStrategy().getStoredSolutions()) {
+					dbManager.insertMeasures(solverID, sol.getMeasures());
+				}
 			}
 			measuresID = dbManager.insertEntryAndRetrieveGPK(DbTables.T_MEASURES, 
 					solver.getSolutionCount(), objective, solver.getTimeCount(), 

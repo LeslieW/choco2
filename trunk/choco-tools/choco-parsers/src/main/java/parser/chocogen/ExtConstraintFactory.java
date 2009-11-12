@@ -118,7 +118,7 @@ public class ExtConstraintFactory extends ObjectFactory {
                         if (prel.getLrel() instanceof TuplesTable)
                             extct[0] = relationTupleAC("cp:ac32", intvars, prel.getLrel());
                         else
-                            extct[0] = relationTupleAC("cp:ac" + XmlModel.getAcAlgo(), intvars, prel.getLrel());
+                            extct[0] = relationTupleAC("cp:ac"+algorithmAC, intvars, prel.getLrel());
                     } else {
                         extct[0] = regular(dfa, intvars);
                     }
