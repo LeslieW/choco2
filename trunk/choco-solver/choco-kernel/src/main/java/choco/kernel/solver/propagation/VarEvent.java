@@ -41,7 +41,7 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
      * If set to TRUE, means the iteration will call the active checker of each constraints,
      * If set to FALSE, means the iteration will be done on active constraints only
      */
-    public static boolean CHECK_ACTIVE = true;
+    public final static boolean CHECK_ACTIVE = true;
 
     /**
    * empty bitvector for the event type.

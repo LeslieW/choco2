@@ -2455,9 +2455,19 @@ public class CPSolver implements Solver {
 	}
 
 	/**
+     * bug 2874124
+	 * Displays all the runtime statistics.
+     * @see choco.cp.solver.CPSolver#printRuntimeStatistics()
+	 */
+    @Deprecated
+	public void printRuntimeSatistics() {
+		getSearchStrategy().printRuntimeStatistics();
+	}
+
+    /**
 	 * Displays all the runtime statistics.
 	 */
-	public void printRuntimeSatistics() {
+	public void printRuntimeStatistics() {
 		getSearchStrategy().printRuntimeStatistics();
 	}
 
