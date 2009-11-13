@@ -193,18 +193,24 @@ public abstract class AbstractInstanceModel {
 
 	private final void logOnModel() {
 		if(LOGGER.isLoggable(Level.CONFIG)) {
-			LOGGER.config(MessageFormat.format(DESCR_MSG, "model", model.getNbIntVars(), model.getNbConstraints(), model.getNbConstantVars()));
-			if(LOGGER.isLoggable(Level.FINEST)) {
-				LOGGER.fine(model.pretty());
+			if(model == null) LOGGER.log(Level.CONFIG, "model...[null]");
+			else {
+				LOGGER.config(MessageFormat.format(DESCR_MSG, "model", model.getNbIntVars(), model.getNbConstraints(), model.getNbConstantVars()));
+				if(LOGGER.isLoggable(Level.FINEST)) {
+					LOGGER.fine(model.pretty());
+				}
 			}
 		}
 	}
 
 	private final void logOnSolver() {
 		if(LOGGER.isLoggable(Level.CONFIG)) {
-			LOGGER.config(MessageFormat.format(DESCR_MSG, "solver", solver.getNbIntVars(), solver.getNbIntConstraints(), solver.getNbConstants()));
-			if(LOGGER.isLoggable(Level.FINER)) {
-				LOGGER.fine(solver.pretty());
+			if(solver == null) LOGGER.log(Level.CONFIG, "solver...[null]");
+			else {
+				LOGGER.config(MessageFormat.format(DESCR_MSG, "solver", solver.getNbIntVars(), solver.getNbIntConstraints(), solver.getNbConstants()));
+				if(LOGGER.isLoggable(Level.FINER)) {
+					LOGGER.fine(solver.pretty());
+				}
 			}
 		}
 	}
@@ -375,6 +381,7 @@ public abstract class AbstractInstanceModel {
 			}else return SAT; //deal with CSP
 		}	
 		else if ( isFeasible == Boolean.FALSE) return UNSAT;
+		else if (solver == null) return ERROR; 
 		else return solver.isEncounteredLimit() ? TIMEOUT : UNKNOWN;
 	}
 
