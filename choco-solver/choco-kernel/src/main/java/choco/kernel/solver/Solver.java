@@ -436,8 +436,12 @@ public interface Solver extends IMeasures, IPretty {
     public Boolean minimize(Var obj, boolean restart);
 
     public void setSolutionPoolCapacity(int capacity);
-    
+
+    // bug 2874124
+    @Deprecated
     public void printRuntimeSatistics();
+    
+    public void printRuntimeStatistics();
 
     // bug 2874124
     @Deprecated
