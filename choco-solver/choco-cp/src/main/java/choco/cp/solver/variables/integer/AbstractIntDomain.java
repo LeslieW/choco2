@@ -327,11 +327,10 @@ public abstract class AbstractIntDomain implements IntDomain {
 		if (x < getSup()) {
 			if (x < getInf()) {
 				this.getSolver().getPropagationEngine().raiseContradiction(idx, this.variable);
-				return true; // Just for compilation !
 			} else {
 				updateSup(x);
-				return true;
 			}
+			return true;
 		} else {
 			return false;
 		}

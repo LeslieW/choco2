@@ -22,11 +22,8 @@ public abstract class AbstractDomOverWDegBranching extends
         AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomBreakTies {
 
 	//*****************************************************************//
-	//*********** computing weighted degrees and couting failures ****//
+	//*********** computation of weighted degrees and failures ****//
 	//***************************************************************//
-	/**
-	 * 
-	 */
 	protected static final int ABSTRACTCONTRAINT_EXTENSION = AbstractSConstraint.getAbstractSConstraintExtensionNumber("choco.cp.cpsolver.search.integer.varselector.DomOverWDeg");
 
 	public static final class DomOverWDegBranchingConstraintExtension {
@@ -104,6 +101,7 @@ public abstract class AbstractDomOverWDegBranching extends
 
 	private Random randomBreakTies;
 
+	//FIXME seems useless
 	protected int maxConstraintArity = Integer.MAX_VALUE;
 
 	private AbstractSConstraint reuseCstr;
@@ -260,7 +258,7 @@ public abstract class AbstractDomOverWDegBranching extends
 	 * @param i the index of the variable 
 	 */
 	protected int getDomMesure(int i) {
-		return  ( (IntDomainVar) vars[i]).getDomainSize();
+		return  vars[i].getDomainSize();
 	}
 
 	

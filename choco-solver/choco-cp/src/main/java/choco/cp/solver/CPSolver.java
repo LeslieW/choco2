@@ -1667,14 +1667,14 @@ public class CPSolver implements Solver {
 	 * Checks if a limit has been encountered
 	 */
 	public boolean isEncounteredLimit() {
-		return strategy.isEncounteredLimit();
+		return strategy == null ? false : strategy.isEncounteredLimit();
 	}
 
 	/**
 	 * If a limit has been encounteres, return the involved limit
 	 */
 	public AbstractGlobalSearchLimit getEncounteredLimit() {
-		return strategy.getEncounteredLimit();
+		return strategy == null ? null : strategy.getEncounteredLimit();
 	}
 
 	/**
