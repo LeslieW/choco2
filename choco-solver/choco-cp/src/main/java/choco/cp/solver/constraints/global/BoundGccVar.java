@@ -281,7 +281,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
             if (h[x] > x) {
                 w = pathmax(h, h[x]);
 //                updateInf(maxsorted[i].var, bounds[w], maxsorted[i].idx);
-                maxsorted[i].var.updateInf(bounds[w], VarEvent.domOverWDegIdx(maxsorted[i].idx));
+                maxsorted[i].var.updateInf(bounds[w], VarEvent.domOverWDegIdx(cIndices[maxsorted[i].idx]));
                 pathset(h, x, w, w);
             }
             if (d[z] == u.sum(bounds[y], bounds[z] - 1)) {
@@ -317,7 +317,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
             if (h[x] < x) {
                 w = pathmin(h, h[x]);
 //                updateSup(minsorted[i].var, bounds[w] - 1, minsorted[i].idx);
-                minsorted[i].var.updateSup(bounds[w] - 1, minsorted[i].idx);
+                minsorted[i].var.updateSup(bounds[w] - 1, cIndices[minsorted[i].idx]);
                 pathset(h, x, w, w);
             }
             if (d[z] == u.sum(bounds[z], bounds[y] - 1)) {
@@ -427,7 +427,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
             y = maxsorted[i].maxrank;
             if ((stableInterval[x] <= x) || (y > stableInterval[x])) {
 //                updateInf(maxsorted[i].var, l.skipNonNullElementsRight(bounds[newMin[i]]), maxsorted[i].idx);
-                maxsorted[i].var.updateInf(l.skipNonNullElementsRight(bounds[newMin[i]]), maxsorted[i].idx);
+                maxsorted[i].var.updateInf(l.skipNonNullElementsRight(bounds[newMin[i]]), cIndices[maxsorted[i].idx]);
             }
         }
     }
@@ -496,7 +496,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
             int y = minsorted[i].maxrank;
             if ((stableInterval[x] <= x) || (y > stableInterval[x])) {
 //                updateSup(minsorted[i].var, l.skipNonNullElementsLeft(bounds[newMin[i]] - 1), minsorted[i].idx);
-                minsorted[i].var.updateSup(l.skipNonNullElementsLeft(bounds[newMin[i]] - 1), minsorted[i].idx);
+                minsorted[i].var.updateSup(l.skipNonNullElementsLeft(bounds[newMin[i]] - 1), cIndices[minsorted[i].idx]);
             }
         }
 
@@ -519,9 +519,9 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
     @Override
     public void awake() throws ContradictionException {
         initBackDataStruct();
-        for (int i = 0; i < vars.length; i++) {
-            if (vars[i].isInstantiated()) {
-                filterBCOnInst(vars[i].getVal());
+        for (IntDomainVar var : vars) {
+            if (var.isInstantiated()) {
+                filterBCOnInst(var.getVal());
             }
         }
         if (directInconsistentCount())
