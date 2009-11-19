@@ -43,10 +43,10 @@ public class OrderedGccTest {
 		Imax1[4] = 1;
 		Imax1[5] = 0;
         int minBot = 1;
-	    Object[] p = new Object[3];
-	    p[0] = vars;
-	    p[1] = Imax1;
-	    p[2] = minBot;
+	    Object[] p = new Object[2];
+	    //p[0] = vars;
+	    p[0] = Imax1;
+	    p[1] = minBot;
 	    ComponentConstraint c = new ComponentConstraint(OrderedGccManager.class,(Object) p,vars);
         m.addConstraint(c);
         CPSolver s = new CPSolver();
@@ -72,10 +72,9 @@ public class OrderedGccTest {
 		Imax1[4] = 1;
 		Imax1[5] = 0;
         int minBot = 2;
-	    Object[] p = new Object[3];
-	    p[0] = vars;
-	    p[1] = Imax1;
-	    p[2] = minBot;
+	    Object[] p = new Object[2];
+	    p[0] = Imax1;
+	    p[1] = minBot;
 	    ComponentConstraint c = new ComponentConstraint(OrderedGccManager.class,(Object) p,vars);
         m.addConstraint(c);
         CPSolver s = new CPSolver();
@@ -101,10 +100,9 @@ public class OrderedGccTest {
 		Imax1[4] = 0;
 		Imax1[5] = 0;
         int minBot = 1;
-	    Object[] p = new Object[3];
-	    p[0] = vars;
-	    p[1] = Imax1;
-	    p[2] = minBot;
+	    Object[] p = new Object[2];
+	    p[0] = Imax1;
+	    p[1] = minBot;
 	    ComponentConstraint c = new ComponentConstraint(OrderedGccManager.class,(Object) p,vars);
         m.addConstraint(c);
         CPSolver s = new CPSolver();
@@ -138,10 +136,9 @@ public class OrderedGccTest {
         int minBot = 1;
         // nombre de solutions = 2
         // 1 2 0 1, 1 3 0 1
-	    Object[] p = new Object[3];
-	    p[0] = vars;
-	    p[1] = Imax1;
-	    p[2] = minBot;
+	    Object[] p = new Object[2];
+	    p[0] = Imax1;
+	    p[1] = minBot;
 	    ComponentConstraint c = new ComponentConstraint(OrderedGccManager.class,(Object) p,vars);
         m.addConstraint(c);
         CPSolver s = new CPSolver();
@@ -170,10 +167,9 @@ public class OrderedGccTest {
            int minBot = 1;
            // nombre de solutions = 2
            // -1 0 -2 -1, -1 1 -2 -1
-           Object[] p = new Object[3];
-           p[0] = vars;
-           p[1] = Imax1;
-           p[2] = minBot;
+           Object[] p = new Object[2];
+           p[0] = Imax1;
+           p[1] = minBot;
            ComponentConstraint c = new ComponentConstraint(OrderedGccManager.class,(Object) p,vars);
            m.addConstraint(c);
            CPSolver s = new CPSolver();
@@ -203,10 +199,9 @@ public class OrderedGccTest {
             // nombre de solutions = 6
             // 1 1 0 1, 2 1 0 1, 1 2 0 1, 1 1 0 2,
             // 1 3 0 1, 1 1 0 3,
-            Object[] p = new Object[3];
-            p[0] = vars;
-            p[1] = Imax1;
-            p[2] = minBot;
+            Object[] p = new Object[2];
+            p[0] = Imax1;
+            p[1] = minBot;
             ComponentConstraint c = new ComponentConstraint(OrderedGccManager.class,(Object) p,vars);
             m.addConstraint(c);
             CPSolver s = new CPSolver();
@@ -244,10 +239,9 @@ public class OrderedGccTest {
             // nombre de solutions = 6
             // 0 0 -1 0, 1 0 -1 0, 0 1 -1 0, 0 0 -1 1,
             // 0 2 -1 0, 0 0 -1 2,
-            Object[] p = new Object[3];
-            p[0] = vars;
-            p[1] = Imax1;
-            p[2] = minBot;
+            Object[] p = new Object[2];
+            p[0] = Imax1;
+            p[1] = minBot;
             ComponentConstraint c = new ComponentConstraint(OrderedGccManager.class,(Object) p,vars);
             m.addConstraint(c);
             CPSolver s = new CPSolver();
@@ -263,6 +257,7 @@ public class OrderedGccTest {
             }
             assertTrue(s.getNbSolutions()==6);
         }
+
 
 
 }
