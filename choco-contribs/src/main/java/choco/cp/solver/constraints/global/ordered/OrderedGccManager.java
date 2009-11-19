@@ -27,8 +27,8 @@ public class OrderedGccManager extends IntConstraintManager {
 			vars[i] = solver.getVar(variables[i]);
 		}
 		Object[] params = (Object[]) parameters;
-		int[] Imax = (int[]) params[1];
-		int minBot = (Integer) params[2];
+		int[] Imax = (int[]) params[0];
+		int minBot = (Integer) params[1];
 		return new OrderedGcc(vars,Imax,minBot);
 	}
 
