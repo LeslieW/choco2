@@ -150,7 +150,6 @@ public class Automaton {
 
         for (dk.brics.automaton.State s : tmp)
             ct.put(s,addState());
-
         setStartingState(ct.get(a.getInitialState()));
         for (dk.brics.automaton.State s : dkStates) {
             int tmp1 = ct.get(s);

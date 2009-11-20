@@ -98,6 +98,11 @@
             <version>2.1.0</version>
             <scope>compile</scope>
         </dependency>
+		<dependency>
+	        <groupId>jgrapht</groupId>
+	        <artifactId>jgrapht</artifactId>
+	        <version>0.8.1</version>
+	    </dependency>
     </dependencies>
     <modules>
         <module>choco-solver</module>

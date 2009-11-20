@@ -3211,6 +3211,22 @@ public class Choco{
 				auto, vars);
 	}
 
+    /**
+	 * Create a Regular constraint that enforce the sequence of variables to be a word
+	 * recognized by the dfa auto.
+	 * For example regexp = "(1|2)(3*)(4|5)";
+	 * The same dfa can be used for different propagators.
+	 *
+	 * @param auto the DFA
+	 * @param vars the variables of the constraint
+	 * @return the new constraint
+	 */
+	public static Constraint regular(Automaton auto, IntegerVariable[] vars) {
+		return new ComponentConstraint<IntegerVariable>(ConstraintType.FASTREGULAR,
+				auto, vars);
+	}
+
+
 
 	/**
 	 * Create a Regular constraint that enforce the sequence of variables to match the regular

@@ -48,6 +48,7 @@ public enum ConstraintType {
     EUCLIDEANDIVISION("div", "constraint.div"),
     EXPRESSION("expression"),
     FALSE("false", "constraint.false"),
+    FASTREGULAR("fastregular", "constraint.fastregular"),
     GEOST("geost", "constraint.geost"),
     GEQ("geq", "constraint.geq"),
     GLOBALCARDINALITY("globalCardinaly", "constraint.globalCardinaly"),
