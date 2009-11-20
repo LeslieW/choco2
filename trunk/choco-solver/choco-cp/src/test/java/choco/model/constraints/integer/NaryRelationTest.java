@@ -29,8 +29,10 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.constraints.integer.extension.TuplesTest;
 import org.junit.After;
@@ -42,6 +44,7 @@ import org.junit.Test;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 // **************************************************
 // *                   J-CHOCO                      *
@@ -748,6 +751,28 @@ public class NaryRelationTest {
         } catch (Exception e) {
             Assert.fail();
         }
+    }
+
+    @Test
+    public void testAcren(){
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+
+        IntegerVariable v1 = Choco.makeIntVar("v1", 4, 5);
+        IntegerVariable v2 = Choco.makeIntVar("v2", 50000, 100000);
+
+        m.addVariable(v1);
+        m.addVariable(v2);
+
+        List<int[]> tuples = new ArrayList<int[]>();
+
+        tuples.add(new int[] { 1, 100000 });
+        tuples.add(new int[] { 4, 100000 });
+
+        m.addConstraint(Choco.feasTupleAC(tuples, new IntegerVariable[] { v1, v2 }));
+
+        s.read(m);
+        
     }
 
 }

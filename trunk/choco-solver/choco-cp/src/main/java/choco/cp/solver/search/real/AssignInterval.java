@@ -56,10 +56,10 @@ public final class AssignInterval extends AbstractIntBranchingStrategy {
 		final RealVar x = decision.getBranchingRealVar();
 		if ( decision.getBranchingValue() == 1) {
 			x.intersect(RealMath.firstHalf(x));
-			manager.solver.propagate(); //FIXME is propagate useful ?
+			//manager.solver.propagate(); //FIXME is propagate useful ?
 		} else if( decision.getBranchingValue() == 2) {
 			x.intersect(RealMath.secondHalf(x));
-			manager.solver.propagate(); //FIXME is propagate useful ?
+			//manager.solver.propagate(); //FIXME is propagate useful ?
 		} else {
 			throw new SolverException("invalid real branching value");
 		}

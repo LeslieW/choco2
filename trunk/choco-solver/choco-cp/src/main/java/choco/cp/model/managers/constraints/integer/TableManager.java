@@ -50,8 +50,8 @@ public class TableManager extends IntConstraintManager {
      * @param solver
      * @param vars
      * @param parameters : a List<Object> which is intended to either a single element i.e the relation or
-     *                   two elements : - a boolean indicating if the consistency relation is feasible or infeasible
-     *                   - a list<int[]> or a int[][]
+     *                   two elements :<ul> <li>- a boolean indicating if the consistency relation is feasible or infeasible</li>
+     *                   <li>- a list<int[]> or a int[][]</li></ul>
      * @param options
      * @return
      */
