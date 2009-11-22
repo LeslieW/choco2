@@ -76,8 +76,8 @@ public class ASAPDataHandler extends Observable {
         this.solver = new CPSolver();
         this.solver.monitorFailLimit(true);
         this.solver.read(this.model);
-        ((CPSolver)this.solver).setGeometricRestart(1500,1.0);
-        ((CPSolver)this.solver).setRecordNogoodFromRestart(true);
+      //  ((CPSolver)this.solver).setGeometricRestart(1500,1.0);
+      //  ((CPSolver)this.solver).setRecordNogoodFromRestart(true);
 
         this.solver.setVarIntSelector(
                 new StaticVarOrder(
