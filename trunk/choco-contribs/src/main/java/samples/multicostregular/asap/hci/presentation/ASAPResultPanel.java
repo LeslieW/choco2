@@ -110,7 +110,11 @@ public class ASAPResultPanel extends JPanel {
             addPanel(p1,print);
             for (IntDomainVar iv : d.getCPSolver().getVar(ivt))
             {
-                final String car = this.model.getHandler().inverseMap.get(iv.getVal());
+                final String car;
+                if (iv.isInstantiated())
+                   car = this.model.getHandler().inverseMap.get(iv.getVal());
+                else
+                    car = "NO";
                 addPanel(p2,car);
             }
 

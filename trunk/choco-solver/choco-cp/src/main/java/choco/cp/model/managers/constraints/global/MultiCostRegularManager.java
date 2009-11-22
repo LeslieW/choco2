@@ -24,7 +24,7 @@ package choco.cp.model.managers.constraints.global;
 
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.multicostregular.MultiCostRegular;
+import choco.cp.solver.constraints.global.automata.multicostregular.FastMultiCostRegular;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -64,13 +64,13 @@ public class MultiCostRegularManager extends IntConstraintManager
                 if (param[2] instanceof int[][][])
                 {
                     int[][][] csts = (int[][][]) param[2];
-                    return new MultiCostRegular(vs,z,pi,csts);
+                    return new FastMultiCostRegular(vs,z,pi,csts);
                 }
-                else if (param[2] instanceof int[][][][])
+              /*  else if (param[2] instanceof int[][][][])
                 {
                     int[][][][] csts = (int[][][][]) param[2];
                     return new MultiCostRegular(vs,z,pi,csts);
-                }
+                } */
             }
         }
         return null;

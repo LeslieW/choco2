@@ -20,8 +20,9 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.constraints.global.fast_regular.structure;
+package choco.cp.solver.constraints.global.automata.fast_regular.structure;
 
+import choco.cp.solver.constraints.global.automata.common.StoredIndexedBipartiteSetWithOffset;
 import gnu.trove.TIntHashSet;
 import gnu.trove.TIntStack;
 import org.jgrapht.graph.DirectedMultigraph;
@@ -49,7 +50,7 @@ public class StoredDirectedMultiGraph {
 
 
 
-    StoredIndexedBipartiteSetWithAccess[] supports;
+    StoredIndexedBipartiteSetWithOffset[] supports;
 
 
 
@@ -58,8 +59,8 @@ public class StoredDirectedMultiGraph {
     {
         int[] states;
         int[] layers;
-        StoredIndexedBipartiteSetWithAccess[] outArcs;
-        StoredIndexedBipartiteSetWithAccess[] inArcs;
+        StoredIndexedBipartiteSetWithOffset[] outArcs;
+        StoredIndexedBipartiteSetWithOffset[] inArcs;
 
 
 
@@ -93,7 +94,7 @@ public class StoredDirectedMultiGraph {
         this.GArcs = new Arcs();
 
         TIntHashSet[] sups = new TIntHashSet[supportLength];
-        this.supports = new StoredIndexedBipartiteSetWithAccess[supportLength];
+        this.supports = new StoredIndexedBipartiteSetWithOffset[supportLength];
 
 
         Set<Arc> arcs = graph.edgeSet();
@@ -119,12 +120,12 @@ public class StoredDirectedMultiGraph {
         for (int i =0 ;i < sups.length ;i++)
         {
             if (sups[i] != null)
-                supports[i] = new StoredIndexedBipartiteSetWithAccess(this.constraint.getSolver().getEnvironment(),sups[i].toArray());
+                supports[i] = new StoredIndexedBipartiteSetWithOffset(this.constraint.getSolver().getEnvironment(),sups[i].toArray());
         }
 
         Set<Node> nodes = graph.vertexSet();
-        GNodes.outArcs = new StoredIndexedBipartiteSetWithAccess[nodes.size()];
-        GNodes.inArcs = new StoredIndexedBipartiteSetWithAccess[nodes.size()];
+        GNodes.outArcs = new StoredIndexedBipartiteSetWithOffset[nodes.size()];
+        GNodes.inArcs = new StoredIndexedBipartiteSetWithOffset[nodes.size()];
         GNodes.layers = new int[nodes.size()];
         GNodes.states = new int[nodes.size()];
 
@@ -143,7 +144,7 @@ public class StoredDirectedMultiGraph {
                 {
                     out[i++] = a.id;
                 }
-                GNodes.outArcs[n.id] = new StoredIndexedBipartiteSetWithAccess(this.constraint.getSolver().getEnvironment(),out);
+                GNodes.outArcs[n.id] = new StoredIndexedBipartiteSetWithOffset(this.constraint.getSolver().getEnvironment(),out);
             }
 
             Set<Arc> inarc = graph.incomingEdgesOf(n);
@@ -155,7 +156,7 @@ public class StoredDirectedMultiGraph {
                 {
                     in[i++] = a.id;
                 }
-                GNodes.inArcs[n.id] = new StoredIndexedBipartiteSetWithAccess(this.constraint.getSolver().getEnvironment(),in);
+                GNodes.inArcs[n.id] = new StoredIndexedBipartiteSetWithOffset(this.constraint.getSolver().getEnvironment(),in);
             }
         }
 
@@ -163,7 +164,7 @@ public class StoredDirectedMultiGraph {
 
     }
 
-    public final StoredIndexedBipartiteSetWithAccess getSupport(int i, int j)
+    public final StoredIndexedBipartiteSetWithOffset getSupport(int i, int j)
     {
         int idx = starts[i]+j-offsets[i];
         return supports[idx];
@@ -185,7 +186,7 @@ public class StoredDirectedMultiGraph {
         int layer = GNodes.layers[orig];
         int value = GArcs.values[arcId];
 
-        StoredIndexedBipartiteSetWithAccess support = getSupport(layer,value);
+        StoredIndexedBipartiteSetWithOffset support = getSupport(layer,value);
         support.remove(arcId);
 
         if (support.isEmpty())
@@ -202,8 +203,8 @@ public class StoredDirectedMultiGraph {
         }
 
         DisposableIntIterator it;
-        StoredIndexedBipartiteSetWithAccess out = GNodes.outArcs[orig];
-        StoredIndexedBipartiteSetWithAccess in;
+        StoredIndexedBipartiteSetWithOffset out = GNodes.outArcs[orig];
+        StoredIndexedBipartiteSetWithOffset in;
 
         out.remove(arcId);
 

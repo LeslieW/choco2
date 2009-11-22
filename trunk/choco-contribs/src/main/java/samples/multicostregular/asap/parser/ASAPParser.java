@@ -416,7 +416,7 @@ public class ASAPParser {
         for (int m = 0 ; m < c.getMinConsecutiveFreeDays()-1 ; m++)
             pat.add(rest);
         pat.add(allW);
-        //c.addPattern(pat);
+       // c.addPattern(pat);
 
         pat2.setComplete(true);
         pat3.setComplete(true);
