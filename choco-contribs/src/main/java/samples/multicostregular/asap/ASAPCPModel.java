@@ -251,7 +251,7 @@ public class ASAPCPModel extends CPModel {
                 ArrayUtils.reverse(cc);
             }
 
-            this.addConstraint(lexChainEq(chain));
+            this.addConstraint(lexChain(chain));   //TODO Ceci n'est pas correct !
         }
     }
 
