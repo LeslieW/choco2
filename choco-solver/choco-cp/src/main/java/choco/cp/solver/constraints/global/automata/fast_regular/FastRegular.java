@@ -1,9 +1,9 @@
-package choco.cp.solver.constraints.global.fast_regular;
+package choco.cp.solver.constraints.global.automata.fast_regular;
 
 
-import choco.cp.solver.constraints.global.fast_regular.structure.Arc;
-import choco.cp.solver.constraints.global.fast_regular.structure.Node;
-import choco.cp.solver.constraints.global.fast_regular.structure.StoredDirectedMultiGraph;
+import choco.cp.solver.constraints.global.automata.fast_regular.structure.Arc;
+import choco.cp.solver.constraints.global.automata.fast_regular.structure.Node;
+import choco.cp.solver.constraints.global.automata.fast_regular.structure.StoredDirectedMultiGraph;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;

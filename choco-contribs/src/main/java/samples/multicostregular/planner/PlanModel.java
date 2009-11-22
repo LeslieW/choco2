@@ -25,9 +25,11 @@ package samples.multicostregular.planner;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.global.automata.multicostregular.FastMultiCostRegular;
+import choco.cp.solver.constraints.global.automata.multicostregular.valselector.MCRValSelector;
 import choco.cp.solver.search.integer.varselector.MinDomain;
-import choco.cp.solver.constraints.global.costregular.CostRegular;
-import choco.cp.solver.constraints.global.costregular.CostRegularValSelector;
+import choco.cp.solver.constraints.global.automata.costregular.CostRegular;
+import choco.cp.solver.constraints.global.automata.costregular.CostRegularValSelector;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
@@ -38,8 +40,6 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
-import choco.cp.solver.constraints.global.multicostregular.MCRValSelector;
-import choco.cp.solver.constraints.global.multicostregular.MultiCostRegular;
 
 /**
  * Created by IntelliJ IDEA.
@@ -312,7 +312,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
         //CPSolver.setVerbosity(CPSolver.SOLUTION);
         if (type == MCR && valheur)
         {
-             s.setValIntSelector(new MCRValSelector(new MultiCostRegular[]{(MultiCostRegular)s.getCstr(main)},false));
+             s.setValIntSelector(new MCRValSelector(new FastMultiCostRegular[]{(FastMultiCostRegular)s.getCstr(main)},false));
         }
         if (type == COSTREG && valheur)
         {
@@ -445,7 +445,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
     }
 
     public static void main(String[] args) throws Exception {
-        MultiCostRegular.DATA_STRUCT = MultiCostRegular.LIST;
+        FastMultiCostRegular.DATA_STRUCT = FastMultiCostRegular.LIST;
      //   MultiCostRegular.DATA_STRUCT = MultiCostRegular.BITSET;
 
         DEBUG = false;

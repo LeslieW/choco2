@@ -97,6 +97,7 @@ public class ASAPCPModel extends CPModel {
 
         shifts = makeIntVarArray("x",nbEmployees,nbDays,dom,"cp:enum");
 
+
     }
 
     static int WE = 0;
@@ -108,12 +109,18 @@ public class ASAPCPModel extends CPModel {
         int[] alpha = this.alpha.toArray();
         int m = 0 ;
         int nbWeek = nbDays/7;
+        HashMap<ASAPContract,HashSet<IntegerVariable[]>> map = new HashMap<ASAPContract,HashSet<IntegerVariable[]>>();
+
  
 
 
         for (ASAPEmployee e : this.handler.orderedEmployees)
         {
             ASAPContract c = e.getContract();
+            if (map.get(c) == null)
+                map.put(c,new HashSet<IntegerVariable[]>());
+
+
             ArrayList<IntegerVariable> vs = new ArrayList<IntegerVariable>();
             int maxSPW = c.getMaxShiftsPerWeek();
             int minSPW = c.getMinShiftsPerWeek();
@@ -163,6 +170,7 @@ public class ASAPCPModel extends CPModel {
 
 
             IntegerVariable[] v =  shifts[m++];
+            map.get(c).add(v);
             IntegerVariable[] z = vs.toArray(new IntegerVariable[vs.size()]);
             Automaton a = rules.get(c);
             //  IntegerVariable z = makeIntVar("z",0,1000000,"cp:bound");
@@ -233,6 +241,17 @@ public class ASAPCPModel extends CPModel {
 
             Constraint cons = multiCostRegular(v,z,a,csts);
             this.addConstraint(cons);
+        }
+
+        for (HashSet<IntegerVariable[]> h : map.values())
+        {
+            IntegerVariable[][] chain = h.toArray(new IntegerVariable[h.size()][]);
+            for (IntegerVariable[] cc : chain)
+            {
+                ArrayUtils.reverse(cc);
+            }
+
+            this.addConstraint(lexChainEq(chain));
         }
     }
 
@@ -554,6 +573,7 @@ public class ASAPCPModel extends CPModel {
 
         }
         colormap.put("R",Color.LIGHT_GRAY);
+        colormap.put("NO",Color.BLACK);
 
     }
 

@@ -30,6 +30,8 @@ import choco.kernel.common.util.tools.ArrayUtils;
 import java.util.Observable;
 
 import samples.multicostregular.asap.ASAPCPModel;
+import samples.multicostregular.asap.heuristics.ASAPValSelector;
+import samples.multicostregular.asap.heuristics.ASAPVarSelector;
 
 /**
  * Created by IntelliJ IDEA.
@@ -74,15 +76,19 @@ public class ASAPDataHandler extends Observable {
         this.solver = new CPSolver();
         this.solver.monitorFailLimit(true);
         this.solver.read(this.model);
+        ((CPSolver)this.solver).setGeometricRestart(1500,1.0);
+        ((CPSolver)this.solver).setRecordNogoodFromRestart(true);
+
         this.solver.setVarIntSelector(
                 new StaticVarOrder(
                         this.solver.getVar(ArrayUtils.flatten(ArrayUtils.transpose(this.model.shifts)))
                 )
         );
-        //this.solver.setVarIntSelector(new ASAPVarSelector(this.solver,UtilAlgo.transpose(this.model.shifts)));
-        //this.solver.setValIntSelector(new ASAPValSelector(this.solver,UtilAlgo.transpose(this.model.shifts),this));
+      //  this.solver.setVarIntSelector(new ASAPVarSelector(this.solver,ArrayUtils.transpose(this.model.shifts)));
+        //this.solver.setValIntSelector(new ASAPValSelector(this.solver,ArrayUtils.transpose(this.model.shifts),this));
 
         solving.start();
+        
         this.setChanged();
         this.notifyObservers(SOLVING);
 

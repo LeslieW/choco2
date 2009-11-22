@@ -1,4 +1,4 @@
-package choco.cp.solver.constraints.global.fast_regular.structure;
+package choco.cp.solver.constraints.global.automata.fast_regular.structure;
 
 /**
  * Created by IntelliJ IDEA.

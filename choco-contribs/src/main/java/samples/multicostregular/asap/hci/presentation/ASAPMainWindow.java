@@ -58,17 +58,18 @@ public class ASAPMainWindow extends JFrame {
         this.pane.setLayout(new BorderLayout());
 
         addMenuBar();
-        buildLeft();
         buildCenter();
+        buildLeft();
 
 
 
     }
 
+    ASAPResultPanel jPanelResult;
     public void buildLeft()
     {
         int w = this.getWidth()/5;
-        ASAPSummaryPanel jPanelSummary  = new ASAPSummaryPanel(w);
+        ASAPSummaryPanel jPanelSummary  = new ASAPSummaryPanel(w,jPanelResult);
         Dimension d = new Dimension(w,this.getHeight());
         jPanelSummary.setPreferredSize(d);
 
@@ -88,7 +89,7 @@ public class ASAPMainWindow extends JFrame {
 
     public void buildCenter()
     {
-        ASAPResultPanel jPanelResult = new ASAPResultPanel(model);
+        jPanelResult = new ASAPResultPanel(model);
         //jPanelResult.setPreferredSize(new Dimension(this.getWidth()*4/5,this.getHeight()));
         ASAPResultControl rc = new ASAPResultControl(jPanelResult);
         model.addObserver(rc);

@@ -1,7 +1,7 @@
 package choco.cp.model.managers.constraints.global;
 
 import choco.cp.model.managers.IntConstraintManager;
-import choco.cp.solver.constraints.global.fast_regular.FastRegular;
+import choco.cp.solver.constraints.global.automata.fast_regular.FastRegular;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;

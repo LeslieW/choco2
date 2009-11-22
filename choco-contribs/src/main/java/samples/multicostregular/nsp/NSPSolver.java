@@ -1,7 +1,7 @@
 package samples.multicostregular.nsp;
 
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.multicostregular.MultiCostRegular;
+import choco.cp.solver.constraints.global.automata.multicostregular.FastMultiCostRegular;
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,9 +27,9 @@ public class NSPSolver {
                 s.attachGoal(new NSPBranching(varselec,valselec));
 
 
-                MultiCostRegular[] cons = new MultiCostRegular[mod.constraints.length];
+                FastMultiCostRegular[] cons = new FastMultiCostRegular[mod.constraints.length];
                 for (int k  = 0 ; k < mod.constraints.length ; k++)
-                    cons[k] = (MultiCostRegular) s.getCstr(mod.constraints[k]);
+                    cons[k] = (FastMultiCostRegular) s.getCstr(mod.constraints[k]);
 
                // s.setValIntSelector(new RCCRValSelector(cons,false));
 

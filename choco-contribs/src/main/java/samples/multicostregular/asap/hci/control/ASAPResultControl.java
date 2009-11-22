@@ -66,6 +66,7 @@ public class ASAPResultControl implements Observer {
         else if (i.equals(ASAPDataHandler.SOLVING))
         {
             this.pr.setText("SOLVING IN PROGRESS... PLEASE BE (VERY) PATIENT");
+            //this.pr.setSolved();
         }
         else if (i.equals(ASAPDataHandler.SOLUTION_FOUND))
         {

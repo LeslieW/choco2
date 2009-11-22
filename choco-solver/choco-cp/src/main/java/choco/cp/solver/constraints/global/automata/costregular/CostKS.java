@@ -20,7 +20,7 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.constraints.global.costregular;
+package choco.cp.solver.constraints.global.automata.costregular;
 
 
 import choco.kernel.solver.variables.integer.IntDomainVar;

@@ -25,7 +25,7 @@ package samples.documentation;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.multicostregular.MultiCostRegular;
+import choco.cp.solver.constraints.global.automata.multicostregular.FastMultiCostRegular;
 import choco.kernel.model.Model;
 //totex cmulticosteregular_import
 import choco.kernel.model.constraints.automaton.FA.Automaton;
@@ -214,7 +214,7 @@ public class Code4Doc4 {
             csts[i][REST][2] = new int[]{2, 0, 0, 0}; // costs of transition (2,REST,0)
         }
         //5- Set a constraint parameter
-        MultiCostRegular.DATA_STRUCT = MultiCostRegular.LIST;
+        FastMultiCostRegular.DATA_STRUCT = FastMultiCostRegular.LIST;
         //6- add the constraint
         m.addConstraint(multiCostRegular(sequence, bounds, auto, csts));
         //7- create the solver, read the model and solve it

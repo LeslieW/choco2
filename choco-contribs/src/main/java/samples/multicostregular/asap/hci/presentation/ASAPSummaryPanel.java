@@ -50,8 +50,9 @@ public class ASAPSummaryPanel extends JPanel
     private boolean solved;
     private long time  = 0;
     private Solver solver;
+    ASAPResultPanel rp;
 
-    public ASAPSummaryPanel(int width)
+    public ASAPSummaryPanel(int width,ASAPResultPanel rp)
     {
         super(new BorderLayout());
         this.width = width;
@@ -60,6 +61,7 @@ public class ASAPSummaryPanel extends JPanel
         this.end = new ASAPDate(1970,1,1);
         this.solving = false;
         this.solved = false;
+        this.rp =rp;
         this.setBorder(BorderFactory.createBevelBorder(1));
 
     }
@@ -110,7 +112,10 @@ public class ASAPSummaryPanel extends JPanel
             g.drawString("Time \t:\t"+t+" s",x,y);
             y+=20;
             try{
-            g.drawString("Fails \t:\t"+this.solver.getFailCount(),x,y);
+
+            g.drawString("Fails \t:\t"+this.solver.getNodeCount(),x,y);
+            this.rp.setSolved();
+
             }
             catch (NullPointerException ignored)
             {
@@ -174,7 +179,7 @@ public class ASAPSummaryPanel extends JPanel
             {
                 repaint();
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     System.err.println("Should not be interrupted");
                 }

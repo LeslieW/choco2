@@ -29,7 +29,6 @@ import choco.kernel.solver.constraints.SConstraint;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.multicostregular.MultiCostRegular;
 
 /**
  * This class present a simple scheduling problem defined in multicost-regular documentation.
@@ -197,8 +196,7 @@ public class SimpleSchedule extends CPModel
 
     public static void main(String[] args)
     {
-        MultiCostRegular.DATA_STRUCT = MultiCostRegular.LIST;
-        //MultiCostRegular.DATA_STRUCT = MultiCostRegular.BITSET;
+     
 
         SimpleSchedule m = new SimpleSchedule();
         CPSolver s = new CPSolver();
