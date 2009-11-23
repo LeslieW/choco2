@@ -1168,10 +1168,19 @@ public class Choco{
 			if (couple.length != 2) {
 				throw new ModelException("Wrong dimension : " + couple.length + " for a couple");
 			}
-			relation.setCouple(couple[0], couple[1]);
+            if(between(couple[0], min[0],max[0])
+                    && between(couple[1], min[1],max[1])){
+			    relation.setCouple(couple[0], couple[1]);
+            }else{
+                LOGGER.warning("{"+couple[0] +","+couple[1]+"} will not be added, because it doesn't respect domain bounds");
+            }
 		}
 		return relation;
 	}
+
+    private static boolean between(int v, int low, int upp){
+        return (low <= v) && (v <= upp);
+    }
 
 
 	/**
