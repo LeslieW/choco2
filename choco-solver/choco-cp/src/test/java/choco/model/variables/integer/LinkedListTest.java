@@ -22,14 +22,20 @@
 **************************************************/
 package choco.model.variables.integer;
 
+import choco.Choco;
 import static choco.Choco.makeIntVar;
 import static choco.Choco.neq;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
+import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.Random;
 
 /*
 * User : charles
@@ -42,8 +48,9 @@ public class LinkedListTest {
 
     @Test
      public void test_patakm1() {
+        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         Model m = new CPModel();
-        IntegerVariable[] arr = new IntegerVariable[10];
+        IntegerVariable[] arr = new IntegerVariable[1];
         int[] values = {-20000000, 20000000};
         for (int i = 0; i < arr.length; i++) {
             arr[i] = makeIntVar("", values, "cp:link");
@@ -52,7 +59,25 @@ public class LinkedListTest {
 
         Solver s = new CPSolver();
         s.read(m);
-        s.solve();
-        System.out.println("number of solutions: " + s.getNbSolutions());
+        s.solveAll();
+        Assert.assertEquals(2, s.getSolutionCount());
+    }
+
+    @Test
+     public void test_patakm2() {
+        String option = "cp:link";
+        for(int i = 0; i < 1000; i++){
+            Random r = new Random(i);
+            Model m = new CPModel();
+            int lb = r.nextInt(100) * (r.nextBoolean()?1:-1);
+            int ub = lb+ r.nextInt(100);
+            boolean isArray = r.nextBoolean();
+            IntegerVariable link = (isArray?Choco.makeIntVar("v", new int[]{lb, ub}, option):Choco.makeIntVar("v", lb, ub, option));
+            m.addVariable(link);
+            Solver s = new CPSolver();
+            s.read(m);
+            s.solveAll();
+            Assert.assertEquals("["+lb+","+ (isArray?"...":"")+ub+"]", isArray?(ub-lb==0?1:2):(ub-lb+1), s.getNbSolutions());
+        }
     }
 }

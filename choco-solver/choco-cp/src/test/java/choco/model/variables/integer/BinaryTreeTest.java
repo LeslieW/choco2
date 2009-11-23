@@ -37,15 +37,16 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Random;
 import java.util.logging.Logger;
 
-/**
- * Created by IntelliJ IDEA.
- * User: charles
- * Date: 18 juin 2008
- * Time: 11:36:26
- * To change this template use File | Settings | File Templates.
- */
+/*
+* User : charles
+* Mail : cprudhom(a)emn.fr
+* Date : 20 nov. 2009
+* Since : Choco 2.1.1
+* Update : Choco 2.1.1
+*/
 public class BinaryTreeTest {
 	private final static Logger LOGGER = ChocoLogging.getTestLogger();
   private Model m;
@@ -143,7 +144,7 @@ public class BinaryTreeTest {
             try {
                 s.getVar(y).remVal(i);
             } catch (ContradictionException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                Assert.fail();
             }
 
             Assert.assertFalse("y remove "+i, yDom.contains(i));
@@ -253,4 +254,24 @@ public class BinaryTreeTest {
         assertTrue("yDom not contains 10",yDom.contains(2));
         assertTrue("yDom not contains 6",yDom.contains(6));
     }
+
+    @Test
+     public void test_patakm() {
+        String option = "cp:btree";
+        for(int i = 0; i < 1000; i++){
+            Random r = new Random(i);
+            Model m = new CPModel();
+            int lb = r.nextInt(100) * (r.nextBoolean()?1:-1);
+            int ub = lb+ r.nextInt(100);
+            boolean isArray = r.nextBoolean();
+            IntegerVariable link = (isArray?Choco.makeIntVar("v", new int[]{lb, ub}, option):Choco.makeIntVar("v", lb, ub, option));
+            m.addVariable(link);
+            Solver s = new CPSolver();
+            s.read(m);
+            s.solveAll();
+            Assert.assertEquals("["+lb+","+ (isArray?"...":"")+ub+"]", isArray?(ub-lb==0?1:2):(ub-lb+1), s.getNbSolutions());
+        }
+    }
+
+
 }
