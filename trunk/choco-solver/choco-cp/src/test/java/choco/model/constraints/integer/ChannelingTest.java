@@ -22,17 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.integer;
 
-import static choco.Choco.*;
 import choco.Choco;
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
-import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.scheduling.SchedUtilities;
-
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -150,9 +147,19 @@ public class ChannelingTest {
 		s.read(m);
 		CPSolver s1 = new CPSolver();
 		s1 .read(m1);
-		ChocoLogging.setVerbosity(Verbosity.SEARCH);
 		SchedUtilities.compare( n, SchedUtilities.NO_CHECK_NODES, "channeling", s, s1);
 	}
 
+
+    @Test
+    public void test6(){
+        IntegerVariable xi = makeIntVar("x1", 0, 5);
+        IntegerVariable yij = makeIntVar("y1", 0, 0);
+        int j = 10000;
+        m.addConstraint(boolChanneling(yij, xi, j));
+		s.read(m);
+		s.solveAll();
+		assertEquals(6, s.getSolutionCount());
+    }
 
 }
