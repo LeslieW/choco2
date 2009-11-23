@@ -74,6 +74,7 @@ public class RuleModel extends CPModel {
             work+=tmp[i]+"|";
         work = work.substring(0,work.length()-1)+")";
         all = "("+tmp[2]+"|"+work.substring(1,work.length());
+        System.out.println("WORK : "+work);
 
 
     }
@@ -115,7 +116,7 @@ public class RuleModel extends CPModel {
 
         frule+="))";
 
-        full = new RegExp(StringUtils.toCharExp(frule)).toAutomaton().complement();
+        full = new RegExp(StringUtils.toCharExp(frule)).toAutomaton();
 
 
     }
@@ -158,7 +159,7 @@ public class RuleModel extends CPModel {
         {
             ret+=all;
         }
-        ret+="200";
+        ret+="122";
 
         for (int i = 0; i < 7 ; i++)
             ret+=all;
@@ -176,7 +177,7 @@ public class RuleModel extends CPModel {
         ret+="122";
         ret+="))";
 
-        full = full.intersection(new RegExp(StringUtils.toCharExp(ret)).toAutomaton().complement());
+        full = full.union(new RegExp(StringUtils.toCharExp(ret)).toAutomaton());
         full.minimize();
 
 
@@ -192,7 +193,7 @@ public class RuleModel extends CPModel {
             ret+=work;
         ret+=all+"*";
 
-        full = full.intersection(new RegExp(StringUtils.toCharExp(ret)).toAutomaton().complement());
+        full = full.union(new RegExp(StringUtils.toCharExp(ret)).toAutomaton());
         full.minimize();
 
 
@@ -204,7 +205,7 @@ public class RuleModel extends CPModel {
         ret+="1+0";
         ret+=all+"*";
 
-        full = full.intersection(new RegExp(StringUtils.toCharExp(ret)).toAutomaton().complement());
+        full = full.union(new RegExp(StringUtils.toCharExp(ret)).toAutomaton());
         full.minimize();
 
 
@@ -231,8 +232,13 @@ public class RuleModel extends CPModel {
         b.deleteCharAt(b.length()-1).append(")");
 
 
-        full = full.intersection(new RegExp(StringUtils.toCharExp(b.toString())).toAutomaton().complement());
+        System.out.println(b);
+        full = full.union(new RegExp(StringUtils.toCharExp(b.toString())).toAutomaton());
         full.minimize();
+
+        Automaton tmp = new Automaton();
+        tmp.fill(new RegExp(StringUtils.toCharExp(b.toString())).toAutomaton().complement(),alpha);
+        System.out.println(tmp);
 
 
 
@@ -284,7 +290,7 @@ public class RuleModel extends CPModel {
             for (int j = 0 ; j < 4 ; j++)
                 tmp[j] = makeIntVar("z_{"+i+","+j+"}",4,5,"cp:bound");
             this.addVariables(tmp);
-            this.addConstraint(eq(minus(tmp[4],28),minus(0,tmp[6])));
+          //  this.addConstraint(eq(minus(tmp[4],28),minus(0,tmp[6])));
 
             this.addVariables(vs[i]);
 
@@ -300,18 +306,26 @@ public class RuleModel extends CPModel {
             for (int j = 0 ; j < 4 ; j++)
                 tmp[j] = makeIntVar("z_{"+i+","+j+"}",2,3,"cp:bound");
             this.addVariables(tmp);
-            this.addConstraint(eq(plus(tmp[4],tmp[6]),28));
+        //    this.addConstraint(eq(plus(tmp[4],tmp[6]),28));
             this.addVariables(vs[i]);
 
         }
 
         Automaton auto = new Automaton();
-        auto.fill(full,alpha);
+        auto.fill(full.complement(),alpha);
 
+        int[] word = {2,2,2,2,1,2,0,2,2,2,1,2,2,0,0,0,2,1,2,2,2,2,2,0,0,2,2,1};
+        for (int i : word)
+            System.out.print(i+" ");
+        System.out.println("");
+
+        System.out.println(word.length);
+        System.out.println("BIZARRE ? "+auto.run(word));
 
         for (int i  = 0 ;i < 8 ; i++)
         {
             Constraint mr = multiCostRegular(vs[i],cvs[i],auto,csts);
+          //  this.addConstraint(regular(auto,vs[i]));
 
             this.addConstraint(mr);
             cstr.add(mr);
@@ -334,21 +348,28 @@ public class RuleModel extends CPModel {
 
     public void addLexConstraint()
     {
-        IntegerVariable[][] a = new IntegerVariable[4][];
-        IntegerVariable[][] b = new IntegerVariable[4][];
+        IntegerVariable[][] a = new IntegerVariable[4][28];
+        IntegerVariable[][] b = new IntegerVariable[4][28];
 
 
-        System.arraycopy(vs, 0, a, 0, a.length);
+
+       /* System.arraycopy(vs, 0, a, 0, a.length);
         System.arraycopy(vs, 4, b, 0, b.length);
+        System.arraycopy(vs, 0, aa, 0, aa.length);
+        System.arraycopy(vs, 4, bb, 0, bb.length);*/
 
         for (int i = 0 ; i < a.length ; i++)
         {
-            ArrayUtils.reverse(a[i]);
-            ArrayUtils.reverse(b[i]);
+            System.arraycopy(vs[i],0,a[i],0,a[i].length);
+            System.arraycopy(vs[i+4],0,b[i],0,b[i].length);
+
+
+
 
         }
 
-        this.addConstraints(lexChainEq(a),lexChainEq(b));
+        this.addConstraints(lexChain(a),lexChain(b));
+
 
 
     }
@@ -362,7 +383,7 @@ public class RuleModel extends CPModel {
 
         m.buildConsecutiveWERule();
         m.buildNoNightBeforeFreeWE();
-        m.buildNoMoreThanDayRule();
+       m.buildNoMoreThanDayRule();
         m.buildRestAfterNight();
         m.buildCompleteWE();
 
@@ -394,6 +415,8 @@ public class RuleModel extends CPModel {
 
         if (s.solve())
         {
+
+                System.out.println(mcr[4].check());
             int i = 0 ;
             for (IntegerVariable[] va : m.vs)
             {

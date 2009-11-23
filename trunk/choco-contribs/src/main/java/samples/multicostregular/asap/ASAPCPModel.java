@@ -245,13 +245,21 @@ public class ASAPCPModel extends CPModel {
 
         for (HashSet<IntegerVariable[]> h : map.values())
         {
+
             IntegerVariable[][] chain = h.toArray(new IntegerVariable[h.size()][]);
-            for (IntegerVariable[] cc : chain)
+            IntegerVariable[][] copy  = new IntegerVariable[chain.length][chain[0].length];
+            for (int i = 0 ; i < chain.length ;i++)
+            {
+                System.arraycopy(chain[i], 0, copy[i], 0, chain[i].length);
+            }
+
+
+            for (IntegerVariable[] cc : copy)
             {
                 ArrayUtils.reverse(cc);
             }
 
-            this.addConstraint(lexChain(chain));   //TODO Ceci n'est pas correct !
+          //  this.addConstraint(lexChainEq(chain));   //TODO Ceci n'est pas correct !
         }
     }
 
