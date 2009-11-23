@@ -31,7 +31,6 @@ import choco.cp.solver.constraints.integer.channeling.DomainChanneling;
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.model.constraints.ConstraintType;
 import static choco.kernel.model.constraints.ConstraintType.*;
-import static choco.kernel.model.constraints.ConstraintType.INVERSECHANNELING;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -75,7 +74,7 @@ public class ChannelingManager extends IntConstraintManager {
                         boolv = xi;
                         intv = yij;
                     }
-                    if ((boolv.getInf() >= 0) && (boolv.getSup() <= 1) && (intv.canBeInstantiatedTo(j))) {
+                    if ((boolv.getInf() >= 0) && (boolv.getSup() <= 1)/* && (intv.canBeInstantiatedTo(j))*/) {
                         return new BooleanChanneling(boolv, intv, j);
                     } else {
                         throw new SolverException(yij + " should be a boolean variable and " + j + " should belongs to the domain of " + xi);
