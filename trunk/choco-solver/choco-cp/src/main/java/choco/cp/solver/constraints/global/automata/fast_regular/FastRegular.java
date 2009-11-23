@@ -237,7 +237,13 @@ public class FastRegular extends AbstractLargeIntSConstraint {
             while(temp.size() > 0)
             {
                 int arcId = temp.pop();
-                graph.removeArc(arcId);
+                try{
+                    graph.removeArc(arcId);
+                } catch (ContradictionException e)
+                {
+                    temp.clear();
+                    throw e;
+                }
             }
 
         }
