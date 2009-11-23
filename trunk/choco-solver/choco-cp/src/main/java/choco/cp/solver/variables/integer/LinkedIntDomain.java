@@ -26,6 +26,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.IStateIntVector;
+import gnu.trove.TIntIntHashMap;
 
 import java.util.Random;
 
@@ -100,6 +101,10 @@ public class LinkedIntDomain extends AbstractIntDomain {
    */
   protected int firstIndexBeingPropagated;
 
+    protected final int[] sortedValues;
+
+    protected final TIntIntHashMap val2ind;
+
   /**
    * Constructs a new domain for the specified variable and bounds.
    *
@@ -116,10 +121,14 @@ public class LinkedIntDomain extends AbstractIntDomain {
     lowerBound = env.makeInt(a);
     upperBound = env.makeInt(b);
     int size = b - a + 1;
+      sortedValues = new int[size];
+      val2ind = new TIntIntHashMap();
     this.size = env.makeInt(size);
     int[] prevIndices = new int[size];
     int[] nextIndices = new int[size];
     for (int i = 0; i < nextIndices.length; i++) {
+        sortedValues[i] = a+i;
+        val2ind.put(a+i, i);
       nextIndices[i] = (i + 1) % size;
       prevIndices[i] = (i - 1 + size) % size;
     }
@@ -139,10 +148,13 @@ public class LinkedIntDomain extends AbstractIntDomain {
     lowerBound = env.makeInt(sortedValues[0]);
     upperBound = env.makeInt(sortedValues[sortedValues.length - 1]);
     int size = sortedValues.length;
+      this.sortedValues = sortedValues;
+      val2ind = new TIntIntHashMap();
     this.size = env.makeInt(size);
     int[] prevIndices = new int[size];
     int[] nextIndices = new int[size];
     for (int i = 0; i < sortedValues.length; i++) {
+        val2ind.put(sortedValues[i], i);
       nextIndices[i] = (i+1)%sortedValues.length;
       prevIndices[i] = (i-1+sortedValues.length)%sortedValues.length;
     }
@@ -161,7 +173,8 @@ public class LinkedIntDomain extends AbstractIntDomain {
    * @return the designed value in the domain.
    */
   protected int indexToValue(int index) {
-    return index + offset;
+//    return index + offset;
+      return sortedValues[index];
   }
 
   /**
@@ -171,7 +184,12 @@ public class LinkedIntDomain extends AbstractIntDomain {
    * @return the index of this value.
    */
   protected int valueToIndex(int value) {
-    return value - offset;
+//    return value - offset;
+      if(val2ind.containsKey(value)){
+          return val2ind.get(value);
+      }else{
+          return -1;
+      }
   }
 
   /**
@@ -214,8 +232,7 @@ public class LinkedIntDomain extends AbstractIntDomain {
    */
   public boolean contains(int x) {
     int xIndex = valueToIndex(x);
-    if (xIndex < 0 || xIndex >= nextIndex.size()) return false;
-    return nextIndex.get(xIndex) != -1;
+      return !(xIndex < 0 || xIndex >= nextIndex.size()) && nextIndex.get(xIndex) != -1;
   }
 
   /**
