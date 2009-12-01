@@ -207,7 +207,7 @@ public class TaskPlanif {
 
         System.out.println("Lecture MODEL  CHOCO .. ");
 
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
         System.out.println("Lancement Solver CHOCO ............ ");
         s.setTimeLimit(120 * 80000); // 2*80 secondes
         s.monitorTimeLimit(true);

@@ -48,7 +48,7 @@ public class LinkedListTest {
 
     @Test
      public void test_patakm1() {
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
+        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
         Model m = new CPModel();
         IntegerVariable[] arr = new IntegerVariable[1];
         int[] values = {-20000000, 20000000};

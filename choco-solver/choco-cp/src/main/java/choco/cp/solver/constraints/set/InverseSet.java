@@ -170,7 +170,7 @@ public final class InverseSet extends AbstractLargeSetIntSConstraint {
 	public boolean isSatisfied (int j) {
 		int s = ivars[j].getVal();
 		if (!svars[s].isInDomainKernel(j)) return false;
-		for (int i = 0; i < ivars.length; i++)
+		for (int i = 0; i < svars.length; i++)
 			if (svars[i].isInDomainEnveloppe(j) && i!=s) return false;
 		return true;
 	}
