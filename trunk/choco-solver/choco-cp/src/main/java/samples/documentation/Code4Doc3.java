@@ -33,8 +33,6 @@ import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 
 import java.util.ArrayList;
 
@@ -127,7 +125,6 @@ public class Code4Doc3 {
         m.addVariables("cp:bound",x ,y, z);
         m.addConstraint(ifOnlyIf(lt(x, y), lt(y, z)));
         s.read(m);
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
         s.solveAll();
         //totex
     }

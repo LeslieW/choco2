@@ -1,9 +1,5 @@
 package samples.jobshop;
 
-import java.util.Random;
-import java.util.logging.Level;
-
-import samples.Examples.PatternExample;
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -21,6 +17,10 @@ import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+import samples.Examples.PatternExample;
+
+import java.util.Random;
+import java.util.logging.Level;
 
 public class TaskPlanif2 extends PatternExample {
 
@@ -94,7 +94,7 @@ public class TaskPlanif2 extends PatternExample {
 
 	@Override
 	public void solve() {
-		ChocoLogging.setVerbosity(Verbosity.SEARCH);
+		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
 		_s.generateSearchStrategy();
 		_s.setTimeLimit(120*1000);
 		_s.minimize(_s.getVar(sumDurations), false);

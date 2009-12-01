@@ -56,7 +56,7 @@ public class SoftTest {
 
         s.post(softC);
 
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
         s.solveAll();
     }
 
@@ -72,7 +72,7 @@ public class SoftTest {
 
         s.post(softC);
 
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
         s.solveAll();
     }
 
@@ -91,7 +91,7 @@ public class SoftTest {
 
         s.post(softC);
 
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
         s.solveAll();
     }
 
@@ -125,7 +125,7 @@ public class SoftTest {
 
         System.out.println(s.pretty());
 
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
         s.minimize(obj, true);
     }
 

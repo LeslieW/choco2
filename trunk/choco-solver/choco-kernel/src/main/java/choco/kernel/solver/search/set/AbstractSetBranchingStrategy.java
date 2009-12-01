@@ -45,10 +45,8 @@ public abstract class AbstractSetBranchingStrategy extends AbstractBinIntBranchi
 	public void goDownBranch(final IntBranchingDecision decision) throws ContradictionException {
 		if (decision.getBranchIndex() == 0) {
 			decision.setValInSet();
-			manager.solver.propagate(); // is propagate useful ?
 		} else {
 			decision.setValOutSet();
-			manager.solver.propagate(); // is propagate useful ?
 		}
 	}
 
