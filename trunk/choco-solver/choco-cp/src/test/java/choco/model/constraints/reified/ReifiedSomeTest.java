@@ -1741,6 +1741,50 @@ public class ReifiedSomeTest {
 
     }
 
+    @Test
+    public void test_stoklin1(){
+        int NV = 6525;
+
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+
+        IntegerVariable[] vars = Choco.makeIntVarArray("v", NV, 0, 1);
+        IntegerVariable result = Choco.makeIntVar("result", 0, 978750);
+        int[] coeff = new int[NV];
+        Arrays.fill(coeff, 150);
+
+        m.addConstraint(eq(scalar(coeff, vars), result));
+
+        long t = -System.currentTimeMillis();
+        s.read(m);
+        t += System.currentTimeMillis();
+        System.out.println("t:"+t);
+        Assert.assertTrue("time!!", t < 6000);
+    }
+
+    @Test
+    public void test_stoklin2(){
+        int NV = 1999;
+
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+
+        IntegerVariable[] vars = Choco.makeIntVarArray("v", NV, 0, 1);
+        IntegerVariable result = Choco.makeIntVar("result", 0, 978750);
+        int[] coeff = new int[NV];
+        Arrays.fill(coeff, 150);
+        IntegerExpressionVariable exp = Choco.constant(0);
+        for(int i = 0; i < NV; i++){
+            exp = Choco.plus(exp, mult(coeff[i], vars[i]));
+        }
+        m.addConstraint(eq(exp, result));
+
+        long t = -System.currentTimeMillis();
+        s.read(m);
+        t += System.currentTimeMillis();
+        System.out.println("t:"+t);
+        Assert.assertTrue("time!!", t < 6000);
+    }
 
 
 }
