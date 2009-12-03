@@ -27,9 +27,9 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.TLongArrayList;
+import gnu.trove.TLongHashSet;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 /*
@@ -74,13 +74,24 @@ public abstract class INode implements IPretty {
      * @param s container solver
      * @return array of variable in the scope
      */
+//    public IntDomainVar[] getScope(Solver s) {
+//        try {
+//            IntDomainVar[] scope = subtrees[0].getScope(s);
+//            for (int i = 1; i < subtrees.length; i++) {
+//                scope = union(scope, subtrees[i].getScope(s));
+//            }
+//            return scope;
+//        } catch (NullPointerException e) {
+//            return null;
+//        }
+//    }
     public IntDomainVar[] getScope(Solver s) {
         try {
-            IntDomainVar[] scope = subtrees[0].getScope(s);
-            for (int i = 1; i < subtrees.length; i++) {
-                scope = union(scope, subtrees[i].getScope(s));
+            final IntDomainVar[][] scopes = new IntDomainVar[subtrees.length][];
+            for(int i = 0; i< subtrees.length; i++){
+                scopes[i] = subtrees[i].getScope(s);
             }
-            return scope;
+            return union(scopes);
         } catch (NullPointerException e) {
             return null;
         }
@@ -123,33 +134,23 @@ public abstract class INode implements IPretty {
     /**
      * Return a table being the union of the two tables given in argument
      *
-     * @param t1
-     * @param t2
-     * @return
+     * @param arrays first array
+     * @return array representing union of the two arrays in parameters
      */
-    public IntDomainVar[] union(IntDomainVar[] t1, IntDomainVar[] t2) {
-        TLongArrayList indexes = new TLongArrayList((t1==null?0:t1.length) + (t2==null?0:t2.length));
-        IntDomainVar[] unionset = new IntDomainVar[(t1==null?0:t1.length) + (t2==null?0:t2.length)];
-        int indice = 0;
-        if(t1!=null){
-            for (IntDomainVar var : t1) {
-                if (!indexes.contains(var.getIndex())) {
-                    indexes.add(var.getIndex());
-                    unionset[indice++] = var;
+    private IntDomainVar[] union(final IntDomainVar[]... arrays) {
+        final TLongHashSet indexes = new TLongHashSet();
+        final ArrayList<IntDomainVar> unionset = new ArrayList<IntDomainVar>();
+        for (IntDomainVar[] array : arrays) {
+            if (array != null) {
+                for (IntDomainVar var : array) {
+                    if (!indexes.contains(var.getIndex())) {
+                        indexes.add(var.getIndex());
+                        unionset.add(var);
+                    }
                 }
             }
         }
-        if(t2!=null){
-            for (IntDomainVar var : t2) {
-                if (!indexes.contains(var.getIndex())) {
-                    indexes.add(var.getIndex());
-                    unionset[indice++] = var;
-                }
-            }
-        }
-        IntDomainVar[] uniontab = new IntDomainVar[indice];
-        System.arraycopy(unionset, 0, uniontab, 0, indice);
-        return uniontab;
+        return unionset.toArray(new IntDomainVar[unionset.size()]);
     }
 
     /**
@@ -159,20 +160,28 @@ public abstract class INode implements IPretty {
      * @param t2
      * @return
      */
-    public IntegerVariable[] union(IntegerVariable[] t1, IntegerVariable[] t2) {
-        HashSet<IntegerVariable> unionset = new HashSet<IntegerVariable>();
-        for (int i = 0; t1 != null && i < t1.length; i++) {
-            if (!unionset.contains(t1[i])) {
-                unionset.add(t1[i]);
+    private IntegerVariable[] union(IntegerVariable[] t1, IntegerVariable[] t2) {
+        final TLongHashSet indexes = new TLongHashSet((t1==null?0:t1.length) + (t2==null?0:t2.length));
+        final IntegerVariable[] unionset = new IntegerVariable[(t1==null?0:t1.length) + (t2==null?0:t2.length)];
+        int indice = 0;
+        if(t1!=null){
+            for (IntegerVariable var : t1) {
+                if (!indexes.contains(var.getIndex())) {
+                    indexes.add(var.getIndex());
+                    unionset[indice++] = var;
+                }
             }
         }
-        for (int i = 0; t2 != null && i < t2.length; i++) {
-            if (!unionset.contains(t2[i])) {
-                unionset.add(t2[i]);
+        if(t2!=null){
+            for (IntegerVariable var : t2) {
+                if (!indexes.contains(var.getIndex())) {
+                    indexes.add(var.getIndex());
+                    unionset[indice++] = var;
+                }
             }
         }
-        IntegerVariable[] uniontab = new IntegerVariable[unionset.size()];
-        unionset.toArray(uniontab);
+        IntegerVariable[] uniontab = new IntegerVariable[indice];
+        System.arraycopy(unionset, 0, uniontab, 0, indice);
         return uniontab;
     }
 
@@ -270,4 +279,4 @@ public abstract class INode implements IPretty {
     public NodeType getType() {
         return type;
     }
- }
+}

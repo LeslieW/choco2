@@ -137,7 +137,7 @@ public abstract class AbstractVar implements Var {
      * @return the indice of the objet
      */
     @Override
-    public long getIndex() {
+    public final long getIndex() {
         return index;
     }
 
