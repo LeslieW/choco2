@@ -22,16 +22,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.set;
 
-import choco.Choco;
 import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.set.MemberX;
 import choco.cp.solver.constraints.set.MemberXY;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.SConstraint;
 
 import java.util.HashSet;
@@ -62,9 +61,6 @@ public class MemberManager extends MixedConstraintManager {
                 return new MemberX(solver.getVar((SetVariable) vars[0]), (Integer) parameters);
             }
         }
-        if (Choco.DEBUG) {
-            throw new SolverException("Could not found implementation for Member !");
-        }
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 }

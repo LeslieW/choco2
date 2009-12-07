@@ -22,11 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
-import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.regular.Regular;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.automaton.DFA;
 import choco.kernel.model.constraints.automaton.Transition;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -140,9 +140,6 @@ public class StretchPathManager extends IntConstraintManager {
                 return new Regular(auto, tmpVars);
             }
         }
-        if (Choco.DEBUG) {
-            LOGGER.severe("Could not found an implementation of stretchPath !");
-        }
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 }

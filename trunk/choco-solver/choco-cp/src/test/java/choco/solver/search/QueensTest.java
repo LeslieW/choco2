@@ -22,29 +22,23 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.solver.search;
 
-import static choco.Choco.makeIntVar;
-import static choco.Choco.minus;
-import static choco.Choco.neq;
-import static choco.Choco.plus;
-import static org.junit.Assert.assertEquals;
-
-import java.util.logging.Logger;
-
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
 import choco.cp.solver.search.integer.valselector.MaxVal;
-import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
+import org.junit.After;
+import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.logging.Logger;
 
 /* File choco.currentElement.search.QueensTest.java, last modified by flaburthe 12 janv. 2004 18:03:29 */
 
@@ -101,9 +95,9 @@ public class QueensTest {
     public void incrementalSolve(Solver solver, int n) {
     	solver.solve();
         do{
-            Assert.assertTrue("Not a solution", solver.checkSolution(false));
+            Assert.assertTrue("Not a solution", solver.checkSolution());
         }while(Boolean.TRUE.equals(solver.nextSolution()));
-        solver.printRuntimeSatistics();
+        solver.printRuntimeStatistics();
         assertEquals(Boolean.valueOf( NB_QUEENS_SOLUTION[n] > 0), solver.isFeasible());
         assertEquals(NB_QUEENS_SOLUTION[n], solver.getNbSolutions());
     }
@@ -116,6 +110,8 @@ public class QueensTest {
         s2.read(m);
         s2.setValIntSelector(new MaxVal()); 
         incrementalSolve(s2, n);
+
+        Assert.assertEquals(s1.getSolutionCount(), s2.getSolutionCount());
     }
 
     public void queen0(int n) {

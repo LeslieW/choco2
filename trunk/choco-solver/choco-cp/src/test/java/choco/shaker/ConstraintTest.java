@@ -357,7 +357,7 @@ public class ConstraintTest {
                     Assert.fail("(seed:" + seed + ") unexpected behaviour in propagation...\n"+e.getMessage()+"\n" + s.pretty());
                 }
             }
-            Assert.assertEquals("(seed:"+seed+") not satisfied", true, s.checkSolution(false));
+            Assert.assertEquals("(seed:"+seed+") not satisfied", true, s.checkSolution());
     }
 
     /**
@@ -383,7 +383,7 @@ public class ConstraintTest {
                         generateEvent((IntDomainVar)sc.getVar(v), values[vars.get((IntDomainVar)sc.getVar(v))], r);
                         stillInstanciable(vars, values);
                         if(fullyInstanciated(vars)){
-                            if(s.checkSolution(false)){
+                            if(s.checkSolution()){
                                     Assert.fail("(seed:" + seed + ") satisfied...\n" + s.pretty());
                             }
                         }

@@ -3,13 +3,11 @@
  */
 package choco.solver.search;
 
-import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import junit.framework.Assert;
 import static org.junit.Assert.assertEquals;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import samples.Examples.MinimumEdgeDeletion;
@@ -21,13 +19,6 @@ import java.util.logging.Logger;
 public class TestStrategyMed {
 
 	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
-
-	@Before
-	public void init() {
-		//		ChocoLogging.getTestLogger().setLevel(Level.INFO);
-		//		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
-		Choco.DEBUG=true;
-	}
 
 	private final MinimumEdgeDeletion med = new MedShaker();
 
@@ -43,7 +34,8 @@ public class TestStrategyMed {
 
 	/**
 	 * shake a little bit the optimization options.
-	 */
+     * @param parametersMED parameters of the  minimum edge deletion
+     */
 	public void testMED(Object parametersMED) {
 		med.setUp(parametersMED);
 		med.buildModel();

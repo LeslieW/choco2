@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
-import choco.Choco;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.memory.IEnvironment;
@@ -31,7 +30,6 @@ import choco.kernel.solver.ContradictionException;
 
 import java.util.Arrays;
 import java.util.Random;
-import java.util.logging.Level;
 
 /**
  * @author Guillaume Rochart
@@ -95,16 +93,8 @@ public class BipartiteIntDomain extends AbstractIntDomain {
      * @param sortedValues arry of sorted values.
      */
     public BipartiteIntDomain(IntDomainVarImpl v, int[] sortedValues) {
-        if (Choco.DEBUG) {
-            if (v == null) {
-                LOGGER.severe("Cannot create a domain without a not null variable !");
-                System.exit(-1);
-            }
-            if (sortedValues == null) {
-                LOGGER.log(Level.SEVERE, "Variable {0} cannot have an empty domain at the beginning !", v);
-                System.exit(-1);
-            }
-        }
+        assert(v!=null);
+        assert(sortedValues!=null);
         init(v, sortedValues);
     }
 
@@ -117,16 +107,8 @@ public class BipartiteIntDomain extends AbstractIntDomain {
      */
     public BipartiteIntDomain(IntDomainVarImpl v, int low, int up) {
         // Pre-condition
-        if (Choco.DEBUG) {
-            if (v == null) {
-            	 LOGGER.severe("Cannot create a domain without a not null variable !");
-                System.exit(-1);
-            }
-            if (low > up) {
-            	 LOGGER.log(Level.SEVERE, "Variable {0} cannot have an empty domain at the beginning !", v);
-                System.exit(-1);
-            }
-        }
+        assert(v!=null);
+        assert(low <= up);
         int[] sortedValues = new int[up - low + 1];
         for (int i = 0; i < sortedValues.length; i++) {
             sortedValues[i] = low + i;

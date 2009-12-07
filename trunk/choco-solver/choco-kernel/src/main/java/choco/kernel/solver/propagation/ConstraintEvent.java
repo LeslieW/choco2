@@ -23,7 +23,6 @@
 
 package choco.kernel.solver.propagation;
 
-import choco.Choco;
 import choco.kernel.solver.ContradictionException;
 
 /**
@@ -86,18 +85,14 @@ public class ConstraintEvent implements PropagationEvent {
    */
 
   public boolean propagateEvent() throws ContradictionException {
-    if (this.initialized) {
-      if (Choco.DEBUG) {
-        if (!this.touchedConstraint.isActive()) {
-          LOGGER.severe("There should not be some not active constraint events in the queue !");
-        }
+      if (this.initialized) {
+          assert (this.touchedConstraint.isActive());
+          this.touchedConstraint.propagate();
+      } else {
+          this.touchedConstraint.awake();
+          this.touchedConstraint.setActiveSilently();
       }
-      this.touchedConstraint.propagate();
-    } else {
-      this.touchedConstraint.awake();
-      this.touchedConstraint.setActiveSilently();
-    }
-    return true;
+      return true;
   }
 
 

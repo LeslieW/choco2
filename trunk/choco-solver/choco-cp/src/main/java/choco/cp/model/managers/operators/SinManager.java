@@ -22,10 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.operators;
 
-import choco.Choco;
 import choco.cp.model.managers.RealConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.real.exp.RealSin;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.real.RealExpressionVariable;
@@ -82,10 +82,6 @@ public class SinManager extends RealConstraintManager{
                 return new RealSin(s, r1);
             }
         }
-        if(Choco.DEBUG){
-            LOGGER.severe("Could not found an implementation for SinManager !");
-            System.exit(-1);
-        }
-        return null;
+        throw new ModelException("Could not found an expression manager in " + this.getClass() + " !");
     }
 }

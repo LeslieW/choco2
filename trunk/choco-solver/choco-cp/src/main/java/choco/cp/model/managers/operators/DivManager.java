@@ -22,9 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.operators;
 
-import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.leaves.arithm.DivNode;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ExpressionManager;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
@@ -54,9 +54,6 @@ public class DivManager implements ExpressionManager {
                 return new DivNode(nodes);
             }
         }
-        if(Choco.DEBUG){
-            throw new RuntimeException("Could not found an implementation for DivManager !");
-        }
-        return null;
+        throw new ModelException("Could not found a node manager in " + this.getClass() + " !");
     }
 }

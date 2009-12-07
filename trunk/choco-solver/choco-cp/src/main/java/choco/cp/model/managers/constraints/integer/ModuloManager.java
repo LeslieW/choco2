@@ -22,11 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.integer;
 
-import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.ModuloXYC2;
 import choco.cp.solver.constraints.reified.leaves.arithm.ModNode;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -75,10 +75,7 @@ public class ModuloManager extends IntConstraintManager {
                 return super.makeNode(solver, cstrs, vars);
             }
         }
-        if(Choco.DEBUG){
-            throw new RuntimeException("Could not found an implementation for ModuloManager !");
-        }
-        return null;
+        throw new ModelException("Could not found a node manager in " + this.getClass() + " !");
     }
 
 }

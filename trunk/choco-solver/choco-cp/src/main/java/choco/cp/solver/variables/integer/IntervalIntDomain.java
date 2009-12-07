@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
-import choco.Choco;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.EmptyIntIterator;
 import choco.kernel.common.util.iterators.OneValueIterator;
@@ -327,10 +326,9 @@ public class IntervalIntDomain extends AbstractIntDomain {
     }
 
     public String pretty() {
-        String ret = "[" + this.getInf() + " .. " + this.getSup() + "]";
-        if(Choco.DEBUG){
-            ret += lastInfPropagated + "->" + lastSupPropagated;
-        }
-        return ret;
+        StringBuffer ret = new StringBuffer();
+        ret.append("[").append(this.getInf()).append(" .. ").append(this.getSup()).append("]");
+        ret.append(lastInfPropagated).append("->").append(lastSupPropagated);
+        return ret.toString();
     }
 }

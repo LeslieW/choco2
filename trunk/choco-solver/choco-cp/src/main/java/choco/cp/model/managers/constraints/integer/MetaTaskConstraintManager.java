@@ -3,9 +3,9 @@
  */
 package choco.cp.model.managers.constraints.integer;
 
-import choco.Choco;
 import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.solver.Solver;
@@ -38,10 +38,7 @@ public class MetaTaskConstraintManager extends MixedConstraintManager {
 				}
 			}
 		  }
-		  if (Choco.DEBUG) {
-	            LOGGER.severe("Could not found an implementation of distance !");
-	        }
-		return null;
+		  throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
 	}
 
 	@Override

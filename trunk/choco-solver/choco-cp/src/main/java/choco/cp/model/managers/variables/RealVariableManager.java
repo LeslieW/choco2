@@ -22,9 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.variables;
 
-import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.real.RealVarImpl;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableManager;
@@ -68,11 +68,7 @@ public class RealVariableManager implements VariableManager {
             ((CPSolver) solver).addRealVar(s);
             return s;
         }
-        if (Choco.DEBUG) {
-            LOGGER.severe("Count not found implementation for RealVariable !");
-            System.exit(-1);
-        }
-        return null;
+        throw new ModelException("Could not found a variable manager in " + this.getClass() + " !");
     }
 
     /**

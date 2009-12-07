@@ -22,10 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.set;
 
-import choco.Choco;
 import choco.cp.model.managers.SetConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.set.SetUnion;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -56,11 +56,6 @@ public class UnionManager extends SetConstraintManager {
                 return new SetUnion(solver.getVar(variables[0]), solver.getVar(variables[1]), solver.getVar(variables[2]));
             }
         }
-        
-
-        if(Choco.DEBUG){
-            throw new RuntimeException("Could not found implementation for Union");
-        }
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 }

@@ -615,7 +615,7 @@ public interface Solver extends IMeasures, IPretty {
      * @param printAll print every available information
      * @return a boolean indicating wether the solution is correct or not.
      */
-    public Boolean checkSolution(boolean printAll);
+    public Boolean checkSolution();
 
     public Boolean nextSolution();
 

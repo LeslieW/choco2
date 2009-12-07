@@ -22,13 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.integer;
 
-import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.InverseChanneling;
 import choco.cp.solver.constraints.integer.channeling.BooleanChanneling;
 import choco.cp.solver.constraints.integer.channeling.DomainChanneling;
 import choco.kernel.common.util.tools.VariableUtils;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.ConstraintType;
 import static choco.kernel.model.constraints.ConstraintType.*;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
@@ -91,11 +91,6 @@ public class ChannelingManager extends IntConstraintManager {
                 }
             }
         }
-        if(Choco.DEBUG){
-            LOGGER.severe("Could not found an implementation of channeling !");
-        }
-
-
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 }

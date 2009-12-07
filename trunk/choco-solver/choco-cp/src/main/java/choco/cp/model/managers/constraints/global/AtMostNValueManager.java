@@ -22,10 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
-import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.AtMostNValue;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -55,9 +55,6 @@ public class AtMostNValueManager extends IntConstraintManager {
             System.arraycopy(variables, 0, vars, 0, vars.length);
              return new AtMostNValue(solver.getVar(vars), solver.getVar(variables[variables.length-1]));
         }
-        if (Choco.DEBUG) {
-            LOGGER.severe("Could not found an implementation of atMostNValue !");
-        }
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 }

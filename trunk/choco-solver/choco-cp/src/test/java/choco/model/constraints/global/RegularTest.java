@@ -877,7 +877,7 @@ public class RegularTest {
                     System.out.print(s.getVar(v).getVal()+ " ");
                 }
                 System.out.println();
-                Assert.assertTrue(s.checkSolution(true));
+                Assert.assertTrue(s.checkSolution());
             }while (s.nextSolution());
         }
     }

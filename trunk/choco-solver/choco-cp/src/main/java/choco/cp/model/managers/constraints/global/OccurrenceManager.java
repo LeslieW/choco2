@@ -22,11 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
-import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.Occurrence;
 import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -74,10 +74,7 @@ public class OccurrenceManager extends IntConstraintManager {
                 }
             }
         }
-        if(Choco.DEBUG){
-            LOGGER.severe("Could not found an implementation of occurence !");
-        }
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 
     /**
@@ -125,9 +122,6 @@ public class OccurrenceManager extends IntConstraintManager {
                 return cs;
 			}
 		}
-		if (Choco.DEBUG) {
-			throw new RuntimeException("Could not found an implementation of min or max !");
-		}
-		return null;
+		throw new ModelException("Could not found a constraint and opposite manager in " + this.getClass() + " !");
     }
 }

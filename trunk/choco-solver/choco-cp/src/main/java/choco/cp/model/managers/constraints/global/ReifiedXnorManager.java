@@ -22,10 +22,10 @@
 **************************************************/
 package choco.cp.model.managers.constraints.global;
 
-import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.channeling.ReifiedBinXnor;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -57,9 +57,6 @@ public class ReifiedXnorManager extends IntConstraintManager {
                 return new ReifiedBinXnor(solver.getVar(variables[0]), solver.getVar(variables[1]), solver.getVar(variables[2]));
             }
         }
-        if (Choco.DEBUG) {
-            throw new RuntimeException("Could not found implementation for ReifiedXor");
-        }
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 }

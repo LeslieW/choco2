@@ -1,19 +1,17 @@
 package samples.multicostregular.nsp;
 
-import choco.cp.model.CPModel;
-import choco.cp.model.managers.constraints.global.MultiCostRegularManager;
-
-import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.ComponentConstraint;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
-import choco.kernel.model.constraints.automaton.DFA;
-import choco.kernel.model.constraints.automaton.Transition;
-import choco.kernel.solver.Solver;
 import static choco.Choco.*;
+import choco.cp.model.CPModel;
+import choco.kernel.model.constraints.ComponentConstraint;
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.automaton.DFA;
+import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.Transition;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Solver;
 
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by IntelliJ IDEA.
@@ -69,7 +67,6 @@ public class NSPModel extends CPModel {
 
     private void makeModel()
     {
-        DEBUG=false;
         //workload : max : 5D/week or 4E/week or 2N/week min 2R/week
         this.shifts = makeIntVarArray("shift",instance.nbNurses,instance.nbDays,0,instance.nbShifts-1,"cp:enum");
         this.auto = makeNSPAutomaton();

@@ -120,11 +120,7 @@ public class IntegerVariableManager implements VariableManager {
             ((CPSolver) solver).addIntVar(v);
             return v;
         }
-        if (Choco.DEBUG) {
-            LOGGER.severe("Count not found implementation for IntegerVariable !");
-            System.exit(-1);
-        }
-        return null;
+        throw new ModelException("Could not found a variable manager in " + this.getClass() + " !");
     }
 
     /**

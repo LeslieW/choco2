@@ -22,9 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.expressions;
 
-import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.leaves.arithm.IfThenElseNode;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.constraints.ExpressionManager;
@@ -73,9 +73,6 @@ public class IfThenElseManager implements ExpressionManager {
                 return new IfThenElseNode(nt);
             }
         }
-        if(Choco.DEBUG){
-            throw new RuntimeException("Could not found an implementation for IfThenElseManager !");
-        }
-        return null;
+        throw new ModelException("Could not found a node manager in " + this.getClass() + " !");
     }
 }
