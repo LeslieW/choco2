@@ -136,7 +136,7 @@ public class SetEq extends AbstractBinSetSConstraint {
 				}
 			}
             it1.dispose();
-			return false;
+			return true;
 		} else {
 			return false;
 		}
