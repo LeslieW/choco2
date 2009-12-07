@@ -234,8 +234,8 @@ public class  ClauseStore extends AbstractLargeIntSConstraint {
             int[] lit = cl.getLits();
             int[] clt = new int[lit.length];
             for (int i = 0; i < lit.length; i++) {
-                //the literals are offset by one (thus the -1 and +1)
-                clt[i] = tuple[lit[i] > 0 ? lit[i] - 1 : -lit[i] + 1];
+                //the literals are offset by one
+                clt[i] = tuple[Math.abs(lit[i])-1];
             }
             if (!cl.isSatisfied(clt))
 				return false;
