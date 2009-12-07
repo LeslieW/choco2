@@ -22,8 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.variables;
 
-import choco.Choco;
 import choco.cp.solver.CPSolver;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableManager;
@@ -53,11 +53,7 @@ public class TaskVariableManager implements VariableManager {
                     solver.getVar(tv.end()), solver.getVar(tv.duration()));
             return stv;
         }
-        if(Choco.DEBUG){
-            LOGGER.severe("Count not found implementation for SetVariable !");
-            System.exit(-1);
-        }
-        return null;
+        throw new ModelException("Could not found a variable manager in " + this.getClass() + " !");
     }
 
     /**

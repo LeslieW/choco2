@@ -77,8 +77,6 @@ public class Choco{
 
 	protected final static Logger LOGGER = ChocoLogging.getModelLogger();
 
-	public static boolean DEBUG = false;
-
 	public final static int MIN_LOWER_BOUND  = Integer.MIN_VALUE / 100;
 
 	public final static int MAX_UPPER_BOUND  = Integer.MAX_VALUE / 100;
@@ -101,8 +99,6 @@ public class Choco{
 			LOGGER.warning("WARNING! Domains over ["+MIN_LOWER_BOUND+", "+MAX_UPPER_BOUND+"] are strongly inadvisable ! ");
 		}
 	}
-
-
 
 
 	/**
@@ -1170,10 +1166,10 @@ public class Choco{
 			}
             if(between(couple[0], min[0],max[0])
                     && between(couple[1], min[1],max[1])){
-			    relation.setCouple(couple[0], couple[1]);
+            relation.setCouple(couple[0], couple[1]);
             }else{
                 LOGGER.warning("{"+couple[0] +","+couple[1]+"} will not be added, because it doesn't respect domain bounds");
-            }
+		}
 		}
 		return relation;
 	}

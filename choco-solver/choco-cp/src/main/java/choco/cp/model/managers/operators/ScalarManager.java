@@ -22,9 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.operators;
 
-import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.leaves.arithm.ScalarNode;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ExpressionManager;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
@@ -55,10 +55,6 @@ public class ScalarManager implements ExpressionManager {
             }
             return new ScalarNode(scalarNodes, coeffs);
         }
-        if(Choco.DEBUG){
-            LOGGER.severe("Could not found an implementation for ScalarManager !");
-            System.exit(-1);
-        }
-        return null;
+        throw new ModelException("Could not found a node manager in " + this.getClass() + " !");
     }
 }

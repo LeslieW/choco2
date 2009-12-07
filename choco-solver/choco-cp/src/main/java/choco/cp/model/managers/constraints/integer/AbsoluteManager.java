@@ -22,11 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.integer;
 
-import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.Absolute;
 import choco.cp.solver.constraints.reified.leaves.arithm.AbsNode;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -59,11 +59,7 @@ public class AbsoluteManager extends IntConstraintManager {
                 return new Absolute(solver.getVar(variables[0]), solver.getVar(variables[1]));
             }
         }
-
-        if(Choco.DEBUG){
-            throw new RuntimeException("Could not found implementation for Absolute");
-        }
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 
     /**
@@ -86,9 +82,6 @@ public class AbsoluteManager extends IntConstraintManager {
                 return super.makeNode(solver, cstrs, vars);
             }
         }
-        if(Choco.DEBUG){
-            throw new RuntimeException("Could not found an implementation for Absolute !");
-        }
-        return null;
+        throw new ModelException("Could not found a node manager in " + this.getClass() + " !");
     }
 }

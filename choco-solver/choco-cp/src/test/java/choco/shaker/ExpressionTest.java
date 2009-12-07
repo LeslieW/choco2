@@ -750,7 +750,7 @@ public class ExpressionTest {
         if (decomposedSolver.isFeasible()) {
 
             do {
-                Assert.assertEquals("decomposedSolver.isSatisfied()",Boolean.TRUE, decomposedSolver.checkSolution(false));
+                Assert.assertEquals("decomposedSolver.isSatisfied()",Boolean.TRUE, decomposedSolver.checkSolution());
                 if(print){
                     st = new StringBuffer();
                     Iterator<IntegerVariable> it = m.getIntVarIterator();
@@ -771,7 +771,7 @@ public class ExpressionTest {
         if (undecomposedSolver.isFeasible()) {
             do {
                 if(print){
-                    Assert.assertEquals("undecomposedSolver.isSatisfied()",Boolean.TRUE, undecomposedSolver.checkSolution(false));
+                    Assert.assertEquals("undecomposedSolver.isSatisfied()",Boolean.TRUE, undecomposedSolver.checkSolution());
                     st = new StringBuffer();
                     Iterator<IntegerVariable> it = m.getIntVarIterator();
                     while(it.hasNext()){

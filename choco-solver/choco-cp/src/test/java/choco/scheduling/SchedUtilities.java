@@ -22,19 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.scheduling;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -53,6 +40,13 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.AbstractTask;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
+import static org.junit.Assert.assertEquals;
+
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -86,7 +80,6 @@ public final class SchedUtilities {
 
 
 	public static void compare(int nbsol,int nbNodes,String label ,Solver... solvers) {
-		Choco.DEBUG=true;
 		IntList bests = new IntList(solvers.length);
 		int bestTime = Integer.MAX_VALUE;
 		for (int i = 0; i < solvers.length; i++) {
@@ -112,7 +105,7 @@ public final class SchedUtilities {
 			}else if(nbNodes == CHECK_NODES && i>0){
 				assertEquals("check-cmp NbNodes "+str,solvers[i-1].getNodeCount(),s.getNodeCount());
 			}
-			assertEquals("solution checker",s.isFeasible(), s.checkSolution(false));
+			assertEquals("solution checker",s.isFeasible(), s.checkSolution());
 		}
 		LOGGER.log(Level.INFO,"Best solver: index {0} in {1}ms", new Object[]{bests,bestTime});
 	}
@@ -122,7 +115,6 @@ public final class SchedUtilities {
 	}
 	
 	public static void solveRandom(CPSolver solver,int nbsol,int nbNodes, Integer seed, String label) {
-		Choco.DEBUG=true;
 		//solver.setLoggingMaxDepth(10000);
 		if(seed == null) solver.setRandomSelectors();
 		else solver.setRandomSelectors(seed.longValue());
@@ -141,7 +133,7 @@ public final class SchedUtilities {
 			if(nbNodes>=0) {
 				assertEquals(jmsg("check nb nodes",label),nbNodes,solver.getNodeCount());
 			}
-			assertEquals("solution checker",solver.isFeasible(), solver.checkSolution(false));
+			assertEquals("solution checker",solver.isFeasible(), solver.checkSolution());
 		}
 	}
 

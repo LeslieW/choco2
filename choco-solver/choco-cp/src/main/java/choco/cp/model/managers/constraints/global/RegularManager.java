@@ -22,11 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
-import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.regular.Regular;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.automaton.DFA;
 import choco.kernel.model.constraints.automaton.Transition;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -71,10 +71,7 @@ public class RegularManager extends IntConstraintManager {
                 return new Regular(new DFA((String) parameters, vars.length), variables);
             }
         }
-        if (Choco.DEBUG) {
-            LOGGER.severe("Could not found an implementation of regular !");
-        }
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 
     public int[] getFavoriteDomains(HashSet<String> options) {

@@ -22,11 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.set;
 
-import choco.Choco;
 import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.set.NotMemberX;
 import choco.cp.solver.constraints.set.NotMemberXY;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -63,9 +63,6 @@ public class NotMemberManager extends MixedConstraintManager {
             
         }
     }
-    if (Choco.DEBUG) {
-      LOGGER.severe("Could not found an implementation in " + this.getClass() + " !");
-    }
-    return null;
+    throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
   }
 }

@@ -22,11 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.operators;
 
-import choco.Choco;
 import choco.cp.model.managers.RealConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.real.exp.RealMult;
 import choco.cp.solver.constraints.reified.leaves.arithm.MultNode;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ExpressionManager;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
@@ -76,10 +76,7 @@ public class MultManager extends RealConstraintManager implements ExpressionMana
                 return new MultNode(nodes);
             }
         }
-        if(Choco.DEBUG){
-            throw new RuntimeException("Could not found an implementation for MultManager !");
-        }
-        return null;
+        throw new ModelException("Could not found a node manager in " + this.getClass() + " !");
     }
 
     /**
@@ -97,9 +94,6 @@ public class MultManager extends RealConstraintManager implements ExpressionMana
                 return new RealMult(s, r1, r2);
             }
         }
-        if(Choco.DEBUG){
-            throw new RuntimeException("Could not found an implementation for MultManager !");
-        }
-        return null;
+        throw new ModelException("Could not found an expression manager in " + this.getClass() + " !");
     }
 }

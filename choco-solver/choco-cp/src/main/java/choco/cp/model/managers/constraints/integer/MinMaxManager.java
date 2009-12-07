@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.integer;
 
-import choco.Choco;
 import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.MaxOfAList;
@@ -31,6 +30,7 @@ import choco.cp.solver.constraints.integer.MinOfAList;
 import choco.cp.solver.constraints.integer.MinXYZ;
 import choco.cp.solver.constraints.set.MaxOfASet;
 import choco.cp.solver.constraints.set.MinOfASet;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
@@ -70,10 +70,7 @@ public class MinMaxManager extends MixedConstraintManager {
                 return buildConstraint(min, varOpt, set, solver.getVar(vars));
 			}
 		}
-		if (Choco.DEBUG) {
-			throw new RuntimeException("Could not found an implementation of min or max !");
-		}
-		return null;
+		throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
 	}
 
 
@@ -121,10 +118,7 @@ public class MinMaxManager extends MixedConstraintManager {
                 return cs;
 			}
 		}
-		if (Choco.DEBUG) {
-			throw new RuntimeException("Could not found an implementation of min or max !");
-		}
-		return null;
+		throw new ModelException("Could not found a constraint and opposite manager in " + this.getClass() + " !");
     }
 
 

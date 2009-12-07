@@ -1,11 +1,11 @@
 package choco.cp.model.managers.constraints.global;
 
-import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.Geost_Constraint;
 import choco.cp.solver.constraints.global.geost.externalConstraints.*;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Obj;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.geost.GeostOptions;
 import choco.kernel.model.constraints.geost.externalConstraints.*;
 import choco.kernel.model.variables.geost.GeostObject;
@@ -101,10 +101,7 @@ public class GeostManager extends IntConstraintManager {
                 }
                         }
                     }
-        if (Choco.DEBUG) {
-            System.err.println("Could not found implementation for Geost !");
-        }
-        return null;
+       throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 
 }

@@ -22,11 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
-import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.BoundAllDiff;
 import choco.cp.solver.constraints.global.matching.AllDifferent;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -62,10 +62,7 @@ public class AllDifferentManager extends IntConstraintManager {
 
             return defaultDetection(variables);
         }
-        if (Choco.DEBUG) {
-            LOGGER.severe("Could not found an implementation of alldifferent !");
-        }
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 
     public int[] getFavoriteDomains(HashSet<String> options) {

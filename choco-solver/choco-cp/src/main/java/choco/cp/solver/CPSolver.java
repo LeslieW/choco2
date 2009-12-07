@@ -80,7 +80,8 @@ import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.MathUtils;
-import choco.kernel.common.util.tools.StringUtils;
+import static choco.kernel.common.util.tools.StringUtils.pad;
+import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
@@ -537,7 +538,7 @@ public class CPSolver implements Solver {
 		}
 		buf.append("==== TASKS ====\n");
 		//noinspection unchecked
-		buf.append(StringUtils.prettyOnePerLine(taskVars.toList()));
+		buf.append(prettyOnePerLine(taskVars.toList()));
 		return new String(buf);
 	}
 
@@ -2294,44 +2295,46 @@ public class CPSolver implements Solver {
 	 * Solution checker. Usefull for debug and development.
 	 * Check also constraints with not instantiated variables
 	 *
-	 * @param logged pretty print
 	 * @return a boolean indicating wether the solution is correct or not.
 	 */
-	public Boolean checkSolution(boolean logged) {
-		return checkSolution(logged, true);
+	public Boolean checkSolution() {
+		return checkSolution(true);
 	}
 
 	/**
 	 * Solution checker. Usefull for debug and development.
 	 *
-	 * @param logged pretty print
 	 * @param enableConsistency check also constraints with not instantiated variables
 	 * @return a boolean indicating wether the solution is correct or not.
 	 */
-	public Boolean checkSolution(boolean logged, boolean enableConsistency) {
+	public Boolean checkSolution(boolean enableConsistency) {
 		Boolean isSolution = true;
-		StringBuffer st = new StringBuffer("~~~~~SOLUTION CHECKER~~~~~")
-		.append("\n");
-		st.append("(check wether every constraints define isSatisfied())")
-		.append("\n");
-
+        if(LOGGER.isLoggable(Level.INFO)){
+            LOGGER.info("=== Solution checker");
+            LOGGER.info("    Check decision variables and constraints:");
+            LOGGER.info("    - ");
+        }
 		// Check variables
-		isSolution &= checkDecisionVariables((logged?st:null));
-
+		isSolution &= checkDecisionVariables();
+        if(LOGGER.isLoggable(Level.INFO)){
+            if (isSolution) {
+                LOGGER.info("    Every decision variables are instantiated.");
+            } else {
+                LOGGER.info("    One or more decision variable is not instantiated,");
+                LOGGER.info("    or the search is not finished.");
+            }
+            LOGGER.info("    - ");
+        }
 		// Check constraints
-		isSolution &= checkConstraints((logged?st:null), enableConsistency);
-
-		st.append("\n");
-		if (isSolution) {
-			st.append("This solution satisfies every constraints.");
-		} else {
-			st.append("One or more constraint is not satisfied.").append("\n")
-			.append("Or one or more constraint is not consistent.\n")
-			.append("Or the search is not finished.");
-		}
-
-		st.append("\n").append("~~~~~~~~~~~~~~~~~~~~~~~~~~").append("\n");
-		if(logged)LOGGER.log(Level.INFO, st.toString());
+		isSolution &= checkConstraints(enableConsistency);
+        if(LOGGER.isLoggable(Level.INFO)){
+            if (isSolution) {
+                LOGGER.info("    Every constraints are satisfied.");
+            } else {
+                LOGGER.info("    One or more constraint is not satisfied,");
+                LOGGER.info("    or one or more constraint is not consistent.");
+            }
+        }
 		return isSolution;
 	}
 
@@ -2341,47 +2344,32 @@ public class CPSolver implements Solver {
 	 * @return true if all variables are instantiated
 	 */
 	public boolean checkDecisionVariables() {
-		return checkDecisionVariables(null);
-	}
-
-	/**
-	 * Check wether every decisions variables are instantiated
-	 *
-	 * @param st a stringbuffer to get the log
-	 * @return true if all variables are instantiated
-	 */
-	private boolean checkDecisionVariables(StringBuffer st) {
 		boolean isOk = true;
+        boolean check;
 		if (intDecisionVars != null) {
 			for (IntDomainVar intDecisionVar : intDecisionVars) {
-				if (!intDecisionVar.isInstantiated()) {
-					if(st!=null)st.append(StringUtils.pad(""+intDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
-					isOk = false;
-				}else{
-					if(st!=null)st.append(StringUtils.pad(""+intDecisionVar.getName(), 100, ".")).append("ok\n");
-				}
+                isOk &= check = intDecisionVar.isInstantiated();
+                if(LOGGER.isLoggable(Level.INFO)){
+                    printFail(intDecisionVar.getName(), check);
+                }
 			}
 		}
 
 		if (setDecisionVars != null) {
 			for (SetVar setDecisionVar : setDecisionVars) {
-				if (!setDecisionVar.isInstantiated()) {
-					if(st!=null)st.append(StringUtils.pad(""+setDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
-					isOk = false;
-				}else{
-					if(st!=null)st.append(StringUtils.pad(""+setDecisionVar.getName(), 100, ".")).append("ok\n");
-				}
+				isOk &= check = setDecisionVar.isInstantiated();
+                if(LOGGER.isLoggable(Level.INFO)){
+                    printFail(setDecisionVar.getName(), check);
+                }
 			}
 		}
 
 		if (floatDecisionVars != null) {
 			for (RealVar floatDecisionVar : floatDecisionVars) {
-				if (!floatDecisionVar.isInstantiated()) {
-					if(st!=null)st.append(StringUtils.pad(""+floatDecisionVar.getName(), 100, ".")).append("ko <= WARNING!\n");
-					isOk = false;
-				}else{
-					if(st!=null)st.append(StringUtils.pad(""+floatDecisionVar.getName(), 100, ".")).append("ok\n");
-				}
+				isOk &= check = floatDecisionVar.isInstantiated();
+                if(LOGGER.isLoggable(Level.INFO)){
+                    printFail(floatDecisionVar.getName(), check);
+                }
 			}
 		}
 		return isOk;
@@ -2393,21 +2381,12 @@ public class CPSolver implements Solver {
 	 * @return boolean
 	 */
 	public boolean checkConstraints(boolean enableConsistency){
-		return checkConstraints(null, enableConsistency);
-	}
-
-	/**
-	 * Check the constraints
-	 * @param st a string buffer for the log
-	 * @param enableConsistency check also constraints with not instantiated variables
-	 * @return boolean
-	 */
-	private boolean checkConstraints(StringBuffer st, boolean enableConsistency){
 		boolean isOk = true;
 		// Checck constraints
 		Iterator<SConstraint> ctit = this.getIntConstraintIterator();
 		while (ctit.hasNext()) {
 			SConstraint c = ctit.next();
+            boolean check;
 			if(c instanceof AbstractIntSConstraint){
 				AbstractIntSConstraint ic = (AbstractIntSConstraint)c;
 				int[] tuple = new int[c.getNbVars()];
@@ -2426,33 +2405,41 @@ public class CPSolver implements Solver {
 						tupleU[i] = v.getSup();
 					}
 				}
-				if(fullInstantiated){
-					if(ic.isSatisfied(tuple)){
-						if(st!=null)st.append(StringUtils.pad(""+ic.pretty(), 200, ".")).append("ok\n");
-					}else{
-						if(st!=null)st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ko <= WARNING!\n");
-						isOk = false;
-					}
-				}else if(enableConsistency){
-					if(ic.isSatisfied(tupleL) && ic.isSatisfied(tupleU)){
-						if(st!=null)st.append(StringUtils.pad(""+ic.pretty(), 200, ".")).append("ok\n");
-					}else{
-						if(st!=null)st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ko <= WARNING!\n");
-						if(st!=null)st.append("=> NOT CONSISTENT\n");
-						isOk = false;
-					}
-				}
+                try{
+                    if(fullInstantiated){
+                        check = ic.isSatisfied(tuple);
+                        isOk &= check;
+                        if(LOGGER.isLoggable(Level.INFO)){
+                            printFail(c.pretty(), check);
+                        }
+                    }else if(enableConsistency){
+                        check = (ic.isSatisfied(tupleL) && ic.isSatisfied(tupleU));
+                        isOk &= check;
+                        if(LOGGER.isLoggable(Level.INFO)){
+                            printFail(c.pretty(), check);
+                        }
+                    }
+                }catch (UnsupportedOperationException e){
+                    check =c.isSatisfied();
+                    isOk &= check;
+                    if(LOGGER.isLoggable(Level.INFO)){
+                        printFail(" => isSatisfied(int[]) is not defined for "+c.pretty(), check);
+                    }
+                }
 			}else{
-				if(c.isSatisfied()){
-					if(st!=null)st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ok\n");
-				}else{
-					if(st!=null)st.append(StringUtils.pad(""+c.pretty(), 200, ".")).append("ko <= WARNING!\n");
-					isOk = false;
-				}
+                check =c.isSatisfied();
+                isOk &= check;
+                if(LOGGER.isLoggable(Level.INFO)){
+                    printFail(c.pretty(), check);
+                }
 			}
 		}
 		return isOk;
 	}
+
+    private static void printFail(String input, boolean check){
+        LOGGER.info(pad((check?"":"FAILURE! => "),13, " ") +input);
+    }
 
 	/**
      * bug 2874124
@@ -2657,7 +2644,7 @@ public class CPSolver implements Solver {
 	 */
 	@Override
 	public void restoreSolution(Solution sol) {
-		try {
+        try{
 			// Integer variables
 			int nbv = getNbIntVars();
 			for (int i = 0; i < nbv; i++) {
@@ -2677,29 +2664,36 @@ public class CPSolver implements Solver {
 			for (int i = 0; i < nbv; i++) {
 				getRealVar(i).intersect(sol.getRealValue(i));
 			}
-			if (Choco.DEBUG) {
-				if (nogoodStore != null)
-					nogoodStore.setPassive();
-				ChocoLogging.flushLogs();
-				propagate();
-				if (nogoodStore != null)
-					nogoodStore.setActive();
-				// Iterator<Propagator> ctit =
-				// solver.getIntConstraintIterator();
-				// while (ctit.hasNext()) {
-				// SConstraint c = ctit.next();
-				// if(!c.isSatisfied()){
-				// throw(new
-				// SolverException("Restored solution not consistent !!"));
-				// }
-				// }
-			}
+            ChocoLogging.flushLogs();
+
+            assert(checkWithPropagate());
+            assert(checkWithIsSatisfied());
+            
 		} catch (ContradictionException e) {
-			LOGGER.severe("BUG in restoring solution !!");
-			throw (new SolverException("Restored solution not consistent !!"));
-			// TODO : � voir comment g�rer les erreurs en g�n�ral
+            // TODO : see how to deal with error
+            LOGGER.severe("BUG in restoring solution !!");
+            throw (new SolverException("Restored solution not consistent !!"));
 		}
 	}
+
+    private boolean checkWithPropagate() {
+        if (nogoodStore != null)
+            nogoodStore.setPassive();
+        try {
+            propagate();
+        } catch (ContradictionException e) {
+            // TODO : see how to deal with error
+            LOGGER.severe("BUG in restoring solution !!");
+            return false;
+        }
+        if (nogoodStore != null)
+            nogoodStore.setActive();
+        return true;
+    }
+
+    private boolean checkWithIsSatisfied(){
+        return checkSolution();
+    }
 
 
 	// **********************************************************************

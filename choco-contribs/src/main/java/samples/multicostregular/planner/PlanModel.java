@@ -25,21 +25,21 @@ package samples.multicostregular.planner;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.global.automata.costregular.CostRegular;
+import choco.cp.solver.constraints.global.automata.costregular.CostRegularValSelector;
 import choco.cp.solver.constraints.global.automata.multicostregular.FastMultiCostRegular;
 import choco.cp.solver.constraints.global.automata.multicostregular.valselector.MCRValSelector;
 import choco.cp.solver.search.integer.varselector.MinDomain;
-import choco.cp.solver.constraints.global.automata.costregular.CostRegular;
-import choco.cp.solver.constraints.global.automata.costregular.CostRegularValSelector;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.solver.Solver;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.tools.ArrayUtils;
 
 /**
  * Created by IntelliJ IDEA.
@@ -448,7 +448,6 @@ for (int i = 3 ; i < nbAct+3 ; i++)
         FastMultiCostRegular.DATA_STRUCT = FastMultiCostRegular.LIST;
      //   MultiCostRegular.DATA_STRUCT = MultiCostRegular.BITSET;
 
-        DEBUG = false;
         PlanModel dummy = new PlanModel(MCR,1,0,false);
         dummy.solve(false,false);
         int[] activ = {1,2,4,6,8,10,15,20,30,40,50};

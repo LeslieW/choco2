@@ -22,12 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
-import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.BoundGcc;
 import choco.cp.solver.constraints.global.BoundGccVar;
 import choco.cp.solver.constraints.global.matching.GlobalCardinality;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.ConstraintType;
 import static choco.kernel.model.constraints.ConstraintType.*;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -106,11 +106,7 @@ public class GlobalCardinalityManager extends IntConstraintManager {
                 }
             }
         }
-        if(Choco.DEBUG){
-            LOGGER.severe("Could not found an implementation of alldifferent !");
-        }
-
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 
     public int[] getFavoriteDomains(HashSet<String> options) {

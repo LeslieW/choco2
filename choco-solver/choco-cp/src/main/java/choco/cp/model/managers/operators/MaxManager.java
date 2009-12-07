@@ -22,9 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.operators;
 
-import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.leaves.arithm.MaxNode;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ExpressionManager;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
@@ -53,9 +53,6 @@ public class MaxManager implements ExpressionManager {
             }
             return new MaxNode(nodes);
         }
-        if(Choco.DEBUG){
-            throw new RuntimeException("Could not found an implementation for MaxManager !");
-        }
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 }

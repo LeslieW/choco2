@@ -22,11 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.integer;
 
-import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.DistanceXYC;
 import choco.cp.solver.constraints.integer.DistanceXYZ;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -73,10 +73,7 @@ public class DistanceManager extends IntConstraintManager {
                 }
             }
         }
-        if (Choco.DEBUG) {
-            LOGGER.severe("Could not found an implementation of distance !");
-        }
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 
     /**
@@ -120,9 +117,6 @@ public class DistanceManager extends IntConstraintManager {
                 return cs;
             }
         }
-        if (Choco.DEBUG) {
-            LOGGER.severe("Could not found an implementation of distance !");
-        }
-        return null;
+        throw new ModelException("Could not found a constraint and opposite manager in " + this.getClass() + " !");
     }
 }

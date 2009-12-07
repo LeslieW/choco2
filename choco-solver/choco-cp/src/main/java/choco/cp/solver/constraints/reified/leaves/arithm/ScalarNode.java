@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.reified.leaves.arithm;
 
-import choco.Choco;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.ArithmNode;
@@ -51,12 +50,7 @@ public class ScalarNode extends INode implements ArithmNode {
     public ScalarNode(INode[] subt, int[] coeffs) {
         super(subt, NodeType.SCALAR);
         this.coeffs = coeffs;
-        if (Choco.DEBUG) {
-            if (subt.length != coeffs.length) {
-                LOGGER.severe("There should be as many coeffs than variables in a sum/scalar !");
-                System.exit(-1);
-            }
-        }
+        assert(subt.length == coeffs.length);
     }
 
     public int eval(int[] tuple) {

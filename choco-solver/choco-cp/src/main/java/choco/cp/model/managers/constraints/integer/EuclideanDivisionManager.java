@@ -22,10 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.integer;
 
-import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.EuclideanDivisionXYZ;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -61,9 +61,6 @@ public class EuclideanDivisionManager extends IntConstraintManager {
             IntDomainVar[] vs = solver.getVar((IntegerVariable[]) variables);
             return new EuclideanDivisionXYZ(vs[0],vs[1],vs[2]);
         }
-        if(Choco.DEBUG){
-            LOGGER.severe("Could not found an implementation of Euclidean Division !");
-        }
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 }

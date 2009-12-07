@@ -22,11 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.operators;
 
-import choco.Choco;
 import choco.cp.model.managers.RealConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.real.exp.RealPlus;
 import choco.cp.solver.constraints.reified.leaves.arithm.PlusNode;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ExpressionManager;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
@@ -77,11 +77,7 @@ public class PlusManager extends RealConstraintManager implements ExpressionMana
                 return new PlusNode(nodes);
             }
         }
-        if(Choco.DEBUG){
-            LOGGER.severe("Could not found an implementation for PlusManager !");
-            System.exit(-1);
-        }
-        return null;
+        throw new ModelException("Could not found a node manager in " + this.getClass() + " !");
     }
 
 
@@ -100,10 +96,6 @@ public class PlusManager extends RealConstraintManager implements ExpressionMana
                 return new RealPlus(s, r1, r2);
             }
         }
-        if(Choco.DEBUG){
-            LOGGER.severe("Could not found an implementation for PlusManager !");
-            System.exit(-1);
-        }
-        return null;
+        throw new ModelException("Could not found an expression manager in " + this.getClass() + " !");
     }
 }

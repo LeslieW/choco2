@@ -146,7 +146,7 @@ public class EqTest {
         Solver s = new CPSolver();
         s.read(m);
         s.solve();
-        Assert.assertFalse(s.checkSolution(false));
+        Assert.assertFalse(s.checkSolution());
     }
 }
 

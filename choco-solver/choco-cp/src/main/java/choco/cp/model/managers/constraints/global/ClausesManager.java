@@ -22,10 +22,10 @@
  **************************************************/
 package choco.cp.model.managers.constraints.global;
 
-import choco.Choco;
 import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
@@ -66,10 +66,7 @@ public class ClausesManager extends MixedConstraintManager {
             }
             return cs;
         }
-        if (Choco.DEBUG) {
-            LOGGER.severe("Could not found an implementation of Clauses manager !");
-        }
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 
 }

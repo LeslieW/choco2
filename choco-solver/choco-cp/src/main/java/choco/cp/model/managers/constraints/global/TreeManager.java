@@ -22,12 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
-import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.tree.TreeSConstraint;
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.Node;
 import choco.cp.solver.constraints.global.tree.structure.inputStructure.TreeParameters;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.tree.TreeNodeObject;
 import choco.kernel.model.variables.tree.TreeParametersObject;
@@ -71,9 +71,6 @@ public class TreeManager extends IntConstraintManager {
                 return new TreeSConstraint(params.getAllVars(),params);
             }
         }
-        if(Choco.DEBUG){
-            throw new RuntimeException("Could not found implementation for Tree !");
-        }
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 }

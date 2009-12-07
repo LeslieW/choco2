@@ -22,10 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.variables;
 
-import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.set.SetCard;
 import choco.cp.solver.variables.set.SetVarImpl;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableManager;
@@ -82,11 +82,7 @@ public class SetVariableManager implements VariableManager {
             solver.post(new SetCard(s, s.getCard(), true, true)); //post |v| = v.getCard() 
             return s;
         }
-        if(Choco.DEBUG){
-            LOGGER.severe("Count not found implementation for SetVariable !");
-            System.exit(-1);
-        }
-        return null;
+        throw new ModelException("Could not found a variable manager in " + this.getClass() + " !");
     }
 
     /**

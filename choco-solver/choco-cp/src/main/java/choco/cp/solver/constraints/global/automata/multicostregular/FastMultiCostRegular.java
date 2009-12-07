@@ -22,34 +22,32 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.automata.multicostregular;
 
-import static choco.Choco.DEBUG;
-import choco.cp.solver.constraints.global.automata.multicostregular.structure.StoredDirectedMultiGraph;
-import choco.cp.solver.constraints.global.automata.multicostregular.algo.FastPathFinder;
-import choco.cp.solver.constraints.global.automata.multicostregular.structure.Node;
-import choco.cp.solver.constraints.global.automata.multicostregular.structure.Arc;
-import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.cp.solver.CPSolver;
 import choco.cp.model.managers.IntConstraintManager;
+import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.global.automata.multicostregular.algo.FastPathFinder;
+import choco.cp.solver.constraints.global.automata.multicostregular.structure.Arc;
+import choco.cp.solver.constraints.global.automata.multicostregular.structure.Node;
+import choco.cp.solver.constraints.global.automata.multicostregular.structure.StoredDirectedMultiGraph;
+import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.tools.ArrayUtils;
 import gnu.trove.TIntHashSet;
-import gnu.trove.TObjectIntHashMap;
 import gnu.trove.TIntIterator;
+import gnu.trove.TObjectIntHashMap;
+import org.jgrapht.graph.DirectedMultigraph;
 
-import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.BitSet;
-
-import org.jgrapht.graph.DirectedMultigraph;
+import java.util.HashSet;
 
 
 /**
@@ -976,13 +974,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         this.computeSharpBounds();
         if (toRemove.size() > 0)
             System.out.println("PB");
-        if (DEBUG && !this.check())
-        {
-            System.out.flush();
-            System.err.println("ACCEPTED INSTANTIATION DOES NOT COMPLY WITH CHECKER");
-            System.exit(1);
-            this.fail();
-        }
+        assert(check());
     }
 
 

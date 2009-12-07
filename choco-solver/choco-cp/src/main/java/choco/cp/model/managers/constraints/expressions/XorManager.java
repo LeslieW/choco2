@@ -22,11 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.expressions;
 
-import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.bool.BinXor;
 import choco.cp.solver.constraints.reified.leaves.bool.XorNode;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.MetaConstraint;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
@@ -61,10 +61,7 @@ public class XorManager extends IntConstraintManager {
                 }
             }
 
-            if (Choco.DEBUG) {
-                throw new RuntimeException("Could not found implementation for Xor");
-            }
-            return null;
+            throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 
     /**

@@ -22,10 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.expressions;
 
-import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.leaves.bool.*;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
@@ -66,10 +66,7 @@ public class NotManager extends IntConstraintManager {
                 return ct[1];
             }
         }
-        if (Choco.DEBUG) {
-            throw new RuntimeException("Could not found an implementation of Not !");
-        }
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 
     /**

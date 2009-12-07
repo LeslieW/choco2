@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular.asap;
 
-import static choco.Choco.*;
 import samples.multicostregular.asap.hci.abstraction.ASAPDataHandler;
 import samples.multicostregular.asap.hci.presentation.ASAPMainWindow;
 
@@ -37,17 +36,9 @@ public class ASAPViewer {
 
 
     public static void main(String[] args) {
-
-        DEBUG=false;
         ASAPDataHandler d = new ASAPDataHandler();
         ASAPMainWindow mw = new ASAPMainWindow(d);
         mw.pack();
         mw.setVisible(true);
-
-
     }
-
-
-    
-
 }

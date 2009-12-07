@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
-import choco.Choco;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.Element;
@@ -34,6 +33,7 @@ import choco.cp.solver.constraints.reified.leaves.bool.AndNode;
 import choco.cp.solver.constraints.reified.leaves.bool.EqNode;
 import choco.cp.solver.constraints.reified.leaves.bool.NeqNode;
 import choco.cp.solver.constraints.reified.leaves.bool.OrNode;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -97,10 +97,7 @@ public class ElementManager extends IntConstraintManager{
             }
         }
 
-        if(Choco.DEBUG){
-            throw new RuntimeException("Could not found implementation for Element !");
-        }
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 
     /**
@@ -180,9 +177,6 @@ public class ElementManager extends IntConstraintManager{
             return cs;
         }
 
-        if(Choco.DEBUG){
-            throw new RuntimeException("Could not found implementation for Element !");
-        }
-        return null;
+        throw new ModelException("Could not found a node manager in " + this.getClass() + " !");
     }
 }

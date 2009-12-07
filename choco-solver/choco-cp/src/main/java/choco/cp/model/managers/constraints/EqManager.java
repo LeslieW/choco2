@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints;
 
-import choco.Choco;
 import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.model.managers.RealConstraintManager;
 import choco.cp.solver.CPSolver;
@@ -34,6 +33,7 @@ import choco.cp.solver.constraints.reified.leaves.bool.*;
 import choco.cp.solver.constraints.set.SetEq;
 import choco.cp.solver.constraints.set.SetNotEq;
 import choco.kernel.common.util.tools.VariableUtils;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
@@ -167,10 +167,7 @@ public class EqManager extends MixedConstraintManager {
             }
         }
 
-        if (Choco.DEBUG) {
-            throw new RuntimeException("Could not find manager for Eq !");
-        }
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 
     /**

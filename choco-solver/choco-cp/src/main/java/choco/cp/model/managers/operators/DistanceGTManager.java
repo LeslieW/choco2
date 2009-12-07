@@ -22,9 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.operators;
 
-import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.leaves.bool.DistGtNode;
+import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ExpressionManager;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
@@ -55,9 +55,6 @@ public class DistanceGTManager implements ExpressionManager {
                 return new DistGtNode(nodes);
             }
         }
-        if(Choco.DEBUG){
-            throw new RuntimeException("Could not found an implementation for DistanceGTManager !");
-        }
-        return null;
+        throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 }
