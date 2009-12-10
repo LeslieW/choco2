@@ -320,6 +320,7 @@ public final class ChocoLogging {
 	 * set the choco verbosity level
 	 * @param verbosity the new verbosity level
 	 */
+	//FIXME change level of parser logger to display logs msg in AbstractInstanceModel
 	public static void setVerbosity(Verbosity verbosity) {
 		switch(verbosity) {
 		case OFF: setLevel(Level.OFF, CHOCO_LOGGERS);break;

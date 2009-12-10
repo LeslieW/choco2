@@ -192,19 +192,31 @@ public class Disjunctive extends AbstractResourceSConstraint {
 	
 	@Override
 	public boolean isSatisfied(int[] tuple) {
+		//System.out.println(Arrays.toString(tuple));
 		final int n = getNbTasks();
 		IPermutation permutation = PermutationUtils.getSortingPermuation(Arrays.copyOf(tuple, n));
-		int last = 0, tidx;
+		int pstart = 0, pend = 0;
 		for (int i = 0; i < n; i++) {
-			tidx = permutation.getOriginalIndex(i);
+			final int tidx = permutation.getOriginalIndex(i);
+			//System.out.println(tuple[tidx] +" "+ tuple[endOffset + tidx]+" "+tuple[startOffset + tidx]);
 			if( !isTaskSatisfied(tuple, tidx)) return false; //s_i + p_i != e_i
 			else if(isRegular(tuple, tidx)) {
-				//check that a regular task does not overlap with the previous one
-				if( tuple[tidx] < last) return false;
-				last = tuple[ startOffset + tidx];
+				final int s = tuple[tidx];
+				if( tuple[endOffset + tidx] > 0) {
+					//task has a positive duration
+					if( s < pend) return false; //overlaps with previous task
+					pstart = tuple[tidx];
+					pend = tuple[ startOffset + tidx];
+				} else {
+					//task has a nil duration
+					assert(tuple[endOffset + tidx] == 0);
+					if(s >= pend) {
+						pstart = pend = s; //start after previous task
+					} else if(s > pstart) return false; //overlaps with previous task
+				}
 			}
 		}
-		if(last > tuple[indexUB]) {return false;} //check makespan
+		if(pend > tuple[indexUB]) {return false;} //check makespan
 		return true;
 	}
 

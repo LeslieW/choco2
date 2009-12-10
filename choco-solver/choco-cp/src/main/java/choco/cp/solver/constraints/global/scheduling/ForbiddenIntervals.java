@@ -64,20 +64,13 @@ public class ForbiddenIntervals extends AbstractResourceSConstraint {
 		forbidden=new ExtendedBitSet(bell.getCoveredSet(),load);
 	}
 
-	/**
-	 * Gets the upper bound on the objective
-	 *
-	 * @return the UB
-	 */
-	private int getUB() {
-		return this.vars[indexUB].getSup();
-	}
 
-	private final boolean checkHead(final int head) {
+
+	private final boolean checkHead(final int head, final int ub) {
 		if(!forbidden.get(head)) {
 			final int before=forbidden.prevSetBit(head);
 			final int after=this.load-before;
-			if(after+head>this.getUB()) {
+			if(after+head> ub) {
 				return true;
 			}
 		}
@@ -90,25 +83,26 @@ public class ForbiddenIntervals extends AbstractResourceSConstraint {
 	 */
 	private final void updateHead(final int operation) throws ContradictionException {
 		final TaskVar t= getTask(operation);
+		final int ub = this.vars[indexUB].getSup();
 		int head=t.getEST();
-		if(checkHead(head)) {
+		if(checkHead(head, ub)) {
 			rtasks[operation].updateEST(forbidden.nextSetBit(head));
 		}
 		head=t.getECT();
-		if(checkHead(head)) {
+		if(checkHead(head, ub)) {
 			rtasks[operation].updateECT(forbidden.nextSetBit(head));
 		}
 	}
 
-	private int checkTail(final int tail) {
+	private int checkTail(final int tail, int ub) {
 		if(!forbidden.get(tail)) {
 			final int before=forbidden.prevSetBit(tail);
-			final int after=this.getUB()-(this.load-before);
+			final int after= ub -(this.load-before);
 			if(tail>after) {
 				return after;
 			}
 		}
-		return -1;
+		return Integer.MIN_VALUE;
 	}
 
 
@@ -118,13 +112,12 @@ public class ForbiddenIntervals extends AbstractResourceSConstraint {
 	 */
 	private final void updateTail(final int operation) throws ContradictionException {
 		final TaskVar t= getTask(operation);
-		int tail=t.getLST();
-		int val=checkTail(tail);
+		final int ub = this.vars[indexUB].getSup();
+		int val=checkTail(t.getLST(), ub);
 		if(val>=0) {
 			rtasks[operation].updateLST(val);
 		}
-		tail=t.getLCT();
-		val=checkTail(tail);
+		val=checkTail(t.getLCT(), ub);
 		if(val>=0) {
 			rtasks[operation].updateLCT(val);
 		}
@@ -141,13 +134,6 @@ public class ForbiddenIntervals extends AbstractResourceSConstraint {
 		if(idx< getNbTasks()) {updateHead(idx);}
 	}
 
-	private void globalUpdate() throws ContradictionException {
-		for (int o = 0; o < getNbTasks(); o++) {
-			updateHead(o);
-			updateTail(o);
-		}
-	}
-
 
 	@Override
 	public void awakeOnInst(final int idx) throws ContradictionException {
@@ -155,16 +141,16 @@ public class ForbiddenIntervals extends AbstractResourceSConstraint {
 			updateHead(idx);
 			updateTail(idx);
 		}else if(idx== indexUB){
-			globalUpdate();
+			propagate();
 		}
 	}
 
 	@Override
 	public void awakeOnSup(final int idx) throws ContradictionException {
 		if(idx== indexUB){
-			globalUpdate();
-		}else if(idx >= getNbTasks()) {
-			updateTail(idx/2);
+			propagate();
+		}else if(idx >= startOffset) {
+			updateTail(idx - startOffset);
 		}
 	}
 
@@ -175,8 +161,27 @@ public class ForbiddenIntervals extends AbstractResourceSConstraint {
 	 */
 	@Override
 	public void propagate() throws ContradictionException {
-		//nothing to do
+		for (int o = 0; o < getNbTasks(); o++) {
+			updateHead(o);
+			updateTail(o);
+		}
 	}
+
+	@Override
+	public boolean isSatisfied(int[] tuple) {
+		final int n = getNbTasks();
+		final int makespan = tuple[indexUB];
+		for (int i = 0; i < n; i++) {
+			final int end = tuple[ startOffset + i];
+			final int tail = checkTail(end, makespan);
+			if( checkHead(tuple[i], makespan) || 
+					( tail >= 0 && tail < end) ) {
+				return false; 
+			}
+		}
+		return true;
+	}
+
 
 
 

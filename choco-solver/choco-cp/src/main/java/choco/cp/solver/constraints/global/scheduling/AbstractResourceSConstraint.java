@@ -110,7 +110,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 	}
 	private final static IntDomainVar[] createIntVarArray(final IntDomainVar[] otherVars,final IntDomainVar uppBound) {
 		if(uppBound == null) {
-			throw new SolverException("no makepsan specified for a resource constraint");
+			throw new SolverException("no makespan for resource constraint");
 		}
 		IntDomainVar unit = uppBound.getSolver().createIntegerConstant("unit", 1);
 		return ArrayUtils.append(otherVars, new IntDomainVar[]{uppBound, unit});
@@ -168,8 +168,10 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 	 * returns (s_i + p_i = e_i)
 	 */
 	protected final boolean isTaskSatisfied(int[] tuple, int tidx) {
+		//start + duration = end
 		return tuple[tidx] + tuple[endOffset + tidx] == tuple[startOffset + tidx];
 	}
+	
 	
 	protected boolean isRegular(int[] tuple, int tidx) {
 		return true;

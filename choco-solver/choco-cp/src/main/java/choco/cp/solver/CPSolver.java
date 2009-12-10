@@ -2666,8 +2666,8 @@ public class CPSolver implements Solver {
 			}
             ChocoLogging.flushLogs();
 
-            assert(checkWithPropagate());
-            assert(checkWithIsSatisfied());
+           // assert(checkWithPropagate());
+           // assert(checkWithIsSatisfied());
             
 		} catch (ContradictionException e) {
             // TODO : see how to deal with error

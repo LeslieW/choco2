@@ -54,6 +54,7 @@ public class LimitConfiguration {
 
 	protected Limit restartStrategyLimitType = Limit.BACKTRACK;
 
+	//FIXME useless
 	public boolean monitorFailLimit;
 
 	public LimitConfiguration() {}

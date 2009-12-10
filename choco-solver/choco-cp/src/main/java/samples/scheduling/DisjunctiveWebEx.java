@@ -90,7 +90,7 @@ public class DisjunctiveWebEx extends PatternExample {
 			for (int i = 0; i < N; i++) {
 				durations[i] = makeIntVar("H_" + i, new int[]{0, DURATIONS_DATA[i]});
 				tasks[i] = makeTaskVar("t"+i, RELEASE_DATES_DATA[i], 20, durations[i]);
-			}
+			}	
 			//post the channeling to know if the task is scheduled or not
 			for (int i = 0; i < N; i++) {
 				_m.addConstraint(boolChanneling(USAGES[i], durations[i], DURATIONS_DATA[i]));

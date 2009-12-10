@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.integer.branching.AbstractDomOverWDegBranching;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.variables.integer.IntegerVariable;
 
@@ -60,6 +61,7 @@ public class MagicSquare extends PatternExample {
 	@Override
 	public void buildSolver() {
 		_s = new CPSolver();
+		_s.monitorFailLimit(true);
 		_s.read(_m);
 		_s.setTimeLimit(500*1000);
 	}
@@ -89,7 +91,8 @@ public class MagicSquare extends PatternExample {
 	}
 
 	public static void main(String[] args) {
-		new MagicSquare().execute(7);
+		MagicSquare ex = new MagicSquare();
+		ex.execute(5);
 	}
 
 }
