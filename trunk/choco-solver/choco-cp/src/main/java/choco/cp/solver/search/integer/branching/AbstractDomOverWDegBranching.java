@@ -1,5 +1,6 @@
 package choco.cp.solver.search.integer.branching;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -19,7 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class AbstractDomOverWDegBranching extends
-        AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomBreakTies {
+AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomBreakTies {
 
 	//*****************************************************************//
 	//*********** computation of weighted degrees and failures ****//
@@ -117,11 +118,12 @@ public abstract class AbstractDomOverWDegBranching extends
 		initExtensions(this.solver);
 		this.solver.getPropagationEngine().addPropagationEngineListener(this);
 	}
+
 	@Override
 	public final void safeDelete() {
 		solver.getPropagationEngine().removePropagationEngineListener(this);
 	}
-	
+
 	protected static final IntDomainVar[] buildVars(Solver s) {
 		IntDomainVar[] vars = new IntDomainVar[s.getNbIntVars()];
 		for (int i = 0; i < vars.length; i++) {
@@ -149,6 +151,20 @@ public abstract class AbstractDomOverWDegBranching extends
 		this.maxConstraintArity = maxConstraintArity;
 	}
 
+
+	public static final int computeWeightedDegreeFromScratch(Var v) {
+		int weight = 0;
+		final DisposableIntIterator iter= v.getIndexVector().getIndexIterator();
+		while (iter.hasNext()) {
+			final int idx = iter.next();
+			AbstractSConstraint cstr = (AbstractSConstraint) v.getConstraint(idx);
+			if (SConstraintType.INTEGER.equals(cstr.getConstraintType()) && cstr.getNbVarNotInst() > 1) {
+				weight+= getConstraintExtension(cstr).getNbFailure() + cstr.getFineDegree(v.getVarIndex(idx));
+			}
+		}
+		iter.dispose();
+		return weight;
+	}
 	//*****************************************************************//
 	//*******************  Extension managment ***********************//
 	//***************************************************************//
@@ -206,6 +222,7 @@ public abstract class AbstractDomOverWDegBranching extends
 					weight+= getConstraintExtension(reuseCstr).getNbFailure() + reuseCstr.getFineDegree(v.getVarIndex(idx));
 				}
 			}
+			iter.dispose();
 			getVarExtension((AbstractVar) v).setSumWeights(weight);
 		}
 		//logWeights(ChocoLogging.getChocoLogger(), Level.INFO);
@@ -217,6 +234,7 @@ public abstract class AbstractDomOverWDegBranching extends
 			if (SConstraintType.INTEGER.equals(reuseCstr.getConstraintType()) &&
 					reuseCstr.getNbVarNotInst() == 2) {
 				int delta = assign ? -getConstraintExtension(reuseCstr).getNbFailure() : getConstraintExtension(reuseCstr).getNbFailure(); 
+				//System.out.println("branching "+reuseCstr.pretty()+" "+getConstraintExtension(reuseCstr).getNbFailure());
 				for (int k = 0; k < reuseCstr.getNbVars(); k++) {
 					AbstractVar var = (AbstractVar) reuseCstr.getVar(k);
 					if (var != currentVar && !var.isInstantiated()) {
@@ -237,7 +255,9 @@ public abstract class AbstractDomOverWDegBranching extends
 				initConstraintForBranching(reuseCstr);
 				getConstraintExtension(reuseCstr).addFailure();
 			}
+			//System.out.println("contradiction "+reuseCstr.pretty()+" "+getConstraintExtension(reuseCstr).getNbFailure());
 			for (int k = 0; k < reuseCstr.getNbVars(); k++) {
+				//FIXME add FineDegree too and check number of non instantiated variables ?
 				getVarExtension( (AbstractVar) reuseCstr.getVar(k)).addWeight();
 			}
 		}
@@ -261,11 +281,13 @@ public abstract class AbstractDomOverWDegBranching extends
 		return  vars[i].getDomainSize();
 	}
 
-	
+
 	protected final int selectBranchingIndex() {
 		dwdegStruct.reset();
 		if (randomBreakTies == null) {
 			for (int i = 0; i < vars.length; i++) {
+				//assert( vars[i].isInstantiated() 
+				//		|| computeWeightedDegreeFromScratch(vars[i]) ==  getVarExtension((AbstractVar) vars[i]).getSumWeights());
 				if ( ! vars[i].isInstantiated()  && 
 						( dwdegStruct.isEmpty() || dwdegStruct.compare(i) > 0) ) {
 					//first or best non instantiated variable
@@ -293,9 +315,9 @@ public abstract class AbstractDomOverWDegBranching extends
 			else {return reuseList.getQuick(randomBreakTies.nextInt(reuseList.size()));}
 		}
 	}
-	
+
 	protected int reuseIndex;
-	
+
 	public Object selectBranchingObject() throws ContradictionException {
 		reuseIndex = selectBranchingIndex();
 		return reuseIndex < 0 ? null : vars[reuseIndex];
@@ -338,6 +360,7 @@ public abstract class AbstractDomOverWDegBranching extends
 			}
 			b.append("<=== End Display DomWDeg weights\n");
 			logger.log(level, new String(b));
+			ChocoLogging.flushLogs();
 		}
 	}
 
