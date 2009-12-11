@@ -143,7 +143,7 @@ public class StringUtils {
 
     public static String pretty(int c) {
     	if (c > 0) return " + "+c;
-        else if (c < 0) return " - "+c;
+        else if (c < 0) return " - "+Math.abs(c);
         else return "";
     }
 
