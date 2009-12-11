@@ -165,7 +165,7 @@ public class  ClauseStore extends AbstractLargeIntSConstraint {
 		return indexes.get(v.getIndex())+1;
 	}
 
-	public void addDynamicClause(IntDomainVar[] positivelits,IntDomainVar[] negativelits) {
+	public void addNoGood(IntDomainVar[] positivelits,IntDomainVar[] negativelits) {
 		IntDomainVar[] plit = removeRedundantVars(positivelits);
 		IntDomainVar[] nlit = removeRedundantVars(negativelits);
 
@@ -223,22 +223,30 @@ public class  ClauseStore extends AbstractLargeIntSConstraint {
 
 	public boolean isSatisfied() {
 		for (WLClause cl : listclause) {
-			if (!cl.isSatisfied())
-				return false;
+            // only check static clauses,
+            // because nogoods can be unsatisfied due to the backtrack
+            if(!cl.isNogood()){
+                if (!cl.isSatisfied())
+                    return false;
+            }
 		}
 		return true;
 	}
 
     public boolean isSatisfied(int[] tuple) {
 		for (WLClause cl : listclause) {
-            int[] lit = cl.getLits();
-            int[] clt = new int[lit.length];
-            for (int i = 0; i < lit.length; i++) {
-                //the literals are offset by one
-                clt[i] = tuple[Math.abs(lit[i])-1];
+            // only check static clauses,
+            // because nogoods can be unsatisfied due to the backtrack
+            if(!cl.isNogood()){
+                int[] lit = cl.getLits();
+                int[] clt = new int[lit.length];
+                for (int i = 0; i < lit.length; i++) {
+                    //the literals are offset by one
+                    clt[i] = tuple[Math.abs(lit[i])-1];
+                }
+                if (!cl.isSatisfied(clt))
+                    return false;
             }
-            if (!cl.isSatisfied(clt))
-				return false;
 		}
 		return true;
 	}
