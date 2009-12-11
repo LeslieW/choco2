@@ -17,6 +17,7 @@ public class WLClause {
 
     protected boolean isreg = false;
 
+    protected boolean nogood = false;
 
     public WLClause(int[] ps, Lits voc) {
         lits = ps;
@@ -187,6 +188,10 @@ public class WLClause {
 
     public boolean isRegistered() {
         return isreg;
+    }
+
+    public boolean isNogood() {
+        return nogood;
     }
 
     public String toString() {
