@@ -22,8 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.set;
 
+import static choco.Choco.eq;
 import static choco.Choco.makeSetVar;
-import static choco.Choco.neq;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.set.RandomSetValSelector;
@@ -45,7 +45,7 @@ import java.util.logging.Logger;
  * Date: 23 avr. 2008
  * Time: 14:28:12
  */
-public class SetNeqTest {
+public class SetEqTest {
 
     protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
@@ -66,29 +66,19 @@ public class SetNeqTest {
     }
 
     @Test
-    public void test2SetNotEq() {
+    public void test2SetEq() {
 		for (int seed = 1; seed < 20; seed++) {
             m = new CPModel();
             s = new CPSolver();
             SetVariable v1 = makeSetVar("v1", 1, 2);
 			SetVariable v2 = makeSetVar("v2", 1, 2);
 
-            m.addConstraint(neq(v1, v2));
+            m.addConstraint(eq(v1, v2));
 			s.read(m);
 			s.setVarSetSelector(new RandomSetVarSelector(s, seed));
             s.setValSetSelector(new RandomSetValSelector(seed+1));
-            //CPSolver.setVerbosity(CPSolver.PROPAGATION);
-            s.solve();
-            do{
- //               LOGGER.info("v1 = " + s.getVar(v1));
- //               LOGGER.info("v2 = " + s.getVar(v2));
-//                LOGGER.info("======================");
-            } while(s.nextSolution());
-            LOGGER.info("nb solution: " + s.getNbSolutions());
-
-            //CPSolver.flushLogs();
-
-            assertEquals(12, s.getNbSolutions());
+            s.solveAll();
+            assertEquals(4, s.getNbSolutions());
 		}
 	}
 }
