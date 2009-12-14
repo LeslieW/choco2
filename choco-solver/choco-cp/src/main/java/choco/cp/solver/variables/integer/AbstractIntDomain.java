@@ -401,7 +401,7 @@ public abstract class AbstractIntDomain implements IntDomain {
     }
 
     @Override
-    public final void freezeDeltaDomain() {
+    public void freezeDeltaDomain() {
         deltaDom.freeze();
     }
 
@@ -411,7 +411,7 @@ public abstract class AbstractIntDomain implements IntDomain {
      * @return wether it was a new update
      */
     @Override
-    public final boolean releaseDeltaDomain() {
+    public boolean releaseDeltaDomain() {
         return deltaDom.release();
     }
 
@@ -424,7 +424,7 @@ public abstract class AbstractIntDomain implements IntDomain {
      * checks whether the delta domain has indeed been released (ie: chechks that no domain updates are pending)
      */
     @Override
-    public final boolean getReleasedDeltaDomain() {
+    public boolean getReleasedDeltaDomain() {
         return deltaDom.isReleased();
     }
 

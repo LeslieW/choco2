@@ -22,7 +22,7 @@
  **************************************************/
 package choco.cp.solver.variables.integer;
 
-import choco.cp.solver.variables.delta.IntervalDeltaDomain;
+import choco.cp.solver.variables.delta.BooleanDeltaDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.memory.IEnvironment;
@@ -80,7 +80,7 @@ public class BooleanDomain extends AbstractIntDomain {
         notInstanciated = (StoredIndexedBipartiteSet)env.getSharedBipartiteSetForBooleanVars();
         this.offset = env.getNextOffset();
         value = 0;
-        deltaDom = new IntervalDeltaDomain(this, 0,1);
+        deltaDom = new BooleanDeltaDomain(this, 0,1);
     }
 
 
