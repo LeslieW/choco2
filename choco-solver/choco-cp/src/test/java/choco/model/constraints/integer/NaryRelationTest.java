@@ -775,4 +775,21 @@ public class NaryRelationTest {
         
     }
 
+    @Test
+    public void test_petersmat(){
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+
+        IntegerVariable[] vs = Choco.makeIntVarArray("vs", 5, 99, 201);
+
+        List<int[]> tuples = new ArrayList<int[]>();
+        tuples.add(new int[] { 100, 200, 100, 200, 100});
+        tuples.add(new int[] { 200, 100, 200, 100, 200});
+
+        m.addConstraint(Choco.feasTupleFC(tuples, vs));
+
+        s.read(m);
+    }
+
+
 }
