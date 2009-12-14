@@ -26,6 +26,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.propagation.VarEvent;
+import choco.kernel.solver.variables.delta.IDeltaDomain;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -60,6 +61,9 @@ public abstract class AbstractIntDomain implements IntDomain {
 	protected int currentSupPropagated;
 
 	protected DisposableIntIterator _cachedIterator;
+
+
+    IDeltaDomain deltaDom;
 
 	/**
 	 * Returns an getIterator.
@@ -370,35 +374,6 @@ public abstract class AbstractIntDomain implements IntDomain {
 		}
 	}
 
-	public void freezeDeltaDomain() {
-		currentInfPropagated = getInf();
-		currentSupPropagated = getSup();
-	}
-
-	/**
-	 * release the delta domain
-	 *
-	 * @return wether it was a new update
-	 */
-	public boolean releaseDeltaDomain() {
-		boolean noNewUpdate = ((getInf() == currentInfPropagated) && (getSup() == currentSupPropagated));
-		currentInfPropagated = Integer.MIN_VALUE;
-		currentSupPropagated = Integer.MAX_VALUE;
-		return noNewUpdate;
-	}
-
-	public void clearDeltaDomain() {
-		currentInfPropagated = Integer.MIN_VALUE;
-		currentSupPropagated = Integer.MAX_VALUE;
-	}
-
-	/**
-	 * @return a boolean
-	 */
-	public boolean getReleasedDeltaDomain() {
-		return true;
-	}
-
 	/**
 	 * Retrieves the solver of the entity
 	 */
@@ -416,5 +391,46 @@ public abstract class AbstractIntDomain implements IntDomain {
 		return pretty();
 	}
 
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////// DELTA DOMAIN /////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public final DisposableIntIterator getDeltaIterator() {
+        return deltaDom.iterator();
+    }
+
+    @Override
+    public final void freezeDeltaDomain() {
+        deltaDom.freeze();
+    }
+
+    /**
+     * release the delta domain
+     *
+     * @return wether it was a new update
+     */
+    @Override
+    public final boolean releaseDeltaDomain() {
+        return deltaDom.release();
+    }
+
+    @Override
+    public final void clearDeltaDomain() {
+        deltaDom.clear();
+    }
+
+    /**
+     * checks whether the delta domain has indeed been released (ie: chechks that no domain updates are pending)
+     */
+    @Override
+    public final boolean getReleasedDeltaDomain() {
+        return deltaDom.isReleased();
+    }
+
+    @Override
+    public final IDeltaDomain copyDelta() {
+        return deltaDom.copy();
+    }
 
 }

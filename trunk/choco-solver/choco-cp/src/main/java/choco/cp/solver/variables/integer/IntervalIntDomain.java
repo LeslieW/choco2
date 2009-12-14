@@ -22,8 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
+import choco.cp.solver.variables.delta.IntervalDeltaDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.iterators.EmptyIntIterator;
 import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
@@ -51,25 +51,14 @@ public class IntervalIntDomain extends AbstractIntDomain {
 
     protected final IStateInt sup;
 
-  /**
-   * The last value since the last coherent state
-   */
-    protected int lastInfPropagated;
-  /**
-   * The last value since the last coherent state
-   */
-  protected int lastSupPropagated;
-
     public IntervalIntDomain(IntDomainVarImpl v, int a, int b) {
         variable = v;
         solver = v.getSolver();
         IEnvironment env = solver.getEnvironment();
         inf = env.makeInt(a);
         sup = env.makeInt(b);
-        lastInfPropagated = a;
-        lastSupPropagated = b;
-        currentInfPropagated = Integer.MIN_VALUE;
-        currentSupPropagated = Integer.MAX_VALUE;
+        deltaDom = new IntervalDeltaDomain(this, a,b);
+
     }
 
     public boolean contains(int x) {
@@ -168,30 +157,24 @@ public class IntervalIntDomain extends AbstractIntDomain {
     }
 
     public void restrict(int x) {
-      if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0 &&
-          lastInfPropagated == Integer.MIN_VALUE) {
-        lastInfPropagated = inf.get();
-        lastSupPropagated = sup.get();
+      if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
+        deltaDom.remove(x);
       }
         inf.set(x);
         sup.set(x);
     }
 
     public int updateInf(int x) {
-      if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0 &&
-          lastInfPropagated == Integer.MIN_VALUE) {
-        lastInfPropagated = inf.get();
-        lastSupPropagated = sup.get();
+      if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
+        deltaDom.remove(x);
       }
         inf.set(x);
         return x;
     }
 
     public int updateSup(int x) {
-      if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0 &&
-          lastInfPropagated == Integer.MIN_VALUE) {
-        lastInfPropagated = inf.get();
-        lastSupPropagated = sup.get();
+      if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
+        deltaDom.remove(x);
       }
         sup.set(x);
         return x;
@@ -220,115 +203,10 @@ public class IntervalIntDomain extends AbstractIntDomain {
         return false;
     }
 
-  public void freezeDeltaDomain() {
-    if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
-      currentInfPropagated = getInf();
-      currentSupPropagated = getSup();
-    }
-  }
-
-  /**
-   * release the delta domain
-   *
-   * @return wether it was a new update
-   */
-  public boolean releaseDeltaDomain() {
-    if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
-      boolean noNewUpdate = ((getInf() == currentInfPropagated) && (getSup() == currentSupPropagated));
-      if (noNewUpdate) {
-        lastInfPropagated = Integer.MIN_VALUE;
-        lastSupPropagated = Integer.MAX_VALUE;
-      } else {
-        lastInfPropagated = currentInfPropagated;
-        lastSupPropagated = currentSupPropagated;
-      }
-      currentInfPropagated = Integer.MIN_VALUE;
-      currentSupPropagated = Integer.MAX_VALUE;
-      return noNewUpdate;
-    }
-    return true;
-  }
-
-  public void clearDeltaDomain() {
-    if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
-      lastInfPropagated = Integer.MIN_VALUE;
-      lastSupPropagated = Integer.MAX_VALUE;
-      currentInfPropagated = Integer.MIN_VALUE;
-      currentSupPropagated = Integer.MAX_VALUE;
-    }
-  }
-
-  /**
-   * @return a boolean
-   */
-  public boolean getReleasedDeltaDomain() {
-    if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
-      return currentInfPropagated == Integer.MIN_VALUE
-          && currentSupPropagated == Integer.MAX_VALUE;
-    }
-    return true;
-  }
-
-
-    protected DisposableIntIterator _deltaIterator = null;
-
-    public DisposableIntIterator getDeltaIterator() {
-        if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
-          IntervalIntDomainDeltaIterator iter = (IntervalIntDomainDeltaIterator) _deltaIterator;
-        if (iter != null && iter.reusable) {
-            iter.init();
-            return iter;
-        }
-        _deltaIterator = new IntervalIntDomainDeltaIterator(this);
-        return _deltaIterator;
-      } else {
-        return EmptyIntIterator.getEmptyIntIterator();
-      }
-    }
-
-
-    protected static class IntervalIntDomainDeltaIterator extends DisposableIntIterator{
-        IntervalIntDomain domain;
-
-        int x;
-
-        public IntervalIntDomainDeltaIterator(IntervalIntDomain dom) {
-            domain = dom;
-            init();
-        }
-
-        public void init() {
-            super.init();
-            x = domain.lastInfPropagated - 1;
-        }
-
-
-        public boolean hasNext() {
-            if (x + 1 == domain.currentInfPropagated) return domain.currentSupPropagated < domain.lastSupPropagated;
-            if (x > domain.currentSupPropagated) return x < domain.lastSupPropagated;
-            return (x + 1 < domain.currentInfPropagated);
-        }
-
-        public int next() {
-            x++;
-            if (x == domain.currentInfPropagated) {
-                x = domain.currentSupPropagated + 1;
-            }
-            return x;
-        }
-
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-
-        public void dispose() {
-        }
-    }
-
     public String pretty() {
         StringBuffer ret = new StringBuffer();
         ret.append("[").append(this.getInf()).append(" .. ").append(this.getSup()).append("]");
-        ret.append(lastInfPropagated).append("->").append(lastSupPropagated);
+        ret.append(deltaDom.pretty());
         return ret.toString();
     }
 }

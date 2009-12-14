@@ -41,4 +41,13 @@ public abstract class DisposableIntIterator implements IntIterator {
     public void dispose() {
         reusable = true;
     }
+
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException();
+    }
+
+    public DisposableIntIterator copy(){
+        throw new UnsupportedOperationException();
+    }
 }

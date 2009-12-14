@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
+import choco.cp.solver.variables.delta.BipartiteDeltaDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.memory.IEnvironment;
@@ -138,8 +139,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
             indices[values[i] - offset] = i;
         }
         // At the beginning nothing has been propageted !
-        endOfDeltaDomain = size;
-        beginningOfDeltaDomain = size;
+        deltaDom = new BipartiteDeltaDomain(size, values, valuesInDomainNumber);
         inf = env.makeInt(low);
         sup = env.makeInt(up);
     }
@@ -294,9 +294,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
                 indices[i] = mark;
             }
             valuesInDomainNumber.add(-1);
-            if (endOfDeltaDomain <= mark) {
-                endOfDeltaDomain = mark + 1;
-            }
+            deltaDom.remove(mark);
             return true;
         }
         return false;
@@ -312,9 +310,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
         indices[i] = 0;
         inf.set(x);
         sup.set(x);
-        if (endOfDeltaDomain <= valuesInDomainNumber.get()) {
-            endOfDeltaDomain = valuesInDomainNumber.get() + 1;
-        }
+        deltaDom.remove(valuesInDomainNumber.get());
         valuesInDomainNumber.set(0);
     }
 
@@ -392,103 +388,6 @@ public class BipartiteIntDomain extends AbstractIntDomain {
         }
     }
 
-    protected DisposableIntIterator _cachedDeltaIntDomainIterator = null;
-
-    public DisposableIntIterator getDeltaIterator() {
-        DeltaBipartiteIterator iter = (DeltaBipartiteIterator) _cachedDeltaIntDomainIterator;
-        if (iter != null && iter.disposed) {
-            iter.init();
-            return iter;
-        }
-        _cachedDeltaIntDomainIterator = new DeltaBipartiteIterator(this);
-        return _cachedDeltaIntDomainIterator;
-    }
-
-    protected static class DeltaBipartiteIterator extends DisposableIntIterator {
-        protected BipartiteIntDomain domain;
-        protected int currentIndex = -1;
-        protected boolean disposed = true;
-
-        private DeltaBipartiteIterator(BipartiteIntDomain dom) {
-            domain = dom;
-            init();
-        }
-
-        public void init() {
-            currentIndex = domain.beginningOfDeltaDomain;
-            disposed = false;
-        }
-
-        public void dispose() {
-            disposed = true;
-        }
-
-        public boolean hasNext() {
-            return currentIndex < domain.endOfDeltaDomain;
-        }
-
-        public int next() {
-            return domain.values[currentIndex++];
-        }
-
-        public void remove() {
-            if (currentIndex == -1) {
-                throw new IllegalStateException();
-            } else {
-                throw new UnsupportedOperationException();
-            }
-        }
-    }
-
-    /**
-     * A pointer to the first removed value to be propagated.
-     * its position in the list
-     */
-    protected int beginningOfDeltaDomain;
-
-    /**
-     * A pointer on the last removed value propagated.
-     * its position in the list
-     */
-    protected int endOfDeltaDomain;
-
-    /**
-     * The delta domain container is "frozen" (it can no longer accept new value removals)
-     * so that this set of values can be iterated as such
-     */
-    public void freezeDeltaDomain() {
-        // freeze all data associated to bounds for the the event
-        super.freezeDeltaDomain();
-        beginningOfDeltaDomain = valuesInDomainNumber.get() + 1;
-    }
-
-    /**
-     * after an iteration over the delta domain, the delta domain is reopened again.
-     *
-     * @return true iff the delta domain is reopened empty (no updates have been made to the domain
-     *         while it was frozen, false iff the delta domain is reopened with pending value removals (updates
-     *         were made to the domain, while the delta domain was frozen).
-     */
-    public boolean releaseDeltaDomain() {
-        // release all data associated to bounds for the the event
-        super.releaseDeltaDomain();
-        endOfDeltaDomain = beginningOfDeltaDomain;
-        beginningOfDeltaDomain = valuesInDomainNumber.get() + 1;
-        return beginningOfDeltaDomain == endOfDeltaDomain;
-    }
-
-    public boolean getReleasedDeltaDomain() {
-        return beginningOfDeltaDomain == endOfDeltaDomain;
-    }
-
-    /**
-     * cleans the data structure implementing the delta domain
-     */
-    public void clearDeltaDomain() {
-        beginningOfDeltaDomain = valuesInDomainNumber.get() + 1;
-        endOfDeltaDomain = beginningOfDeltaDomain;
-    }
-
     public boolean isEnumerated() {
         return true;
     }
@@ -517,5 +416,4 @@ public class BipartiteIntDomain extends AbstractIntDomain {
         buf.append("}");
         return buf.toString();
     }
-
 }

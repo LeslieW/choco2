@@ -22,11 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.set;
 
+import choco.cp.solver.variables.delta.BitSetDeltaDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.variables.delta.IDeltaDomain;
 import choco.kernel.solver.variables.set.SetSubDomain;
 import choco.kernel.solver.variables.set.SetVar;
 
@@ -70,28 +72,9 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
    */
   private int capacity;
 
-  /**
-   * A chained list implementing two subsets of values:
-   * - the removed values waiting to be propagated
-   * - the removed values being propagated
-   * (each element points to the index of the enxt element)
-   * -1 for the last element
-   */
-  protected int[] chain;
+    private final IDeltaDomain delatDom;
 
   /**
-   * start of the chain for the values waiting to be propagated
-   * -1 for empty chains
-   */
-  protected int firstIndexToBePropagated;
-
-  /**
-   * start of the chain for the values being propagated
-   * -1 for empty chains
-   */
-  protected int firstIndexBeingPropagated;
-
-    /**
    * Constructs a new domain for the specified variable and bounds.
    *
    * @param v    The involved variable.
@@ -114,9 +97,8 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
       for (int i = 0; i < capacity; i++)
         contents.set(i);
     }
-    chain = new int[capacity];
-    firstIndexToBePropagated = -1;
-    firstIndexBeingPropagated = -1;
+    //delatDom = new ChainDeltaDomain(capacity, offset);
+        delatDom = new BitSetDeltaDomain(capacity, offset);
   }
 
   public BitSetEnumeratedDomain(SetVar v, int[] sortedValues, boolean full) {
@@ -133,13 +115,13 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
       }
       contents = env.makeBitSet(capacity);
       if (full) {
-          for (int i = 0; i < sortedValues.length; i++) {  // TODO : could be improved...
-              contents.set(sortedValues[i] - a);
+          // TODO : could be improved...
+          for (int sortedValue : sortedValues) {
+              contents.set(sortedValue - a);
           }
       }
-      chain = new int[capacity];
-      firstIndexToBePropagated = -1;
-      firstIndexBeingPropagated = -1;
+//      delatDom = new ChainDeltaDomain(capacity, offset);
+      delatDom = new BitSetDeltaDomain(capacity, offset);
   }
 
     /**
@@ -153,9 +135,8 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
       this.offset = 0;
       size = env.makeInt(0);
       contents = env.makeBitSet(capacity);
-      chain = new int[capacity];
-      firstIndexToBePropagated = -1;
-      firstIndexBeingPropagated = -1;
+//      delatDom = new ChainDeltaDomain(capacity, offset);
+        delatDom = new BitSetDeltaDomain(capacity, offset);
   }
 
 
@@ -217,11 +198,8 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
   }
 
   private void removeIndex(int i) {
-    if (i == firstIndexToBePropagated)
-      LOGGER.severe("RemoveIndex BIZARRE !!!!!!!!!!!!");
     contents.clear(i);
-    chain[i] = firstIndexToBePropagated;
-    firstIndexToBePropagated = i;
+    delatDom.remove(i+offset);
     if (contents.get(i))
       LOGGER.severe("etrange etrange");
     size.add(-1);
@@ -230,6 +208,8 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
 
   /**
    * add a value.
+   * @param x value to add
+   * @return true wether the value has been added
    */
 
   public boolean add(int x) {
@@ -243,11 +223,8 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
   }
 
   private void addIndex(int i) {
-    if (i == firstIndexToBePropagated)
-      LOGGER.severe("AddIndex BIZARRE !!!!!!!!!!!!");
     contents.set(i);
-    chain[i] = firstIndexToBePropagated;
-    firstIndexToBePropagated = i;
+    delatDom.remove(i+offset);
     if (!contents.get(i))
       LOGGER.severe("etrange etrange");
     size.add(1);
@@ -265,6 +242,8 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
   /**
    * Returns the value following <code>x</code>
    * if non exist return -1
+   * @param x starting value
+   * @return value following x
    */
 
   public int getNextValue(int x) {
@@ -280,6 +259,8 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
   /**
    * Returns the value preceding <code>x</code>
    * if non exist return -1
+   * @param x starting value
+   * @return value preceding x
    */
 
   public int getPrevValue(int x) {
@@ -294,6 +275,8 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
 
   /**
    * Checks if the value has a following value.
+   * @param x starting value
+   * @return true whether there is a following value
    */
 
   public boolean hasNextValue(int x) {
@@ -304,6 +287,8 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
 
   /**
    * Checks if the value has a preceding value.
+   * @param x starting value
+   * @return true if there is a preceding value
    */
 
   public boolean hasPrevValue(int x) {
@@ -311,78 +296,22 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
     return (contents.prevSetBit(i - 1) != -1);
   }
 
-
-   protected DeltaDomainIterator _cachedDeltaDomainIterator = null;
-
   public DisposableIntIterator getDeltaIterator() {
-      DisposableIntIterator iter = _cachedDeltaDomainIterator;
-      if(iter != null && iter.reusable){
-          iter.init();
-          return iter;
+      return delatDom.iterator();
       }
-      _cachedDeltaDomainIterator = new DeltaDomainIterator(this);
-      return _cachedDeltaDomainIterator;
-  }
-
-  protected class DeltaDomainIterator extends DisposableIntIterator{
-    protected BitSetEnumeratedDomain domain;
-    protected int currentIndex = -1;
-
-    private DeltaDomainIterator(BitSetEnumeratedDomain dom) {
-      domain = dom;
-      init();
-    }
 
       @Override
-      public void init() {
-          super.init();
-          currentIndex = -1;
+    public IDeltaDomain copyDelta() {
+        return delatDom.copy();
       }
-
-      public boolean hasNext() {
-      if (currentIndex == -1) {
-        return (firstIndexBeingPropagated != -1);
-      } else {
-        return (chain[currentIndex] != -1);
-      }
-    }
-
-    public int next() {
-      if (currentIndex == -1) {
-        currentIndex = firstIndexBeingPropagated;
-      } else {
-        currentIndex = chain[currentIndex];
-      }
-      return currentIndex + offset;
-    }
-
-    public void remove() {
-      if (currentIndex == -1) {
-        throw new IllegalStateException();
-      } else {
-        throw new UnsupportedOperationException();
-      }
-    }
-  }
 
   /**
    * The delta domain container is "frozen" (it can no longer accept new value removals)
    * so that this set of values can be iterated as such
    */
   public void freezeDeltaDomain() {
-    // freeze all data associated to bounds for the the event
-    //super.freezeDeltaDomain();
-    // if the delta domain is already being iterated, it cannot be frozen
-    if (firstIndexBeingPropagated != -1) {
-    }//throw new IllegalStateException();
-    else {
-      // the set of values waiting to be propagated is now "frozen" as such,
-      // so that those value removals can be iterated and propagated
-      firstIndexBeingPropagated = firstIndexToBePropagated;
-      // the container (link list) for values waiting to be propagated is reinitialized to an empty set
-      firstIndexToBePropagated = -1;
+    delatDom.freeze();
     }
-  }
 
   /**
    * after an iteration over the delta domain, the delta domain is reopened again.
@@ -392,31 +321,17 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
    *         were made to the domain, while the delta domain was frozen).
    */
   public boolean releaseDeltaDomain() {
-    // release all data associated to bounds for the the event
-    //super.releaseDeltaDomain();
-    // special case: the set of removals was not being iterated (because the variable was instantiated, or a bound was updated)
-    if (firstIndexBeingPropagated == -1) {
-      // remove all values that are waiting to be iterated
-      firstIndexToBePropagated = -1;
-      // return true because the event has been "flushed" (nothing more is awaiting)
-      return true;
-    } else { // standard case: the set of removals was being iterated
-      // empty the set of values that were being propagated
-      firstIndexBeingPropagated = -1;
-      // if more values are waiting to be propagated, return true
-      return (firstIndexToBePropagated == -1);
+    return delatDom.release();
     }
-  }
 
   public boolean getReleasedDeltaDomain() {
-    return ((firstIndexBeingPropagated == -1) && (firstIndexToBePropagated == -1));
+    return delatDom.isReleased();
   }
 
   /**
    * cleans the data structure implementing the delta domain
    */
   public void clearDeltaDomain() {
-    firstIndexBeingPropagated = -1;
-    firstIndexToBePropagated = -1;
+    delatDom.clear();
   }
 }

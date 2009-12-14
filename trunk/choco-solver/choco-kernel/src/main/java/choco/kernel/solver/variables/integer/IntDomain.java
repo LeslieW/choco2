@@ -25,6 +25,7 @@ package choco.kernel.solver.variables.integer;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.variables.Domain;
+import choco.kernel.solver.variables.delta.IDeltaDomain;
 
 import java.util.logging.Logger;
 
@@ -180,5 +181,6 @@ public interface IntDomain extends Domain {
 	 */
 	public boolean isBoolean();
 
+    public IDeltaDomain copyDelta();
 
 }

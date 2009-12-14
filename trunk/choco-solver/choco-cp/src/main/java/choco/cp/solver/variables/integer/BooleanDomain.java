@@ -22,6 +22,7 @@
  **************************************************/
 package choco.cp.solver.variables.integer;
 
+import choco.cp.solver.variables.delta.IntervalDeltaDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.memory.IEnvironment;
@@ -66,7 +67,6 @@ public class BooleanDomain extends AbstractIntDomain {
 
     protected StoredIndexedBipartiteSet notInstanciated;
 
-
     /**
      * Constructs a new domain for the specified variable and bounds.
      *
@@ -80,6 +80,7 @@ public class BooleanDomain extends AbstractIntDomain {
         notInstanciated = (StoredIndexedBipartiteSet)env.getSharedBipartiteSetForBooleanVars();
         this.offset = env.getNextOffset();
         value = 0;
+        deltaDom = new IntervalDeltaDomain(this, 0,1);
     }
 
 
@@ -284,52 +285,6 @@ public class BooleanDomain extends AbstractIntDomain {
 
     public boolean isBoolean() {
         return true;
-    }
-
-    protected DisposableIntIterator _cachedDeltaIntDomainIterator = null;
-
-    public DisposableIntIterator getDeltaIterator() {
-        DeltaBoolDomainIterator iter = (DeltaBoolDomainIterator) _cachedDeltaIntDomainIterator;
-        if (iter != null && iter.reusable) {
-            iter.init();
-            return iter;
-        }
-        _cachedDeltaIntDomainIterator = new DeltaBoolDomainIterator(this);
-        return _cachedDeltaIntDomainIterator;
-    }
-
-    protected static class DeltaBoolDomainIterator extends DisposableIntIterator {
-        protected BooleanDomain domain;
-        protected int val = -1;
-
-        private DeltaBoolDomainIterator(BooleanDomain dom) {
-            domain = dom;
-            init();
-        }
-
-        public void init() {
-            super.init();
-            val = domain.getValueIfInst();
-            if (val == 1) val = 0;
-            else if (val == 0) val = 1;
-        }
-
-        public boolean hasNext() {
-            return val < 2;
-        }
-
-        public int next() {
-            int temp = val;
-            val = 2;
-//            if (isInstantiated())
-//                val = 2;
-//            else val++;
-            return temp;
-        }
-
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
     }
 
     public String toString() {

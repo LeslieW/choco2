@@ -2129,7 +2129,7 @@ public class CPSolver implements Solver {
 			nogoodStore = new ClauseStore(getBooleanVariables());
 			postCut(nogoodStore);
 		}
-		nogoodStore.addDynamicClause(poslit,neglit);
+		nogoodStore.addNoGood(poslit,neglit);
 		propNogoodWorld = this.getWorldIndex();
 		nogoodStore.constAwake(false);
 		//put the nogood store last in the static list
@@ -2309,30 +2309,30 @@ public class CPSolver implements Solver {
 	 */
 	public Boolean checkSolution(boolean enableConsistency) {
 		Boolean isSolution = true;
-        if(LOGGER.isLoggable(Level.INFO)){
-            LOGGER.info("=== Solution checker");
-            LOGGER.info("    Check decision variables and constraints:");
-            LOGGER.info("    - ");
+        if(LOGGER.isLoggable(Level.CONFIG)){
+            LOGGER.config("=== Solution checker");
+            LOGGER.config("    Check decision variables and constraints:");
+            LOGGER.config("    - ");
         }
 		// Check variables
 		isSolution &= checkDecisionVariables();
-        if(LOGGER.isLoggable(Level.INFO)){
+        if(LOGGER.isLoggable(Level.CONFIG)){
             if (isSolution) {
-                LOGGER.info("    Every decision variables are instantiated.");
+                LOGGER.config("    Every decision variables are instantiated.");
             } else {
-                LOGGER.info("    One or more decision variable is not instantiated,");
-                LOGGER.info("    or the search is not finished.");
+                LOGGER.config("    One or more decision variable is not instantiated,");
+                LOGGER.config("    or the search is not finished.");
             }
             LOGGER.info("    - ");
         }
 		// Check constraints
 		isSolution &= checkConstraints(enableConsistency);
-        if(LOGGER.isLoggable(Level.INFO)){
+        if(LOGGER.isLoggable(Level.CONFIG)){
             if (isSolution) {
-                LOGGER.info("    Every constraints are satisfied.");
+                LOGGER.config("    Every constraints are satisfied.");
             } else {
-                LOGGER.info("    One or more constraint is not satisfied,");
-                LOGGER.info("    or one or more constraint is not consistent.");
+                LOGGER.config("    One or more constraint is not satisfied,");
+                LOGGER.config("    or one or more constraint is not consistent.");
             }
         }
 		return isSolution;
@@ -2349,7 +2349,7 @@ public class CPSolver implements Solver {
 		if (intDecisionVars != null) {
 			for (IntDomainVar intDecisionVar : intDecisionVars) {
                 isOk &= check = intDecisionVar.isInstantiated();
-                if(LOGGER.isLoggable(Level.INFO)){
+                if(LOGGER.isLoggable(Level.CONFIG)){
                     printFail(intDecisionVar.getName(), check);
                 }
 			}
@@ -2358,7 +2358,7 @@ public class CPSolver implements Solver {
 		if (setDecisionVars != null) {
 			for (SetVar setDecisionVar : setDecisionVars) {
 				isOk &= check = setDecisionVar.isInstantiated();
-                if(LOGGER.isLoggable(Level.INFO)){
+                if(LOGGER.isLoggable(Level.CONFIG)){
                     printFail(setDecisionVar.getName(), check);
                 }
 			}
@@ -2367,7 +2367,7 @@ public class CPSolver implements Solver {
 		if (floatDecisionVars != null) {
 			for (RealVar floatDecisionVar : floatDecisionVars) {
 				isOk &= check = floatDecisionVar.isInstantiated();
-                if(LOGGER.isLoggable(Level.INFO)){
+                if(LOGGER.isLoggable(Level.CONFIG)){
                     printFail(floatDecisionVar.getName(), check);
                 }
 			}
@@ -2409,27 +2409,27 @@ public class CPSolver implements Solver {
                     if(fullInstantiated){
                         check = ic.isSatisfied(tuple);
                         isOk &= check;
-                        if(LOGGER.isLoggable(Level.INFO)){
+                        if(LOGGER.isLoggable(Level.CONFIG)){
                             printFail(c.pretty(), check);
                         }
                     }else if(enableConsistency){
                         check = (ic.isSatisfied(tupleL) && ic.isSatisfied(tupleU));
                         isOk &= check;
-                        if(LOGGER.isLoggable(Level.INFO)){
+                        if(LOGGER.isLoggable(Level.CONFIG)){
                             printFail(c.pretty(), check);
                         }
                     }
                 }catch (UnsupportedOperationException e){
                     check =c.isSatisfied();
                     isOk &= check;
-                    if(LOGGER.isLoggable(Level.INFO)){
+                    if(LOGGER.isLoggable(Level.CONFIG)){
                         printFail(" => isSatisfied(int[]) is not defined for "+c.pretty(), check);
                     }
                 }
 			}else{
                 check =c.isSatisfied();
                 isOk &= check;
-                if(LOGGER.isLoggable(Level.INFO)){
+                if(LOGGER.isLoggable(Level.CONFIG)){
                     printFail(c.pretty(), check);
                 }
 			}
@@ -2438,7 +2438,7 @@ public class CPSolver implements Solver {
 	}
 
     private static void printFail(String input, boolean check){
-        LOGGER.info(pad((check?"":"FAILURE! => "),13, " ") +input);
+        LOGGER.config(pad((check?"":"FAILURE! => "),13, " ") +input);
     }
 
 	/**
