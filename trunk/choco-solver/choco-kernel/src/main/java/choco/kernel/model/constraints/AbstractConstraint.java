@@ -67,13 +67,52 @@ public abstract class AbstractConstraint implements Constraint, Comparable {
         indice = IndexFactory.getId();
     }
 
-    public HashSet<String> getOptions() {
-        return options;
-    }
-
     @Override
     public int hashCode() {
         return HashCoding.hashCodeMe(new Object[]{this});
+    }
+
+    /**
+     * Add a single option to the pool of options
+     * of the object.
+     *
+     * @param option an option
+     */
+    @Override
+    public void addOption(String option) {
+        this.options.add(option.trim());
+    }
+
+    /**
+     * Add an array of options to the pool of options
+     * of the object
+     *
+     * @param options array of options
+     */
+    @Override
+    public void addOptions(String[] options) {
+        this.options.addAll(Arrays.asList(options));
+    }
+
+    /**
+     * Add a set of options to the pool of options
+     * of the object
+     *
+     * @param options set of options
+     */
+    @Override
+    public void addOptions(HashSet<String> options) {
+        this.options.addAll(options);
+    }
+
+    /**
+     * Get the pool of unique options
+     *
+     * @return set of options
+     */
+    @Override
+    public HashSet<String> getOptions() {
+        return options;
     }
 
     /**
@@ -85,28 +124,6 @@ public abstract class AbstractConstraint implements Constraint, Comparable {
     @Override
     public long getIndex() {
         return indice;
-    }
-
-    public void addOption(String opts) {
-        if (opts != null && !"".equals(opts)) {
-            String[] optionsStrings = opts.split(" ");
-            options.addAll(Arrays.asList(optionsStrings));
-        }
-    }
-
-    public void addOptions(String[] options) {
-        for (String option : options) {
-            this.addOption(option);
-        }
-	}
-
-    public void addOptions(HashSet<String> options){
-        if(options != null){
-            for (;options.iterator().hasNext();){
-                String opt = options.iterator().next();
-                this.addOption(opt);
-            }
-        }
     }
 
     public Variable[] getVariables() {
@@ -140,7 +157,7 @@ public abstract class AbstractConstraint implements Constraint, Comparable {
 
     /**
      * get rid of the constants within the returned scopes !
-     * @return
+     * @return scope of integervariable of the constraint
      */
     public IntegerVariable[] getIntVariableScope() {
         Iterator<Variable> itvs = getVariableIterator();
@@ -152,12 +169,10 @@ public abstract class AbstractConstraint implements Constraint, Comparable {
                 vs.add((IntegerVariable) v1);
             } else if (v1.getVariableType().equals(VariableType.INTEGER_EXPRESSION)) {
                 HashSet<Variable> tmp = extractEveryvariables((IntegerExpressionVariable) v1);
-                Iterator<Variable> it = tmp.iterator();
-                while (it.hasNext()) {
-                    Variable v = it.next();
-                    if (v.getVariableType() == VariableType.INTEGER &&
-                            !vs.contains(v)) {
-                        vs.add((IntegerVariable) v);
+                for (Variable aTmp : tmp) {
+                    if (aTmp.getVariableType() == VariableType.INTEGER &&
+                            !vs.contains(aTmp)) {
+                        vs.add((IntegerVariable) aTmp);
                     }
                 }
             }
@@ -173,11 +188,11 @@ public abstract class AbstractConstraint implements Constraint, Comparable {
 
     /**
      * Extract every sub variables of an IntegerExpressionVariable
-     * @param iev
-     * @return
+     * @param iev integer expression variable
+     * @return set of variable
      */
     private HashSet<Variable> extractEveryvariables(IntegerExpressionVariable iev){
-        HashSet<Variable> vs = new HashSet();
+        HashSet<Variable> vs = new HashSet<Variable>();
         if(iev.getVariableType().equals(VariableType.INTEGER)){
             if(!vs.contains(iev))vs.add(iev);
         }

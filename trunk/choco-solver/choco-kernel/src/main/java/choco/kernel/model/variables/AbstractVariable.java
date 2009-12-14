@@ -26,6 +26,7 @@ import choco.kernel.common.HashCoding;
 import choco.kernel.common.IndexFactory;
 import choco.kernel.model.ModelException;
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 
@@ -50,37 +51,6 @@ public abstract class AbstractVariable implements Variable, Comparable{
         indice = IndexFactory.getId();
 	}
 
-	public HashSet<String> getOptions(){
-		return options;
-	}
-
-    public void addOption(String opts) {
-    	int d = 0;
-		int f = opts.indexOf(" ", d);
-		while (f != -1) {
-			if( f > d) options.add(opts.substring(d,f));
-			d = f+1;
-			f = opts.indexOf(" ", d);
-		}
-		if( d < opts.length()) options.add(opts.substring(d));
-	}
-
-    public final void addOptions(String[] options) {
-        for (String option : options) {
-            this.addOption(option);
-        }
-	}
-
-
-    public final void addOptions(HashSet<String> tOptions){
-        if(tOptions != null){
-            for (String tOption : tOptions) {
-                this.addOption(tOption);
-            }
-        }
-    }
-
-
     public final VariableType getVariableType() {
 		return type;
 	}
@@ -103,6 +73,48 @@ public abstract class AbstractVariable implements Variable, Comparable{
 		return HashCoding.hashCodeMe(new Object[]{this});
 	}
 
+    /**
+     * Add a single option to the pool of options
+     * of the object.
+     *
+     * @param option an option
+     */
+    @Override
+    public void addOption(String option) {
+        this.options.add(option.trim());
+    }
+
+    /**
+     * Add an array of options to the pool of options
+     * of the object
+     *
+     * @param options array of options
+     */
+    @Override
+    public void addOptions(String[] options) {
+        this.options.addAll(Arrays.asList(options));
+    }
+
+    /**
+     * Add a set of options to the pool of options
+     * of the object
+     *
+     * @param options set of options
+     */
+    @Override
+    public void addOptions(HashSet<String> options) {
+        this.options.addAll(options);
+    }
+
+    /**
+     * Get the pool of unique options
+     *
+     * @return set of options
+     */
+    @Override
+    public HashSet<String> getOptions() {
+        return options;
+    }
 
     /**
      * Unique index

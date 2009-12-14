@@ -130,14 +130,6 @@ public class PreProcessCPSolver extends CPSolver {
         options.add(opt);
     }
 
-    public void addOptions(String options) {
-        if (options != null && !"".equals(options)) {
-            String[] optionsStrings = options.split(" ");
-            for (String optionsString : optionsStrings) {
-                this.addOption(optionsString);
-            }
-        }
-    }
 
     public void setAllProcessing() {
         options.add("bb:exp");
