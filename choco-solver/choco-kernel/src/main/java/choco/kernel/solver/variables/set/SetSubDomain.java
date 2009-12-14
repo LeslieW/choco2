@@ -24,6 +24,7 @@ package choco.kernel.solver.variables.set;
 
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.solver.variables.delta.IDeltaDomain;
 
 import java.util.logging.Logger;
 
@@ -57,4 +58,6 @@ public interface SetSubDomain {
     public boolean getReleasedDeltaDomain();
 
     public DisposableIntIterator getDeltaIterator();
+
+    public IDeltaDomain copyDelta();
 }

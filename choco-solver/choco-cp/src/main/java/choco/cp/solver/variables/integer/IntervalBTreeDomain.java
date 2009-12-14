@@ -22,11 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
-import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.cp.solver.variables.delta.StackDeltaDomain;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBinaryTree;
 import choco.kernel.memory.IStateInt;
-import gnu.trove.TIntStack;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -61,19 +60,6 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
      */
     protected int capacity;
 
-        /**
-     * A chained list implementing two subsets of values:
-     * - the removed values waiting to be propagated
-     * - the removed values being propagated
-     * (each element points to the index of the enxt element)
-     * -1 for the last element
-     */
-//    protected Stack stack;
-    protected TIntStack stack;
-
-    protected int lastSizeBeforePropagation;
-
-
     /**
      * Construct a new domain represented by a Binary Tree of Interval
      * @param v the associatede variable
@@ -88,9 +74,7 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
         btree= env.makeBinaryTree(a,b);
         capacity = b - a + 1;
         size = env.makeInt(capacity);
-//        stack = new Stack();
-        stack = new TIntStack();
-        lastSizeBeforePropagation = 0;
+        deltaDom = new StackDeltaDomain();
     }
 
     /**
@@ -117,11 +101,8 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
             }
             a = b;
         }
-
         size = env.makeInt(btree.getSize());
-//        stack = new Stack();
-        stack = new TIntStack();
-        lastSizeBeforePropagation=0;
+        deltaDom = new StackDeltaDomain();
     }
 
     /**
@@ -199,7 +180,7 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
 //    }
 
     private void removeIndex(int i) {
-        stack.push(i);
+        deltaDom.remove(i);
     }
 
     /**
@@ -308,103 +289,6 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
         int val = random.nextInt(selected.sup-selected.inf+1);
         return val+selected.inf;
 
-    }
-
-
-    protected DisposableIntIterator _cachedDeltaIntDomainIterator = null;
-
-    public DisposableIntIterator getDeltaIterator() {
-      DeltaIntDomainIterator iter = (DeltaIntDomainIterator) _cachedDeltaIntDomainIterator;
-      if (iter != null && iter.reusable) {
-        iter.init();
-        return iter;
-      }
-      _cachedDeltaIntDomainIterator = new DeltaIntDomainIterator(this);
-        return _cachedDeltaIntDomainIterator;
-    }
-
-    protected static class DeltaIntDomainIterator extends DisposableIntIterator {
-        protected IntervalBTreeDomain domain;
-        protected int currentVal;
-
-        private DeltaIntDomainIterator(IntervalBTreeDomain dom) {
-            domain = dom;
-            init();
-        }
-
-      public void init() {
-          super.init();
-      }
-
-        public boolean hasNext() {
-            if(domain.stack.size()>0){
-                currentVal = domain.stack.pop();
-                return true;
-            }else{
-                return false;
-            }
-        }
-
-        public int next() {
-            return currentVal;
-        }
-
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-
-    }
-
-    /**
-     * The delta domain container is "frozen" (it can no longer accept new value removals)
-     * so that this set of values can be iterated as such
-     */
-    public void freezeDeltaDomain() {
-        // freeze all data associated to bounds for the the event
-        // if the delta domain is already being iterated, it cannot be frozen
-        if (lastSizeBeforePropagation  ==  0){
-            // the set of values waiting to be propagated is now "frozen" as such,
-            // so that those value removals can be iterated and propagated
-              lastSizeBeforePropagation = stack.size();
-            // the container (link list) for values waiting to be propagated is reinitialized to an empty set
-//            firstIndexToBePropagated = -1;
-        }
-    }
-
-    /**
-     * after an iteration over the delta domain, the delta domain is reopened again.
-     *
-     * @return true iff the delta domain is reopened empty (no updates have been made to the domain
-     *         while it was frozen, false iff the delta domain is reopened with pending value removals (updates
-     *         were made to the domain, while the delta domain was frozen).
-     */
-    public boolean releaseDeltaDomain() {
-        // release all data associated to bounds for the the event
-        // special case: the set of removals was not being iterated (because the variable was instantiated, or a bound was updated)
-        if (lastSizeBeforePropagation == stack.size()) {
-//        if (firstIndexBeingPropagated == -1) {
-            stack.clear();
-            lastSizeBeforePropagation = 0;
-            // return true because the event has been "flushed" (nothing more is awaiting)
-            return true;
-        } else { // standard case: the set of removals was being iterated
-            // empty the set of values that were being propagated
-            lastSizeBeforePropagation  = 0;
-            // if more values are waiting to be propagated, return true
-            return (stack.size()==0);
-        }
-    }
-
-    public boolean getReleasedDeltaDomain() {
-        return (stack.size()==0 && lastSizeBeforePropagation == 0);
-    }
-
-    /**
-     * cleans the data structure implementing the delta domain
-     */
-    public void clearDeltaDomain() {
-        lastSizeBeforePropagation = 0;
-        stack.clear();
     }
 
 
