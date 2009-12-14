@@ -38,7 +38,7 @@ public class BitSetDeltaDomain implements IDeltaDomain {
 
     private BitSet removedValues;
 
-    private BitSet alreadyRemovedValues;
+    private BitSet removedValuesToPropagate;
 
     private int offset;
 
@@ -47,7 +47,7 @@ public class BitSetDeltaDomain implements IDeltaDomain {
 
     public BitSetDeltaDomain(int size, int offset) {
         this.removedValues = new BitSet(size);
-        this.alreadyRemovedValues = new BitSet(size);
+        this.removedValuesToPropagate = new BitSet(size);
         this.offset = offset;
     }
 
@@ -57,8 +57,8 @@ public class BitSetDeltaDomain implements IDeltaDomain {
      */
     @Override
     public void freeze() {
-        alreadyRemovedValues.clear();
-        alreadyRemovedValues.or(removedValues);
+        removedValuesToPropagate.clear();
+        removedValuesToPropagate.or(removedValues);
     }
 
     /**
@@ -77,7 +77,7 @@ public class BitSetDeltaDomain implements IDeltaDomain {
     @Override
     public void clear() {
         removedValues.clear();
-        alreadyRemovedValues.clear();
+        removedValuesToPropagate.clear();
     }
 
     /**
@@ -99,9 +99,9 @@ public class BitSetDeltaDomain implements IDeltaDomain {
      */
     @Override
     public boolean release() {
-        removedValues.and(alreadyRemovedValues);
+        removedValues.andNot(removedValuesToPropagate);
         boolean empty = removedValues.isEmpty();
-        removedValues.clear();
+        removedValuesToPropagate.clear();
         return empty;
 //        removedValues.clear();
 //        return true;
@@ -134,7 +134,7 @@ public class BitSetDeltaDomain implements IDeltaDomain {
 
         @Override
         public void init() {
-            currentIndex = removedValues.nextSetBit(0);
+            currentIndex = removedValuesToPropagate.nextSetBit(0);
         }
 
         public boolean hasNext() {
@@ -143,7 +143,7 @@ public class BitSetDeltaDomain implements IDeltaDomain {
 
         public int next() {
             int v = currentIndex;
-            currentIndex = removedValues.nextSetBit(currentIndex+1);
+            currentIndex = removedValuesToPropagate.nextSetBit(currentIndex+1);
             return v+offset;
         }
 
@@ -160,7 +160,7 @@ public class BitSetDeltaDomain implements IDeltaDomain {
     public BitSetDeltaDomain copy(){
         BitSetDeltaDomain dom =new BitSetDeltaDomain();
         dom.removedValues = (BitSet)this.removedValues.clone();
-        dom.alreadyRemovedValues = (BitSet)this.alreadyRemovedValues.clone();
+        dom.removedValuesToPropagate = (BitSet)this.removedValuesToPropagate.clone();
         dom.offset = this.offset;
         return dom;
     }

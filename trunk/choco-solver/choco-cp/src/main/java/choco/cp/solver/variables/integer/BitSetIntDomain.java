@@ -95,8 +95,8 @@ public class BitSetIntDomain extends AbstractIntDomain implements IBitSetIntDoma
         for (int i = 0; i < capacity; i++) {  // TODO : could be improved...
             contents.set(i);
         }
-//        deltaDom = new ChainDeltaDomain(size.get(), offset);
         deltaDom = new BitSetDeltaDomain(capacity, offset);
+//        deltaDom = new StackDeltaDomain();
         inf = env.makeInt(a);
         sup = env.makeInt(b);
     }
@@ -114,8 +114,8 @@ public class BitSetIntDomain extends AbstractIntDomain implements IBitSetIntDoma
         for (int i = 0; i < sortedValues.length; i++) {  // TODO : could be improved...
             contents.set(sortedValues[i] - a);
         }
-//        deltaDom = new ChainDeltaDomain(size.get(), offset);
         deltaDom = new BitSetDeltaDomain(capacity, offset);
+//        deltaDom = new StackDeltaDomain();
         inf =  env.makeInt(a);
         sup =  env.makeInt(b);
     }

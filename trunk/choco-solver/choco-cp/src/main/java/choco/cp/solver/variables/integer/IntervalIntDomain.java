@@ -209,4 +209,39 @@ public class IntervalIntDomain extends AbstractIntDomain {
         ret.append(deltaDom.pretty());
         return ret.toString();
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////// DELTA DOMAIN /////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    @Override
+    public void freezeDeltaDomain() {
+        if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
+            deltaDom.freeze();
+        }
+    }
+
+    /**
+     * release the delta domain
+     *
+     * @return wether it was a new update
+     */
+    @Override
+    public boolean releaseDeltaDomain() {
+        if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0){
+            return deltaDom.release();
+        }
+        return true;
+    }
+
+    /**
+     * checks whether the delta domain has indeed been released (ie: chechks that no domain updates are pending)
+     */
+    @Override
+    public boolean getReleasedDeltaDomain() {
+        if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
+            return deltaDom.isReleased();
+        }
+        return true;
+    }
 }
