@@ -95,9 +95,9 @@ public class LinkedIntDomain extends AbstractIntDomain {
      */
 
     public LinkedIntDomain(IntDomainVarImpl v, int a, int b) {
+        super(v.getSolver().getPropagationEngine());
         variable = v;
-        solver = v.getSolver();
-        IEnvironment env = solver.getEnvironment();
+        final IEnvironment env = v.getSolver().getEnvironment();
         this.offset = a;
         lowerBound = env.makeInt(a);
         upperBound = env.makeInt(b);
@@ -122,9 +122,9 @@ public class LinkedIntDomain extends AbstractIntDomain {
     }
 
     public LinkedIntDomain(IntDomainVarImpl v, int[] sortedValues) {
+        super(v.getSolver().getPropagationEngine());
         variable = v;
-        solver = v.getSolver();
-        IEnvironment env = solver.getEnvironment();
+        final IEnvironment env = v.getSolver().getEnvironment();
         this.offset = sortedValues[0];
         lowerBound = env.makeInt(sortedValues[0]);
         upperBound = env.makeInt(sortedValues[sortedValues.length - 1]);

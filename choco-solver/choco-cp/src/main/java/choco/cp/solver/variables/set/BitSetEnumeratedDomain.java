@@ -27,7 +27,6 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
-import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.delta.IDeltaDomain;
 import choco.kernel.solver.variables.set.SetSubDomain;
 import choco.kernel.solver.variables.set.SetVar;
@@ -40,12 +39,6 @@ import choco.kernel.solver.variables.set.SetVar;
  *
  */
 public class BitSetEnumeratedDomain implements SetSubDomain {
-
-    /**
-     * The (optimization or decision) model to which the entity belongs.
-     */
-
-    public Solver solver;
 
   /**
    * The offset, that is the minimal value of the domain (stored at index 0).
@@ -84,8 +77,7 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
    */
 
   public BitSetEnumeratedDomain(SetVar v, int a, int b, boolean full) {
-    solver = v.getSolver();
-    IEnvironment env = solver.getEnvironment();
+    final IEnvironment env = v.getSolver().getEnvironment();
     capacity = b - a + 1;           // number of entries
     this.offset = a;
     if (full)
@@ -102,8 +94,7 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
   }
 
   public BitSetEnumeratedDomain(SetVar v, int[] sortedValues, boolean full) {
-      solver = v.getSolver();
-      IEnvironment env = solver.getEnvironment();
+      IEnvironment env = v.getSolver().getEnvironment();
       int a = sortedValues[0];
       int b = sortedValues[sortedValues.length - 1];
       capacity = b - a + 1;           // number of entries
@@ -129,8 +120,7 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
      * @param v
      */
     private BitSetEnumeratedDomain(SetVar v) {
-      solver = v.getSolver();
-      IEnvironment env = solver.getEnvironment();
+      IEnvironment env = v.getSolver().getEnvironment();
       capacity = 0;           // number of entries
       this.offset = 0;
       size = env.makeInt(0);
@@ -334,4 +324,29 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
   public void clearDeltaDomain() {
     delatDom.clear();
   }
+
+    /**
+     * pretty printing of the object. This String is not constant and may depend on the context.
+     *
+     * @return a readable string representation of the object
+     */
+    @Override
+    public String pretty() {
+        StringBuffer buf = new StringBuffer("{");
+        int maxDisplay = 15;
+        int count = 0;
+        int val = getFirstVal();
+        do{
+            count++;
+            if (count > 1) buf.append(", ");
+            buf.append(val);
+            val = getNextValue(val);
+        }while(val>-1 && count < maxDisplay);
+        if (this.getSize() > maxDisplay) {
+            buf.append("..., ");
+            buf.append(this.getLastVal());
+        }
+        buf.append("}");
+        return buf.toString();
+    }
 }

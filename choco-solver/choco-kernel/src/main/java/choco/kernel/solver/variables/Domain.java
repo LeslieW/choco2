@@ -23,7 +23,6 @@
 package choco.kernel.solver.variables;
 
 import choco.IPretty;
-import choco.kernel.solver.Solver;
 
 /*
  * Created by IntelliJ IDEA.
@@ -33,14 +32,6 @@ import choco.kernel.solver.Solver;
  *
  */
 public interface Domain extends IPretty {
-
-    /**
-       * Retrieves the model of the entity.
-       */
-
-    public Solver getSolver();
-
-    public void setSolver(Solver solver);
 
 
 }

@@ -94,6 +94,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
      * @param sortedValues arry of sorted values.
      */
     public BipartiteIntDomain(IntDomainVarImpl v, int[] sortedValues) {
+        super(v.getSolver().getPropagationEngine());
         assert(v!=null);
         assert(sortedValues!=null);
         init(v, sortedValues);
@@ -107,6 +108,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
      * @param up  Maximal value.
      */
     public BipartiteIntDomain(IntDomainVarImpl v, int low, int up) {
+        super(v.getSolver().getPropagationEngine());
         // Pre-condition
         assert(v!=null);
         assert(low <= up);
@@ -120,8 +122,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
     public void init(IntDomainVarImpl v, int[] sortedValues) {
         // Constructor
         variable = v;
-        solver = v.getSolver();
-        IEnvironment env = solver.getEnvironment();
+        final IEnvironment env = v.getSolver().getEnvironment();
         int low = sortedValues[0];
         int up = sortedValues[sortedValues.length - 1];
         int size = sortedValues.length;
@@ -249,7 +250,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
             if (x == infv) {
                 int possibleninf = x + 1;
                 if (possibleninf > supv) {
-                    this.getSolver().getPropagationEngine().raiseContradiction(idx, variable);
+                    propagationEngine.raiseContradiction(idx, variable);
                 }
                 int min = Integer.MAX_VALUE;
                 for (int i = valuesInDomainNumber.get(); i >= 0; i--) {
@@ -263,7 +264,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
             } else if (x == supv) {
                 int possiblesup = x - 1;
                 if (possiblesup < infv) {
-                    this.getSolver().getPropagationEngine().raiseContradiction(idx, variable);
+                    propagationEngine.raiseContradiction(idx, variable);
                 }
                 int max = Integer.MIN_VALUE;
                 for (int i = valuesInDomainNumber.get(); i >= 0; i--) {

@@ -74,9 +74,9 @@ public class BooleanDomain extends AbstractIntDomain {
      */
 
     public BooleanDomain(IntDomainVarImpl v) {
+        super(v.getSolver().getPropagationEngine());
         variable = v;
-        solver = v.getSolver();
-        IEnvironment env = solver.getEnvironment();
+        final IEnvironment env = v.getSolver().getEnvironment();
         notInstanciated = (StoredIndexedBipartiteSet)env.getSharedBipartiteSetForBooleanVars();
         this.offset = env.getNextOffset();
         value = 0;
@@ -309,7 +309,7 @@ public class BooleanDomain extends AbstractIntDomain {
      */
     public boolean updateSup(int x, int idx) throws ContradictionException {
         if (_updateSup(x, idx)) {
-            solver.getPropagationEngine().postInstInt(variable, idx);
+            propagationEngine.postInstInt(variable, idx);
 
             return true;
         } else
@@ -330,7 +330,7 @@ public class BooleanDomain extends AbstractIntDomain {
 
     public boolean updateInf(int x, int idx) throws ContradictionException {
         if (_updateInf(x, idx)) {
-            solver.getPropagationEngine().postInstInt(variable, idx);
+            propagationEngine.postInstInt(variable, idx);
             return true;
         } else
             return false;
@@ -354,7 +354,7 @@ public class BooleanDomain extends AbstractIntDomain {
 
     public final boolean removeVal(int x, int idx) throws ContradictionException {
         if (_removeVal(x, idx)) {
-            solver.getPropagationEngine().postInstInt(variable, idx);
+            propagationEngine.postInstInt(variable, idx);
             return true;
         } else
             return false;
@@ -373,14 +373,14 @@ public class BooleanDomain extends AbstractIntDomain {
 
     public final boolean instantiate(int x, int idx) throws ContradictionException {
         if (_instantiate(x, idx)) {
-            solver.getPropagationEngine().postInstInt(variable, idx);
+            propagationEngine.postInstInt(variable, idx);
             return true;
         } else
             return false;
     }
 
     private void failOnIndex(int idx) throws ContradictionException {
-        this.getSolver().getPropagationEngine().raiseContradiction(idx, variable);
+        propagationEngine.raiseContradiction(idx, variable);
     }
     
 

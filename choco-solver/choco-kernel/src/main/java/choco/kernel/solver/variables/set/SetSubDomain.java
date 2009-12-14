@@ -24,6 +24,7 @@ package choco.kernel.solver.variables.set;
 
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.solver.variables.Domain;
 import choco.kernel.solver.variables.delta.IDeltaDomain;
 
 import java.util.logging.Logger;
@@ -35,7 +36,7 @@ import java.util.logging.Logger;
 * Since : Choco 2.0.1
 * Update : Choco 2.0.1
 */
-public interface SetSubDomain {
+public interface SetSubDomain extends Domain {
 
 	public static final Logger LOGGER = ChocoLogging.getEngineLogger();
 	

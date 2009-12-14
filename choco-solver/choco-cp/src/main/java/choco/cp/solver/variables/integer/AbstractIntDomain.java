@@ -24,7 +24,7 @@ package choco.cp.solver.variables.integer;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
+import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.delta.IDeltaDomain;
 import choco.kernel.solver.variables.integer.IntDomain;
@@ -36,11 +36,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public abstract class AbstractIntDomain implements IntDomain {
 
-	/**
-	 * The (optimization or decision) solver to which the entity belongs.
-	 */
-
-	public Solver solver;
+    final PropagationEngine propagationEngine;
 
 
 	/**
@@ -65,7 +61,11 @@ public abstract class AbstractIntDomain implements IntDomain {
 
     IDeltaDomain deltaDom;
 
-	/**
+    protected AbstractIntDomain(PropagationEngine propagationEngine) {
+        this.propagationEngine = propagationEngine;
+    }
+
+    /**
 	 * Returns an getIterator.
 	 */
 
@@ -137,10 +137,10 @@ public abstract class AbstractIntDomain implements IntDomain {
 			if (val == getSup()) {
 				//instantiate(getSup(), cause);
 				restrict(val);
-				solver.getPropagationEngine().postInstInt(variable, cause);
+				propagationEngine.postInstInt(variable, cause);
 			}
 			else
-				solver.getPropagationEngine().postUpdateSup(variable, cause);
+				propagationEngine.postUpdateSup(variable, cause);
 			return true;
 		} else
 			return false;
@@ -166,9 +166,9 @@ public abstract class AbstractIntDomain implements IntDomain {
 			if (val == getInf()) {
 				//        instantiate(getInf(), cause);
 				restrict(val);
-				solver.getPropagationEngine().postInstInt(variable, cause);
+				propagationEngine.postInstInt(variable, cause);
 			} else
-				solver.getPropagationEngine().postUpdateInf(variable, cause);
+				propagationEngine.postUpdateInf(variable, cause);
 			// TODO      solver.getChocEngine().postUpdateInf(variable, cause, oldinf);
 			return true;
 		} else
@@ -198,13 +198,13 @@ public abstract class AbstractIntDomain implements IntDomain {
 			//int promoteCause = idx;
 			int promoteCause = VarEvent.NOCAUSE;
 			if (getInf() == getSup())
-				solver.getPropagationEngine().postInstInt(variable, promoteCause);
+				propagationEngine.postInstInt(variable, promoteCause);
 			else if (x < getInf())
-				solver.getPropagationEngine().postUpdateInf(variable, promoteCause);
+				propagationEngine.postUpdateInf(variable, promoteCause);
 			else if (x > getSup())
-				solver.getPropagationEngine().postUpdateSup(variable, promoteCause);
+				propagationEngine.postUpdateSup(variable, promoteCause);
 			else
-				solver.getPropagationEngine().postRemoveVal(variable, x, idx);
+				propagationEngine.postRemoveVal(variable, x, idx);
 			return true;
 		} else
 			return false;
@@ -253,7 +253,7 @@ public abstract class AbstractIntDomain implements IntDomain {
 
 	public boolean instantiate(int x, int idx) throws ContradictionException {
 		if (_instantiate(x, idx)) {
-			solver.getPropagationEngine().postInstInt(variable, idx);
+			propagationEngine.postInstInt(variable, idx);
 			return true;
 		} else
 			return false;
@@ -277,14 +277,14 @@ public abstract class AbstractIntDomain implements IntDomain {
 	protected boolean _instantiate(int x, int idx) throws ContradictionException {
 		if (variable.isInstantiated()) {
 			if (variable.getVal() != x) {
-				this.getSolver().getPropagationEngine().raiseContradiction(idx, this.variable);
+				propagationEngine.raiseContradiction(idx, this.variable);
 				return true; // Just for compilation !
 			} else return false;
 		} else {
 			if (x < getInf() || x > getSup() || !contains(x)) { // GRT : we need to check bounds
 				// since contains suppose trivial bounds
 				// are containing tested value !!
-				this.getSolver().getPropagationEngine().raiseContradiction(idx, this.variable);
+				propagationEngine.raiseContradiction(idx, this.variable);
 				return true; // Just for compilation !
 			} else {
 				restrict(x);
@@ -307,7 +307,7 @@ public abstract class AbstractIntDomain implements IntDomain {
 	protected boolean _updateInf(int x, int idx) throws ContradictionException {
 		if (x > getInf()) {
 			if (x > getSup()) {
-				this.getSolver().getPropagationEngine().raiseContradiction(idx, this.variable);
+				propagationEngine.raiseContradiction(idx, this.variable);
 				return true; // Just for compilation !
 			} else {
 				updateInf(x);
@@ -330,7 +330,7 @@ public abstract class AbstractIntDomain implements IntDomain {
 	protected boolean _updateSup(int x, int idx) throws ContradictionException {
 		if (x < getSup()) {
 			if (x < getInf()) {
-				this.getSolver().getPropagationEngine().raiseContradiction(idx, this.variable);
+				propagationEngine.raiseContradiction(idx, this.variable);
 			} else {
 				updateSup(x);
 			}
@@ -372,18 +372,6 @@ public abstract class AbstractIntDomain implements IntDomain {
 		} else {
 			return false;
 		}
-	}
-
-	/**
-	 * Retrieves the solver of the entity
-	 */
-
-	public Solver getSolver() {
-		return solver;
-	}
-
-	public void setSolver(Solver solver) {
-		this.solver = solver;
 	}
 
 	@Override
