@@ -85,37 +85,34 @@ public class BitSetIntDomain extends AbstractIntDomain implements IBitSetIntDoma
      */
 
     public BitSetIntDomain(IntDomainVarImpl v, int a, int b) {
+        super(v.getSolver().getPropagationEngine());
         variable = v;
-        solver = v.getSolver();
-        IEnvironment env = solver.getEnvironment();
+        final IEnvironment env = v.getSolver().getEnvironment();
         capacity = b - a + 1;           // number of entries
         this.offset = a;
         size = env.makeInt(capacity);
         contents = env.makeBitSet(capacity);
-        for (int i = 0; i < capacity; i++) {  // TODO : could be improved...
-            contents.set(i);
-        }
+        contents.set(0, capacity);
         deltaDom = new BitSetDeltaDomain(capacity, offset);
-//        deltaDom = new StackDeltaDomain();
         inf = env.makeInt(a);
         sup = env.makeInt(b);
     }
 
     public BitSetIntDomain(IntDomainVarImpl v, int[] sortedValues) {
+        super(v.getSolver().getPropagationEngine());
         int a = sortedValues[0];
         int b = sortedValues[sortedValues.length - 1];
         variable = v;
-        solver = v.getSolver();
-        IEnvironment env = solver.getEnvironment();
+        final IEnvironment env = v.getSolver().getEnvironment();
         capacity = b - a + 1;           // number of entries
         this.offset = a;
         size = env.makeInt(sortedValues.length);
         contents = env.makeBitSet(capacity);
-        for (int i = 0; i < sortedValues.length; i++) {  // TODO : could be improved...
-            contents.set(sortedValues[i] - a);
+        // TODO : could be improved...
+        for (int sortedValue : sortedValues) {
+            contents.set(sortedValue - a);
         }
         deltaDom = new BitSetDeltaDomain(capacity, offset);
-//        deltaDom = new StackDeltaDomain();
         inf =  env.makeInt(a);
         sup =  env.makeInt(b);
     }

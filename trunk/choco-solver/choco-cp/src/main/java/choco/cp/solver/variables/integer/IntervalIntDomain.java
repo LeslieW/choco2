@@ -52,9 +52,9 @@ public class IntervalIntDomain extends AbstractIntDomain {
     protected final IStateInt sup;
 
     public IntervalIntDomain(IntDomainVarImpl v, int a, int b) {
+        super(v.getSolver().getPropagationEngine());
         variable = v;
-        solver = v.getSolver();
-        IEnvironment env = solver.getEnvironment();
+        final IEnvironment env = v.getSolver().getEnvironment();
         inf = env.makeInt(a);
         sup = env.makeInt(b);
         deltaDom = new IntervalDeltaDomain(this, a,b);
@@ -228,10 +228,7 @@ public class IntervalIntDomain extends AbstractIntDomain {
      */
     @Override
     public boolean releaseDeltaDomain() {
-        if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0){
-            return deltaDom.release();
-        }
-        return true;
+        return (variable.getEvent().getPropagatedEvents() & eventBitMask) == 0 || deltaDom.release();
     }
 
     /**
@@ -239,9 +236,6 @@ public class IntervalIntDomain extends AbstractIntDomain {
      */
     @Override
     public boolean getReleasedDeltaDomain() {
-        if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
-            return deltaDom.isReleased();
-        }
-        return true;
+        return (variable.getEvent().getPropagatedEvents() & eventBitMask) == 0 || deltaDom.isReleased();
     }
 }

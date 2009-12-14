@@ -26,7 +26,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateDouble;
 import choco.kernel.solver.ContradictionException;
 import static choco.kernel.solver.ContradictionException.Type.DOMAIN;
-import choco.kernel.solver.Solver;
+import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.real.RealDomain;
 import choco.kernel.solver.variables.real.RealInterval;
@@ -40,12 +40,7 @@ public class RealDomainImpl implements RealDomain {
 	//public double width_zero = 1.e-8;
 	//public double reduction_factor = 0.99;
 
-	/**
-	 * The (optimization or decision) solver to which the entity belongs.
-	 */
-
-	public Solver solver;
-
+    final PropagationEngine propagationEngine;
 
 	/**
 	 * for the delta domain: current value of the inf (domain lower bound) when the bound started beeing propagated
@@ -67,8 +62,8 @@ public class RealDomainImpl implements RealDomain {
 
 	public RealDomainImpl(RealVar v, double a, double b) {
 		variable = v;
-		solver = v.getSolver();
-		IEnvironment env = solver.getEnvironment();
+        propagationEngine = v.getSolver().getPropagationEngine();
+		final IEnvironment env = v.getSolver().getEnvironment();
 		inf = env.makeFloat(a);
 		sup = env.makeFloat(b);
 	}
@@ -96,7 +91,7 @@ public class RealDomainImpl implements RealDomain {
 
 	public void intersect(RealInterval interval, int index) throws ContradictionException {
 		if ((interval.getInf() > this.getSup()) || (interval.getSup() < this.getInf())) {
-			this.getSolver().getPropagationEngine().raiseContradiction(this, DOMAIN);
+			propagationEngine.raiseContradiction(this, DOMAIN);
 		}
 
 		double old_width = this.getSup() - this.getInf();
@@ -106,12 +101,12 @@ public class RealDomainImpl implements RealDomain {
 		&& (new_width < old_width * variable.getSolver().getReduction());
 
 		if (interval.getInf() > this.getInf()) {
-			if (toAwake) solver.getPropagationEngine().postUpdateInf(variable, index);
+			if (toAwake) propagationEngine.postUpdateInf(variable, index);
 			inf.set(interval.getInf());
 		}
 
 		if (interval.getSup() < this.getSup()) {
-			if (toAwake) solver   .getPropagationEngine().postUpdateSup(variable, index);
+			if (toAwake) propagationEngine.postUpdateSup(variable, index);
 			sup.set(interval.getSup());
 		}
 	}
@@ -141,16 +136,4 @@ public class RealDomainImpl implements RealDomain {
 		inf.set(i.getInf());
 		sup.set(i.getSup());
 	}
-
-	/**
-	 * Retrieves the solver of the entity
-	 */
-
-	 public Solver getSolver() {
-		return solver;
-	 }
-
-	 public void setSolver(Solver solver) {
-		 this.solver = solver;
-	 }
 }

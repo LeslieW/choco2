@@ -68,9 +68,9 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
      */
     public IntervalBTreeDomain(IntDomainVarImpl v, int a, int b)
     {
+        super(v.getSolver().getPropagationEngine());
         variable = v;
-        solver = v.getSolver();
-        IEnvironment env = solver.getEnvironment();
+        final IEnvironment env = v.getSolver().getEnvironment();
         btree= env.makeBinaryTree(a,b);
         capacity = b - a + 1;
         size = env.makeInt(capacity);
@@ -84,9 +84,9 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
      */
     public IntervalBTreeDomain(IntDomainVarImpl v, int[] sortedValues)
     {
+        super(v.getSolver().getPropagationEngine());
         variable = v;
-        solver = v.getSolver();
-        IEnvironment env = solver.getEnvironment();
+        final IEnvironment env = v.getSolver().getEnvironment();
         int a = sortedValues[0];
         btree= env.makeBinaryTree(a,a);
         capacity = sortedValues.length;
