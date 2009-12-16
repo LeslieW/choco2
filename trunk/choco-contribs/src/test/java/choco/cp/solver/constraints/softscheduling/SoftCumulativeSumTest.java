@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 public class SoftCumulativeSumTest {
 
     protected final static Logger LOGGER = ChocoLogging.getTestLogger();
-    public static boolean debug = true;
+    public static boolean debug = false;
 
     // Todo : implement isSatisfied methods of SofCumulative and SoftCumulativeSum (remove from abstract class)
 
