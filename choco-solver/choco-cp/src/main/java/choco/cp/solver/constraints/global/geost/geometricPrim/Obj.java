@@ -288,22 +288,23 @@ public class Obj implements Externalizable {
     }
 
     public String toString() {
-        String res = new String();
+        StringBuilder res = new StringBuilder();
 		for (int i = 0; i < this.coords.length; i++)
 		{
             if (i+1!=this.coords.length)
                 if (!this.getCoord(i).isInstantiated())
-                    res += "["+this.getCoord(i).getInf() +"," + this.getCoord(i).getSup() +"],";
+                    res.append("[").append(this.getCoord(i).getInf()).append(",")
+                            .append(this.getCoord(i).getSup()).append("],");
                 else
-                    res += ""+this.getCoord(i).getInf() + ",";
+                    res.append(this.getCoord(i).getInf()).append(",");
             else
                 if (!this.getCoord(i).isInstantiated())
-                    res += "["+this.getCoord(i).getInf() +"," + this.getCoord(i).getSup() +"]";
+                    res.append("[").append(this.getCoord(i).getInf()).append(",").append(this.getCoord(i).getSup()).append("]");
                 else
-                    res += ""+this.getCoord(i).getInf() +""; 
+                    res.append(this.getCoord(i).getInf()).append("");
 
         }
-        return res;
+        return res.toString();
     }
 
     public Outbox intersect(Outbox ob) {

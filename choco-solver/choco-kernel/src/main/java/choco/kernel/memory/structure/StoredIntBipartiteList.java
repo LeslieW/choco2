@@ -100,11 +100,11 @@ public class StoredIntBipartiteList implements IStateIntVector {
     }
 
     public String pretty() {
-        String s = "[";
+        StringBuilder s = new StringBuilder("[");
         for (int i = 0; i <= last.get(); i++) {
-            s+= list[i] + (i == last.get() ? "":",");
+            s.append(list[i]).append(i == last.get() ? "" : ",");
         }
-        return s + "]";
+        return s.append("]").toString();
     }
     
 

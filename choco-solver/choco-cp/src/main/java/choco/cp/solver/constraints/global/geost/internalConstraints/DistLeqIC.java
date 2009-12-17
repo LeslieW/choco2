@@ -591,11 +591,17 @@ public class DistLeqIC extends ForbiddenRegion {
     }
 
     public String toString() {
-           String r=new String("");
-        if (DVar==null) r+="LeqIC(D="+D+",q="+q+",o1="+o1+",o2="+o2+")";
-        else r+="LeqIC(D=["+DVar.getInf()+","+DVar.getSup()+"],q="+q+",o1="+o1+",o2="+o2+")";
+           StringBuilder r=new StringBuilder();
+        if (DVar==null){
+            r.append("LeqIC(D=").append(D).append(",q=").append(q).append(",o1=")
+                    .append(o1).append(",o2=").append(o2).append(")");
+        }
+        else {
+            r.append("LeqIC(D=[").append(DVar.getInf()).append(",").append(DVar.getSup())
+                    .append("],q=").append(q).append(",o1=").append(o1).append(",o2=").append(o2).append(")");
+        }
 
-            return r;
+            return r.toString();
     }
 
     public int EvaluateMinimumDistance(int k) {

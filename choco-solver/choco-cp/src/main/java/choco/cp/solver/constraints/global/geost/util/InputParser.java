@@ -169,7 +169,7 @@ public class InputParser {
 			        	case 2:
 			        		String temp2 = st.nextToken();
 			        		tokenNb++;
-			        		shape = Choco.makeIntVar("sid_"+indice, Integer.valueOf(temp).intValue(), Integer.valueOf(temp2).intValue());
+			        		shape = Choco.makeIntVar("sid_"+indice, Integer.valueOf(temp), Integer.valueOf(temp2));
 			        		break;
 			        }
 			        
@@ -182,11 +182,11 @@ public class InputParser {
 			        		{
 			        			if(j==0)
 			        			{
-			        				lowerBound = Integer.valueOf(temp).intValue();
+			        				lowerBound = Integer.valueOf(temp);
                                 }
 			        			if(j==1)
 			        			{
-			        				upperBound = Integer.valueOf(temp).intValue();
+			        				upperBound = Integer.valueOf(temp);
                                 }
 			        			if(st.hasMoreTokens())
 			        			{
@@ -206,11 +206,11 @@ public class InputParser {
 			        		{
 			        			if(j==0)
 			        			{
-			        				lowerBound = Integer.valueOf(temp).intValue();
+			        				lowerBound = Integer.valueOf(temp);
 			        			}
 			        			if(j==1)
 			        			{
-			        				upperBound = Integer.valueOf(temp).intValue();
+			        				upperBound = Integer.valueOf(temp);
 			        			}
 			        			if(st.hasMoreTokens())
 			        			{
@@ -242,7 +242,7 @@ public class InputParser {
 			{
 				Shape s = new Shape();
 				temp = st.nextToken();
-			    s.setShapeId(Integer.valueOf(temp).intValue());
+			    s.setShapeId(Integer.valueOf(temp));
 			    sh.add(s);
 			}
 			
@@ -255,7 +255,7 @@ public class InputParser {
 			        tokenNb++; 
 			        if (tokenNb == 1)
 			        {
-			        	s.setShapeId(Integer.valueOf(temp).intValue());
+			        	s.setShapeId(Integer.valueOf(temp));
 			        }
 			        
 			        if (tokenNb > 1 && tokenNb <= this.dim + 1)
@@ -263,7 +263,7 @@ public class InputParser {
 			        	int[] off = new int[this.dim];
 			        	for(int i = 0; i < this.dim; i++)
 			        	{
-			        		off[i] = Integer.valueOf(temp).intValue();
+			        		off[i] = Integer.valueOf(temp);
 			        		if (i != this.dim - 1)
 			        		{
 			        			temp = st.nextToken();
@@ -279,7 +279,7 @@ public class InputParser {
 			        	int[] size = new int[this.dim];
 			        	for(int i = 0; i < this.dim; i++)
 			        	{
-			        		size[i] = Integer.valueOf(temp).intValue();
+			        		size[i] = Integer.valueOf(temp);
 			        		if (i != this.dim - 1)
 			        		{
 			        			temp = st.nextToken();

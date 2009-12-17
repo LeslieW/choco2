@@ -195,15 +195,15 @@ public class WLClause {
     }
 
     public String toString() {
-        String clname = "";
+        StringBuilder clname = new StringBuilder();
         for (int i = 0; i < lits.length; i++) {
             if (lits[i] > 0) {
-                clname += voc.boolvars[lits[i]];
-            } else clname += "!" + voc.boolvars[-lits[i]];
+                clname.append(voc.boolvars[lits[i]]);
+            } else clname.append("!" + voc.boolvars[-lits[i]]);
             if (i < lits.length - 1)
-            clname += " v ";
+            clname.append(" v ");
         }
-        return clname;
+        return clname.toString();
     }
 
 }

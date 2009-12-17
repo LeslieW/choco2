@@ -83,10 +83,10 @@ public class MaxNode extends INode implements ArithmNode {
 	}
 
     public String pretty() {
-        String s = "max(";
+        StringBuilder s = new StringBuilder("max(");
 	    for (int i = 0; i < subtrees.length - 1; i++) {
-		   s += subtrees[i].pretty()+",";
+            s.append(subtrees[i].pretty()).append(",");
 	    }
-	    return s + subtrees[subtrees.length - 1].pretty()+")";
+	    return s.append(subtrees[subtrees.length - 1].pretty()).append(")").toString();
     }
 }

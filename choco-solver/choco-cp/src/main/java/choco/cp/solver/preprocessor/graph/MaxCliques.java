@@ -173,24 +173,24 @@ public class MaxCliques {
 
 
     public static String display(int [] array){
-		String s ="[";
+		StringBuilder s = new StringBuilder("[");
 		for(int i=0; i<array.length; i++) {
-			s+=array[i];
+			s.append(array[i]);
 			if(i<array.length-1) { 
-				s+=",";
+				s.append(",");
 			}
 		}
-		s+="]";
-		return s;
+		s.append("]");
+		return s.toString();
 	}
 	
 	public static String display(int [][] array){
-		String s ="";
+		StringBuilder s = new StringBuilder();
 		for(int i=0; i<array.length; i++) {
-			s += display(array[i]);
-			s += "\n"; 
+			s.append(display(array[i]));
+			s.append("\n");
 		}
-		return s;
+		return s.toString();
 	}
 	
 	public static ArrayGraph generateGraph(int n, int m, int seed, double start) {

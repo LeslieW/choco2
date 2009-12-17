@@ -22,6 +22,7 @@ package choco.cp.solver.constraints.global.automata.multicostregular.example;
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.automata.multicostregular.FastMultiCostRegular;
@@ -29,16 +30,14 @@ import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.TIntHashSet;
 import dk.brics.automaton.RegExp;
-import static choco.Choco.*;
+import gnu.trove.TIntHashSet;
 
 import java.util.ArrayList;
 
@@ -82,41 +81,41 @@ public class RuleModel extends CPModel {
 
     public void buildConsecutiveWERule()
     {
-        String frule ="((";
+        StringBuilder frule = new StringBuilder("((");
         for (int j = 0 ; j < 3 ; j++)
         {
             for (int i = 0 ; i < 5 ; i++)
             {
-                frule+=all;
+                frule.append(all);
             }
-            frule+=work;
-            frule+=work;
+            frule.append(work);
+            frule.append(work);
         }
         for (int j = 0 ; j < 7 ; j++)
         {
-            frule+=all;
+            frule.append(all);
         }
 
-        frule+=")|(";
+        frule.append(")|(");
 
         for (int j = 0 ; j < 7 ; j++)
         {
-            frule+=all;
+            frule.append(all);
         }
 
         for (int j = 0 ; j < 3 ; j++)
         {
             for (int i = 0 ; i < 5 ; i++)
             {
-                frule+=all;
+                frule.append(all);
             }
-            frule+=work;
-            frule+=work;
+            frule.append(work);
+            frule.append(work);
         }
 
-        frule+="))";
+        frule.append("))");
 
-        full = new RegExp(StringUtils.toCharExp(frule)).toAutomaton();
+        full = new RegExp(StringUtils.toCharExp(frule.toString())).toAutomaton();
 
 
     }

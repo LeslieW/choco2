@@ -40,10 +40,16 @@ public class DistGeqModel extends IExternalConstraint {
 
 
     public String toString() {
-        String r="";
-        if (modelDVar!=null) r+="Geq(D=["+modelDVar.getLowB()+","+modelDVar.getUppB()+"],q="+q+",o1="+o1+",o2="+o2+")";
-        else  r+="Geq(D="+D+",q="+q+",o1="+o1+",o2="+o2+")";
-        return r;
+        StringBuilder r= new StringBuilder();
+        if (modelDVar!=null){
+            r.append("Geq(D=[").append(modelDVar.getLowB()).append(",").append(modelDVar.getUppB())
+                    .append("],q=").append(q).append(",o1=").append(o1).append(",o2=").append(o2).append(")");
+        }
+        else{
+            r.append("Geq(D=").append(D).append(",q=").append(q).append(",o1=").append(o1)
+                    .append(",o2=").append(o2).append(")");
+        }
+        return r.toString();
     }
 
     public boolean hasDistanceVar() { return (modelDVar!=null); }

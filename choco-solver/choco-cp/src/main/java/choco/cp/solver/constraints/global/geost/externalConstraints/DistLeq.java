@@ -80,12 +80,18 @@ public class DistLeq extends ExternalConstraint implements Externalizable {
     }
 
     public String toString() {
-           String r="";
+           StringBuilder r=new StringBuilder();
 
-            if (DVar!=null) r+="Leq(D=["+DVar.getInf()+","+DVar.getSup()+"],q="+q+",o1="+o1+",o2="+o2+")";
-            else r+="Leq(D="+D+",q="+q+",o1="+o1+",o2="+o2+")";
+            if (DVar!=null){
+                r.append("Leq(D=[").append(DVar.getInf()).append(",").append(DVar.getSup())
+                        .append("],q=").append(q).append(",o1=").append(o1).append(",o2=").append(o2).append(")");
+            }
+            else {
+                r.append("Leq(D=").append(D).append(",q=").append(q).append(",o1=")
+                        .append(o1).append(",o2=").append(o2).append(")");
+            }
 
-            return r;
+            return r.toString();
     }
 
     public boolean hasDistanceVar() { return (DVar!=null); }

@@ -50,13 +50,12 @@ public class Outbox extends InternalConstraint {
 	}
 
     public String toString() {
-        String res = new String();
+        StringBuilder res = new StringBuilder();
+        for (int aT : t) res.append("[").append(aT).append("],");
         for (int i=0; i<t.length; i++)
-            res += "["+t[i] +"],";
-        for (int i=0; i<t.length; i++)
-            res += "["+l[i] +"],";
+            res.append("[").append(l[i]).append("],");
 
-        return res;
+        return res.toString();
     }
 
     public int adjacent(Outbox ob)
