@@ -66,11 +66,19 @@ public final class NotEqualXYC extends AbstractBinIntSConstraint {
 	}
 
 	private void removeValV0() throws ContradictionException {
-        if(v0.removeVal(v1.getVal() + this.cste, this.cIdx0))this.setEntailed();
+        if(v0.removeVal(v1.getVal() + this.cste, this.cIdx0)){
+            this.setEntailed();
+        }else if(!v0.canBeInstantiatedTo(v1.getVal() + this.cste)){
+            this.setEntailed();
+        }
 	}
 
 	private void removeValV1() throws ContradictionException {
-        if(v1.removeVal(v0.getVal() - this.cste, this.cIdx1))this.setEntailed();
+        if(v1.removeVal(v0.getVal() - this.cste, this.cIdx1)){
+            this.setEntailed();
+        }else if(!v1.canBeInstantiatedTo(v0.getVal() - this.cste)){
+            this.setEntailed();
+        }
 	}
 
 	/**
