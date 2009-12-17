@@ -109,18 +109,18 @@ public class ArrayGraph {
 	}
 
 	public String toString() {
-		String s = "";
-		for (int i = 0; i < mat.length; i++) {
-			for (int j = 0; j < mat.length; j++) {
-				if (mat[i].get(j)) {
-					s += "x ";
-				} else {
-					s += ". ";
-				}
-			}
-			s += "\n";
-		}
-		return s;
+		StringBuilder s = new StringBuilder();
+        for (BitSet aMat : mat) {
+            for (int j = 0; j < mat.length; j++) {
+                if (aMat.get(j)) {
+                    s.append("x ");
+                } else {
+                    s.append(". ");
+                }
+            }
+            s.append("\n");
+        }
+		return s.toString();
 	}
 
     public void storeEdge(Constraint c, int a, int b) {

@@ -165,66 +165,66 @@ public class ModelTest {
 		for (int i = 0; i < 11; i++) {
 			m.addVariables(v, w);
 			m.addConstraints(c, d);
-			String message = i + ": ";
+			StringBuilder message = new StringBuilder(i + ": ");
 			try {
 				switch (i) {
 				case 0:
-					message += "No variable, no constraint";
+					message.append("No variable, no constraint");
 					m.removeVariable(w);
 					m.removeVariable(v);
 					m.removeConstraint(c);
 					m.removeConstraint(d);
 					break;
 				case 1:
-					message += "One variable, no constraint";
+					message.append("One variable, no constraint");
 					m.removeVariable(w);
 					m.removeConstraint(c);
 					m.removeConstraint(d);
 					break;
 				case 2:
-					message += "One variable, One constraint";
+					message.append("One variable, One constraint");
 					m.removeVariable(w);
 					m.removeConstraint(d);
 					break;
 				case 3:
-					message += "Two variables, no constraint";
+					message.append("Two variables, no constraint");
 					m.removeConstraint(c);
 					m.removeConstraint(d);
 					break;
 				case 4:
-					message += "Two variables, one constraint";
+					message.append("Two variables, one constraint");
 					m.removeConstraint(c);
 					break;
 				case 5:
-					message += "Two variables, one constraint (2)";
+					message.append("Two variables, one constraint (2)");
 					m.removeConstraint(d);
 					break;
 				case 6:
-					message += "No variable, one constraint";
+					message.append("No variable, one constraint");
 					m.removeVariables(v, w);
 					m.removeConstraint(c);
 					break;
 				case 7:
-					message += "No variable, one constraint(2)";
+					message.append("No variable, one constraint(2)");
 					m.removeVariables(v, w);
 					m.removeConstraint(d);
 					break;
 				case 8:
-					message += "No variable, two constraints";
+					message.append("No variable, two constraints");
 					m.removeVariables(v, w);
 					break;
 				case 9:
-					message += "One variable, two constraints";
+					message.append("One variable, two constraints");
 					m.removeVariable(v);
 					break;
 				case 10:
-					message += "One variable, two constraints(2)";
+					message.append("One variable, two constraints(2)");
 					m.removeVariable(w);
 					break;
 				}
 				s.read(m);
 			} catch (Exception e) {
-				Assert.fail(message);
+				Assert.fail(message.toString());
 			}
 			Iterator<Constraint> itc;
 			try {

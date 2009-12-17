@@ -15,6 +15,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import static java.text.MessageFormat.format;
 import java.util.HashMap;
 import java.util.Vector;
 
@@ -101,32 +102,32 @@ public class GeostNumeric {
 
 
     private String  strObj(Obj o) {
-        String r="";
+        StringBuilder r= new StringBuilder();
         int k=o.getCoordinates().length;
-        r="o"+o.getObjectId()+"["+k+"] in [";
+        r.append("o").append(o.getObjectId()).append("[").append(k).append("] in [");
         for (int d=0; d<k; d++) {
-            r+="[";
-            r+=coordToExtEngine(o.getCoord(d).getInf())+"/*"+o.getCoord(d).getInf()+"*/,";
-            r+=coordToExtEngine(o.getCoord(d).getSup())+"/*"+o.getCoord(d).getSup()+"*/";
-            if (d==k-1) r+="]"; else r+="];";
+            r.append("[");
+            r.append(coordToExtEngine(o.getCoord(d).getInf())).append("/*").append(o.getCoord(d).getInf()).append("*/,");
+            r.append(coordToExtEngine(o.getCoord(d).getSup())).append("/*").append(o.getCoord(d).getSup()).append("*/");
+            if (d==k-1) r.append("]"); else r.append("];");
         }
-        r+="];\n";
-        return r;
+        r.append("];\n");
+        return r.toString();
     }
 
 
     private String strParam(Obj o,ExternalConstraint ectr) {
-        String r="";
+        StringBuilder r= new StringBuilder();
         int k=o.getCoordinates().length;
-        r=ObjParamIdText.get(o).get(ectr)+"["+k+"] in [";
+        r.append(ObjParamIdText.get(o).get(ectr)).append("[").append(k).append("] in [");
         for (int d=0; d<k; d++) {
-            r+="[";
-            r+=coordToExtEngine(o.getCoord(d).getInf())+"/*"+o.getCoord(d).getInf()+"*/"+",";
-            r+=coordToExtEngine(o.getCoord(d).getSup())+"/*"+o.getCoord(d).getSup()+"*/";
-            if (d==k-1) r+="]"; else r+="];";
+            r.append("[");
+            r.append(coordToExtEngine(o.getCoord(d).getInf())).append("/*").append(o.getCoord(d).getInf()).append("*/" + ",");
+            r.append(coordToExtEngine(o.getCoord(d).getSup())).append("/*").append(o.getCoord(d).getSup()).append("*/");
+            if (d==k-1) r.append("]"); else r.append("];");
         }
-        r+="];\n";
-        return r;
+        r.append("];\n");
+        return r.toString();
     }
 
 
@@ -161,13 +162,13 @@ public class GeostNumeric {
     }
 
     private String strParam(IntDomainVar v,ExternalConstraint ectr) {
-        String name="p"+VarParamId.get(v).get(ectr);
-        String r=name+" in ";
-        r+="[";
-        r+=coordToExtEngine(v.getInf())+",";
-        r+=coordToExtEngine(v.getSup());
-        r+="];\n";
-        return r;
+        String name= format("p{0}", VarParamId.get(v).get(ectr));
+        StringBuilder r= new StringBuilder(format("{0} in ", name));
+        r.append("[");
+        r.append(coordToExtEngine(v.getInf())).append(",");
+        r.append(coordToExtEngine(v.getSup()));
+        r.append("];\n");
+        return r.toString();
     }
 
 
@@ -249,40 +250,44 @@ public class GeostNumeric {
     }
 
     private String strCstr(Obj o, ExternalConstraint ectr) {
-                String name=strCstrName(o,ectr);
-                String r="";
+                StringBuilder r=new StringBuilder();
                 if (ectr instanceof DistLeq) {
                     DistLeq dl = (DistLeq) ectr;
                     int oid=o.getObjectId();
-                    r+="constraint "+strCstrName(o,ectr)+"\n";
+                    r.append(format("constraint {0}\n", strCstrName(o, ectr)));
                     if (dl.hasDistanceVar()) {
-                        r+=" distance(o"+oid+","+getObjectParamIdText(stp.getObject(dl.o2),ectr)+")<="
-                            +getVarParamIdText(dl.getDistanceVar(),ectr)+";\n";
+                        r.append(" distance(o").append(oid).append(",").append(getObjectParamIdText(stp.getObject(dl.o2), ectr))
+                                .append(")<=").append(getVarParamIdText(dl.getDistanceVar(), ectr)).append(";\n");
                     }
                     else {
-                        r+=" distance(o"+oid+","+getObjectParamIdText(stp.getObject(dl.o2),ectr)+")<="+coordToExtEngine(dl.D/2)+"/*"+dl.D+"*/"+";\n";
+                        r.append(" distance(o").append(oid).append(",")
+                                .append(getObjectParamIdText(stp.getObject(dl.o2), ectr)).append(")<=")
+                                .append(coordToExtEngine(dl.D / 2)).append("/*").append(dl.D).append("*/" + ";\n");
                     }
-                    r+="end\n";
+                    r.append("end\n");
                 }
                 else if (ectr instanceof DistGeq) {
                     DistGeq dl = (DistGeq) ectr;
                     int oid=o.getObjectId();
-                    r+="constraint "+strCstrName(o,ectr)+"\n";
+                    r.append("constraint ").append(strCstrName(o, ectr)).append("\n");
                     if (dl.hasDistanceVar()) {
-                        r+=" distance(o"+oid+","+getObjectParamIdText(stp.getObject(dl.o2),ectr)+")>="
-                            +getVarParamIdText(dl.getDistanceVar(),ectr)+";\n";
+                        r.append(" distance(o").append(oid).append(",")
+                                .append(getObjectParamIdText(stp.getObject(dl.o2), ectr)).append(")>=")
+                                .append(getVarParamIdText(dl.getDistanceVar(), ectr)).append(";\n");
                     }
                     else {
-                        r+=" distance(o"+oid+","+getObjectParamIdText(stp.getObject(dl.o2),ectr)+")>="+coordToExtEngine(dl.D)+"/*"+dl.D+"*/"+";\n";
+                        r.append(" distance(o").append(oid).append(",")
+                                .append(getObjectParamIdText(stp.getObject(dl.o2), ectr)).append(")>=")
+                                .append(coordToExtEngine(dl.D)).append("/*").append(dl.D).append("*/" + ";\n");
                     }
-                    r+="end\n";
+                    r.append("end\n");
                 }
                 else if (ectr instanceof DistLinear) {
                     System.out.println("choco.cp.solver.constraints.global.geost.layers.GeostNumeric:strCstr():External Constraint "+ectr+" not supported yet.");
                     System.exit(-1);
                 }
 
-                return r;
+                return r.toString();
     }
 
     private String getObjectParamIdText(Obj o, ExternalConstraint ectr) {
@@ -494,7 +499,7 @@ public class GeostNumeric {
         Region r = new Region(k,o.getObjectId());
         for (int i=0; i<k; i++) {
             //Probleme de conversion inverse ici
-            String id = "o"+o.getObjectId()+"["+i+"]";
+            String id = format("o{0}[{1}]", o.getObjectId(), i);
             double lb=engine.get_lb(id);
             double ub=engine.get_ub(id);
             int lb_int=(int) Math.floor(lb*cr);

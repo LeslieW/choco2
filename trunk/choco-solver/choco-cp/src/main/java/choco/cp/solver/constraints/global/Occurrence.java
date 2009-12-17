@@ -245,18 +245,18 @@ public class Occurrence extends AbstractLargeIntSConstraint {
     }
 
     public String pretty() {
-        String s = "occur([";
+        StringBuilder s = new StringBuilder("occur([");
         for (int i = 0; i < vars.length - 2; i++) {
-            s += vars[i] + ",";
+            s.append(vars[i]).append(",");
         }
-        s += vars[vars.length - 2] + "], " + cste + ")";
+        s.append(vars[vars.length - 2]).append("], ").append(cste).append(")");
         if (constrainOnInfNumber && constrainOnSupNumber)
-            s += " = ";
+            s.append(" = ");
         else if (constrainOnInfNumber)
-            s += " >= ";
+            s.append(" >= ");
         else
-            s += " <= ";
-        s += vars[vars.length - 1];
-        return s;
+            s.append(" <= ");
+        s.append(vars[vars.length - 1]);
+        return s.toString();
     }
 }

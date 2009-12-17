@@ -244,14 +244,14 @@ public class DoubleLinkedList extends DisposableIntIterator {
 	// Display the table
 	@Override
 	public String toString() {
-		String n = "next    :";
-		String p = "suivant :";
+		StringBuilder n = new StringBuilder("next    :");
+		StringBuilder p = new StringBuilder("suivant :");
 		for (int i = 0; i < nextT.length; i++) {
-			n += nextT[i] + " ";
-			p += prevT[i] + " ";
+            n.append(nextT[i]).append(" ");
+            p.append(prevT[i]).append(" ");
 		}
 
-		return ("first :" + nextT[listSize] + "| " + "last :" + prevT[listSize] + "| " + n + "| " + p);
+		return ("first :" + nextT[listSize] + "| " + "last :" + prevT[listSize] + "| " + n.toString() + "| " + p.toString());
 	}
 
 }

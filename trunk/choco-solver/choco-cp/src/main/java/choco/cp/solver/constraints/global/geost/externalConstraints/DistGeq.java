@@ -47,10 +47,16 @@ public class DistGeq extends ExternalConstraint implements Serializable {
 
 
     public String toString() {
-        String r="";
-        if (DVar !=null) r+="Geq(D=["+ DVar.getInf()+","+ DVar.getSup()+"],q="+q+",o1="+o1+",o2="+o2+")";
-        else  r+="Geq(D="+D+",q="+q+",o1="+o1+",o2="+o2+")";
-        return r;
+        StringBuilder r=new StringBuilder();
+        if (DVar !=null){
+            r.append("Geq(D=[").append(DVar.getInf()).append(",").append(DVar.getSup())
+                    .append("],q=").append(q).append(",o1=").append(o1).append(",o2=").append(o2).append(")");
+        }
+        else {
+            r.append("Geq(D=").append(D).append(",q=").append(q).append(",o1=").append(o1)
+                    .append(",o2=").append(o2).append(")");
+        }
+        return r.toString();
     }
 
     public boolean hasDistanceVar() { return (DVar !=null); }

@@ -154,21 +154,21 @@ public class Region implements Externalizable {
 		return this.max[index];
 	}
     public String toString() {
-        String res = new String();
-        res+="(";
+        StringBuilder res = new StringBuilder();
+        res.append("(");
 //        for (int i=0; i<dim; i++)
 //            res += min[i] +" ";
 //        for (int i=0; i<dim; i++)
 //            res += max[i] +" ";
         for (int i=0; i<dim; i++)
             if (i!=dim-1)
-                res += "["+min[i]+","+max[i]+"],";
+                res.append("[").append(min[i]).append(",").append(max[i]).append("],");
             else
-                res += "["+min[i]+","+max[i]+"]";
+                res.append("[").append(min[i]).append(",").append(max[i]).append("]");
 
 
-            res+=")";
-        return res;
+            res.append(")");
+        return res.toString();
 
     }
 

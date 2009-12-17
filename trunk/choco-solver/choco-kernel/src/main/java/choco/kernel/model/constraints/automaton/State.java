@@ -312,16 +312,18 @@ public class State extends LightState {
 
 		for (int i = 0; i < delta2.length; i++) {
 			if (delta2[i] != null) {
-				String label = "   " + idx + " -> " + delta2[i].idx + "  [ label = \"{" + i;
+				StringBuilder label = new StringBuilder();
+                label.append("   ").append(idx).append(" -> ")
+                        .append(delta2[i].idx).append("  [ label = \"{").append(i);
 
 				for (int j = i + 1; j < delta2.length; j++) {
 					if ((delta2[j] != null) && delta2[i].equals(delta2[j])) {
-						label = label + "," + j;
+						label.append("," + j);
 						delta2[j] = null;
 					}
 				}
-				label += "}\" ];";
-				bw.write(label);
+				label.append("}\" ];");
+				bw.write(label.toString());
 				bw.newLine();
 			}
 		}

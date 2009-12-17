@@ -531,11 +531,10 @@ public class Automaton {
                     it2.advance();
                     int j = it2.key();
                     TIntHashSet smb = ot.get(j);
-                    String s = "";
+                    StringBuilder s = new StringBuilder();
                     for (TIntIterator it3 = smb.iterator() ; it3.hasNext();)
-                        s+=it3.next()+",";
-                    s = s.substring(0,s.length()-1);
-                    bw.write("   "+i+" -> "+j+"  [ label = \"{"+s+"}\" ];");
+                        s.append(it3.next()).append(",");
+                    bw.write("   "+i+" -> "+j+"  [ label = \"{"+s.substring(0,s.length()-1)+"}\" ];");
                     bw.newLine();
 
 

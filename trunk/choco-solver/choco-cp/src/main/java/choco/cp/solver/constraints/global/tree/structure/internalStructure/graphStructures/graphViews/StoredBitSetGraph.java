@@ -677,11 +677,11 @@ public class StoredBitSetGraph {
     }
 
     public String showDesc(int i, String type) {
-        String s = ("D_" + type + "[" + i + "] = ");
+        StringBuilder s = new StringBuilder("D_" + type + "[" + i + "] = ");
         for (int j = tcGraph[i].nextSetBit(0); j >= 0; j = tcGraph[i].nextSetBit(j + 1)) {
-            s += j + " ";
+            s.append(j).append(" ");
         }
-        return s;
+        return s.toString();
     }
 
     public void showAllDesc(String type) {

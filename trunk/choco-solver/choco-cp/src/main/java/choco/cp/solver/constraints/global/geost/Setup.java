@@ -247,16 +247,16 @@ public class Setup {
 			System.out.println("shape id: " + sid);
 			for(int i = 0; i < sb.size(); i++)
 			{
-				String offset = "";
-				String size = "";
+				StringBuilder offset = new StringBuilder();
+				StringBuilder size = new StringBuilder();
 				for (int j = 0; j < cst.getDIM(); j++)
 				{
-					offset = offset + sb.elementAt(i).getOffset(j) + "  ";
-					size = size + sb.elementAt(i).getSize(j) + "  ";
+                    offset.append(sb.elementAt(i).getOffset(j)).append("  ");
+                    size.append(sb.elementAt(i).getSize(j)).append("  ");
 				}
 				System.out.println("    sb" + i + ": ");
-				System.out.println("       Offset: " +  offset);
-				System.out.println("       Size: " +  size);
+				System.out.println("       Offset: " +  offset.toString());
+				System.out.println("       Size: " +  size.toString());
 			}
 		}
 	}
@@ -291,16 +291,16 @@ public class Setup {
 				out.write("shape id: " + sid + '\n');
 				for(int i = 0; i < sb.size(); i++)
 				{
-					String offset = "";
-					String size = "";
+					StringBuilder offset = new StringBuilder();
+					StringBuilder size = new StringBuilder();
 					for (int j = 0; j < cst.getDIM(); j++)
 					{
-						offset = offset + sb.elementAt(i).getOffset(j) + "  ";
-						size = size + sb.elementAt(i).getSize(j) + "  ";
+                        offset.append(sb.elementAt(i).getOffset(j)).append("  ");
+                        size.append(sb.elementAt(i).getSize(j)).append("  ");
 					}
 					out.write("    sb" + i + ": " + '\n');
-					out.write("       Offset: " +  offset + '\n');
-					out.write("       Size: " +  size + '\n');
+					out.write("       Offset: " +  offset.toString() + '\n');
+					out.write("       Size: " +  size.toString() + '\n');
 				}
 			}
 			out.close();
@@ -356,15 +356,15 @@ public class Setup {
 
 				for(int i = 0; i < sb.size(); i++)
 				{
-					String offset = "";
-					String size = "";
+					StringBuilder offset = new StringBuilder();
+					StringBuilder size = new StringBuilder();
 					for (int j = 0; j < cst.getDIM(); j++)
 					{
-						offset = offset + sb.elementAt(i).getOffset(j) + " ";
-						size = size + sb.elementAt(i).getSize(j) + " ";
+                        offset.append(sb.elementAt(i).getOffset(j)).append(" ");
+                        size.append(sb.elementAt(i).getSize(j)).append(" ");
 					}
 					out.write(sid + " ");
-					out.write(offset +  size + '\n');
+					out.write(offset.toString() +  size.toString() + '\n');
 				}
 			}
 			out.close();

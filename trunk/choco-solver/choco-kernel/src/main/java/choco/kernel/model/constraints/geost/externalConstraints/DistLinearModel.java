@@ -24,11 +24,13 @@ public class DistLinearModel extends IExternalConstraint{
 	}
 
     public String toString() {
-        String r="";
-        r+="Linear(o:"+o1+" [";
-        for (int i=0; i<a.length; i++) r+=a[i]+" ";
-        r+="].X<="+b+")";        
-        return r;
+        StringBuilder r= new StringBuilder();
+        r.append("Linear(o:").append(o1).append(" [");
+        for (int i=0; i<a.length; i++){
+            r.append(a[i]).append(" ");
+        }
+        r.append("].X<=").append(b).append(")");
+        return r.toString();
 
     }
 

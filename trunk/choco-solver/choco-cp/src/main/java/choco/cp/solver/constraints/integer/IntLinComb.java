@@ -602,19 +602,19 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
 	 * @return a strring representation of the constraint
 	 */
 	public String pretty() {
-		String linComb = "";
+		StringBuilder linComb = new StringBuilder();
 		for (int i = 0; i < coeffs.length - 1; i++) {
-			linComb += coeffs[i] + "*" + vars[i] + " + ";
+            linComb.append(coeffs[i]).append("*").append(vars[i]).append(" + ");
 		}
-		linComb += coeffs[coeffs.length - 1] + "*" + vars[coeffs.length - 1];
+        linComb.append(coeffs[coeffs.length - 1]).append("*").append(vars[coeffs.length - 1]);
 		if (op == 0) {
-			linComb += " = ";
+			linComb.append(" = ");
 		} else if (op == 1) {
-			linComb += " >= ";
+			linComb.append(" >= ");
 		} else if (op == 2) {
-			linComb += " != ";
+			linComb.append(" != ");
 		}
-		linComb += -cste;
-		return linComb;
+		linComb.append(-cste);
+		return linComb.toString();
 	}
 }

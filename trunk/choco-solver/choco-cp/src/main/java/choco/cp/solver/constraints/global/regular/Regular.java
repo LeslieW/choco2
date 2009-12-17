@@ -443,11 +443,11 @@ public class Regular extends AbstractLargeIntSConstraint {
 
 
     public String toString() {
-        String autstring = "auto : ";
+        StringBuilder autstring = new StringBuilder("auto : ");
         for (int i = 0; i < vars.length; i++) {
-            autstring += vars[i] + " ";
+            autstring.append(vars[i] + " ");
         }
-        return autstring;
+        return autstring.toString();
     }
 
     /*******************************************************/

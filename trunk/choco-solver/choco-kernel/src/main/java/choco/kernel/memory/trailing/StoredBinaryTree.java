@@ -577,30 +577,30 @@ public class StoredBinaryTree implements IStateBinaryTree {
 
     public String toDotty()
     {
-        String s = "digraph binary_tree_domain {\n";
-        s+=this.toDotty(this.root);
-        s+="\n}";
-        return s;
+        StringBuilder s = new StringBuilder("digraph binary_tree_domain {\n");
+        s.append(this.toDotty(this.root));
+        s.append("\n}");
+        return s.toString();
     }
 
 
 
     public String toDotty(Node n)
     {
-        String s ="";
+        StringBuilder s = new StringBuilder();
         if (n.leftNode != null)
         {
-            s+= "\""+n+"\" -> \""+n.leftNode+"\";\n";
-            s+= this.toDotty(n.leftNode);
+            s.append("\"").append(n).append("\" -> \"").append(n.leftNode).append("\";\n");
+            s.append(this.toDotty(n.leftNode));
         }
         if (n.rightNode != null)
         {
-            s+= "\""+n+"\" -> \""+n.rightNode+"\";\n";
-            s+= this.toDotty(n.rightNode);
+            s.append("\"").append(n).append("\" -> \"").append(n.rightNode).append("\";\n");
+            s.append(this.toDotty(n.rightNode));
         }
 
 
-        return s;
+        return s.toString();
 
     }
 

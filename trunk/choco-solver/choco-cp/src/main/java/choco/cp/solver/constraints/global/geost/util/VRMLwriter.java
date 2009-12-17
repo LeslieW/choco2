@@ -32,6 +32,7 @@ import choco.kernel.model.variables.geost.ShiftedBox;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Vector;
@@ -82,21 +83,21 @@ public class VRMLwriter {
 				while(itr.hasNext())
 				{
 					ObjectIterationNb++;
-					int id = ((Integer)itr.next()).intValue();
+					int id = (Integer) itr.next();
 					//Obj o = s.objects.get(new Integer(id));
-					Obj o = s.getObject(Integer.valueOf(id));
+					Obj o = s.getObject(id);
 					
-					String temp = "";
+					StringBuilder temp = new StringBuilder();
 					for(int i = 0; i < c.getDIM(); i++)
 					{
-						temp = temp + o.getCoord(i).getInf() + " " ;
+                        temp.append(o.getCoord(i).getInf()).append(" ");
 					}
 					
 					if (kdim == 2)
-						temp = temp + " 0.0 ";
+						temp.append(" 0.0 ");
 					
 					
-					out.write("Transform { translation " + temp + '\n' );
+					out.write("Transform { translation " + temp.toString() + '\n' );
 					out.write("children [ " + '\n');
 					Vector<ShiftedBox> sb = s.shapes.get(Integer.valueOf(o.getShapeId().getInf()));
 					
@@ -122,34 +123,34 @@ public class VRMLwriter {
 					{
 						
 						//out.write("Shape { geometry Box { size ");
-						temp = "";
+						temp.setLength(0);
 						for (int j = 0; j < c.getDIM(); j++)
 						{
 							float k = (sb.elementAt(i).getOffset(j) + (sb.elementAt(i).getSize(j) / 2.0f));
-							temp = temp + "" +  k + " ";
+                            temp.append("").append(k).append(" ");
 						}
 					
 //						the translation (on the z-axis) for the text label on the box
 						sizeOnZOfFirstShiftedBoxOfObject = sb.elementAt(0).getSize(c.getDIM() - 1);
 						
 						if (kdim == 2)
-							temp = temp + " 0.0 ";
+							temp.append(" 0.0 ");
 						
-						out.write("Transform { translation " + temp + '\n' );
+						out.write("Transform { translation " + temp.toString() + '\n' );
 						out.write("children [ ");
-						temp = "";
+						temp.setLength(0);
 						for (int j = 0; j < c.getDIM(); j++)
 						{
 							int k = sb.elementAt(i).getSize(j);
-							temp = temp + "" +  k + " ";
+                            temp.append("").append(k).append(" ");
 						}
 						
 						if (kdim == 2)
-							temp = temp + " 0.0 ";
+							temp.append(" 0.0 ");
 						
 						out.write("Shape { " + appearance); 
 						
-						out.write(" geometry Box { size " + temp + "}}]}" + '\n' );
+						out.write(" geometry Box { size " + temp.toString() + "}}]}" + '\n' );
 //						out.write(" geometry Box { size " + temp + "}}");
 						
 						
@@ -165,31 +166,33 @@ public class VRMLwriter {
 					out.write(" ]} " + '\n');
 				}
 				
-				String temp = "";
+				StringBuilder temp = new StringBuilder();
 				
 				if (kdim == 3)
 				{
-					temp = " 25.0 0.1 0.1 ";
+					temp.append(" 25.0 0.1 0.1 ");
 //					the x-axis
-					out.write("Transform { translation " + temp + '\n' );
+					out.write("Transform { translation " + temp.toString() + '\n' );
 					out.write("children [ ");
 					out.write("Shape { " + "appearance  Appearance {" +
 							"material  Material { "+
 							" diffuseColor  1.0 0.0 0.0 }} ");
 					out.write(" geometry Box { size 50.0 0.2 0.2 }}]}" + '\n' );
 					
-					temp = " 0.1 25.0 0.1 ";
+					temp.setLength(0);
+                    temp.append(" 0.1 25.0 0.1 ");
 //					the y-axis
-					out.write("Transform { translation " + temp + '\n' );
+					out.write("Transform { translation " + temp.toString() + '\n' );
 					out.write("children [ ");
 					out.write("Shape { " + "appearance  Appearance {" +
 							"material  Material { "+
 							" diffuseColor  0.0 1.0 0.0 }} ");
 					out.write(" geometry Box { size 0.2 50.0 0.2 }}]}" + '\n' );
 					
-					temp = " 0.1 0.1 25.0 ";
+					temp.setLength(0);
+                    temp.append(" 0.1 0.1 25.0 ");
 //					the z-axis
-					out.write("Transform { translation " + temp + '\n' );
+					out.write("Transform { translation " + temp.toString() + '\n' );
 					out.write("children [ ");
 					out.write("Shape { " + "appearance  Appearance {" +
 							"material  Material { "+
@@ -199,18 +202,20 @@ public class VRMLwriter {
 				
 				else if(kdim == 2)
 				{
-					temp = " 25.0 0.1 0.0 ";
+					temp.setLength(0);
+                    temp.append(" 25.0 0.1 0.0 ");
 //					the x-axis
-					out.write("Transform { translation " + temp + '\n' );
+					out.write("Transform { translation " + temp.toString() + '\n' );
 					out.write("children [ ");
 					out.write("Shape { " + "appearance  Appearance {" +
 							"material  Material { "+
 							" diffuseColor  1.0 0.0 0.0 }} ");
 					out.write(" geometry Box { size 50.0 0.2 0.0 }}]}" + '\n' );
 					
-					temp = " 0.1 25.0 0.0 ";
+					temp.setLength(0);
+                    temp.append(" 0.1 25.0 0.0 ");
 //					the y-axis
-					out.write("Transform { translation " + temp + '\n' );
+					out.write("Transform { translation " + temp.toString() + '\n' );
 					out.write("children [ ");
 					out.write("Shape { " + "appearance  Appearance {" +
 							"material  Material { "+
@@ -236,7 +241,7 @@ public class VRMLwriter {
 	public static boolean printVRML3D(Setup s, Constants c,String prefix, int solNb)
 	{
 		
-		String str =  ""+ prefix + "_" + solNb ;
+		String str = MessageFormat.format("{0}_{1}", prefix, solNb);
 		
 		return printVRML3D(s, c, str);
 	}
@@ -244,7 +249,7 @@ public class VRMLwriter {
     public static boolean printVRML3D(Setup s, Constants c,String output, String prefix, int solNb)
 	{
 
-		String str =  ""+ prefix + "_" + solNb ;
+		String str = MessageFormat.format("{0}_{1}", prefix, solNb);
 
 		return printVRML3D(s, c, output, str);
 	}

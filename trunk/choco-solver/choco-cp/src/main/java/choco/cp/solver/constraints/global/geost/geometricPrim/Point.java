@@ -174,15 +174,15 @@ public class Point implements Serializable {
 	}
 
     public String toString() {
-        String res = new String();
-        res+="(";
+        StringBuilder res = new StringBuilder();
+        res.append("(");
         for (int i=0; i<dim; i++)
             if (i!=dim-1)
-                res += coords[i]+",";
+                res.append(coords[i]+",");
             else
-                res += coords[i]+")";
+                res.append(coords[i]+")");
 
-        return res;
+        return res.toString();
     }
 	
 }

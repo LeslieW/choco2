@@ -25,8 +25,10 @@ package choco.memory;
 
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.IStateInt;
+import choco.kernel.memory.copy.EnvironmentCopying;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import org.junit.After;
+import org.junit.Assert;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
@@ -103,5 +105,58 @@ public class StoredIntTest {
       assertTrue(x1.get() == i - 1);
     }
   }
+
+    @Test
+    public void test3(){
+        EnvironmentTrailing et = new EnvironmentTrailing();
+        EnvironmentCopying ec = new EnvironmentCopying();
+        IStateInt t1 = et.makeInt(0);
+        IStateInt c1 = ec.makeInt(0);
+
+        et.worldPush();
+        ec.worldPush();
+        Assert.assertEquals(t1.get(), c1.get());
+
+        t1.set(1);
+        c1.set(1);
+        Assert.assertEquals(t1.get(), c1.get());
+
+        et.worldPush();
+        ec.worldPush();
+        Assert.assertEquals(t1.get(), c1.get());
+
+        t1.set(2);
+        c1.set(2);
+        Assert.assertEquals(t1.get(), c1.get());
+
+        et.worldPush();
+        ec.worldPush();
+        Assert.assertEquals(t1.get(), c1.get());
+
+        t1.set(1);
+        c1.set(1);
+        Assert.assertEquals(t1.get(), c1.get());
+
+        et.worldPop();
+        ec.worldPop();
+        Assert.assertEquals(t1.get(), c1.get());
+
+        et.worldPop();
+        ec.worldPop();
+        Assert.assertEquals(t1.get(), c1.get());
+
+        et.worldPop();
+        ec.worldPop();
+        Assert.assertEquals(t1.get(), c1.get());
+
+        et.worldPush();
+        ec.worldPush();
+        Assert.assertEquals(t1.get(), c1.get());
+
+        t1.set(1);
+        c1.set(1);
+        Assert.assertEquals(t1.get(), c1.get());
+    }
+
 
 }

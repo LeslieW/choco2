@@ -14,9 +14,10 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import static java.text.MessageFormat.format;
 import java.util.HashMap;
 import java.util.Vector;
-                                      
+
 class MemoStore {
     public boolean active = false;
     public int p = 1; //Maximum nbr of objects stored
@@ -2542,7 +2543,7 @@ public class GeometricKernel {
             if (stp.opt.debug) System.out.println("/*debug*/FindBoxTriangleDicho1() returns null");
             return null;
         }
-        String laststr=new String("");
+        String laststr= "";
 
         do {
 //            System.out.println("/*Processing*/diagonal("+Pdiag.getCoord(0)+","+Pdiag.getCoord(1)+","+up.getCoord(0)+","+up.getCoord(1)+");/*up*/");
@@ -2550,15 +2551,15 @@ public class GeometricKernel {
 
             Point cut = new Point(h); cut.setCoord(d_dicho_int, Min(cut.getCoord(d_dicho_int), up.getCoord(d_dicho_int), increase ));
             boolean upOk = CheckBoxTriangle(Pra , Pdiag , cut, up , ictr_pradiag , ictr_pdiag);
-            String upstr = new String("FindBoxTriangleDicho1:up:CheckBoxTriangle("+Pra+","+Pdiag+","+cut+","+up+","+ictr_pradiag+","+ictr_pdiag+","+d_dicho_int+","+increase);
+            String upstr = format("FindBoxTriangleDicho1:up:CheckBoxTriangle({0},{1},{2},{3},{4},{5},{6},{7}", Pra, Pdiag, cut, up, ictr_pradiag, ictr_pdiag, d_dicho_int, increase);
             cut = new Point(h); cut.setCoord(d_dicho_int, Min(cut.getCoord(d_dicho_int), low.getCoord(d_dicho_int), increase ));
             boolean lowOk = CheckBoxTriangle(Pra , Pdiag , cut, low , ictr_pradiag , ictr_pdiag);
-            String lowstr = new String("FindBoxTriangleDicho1:low:CheckBoxTriangle("+Pra+","+Pdiag+","+cut+","+low+","+ictr_pradiag+","+ictr_pdiag+","+d_dicho_int+","+increase);
+            String lowstr = format("FindBoxTriangleDicho1:low:CheckBoxTriangle({0},{1},{2},{3},{4},{5},{6},{7}", Pra, Pdiag, cut, low, ictr_pradiag, ictr_pdiag, d_dicho_int, increase);
             Point mid = new Point(low); mid.setCoord(d_dicho_int,((low.getCoord(d_dicho_int)+up.getCoord(d_dicho_int))/2));
             cut = new Point(h); cut.setCoord(d_dicho_int, Min(cut.getCoord(d_dicho_int), mid.getCoord(d_dicho_int), increase ));
 //            System.out.println("/*Processing*/diagonal("+Pdiag.getCoord(0)+","+Pdiag.getCoord(1)+","+mid.getCoord(0)+","+mid.getCoord(1)+");/*mid*/");
             boolean midOk = CheckBoxTriangle(Pra , Pdiag , cut, mid , ictr_pradiag , ictr_pdiag);
-            String midstr = new String("FindBoxTriangleDicho1:mid:CheckBoxTriangle("+Pra+","+Pdiag+","+cut+","+mid+","+ictr_pradiag+","+ictr_pdiag+","+d_dicho_int+","+increase);
+            String midstr = format("FindBoxTriangleDicho1:mid:CheckBoxTriangle({0},{1},{2},{3},{4},{5},{6},{7}", Pra, Pdiag, cut, mid, ictr_pradiag, ictr_pdiag, d_dicho_int, increase);
 
 
             if ((!lowOk) && (!midOk) && (!upOk)) break;
@@ -2591,7 +2592,7 @@ public class GeometricKernel {
 
             Region result=BuildBox(k,Pdiag,best_found);
             result.setType("diagonal");
-            result.father=new String("FindBoxTriangleDicho1");
+            result.father= "FindBoxTriangleDicho1";
             result.info=laststr;
             if (stp.opt.debug) System.out.println("/*debug*/FindBoxTriangleDicho1() returns "+result);
             return result;
@@ -2621,7 +2622,7 @@ public class GeometricKernel {
         boolean found=false; Point best_found=null;
         boolean upOk=false,lowOk=false,midOk=false;
         Point h_low,h_mid,h_up;
-        String laststr=new String("");
+        String laststr= "";
         do {
             Point mid=new Point(low);
             mid.setCoord(d_dicho_int,(low.getCoord(d_dicho_int)+up.getCoord(d_dicho_int))/2);
@@ -2631,18 +2632,18 @@ public class GeometricKernel {
                 h_up = SlidePt(Pra,d_dicho_int,up.getCoord(d_dicho_int));
                 upOk = ( ictr_pradiag.insideForbidden(h_up) && ictr_pdiag.insideForbidden(h_up)
                         && CheckBoxTriangle(Pra,Pdiag,up,h_up,ictr_pradiag,ictr_pdiag));
-                upstr = new String("FindBoxTriangleDicho2.1:up:CheckBoxTriangle("+Pra+","+Pdiag+","+up+","+h_up+","+ictr_pradiag+","+ictr_pdiag+","+d_dicho_int+","+increase);
+                upstr = format("FindBoxTriangleDicho2.1:up:CheckBoxTriangle({0},{1},{2},{3},{4},{5},{6},{7}", Pra, Pdiag, up, h_up, ictr_pradiag, ictr_pdiag, d_dicho_int, increase);
 
                 h_low = SlidePt(Pra,d_dicho_int,low.getCoord(d_dicho_int));
                 lowOk = ( ictr_pradiag.insideForbidden(h_low) && ictr_pdiag.insideForbidden(h_low)
                         && CheckBoxTriangle(Pra,Pdiag,low,h_low,ictr_pradiag,ictr_pdiag));
-                lowstr = new String("FindBoxTriangleDicho2.1:low:CheckBoxTriangle("+Pra+","+Pdiag+","+low+","+h_low+","+ictr_pradiag+","+ictr_pdiag+","+d_dicho_int+","+increase);
+                lowstr = format("FindBoxTriangleDicho2.1:low:CheckBoxTriangle({0},{1},{2},{3},{4},{5},{6},{7}", Pra, Pdiag, low, h_low, ictr_pradiag, ictr_pdiag, d_dicho_int, increase);
 
                 h_mid = SlidePt(Pra,d_dicho_int,mid.getCoord(d_dicho_int));
                 midOk =  ictr_pradiag.insideForbidden(h_mid);
                 midOk = midOk && ictr_pdiag.insideForbidden(h_mid);
                 midOk=midOk        && CheckBoxTriangle(Pra,Pdiag,mid,h_mid,ictr_pradiag,ictr_pdiag);
-                midstr = new String("FindBoxTriangleDicho2.1:mid:CheckBoxTriangle("+Pra+","+Pdiag+","+mid+","+h_mid+","+ictr_pradiag+","+ictr_pdiag+","+d_dicho_int+","+increase+"="+midOk);
+                midstr = format("FindBoxTriangleDicho2.1:mid:CheckBoxTriangle({0},{1},{2},{3},{4},{5},{6},{7}={8}", Pra, Pdiag, mid, h_mid, ictr_pradiag, ictr_pdiag, d_dicho_int, increase, midOk);
 
             }
             else {

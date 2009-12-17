@@ -578,12 +578,12 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
 
 		@Override
 		public String toString() {
-			String s = "<";
+			StringBuilder s = new StringBuilder("<");
 			for (int i = this.first; i != -1; i = this.pointers[i]) {
-				s += (" " + this.indices[i]);
+                s.append(" ").append(this.indices[i]);
 			}
-			s += " >";
-			return s;
+			s.append(" >");
+			return s.toString();
 		}
 	}
 
@@ -631,11 +631,11 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
 
 		@Override
 		public String toString() {
-			String s = "";
+			StringBuilder s = new StringBuilder();
 			for (int i = 0; i < this.nbElts; i++) {
-				s += (" " + this.values[i]);
+                s.append(" ").append(this.values[i]);
 			}
-			return s;
+			return s.toString();
 		}
 	}
 
@@ -703,11 +703,12 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
 
 		@Override
 		public String toString() {
-			String s = "";
+			StringBuilder s = new StringBuilder();
 			for (int i = 0; i < this.nbElts; i++) {
-				s += (" <" + this.roots[i] + ", " + this.rightMosts[i] + ", " + this.maxXs[i] + ">");
+                s.append(" <").append(this.roots[i]).append(", ")
+                        .append(this.rightMosts[i]).append(", ").append(this.maxXs[i]).append(">");
 			}
-			return s;
+			return s.toString();
 		}
 	}
 
