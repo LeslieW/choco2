@@ -113,14 +113,14 @@
             <url>${choco-dir}</url>
         </site>
         <repository>
-            <uniqueVersion>false</uniqueVersion>
+            <uniqueVersion>true</uniqueVersion>
             <id>sourceforge.net</id>
             <name>Stable version</name>
             <url>${mvn-releases-dir}</url>
             <layout>default</layout>
         </repository>
         <snapshotRepository>
-            <uniqueVersion>false</uniqueVersion>
+            <uniqueVersion>true</uniqueVersion>
             <id>sourceforge.net</id>
             <name>Snapshot version</name>
             <url>${mvn-snapshots-dir}</url>

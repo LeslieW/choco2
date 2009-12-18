@@ -247,6 +247,7 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 
 	protected final void addFailure(Object cause) {
 		reuseCstr = (AbstractSConstraint) cause;
+        // <= maxConstraintArity ? due to ClauseStore
 		if(SConstraintType.INTEGER.equals(reuseCstr.getConstraintType()) && reuseCstr.getNbVars() <= maxConstraintArity) {
 			try {
 				getConstraintExtension(reuseCstr).addFailure();

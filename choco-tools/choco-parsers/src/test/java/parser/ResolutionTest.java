@@ -110,11 +110,11 @@ public class ResolutionTest {
             }
             int time = Integer.valueOf((String) properties.get("pb."+i+".buildtime"));
             LOGGER.info(xm.getBuildTime()  + " > " + time + "?" + " for " + "pb."+i);
-            Assert.assertTrue(properties.get("pb."+i+".name")+": too much time spending in reading problem...", xm.getBuildTime() < time);
+            Assert.assertTrue(properties.get("pb."+i+".name")+": too much time spending in reading problem... (excepted : < "+time+")", xm.getBuildTime() < time);
 
             time = Integer.valueOf((String) properties.get("pb."+i+".conftime"));
             LOGGER.info(xm.getConfTime()  + " > " + time + "?" + " for " + "pb."+i);
-            Assert.assertTrue(properties.get("pb."+i+".name")+": too much time spending in preprocessing problem...", xm.getConfTime() < time);
+            Assert.assertTrue(properties.get("pb."+i+".name")+": too much time spending in preprocessing problem...(excepted : < "+time+")", xm.getConfTime() < time);
         }
     }
 

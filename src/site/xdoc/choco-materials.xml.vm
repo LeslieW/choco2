@@ -16,6 +16,10 @@
 <p>
   <ul>
 
+  <li><b></b>December 2009: <i>Report on CSC'09 and CHOCO</i>, presentation of the results of CHOCO within the 
+  <a href="http://www.cril.univ-artois.fr/CSC09/results/results.php?idev=30">CSC'09</a>.
+  <a href="./pdf/choco09.pdf" class="externalLink" target="_blank">PDF slides of the results of <tt>choco</tt> in CSC'09</a> </li>
+
   <li><b></b>August 2008: The <i>CHOCO : an Open Source Java Constraint Constraint Programming</i> white paper presentation send to the
   <a href="http://www.cril.univ-artois.fr/CPAI08/">CSP'08 competition</a>.
   <a href="./pdf/choco-presentation.pdf" class="externalLink" target="_blank">PDF of white paper presentation of <tt>choco</tt></a> </li>

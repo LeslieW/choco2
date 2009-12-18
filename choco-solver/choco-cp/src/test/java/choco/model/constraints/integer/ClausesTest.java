@@ -101,7 +101,7 @@ public class ClausesTest {
         //for (int seed = 0; seed < 20; seed++) {
         CPModel mod = new CPModel();
         CPSolver s = new CPSolver();
-        IntegerVariable[] vars = makeBooleanVarArray("b", 10);
+        IntegerVariable[] vars = makeBooleanVarArray("b", 3);
         mod.addConstraint(clause(new IntegerVariable[]{vars[0], vars[1], vars[2]}, new IntegerVariable[]{}));
         s.read(mod);
         s.setGeometricRestart(1, 1.1);
