@@ -8,8 +8,8 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /**
  * A variable implementation dedicated to boolean domains
  **/
-public final class BooleanVarImpl extends IntDomainVarImpl {
-
+public class BooleanVarImpl extends IntDomainVarImpl {
+//<hca> I remove the final here to facilitate extention
     /**
      * A reference to the domain
      */

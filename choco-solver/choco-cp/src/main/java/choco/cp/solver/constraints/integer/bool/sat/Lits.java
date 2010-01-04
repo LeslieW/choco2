@@ -61,6 +61,18 @@ public class Lits {
         }
     }
 
+    public Boolean isEntailed(int lit) {
+        if (lit < 0) {
+            if (!boolvars[-lit].isInstantiated())
+                return null;
+            return boolvars[-lit].isInstantiatedTo(0);
+        } else {
+            if (!boolvars[lit].isInstantiated())
+                return null;
+            return boolvars[lit].isInstantiatedTo(1);
+        }
+    }
+
     public boolean isSatisfied(int lit, int val) {
         if (lit < 0) {
             return val == 0;

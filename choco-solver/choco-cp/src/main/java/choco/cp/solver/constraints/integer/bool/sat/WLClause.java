@@ -19,9 +19,21 @@ public class WLClause {
 
     protected boolean nogood = false;
 
+    protected int idx = -1; //index of the clause in the list of the clause store
+
+    protected ClauseStore propagator;
+
     public WLClause(int[] ps, Lits voc) {
         lits = ps;
         this.voc = voc;
+    }
+
+    public void setIdx(int id) {
+        this.idx = id;
+    }
+
+    public int getIdx() {
+        return this.idx;
     }
 
     public int getLitZero() {
@@ -49,23 +61,31 @@ public class WLClause {
      */
     public boolean register(ClauseStore propagator) throws ContradictionException {
         assert lits.length > 1;
+        this.propagator = propagator; 
         if (isreg) return true;
         findLiteral(0);  // find a non falsified literal and exchange it with lits[0]
         if (voc.isFalsified(lits[0])) { // if none, raise a contradiction
             propagator.fail();
         }
         findLiteral(1);  // find a second non falsified literal and exchange it with lits[1]
-
-        // ajoute la clause a la liste des clauses controles.
         if (voc.isFalsified(lits[1])) { // if none, propagate lits[0]
             updateDomain();
         }
+        
+        // ajoute la clause a la liste des clauses controles.
         if (voc.isFree(lits[0]) && voc.isFree(lits[1])) {
             isreg = true;
             voc.watch(lits[0], this);
             voc.watch(lits[1], this);
         }
         return isreg;
+    }
+
+    public void unregister() {
+        if (isreg) {
+            voc.unwatch(lits[0], this);
+            voc.unwatch(lits[1], this);
+        }
     }
 
     /**
@@ -104,8 +124,14 @@ public class WLClause {
 
     public void updateDomain() throws ContradictionException {
         if (lits[0] > 0) {
+            if (voc.boolvars[lits[0]].isInstantiatedTo(0)) {
+               propagator.updateDegree(lits);
+            }
             voc.boolvars[lits[0]].instantiate(1, VarEvent.NOCAUSE);//propagator.cIndices[lits[0] - 1]);
         } else {
+            if (voc.boolvars[-lits[0]].isInstantiatedTo(1)) {
+               propagator.updateDegree(lits);
+            }
             voc.boolvars[-lits[0]].instantiate(0, VarEvent.NOCAUSE);//propagator.cIndices[-lits[0] - 1]);
         }
     }
@@ -178,6 +204,19 @@ public class WLClause {
         }
         return false;
     }
+
+    public Boolean isEntailed() {
+        boolean unknown = false;
+        for (int i = 0; i < lits.length; i++) {
+            Boolean b = voc.isEntailed(lits[i]);
+            if (b == null) unknown = true;
+            else if (b) return true;
+        }
+        if (unknown)
+            return null;
+        else
+            return false;
+    }    
 
     public boolean isSatisfied(int[] tuple) {
         for (int i = 0; i < lits.length; i++) {
