@@ -49,13 +49,13 @@ Download CHOCO
 *---*---*---*
 | 20091218 | | | |
 *---*---*---*
-| | <<JAR>> | {{{mvn/repository/choco/choco/2.1.1-SNAPSHOT/choco-solver-2.1.1-20091218.152832-4.jar} choco-solver-2.1.1-20091218.152832-4.jar}}                               | {{{mvn/repository/choco/choco/2.1.1-SNAPSHOT/choco-solver-2.1.1-20091218.152832-4.jar.md5} choco-solver-2.1.1-20091218.152832-4.jar.md5}} |
+| | <<JAR>> | {{{mvn/repository/choco/choco/2.1.1-SNAPSHOT/choco-2.1.1-20091218.152953-3.jar} choco-2.1.1-20091218.152953-3.jar }}                               | {{{mvn/repository/choco/choco/2.1.1-SNAPSHOT/choco-2.1.1-20091218.152953-3.jar.md5} choco-2.1.1-20091218.152953-3.jar.md5}} |
 *---*---*---*
-| | <<JAR>> | {{{mvn/repository/choco/choco/2.1.1-SNAPSHOT/choco-solver-2.1.1-20091218.152832-4-src.jar} choco-solver-2.1.1-20091218.152832-4-src.jar}}                  | {{{mvn/repository/choco/choco/2.1.1-SNAPSHOT/choco-solver-2.1.1-20091218.152832-4-src.jar.md5} choco-solver-2.1.1-20091218.152832-4-src.jar.md5}} |
+| | <<JAR>> | {{{mvn/repository/choco/choco/2.1.1-SNAPSHOT/choco-2.1.1-20091218.152953-3-src.jar} choco-2.1.1-20091218.152953-3-src.jar }}                               | {{{mvn/repository/choco/choco/2.1.1-SNAPSHOT/choco-2.1.1-20091218.152953-3-src.jar.md5} choco-2.1.1-20091218.152953-3-src.jar.md5}} |
 *---*---*---*
-| | <<JAR>> | {{{mvn/repository/choco/choco-solver/2.1.1-SNAPSHOT/choco-2.1.1-20091218.152953-3.jar} choco-2.1.1-20091218.152953-3.jar}}          | {{{mvn/repository/choco/choco-solver/2.1.1-SNAPSHOT/choco-2.1.1-20091218.152953-3.jar.md5} choco-2.1.1-20091218.152953-3.jar.md5}} |
+| | <<JAR>> | {{{mvn/repository/choco/choco-solver/2.1.1-SNAPSHOT/choco-solver-2.1.1-20091218.152832-4.jar} choco-solver-2.1.1-20091218.152832-4.jar}}          | {{{mvn/repository/choco/choco-solver/2.1.1-SNAPSHOT/choco-solver-2.1.1-20091218.152832-4.jar.md5} choco-solver-2.1.1-20091218.152832-4.jar.md5}} |
 *---*---*---*
-| | <<JAR>> | {{{mvn/repository/choco/choco-solver/2.1.1-SNAPSHOT/choco-2.1.1-20091218.152953-3-src.jar} choco-2.1.1-20091218.152953-3-src.jar}}  | {{{mvn/repository/choco/choco-solver/2.1.1-SNAPSHOT/choco-2.1.1-20091218.152953-3-src.jar.md5} choco-2.1.1-20091218.152953-3-src.jar.md5}} |
+| | <<JAR>> | {{{mvn/repository/choco/choco-solver/2.1.1-SNAPSHOT/choco-solver-2.1.1-20091218.152832-4-src.jar} choco-solver-2.1.1-20091218.152832-4-src.jar}}          | {{{mvn/repository/choco/choco-solver/2.1.1-SNAPSHOT/choco-solver-2.1.1-20091218.152832-4-src.jar.md5} choco-solver-2.1.1-20091218.152832-4-src.jar.md5}} |
 *---*---*---*
 | 20091106 | | | |
 *---*---*---*
