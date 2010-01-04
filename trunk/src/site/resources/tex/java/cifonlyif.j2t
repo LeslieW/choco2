@@ -6,5 +6,4 @@
         m.addVariables("cp:bound",x ,y, z);
         m.addConstraint(ifOnlyIf(lt(x, y), lt(y, z)));
         s.read(m);
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
         s.solveAll();

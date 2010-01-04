@@ -382,39 +382,10 @@ Where \emph{params} is whatever you want (\texttt{Object[], int, String},...) an
 
 \subsection{Example: implement and add the \texttt{IsOdd} constraint}
 One creates the constraint by implementing the \texttt{AbstractUnIntSConstraint} (one integer variable) class:
-\begin{lstlisting}
-	public class IsOdd extends AbstractUnIntSConstraint {
-	
-	        public IsOdd(IntDomainVar v0) {
-	            super(v0);
-	        }
-	
-            /** Default initial propagation: full constraint re-propagation */
-            public void awake() throws ContradictionException {
-	            DisposableIntIterator it = v0.getDomain().getIterator();
-                while(it.hasNext()){
-                    int val = it.next();
-                    if(val%2==0)
-                        v0.removeVal(val, 0);
-                }
-	        }
-	
-	        /** Propagation until local consistency is reached */
-	        public void propagate() throws ContradictionException {
-	            if(v0.isInstantiated() && v0.getVal()%2==0)
-                    fail();
-	        }
-	    }
-\end{lstlisting}
+\lstinputlisting{java/isodd.j2t}
 
 To add the constraint to the model, one creates the following class (or inner class):
-\begin{lstlisting}
-  public static class IsOddManager implements IntConstraintManager {
-      public SConstraint makeConstraint(Solver s, Variable[] vars, Object params, HashSet<String> options) {
-          return new IsOdd(s.getVar((IntegerVariable)vars[0]));
-      }
-  }
-\end{lstlisting}
+\lstinputlisting{java/isoddmanager.j2t}
 It calls the constructor of the constraint, with every \emph{vars}, \emph{params} and \emph{options} needed.
 
 Then, the constraint can be added to a model as follows:

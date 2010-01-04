@@ -23,7 +23,6 @@
 package choco.model.variables.integer;
 
 import choco.Choco;
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.MinDomain;
@@ -40,6 +39,8 @@ import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -248,8 +249,9 @@ public class IntegerVariableTest {
     public static void oddPb(Model m, int type, IntegerVariable v0, IntegerVariable v1) {
         m.addConstraint(eq(v0, plus(v1, 1)));
 
-        m.addConstraint(new ComponentConstraint(IsOdd.IsOddManager.class, null, new IntegerVariable[]{v1}));
-        m.addConstraint(new ComponentConstraint("choco.model.variables.integer.IsOdd$IsOddManager", null, new IntegerVariable[]{v0}));
+        m.addConstraint(new ComponentConstraint(IsOddManager.class, null, new IntegerVariable[]{v1}));
+//        m.addConstraint(new ComponentConstraint("choco.model.variables.integer.IsOdd$IsOddManager", null, new IntegerVariable[]{v0}));
+        m.addConstraint(new ComponentConstraint("choco.model.variables.integer.IsOddManager", null, new IntegerVariable[]{v0}));
 
 
         Solver s = new CPSolver();
