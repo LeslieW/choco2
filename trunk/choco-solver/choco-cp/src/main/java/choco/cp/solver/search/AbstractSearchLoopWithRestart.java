@@ -33,16 +33,16 @@ import choco.kernel.solver.search.IntBranchingTrace;
 
 public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 
-	private int moveAfterSolution = UP_BRANCH;
+	protected int moveAfterSolution = UP_BRANCH;
 
 	//It seems that it is important to reinit the branching when restarting after each solution with DWDeg.
 	//If you only set up an OPEN_NODE, it really decreases performance
 	//So we have to check the combinatin of DWDeg an a restart strategy.
-	private int moveAfterRestart=  INIT_SEARCH;
+	protected int moveAfterRestart=  INIT_SEARCH;
 
-	private int previousNbSolutions;
+	protected int previousNbSolutions;
 
-	private IKickRestart kickRestart;
+	protected IKickRestart kickRestart;
 
 	/**
 	 * current trace object. 
@@ -98,7 +98,7 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 		super.initialize();
 	}
 
-	private AbstractBranchingStrategy br;
+	protected AbstractBranchingStrategy br;
 
 	@Override
 	public void initSearch() {
@@ -140,9 +140,9 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 	//*******************  OPEN_NODE  ********************************//
 	//***************************************************************//
 
-	private Object branchingObj;
+	protected Object branchingObj;
 
-	private AbstractIntBranchingStrategy currentBranching;
+	protected AbstractIntBranchingStrategy currentBranching;
 
 	@Override
 	public void openNode() {
@@ -218,9 +218,9 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 
 
 
-
+    //<hca> can I remove the final here to extend the searchloop
 	@Override
-	public final void upBranch() {
+	public void upBranch() {
 		try {
 			searchStrategy.endTreeNode(); //check limit
 			worldPop();

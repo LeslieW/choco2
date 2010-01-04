@@ -950,6 +950,10 @@ public class CPModel implements Model {
     private void storeClauses(ComponentConstraint clause){
         if(clausesStore==null){
             clausesStore = new ComponentConstraintWithSubConstraints(ConstraintType.CLAUSES, clause.getVariables(), null, clause);
+            HashSet<String> opt = clause.getOptions();
+            for (Iterator<String> iterator = opt.iterator(); iterator.hasNext();) {
+                clausesStore.addOption(iterator.next());
+            }
             clausesStore.findManager(properties);
             constraints.add(clausesStore);
 

@@ -49,6 +49,9 @@ public class ClausesManager extends MixedConstraintManager {
         if (solver instanceof CPSolver) {
             IntDomainVar[] vs = ((CPSolver)solver).getVar(IntDomainVar.class, vars);
             ClauseStore cs =  new ClauseStore(vs);
+            if (options.contains("cp:entail")) {
+                cs.setEfficientEntailmentTest();
+            }
             Constraint[] constraints = (Constraint[])((Object[])parameters)[1];
             for(int c = 0; c < constraints.length; c++){
                 ComponentConstraint clause = (ComponentConstraint)constraints[c];
