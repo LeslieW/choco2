@@ -22,11 +22,12 @@
  **************************************************/
 package samples.Examples;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
+
+import static choco.Choco.*;
 
 /*
 * User : charles
@@ -38,10 +39,13 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 public class Candles extends PatternExample{
 
     /**
-     * Marshall and Lily have 7 children borned on Thanksgiving of
-     * 6 consecutives years.
-     * Today, uncle Barney, like every year, prepare a birthday cake with candles.
-     * This year, he has bought two more candles that last year.
+     *
+     * Lily and Marshall have seven children, all born on Thanksgiving
+     * during six consective's years. Since the first anniversary of the elder,
+     * Uncle Barney holds a party every Thanksgiving.
+     * Today, the day of their anniversary, there are seven children, each
+     * receives a beautiful cake decorated with so many candles he has years.
+     * Uncle Barney finds he bought twice as many candles as two years ago.
      * How old are the children and how many candles did Barney buy?
      */
 
