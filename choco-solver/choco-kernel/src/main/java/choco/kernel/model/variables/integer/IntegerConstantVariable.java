@@ -33,13 +33,13 @@ import choco.kernel.model.variables.VariableType;
  */
 public class IntegerConstantVariable extends IntegerVariable implements Comparable {
 
-	public IntegerConstantVariable(String name, int value) {
-        super(name, VariableType.CONSTANT_INTEGER, value, value);
-        this.values = new int[]{value};
+    private static String toString(int value){
+        return Integer.toString(value);
     }
 
-    public IntegerConstantVariable(int value) {
-        this("intCst", value);
+	public IntegerConstantVariable(int value) {
+        super(Integer.toString(value), VariableType.CONSTANT_INTEGER, value, value);
+        this.values = new int[]{value};
     }
 
     public int getValue() {
@@ -63,7 +63,7 @@ public class IntegerConstantVariable extends IntegerVariable implements Comparab
      */
     @Override
     public String pretty() {
-        return name+" ["+getValue()+"]";
+        return name;
     }
 
 

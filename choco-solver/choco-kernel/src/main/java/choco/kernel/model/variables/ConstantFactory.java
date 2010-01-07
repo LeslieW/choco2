@@ -26,6 +26,7 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.real.RealConstantVariable;
 import choco.kernel.model.variables.set.SetConstantVariable;
+import gnu.trove.TDoubleObjectHashMap;
 import gnu.trove.TIntObjectHashMap;
 
 import java.util.HashMap;
@@ -42,35 +43,24 @@ public class ConstantFactory {
 
     protected final static Logger LOGGER = ChocoLogging.getModelLogger();
 
-    static TIntObjectHashMap<IntegerConstantVariable> integerMap = new TIntObjectHashMap();
-    static HashMap<int[], SetConstantVariable> setMap = new HashMap();
-    static HashMap<Double, RealConstantVariable> realMap = new HashMap();
+    static TIntObjectHashMap<IntegerConstantVariable> integerMap = new TIntObjectHashMap<IntegerConstantVariable>();
+    static HashMap<int[], SetConstantVariable> setMap = new HashMap<int[], SetConstantVariable>();
+    static TDoubleObjectHashMap<RealConstantVariable> realMap = new TDoubleObjectHashMap<RealConstantVariable>();
 
     /**
      * Create if necessary and return the IntegerConstantVariable that
      * corresponds to the value
-     * @param value
-     * @return
+     * @param value int constant value
+     * @return IntegerConstantVariable
      */
     public static IntegerConstantVariable getConstant(int value){
-        return getConstant("cst", value);
-    }
-
-    /**
-     * Create if necessary and return the IntegerConstantVariable that
-     * corresponds to the value
-     * @param name
-     * @param value
-     * @return
-     */
-    public static IntegerConstantVariable getConstant(String name, int value){
         if(integerMap.get(0)!=null
                 &&integerMap.get(0).getValue() !=0){
             LOGGER.severe("$$$$$$$$$$$$$ ALARM $$$$$$$$$$$$$$$$$$$$$$$$$$");
             System.exit(-1589);
         }
         if(!integerMap.containsKey(value)){
-            integerMap.put(value, new IntegerConstantVariable(name, value));
+            integerMap.put(value, new IntegerConstantVariable(value));
         }
         return integerMap.get(value);
     }
@@ -78,26 +68,12 @@ public class ConstantFactory {
     /**
      * Create if necessary and return the SetConstantVariable that
      * corresponds to arrays of value
-     * @param values
-     * @return
+     * @param values set constant values
+     * @return SetConstantVariable
      */
     public static SetConstantVariable getConstant(int[] values){
         if(!setMap.containsKey(values)){
-            setMap.put(values, new SetConstantVariable("cst", getConstant(values.length), values));
-        }
-        return setMap.get(values);
-    }
-
-    /**
-     * Create if necessary and return the SetConstantVariable that
-     * corresponds to arrays of value
-     * @param name
-     * @param values
-     * @return
-     */
-    public static SetConstantVariable getConstant(String name, int[] values){
-        if(!setMap.containsKey(values)){
-            setMap.put(values, new SetConstantVariable(name, getConstant((values.length)), values));
+            setMap.put(values, new SetConstantVariable(getConstant(values.length), values));
         }
         return setMap.get(values);
     }
@@ -105,26 +81,12 @@ public class ConstantFactory {
     /**
      * Create if necessary and return the RealConstantVariable that
      * corresponds to the value
-     * @param value
-     * @return
+     * @param value double real value
+     * @return RealConstantVariable
      */
     public static RealConstantVariable getConstant(double value){
         if(!realMap.containsKey(value)){
-            realMap.put(value, new RealConstantVariable("cst", value));
-        }
-        return realMap.get(value);
-    }
-
-    /**
-     * Create if necessary and return the RealConstantVariable that
-     * corresponds to the value
-     * @param
-     * @param value
-     * @return
-     */
-    public static RealConstantVariable getConstant(String name, double value){
-        if(!realMap.containsKey(value)){
-            realMap.put(value, new RealConstantVariable(name, value));
+            realMap.put(value, new RealConstantVariable(value));
         }
         return realMap.get(value);
     }

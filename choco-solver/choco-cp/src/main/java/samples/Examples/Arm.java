@@ -28,7 +28,6 @@
 // **************************************************
 package samples.Examples;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.real.CyclicRealVarSelector;
@@ -40,6 +39,8 @@ import choco.kernel.model.variables.real.RealExpressionVariable;
 import choco.kernel.model.variables.real.RealVariable;
 
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
 
 /**
  * Samples in Elisa package.
@@ -81,7 +82,7 @@ public class Arm extends PatternExample{
         _m.addConstraint(leq(circle, 4.0));
 
         _m.addConstraint(eq(alpha, Math.PI / 6));
-        RealConstantVariable v = new RealConstantVariable("v", 1.99, 2.01);
+        RealConstantVariable v = new RealConstantVariable(1.99, 2.01);
         _m.addConstraint(eq(minus(a, mult(ir, v)), 0.0));
         _m.addConstraint(eq(minus(b, mult(jr, v)), 0.0));
     }

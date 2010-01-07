@@ -57,12 +57,13 @@ import choco.kernel.solver.constraints.global.scheduling.RscData;
 import choco.kernel.solver.constraints.integer.extension.*;
 import gnu.trove.TIntArrayList;
 
-import static java.lang.System.arraycopy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static java.lang.System.arraycopy;
 
 /**
  * Created by IntelliJ IDEA.
@@ -803,38 +804,39 @@ public class Choco{
 	 * ***** Constant **********
 	 */
 
-	/**
-	 * Create a constant set variable
-	 * @param name name of the constant
-	 * @param value value of the constant
-	 * @return the set constant
-	 */
-	public static SetVariable constant(String name, int... value) {
-		return ConstantFactory.getConstant(name, value);
+    /**
+     * Create a integer constant
+     * @param value constant value
+     * @return IntegerConstantVariable
+     */
+	public static IntegerConstantVariable constant(int value) {
+		return ConstantFactory.getConstant(value);
 	}
 
-	public static RealConstantVariable constant(String name, double value) {
-		return ConstantFactory.getConstant(name, value);
+    /**
+     * Create a set constant
+     * @param values array of constant values
+     * @return IntegerConstantVariable
+     */
+	public static SetConstantVariable constant(int[] values) {
+		return ConstantFactory.getConstant(values);
 	}
 
-	public static IntegerConstantVariable constant(String name, int value) {
-		return ConstantFactory.getConstant(name, value);
-	}
-
-	public static IntegerConstantVariable constant(int a) {
-		return ConstantFactory.getConstant(a);
-	}
-
-	public static SetConstantVariable constant(int[] a) {
-		return ConstantFactory.getConstant(a);
-	}
-
+    /**
+     * Create an empty set constant
+     * @return SetConstantVariable
+     */
 	public static SetConstantVariable emptySet() {
 		return ConstantFactory.getConstant(new int[0]);
 	}
 
-	public static RealConstantVariable constant(double a) {
-		return ConstantFactory.getConstant(a);
+    /**
+     * Create a real constant
+     * @param value constant value
+     * @return RealConstantVariable
+     */
+	public static RealConstantVariable constant(double value) {
+		return ConstantFactory.getConstant(value);
 	}
 
 	public static IntegerConstantVariable[] constantArray(int[] values) {

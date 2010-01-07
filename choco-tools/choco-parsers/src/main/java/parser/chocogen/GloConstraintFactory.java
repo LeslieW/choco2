@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.chocogen;
 
-import static choco.Choco.*;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
@@ -31,6 +30,8 @@ import choco.kernel.model.variables.scheduling.TaskVariable;
 import gnu.trove.TIntObjectHashMap;
 import parser.absconparseur.components.*;
 import parser.absconparseur.tools.InstanceParser;
+
+import static choco.Choco.*;
 
 /**
  * The factory for global constraints
@@ -139,7 +140,7 @@ public class GloConstraintFactory extends ObjectFactory {
 		for (int i = 0; i < n; i++) {
 			PTask t = pc.getTasks()[i];
 			start = ((PVariable) t.getOrigin()).getChocovar();
-			duration = constant("dur_" + i, (Integer) t.getDuration());
+			duration = constant((Integer) t.getDuration());
 			heights[i] = (Integer) t.getHeight();
 			if (t.getEnd() == null) {
 				end = makeIntVar("end_" + i, start.getLowB() + (Integer) t.getDuration(), start.getUppB() + (Integer) t.getDuration());

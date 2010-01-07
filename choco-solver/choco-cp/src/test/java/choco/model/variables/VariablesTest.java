@@ -23,7 +23,6 @@
 package choco.model.variables;
 
 import choco.Choco;
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntVarEvent;
@@ -36,16 +35,18 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import static junit.framework.Assert.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import static java.text.MessageFormat.format;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static java.text.MessageFormat.format;
+import static junit.framework.Assert.*;
 
 /**
  * @author Arnaud Malapert
@@ -159,7 +160,7 @@ public class VariablesTest {
 		SetVariable s1 = makeSetVar("set1", 0, 10);
 		SetVariable s2 = makeSetVar("set2", 5, 20);
 		s1.getCard().addOption("cp:no_decision");
-		m.addVariables(s1, s2,constant(2), constant("test", 1));
+		m.addVariables(s1, s2,constant(2), constant(1));
 		CPSolver solver = new CPSolver();
 		solver.read(m);
 		List<IntDomainVar> l =solver.getIntDecisionVars();
