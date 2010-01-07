@@ -23,7 +23,6 @@
 package choco.model.constraints.reified;
 
 import choco.Choco;
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.model.managers.operators.SqrtManager;
 import choco.cp.solver.CPSolver;
@@ -36,7 +35,6 @@ import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
-import static choco.kernel.model.constraints.ConstraintType.*;
 import choco.kernel.model.variables.Operator;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
@@ -50,11 +48,14 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.*;
-import static org.junit.Assert.*;
 
-import static java.text.MessageFormat.format;
 import java.util.*;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static choco.kernel.model.constraints.ConstraintType.*;
+import static java.text.MessageFormat.format;
+import static org.junit.Assert.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -631,9 +632,9 @@ public class ReifiedSomeTest {
     @Ignore
     public void testJmm3bool() {
 
-        IntegerConstantVariable betaBlocker = constant("Beta-blocker", 1);
-        IntegerConstantVariable copd = constant("Chronic Obstructive Lung Disease", 1);
-        IntegerConstantVariable verapamil = constant("Verapamil", 0);
+        IntegerConstantVariable betaBlocker = constant(1);
+        IntegerConstantVariable copd = constant(1);
+        IntegerConstantVariable verapamil = constant(0);
 
         HashMap<Constraint, String> cardioConstraints = new HashMap<Constraint, String>();
 
@@ -823,7 +824,7 @@ public class ReifiedSomeTest {
             IntegerVariable[] durs = new IntegerVariable[20];
             for (int i = 0; i < 20; i++) {
                 ends[i] = makeIntVar("end", vars[i].getLowB() + durations[i], vars[i].getUppB() + durations[i]);
-                durs[i] = constant("dur", durations[i]);
+                durs[i] = constant(durations[i]);
             }
 
             int capa = 6;

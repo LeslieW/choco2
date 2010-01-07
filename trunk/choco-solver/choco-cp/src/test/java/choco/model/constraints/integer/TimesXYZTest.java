@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.integer;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
@@ -33,11 +32,13 @@ import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import org.junit.After;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static org.junit.Assert.*;
 
 public class TimesXYZTest {
     protected final static Logger LOGGER = ChocoLogging.getTestLogger();
@@ -176,7 +177,7 @@ public class TimesXYZTest {
         IntegerVariable x = makeIntVar("x", -10, 10);
         IntegerVariable y = makeIntVar("y", -10, 10);
         IntegerVariable z = makeIntVar("z", -20, 20);
-        IntegerConstantVariable oneFourFour = constant("c", 14);
+        IntegerConstantVariable oneFourFour = constant(14);
         //IntVar oneFourFour = pb.makeConstantIntVar(144);
 
         m.addConstraint(times(x, y, z));

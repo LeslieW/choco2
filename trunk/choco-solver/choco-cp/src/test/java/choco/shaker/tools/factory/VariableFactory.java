@@ -171,7 +171,7 @@ public class VariableFactory {
                 break;
             case CST:
                 int val = r.nextInt(dsize)-dsize/2;
-                var = Choco.constant("c_"+id, val);
+                var = Choco.constant(val);
                 break;
         }
         created.add(var);

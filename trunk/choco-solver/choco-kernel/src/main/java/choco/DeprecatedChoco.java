@@ -26,6 +26,7 @@ import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
+import choco.kernel.model.variables.ConstantFactory;
 import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -322,16 +323,31 @@ public class DeprecatedChoco extends Choco{
     
     @Deprecated
     public static SetVariable makeConstantSetVar(String name, int... value) {
-		return new SetConstantVariable(name, constant(value.length), value);
+		return new SetConstantVariable(constant(value.length), value);
 	}
 
     @Deprecated
 	public static RealConstantVariable makeConstantVar(String name, double value) {
-		return new RealConstantVariable(name, value);
+		return new RealConstantVariable(value);
 	}
 
     @Deprecated
 	public static IntegerConstantVariable makeConstantVar(String name, int value) {
-		return new IntegerConstantVariable(name, value);
+		return new IntegerConstantVariable(value);
+	}
+
+    @Deprecated
+    public static SetVariable constant(String name, int... value) {
+		return ConstantFactory.getConstant(value);
+	}
+
+    @Deprecated
+	public static RealConstantVariable constant(String name, double value) {
+		return ConstantFactory.getConstant(value);
+	}
+
+    @Deprecated
+	public static IntegerConstantVariable constant(String name, int value) {
+		return ConstantFactory.getConstant(value);
 	}
 }

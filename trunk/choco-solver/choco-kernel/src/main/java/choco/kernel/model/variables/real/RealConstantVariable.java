@@ -33,25 +33,23 @@ import choco.kernel.model.variables.VariableType;
  */
 public class RealConstantVariable extends RealVariable {
 
+    private static String toString(double v1, double v2){
+        StringBuffer st = new StringBuffer("[");
+        st.append(Double.toString(v1)).append(",").append(Double.toString(v2)).append("]");
+        return st.toString();
+    }
 
-	public RealConstantVariable(String name, double value) {
-		super(name, VariableType.CONSTANT_DOUBLE, value, value);
+	public RealConstantVariable(double value) {
+		super(toString(value, value), VariableType.CONSTANT_DOUBLE, value, value);
 		this.setValue(value);
 	}
 
 
-	public RealConstantVariable(String name, double value1, double value2) {
-		super(name, VariableType.CONSTANT_DOUBLE, value1, value2);
+	public RealConstantVariable(double value1, double value2) {
+		super(toString(value1, value2),
+                VariableType.CONSTANT_DOUBLE, value1, value2);
 		this.setValue(value1, value2);
 	}
-
-    public RealConstantVariable(double value) {
-		this("realCst", value);
-	}
-
-    public RealConstantVariable(double value1, double value2) {
-     this("realCst", value1, value2);
-    }
 
     /**
      * pretty printing of the object. This String is not constant and may depend on the context.
@@ -60,7 +58,7 @@ public class RealConstantVariable extends RealVariable {
      */
     @Override
     public String pretty() {
-        return name+" ["+getValue()+"]";
+        return name;
     }
 
     public double getValue() {

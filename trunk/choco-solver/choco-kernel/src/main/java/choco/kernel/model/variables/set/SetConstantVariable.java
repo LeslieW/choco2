@@ -35,13 +35,19 @@ import choco.kernel.model.variables.integer.IntegerConstantVariable;
  */
 public class SetConstantVariable extends SetVariable {
 
-
-	public SetConstantVariable(String name, IntegerConstantVariable card, int... value) {
-        super(name, VariableType.CONSTANT_SET, value, card);
+    private static String toString(int[] values){
+        StringBuffer sb = new StringBuffer();
+        sb.append("{");
+        for(int i = 0; i < values.length; i++){
+            sb.append(i);
+            if(i<values.length-1)sb.append(",");
+        }
+        sb.append("}");
+        return sb.toString();
     }
 
-    public SetConstantVariable(IntegerConstantVariable card, int... value) {
-        this("setCst", card, value);
+	public SetConstantVariable(IntegerConstantVariable card, int... value) {
+        super(toString(value), VariableType.CONSTANT_SET, value, card);
     }
 
     public int[] getValues() {
@@ -65,14 +71,7 @@ public class SetConstantVariable extends SetVariable {
      */
     @Override
     public String pretty() {
-        StringBuffer sb = new StringBuffer(name);
-        sb.append("{");
-        for(int i = 0; i < values.length; i++){
-            sb.append(i);
-            if(i<values.length-1)sb.append(",");
-        }
-        sb.append("}");
-        return sb.toString();
+        return name;
     }
 
 
