@@ -5,9 +5,8 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.propagation.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.memory.IStateBitSet;
-import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.trailing.StoredInt;
+import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import gnu.trove.TLongIntHashMap;
 
 import java.util.*;
@@ -41,13 +40,14 @@ public class ClauseStore extends AbstractLargeIntSConstraint {
     protected int[] fineDegree;
 
     protected int nbNonBinaryClauses;
+
     //clause_entailed[i][0] : the set of NOT BINARY clauses (as a bitset of indexes)
     //                        entailed by setting x_i to 0
     //clause_entailed[i][1] : the set of NOT BINARY clauses (as a bitset of indexes)
     //                        entailed by setting x_i to 1    
-    protected IStateBitSet[][] clauses_entailed;
-    //the set of NOT BINARY clauses entailed
-    protected IStateBitSet tot_clauses_entailed;
+    protected int[][][] clause_entailed;
+    //the set of clauses not yet entailed
+    protected StoredIndexedBipartiteSet clauses_not_entailed;
 
     /**
      * @param vars must be a table of BooleanVarImpl
@@ -82,7 +82,7 @@ public class ClauseStore extends AbstractLargeIntSConstraint {
     }
 
     public void clearEfficientEntailmentTest() {
-            efficient_entailment_test = false;
+        efficient_entailment_test = false;
     }
 
 
@@ -115,10 +115,6 @@ public class ClauseStore extends AbstractLargeIntSConstraint {
                     if (clause.propagate(vocidx, i)) i--;
                 }
             }
-            //for efficient entailment tests
-            if (efficient_entailment_test) {
-                tot_clauses_entailed.or(clauses_entailed[idx][1]);
-            }
         } else {
             Vec<WLClause> wlist = voc.watches(sidx);
             if (wlist != null) {
@@ -127,13 +123,27 @@ public class ClauseStore extends AbstractLargeIntSConstraint {
                     if (clause.propagate(sidx, i)) i--;
                 }
             }
-            //for efficient entailment tests
-            if (efficient_entailment_test) {
-                tot_clauses_entailed.or(clauses_entailed[idx][0]);
-            }
+        }
+
+        //for efficient entailment tests
+        if (efficient_entailment_test) {
+            maintainEfficientEntailment(idx, val);
         }
     }
 
+    public void maintainEfficientEntailment(int idx, int val) {
+        if (val == 1) {
+            //tot_clauses_entailed.or(clauses_entailed[idx][1]);
+            for (int i = 0; i < clause_entailed[idx][1].length; i++) {
+                clauses_not_entailed.remove(clause_entailed[idx][1][i]);
+            }
+        } else {
+            for (int i = 0; i < clause_entailed[idx][0].length; i++) {
+                clauses_not_entailed.remove(clause_entailed[idx][0][i]);
+            }
+        }
+
+    }
 
     public void addClause(int[] lits) {
         listclause.add(new WLClause(lits, voc));
@@ -273,30 +283,47 @@ public class ClauseStore extends AbstractLargeIntSConstraint {
     }
 
     public void createEntailmentStructures() {
-        tot_clauses_entailed = solver.getEnvironment().makeBitSet(listclause.size());
-        clauses_entailed = new IStateBitSet[vars.length][2];
-        for (int i = 0; i < vars.length; i++) {
-            clauses_entailed[i][0] = solver.getEnvironment().makeBitSet(nbNonBinaryClauses);
-            clauses_entailed[i][1] = solver.getEnvironment().makeBitSet(nbNonBinaryClauses);
-            clauses_entailed[i][0].clear();
-            clauses_entailed[i][1].clear();
+        int[] lclauses = new int[listclause.size()];
+        for (int i = 0; i < lclauses.length; i++) {
+            lclauses[i] = i;
         }
+        IEnvironment env = vars[0].getSolver().getEnvironment();
+        clauses_not_entailed = (StoredIndexedBipartiteSet) env.makeBipartiteSet(lclauses);
     }
 
     public void initEntailmentStructures() {
-        int idxcl = 0;
+        int[][] count = new int[vars.length][2];
         for (WLClause cl : listclause) {
             int[] lits = cl.lits;
             for (int i = 0; i < lits.length; i++) {
                 int lit = lits[i];
                 if (lit > 0) {
-                    clauses_entailed[lit - 1][1].set(idxcl);
+                    count[lit - 1][1]++;
                 } else {
-                    clauses_entailed[-lit - 1][0].set(idxcl);
+                    count[-lit - 1][0]++;
+                }
+            }
+        }
+        int idxcl = 0;
+        clause_entailed = new int[vars.length][2][];
+        for (int i = 0; i < vars.length; i++) {
+            clause_entailed[i][0] = new int[count[i][0]];
+            clause_entailed[i][1] = new int[count[i][1]];
+        }
+        count = new int[vars.length][2];
+        for (WLClause cl : listclause) {
+            int[] lits = cl.lits;
+            for (int i = 0; i < lits.length; i++) {
+                int lit = lits[i];
+                if (lit > 0) {
+                    clause_entailed[lit - 1][1][count[lit - 1][1]] = idxcl;
+                    count[lit - 1][1]++;
+                } else {
+                    clause_entailed[-lit - 1][0][count[-lit - 1][0]] = idxcl;
+                    count[-lit - 1][0]++;
                 }
             }
             idxcl++;
-
         }
     }
 
@@ -332,6 +359,13 @@ public class ClauseStore extends AbstractLargeIntSConstraint {
                     iterator.remove();
                 }
             }
+            if (efficient_entailment_test) {
+                for (int i = 0; i < vars.length; i++) {
+                    if (vars[i].isInstantiated()) {
+                        maintainEfficientEntailment(i,vars[i].getVal());
+                    }
+                }
+            }
             propagateUnitClause();
         }
     }
@@ -344,11 +378,8 @@ public class ClauseStore extends AbstractLargeIntSConstraint {
 
     public Boolean isEntailed() {
         if (efficient_entailment_test) {
-            //System.out.println("card: " + tot_clauses_entailed.cardinality());
-            //System.out.println("nbin: " + nbBinaryClauseEntailed.get());
-            if (tot_clauses_entailed.cardinality() == listclause.size()) {
+            if (clauses_not_entailed.isEmpty())
                 return Boolean.TRUE;
-            }
             return null;
         } else {
             boolean unknownflag = false;
@@ -400,10 +431,10 @@ public class ClauseStore extends AbstractLargeIntSConstraint {
 
     public int getNbEntailedClauseFrom(int idx, int val) {
         int nbentailedclause = 0;
-        for (int i = clauses_entailed[idx][val].nextSetBit(0); i > 0; i = clauses_entailed[idx][val].nextSetBit(i + 1)) {
-            if (!tot_clauses_entailed.get(i)) {
+        for (int i = 0; i < clause_entailed[idx][val].length; i++) {
+            if (clauses_not_entailed.contain(clause_entailed[idx][val][i]))
                 nbentailedclause++;
-            }
+
         }
         return nbentailedclause;
     }
