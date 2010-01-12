@@ -20,25 +20,25 @@
  *     Copyright (C) F. Laburthe,                 *
  *                   N. Jussien    1999-2009      *
  **************************************************/
-package choco;
+package choco.cp.solver.constraints.integer;
 
-import static choco.Choco.makeIntVar;
-import static org.junit.Assert.assertEquals;
-
-import java.util.logging.Logger;
-
-import org.junit.Before;
-import org.junit.Test;
-
+import choco.Choco;
 import choco.cp.model.CPModel;
+import choco.cp.model.managers.constraints.integer.ElementGManager;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.MyElementManager;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.logging.Logger;
+
+import static choco.Choco.makeIntVar;
+import static org.junit.Assert.assertEquals;
 
 /*
 * User : charles
@@ -47,7 +47,7 @@ import choco.kernel.solver.Solver;
 * Since : Choco 2.1.0
 * Update : Choco 2.1.0
 */
-public class MyElementTest {
+public class ElementGTest {
 
     protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
@@ -75,7 +75,7 @@ public class MyElementTest {
 		vars[vars.length-2] = index;
 		vars[vars.length-1] = var;
 
-        Constraint element = new ComponentConstraint(MyElementManager.class, 0, vars);
+        Constraint element = new ComponentConstraint(ElementGManager.class, 0, vars);
         // fin
 
         m.addConstraint(element);
