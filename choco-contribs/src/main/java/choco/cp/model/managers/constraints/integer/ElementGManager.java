@@ -1,8 +1,10 @@
-package choco.cp.solver.constraints.global;
+package choco.cp.model.managers.constraints.integer;
 
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.Element2D;
+import choco.cp.solver.constraints.integer.ElementG;
+import choco.cp.solver.constraints.integer.ElementVG;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -17,7 +19,7 @@ import java.util.HashSet;
  * Date: 17 mars 2009
  * Time: 11:25:12
  */
-public final class MyElementManager extends IntConstraintManager {
+public final class ElementGManager extends IntConstraintManager {
 
     /**
      * Build a constraint for the given solver and "model variables"

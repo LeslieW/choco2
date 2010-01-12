@@ -6,7 +6,7 @@
 // *           Copyright (C) F. Laburthe, 1999-2006 *
 // **************************************************
 
-package choco.cp.solver.constraints.global;
+package choco.cp.solver.constraints.integer;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.StringUtils;
