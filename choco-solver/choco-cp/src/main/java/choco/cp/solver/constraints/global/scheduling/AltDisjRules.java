@@ -23,6 +23,7 @@
 package choco.cp.solver.constraints.global.scheduling;
 
 import choco.cp.solver.constraints.global.scheduling.trees.AltDisjTreeTL;
+import choco.cp.solver.constraints.global.scheduling.trees.IThetaLambdaTree;
 import choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode;
 import static choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode.ECT;
 import static choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode.LST;
@@ -278,6 +279,29 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 
 
 
+
+
+	@Override
+	protected boolean edgeFindingEST(IThetaLambdaTree disjTreeTL,
+			IBipartiteQueue<IRTask> rqueue) throws ContradictionException {
+		if(ALIAA_FLAG) {
+			//Aliaa, write your code here
+			return super.edgeFindingEST(disjTreeTL, rqueue);
+		}else {
+			return super.edgeFindingEST(disjTreeTL, rqueue);
+		}
+	}
+
+	@Override
+	protected boolean edgeFindingLCT(IThetaLambdaTree disjTreeTL,
+			IBipartiteQueue<IRTask> rqueue) throws ContradictionException {
+		if(ALIAA_FLAG) {
+			//Aliaa, write your code here
+			return super.edgeFindingLCT(disjTreeTL, rqueue);
+		}else {
+			return super.edgeFindingLCT(disjTreeTL, rqueue);
+		}
+	}
 
 	@Override
 	public Iterator<IRTask> iterator() {

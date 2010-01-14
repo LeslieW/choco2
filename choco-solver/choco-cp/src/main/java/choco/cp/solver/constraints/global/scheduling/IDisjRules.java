@@ -34,6 +34,8 @@ import choco.kernel.solver.variables.scheduling.IRTask;
  */
 public interface IDisjRules {
 	
+	public final static boolean ALIAA_FLAG = false;
+	
 	void fireDomainChanged();
 	
 	boolean isActive();

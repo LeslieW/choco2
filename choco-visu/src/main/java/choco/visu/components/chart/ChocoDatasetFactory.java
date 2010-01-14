@@ -52,9 +52,9 @@ public final class ChocoDatasetFactory {
 		return createTask(s.getVar(t));
 	}
 
-//	public static Task createTask(BTask t) {
-//		return new Task(t.toString(),getTimePeriod(t.startd,t.end));
-//	}
+	//	public static Task createTask(BTask t) {
+	//		return new Task(t.toString(),getTimePeriod(t.startd,t.end));
+	//	}
 
 
 	public static TimePeriod getTimePeriod(final long begin,final long end) {
@@ -62,35 +62,39 @@ public final class ChocoDatasetFactory {
 	}
 
 	public static TaskSeries createTaskSeries(IResource<TaskVar> rsc) {
+		//FIXME handle alternative resource
 		TaskSeries s = new TaskSeries(rsc.getRscName());
 		for (int i = 0; i < rsc.getNbTasks(); i++) {
-			s.add(createTask(rsc.getTask(i)));
+			//if( rsc.getRTask(i).isRegular()) {
+				s.add(createTask(rsc.getTask(i)));
+			//}
 		}
 		return s;
 	}
-//	public static TaskSeriesCollection createJobsTaskCollection(BSolution bsol) {
-//		final TaskSeriesCollection c = new TaskSeriesCollection();
-//		for (int j = 0; j < bsol.nbJ; j++) {
-//			final TaskSeries s = new TaskSeries("J"+j);
-//			for (int i = 0; i < bsol.nbM; i++) {
-//				s.add(createTask(bsol.tasks_mat[i][j]));
-//			}
-//			c.add(s);
-//		}
-//		return c;
-//	}
-//
-//	public static TaskSeriesCollection createMachinesTaskCollection(BSolution bsol) {
-//		final TaskSeriesCollection c = new TaskSeriesCollection();
-//		for (int i = 0; i < bsol.nbM; i++) {
-//			final TaskSeries s = new TaskSeries("M"+i);
-//			for (int j = 0; j < bsol.nbJ; j++) {
-//				s.add(createTask(bsol.tasks_mat[i][j]));
-//			}	
-//			c.add(s);
-//		}
-//		return c;
-//	}
+	//	public static TaskSeriesCollection createJobsTaskCollection(BSolution bsol) {
+	//		final TaskSeriesCollection c = new TaskSeriesCollection();
+	//		for (int j = 0; j < bsol.nbJ; j++) {
+	//			final TaskSeries s = new TaskSeries("J"+j);
+	//			for (int i = 0; i < bsol.nbM; i++) {
+	//				s.add(createTask(bsol.tasks_mat[i][j]));
+	//			}
+	//			c.add(s);
+	//		}
+	//		return c;
+	//	}
+	//
+	//	public static TaskSeriesCollection createMachinesTaskCollection(BSolution bsol) {
+	//		final TaskSeriesCollection c = new TaskSeriesCollection();
+	//		for (int i = 0; i < bsol.nbM; i++) {
+	//			final TaskSeries s = new TaskSeries("M"+i);
+	//			for (int j = 0; j < bsol.nbJ; j++) {
+	//				s.add(createTask(bsol.tasks_mat[i][j]));
+	//			}	
+	//			c.add(s);
+	//		}
+	//		return c;
+	//	}
+	
 	public static TaskSeriesCollection createTaskCollection(IResource<TaskVar>... resources) {
 		TaskSeriesCollection c = new TaskSeriesCollection();
 		for (IResource<TaskVar> rsc : resources) {
@@ -98,7 +102,7 @@ public final class ChocoDatasetFactory {
 		}
 		return c;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static TaskSeriesCollection createTaskCollection(Solver s, Constraint[] resources) {
 		TaskSeriesCollection c = new TaskSeriesCollection();
@@ -118,7 +122,7 @@ public final class ChocoDatasetFactory {
 		return coll;
 	}
 
-	
+
 
 	protected static Integer[] createDates(ICumulativeResource<TaskVar> rsc) {
 		final Set<Integer> dateSet = new HashSet<Integer>();
@@ -134,6 +138,7 @@ public final class ChocoDatasetFactory {
 	}
 
 	public static TimeTableXYDataset createCumulativeDataset(ICumulativeResource<TaskVar> rsc) {
+		//FIXME handle alternative resource
 		//create dates and time periods
 		Integer[] dates = createDates(rsc);
 		TimePeriod[] periods = new TimePeriod[dates.length-1];
@@ -156,8 +161,8 @@ public final class ChocoDatasetFactory {
 	//*****************************************************************//
 	//*******************  Pack  ********************************//
 	//***************************************************************//
-	
-	
+
+
 	public static CategoryDataset[] createPackDataset(String title, Solver s) {
 		final int n = s.getModel().getNbConstraintByType(ConstraintType.PACK);
 		Iterator<Constraint> cstr = s.getModel().getConstraintByType(ConstraintType.PACK);
@@ -168,7 +173,7 @@ public final class ChocoDatasetFactory {
 		}
 		return datasets;
 	}
-	
+
 	public static CategoryDataset createPackDataset(int nbBins, IntDomainVar[] bins,IntDomainVar[] sizes) {
 		DefaultCategoryDataset   dataset =   new   DefaultCategoryDataset();
 		int[] series = new int[nbBins];
@@ -194,9 +199,9 @@ public final class ChocoDatasetFactory {
 		XYSeries series = new XYSeries("solver sol.");
 		final AbstractGlobalSearchStrategy strat = s.getSearchStrategy();
 		for (Solution sol : strat.getStoredSolutions()) {
-					series.add(sol.getMeasures().getLimitCount(limit), sol.getObjectiveValue());
-				}
-		
+			series.add(sol.getMeasures().getLimitCount(limit), sol.getObjectiveValue());
+		}
+
 		return series;
 	}
 
@@ -204,41 +209,41 @@ public final class ChocoDatasetFactory {
 		final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 		final AbstractGlobalSearchStrategy strat = s.getSearchStrategy();
 		final String series = "Solver sol.";
-						//reversed loop
-				final List<Solution> sols = strat.getStoredSolutions();
-				for (int i = sols.size()-1; i >=0; i--) {
-					final Solution sol = sols.get(i);
-					dataset.addValue(sol.getObjectiveValue(), series, Integer.valueOf(sol.getMeasures().getLimitCount(limit)));
-				}
+		//reversed loop
+		final List<Solution> sols = strat.getStoredSolutions();
+		for (int i = sols.size()-1; i >=0; i--) {
+			final Solution sol = sols.get(i);
+			dataset.addValue(sol.getObjectiveValue(), series, Integer.valueOf(sol.getMeasures().getLimitCount(limit)));
+		}
 
 
 		return dataset;
 	}
 
-//	public static CategoryDataset createHeuristicsCategoryDataset(ListHeuristics heuristics) {
-//		final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-//		List<HeuristicsEvent> func = heuristics.getEvents().getFunction();
-//		final String series = "Heuristics sol.";
-//		for (HeuristicsEvent evt : func) {
-//			dataset.addValue(evt.getMakespan(), series, Integer.valueOf(evt.getCoordinate()));
-//		}
-//		return dataset;
-//	}
+	//	public static CategoryDataset createHeuristicsCategoryDataset(ListHeuristics heuristics) {
+	//		final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+	//		List<HeuristicsEvent> func = heuristics.getEvents().getFunction();
+	//		final String series = "Heuristics sol.";
+	//		for (HeuristicsEvent evt : func) {
+	//			dataset.addValue(evt.getMakespan(), series, Integer.valueOf(evt.getCoordinate()));
+	//		}
+	//		return dataset;
+	//	}
 
 
 	//*****************************************************************//
 	//*******************  Linear function (YInterval) ***************//
 	//***************************************************************//
 
-//	public static YIntervalSeries createFunctionDataset(String keys, IPiecewiseLinearFunction<StatEvent> function) {
-//		YIntervalSeries series = new YIntervalSeries(keys);
-//		for (StatEvent evt : function.getFunction()) {
-//			final double m = evt.getContribution();
-//			final double std = evt.getContribStat().getStandardDeviation();
-//			series.add(evt.getCoordinate()+1, m, m-std, m+std);
-//		}
-//		return series;
-//	}
+	//	public static YIntervalSeries createFunctionDataset(String keys, IPiecewiseLinearFunction<StatEvent> function) {
+	//		YIntervalSeries series = new YIntervalSeries(keys);
+	//		for (StatEvent evt : function.getFunction()) {
+	//			final double m = evt.getContribution();
+	//			final double std = evt.getContribStat().getStandardDeviation();
+	//			series.add(evt.getCoordinate()+1, m, m-std, m+std);
+	//		}
+	//		return series;
+	//	}
 
 }
 

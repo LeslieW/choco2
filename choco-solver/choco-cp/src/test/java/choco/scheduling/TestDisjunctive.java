@@ -116,7 +116,7 @@ public class TestDisjunctive {
 	public static void launchAllRules(DisjProblem apc, final int nbTests, final int nbSol) {
 		apc.initializeModel();
 		for (int i = 0; i < nbTests; i++) {
-			//Rule[] rules = new Rule[]{ Rule.NONE,Rule.EF_LCT};
+			//Rule[] rules = new Rule[]{Rule.NOT_LAST};
 			Rule[] rules = Rule.values();
 			for (int j = 1; j < rules.length; j++) {
 				apc.generateSolver(rules[j]);
