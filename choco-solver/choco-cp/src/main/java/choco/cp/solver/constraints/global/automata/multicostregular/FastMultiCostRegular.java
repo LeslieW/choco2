@@ -147,7 +147,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
     /**
      * Integral costs : c[i][j][k][s] is the cost over dimension k of x_i = j on state s
      */
-    protected final int[][][] costs;
+    protected final double[][][] costs;
 
     /**
      * The finite automaton which defines the regular language the variable sequence must belong
@@ -190,11 +190,6 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
      */
     protected final int nbR;
 
-    /**
-     * Store the last world in which propagation was called
-     */
-    protected int lastVisitedWorld;
-
 
     /**
      * Stack to store removed edges index, for delayed update
@@ -228,7 +223,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
      * @param auto  finite automaton
      * @param costs assignment cost arrays
      */
-    public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final Automaton auto, final int[][][] costs)
+    public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final Automaton auto, final double[][][] costs)
     {
         super(ArrayUtils.<IntDomainVar>append(vars,CR));
         this.vs = vars;
@@ -700,8 +695,8 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
                 p.resetNodeShortestandLongestPathValues();
                 p.computeShortestAndLongestPath(toRemove,newCosts,binf,bsup);
                 b |= toRemove.size() > 0;
-                z[i].updateInf((int)Math.ceil(p.getShortestPathValue()),this.getConstraintIdx(vs.length));
-                z[i].updateSup((int)Math.floor(p.getLongestPathValue()),this.getConstraintIdx(vs.length));
+                z[i].updateInf((int)Math.ceil(p.getShortestPathValue()),this.getConstraintIdx(vs.length+i));
+                z[i].updateSup((int)Math.floor(p.getLongestPathValue()),this.getConstraintIdx(vs.length+i));
                 /*  if (b)
                {
                    this.delayedGraphUpdate();
@@ -730,7 +725,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         {
             double mr = Math.round(realsp);
             double rsp = (realsp-mr <= D_PREC)? mr : realsp;
-            z[0].updateInf((int) Math.ceil(rsp),this.getConstraintIdx(vars.length-1));
+            z[0].updateInf((int) Math.ceil(rsp),this.getConstraintIdx(vs.length));
             modifiedBound[0] = true;
         }
     }
@@ -749,7 +744,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         {
             double mr = Math.round(reallp);
             double rsp = (reallp-mr <= D_PREC)? mr : reallp;
-            z[0].updateSup((int) Math.floor(rsp),this.getConstraintIdx(vars.length -1));
+            z[0].updateSup((int) Math.floor(rsp),this.getConstraintIdx(vs.length));
             modifiedBound[1] = true;
         }
     }
@@ -1022,7 +1017,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
                 if (param.length == 2)
                 {
                     Automaton pi = (Automaton) param[0];
-                    int[][][] csts = (int[][][]) param[1];
+                    double[][][] csts = (double[][][]) param[1];
                     int nbCost = csts[0][0].length;
                     IntDomainVar[] zs = new IntDomainVar[nbCost];
                     IntDomainVar[] vs = new IntDomainVar[tmp.length-nbCost];
