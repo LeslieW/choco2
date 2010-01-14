@@ -193,8 +193,8 @@ public class CumulRules implements ICumulRules {
 		final long capaMaxDiff = rsc.getMaxCapacity() * diff;
 		if (capaMaxDiff < energy) {
 			//SConstraint.LOGGER.warning("fail");
-			ChocoLogging.flushLogs();
-			System.out.println(StringUtils.pretty(tasksLY));
+			//ChocoLogging.flushLogs();
+			//System.out.println(StringUtils.pretty(tasksLY));
 			rsc.fail();
 		}
 	}

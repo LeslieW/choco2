@@ -147,7 +147,7 @@ public abstract class AbstractDisjRules implements IDisjRules {
 	 * the only abstract rule as there is no alternative version.
 	 * Arguments should be in a valid initial state.
 	 */
-	protected final boolean edgeFindingEST(IThetaLambdaTree disjTreeTL, IBipartiteQueue<IRTask> rqueue) throws ContradictionException {
+	protected boolean edgeFindingEST(IThetaLambdaTree disjTreeTL, IBipartiteQueue<IRTask> rqueue) throws ContradictionException {
 		rqueue.sort(makeReverseRLatestCompletionTimeCmp());
 		setMakespanLB(disjTreeTL);
 		IRTask rtj=rqueue.peek();
@@ -180,7 +180,7 @@ public abstract class AbstractDisjRules implements IDisjRules {
 	 * the only abstract rule as there is no alternative version.
 	 * Arguments should be in a valid initial state.
 	 */
-	protected final boolean edgeFindingLCT(IThetaLambdaTree disjTreeTL, IBipartiteQueue<IRTask> rqueue) throws ContradictionException  {
+	protected boolean edgeFindingLCT(IThetaLambdaTree disjTreeTL, IBipartiteQueue<IRTask> rqueue) throws ContradictionException  {
 		rqueue.sort(makeREarliestStartingTimeCmp());
 		IRTask rtj=rqueue.peek();
 		ITask j= rtj.getTaskVar();
