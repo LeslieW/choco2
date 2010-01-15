@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.chocogen;
 
-import static choco.Choco.makeIntVar;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import parser.absconparseur.components.PConstraint;
@@ -31,6 +30,8 @@ import parser.absconparseur.components.PVariable;
 import parser.absconparseur.tools.InstanceParser;
 
 import java.util.Iterator;
+
+import static choco.Choco.makeIntVar;
 
 /*
  * User:    hcambaza

@@ -1,11 +1,11 @@
 package parser.instances;
 
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.solver.Solver;
+
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.solver.Solver;
 
 
 public class BasicSettings {
