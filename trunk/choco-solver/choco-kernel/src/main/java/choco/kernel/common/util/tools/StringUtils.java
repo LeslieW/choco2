@@ -147,6 +147,10 @@ public class StringUtils {
         else return "";
     }
 
+
+
+
+
     /**
 	 * Convert a regexp formed with integer charachter into a char formed regexp
 	 * for instance, "12%12%" which stands for 1 followed by 2 followed by 12 would be misinterpreted by regular

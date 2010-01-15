@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
- *         |  ï¿½(..)  |                           *
+ *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -20,28 +20,45 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package samples.multicostregular.asap;
+package samples.rackconfig;
 
-import samples.multicostregular.asap.hci.abstraction.ASAPDataHandler;
-import samples.multicostregular.asap.hci.presentation.ASAPMainWindow;
-import samples.multicostregular.asap.parser.ASAPParser;
+import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.solver.search.AbstractSearchHeuristic;
+import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+import gnu.trove.TIntArrayList;
 
 /**
  * Created by IntelliJ IDEA.
  * User: julien
  * Mail: julien.menana{at}emn.fr
- * Date: Mar 9, 2009
- * Time: 1:01:09 PM
+ * Date: Nov 25, 2009
+ * Time: 12:32:31 AM
  */
-public class ASAPViewer {
+public class RackValSelector extends AbstractSearchHeuristic implements ValSelector {
 
+    int[] ordered;
 
-    public static void main(String[] args) {
-        ASAPParser.LET_INFEASABILITY = false;
-        
-        ASAPDataHandler d = new ASAPDataHandler();
-        ASAPMainWindow mw = new ASAPMainWindow(d);
-        mw.pack();
-        mw.setVisible(true);
+    public RackValSelector(int[] cost)
+    {
+        TIntArrayList arr = new TIntArrayList(cost);
+        this.ordered = new int[cost.length];
+        int k = 0 ;
+        while(!arr.isEmpty())
+        {
+            int idx = arr.indexOf(arr.min());
+            arr.remove(idx);
+            ordered[k++] = idx;
+        }
+    }
+
+    public int getBestVal(IntDomainVar x) {
+        for (int i : ordered)
+        {
+            if (x.canBeInstantiatedTo(i))
+                return i;
+        }
+
+        return x.getSup();
     }
 }

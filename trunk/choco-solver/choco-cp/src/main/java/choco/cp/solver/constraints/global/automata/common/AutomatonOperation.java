@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
- *         |  ï¿½(..)  |                           *
+ *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -20,28 +20,44 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package samples.multicostregular.asap;
+package choco.cp.solver.constraints.global.automata.common;
 
-import samples.multicostregular.asap.hci.abstraction.ASAPDataHandler;
-import samples.multicostregular.asap.hci.presentation.ASAPMainWindow;
-import samples.multicostregular.asap.parser.ASAPParser;
+import dk.brics.automaton.Automaton;
+import dk.brics.automaton.State;
+import dk.brics.automaton.Transition;
 
 /**
  * Created by IntelliJ IDEA.
  * User: julien
  * Mail: julien.menana{at}emn.fr
- * Date: Mar 9, 2009
- * Time: 1:01:09 PM
+ * Date: Dec 3, 2009
+ * Time: 4:26:07 PM
  */
-public class ASAPViewer {
+public class AutomatonOperation {
 
 
-    public static void main(String[] args) {
-        ASAPParser.LET_INFEASABILITY = false;
-        
-        ASAPDataHandler d = new ASAPDataHandler();
-        ASAPMainWindow mw = new ASAPMainWindow(d);
-        mw.pack();
-        mw.setVisible(true);
+    public static Automaton makeAcceptAllOfLength(int length, int[] alphabet)
+    {
+        Automaton auto = new Automaton();
+        State start = new State();
+        State tmp = start;
+        State last =start;
+
+        for (int i = 0 ; i < length ; i++)
+        {
+            last = new State();
+            for (int k : alphabet)
+            {
+                tmp.addTransition(new Transition((char) choco.kernel.model.constraints.automaton.FA.Automaton.getCharFromInt(k),last));
+            }
+            tmp = last;
+
+        }
+        last.setAccept(true);
+        auto.setInitialState(start);
+        return auto;
     }
+
+
+
 }

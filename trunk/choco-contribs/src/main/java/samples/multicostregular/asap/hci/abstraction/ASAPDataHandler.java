@@ -24,14 +24,18 @@ package samples.multicostregular.asap.hci.abstraction;
 
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
+import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.common.util.tools.ArrayUtils;
 
 import java.util.Observable;
 
+import choco.kernel.solver.variables.integer.IntDomainVar;
 import samples.multicostregular.asap.ASAPCPModel;
 import samples.multicostregular.asap.heuristics.ASAPValSelector;
 import samples.multicostregular.asap.heuristics.ASAPVarSelector;
+import samples.multicostregular.asap.heuristics.CoverVarSelector;
+import samples.multicostregular.asap.parser.ASAPParser;
 
 /**
  * Created by IntelliJ IDEA.
@@ -78,12 +82,23 @@ public class ASAPDataHandler extends Observable {
         this.solver.read(this.model);
       //  ((CPSolver)this.solver).setGeometricRestart(1500,1.0);
       //  ((CPSolver)this.solver).setRecordNogoodFromRestart(true);
+        IntegerVariable[][] trans = ArrayUtils.transpose(this.model.shifts);
+        IntDomainVar[][] vs = new IntDomainVar[trans.length][];
+        for (int i  = 0 ; i < vs.length ; i++)
+        {
+            vs[i] = solver.getVar(trans[i]);
+        }
 
-        this.solver.setVarIntSelector(
+        CoverVarSelector vsel = new CoverVarSelector(vs,this.model.lowb);
+        this.solver.setVarIntSelector(vsel);
+
+        this.solver.setValIntSelector(vsel);
+
+    /*    this.solver.setVarIntSelector(
                 new StaticVarOrder(
-                        this.solver.getVar(ArrayUtils.flatten(ArrayUtils.transpose(this.model.shifts)))
+                        this.solver.getVar(ArrayUtils.flatten(trans))
                 )
-        );
+        );  */
       //  this.solver.setVarIntSelector(new ASAPVarSelector(this.solver,ArrayUtils.transpose(this.model.shifts)));
         //this.solver.setValIntSelector(new ASAPValSelector(this.solver,ArrayUtils.transpose(this.model.shifts),this));
 
