@@ -51,6 +51,7 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
     protected VariableManager vm;
     protected ExpressionManager em;
 
+    Constraint[] cstr = null;
 
     public ComponentVariable(final VariableType variableType, final Operator operator, final Object parameters, final String name, final ComponentVariable... vars) {
         super(variableType);
@@ -217,8 +218,10 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
 
 
     public Constraint[] getConstraints() {
-        Constraint[] cstr = new Constraint[constraints.size()];
-        constraints.toArray(cstr);
+        if(cstr == null){
+            cstr = new Constraint[constraints.size()];
+            constraints.toArray(cstr);
+        }
         return cstr;
     }
 
