@@ -23,7 +23,6 @@
 package parser.chocogen;
 
 import choco.Choco;
-import static choco.Choco.*;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
@@ -36,6 +35,8 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+
+import static choco.Choco.*;
 
 /**
  * The general factory to handle all constraints except Global and Extensional

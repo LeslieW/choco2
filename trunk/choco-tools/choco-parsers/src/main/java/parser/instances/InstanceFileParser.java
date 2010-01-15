@@ -1,10 +1,10 @@
 package parser.instances;
 
+import choco.kernel.common.logging.ChocoLogging;
+import parser.absconparseur.tools.UnsupportedConstraintException;
+
 import java.io.File;
 import java.util.logging.Logger;
-
-import parser.absconparseur.tools.UnsupportedConstraintException;
-import choco.kernel.common.logging.ChocoLogging;
 
 public interface InstanceFileParser {
 	

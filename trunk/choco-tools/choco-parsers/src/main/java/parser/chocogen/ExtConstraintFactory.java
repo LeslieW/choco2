@@ -23,7 +23,6 @@
 package parser.chocogen;
 
 import choco.Choco;
-import static choco.Choco.*;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.automaton.DFA;
@@ -38,6 +37,8 @@ import parser.absconparseur.tools.InstanceParser;
 
 import java.util.Iterator;
 import java.util.List;
+
+import static choco.Choco.*;
 
 
 /**

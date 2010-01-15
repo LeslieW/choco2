@@ -1,9 +1,9 @@
 package parser.instances.xcsp;
 
-import java.util.Properties;
-
 import parser.chocogen.ObjectFactory;
 import parser.instances.RestartSettings;
+
+import java.util.Properties;
 
 public class XcspSettings extends RestartSettings {
 	

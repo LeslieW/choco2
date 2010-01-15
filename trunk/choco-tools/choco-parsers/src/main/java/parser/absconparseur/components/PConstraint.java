@@ -25,8 +25,9 @@ package parser.absconparseur.components;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 
-import static java.lang.Integer.parseInt;
 import java.util.logging.Logger;
+
+import static java.lang.Integer.parseInt;
 
 public abstract class PConstraint {
 

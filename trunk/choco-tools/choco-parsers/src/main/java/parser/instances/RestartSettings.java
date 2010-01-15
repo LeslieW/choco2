@@ -1,9 +1,9 @@
 package parser.instances;
 
-import java.util.Properties;
-
 import choco.cp.solver.CPSolver;
 import choco.kernel.solver.SolverException;
+
+import java.util.Properties;
 
 
 public class RestartSettings extends BasicSettings {
