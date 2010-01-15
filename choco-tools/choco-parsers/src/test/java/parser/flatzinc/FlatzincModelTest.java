@@ -26,12 +26,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import parser.flatzinc.parser.FZNParser;
+import static parser.flatzinc.parser.FZNParser.*;
 import parser.flatzinc.parser.TerminalParser;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-
-import static parser.flatzinc.parser.FZNParser.*;
 
 /*
 * User : CPRUDHOM
@@ -79,7 +78,7 @@ public class FlatzincModelTest {
 
     @Test
     public void testMain() throws IOException, URISyntaxException {
-        String data = Mzn2fzn.class.getResource("/flatzinc").toURI().getPath();
+        String data = Mzn2fznHelper.class.getResource("/flatzinc").toURI().getPath();
         String[] args = new String[]{data};
         FznModel.main(args);
     }
