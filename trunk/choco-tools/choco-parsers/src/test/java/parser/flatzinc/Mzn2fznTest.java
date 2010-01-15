@@ -38,7 +38,7 @@ public class Mzn2fznTest {
 
     @Test
     public void testNoArgs() throws IOException, InterruptedException, URISyntaxException {
-        Mzn2fzn.main(new String[]{""});
+        Mzn2fznHelper.main(new String[]{""});
     }
 
     @Test
@@ -48,7 +48,7 @@ public class Mzn2fznTest {
                 "-m", "/home/charles/Bureau/minizinc-rotd-2009-11-02/benchmarks/alpha/alpha.mzn",
                 "-o", "/tmp/alpha.fzn"
         };
-        Mzn2fzn.main(args);
+        Mzn2fznHelper.main(args);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class Mzn2fznTest {
                 "-d", "/home/charles/Bureau/minizinc-rotd-2009-11-02/benchmarks/queens/004.dzn",
                 "-o", "/tmp/queens_004.fzn"
         };
-        Mzn2fzn.main(args);
+        Mzn2fznHelper.main(args);
     }
 
 }
