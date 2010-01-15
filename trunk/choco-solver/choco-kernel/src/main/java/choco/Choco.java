@@ -57,13 +57,12 @@ import choco.kernel.solver.constraints.global.scheduling.RscData;
 import choco.kernel.solver.constraints.integer.extension.*;
 import gnu.trove.TIntArrayList;
 
+import static java.lang.System.arraycopy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static java.lang.System.arraycopy;
 
 /**
  * Created by IntelliJ IDEA.
@@ -3355,6 +3354,7 @@ public class Choco{
 	 * @param costs the cost of taking value j for the variable i from state s
 	 * @return  a instance of the constraint
 	 */
+    @Deprecated
 	public static Constraint multiCostRegular(IntegerVariable[] vars, IntegerVariable[] cvar, Automaton auto, int[][][][] costs){
 		return new ComponentConstraint<IntegerVariable>(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,costs},
 				ArrayUtils.append(vars, cvar));
