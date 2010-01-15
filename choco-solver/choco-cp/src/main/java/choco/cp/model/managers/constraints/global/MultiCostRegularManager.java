@@ -61,9 +61,9 @@ public class MultiCostRegularManager extends IntConstraintManager
                 System.arraycopy(all, 0, vs, 0, vs.length);
                 System.arraycopy(all, vs.length, z, 0, all.length - vs.length);
 
-                if (param[2] instanceof int[][][])
+                if (param[2] instanceof double[][][])
                 {
-                    int[][][] csts = (int[][][]) param[2];
+                    double[][][] csts = (double[][][]) param[2];
                     return new FastMultiCostRegular(vs,z,pi,csts);
                 }
               /*  else if (param[2] instanceof int[][][][])

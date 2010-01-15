@@ -43,6 +43,7 @@ import java.util.Arrays;
  */
 public class ASAPParser {
 
+    public static boolean LET_INFEASABILITY = true;
 
     String id;
 
@@ -416,7 +417,8 @@ public class ASAPParser {
         for (int m = 0 ; m < c.getMinConsecutiveFreeDays()-1 ; m++)
             pat.add(rest);
         pat.add(allW);
-       // c.addPattern(pat);
+        if (LET_INFEASABILITY)
+            c.addPattern(pat);
 
         pat2.setComplete(true);
         pat3.setComplete(true);
