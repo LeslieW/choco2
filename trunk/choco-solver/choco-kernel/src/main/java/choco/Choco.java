@@ -3301,6 +3301,22 @@ public class Choco{
 				ArrayUtils.append(vars, new IntegerVariable[]{cvar}));
 	}
 
+    /**
+     * Construct a knapsack problem constraint with an underlying costregular constraint.
+     * It simulates M. Triks dynamic programming approach.
+     * @param vars Object variables
+     * @param cVar1 First dimension cost variable
+     * @param cVar2 Second dimension cost variable
+     * @param costs1 First dimension cost function
+     * @param costs2 Second dimension cost function
+     * @return an instance of a knapsack problem constraint.
+     */
+    public static Constraint knapsackProblem(IntegerVariable[] vars, IntegerVariable cVar1, IntegerVariable cVar2, int[] costs1, int[] costs2)
+    {
+       return new ComponentConstraint<IntegerVariable>(ConstraintType.COSTKNAPSACK,new Object[]{costs1,costs2},
+              ArrayUtils.append(vars,new IntegerVariable[]{cVar1,cVar2}));
+    }
+
 
     /**
 	 * Constructs a new CostRegular constraint

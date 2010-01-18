@@ -39,6 +39,7 @@ public enum ConstraintType {
     CHANNELING("channeling", "constraint.channeling"),
     CLAUSES("clauses", "constraint.clauses"),
     CST("cst"),
+    COSTKNAPSACK("costknapsack","constraint.costknapsack"),
     COSTREGULAR("costregular", "constraint.costregular"),
     CUMULATIVE("cumulative", "constraint.cumulative"),
     DISJOINT("disjoint", "constraint.disjoint"),
@@ -110,6 +111,7 @@ public enum ConstraintType {
 
     public final String name;
     public final String property;
+
 
     ConstraintType(String name, String property) {
         this.property = property;

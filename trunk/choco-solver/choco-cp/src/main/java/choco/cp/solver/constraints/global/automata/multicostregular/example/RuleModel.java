@@ -27,6 +27,8 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
+import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
+import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.common.util.tools.ArrayUtils;
@@ -321,21 +323,75 @@ public class RuleModel extends CPModel {
 
     }
 
+    public void addMinCoverConstraint()
+    {
+        IntegerVariable[] worked = ArrayUtils.transpose(cvs)[4];
+        IntegerVariable[] night = ArrayUtils.transpose(cvs)[5];
+        IntegerVariable[] rest = ArrayUtils.transpose(cvs)[6];
+        //3 days and 1 night per day -> 4*28 working days
+        this.addConstraint(eq(sum(worked),4*28));
+        this.addConstraint(eq(sum(night),28));
+        this.addConstraint(eq(sum(rest),28*4));
+
+        IntegerVariable[] week0 = ArrayUtils.transpose(cvs)[0];
+        this.addConstraint(eq(sum(week0),4*7));
+
+        IntegerVariable[] week1 = ArrayUtils.transpose(cvs)[1];
+        this.addConstraint(eq(sum(week1),4*7));
+
+        IntegerVariable[] week2 = ArrayUtils.transpose(cvs)[2];
+        this.addConstraint(eq(sum(week2),4*7));
+
+        IntegerVariable[] week3 = ArrayUtils.transpose(cvs)[3];
+        this.addConstraint(eq(sum(week3),4*7));
+
+
+    }
+
     public void addLexConstraint()
     {
-        IntegerVariable[][] a = new IntegerVariable[4][28];
-        IntegerVariable[][] b = new IntegerVariable[4][28];
+        IntegerVariable[][] a = new IntegerVariable[2][28];
+        IntegerVariable[][] b = new IntegerVariable[3][28];
+
+        System.arraycopy(vs[0],0,a[0],0,a[0].length);
+        System.arraycopy(vs[2],0,a[1],0,a[1].length);
 
 
-        for (int i = 0 ; i < a.length ; i++)
-        {
-            System.arraycopy(vs[i],0,a[i],0,a[i].length);
-            System.arraycopy(vs[i+4],0,b[i],0,b[i].length);
+        System.arraycopy(vs[5],0,b[0],0,b[0].length);
+        System.arraycopy(vs[6],0,b[1],0,b[1].length);
+        System.arraycopy(vs[7],0,b[2],0,b[2].length);
 
 
-        }
 
-        this.addConstraints(lexChainEq(a),lexChainEq(b));
+
+      //  this.addConstraints(lexChainEq(a));
+      //  this.addConstraint(lexChainEq(b));
+              
+
+    }
+
+    public void addMandatoryShift()
+    {
+
+        this.addConstraint(eq(vs[0][0],0));
+        this.addConstraint(eq(vs[0][1],0));
+
+        this.addConstraint(eq(vs[2][0],0));
+        this.addConstraint(eq(vs[2][1],0));
+
+        this.addConstraint(eq(vs[3][0],1));
+        this.addConstraint(eq(vs[3][1],1));
+
+        this.addConstraint(eq(vs[4][0],0));
+        this.addConstraint(eq(vs[4][1],0));
+        
+
+
+        
+
+
+        
+
 
     }
 
@@ -352,6 +408,8 @@ public class RuleModel extends CPModel {
         m.fillModel();
 
         m.addLexConstraint();
+        m.addMandatoryShift();
+        m.addMinCoverConstraint();
 
         CPSolver s = new CPSolver();
         s.read(m);
@@ -361,8 +419,24 @@ public class RuleModel extends CPModel {
         for (int i  = 0 ; i < 8 ; i++)
             mars.add(s.getVar(m.cvs[i][4]));
 
-        s.attachGoal(new AssignVar(new StaticVarOrder(mars.toArray(new IntDomainVar[8])),new DecreasingDomain()));
-        s.addGoal(new AssignVar(new StaticVarOrder(s.getVar(ArrayUtils.flatten(ArrayUtils.transpose(m.vs)))),new IncreasingDomain()));
+
+        int[][] lowb = new int[28][3];
+        {
+            for (int i = 0 ; i < lowb.length ; i++)
+            {
+                lowb[i][0]= 3;
+                lowb[i][1]= 1;
+                lowb[i][2]= 4;
+            }
+        }
+
+        CoverVarValSelector sel = new CoverVarValSelector(s,m.vs,lowb);
+     //   s.attachGoal(new AssignVar(sel,sel));
+
+
+       // s.attachGoal(new AssignVar(new StaticVarOrder(mars.toArray(new IntDomainVar[8])),new DecreasingDomain()));
+        s.attachGoal(new AssignVar(new StaticVarOrder(s.getVar(ArrayUtils.flatten(ArrayUtils.transpose(m.vs)))),new IncreasingDomain()));
+        //s.addGoal(new AssignVar(new RandomIntVarSelector(s,s.getVar(ArrayUtils.flatten(ArrayUtils.transpose(m.vs))),0),new RandomIntValSelector()));
 
 
 
