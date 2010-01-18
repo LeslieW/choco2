@@ -694,7 +694,7 @@ public class ASAPParser {
                         String t = o3.getFirstChild().getNodeValue();
                         ASAPShift not = handler.getShift(t);
                         ASAPShiftSet set = handler.makeShiftSet();
-                        for (ASAPPatternElement pe : handler.getShiftGroup("All"))
+                        for (ASAPPatternElement pe : handler.getShifts()/*handler.getShiftGroup("All")*/)
                         {
                             if (!pe.equals(not))
                                 set.add(pe);

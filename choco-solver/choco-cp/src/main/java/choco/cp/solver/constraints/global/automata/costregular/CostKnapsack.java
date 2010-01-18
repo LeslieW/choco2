@@ -33,7 +33,7 @@ import java.util.ArrayList;
  * Date: Jan 31, 2008
  * Time: 3:09:00 PM
  */
-public class CostKS extends CostRegular
+public class CostKnapsack extends CostRegular
 {
 
     IntDomainVar bVar;
@@ -51,12 +51,12 @@ public class CostKS extends CostRegular
         return nyv;
     }
 
-    public static CostKS make(IntDomainVar[] vars, IntDomainVar bVar, IntDomainVar cVar, int[] cost, int[] gain)
+    public static CostKnapsack make(IntDomainVar[] vars, IntDomainVar bVar, IntDomainVar cVar, int[] cost, int[] gain)
     {
-        return new CostKS(vars,bVar,cVar,cost,gain);
+        return new CostKnapsack(vars,bVar,cVar,cost,gain);
     }
 
-    protected CostKS(IntDomainVar[] vars, IntDomainVar bVar, IntDomainVar cVar,  int[] cost, int[] gain)
+    protected CostKnapsack(IntDomainVar[] vars, IntDomainVar bVar, IntDomainVar cVar,  int[] cost, int[] gain)
     {
         super(merge(vars,bVar,cVar),null,null);
         this.bVar = bVar;

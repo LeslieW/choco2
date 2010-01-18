@@ -1,4 +1,4 @@
-package samples.multicostregular.asap.heuristics;
+package choco.cp.solver.constraints.global.automata.multicostregular.example;
 
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.util.tools.ArrayUtils;
@@ -16,7 +16,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date: 5 janv. 2010
  * Time: 13:39:56
  */
-public class CoverVarSelector extends AbstractIntVarSelector implements ValSelector {
+public class CoverVarValSelector extends AbstractIntVarSelector implements ValSelector {
 
 
     AbstractIntVarSelector other;
@@ -28,7 +28,7 @@ public class CoverVarSelector extends AbstractIntVarSelector implements ValSelec
     IStateInt lastCol;
     int[][] lowb;
 
-    public CoverVarSelector(IntDomainVar[][] vars, int[][] lowb)
+    public CoverVarValSelector(IntDomainVar[][] vars, int[][] lowb)
     {
         this.vars = vars;
         this.lowb = lowb;
@@ -37,10 +37,24 @@ public class CoverVarSelector extends AbstractIntVarSelector implements ValSelec
         lastCol = vars[0][0].getSolver().getEnvironment().makeInt(0);
 
     }
+    public CoverVarValSelector(Solver s, IntegerVariable[][] mvars, int[][] lowb)
+       {
+           IntegerVariable[][] tmp = ArrayUtils.transpose(mvars);
+           this.vars = new IntDomainVar[tmp.length][];
+           for (int i = 0 ; i < this.vars.length ; i++)
+               this.vars[i] = s.getVar(tmp[i]);
+
+           this.lowb = lowb;
+
+           this.other = new StaticVarOrder(ArrayUtils.flatten(vars));
+
+           lastCol = vars[0][0].getSolver().getEnvironment().makeInt(0);
+       }
+
 
     private int scanCol(int idx)
     {
-        int[] tmp = new int[10];
+        int[] tmp = new int[lowb[idx].length];
         IntDomainVar[] col = vars[idx];
         int[] low = lowb[idx];
         for (IntDomainVar v : col)
