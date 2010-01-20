@@ -22,15 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.flatzinc;
 
+import choco.cp.solver.CPSolver;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import parser.flatzinc.ast.SolveGoal;
 import parser.flatzinc.parser.FZNParser;
-import static parser.flatzinc.parser.FZNParser.*;
 import parser.flatzinc.parser.TerminalParser;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 /*
 * User : CPRUDHOM
@@ -41,46 +39,48 @@ import java.net.URISyntaxException;
 */
 public class FlatzincModelTest {
 
+    FZNParser fzn;
+    CPSolver s;
+
     @Before
     public void before(){
-        init();
+        fzn = new FZNParser();
     }
 
     @Test
     public void test1(){
-        TerminalParser.parse(FZNParser.PAR_VAR_DECL, "var 1 .. 2: a::output_var;");
-        TerminalParser.parse(CONSTRAINT, "constraint int_ne(a, 1);");
-        TerminalParser.parse(SOLVE_GOAL, "solve satisfy;");
-        FZNParser.solver.launch();
-        Assert.assertEquals(1, FZNParser.solver.getSolutionCount());
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "var 1 .. 2: a::output_var;");
+        TerminalParser.parse(fzn.CONSTRAINT, "constraint int_ne(a, 1);");
+        SolveGoal sg = TerminalParser.parse(fzn.SOLVE_GOAL, "solve satisfy;");
+        s.read(fzn.model);
+        sg.defineGoal(s);
+        s.launch();
+        Assert.assertEquals(1, s.getSolutionCount());
     }
 
     @Test
     public void test2(){
-        String problem = "var 1 .. 2: a::output_var;\n" +
+        fzn.instance = "var 1 .. 2: a::output_var;\n" +
                 "constraint int_ne(a, 1);\n" +
                 "solve satisfy;";
-
-        FZNParser.FLATZINC_MODEL(problem, true);
-        Assert.assertEquals(1, FZNParser.solver.getSolutionCount());
+        SolveGoal sg = fzn.parse();
+        s.read(fzn.model);
+        sg.defineGoal(s);
+        s.launch();
+        Assert.assertEquals(1, s.getSolutionCount());
     }
 
     @Test
     public void test3(){
-        String problem = "array[1 .. 2] of var 1 .. \n" +
+        fzn.instance = "array[1 .. 2] of var 1 .. \n" +
                 "2: q;\n" +
                 "constraint int_ne(q[1], q[2]);\n" +
                 "solve satisfy;";
 
-        FZNParser.FLATZINC_MODEL(problem, true);
-        Assert.assertEquals(1, FZNParser.solver.getSolutionCount());
+        SolveGoal sg = fzn.parse();
+        s.read(fzn.model);
+        sg.defineGoal(s);
+        s.launch();
+        Assert.assertEquals(1, s.getSolutionCount());
     }
-
-    @Test
-    public void testMain() throws IOException, URISyntaxException {
-        String data = Mzn2fznHelper.class.getResource("/flatzinc").toURI().getPath();
-        String[] args = new String[]{data};
-        FznModel.main(args);
-    }
-
 }

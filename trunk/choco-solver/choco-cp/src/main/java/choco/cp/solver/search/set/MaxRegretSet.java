@@ -20,27 +20,35 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.search.integer.valselector;
+package choco.cp.solver.search.set;
 
-import choco.kernel.solver.search.AbstractSearchHeuristic;
-import choco.kernel.solver.search.integer.ValSelector;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.search.set.AbstractSetVarSelector;
+import choco.kernel.solver.variables.set.SetVar;
 
-public class MidVal extends AbstractSearchHeuristic implements ValSelector {
-    /**
-     * selecting a value in the middle of the domain
-     *
-     * @param x the variable under consideration
-     * @return what seems the most interesting value for branching
-     */
-    public int getBestVal(IntDomainVar x) {
-        if (x.getDomain().isEnumerated()) {
-            final int midVal = x.getInf() + (x.getSup() - x.getInf()) / 2;
-            // -1 is mandatory in case of instantiation
-            return x.getNextDomainValue(midVal-1);
-        } else {
-            // otherwise, always return lower bound
-            return x.getInf();
-        }
+// **************************************************
+// *                   J-CHOCO                      *
+// *   Copyright (C) F. Laburthe, 1999-2003         *
+// **************************************************
+// *  an open-source Constraint Programming Kernel  *
+// *     for Research and Education                 *
+// **************************************************
+
+public class MaxRegretSet extends AbstractSetVarSelector {
+
+    public MaxRegretSet(Solver solver, SetVar[] decisionvs) {
+        vars = decisionvs;
+        this.solver = solver;
+    }
+
+    public MaxRegretSet(Solver solver) {
+        this.solver = solver;
+    }
+
+    @Override
+    public int getHeuristic(SetVar v) {
+        int val = v.getEnveloppeInf();
+        val -= v.getDomain().getEnveloppeDomain().getNextValue(val);
+        return val;
     }
 }

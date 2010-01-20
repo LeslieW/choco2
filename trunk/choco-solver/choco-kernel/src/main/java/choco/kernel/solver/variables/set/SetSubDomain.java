@@ -48,6 +48,8 @@ public interface SetSubDomain extends Domain {
 
     public int getFirstVal();
 
+    public int getNextValue(int x);
+
     public int getLastVal();
 
     public void clearDeltaDomain();

@@ -22,17 +22,16 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package cli;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
+import choco.kernel.common.logging.ChocoLogging;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.ExampleMode;
 
-import choco.kernel.common.logging.ChocoLogging;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 
@@ -63,7 +62,7 @@ public abstract class AbstractCmdLine {
 
 	/**
 	 * the mode of this Command Line
-	 * @param mode
+	 * @param hasExtraArguments
 	 */
 	public AbstractCmdLine(boolean hasExtraArguments) {
 		super();

@@ -36,15 +36,16 @@ import org.junit.Test;
 */
 public class ParameterTest {
 
+    FZNParser fzn;
     @Before
     public void before(){
-        FZNParser.init();
+        fzn = new FZNParser();
     }
 
     @Test
     public void testBool(){
-        TerminalParser.parse(FZNParser.PAR_VAR_DECL, "bool: bb = true;");
-        Object o = FZNParser.map.get("bb");
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "bool: bb = true;");
+        Object o = fzn.map.get("bb");
         Assert.assertTrue(Boolean.class.isInstance(o));
         Boolean oi = (Boolean)o;
         Assert.assertTrue(oi);
@@ -52,8 +53,8 @@ public class ParameterTest {
 
     @Test
     public void testInt(){
-        TerminalParser.parse(FZNParser.PAR_VAR_DECL, "int: n = 4;");
-        Object o = FZNParser.map.get("n");
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "int: n = 4;");
+        Object o = fzn.map.get("n");
         Assert.assertTrue(Integer.class.isInstance(o));
         Integer oi = (Integer)o;
         Assert.assertEquals(4, oi.intValue());
@@ -61,8 +62,8 @@ public class ParameterTest {
 
     @Test
     public void testInt2(){
-        TerminalParser.parse(FZNParser.PAR_VAR_DECL, "0..1: n = 4;");
-        Object o = FZNParser.map.get("n");
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "0..1: n = 4;");
+        Object o = fzn.map.get("n");
         Assert.assertTrue(Integer.class.isInstance(o));
         Integer oi = (Integer)o;
         Assert.assertEquals(4, oi.intValue());
@@ -70,8 +71,8 @@ public class ParameterTest {
 
     @Test
     public void testInt3(){
-        TerminalParser.parse(FZNParser.PAR_VAR_DECL, "{0,68}: n = 4;");
-        Object o = FZNParser.map.get("n");
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "{0,68}: n = 4;");
+        Object o = fzn.map.get("n");
         Assert.assertTrue(Integer.class.isInstance(o));
         Integer oi = (Integer)o;
         Assert.assertEquals(4, oi.intValue());
@@ -79,8 +80,8 @@ public class ParameterTest {
 
     @Test
     public void testSet1(){
-        TerminalParser.parse(FZNParser.PAR_VAR_DECL, "set of int: jobs = 6 .. 8;");
-        Object o = FZNParser.map.get("jobs");
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "set of int: jobs = 6 .. 8;");
+        Object o = fzn.map.get("jobs");
         Assert.assertTrue(SetConstantVariable.class.isInstance(o));
         SetConstantVariable oi = (SetConstantVariable)o;
         Assert.assertArrayEquals(new int[]{6,7,8}, oi.getValues());
@@ -88,8 +89,8 @@ public class ParameterTest {
 
     @Test
     public void testSet2(){
-        TerminalParser.parse(FZNParser.PAR_VAR_DECL, "set of int: jobs = {6,88,99};");
-        Object o = FZNParser.map.get("jobs");
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "set of int: jobs = {6,88,99};");
+        Object o = fzn.map.get("jobs");
         Assert.assertTrue(SetConstantVariable.class.isInstance(o));
         SetConstantVariable oi = (SetConstantVariable)o;
         Assert.assertArrayEquals(new int[]{6,88,99}, oi.getValues());
@@ -97,8 +98,8 @@ public class ParameterTest {
 
     @Test
     public void testArray1(){
-        TerminalParser.parse(FZNParser.PAR_VAR_DECL, "array[1 .. 10] of int: job_task_duration = [ 23, 82, 84, 45, 38, 50, 41, 29, 18, 21];");
-        Object o = FZNParser.map.get("job_task_duration");
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "array[1 .. 10] of int: job_task_duration = [ 23, 82, 84, 45, 38, 50, 41, 29, 18, 21];");
+        Object o = fzn.map.get("job_task_duration");
         Assert.assertTrue(o.getClass().isArray());
         int[] oi = (int[])o;
         Assert.assertArrayEquals(new int[]{23, 82, 84, 45, 38, 50, 41, 29, 18, 21}, oi);

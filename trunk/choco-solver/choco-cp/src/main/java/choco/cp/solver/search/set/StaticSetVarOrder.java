@@ -39,6 +39,7 @@ public class StaticSetVarOrder extends AbstractSetVarSelector {
     this.vars = vars;
   }
 
+    @Override
   public SetVar selectSetVar() {
     for (int i = 0; i < vars.length; i++) {
       if (!vars[i].isInstantiated()) {
@@ -48,4 +49,8 @@ public class StaticSetVarOrder extends AbstractSetVarSelector {
     return null;
   }
 
+    @Override
+    public int getHeuristic(SetVar v) {
+        return 0;
+    }
 }

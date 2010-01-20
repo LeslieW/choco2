@@ -69,6 +69,7 @@ public class RandomSetVarSelector extends AbstractSetVarSelector implements SetV
   }
 
 
+    @Override
   public SetVar selectSetVar() {
     // list supposed cleared !
     if (vars == null) {
@@ -90,4 +91,9 @@ public class RandomSetVarSelector extends AbstractSetVarSelector implements SetV
     list.clear();
       return ret;
   }
+
+    @Override
+    public int getHeuristic(SetVar v) {
+        return random.nextInt();
+    }
 }

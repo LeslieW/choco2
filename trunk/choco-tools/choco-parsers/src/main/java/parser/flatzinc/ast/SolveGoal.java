@@ -22,19 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.flatzinc.ast;
 
+import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.valselector.MaxVal;
 import choco.cp.solver.search.integer.valselector.MidVal;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
-import choco.cp.solver.search.integer.varselector.DomOverDeg;
-import choco.cp.solver.search.integer.varselector.MinDomain;
-import choco.cp.solver.search.integer.varselector.MostConstrained;
-import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-import choco.cp.solver.search.set.MinDomSet;
-import choco.cp.solver.search.set.MinEnv;
-import choco.cp.solver.search.set.RandomSetValSelector;
-import choco.cp.solver.search.set.StaticSetVarOrder;
+import choco.cp.solver.search.integer.varselector.*;
+import choco.cp.solver.search.set.*;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -49,13 +44,10 @@ import choco.kernel.solver.variables.set.SetVar;
 import parser.flatzinc.ast.expression.EAnnotation;
 import parser.flatzinc.ast.expression.EIdentifier;
 import parser.flatzinc.ast.expression.Expression;
-import parser.flatzinc.parser.FZNParser;
 
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.logging.Logger;
-
-import static parser.flatzinc.parser.FZNParser.solver;
 
 /*
 * User : CPRUDHOM
@@ -74,13 +66,22 @@ public class SolveGoal {
 
     static Logger LOGGER = ChocoLogging.getParserLogger();
 
+    final List<EAnnotation> annotations;
+    final Solver type;
+    final Expression expr;
+
     public enum Solver {
         SATISFY, MINIMIZE, MAXIMIZE
     }
 
     public SolveGoal(List<EAnnotation> annotations, Solver type, Expression expr) {
-        readAnnotations(annotations);
-        solver.read(FZNParser.model);
+        this.annotations = annotations;
+        this.type = type;
+        this.expr = expr;
+    }
+
+    public boolean defineGoal(CPSolver solver){
+        boolean searchSet = readAnnotations(annotations, solver);
         switch (type) {
             case SATISFY:
                 solver.setFirstSolution(true);
@@ -89,45 +90,49 @@ public class SolveGoal {
                 solver.setDoMaximize(true);
                 Variable max = expr.intVarValue();
                 solver.setObjective(solver.getVar(max));
-                FZNParser.solver.setRestart(true);
+                solver.setRestart(true);
                 solver.setFirstSolution(false);
                 break;
             case MINIMIZE:
                 solver.setDoMaximize(false);
                 Variable min = expr.intVarValue();
                 solver.setObjective(solver.getVar(min));
-                FZNParser.solver.setRestart(true);
+                solver.setRestart(true);
                 solver.setFirstSolution(false);
 
                 break;
         }
         solver.generateSearchStrategy();
+        return searchSet;
     }
 
     /**
      * Read and treat annotations. These are search strategy annotations.
      * @param annotations search strategy annotations
+     * @param solver solver within the search is defined
+     * @return {@code true} if a search strategy is defined
      */
-    private void readAnnotations(List<EAnnotation> annotations) {
+    private boolean readAnnotations(List<EAnnotation> annotations, CPSolver solver) {
         for (EAnnotation ann : annotations) {
             // read search sequences
-            if (ann.id.equals("seq_search")) {
+            if (ann.id.value.equals("seq_search")) {
                 // read search annotation
                 for (Expression e : ann.exps) {
                     if (e.getTypeOf().equals(Expression.EType.ANN)) {
-                        readSearchAnnotation((EAnnotation) e);
+                        return readSearchAnnotation((EAnnotation) e, solver);
                     } else {
                         LOGGER.severe(MessageFormat.format("SolveGoal#readAnnotations : unknown type \"{0}\"", e.getTypeOf()));
                     }
                 }
             } else {
                 if (ann.getTypeOf().equals(Expression.EType.ANN)) {
-                        readSearchAnnotation(ann);
+                        return readSearchAnnotation(ann, solver);
                     } else {
                         LOGGER.severe(MessageFormat.format("SolveGoal#readAnnotations : unknown type \"{0}\"", ann.getTypeOf()));
                     }
             }
         }
+        return false;
     }
 
     private static final String[] sannos = {"int_search", "bool_search", "set_search"};
@@ -147,21 +152,24 @@ public class SolveGoal {
     /**
      * Read search annotation and build corresponding strategy
      * @param e {@link parser.flatzinc.ast.expression.EAnnotation}
+     * @param solver solver within the search is defined
+     * @return {@code true} if a search strategy is defined
      */
-    private void readSearchAnnotation(EAnnotation e) {
+    private boolean readSearchAnnotation(EAnnotation e, CPSolver solver) {
         Expression[] exps = new Expression[e.exps.size()];
         e.exps.toArray(exps);
 
         // int_search or bool_search
-        if (sannos[0].equals(e.id) || sannos[1].equals(e.id)) {
+        if (sannos[0].equals(e.id.value) || sannos[1].equals(e.id.value)) {
             IntegerVariable[] scope = exps[0].toIntVarArray();
-            setIntSearchStrategy(solver.getVar(scope), (EIdentifier)exps[1], (EIdentifier)exps[2]);
+            return setIntSearchStrategy(solver.getVar(scope), (EIdentifier)exps[1], (EIdentifier)exps[2], solver);
         } else
             // set_search
-            if (sannos[2].equals(e.id)) {
+            if (sannos[2].equals(e.id.value)) {
                 SetVariable[] scope = exps[0].toSetVarArray();
-                setSetSearchStrategy(solver.getVar(scope), (EIdentifier)exps[1], (EIdentifier)exps[2]);
+                return setSetSearchStrategy(solver.getVar(scope), (EIdentifier)exps[1], (EIdentifier)exps[2], solver);
             }
+        return false;
     }
 
     /**
@@ -182,9 +190,11 @@ public class SolveGoal {
      * @param scope solver int variable
      * @param exp {@link parser.flatzinc.ast.expression.EIdentifier} defining the variable choice
      * @param exp1 {@link parser.flatzinc.ast.expression.EIdentifier} defining the assignment choice
+     * @param solver solver within the search is defined
+     * @return {@code true} if a search strategy is defined
      */
-    private void setIntSearchStrategy(IntDomainVar[] scope, EIdentifier exp, EIdentifier exp1) {
-        IntVarSelector varSelector = null;
+    private boolean setIntSearchStrategy(IntDomainVar[] scope, EIdentifier exp, EIdentifier exp1, CPSolver solver) {
+        IntVarSelector varSelector;
         switch (index(exp.value, varchoiceannos)){
             case 0:
                 varSelector = new StaticVarOrder(scope);
@@ -193,14 +203,14 @@ public class SolveGoal {
                 varSelector = new MinDomain(solver, scope);
                 break;
             case 2:
-                //TODO: implement MaxDomain
-                return;
+                varSelector = new MaxDomain(solver, scope);
+                break;
             case 3:
-                //TODO: implements MinValueDomain
-                return;
+                varSelector = new MinValueDomain(solver, scope);
+                break;
             case 4:
-                //TODO: implements MaxValueDomain
-                return;
+                varSelector = new MaxValueDomain(solver, scope);
+                break;
             case 5:
                 varSelector = new MostConstrained(solver, scope);
                 break;
@@ -208,9 +218,9 @@ public class SolveGoal {
                 varSelector = new DomOverDeg(solver, scope);
                 break;
             case 7:
-                //TODO: implements MaxRegret
-                return;
-            default: return;
+                varSelector = new MaxRegret(solver, scope);
+                break;
+            default: return false;
         }
         ValSelector vals = null;
         ValIterator vali = null;
@@ -223,7 +233,7 @@ public class SolveGoal {
                 break;
             case 2:
                 //TODO: implements DomainClosestMiddle
-                return;
+                return false;
             case 3:
                 vals = new MidVal();
                 break;
@@ -235,22 +245,25 @@ public class SolveGoal {
                 break;
             case 6:
                 //TODO: implements DomainFirstHalf
-                return;
+                return false;
             case 7:
                 //TODO: implements DomainSecondtHalf
-                return;
+                return false;
             case 8:
                 //TODO: implements DomainInterval
-                return;
-            default : return;
+                return false;
+            default : return false;
         }
         if(vals != null){
             solver.setVarIntSelector(varSelector);
             solver.setValIntSelector(vals);
+            return true;
         }else if(vali != null){
             solver.setVarIntSelector(varSelector);
             solver.setValIntIterator(vali);
+            return true;
         }
+        return false;
     }
 
 
@@ -259,9 +272,11 @@ public class SolveGoal {
      * @param scope solver set variable
      * @param exp {@link parser.flatzinc.ast.expression.EIdentifier} defining the variable choice
      * @param exp1 {@link parser.flatzinc.ast.expression.EIdentifier} defining the assignment choice
+     * @param solver solver within the search is defined
+     * @return {@code true} if a search strategy is defined
      */
-    private void setSetSearchStrategy(SetVar[] scope, EIdentifier exp, EIdentifier exp1) {
-        SetVarSelector varSelector = null;
+    private boolean setSetSearchStrategy(SetVar[] scope, EIdentifier exp, EIdentifier exp1, CPSolver solver) {
+        SetVarSelector varSelector;
         switch (index(exp.value, varchoiceannos)){
             case 0:
                 varSelector = new StaticSetVarOrder(scope);
@@ -270,60 +285,62 @@ public class SolveGoal {
                 varSelector = new MinDomSet(solver, scope);
                 break;
             case 2:
-                //TODO: implement MaxDomSet
-                return;
+                varSelector = new MaxDomSet(solver, scope);
+                break;
             case 3:
-                //TODO: implements MinValueDomSet
-                return;
+                varSelector = new MinValueDomSet(solver, scope);
+                break;
             case 4:
-                //TODO: implements MaxValueDomSet
-                return;
+                varSelector = new MaxValueDomSet(solver, scope);
+                break;
             case 5:
-                //TODO: implements MostConstrained
-                return;
+                varSelector = new MostConstrainedSet(solver, scope);
+                break;
             case 6:
                 //TODO: implements DomOverDeg
-                return;
+                return false;
             case 7:
-                //TODO: implements MaxRegret
-                return;
-            default: return;
+                varSelector = new MaxRegretSet(solver, scope);
+                break;
+            default: return false;
         }
-        SetValSelector vals = null;
+        SetValSelector vals;
         switch (index(exp1.value, assignmentannos)){
             case 0:
                 vals = new MinEnv(solver);
                 break;
             case 1:
                 //TODO: implements MaxEnv
-                return;
+                return false;
             case 2:
                 //TODO: implements DomainClosestMiddle
-                return;
+                return false;
             case 3:
                 //TODO: implements MidEnv
-                return;
+                return false;
             case 4:
                 //TODO: implements MeddianEnv
-                return;
+                return false;
             case 5:
                 vals = new RandomSetValSelector();
                 break;
             case 6:
                 //TODO: implements DomainFirstHalf
-                return;
+                return false;
             case 7:
                 //TODO: implements DomainSecondtHalf
-                return;
+                return false;
             case 8:
                 //TODO: implements DomainInterval
-                return;
-            default : return;
+                return false;
+            default : return false;
         }
         if(vals != null){
             solver.setVarSetSelector(varSelector);
             solver.setValSetSelector(vals);
+            return true;
         }
+        return false;
     }
 
 

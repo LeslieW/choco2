@@ -22,12 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.flatzinc.parser;
 
+import choco.cp.solver.CPSolver;
 import choco.kernel.model.constraints.ComponentConstraint;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import static parser.flatzinc.parser.FZNParser.*;
 
 /*
 * User : CPRUDHOM
@@ -38,44 +37,48 @@ import static parser.flatzinc.parser.FZNParser.*;
 */
 public class ConstraintTest {
 
+    FZNParser fzn;
+    CPSolver s;
+
     @Before
     public void before(){
-        init();
+        fzn = new FZNParser();
+        s = new CPSolver();
     }
 
     @Test
     public void testIntNe(){
-        TerminalParser.parse(PAR_VAR_DECL, "var 1 .. 10: a::output_var;");
-        TerminalParser.parse(PAR_VAR_DECL, "var 1 .. 10: b::output_var;");
-        TerminalParser.parse(CONSTRAINT, "constraint int_ne(a, b);");
-        Assert.assertEquals(1, model.getNbConstraints());
-        Assert.assertTrue(ComponentConstraint.class.isInstance(model.getConstraint(0)));
-        solver.read(model);
-        solver.solveAll();
-        Assert.assertEquals(90, solver.getSolutionCount());
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "var 1 .. 10: a::output_var;");
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "var 1 .. 10: b::output_var;");
+        TerminalParser.parse(fzn.CONSTRAINT, "constraint int_ne(a, b);");
+        Assert.assertEquals(1, fzn.model.getNbConstraints());
+        Assert.assertTrue(ComponentConstraint.class.isInstance(fzn.model.getConstraint(0)));
+        s.read(fzn.model);
+        s.solveAll();
+        Assert.assertEquals(90, s.getSolutionCount());
     }
 
     @Test
     public void testIntLinNe(){
-        TerminalParser.parse(PAR_VAR_DECL, "var 1 .. 26: a::output_var;");
-        TerminalParser.parse(PAR_VAR_DECL, "var 1 .. 26: b::output_var;");
-        TerminalParser.parse(CONSTRAINT, "constraint int_lin_eq([ 1, -1 ], [ a, b ], -1);");
-        Assert.assertEquals(1, model.getNbConstraints());
-        Assert.assertTrue(ComponentConstraint.class.isInstance(model.getConstraint(0)));
-        solver.read(model);
-        solver.solveAll();
-        Assert.assertEquals(25, solver.getSolutionCount());
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "var 1 .. 26: a::output_var;");
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "var 1 .. 26: b::output_var;");
+        TerminalParser.parse(fzn.CONSTRAINT, "constraint int_lin_eq([ 1, -1 ], [ a, b ], -1);");
+        Assert.assertEquals(1, fzn.model.getNbConstraints());
+        Assert.assertTrue(ComponentConstraint.class.isInstance(fzn.model.getConstraint(0)));
+        s.read(fzn.model);
+        s.solveAll();
+        Assert.assertEquals(25, s.getSolutionCount());
     }
 
     @Test
     public void testIntLinNe2(){
-        TerminalParser.parse(PAR_VAR_DECL, "array[1 .. 2] of var 1 .. 2: q;");
-        TerminalParser.parse(CONSTRAINT, "constraint int_lin_eq([ 1, -1 ], [ q[1], q[2] ], -1);");
-        Assert.assertEquals(1, model.getNbConstraints());
-        Assert.assertTrue(ComponentConstraint.class.isInstance(model.getConstraint(0)));
-        solver.read(model);
-        solver.solveAll();
-        Assert.assertEquals(1, solver.getSolutionCount());
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "array[1 .. 2] of var 1 .. 2: q;");
+        TerminalParser.parse(fzn.CONSTRAINT, "constraint int_lin_eq([ 1, -1 ], [ q[1], q[2] ], -1);");
+        Assert.assertEquals(1, fzn.model.getNbConstraints());
+        Assert.assertTrue(ComponentConstraint.class.isInstance(fzn.model.getConstraint(0)));
+        s.read(fzn.model);
+        s.solveAll();
+        Assert.assertEquals(1, s.getSolutionCount());
     }
     
 }
