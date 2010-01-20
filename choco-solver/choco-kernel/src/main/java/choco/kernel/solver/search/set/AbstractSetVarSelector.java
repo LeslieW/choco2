@@ -36,17 +36,18 @@ import choco.kernel.solver.variables.set.SetVar;
 
 public abstract class AbstractSetVarSelector extends AbstractSearchHeuristic implements SetVarSelector {
 
-  /**
-   * a specific array of SetVars from which the object seeks the one with smallest domain
-   */
-  protected SetVar[] vars;
+    /**
+     * a specific array of SetVars from which the object seeks the one with smallest domain
+     */
+    protected SetVar[] vars;
 
-  public AbstractVar selectVar() {
-    return (AbstractVar) selectSetVar();
-  }
+    public AbstractVar selectVar() {
+        return (AbstractVar) selectSetVar();
+    }
 
     /**
      * Get decision vars
+     *
      * @return decision vars
      */
     public SetVar[] getVars() {
@@ -55,9 +56,44 @@ public abstract class AbstractSetVarSelector extends AbstractSearchHeuristic imp
 
     /**
      * Set decision vars
+     *
      * @return decision vars
      */
     public void setVars(SetVar[] vars) {
         this.vars = vars;
     }
+
+    public abstract int getHeuristic(SetVar v);
+
+    public SetVar selectSetVar() {
+        int min = Integer.MAX_VALUE;
+        SetVar v0 = null;
+        if (null != vars) {
+            int n = vars.length;
+            for (int i = 0; i < n; i++) {
+                SetVar v = vars[i];
+                if (!v.isInstantiated()) {
+                    int domSize = getHeuristic(v);
+                    if (domSize < min) {
+                        min = domSize;
+                        v0 = v;
+                    }
+                }
+            }
+        } else {
+            int n = solver.getNbSetVars();
+            for (int i = 0; i < n; i++) {
+                SetVar v = solver.getSetVar(i);
+                if (!v.isInstantiated()) {
+                    int domSize = getHeuristic(v);
+                    if (domSize < min) {
+                        min = domSize;
+                        v0 = v;
+                    }
+                }
+            }
+        }
+        return v0;
+    }
+
 }

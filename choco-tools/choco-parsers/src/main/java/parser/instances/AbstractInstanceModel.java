@@ -33,6 +33,7 @@ import choco.kernel.solver.search.measures.IMeasures;
 import db.DbManager;
 import db.DbTables;
 import parser.absconparseur.tools.UnsupportedConstraintException;
+import static parser.instances.ResolutionStatus.*;
 
 import java.io.File;
 import java.sql.Timestamp;
@@ -40,8 +41,6 @@ import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static parser.instances.ResolutionStatus.*;
 
 /**
  * A class to provide facilities for loading and solving instance described by a file (txt, xml, ...). </br>
@@ -219,7 +218,7 @@ public abstract class AbstractInstanceModel {
 		}
 	}
 
-	private final void logOnError(ResolutionStatus error, Exception e) {
+	private void logOnError(ResolutionStatus error, Exception e) {
 		LOGGER.log(Level.INFO, "s {0}", error.getName());
 		if(e != null) {
 			LOGGER.log(Level.CONFIG, parser.getInstanceFile().getName()+"...[FAIL]", e);
@@ -232,19 +231,18 @@ public abstract class AbstractInstanceModel {
 	//*******************    ********************************//
 	//***************************************************************//
 	/**
-	 * ei
-	 * Solve the csp given by file "fichier"
+	 * Solve the csp given by file {@code file}
 	 *
-	 * @param fichier
+	 * @param file instance file to solve
 	 */
-	public final void solveFile(File fichier) {
+	public final void solveFile(File file) {
 		initialize();
 		try {
-			LOGGER.log(Level.CONFIG, INSTANCE_MSG, fichier.getName());
+			LOGGER.log(Level.CONFIG, INSTANCE_MSG, file.getName());
 			boolean isLoaded = false;
 			time[0] = System.currentTimeMillis();
 			try {
-				load(fichier);
+				load(file);
 				isLoaded = true;
 			} catch (UnsupportedConstraintException e) {
 				Arrays.fill(time, 1, time.length, time[0]);

@@ -43,7 +43,8 @@ public class IntVarSelectorFactory {
     public ArrayList<V> scope = new ArrayList<V>();
 
     public enum V {
-        STATIC, DOMOVERDEG, DOMOVERDYNDEG, DOMOVERWDEG, MINDOMAIN, MOSTCONSTRAINED, RANDOM
+        STATIC, DOMOVERDEG, DOMOVERDYNDEG, DOMOVERWDEG, MINDOMAIN, MAXDOMAIN,
+        MAXREGRET, MINVALUEDOMAIN, MAXVALUEDOMAIN, MOSTCONSTRAINED, RANDOM
     }
 
     /**
@@ -99,8 +100,20 @@ public class IntVarSelectorFactory {
             case DOMOVERWDEG:
                 ivs = new DomOverWDeg(s, vars);
                 break;
+            case MAXDOMAIN:
+                ivs = new MaxDomain(s, vars);
+                break;
+            case MAXREGRET:
+                ivs = new MaxRegret(s, vars);
+                break;
+            case MAXVALUEDOMAIN:
+                ivs = new MaxValueDomain(s, vars);
+                break;
             case MINDOMAIN:
                 ivs = new MinDomain(s, vars);
+                break;
+            case MINVALUEDOMAIN:
+                ivs = new MinValueDomain(s, vars);
                 break;
             case MOSTCONSTRAINED:
                 ivs = new MostConstrained(s, vars);

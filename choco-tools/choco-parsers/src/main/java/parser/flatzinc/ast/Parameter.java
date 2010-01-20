@@ -29,7 +29,7 @@ import parser.flatzinc.ast.declaration.DInt2;
 import parser.flatzinc.ast.declaration.Declaration;
 import parser.flatzinc.ast.expression.*;
 
-import static parser.flatzinc.parser.FZNParser.map;
+import java.util.HashMap;
 
 /*
 * User : CPRUDHOM
@@ -43,23 +43,23 @@ import static parser.flatzinc.parser.FZNParser.map;
 */
 public final class Parameter extends ParVar{
 
-    public Parameter(Declaration type, String identifier, Expression expression) {
+    public Parameter(HashMap<String, Object> map,Declaration type, String identifier, Expression expression) {
         switch (type.typeOf) {
             case BOOL:
-                buildBool(identifier, (EBool)expression);
+                buildBool(identifier, (EBool)expression, map);
                 break;
             case INT1:
             case INT2:
             case INTN:
-                buildInt(identifier, (EInt)expression);
+                buildInt(identifier, (EInt)expression, map);
                 break;
             case SET:
-                buildSet(identifier, (ESet)expression);
+                buildSet(identifier, (ESet)expression, map);
                 break;
             case ARRAY:
                 DArray arr = (DArray)type;
                 DInt2 index = (DInt2) arr.getIndex();
-                buildArray(identifier, index, arr.getWhat(), (EArray)expression);
+                buildArray(identifier, index, arr.getWhat(), (EArray)expression, map);
                 break;
         }
 
@@ -68,10 +68,11 @@ public final class Parameter extends ParVar{
     /**
      * Build a boolean primitive and add it to the {@code flatzinc.parser.FZNParser.map}.
      * @param name key name
-     * @param value {@link EBool} storing the value
+     * @param value {@link parser.flatzinc.ast.expression.EBool} storing the value
+     * @param map
      * @return {@link boolean}
      */
-    private static boolean buildBool(String name, EBool value){
+    private boolean buildBool(String name, EBool value, HashMap<String, Object> map){
         boolean b = value.value;
         map.put(name, b);
         return b;
@@ -80,10 +81,11 @@ public final class Parameter extends ParVar{
     /**
      * Build a int primitive and add it to the {@code flatzinc.parser.FZNParser.map}.
      * @param name key name
-     * @param value {@link EInt} storing the value.
+     * @param value {@link parser.flatzinc.ast.expression.EInt} storing the value.
+     * @param map
      * @return {@link int}
      */
-    private static int buildInt(String name, EInt value){
+    private int buildInt(String name, EInt value, HashMap<String, Object> map){
         int i = value.value;
         map.put(name, i);
         return i;
@@ -93,10 +95,11 @@ public final class Parameter extends ParVar{
      * Build a {@link choco.kernel.model.variables.set.SetConstantVariable} object
      * and add it to the {@code flatzinc.parser.FZNParser.map}.
      * @param name key name
-     * @param set {@link ESet} defining the set
+     * @param set {@link parser.flatzinc.ast.expression.ESet} defining the set
+     * @param map
      * @return {@link choco.kernel.model.variables.set.SetConstantVariable}
      */
-    private static SetConstantVariable buildSet(String name, ESet set){
+    private SetConstantVariable buildSet(String name, ESet set, HashMap<String, Object> map){
         final SetConstantVariable s;
         switch (set.getTypeOf()){
             case SET_B:
@@ -120,8 +123,9 @@ public final class Parameter extends ParVar{
      * @param index size definition
      * @param what type of object
      * @param value input declaration
+     * @param map
      */
-    private static void buildArray(String name, DInt2 index, Declaration what, EArray value){
+    private void buildArray(String name, DInt2 index, Declaration what, EArray value, HashMap<String, Object> map){
         // no need to get lowB, it is always 1 (see specification of FZN for more informations)
         int size = index.getUpp();
         switch (what.typeOf) {
@@ -144,7 +148,7 @@ public final class Parameter extends ParVar{
             case SET:
                 SetConstantVariable[] sarr = new SetConstantVariable[size];
                 for(int i = 0; i < size; i++){
-                    sarr[i] = buildSet(name+"_"+i, (ESet)value.getWhat_i(i));
+                    sarr[i] = buildSet(name+"_"+i, (ESet)value.getWhat_i(i), map);
                 }
                 map.put(name, sarr);
                 break;

@@ -25,7 +25,8 @@ package parser.flatzinc.ast.expression;
 import choco.Choco;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
-import parser.flatzinc.parser.FZNParser;
+
+import java.util.HashMap;
 
 /*
 * User : CPRUDHOM
@@ -41,12 +42,12 @@ public final class EIdArray extends Expression{
     final EInt index;
     final Object object;
 
-    public EIdArray(String id, EInt i) {
+    public EIdArray(HashMap<String, Object> map, String id, EInt i) {
         super(EType.IDA);
         this.name = id;
         this.index = i;
 
-        Object array = FZNParser.map.get(name);
+        Object array = map.get(name);
         if(int_arr.isInstance(array)){
             object = ((int[])array)[index.value-1];
         }else if(bool_arr.isInstance(array)){

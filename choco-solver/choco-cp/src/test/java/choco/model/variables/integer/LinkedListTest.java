@@ -27,8 +27,6 @@ import static choco.Choco.makeIntVar;
 import static choco.Choco.neq;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -48,7 +46,6 @@ public class LinkedListTest {
 
     @Test
      public void test_patakm1() {
-        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
         Model m = new CPModel();
         IntegerVariable[] arr = new IntegerVariable[1];
         int[] values = {-20000000, 20000000};

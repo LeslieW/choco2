@@ -31,10 +31,9 @@ import parser.flatzinc.ast.expression.EAnnotation;
 import parser.flatzinc.ast.expression.EArray;
 import parser.flatzinc.ast.expression.Expression;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
-
-import static parser.flatzinc.parser.FZNParser.map;
 
 /*
 * User : CPRUDHOM
@@ -54,32 +53,32 @@ public final class PVariable extends ParVar{
 
     public static final String OUTPUT = "output_";
 
-    public PVariable(Declaration type, String identifier, List<EAnnotation> annotations, Expression expression) {
+    public PVariable(HashMap<String, Object> map, Declaration type, String identifier, List<EAnnotation> annotations, Expression expression) {
         try {
             // value is always null, except for ARRAY, it can be defined
             // see Flatzinc specifications for more informations.
             switch (type.typeOf) {
                 case INT1:
-                    buildWithInt(identifier);
+                    buildWithInt(identifier, map);
                     break;
                 case INT2:
-                    buildWithInt2(identifier, (DInt2) type);
+                    buildWithInt2(identifier, (DInt2) type, map);
                     return;
                 case INTN:
-                    buildWithManyInt(identifier, (DManyInt) type);
+                    buildWithManyInt(identifier, (DManyInt) type, map);
                     return;
                 case BOOL:
-                    buildWithBool(identifier);
+                    buildWithBool(identifier, map);
                     return;
                 case SET:
-                    buildWithSet(identifier, (DSet) type);
+                    buildWithSet(identifier, (DSet) type, map);
                     return;
                 case ARRAY:
                     if (expression == null) {
-                        buildWithDArray(identifier, (DArray) type);
+                        buildWithDArray(identifier, (DArray) type, map);
                         return;
                     } else {
-                        buildWithDArray(identifier, (DArray) type, (EArray) expression);
+                        buildWithDArray(identifier, (DArray) type, (EArray) expression, map);
                         return;
                     }
             }
@@ -96,9 +95,10 @@ public final class PVariable extends ParVar{
      * Build a {@link IntegerVariable} named {@code name}.
      *
      * @param name name of the boolean variable
+     * @param map
      * @return {@link IntegerVariable}
      */
-    private static IntegerVariable buildWithBool(String name) {
+    private IntegerVariable buildWithBool(String name, HashMap<String, Object> map) {
         final IntegerVariable bi = Choco.makeBooleanVar(name);
         map.put(name, bi);
         return bi;
@@ -108,9 +108,10 @@ public final class PVariable extends ParVar{
      * Build an unbounded {@link IntegerVariable} named {@code name}, defined by {@code type}.
      *
      * @param name name of the variable
+     * @param map
      * @return {@link IntegerVariable}
      */
-    private static IntegerVariable buildWithInt(String name) {
+    private IntegerVariable buildWithInt(String name, HashMap<String, Object> map) {
         final IntegerVariable iv = Choco.makeIntVar(name);
         map.put(name, iv);
         return iv;
@@ -120,10 +121,11 @@ public final class PVariable extends ParVar{
      * Build a {@link IntegerVariable} named {@code name}, defined by {@code type}.
      *
      * @param name name of the variable
-     * @param type {@link DInt2} object
+     * @param type {@link parser.flatzinc.ast.declaration.DInt2} object
+     * @param map
      * @return {@link IntegerVariable}
      */
-    private static IntegerVariable buildWithInt2(String name, DInt2 type) {
+    private IntegerVariable buildWithInt2(String name, DInt2 type, HashMap<String, Object> map) {
         final IntegerVariable iv = Choco.makeIntVar(name, type.getLow(), type.getUpp());
         map.put(name, iv);
         return iv;
@@ -135,9 +137,10 @@ public final class PVariable extends ParVar{
      *
      * @param name name of the variable
      * @param type {@link parser.flatzinc.ast.declaration.DManyInt} object.
+     * @param map
      * @return {@link IntegerVariable}
      */
-    private static IntegerVariable buildWithManyInt(String name, DManyInt type) {
+    private IntegerVariable buildWithManyInt(String name, DManyInt type, HashMap<String, Object> map) {
         final IntegerVariable iv = Choco.makeIntVar(name, type.getValues());
         map.put(name, iv);
         return iv;
@@ -148,10 +151,11 @@ public final class PVariable extends ParVar{
      * Build a {@link SetVariable} named {@code name}, defined by {@code type}.
      *
      * @param name name of the variable
-     * @param type {@link DSet} object.
+     * @param type {@link parser.flatzinc.ast.declaration.DSet} object.
+     * @param map
      * @return {@link SetVariable}.
      */
-    private static SetVariable buildWithSet(String name, DSet type) {
+    private SetVariable buildWithSet(String name, DSet type, HashMap<String, Object> map) {
         final Declaration what = type.getWhat();
         final SetVariable sv;
         switch (what.typeOf) {
@@ -178,9 +182,10 @@ public final class PVariable extends ParVar{
      * </br>WARNING: array's indice are from 1 to n.
      *
      * @param name name of the array of variables.</br> Each variable is named like {@code name}_i.
-     * @param type {@link DArray} object.
+     * @param type {@link parser.flatzinc.ast.declaration.DArray} object.
+     * @param map
      */
-    private static void buildWithDArray(String name, DArray type) {
+    private void buildWithDArray(String name, DArray type, HashMap<String, Object> map) {
         final DInt2 index = (DInt2) type.getIndex();
         // no need to get lowB, it is always 1 (see specification of FZN for more informations)
         final int size = index.getUpp();
@@ -190,35 +195,35 @@ public final class PVariable extends ParVar{
             case BOOL:
                 vs = new IntegerVariable[size];
                 for (int i = 1; i <= size; i++) {
-                    vs[i - 1] = buildWithBool(name + "_" + i);
+                    vs[i - 1] = buildWithBool(name + "_" + i, map);
                 }
                 map.put(name, vs);
                 break;
             case INT1:
                 vs = new IntegerVariable[size];
                 for (int i = 1; i <= size; i++) {
-                    vs[i - 1] = buildWithInt(name + "_" + i);
+                    vs[i - 1] = buildWithInt(name + "_" + i, map);
                 }
                 map.put(name, vs);
                 break;
             case INT2:
                 vs = new IntegerVariable[size];
                 for (int i = 1; i <= size; i++) {
-                    vs[i - 1] = buildWithInt2(name + "_" + i, (DInt2) what);
+                    vs[i - 1] = buildWithInt2(name + "_" + i, (DInt2) what, map);
                 }
                 map.put(name, vs);
                 break;
             case INTN:
                 vs = new IntegerVariable[size];
                 for (int i = 1; i <= size; i++) {
-                    vs[i - 1] = buildWithManyInt(name + "_" + i, (DManyInt) what);
+                    vs[i - 1] = buildWithManyInt(name + "_" + i, (DManyInt) what, map);
                 }
                 map.put(name, vs);
                 break;
             case SET:
                 final SetVariable[] svs = new SetVariable[size];
                 for (int i = 1; i <= size; i++) {
-                    svs[i - 1] = buildWithSet(name + "_" + i, (DSet) what);
+                    svs[i - 1] = buildWithSet(name + "_" + i, (DSet) what, map);
                 }
                 map.put(name, svs);
                 break;
@@ -233,10 +238,11 @@ public final class PVariable extends ParVar{
      * </br>WARNING: array's indice are from 1 to n.
      *
      * @param name name of the array of variables.</br> Each variable is named like {@code name}_i.
-     * @param type {@link DArray} object.
-     * @param earr array of {@link Expression}
+     * @param type {@link parser.flatzinc.ast.declaration.DArray} object.
+     * @param earr array of {@link parser.flatzinc.ast.expression.Expression}
+     * @param map
      */
-    private static void buildWithDArray(String name, DArray type, EArray earr) {
+    private void buildWithDArray(String name, DArray type, EArray earr, HashMap<String, Object> map) {
         final DInt2 index = (DInt2) type.getIndex();
         // no need to get lowB, it is always 1 (see specification of FZN for more informations)
         final int size = index.getUpp();

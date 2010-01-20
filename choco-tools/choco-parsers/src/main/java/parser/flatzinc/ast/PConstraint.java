@@ -22,19 +22,18 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.flatzinc.ast;
 
+import static choco.Choco.*;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import parser.flatzinc.ast.expression.EAnnotation;
 import parser.flatzinc.ast.expression.Expression;
-import parser.flatzinc.parser.FZNParser;
 
 import java.util.List;
 import java.util.logging.Logger;
-
-import static choco.Choco.*;
 
 /*
 * User : CPRUDHOM
@@ -124,42 +123,43 @@ public final class PConstraint {
     private static final String _sorting = "_sorting";
 
 
-    public PConstraint(String id, List<Expression> exps, List<EAnnotation> annotations) {
+    public PConstraint(Model model, String id, List<Expression> exps, List<EAnnotation> annotations) {
         //TODO: manage annotations
-        build(id, exps);
+        build(id, exps, model);
     }
 
     /**
      * Builder of constraint defined with flatzinc-like object.
      * @param name predicate name
      * @param exps constraint parameters
+     * @param model
      */
-    private static void build(String name, List<Expression> exps) {
+    private static void build(String name, List<Expression> exps, Model model) {
         if(name.startsWith(_global)){
-            buildGlobal(name, exps);
+            buildGlobal(name, exps, model);
             return;
         }else
         if (name.startsWith(_int)) {
-            buildInt(name, exps);
+            buildInt(name, exps, model);
             return;
         } else
         if (name.startsWith(_float)) {
-            buildFloat(name, exps);
+            buildFloat(name, exps, model);
             return;
         } else
         if (name.startsWith(_bool)) {
-            buildBool(name, exps);
+            buildBool(name, exps, model);
             return;
         } else
         if (name.startsWith(_set)) {
-            buildSet(name, exps);
+            buildSet(name, exps, model);
             return;
         } else if(name.startsWith(_array)){
             if(name.contains(_bool)){
-                buildBool(name, exps);
+                buildBool(name, exps, model);
                 return;
             }else if(name.contains(_int)){
-                buildInt(name, exps);
+                buildInt(name, exps, model);
                 return;
             }
         }
@@ -171,8 +171,9 @@ public final class PConstraint {
      * Build a basic constraint based on int variables
      * @param name name of the constraint
      * @param exps parameters of the constraint
+     * @param model
      */
-    private static void buildInt(String name, List<Expression> exps) {
+    private static void buildInt(String name, List<Expression> exps, Model model) {
         Constraint c = null;
         if (name.contains(_lin)) {
 
@@ -250,10 +251,10 @@ public final class PConstraint {
         }
         if(c!=null){
             if (!name.endsWith(_reif)) {
-                FZNParser.model.addConstraint(c);
+                model.addConstraint(c);
             } else {
                 IntegerVariable vr = exps.get(exps.size()-1).intVarValue();
-                FZNParser.model.addConstraint(reifiedIntConstraint(vr, c));
+                model.addConstraint(reifiedIntConstraint(vr, c));
             }
             return;
         }
@@ -265,8 +266,9 @@ public final class PConstraint {
      * Build a basic constraint based on float variables
      * @param name name of the constraint
      * @param exps parameters of the constraint
+     * @param model
      */
-    private static void buildFloat(String name, List<Expression> exps) {
+    private static void buildFloat(String name, List<Expression> exps, Model model) {
         //TODO: to complete
         LOGGER.severe("buildFloat::ERROR:: unknown type :" + name);
         System.exit(-1);
@@ -277,8 +279,9 @@ public final class PConstraint {
      * FYI : bool == 1 is true
      * @param name name of the constraint
      * @param exps parameters of the constraint
+     * @param model
      */
-    private static void buildBool(String name, List<Expression> exps) {
+    private static void buildBool(String name, List<Expression> exps, Model model) {
         Constraint c = null;
         if (name.contains((_array))) {
             if (name.contains(_element)) {
@@ -345,10 +348,10 @@ public final class PConstraint {
         }
         if (c != null) {
             if (!name.endsWith(_reif)) {
-                FZNParser.model.addConstraint(c);
+                model.addConstraint(c);
             } else {
                 IntegerVariable vr = exps.get(exps.size()-1).intVarValue();
-                FZNParser.model.addConstraint(reifiedIntConstraint(vr, c));
+                model.addConstraint(reifiedIntConstraint(vr, c));
             }
             return;
         }
@@ -360,8 +363,9 @@ public final class PConstraint {
      * Build a basic constraint based on set variables
      * @param name name of the constraint
      * @param exps parameters of the constraint
+     * @param model
      */
-    private static void buildSet(String name, List<Expression> exps) {
+    private static void buildSet(String name, List<Expression> exps, Model model) {
         Constraint c = null;
         if(name.endsWith(_reif)){
             LOGGER.severe("buildSet::ERROR:: unexepected reified call :" + name);
@@ -410,7 +414,7 @@ public final class PConstraint {
 
         if(c!=null){
 //            if (!name.endsWith(_reif)) {
-                FZNParser.model.addConstraint(c);
+                model.addConstraint(c);
 //            } else {
 //                IntegerVariable vr = exps.get(exps.size()-1).intVarValue();
 //                FZNParser.model.addConstraint(reifiedIntConstraint(vr, c));
@@ -425,8 +429,9 @@ public final class PConstraint {
      * Build a global constraint
      * @param name name of the constraint
      * @param exps parameters of the constraint
+     * @param model
      */
-    private static void buildGlobal(String name, List<Expression> exps){
+    private static void buildGlobal(String name, List<Expression> exps, Model model){
         Constraint c = null;
         if(name.contains(_allDifferent)){
             IntegerVariable[] vars = exps.get(0).toIntVarArray();
@@ -502,10 +507,10 @@ public final class PConstraint {
         }
         if (c != null) {
             if (!name.endsWith(_reif)) {
-                FZNParser.model.addConstraint(c);
+                model.addConstraint(c);
             } else {
                 IntegerVariable vr = exps.get(exps.size()-1).intVarValue();
-                FZNParser.model.addConstraint(reifiedIntConstraint(vr, c));
+                model.addConstraint(reifiedIntConstraint(vr, c));
             }
             return;
         }

@@ -37,15 +37,16 @@ import org.junit.Test;
 */
 public class PVariableTest {
 
+    FZNParser fzn;
     @Before
     public void before(){
-        FZNParser.init();
+        fzn = new FZNParser();
     }
 
     @Test
     public void testBool(){
-        TerminalParser.parse(FZNParser.PAR_VAR_DECL, "var bool: bb::var_is_introduced::is_defined_var;");
-        Object o = FZNParser.map.get("bb");
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "var bool: bb::var_is_introduced::is_defined_var;");
+        Object o = fzn.map.get("bb");
         Assert.assertTrue(IntegerVariable.class.isInstance(o));
         IntegerVariable oi = (IntegerVariable)o;
         Assert.assertTrue(oi.isBoolean());
@@ -53,8 +54,8 @@ public class PVariableTest {
 
     @Test
     public void testBound(){
-        TerminalParser.parse(FZNParser.PAR_VAR_DECL, "var 0 .. 9: A::var_is_introduced;");
-        Object o = FZNParser.map.get("A");
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "var 0 .. 9: A::var_is_introduced;");
+        Object o = fzn.map.get("A");
         Assert.assertTrue(IntegerVariable.class.isInstance(o));
         IntegerVariable oi = (IntegerVariable)o;
         Assert.assertNull(oi.getValues());
@@ -65,8 +66,8 @@ public class PVariableTest {
 
     @Test
     public void testEnum(){
-        TerminalParser.parse(FZNParser.PAR_VAR_DECL, "var {0,3,18}: B::var_is_introduced;");
-        Object o = FZNParser.map.get("B");
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "var {0,3,18}: B::var_is_introduced;");
+        Object o = fzn.map.get("B");
         Assert.assertTrue(IntegerVariable.class.isInstance(o));
         IntegerVariable oi = (IntegerVariable)o;
         Assert.assertNotNull(oi.getValues());
@@ -75,8 +76,8 @@ public class PVariableTest {
 
     @Test
     public void testSetBound(){
-        TerminalParser.parse(FZNParser.PAR_VAR_DECL, "var set of 0..9: S::var_is_introduced;");
-        Object o = FZNParser.map.get("S");
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "var set of 0..9: S::var_is_introduced;");
+        Object o = fzn.map.get("S");
         Assert.assertTrue(SetVariable.class.isInstance(o));
         SetVariable oi = (SetVariable)o;
         Assert.assertNull(oi.getValues());
@@ -86,8 +87,8 @@ public class PVariableTest {
 
     @Test
     public void testSetEnum(){
-        TerminalParser.parse(FZNParser.PAR_VAR_DECL, "var set of {0,3,18}: S::var_is_introduced;");
-        Object o = FZNParser.map.get("S");
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "var set of {0,3,18}: S::var_is_introduced;");
+        Object o = fzn.map.get("S");
         Assert.assertTrue(SetVariable.class.isInstance(o));
         SetVariable oi = (SetVariable)o;
         Assert.assertNotNull(oi.getValues());
@@ -96,8 +97,8 @@ public class PVariableTest {
 
     @Test
     public void testArray(){
-        TerminalParser.parse(FZNParser.PAR_VAR_DECL, "array[1 .. 3] of var 0 .. 9: C::output_array([ 1 .. 3 ]);");
-        Object o = FZNParser.map.get("C");
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "array[1 .. 3] of var 0 .. 9: C::output_array([ 1 .. 3 ]);");
+        Object o = fzn.map.get("C");
         Assert.assertTrue(o.getClass().isArray());
         IntegerVariable[] oi = (IntegerVariable[])o;
         Assert.assertEquals(3, oi.length);
@@ -107,11 +108,11 @@ public class PVariableTest {
 
     @Test
     public void testArray2(){
-        TerminalParser.parse(FZNParser.PAR_VAR_DECL, "var 1 .. 5: a ::output_var;");
-        TerminalParser.parse(FZNParser.PAR_VAR_DECL, "var 1 .. 5: b::output_var;");
-        TerminalParser.parse(FZNParser.PAR_VAR_DECL, "var 1 .. 5: c::output_var;");
-        TerminalParser.parse(FZNParser.PAR_VAR_DECL, "array[1 .. 3] of var 1 .. 5: alpha = [ a, b, c];");
-        Object o = FZNParser.map.get("alpha");
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "var 1 .. 5: a ::output_var;");
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "var 1 .. 5: b::output_var;");
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "var 1 .. 5: c::output_var;");
+        TerminalParser.parse(fzn.PAR_VAR_DECL, "array[1 .. 3] of var 1 .. 5: alpha = [ a, b, c];");
+        Object o = fzn.map.get("alpha");
         Assert.assertTrue(o.getClass().isArray());
         IntegerVariable[] oi = (IntegerVariable[])o;
         Assert.assertEquals(3, oi.length);

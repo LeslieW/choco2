@@ -25,7 +25,8 @@ package parser.flatzinc.ast.expression;
 import choco.Choco;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
-import parser.flatzinc.parser.FZNParser;
+
+import java.util.HashMap;
 
 /*
 * User : CPRUDHOM
@@ -41,10 +42,10 @@ public final class EIdentifier extends Expression{
 
     public final Object object;
 
-    public EIdentifier(String s) {
+    public EIdentifier(HashMap<String, Object> map, String s) {
         super(EType.IDE);
         this.value = s;
-        object = FZNParser.map.get(value);
+        object = map.get(value);
     }
 
     @Override

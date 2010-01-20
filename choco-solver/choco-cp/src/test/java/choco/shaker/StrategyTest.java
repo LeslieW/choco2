@@ -23,17 +23,25 @@
 package choco.shaker;
 
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.integer.branching.AssignVar;
+import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
+import choco.cp.solver.search.integer.valselector.MidVal;
+import choco.cp.solver.search.integer.varselector.DomOverWDeg;
+import choco.cp.solver.search.integer.varselector.MaxValueDomain;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.shaker.tools.search.IntBranchingFactory;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import samples.Examples.GolombRuler;
+import samples.Examples.MagicSquare;
 import samples.Examples.PatternExample;
 import samples.Examples.Queen;
 
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /*
@@ -55,15 +63,31 @@ public class StrategyTest {
     @Before
     public void before(){
         s = new CPSolver();
-        loadModel();
     }
 
-    private void loadModel() {
+    private void createModel(){
+        pe.buildModel();
+        pe._s = new CPSolver();
+		pe._s.read(pe._m);
+        pe._s.solveAll();
+    }
+
+    private void loadQueenModel() {
         pe = new Queen();
-        pe.setUp(4);
-		pe.buildModel();
-		pe.buildSolver();
-		pe._s.solveAll();
+        pe.setUp(8);
+        createModel();
+    }
+
+    private void loadMagicSquareModel() {
+        pe = new MagicSquare();
+        pe.setUp(3);
+        createModel();
+    }
+
+    private void loadGolombRulerModel() {
+        pe = new GolombRuler();
+        pe.setUp(new Object[]{6,18, true});
+        createModel();
     }
 
     @After
@@ -74,18 +98,14 @@ public class StrategyTest {
 
 
     @Test
-    @Ignore
-    public void testStrategy() {
-        LOGGER.setLevel(Level.FINEST);
+    public void testStrategyQ() {
+        loadQueenModel();
         for(int i = 0; i < 100; i++){
             LOGGER.info("seed:"+i);
             random = new Random(i);
 
             s = new CPSolver();
             s.read(pe._m);
-            s.setTimeLimit(1000);
-
-
             IntBranchingFactory bf = new IntBranchingFactory();
             List<IntDomainVar> vars = s.getIntDecisionVars();
 
@@ -95,14 +115,70 @@ public class StrategyTest {
 
     }
 
+    @Test
+    public void testStrategyMS() {
+        loadMagicSquareModel();
+        for(int i = 0; i < 100; i++){
+            LOGGER.info("seed:"+i);
+            random = new Random(i);
+
+            s = new CPSolver();
+            s.read(pe._m);
+            IntBranchingFactory bf = new IntBranchingFactory();
+            List<IntDomainVar> vars = s.getIntDecisionVars();
+
+            s.attachGoal(bf.make(random, s, vars.toArray(new IntDomainVar[vars.size()])));
+            checker();
+        }
+
+    }
+
+    @Test
+    public void testStrategyGR() {
+        loadGolombRulerModel();
+        for(int i = 0; i < 100; i++){
+            LOGGER.info("seed:"+i);
+            random = new Random(i);
+
+            s = new CPSolver();
+            s.read(pe._m);
+            IntBranchingFactory bf = new IntBranchingFactory();
+            List<IntDomainVar> vars = s.getIntDecisionVars();
+
+            s.attachGoal(bf.make(random, s, vars.toArray(new IntDomainVar[vars.size()])));
+            checker();
+        }
+
+    }
 
     private void checker() {
-
-        s.solveAll();
-        Assert.assertFalse("encountered time limit", s.getLimitCount(Limit.TIME)>=s.getTimeCount());
+        s.solve();
+        if(Boolean.TRUE.equals(s.isFeasible())){
+            do{
+                Assert.assertTrue(s.checkSolution());
+            }while(s.nextSolution());
+        }
         Assert.assertEquals("feasibility incoherence", pe._s.isFeasible(), s.isFeasible());
         Assert.assertEquals("nb sol incoherence", pe._s.getNbSolutions(), s.getNbSolutions());
 
+    }
+
+    @Test
+    public void testStrategy1() {
+        loadQueenModel();
+        s = new CPSolver();
+        s.read(pe._m);
+        s.attachGoal(new AssignVar(new DomOverWDeg(s), new MidVal()));
+        checker();
+    }
+
+    @Test
+    public void testStrategy2() {
+        loadGolombRulerModel();
+        s = new CPSolver();
+        s.read(pe._m);
+        s.attachGoal(new AssignVar(new MaxValueDomain(s), new DecreasingDomain()));
+        checker();
     }
 
 }
