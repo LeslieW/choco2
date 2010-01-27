@@ -1,0 +1,31 @@
+ ------
+ Download DADCOP-tracer
+ ------
+ CHOCO development team
+ ------
+ ------
+
+Download DADCOP-tracer
+
+    * A single <jar> for tracing :
+
+        * <choco-kernel-X.x.x>,
+
+        * <choco-cp-X.x.x>.
+
+   This archive should be used if you want to integrate your own class-path.
+
+* Snapshot versions
+
+   Snapshot are available for development versions. They contain additional features or fixes
+   that are not as mature to be considered as a release.
+
+** <all-in-one> jars
+
+*---+---+---*---+---*
+| <<Id>> |  <<Archive>> | |
+*---*---*---*---*---*
+| <<<20100127>>> | | |
+*---*---*---*---*---*
+| | {{{mvn/repository/choco/dadcop-tracer/2.1.1-SNAPSHOT/dadcop-tracer-2.1.1-20100127.140412-1.jar}dadcop-tracer-2.1.1-20100127.140412-1.jar}}| {{{mvn/repository/choco/dadcop-tracer/2.1.1-SNAPSHOT/dadcop-tracer-2.1.1-20100127.140412-1.jar.md5}md5}}|
+*---*---*---*---*---*
