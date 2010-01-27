@@ -136,5 +136,7 @@ public interface PropagationEngine {
      */
     void removePropagationEngineListener(PropagationEngineListener listener);
 
+    boolean containsPropagationListener(PropagationEngineListener listener);
+
 	EventQueue getQueue(ConstraintEvent csvt);
 }

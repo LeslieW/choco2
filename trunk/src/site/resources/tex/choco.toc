@@ -87,10 +87,10 @@
 \contentsline {section}{\numberline {4.6}Define your own variable}{47}{section.4.6}
 \contentsline {section}{\numberline {4.7}Backtrackable structures}{47}{section.4.7}
 \contentsline {section}{\numberline {4.8}Logging System}{47}{section.4.8}
-\contentsline {subsubsection}{Verbosity.}{48}{section*.19}
-\contentsline {subsubsection}{How to write logging statements ?}{48}{section*.20}
-\contentsline {subsubsection}{Handlers.}{49}{section*.21}
-\contentsline {subsubsection}{Define your own logger.}{49}{section*.22}
+\contentsline {subsubsection}{Verbosity and messages.}{48}{section*.19}
+\contentsline {subsubsection}{How to write logging statements ?}{50}{section*.20}
+\contentsline {subsubsection}{Handlers.}{50}{section*.21}
+\contentsline {subsubsection}{Define your own logger.}{50}{section*.22}
 \contentsline {chapter}{\numberline {5}Applications with global constraints}{51}{chapter.5}
 \contentsline {section}{\numberline {5.1}Scheduling and use of the cumulative constraint}{51}{section.5.1}
 \contentsline {section}{\numberline {5.2}Placement and use of the Geost constraint}{53}{section.5.2}

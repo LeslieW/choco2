@@ -78,6 +78,11 @@
                 <artifactId>samples</artifactId>
                 <version>${project.version}</version>
             </dependency>
+	    <dependency>
+                <groupId>choco</groupId>
+                <artifactId>dadcop-tracer</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!--<dependency>
                 <groupId>choco</groupId>
                 <artifactId>choco-old_version</artifactId>
@@ -105,6 +110,7 @@
         <module>choco-visu</module>
         <module>choco-contribs</module>
         <module>samples</module>
+        <module>dadcop-tracer</module>	
         <!--<module>choco-old_version</module>-->
     </modules>
     <distributionManagement>

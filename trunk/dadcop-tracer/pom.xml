@@ -9,7 +9,7 @@
     <artifactId>dadcop-tracer</artifactId>
     <packaging>jar</packaging>
     <name>Dynamic Analysis and Debugging of Constraint Programs tracer for CHOCO</name>
-    <url>http://www.emn.fr/z-info/choco-solver/oadymppactrace</url>
+    <url>http://www.emn.fr/z-info/choco-solver/dadcop-tracer</url>
     <dependencies>
 <dependency>
             <groupId>choco</groupId>
@@ -117,8 +117,8 @@
     </reporting>
     <distributionManagement>
         <site>
-            <id>oadymmppac-repo</id>
-            <url>${choco-dir}/samples</url>
+            <id>dadcop-repo</id>
+            <url>${choco-dir}/dadcop-tracer</url>
         </site>
     </distributionManagement>
 </project>
