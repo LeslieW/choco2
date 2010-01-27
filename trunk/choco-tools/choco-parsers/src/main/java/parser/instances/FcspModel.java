@@ -91,8 +91,8 @@ public final class FcspModel extends AbstractInstanceModel {
     public Solver buildSolver() {
         PreProcessCPSolver s = new PreProcessCPSolver();
 		s.read(model);
+        settings.applyTimeLimit(s);
         searchSet = solveGoal.defineGoal(s);
-//		settings.applyTimeLimit(s);
 		return s;
     }
 
@@ -123,7 +123,8 @@ public final class FcspModel extends AbstractInstanceModel {
 			//				return s.isFeasible();
 			//			} else return s.solve();
 			s.setLoggingMaxDepth(200);
-			return s.solve();
+            s.launch();
+			return s.isFeasible();
 		} else {
 			return Boolean.FALSE;
 		}
