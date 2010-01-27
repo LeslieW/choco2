@@ -537,29 +537,101 @@ The color of the node gives its logging level with DEFAULT verbosity:
 \texttt{Level.INFO} (\textcolor{orange}{orange}),
 \texttt{Level.WARNING} (\textcolor{red}{red}).
 
-\subsubsection{Verbosity.}\label{advanced:verbosity}\hypertarget{advanced:verbosity}{}
-The following table summarizes the verbosity available in choco: 
-\begin{center}
- 	\begin{tabular}{l c l}
-      \hline
-      Verbosity &level & description \\
-      \hline
-		 OFF &0 &  disable logging \\
-		 SILENT &1 &  display only severe messages \\
-		 DEFAULT &2 &  display warning and some API messages \\
-		 VERBOSE &3 &  display more API messages and a solving message \\
-		 SOLUTION &4 &  display all solutions \\
-		 SEARCH &5 &  display the search tree \\
-		 FINEST &6 &  display all logs\\
-         \hline\\
-	\end{tabular}
-\end{center}
+\subsubsection{Verbosity and messages.}\label{advanced:verbosityandmessages}\hypertarget{advanced:verbosityandmessages}{}
+The following table summarizes the verbosities available in choco: 
+
+\begin{itemize}
+	\item \textbf{OFF -- level 0:} Disable logging.
+	\item \textbf{SILENT -- level 1:} Display only severe messages.
+	\item \textbf{DEFAULT -- level 2:} Display informations on final search state.
+		\begin{itemize}
+			\item ON START
+				\lstset{language={sh},columns=fixed}
+\begin{lstlisting}
+ * * * * * * * * * * * * * * * * * * * * * *
+ *    CHOCO is an open-source software,    *
+ *    distributed under a BSD licence      *
+ *    and hosted by sourceforge.net        *
+ *                                         *
+ *    + website : http://choco.emn.fr      *
+ *                                         *
+ *                Copyleft 1999-2010       *
+ * * * * * * * * * * * * * * * * * * * * * *\end{lstlisting}
+			\item ON COMPLETE SEARCH:
+				\begin{lstlisting}
+- Search completed -
+  Solutions     : {0},
+  Nodes         : {1},
+  [Objective    : {2},]
+  Time (ms)     : {3}.\end{lstlisting}
+Brackets [\textit{line}] indicate \textit{line} is optionnal}.
+
+			\item ON COMPLETE SEARCH WITHOUT SOLUTIONS :
+				\begin{lstlisting}
+- Search completed - No solutions
+  Nodes		: {0},
+  Time (ms)	: {1}.\end{lstlisting}
+
+			\item ON INCOMPLETE SEARCH:
+				\begin{lstlisting}
+- Search incompleted - Exiting on l limit
+  Solutions 	: {0},
+  Nodes			: {1},
+  [Objective 	: {2},]
+  Time (ms)		: {3}.\end{lstlisting}
+				brackets [\textit{line}] indicate \textit{line} is optionnal},\\
+				\texttt{Objective} indicates the best known value before exiting.
+		\end{itemize}			
+
+	\item \textbf{VERBOSE -- level 3:} Display informations on search state.
+		\begin{itemize}
+			\item EVERY X (default=1000) NODES:
+			\begin{lstlisting}
+- Partial search - {0} solutions, {1} nodes, {2} ms, {3} depth [, objective : {4}].
+			\end{lstlisting}
+			\texttt{objective} indicates the best known value.
+
+			\item ON RESTART : 
+			\begin{lstlisting}
+- Restarting search - {0} restarts[, next cutoff {1}].
+			\end{lstlisting}
+		\end{itemize}
+
+	\item \textbf{SOLUTION -- level 4:} display all solutions.
+		\begin{itemize}
+			\item AT EACH SOLUTION:
+			\begin{lstlisting}
+- Solution {0} found : {1} nodes, {2} ms[, objective : {3}]
+  X_1:v1, x_2:v2...
+			\end{lstlisting}
+		\end{itemize}
+
+	\item \textbf{SEARCH -- level 5:} Display the search tree.
+		\begin{itemize}
+			\item AT EACH NODE, ON DOWN BRANCH:
+			\begin{lstlisting}
+...[w] down branch X==v branch b
+			\end{lstlisting}
+where \texttt{w} is the current world index, \texttt{X} the branching variable, \texttt{v} the branching value and \texttt{b} the branch index. This message can be adapted on variable type and search strategy.
+
+			\item AT EACH NODE, ON UP BRANCH:
+			\begin{lstlisting}
+...[w] up branch X==v branch b
+			\end{lstlisting}
+where \texttt{w} is the current world index, \texttt{X} the branching variable, \texttt{v} the branching value and \texttt{b} the branch index. This message can be adapted on variable type and search strategy.
+		\end{itemize}
+
+	\item \textbf{FINEST -- level 6:} display all logs.
+
+\end{itemize}
+
 More precisely, if the verbosity level is greater than DEFAULT, then the verbosity levels of the model and of the solver are increased to INFO, and the verbosity levels of the search and of the branching are slightly modified to display the solution(s) and search messages.
 
 The verbosity level can be changed as follows:
 \begin{lstlisting}
 	ChocoLogging.setVerbosity(Verbosity.VERBOSE);
 \end{lstlisting}
+
 
 \subsubsection{How to write logging statements ?}\label{advanced:howtowriteloggingstatements}\hypertarget{advanced:howtowriteloggingstatements}{}
 

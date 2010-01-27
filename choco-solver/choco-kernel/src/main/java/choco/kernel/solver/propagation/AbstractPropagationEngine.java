@@ -127,7 +127,12 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
         propagationEngineListeners.remove(listener);
     }
 
-	/**
+    @Override
+    public boolean containsPropagationListener(PropagationEngineListener listener) {
+        return propagationEngineListeners.contains(listener);
+    }
+
+    /**
 	 * Retrieving the cause of the last contradiction.
 	 */
 	public final Object getContradictionCause() {
