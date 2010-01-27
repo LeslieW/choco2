@@ -200,10 +200,6 @@ public class PartiallyStoredIntVector {
           }
           return idx;
       }
-
-      public void remove() {
-        throw new UnsupportedOperationException();
-      }
   }
 
   public static boolean isStaticIndex(int idx) {

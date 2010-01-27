@@ -111,9 +111,5 @@ public class PartiallyStoredBitSet {
               return i;
           }
       }
-
-      public void remove() {
-        throw new UnsupportedOperationException();
-      }
     }
 }

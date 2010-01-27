@@ -71,8 +71,4 @@ public class CyclicIterator extends DisposableIntIterator {
       k = nextk;
       return k;
     }
-
-    public void remove() {
-      throw new UnsupportedOperationException();
-    }
   }

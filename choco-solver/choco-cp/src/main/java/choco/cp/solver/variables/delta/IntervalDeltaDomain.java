@@ -185,13 +185,6 @@ public class IntervalDeltaDomain implements IDeltaDomain {
             }
             return x;
         }
-
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-
-        public void dispose() {
-        }
     }
 
     @Override

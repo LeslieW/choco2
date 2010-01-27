@@ -49,8 +49,4 @@ public class EmptyIntIterator extends DisposableIntIterator {
     public int next() {
       return 0;
     }
-
-    public void remove() {
-      throw new UnsupportedOperationException();
-    }
   }

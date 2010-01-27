@@ -24,7 +24,6 @@ package choco.kernel.model.variables.integer;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.Model;
-import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Operator;
 import choco.kernel.model.variables.Variable;
@@ -223,10 +222,6 @@ public class IntegerVariable extends IntegerExpressionVariable {
             if (v.getValues() == null)
                 return currentVal++;
             else return v.getValues()[idx++];
-        }
-
-        public void remove() {
-            throw new ModelException("can not removed values this way");
         }
     }
 

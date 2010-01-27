@@ -112,10 +112,6 @@ public abstract class AbstractIntDomain implements IntDomain {
 			nextValue = domain.getNextValue(nextValue);
 			return v;
 		}
-
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
 	}
 
 	/**

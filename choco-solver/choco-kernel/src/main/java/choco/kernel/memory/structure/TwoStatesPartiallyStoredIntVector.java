@@ -260,10 +260,6 @@ public class TwoStatesPartiallyStoredIntVector extends PartiallyStoredIntVector 
                 return vector.storedInts[storedI] + STORED_OFFSET;
             }
         }
-
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
     }
 
 }

@@ -383,10 +383,6 @@ public class BipartiteIntDomain extends AbstractIntDomain {
             nextIdx--;
             return domain.values[v];
         }
-
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
     }
 
     public boolean isEnumerated() {

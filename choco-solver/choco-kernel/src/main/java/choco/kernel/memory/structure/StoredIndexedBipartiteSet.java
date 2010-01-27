@@ -238,7 +238,7 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
 
     public DisposableIntIterator getIterator() {
         BipartiteSetIterator iter = (BipartiteSetIterator) _cachedIterator;
-        if (iter != null && iter.disposed) {
+        if (iter != null && iter.reusable) {
             iter.init();
             return iter;
         }
@@ -248,7 +248,7 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
 
     public BipartiteSetIterator getObjectIterator() {
         BipartiteSetIterator iter = (BipartiteSetIterator) _cachedIterator;
-        if (iter != null && iter.disposed) {
+        if (iter != null && iter.reusable) {
             iter.init();
             return iter;
         }
@@ -269,7 +269,6 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
         StoredIndexedBipartiteSet sibset;
 
         int idx;
-        boolean disposed;
 
         public BipartiteSetIterator(StoredIndexedBipartiteSet sibset) {
             this.sibset = sibset;
@@ -277,8 +276,8 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
         }
 
         public void init() {
+            super.init();
             idx = 0;
-            disposed = false;
         }
 
         public boolean hasNext() {
@@ -306,11 +305,6 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
                 sibset.position[temp] = idxToRem;
                 sibset.last.add(-1);
             }
-        }
-
-        @Override
-        public void dispose() {
-            disposed = true;
         }
     }
 

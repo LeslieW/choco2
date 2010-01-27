@@ -271,10 +271,6 @@ public class BitSetIntDomain extends AbstractIntDomain implements IBitSetIntDoma
       nextValue = domain.contents.nextSetBit(nextValue + 1);
       return v + domain.offset;
     }
-
-    public void remove() {
-        throw new UnsupportedOperationException();
-    }
   }
 
     /**

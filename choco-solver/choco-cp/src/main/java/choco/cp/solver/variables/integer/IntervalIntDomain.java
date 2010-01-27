@@ -138,10 +138,6 @@ public class IntervalIntDomain extends AbstractIntDomain {
             public int next() {
                 return ++x;
             }
-
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
         }
 
     public boolean remove(int x) {
