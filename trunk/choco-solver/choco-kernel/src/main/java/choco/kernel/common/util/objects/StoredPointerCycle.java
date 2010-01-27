@@ -255,13 +255,6 @@ public class StoredPointerCycle {
       }
       return k;
     }
-
-    /**
-     * Removes an element. Not supported here !
-     */
-    public void remove() {
-      throw new UnsupportedOperationException();
-    }
   }
 
 }

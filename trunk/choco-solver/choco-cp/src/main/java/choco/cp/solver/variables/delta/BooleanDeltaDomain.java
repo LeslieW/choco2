@@ -184,10 +184,6 @@ public class BooleanDeltaDomain implements IDeltaDomain{
 //            else val++;
             return temp;
         }
-
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
     }
 
     @Override

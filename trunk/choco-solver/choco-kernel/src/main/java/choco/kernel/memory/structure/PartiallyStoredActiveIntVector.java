@@ -205,10 +205,6 @@ public class PartiallyStoredActiveIntVector extends PartiallyStoredIntVector {
         public int next() {
             return values[i++];
         }
-
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
     }
 
 }

@@ -91,7 +91,7 @@ public class StoredIntBipartiteList implements IStateIntVector {
 
     public DisposableIntIterator getIterator() {
       BipartiteListIterator iter = (BipartiteListIterator) _cachedIterator;
-      if (iter != null && iter.disposed) {
+      if (iter != null && iter.reusable) {
         iter.init();
         return iter;
       }
@@ -112,7 +112,6 @@ public class StoredIntBipartiteList implements IStateIntVector {
         StoredIntBipartiteList siblist;
 
         int idx;
-        boolean disposed;
 
         public BipartiteListIterator(StoredIntBipartiteList list) {
             this.siblist = list;
@@ -120,8 +119,8 @@ public class StoredIntBipartiteList implements IStateIntVector {
         }
 
         public void init() {
+            super.init();
            idx = 0;
-           disposed = false;
         }
 
         public boolean hasNext() {
@@ -138,11 +137,6 @@ public class StoredIntBipartiteList implements IStateIntVector {
             siblist.list[siblist.last.get()] = siblist.list[idx];
             siblist.list[idx] = temp;
             siblist.last.add(-1);
-        }
-
-        @Override
-        public void dispose() {
-            disposed = true;
         }
     }
 }

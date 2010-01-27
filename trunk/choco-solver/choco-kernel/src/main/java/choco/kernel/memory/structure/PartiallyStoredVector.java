@@ -304,10 +304,6 @@ public class PartiallyStoredVector<E> {
 		}
         return idx;
       }
-
-      public void remove() {
-        throw new UnsupportedOperationException();
-      }
   }
   private PSVIndexIterator _cachedPSVIndexIterator;
   public DisposableIntIterator getIndexIterator() {

@@ -216,10 +216,6 @@ public class BooleanDomain extends AbstractIntDomain {
             else nextValue = 2;
             return v;
         }
-
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
     }
 
     /**
