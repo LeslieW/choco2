@@ -1,25 +1,27 @@
-package choco.cp.solver.search.limit;
+package choco.cp.solver.search;
 
 
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.solver.ContradictionException;
 import static choco.kernel.solver.ContradictionException.Type.SEARCH_LIMIT;
-import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.RESTART;
 import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.STOP;
-import choco.kernel.solver.search.GlobalSearchLimit;
-import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
-import choco.kernel.solver.search.restart.NoRestartStrategy;
-import choco.kernel.solver.search.restart.UniversalRestartStrategy;
 
 import java.util.logging.Logger;
 
-public class LimitManager implements GlobalSearchLimit {
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.GlobalSearchLimitManager;
+import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
+import choco.kernel.solver.search.limit.NoLimit;
+import choco.kernel.solver.search.restart.NoRestartStrategy;
+import choco.kernel.solver.search.restart.UniversalRestartStrategy;
+
+public class SearchLimitManager implements GlobalSearchLimitManager {
 
 	public final static Logger LOGGER = ChocoLogging.getSearchLogger();
 
 	protected final AbstractGlobalSearchStrategy searchStrategy;
-	
+
 	protected AbstractGlobalSearchLimit restartLimit;
 
 	protected AbstractGlobalSearchLimit searchLimit;
@@ -28,19 +30,17 @@ public class LimitManager implements GlobalSearchLimit {
 	protected UniversalRestartStrategy restartStrategy;
 
 	protected AbstractGlobalSearchLimit restartStrategyLimit;
-	
-	private int restartFromStrategyCount = 0;
 
 	private int restartCutoff = 0;
 
 	//COUNTERS
+	private int restartFromStrategyCount = 0;
+
 	private int timeCount;
 
 	private long starth;
 
-	private AbstractGlobalSearchLimit failCount; //if only want to monitor the limit
-	
-	public LimitManager(AbstractGlobalSearchStrategy searchStrategy) {
+	public SearchLimitManager(AbstractGlobalSearchStrategy searchStrategy) {
 		super();
 		this.searchStrategy = searchStrategy;
 	}
@@ -74,7 +74,7 @@ public class LimitManager implements GlobalSearchLimit {
 		this.searchLimit = searchLimit == null ? NoLimit.SINGLOTON : searchLimit;
 	}
 
-	
+
 	public final void setRestartStrategy(UniversalRestartStrategy restartStrategy, AbstractGlobalSearchLimit restartStrategyLimit) {
 		if( restartStrategyLimit == null || restartStrategy == null) {
 			this.restartStrategyLimit = NoLimit.SINGLOTON;
@@ -95,11 +95,9 @@ public class LimitManager implements GlobalSearchLimit {
 		return restartCutoff;
 	}
 
-
-	public final int getFailCount() {
-		return failCount == null ? -1 : failCount.getNb();
-	}
-
+	/**
+	 * Get the time in milliseconds elapsed since the beginning of the search.
+	 */
 	public final int getTimeCount() {
 		return timeCount;
 	}
@@ -110,7 +108,7 @@ public class LimitManager implements GlobalSearchLimit {
 	}
 
 
-	
+
 	//*****************************************************************//
 	//*******************  LIMIT MANAGEMENT **************************//
 	//***************************************************************//
@@ -137,12 +135,11 @@ public class LimitManager implements GlobalSearchLimit {
 		restartStrategyLimit.setNbMax( restartStrategyLimit.getNb() + restartCutoff);
 	}
 
-	
+
 
 	@Override
 	public void endTreeSearch() {
 		timeCount = (int) (System.currentTimeMillis() - starth);
-		
 	}
 
 	@Override
@@ -182,34 +179,30 @@ public class LimitManager implements GlobalSearchLimit {
 		return restartLimit.getNb() >= restartLimit.getNbMax();
 	}
 
-	
-	public final void cancelRestart() {
-		restartLimit = NoLimit.SINGLOTON;
+
+	public final void cancelRestartStrategy() {
+		//restartLimit = NoLimit.SINGLOTON;
 		restartStrategyLimit = NoLimit.SINGLOTON;
-		restartStrategy = NoRestartStrategy.SINGLOTON;
+		//restartStrategy = NoRestartStrategy.SINGLOTON;
 	}
 
 
 	@Override
-	public String pretty() {
-		final StringBuilder stb = new StringBuilder();
+	public String toString() {
 		if( searchLimit.getUnit() != NoLimit.NO_LIMIT_UNIT) {
-			stb.append("Limits{ search:").append(searchLimit.pretty());
-			if( restartLimit.getUnit() != NoLimit.NO_LIMIT_UNIT) {
-				stb.append(" ; restart:").append(restartLimit.pretty());
-			}
-			stb.append(" }");
-		}else if( restartLimit.getUnit() != NoLimit.NO_LIMIT_UNIT) {
-			stb.append("Limits{ restart:").append(restartLimit.pretty()).append(" }");
+			return searchLimit.pretty();
 		}
-		if(restartStrategy != null && restartStrategy.getName() != NoRestartStrategy.NO_RESTART_NAME) {
-			stb.append(" RestartStrategy{ policy:").append(restartStrategy.pretty());
-			stb.append(" ; count:").append(restartFromStrategyCount);
-			stb.append(" ; cutoff:").append(restartStrategyLimit.pretty());
-			stb.append(" }");
-		}
-		return new String(stb);
+		return "";
 	}
+
+	@Override
+	public String pretty() {
+		if( restartLimit.getUnit() != NoLimit.NO_LIMIT_UNIT) {
+			return toString()+ ",  restart: "+restartLimit.pretty();
+		}
+		return toString();
+	}
+
 }
 
 

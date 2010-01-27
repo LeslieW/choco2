@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 
 public class Dominators {
 
-    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     protected int nbVertices;
     protected VarGraphView graph;

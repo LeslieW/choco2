@@ -47,7 +47,7 @@ import static choco.Choco.*;
  */
 public class Arm extends PatternExample{
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
     RealVariable a, b, alpha, beta, x, y, jr, ir;
 

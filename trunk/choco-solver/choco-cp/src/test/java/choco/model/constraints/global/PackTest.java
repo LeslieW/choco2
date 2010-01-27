@@ -277,7 +277,6 @@ public class PackTest {
 			for (CPSolver s : this.solvers) {
 				s.post(s.leq(s.getVar(modeler.nbNonEmpty), ub));
 				//CPSolver.setVerbosity(CPSolver.SEARCH);
-				s.setLoggingMaxDepth(7);
 				s.launch();
 				LOGGER.log(Level.INFO, "Nb solutions: {0}\n{1}", new Object[]{s.getNbSolutions(), s.runtimeSatistics()});
 				if(last!=null) {

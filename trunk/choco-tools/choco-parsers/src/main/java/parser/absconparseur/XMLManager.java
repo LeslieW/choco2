@@ -44,7 +44,7 @@ import java.util.logging.Logger;
 
 public final class XMLManager {
 
-	protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+	protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	private static boolean useStyleSheet = true; // true; // TODO //true; //false; // true // a style sheet can seriously degrade performances
 

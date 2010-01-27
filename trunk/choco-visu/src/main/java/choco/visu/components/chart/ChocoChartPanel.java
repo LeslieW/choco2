@@ -38,7 +38,7 @@ import choco.visu.components.chart.renderer.MyXYBarRenderer.ResourceRenderer;
 
 public class ChocoChartPanel extends JPanel implements TreeSelectionListener {
     
-    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	private final static JLabel NO_DISPLAY= new JLabel("NO DISPLAY", JLabel.CENTER);
 	

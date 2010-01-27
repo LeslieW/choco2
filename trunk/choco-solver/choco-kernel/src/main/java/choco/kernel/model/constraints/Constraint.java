@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  */
 public interface Constraint extends IPretty, IIndex, IOptions {
 
-    final static Logger LOGGER = ChocoLogging.getModelLogger();
+    final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     public ConstraintType getConstraintType();
 

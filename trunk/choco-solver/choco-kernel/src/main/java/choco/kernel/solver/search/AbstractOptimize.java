@@ -24,6 +24,7 @@ package choco.kernel.solver.search;
 
 import java.util.logging.Level;
 
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.variables.Var;
@@ -86,13 +87,9 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 		super.writeSolution(sol);
 		bounds.writeObjective(sol);
 	}
-
-
+	
 	@Override
 	public void recordSolution() {
-		if(LOGGER.isLoggable(Level.FINE)) {
-			LOGGER.log(Level.FINE, "solution with cost {1}", new Object[]{ Integer.valueOf(-1), getObjective()});
-		}
 		super.recordSolution();
 		bounds.setBound();
 		bounds.setTargetBound();
@@ -108,15 +105,6 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 	}
 
 	@Override
-	public void endTreeSearch() {
-		if (LOGGER.isLoggable(Level.CONFIG)) {
-			LOGGER.log(Level.CONFIG, "{1} => {2}", new Object[]{-1, doMaximize ? "maximize" : "minimize", getObjective()});
-		}
-		super.endTreeSearch();
-	}
-
-
-	@Override
 	public Boolean nextSolution() {
 		if( bounds.isTargetInfeasible()) {
 			//the search is finished as the optimum has been proven by the bounding mechanism.
@@ -127,6 +115,25 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 		}
 	}
 
+	
+	
+	@Override
+	public String partialRuntimeStatistics(boolean logOnSolution) {
+		if( logOnSolution) {
+			return "objective="+bounds.getObjectiveIntValue()+", "+super.partialRuntimeStatistics(logOnSolution);
+		}else {
+			return "upper-bound="+bounds.getBestObjectiveValue()+", "+super.partialRuntimeStatistics(logOnSolution);
+		}
+		
+	}
+
+
+	@Override
+	public String runtimeStatistics() {
+		return "  "+ (doMaximize ? "Maximize: " : "Minimize: ") + getObjective() + "\n" +super.runtimeStatistics();
+	}
+
+	
 
 	
 }

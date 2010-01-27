@@ -20,12 +20,14 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.search;
+package choco.kernel.solver.search;
 
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.*;
-import choco.kernel.solver.search.ISearchLoop;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.DOWN_BRANCH;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.INIT_SEARCH;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.OPEN_NODE;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.RESTART;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.STOP;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.UP_BRANCH;
 
 
 public abstract class AbstractSearchLoop implements ISearchLoop {
@@ -55,34 +57,17 @@ public abstract class AbstractSearchLoop implements ISearchLoop {
 
 
 
-	public final boolean isStop() {
+	public final boolean isStopped() {
 		return stop;
 	}
-
-
 
 	public final int getNodeCount() {
 		return nodeCount;
 	}
 
-
-
-	public final void setNodeCount(int nodeCount) {
-		this.nodeCount = nodeCount;
-	}
-
-
-
 	public final int getBacktrackCount() {
 		return backtrackCount;
 	}
-
-
-
-	public final void setBacktrackCount(int backtrackCount) {
-		this.backtrackCount = backtrackCount;
-	}
-
 
 
 	public final int getRestartCount() {
@@ -109,7 +94,6 @@ public abstract class AbstractSearchLoop implements ISearchLoop {
 		stop = false;
 		initLoop();
 		while (!stop) {
-			ChocoLogging.flushLogs();
 			switch (searchStrategy.nextMove) {
 			//The order of the condition is important. 
 			//SEARCH TREE MOVES

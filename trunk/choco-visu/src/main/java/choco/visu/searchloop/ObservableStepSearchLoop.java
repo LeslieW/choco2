@@ -23,8 +23,8 @@
 package choco.visu.searchloop;
 
 import choco.IObserver;
-import choco.cp.solver.search.AbstractSearchLoop;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.AbstractSearchLoop;
 import static choco.visu.searchloop.State.*;
 
 import java.util.Vector;

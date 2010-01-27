@@ -86,6 +86,8 @@ public class GolombRuler extends PatternExample {
 
     @Override
     public void solve() {
+    	//ChocoLogging.setVerbosity(Verbosity.SEARCH);
+    	//ChocoLogging.setLoggingMaxDepth(3);
     	_s.solveAll();
     }
 

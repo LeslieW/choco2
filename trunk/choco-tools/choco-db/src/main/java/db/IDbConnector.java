@@ -6,7 +6,7 @@ import choco.kernel.common.logging.ChocoLogging;
 
 public interface IDbConnector {
 
-	public final static Logger LOGGER= ChocoLogging.getParserLogger();
+	public final static Logger LOGGER= ChocoLogging.getMainLogger();
 	
 	DbManager getDatabaseManager();
 	

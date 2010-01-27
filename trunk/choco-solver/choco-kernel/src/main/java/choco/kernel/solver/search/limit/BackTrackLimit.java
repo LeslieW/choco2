@@ -20,42 +20,24 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.search.limit;
+package choco.kernel.solver.search.limit;
 
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.propagation.PropagationEngineListener;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
-import choco.kernel.solver.search.limit.Limit;
 
 /**
- * Limit counting the fail number
+ * Limit counting the backtrack number
  */
-public final class FailLimit extends AbstractGlobalSearchLimit implements PropagationEngineListener {
+public final class BackTrackLimit extends AbstractGlobalSearchLimit {
 
-	private int nb;
-	
-	public FailLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
-		super(theStrategy, theLimit, Limit.FAIL);
-		strategy.getSolver().getPropagationEngine().addPropagationEngineListener(this);
+	public BackTrackLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
+		super(theStrategy, theLimit, Limit.BACKTRACK);
+		
 	}
 
-	/**
-	 * Define action to do just before a deletion.
-	 */
-	@Override
-	public final void safeDelete() {
-		strategy.getSolver().getPropagationEngine().removePropagationEngineListener(this);
-	}
-	
-
-	
 	@Override
 	public final int getNb() {
-		return nb;
+		return strategy.getBackTrackCount();
 	}
 
-	public void contradictionOccured(ContradictionException e) {
-		if(!e.isSearchLimitCause()) {nb++;}
-	}
+	
 }

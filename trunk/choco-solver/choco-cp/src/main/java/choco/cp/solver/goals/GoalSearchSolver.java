@@ -160,7 +160,7 @@ public class GoalSearchSolver extends AbstractGlobalSearchStrategy {
                 } else {
                   if (g instanceof Generate) {
                     if(LOGGER.isLoggable(Level.FINEST)) {LOGGER.log(Level.FINEST, "[GOAL] generate {0} pop", g.pretty());}
-                    newTreeNode();
+                    limitManager.newNode();
                   }
                   Goal newG = g.execute(this.getSolver());
                   this.getSolver().propagate();
@@ -185,7 +185,7 @@ public class GoalSearchSolver extends AbstractGlobalSearchStrategy {
               this.getSolver().worldPop();
               //endTreeNode();
               //problem.propagate();
-              endTreeNode();
+              limitManager.endNode();
               postDynamicCut();
               currentChoiceIndex++;
               if (currentChoiceIndex < currentChoice.getNbChoices()) {

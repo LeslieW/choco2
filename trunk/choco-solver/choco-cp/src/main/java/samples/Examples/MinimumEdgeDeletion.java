@@ -18,8 +18,11 @@ import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.search.integer.ValIterator;
+import choco.kernel.solver.search.limit.Limit;
 
 /**
  * Let consider a set of N boolean variables and a binary constraint network (eq or neq).
@@ -114,7 +117,7 @@ public class MinimumEdgeDeletion extends PatternExample {
 
 	@Override
 	public void prettyOut() {
-		LOGGER.info("pairs: "+Arrays.toString(_s.getVar(pairVars)));
+		//LOGGER.info("pairs: "+Arrays.toString(_s.getVar(pairVars)));
 		LOGGER.info("nbDeletions= "+ _s.getOptimumValue());
 		LOGGER.info("bool vars: "+Arrays.toString(_s.getVar(boolVars)));
 	}
@@ -131,6 +134,7 @@ public class MinimumEdgeDeletion extends PatternExample {
 	}
 
 	public static void main(String[] args) {
+		//ChocoLogging.setVerbosity(Verbosity.DEFAULT);
 		new MinimumEdgeDeletion().execute();
 	}
 }

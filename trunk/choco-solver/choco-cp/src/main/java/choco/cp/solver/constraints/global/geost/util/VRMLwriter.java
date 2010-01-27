@@ -47,7 +47,7 @@ import java.util.logging.Logger;
 public class VRMLwriter {
 
 
-    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	public static final String VRML_OUTPUT_FOLDER = "";
 

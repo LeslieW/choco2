@@ -49,7 +49,7 @@ import java.util.logging.Logger;
  */
 public class DeterministicPert {
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	protected static final int[] ILOG_DURATIONS={7,3,8,3,1,2,1,2,1,1};
 

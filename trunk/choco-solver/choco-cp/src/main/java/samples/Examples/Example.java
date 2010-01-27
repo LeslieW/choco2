@@ -6,7 +6,7 @@ import choco.kernel.common.logging.ChocoLogging;
 
 public interface Example {
 
-	public final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+	public final static Logger LOGGER = ChocoLogging.getMainLogger();
 	
 	void execute();
 	

@@ -38,7 +38,7 @@ import java.util.logging.Logger;
 
 public class InstanceChecker extends JFrame {
 
-	protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+	protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	private static final long serialVersionUID = -3961722178499026262L;
 

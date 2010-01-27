@@ -38,7 +38,7 @@ import java.util.logging.Logger;
 
 public class OrderedGraphPropag {
 
-    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     /**
      * boolean that allow to display debug mode for this propagator

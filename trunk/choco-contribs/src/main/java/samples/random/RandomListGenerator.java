@@ -43,7 +43,7 @@ import java.util.logging.Logger;
  */
 public abstract class RandomListGenerator
 {
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	public static enum Structure {
 		/**

@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * *
+/* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -20,24 +20,43 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.search.limit;
+package choco.kernel.solver.search.measure;
 
-import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
+import choco.IPretty;
 import choco.kernel.solver.search.limit.Limit;
 
 
-public final class NodeLimit extends AbstractGlobalSearchLimit {
+public interface ISearchMeasures {
+	   
+	/**
+     * Get the time count in milliseconds of the measure
+     * @return time count
+     */
+    int getTimeCount();
 
-	
-	public NodeLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
-		super(theStrategy, theLimit, Limit.NODE);
-	}
+    /**
+     * Get the node count of the measure
+     * @return node count
+     */
+    int getNodeCount();
 
+    /**
+     * Get the backtrack count of the measure
+     * @return backtrack count
+     */
+    int getBackTrackCount();
 
-	@Override
-	public final int getNb() {
-		return strategy.searchMeasures.getNodeCount();
-	}
-	
+    /**
+     * Get the fail count of the measure
+     * @return fail count
+     */
+    int getFailCount();
+    
+    /**
+     * Get the restart count of the measure
+     * @return restart count
+     */
+    int getRestartCount();
+    
+        
 }

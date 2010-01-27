@@ -41,7 +41,7 @@ import java.util.logging.Logger;
 
 public class ComposedRandomProblem {
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	private static double criticTightness(int nbvar, int nbval, int nbcons) {
 		// d = n^alpha

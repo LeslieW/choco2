@@ -80,7 +80,7 @@ public class TestStrategyMed {
 		med.buildSolver();
 		med.solve();
 		med.prettyOut();
-		ChocoLogging.setVerbosity(Verbosity.SILENT);
+		//ChocoLogging.setVerbosity(Verbosity.SILENT);
 		Assert.assertEquals("nb deletion", 1, med._s.getObjectiveValue());
 	}
 
@@ -119,7 +119,6 @@ public class TestStrategyMed {
 			_s =  new CPSolver();
 			_s.monitorBackTrackLimit(true);
 			_s.monitorFailLimit(true);
-			_s.setLoggingMaxDepth(100);
 			_s.read(_m);
 			_s.setFirstSolution(false);
 			_s.setDoMaximize(false);

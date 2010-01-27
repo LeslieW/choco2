@@ -217,7 +217,6 @@ public class XcspModel extends AbstractInstanceModel {
 			//				s.launch();
 			//				return s.isFeasible();
 			//			} else return s.solve();
-			s.setLoggingMaxDepth(200);
 			return s.solve();
 		} else {
 			return Boolean.FALSE;

@@ -42,7 +42,7 @@ import java.util.logging.Logger;
  */
 public class SolutionChecker {
 
-    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	private InstanceParser parser;
 

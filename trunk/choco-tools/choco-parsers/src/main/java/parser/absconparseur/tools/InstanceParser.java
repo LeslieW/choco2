@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  */
 public class InstanceParser {
 
-	protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+	protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	public static final String VERSION = "version 2.1.4 (November 4, 2008)";
 

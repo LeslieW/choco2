@@ -51,7 +51,7 @@ public final class OdbHsqldbBridge {
 	
 	public final static String ODB_PATTERN = "/chocodb.odb";
 	
-	public final static Logger LOGGER = ChocoLogging.getParserLogger();
+	public final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	public final static String HSQLDB_OPTIONS = ";sql.enforce_strict_size=true";
 	

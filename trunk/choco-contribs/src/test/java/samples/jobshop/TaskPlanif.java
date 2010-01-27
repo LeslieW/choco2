@@ -1,6 +1,6 @@
 /* ************************************************
  *           _       _                            *
- *          |  °(..)  |                           *
+ *          |  ï¿½(..)  |                           *
  *          |_  J||L _|        CHOCO solver       *
  *                                                *
  *     Choco is a java library for constraint     *
@@ -69,7 +69,7 @@ public class TaskPlanif {
         }
 
         public Constraint contraintes() {
-            System.out.println("contraintes neq exécutée ...");
+            System.out.println("contraintes neq exï¿½cutï¿½e ...");
             // return Choco.neq( pipeau, pipeau );
             return TRUE;
 
@@ -104,13 +104,13 @@ public class TaskPlanif {
 
         int iTache, iPeriode;
 
-        // La date de fin d'une tâche, si elle commenece à "t" allant de 0 à NBPERIODES
-        // à une valeur definie dans FinMinTache
+        // La date de fin d'une tï¿½che, si elle commenece ï¿½ "t" allant de 0 ï¿½ NBPERIODES
+        // ï¿½ une valeur definie dans FinMinTache
         // IntegerConstantVariable[][] FinMinTache = new IntegerConstantVariable[NBTACHES][NBPERIODES];
         int[][] FinMinTache = new int[NBTACHES][NBPERIODES];
         System.out.println("");
         for (iTache = 0; iTache < NBTACHES; iTache++) {
-            System.out.println("Valeur de duree pour la tache de numéro " + iTache);
+            System.out.println("Valeur de duree pour la tache de numï¿½ro " + iTache);
             for (iPeriode = 0; iPeriode < NBPERIODES; iPeriode++) {
                 // FinMinTache[iTache][iPeriode] = new IntegerConstantVariable( ( ( iTache + 1 ) * iPeriode ) % 10 );
                 FinMinTache[iTache][iPeriode] = (int) (iPeriode + r.nextDouble()* 10 + 1);
@@ -146,8 +146,8 @@ public class TaskPlanif {
 //                    debutTache[iTache])));
         }
 
-        // dans ce tableau, on s'indexe donc, pour une tache donné, avec la durée estimée, et la valeur
-        // est la date de début prévue
+        // dans ce tableau, on s'indexe donc, pour une tache donnï¿½, avec la durï¿½e estimï¿½e, et la valeur
+        // est la date de dï¿½but prï¿½vue
 
         // = Choco.makeIntVarArray( "debutTache", NBTACHES, 0, NBPERIODES, new String[0] );
 
@@ -159,7 +159,7 @@ public class TaskPlanif {
             m.addConstraint(startsAfterEnd(tasks[iTache], tasks[iTache+1]));
 
             for (iPeriode = 0; iPeriode < NBPERIODES; iPeriode++) {
-                // Avec la contrainte suivante commentée, plantage "IndexoutOfBounds 140" (14à =
+                // Avec la contrainte suivante commentï¿½e, plantage "IndexoutOfBounds 140" (14ï¿½ =
                 // 2*NBPERIODES) ?????????????????
 
                 // m.addConstraint( Choco.geq( finTache[iTache], Choco.sum( new IntegerVariable[] {
@@ -179,7 +179,7 @@ public class TaskPlanif {
         switch (n) {
 
             case 1:
-                // O1 minimiser la durée totale du projet:
+                // O1 minimiser la durï¿½e totale du projet:
                 objectiveMissionExpression = minus(max(finTache), min(debutTache));
                 break;
             case 2:
@@ -187,7 +187,7 @@ public class TaskPlanif {
                 objectiveMissionExpression = max(finTache);
                 break;
             case 3:
-                // O3 : minimiser la somme des charges effectuées :
+                // O3 : minimiser la somme des charges effectuï¿½es :
 //                objectiveMissionExpression = Choco.sum(DureeEffectiveTachePeriodeCourante);
 //                objectiveMissionExpression = minus(sum(finTache), sum(debutTache));
                 objectiveMissionExpression = scalar(coeffs, vars);
@@ -207,7 +207,6 @@ public class TaskPlanif {
 
         System.out.println("Lecture MODEL  CHOCO .. ");
 
-        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
         System.out.println("Lancement Solver CHOCO ............ ");
         s.setTimeLimit(120 * 80000); // 2*80 secondes
         s.monitorTimeLimit(true);
@@ -217,11 +216,11 @@ public class TaskPlanif {
         if (s.isFeasible()) {
             System.out.println("Nb_sol  : " + s.getNbSolutions() + "timecount" + s.getTimeCount());
             // Commentaire : il
-            // s'agit ici du nombre total de solution trouvées. cependant, comem on a fixé un objectif
+            // s'agit ici du nombre total de solution trouvï¿½es. cependant, comem on a fixï¿½ un objectif
             // (maximize ou minimize), il n'een reste plus qu'une seule dans le parcours des
             // solution qui suit. Quand on ne fixe pas d'objectif, le parcour suivant donne autant de
             // solutions que getNbSolutions
-            // Le flushLogs, avec vebosity "SOLUTION" permet d'anamyser toutes les solutions rencontrées
+            // Le flushLogs, avec vebosity "SOLUTION" permet d'anamyser toutes les solutions rencontrï¿½es
             //
             do {
 

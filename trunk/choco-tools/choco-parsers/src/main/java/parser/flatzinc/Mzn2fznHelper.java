@@ -50,7 +50,7 @@ import java.util.logging.Logger;
 
 public class Mzn2fznHelper {
 
-    static Logger LOGGER = ChocoLogging.getParserLogger();
+    static Logger LOGGER = ChocoLogging.getMainLogger();
 
     @Option(name = "--mzn-dir", usage = "Specify the MiniZinc directory.", required=true,metaVar = "<minizinc dir>")
     private static String mznDir;

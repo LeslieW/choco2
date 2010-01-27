@@ -23,9 +23,9 @@
 package choco.visu;
 
 import choco.cp.solver.propagation.ObservableVarEventQueue;
-import choco.cp.solver.search.AbstractSearchLoop;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.search.AbstractSearchLoop;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.visu.IVisu;
 import choco.kernel.visu.components.IVisuVariable;

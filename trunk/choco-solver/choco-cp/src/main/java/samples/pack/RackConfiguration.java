@@ -44,7 +44,7 @@ import java.util.logging.Logger;
  * @version 2.0.1</br>
  */
 public class RackConfiguration {
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	public final RackConfigurationData data;
 

@@ -75,7 +75,7 @@ import java.util.logging.Logger;
  */
 public class Choco{
 
-	protected final static Logger LOGGER = ChocoLogging.getModelLogger();
+	protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	public final static int MIN_LOWER_BOUND  = Integer.MIN_VALUE / 100;
 

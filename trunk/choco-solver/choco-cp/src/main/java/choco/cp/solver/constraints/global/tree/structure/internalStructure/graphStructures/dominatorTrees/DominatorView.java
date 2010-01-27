@@ -33,7 +33,7 @@ import java.util.logging.Logger;
 
 public class DominatorView {
 
-     protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
+     protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     // le solveur choco
     protected Solver solver;

@@ -46,7 +46,7 @@ import java.util.logging.Logger;
 
 public abstract class Evaluator {
 
-	protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+	protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	private static Map<String, Class> classMap;
 

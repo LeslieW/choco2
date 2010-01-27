@@ -47,7 +47,7 @@ import java.util.logging.Logger;
 
 
 public class EvaluationManager {
-	protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+	protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	protected String[] universalPostfixExpression;
 

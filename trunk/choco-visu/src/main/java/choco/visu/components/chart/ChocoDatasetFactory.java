@@ -199,7 +199,7 @@ public final class ChocoDatasetFactory {
 		XYSeries series = new XYSeries("solver sol.");
 		final AbstractGlobalSearchStrategy strat = s.getSearchStrategy();
 		for (Solution sol : strat.getStoredSolutions()) {
-			series.add(sol.getMeasures().getLimitCount(limit), sol.getObjectiveValue());
+			series.add(limit.getValue(sol.getMeasures()), sol.getObjectiveValue());
 		}
 
 		return series;
@@ -213,7 +213,7 @@ public final class ChocoDatasetFactory {
 		final List<Solution> sols = strat.getStoredSolutions();
 		for (int i = sols.size()-1; i >=0; i--) {
 			final Solution sol = sols.get(i);
-			dataset.addValue(sol.getObjectiveValue(), series, Integer.valueOf(sol.getMeasures().getLimitCount(limit)));
+			dataset.addValue(sol.getObjectiveValue(), series, Integer.valueOf(limit.getValue(sol.getMeasures())));
 		}
 
 

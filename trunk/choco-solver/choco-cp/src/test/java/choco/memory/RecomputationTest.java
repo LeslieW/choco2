@@ -75,7 +75,7 @@ public class RecomputationTest {
 
     @Test
         public void nQueen() {
-        ChocoLogging.setVerbosity(Verbosity.OFF);
+        //ChocoLogging.setVerbosity(Verbosity.OFF);
 
 
         System.out.print(pad("Q", 10, " "));

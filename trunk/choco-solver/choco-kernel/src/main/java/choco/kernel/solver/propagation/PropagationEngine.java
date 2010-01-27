@@ -25,6 +25,7 @@ package choco.kernel.solver.propagation;
 
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.search.measure.FailMeasure;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.real.RealVar;
@@ -139,4 +140,5 @@ public interface PropagationEngine {
     boolean containsPropagationListener(PropagationEngineListener listener);
 
 	EventQueue getQueue(ConstraintEvent csvt);
+
 }

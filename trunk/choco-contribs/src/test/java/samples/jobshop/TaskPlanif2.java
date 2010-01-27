@@ -94,7 +94,7 @@ public class TaskPlanif2 extends PatternExample {
 
 	@Override
 	public void solve() {
-		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+		//ChocoLogging.setVerbosity(Verbosity.VERBOSE);
 		_s.generateSearchStrategy();
 		_s.setTimeLimit(120*1000);
 		_s.minimize(_s.getVar(sumDurations), false);

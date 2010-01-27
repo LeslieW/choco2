@@ -9,7 +9,7 @@ import choco.kernel.solver.Solver;
 
 public interface ISolutionPool {
 
-	public final static Logger LOGGER = ChocoLogging.getSearchLogger();
+	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	void clear();
 

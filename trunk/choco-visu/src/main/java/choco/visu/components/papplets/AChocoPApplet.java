@@ -48,7 +48,7 @@ import java.util.logging.Logger;
 
 public abstract class AChocoPApplet extends PApplet {
 
-    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     protected AChocoBrick[] bricks;
 

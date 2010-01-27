@@ -35,7 +35,7 @@ import java.util.logging.Logger;
 // *********************************************
 
 public class DemoApplet extends JApplet {
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
   @Override
 public void init() {

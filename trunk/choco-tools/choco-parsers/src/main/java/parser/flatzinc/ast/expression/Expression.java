@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
- *         |  °(..)  |                           *
+ *         |  ï¿½(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -38,7 +38,7 @@ import java.util.logging.Logger;
 */
 public abstract class Expression {
 
-    static final Logger LOGGER = ChocoLogging.getParserLogger();
+    static final Logger LOGGER = ChocoLogging.getMainLogger();
 
     public enum EType{
         ANN, ARR, BOO, IDA, IDE, INT, SET_B, SET_L, STR 

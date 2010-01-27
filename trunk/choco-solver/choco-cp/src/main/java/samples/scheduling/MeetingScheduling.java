@@ -42,7 +42,7 @@ import java.util.logging.Logger;
  */
 public class MeetingScheduling {
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
     protected int nbP;          // number of proposals
     protected int nbE;          // number of evaluators

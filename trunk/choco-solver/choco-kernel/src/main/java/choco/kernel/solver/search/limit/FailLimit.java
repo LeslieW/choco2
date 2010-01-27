@@ -20,26 +20,22 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.search.limit;
+package choco.kernel.solver.search.limit;
 
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
-import choco.kernel.solver.search.limit.Limit;
 
 /**
- * Limit counting the backtrack number
+ * Limit counting the number of fails
  */
-public final class BackTrackLimit extends AbstractGlobalSearchLimit {
-
-	public BackTrackLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
-		super(theStrategy, theLimit, Limit.BACKTRACK);
-		
+public final class FailLimit extends AbstractGlobalSearchLimit {
+	
+	public FailLimit(AbstractGlobalSearchStrategy theStrategy, int theLimit) {
+		super(theStrategy, theLimit, Limit.FAIL);
 	}
 
 	@Override
 	public final int getNb() {
-		return strategy.searchMeasures.getBackTrackCount();
+		return strategy.getFailCount();
 	}
 
-	
 }

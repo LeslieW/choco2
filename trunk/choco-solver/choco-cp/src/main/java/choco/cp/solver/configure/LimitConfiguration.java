@@ -25,15 +25,15 @@ package choco.cp.solver.configure;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import choco.cp.solver.search.limit.BackTrackLimit;
-import choco.cp.solver.search.limit.FailLimit;
-import choco.cp.solver.search.limit.NodeLimit;
-import choco.cp.solver.search.limit.RestartLimit;
-import choco.cp.solver.search.limit.TimeLimit;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
+import choco.kernel.solver.search.limit.BackTrackLimit;
+import choco.kernel.solver.search.limit.FailLimit;
 import choco.kernel.solver.search.limit.Limit;
+import choco.kernel.solver.search.limit.NodeLimit;
+import choco.kernel.solver.search.limit.RestartLimit;
+import choco.kernel.solver.search.limit.TimeLimit;
 
 /**
  * @author Arnaud Malapert</br> 
@@ -42,7 +42,7 @@ import choco.kernel.solver.search.limit.Limit;
  */
 public class LimitConfiguration {
 
-	public final static Logger LOGGER = ChocoLogging.getSolverLogger();
+	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	public Limit searchLimitType;
 
@@ -53,9 +53,6 @@ public class LimitConfiguration {
 	protected int restartLimit = Integer.MAX_VALUE;
 
 	protected Limit restartStrategyLimitType = Limit.BACKTRACK;
-
-	//FIXME useless
-	public boolean monitorFailLimit;
 
 	public LimitConfiguration() {}
 
@@ -105,20 +102,16 @@ public class LimitConfiguration {
 		return makeLimit(strategy, searchLimitType, searchLimit);
 	}
 
-	/**
-	 * the fail  count is not monitored by default.
-	 */
-	public final void monitorFailLimit(boolean b) {
-		monitorFailLimit = b;
-	}
-
 	public final AbstractGlobalSearchLimit createLimit(AbstractGlobalSearchStrategy strategy, Limit type, int theLimit) {
 		switch (type) {
 		case TIME: return new TimeLimit(strategy, theLimit);
 		case NODE: return new NodeLimit(strategy, theLimit);
 		case BACKTRACK: return new BackTrackLimit(strategy, theLimit);
 		case RESTART: return new RestartLimit(strategy, theLimit);
-		case FAIL: return new FailLimit(strategy, theLimit);
+		case FAIL: {
+			strategy.solver.monitorFailLimit(true);
+			return new FailLimit(strategy, theLimit);
+		}
 		default: 
 			return null;
 		}

@@ -39,7 +39,7 @@ import java.util.logging.Logger;
 
 public interface IChocoPanel {
 
-    final static Logger LOGGER = ChocoLogging.getSolverLogger();
+    final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 
     /**

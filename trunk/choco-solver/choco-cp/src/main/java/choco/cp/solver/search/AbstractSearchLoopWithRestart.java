@@ -22,11 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search;
 
+import java.util.logging.Level;
+
 import choco.cp.solver.search.restart.IKickRestart;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.AbstractBranchingStrategy;
 import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.AbstractSearchLoop;
 import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.*;
 import choco.kernel.solver.search.IntBranchingTrace;
 
@@ -147,7 +150,7 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 	@Override
 	public void openNode() {
 		try {
-			searchStrategy.newTreeNode();
+			searchStrategy.limitManager.newNode();
 			//looking for the next branching object
 			currentBranching =  ctx.getBranching();
 			while(currentBranching != null) {
@@ -222,7 +225,7 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 	@Override
 	public void upBranch() {
 		try {
-			searchStrategy.endTreeNode(); //check limit
+			searchStrategy.limitManager.endNode(); //check limit
 			worldPop();
 			goUpBranch(); //backtrack
 			//compute the next move
@@ -269,7 +272,7 @@ public void downBranch() {
  */
 @Override
 public void restart() {
-	LOGGER.finest("=== restarting ...");
+	if(LOGGER.isLoggable(Level.CONFIG)) LOGGER.log(Level.CONFIG, "- Restarting search: {0} restarts", getRestartCount());
 	kickRestart.restoreRootNode(ctx);
 	try {
 		searchStrategy.postDynamicCut();
@@ -277,8 +280,9 @@ public void restart() {
 		ctx = searchStrategy.getReusableInitialTrace();
 		searchStrategy.nextMove = moveAfterRestart;
 		if( searchStrategy.limitManager.newRestart()) {
+			LOGGER.config("- Limit reached: stop restarting");
 			setRestartAfterEachSolution(false);
-			searchStrategy.limitManager.cancelRestart();
+			searchStrategy.limitManager.cancelRestartStrategy();
 		}
 	} catch (ContradictionException e) {
 		stop = true;

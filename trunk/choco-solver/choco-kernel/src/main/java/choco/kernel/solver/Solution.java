@@ -26,9 +26,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
-import choco.kernel.solver.search.measures.IMeasures;
-import choco.kernel.solver.search.measures.ISearchMeasures;
-import choco.kernel.solver.search.measures.MeasuresBean;
+import choco.kernel.solver.search.measure.IMeasures;
+import choco.kernel.solver.search.measure.ISearchMeasures;
+import choco.kernel.solver.search.measure.MeasuresBean;
 import choco.kernel.solver.variables.real.RealInterval;
 
 /**
@@ -41,9 +41,6 @@ public class Solution {
 	 */
 	protected Solver solver;
 
-	protected int solutionCount;
-
-	protected int iterationCount;
 	/**
 	 * data storage for values of search variables
 	 */
@@ -57,7 +54,7 @@ public class Solution {
 
 	protected double objectiveRealValue = Double.POSITIVE_INFINITY;
 
-	protected final SolutionMeasures measures;
+	protected final MeasuresBean measures;
 
 	private List<AbstractGlobalSearchLimit> solutionLimits;
 	/**
@@ -71,7 +68,7 @@ public class Solution {
 		setVarValues = new int[solver.getNbSetVars()][];
 		realVarValues = new RealInterval[solver.getNbRealVars()];
 		solutionLimits = new LinkedList<AbstractGlobalSearchLimit>();
-		measures = new SolutionMeasures();
+		measures = new MeasuresBean();
 	}
 
 	public void setSolver(Solver s) {
@@ -99,12 +96,9 @@ public class Solution {
 	}
 
 	public final void recordSolutionCount(int solutionCount) {
-		this.solutionCount = solutionCount;
+		this.measures.setSolutionCount(solutionCount);
 	}
 
-	public final void recordIterationCount(int restartCount) {
-		this.iterationCount = restartCount;
-	}
 
 	public final void recordIntValue(int intVarIndex, int intVarValue) {
 		intVarValues[intVarIndex] = intVarValue;
@@ -119,18 +113,18 @@ public class Solution {
 	}
 
 	public final void recordIntObjective(int objectiveIntValue) {
-		this.objectiveIntValue = objectiveIntValue;
+		measures.setObjectiveIntValue( objectiveIntValue);
 	}
 
 	public final void recordRealObjective(double objectiveRealValue) {
-		this.objectiveRealValue = objectiveRealValue;
+		this.measures.setObjectiveRealValue(objectiveRealValue);
 	}
 
 	public final void recordSearchMeasures(ISearchMeasures measures){
-		this.measures.copy(measures);
+		this.measures.setSearchMeasures(measures);
 	}
 
-
+		
 	/**
 	 * Accessor to the value of a variable in a solution
 	 *
@@ -148,43 +142,6 @@ public class Solution {
 	public final RealInterval getRealValue(int varIndex) {
 		return realVarValues[varIndex];
 	}
-
-
-	final class SolutionMeasures extends MeasuresBean implements IMeasures {
-
-		public SolutionMeasures() {
-			super();
-		}
-
-		@Override
-		public boolean isObjectiveOptimal() {
-			return false;
-		}
-
-
-		@Override
-		public Number getObjectiveValue() {
-			return ( 
-					objectiveIntValue == Integer.MAX_VALUE ? 
-							( objectiveRealValue == Double.POSITIVE_INFINITY? (Number) null: Double.valueOf(objectiveRealValue) ) :
-								Integer.valueOf(objectiveIntValue) 
-			);
-		}
-
-		@Override
-		public boolean existsSolution() {
-			return true;
-		}
-
-		@Override
-		public int getSolutionCount() {
-			return solutionCount;
-		}
-	}
-
-
-
-
 
 }
 

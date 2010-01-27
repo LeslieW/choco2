@@ -25,7 +25,7 @@ package choco.kernel.solver.search;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.search.measures.ISolutionMeasures;
+import choco.kernel.solver.search.measure.ISolutionMeasures;
 import choco.kernel.solver.variables.integer.IntVar;
 import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.set.SetVar;
@@ -146,24 +146,6 @@ public abstract class AbstractSearchStrategy implements ISolutionMeasures {
 			sol.recordRealValue(i, vari.getValue());
 			// }
 		}
-		//AbstractOptimize overrides the method.
-		//record objective
-//		final AbstractGlobalSearchStrategy strategy = solver.getSearchStrategy();
-//		if (solver.getSearchStrategy() instanceof AbstractOptimize) {
-//			sol.recordIntObjective(((AbstractOptimize) strategy)
-//					.getObjectiveValue());
-//		}else {
-//			sol.recordIntObjective(Integer.MAX_VALUE);
-//		}
-	}
-
-	/**
-	 * showing information about the last solution
-	 */
-	public void showSolution() {
-		if(LOGGER.isLoggable(Level.INFO)) {
-			LOGGER.info(solver.pretty());
-		}
 	}
 
 
@@ -176,9 +158,4 @@ public abstract class AbstractSearchStrategy implements ISolutionMeasures {
 	}
 
 	
-	/**
-	 * main entry point: running the search algorithm controlled the CPSolver object
-	 * @deprecated
-	 */
-	//public abstract void run();
 }

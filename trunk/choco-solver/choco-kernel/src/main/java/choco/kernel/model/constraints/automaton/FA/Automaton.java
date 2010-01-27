@@ -46,7 +46,7 @@ import java.util.logging.Logger;
 
 public class Automaton {
 
-    protected final static Logger LOGGER = ChocoLogging.getModelLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 
     protected ArrayList<int[]> representedBy;

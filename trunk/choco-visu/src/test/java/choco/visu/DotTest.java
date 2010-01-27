@@ -113,7 +113,6 @@ public class DotTest {
     //    s.setVarIntSelector(new MinDomain(s,s.getVar(queens)));
         s.attachGoal(new AssignVar(new MinDomain(s,s.getVar(queens)),new IncreasingDomain()));
 
-        s.setLoggingMaxDepth(50);
         int timeLimit = 60000;
         s.setTimeLimit(timeLimit);
 
@@ -170,7 +169,6 @@ public class DotTest {
     //    s.setVarIntSelector(new MinDomain(s,s.getVar(queens)));
         s.attachGoal(new AssignVar(new MinDomain(s,s.getVar(queens)),new IncreasingDomain()));
 
-        s.setLoggingMaxDepth(50);
 //        int timeLimit = 60000;
 //        s.setTimeLimit(timeLimit);
         Visu v = Visu.createVisu(220, 200);

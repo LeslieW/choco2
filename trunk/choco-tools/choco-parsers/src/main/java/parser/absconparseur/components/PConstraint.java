@@ -31,7 +31,7 @@ import static java.lang.Integer.parseInt;
 
 public abstract class PConstraint {
 
-    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
     private int index;
 

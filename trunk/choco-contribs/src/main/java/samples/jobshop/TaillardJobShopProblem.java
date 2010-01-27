@@ -46,7 +46,7 @@ import java.util.logging.Logger;
 
 public class TaillardJobShopProblem {
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
     private IntegerVariable[][] variables;
     private Collection<Collection<Constraint>> disjunctive;

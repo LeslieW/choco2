@@ -30,7 +30,7 @@ import choco.kernel.solver.search.restart.UniversalRestartStrategy;
 /**
  * The interface of objects limiting the global search exploration
  */
-public interface GlobalSearchLimit extends IPretty {
+public interface GlobalSearchLimitManager extends IPretty {
 
 
 	/**
@@ -64,22 +64,35 @@ public interface GlobalSearchLimit extends IPretty {
 	 */
 	void endNode() throws ContradictionException;
 
+	void endTreeSearch();
+
 	/**
 	 * notify the limit object whenever the search has been restarted.
 	 * return <code>true</code> if the limit does stop the restart process.
 	 */
 	boolean newRestart();
-
-	void endTreeSearch();
-
+	
+	/**
+	 * Get the time in milliseconds elapsed since the beginning of the search.
+	 */
+	int getTimeCount();
+	
 	/**
 	 * get the restart strategy, if any.
 	 */
 	UniversalRestartStrategy getRestartStrategy();
+	
 	/**
-	 * cancel the restart mechanisms during search.
+	 * cancel the restart strategy.
 	 */
-	void cancelRestart();
-
+	void cancelRestartStrategy();
+	
+	/**
+	 * get the number of restarts caused by the restart strategy.
+	 * @return
+	 */
+	int getRestartFromStrategyCount();
+	
+	
 }
 
