@@ -164,7 +164,7 @@ public class Transportation extends PatternExample {
 	}
 
 	public static void main(String[] args) {
-		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+		//ChocoLogging.setVerbosity(Verbosity.VERBOSE);
 		//new Transportation().execute(new int[]{4, 4, 1});
 		//new Transportation().execute(new int[]{12, 4, 1});
 		//new Transportation().execute(new int[]{13, 4, 0});

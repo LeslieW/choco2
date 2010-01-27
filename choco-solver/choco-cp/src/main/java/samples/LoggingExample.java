@@ -46,7 +46,7 @@ public final class LoggingExample  implements Example {
 		Verbosity verb = (Verbosity) parameters;
 		ChocoLogging.flushLogs();
 		ChocoLogging.setVerbosity(verb);
-		ChocoLogging.getSamplesLogger().log(Level.SEVERE,"verbosity: {0}",verb);
+		ChocoLogging.getMainLogger().log(Level.SEVERE,"verbosity: {0}",verb);
 		new Queen().execute();
 		for (Logger logger : ChocoLogging.CHOCO_LOGGERS) {
 			final Level l = logger.getLevel();

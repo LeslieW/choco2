@@ -40,7 +40,7 @@ import java.util.logging.Logger;
 
 public class Zebra {
 
-	protected final static Logger LOGGER = ChocoLogging.getModelLogger();
+	protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
     private static CPSolver solver;
 
     private static void propagateDecision(IntegerVariable v,int value) throws ContradictionException {

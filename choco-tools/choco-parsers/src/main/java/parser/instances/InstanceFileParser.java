@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 public interface InstanceFileParser {
 	
-	public final static Logger LOGGER = ChocoLogging.getParserLogger();
+	public final static Logger LOGGER = ChocoLogging.getMainLogger();
 	
 	File getInstanceFile();
 	

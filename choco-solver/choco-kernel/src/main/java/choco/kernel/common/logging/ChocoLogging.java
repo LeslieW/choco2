@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.common.logging;
 
+import gnu.trove.TObjectIntHashMap;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -41,6 +43,9 @@ import static java.util.logging.Logger.getLogger;
  */
 public final class ChocoLogging {
 
+	public final static String START_MESSAGE =
+		"** CHOCO : Constraint Programming Solver\n"+
+		"** CHOCO v2.1.1 (April, 2009), Copyleft (c) 1999-2010";
 
 	public final static Formatter LIGHT_FORMATTER = new LightFormatter();
 
@@ -52,24 +57,17 @@ public final class ChocoLogging {
 
 	public final static Handler ERROR_HANDLER = new StreamHandler(System.err, DETAILED_FORMATTER);
 
-
 	public final static Logger[] CHOCO_LOGGERS = new Logger[] {
 		getLogger("choco"),
 
-		getLogger("choco.kernel"),
-		getLogger("choco.kernel.search"),
-		getLogger("choco.kernel.search.branching"),
-		getLogger("choco.kernel.engine"),
+		getLogger("choco.core"),
+		getLogger("choco.core.engine"),
+		getLogger("choco.core.search"),
+		getLogger("choco.core.search.branching"),
 
 		getLogger("choco.api"),
-		getLogger("choco.api.model"),
-		getLogger("choco.api.solver"),
-		getLogger("choco.api.parser"),
-
-		getLogger("choco.user"),
-		getLogger("choco.user.samples"),
-
-		getLogger("choco.test"),
+		getLogger("choco.api.main"),
+		getLogger("choco.api.test"),
 	};
 
 	static {
@@ -84,36 +82,72 @@ public final class ChocoLogging {
 		}
 	}
 
+	/**
+	 * maximal search depth for logging statements
+	 */
+	private static int LOGGING_MAX_DEPTH = 25;
+
+	/**
+	 * display information about search every x nodes.
+	 */
+	private static int EVERY_X_NODES = 10;
+
 	private ChocoLogging() {
 		super();
 	}
 
+
+	public static final int getEveryXNodes() {
+		return EVERY_X_NODES;
+	}
+
+
+	public static final void setEveryXNodes(int everyXnodes) {
+		if(everyXnodes > 0) EVERY_X_NODES = everyXnodes;
+	}
+
+
+	/**
+	 * set the maximal search depth for logging statements
+	 */
+	public static final void setLoggingMaxDepth(int loggingMaxDepth) {
+		if( loggingMaxDepth > 1) LOGGING_MAX_DEPTH = loggingMaxDepth;
+	}
+
+	/**
+	 * get the maximal search depth for logging statements
+	 */
+	public final static int getLoggingMaxDepth() {
+		return LOGGING_MAX_DEPTH;
+	}
+
+
 	/**
 	 * create a new user logger with valid name
-	 * @param suffix
+	 * @param name
 	 * @return
 	 */
-	public static Logger makeUserLogger(String suffix) {
-		return Logger.getLogger("choco.user."+suffix);
+	public static Logger makeUserLogger(String name) {
+		return Logger.getLogger(getMainLogger().getName()+"."+name);
 	}
-	
+
 	protected static Logger getChocoLogger() {
 		return CHOCO_LOGGERS[0];
 	}
 
-	protected static Logger getKernelLogger() {
+	protected static Logger getCoreLogger() {
 		return CHOCO_LOGGERS[1];
 	}
 
-	public static Logger getSearchLogger() {
+	public static Logger getEngineLogger() {
 		return CHOCO_LOGGERS[2];
 	}
 
-	public static Logger getBranchingLogger() {
+	public static Logger getSearchLogger() {
 		return CHOCO_LOGGERS[3];
 	}
 
-	public static Logger getEngineLogger() {
+	public static Logger getBranchingLogger() {
 		return CHOCO_LOGGERS[4];
 	}
 
@@ -121,30 +155,14 @@ public final class ChocoLogging {
 		return CHOCO_LOGGERS[5];
 	}
 
-	public static Logger getModelLogger() {
+	public static Logger getMainLogger() {
 		return CHOCO_LOGGERS[6];
 	}
 
-	public static Logger getSolverLogger() {
+	public static Logger getTestLogger() {
 		return CHOCO_LOGGERS[7];
 	}
 
-	public static Logger getParserLogger() {
-		return CHOCO_LOGGERS[8];
-	}
-
-
-	public static Logger getUserLogger() {
-		return CHOCO_LOGGERS[9];
-	}
-
-	public static Logger getSamplesLogger() {
-		return CHOCO_LOGGERS[10];
-	}
-
-	public static Logger getTestLogger() {
-		return CHOCO_LOGGERS[11];
-	}
 	public static Formatter getDefaultFormatter() {
 		return LIGHT_FORMATTER;
 	}
@@ -282,78 +300,83 @@ public final class ChocoLogging {
 		return addFileHandler(file, Level.ALL, LIGHT_FORMATTER);
 	}
 
+	public static void setLevel(final Level level, final Logger logger) {
+		logger.setLevel(level);
+	}
 
-	public static void setLevel(Level level, Logger... loggers) {
+	public static void setLevel(final Level level, final Logger... loggers) {
 		for (Logger logger : loggers) {
 			logger.setLevel(level);
 		}
 	}
 
-
-	/**
-	 * ignore the search logger.
-	 */
-	private static void setCommon() {
-		setLevel(Level.WARNING, getBranchingLogger(), getTestLogger(), getEngineLogger());
-		setLevel(Level.INFO, 
-				getUserLogger(), getSamplesLogger(), 
-				getAPILogger(),getModelLogger(),getSolverLogger()
-		);
-		setLevel(Level.CONFIG, getParserLogger());
-		setLevel(Level.FINEST, getChocoLogger(),getKernelLogger(),getAPILogger());
-	}
-	
-
-	public static void setOnlyParserLogger(Level level) {
-		setVerbosity(Verbosity.SILENT);
-		setLevel(Level.FINEST, getChocoLogger(),getAPILogger());
-		getParserLogger().setLevel(level);
-	}
-	
-	public static void setOnlyTestLogger(Level level) {
-		setVerbosity(Verbosity.SILENT);
-		setLevel(Level.FINEST, getChocoLogger(),getKernelLogger());
-		getParserLogger().setLevel(level);
-	}
-	
 	/**
 	 * set the choco verbosity level
 	 * @param verbosity the new verbosity level
 	 */
-	//FIXME change level of parser logger to display logs msg in AbstractInstanceModel
 	public static void setVerbosity(Verbosity verbosity) {
-		switch(verbosity) {
-		case OFF: setLevel(Level.OFF, CHOCO_LOGGERS);break;
-		case SILENT: setLevel(Level.SEVERE, CHOCO_LOGGERS);break;
-		case DEFAULT: {
-			setCommon();
-			setLevel(Level.WARNING,getModelLogger(), getSolverLogger());
-			setLevel(Level.INFO, getSearchLogger(), getParserLogger());
-			break;
-		}
-		case VERBOSE: {
-			setCommon();
-			setLevel(Level.CONFIG,getSearchLogger());
-			break;
-		}
-		case SOLUTION: { 
-			setCommon();
-			setLevel(Level.FINER,getSearchLogger());
-			break;
-		}
-		case SEARCH: {
-			setCommon();
-			setLevel(Level.FINEST,getSearchLogger());
-			setLevel(Level.INFO,getBranchingLogger());
-			break;
-		}
-		case FINEST: setLevel(Level.FINEST, CHOCO_LOGGERS);break;
-		default: {
-			getAPILogger().log(Level.WARNING,"cant set logger verbosity: ${0}\n Set default verbosity.",verbosity);
-			setVerbosity(Verbosity.DEFAULT);
-		}
+		if(verbosity == Verbosity.OFF) setLevel(Level.OFF, CHOCO_LOGGERS);
+		else if(verbosity == Verbosity.FINEST) setLevel(Level.FINEST, CHOCO_LOGGERS);
+		else {
+			setLevel(Level.FINEST, getChocoLogger(),getCoreLogger(), getAPILogger());
+			setLevel(Level.WARNING,getTestLogger());
+			switch(verbosity) {
+			case SILENT: {
+				setLevel(Level.SEVERE,	getEngineLogger(), getSearchLogger(), getBranchingLogger());
+				setLevel(Level.INFO, getMainLogger());
+				break;
+			}
+			case DEFAULT: {
+				setLevel(Level.WARNING, getEngineLogger(), getBranchingLogger());
+				setLevel(Level.INFO, getMainLogger(), getSearchLogger());
+				break;
+			}
+			case VERBOSE: {
+				setLevel(Level.INFO, getEngineLogger(), getBranchingLogger());
+				setLevel(Level.CONFIG, getMainLogger(), getSearchLogger());
+				break;
+			}
+			case SOLUTION: { 
+				setLevel(Level.INFO, getEngineLogger(), getBranchingLogger());
+				setLevel(Level.FINER, getMainLogger(), getSearchLogger());
+				break;
+			}
+			case SEARCH: {
+				setLevel(Level.INFO, getEngineLogger());
+				setLevel(Level.CONFIG, getBranchingLogger());
+				setLevel(Level.FINEST, getMainLogger(), getSearchLogger());
+				break;
+			}
+			default: {
+				setVerbosity(Verbosity.DEFAULT);
+			}
 
+			}
 		}
 	}
 
+	public final static String toDotty() {
+		final StringBuilder b = new StringBuilder();
+		final TObjectIntHashMap<Logger> indexMap = new TObjectIntHashMap<Logger>(CHOCO_LOGGERS.length);
+		//Create a node for each logger
+		for (int i = 0; i < CHOCO_LOGGERS.length; i++) {
+			indexMap.put(CHOCO_LOGGERS[i], i);
+			String name = CHOCO_LOGGERS[i].getName();
+			final int idx = name.lastIndexOf('.');
+			if( idx != -1) name = name.substring(idx + 1);
+			b.append(i).append("[ shape=record, label=\"{");
+			b.append(name).append("|").append(CHOCO_LOGGERS[i].getLevel());
+			b.append("}\"]");
+		}
+		//Create arcs between a logger and its parent
+		for (int i = 1; i < CHOCO_LOGGERS.length; i++) {
+			b.append(indexMap.get(CHOCO_LOGGERS[i].getParent()));
+			b.append(" -> ").append(i).append('\n');
+		}
+		return new String(b);
+	}
+
+	public static void main(String[] args) {
+		System.out.println(toDotty());
+	}
 }

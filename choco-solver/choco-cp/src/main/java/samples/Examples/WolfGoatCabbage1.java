@@ -41,7 +41,7 @@ import java.util.logging.Logger;
 */
 public class WolfGoatCabbage1 extends PatternExample {
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
     static int numberOfStates = 8;
     static WGC_State[] states;

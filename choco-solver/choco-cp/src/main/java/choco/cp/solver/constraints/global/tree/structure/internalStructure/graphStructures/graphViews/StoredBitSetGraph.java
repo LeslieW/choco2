@@ -40,7 +40,7 @@ import java.util.logging.Logger;
  */
 public class StoredBitSetGraph {
 
-    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     /**
      * list of graph properties that can be maintained for a given graph

@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.search.limit;
 
+import choco.kernel.solver.search.measure.ISearchMeasures;
+
 /*
  * Created by IntelliJ IDEA.
  * User: charles
@@ -30,11 +32,11 @@ package choco.kernel.solver.search.limit;
  *
  */
 public enum Limit {
-	TIME("limit.time","millis."),
-	NODE("limit.node","nodes"),
-	BACKTRACK("limit.backtrack","backtracks"),
-    FAIL("limit.fail","fails"),
-    RESTART("limit.restart","restarts");
+	TIME("limit.time","Time (ms)"),
+	NODE("limit.node","Nodes"),
+	BACKTRACK("limit.backtrack","Backtracks"),
+    FAIL("limit.fail","Fails"),
+    RESTART("limit.restart","Restarts");
 
     private final String property;
 
@@ -54,6 +56,21 @@ public enum Limit {
 	public final String getProperty(){
         return property;
     }
+
+	/**
+     * get the value of the given measure 
+     */
+	public final int getValue(final ISearchMeasures measures) {
+		switch (this) {
+		case TIME: return measures.getTimeCount();
+		case NODE: return measures.getNodeCount();
+		case BACKTRACK: return measures.getBackTrackCount();
+		case RESTART: return measures.getRestartCount();
+		case FAIL: return measures.getFailCount();
+		default: 
+			return Integer.MIN_VALUE;
+		}
+	}
 
 
 

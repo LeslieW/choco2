@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 
 public class InstanceShuffler {
 
-    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	private File file;
 

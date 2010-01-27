@@ -41,7 +41,7 @@ import java.util.logging.Logger;
 
 public abstract class AbstractPropagator {
 
-    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     /**
      * Choco solver embedding the tree constraint

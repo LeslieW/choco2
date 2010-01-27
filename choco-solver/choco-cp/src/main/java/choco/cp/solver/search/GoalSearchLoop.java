@@ -27,6 +27,7 @@ import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.goals.GoalType;
 import choco.kernel.solver.goals.solver.ChoicePoint;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.AbstractSearchLoop;
 import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.*;
 
 import java.util.ArrayList;
@@ -134,7 +135,7 @@ public class GoalSearchLoop extends AbstractSearchLoop {
                             break;
                         case GEN:
                             // AMAL : node count increasing should be done there...
-                            searchStrategy.newTreeNode();
+                            searchStrategy.limitManager.newNode();
                         default:
                             Goal newG = g.execute(searchStrategy.solver);
                             switch (gt){
@@ -186,7 +187,7 @@ public class GoalSearchLoop extends AbstractSearchLoop {
             if (globalContradiction) searchStrategy.nextMove = UP_BRANCH;
             try {
                 searchStrategy.solver.worldPop();
-                searchStrategy.endTreeNode();
+                searchStrategy.limitManager.endNode();
                 searchStrategy.postDynamicCut();
 
                 currentChoiceIndex++;

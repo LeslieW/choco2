@@ -35,7 +35,7 @@ import java.util.logging.Logger;
  */
 public interface ExpressionManager {
 
-    final static Logger LOGGER = ChocoLogging.getModelLogger();
+    final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     /**
      * Build a expression node

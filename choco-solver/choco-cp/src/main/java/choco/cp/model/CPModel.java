@@ -62,7 +62,7 @@ import java.util.logging.Logger;
  */
 public class CPModel implements Model {
 
-    protected final static Logger LOGGER = ChocoLogging.getModelLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     /**
      * Precision of the search for a real model.

@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 
 public class ConnectedComponents {
 
-    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     protected boolean affiche;
 

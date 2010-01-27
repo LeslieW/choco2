@@ -47,7 +47,7 @@ import java.util.logging.Logger;
  * Main class for the demo
  */
 public class DemoUI {
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
   public JList list;
   public JTextPane result, code;

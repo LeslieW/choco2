@@ -50,7 +50,7 @@ import java.util.logging.Logger;
  */
 public class XmlModel {
 
-	public final static Logger LOGGER = ChocoLogging.getParserLogger();
+	public final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	//heuristics
 	private static final int DOMOVERDEG = 0;
@@ -265,7 +265,6 @@ public class XmlModel {
 	 */
 	public CPModel buildModel(InstanceParser parser) throws Exception, Error {
 		boolean forceExp = false; //force all expressions to be handeled by arc consistency
-		ChocoLogging.setOnlyParserLogger(Level.INFO);
 		CPModel m = new CPModel(parser.getMapOfConstraints().size(), parser.getNbVariables(), 50, 0, 100, 100, 100);
 		ChocoFactory chocofact = new ChocoFactory(parser, m);
 		chocofact.createVariables();
@@ -345,7 +344,6 @@ public class XmlModel {
 			}
 		}
 		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
-		s.setLoggingMaxDepth(200);
 		if (isFeasible && (cheuri == IMPACT || s.rootNodeSingleton(singleton, initialisationtime))) {
 			if (ngFromRestart && (s.restartMode || forcerestart)) {
 				s.setRecordNogoodFromRestart(true);

@@ -22,11 +22,13 @@
  **************************************************/
 package choco.kernel.common.util.tools;
 
-import choco.IPretty;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
-
 import java.util.Collection;
 import java.util.Iterator;
+
+import choco.IPretty;
+import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.solver.search.limit.Limit;
+import choco.kernel.solver.search.measure.ISearchMeasures;
 
 /*
 * User : charles
@@ -149,6 +151,29 @@ public class StringUtils {
 
 
 
+	public static String prettyOnePerLine(ISearchMeasures measures) {
+		StringBuilder b = new StringBuilder();
+		for (Limit type : Limit.values()) {
+			final int val = type.getValue(measures);
+			if(val != Integer.MIN_VALUE) {
+				b.append("\n  ").append(type.getUnit()).append(": ").append(val);
+			}
+		}
+		if(b.length() > 0) b.deleteCharAt(0);
+		return new String(b);
+	}
+
+	public static String pretty(ISearchMeasures measures) {
+		StringBuilder b = new StringBuilder();
+		for (Limit type : Limit.values()) {
+			final int val = type.getValue(measures);
+			if(val != Integer.MIN_VALUE) {
+				b.append(", ").append(val).append(" ").append(type.getUnit());
+			}
+		}
+		if(b.length() > 1) b.delete(0, 2);
+		return new String(b);
+	}
 
 
     /**

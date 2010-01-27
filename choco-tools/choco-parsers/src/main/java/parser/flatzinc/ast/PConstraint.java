@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
- *         |  °(..)  |                           *
+ *         |  ï¿½(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -45,7 +45,7 @@ import java.util.logging.Logger;
 */
 public final class PConstraint {
 
-    static Logger LOGGER = ChocoLogging.getParserLogger();
+    static Logger LOGGER = ChocoLogging.getMainLogger();
 
     // VARIABLE TYPE
     private static final String _int = "int";

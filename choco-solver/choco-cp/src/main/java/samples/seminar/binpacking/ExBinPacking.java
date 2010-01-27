@@ -56,7 +56,7 @@ import choco.kernel.solver.Solver;
  */
 public class ExBinPacking {
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
     public int[] getRandomPackingPb(int nbObj, int capa, int seed) {
         Random rand = new Random(seed);
@@ -217,8 +217,7 @@ public class ExBinPacking {
     }
     
     public static void main(String[] args) {
-    	ChocoLogging.setVerbosity(Verbosity.VERBOSE);
-        ExBinPacking tp2 = new ExBinPacking();
+    	ExBinPacking tp2 = new ExBinPacking();
         LOGGER.info("************** Modèle Booléen **************");
         tp2.binPacking1(10, 13, 1);
         LOGGER.info("");

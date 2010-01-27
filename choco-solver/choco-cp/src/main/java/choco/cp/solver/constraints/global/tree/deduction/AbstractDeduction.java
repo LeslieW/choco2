@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 
 public abstract class AbstractDeduction {
 
-    protected final static Logger LOGGER  = ChocoLogging.getSolverLogger();
+    protected final static Logger LOGGER  = ChocoLogging.getEngineLogger();
 
     protected boolean affiche = true;
 

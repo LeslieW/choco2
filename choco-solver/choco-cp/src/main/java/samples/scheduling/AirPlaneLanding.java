@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  */
 public class AirPlaneLanding {
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	public final static Random RND=new Random(1);
 

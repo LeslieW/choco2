@@ -38,7 +38,7 @@ import java.util.logging.Logger;
 
 public class InstanceCheckerEngine extends Thread {
 
-    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	public static final String DEFAULT_PREFIX = "inst";
 

@@ -22,9 +22,9 @@
  **************************************************/
 package choco.shaker.tools.search;
 
-import choco.cp.solver.search.AbstractSearchLoop;
 import choco.kernel.solver.propagation.Propagator;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.AbstractSearchLoop;
 
 /*
  * User : charles

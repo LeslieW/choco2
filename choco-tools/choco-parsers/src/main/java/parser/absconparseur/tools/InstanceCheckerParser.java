@@ -43,7 +43,7 @@ import java.util.logging.Logger;
 
 
 public class InstanceCheckerParser {
-    protected final static Logger LOGGER = ChocoLogging.getParserLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	private InstanceCheckerEngine engine;
 

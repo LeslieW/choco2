@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 
 public class Generator {
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
     protected Random rand;
 

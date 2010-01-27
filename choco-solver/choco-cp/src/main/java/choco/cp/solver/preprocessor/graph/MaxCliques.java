@@ -35,7 +35,7 @@ import java.util.logging.Logger; // main de test
  */
 public class MaxCliques {
 
-    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	private ArrayGraph graph; 
 	private int[][]  cliques;

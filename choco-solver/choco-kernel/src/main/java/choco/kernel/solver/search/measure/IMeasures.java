@@ -20,19 +20,12 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.solver.search.measures;
+package choco.kernel.solver.search.measure;
 
-public interface ISolutionMeasures {
+
+
+
+public interface IMeasures extends ISolutionMeasures, IOptimizationMeasures, ISearchMeasures {
 	
-	/**
-	 * indicates if the search find at least one solution.
-	 */
-	boolean existsSolution();
-				
-	/**
-     * Get the solution count of the measure
-     * @return solution count
-     */
-    int getSolutionCount();
-    
+		
 }

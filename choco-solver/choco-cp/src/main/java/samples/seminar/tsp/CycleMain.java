@@ -39,7 +39,7 @@ import java.util.logging.Logger;
 
 public class CycleMain {
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
     public static int maxValue = 100000;
 
@@ -96,7 +96,6 @@ public class CycleMain {
                 solver.getVar(vars), 0, n - 1));
         solver.setValIntSelector(new MyValSelector(solver.getVar(objective),
                 solver.getVar(vars), matrix, 0, n - 1));
-        solver.setLoggingMaxDepth(50);
         LOGGER.info("debut de la resolution");
         switch (type) {
         case PROPAGATE:

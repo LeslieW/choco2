@@ -42,7 +42,7 @@ import java.util.logging.Logger;
  */
 public class ExoSudoku {
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	public static void sudokuSimple(int[][] instance, boolean onlyProp) {
 		int n = instance.length;

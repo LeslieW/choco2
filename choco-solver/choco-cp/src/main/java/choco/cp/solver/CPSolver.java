@@ -60,7 +60,6 @@ import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
-import choco.cp.solver.search.limit.LimitManager;
 import choco.cp.solver.search.real.AssignInterval;
 import choco.cp.solver.search.real.CyclicRealVarSelector;
 import choco.cp.solver.search.real.RealBranchAndBound;
@@ -80,6 +79,7 @@ import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.MathUtils;
+import choco.kernel.common.util.tools.StringUtils;
 import static choco.kernel.common.util.tools.StringUtils.pad;
 import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
 import choco.kernel.common.util.tools.VariableUtils;
@@ -116,6 +116,7 @@ import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.propagation.*;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.AbstractOptimize;
+import choco.kernel.solver.search.AbstractSearchLoop;
 import choco.kernel.solver.search.AbstractSearchStrategy;
 import choco.kernel.solver.search.ISolutionPool;
 import static choco.kernel.solver.search.SolutionPoolFactory.makeDefaultSolutionPool;
@@ -124,6 +125,7 @@ import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.limit.Limit;
+import choco.kernel.solver.search.measure.FailMeasure;
 import choco.kernel.solver.search.real.RealValIterator;
 import choco.kernel.solver.search.real.RealVarSelector;
 import choco.kernel.solver.search.set.AbstractSetVarSelector;
@@ -168,7 +170,7 @@ public class CPSolver implements Solver {
 	 * Solver (using the java.util.logging package)
 	 */
 
-	protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
+	protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	protected final IndexFactory indexfactory;
 	/**
@@ -310,18 +312,17 @@ public class CPSolver implements Solver {
 	 */
 	public int propNogoodWorld;
 
+
+	@Deprecated
 	public final void setLoggingMaxDepth(int loggingMaxDepth) {
-		this.loggingMaxDepth = loggingMaxDepth;
+		ChocoLogging.setLoggingMaxDepth(loggingMaxDepth);
 	}
 
+	@Deprecated
 	public final int getLoggingMaxDepth() {
-		return loggingMaxDepth;
+		return ChocoLogging.getLoggingMaxDepth();
 	}
 
-	/**
-	 * maximal search depth for logging statements
-	 */
-	public int loggingMaxDepth = 25;
 
 	/**
 	 * set the number of stored solutions.
@@ -394,6 +395,8 @@ public class CPSolver implements Solver {
 
 	public final LimitConfiguration limitConfig = new LimitConfiguration();
 
+	protected FailMeasure failMeasure;
+	
 	public final RestartConfiguration restartConfig = new RestartConfiguration();
 
 	//protected LimitManager limitManager = new LimitManager();
@@ -440,6 +443,7 @@ public class CPSolver implements Solver {
 		intconstantVars = new HashMap<Integer, IntDomainVar>();
 		realconstantVars = new HashMap<Double, RealIntervalConstant>();
 		this.propagationEngine = new ChocEngine(this);
+		failMeasure = new FailMeasure(propagationEngine);
 		this.environment = env;
 		this.constraints = env.makePartiallyStoredVector();
 		indexfactory = new IndexFactory();
@@ -447,6 +451,7 @@ public class CPSolver implements Solver {
 			setRecomputation(true);
 		}
 		this.indexOfLastInitializedStaticConstraint = env.makeInt(PartiallyStoredVector.getFirstStaticIndex() - 1);
+		
 	}
 
     /**
@@ -468,6 +473,7 @@ public class CPSolver implements Solver {
 		intconstantVars.clear();
 		realconstantVars.clear();
 		this.propagationEngine = new ChocEngine(this);
+		failMeasure = new FailMeasure(propagationEngine);
 		this.constraints.clear(environment);
 //		indexfactory = new IndexFactory();
 		this.indexOfLastInitializedStaticConstraint.set(PartiallyStoredVector.getFirstStaticIndex() - 1);
@@ -796,13 +802,10 @@ public class CPSolver implements Solver {
 		strategy.stopAtFirstSol = firstSolution;
 
 		strategy.setSolutionPool(makeDefaultSolutionPool(solutionPoolCapacity));
-
-		strategy.setSearchMeasures(
-				new DefaultStrategyMeasures(strategy, 
-						generateSearchLoop(), 
-						generateLimitManager()
-				)
-		);
+		//clarify : code is too much imbricated
+		generateSearchLoop();
+		generateLimitManager();
+		
 
 
         if(ilogGoal==null){
@@ -815,13 +818,13 @@ public class CPSolver implements Solver {
 		}
 
 		//logging statements
-		if( ChocoLogging.getBranchingLogger().isLoggable(BranchingWithLoggingStatements.LOGGING_LEVEL)) {
+		if( ChocoLogging.getBranchingLogger().isLoggable(Level.INFO)) {
 			strategy.mainGoal = BranchingWithLoggingStatements.setLoggingStatement(strategy.mainGoal);
 		}
 	}
 
-	protected LimitManager generateLimitManager() {
-		final LimitManager limitManager = new LimitManager(strategy);
+	protected void generateLimitManager() {
+		final SearchLimitManager limitManager = new SearchLimitManager(strategy);
 		limitManager.setSearchLimit(limitConfig.makeSearchLimit(strategy)); //controlling the search
 		limitManager.setRestartLimit(limitConfig.makeRestartLimit(strategy)); //controlling the restart
 		//controlling the restart strategy
@@ -830,10 +833,9 @@ public class CPSolver implements Solver {
 				limitConfig.createLimit(strategy,limitConfig.getRestartStrategyLimitType(), Integer.MAX_VALUE)
 		); 
 		strategy.setLimitManager(limitManager);
-		return limitManager;
 	}
 
-	protected AbstractSearchLoop generateSearchLoop() {
+	protected void generateSearchLoop() {
 		final IKickRestart kickRestart = ( 
 				restartConfig.isRecordNogoodFromRestart() ? 
 						new NogoodKickRestart(strategy) : 
@@ -863,7 +865,6 @@ public class CPSolver implements Solver {
             ((AbstractSearchLoopWithRestart)searchLoop).setInitializeSearchAfterRestart(restartConfig.isInitializingSearchAfterRestart());
         }
 		strategy.setSearchLoop(searchLoop);
-		return searchLoop;
 	}
 
 	public AbstractIntBranchingStrategy generateRealGoal() {
@@ -1143,7 +1144,8 @@ public class CPSolver implements Solver {
 	 *            indicates wether the search stategy monitor the fail limit
 	 */
 	public void monitorFailLimit(boolean b) {
-		limitConfig.monitorFailLimit(b);
+		if(b) failMeasure.safeAdd();
+		else failMeasure.safeDelete();
 	}
 
 	/**
@@ -1187,10 +1189,11 @@ public class CPSolver implements Solver {
 		limitConfig.setRestartLimit(Limit.RESTART, restartLimit);
 	}
 
+	
 
 	@Override
-	public int getLimitCount(Limit type) {
-		return strategy == null ? 0 : strategy.getSearchMeasures().getLimitCount(type);
+	public final FailMeasure getFailMeasure() {
+		return failMeasure;
 	}
 
 	/**
@@ -1199,7 +1202,7 @@ public class CPSolver implements Solver {
 	 * @return time count
 	 */
 	public int getTimeCount() {
-		return strategy == null ? 0 : strategy.getSearchMeasures().getTimeCount();
+		return strategy == null ? 0 : strategy.getTimeCount();
 	}
 
 
@@ -1209,7 +1212,7 @@ public class CPSolver implements Solver {
 	 * @return node count
 	 */
 	public int getNodeCount() {
-		return strategy == null ? 0 : strategy.getSearchMeasures().getNodeCount();
+		return strategy == null ? 0 : strategy.getNodeCount();
 	}
 
 	/**
@@ -1218,7 +1221,7 @@ public class CPSolver implements Solver {
 	 * @return strategy == null ? 0 : backtrack count
 	 */
 	public int getBackTrackCount() {
-		return strategy == null ? 0 : strategy.getSearchMeasures().getBackTrackCount();
+		return strategy == null ? 0 : strategy.getBackTrackCount();
 	}
 
 	/**
@@ -1227,13 +1230,13 @@ public class CPSolver implements Solver {
 	 * @return fail count
 	 */
 	public int getFailCount() {
-		return strategy == null ? 0 : strategy.getSearchMeasures().getFailCount();
+		return strategy == null ? 0 : strategy.getFailCount();
 	}
 
 
 	@Override
 	public int getRestartCount() {
-		return strategy == null ? 0 : strategy.getSearchMeasures().getRestartCount();
+		return strategy == null ? 0 : strategy.getRestartCount();
 	}
 
 	@Override
@@ -2346,7 +2349,9 @@ public class CPSolver implements Solver {
 	public boolean checkDecisionVariables() {
 		boolean isOk = true;
         boolean check;
-		if (intDecisionVars != null) {
+		//FIXME test logging level outside loops
+        //FIXME put a decision flag inside the variable class instead of the list ?
+        if (intDecisionVars != null) {
 			for (IntDomainVar intDecisionVar : intDecisionVars) {
                 isOk &= check = intDecisionVar.isInstantiated();
                 if(LOGGER.isLoggable(Level.CONFIG)){
@@ -2448,14 +2453,14 @@ public class CPSolver implements Solver {
 	 */
     @Deprecated
 	public void printRuntimeSatistics() {
-		getSearchStrategy().printRuntimeStatistics();
+		printRuntimeStatistics();
 	}
 
     /**
 	 * Displays all the runtime statistics.
 	 */
 	public void printRuntimeStatistics() {
-		getSearchStrategy().printRuntimeStatistics();
+		System.out.println(runtimeStatistics());
 	}
 
 	/**
@@ -2474,7 +2479,9 @@ public class CPSolver implements Solver {
 	 * @return
 	 */
 	public String runtimeStatistics() {
-		return getSearchStrategy().runtimeStatistics();
+		if( getSearchStrategy() != null) {
+			return StringUtils.pretty(getSearchStrategy()) + " - " + getSearchStrategy().limitManager.pretty();
+		}else return "";
 	}
 
 	/**
@@ -2664,15 +2671,14 @@ public class CPSolver implements Solver {
 			for (int i = 0; i < nbv; i++) {
 				getRealVar(i).intersect(sol.getRealValue(i));
 			}
-            ChocoLogging.flushLogs();
 
-           // assert(checkWithPropagate());
+           //assert(checkWithPropagate());
            // assert(checkWithIsSatisfied());
             
 		} catch (ContradictionException e) {
             // TODO : see how to deal with error
             LOGGER.severe("BUG in restoring solution !!");
-            throw (new SolverException("Restored solution not consistent !!"));
+            throw new SolverException("Restored solution not consistent !!");
 		}
 	}
 

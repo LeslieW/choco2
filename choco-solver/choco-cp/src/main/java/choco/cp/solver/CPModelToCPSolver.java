@@ -81,7 +81,7 @@ import java.util.logging.Logger;
  */
 public class CPModelToCPSolver {
 
-    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	protected CPSolver cpsolver;
 

@@ -34,7 +34,7 @@ import java.util.logging.Logger;
 
 public class RestrictedSCC {
 
-    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     protected boolean affiche = false;
     protected boolean debug = false;

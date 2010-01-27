@@ -43,7 +43,7 @@ import java.util.logging.Logger;
  *
  */
 public class ExSocialGolfer {
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
     public int w; // number of weeks
     public int g; // number of groups

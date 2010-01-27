@@ -42,7 +42,7 @@ import java.util.logging.Logger;
  */
 public class ExKnapSack {
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
     static IntegerVariable obj1;
     static IntegerVariable obj2;

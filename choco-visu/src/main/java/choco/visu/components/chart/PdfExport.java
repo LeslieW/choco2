@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public final class PdfExport {
 
 
-    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	private PdfExport() {
 		super();

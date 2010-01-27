@@ -42,7 +42,7 @@ import java.util.logging.Logger;
  */
 public class InputParser {
 
-    protected static final Logger LOGGER = ChocoLogging.getSolverLogger();
+    protected static final Logger LOGGER = ChocoLogging.getEngineLogger();
 
 
     public static class GeostProblem{

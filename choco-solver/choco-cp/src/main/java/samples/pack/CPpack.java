@@ -56,7 +56,7 @@ import choco.kernel.solver.search.integer.ValSelector;
  */
 public class CPpack {
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	/////////// CONFIGURATION //////////////////
 

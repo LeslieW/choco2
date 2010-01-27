@@ -24,6 +24,7 @@ package choco.kernel.solver;
 
 import choco.IPretty;
 import choco.kernel.common.IndexFactory;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -45,7 +46,8 @@ import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
-import choco.kernel.solver.search.measures.IMeasures;
+import choco.kernel.solver.search.measure.FailMeasure;
+import choco.kernel.solver.search.measure.IMeasures;
 import choco.kernel.solver.search.real.RealValIterator;
 import choco.kernel.solver.search.real.RealVarSelector;
 import choco.kernel.solver.search.set.SetValSelector;
@@ -127,6 +129,8 @@ public interface Solver extends IMeasures, IPretty {
      */
     public void monitorBackTrackLimit(boolean b);
 
+    
+    public FailMeasure getFailMeasure();
     /**
      * Monitor the fail limit (default to false)
      * @param b indicates wether the search stategy monitor the fail limit
@@ -151,7 +155,7 @@ public interface Solver extends IMeasures, IPretty {
 	/**
 	 * Sets the fail limit i.e. the maximal numnber of fails before stopping the search algorithm
 	 */
-	public void setFailLimit(int nodeLimit);
+	public void setFailLimit(int failLimit);
 	
 	/**
 	 * Sets the restart limit i.e. the maximal number of restart performed during the search algorithm.
@@ -450,12 +454,16 @@ public interface Solver extends IMeasures, IPretty {
     public String runtimeStatistics();
     /**
 	 * set the maximal search depth for logging statements
+	 * @see ChocoLogging
 	 */
+    @Deprecated
     public void setLoggingMaxDepth(int loggingMaxDepth);
 
     /**
 	 * get the maximal search depth for logging statements
+	 * @see ChocoLogging
 	 */
+    @Deprecated
     public int getLoggingMaxDepth();
     
 	/**

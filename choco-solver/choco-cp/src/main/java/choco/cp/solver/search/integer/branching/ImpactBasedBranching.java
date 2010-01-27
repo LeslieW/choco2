@@ -23,7 +23,7 @@
 package choco.cp.solver.search.integer.branching;
 
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.limit.TimeCacheThread;
+import choco.cp.solver.search.TimeCacheThread;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;

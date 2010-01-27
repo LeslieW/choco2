@@ -41,7 +41,7 @@ import java.util.logging.Logger;
  */
 public abstract class INode implements IPretty {
 
-    protected final static Logger LOGGER = ChocoLogging.getModelLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     /**
      * reference to branches below this node

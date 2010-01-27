@@ -25,6 +25,7 @@ package choco.kernel.solver.propagation;
 import choco.kernel.solver.ContradictionException;
 import static choco.kernel.solver.ContradictionException.Type.*;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.search.measure.FailMeasure;
 import choco.kernel.solver.variables.Var;
 
 import java.util.LinkedList;
@@ -51,6 +52,8 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
 	 * Retrieves the solver of the entity.
 	 */
 
+	protected final FailMeasure reuseFailMeasure;
+	
 	public final Solver getSolver(){
 		return solver;
 	}
@@ -63,8 +66,8 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
 
 	public AbstractPropagationEngine(Solver solver) {
 		this.solver = solver;
+		reuseFailMeasure = new FailMeasure(this);
 	}
-
 
 	/**
 	 * Throws a contradiction with the specified cause.
@@ -98,7 +101,6 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
             reuseException.set(variable, VARIABLE,
                     variable.getConstraintVector().get(VarEvent.domOverWDegInitialIdx(cidx)));
         }
-
         for(PropagationEngineListener listener : propagationEngineListeners) {
             listener.contradictionOccured(reuseException);
         }

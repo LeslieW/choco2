@@ -43,7 +43,7 @@ import java.util.logging.Logger;
  */
 public class ExDonaldGeraldRobert {
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
     public static IntegerVariable _donald = null;
     public static IntegerVariable _gerald = null;

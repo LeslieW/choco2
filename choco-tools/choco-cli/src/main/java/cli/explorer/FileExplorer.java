@@ -30,7 +30,7 @@ import choco.kernel.common.logging.Verbosity;
  */
 public final class FileExplorer {
 
-	public final static Logger LOGGER= ChocoLogging.getParserLogger();
+	public final static Logger LOGGER= ChocoLogging.getMainLogger();
 
 	public static final FileFilter DIRECTORY_FILTER = new AndFileFilter( Arrays.asList( 
 			CanReadFileFilter.CAN_READ,
@@ -102,7 +102,6 @@ public final class FileExplorer {
 
 
 	public static void main(String[] args) {
-		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
 		final FileProcedure proc = new FileProcedure() {
 
 			Random rnd = new Random();

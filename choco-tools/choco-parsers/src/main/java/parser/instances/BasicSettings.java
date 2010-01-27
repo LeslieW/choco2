@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 public class BasicSettings {
 
-	public final static Logger LOGGER= ChocoLogging.getParserLogger();
+	public final static Logger LOGGER= ChocoLogging.getMainLogger();
 
 	protected static final String PP = "chocotools.";
 	/**

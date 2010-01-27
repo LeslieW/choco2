@@ -29,7 +29,7 @@ import choco.visu.components.chart.ChocoChartFactory;
 
 public final class ChocoDemo {
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	private static final int TIME_LIMIT = 15;
 

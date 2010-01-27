@@ -56,7 +56,6 @@ public class QueensTest {
 
     @Before
     public void setUp() {
-        ChocoLogging.setVerbosity(Verbosity.SILENT);
         LOGGER.fine("Queens Testing...");
         m = new CPModel();
         s1 = new CPSolver();

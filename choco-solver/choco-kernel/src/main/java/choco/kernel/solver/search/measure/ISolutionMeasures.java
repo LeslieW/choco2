@@ -20,16 +20,19 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.solver.search.measures;
+package choco.kernel.solver.search.measure;
 
-public interface IOptimizationMeasures extends ISolutionMeasures {
+public interface ISolutionMeasures {
 	
 	/**
-     * Get the objective value of the measure, optimization only.
-     * @return objective value
+	 * indicates if the search find at least one solution.
+	 */
+	boolean existsSolution();
+				
+	/**
+     * Get the solution count of the measure
+     * @return solution count
      */
-	Number getObjectiveValue();
-	
-	boolean isObjectiveOptimal();
-	
+    int getSolutionCount();
+    
 }

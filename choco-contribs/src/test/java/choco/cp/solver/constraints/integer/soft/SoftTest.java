@@ -1,6 +1,6 @@
 /* ************************************************
 *           _       _                            *
-*          |  °(..)  |                           *
+*          |  ï¿½(..)  |                           *
 *          |_  J||L _|        CHOCO solver       *
 *                                                *
 *     Choco is a java library for constraint     *
@@ -56,7 +56,6 @@ public class SoftTest {
 
         s.post(softC);
 
-        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
         s.solveAll();
     }
 
@@ -71,8 +70,6 @@ public class SoftTest {
         SoftIntSConstraint softC = new SoftIntSConstraint(dist, neq);
 
         s.post(softC);
-
-        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
         s.solveAll();
     }
 
@@ -90,8 +87,6 @@ public class SoftTest {
         SoftIntSConstraint softC = new SoftIntSConstraint(dist, allDiff);
 
         s.post(softC);
-
-        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
         s.solveAll();
     }
 
@@ -124,8 +119,6 @@ public class SoftTest {
         s.post(s.eq(obj, s.sum(dists)));
 
         System.out.println(s.pretty());
-
-        ChocoLogging.setVerbosity(Verbosity.VERBOSE);
         s.minimize(obj, true);
     }
 

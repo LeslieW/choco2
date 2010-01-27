@@ -29,7 +29,7 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.search.measures.IMeasures;
+import choco.kernel.solver.search.measure.IMeasures;
 import db.DbManager;
 import db.DbTables;
 import parser.absconparseur.tools.UnsupportedConstraintException;
@@ -47,7 +47,7 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractInstanceModel {
 
-	public final static Logger LOGGER = ChocoLogging.getParserLogger();
+	public final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	//configuration
 	private long seed;

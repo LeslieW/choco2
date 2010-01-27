@@ -28,6 +28,10 @@
 //**************************************************
 package choco.kernel.solver.search;
 
+import java.util.logging.Level;
+
+import choco.kernel.common.logging.ChocoLogging;
+import static choco.kernel.common.util.tools.StringUtils.*;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
@@ -36,15 +40,13 @@ import choco.kernel.solver.branch.AbstractBranchingStrategy;
 import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
-import choco.kernel.solver.search.measures.ISearchMeasures;
-
-import java.util.logging.Level;
+import choco.kernel.solver.search.measure.ISearchMeasures;
 
 /**
  * An abstract class for controlling tree search in various ways
  * version 2.0.3 : change the value of search constant to use bit masks.
  */
-public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrategy {
+public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrategy implements ISearchMeasures {
 
 	/**
 	 * constants for driving the incremental search algorithm
@@ -60,12 +62,12 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 * index of the current trace in the stack
 	 */
 	protected int currentTraceIndex = -1;
-	
+
 	/**
 	 * a data structure storing the stack of choice contexts (for incremental search explorations)
 	 */
 	protected IntBranchingTrace[] traceStack;
-	
+
 	/**
 	 * a reusable trace object to start the branching from the root node.
 	 */
@@ -88,24 +90,24 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 
 
 	//ALREADY EXIST IN THE SOLVER
-//	/**
-//	 * set the maximal search depth for logging statements
-//	 */
-//	public void setLoggingMaxDepth(int loggingMaxDepth) {
-//		this.loggingMaxDepth = loggingMaxDepth;
-//	}
-//
-//	/**
-//	 * get the maximal search depth for logging statements
-//	 */
-//	public int getLoggingMaxDepth() {
-//		return loggingMaxDepth;
-//	}
-//
-//	/**
-//	 * maximal search depth for logging statements
-//	 */
-//	protected int loggingMaxDepth = 5;
+	//	/**
+	//	 * set the maximal search depth for logging statements
+	//	 */
+	//	public void setLoggingMaxDepth(int loggingMaxDepth) {
+	//		this.loggingMaxDepth = loggingMaxDepth;
+	//	}
+	//
+	//	/**
+	//	 * get the maximal search depth for logging statements
+	//	 */
+	//	public int getLoggingMaxDepth() {
+	//		return loggingMaxDepth;
+	//	}
+	//
+	//	/**
+	//	 * maximal search depth for logging statements
+	//	 */
+	//	protected int loggingMaxDepth = 5;
 
 	/**
 	 * /**
@@ -118,12 +120,10 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	public int baseWorld = 0;
 
-	
-	public ISearchMeasures searchMeasures;
-	
-	public GlobalSearchLimit limitManager;
-	
-	public ISearchLoop searchLoop;
+
+	public GlobalSearchLimitManager limitManager;
+
+	public AbstractSearchLoop searchLoop;
 
 	protected AbstractGlobalSearchStrategy(Solver solver) {
 		this.solver = solver;
@@ -141,37 +141,27 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 			}
 		}
 	}
-		
 
-	public final GlobalSearchLimit getLimitManager() {
+
+	public final GlobalSearchLimitManager getLimitManager() {
 		return limitManager;
 	}
 
 
-
-	public final ISearchMeasures getSearchMeasures() {
-		return searchMeasures;
-	}
-	
-
-	public final ISearchLoop getSearchLoop() {
+	public final AbstractSearchLoop getSearchLoop() {
 		return searchLoop;
 	}
 
 
-	public final void setSearchLoop(ISearchLoop searchLoop) {
+	public final void setSearchLoop(AbstractSearchLoop searchLoop) {
 		this.searchLoop = searchLoop;
 	}
-	
-	public final void setSearchMeasures(ISearchMeasures searchMeasures) {
-		this.searchMeasures = searchMeasures;
-	}
 
-	public final void setLimitManager(GlobalSearchLimit limitManager) {
+	public final void setLimitManager(GlobalSearchLimitManager limitManager) {
 		this.limitManager = limitManager;
 	}
 
-	
+
 	/*
 	 * main entry point: searching for one solution
 	 * Note: the initial propagation must be done before pushing any world level.
@@ -203,7 +193,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
     endTreeSearch();
   }*/
 
-	
+
 	/**
 	 * main entry point: searching for one solution
 	 * Note: the initial propagation must be done before pushing any world level.
@@ -224,8 +214,8 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 			if (stopAtFirstSol) {
 				nextSolution();
 			} else {
-                //noinspection StatementWithEmptyBody
-                while (nextSolution() == Boolean.TRUE){}
+				//noinspection StatementWithEmptyBody
+				while (nextSolution() == Boolean.TRUE){}
 			}
 			if (  ! solutionPool.isEmpty() && (!stopAtFirstSol)) {
 				solver.worldPopUntil(baseWorld);
@@ -247,11 +237,13 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	public void newTreeSearch() throws ContradictionException {
 		assert(solver.getSearchStrategy() == this);
-        resetSolutions();
+		resetSolutions();
+		LOGGER.info(ChocoLogging.START_MESSAGE);
 		baseWorld = solver.getWorldIndex();
 		initialTrace.setBranching(this.mainGoal);
 		limitManager.initialize();
 		searchLoop.initialize();
+		solver.getFailMeasure().safeReset();
 	}
 
 	/**
@@ -265,28 +257,22 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	public void endTreeSearch() {
 		limitManager.endTreeSearch();
-		if (LOGGER.isLoggable(Level.CONFIG)) {
-			LOGGER.log(Level.CONFIG, "=== solve => {0} solutions\n\twith {1}", new Object[]{getSolutionCount(), runtimeStatistics()});
+		if (LOGGER.isLoggable(Level.INFO)) {
+			if( isEncounteredLimit() ) {
+				LOGGER.log(Level.INFO, "- Search incompleted: Exiting on 1 limit\n  Limit: {0}\n{1}", 
+						new Object[]{limitManager.toString(), runtimeStatistics()});
+			}else if( solver.isFeasible() == Boolean.TRUE) {
+				LOGGER.log(Level.INFO, "- Search completed\n{0}",runtimeStatistics());
+			}else if( solver.isFeasible() == Boolean.FALSE) {
+				LOGGER.log(Level.INFO, "- Search completed: No solutions\n{0}",runtimeStatistics());
+			}else {
+				LOGGER.log(Level.INFO, "- Search stopped ?\n{1}", runtimeStatistics()); 
+			}
+			
 		}
 	}
-
-	/**
-	 * called before a node is expanded in the search tree (choice point creation)
-	 * @throws choco.kernel.solver.ContradictionException
-	 */
-	public void newTreeNode() throws ContradictionException {
-		limitManager.newNode();
-	}
-
-	/**
-	 * called after a node is expanded in the search tree (choice point creation)
-	 * @throws choco.kernel.solver.ContradictionException
-	 */
-	public void endTreeNode() throws ContradictionException {
-		limitManager.endNode();
-	}
-
-
+	
+		
 	public Boolean nextSolution() {
 		//precondition for calling the search loop is that a limit has not been attempted
 		//useful when solution are recorded from outside the OPEN_NODE case (hand-made)
@@ -296,14 +282,15 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		} else {return  searchLoop.run();}
 	}
 
-	
-	
+
+
 	@Override
 	public void writeSolution(Solution sol) {
 		super.writeSolution(sol);
-		sol.recordSearchMeasures(searchMeasures);
+		sol.recordSearchMeasures(this);
 	}
 
+	
 	/**
 	 * called when a solution is encountered: printing and, if needed, storing the solution
 	 */
@@ -313,11 +300,12 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		if(solver.checkDecisionVariables()){
 			super.recordSolution();
 			if (LOGGER.isLoggable(Level.FINE)) {
-				StringBuilder sb = new StringBuilder();
-				sb.append("Solution #").append(getSolutionCount()).append(" is found");
-				sb.append("\n\twith ").append(runtimeStatistics());
-				LOGGER.log(Level.FINE, "=== {0}",sb);	
-				if (LOGGER.isLoggable(Level.FINER)) {LOGGER.log(Level.FINER,"\t{0}", solver.solutionToString());}
+				LOGGER.log(Level.FINE, "- Solution #{0} found: {1}",
+						new Object[]{getSolutionCount(),partialRuntimeStatistics(true)}
+				);	
+				if (LOGGER.isLoggable(Level.FINER)) {
+					LOGGER.log(Level.FINER,"  {0}", solver.solutionToString());
+				}
 			}
 		}else{
 			throw new SolverException("Bug in solution :one or more decisions variables is not instantiated");
@@ -332,42 +320,42 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	public void postDynamicCut() throws ContradictionException {
 	}
 
-	
-	
+
+
 	public final IntBranchingTrace pushTrace() {
 		currentTraceIndex++;
 		if (currentTraceIndex >= traceStack.length) {
 			//ensure capacity
-			 int newCapacity = (traceStack.length * 3)/2 + 1;
-			 IntBranchingTrace[] tmp = new IntBranchingTrace[newCapacity];
-			 System.arraycopy(traceStack, 0, tmp, 0, traceStack.length);
-			 traceStack = tmp;
-			 traceStack[currentTraceIndex] = new IntBranchingTrace(); //create trace 
+			int newCapacity = (traceStack.length * 3)/2 + 1;
+			IntBranchingTrace[] tmp = new IntBranchingTrace[newCapacity];
+			System.arraycopy(traceStack, 0, tmp, 0, traceStack.length);
+			traceStack = tmp;
+			traceStack[currentTraceIndex] = new IntBranchingTrace(); //create trace 
 		}else if (traceStack[currentTraceIndex] == null) {
 			traceStack[currentTraceIndex] = new IntBranchingTrace();  //create trace
 		}else {
 			//is it really useful as we overwrite the trace ?
 			traceStack[currentTraceIndex].clear(); //reset old trace
 		}
-		 return traceStack[currentTraceIndex];
+		return traceStack[currentTraceIndex];
 	}
 
 	public final boolean isTraceEmpty() {
 		return currentTraceIndex < 0;
 	}
-	
+
 	public final IntBranchingTrace getTrace(int index) {
 		return traceStack[index];
 	}
-	
+
 	public final int getCurrentTraceIndex() {
 		return currentTraceIndex;
 	}
-	
+
 	public final int getTraceSize() {
 		return currentTraceIndex+1;
 	}
-	
+
 	public final IntBranchingTrace popTrace() {
 		if (currentTraceIndex <= 0) {
 			currentTraceIndex = -1;
@@ -377,8 +365,8 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 			return traceStack[currentTraceIndex];
 		}
 	}
-	
-	
+
+
 	public final IntBranchingTrace initialTrace() {
 		return isTraceEmpty() ? initialTrace : traceStack[currentTraceIndex];
 	}
@@ -393,80 +381,76 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	public final IntBranchingTrace topTrace() {
 		return isTraceEmpty() ? null : traceStack[currentTraceIndex];
 	}
-	
+
 	public final void clearTrace() {
 		currentTraceIndex = -1;
 	}
+
+	//	public final void popTraceUntil(int targetWorld) {
+	//		clearTrace();
+	//
+	//		/*int deltaWorld = (solver.getEnvironment().getWorldIndex() - targetWorld);
+	//    if (deltaWorld > 0) {
+	//      if (currentTraceIndex - deltaWorld < -1)
+	//        LOGGER.severe("bizarre");
+	//      currentTraceIndex = currentTraceIndex - deltaWorld;
+	//    }*/
+	//	}
+
 	
-//	public final void popTraceUntil(int targetWorld) {
-//		clearTrace();
-//
-//		/*int deltaWorld = (solver.getEnvironment().getWorldIndex() - targetWorld);
-//    if (deltaWorld > 0) {
-//      if (currentTraceIndex - deltaWorld < -1)
-//        LOGGER.severe("bizarre");
-//      currentTraceIndex = currentTraceIndex - deltaWorld;
-//    }*/
-//	}
-
-
-
-	/**
-	 * Print all statistics
-	 */
-	public void printRuntimeStatistics() {
-		if(LOGGER.isLoggable(Level.INFO)) {
-			LOGGER.info(runtimeStatistics());
-		}
-	}
+	
 
 	public String runtimeStatistics() {
-		return "Measures{ "+searchMeasures.pretty()+" } "+limitManager.pretty();
+		return "  Solutions: "+getSolutionCount() + "\n"+prettyOnePerLine(this);
+	}
+	
+	public String partialRuntimeStatistics(boolean logOnSolution) {
+		return logOnSolution ? 
+				getSolutionCount()+" solutions, "+pretty(this) :
+			pretty(this);
 	}
 
-	
-	
+
+
 	/**
 	 * @return the time elapsed during the last search in milliseconds
-	 * (-1 if time was neither measured nor bounded)
 	 */
-	@Deprecated
+	@Override
 	public int getTimeCount() {
-		return searchMeasures.getTimeCount();
+		return limitManager.getTimeCount();
 	}
 
-	/**
-	 * @return the CPU time elapsed during the last search in milliseconds
-	 * (-1 if time was neither measured nor bounded)
-	 */
-	@Deprecated
-	public int getCpuTimeCount() {
-		return searchMeasures.getTimeCount();
-	}
+	
 
 	/**
 	 * @return the number of nodes of the tree search (including the root node where
 	 * initial propagation has been performed and saved)
 	 */
-	@Deprecated
+	@Override
 	public int getNodeCount() {
-		return searchMeasures.getNodeCount();
+		return searchLoop.getNodeCount();
 	}
 
 	/**
 	 * @return the number of backtracks of the tree search
 	 */
-	@Deprecated
+	@Override
 	public int getBackTrackCount() {
-		return searchMeasures.getBackTrackCount();
+		return searchLoop.getBacktrackCount();
+	}
+
+	
+	@Override
+	public int getRestartCount() {
+		return searchLoop.getRestartCount();
 	}
 
 	/**
 	 * @return the number of fails of the tree search
 	 */
-	@Deprecated
+	@Override
 	public int getFailCount() {
-		return searchMeasures.getFailCount();
+		return solver.getFailMeasure().getFailCount();
 	}
 
 	/**
@@ -491,7 +475,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	public final void setEncounteredLimit(AbstractGlobalSearchLimit encounteredLimit) {
 		this.encounteredLimit = encounteredLimit;
 	}
-	
-	
-	
+
+
+
 }

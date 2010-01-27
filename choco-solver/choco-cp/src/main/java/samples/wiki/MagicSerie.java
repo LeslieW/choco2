@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  */
 public class MagicSerie {
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 
     public static void main(String[] args) {

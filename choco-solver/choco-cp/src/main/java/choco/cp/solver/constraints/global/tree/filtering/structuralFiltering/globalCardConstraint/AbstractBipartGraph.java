@@ -35,7 +35,7 @@ import java.util.logging.Logger;
 
 public abstract class AbstractBipartGraph {
 
-    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     // slots storing the graph as a matching
     protected int nbLeftVertices, nbRightVertices, nbVertices;

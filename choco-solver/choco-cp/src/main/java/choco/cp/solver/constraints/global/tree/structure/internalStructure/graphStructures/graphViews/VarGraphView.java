@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 
 public class VarGraphView {
 
-    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     /**
      * boolean for debug and show a trace of the execution

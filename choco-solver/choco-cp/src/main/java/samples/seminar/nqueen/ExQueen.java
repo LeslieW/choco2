@@ -45,7 +45,7 @@ import java.util.logging.Logger;
  */
 public class ExQueen {
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	public static void nQueensNaif(int n) {
 		Model m = new CPModel();
@@ -131,7 +131,6 @@ public class ExQueen {
 
 		s.setVarIntSelector(new MinDomain(s,s.getVar(queens)));
 
-		s.setLoggingMaxDepth(50);
 		int timeLimit = 60000;
 		s.setTimeLimit(timeLimit);
 		s.solve();
@@ -274,7 +273,7 @@ public class ExQueen {
 
 	public static void main(String[] args) {
 		int nbQueens = 20;
-		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+		//ChocoLogging.setVerbosity(Verbosity.VERBOSE);
 		LOGGER.info("************* Nqueens naif *************");
 		nQueensNaif(nbQueens); // (1)
 		LOGGER.info("");

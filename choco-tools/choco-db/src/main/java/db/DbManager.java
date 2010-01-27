@@ -49,14 +49,14 @@ import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.search.measures.IMeasures;
+import choco.kernel.solver.search.measure.IMeasures;
 
 
 public class DbManager {
 
 	public final static int DEFAULT_COLUMN_WIDTH = 12;
 
-	public final static Logger LOGGER = ChocoLogging.getParserLogger();
+	public final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	public final DriverManagerDataSource dataSource = new DriverManagerDataSource();
 

@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.branch;
 
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
@@ -32,19 +33,16 @@ import choco.kernel.solver.search.IntBranchingDecision;
 import java.util.logging.Level;
 
 public class BranchingWithLoggingStatements extends AbstractIntBranchingStrategy {
-	
+
 	/**
 	 * prefixes for log statements (visualize search depth)
 	 */
 	public final static String[] LOG_PREFIX = { "", ".", "..", "...", "....",
 		".....", "......", ".......", "........", ".........", ".........." };
 
-	public final static Level LOGGING_LEVEL = Level.INFO;
+	public final AbstractIntBranchingStrategy internalBranching;
 
-	public AbstractIntBranchingStrategy internalBranching;
-
-
-
+	private int nextInformationNode = ChocoLogging.getEveryXNodes();
 
 	public BranchingWithLoggingStatements(AbstractIntBranchingStrategy internalBranching) {
 		super();
@@ -63,15 +61,10 @@ public class BranchingWithLoggingStatements extends AbstractIntBranchingStrategy
 	}
 
 
-	public final static boolean isLoggable(final AbstractGlobalSearchStrategy manager) {
-		return LOGGER.isLoggable(LOGGING_LEVEL) &&  manager.solver.getWorldIndex() < manager.solver.getLoggingMaxDepth();
-	}
-
-
 	public final static StringBuilder makeLoggingMsgPrefix(int worldStamp) {
 		StringBuilder b  =new StringBuilder();
-//		b.append(LOG_PREFIX[worldStamp % (LOG_PREFIX.length)]);
-        b.append(StringUtils.pad("", worldStamp, "."));
+		//		b.append(LOG_PREFIX[worldStamp % (LOG_PREFIX.length)]);
+		b.append(StringUtils.pad("", worldStamp, "."));
 		b.append('[').append(worldStamp).append(']');
 		return b;
 	}
@@ -87,18 +80,27 @@ public class BranchingWithLoggingStatements extends AbstractIntBranchingStrategy
 	@Override
 	public void goDownBranch(IntBranchingDecision decision)
 	throws ContradictionException {
-		if (isLoggable(manager)) {
-			LOGGER.log(LOGGING_LEVEL, makeLoggingMessage(decision, LOG_DOWN_MSG, manager.solver.getWorldIndex()));
+		if(LOGGER.isLoggable(Level.INFO)) {
+			if(manager.getNodeCount() >= nextInformationNode) {
+				LOGGER.log(Level.INFO, "- Partial Seach: {0}", manager.partialRuntimeStatistics(false));
+				nextInformationNode = manager.getNodeCount() + ChocoLogging.getEveryXNodes();
+				ChocoLogging.flushLogs();
+			}  
+			if (LOGGER.isLoggable(Level.CONFIG) &&
+					manager.solver.getWorldIndex()  < ChocoLogging.getLoggingMaxDepth()) {
+				LOGGER.log(Level.CONFIG, makeLoggingMessage(decision, LOG_DOWN_MSG, manager.solver.getWorldIndex()));
+				ChocoLogging.flushLogs();
+			}
 		}
 		internalBranching.goDownBranch(decision);
-
 	}
 
 	@Override
 	public void goUpBranch(IntBranchingDecision decision)
 	throws ContradictionException {
-		if (isLoggable(manager)) {
-			LOGGER.log(LOGGING_LEVEL, makeLoggingMessage(decision, LOG_UP_MSG, manager.solver.getWorldIndex() + 1));
+		if ( LOGGER.isLoggable(Level.CONFIG) 
+				&& manager.solver.getWorldIndex() + 1 < ChocoLogging.getLoggingMaxDepth()) {
+			LOGGER.log(Level.CONFIG, makeLoggingMessage(decision, LOG_UP_MSG, manager.solver.getWorldIndex() + 1));
 		}
 		internalBranching.goUpBranch(decision);
 

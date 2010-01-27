@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 
 public class MagicSquare {
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
     public static void main(String[] args) {
         int n = 7;

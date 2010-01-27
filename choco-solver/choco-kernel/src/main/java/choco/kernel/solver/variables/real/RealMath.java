@@ -31,7 +31,7 @@ import java.util.logging.Logger;
  * Inspired from IAMath : interval.sourceforge.net
  */
 public class RealMath {
-    protected final static Logger LOGGER = ChocoLogging.getSolverLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
   public static final double ZERO = 0.0;
   public static final double NEG_ZER0 = 0.0 * -1.0;

@@ -44,7 +44,7 @@ import java.util.logging.Logger;
  */
 public interface Variable extends IPretty, IIndex, IOptions, IHook {
 
-    final static Logger LOGGER = ChocoLogging.getModelLogger();
+    final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	public VariableType getVariableType();
 

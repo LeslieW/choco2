@@ -36,7 +36,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class RandomProblemGenerator {
-	protected final static Logger LOGGER  = ChocoLogging.getSolverLogger();
+	protected final static Logger LOGGER  = ChocoLogging.getEngineLogger();
 
 	private Vector<GeostObject> objects;
 	private Vector<ShiftedBox> sBoxes;

@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 public class RehearsalProblem extends PatternExample {
 
-    protected final static Logger LOGGER = ChocoLogging.getSamplesLogger();
+    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	public final static int[] CSPLIB_DURATIONS = {2, 4, 1, 3, 3, 2, 5, 7, 6};
 

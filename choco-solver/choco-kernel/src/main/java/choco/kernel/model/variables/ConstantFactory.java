@@ -41,7 +41,7 @@ import java.util.logging.Logger;
 */
 public class ConstantFactory {
 
-    protected final static Logger LOGGER = ChocoLogging.getModelLogger();
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     static TIntObjectHashMap<IntegerConstantVariable> integerMap = new TIntObjectHashMap<IntegerConstantVariable>();
     static HashMap<int[], SetConstantVariable> setMap = new HashMap<int[], SetConstantVariable>();
