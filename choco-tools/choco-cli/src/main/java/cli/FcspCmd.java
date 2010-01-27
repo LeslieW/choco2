@@ -11,6 +11,7 @@ public class FcspCmd extends AbstractBenchmarkCmd {
 
 	public FcspCmd() {
 		super("/fcsp.properties");
+        settings = new FcspSettings();
 	}
 
 	FcspSettings getFcspSettings() {
