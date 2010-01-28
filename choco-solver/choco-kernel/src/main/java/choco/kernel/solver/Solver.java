@@ -22,6 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
+
 import choco.IPretty;
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
@@ -43,6 +48,7 @@ import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.checker.SolutionCheckerEngine;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
@@ -61,10 +67,6 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
 import choco.kernel.visu.IVisu;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 
 /**
  * Created by IntelliJ IDEA.
@@ -74,8 +76,14 @@ import java.util.List;
  * Interface for Solver class, declare main expected methods.
  */
 public interface Solver extends IMeasures, IPretty {
-
-    /**
+	
+	/**
+	 * Reference to an object for logging trace statements related to Abtract
+	 * Solver (using the java.util.logging package)
+	 */
+	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
+	
+	/**
      * Removes all of the elements from this solver (optional operation).
      * The solver will be 'empty' after this call returns.
      */
@@ -219,7 +227,13 @@ public interface Solver extends IMeasures, IPretty {
 	public void setValSetSelector(SetValSelector setValIntSelector);
 
 	public Iterator<SConstraint> getIntConstraintIterator();
+	
+	public Iterator<IntDomainVar> getIntVarIterator();
+	
+	public Iterator<SetVar> getSetVarIterator();
 
+	public Iterator<RealVar> getRealVarIterator();
+	
 	/**
 	 * Returns the propagation engine associated to the model
 	 */
@@ -302,6 +316,8 @@ public interface Solver extends IMeasures, IPretty {
 	 */
 
 	public IntVar getIntVar(int i);
+	
+	IntVar quickGetIntVar(int i);
 
 	public int getIntVarIndex(IntVar c);
 
@@ -354,6 +370,8 @@ public interface Solver extends IMeasures, IPretty {
 	 * @return the i-th real variable
 	 */
 	public RealVar getRealVar(int i);
+	
+	RealVar quickGetRealVar(int i);
 
 	/**
 	 * Returns the number of variables modelling real numbers.
@@ -368,6 +386,8 @@ public interface Solver extends IMeasures, IPretty {
 	 * @return the i-th real variable
 	 */
 	public SetVar getSetVar(int i);
+	
+	SetVar quickGetSetVar(int i);
 
 	/**
 	 * Returns the number of variables modelling real numbers.
@@ -383,6 +403,8 @@ public interface Solver extends IMeasures, IPretty {
 	 * @return the i-th task variable
 	 */
 	public TaskVar getTaskVar(int i);
+	
+	TaskVar quickGetTaskVar(int i);
 
 	/**
 	 * Returns the number of variables modelling tasks.

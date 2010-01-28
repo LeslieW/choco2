@@ -319,36 +319,40 @@ public final class ChocoLogging {
 		else if(verbosity == Verbosity.FINEST) setLevel(Level.FINEST, CHOCO_LOGGERS);
 		else {
 			setLevel(Level.FINEST, getChocoLogger(),getCoreLogger(), getAPILogger());
-			setLevel(Level.WARNING,getTestLogger());
 			switch(verbosity) {
 			case SILENT: {
 				setLevel(Level.SEVERE,	getEngineLogger(), getSearchLogger(), getBranchingLogger());
-				setLevel(Level.INFO, getMainLogger());
+				setLevel(Level.WARNING, getMainLogger(), getTestLogger());
+				break;
+			}
+			case QUIET: {
+				setLevel(Level.WARNING,	getEngineLogger(), getSearchLogger(), getBranchingLogger());
+				setLevel(Level.INFO, getMainLogger(), getTestLogger());
 				break;
 			}
 			case DEFAULT: {
 				setLevel(Level.WARNING, getEngineLogger(), getBranchingLogger());
-				setLevel(Level.INFO, getMainLogger(), getSearchLogger());
+				setLevel(Level.INFO, getMainLogger(), getSearchLogger(), getTestLogger());
 				break;
 			}
 			case VERBOSE: {
 				setLevel(Level.INFO, getEngineLogger(), getBranchingLogger());
-				setLevel(Level.CONFIG, getMainLogger(), getSearchLogger());
+				setLevel(Level.CONFIG, getMainLogger(), getSearchLogger(), getTestLogger());
 				break;
 			}
 			case SOLUTION: { 
 				setLevel(Level.INFO, getEngineLogger(), getBranchingLogger());
+				setLevel(Level.CONFIG, getTestLogger());
 				setLevel(Level.FINER, getMainLogger(), getSearchLogger());
 				break;
 			}
 			case SEARCH: {
-				setLevel(Level.INFO, getEngineLogger());
-				setLevel(Level.CONFIG, getBranchingLogger());
+				setLevel(Level.CONFIG, getEngineLogger(), getBranchingLogger(), getTestLogger());
 				setLevel(Level.FINEST, getMainLogger(), getSearchLogger());
 				break;
 			}
 			default: {
-				setVerbosity(Verbosity.DEFAULT);
+				setVerbosity(Verbosity.VERBOSE);
 			}
 
 			}

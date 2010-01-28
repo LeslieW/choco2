@@ -22,18 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.instances;
 
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.configure.RestartConfiguration;
-import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.model.Model;
-import choco.kernel.solver.Solution;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.search.measure.IMeasures;
-import db.DbManager;
-import db.DbTables;
-import parser.absconparseur.tools.UnsupportedConstraintException;
-import static parser.instances.ResolutionStatus.*;
+import static parser.instances.ResolutionStatus.ERROR;
+import static parser.instances.ResolutionStatus.OPTIMUM;
+import static parser.instances.ResolutionStatus.SAT;
+import static parser.instances.ResolutionStatus.TIMEOUT;
+import static parser.instances.ResolutionStatus.UNKNOWN;
+import static parser.instances.ResolutionStatus.UNSAT;
+import static parser.instances.ResolutionStatus.UNSUPPORTED;
 
 import java.io.File;
 import java.sql.Timestamp;
@@ -41,6 +36,19 @@ import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import parser.absconparseur.tools.UnsupportedConstraintException;
+import choco.cp.solver.CPSolver;
+import choco.cp.solver.configure.RestartConfiguration;
+import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.model.Model;
+import choco.kernel.solver.Solution;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.search.checker.SolutionCheckerException;
+import choco.kernel.solver.search.measure.IMeasures;
+import db.DbManager;
+import db.DbTables;
 
 /**
  * A class to provide facilities for loading and solving instance described by a file (txt, xml, ...). </br>
@@ -343,7 +351,7 @@ public abstract class AbstractInstanceModel {
 	 * @return <code>true</code> if the solution is valid, <code>false</code> otherwise.
 	 */
 	public void checkSolution() throws SolutionCheckerException {
-		//FIXME checkIsSatisfied(); check les clauses et les logs
+		//FIXME checkIsSatisfied(); checks les clauses
 	}
 
 

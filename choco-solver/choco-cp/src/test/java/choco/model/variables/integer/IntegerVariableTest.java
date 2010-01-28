@@ -261,8 +261,7 @@ public class IntegerVariableTest {
         s.solve();
 
         Assert.assertEquals(s.getNbSolutions(), 0);
-        LOGGER.info("-------------\n" + typeList.get(type) + ":");
-        s.printRuntimeSatistics();
+        LOGGER.info("-------------\n" + typeList.get(type) + ":"+s.runtimeStatistics());
 
     }
 

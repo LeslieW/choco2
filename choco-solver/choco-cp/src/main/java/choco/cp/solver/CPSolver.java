@@ -78,6 +78,7 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.common.util.tools.StringUtils;
 import static choco.kernel.common.util.tools.StringUtils.pad;
@@ -120,6 +121,7 @@ import choco.kernel.solver.search.AbstractSearchLoop;
 import choco.kernel.solver.search.AbstractSearchStrategy;
 import choco.kernel.solver.search.ISolutionPool;
 import static choco.kernel.solver.search.SolutionPoolFactory.makeDefaultSolutionPool;
+import choco.kernel.solver.search.checker.SolutionCheckerEngine;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
@@ -155,7 +157,8 @@ import java.util.logging.Logger;
  */
 public class CPSolver implements Solver {
 
-
+	public final static SolutionCheckerEngine DEFAULT_SOLUTION_CHECKER = new SolutionCheckerEngine();
+	
 	/**
 	 * A constant denoting the true constraint (always satisfied)
 	 */
@@ -164,13 +167,6 @@ public class CPSolver implements Solver {
 	 * A constant denoting the false constraint (never satisfied)
 	 */
 	public static final SConstraint FALSE = new ConstantSConstraint(false);
-
-	/**
-	 * Reference to an object for logging trace statements related to Abtract
-	 * Solver (using the java.util.logging package)
-	 */
-
-	protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	protected final IndexFactory indexfactory;
 	/**
@@ -800,9 +796,7 @@ public class CPSolver implements Solver {
 
 		assert strategy != null;
 		strategy.stopAtFirstSol = firstSolution;
-
-		strategy.setSolutionPool(makeDefaultSolutionPool(solutionPoolCapacity));
-		//clarify : code is too much imbricated
+		strategy.setSolutionPool(makeDefaultSolutionPool(strategy, solutionPoolCapacity));
 		generateSearchLoop();
 		generateLimitManager();
 		
@@ -1742,6 +1736,10 @@ public class CPSolver implements Solver {
 	public final IntVar getIntVar(int i) {
 		return intVars.get(i);
 	}
+	
+	public final IntVar quickGetIntVar(int i) {
+		return intVars.getQuick(i);
+	}
 
 	/**
 	 * Add a integer variable to the integer variables list
@@ -1817,6 +1815,9 @@ public class CPSolver implements Solver {
 		return floatVars.get(i);
 	}
 
+	public final RealVar quickGetRealVar(int i) {
+		return floatVars.getQuick(i);
+	}
 	/**
 	 * Add a real variable to the real variables list
 	 *
@@ -1845,6 +1846,10 @@ public class CPSolver implements Solver {
 		return setVars.get(i);
 	}
 
+	public final SetVar quickGetSetVar(int i) {
+		return setVars.getQuick(i);
+	}
+	
 	/**
 	 * Add a set variable to the set variables list
 	 *
@@ -1872,6 +1877,10 @@ public class CPSolver implements Solver {
 		return taskVars.get(i);
 	}
 
+	public final TaskVar quickGetTaskVar(int i) {
+		return taskVars.getQuick(i);
+	}
+	
 	/**
 	 * retrieving the total number of constraints over integers
 	 *
@@ -1893,7 +1902,19 @@ public class CPSolver implements Solver {
 	public final IntSConstraint getIntConstraint(int i) {
 		return (IntSConstraint) constraints.get(i);
 	}
+	
+	public Iterator<IntDomainVar> getIntVarIterator() {
+		return intVars.quickIterator();
+	}
+	
+	public Iterator<SetVar> getSetVarIterator() {
+		return setVars.quickIterator();
+	}
 
+	public Iterator<RealVar> getRealVarIterator() {
+		return floatVars.quickIterator();
+	}
+	
 	public Iterator<SConstraint> getIntConstraintIterator() {
 		return new Iterator<SConstraint>() {
 			DisposableIntIterator it = constraints.getIndexIterator();
@@ -2311,34 +2332,8 @@ public class CPSolver implements Solver {
 	 * @return a boolean indicating wether the solution is correct or not.
 	 */
 	public Boolean checkSolution(boolean enableConsistency) {
-		Boolean isSolution = true;
-        if(LOGGER.isLoggable(Level.CONFIG)){
-            LOGGER.config("=== Solution checker");
-            LOGGER.config("    Check decision variables and constraints:");
-            LOGGER.config("    - ");
-        }
-		// Check variables
-		isSolution &= checkDecisionVariables();
-        if(LOGGER.isLoggable(Level.CONFIG)){
-            if (isSolution) {
-                LOGGER.config("    Every decision variables are instantiated.");
-            } else {
-                LOGGER.config("    One or more decision variable is not instantiated,");
-                LOGGER.config("    or the search is not finished.");
-            }
-            LOGGER.info("    - ");
-        }
-		// Check constraints
-		isSolution &= checkConstraints(enableConsistency);
-        if(LOGGER.isLoggable(Level.CONFIG)){
-            if (isSolution) {
-                LOGGER.config("    Every constraints are satisfied.");
-            } else {
-                LOGGER.config("    One or more constraint is not satisfied,");
-                LOGGER.config("    or one or more constraint is not consistent.");
-            }
-        }
-		return isSolution;
+		DEFAULT_SOLUTION_CHECKER.setEnableConsistency(enableConsistency);
+		return DEFAULT_SOLUTION_CHECKER.inspectSolution(this);
 	}
 
 	/**
@@ -2349,102 +2344,36 @@ public class CPSolver implements Solver {
 	public boolean checkDecisionVariables() {
 		boolean isOk = true;
         boolean check;
-		//FIXME test logging level outside loops
-        //FIXME put a decision flag inside the variable class instead of the list ?
         if (intDecisionVars != null) {
 			for (IntDomainVar intDecisionVar : intDecisionVars) {
                 isOk &= check = intDecisionVar.isInstantiated();
-                if(LOGGER.isLoggable(Level.CONFIG)){
-                    printFail(intDecisionVar.getName(), check);
-                }
+//                if(LOGGER.isLoggable(Level.CONFIG)){
+//                    printFail(intDecisionVar.getName(), check);
+//                }
 			}
 		}
 
 		if (setDecisionVars != null) {
 			for (SetVar setDecisionVar : setDecisionVars) {
 				isOk &= check = setDecisionVar.isInstantiated();
-                if(LOGGER.isLoggable(Level.CONFIG)){
-                    printFail(setDecisionVar.getName(), check);
-                }
+//                if(LOGGER.isLoggable(Level.CONFIG)){
+//                    printFail(setDecisionVar.getName(), check);
+//                }
 			}
 		}
 
 		if (floatDecisionVars != null) {
 			for (RealVar floatDecisionVar : floatDecisionVars) {
 				isOk &= check = floatDecisionVar.isInstantiated();
-                if(LOGGER.isLoggable(Level.CONFIG)){
-                    printFail(floatDecisionVar.getName(), check);
-                }
+//                if(LOGGER.isLoggable(Level.CONFIG)){
+//                    printFail(floatDecisionVar.getName(), check);
+//                }
 			}
 		}
 		return isOk;
 	}
 
-	/**
-	 * Check the constraints
-	 * @param enableConsistency check also constraints with not instantiated variables
-	 * @return boolean
-	 */
-	public boolean checkConstraints(boolean enableConsistency){
-		boolean isOk = true;
-		// Checck constraints
-		Iterator<SConstraint> ctit = this.getIntConstraintIterator();
-		while (ctit.hasNext()) {
-			SConstraint c = ctit.next();
-            boolean check;
-			if(c instanceof AbstractIntSConstraint){
-				AbstractIntSConstraint ic = (AbstractIntSConstraint)c;
-				int[] tuple = new int[c.getNbVars()];
-				int[] tupleL = new int[c.getNbVars()];
-				int[] tupleU = new int[c.getNbVars()];
-				boolean fullInstantiated = true;
-				for(int i = 0; i < c.getNbVars(); i++){
-					IntDomainVar v = (IntDomainVar)c.getVar(i);
-					if(v.isInstantiated()){
-						tuple[i] = v.getVal();
-						tupleL[i] = tuple[i];
-						tupleU[i] = tuple[i];
-					}else{
-						fullInstantiated = false;
-						tupleL[i] = v.getInf();
-						tupleU[i] = v.getSup();
-					}
-				}
-                try{
-                    if(fullInstantiated){
-                        check = ic.isSatisfied(tuple);
-                        isOk &= check;
-                        if(LOGGER.isLoggable(Level.CONFIG)){
-                            printFail(c.pretty(), check);
-                        }
-                    }else if(enableConsistency){
-                        check = (ic.isSatisfied(tupleL) && ic.isSatisfied(tupleU));
-                        isOk &= check;
-                        if(LOGGER.isLoggable(Level.CONFIG)){
-                            printFail(c.pretty(), check);
-                        }
-                    }
-                }catch (UnsupportedOperationException e){
-                    check =c.isSatisfied();
-                    isOk &= check;
-                    if(LOGGER.isLoggable(Level.CONFIG)){
-                        printFail(" => isSatisfied(int[]) is not defined for "+c.pretty(), check);
-                    }
-                }
-			}else{
-                check =c.isSatisfied();
-                isOk &= check;
-                if(LOGGER.isLoggable(Level.CONFIG)){
-                    printFail(c.pretty(), check);
-                }
-			}
-		}
-		return isOk;
-	}
-
-    private static void printFail(String input, boolean check){
-        LOGGER.config(pad((check?"":"FAILURE! => "),13, " ") +input);
-    }
+	
 
 	/**
      * bug 2874124
@@ -2644,6 +2573,8 @@ public class CPSolver implements Solver {
 		strategy.writeSolution(sol);
 		return sol;
 	}
+	//FIXME should be delegated to the search strategy
+	//For example, measures are not updated, solution is not check, no logging statements.
 
 
 	/**
@@ -2697,9 +2628,6 @@ public class CPSolver implements Solver {
         return true;
     }
 
-    private boolean checkWithIsSatisfied(){
-        return checkSolution();
-    }
 
 
 	// **********************************************************************

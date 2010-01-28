@@ -43,12 +43,12 @@ public class MinimumEdgeDeletion extends PatternExample {
 	protected int nbBools;
 
 	protected double pairProba;
-	
+
 	protected int nbPairs;
 
 	protected int[] instantiated;
-	
-	
+
+
 	protected Boolean[][] pairs;
 
 	/**
@@ -124,8 +124,10 @@ public class MinimumEdgeDeletion extends PatternExample {
 
 	@Override
 	public void solve() {
+		//_s.setSolutionPoolCapacity(5);
 		_s.generateSearchStrategy();
 		_s.launch();
+		_s.checkSolution();
 	}
 
 	@Override
@@ -134,7 +136,7 @@ public class MinimumEdgeDeletion extends PatternExample {
 	}
 
 	public static void main(String[] args) {
-		//ChocoLogging.setVerbosity(Verbosity.DEFAULT);
+		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
 		new MinimumEdgeDeletion().execute();
 	}
 }
