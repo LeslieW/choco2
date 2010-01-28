@@ -1,8 +1,9 @@
-package parser.instances;
+package choco.kernel.solver.search.checker;
 
 public class SolutionCheckerException extends Exception {
 
 	private static final long serialVersionUID = 6382585015655627735L;
+
 
 	public SolutionCheckerException(String message) {
 		super(message);

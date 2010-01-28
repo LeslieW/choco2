@@ -88,29 +88,8 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	protected AbstractGlobalSearchLimit encounteredLimit = null;
 
-
-	//ALREADY EXIST IN THE SOLVER
-	//	/**
-	//	 * set the maximal search depth for logging statements
-	//	 */
-	//	public void setLoggingMaxDepth(int loggingMaxDepth) {
-	//		this.loggingMaxDepth = loggingMaxDepth;
-	//	}
-	//
-	//	/**
-	//	 * get the maximal search depth for logging statements
-	//	 */
-	//	public int getLoggingMaxDepth() {
-	//		return loggingMaxDepth;
-	//	}
-	//
-	//	/**
-	//	 * maximal search depth for logging statements
-	//	 */
-	//	protected int loggingMaxDepth = 5;
-
 	/**
-	 * /**
+	 * 
 	 * the goal that needs be solved to drive the exploration
 	 */
 	public AbstractIntBranchingStrategy mainGoal;

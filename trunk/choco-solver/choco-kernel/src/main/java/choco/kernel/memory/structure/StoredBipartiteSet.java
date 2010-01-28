@@ -113,6 +113,7 @@ public class StoredBipartiteSet<E> extends AbstractList<E> {
 			public E next() {
 		            return elementData[cursor++];
 			}
+			
 
 			public void remove() {
 			    throw new UnsupportedOperationException("cant remove with quick iterator.");

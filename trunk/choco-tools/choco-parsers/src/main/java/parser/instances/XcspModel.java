@@ -23,6 +23,21 @@
 package parser.instances;
 
 
+import static parser.instances.xcsp.XcspSettings.DOMOVERDEG;
+import static parser.instances.xcsp.XcspSettings.DOMOVERWDEG;
+import static parser.instances.xcsp.XcspSettings.IMPACT;
+import static parser.instances.xcsp.XcspSettings.SIMPLE;
+import static parser.instances.xcsp.XcspSettings.VERSATILE;
+
+import java.io.File;
+
+import parser.absconparseur.components.PVariable;
+import parser.absconparseur.tools.InstanceParser;
+import parser.absconparseur.tools.SolutionChecker;
+import parser.absconparseur.tools.UnsupportedConstraintException;
+import parser.chocogen.ChocoFactory;
+import parser.chocogen.ObjectFactory;
+import parser.instances.xcsp.XcspSettings;
 import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.integer.extension.ValidityChecker;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
@@ -31,17 +46,7 @@ import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.model.Model;
 import choco.kernel.solver.Solver;
-import parser.absconparseur.components.PVariable;
-import parser.absconparseur.tools.InstanceParser;
-import parser.absconparseur.tools.SolutionChecker;
-import parser.absconparseur.tools.UnsupportedConstraintException;
-import parser.chocogen.ChocoFactory;
-import parser.chocogen.ObjectFactory;
-import parser.instances.xcsp.XcspSettings;
-
-import java.io.File;
-
-import static parser.instances.xcsp.XcspSettings.*;
+import choco.kernel.solver.search.checker.SolutionCheckerException;
 
 //TODO InstanceParser should implement the interface. 
 class ParserWrapper implements InstanceFileParser {

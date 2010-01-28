@@ -34,16 +34,18 @@ public enum Verbosity {
 	
 	/** disable logging*/
 	OFF(Integer.MIN_VALUE),
-	/** display only severe messages*/
+	/** display only severe messages from core loggers and warning messages otherwise*/
 	SILENT(0), 
-	/** display warning messages and some info messages (non related to the search)*/
-	DEFAULT(50), 
-	/** display short solving logs*/
-	VERBOSE(100), 
-	/** display all solutions found*/
-	SOLUTION(200), 
+	/** display only severe messages from core loggers and info messages otherwise.*/
+	QUIET(100), 
+	/** display information about initial and final state of the search */
+	DEFAULT(200), 
+	/** display search information at regular node intervals */
+	VERBOSE(300), 
+	/** display all solutions */
+	SOLUTION(400), 
 	/** display the search tree */
-	SEARCH(300) , 
+	SEARCH(500) , 
 	/** display all logs*/
 	FINEST(Integer.MAX_VALUE);
 	

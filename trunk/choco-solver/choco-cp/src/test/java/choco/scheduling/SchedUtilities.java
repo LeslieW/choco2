@@ -22,6 +22,18 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.scheduling;
 
+import static org.junit.Assert.*;
+
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -40,13 +52,6 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.AbstractTask;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
-import static org.junit.Assert.assertEquals;
-
-import java.awt.*;
-import java.util.*;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -95,8 +100,14 @@ public final class SchedUtilities {
 			}else if(s.getTimeCount() == bestTime) {
 				bests.add(i);
 			}
-			if(nbsol>=0) {
+			if(nbsol > 0) {
 				assertEquals("check-cmp NbSols "+str,nbsol,s.getSolutionCount());
+				assertTrue("isFeasible", s.isFeasible());
+				assertTrue("solution checker", s.checkSolution());
+			}else if(nbsol>=0) {
+				assertEquals("check-cmp NbSols "+str,nbsol,s.getSolutionCount());
+				assertFalse("isFeasible", s.isFeasible());
+				
 			}else if(i>0){
 				assertEquals("check-cmp NbSols "+str,solvers[i-1].getSolutionCount(),s.getSolutionCount());
 			}
@@ -105,7 +116,6 @@ public final class SchedUtilities {
 			}else if(nbNodes == CHECK_NODES && i>0){
 				assertEquals("check-cmp NbNodes "+str,solvers[i-1].getNodeCount(),s.getNodeCount());
 			}
-			assertEquals("solution checker",s.isFeasible(), s.checkSolution());
 		}
 		LOGGER.log(Level.INFO,"Best solver: index {0} in {1}ms", new Object[]{bests,bestTime});
 	}
@@ -133,7 +143,7 @@ public final class SchedUtilities {
 			if(nbNodes>=0) {
 				assertEquals(jmsg("check nb nodes",label),nbNodes,solver.getNodeCount());
 			}
-			assertEquals("solution checker",solver.isFeasible(), solver.checkSolution());
+			assertTrue("solution checker", solver.checkSolution());
 		}
 	}
 
