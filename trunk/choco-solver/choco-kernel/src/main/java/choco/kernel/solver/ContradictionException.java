@@ -62,20 +62,7 @@ public class ContradictionException extends Exception {
 
     private Object domOverDegContradictionCause;
 
-    /**
-	 * An exception may have a local cause (the last variable
-	 * / constraint responsible for the failure)
-	 */
 
-	/**
-	 * Constructs a new contradiction with the specified cause.
-	 *
-	 */
-	public ContradictionException() {
-		this(null,Type.UNKNOWN);
-	}
-	
-	
     /**
 	 * Constructs a new contradiction with the specified cause.
 	 *
@@ -83,7 +70,7 @@ public class ContradictionException extends Exception {
 	 *              for the failure of propagation
      * @param contradictionType type of contradiction
 	 */
-	public ContradictionException(Object contradictionCause,
+	protected ContradictionException(Object contradictionCause,
 			Type contradictionType) {
 		super();
 		this.contradictionCause = contradictionCause;

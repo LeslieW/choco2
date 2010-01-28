@@ -23,7 +23,9 @@
 package choco.kernel.solver.propagation;
 
 import choco.kernel.solver.ContradictionException;
-import static choco.kernel.solver.ContradictionException.Type.*;
+import static choco.kernel.solver.ContradictionException.Type.CONSTRAINT;
+import static choco.kernel.solver.ContradictionException.Type.VARIABLE;
+import choco.kernel.solver.ContradictionExceptionFactory;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.measure.FailMeasure;
 import choco.kernel.solver.variables.Var;
@@ -47,11 +49,11 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
 	/**
 	 * Storing the last contradiction (reusable).
 	 */
-	protected final ContradictionException reuseException  = new ContradictionException(null, UNKNOWN);
+	protected final ContradictionException reuseException  = ContradictionExceptionFactory.get();
 	/**
 	 * Retrieves the solver of the entity.
-	 */
-
+     * @return piloting solver 
+     */
 	protected final FailMeasure reuseFailMeasure;
 	
 	public final Solver getSolver(){

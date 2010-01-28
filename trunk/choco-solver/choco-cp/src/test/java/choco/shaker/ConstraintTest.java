@@ -452,7 +452,7 @@ public class ConstraintTest {
         while(itv.hasNext()){
             v = itv.next();
             if(!v.canBeInstantiatedTo(values[vars.get(v)])){
-                throw new ContradictionException("stillInstanciable", ContradictionException.Type.UNKNOWN);
+                s.getPropagationEngine().raiseContradiction("stillInstanciable", ContradictionException.Type.UNKNOWN);
             }
         }
     }

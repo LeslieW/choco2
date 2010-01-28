@@ -285,7 +285,9 @@ public class GeometricKernel {
 
         stp.opt.propag_failed=false;
 
-        if (stp.opt.try_propagation) throw new ContradictionException();
+        if (stp.opt.try_propagation) {
+            stp.getSolver().getPropagationEngine().raiseContradiction(null, ContradictionException.Type.UNKNOWN);
+        }
 
 		return true;
 	}
