@@ -45,7 +45,7 @@ import choco.kernel.solver.variables.scheduling.ITask;
  */
 public abstract class AbstractVilimTree extends ProperBinaryTree implements IVilimTree {
 
-	enum NodeType {THETA, LAMBDA, NIL, INTERNAL}
+	enum NodeType {THETA, LAMBDA, OMEGA, NIL, INTERNAL}
 
 	private TreeMode mode;
 
