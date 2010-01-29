@@ -1,16 +1,21 @@
 package choco.kernel.solver.search.checker;
 
-import java.util.Iterator;
-import java.util.logging.Level;
-
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.set.SetVar;
 
+import java.util.Iterator;
+import java.util.logging.Level;
+
 public abstract class AbstractSolutionCheckerEngine implements ISolutionCheckerEngine {
 
+    /**
+     * Check satisfaction of every constraints involved within the {@code solver}.
+     * @param solver containing solver
+     * @throws SolutionCheckerException if one or more constraint is not satisfied.
+     */
 	@Override
 	public final void checkConstraints(Solver solver) throws SolutionCheckerException {
 		final Iterator<SConstraint> ctit = solver.getIntConstraintIterator();
@@ -19,12 +24,25 @@ public abstract class AbstractSolutionCheckerEngine implements ISolutionCheckerE
 		}		
 	}
 
+     /**
+     * Check the current solution of the {@code solver}.
+     * It runs over variables (check instantiation) and constraints (call isSatisfied).
+     * By defautlt, it checks the consistency and ignore the nogood recording.
+     *
+     * @param solver involving solver
+     * @throws SolutionCheckerException if the current solution is not correct.
+     */
 	@Override
 	public void checkSolution(Solver solver) throws SolutionCheckerException {
 		checkVariables(solver);
 		checkConstraints(solver);		
 	}
 
+    /**
+     * Check instantiation of every variables involved within the {@code solver}.
+     * @param solver containing solver
+     * @throws SolutionCheckerException if one or more variable is not instantiated.
+     */
 	@Override
 	public final void checkVariables(Solver solver) throws SolutionCheckerException {
 		final Iterator<IntDomainVar> ivIter = solver.getIntVarIterator();
@@ -41,6 +59,11 @@ public abstract class AbstractSolutionCheckerEngine implements ISolutionCheckerE
 		}		
 	}
 
+    /**
+     * Inspect satisfaction of every constraints declared in {@code solver}.
+     * @param solver containing solver
+     * @return false if one or more constraint is not satisfied.
+     */
 	@Override
 	public final boolean inspectConstraints(Solver solver) {
 		boolean isOk = true;
@@ -51,6 +74,13 @@ public abstract class AbstractSolutionCheckerEngine implements ISolutionCheckerE
 		return isOk;
 	}
 
+    /**
+     * Inspect the current solution of {@code solver}.
+     * It runs over variables (check instantiation) and constraints (call isSatisfied).
+     * By defautlt, it checks the consistency and ignore the nogood recording.
+     * @param solver involving solver
+     * @return false if the current solution is not correct
+     */
 	@Override
 	public boolean inspectSolution(Solver solver) {
 		LOGGER.log(Level.INFO, "- Check solution: {0}", this.getClass().getSimpleName());
@@ -68,6 +98,11 @@ public abstract class AbstractSolutionCheckerEngine implements ISolutionCheckerE
 		return isOk;
 	}
 
+    /**
+     * Inspect instantiation of every variables involved in {@code solver}.
+     * @param solver containing solver.
+     * @return false if one or more variable is not instantiated.
+     */
 	@Override
 	public final boolean inspectVariables(Solver solver) {
 		boolean isOk = true;
