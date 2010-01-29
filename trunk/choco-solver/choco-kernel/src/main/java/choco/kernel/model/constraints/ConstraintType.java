@@ -60,6 +60,7 @@ public enum ConstraintType {
     IFTHENELSE("ifthenelse", "constraint.ifthenelse"),
     IMPLIES("implies", "constraint.implies"),
     INVERSECHANNELING("inverse channeling", "constraint.channeling"),
+    INCREASINGNVALUE("increasing n value", "constraint.increasingnvalue"),
     DOMAIN_CHANNELING("domain channeling", "constraint.channeling"),
     INVERSE_SET("inverse set", "constraint.inverseset"),
     ISINCLUDED("isIncluded", "constraint.isIncluded"),

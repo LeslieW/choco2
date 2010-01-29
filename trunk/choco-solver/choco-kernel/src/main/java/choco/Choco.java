@@ -2330,7 +2330,17 @@ public class Choco{
 		return new ComponentConstraint<IntegerVariable>(ConstraintType.STRETCHPATH, stretchesParameters, vars);
 	}
 
-
+    /**
+     * The variables of the collection VARIABLES are increasing.
+     * In addition, NVAL is the number of distinct values taken by the variables of the collection VARIABLES.
+     * @param nval number of distinct values
+     * @param vars collection of variables
+     * @return increasing n value constraint
+     */
+    public static Constraint increasing_nvalue(IntegerVariable nval, IntegerVariable[] vars){
+        return new ComponentConstraint<IntegerVariable>(ConstraintType.INCREASINGNVALUE, null,
+                ArrayUtils.append(new IntegerVariable[]{nval},vars));
+    }
 
 
 	public static Constraint pack(int[] sizes, int nbBins, int capacity, String... options) {
@@ -2568,7 +2578,9 @@ public class Choco{
 	/**
 	 * Each task of the collection tasks1 should not overlap any task of the collection tasks2.
 	 * The model only provides a decomposition with reified precedences because the coloured cumulative is not available.
-	 * @see {http://www.emn.fr/x-info/sdemasse/gccat/Cdisjoint_tasks.html#uid11633}
+	 * @param tasks1 first set of tasks
+     * @param tasks2 second set of tasks
+     * @see {http://www.emn.fr/x-info/sdemasse/gccat/Cdisjoint_tasks.html#uid11633}
      * @return Constraint disjoint
 	 */
 	public static Constraint[] disjoint(TaskVariable[] tasks1,TaskVariable[] tasks2) {
@@ -2595,7 +2607,10 @@ public class Choco{
 
 	/**
 	 * T1 ends before t2 starts or t1 precedes t2.
-	 */
+     * @param t1 a task
+     * @param t2 another task
+     * @return precedence constraint
+     */
 	public static Constraint precedence(TaskVariable t1, TaskVariable t2) {
 		return precedenceDisjoint(t1, t2, ONE);
 	}
@@ -2632,7 +2647,11 @@ public class Choco{
 
 	/**
 	 * represents a disjunction without setup times
-	 */
+     * @param t1 a task
+     * @param t2 another task
+     * @param direction
+     * @return precedence disjoint constraint
+     */
 	public static Constraint precedenceDisjoint(TaskVariable t1, TaskVariable t2, IntegerVariable direction) {
 		return precedenceDisjoint(t1, t2, direction, 0, 0);
 	}
@@ -2649,6 +2668,7 @@ public class Choco{
 	 * @param direction  boolean variable which reified the precedence relation. 
 	 * @param forwardSetup setup times between t1 and t2
 	 * @param backwardSetup setup times between t2 and t1.
+     * @return precedence disjoint constraint
 	 */
 	public static Constraint precedenceDisjoint(TaskVariable t1, TaskVariable t2, IntegerVariable direction, int forwardSetup, int backwardSetup) {
 		return new ComponentConstraint<Variable>(ConstraintType.PRECEDENCE_DISJOINT, Boolean.TRUE, new Variable[]{t1,constant(forwardSetup), t2, constant(backwardSetup), direction});
