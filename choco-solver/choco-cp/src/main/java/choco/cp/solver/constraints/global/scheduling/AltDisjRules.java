@@ -81,7 +81,6 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 			//Should insert tasks to TLTO tree as well
 			altDisjTreeTLTO.insert(rtasks[i].getTaskVar());
 		}
-
 	}
 	
 	protected void applyRemovals() throws ContradictionException {
@@ -151,9 +150,8 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		removals.add(respTask);
 		if(!omega)
 			altDisjTreeTLTO.removeFromLambda(respTask.getTaskVar());
-		else{
+		else
 			altDisjTreeTLTO.removeFromOmega(respTask);
-		}
 	}
 	
 	@Override
@@ -323,37 +321,32 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		if(rtj.isRegular())
 			if(altDisjTreeTLTO.getTime() > j.getLCT()) {rtj.fail();}
 		do{
-			//Remove Task j from either Theta, or Omega, and insert it in Lambda
-			if(rtj.isOptional()){
-				altDisjTreeTLTO.removeFromOmegaAndInsertInLambda(rtj);
-			}
-			else if(rtj.isRegular()){
-				altDisjTreeTLTO.removeFromThetaAndInsertInLambda(rtj);
-			}
-			else{
-				throw new SolverException("Disabled Tasks should not exist in the queue");
-			}
-			rqueue.poll();
-			if(!rqueue.isEmpty()) {
-				rtj=rqueue.peek();
-				j= rtj.getTaskVar();
-			}
-			else {break;}
-			if(rtj.isRegular()){
-				if(altDisjTreeTLTO.getTime() > j.getLCT()) {rtj.fail();}//Overload Rule applies.
-				checkTL(j, ECT);
-				checkTO(j, ECT);
-				checkFTLO(j, ECT);
-			}
-			else if(rtj.isOptional()){
-				checkSTLO(rtj, ECT);
-			}
+				//Remove Task j from either Theta, or Omega, and insert it in Lambda
+				if(rtj.isOptional()){
+					altDisjTreeTLTO.removeFromOmegaAndInsertInLambda(rtj);
+				}
+				else if(rtj.isRegular()){
+					altDisjTreeTLTO.removeFromThetaAndInsertInLambda(rtj);
+				}
+				rqueue.poll();
+				if(!rqueue.isEmpty()) {
+					rtj=rqueue.peek();
+					j= rtj.getTaskVar();
+				}
+				else {break;}
+				if(rtj.isRegular()){
+					if(altDisjTreeTLTO.getTime() > j.getLCT()) {rtj.fail();}//Overload Rule applies.
+					checkTL(j, ECT);
+					checkTO(j, ECT);
+					checkFTLO(j, ECT);
+				}
+				else if(rtj.isOptional()){
+					checkSTLO(rtj, ECT);
+				}
 		}while(!rqueue.isEmpty());
-		System.out.println("Applying removals to optional tasks"+removals);
 		//Apply all removals
 		applyRemovals();
 		return updateEST();
-		
 	}
 	
 	private void checkFTLO(ITask j, TreeMode mode){
@@ -420,7 +413,6 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 	 * @param j
 	 */
 	private void checkSTLO(IRTask j, TreeMode mode){
-		
 		if(!removals.contains(j)){
 		//To overcome the problem of not applying a removal of optional tasks immediately.
 			//Temporarily remove task j from omega, and embed it in Theta
@@ -462,15 +454,15 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 				break;
 			case LST:
 				final int est = j.getTaskVar().getEST();
-				if( ectTUO < est || ectTL < est)
+				if( ectTUO < est || ectTL < est){
 					setAsRemoval(j, true);
+				}
 				break;
 			}
 		}
 	}
 	
 	private void checkTL(ITask j, TreeMode mode) throws ContradictionException{
-		
 		switch(mode){
 		case ECT:
 			while(altDisjTreeTLTO.getGrayTime() > j.getLCT()){
@@ -489,8 +481,11 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 						else{
 							throw new SolverException("Eliminated tasks should not exist in a TL tree");
 						}
-					}
-					else{addUpdate(rti,altDisjTreeTLTO.getTime());}
+					}else{
+						//******************
+						if(rti.isRegular())
+						//******************	
+							addUpdate(rti,altDisjTreeTLTO.getTime());}
 				}
 				altDisjTreeTLTO.removeFromLambda(i);
 			}
@@ -510,7 +505,11 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 							throw new SolverException("Eliminated tasks should not exist in a TL tree");
 						}
 					}
-					else{addUpdate(rti,altDisjTreeTLTO.getTime());}
+					else{
+						//*****************
+						if(rti.isRegular())
+						//*****************
+							addUpdate(rti,altDisjTreeTLTO.getTime());}
 				}
 				altDisjTreeTLTO.removeFromLambda(i);
 			}
@@ -519,6 +518,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 				throw new UnsupportedOperationException("unknown tree mode.");
 		}
 	}
+	
 	
 	private void checkTO(ITask j, TreeMode mode)
 	{
@@ -529,7 +529,6 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 					final IRTask rti= (IRTask) altDisjTreeTLTO.getResponsibleTOTask();
 					//Remove optional task from OMEGA
 					setAsRemoval(rti, true);
-					
 				}
 				break;
 			case LST:
@@ -543,6 +542,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 			}
 	}
 	
+	
 	private void setupEF(final TreeMode mode,final Comparator<IRTask> queueComp){
 		this.clear();
 		//Initialise Edge Finding Tree
@@ -552,6 +552,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 	}
 	
 	protected boolean edgeFindingLCTSK()throws ContradictionException{
+		
 		//rqueue should be sorted in ascending order of EST.
 		//While Tasks List should still be sorted in ascending order of EST.
 		setupEF(LST, makeREarliestStartingTimeCmp());
@@ -561,13 +562,11 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 			if(altDisjTreeTLTO.getTime() < j.getEST()) {rtj.fail();}
 		do{
 			//Remove Task j from either Theta, or Omega, and insert it in Lambda
-			if(rtj.isOptional())
+			if(rtj.isOptional()){
 				altDisjTreeTLTO.removeFromOmegaAndInsertInLambda(rtj);
-			else if(rtj.isRegular()){
-				altDisjTreeTLTO.removeFromThetaAndInsertInLambda(j);
 			}
-			else{
-				throw new SolverException("Disabled Tasks should not exist in the queue");
+			else if(rtj.isRegular()){
+				altDisjTreeTLTO.removeFromThetaAndInsertInLambda(rtj);
 			}
 			rqueue.poll();
 			if(!rqueue.isEmpty()) {

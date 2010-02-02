@@ -55,10 +55,4 @@ public interface IThetaOmegaTree extends IThetaLambdaTree{
 	 * @return true if the operation is successful.
 	 */
 	boolean removeFromOmegaAndInsertInLambda(IRTask rtask);
-	/**
-	 * Removes task from Omega, and insert it in Lambda. 
-	 * @param task
-	 * @return true if the operation is successful
-	 */
-	boolean removeFromOmegaAndInsertInLambda(ITask task);
 }
