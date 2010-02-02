@@ -104,9 +104,6 @@ public class AltDisjTreeTLTO extends AbstractThetaTree implements IThetaLambdaTr
 					throw new SolverException("can't initialize Omega Node in Alternative Edge Finding TLTO Tree");
 				}
 			}
-			else{
-				throw new SolverException(" can't add eliminated task to the tree");
-			}
 		}
 		fireTreeChanged();
 	}
@@ -170,13 +167,14 @@ public class AltDisjTreeTLTO extends AbstractThetaTree implements IThetaLambdaTr
 		}
 		return false;
 	}
-	private boolean removeFromOmegaAndInsertInLambda(ITask task,Object resp){
+	private boolean removeFromOmegaAndInsertInLambda(IRTask task,Object resp){
 			
-			final IBinaryNode leaf = getLeaf(task);
+			final IBinaryNode leaf = getLeaf(task.getTaskVar());
 			final AltDisjStatusTLTO status =  getNodeStatus(leaf);
 			if(status.getType() == AbstractVilimTree.NodeType.OMEGA) {
-				//Remove Task first from Omega
+				//Remove task first from Omega
 				status.removeFromOmega();
+				//leaf.fireStatusChanged();
 				nbOmegaTasks --;
 				//Then add the Task to Lambda 
 				status.insertInLambda(resp);
@@ -222,12 +220,9 @@ public class AltDisjTreeTLTO extends AbstractThetaTree implements IThetaLambdaTr
 	}
 	@Override
 	public boolean removeFromOmegaAndInsertInLambda(IRTask task) {
-		return this.removeFromOmegaAndInsertInLambda(task.getTaskVar(), task);
+		return this.removeFromOmegaAndInsertInLambda(task, task);
 	}
-	@Override
-	public boolean removeFromOmegaAndInsertInLambda(ITask task) {
-		return this.removeFromOmegaAndInsertInLambda(task,task);
-	}
+	
 	
 	public int getNbOmegaTasks() {
 		return nbOmegaTasks;
