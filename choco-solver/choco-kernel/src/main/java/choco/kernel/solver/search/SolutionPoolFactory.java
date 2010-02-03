@@ -103,7 +103,7 @@ abstract class AbstractSolutionPool implements ISolutionPool {
 	}
 
 	@Override
-	public final int size() {
+	public int size() {
 		return Math.min(capacity, strategy.getSolutionCount());
 	}
 
@@ -142,9 +142,11 @@ final class NoSolutionPool extends AbstractSolutionPool {
 	protected final static NoSolutionPool SINGLETON = new NoSolutionPool();
 
 
-	private NoSolutionPool() {
-		super(null,0);
+	
+	protected NoSolutionPool() {
+		super(null, 0);
 	}
+
 
 	@Override
 	public List<Solution> asList() {
@@ -160,6 +162,13 @@ final class NoSolutionPool extends AbstractSolutionPool {
 	@Override
 	public void recordSolution(Solver solver) {}
 
+
+	@Override
+	public int size() {
+		return capacity;
+	}
+
+	
 }
 
 
