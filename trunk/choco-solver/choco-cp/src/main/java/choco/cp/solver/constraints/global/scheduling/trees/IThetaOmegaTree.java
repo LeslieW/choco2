@@ -25,7 +25,7 @@ package choco.cp.solver.constraints.global.scheduling.trees;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
 
-public interface IThetaOmegaTree extends IThetaLambdaTree{
+public interface IThetaOmegaTree extends IThetaLambdaTree {
 
 	/**
 	 * 
