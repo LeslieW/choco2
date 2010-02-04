@@ -49,11 +49,12 @@ public interface RecomputableElement {
     public static int INT = 1;
     public static int VECTOR = 2;
     public static int INTVECTOR = 3;
-    public static int LONG = 4;
-    public static int DOUBLE = 5;
-    public static int OBJECT = 6;
+    public static int DOUBLEVECTOR = 4;
+    public static int LONG = 5;
+    public static int DOUBLE = 6;
+    public static int OBJECT = 7;
 
-    public static int NB_TYPE = 7;
+    public static int NB_TYPE = 8;
     
     public int getType();
 

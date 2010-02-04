@@ -156,6 +156,21 @@ public class EnvironmentCopying extends AbstractEnvironment {
 		return new RcIntVector(this,entries);
 	}
 
+    @Override
+    public IStateDoubleVector makeDoubleVector() {
+        return new RcDoubleVector(this);
+    }
+
+    @Override
+    public IStateDoubleVector makeDoubleVector(int size, double initialValue) {
+        return new RcDoubleVector(this,size,initialValue);
+    }
+
+    @Override
+    public IStateDoubleVector makeDoubleVector(double[] entries) {
+        return new RcDoubleVector(this,entries);
+    }
+
 //    @Override
 //	public IStateBitSet makeBitSet(int size) {
 //		return new RcBitSet(this,size);

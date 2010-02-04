@@ -93,20 +93,30 @@ public interface IEnvironment {
      */
 
     final int INT_VECTOR_TRAIL = 3;
+
+    /**
+     * Index of the {@link choco.kernel.memory.trailing.trail.StoredDoubleVectorTrail} for storing
+     * double vectors.
+     *
+     */
+
+    final int DOUBLE_VECTOR_TRAIL = 4;
     /**
      * Index of the {@link choco.kernel.memory.trailing.trail.StoredDoubleTrail} for storing
      * integer vectors.
      *
      */
 
-    final int FLOAT_TRAIL = 4;
+
+
+    final int FLOAT_TRAIL = 5;
     /**
      * Index of the {@link choco.kernel.memory.trailing.trail.StoredLongTrail} for storing
      * integer vectors.
      *
      */
 
-    final int LONG_TRAIL = 5;
+    final int LONG_TRAIL = 6;
 
 
     /**
@@ -114,7 +124,8 @@ public interface IEnvironment {
      * integer vectors.
      *
      */
-    final int BTREE_TRAIL = 6;
+    final int BTREE_TRAIL = 7;
+
 
 
     /**
@@ -246,6 +257,33 @@ public interface IEnvironment {
      */
 
     IStateIntVector makeIntVector(int[] entries);
+
+    /**
+     * Factory pattern: new IStateDoubleVector objects are created by the environment.
+     * Creates an empty vector
+     * @return IStateDoubleVector
+     */
+
+    IStateDoubleVector makeDoubleVector();
+
+    /**
+     * Factory pattern: new IStateDoubleVector objects are created by the environment
+     *
+     * @param size         the number of entries in the vector
+     * @param initialValue the common initial value for all entries (backtrackable integers)
+     * @return IStateDoubleVector
+     */
+
+    IStateDoubleVector makeDoubleVector(int size, double initialValue);
+
+    /**
+     * Factory pattern: new IStateDoubleVector objects are created by the environment
+     *
+     * @param entries an array to be copied as set of initial contents of the vector
+     * @return IStateDoubleVector
+     */
+
+    IStateDoubleVector makeDoubleVector(double[] entries);
 
     /**
      * Factory pattern: new IStateVector objects are created by the environment.
