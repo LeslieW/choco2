@@ -214,6 +214,22 @@ public class EnvironmentRecomputation extends AbstractEnvironment {
     }
 
     @Override
+    public IStateDoubleVector makeDoubleVector() {
+        return delegatedEnv.makeDoubleVector();
+
+    }
+
+    @Override
+    public IStateDoubleVector makeDoubleVector(int size, double initialValue) {
+         return delegatedEnv.makeDoubleVector(size,initialValue);
+    }
+
+    @Override
+    public IStateDoubleVector makeDoubleVector(double[] entries) {
+        return delegatedEnv.makeDoubleVector(entries);
+    }
+
+    @Override
     public <T> PartiallyStoredVector<T> makePartiallyStoredVector() {
         return delegatedEnv.makePartiallyStoredVector();
     }

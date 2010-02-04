@@ -64,6 +64,7 @@ public class EnvironmentTrailing extends AbstractEnvironment {
 				new StoredIntTrail(this, maxHist, maxWorld),
 				new StoredVectorTrail(this, maxHist, maxWorld),
 				new StoredIntVectorTrail(this, maxHist, maxWorld),
+                new StoredDoubleVectorTrail(this,maxHist,maxWorld),
 				new StoredDoubleTrail(this, maxHist, maxWorld),
 				new StoredLongTrail(this, maxHist, maxWorld),
 				new StoredBinaryTreeTrail(this, maxHist,maxWorld),
@@ -150,6 +151,21 @@ public class EnvironmentTrailing extends AbstractEnvironment {
 	}
 
     @Override
+    public IStateDoubleVector makeDoubleVector() {
+        return new StoredDoubleVector(this);
+    }
+
+    @Override
+    public IStateDoubleVector makeDoubleVector(int size, double initialValue) {
+        return new StoredDoubleVector(this, size, initialValue);
+    }
+
+    @Override
+    public IStateDoubleVector makeDoubleVector(double[] entries) {
+        return new StoredDoubleVector(this, entries);
+    }
+
+    @Override
 	public <T> IStateVector<T> makeVector() {
 		return new StoredVector<T>(this);
 	}
@@ -208,6 +224,10 @@ public class EnvironmentTrailing extends AbstractEnvironment {
 	public int getIntVectorTrailSize() {
 		return trails[INT_VECTOR_TRAIL].getSize();
 	}
+    public int getDoubleVectorTrailSize()
+    {
+        return trails[DOUBLE_VECTOR_TRAIL].getSize();
+    }
 
 	public int getFloatTrailSize() {
 		return trails[FLOAT_TRAIL].getSize();
