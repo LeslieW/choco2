@@ -3321,6 +3321,21 @@ public class Choco{
 				ArrayUtils.append(vars, new IntegerVariable[]{cvar}));
 	}
 
+    	/**
+	 * Constructs a new CostRegular constraint
+	 * This constraint ensures that the sequence of variables values
+	 * will follow a pattern defined by a DFA and that this sequence has a cost bounded by the cost variable
+	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+	 * @param cvar the cost variable
+	 * @param auto  the automaton describing the regular language
+	 * @param costs the cost of taking value j for the variable i
+	 * @return  a instance of the constraint
+	 */
+	public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable cvar, Automaton auto, double[][][] costs){
+		return new ComponentConstraint<IntegerVariable>(ConstraintType.FASTCOSTREGULAR, new Object[]{auto, costs},
+				ArrayUtils.append(vars, new IntegerVariable[]{cvar}));
+	}
+
     /**
      * Construct a knapsack problem constraint with an underlying costregular constraint.
      * It simulates M. Triks dynamic programming approach.
