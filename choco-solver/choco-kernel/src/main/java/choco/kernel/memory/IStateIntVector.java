@@ -82,12 +82,27 @@ public interface IStateIntVector {
 
   public int get(int index);
 
+    /**
+     * access an element without any bound check
+     * @param index
+     * @return
+     */
+    public int unsafeGet(int index);
+
   /**
    * Assigns a new value <code>val</code> to the element <code>index</code> and returns
    * the old value
    */
 
   public int set(int index, int val);
+
+    /**
+     * Assigns a new value val to the element indexth and return the old value without bound check
+     * @param index the index where the value is modified
+     * @param val the new value
+     * @return the old value
+     */
+    public int unsafeSet(int index, int val);
   
   public DisposableIntIterator getIterator();
 }

@@ -196,6 +196,11 @@ public class RcIntVector implements IStateIntVector, RecomputableElement {
         throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size.get());
     }
 
+    @Override
+    public int unsafeGet(int index) {
+        return elementData[index];
+    }
+
 
     /**
      * Assigns a new value <code>val</code> to the element <code>index</code>.
@@ -213,6 +218,16 @@ public class RcIntVector implements IStateIntVector, RecomputableElement {
             return oldValue;
         }
         throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size.get());
+    }
+
+    @Override
+    public int unsafeSet(int index, int val) {
+       int oldValue = elementData[index];
+            if (val != oldValue) {
+                elementData[index] = val;
+            }
+            timeStamp = environment.getWorldIndex();
+            return oldValue;
     }
 
     public int[] toArray(int[] tab) {

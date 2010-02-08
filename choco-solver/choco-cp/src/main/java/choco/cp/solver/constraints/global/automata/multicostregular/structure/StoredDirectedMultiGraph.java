@@ -260,7 +260,11 @@ public class StoredDirectedMultiGraph {
             while(it.hasNext())
             {
                 int id = it.next();
-                toRemove.add(id);
+                if(!isInStack(id))
+                {
+                    setInStack(id);
+                    toRemove.add(id);
+                }
             }
             it.dispose();
         }
@@ -277,7 +281,11 @@ public class StoredDirectedMultiGraph {
             while (it.hasNext())
             {
                 int id = it.next();
-                toRemove.add(id);
+                if (!isInStack(id))
+                {
+                    setInStack(id);
+                    toRemove.add(id);
+                }
             }
             it.dispose();
 

@@ -85,8 +85,18 @@ public class StoredIntBipartiteList implements IStateIntVector {
         return list[index];
     }
 
+    @Override
+    public int unsafeGet(int index) {
+        return list[index];
+    }
+
     public int set(final int index, final int val) {
         throw new SolverException("setting an element is not permitted on this structure");
+    }
+
+    @Override
+    public int unsafeSet(int index, int val) {
+        return set(index,val);
     }
 
     public DisposableIntIterator getIterator() {
@@ -106,7 +116,7 @@ public class StoredIntBipartiteList implements IStateIntVector {
         }
         return s.append("]").toString();
     }
-    
+
 
     protected static class BipartiteListIterator extends DisposableIntIterator {
         StoredIntBipartiteList siblist;

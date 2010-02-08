@@ -116,6 +116,7 @@ public class FastPathFinder {
                     }
 
                 }
+                in.dispose();
             }
         }
 
@@ -200,6 +201,7 @@ public class FastPathFinder {
                         }
                     }
                 }
+                in.dispose();
             }
         }
 
@@ -314,6 +316,7 @@ public class FastPathFinder {
 
                     }
                 }
+                in.dispose();
             }
         }
 

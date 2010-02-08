@@ -60,6 +60,8 @@ public class StoredValuedDirectedMultiGraph {
     public int[][] layers;
     public BitSet inStack;
     public StoredIndexedBipartiteSet inGraph;
+    public TIntStack toUpdateLeft;
+    public TIntStack toUpdateRight;
 
 
     public class Nodes
@@ -108,6 +110,8 @@ public class StoredValuedDirectedMultiGraph {
         this.layers = layers;
         this.sourceIndex = layers[0][0];
         this.tinkIndex = layers[layers.length-1][0];
+        this.toUpdateLeft = new TIntStack();
+        this.toUpdateRight = new TIntStack();
 
         this.GNodes = new Nodes();
         this.GArcs = new Arcs();
@@ -147,9 +151,9 @@ public class StoredValuedDirectedMultiGraph {
         }
 
         this.inGraph = new StoredIndexedBipartiteSet(constraint.getSolver().getEnvironment(),inginit);
-       // this.inGraph = constraint.getSolver().getEnvironment().makeBitSet(arcs.size());
+        // this.inGraph = constraint.getSolver().getEnvironment().makeBitSet(arcs.size());
 //        this.inGraph.set(0,arcs.size());
-       // System.out.println(this.inGraph.size());
+        // System.out.println(this.inGraph.size());
         for (int i =0 ;i < sups.length ;i++)
         {
             if (sups[i] != null)
@@ -219,10 +223,10 @@ public class StoredValuedDirectedMultiGraph {
     {
         int start = layers[0][0];
         int end = layers[layers.length-1][0];
-        GNodes.spfs.set(start,0.0);
-        GNodes.lpfs.set(start,0.0);
-        GNodes.spft.set(end,0.0);
-        GNodes.lpft.set(end,0.0);
+        GNodes.spfs.unsafeSet(start,0.0);
+        GNodes.lpfs.unsafeSet(start,0.0);
+        GNodes.spft.unsafeSet(end,0.0);
+        GNodes.lpft.unsafeSet(end,0.0);
 
 
         for (int i = 1 ; i < layers.length ; i++)
@@ -236,18 +240,18 @@ public class StoredValuedDirectedMultiGraph {
                     int arc = it.next();
                     double acost = GArcs.costs[arc];
                     int orig = GArcs.origs[arc];
-                    double otherS = GNodes.spfs.get(orig) +acost;
-                    if (otherS < GNodes.spfs.get(q))
+                    double otherS = GNodes.spfs.unsafeGet(orig) +acost;
+                    if (otherS < GNodes.spfs.unsafeGet(q))
                     {
-                        GNodes.spfs.set(q,otherS);
-                        GNodes.prevSP.set(q,arc);
+                        GNodes.spfs.unsafeSet(q,otherS);
+                        GNodes.prevSP.unsafeSet(q,arc);
                     }
 
-                    double otherL = GNodes.lpfs.get(orig) +acost;
-                    if (otherL > GNodes.lpfs.get(q))
+                    double otherL = GNodes.lpfs.unsafeGet(orig) +acost;
+                    if (otherL > GNodes.lpfs.unsafeGet(q))
                     {
-                        GNodes.lpfs.set(q,otherL);
-                        GNodes.prevLP.set(q,arc);
+                        GNodes.lpfs.unsafeSet(q,otherL);
+                        GNodes.prevLP.unsafeSet(q,arc);
                     }
 
                 }
@@ -268,20 +272,21 @@ public class StoredValuedDirectedMultiGraph {
                     int arc = it.next();
                     double acost = GArcs.costs[arc];
                     int dest = GArcs.dests[arc];
-                    double otherS = GNodes.spft.get(dest) + acost;
-                    if (otherS < GNodes.spft.get(q))
+                    double otherS = GNodes.spft.unsafeGet(dest) + acost;
+                    if (otherS < GNodes.spft.unsafeGet(q))
                     {
-                        GNodes.spft.set(q,otherS);
-                        GNodes.nextSP.set(q,arc);
+                        GNodes.spft.unsafeSet(q,otherS);
+                        GNodes.nextSP.unsafeSet(q,arc);
                     }
 
-                    double otherL = GNodes.lpft.get(dest) +acost;
-                    if (otherL > GNodes.lpft.get(q))
+                    double otherL = GNodes.lpft.unsafeGet(dest) +acost;
+                    if (otherL > GNodes.lpft.unsafeGet(q))
                     {
-                        GNodes.lpft.set(q,otherL);
-                        GNodes.nextLP.set(q,arc);
+                        GNodes.lpft.unsafeSet(q,otherL);
+                        GNodes.nextLP.unsafeSet(q,arc);
                     }
                 }
+                it.dispose();
             }
         }
 
@@ -305,7 +310,7 @@ public class StoredValuedDirectedMultiGraph {
 
 
     public void removeArc(int arcId, TIntStack toRemove) throws ContradictionException {
-        inStack.clear(arcId);
+        clearInStack(arcId);
         inGraph.remove(arcId);
 
         int orig = GArcs.origs[arcId];
@@ -337,22 +342,83 @@ public class StoredValuedDirectedMultiGraph {
         in.remove(arcId);
 
 
-        if (GNodes.nextSP.get(orig) == arcId)
+
+        if (GNodes.nextSP.unsafeGet(orig) == arcId || GNodes.nextLP.unsafeGet(orig) == arcId)
         {
-            updateSPFT(orig,toRemove);
+            updateRight(orig,toRemove);
         }
-        if (GNodes.nextLP.get(orig) == arcId)
+        if (GNodes.prevSP.unsafeGet(dest) == arcId || GNodes.prevLP.unsafeGet(dest) == arcId)
         {
-            updateLPFT(orig,toRemove);
+            updateLeft(dest,toRemove);
         }
-        if (GNodes.prevSP.get(dest) == arcId)
+
+
+    }
+
+    public void updateRight(int nid, TIntStack toRemove)
+    {
+
+        double tempPval = Double.POSITIVE_INFINITY;
+        double tempPval2 = Double.NEGATIVE_INFINITY;
+        int tempP = Integer.MIN_VALUE;
+        int temp2 = Integer.MIN_VALUE;
+        DisposableIntIterator it = GNodes.outArcs[nid].getIterator();
+
+
+        while(it.hasNext())
         {
-            updateSPFS(dest,toRemove);
+            int arcId = it.next();
+            int dest = GArcs.dests[arcId];
+            double spft = GNodes.spft.unsafeGet(dest) + GArcs.costs[arcId];
+            if (tempPval > spft)
+            {
+                tempPval = spft;
+                tempP = arcId;
+            }
+
+            double lpft = GNodes.lpft.unsafeGet(dest) + GArcs.costs[arcId];
+            if (tempPval2 < lpft)
+            {
+                tempPval2 = lpft;
+                temp2 = arcId;
+            }
+
+
         }
-        if (GNodes.prevLP.get(dest) == arcId)
+        it.dispose();
+        double old = GNodes.spft.unsafeSet(nid,tempPval);
+        GNodes.nextSP.unsafeSet(nid,tempP);
+
+        double old2 = GNodes.lpft.unsafeSet(nid,tempPval2);
+        GNodes.nextLP.unsafeSet(nid,temp2);
+
+        if (nid != sourceIndex && (old != tempPval || old2 != tempPval2))
         {
-            updateLPFS(dest,toRemove);
+            it = GNodes.inArcs[nid].getIterator();
+
+            while(it.hasNext())
+            {
+                int arcId = it.next();
+                int orig =  GArcs.origs[arcId];
+                if ((GNodes.nextSP.unsafeGet(orig) == arcId &&old!=tempPval) || (old2!=tempPval2 && GNodes.nextLP.unsafeGet(orig) == arcId))
+                {
+                    toUpdateRight.push(orig);
+                    //updateRight(orig,toRemove);
+                }
+                double spfs = GNodes.spfs.unsafeGet(orig);
+                double lpfs = GNodes.lpfs.unsafeGet(orig);
+
+                double acost = GArcs.costs[arcId];
+                if (!isInStack(arcId) && (tempPval + spfs+acost > constraint.getIntVar(starts.length).getSup()
+                        || tempPval2 + lpfs+acost < constraint.getIntVar(starts.length).getInf()))
+                {
+                    setInStack(arcId);
+                    toRemove.push(arcId);
+                }
+            }
+            it.dispose();
         }
+
 
     }
 
@@ -370,7 +436,7 @@ public class StoredValuedDirectedMultiGraph {
         {
             int arcId = it.next();
             int dest = GArcs.dests[arcId];
-            double spft = GNodes.spft.get(dest) + GArcs.costs[arcId];
+            double spft = GNodes.spft.unsafeGet(dest) + GArcs.costs[arcId];
             if (tempPval > spft)
             {
                 tempPval = spft;
@@ -379,8 +445,8 @@ public class StoredValuedDirectedMultiGraph {
 
         }
         it.dispose();
-        double old = GNodes.spft.set(nid,tempPval);
-        GNodes.nextSP.set(nid,tempP);
+        double old = GNodes.spft.unsafeSet(nid,tempPval);
+        GNodes.nextSP.unsafeSet(nid,tempP);
 
         if (nid != sourceIndex && old != tempPval)
         {
@@ -390,11 +456,11 @@ public class StoredValuedDirectedMultiGraph {
             {
                 int arcId = it.next();
                 int orig =  GArcs.origs[arcId];
-                if (GNodes.nextSP.get(orig) == arcId)
+                if (GNodes.nextSP.unsafeGet(orig) == arcId)
                 {
                     updateSPFT(orig,toRemove);
                 }
-                double spfs = GNodes.spfs.get(orig);
+                double spfs = GNodes.spfs.unsafeGet(orig);
                 double acost = GArcs.costs[arcId];
                 if (!isInStack(arcId) && tempPval + spfs+acost > constraint.getIntVar(starts.length).getSup())
                 {
@@ -420,7 +486,7 @@ public class StoredValuedDirectedMultiGraph {
         {
             int arcId = it.next();
             int dest = GArcs.dests[arcId];
-            double lpft = GNodes.lpft.get(dest) + GArcs.costs[arcId];
+            double lpft = GNodes.lpft.unsafeGet(dest) + GArcs.costs[arcId];
             if (tempPval < lpft)
             {
                 tempPval = lpft;
@@ -429,8 +495,8 @@ public class StoredValuedDirectedMultiGraph {
 
         }
         it.dispose();
-        double old = GNodes.lpft.set(nid,tempPval);
-        GNodes.nextLP.set(nid,tempP);
+        double old = GNodes.lpft.unsafeSet(nid,tempPval);
+        GNodes.nextLP.unsafeSet(nid,tempP);
 
         if (nid != sourceIndex && old != tempPval)
         {
@@ -440,11 +506,11 @@ public class StoredValuedDirectedMultiGraph {
             {
                 int arcId = it.next();
                 int orig =  GArcs.origs[arcId];
-                if (GNodes.nextLP.get(orig) == arcId)
+                if (GNodes.nextLP.unsafeGet(orig) == arcId)
                 {
                     updateLPFT(orig,toRemove);
                 }
-                double lpfs = GNodes.lpfs.get(orig);
+                double lpfs = GNodes.lpfs.unsafeGet(orig);
                 double acost = GArcs.costs[arcId];
                 if (!isInStack(arcId) && tempPval + lpfs+acost < constraint.getIntVar(starts.length).getInf())
                 {
@@ -454,6 +520,71 @@ public class StoredValuedDirectedMultiGraph {
             }
             it.dispose();
         }
+
+    }
+
+    public void updateLeft(int nid, TIntStack toRemove)
+    {
+        double tempPval = Double.POSITIVE_INFINITY;
+        int tempP = Integer.MIN_VALUE;
+
+        double tempPval2 = Double.NEGATIVE_INFINITY;
+        int tempP2 = Integer.MIN_VALUE;
+
+        DisposableIntIterator it = GNodes.inArcs[nid].getIterator();
+
+
+        while(it.hasNext())
+        {
+            int arcId = it.next();
+            int orig = GArcs.origs[arcId];
+            double spfs = GNodes.spfs.unsafeGet(orig) + GArcs.costs[arcId];
+            if (tempPval > spfs)
+            {
+                tempPval = spfs;
+                tempP = arcId;
+            }
+            double lpfs = GNodes.lpfs.unsafeGet(orig) + GArcs.costs[arcId];
+            if (tempPval2 < lpfs)
+            {
+                tempPval2 = lpfs;
+                tempP2 = arcId;
+            }
+
+        }
+
+        it.dispose();
+        double old = GNodes.spfs.unsafeSet(nid,tempPval);
+        GNodes.prevSP.unsafeSet(nid,tempP);
+        double old2 = GNodes.lpfs.unsafeSet(nid,tempPval2);
+        GNodes.prevLP.unsafeSet(nid,tempP2);
+
+        if (nid != tinkIndex && (old != tempPval || old2 != tempPval2))
+        {
+            it = GNodes.outArcs[nid].getIterator();
+
+            while(it.hasNext())
+            {
+                int arcId = it.next();
+                int dest =  GArcs.dests[arcId];
+                if ((old != tempPval && GNodes.prevSP.unsafeGet(dest) == arcId) || (old2!=tempPval2 && GNodes.prevLP.unsafeGet(dest) == arcId))
+                {
+                   // updateLeft(dest,toRemove);
+                    toUpdateLeft.push(dest);
+                }
+                double spft = GNodes.spft.unsafeGet(dest);
+                double acost = GArcs.costs[arcId];
+                double lpft = GNodes.lpft.unsafeGet(dest);
+                if (!isInStack(arcId) && (tempPval + spft+acost > constraint.getIntVar(starts.length).getSup()
+                        ||tempPval2 + lpft+acost < constraint.getIntVar(starts.length).getInf()))
+                {
+                    setInStack(arcId);
+                    toRemove.push(arcId);
+                }
+            }
+            it.dispose();
+        }
+
 
     }
 
@@ -470,7 +601,7 @@ public class StoredValuedDirectedMultiGraph {
         {
             int arcId = it.next();
             int orig = GArcs.origs[arcId];
-            double spfs = GNodes.spfs.get(orig) + GArcs.costs[arcId];
+            double spfs = GNodes.spfs.unsafeGet(orig) + GArcs.costs[arcId];
             if (tempPval > spfs)
             {
                 tempPval = spfs;
@@ -479,8 +610,8 @@ public class StoredValuedDirectedMultiGraph {
 
         }
         it.dispose();
-        double old = GNodes.spfs.set(nid,tempPval);
-        GNodes.prevSP.set(nid,tempP);
+        double old = GNodes.spfs.unsafeSet(nid,tempPval);
+        GNodes.prevSP.unsafeSet(nid,tempP);
 
         if (nid != tinkIndex && old != tempPval)
         {
@@ -490,11 +621,11 @@ public class StoredValuedDirectedMultiGraph {
             {
                 int arcId = it.next();
                 int dest =  GArcs.dests[arcId];
-                if (GNodes.prevSP.get(dest) == arcId)
+                if (GNodes.prevSP.unsafeGet(dest) == arcId)
                 {
                     updateSPFS(dest,toRemove);
                 }
-                double spft = GNodes.spft.get(dest);
+                double spft = GNodes.spft.unsafeGet(dest);
                 double acost = GArcs.costs[arcId];
                 if (!isInStack(arcId) && tempPval + spft+acost > constraint.getIntVar(starts.length).getSup())
                 {
@@ -520,7 +651,7 @@ public class StoredValuedDirectedMultiGraph {
         {
             int arcId = it.next();
             int orig = GArcs.origs[arcId];
-            double lpfs = GNodes.lpfs.get(orig) + GArcs.costs[arcId];
+            double lpfs = GNodes.lpfs.unsafeGet(orig) + GArcs.costs[arcId];
             if (tempPval < lpfs)
             {
                 tempPval = lpfs;
@@ -529,8 +660,8 @@ public class StoredValuedDirectedMultiGraph {
 
         }
         it.dispose();
-        double old = GNodes.lpfs.set(nid,tempPval);
-        GNodes.prevLP.set(nid,tempP);
+        double old = GNodes.lpfs.unsafeSet(nid,tempPval);
+        GNodes.prevLP.unsafeSet(nid,tempP);
 
 
         if (nid != tinkIndex && old != tempPval)
@@ -541,11 +672,11 @@ public class StoredValuedDirectedMultiGraph {
             {
                 int arcId = it.next();
                 int dest =  GArcs.dests[arcId];
-                if (GNodes.prevLP.get(dest) == arcId)
+                if (GNodes.prevLP.unsafeGet(dest) == arcId)
                 {
                     updateLPFS(dest,toRemove);
                 }
-                double lpft = GNodes.lpft.get(dest);
+                double lpft = GNodes.lpft.unsafeGet(dest);
                 double acost = GArcs.costs[arcId];
                 if (!isInStack(arcId) && tempPval + lpft+acost < constraint.getIntVar(starts.length).getInf())
                 {
@@ -560,7 +691,7 @@ public class StoredValuedDirectedMultiGraph {
 
 
 
-    
+
     /**
      *  Getter, the idx th bit of the inStack bitSet
      * @param idx the index of the arc

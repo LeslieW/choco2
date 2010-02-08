@@ -405,6 +405,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
                     }
                 }
             }
+            varIter.dispose();
             layerIter = layer.get(i).iterator();
 
             // If no more arcs go out of a given state in the layer, then we remove the state from that layer
@@ -695,8 +696,8 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
                 p.resetNodeShortestandLongestPathValues();
                 p.computeShortestAndLongestPath(toRemove,newCosts,binf,bsup);
                 b |= toRemove.size() > 0;
-                z[i].updateInf((int)Math.ceil(p.getShortestPathValue()),this.getConstraintIdx(vs.length+i));
-                z[i].updateSup((int)Math.floor(p.getLongestPathValue()),this.getConstraintIdx(vs.length+i));
+                z[i].updateInf((int)Math.ceil(p.getShortestPathValue()),this.getConstraintIdx(-1/*vs.length+i*/));
+                z[i].updateSup((int)Math.floor(p.getLongestPathValue()),this.getConstraintIdx(-1/*vs.length+i*/));
                 /*  if (b)
                {
                    this.delayedGraphUpdate();
@@ -908,6 +909,13 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
     }
 
 
+    private boolean remContains(int e)
+    {
+        for (int i = 0 ; i < toRemove.size() ; i++)
+            if (toRemove.get(i) == e)
+                return true;
+        return false;
+    }
 
 
     public void awakeOnRem(final int idx, final int val) throws ContradictionException {
@@ -918,8 +926,10 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
             while (it.hasNext())
             {
                 int e = it.next();
+                assert(graph.isInStack(e)==remContains(e));
                 if (!graph.isInStack(e))
                 {
+                    graph.setInStack(e);
                     toRemove.add(e);
                 }
             }

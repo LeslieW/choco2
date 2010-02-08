@@ -124,7 +124,12 @@ public class TwoStatesIntVector implements IStateIntVector {
     return 0;
   }
 
-  /**
+    @Override
+    public int unsafeGet(int index) {
+        return get(index);
+    }
+
+    /**
    * Assigns a new value <code>val</code> to the element <code>index</code>.
    */
 
@@ -132,7 +137,12 @@ public class TwoStatesIntVector implements IStateIntVector {
     return 0;
   }
 
-  public void saveState() {
+    @Override
+    public int unsafeSet(int index, int val) {
+        return set(index,val);
+    }
+
+    public void saveState() {
   }
 
   public void restoreState() {
@@ -142,6 +152,6 @@ public class TwoStatesIntVector implements IStateIntVector {
 public DisposableIntIterator getIterator() {
 	return null;
 }
-  
-  
+
+
 }

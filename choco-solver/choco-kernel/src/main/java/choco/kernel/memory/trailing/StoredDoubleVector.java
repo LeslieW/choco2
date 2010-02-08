@@ -233,8 +233,13 @@ public final class StoredDoubleVector implements IStateDoubleVector {
 		throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size.get());
 	}
 
+    @Override
+    public final double unsafeGet(int index) {
+        return elementData[index];
+    }
 
-	/**
+
+    /**
 	 * Assigns a new value <code>val</code> to the element <code>index</code>.
 	 */
 
@@ -257,7 +262,23 @@ public final class StoredDoubleVector implements IStateDoubleVector {
 			return oldValue;
 		}
 		throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size.get());
-	}
+	}                                                                               
+
+
+    public double unsafeSet(int index, double val)
+    {
+        double oldValue = elementData[index];
+        if (val != oldValue) {
+		    int oldStamp = this.worldStamps[index];
+			if (oldStamp < environment.getWorldIndex()) {
+			    trail.savePreviousState(this, index, oldValue, oldStamp);
+				worldStamps[index] = environment.getWorldIndex();
+		    }
+		    elementData[index] = val;
+		}
+        return oldValue;
+
+    }
 
 
 	/**

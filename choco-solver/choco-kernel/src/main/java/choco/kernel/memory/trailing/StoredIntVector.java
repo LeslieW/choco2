@@ -229,9 +229,14 @@ public final class StoredIntVector implements IStateIntVector {
 	public int get(int index) {
 		if (index < size.get() && index >= 0) {
 			return elementData[index];
-		}
+		}                                                          
 		throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size.get());
 	}
+
+    public final int unsafeGet(int index)
+    {
+        return elementData[index] ;
+    }
 
 
 	/**
@@ -259,8 +264,23 @@ public final class StoredIntVector implements IStateIntVector {
 		throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size.get());
 	}
 
+    @Override
+    public int unsafeSet(int index, int val) {
+         int oldValue = elementData[index];
+			if (val != oldValue) {
+				int oldStamp = this.worldStamps[index];
 
-	/**
+				if (oldStamp < environment.getWorldIndex()) {
+					trail.savePreviousState(this, index, oldValue, oldStamp);
+					worldStamps[index] = environment.getWorldIndex();
+				}
+				elementData[index] = val;
+			}
+			return oldValue;
+    }
+
+
+    /**
 	 * Sets an element without storing the previous value.
 	 */
 
