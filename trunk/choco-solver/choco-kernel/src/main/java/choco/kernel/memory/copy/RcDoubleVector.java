@@ -191,6 +191,11 @@ public class RcDoubleVector implements IStateDoubleVector, RecomputableElement {
         throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size.get());
     }
 
+    @Override
+    public final double unsafeGet(int index) {
+        return elementData[index];
+    }
+
 
     /**
      * Assigns a new value <code>val</code> to the element <code>index</code>.
@@ -208,6 +213,16 @@ public class RcDoubleVector implements IStateDoubleVector, RecomputableElement {
             return oldValue;
         }
         throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size.get());
+    }
+
+    @Override
+    public double unsafeSet(int index, double val) {
+         double oldValue = elementData[index];
+            if (val != oldValue) {
+                elementData[index] = val;
+            }
+            timeStamp = environment.getWorldIndex();
+            return oldValue;
     }
 
 

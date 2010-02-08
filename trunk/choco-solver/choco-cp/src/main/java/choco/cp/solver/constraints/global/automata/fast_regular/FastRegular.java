@@ -200,6 +200,7 @@ public class FastRegular extends AbstractLargeIntSConstraint {
                     }
                 }
             }
+            varIter.dispose();
             layerIter = layer.get(i).iterator();
 
             // If no more arcs go out of a given state in the layer, then we remove the state from that layer

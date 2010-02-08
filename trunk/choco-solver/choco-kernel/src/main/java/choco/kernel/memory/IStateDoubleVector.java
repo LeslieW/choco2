@@ -82,12 +82,28 @@ public interface IStateDoubleVector {
 
   public double get(int index);
 
+    /**
+     * return the indexth element of the vector without an bound check.
+     * @param index index
+     * @return  the element
+     */
+    public double unsafeGet(int index);
+
+
   /**
    * Assigns a new value <code>val</code> to the element <code>index</code> and returns
    * the old value
    */
 
   public double set(int index, double val);
+
+    /**
+     * Unsafe setter => don't do bound verification
+     * @param index the index of the replaced value
+     * @param val the new value
+     * @return the old value
+     */
+  public double unsafeSet(int index, double val);
 
   public DisposableIntIterator getIterator();
 }

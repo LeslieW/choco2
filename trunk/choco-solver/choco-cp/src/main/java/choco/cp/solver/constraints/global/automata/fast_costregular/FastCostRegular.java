@@ -210,6 +210,7 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
                     }
                 }
             }
+            varIter.dispose();
             layerIter = layer.get(i).iterator();
 
             // If no more arcs go out of a given state in the layer, then we remove the state from that layer
@@ -288,21 +289,35 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
             }
         }
 
-        //  it.dispose();
+        it.dispose();
 
         try
         {
-            while (toRemove.size() > 0)
+            do
             {
-                int id = toRemove.pop();
-                // toRemove.removeLast();
-                this.graph.removeArc(id,toRemove);
-            }
+                while (toRemove.size() > 0)
+                {
+                    int id = toRemove.pop();
+                    // toRemove.removeLast();
+                    this.graph.removeArc(id,toRemove);
+                }
+                while (this.graph.toUpdateLeft.size() > 0)
+                {
+                    this.graph.updateLeft(this.graph.toUpdateLeft.pop(),toRemove);
+                }
+                while(this.graph.toUpdateRight.size() > 0)
+                {
+                    this.graph.updateRight(this.graph.toUpdateRight.pop(),toRemove);
+                }
+            } while (toRemove.size() > 0);
         }
         catch (ContradictionException e)
         {
-            toRemove.clear();
+            toRemove.reset();
             this.graph.inStack.clear();
+            this.graph.toUpdateLeft.reset();
+            this.graph.toUpdateRight.reset();
+
             throw e;
         }
 
@@ -332,6 +347,8 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
         {
             this.toRemove.reset();
             this.graph.inStack.clear();
+            this.graph.toUpdateLeft.reset();
+            this.graph.toUpdateRight.reset();
         }
         lastWorld = current;
     }
@@ -357,6 +374,7 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
                         mod = true;
                     }
                 }
+                it.dispose();
             }
 
         }
@@ -424,11 +442,23 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
 
         }
 
-        while (toRemove.size() > 0)
+        do
         {
-            int id = toRemove.pop();
-            this.graph.removeArc(id,toRemove);
-        }
+            while (toRemove.size() > 0)
+            {
+                int id = toRemove.pop();
+                // toRemove.removeLast();
+                this.graph.removeArc(id,toRemove);
+            }
+            while (this.graph.toUpdateLeft.size() > 0)
+            {
+                this.graph.updateLeft(this.graph.toUpdateLeft.pop(),toRemove);
+            }
+            while(this.graph.toUpdateRight.size() > 0)
+            {
+                this.graph.updateRight(this.graph.toUpdateRight.pop(),toRemove);
+            }
+        } while (toRemove.size() > 0);
 
 
         double zinf = this.graph.GNodes.spft.get(this.graph.sourceIndex);

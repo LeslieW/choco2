@@ -224,8 +224,13 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
         return contain(object.getObjectIdx());
     }
 
-    public int get(int index) {
+    public final int get(int index) {
         return list[index];
+    }
+
+    @Override
+    public final int unsafeGet(int index) {
+        return get(index);
     }
 
     public IndexedObject getObject(int index) {
@@ -234,6 +239,11 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
 
     public int set(int index, int val) {
         throw new SolverException("setting an element is not permitted on this structure");
+    }
+
+    @Override
+    public int unsafeSet(int index, int val) {
+        return set(index,val);
     }
 
     public DisposableIntIterator getIterator() {

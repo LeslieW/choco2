@@ -48,7 +48,7 @@ public class CostRegular extends AbstractLargeIntSConstraint
     /**
      * Switch to turn on/off the event based propagation
      */
-    public final static boolean INCREMENTAL = true;
+    public static boolean INCREMENTAL = true;
 
 
     /**
