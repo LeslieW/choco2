@@ -227,6 +227,7 @@ public class CPModelToCPSolver {
     }
 
 
+    @SuppressWarnings({"unchecked"})
     public Var readModelVariable(Variable v) {
 		if (v instanceof IComponentVariable) {
 			IComponentVariable vv = (IComponentVariable) v;

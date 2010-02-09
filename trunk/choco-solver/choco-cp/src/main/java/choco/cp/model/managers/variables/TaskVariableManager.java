@@ -25,19 +25,17 @@ package choco.cp.model.managers.variables;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableManager;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.variables.Var;
-import choco.kernel.solver.variables.scheduling.TaskVar;
 
 /* User:    charles
  * Date:    21 août 2008
  */
-public class TaskVariableManager implements VariableManager {
+public class TaskVariableManager implements VariableManager<TaskVariable> {
 
 
     /**
@@ -46,12 +44,10 @@ public class TaskVariableManager implements VariableManager {
      * @param var
      * @return a set variable
      */
-    public Var makeVariable(Solver solver, Variable var) {
+    public Var makeVariable(Solver solver, TaskVariable var) {
         if(solver instanceof CPSolver){
-            TaskVariable tv = (TaskVariable)var;
-            TaskVar stv = solver.createTaskVar(tv.getName(), solver.getVar(tv.start()),
-                    solver.getVar(tv.end()), solver.getVar(tv.duration()));
-            return stv;
+            return solver.createTaskVar(var.getName(), solver.getVar(var.start()),
+                    solver.getVar(var.end()), solver.getVar(var.duration()));
         }
         throw new ModelException("Could not found a variable manager in " + this.getClass() + " !");
     }
