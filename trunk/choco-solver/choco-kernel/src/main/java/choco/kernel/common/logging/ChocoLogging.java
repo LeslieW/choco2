@@ -24,13 +24,10 @@ package choco.kernel.common.logging;
 
 import gnu.trove.TObjectIntHashMap;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.security.AccessControlException;
+import java.util.Properties;
 import java.util.logging.*;
-
 import static java.util.logging.Logger.getLogger;
 
 
@@ -75,12 +72,33 @@ public final class ChocoLogging {
 			setLevel(Level.ALL, DEFAULT_HANDLER, DETAILED_HANDLER);
 			setLevel(Level.WARNING, ERROR_HANDLER);
 			setDefaultHandler();
-			setVerbosity(Verbosity.DEFAULT);
+            setVerbosity(loadProperties());
 		} catch (AccessControlException e) {
 			// Do nothing if this is an applet !
 			// TODO: see how to make it work with an applet !
 		}
 	}
+
+    /**
+     * Load the properties file and return default value to logging verbosity, if defined.
+     * @return Default verbosity
+     */
+    private static Verbosity loadProperties() {
+        try {
+            Properties properties = new Properties();
+            InputStream is = ChocoLogging.class.getResourceAsStream("/verbosity.properties");
+            properties.load(is);
+            final String key = "verbosity.level";
+            if (!properties.isEmpty()
+                    && properties.containsKey(key)) {
+                Integer verb = Integer.parseInt(properties.getProperty(key));
+                if (verb >= 0 && verb <= 6) {
+                    return Verbosity.values()[verb];
+                }
+            }
+        } catch (IOException ignored) {}
+        return Verbosity.DEFAULT;
+    }
 
 	/**
 	 * maximal search depth for logging statements
