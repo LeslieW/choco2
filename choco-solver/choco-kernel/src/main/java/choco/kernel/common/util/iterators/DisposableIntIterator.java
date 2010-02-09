@@ -38,7 +38,7 @@ public abstract class DisposableIntIterator implements IntIterator {
      * This method allows to declare that the iterator is not usefull anymoure. It
      * can be reused by another object.
      */
-    public final void dispose() {
+    public void dispose() {
         reusable = true;
     }
 

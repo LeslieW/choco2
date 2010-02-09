@@ -33,7 +33,7 @@ import choco.kernel.memory.IStateDouble;
  * Since : Choco 2.0.0
  *
  */
-public class RcDouble implements IStateDouble, RecomputableElement {
+public final class RcDouble implements IStateDouble, RecomputableElement {
 
     private final EnvironmentCopying environment;
     private double currentValue;

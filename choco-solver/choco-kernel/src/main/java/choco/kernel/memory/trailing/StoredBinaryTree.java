@@ -63,7 +63,7 @@ import java.util.List;
  * Date: Apr 24, 2008
  * Time: 1:27:38 PM
  */
-public class StoredBinaryTree implements IStateBinaryTree {
+public final class StoredBinaryTree implements IStateBinaryTree {
 
 
 

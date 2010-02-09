@@ -31,7 +31,7 @@ import choco.kernel.memory.IStateVector;
  * Time: 12:22:50
  * To change this template use File | Settings | File Templates.
  */
-public class RcVector<E> implements IStateVector<E>, RecomputableElement {
+public final class RcVector<E> implements IStateVector<E>, RecomputableElement {
 
 
     /**

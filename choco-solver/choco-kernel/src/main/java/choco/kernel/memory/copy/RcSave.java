@@ -31,7 +31,7 @@ import gnu.trove.TIntObjectHashMap;
  * Since : Choco 2.0.0
  *
  */
-public class RcSave implements RecomputableElement {
+public final class RcSave implements RecomputableElement {
 
     public RecomputableElement[][] currentElement;
     private EnvironmentCopying environment;

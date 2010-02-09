@@ -32,7 +32,7 @@ import choco.kernel.memory.IStateIntVector;
  * Since : Choco 2.0.0
  *
  */
-public class RcIntVector implements IStateIntVector, RecomputableElement {
+public final class RcIntVector implements IStateIntVector, RecomputableElement {
 
     /**
      * Minimal capacity of a vector
