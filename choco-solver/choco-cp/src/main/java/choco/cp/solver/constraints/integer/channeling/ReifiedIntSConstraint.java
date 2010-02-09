@@ -236,6 +236,7 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
             sb.append("<=>").append(oppositeCons.pretty());
         }
         sb.append(")");
+        sb.append("~").append(vars[0].pretty());
         return sb.toString();
     }
 

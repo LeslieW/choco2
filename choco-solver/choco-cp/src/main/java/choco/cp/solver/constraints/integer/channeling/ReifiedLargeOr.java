@@ -81,6 +81,7 @@ public class ReifiedLargeOr extends AbstractLargeIntSConstraint {
                 } else if (!vars[i].isInstantiated()) {
                     if (updateLit1 && lit1 > i) {
                         lit1 = i;
+                        lit2 = i;
                     } else if (updateLit2 && lit2 > i) {
                         lit2 = i;
                         break;
@@ -135,7 +136,6 @@ public class ReifiedLargeOr extends AbstractLargeIntSConstraint {
                 setEntailed();
             } else {
                 if (idx == lit1) {
-
                     for (int i = 1; i < vars.length; i++) {
                         if (i != lit2 && vars[i].fastCanBeInstantiatedTo(1)) {
                             lit1 = i;
@@ -151,7 +151,6 @@ public class ReifiedLargeOr extends AbstractLargeIntSConstraint {
                     }
 
                 } else if (idx == lit2) {
-
                     for (int i = 1; i < vars.length; i++) {
                         if (i != lit1 && vars[i].fastCanBeInstantiatedTo(1)) {
                             lit2 = i;

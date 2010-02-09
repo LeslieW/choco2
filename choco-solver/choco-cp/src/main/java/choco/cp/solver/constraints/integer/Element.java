@@ -95,6 +95,11 @@ public class Element extends AbstractBinIntSConstraint {
     protected void updateIndexFromValue() throws ContradictionException {
         int minFeasibleIndex = Math.max(0 - cste, this.v0.getInf());
         int maxFeasibleIndex = Math.min(this.v0.getSup(), lval.length - 1 - cste);
+
+        if(minFeasibleIndex>maxFeasibleIndex){
+            this.fail();
+        }
+
         int cause = this.v1.hasEnumeratedDomain() ? this.cIdx0 : VarEvent.domOverWDegIdx(cIdx0);
 
         while ((this.v0.canBeInstantiatedTo(minFeasibleIndex))

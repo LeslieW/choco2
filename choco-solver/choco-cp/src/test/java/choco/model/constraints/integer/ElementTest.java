@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.integer;
 
+import choco.Choco;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -32,10 +33,12 @@ import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import org.junit.After;
+import org.junit.Assert;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Random;
 import java.util.logging.Logger;
 
 /**
@@ -396,5 +399,23 @@ public class ElementTest {
 		s.solveAll();
 		assertEquals(24, s.getSolutionCount());
 	}
+
+    @Test
+    public void testFznElement(){
+        for(int j = 0; j< 100; j++){
+            Random r = new Random(j);
+            IntegerVariable index = Choco.makeIntVar("idx", 24, 25);
+            IntegerVariable val = Choco.makeBooleanVar("val");
+            int[] values = new int[24];
+            for(int i = 0; i < values.length; i++){
+                values[i] = r.nextInt(2);
+            }
+            m.addConstraint(nth(index, values, val));
+            s.read(m);
+            s.solveAll();
+            Assert.assertEquals(20, s.getSolutionCount());
+        }
+
+    }
 
 }
