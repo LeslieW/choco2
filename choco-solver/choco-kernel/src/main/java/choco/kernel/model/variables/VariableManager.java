@@ -27,14 +27,14 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.Var;
 
 
-public interface VariableManager extends ExpressionManager {
+public interface VariableManager<V extends Variable> extends ExpressionManager {
 
     /**
      * Build a variable for the given solver
-     * @param solver
-     * @param variable
+     * @param solver solver
+     * @param variable variable
      * @return a variable
      */
-    Var makeVariable(Solver solver, Variable variable);
+    Var makeVariable(Solver solver, V variable);
 
 }

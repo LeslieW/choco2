@@ -26,7 +26,6 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.real.RealVarImpl;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableManager;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.real.RealConstantVariable;
@@ -43,7 +42,7 @@ import choco.kernel.solver.variables.real.RealVar;
  * Date: 8 août 2008
  * Time: 13:36:45
  */
-public class RealVariableManager implements VariableManager {
+public class RealVariableManager implements VariableManager<RealVariable> {
 
     /**
      * Build a real variable for the given solver
@@ -52,7 +51,7 @@ public class RealVariableManager implements VariableManager {
      * @param var
      * @return a real variable
      */
-    public Var makeVariable(Solver solver, Variable var) {
+    public Var makeVariable(Solver solver, RealVariable var) {
         if (solver instanceof CPSolver) {
             if (var instanceof RealConstantVariable) {
                 RealConstantVariable rcv = (RealConstantVariable) var;
@@ -63,8 +62,7 @@ public class RealVariableManager implements VariableManager {
                 ((CPSolver) solver).addrealConstant(value, s);
                 return s;
             }
-            RealVariable rv = (RealVariable) var;
-            RealVar s = new RealVarImpl(solver, rv.getName(), rv.getLowB(), rv.getUppB(), RealVar.BOUNDS);
+            RealVar s = new RealVarImpl(solver, var.getName(), var.getLowB(), var.getUppB(), RealVar.BOUNDS);
             ((CPSolver) solver).addRealVar(s);
             return s;
         }

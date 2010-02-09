@@ -30,7 +30,6 @@ import choco.cp.solver.variables.integer.BooleanVarImpl;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableManager;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
@@ -49,7 +48,7 @@ import java.util.Iterator;
  * Date: 8 août 2008
  * Time: 10:14:01
  */
-public class IntegerVariableManager implements VariableManager {
+public class IntegerVariableManager implements VariableManager<IntegerVariable> {
 
 
 	protected  IntDomainVar makeConstant(CPSolver solver,IntegerVariable iv) {
@@ -74,47 +73,46 @@ public class IntegerVariableManager implements VariableManager {
      * @param var model variable
      * @return an integer variable
      */
-    public Var makeVariable(Solver solver, Variable var) {
+    public Var makeVariable(Solver solver, IntegerVariable var) {
         if (solver instanceof CPSolver) {
-            IntegerVariable iv = (IntegerVariable) var;
             IntDomainVar v = null;
             // Interception of boolean variable
-            if(iv.isConstant()){
-                return makeConstant((CPSolver)solver, iv);
+            if(var.isConstant()){
+                return makeConstant((CPSolver)solver, var);
             }else
-            if(iv.isBoolean()){
-                v =  new BooleanVarImpl(solver, iv.getName());
+            if(var.isBoolean()){
+                v =  new BooleanVarImpl(solver, var.getName());
             }else
-            if (iv.getValues() == null) {
-                if (iv.getLowB() != iv.getUppB()) {
+            if (var.getValues() == null) {
+                if (var.getLowB() != var.getUppB()) {
                     int type; // default type
-                    if (iv.getOptions().contains("cp:enum")) {
+                    if (var.getOptions().contains("cp:enum")) {
                         type = IntDomainVar.BITSET;
-                    } else if (iv.getOptions().contains("cp:bound")) {
+                    } else if (var.getOptions().contains("cp:bound")) {
                         type = IntDomainVar.BOUNDS;
-                    } else if (iv.getOptions().contains("cp:link")) {
+                    } else if (var.getOptions().contains("cp:link")) {
                         type = IntDomainVar.LINKEDLIST;
-                    } else if (iv.getOptions().contains("cp:btree")) {
+                    } else if (var.getOptions().contains("cp:btree")) {
                         type = IntDomainVar.BINARYTREE;
-                    } else if (iv.getOptions().contains("cp:blist")) {
+                    } else if (var.getOptions().contains("cp:blist")) {
                         type = IntDomainVar.BIPARTITELIST;
                     } else{
-                        type = getIntelligentDomain(iv);
+                        type = getIntelligentDomain(var);
                     }
-                    v =  new IntDomainVarImpl(solver, iv.getName(), type, iv.getLowB(), iv.getUppB());
+                    v =  new IntDomainVarImpl(solver, var.getName(), type, var.getLowB(), var.getUppB());
                 }
             } else {
-                int[] values = iv.getValues();
+                int[] values = var.getValues();
                 if(values.length>1) {
                     int type = IntDomainVar.BITSET; // default type
-                    if (iv.getOptions().contains("cp:link")) {
+                    if (var.getOptions().contains("cp:link")) {
                         type = IntDomainVar.LINKEDLIST;
-                    } else if (iv.getOptions().contains("cp:btree")) {
+                    } else if (var.getOptions().contains("cp:btree")) {
                         type = IntDomainVar.BINARYTREE;
-                    } else if (iv.getOptions().contains("cp:blist")) {
+                    } else if (var.getOptions().contains("cp:blist")) {
                         type = IntDomainVar.BIPARTITELIST;
                     }
-                    v = new IntDomainVarImpl(solver, iv.getName(), type, values);
+                    v = new IntDomainVarImpl(solver, var.getName(), type, values);
                 }
             }
             ((CPSolver) solver).addIntVar(v);

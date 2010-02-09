@@ -27,7 +27,6 @@ import choco.cp.solver.constraints.set.SetCard;
 import choco.cp.solver.variables.set.SetVarImpl;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableManager;
 import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
@@ -44,7 +43,7 @@ import choco.kernel.solver.variables.set.SetVar;
  * Date: 8 août 2008
  * Time: 13:26:41
  */
-public class SetVariableManager implements VariableManager {
+public class SetVariableManager implements VariableManager<SetVariable> {
 
     /**
      * Build a set variable for the given solver
@@ -52,30 +51,29 @@ public class SetVariableManager implements VariableManager {
      * @param var
      * @return a set variable
      */
-    public Var makeVariable(Solver solver, Variable var) {
+    public Var makeVariable(Solver solver, SetVariable var) {
         if(solver instanceof CPSolver){
-            SetVariable sv = (SetVariable)var;
-            IntDomainVar card = (sv.getCard()!=null?solver.getVar(sv.getCard()):null);
-            SetVar s = null;
-            if(sv.getVariableType()== VariableType.CONSTANT_SET){
-                    s = new SetVarImpl(solver, sv.getName(), sv.getValues(), card, SetVar.BOUNDSET_CONSTANT);
+            IntDomainVar card = (var.getCard()!=null?solver.getVar(var.getCard()):null);
+            SetVar s;
+            if(var.getVariableType()== VariableType.CONSTANT_SET){
+                    s = new SetVarImpl(solver, var.getName(), var.getValues(), card, SetVar.BOUNDSET_CONSTANT);
             }else
-            if (sv.getValues() == null) {
-                if(sv.getOptions().contains("cp:boundCard")){
-                    s = new SetVarImpl(solver, sv.getName(), sv.getLowB(), sv.getUppB(), card, SetVar.BOUNDSET_BOUNDCARD);
+            if (var.getValues() == null) {
+                if(var.getOptions().contains("cp:boundCard")){
+                    s = new SetVarImpl(solver, var.getName(), var.getLowB(), var.getUppB(), card, SetVar.BOUNDSET_BOUNDCARD);
                 }else
                 //if(options.contains("cp:enumCard")){
                 {
-                    s = new SetVarImpl(solver, sv.getName(), sv.getLowB(), sv.getUppB(), card, SetVar.BOUNDSET_ENUMCARD);
+                    s = new SetVarImpl(solver, var.getName(), var.getLowB(), var.getUppB(), card, SetVar.BOUNDSET_ENUMCARD);
                 }
             }else{
-                int[] values = sv.getValues();
-                if(sv.getOptions().contains("cp:boundCard")){
-                    s = new SetVarImpl(solver, sv.getName(), values, card, SetVar.BOUNDSET_BOUNDCARD);
+                int[] values = var.getValues();
+                if(var.getOptions().contains("cp:boundCard")){
+                    s = new SetVarImpl(solver, var.getName(), values, card, SetVar.BOUNDSET_BOUNDCARD);
                 }else
                 //if(options.contains("cp:enumCard")){
                 {
-                    s = new SetVarImpl(solver, sv.getName(), values, card, SetVar.BOUNDSET_ENUMCARD);
+                    s = new SetVarImpl(solver, var.getName(), values, card, SetVar.BOUNDSET_ENUMCARD);
                 }
             }
             ((CPSolver)solver).addSetVar(s);
