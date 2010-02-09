@@ -28,7 +28,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.SConstraintType;
-import choco.kernel.solver.propagation.PropagationEngineListener;
+import choco.kernel.solver.propagation.listener.PropagationEngineListener;
 import choco.kernel.solver.search.integer.DoubleHeuristicIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 

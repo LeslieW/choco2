@@ -1,7 +1,6 @@
 package choco.cp.solver.constraints.integer.bool.sat;
 
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.propagation.VarEvent;
 
 /**
  * A specific class for binary clauses

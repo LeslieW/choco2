@@ -24,7 +24,7 @@
 package choco.kernel.solver.constraints.bool;
 
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.propagation.IntVarEventListener;
+import choco.kernel.solver.propagation.listener.IntVarEventListener;
 
 /**
  * An interface for all implementations of listeners using search variables.

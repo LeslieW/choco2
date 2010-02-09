@@ -30,7 +30,7 @@ import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.propagation.VarEvent;
+import choco.kernel.solver.propagation.event.VarEvent;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;

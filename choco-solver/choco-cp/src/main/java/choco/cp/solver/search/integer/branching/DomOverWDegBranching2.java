@@ -3,7 +3,6 @@ package choco.cp.solver.search.integer.branching;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.propagation.PropagationEngineListener;
 import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.variables.AbstractVar;

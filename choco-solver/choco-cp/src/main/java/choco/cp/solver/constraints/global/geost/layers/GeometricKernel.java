@@ -11,7 +11,7 @@ import choco.cp.solver.constraints.global.geost.internalConstraints.*;
 import choco.kernel.common.util.objects.Pair;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.propagation.VarEvent;
+import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import static java.text.MessageFormat.format;

@@ -20,65 +20,33 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-
-package choco.kernel.solver.propagation;
+package choco.kernel.solver.propagation.listener;
 
 import choco.kernel.solver.ContradictionException;
 
-public interface VarEventQueue extends EventQueue {
-
-    /**
-     * Clear datastructures for safe reuses
-     */
-    public void clear();
-
+/*
+ * Created by IntelliJ IDEA.
+ * User: Hadrien
+ * Date: 6 juin 2004
+ * Since : Choco 2.0.0
+ *
+ */
+public interface SetVarEventListener extends VarEventListener {
   /**
-   * Checks if the queue is empty.
+   * Default propagation on kernel modification: propagation on adding a value to the kernel.
    */
-  public boolean isEmpty();
-
-
-  /**
-   * Propagates some events: in fact all the events of the queue, since there
-   * are the most important events.
-   *
-   * @throws choco.kernel.solver.ContradictionException
-   */
-  public void propagateSomeEvents() throws ContradictionException;
-
-  /**
-   * Propagates one single event from the queue (usefull for tracing)
-   *
-   * @throws choco.kernel.solver.ContradictionException
-   */
-  public void propagateOneEvent() throws ContradictionException;
-
-  /**
-   * Pops an event to propagate.
-   */
-  public PropagationEvent popEvent();
+  public void awakeOnKer(int varIdx, int x) throws ContradictionException;
 
 
   /**
-   * Adds an event to the queue.
+   * Default propagation on enveloppe modification: propagation on removing a value from the enveloppe.
    */
+  public void awakeOnEnv(int varIdx, int x) throws ContradictionException;
 
-  public boolean pushEvent(PropagationEvent event);
 
   /**
-   * Removes all the events (including the popping one).
+   * Default propagation on instantiation.
    */
-
-  public void flushEventQueue();
-
-  /**
-   * Removes an event. This method should not be useful for variable events.
-   */
-
-  public void remove(PropagationEvent event);
-
-  public int size();
-
-  public PropagationEvent get(int idx);
+  public void awakeOnInst(int varIdx) throws ContradictionException;
 
 }

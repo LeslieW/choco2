@@ -1,7 +1,7 @@
 package choco.cp.solver.constraints.integer.bool.sat;
 
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.propagation.VarEvent;
+import choco.kernel.solver.propagation.event.VarEvent;
 
 /**
  * A clause is a set of litterals used within the watched literals

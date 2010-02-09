@@ -28,7 +28,7 @@ import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.propagation.VarEvent;
+import choco.kernel.solver.propagation.event.VarEvent;
 
 import java.util.HashMap;
 import java.util.Iterator;

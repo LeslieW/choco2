@@ -26,7 +26,11 @@ import choco.kernel.memory.IStateBool;
 import choco.kernel.solver.ContradictionException;
 import static choco.kernel.solver.ContradictionException.Type.CONSTRAINT;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.propagation.*;
+import choco.kernel.solver.propagation.Propagator;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
+import choco.kernel.solver.propagation.event.PropagationEvent;
+import choco.kernel.solver.propagation.event.VarEvent;
+import choco.kernel.solver.propagation.queue.EventQueue;
 import choco.kernel.solver.variables.Var;
 
 import java.util.HashMap;

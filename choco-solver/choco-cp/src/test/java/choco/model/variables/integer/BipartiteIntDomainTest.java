@@ -15,7 +15,7 @@ import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.propagation.VarEvent;
+import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.After;
@@ -184,7 +184,7 @@ public class BipartiteIntDomainTest {
         yDom.removeVal(14,-1);
         yDom.removeVal(13,-1);
         yDom.updateSup(14);
-        yDom.instantiate(7,VarEvent.NOCAUSE);
+        yDom.instantiate(7, VarEvent.NOCAUSE);
         assertEquals(7, yDom.getInf());
         assertEquals(7, yDom.getSup());
         assertEquals(1, yDom.getSize());

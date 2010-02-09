@@ -31,7 +31,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.IStateLong;
-import choco.kernel.solver.propagation.VarEvent;
+import choco.kernel.solver.propagation.event.VarEvent;
 
 import java.lang.reflect.Array;
 import java.util.BitSet;

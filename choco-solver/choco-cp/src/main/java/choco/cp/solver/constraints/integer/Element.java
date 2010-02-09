@@ -28,7 +28,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
-import choco.kernel.solver.propagation.VarEvent;
+import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public class Element extends AbstractBinIntSConstraint {

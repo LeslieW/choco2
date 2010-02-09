@@ -25,7 +25,7 @@ package choco.cp.solver.propagation;
 
 import choco.IObservable;
 import choco.IObserver;
-import choco.kernel.solver.propagation.PropagationEvent;
+import choco.kernel.solver.propagation.event.PropagationEvent;
 
 import java.util.Vector;
 

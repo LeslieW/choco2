@@ -34,7 +34,7 @@ import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.IntSConstraint;
 import choco.kernel.solver.propagation.Propagator;
-import choco.kernel.solver.propagation.VarEvent;
+import choco.kernel.solver.propagation.event.VarEvent;
 
 /*
 * User : charles

@@ -31,7 +31,7 @@ import choco.kernel.solver.ContradictionException;
 import static choco.kernel.solver.ContradictionException.Type.DOMAIN;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.integer.IntSConstraint;
-import choco.kernel.solver.propagation.VarEvent;
+import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;

@@ -26,7 +26,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.integer.IntSConstraint;
-import choco.kernel.solver.propagation.ConstraintEvent;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 

@@ -27,7 +27,7 @@ import choco.cp.solver.variables.real.RealVarImpl;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.real.RealSConstraint;
-import choco.kernel.solver.propagation.VarEvent;
+import choco.kernel.solver.propagation.event.VarEvent;
 
 /**
  * An event for real interval variable modifications.

@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.propagation;
 
-import choco.kernel.solver.propagation.VarEventQueue;
+import choco.kernel.solver.propagation.queue.VarEventQueue;
 
 /* 
  * Created by IntelliJ IDEA.

@@ -35,7 +35,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
-import choco.kernel.solver.propagation.VarEvent;
+import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.*;
@@ -413,7 +413,7 @@ public class Regular extends AbstractLargeIntSConstraint {
             }
             supports = getQij(idx, vars[idx].getSup());
             if (supports.isEmpty()) {
-                vars[idx].removeVal(vars[idx].getSup(),VarEvent.domOverWDegIdx(cIndices[idx]));           
+                vars[idx].removeVal(vars[idx].getSup(), VarEvent.domOverWDegIdx(cIndices[idx]));
             }
         }
     }

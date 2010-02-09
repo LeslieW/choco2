@@ -21,12 +21,13 @@
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 
-package choco.kernel.solver.propagation;
-
-import java.util.logging.Logger;
+package choco.kernel.solver.propagation.queue;
 
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.propagation.event.PropagationEvent;
+
+import java.util.logging.Logger;
 
 /**
  * An interface for all the implementations of var queues (Constraint awake, on
