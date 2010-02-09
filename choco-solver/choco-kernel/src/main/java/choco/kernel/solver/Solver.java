@@ -22,11 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Logger;
-
 import choco.IPretty;
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
@@ -48,7 +43,6 @@ import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.checker.SolutionCheckerEngine;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
@@ -66,6 +60,11 @@ import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
 import choco.kernel.visu.IVisu;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 
 /**
@@ -642,16 +641,19 @@ public interface Solver extends IMeasures, IPretty {
     /**
      * Solution checker.
      * Usefull for debug and development.
-     * @param printAll print every available information
      * @return a boolean indicating wether the solution is correct or not.
      */
     public Boolean checkSolution();
 
     public Boolean nextSolution();
 
-    public Var getVar(Variable v);
+    public <MV extends Variable, SV extends Var> SV _to(MV mv, SV sv);
 
-    public Var[] getVar(Variable... v);
+    public <MV extends Variable, SV extends Var> SV[] _to(MV[] mv, SV[] sv);
+
+    public <MV extends Variable, SV extends Var> SV getVar(MV v);
+
+    public <MV extends Variable, SV extends Var> SV[] getVar(Class<SV> clazz, MV[] mv);
 
     public IntDomainVar getVar(IntegerVariable v);
 

@@ -2496,24 +2496,32 @@ public class CPSolver implements Solver {
 		this.recomputationGap = recomputationGap;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <V extends Var> V[] getVar(Class<?> c, Variable... v) {
-		V[] tmp = (V[]) Array.newInstance(c, v.length);
-		for (int i = 0; i < v.length; i++) {
-			//noinspection unchecked
-			tmp[i] = (V) mapvariables.get(v[i].getIndex());
-		}
-		return tmp;
-	}
+    @SuppressWarnings({"unchecked"})
+    public <MV extends Variable, SV extends Var> SV _to(MV mv, SV sv){
+        sv = (SV)mapvariables.get(mv.getIndex());
+        return sv;
+    }
 
+    @SuppressWarnings({"unchecked"})
+    public <MV extends Variable, SV extends Var> SV[] _to(MV[] mv, SV[] sv){
+        for(int i = 0; i < mv.length; i++){
+            sv[i] = (SV)mapvariables.get(mv[i].getIndex());
+        }
+        return sv;
+    }
 
-	public Var getVar(Variable v) {
-		return mapvariables.get(v.getIndex());
-	}
+    @SuppressWarnings({"unchecked"})
+    public <MV extends Variable, SV extends Var> SV getVar(MV v){
+        return (SV)mapvariables.get(v.getIndex());
+    }
 
-	public Var[] getVar(Variable... v) {
-		return getVar(Variable.class, v);
-
+    @SuppressWarnings({"unchecked"})
+    public <MV extends Variable, SV extends Var> SV[] getVar(Class<SV> clazz, MV[] mv){
+        SV[] svs = (SV[]) Array.newInstance(clazz, mv.length);
+        for(int i = 0; i < mv.length; i++){
+            svs[i] = (SV)mapvariables.get(mv[i].getIndex());
+        }
+        return svs;
 	}
 
 	public IntDomainVar getVar(IntegerVariable v) {
@@ -2521,7 +2529,8 @@ public class CPSolver implements Solver {
 	}
 
 	public IntDomainVar[] getVar(IntegerVariable... v) {
-		return getVar(IntDomainVar.class, v);
+		IntDomainVar[] vs = new IntDomainVar[v.length];
+        return _to(v, vs);
 	}
 
 	public RealVar getVar(RealVariable v) {
@@ -2529,7 +2538,8 @@ public class CPSolver implements Solver {
 	}
 
 	public RealVar[] getVar(RealVariable... v) {
-		return getVar(RealVar.class, v);
+		RealVar[] vs = new RealVar[v.length];
+        return _to(v, vs);
 	}
 
 	public SetVar getVar(SetVariable v) {
@@ -2537,7 +2547,8 @@ public class CPSolver implements Solver {
 	}
 
 	public SetVar[] getVar(SetVariable... v) {
-		return getVar(SetVar.class, v);
+		SetVar[] vs = new SetVar[v.length];
+        return _to(v, vs);
 	}
 
 	public TaskVar getVar(TaskVariable v) {
@@ -2545,7 +2556,8 @@ public class CPSolver implements Solver {
 	}
 
 	public TaskVar[] getVar(TaskVariable... v) {
-		return getVar(TaskVar.class, v);
+		TaskVar[] vs = new TaskVar[v.length];
+        return _to(v, vs);
 	}
 
 
