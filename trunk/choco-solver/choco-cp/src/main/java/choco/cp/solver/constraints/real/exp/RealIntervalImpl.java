@@ -24,7 +24,7 @@ package choco.cp.solver.constraints.real.exp;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.propagation.VarEvent;
+import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.real.RealInterval;
 
 /**

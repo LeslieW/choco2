@@ -21,12 +21,12 @@
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 
-package choco.kernel.solver.propagation;
-
-import java.util.logging.Logger;
+package choco.kernel.solver.propagation.event;
 
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
+
+import java.util.logging.Logger;
 
 /**
  * An interface for all implementations of events.

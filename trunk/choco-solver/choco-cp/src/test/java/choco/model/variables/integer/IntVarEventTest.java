@@ -42,7 +42,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
-import choco.kernel.solver.propagation.PropagationEvent;
+import choco.kernel.solver.propagation.event.PropagationEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.After;
 import static org.junit.Assert.*;

@@ -27,6 +27,9 @@ import static choco.kernel.solver.ContradictionException.Type.CONSTRAINT;
 import static choco.kernel.solver.ContradictionException.Type.VARIABLE;
 import choco.kernel.solver.ContradictionExceptionFactory;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.propagation.event.VarEvent;
+import choco.kernel.solver.propagation.listener.PropagationEngineListener;
+import choco.kernel.solver.propagation.queue.EventQueue;
 import choco.kernel.solver.search.measure.FailMeasure;
 import choco.kernel.solver.variables.Var;
 

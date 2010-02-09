@@ -25,6 +25,8 @@ package choco.kernel.solver.propagation;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.propagation.event.PropagationEvent;
+import choco.kernel.solver.propagation.listener.VarEventListener;
 
 /**
  * An interface for all implementations of listeners.

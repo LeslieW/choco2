@@ -25,7 +25,7 @@ package choco.visu;
 import choco.IObservable;
 import choco.IObserver;
 import choco.cp.solver.search.AbstractSearchLoopWithRestart;
-import choco.kernel.solver.propagation.VarEvent;
+import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.search.ISearchLoop;
 import choco.kernel.solver.search.IntBranchingTrace;
 import choco.kernel.solver.variables.Var;

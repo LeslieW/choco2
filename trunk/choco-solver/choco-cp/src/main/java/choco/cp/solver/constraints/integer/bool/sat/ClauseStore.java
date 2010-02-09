@@ -1,15 +1,18 @@
 package choco.cp.solver.constraints.integer.bool.sat;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
-import choco.kernel.solver.propagation.VarEvent;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.event.VarEvent;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TLongIntHashMap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.logging.Level;
 
 /**

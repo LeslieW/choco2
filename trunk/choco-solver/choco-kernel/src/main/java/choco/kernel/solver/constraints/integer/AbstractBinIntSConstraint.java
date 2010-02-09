@@ -24,7 +24,7 @@
 package choco.kernel.solver.constraints.integer;
 
 import choco.kernel.solver.SolverException;
-import choco.kernel.solver.propagation.ConstraintEvent;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 

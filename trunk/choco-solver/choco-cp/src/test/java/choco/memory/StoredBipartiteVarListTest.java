@@ -28,7 +28,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.StoredBipartiteVarSet;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.propagation.VarEvent;
+import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.After;
 import org.junit.Assert;
@@ -138,7 +138,7 @@ public class StoredBipartiteVarListTest {
         var[1].instantiate(0,VarEvent.NOCAUSE);
 
         s.worldPush();
-        var[2].instantiate(0,VarEvent.NOCAUSE);
+        var[2].instantiate(0, VarEvent.NOCAUSE);
         var[3].instantiate(0,VarEvent.NOCAUSE);
 
         s.worldPop();

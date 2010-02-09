@@ -21,9 +21,10 @@
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 
-package choco.kernel.solver.propagation;
+package choco.kernel.solver.propagation.event;
 
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.propagation.Propagator;
 
 /**
  * A class for constraint revisions in the propagation process.

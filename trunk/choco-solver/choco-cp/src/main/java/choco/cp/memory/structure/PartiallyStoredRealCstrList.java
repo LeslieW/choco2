@@ -28,7 +28,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.APartiallyStoredCstrList;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.real.RealSConstraint;
-import static choco.kernel.solver.propagation.VarEvent.CHECK_ACTIVE;
+import static choco.kernel.solver.propagation.event.VarEvent.CHECK_ACTIVE;
 
 /*
 * User : charles

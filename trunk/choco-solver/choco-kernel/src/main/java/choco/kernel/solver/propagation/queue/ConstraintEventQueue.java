@@ -21,15 +21,18 @@
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 
-package choco.kernel.solver.propagation;
+package choco.kernel.solver.propagation.queue;
 
 import choco.kernel.common.util.objects.BipartiteSet;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.propagation.PropagationEngine;
+import choco.kernel.solver.propagation.event.ConstraintEvent;
+import choco.kernel.solver.propagation.event.PropagationEvent;
 
 import java.util.Iterator;
 
 /**
- * Implements an {@link choco.kernel.solver.propagation.EventQueue} for managing the constraint awake events.
+ * Implements an {@link EventQueue} for managing the constraint awake events.
  */
 public class ConstraintEventQueue implements EventQueue {
 

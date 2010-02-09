@@ -27,7 +27,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.EmptyIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateIntVector;
-import choco.kernel.solver.propagation.VarEvent;
+import choco.kernel.solver.propagation.event.VarEvent;
 
 /**
  * A data structure implementing a subset of a given set, by means of a cyclic

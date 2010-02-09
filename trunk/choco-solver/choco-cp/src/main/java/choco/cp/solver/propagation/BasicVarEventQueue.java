@@ -24,8 +24,8 @@ package choco.cp.solver.propagation;
 
 
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.propagation.PropagationEvent;
-import choco.kernel.solver.propagation.VarEventQueue;
+import choco.kernel.solver.propagation.event.PropagationEvent;
+import choco.kernel.solver.propagation.queue.VarEventQueue;
 
 import java.util.ArrayDeque;
 import java.util.Queue;

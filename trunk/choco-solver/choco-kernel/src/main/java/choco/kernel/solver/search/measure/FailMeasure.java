@@ -1,9 +1,8 @@
 package choco.kernel.solver.search.measure;
 
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
 import choco.kernel.solver.propagation.PropagationEngine;
-import choco.kernel.solver.propagation.PropagationEngineListener;
+import choco.kernel.solver.propagation.listener.PropagationEngineListener;
 
 
 /**

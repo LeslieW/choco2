@@ -24,7 +24,7 @@ package choco.kernel.solver.constraints.real;
 
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.Propagator;
-import choco.kernel.solver.propagation.RealVarEventListener;
+import choco.kernel.solver.propagation.listener.RealVarEventListener;
 import choco.kernel.solver.variables.real.RealVar;
 
 /**

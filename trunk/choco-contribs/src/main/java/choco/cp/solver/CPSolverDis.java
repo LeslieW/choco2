@@ -23,7 +23,7 @@
 package choco.cp.solver;
 
 import choco.cp.solver.propagation.BlockingVarEventQueue;
-import choco.kernel.solver.propagation.VarEventQueue;
+import choco.kernel.solver.propagation.queue.VarEventQueue;
 
 /*
 * User : charles
