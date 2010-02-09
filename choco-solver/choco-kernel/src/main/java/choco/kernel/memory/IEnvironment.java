@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory;
 
+import choco.IGarbageCollectorAssistant;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.structure.IndexedObject;
 import choco.kernel.memory.structure.IntInterval;
@@ -53,79 +54,57 @@ import java.util.logging.Logger;
 *     Copyright (C) F. Laburthe,                 *
 *                    N. Jussien   1999-2008      *
 **************************************************/
-public interface IEnvironment {
+public interface IEnvironment extends IGarbageCollectorAssistant {
    
 	/**
 	 * Reference to an object for logging trace statements related memory & backtrack (using the java.util.logging package)
 	 */
 	final static Logger LOGGER = ChocoLogging.getEngineLogger();
 	
-	/**
-     * Index of the Environment using trailing
-     */
-	final int ENV_TRAILING = 0;
-
-    /**
-     * Index of the Environment using copying
-     */
-    final int ENV_COPYING = 1;
-
-
-    /**
-     * Index of the {@link choco.kernel.memory.trailing.trail.StoredBoolTrail} for storing booleans.
-     */
-
-    final int BOOL_TRAIL = 0;
-    /**
-     * Index of the {@link choco.kernel.memory.trailing.trail.StoredIntTrail} for storing integers.
-     */
-
-    final int INT_TRAIL = 1;
-    /**
-     * Index of the {@link choco.kernel.memory.trailing.trail.StoredVectorTrail} for storing vectors.
-     */
-
-    final int VECTOR_TRAIL = 2;
-    /**
-     * Index of the {@link choco.kernel.memory.trailing.trail.StoredIntVectorTrail} for storing
-     * integer vectors.
-     *
-     */
-
-    final int INT_VECTOR_TRAIL = 3;
-
-    /**
-     * Index of the {@link choco.kernel.memory.trailing.trail.StoredDoubleVectorTrail} for storing
-     * double vectors.
-     *
-     */
-
-    final int DOUBLE_VECTOR_TRAIL = 4;
-    /**
-     * Index of the {@link choco.kernel.memory.trailing.trail.StoredDoubleTrail} for storing
-     * integer vectors.
-     *
-     */
-
-
-
-    final int FLOAT_TRAIL = 5;
-    /**
-     * Index of the {@link choco.kernel.memory.trailing.trail.StoredLongTrail} for storing
-     * integer vectors.
-     *
-     */
-
-    final int LONG_TRAIL = 6;
-
-
-    /**
-     * Index of the {@link choco.kernel.memory.trailing.StoredBinaryTree} for storing
-     * integer vectors.
-     *
-     */
-    final int BTREE_TRAIL = 7;
-
+//    /**
+//     * Index of the {@link choco.kernel.memory.trailing.trail.StoredBoolTrail} for storing booleans.
+//     */
+//
+//    final int BOOL_TRAIL = 0;
+//    /**
+//     * Index of the {@link choco.kernel.memory.trailing.trail.StoredIntTrail} for storing integers.
+//     */
+//
+//    final int INT_TRAIL = 1;
+//    /**
+//     * Index of the {@link choco.kernel.memory.trailing.trail.StoredVectorTrail} for storing vectors.
+//     */
+//
+//    final int VECTOR_TRAIL = 2;
+//    /**
+//     * Index of the {@link choco.kernel.memory.trailing.trail.StoredIntVectorTrail} for storing
+//     * integer vectors.
+//     *
+//     */
+//
+//    final int INT_VECTOR_TRAIL = 3;
+//    /**
+//     * Index of the {@link choco.kernel.memory.trailing.trail.StoredDoubleTrail} for storing
+//     * integer vectors.
+//     *
+//     */
+//
+//    final int FLOAT_TRAIL = 4;
+//    /**
+//     * Index of the {@link choco.kernel.memory.trailing.trail.StoredLongTrail} for storing
+//     * integer vectors.
+//     *
+//     */
+//
+//    final int LONG_TRAIL = 5;
+//
+//
+//    /**
+//     * Index of the {@link choco.kernel.memory.trailing.StoredBinaryTree} for storing
+//     * integer vectors.
+//     *
+//     */
+//    final int BTREE_TRAIL = 6;
 
 
     /**

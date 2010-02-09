@@ -30,12 +30,6 @@ public final class StoredLong extends AbstractStoredObject implements IStateLong
 
 	private long currentValue;
 
-	/**
-	 * The current {@link choco.kernel.memory.trailing.trail.StoredIntTrail}.
-	 */
-
-	private final StoredLongTrail trail;
-
 
 	/**
 	 * Constructs a stored search with an unknown initial value.
@@ -57,7 +51,6 @@ public final class StoredLong extends AbstractStoredObject implements IStateLong
 	public StoredLong(EnvironmentTrailing env, long d) {
 		super(env);
 		currentValue = d;
-		trail = (StoredLongTrail) this.environment.getTrail(choco.kernel.memory.IEnvironment.LONG_TRAIL);
 	}
 
 
@@ -71,7 +64,7 @@ public final class StoredLong extends AbstractStoredObject implements IStateLong
 	public void set(final long y) {
 		if (y != currentValue) {
 			if (this.worldStamp < environment.getWorldIndex()) {
-				trail.savePreviousState(this, currentValue, worldStamp);
+				environment.savePreviousState(this, currentValue, worldStamp);
 				worldStamp = environment.getWorldIndex();
 			}
 			currentValue = y;

@@ -23,7 +23,7 @@
 
 package choco.kernel.memory.trailing;
 
-import choco.kernel.memory.trailing.trail.StoredVectorTrail;
+
 
 /**
  * <p>
@@ -58,13 +58,6 @@ public final class StoredVector<E> implements choco.kernel.memory.IStateVector<E
 
 
 	/**
-	 * The history of all the backtrackable search vectors.
-	 */
-
-	private final StoredVectorTrail trail;
-
-
-	/**
 	 * Constructs a stored search vector with an initial size, and initial values.
 	 *
 	 * @param env The current environment.
@@ -80,7 +73,6 @@ public final class StoredVector<E> implements choco.kernel.memory.IStateVector<E
 
 		this.size = new StoredInt(env, 0);
 
-		this.trail = (StoredVectorTrail) this.environment.getTrail(choco.kernel.memory.IEnvironment.VECTOR_TRAIL);
 	}
 
 
@@ -89,7 +81,10 @@ public final class StoredVector<E> implements choco.kernel.memory.IStateVector<E
 		throw new UnsupportedOperationException();
 	}
 
-
+	private boolean rangeCheck(int index) {
+		return index < size.get() && index >= 0;
+	}
+	
 	public int size() {
 		return size.get();
 	}
@@ -137,7 +132,7 @@ public final class StoredVector<E> implements choco.kernel.memory.IStateVector<E
 	}
 
 	public E get(int index) {
-		if (index < size.get() && index >= 0) {
+		if (rangeCheck(index)) {
 			return (E)elementData[index];
 		}
 		throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size.get());
@@ -145,16 +140,16 @@ public final class StoredVector<E> implements choco.kernel.memory.IStateVector<E
 
 
 	public E set(int index, E val) {
-		if (index < size.get() && index >= 0) {
+		if (rangeCheck(index)) {
 			assert(this.worldStamps[index] <= environment.getWorldIndex());
-			E oldValue = (E) elementData[index];
+			final E oldValue = (E) elementData[index];
 			if (val != oldValue) {
 				int oldStamp = this.worldStamps[index];
 				// /!\  Logging statements really decrease performances
 				//				if (LOGGER.isLoggable(Level.FINEST))
 				//					LOGGER.log(Level.FINEST, "W: {0}@{1}ts:{2}", new Object[]{ environment.getWorldIndex(), index,this.worldStamps[index]});
 				if (oldStamp < environment.getWorldIndex()) {
-					trail.savePreviousState(this, index, oldValue, oldStamp);
+					environment.savePreviousState(this, index, oldValue, oldStamp);
 					worldStamps[index] = environment.getWorldIndex();
 				}
 				elementData[index] = val;
@@ -170,7 +165,8 @@ public final class StoredVector<E> implements choco.kernel.memory.IStateVector<E
 	 */
 
     public E _set(int index, Object val, int stamp) {
-		E oldval = (E)elementData[index];
+    	assert(rangeCheck(index));
+    	E oldval = (E) elementData[index];
 		elementData[index] = val;
 		worldStamps[index] = stamp;
 		return oldval;

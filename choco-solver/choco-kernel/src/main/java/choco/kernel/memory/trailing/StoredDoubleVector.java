@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
- *         |  ¡(..)  |                           *
+ *         |  ï¿½(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -67,13 +67,6 @@ public final class StoredDoubleVector implements IStateDoubleVector {
 
 
 	/**
-	 * The history of all the backtrackable search vectors.
-	 */
-
-	private final StoredDoubleVectorTrail trail;
-
-
-	/**
 	 * Constructs a stored search vector with an initial size, and initial values.
 	 *
 	 * @param env          The current environment.
@@ -96,8 +89,6 @@ public final class StoredDoubleVector implements IStateDoubleVector {
 			this.worldStamps[i] = w;
 		}
 		this.size = new StoredInt(env, initialSize);
-
-		this.trail = (StoredDoubleVectorTrail) this.environment.getTrail(choco.kernel.memory.IEnvironment.DOUBLE_VECTOR_TRAIL);
 	}
 
 
@@ -117,8 +108,6 @@ public final class StoredDoubleVector implements IStateDoubleVector {
 			this.worldStamps[i] = w;
 		}
 		this.size = new StoredInt(env, initialSize);
-
-		this.trail = (StoredDoubleVectorTrail) this.environment.getTrail(choco.kernel.memory.IEnvironment.INT_VECTOR_TRAIL);
 	}
 
 	/**
@@ -131,6 +120,9 @@ public final class StoredDoubleVector implements IStateDoubleVector {
 		this(env, 0, 0);
 	}
 
+	private boolean rangeCheck(int index) {
+		return index < size.get() && index >= 0;
+	}
 
 	/**
 	 * Returns the current size of the stored search vector.
@@ -227,15 +219,16 @@ public final class StoredDoubleVector implements IStateDoubleVector {
 	 */
 
 	public double get(int index) {
-		if (index < size.get() && index >= 0) {
+		if (rangeCheck(index)) {
 			return elementData[index];
 		}
 		throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size.get());
 	}
 
     @Override
-    public final double unsafeGet(int index) {
-        return elementData[index];
+    public double quickGet(int index) {
+    	assert(rangeCheck(index));
+    	return elementData[index];
     }
 
 
@@ -244,34 +237,24 @@ public final class StoredDoubleVector implements IStateDoubleVector {
 	 */
 
 	public double set(int index, double val) {
-		if (index < size.get() && index >= 0) {
+		if (rangeCheck(index)) {
 			//<hca> je vire cet assert en cas de postCut il n est pas vrai ok ?
 			//assert(this.worldStamps[index] <= environment.getWorldIndex());
-			double oldValue = elementData[index];
-			if (val != oldValue) {
-				int oldStamp = this.worldStamps[index];
-				// /!\  Logging statements really decrease performances
-				//				if (LOGGER.isLoggable(Level.FINEST))
-				//					  LOGGER.log(Level.FINEST, "W:{0} @{1} ts:{2}", new Object[]{ environment.getWorldIndex(), index,this.worldStamps[index]});
-				if (oldStamp < environment.getWorldIndex()) {
-					trail.savePreviousState(this, index, oldValue, oldStamp);
-					worldStamps[index] = environment.getWorldIndex();
-				}
-				elementData[index] = val;
-			}
-			return oldValue;
+			return quickSet(index, val);
+			
 		}
 		throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size.get());
 	}                                                                               
 
 
-    public double unsafeSet(int index, double val)
+    public double quickSet(int index, double val)
     {
-        double oldValue = elementData[index];
+    	assert(rangeCheck(index));
+    	double oldValue = elementData[index];
         if (val != oldValue) {
 		    int oldStamp = this.worldStamps[index];
 			if (oldStamp < environment.getWorldIndex()) {
-			    trail.savePreviousState(this, index, oldValue, oldStamp);
+			    environment.savePreviousState(this, index, oldValue, oldStamp);
 				worldStamps[index] = environment.getWorldIndex();
 		    }
 		    elementData[index] = val;
@@ -290,7 +273,8 @@ public final class StoredDoubleVector implements IStateDoubleVector {
      */
 
     public double _set(int index, double val, int stamp) {
-		double oldval = elementData[index];
+    	assert(rangeCheck(index));
+    	double oldval = elementData[index];
 		elementData[index] = val;
 		worldStamps[index] = stamp;
 		return oldval;

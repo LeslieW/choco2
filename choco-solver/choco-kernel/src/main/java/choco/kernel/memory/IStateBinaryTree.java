@@ -24,6 +24,7 @@ package choco.kernel.memory;
 
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.memory.trailing.trail.StoredBinaryTreeTrail;
 
 import java.util.logging.Logger;
@@ -169,7 +170,7 @@ public interface IStateBinaryTree {
             {
                 if (this.infStamp <= tree.getEnvironment().getWorldIndex())
                 {
-                    tree.getTrail().stack(tree,this,INF);
+                    tree.getEnvironment().savePreviousState(tree,this,INF);
                     this.infStamp = tree.getEnvironment().getWorldIndex();
                 }
                 this.inf = newInf;
@@ -205,7 +206,7 @@ public interface IStateBinaryTree {
 
                 if (this.supStamp <= tree.getEnvironment().getWorldIndex())
                 {
-                    tree.getTrail().stack(tree,this,SUP);
+                    tree.getEnvironment().savePreviousState(tree,this,SUP);
                     this.supStamp = tree.getEnvironment().getWorldIndex();
                 }
                 this.sup = newSup;
@@ -306,13 +307,13 @@ public interface IStateBinaryTree {
      * Used for trailing only
      * @return a trail of StoredBinaryTree
      */
-    StoredBinaryTreeTrail getTrail();
+    //StoredBinaryTreeTrail getTrail();
 
     /**
      * Gets the Environment associated with this tree
      * @return the environment associated with this tree
      */
-    IEnvironment getEnvironment();
+    EnvironmentTrailing getEnvironment();
 
     /**
      * Gets the node containing the lowest value in the tree

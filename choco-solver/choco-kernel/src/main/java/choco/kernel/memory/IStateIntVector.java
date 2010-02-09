@@ -87,7 +87,7 @@ public interface IStateIntVector {
      * @param index
      * @return
      */
-    public int unsafeGet(int index);
+    public int quickGet(int index);
 
   /**
    * Assigns a new value <code>val</code> to the element <code>index</code> and returns
@@ -102,7 +102,7 @@ public interface IStateIntVector {
      * @param val the new value
      * @return the old value
      */
-    public int unsafeSet(int index, int val);
+    public int quickSet(int index, int val);
   
   public DisposableIntIterator getIterator();
 }

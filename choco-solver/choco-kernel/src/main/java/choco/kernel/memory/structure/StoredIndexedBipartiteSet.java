@@ -229,7 +229,7 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
     }
 
     @Override
-    public final int unsafeGet(int index) {
+    public final int quickGet(int index) {
         return get(index);
     }
 
@@ -242,7 +242,7 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
     }
 
     @Override
-    public int unsafeSet(int index, int val) {
+    public int quickSet(int index, int val) {
         return set(index,val);
     }
 

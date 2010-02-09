@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver;
 
+import choco.IGarbageCollectorAssistant;
 import choco.IPretty;
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
@@ -74,7 +75,7 @@ import java.util.logging.Logger;
  * Time: 16:43:08
  * Interface for Solver class, declare main expected methods.
  */
-public interface Solver extends IMeasures, IPretty {
+public interface Solver extends IMeasures, IPretty, IGarbageCollectorAssistant {
 	
 	/**
 	 * Reference to an object for logging trace statements related to Abtract

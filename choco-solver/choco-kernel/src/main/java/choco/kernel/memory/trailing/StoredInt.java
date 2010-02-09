@@ -23,7 +23,6 @@
 package choco.kernel.memory.trailing;
 
 import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.trailing.trail.StoredIntTrail;
 
 
 /**
@@ -34,12 +33,6 @@ public class StoredInt extends AbstractStoredObject implements IStateInt {
 	private int currentValue;
 	
 	/**
-	 * The current {@link StoredIntTrail}.
-	 */
-	private final StoredIntTrail trail;
-
-
-	/**
 	 * Constructs a stored search with an initial value.
 	 * Note: this constructor should not be used directly: one should instead
 	 * use the IEnvironment factory
@@ -47,8 +40,7 @@ public class StoredInt extends AbstractStoredObject implements IStateInt {
     public StoredInt(EnvironmentTrailing env, int i) {
 		super(env);
 		currentValue = i;
-		trail = (StoredIntTrail) this.environment.getTrail(choco.kernel.memory.IEnvironment.INT_TRAIL);
-	}
+    }
 
 	@Override
 	public final void add(final int delta) {
@@ -62,18 +54,14 @@ public class StoredInt extends AbstractStoredObject implements IStateInt {
 	}
 
 
-
-
-
 	/**
 	 * Modifies the value and stores if needed the former value on the
 	 * trailing stack.
 	 */
-
 	public final void set(final int y) {
 		if (y != currentValue) {
 			if (this.worldStamp < environment.getWorldIndex()) {
-				trail.savePreviousState(this, currentValue, worldStamp);
+				environment.savePreviousState(this, currentValue, worldStamp);
 				worldStamp = environment.getWorldIndex();
 			}
 			currentValue = y;

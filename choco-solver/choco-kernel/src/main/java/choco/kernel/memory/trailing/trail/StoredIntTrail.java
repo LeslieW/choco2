@@ -167,7 +167,6 @@ public final class StoredIntTrail implements ITrailStorage {
 	 * Reacts when a StoredInt is modified: push the former value & timestamp
 	 * on the stacks.
 	 */
-
 	public void savePreviousState(StoredInt v, int oldValue, int oldStamp) {
 		valueStack[currentLevel] = oldValue;
 		variableStack[currentLevel] = v;

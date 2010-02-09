@@ -68,7 +68,6 @@ public final class StoredBinaryTree implements IStateBinaryTree {
 
 
     EnvironmentTrailing env;
-    StoredBinaryTreeTrail trail;
     Node root;
     int lastSavedWorld;
     boolean addLeft = true;
@@ -78,7 +77,6 @@ public final class StoredBinaryTree implements IStateBinaryTree {
     public StoredBinaryTree(EnvironmentTrailing env, int a, int b)
     {
         this.env = env;
-        this.trail = (StoredBinaryTreeTrail) env.getTrail(IEnvironment.BTREE_TRAIL);
         this.lastSavedWorld = 0;
         this.add(a,b);
 
@@ -189,7 +187,7 @@ public final class StoredBinaryTree implements IStateBinaryTree {
     {
         if (save)
         {
-            trail.stack(this,n,REM);
+            env.savePreviousState(this,n,REM);
         }
 
 
@@ -305,7 +303,7 @@ public final class StoredBinaryTree implements IStateBinaryTree {
     {
         if (save)
         {
-            trail.stack(this,n,ADD);
+        	env.savePreviousState(this,n,ADD);
         }
         Node current = this.root;
         boolean done = false;
@@ -436,12 +434,8 @@ public final class StoredBinaryTree implements IStateBinaryTree {
         return true;
     }
 
-    public StoredBinaryTreeTrail getTrail()
-    {
-        return this.trail;
-    }
 
-    public IEnvironment getEnvironment()
+    public EnvironmentTrailing getEnvironment()
     {
         return env;
     }

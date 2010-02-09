@@ -228,53 +228,53 @@ public class CPSolver implements Solver {
 	/**
 	 * All the constraints of the model.
 	 */
-	protected PartiallyStoredVector<Propagator> constraints;
+	protected final PartiallyStoredVector<Propagator> constraints;
 
 	/**
 	 * All the search intVars in the model.
 	 */
-	protected StoredBipartiteVarSet<IntDomainVar> intVars;
+	protected final StoredBipartiteVarSet<IntDomainVar> intVars;
 	/**
 	 * All the set intVars in the model.
 	 */
-	protected StoredBipartiteVarSet<SetVar> setVars;
+	protected final StoredBipartiteVarSet<SetVar> setVars;
 	/**
 	 * All the float vars in the model.
 	 */
-	protected StoredBipartiteVarSet<RealVar> floatVars;
+	protected final StoredBipartiteVarSet<RealVar> floatVars;
 
-	protected StoredBipartiteVarSet<TaskVar> taskVars;
+	protected final StoredBipartiteVarSet<TaskVar> taskVars;
 	/**
 	 * All the decision integer Vars in the model.
 	 */
-	protected ArrayList<IntDomainVar> intDecisionVars;
+	protected final ArrayList<IntDomainVar> intDecisionVars;
 	/**
 	 * All the decision set Vars in the model.
 	 */
-	protected ArrayList<SetVar> setDecisionVars;
+	protected final ArrayList<SetVar> setDecisionVars;
 	/**
 	 * All the decision float vars in the model.
 	 */
-	protected ArrayList<RealVar> floatDecisionVars;
+	protected final ArrayList<RealVar> floatDecisionVars;
 
 	/**
 	 * All the decision task vars in the model.
 	 */
-	protected ArrayList<TaskVar> taskDecisionVars;
+	protected final ArrayList<TaskVar> taskDecisionVars;
 
 	/**
 	 * All the integer constant variables in the model.
 	 */
-	protected HashMap<Integer, IntDomainVar> intconstantVars;
+	protected final HashMap<Integer, IntDomainVar> intconstantVars;
 
 	/**
 	 * All the real constant variables in the model.
 	 */
-	protected HashMap<Double, RealIntervalConstant> realconstantVars;
+	protected final HashMap<Double, RealIntervalConstant> realconstantVars;
 
-	protected TLongObjectHashMap<Var> mapvariables;
+	protected final TLongObjectHashMap<Var> mapvariables;
 
-	protected TLongObjectHashMap<SConstraint> mapconstraints;
+	protected final TLongObjectHashMap<SConstraint> mapconstraints;
 
 	/**
 	 * Precision of the search for a real model.
@@ -450,14 +450,9 @@ public class CPSolver implements Solver {
 		this.indexOfLastInitializedStaticConstraint = env.makeInt(PartiallyStoredVector.getFirstStaticIndex() - 1);
 		
 	}
-
-    /**
-     * Removes all of the elements from this solver (optional operation).
-     * The solver will be 'empty' after this call returns.
-     */
-    public void clear() {
-		mod2sol.clear();
-		mapvariables.clear();
+	 
+    protected void clearVarLists() {
+    	mapvariables.clear();
 		mapconstraints.clear();
 		intVars.clear();
 		setVars.clear();
@@ -469,12 +464,29 @@ public class CPSolver implements Solver {
 		taskDecisionVars.clear();
 		intconstantVars.clear();
 		realconstantVars.clear();
+    }
+    /**
+     * Removes all of the elements from this solver (optional operation).
+     * The solver will be 'empty' after this call returns.
+     */
+    public void clear() {
+    	mod2sol.clear();
+		clearVarLists();
 		this.propagationEngine = new ChocEngine(this);
 		failMeasure = new FailMeasure(propagationEngine);
 		this.constraints.clear(environment);
 //		indexfactory = new IndexFactory();
 		this.indexOfLastInitializedStaticConstraint.set(PartiallyStoredVector.getFirstStaticIndex() - 1);
 	}
+    
+    @Override
+	public void freeMemory() {
+    	clearVarLists();
+    	this.constraints.clear(environment);
+		environment.freeMemory();
+		environment=null;
+		mod2sol = null;
+    }
 
 	/**
 	 * Specify the visualization of the solver. Allow the visu to get

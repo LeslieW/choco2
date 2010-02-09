@@ -101,6 +101,7 @@ public abstract class AbstractInstanceModel {
 		isFeasible = null;
 		status = ERROR;
 		model = null;
+		if(solver != null) solver.freeMemory();
 		solver = null;
 		initialObjective = null;
 		objective = null;

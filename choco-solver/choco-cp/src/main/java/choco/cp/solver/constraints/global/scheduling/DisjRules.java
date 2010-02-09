@@ -79,6 +79,7 @@ public final class DisjRules extends AbstractDisjRules {
 	}
 
 
+	
 
 	@Override
 	public void remove(IRTask rtask) {
@@ -231,7 +232,33 @@ public final class DisjRules extends AbstractDisjRules {
 		clear();
 		rqueue.reset();
 		this.disjTreeTL.setMode(ECT);
-		return edgeFindingEST(disjTreeTL, rqueue);
+		rqueue.sort(makeReverseRLatestCompletionTimeCmp());
+		setMakespanLB(disjTreeTL);
+		IRTask rtj=rqueue.peek();
+		ITask j= rtj.getTaskVar();
+		if(disjTreeTL.getTime()>j.getLCT()) {rtj.fail();}//erreur pseudo-code papier sinon on ne traite pas la tete de la queue
+		do {
+			rqueue.poll();
+			if(rtj.isRegular()) {
+				disjTreeTL.removeFromThetaAndInsertInLambda(rtj);
+				if(!rqueue.isEmpty()) {
+					rtj=rqueue.peek();
+					j= rtj.getTaskVar();
+				}
+				else {break;}
+				if(disjTreeTL.getTime()>j.getLCT()) {rtj.fail();}
+				while(disjTreeTL.getGrayTime()>j.getLCT()) {
+					final IRTask rti= (IRTask) disjTreeTL.getResponsibleTask();
+					final ITask i= rti.getTaskVar();
+					if(disjTreeTL.getTime()>i.getEST()) {
+						addUpdate(rti,disjTreeTL.getTime());
+					}
+					disjTreeTL.removeFromLambda(i);
+				}
+			}
+		} while (!rqueue.isEmpty());
+		return updateEST();
+		//return edgeFindingEST(disjTreeTL, rqueue);
 		
 	}
 
@@ -247,7 +274,29 @@ public final class DisjRules extends AbstractDisjRules {
 		clear();
 		rqueue.reset();
 		disjTreeTL.setMode(LST);
-		return edgeFindingLCT(disjTreeTL, rqueue);
+		rqueue.sort(makeREarliestStartingTimeCmp());
+		IRTask rtj=rqueue.peek();
+		ITask j= rtj.getTaskVar();
+		if(disjTreeTL.getTime()<j.getEST()) {rtj.fail();}
+		do {
+			rqueue.poll();
+			if(rtj.isRegular()) {
+				disjTreeTL.removeFromThetaAndInsertInLambda(rtj);
+				if(!rqueue.isEmpty()) {
+					rtj = rqueue.peek();	
+					j= rtj.getTaskVar();
+				}
+				else {break;}
+				if(disjTreeTL.getTime()<j.getEST()) {rtj.fail();}
+				while(disjTreeTL.getGrayTime() <j.getEST()) {
+					final IRTask rti= (IRTask) disjTreeTL.getResponsibleTask();
+					final ITask i= rti.getTaskVar();
+					addUpdate(rti,disjTreeTL.getTime());
+					disjTreeTL.removeFromLambda(i);
+				}
+			}
+		} while (!rqueue.isEmpty());
+		return updateLCT();
 	}
 
 }

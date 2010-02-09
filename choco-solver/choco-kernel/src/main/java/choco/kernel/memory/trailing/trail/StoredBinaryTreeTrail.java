@@ -62,6 +62,7 @@ public class StoredBinaryTreeTrail implements ITrailStorage {
 		this.worldStartLevels = new int[maxWorld];
 		this.maxHist = maxHist;
 	}
+	
 
 
 	public void stack(IStateBinaryTree b, IStateBinaryTree.Node n, int operation)

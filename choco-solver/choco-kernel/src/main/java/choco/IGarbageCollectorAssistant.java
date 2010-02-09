@@ -20,47 +20,21 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.constraints.global.scheduling;
-
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.scheduling.IRTask;
+package choco;
 
 /**
+ * The interface notifies that the object is not "in use" anymore.
+ * The method prepprocesses the object for the garbage collector.
+ * For example, it deletes some strong cross-references between objetcs.
  * 
- * The interface represents the classical filtering rules for an unary resource.
  * @author Arnaud Malapert</br> 
- * @since 23 févr. 2009 version 2.0.3</br>
- * @version 2.0.3</br>
+ * @since 9 févr. 2010 version 2.1.1</br>
+ * @version 2.1.1</br>
  */
-public interface IDisjRules {
-		
-	void fireDomainChanged();
-	
-	boolean isActive();
-	
-	int getMakespanLB();
-	
-	boolean overloadChecking();
+public interface IGarbageCollectorAssistant {
 
-	public boolean notFirst() throws ContradictionException;
-
-	public boolean notLast() throws ContradictionException;
-	
-	public boolean notFirstNotLast() throws ContradictionException;
-	
-	public boolean detectablePrecedenceEST() throws ContradictionException;
-
-	public boolean detectablePrecedenceLCT() throws ContradictionException;
-	
-	public boolean detectablePrecedence() throws ContradictionException;
-	
-	public boolean edgeFindingEST() throws ContradictionException;
-	
-	public boolean edgeFindingLCT() throws ContradictionException;
-	
-	public boolean edgeFinding() throws ContradictionException;
-	
-	/** optional operation */
-	void remove(IRTask rtask);
-		
+	/**
+	 * Preprocessing that helps the garbage collector.
+	 */
+	void freeMemory();
 }

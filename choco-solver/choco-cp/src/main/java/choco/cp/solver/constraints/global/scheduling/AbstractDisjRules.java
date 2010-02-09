@@ -143,68 +143,6 @@ public abstract class AbstractDisjRules implements IDisjRules {
 		return notFirst() | notFirstNotLast();
 	}
 
-	/**
-	 * the only abstract rule as there is no alternative version.
-	 * Arguments should be in a valid initial state.
-	 */
-	protected boolean edgeFindingEST(IThetaLambdaTree disjTreeTL, IBipartiteQueue<IRTask> rqueue) throws ContradictionException {
-		rqueue.sort(makeReverseRLatestCompletionTimeCmp());
-		setMakespanLB(disjTreeTL);
-		IRTask rtj=rqueue.peek();
-		ITask j= rtj.getTaskVar();
-		if(disjTreeTL.getTime()>j.getLCT()) {rtj.fail();}//erreur pseudo-code papier sinon on ne traite pas la tete de la queue
-		do {
-			rqueue.poll();
-			if(rtj.isRegular()) {
-				disjTreeTL.removeFromThetaAndInsertInLambda(rtj);
-				if(!rqueue.isEmpty()) {
-					rtj=rqueue.peek();
-					j= rtj.getTaskVar();
-				}
-				else {break;}
-				if(disjTreeTL.getTime()>j.getLCT()) {rtj.fail();}
-				while(disjTreeTL.getGrayTime()>j.getLCT()) {
-					final IRTask rti= (IRTask) disjTreeTL.getResponsibleTask();
-					final ITask i= rti.getTaskVar();
-					if(disjTreeTL.getTime()>i.getEST()) {
-						addUpdate(rti,disjTreeTL.getTime());
-					}
-					disjTreeTL.removeFromLambda(i);
-				}
-			}
-		} while (!rqueue.isEmpty());
-		return updateEST();
-	}
-
-	/**
-	 * the only abstract rule as there is no alternative version.
-	 * Arguments should be in a valid initial state.
-	 */
-	protected boolean edgeFindingLCT(IThetaLambdaTree disjTreeTL, IBipartiteQueue<IRTask> rqueue) throws ContradictionException  {
-		rqueue.sort(makeREarliestStartingTimeCmp());
-		IRTask rtj=rqueue.peek();
-		ITask j= rtj.getTaskVar();
-		if(disjTreeTL.getTime()<j.getEST()) {rtj.fail();}
-		do {
-			rqueue.poll();
-			if(rtj.isRegular()) {
-				disjTreeTL.removeFromThetaAndInsertInLambda(rtj);
-				if(!rqueue.isEmpty()) {
-					rtj = rqueue.peek();	
-					j= rtj.getTaskVar();
-				}
-				else {break;}
-				if(disjTreeTL.getTime()<j.getEST()) {rtj.fail();}
-				while(disjTreeTL.getGrayTime() <j.getEST()) {
-					final IRTask rti= (IRTask) disjTreeTL.getResponsibleTask();
-					final ITask i= rti.getTaskVar();
-					addUpdate(rti,disjTreeTL.getTime());
-					disjTreeTL.removeFromLambda(i);
-				}
-			}
-		} while (!rqueue.isEmpty());
-		return updateLCT();
-	}
 }
 
 interface IBipartiteQueue<E> {
