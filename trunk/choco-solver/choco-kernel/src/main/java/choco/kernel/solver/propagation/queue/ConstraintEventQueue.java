@@ -34,7 +34,7 @@ import java.util.Iterator;
 /**
  * Implements an {@link EventQueue} for managing the constraint awake events.
  */
-public class ConstraintEventQueue implements EventQueue {
+public class ConstraintEventQueue extends AbstractConstraintEventQueue{
 
   /**
    * The propagation engine using this queue.
