@@ -31,7 +31,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.propagation.event.PropagationEvent;
-import choco.kernel.solver.propagation.queue.ConstraintEventQueue;
+import choco.kernel.solver.propagation.queue.AbstractConstraintEventQueue;
 import choco.kernel.solver.propagation.queue.VarEventQueue;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.After;
@@ -54,8 +54,8 @@ public class EnvironnementTest {
     PropagationEngine eng;
     VarEventQueue veq;
     VarEventQueue veqcop;
-    ConstraintEventQueue ceq;
-    ConstraintEventQueue ceqcop;
+    AbstractConstraintEventQueue ceq;
+    AbstractConstraintEventQueue ceqcop;
 
     @Before
     public final void before(){

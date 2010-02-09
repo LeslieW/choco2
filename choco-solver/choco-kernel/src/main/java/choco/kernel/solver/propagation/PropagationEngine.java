@@ -27,7 +27,7 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.propagation.listener.PropagationEngineListener;
-import choco.kernel.solver.propagation.queue.ConstraintEventQueue;
+import choco.kernel.solver.propagation.queue.AbstractConstraintEventQueue;
 import choco.kernel.solver.propagation.queue.EventQueue;
 import choco.kernel.solver.propagation.queue.VarEventQueue;
 import choco.kernel.solver.variables.Var;
@@ -123,9 +123,9 @@ public interface PropagationEngine {
 
 	void setVarEventQueues(VarEventQueue[] veq);
 
-	ConstraintEventQueue[] getConstraintEventQueues();
+	AbstractConstraintEventQueue[] getConstraintEventQueues();
 
-	void setConstraintEventQueues(ConstraintEventQueue[] ceq);
+	void setConstraintEventQueues(AbstractConstraintEventQueue[] ceq);
 
 	void decPendingInitConstAwakeEvent();
 

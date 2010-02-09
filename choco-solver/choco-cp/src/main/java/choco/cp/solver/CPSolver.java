@@ -117,6 +117,7 @@ import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.propagation.Propagator;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.propagation.listener.PropagationEngineListener;
+import choco.kernel.solver.propagation.queue.AbstractConstraintEventQueue;
 import choco.kernel.solver.propagation.queue.ConstraintEventQueue;
 import choco.kernel.solver.propagation.queue.EventQueue;
 import choco.kernel.solver.propagation.queue.VarEventQueue;
@@ -189,7 +190,7 @@ public class CPSolver implements Solver {
 	 * The EventQueue copies for worldPush/Pop during propation
 	 */
 	protected VarEventQueue[] veqCopy = null;
-	protected ConstraintEventQueue[] ceqCopy = null;
+	protected AbstractConstraintEventQueue[] ceqCopy = null;
 
 	/**
 	 * A constant denoting a null integer term. This is useful to make the API

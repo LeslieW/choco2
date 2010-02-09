@@ -31,6 +31,7 @@ import choco.kernel.solver.propagation.Propagator;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.propagation.event.PropagationEvent;
 import choco.kernel.solver.propagation.event.VarEvent;
+import choco.kernel.solver.propagation.queue.AbstractConstraintEventQueue;
 import choco.kernel.solver.propagation.queue.ConstraintEventQueue;
 import choco.kernel.solver.propagation.queue.EventQueue;
 import choco.kernel.solver.propagation.queue.VarEventQueue;
@@ -307,7 +308,7 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * Returns the constraints queues.
 	 */
 
-	public final ConstraintEventQueue[] getConstraintEventQueues() {
+	public final AbstractConstraintEventQueue[] getConstraintEventQueues() {
 		return constEventQueues;
 	}
 
@@ -315,7 +316,8 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * Set constraint Event Queues
 	 * @param ceqs arrays of constraint event queues
 	 */
-	public final void setConstraintEventQueues(final ConstraintEventQueue[] ceqs) {
+	@SuppressWarnings({"SuspiciousSystemArraycopy"})
+    public final void setConstraintEventQueues(final AbstractConstraintEventQueue[] ceqs) {
 		System.arraycopy(ceqs, 0, constEventQueues, 0, constEventQueues.length);
 	}
 
