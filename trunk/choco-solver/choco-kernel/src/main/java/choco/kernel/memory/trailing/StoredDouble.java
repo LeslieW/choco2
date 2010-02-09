@@ -40,15 +40,6 @@ public final class StoredDouble extends AbstractStoredObject implements IStateDo
 	private double currentValue;
 
 
-
-	/**
-	 * The current {@link choco.kernel.memory.trailing.trail.StoredIntTrail}.
-	 */
-	private final StoredDoubleTrail trail;
-
-
-
-
 	/**
 	 * Constructs a stored search with an initial value.
 	 * Note: this constructor should not be used directly: one should instead
@@ -59,7 +50,6 @@ public final class StoredDouble extends AbstractStoredObject implements IStateDo
 		super(env);
 		currentValue = d;
 		worldStamp = env.getWorldIndex();
-		trail = (StoredDoubleTrail) this.environment.getTrail(choco.kernel.memory.IEnvironment.FLOAT_TRAIL);
 	}
 
 
@@ -72,7 +62,7 @@ public final class StoredDouble extends AbstractStoredObject implements IStateDo
 	public void set(final double y) {
 		if (y != currentValue) {
 			if (this.worldStamp < environment.getWorldIndex()) {
-				trail.savePreviousState(this, currentValue, worldStamp);
+				environment.savePreviousState(this, currentValue, worldStamp);
 				worldStamp = environment.getWorldIndex();
 			}
 			currentValue = y;

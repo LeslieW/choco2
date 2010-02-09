@@ -16,8 +16,6 @@ public class AbstractStoredObject {
 	 */
 	protected final EnvironmentTrailing environment;
 
-
-
 	/**
 	 * The last world the search was moidified in.
 	 */

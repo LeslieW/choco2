@@ -86,7 +86,7 @@ public class StoredIntBipartiteList implements IStateIntVector {
     }
 
     @Override
-    public int unsafeGet(int index) {
+    public int quickGet(int index) {
         return list[index];
     }
 
@@ -95,7 +95,7 @@ public class StoredIntBipartiteList implements IStateIntVector {
     }
 
     @Override
-    public int unsafeSet(int index, int val) {
+    public int quickSet(int index, int val) {
         return set(index,val);
     }
 

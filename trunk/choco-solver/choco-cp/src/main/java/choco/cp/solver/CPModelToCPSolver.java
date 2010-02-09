@@ -91,17 +91,17 @@ public class CPModelToCPSolver {
 
 	protected HashMap<String, VariableManager> variableManagers = new HashMap<String, VariableManager>();
 
-	private HashSet<IntDomainVar> intDecisionVar = new HashSet<IntDomainVar>();
-	private HashSet<IntDomainVar> intNoDecisionVar = new HashSet<IntDomainVar>();
+	private final HashSet<IntDomainVar> intDecisionVar = new HashSet<IntDomainVar>();
+	private final HashSet<IntDomainVar> intNoDecisionVar = new HashSet<IntDomainVar>();
 
-	private HashSet<SetVar> setDecisionVar = new HashSet<SetVar>();
-	private HashSet<SetVar> setNoDecisionVar = new HashSet<SetVar>();
+	private final HashSet<SetVar> setDecisionVar = new HashSet<SetVar>();
+	private final HashSet<SetVar> setNoDecisionVar = new HashSet<SetVar>();
 
-	private HashSet<RealVar> realDecisionVar = new HashSet<RealVar>();
-	private HashSet<RealVar> realNoDecisionVar = new HashSet<RealVar>();
+	private final HashSet<RealVar> realDecisionVar = new HashSet<RealVar>();
+	private final HashSet<RealVar> realNoDecisionVar = new HashSet<RealVar>();
 
-	private HashSet<TaskVar> taskDecisionVar = new HashSet<TaskVar>();
-	private HashSet<TaskVar> taskNoDecisionVar = new HashSet<TaskVar>();
+	private final HashSet<TaskVar> taskDecisionVar = new HashSet<TaskVar>();
+	private final HashSet<TaskVar> taskNoDecisionVar = new HashSet<TaskVar>();
 
 
 	public CPModelToCPSolver(CPSolver cpsolver) {

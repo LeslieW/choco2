@@ -108,8 +108,9 @@ public class EnvironmentRecomputation extends AbstractEnvironment {
         indices = new TIntStack();
         this.gap = gap;
     }
-
-    public EnvironmentRecomputation(IEnvironment envD, int gap) {
+    
+    
+	public EnvironmentRecomputation(IEnvironment envD, int gap) {
 
         currentWorld = 0;
         savedWorldIdxStack = new Stack<Integer>();
@@ -121,6 +122,12 @@ public class EnvironmentRecomputation extends AbstractEnvironment {
 
     }
 
+
+    @Override
+	public void freeMemory() {
+		LOGGER.severe("deprecated: not implemented");
+		
+	}
 
     public void worldPush() {
         if ( currentWorld == 0|| (currentWorld-1) % gap == 0 || (lastFail - savedWorldIdxStack.peek())/2 == currentWorld ) {

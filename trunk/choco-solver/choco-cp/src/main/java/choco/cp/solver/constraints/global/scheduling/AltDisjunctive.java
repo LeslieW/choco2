@@ -71,6 +71,7 @@ public class AltDisjunctive extends Disjunctive {
 	public void awakeOnInst(final int idx) throws ContradictionException {
 		if( idx < getTaskIntVarOffset()) {
 			//TaskVar event
+			//TODO do not use % (really slow operation)
 			rtasks[idx % getNbTasks()].updateCompulsoryPart();
 		} else if(vars[idx].isInstantiatedTo(0) && idx!=indexUB) {
 			//removal, update data structure

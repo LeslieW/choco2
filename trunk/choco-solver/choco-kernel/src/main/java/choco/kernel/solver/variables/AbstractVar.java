@@ -40,7 +40,6 @@ public abstract class AbstractVar implements Var {
 	/**
 	 * The (optimization or decision) model to which the entity belongs.
 	 */
-
 	public Solver solver;
 
 

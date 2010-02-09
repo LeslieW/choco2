@@ -197,7 +197,7 @@ public final class RcIntVector implements IStateIntVector, RecomputableElement {
     }
 
     @Override
-    public int unsafeGet(int index) {
+    public int quickGet(int index) {
         return elementData[index];
     }
 
@@ -221,7 +221,7 @@ public final class RcIntVector implements IStateIntVector, RecomputableElement {
     }
 
     @Override
-    public int unsafeSet(int index, int val) {
+    public int quickSet(int index, int val) {
        int oldValue = elementData[index];
             if (val != oldValue) {
                 elementData[index] = val;

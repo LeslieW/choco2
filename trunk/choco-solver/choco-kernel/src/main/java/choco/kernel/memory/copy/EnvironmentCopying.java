@@ -37,7 +37,7 @@ public class EnvironmentCopying extends AbstractEnvironment {
 
 	private boolean newEl = false;
 
-    static Stack<Integer> clonedWorldIdxStack;
+    protected final static Stack<Integer> clonedWorldIdxStack;
     public static RecomputableElement[][] elements;
     public static int[] indices;
 	private static RcSave save;
@@ -57,8 +57,17 @@ public class EnvironmentCopying extends AbstractEnvironment {
         clonedWorldIdxStack.clear();
         save = new RcSave(this);
 	}
+	
+	
 
-    public int getNbCopy() {
+    @Override
+	public void freeMemory() {
+		//do nothing (static storage)		
+	}
+
+
+
+	public int getNbCopy() {
 		return nbCopy;
 	}
 

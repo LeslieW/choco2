@@ -36,7 +36,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public abstract class AbstractIntDomain implements IntDomain {
 
-    final PropagationEngine propagationEngine;
+    public final PropagationEngine propagationEngine;
 
 
 	/**

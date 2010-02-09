@@ -4,17 +4,22 @@ package choco.kernel.solver;
  * Factory for contradiction exception.
  * Ensure only one contradiction is created by execution.
  */
-public class ContradictionExceptionFactory{
+public final class ContradictionExceptionFactory{
 
-    private static ContradictionException ex =
+    private static ContradictionException reuseException =
             new ContradictionException(null, ContradictionException.Type.UNKNOWN);
 
-    /**
+    
+    private ContradictionExceptionFactory() {
+		super();
+    }
+
+	/**
      * Return the reusable contradiction exception.
      * @return {@link ContradictionException}
      */
-    public static ContradictionException get() {
-        return ex;
+    public static ContradictionException getSingloton() {
+        return reuseException;
     }
 
 }

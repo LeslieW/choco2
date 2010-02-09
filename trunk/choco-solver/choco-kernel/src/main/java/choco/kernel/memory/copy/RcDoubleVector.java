@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
- *         |  ¡(..)  |                           *
+ *         |  ï¿½(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -192,7 +192,7 @@ public class RcDoubleVector implements IStateDoubleVector, RecomputableElement {
     }
 
     @Override
-    public final double unsafeGet(int index) {
+    public final double quickGet(int index) {
         return elementData[index];
     }
 
@@ -216,7 +216,7 @@ public class RcDoubleVector implements IStateDoubleVector, RecomputableElement {
     }
 
     @Override
-    public double unsafeSet(int index, double val) {
+    public double quickSet(int index, double val) {
          double oldValue = elementData[index];
             if (val != oldValue) {
                 elementData[index] = val;

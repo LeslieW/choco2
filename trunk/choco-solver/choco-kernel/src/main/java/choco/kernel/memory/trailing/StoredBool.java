@@ -37,14 +37,6 @@ public final class StoredBool extends AbstractStoredObject implements IStateBool
    */
   private boolean currentValue;
 
-
-  /**
-   * The current {@link choco.kernel.memory.trailing.trail.StoredIntTrail}.
-   */
-
-  private final StoredBoolTrail trail;
-
-
   /**
    * Constructs a stored search with an initial value.
    * Note: this constructor should not be used directly: one should instead
@@ -54,14 +46,12 @@ public final class StoredBool extends AbstractStoredObject implements IStateBool
   public StoredBool(EnvironmentTrailing env, boolean b) {
 	  super(env);
 	  currentValue = b;
-	  trail = (StoredBoolTrail) this.environment.getTrail(choco.kernel.memory.IEnvironment.BOOL_TRAIL);
   }
 
 
   /**
    * Returns the current value.
    */
-
   public boolean get() {
     return currentValue;
   }
@@ -74,7 +64,7 @@ public final class StoredBool extends AbstractStoredObject implements IStateBool
   public void set(final boolean b) {
     if (b != currentValue) {
       if (this.worldStamp < environment.getWorldIndex()) {
-        trail.savePreviousState(this, currentValue, worldStamp);
+        environment.savePreviousState(this, currentValue, worldStamp);
         worldStamp = environment.getWorldIndex();
       }
       currentValue = b;

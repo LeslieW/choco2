@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
- *         |  ¡(..)  |                           *
+ *         |  ï¿½(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -87,7 +87,7 @@ public interface IStateDoubleVector {
      * @param index index
      * @return  the element
      */
-    public double unsafeGet(int index);
+    public double quickGet(int index);
 
 
   /**
@@ -103,7 +103,7 @@ public interface IStateDoubleVector {
      * @param val the new value
      * @return the old value
      */
-  public double unsafeSet(int index, double val);
+  public double quickSet(int index, double val);
 
   public DisposableIntIterator getIterator();
 }
