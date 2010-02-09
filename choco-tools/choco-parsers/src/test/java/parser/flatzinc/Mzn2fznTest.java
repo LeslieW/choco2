@@ -55,7 +55,7 @@ public class Mzn2fznTest {
     public void testData() throws IOException, InterruptedException, URISyntaxException {
         String[] args = new String[]{
                 "--mzn-dir", "/home/charles/Bureau/minizinc-rotd-2009-11-02",
-                "-lib", "/home/charles/Choco/sources/choco/trunk/choco-contribs/src/main/resources/mzn/lib",
+                "-lib", "/home/charles/Choco/sources/choco/trunk/choco-tools/choco-parsers/src/main/resources/std_lib",
                 "-m", "/home/charles/Bureau/minizinc-rotd-2009-11-02/benchmarks/queens/queens.mzn",
                 "-d", "/home/charles/Bureau/minizinc-rotd-2009-11-02/benchmarks/queens/004.dzn",
                 "-o", "/tmp/queens_004.fzn"
