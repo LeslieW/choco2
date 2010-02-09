@@ -23,6 +23,7 @@
 package parser.flatzinc.ast;
 
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.valselector.MaxVal;
 import choco.cp.solver.search.integer.valselector.MidVal;
@@ -42,10 +43,12 @@ import choco.kernel.solver.search.set.SetVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
 import parser.flatzinc.ast.expression.EAnnotation;
+import parser.flatzinc.ast.expression.EArray;
 import parser.flatzinc.ast.expression.EIdentifier;
 import parser.flatzinc.ast.expression.Expression;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -69,6 +72,7 @@ public class SolveGoal {
     final List<EAnnotation> annotations;
     final Solver type;
     final Expression expr;
+    int nbStrategies = 0;
 
     public enum Solver {
         SATISFY, MINIMIZE, MAXIMIZE
@@ -113,26 +117,34 @@ public class SolveGoal {
      * @return {@code true} if a search strategy is defined
      */
     private boolean readAnnotations(List<EAnnotation> annotations, CPSolver solver) {
+        boolean defined = false;
         for (EAnnotation ann : annotations) {
             // read search sequences
             if (ann.id.value.equals("seq_search")) {
                 // read search annotation
                 for (Expression e : ann.exps) {
                     if (e.getTypeOf().equals(Expression.EType.ANN)) {
-                        return readSearchAnnotation((EAnnotation) e, solver);
-                    } else {
+                        defined |= readSearchAnnotation((EAnnotation) e, solver);
+                    } else if (e.getTypeOf().equals(Expression.EType.ARR)) {
+                        EArray ea = (EArray)e;
+                        List<EAnnotation> sub_ann = new ArrayList<EAnnotation>(ea.what.size());
+                        for(Expression ex : ea.what){
+                            sub_ann.add((EAnnotation)ex);
+                        }
+                        defined |= readAnnotations(sub_ann, solver);
+                    }else {
                         LOGGER.severe(MessageFormat.format("SolveGoal#readAnnotations : unknown type \"{0}\"", e.getTypeOf()));
                     }
                 }
             } else {
                 if (ann.getTypeOf().equals(Expression.EType.ANN)) {
-                        return readSearchAnnotation(ann, solver);
+                        defined |=readSearchAnnotation(ann, solver);
                     } else {
                         LOGGER.severe(MessageFormat.format("SolveGoal#readAnnotations : unknown type \"{0}\"", ann.getTypeOf()));
                     }
             }
         }
-        return false;
+        return defined;
     }
 
     private static final String[] sannos = {"int_search", "bool_search", "set_search"};
@@ -254,13 +266,20 @@ public class SolveGoal {
                 return false;
             default : return false;
         }
+        AssignVar as = null;
         if(vals != null){
-            solver.setVarIntSelector(varSelector);
-            solver.setValIntSelector(vals);
-            return true;
+            as = new AssignVar(varSelector, vals);
         }else if(vali != null){
-            solver.setVarIntSelector(varSelector);
-            solver.setValIntIterator(vali);
+            as = new AssignVar(varSelector, vali);
+        }
+        if(as!=null){
+            if(nbStrategies==0){
+                solver.attachGoal(as);
+                nbStrategies++;
+            }else{
+                solver.addGoal(as);
+                nbStrategies++;
+            }
             return true;
         }
         return false;
@@ -336,8 +355,14 @@ public class SolveGoal {
             default : return false;
         }
         if(vals != null){
-            solver.setVarSetSelector(varSelector);
-            solver.setValSetSelector(vals);
+            AssignSetVar as = new AssignSetVar(varSelector, vals);
+            if(nbStrategies == 0){
+                solver.attachGoal(as);
+                nbStrategies++;
+            }else{
+                solver.addGoal(as);
+                nbStrategies++;
+            }
             return true;
         }
         return false;

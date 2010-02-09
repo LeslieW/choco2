@@ -49,13 +49,55 @@ public class ReifiedBinImplication extends AbstractTernIntSConstraint {
         return IntVarEvent.INSTINTbitvector;
     }
 
+    private boolean updateOnV0(int val) throws ContradictionException {
+        boolean mod = false;
+        if (val == 0) {
+            mod = mod | v1.instantiate(1, cIdx1);
+            mod |=v2.instantiate(0, cIdx2);
+        } else {
+            if (v1.isInstantiatedTo(0)) {
+                setEntailed();
+            } else if (v1.isInstantiatedTo(1)) {
+                mod = mod | v2.instantiate(1, cIdx2);
+            }
+        }
+        return mod;
+    }
+
+    private void updateOnV1(int val) throws ContradictionException {
+        if (val == 0) {
+            v0.instantiate(1, cIdx0);
+        } else {
+            if (v0.isInstantiated()) {
+                v2.instantiate(v0.getVal(), cIdx2);
+            } else if (v2.isInstantiated()) {
+                v0.instantiate(v2.getVal(), cIdx0);
+            }
+        }
+    }
+
+    private void updateOnV2(int val) throws ContradictionException {
+        if (val == 0) {
+            if (v0.isInstantiated()) {
+                v1.instantiate(Math.abs(v0.getVal() - 1), cIdx1);
+            } else if (v1.isInstantiated()) {
+                v0.instantiate(Math.abs(v1.getVal() - 1), cIdx0);
+            }
+        } else {
+            v0.instantiate(1, cIdx0);
+            setEntailed();
+        }
+    }
+
     public void propagate() throws ContradictionException {
         if (v0.isInstantiated()) {
-            v2.instantiate(v0.getVal(), cIdx2);
-            setEntailed();
-        } else if (v2.isInstantiated()) {
-            v0.instantiate(v2.getVal(), cIdx0);
-            setEntailed();
+            updateOnV0(v0.getVal());
+        }
+        if (v1.isInstantiated()) {
+            updateOnV1(v1.getVal());
+        }
+        if (v2.isInstantiated()) {
+            updateOnV2(v2.getVal());
         }
     }
 
@@ -64,24 +106,28 @@ public class ReifiedBinImplication extends AbstractTernIntSConstraint {
     public void awakeOnInst(int idx) throws ContradictionException {
         switch (idx) {
             case 0:
-                v2.instantiate(v0.getVal(), cIdx2);
-                setEntailed();
+                updateOnV0(v0.getVal());
+                break;
+            case 1:
+                updateOnV1(v1.getVal());
                 break;
             case 2:
-                v0.instantiate(v2.getVal(), cIdx0);
-                setEntailed();
+                updateOnV2(v2.getVal());
                 break;
         }
     }
 
     @Override
-    public void awakeOnInf(int varIdx) throws ContradictionException {}
+    public void awakeOnInf(int varIdx) throws ContradictionException {
+    }
 
     @Override
-    public void awakeOnSup(int varIdx) throws ContradictionException {}
+    public void awakeOnSup(int varIdx) throws ContradictionException {
+    }
 
     @Override
-    public void awakeOnBounds(int varIndex) throws ContradictionException {}
+    public void awakeOnBounds(int varIndex) throws ContradictionException {
+    }
 
     @Override
     public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
@@ -89,20 +135,15 @@ public class ReifiedBinImplication extends AbstractTernIntSConstraint {
 
 
     public boolean isSatisfied(int[] tuple) {
-        if (tuple[0] == 1) {
-            return tuple[2] == 1;
-        } else {
-            return tuple[2] == 0;
+        if(tuple[0] == 0){
+            return tuple[1] == 1 && tuple[2] == 0;
+        }else{
+            return tuple[1] <= tuple[2];
         }
     }
 
     public Boolean isEntailed() {
-        if (v0.isInstantiatedTo(1)
-                && v1.isInstantiated() && v2.isInstantiated()) {
-            return v2.getVal() == 1;
-        } else if (v0.isInstantiatedTo(0)) {
-            return v2.getVal() == 0;
-        }
+
         return null;
     }
 }
