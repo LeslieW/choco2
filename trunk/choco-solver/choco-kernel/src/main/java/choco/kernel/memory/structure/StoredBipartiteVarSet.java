@@ -271,25 +271,6 @@ public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteS
         public E next() {
             return varsNotInstanciated[i];
         }
-
-        /**
-         * Removes from the underlying collection the last element returned by the
-         * iterator (optional operation).  This method can be called only once per
-         * call to <tt>next</tt>.  The behavior of an iterator is unspecified if
-         * the underlying collection is modified while the iteration is in
-         * progress in any way other than by calling this method.
-         *
-         * @throws UnsupportedOperationException if the <tt>remove</tt>
-         *                                       operation is not supported by this Iterator.
-         * @throws IllegalStateException         if the <tt>next</tt> method has not
-         *                                       yet been called, or the <tt>remove</tt> method has already
-         *                                       been called after the last call to the <tt>next</tt>
-         *                                       method.
-         */
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("Remove not allowed int QuickIterator");
-        }
     }
 
     private class DualIterator extends DisposableIterator<E> {
@@ -325,25 +306,6 @@ public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteS
         @Override
         public E next() {
             return varsNotInstanciated[i];
-        }
-
-        /**
-         * Removes from the underlying collection the last element returned by the
-         * iterator (optional operation).  This method can be called only once per
-         * call to <tt>next</tt>.  The behavior of an iterator is unspecified if
-         * the underlying collection is modified while the iteration is in
-         * progress in any way other than by calling this method.
-         *
-         * @throws UnsupportedOperationException if the <tt>remove</tt>
-         *                                       operation is not supported by this Iterator.
-         * @throws IllegalStateException         if the <tt>next</tt> method has not
-         *                                       yet been called, or the <tt>remove</tt> method has already
-         *                                       been called after the last call to the <tt>next</tt>
-         *                                       method.
-         */
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("Remove not allowed int DualIterator");
         }
     }
 }

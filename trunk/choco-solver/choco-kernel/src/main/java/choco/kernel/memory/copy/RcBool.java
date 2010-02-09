@@ -32,7 +32,7 @@ import choco.kernel.memory.IStateBool;
  * Since : Choco 2.0.0
  *
  */
-public class RcBool implements IStateBool, RecomputableElement {
+public final class RcBool implements IStateBool, RecomputableElement {
 
     private EnvironmentCopying environment;
     private boolean currentValue;

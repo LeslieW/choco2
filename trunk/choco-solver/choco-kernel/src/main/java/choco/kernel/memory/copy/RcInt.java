@@ -52,16 +52,16 @@ public class RcInt implements IStateInt, RecomputableElement {
 
     
     @Override
-	public void add(int delta) {
+	public final void add(int delta) {
 		set(currentValue + delta);		
 	}
 
 	@Override
-	public int get() {
+	public final int get() {
 		return currentValue;
 	}
 
-	public void set(int y) {
+	public final void set(int y) {
         //if (y != currentValue)
             currentValue = y;
         timeStamp = environment.getWorldIndex();
@@ -79,26 +79,26 @@ public class RcInt implements IStateInt, RecomputableElement {
 		timeStamp = wstamp;
 	}
 
-    public IEnvironment getEnvironment() {
+    public final IEnvironment getEnvironment() {
         return environment;
     }
 
-    public int deepCopy() {
+    public final int deepCopy() {
         return currentValue;
     }
 
     
 
-    public int getType() {
+    public final int getType() {
         return INT;
     }
 
-    public int getTimeStamp() {
+    public final int getTimeStamp() {
         return timeStamp;
     }
     
     @Override
-	public String toString() {
+	public final String toString() {
 		return String.valueOf(currentValue);
 	}
 }

@@ -263,6 +263,24 @@ public final class ArrayUtils {
 	  }
 
 	  @SuppressWarnings({"unchecked"})
+	  public static <V extends IIndex> V[] getNonRedundantObjects(V[] all) {
+		  HASHSET.clear();
+		  LIST.clear();
+		  for (V v : all) {
+			  if (!HASHSET.contains(v.getIndex())) {
+				  LIST.add(v);
+				  HASHSET.add(v.getIndex());
+			  }
+		  }
+		  if (LIST.size() != all.length) {
+			  V[] a = (V[]) java.lang.reflect.Array.newInstance((Class<? extends V[]>)all.getClass().getComponentType(), LIST.size());
+			  LIST.toArray(a);
+			  return a;
+		  }
+		  return all;
+	  }
+
+    @SuppressWarnings({"unchecked"})
 	  public static <V extends IIndex> V[] getNonRedundantObjects(Class classe, V[] all) {
 		  HASHSET.clear();
 		  LIST.clear();

@@ -33,7 +33,7 @@ import choco.kernel.memory.IStateLong;
  * Since : Choco 2.0.0
  *
  */
-public class RcLong implements IStateLong, RecomputableElement {
+public final class RcLong implements IStateLong, RecomputableElement {
 
     private final EnvironmentCopying environment;
     private long currentValue;
