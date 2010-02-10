@@ -158,4 +158,22 @@ public class BoundGccTest {
         Assert.assertTrue(s.getNbSolutions()>0);
     }
 
+
+    @Test
+    public void test5(){
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+
+        IntegerVariable[] vars = makeIntVarArray("vars", 3, 1, 3);
+        IntegerVariable[] card = makeIntVarArray("card", 3, 0, 3);
+        card[0] = constant(0);
+        card[1] = constant(1);
+
+        m.addConstraint(Choco.globalCardinality(vars, card));
+
+        s.read(m);
+        s.solveAll();
+        Assert.assertEquals(3, s.getNbSolutions());
+    }
+
 }
