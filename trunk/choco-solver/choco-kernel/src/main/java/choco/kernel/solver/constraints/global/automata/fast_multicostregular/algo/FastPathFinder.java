@@ -23,6 +23,7 @@
 package choco.kernel.solver.constraints.global.automata.fast_multicostregular.algo;
 
 import choco.kernel.memory.IStateIntVector;
+import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.StoredDirectedMultiGraph;
 
@@ -71,53 +72,61 @@ public class FastPathFinder {
         for (int i = 0 ; i < cost.length ; i++)
         {
             for (int orig : graph.layers[i]) {
-                DisposableIntIterator out = graph.GNodes.outArcs[orig].getIterator();
-
-                while (out.hasNext())
+                StoredIndexedBipartiteSet bs = graph.GNodes.outArcs[orig];
+                if (!bs.isEmpty())
                 {
-                    int e = out.next();
-                    if (!graph.isInStack(e))
+                    DisposableIntIterator out = bs.getIterator();
+
+                    while (out.hasNext())
                     {
-                        int next = graph.GArcs.dests[e];//e.getDestination();
-                        double newCost = graph.GNodes.lpfs[orig] + cost[graph.GNodes.layers[orig]][graph.GArcs.values[e]];
-
-                        if (graph.GNodes.lpfs[next] < newCost)
+                        int e = out.next();
+                        if (!graph.isInStack(e))
                         {
-                            graph.GNodes.lpfs[next] = newCost;
-                            graph.GNodes.prevLP[next] = e;
-                        }
-                    }
+                            int next = graph.GArcs.dests[e];//e.getDestination();
+                            double newCost = graph.GNodes.lpfs[orig] + cost[graph.GNodes.layers[orig]][graph.GArcs.values[e]];
 
+                            if (graph.GNodes.lpfs[next] < newCost)
+                            {
+                                graph.GNodes.lpfs[next] = newCost;
+                                graph.GNodes.prevLP[next] = e;
+                            }
+                        }
+
+                    }
+                    out.dispose();
                 }
-                out.dispose();
             }
         }
         for (int i = cost.length ; i > 0 ; i--)
         {
             for (int dest : graph.layers[i]){
-                DisposableIntIterator in = graph.GNodes.inArcs[dest].getIterator();
-
-                while (in.hasNext())
+                StoredIndexedBipartiteSet bs = graph.GNodes.inArcs[dest];
+                if (!bs.isEmpty())
                 {
-                    int e = in.next();
-                    if (!graph.isInStack(e))
-                    {
-                        int next = graph.GArcs.origs[e];
-                        double newCost = graph.GNodes.lpft[dest] + cost[graph.GNodes.layers[next]][graph.GArcs.values[e]];
-                        if (newCost + graph.GNodes.lpfs[next] -lb <= -D_PREC)
-                        {
-                            graph.getInStack().set(e);
-                            removed.add(e);
-                        }
-                        else if (graph.GNodes.lpft[next] < newCost)
-                        {
-                            graph.GNodes.lpft[next] = newCost;
-                            graph.GNodes.nextLP[next] = e;
-                        }
-                    }
+                    DisposableIntIterator in = bs.getIterator();
 
+                    while (in.hasNext())
+                    {
+                        int e = in.next();
+                        if (!graph.isInStack(e))
+                        {
+                            int next = graph.GArcs.origs[e];
+                            double newCost = graph.GNodes.lpft[dest] + cost[graph.GNodes.layers[next]][graph.GArcs.values[e]];
+                            if (newCost + graph.GNodes.lpfs[next] -lb <= -D_PREC)
+                            {
+                                graph.getInStack().set(e);
+                                removed.add(e);
+                            }
+                            else if (graph.GNodes.lpft[next] < newCost)
+                            {
+                                graph.GNodes.lpft[next] = newCost;
+                                graph.GNodes.nextLP[next] = e;
+                            }
+                        }
+
+                    }
+                    in.dispose();
                 }
-                in.dispose();
             }
         }
 
@@ -159,56 +168,66 @@ public class FastPathFinder {
         {
             for (int n : graph.layers[i])
             {
-                DisposableIntIterator out = graph.GNodes.outArcs[n].getIterator();
-                while (out.hasNext())
+                StoredIndexedBipartiteSet bs = graph.GNodes.outArcs[n];
+                if (!bs.isEmpty())
                 {
-                    int e = out.next();
-                    if (!graph.isInStack(e))
-                    {
-                        int next = graph.GArcs.dests[e];//.getDestination();
-                        double newCost = graph.GNodes.spfs[n] + cost[i][graph.GArcs.values[e]];
-                        if (graph.GNodes.spfs[next] > newCost)
-                        {
-                            graph.GNodes.spfs[next] = newCost;
-                            graph.GNodes.prevSP[next] = e;
+                    DisposableIntIterator out = bs.getIterator();
 
+                    while (out.hasNext())
+                    {
+                        int e = out.next();
+                        if (!graph.isInStack(e))
+                        {
+                            int next = graph.GArcs.dests[e];//.getDestination();
+                            double newCost = graph.GNodes.spfs[n] + cost[i][graph.GArcs.values[e]];
+                            if (graph.GNodes.spfs[next] > newCost)
+                            {
+                                graph.GNodes.spfs[next] = newCost;
+                                graph.GNodes.prevSP[next] = e;
+
+                            }
                         }
                     }
+                    out.dispose();
                 }
-                out.dispose();
             }
         }
         for (int i = cost.length ; i > 0 ; i--)
         {
             for (int n : graph.layers[i])
             {
-                DisposableIntIterator in = graph.GNodes.inArcs[n].getIterator();//getInEdgeIterator(n);
-                while (in.hasNext())
+                StoredIndexedBipartiteSet bs = graph.GNodes.inArcs[n];
+                if (!bs.isEmpty())
                 {
-                    int e = in.next();
-                    if (!graph.isInStack(e))
+                    DisposableIntIterator in =bs.getIterator();//getInEdgeIterator(n);
+                    while (in.hasNext())
                     {
-                        int next = graph.GArcs.origs[e];//e.getOrigin()  ;
-                        double newCost = graph.GNodes.spft[n] + cost[graph.GNodes.layers[next]][graph.GArcs.values[e]];
-                        if (newCost + graph.GNodes.spfs[next] - ub >= D_PREC)
+                        int e = in.next();
+                        if (!graph.isInStack(e))
                         {
-                            graph.getInStack().set(e);
-                            removed.add(e);
-                        }
-                        else if (graph.GNodes.spft[next] > newCost)
-                        {
-                            graph.GNodes.spft[next] = newCost;
-                            graph.GNodes.nextSP[next] = e;
+                            int next = graph.GArcs.origs[e];//e.getOrigin()  ;
+                            double newCost = graph.GNodes.spft[n] + cost[graph.GNodes.layers[next]][graph.GArcs.values[e]];
+                            if (newCost + graph.GNodes.spfs[next] - ub >= D_PREC)
+                            {
+                                graph.getInStack().set(e);
+                                removed.add(e);
+                            }
+                            else if (graph.GNodes.spft[next] > newCost)
+                            {
+                                graph.GNodes.spft[next] = newCost;
+                                graph.GNodes.nextSP[next] = e;
+                            }
                         }
                     }
+                    in.dispose();
                 }
-                in.dispose();
+
             }
         }
 
     }
 
-    public double getShortestPathValue() {
+    public final double getShortestPathValue() {
         return graph.GNodes.spft[graph.sourceIndex];
     }
 
@@ -248,76 +267,84 @@ public class FastPathFinder {
         {
             for (int n : graph.layers[i])
             {
-                DisposableIntIterator out = graph.GNodes.outArcs[n].getIterator();
-                while (out.hasNext())
+                StoredIndexedBipartiteSet bs = graph.GNodes.outArcs[n];
+                if (!bs.isEmpty())
                 {
-                    int e = out.next();
-                    if (!graph.isInStack(e))
+                    DisposableIntIterator out = bs.getIterator();
+                    while (out.hasNext())
                     {
-                        int next = graph.GArcs.dests[e];//.getDestination();
-                        double newCost = graph.GNodes.spfs[n] + cost[i][graph.GArcs.values[e]];
-                        if (graph.GNodes.spfs[next] > newCost)
+                        int e = out.next();
+                        if (!graph.isInStack(e))
                         {
-                            graph.GNodes.spfs[next] = newCost;
-                            graph.GNodes.prevSP[next] = e;
+                            int next = graph.GArcs.dests[e];//.getDestination();
+                            double newCost = graph.GNodes.spfs[n] + cost[i][graph.GArcs.values[e]];
+                            if (graph.GNodes.spfs[next] > newCost)
+                            {
+                                graph.GNodes.spfs[next] = newCost;
+                                graph.GNodes.prevSP[next] = e;
+
+                            }
+                            double newCost2 = graph.GNodes.lpfs[n] + cost[graph.GNodes.layers[n]][graph.GArcs.values[e]];
+
+                            if (graph.GNodes.lpfs[next] < newCost2)
+                            {
+                                graph.GNodes.lpfs[next] = newCost2;
+                                graph.GNodes.prevLP[next] = e;
+                            }
+
+
+
 
                         }
-                        double newCost2 = graph.GNodes.lpfs[n] + cost[graph.GNodes.layers[n]][graph.GArcs.values[e]];
-
-                        if (graph.GNodes.lpfs[next] < newCost2)
-                        {
-                            graph.GNodes.lpfs[next] = newCost2;
-                            graph.GNodes.prevLP[next] = e;
-                        }
-
-
-
-
                     }
+                    out.dispose();
                 }
-                out.dispose();
             }
         }
         for (int i = cost.length ; i > 0 ; i--)
         {
             for (int n : graph.layers[i])
             {
-                DisposableIntIterator in = graph.GNodes.inArcs[n].getIterator();//getInEdgeIterator(n);
-                while (in.hasNext())
+                StoredIndexedBipartiteSet bs = graph.GNodes.inArcs[n];
+                if (!bs.isEmpty())
                 {
-                    int e = in.next();
-                    if (!graph.isInStack(e))
+                    DisposableIntIterator in = graph.GNodes.inArcs[n].getIterator();//getInEdgeIterator(n);
+                    while (in.hasNext())
                     {
-                        int next = graph.GArcs.origs[e];//e.getOrigin()  ;
-                        double newCost = graph.GNodes.spft[n] + cost[graph.GNodes.layers[next]][graph.GArcs.values[e]];
-                        if (newCost + graph.GNodes.spfs[next] - ub >= D_PREC)
+                        int e = in.next();
+                        if (!graph.isInStack(e))
                         {
-                            graph.getInStack().set(e);
-                            removed.add(e);
-                        }
-                        else if (graph.GNodes.spft[next] > newCost)
-                        {
-                            graph.GNodes.spft[next] = newCost;
-                            graph.GNodes.nextSP[next] = e;
-                        }
+                            int next = graph.GArcs.origs[e];//e.getOrigin()  ;
+                            double newCost = graph.GNodes.spft[n] + cost[graph.GNodes.layers[next]][graph.GArcs.values[e]];
+                            if (newCost + graph.GNodes.spfs[next] - ub >= D_PREC)
+                            {
+                                graph.getInStack().set(e);
+                                removed.add(e);
+                            }
+                            else if (graph.GNodes.spft[next] > newCost)
+                            {
+                                graph.GNodes.spft[next] = newCost;
+                                graph.GNodes.nextSP[next] = e;
+                            }
 
-                        double newCost2 = graph.GNodes.lpft[n] + cost[graph.GNodes.layers[next]][graph.GArcs.values[e]];
-                        if (newCost2 + graph.GNodes.lpfs[next] -lb <= -D_PREC)
-                        {
-                            graph.getInStack().set(e);
-                            removed.add(e);
+                            double newCost2 = graph.GNodes.lpft[n] + cost[graph.GNodes.layers[next]][graph.GArcs.values[e]];
+                            if (newCost2 + graph.GNodes.lpfs[next] -lb <= -D_PREC)
+                            {
+                                graph.getInStack().set(e);
+                                removed.add(e);
+                            }
+                            else if (graph.GNodes.lpft[next] < newCost2)
+                            {
+                                graph.GNodes.lpft[next] = newCost2;
+                                graph.GNodes.nextLP[next] = e;
+                            }
+
+
+
                         }
-                        else if (graph.GNodes.lpft[next] < newCost2)
-                        {
-                            graph.GNodes.lpft[next] = newCost2;
-                            graph.GNodes.nextLP[next] = e;
-                        }
-
-
-
                     }
+                    in.dispose();
                 }
-                in.dispose();
             }
         }
 
