@@ -26,13 +26,14 @@ import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.model.variables.Variable;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Properties;
 
 /* 
  * Created by IntelliJ IDEA.
  * User: GROCHART
- * Date: 5 ao�t 2008
+ * Date: 5 aout 2008
  * Since : Choco 2.0.0
  *
  */
@@ -53,6 +54,15 @@ public class MetaConstraint<E extends Constraint> extends AbstractConstraint {
     public MetaConstraint(final String metaManager, final E... constraints) {
         super(metaManager);
         this.constraints = constraints;
+    }
+
+    /**
+     * Preprocessing that helps the garbage collector.
+     */
+    @Override
+    public void freeMemory() {
+        Arrays.fill(constraints, null);
+        constraints = null;
     }
 
     public E[] getConstraints() {

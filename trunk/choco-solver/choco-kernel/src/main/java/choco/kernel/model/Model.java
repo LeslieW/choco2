@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model;
 
+import choco.IGarbageCollectorAssistant;
 import choco.IPretty;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
@@ -36,7 +37,7 @@ import choco.kernel.solver.variables.integer.IntVar;
 
 import java.util.Iterator;
 
-public interface Model extends IPretty {
+public interface Model extends IPretty, IGarbageCollectorAssistant {
 
     /**
      * Retrieves the index of an IntDomainVar

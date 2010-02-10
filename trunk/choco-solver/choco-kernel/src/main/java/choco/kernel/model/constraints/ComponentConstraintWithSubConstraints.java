@@ -35,7 +35,7 @@ import java.util.Properties;
 * Since : Choco 2.0.1
 * Update : Choco 2.0.1
 */
-public class ComponentConstraintWithSubConstraints extends ComponentConstraint{
+public class ComponentConstraintWithSubConstraints extends ComponentConstraint<Variable>{
 
     private final ArrayList<Constraint> constraints;
     private final ArrayList<Variable> listVars;
@@ -59,6 +59,16 @@ public class ComponentConstraintWithSubConstraints extends ComponentConstraint{
         super(componentClass, appendParameters(params, constraints), variables);
         this.constraints = new ArrayList<Constraint>(ArrayUtils.toList(constraints));
         this.listVars = new ArrayList<Variable>(ArrayUtils.toList(variables));
+    }
+
+    /**
+     * Preprocessing that helps the garbage collector.
+     */
+    @Override
+    public void freeMemory() {
+        constraints.clear();
+        listVars.clear();
+        super.freeMemory();
     }
 
     public <V extends Variable> void addElements(V[] vars, Constraint[] cstrs){

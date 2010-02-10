@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.constraints;
 
+import choco.IGarbageCollectorAssistant;
 import choco.IPretty;
 import choco.kernel.common.IIndex;
 import choco.kernel.common.logging.ChocoLogging;
@@ -39,7 +40,7 @@ import java.util.logging.Logger;
  * Since : Choco 2.0.0
  *
  */
-public interface Constraint extends IPretty, IIndex, IOptions {
+public interface Constraint extends IPretty, IIndex, IOptions, IGarbageCollectorAssistant {
 
     final static Logger LOGGER = ChocoLogging.getEngineLogger();
 

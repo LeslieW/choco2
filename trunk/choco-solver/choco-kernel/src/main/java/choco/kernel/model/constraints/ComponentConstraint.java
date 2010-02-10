@@ -25,6 +25,7 @@ package choco.kernel.model.constraints;
 import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.model.variables.Variable;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 public class ComponentConstraint <V extends Variable> extends AbstractConstraint {
@@ -49,6 +50,16 @@ public class ComponentConstraint <V extends Variable> extends AbstractConstraint
         super(componentClass.getName());
         this.variables = variables;
         this.parameters = parameters;
+    }
+
+    /**
+     * Preprocessing that helps the garbage collector.
+     */
+    @Override
+    public void freeMemory() {
+        Arrays.fill(variables, null);
+        variables = null;
+        parameters = null;
     }
 
     public Object getParameters() {

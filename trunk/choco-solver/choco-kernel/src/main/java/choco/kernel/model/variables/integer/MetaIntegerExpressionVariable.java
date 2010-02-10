@@ -27,12 +27,13 @@ import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Operator;
 import choco.kernel.model.variables.Variable;
 
+import java.util.Arrays;
 import java.util.Properties;
 
 /*
  * Created by IntelliJ IDEA.
  * User: GROCHART
- * Date: 5 ao�t 2008
+ * Date: 5 aout 2008
  * Since : Choco 2.0.0
  *
  */
@@ -47,6 +48,16 @@ public class MetaIntegerExpressionVariable extends IntegerExpressionVariable {
   public Constraint[] getConstraints() {
     return constraints;
   }
+
+    /**
+     * Preprocessing that helps the garbage collector.
+     */
+    @Override
+    public void freeMemory() {
+        Arrays.fill(constraints, null);
+        constraints = null;
+        super.freeMemory();
+    }
 
     /**
      * Extract first level sub-variables of a variable
