@@ -445,8 +445,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
     }
 
     public static void main(String[] args) throws Exception {
-        FastMultiCostRegular.DATA_STRUCT = FastMultiCostRegular.LIST;
-     //   MultiCostRegular.DATA_STRUCT = MultiCostRegular.BITSET;
+    
 
         PlanModel dummy = new PlanModel(MCR,1,0,false);
         dummy.solve(false,false);
@@ -476,7 +475,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
                     boolean valheur = valh == 1;
                     // System.out.println("NB ACT : "+nbAct+"  seed : "+seed);
                     // PlanModel pm = new PlanModel(REGULAR,nbAct,seed);
-                //    PlanModel pm2 = new PlanModel(COSTREG,nbAct,seed,old);
+                    PlanModel pm2 = new PlanModel(COSTREG,nbAct,seed,old);
                     PlanModel pm3 = new PlanModel(MCR,nbAct,seed,old);
 
                  //   pm3.filteredPercentage(seed,nbAct);
@@ -490,9 +489,9 @@ for (int i = 3 ; i < nbAct+3 ; i++)
                         System.out.println(seed+","+nbAct+",  MCR ,"+varheur+","+valheur+","+mcr[2]+","+mcr[5]+","+mcr[4]+","+mcr[3]);
 
                     }
-                    System.out.println("PASCR");
+                   // System.out.println("PASCR");
 
-                 /*   int[] cr = pm2.solve(varheur,valheur);
+                    int[] cr = pm2.solve(varheur,valheur);
 
 
                     if (cr[0] == 1)
@@ -503,7 +502,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
                     
 
                     }
-                    System.out.println(""); */
+                    System.out.println(""); 
 
 
                 }

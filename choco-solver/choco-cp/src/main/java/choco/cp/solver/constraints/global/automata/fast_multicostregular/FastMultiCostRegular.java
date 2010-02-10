@@ -31,6 +31,7 @@ import choco.kernel.solver.constraints.global.automata.fast_multicostregular.str
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.Constants;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
@@ -72,30 +73,6 @@ import java.util.HashSet;
 public class FastMultiCostRegular extends AbstractLargeIntSConstraint
 {
 
-    /**
-     * Integer to tell MCR to use a bitset-based data-structure
-     */
-    public static final int BITSET = 0;
-
-    /**
-     * Integer to tell MCR to use a list-based date-structure
-     */
-    public static final int LIST = 1;
-
-    /**
-     * Integer to choose the data structure to use (default = BITSET)
-     */
-    public static int DATA_STRUCT = BITSET;
-
-    /**
-     * Defines the rounding precision
-     */
-    public static final int PRECISION = 5; // MUST BE < 13 as java messes up the precisions starting from 10E-12 (34.0*0.05 == 1.70000000000005)
-
-    /**
-     * Defines the smallest used double
-     */
-    public static final double D_PREC = Math.pow(10.0,-PRECISION);
 
     /**
      * Maximum number of iteration during a bound computation
@@ -445,7 +422,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         intLayer[n+1] = new int[]{tink.id};
 
         if (intLayer[0].length > 0)
-            this.graph = new StoredDirectedMultiGraph(this,graph,intLayer,starts,offsets,totalSizes,D_PREC);
+            this.graph = new StoredDirectedMultiGraph(this,graph,intLayer,starts,offsets,totalSizes);
     }
 
 
@@ -546,12 +523,12 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
                 }
                 newLB = Math.max(uUb[l]- uk * (z[l+1].getSup()-axu),0);
                 newLA = Math.max(uUb[l+nbR]- uk*(axu-z[l+1].getInf()),0);
-                if (Math.abs(uUb[l] - newLB) >= D_PREC)
+                if (Math.abs(uUb[l] - newLB) >= Constants.MCR_DECIMAL_PREC)
                 {
                     uUb[l] = newLB;
                     modif = true;
                 }
-                if (Math.abs(uUb[l+nbR]-newLA) >= D_PREC)
+                if (Math.abs(uUb[l+nbR]-newLA) >= Constants.MCR_DECIMAL_PREC)
                 {
                     uUb[l+nbR] = newLA;
                     modif = true;
@@ -658,12 +635,12 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
 
                 newLB = Math.max(uLb[l]+ uk * (axu-z[l+1].getSup()),0);
                 newLA = Math.max(uLb[l+nbR]+uk*(z[l+1].getInf()-axu),0);
-                if (Math.abs(uLb[l]-newLB) >= D_PREC)
+                if (Math.abs(uLb[l]-newLB) >= Constants.MCR_DECIMAL_PREC)
                 {
                     uLb[l] = newLB;
                     modif = true;
                 }
-                if (Math.abs(uLb[l+nbR]-newLA) >= D_PREC)
+                if (Math.abs(uLb[l+nbR]-newLA) >= Constants.MCR_DECIMAL_PREC)
                 {
                     uLb[l+nbR] = newLA;
                     modif = true;
@@ -718,14 +695,14 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
      */
     protected void filterDown(final double realsp) throws ContradictionException {
 
-        if (realsp - z[0].getSup() >= D_PREC)
+        if (realsp - z[0].getSup() >= Constants.MCR_DECIMAL_PREC)
         {
             this.fail();
         }
-        if (realsp - z[0].getInf() >= D_PREC)
+        if (realsp - z[0].getInf() >= Constants.MCR_DECIMAL_PREC)
         {
             double mr = Math.round(realsp);
-            double rsp = (realsp-mr <= D_PREC)? mr : realsp;
+            double rsp = (realsp-mr <= Constants.MCR_DECIMAL_PREC)? mr : realsp;
             z[0].updateInf((int) Math.ceil(rsp),this.getConstraintIdx(vs.length));
             modifiedBound[0] = true;
         }
@@ -737,14 +714,14 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
      * @throws ContradictionException if the cost variable domain is emptied
      */
     protected void filterUp(final double reallp) throws ContradictionException {
-        if (reallp - z[0].getInf() <= -D_PREC )
+        if (reallp - z[0].getInf() <= -Constants.MCR_DECIMAL_PREC )
         {
             this.fail();
         }
-        if (reallp - z[0].getSup() <= -D_PREC )
+        if (reallp - z[0].getSup() <= -Constants.MCR_DECIMAL_PREC )
         {
             double mr = Math.round(reallp);
-            double rsp = (reallp-mr <= D_PREC)? mr : reallp;
+            double rsp = (reallp-mr <= Constants.MCR_DECIMAL_PREC)? mr : reallp;
             z[0].updateSup((int) Math.floor(rsp),this.getConstraintIdx(vs.length));
             modifiedBound[1] = true;
         }

@@ -25,6 +25,7 @@ package choco.kernel.solver.constraints.global.automata.fast_multicostregular.al
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.Constants;
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.StoredDirectedMultiGraph;
 
 import java.util.Arrays;
@@ -39,17 +40,15 @@ import java.util.Arrays;
 public class FastPathFinder {
 
     StoredDirectedMultiGraph graph;
-    public final double D_PREC;
 
     int[] sp;
     int[] lp;
 
-    public FastPathFinder(StoredDirectedMultiGraph graph, double D_PREC)
+    public FastPathFinder(StoredDirectedMultiGraph graph)
     {
         this.graph = graph;
         this.sp = new int[graph.layers.length-1];
         this.lp = new int[graph.layers.length-1];
-        this.D_PREC = D_PREC;
 
     }
 
@@ -112,7 +111,7 @@ public class FastPathFinder {
                         {
                             int next = graph.GArcs.origs[e];
                             double newCost = graph.GNodes.lpft[dest] + cost[graph.GNodes.layers[next]][graph.GArcs.values[e]];
-                            if (newCost + graph.GNodes.lpfs[next] -lb <= -D_PREC)
+                            if (newCost + graph.GNodes.lpfs[next] -lb <= -Constants.MCR_DECIMAL_PREC)
                             {
                                 graph.getInStack().set(e);
                                 removed.add(e);
@@ -207,7 +206,7 @@ public class FastPathFinder {
                         {
                             int next = graph.GArcs.origs[e];//e.getOrigin()  ;
                             double newCost = graph.GNodes.spft[n] + cost[graph.GNodes.layers[next]][graph.GArcs.values[e]];
-                            if (newCost + graph.GNodes.spfs[next] - ub >= D_PREC)
+                            if (newCost + graph.GNodes.spfs[next] - ub >= Constants.MCR_DECIMAL_PREC)
                             {
                                 graph.getInStack().set(e);
                                 removed.add(e);
@@ -316,7 +315,7 @@ public class FastPathFinder {
                         {
                             int next = graph.GArcs.origs[e];//e.getOrigin()  ;
                             double newCost = graph.GNodes.spft[n] + cost[graph.GNodes.layers[next]][graph.GArcs.values[e]];
-                            if (newCost + graph.GNodes.spfs[next] - ub >= D_PREC)
+                            if (newCost + graph.GNodes.spfs[next] - ub >= Constants.MCR_DECIMAL_PREC)
                             {
                                 graph.getInStack().set(e);
                                 removed.add(e);
@@ -328,7 +327,7 @@ public class FastPathFinder {
                             }
 
                             double newCost2 = graph.GNodes.lpft[n] + cost[graph.GNodes.layers[next]][graph.GArcs.values[e]];
-                            if (newCost2 + graph.GNodes.lpfs[next] -lb <= -D_PREC)
+                            if (newCost2 + graph.GNodes.lpfs[next] -lb <= -Constants.MCR_DECIMAL_PREC)
                             {
                                 graph.getInStack().set(e);
                                 removed.add(e);
