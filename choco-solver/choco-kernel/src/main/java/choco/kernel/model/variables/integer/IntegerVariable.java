@@ -109,12 +109,12 @@ public class IntegerVariable extends IntegerExpressionVariable {
     }
 
     @Override
-    public void addConstraint(Constraint c) {
+    public void _addConstraint(Constraint c) {
         constraints.add(c);
     }
 
     @Override
-    public void removeConstraint(Constraint c) {
+    public void _removeConstraint(Constraint c) {
         constraints.remove(c);
     }
 

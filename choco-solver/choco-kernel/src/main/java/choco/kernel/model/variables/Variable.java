@@ -49,9 +49,9 @@ public interface Variable extends IPretty, IIndex, IOptions, IHook, IGarbageColl
 
 	public VariableType getVariableType();
 
-    public void addConstraint(Constraint c);
+    public void _addConstraint(Constraint c);
 
-    public void removeConstraint(Constraint c);
+    public void _removeConstraint(Constraint c);
 
     @Deprecated
     public Iterator<Constraint> getConstraintIterator();

@@ -136,22 +136,22 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
         this.operator = operator;
     }
 
-    public void addConstraint(Constraint c) {
+    public void _addConstraint(Constraint c) {
         if (variables.length == 0) {
             constraints.add(c);
         } else {
             for(Variable v : variables){
-                v.addConstraint(c);
+                v._addConstraint(c);
             }
         }
     }
 
-    public void removeConstraint(Constraint c) {
+    public void _removeConstraint(Constraint c) {
         if (variables.length == 0) {
             constraints.remove(c);
         } else {
             for(Variable v : variables){
-                v.removeConstraint(c);
+                v._removeConstraint(c);
             }
         }
     }

@@ -67,15 +67,15 @@ public abstract class MultipleVariables extends AbstractVariable {
         super.freeMemory();
     }
 
-    public void addConstraint(Constraint c) {
+    public void _addConstraint(Constraint c) {
         for (Variable variable : variables) {
-            variable.addConstraint(c);
+            variable._addConstraint(c);
         }
     }
 
-    public void removeConstraint(Constraint c) {
+    public void _removeConstraint(Constraint c) {
         for (Variable variable : variables) {
-            variable.removeConstraint(c);
+            variable._removeConstraint(c);
         }
     }
 
