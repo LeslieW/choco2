@@ -469,6 +469,18 @@ public class ASAPCPModel extends CPModel {
 
     }
 
+    public void makeSoftPatternRule(ASAPPattern pat)
+    {
+        Automaton auto = new Automaton();
+        ArrayList<ASAPPatternElement> elem = pat.pattern;
+
+        int start = auto.addState();
+        ASAPPatternElement first = elem.get(0);
+
+
+
+    }
+
     public void instantiateMandatoryShift()
     {
         ASAPShiftOnRequest req = handler.getRequestOn();

@@ -28,5 +28,6 @@ public interface ASAPPatternElement {
 
     public boolean isInPattern(ASAPShift s);
     public String toRegExp();
+    public int[] getElementValues();
 
 }

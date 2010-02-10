@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular.asap.data.base;
 
+import gnu.trove.TIntHashSet;
+
 import java.util.ArrayList;
 
 /**
@@ -60,5 +62,15 @@ public class ASAPSubPattern implements ASAPPatternElement {
             b.append(pe.toRegExp());
         }
         return b.toString();
+    }
+
+    @Override
+    public int[] getElementValues() {
+        TIntHashSet set = new TIntHashSet();
+        for (ASAPPatternElement pat : this.pattern)
+        {
+            set.addAll(pat.getElementValues());
+        }
+        return set.toArray();
     }
 }

@@ -25,7 +25,7 @@ package samples.documentation;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.automata.multicostregular.FastMultiCostRegular;
+import choco.cp.solver.constraints.global.automata.fast_multicostregular.FastMultiCostRegular;
 import choco.kernel.model.Model;
 //totex cmulticosteregular_import
 import choco.kernel.model.constraints.automaton.FA.Automaton;

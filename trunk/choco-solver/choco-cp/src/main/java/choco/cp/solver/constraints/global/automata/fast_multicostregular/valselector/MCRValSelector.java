@@ -1,4 +1,4 @@
-package choco.cp.solver.constraints.global.automata.multicostregular.valselector;/* * * * * * * * * * * * * * * * * * * * * * * * *
+package choco.cp.solver.constraints.global.automata.fast_multicostregular.valselector;/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  ¡(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -24,7 +24,7 @@ package choco.cp.solver.constraints.global.automata.multicostregular.valselector
 
 
 
-import choco.cp.solver.constraints.global.automata.multicostregular.FastMultiCostRegular;
+import choco.cp.solver.constraints.global.automata.fast_multicostregular.FastMultiCostRegular;
 import choco.kernel.solver.search.AbstractSearchHeuristic;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;

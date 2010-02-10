@@ -1,4 +1,4 @@
-package choco.cp.solver.constraints.global.automata.multicostregular.example;
+package choco.cp.solver.constraints.global.automata.fast_multicostregular.example;
 
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.util.tools.ArrayUtils;

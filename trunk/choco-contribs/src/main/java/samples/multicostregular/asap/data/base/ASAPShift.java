@@ -164,4 +164,9 @@ public class ASAPShift implements ASAPPatternElement {
     public String toRegExp() {
         return ""+ handler.map.get(this.id);
     }
+
+    @Override
+    public int[] getElementValues() {
+        return new int[]{handler.map.get(this.id)};
+    }
 }

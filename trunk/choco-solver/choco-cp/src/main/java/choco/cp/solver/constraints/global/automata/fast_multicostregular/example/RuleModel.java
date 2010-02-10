@@ -1,4 +1,4 @@
-package choco.cp.solver.constraints.global.automata.multicostregular.example;
+package choco.cp.solver.constraints.global.automata.fast_multicostregular.example;
 /* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
@@ -25,10 +25,7 @@ package choco.cp.solver.constraints.global.automata.multicostregular.example;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
-import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
-import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
-import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.common.util.tools.ArrayUtils;

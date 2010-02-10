@@ -39,6 +39,7 @@ public class ASAPShiftOn {
     ASAPEmployee employee;
     ASAPDate date;
     ASAPItemHandler handler;
+    boolean isOn;
 
     public ASAPShiftOn(ASAPItemHandler handler)
     {
@@ -56,6 +57,7 @@ public class ASAPShiftOn {
     {
         this.handler = handler;
         this.weight = weight;
+	this.isOn = true;
         handler.requestOn.add(this);
     }
 
@@ -91,4 +93,10 @@ public class ASAPShiftOn {
     public void setDate(ASAPDate date) {
         this.date = date;
     }
+
+public boolean isOn() {return isOn; }
+public boolean isOff() {return !isOn; }
+public void setOn() { isOn = true; }
+public void setOff() { isOn = false; }
+
 }

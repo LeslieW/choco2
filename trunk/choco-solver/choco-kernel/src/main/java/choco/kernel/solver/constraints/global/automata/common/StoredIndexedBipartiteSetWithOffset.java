@@ -20,7 +20,7 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.constraints.global.automata.common;
+package choco.kernel.solver.constraints.global.automata.common;
 
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.memory.structure.IndexedObject;
