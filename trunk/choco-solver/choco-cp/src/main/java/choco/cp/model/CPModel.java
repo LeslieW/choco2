@@ -781,7 +781,7 @@ public class CPModel implements Model {
                 itv = c.getVariableIterator();
                 while(itv.hasNext()){
                     v= itv.next();
-                    v.removeConstraint(c);
+                    v._removeConstraint(c);
                     if(v.getNbConstraint(this) == 0 && !varSet.contains(v.getIndex())){
                         remVariable(v);
                         varQueue.add(v);
@@ -973,7 +973,7 @@ public class CPModel implements Model {
                 addVariable(v);
                 if (v.getVariableType() != VariableType.CONSTANT_INTEGER
                         && v.getVariableType() != VariableType.CONSTANT_SET) {
-                    v.addConstraint(c);
+                    v._addConstraint(c);
                 }
             }
         }
