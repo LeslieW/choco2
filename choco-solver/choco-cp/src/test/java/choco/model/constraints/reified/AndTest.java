@@ -25,12 +25,14 @@ package choco.model.constraints.reified;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.integer.channeling.ReifiedLargeAnd;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -151,5 +153,20 @@ public class AndTest {
             Assert.assertEquals("solutions", nbSol , s1.getNbSolutions());
             Assert.assertEquals("solutions", 1, s2.getNbSolutions());
         }
+    }
+
+    @Test
+    public void test7(){
+        Solver s = new CPSolver();
+        IntDomainVar a  = s.createEnumIntVar("a", 0, 0);
+        IntDomainVar b  = s.createEnumIntVar("b", 0, 0);
+        IntDomainVar c  = s.createEnumIntVar("c", 1, 1);
+
+        s.post(new ReifiedLargeAnd(new IntDomainVar[]{a,b,c}));
+
+        s.solveAll();
+
+        Assert.assertEquals(1, s.getNbSolutions());
+
     }
 }

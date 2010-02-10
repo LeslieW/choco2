@@ -90,6 +90,7 @@ public class ReifiedLargeAnd  extends AbstractLargeIntSConstraint {
                 if (vars[i].isInstantiatedTo(0)) {
                     vars[0].instantiate(0, cIndices[0]);
                     setEntailed();
+                    return;
                 } else if (!vars[i].isInstantiated()) {
                     if (updateLit1 && lit1 > i) {
                         lit1 = i;
