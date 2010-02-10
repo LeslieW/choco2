@@ -54,6 +54,8 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.model.variables.tree.TreeParametersObject;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.global.scheduling.RscData;
+import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Node;
+import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Arc;
 import choco.kernel.solver.constraints.integer.extension.*;
 import gnu.trove.TIntArrayList;
 
@@ -63,6 +65,8 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.jgrapht.graph.DirectedMultigraph;
 
 /**
  * Created by IntelliJ IDEA.
@@ -3333,6 +3337,21 @@ public class Choco{
 	 */
 	public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable cvar, Automaton auto, double[][][] costs){
 		return new ComponentConstraint<IntegerVariable>(ConstraintType.FASTCOSTREGULAR, new Object[]{auto, costs},
+				ArrayUtils.append(vars, new IntegerVariable[]{cvar}));
+	}
+
+      	/**
+	 * Constructs a new CostRegular constraint
+	 * This constraint ensures that the sequence of variables values
+	 * will follow a pattern defined by a DFA and that this sequence has a cost bounded by the cost variable
+	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+	 * @param cvar the cost variable
+	 * @param graph  a layered directed multigraph
+	 * @param source the source node of the graph
+	 * @return  a instance of the constraint
+	 */
+	public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable cvar, DirectedMultigraph<Node, Arc> graph, Node source){
+		return new ComponentConstraint<IntegerVariable>(ConstraintType.FASTCOSTREGULAR, new Object[]{graph, source},
 				ArrayUtils.append(vars, new IntegerVariable[]{cvar}));
 	}
 

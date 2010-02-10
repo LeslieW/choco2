@@ -20,22 +20,19 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.constraints.global.automata.multicostregular.structure;
+package choco.kernel.solver.constraints.global.automata.fast_regular.structure;
 
-import choco.cp.solver.constraints.global.automata.common.StoredIndexedBipartiteSetWithOffset;
+import choco.kernel.solver.constraints.global.automata.common.StoredIndexedBipartiteSetWithOffset;
 import gnu.trove.TIntHashSet;
+import gnu.trove.TIntStack;
 import org.jgrapht.graph.DirectedMultigraph;
 
 import java.util.Set;
-import java.util.Arrays;
 
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.constraints.integer.IntSConstraint;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.memory.IStateIntVector;
-import choco.kernel.memory.IStateBitSet;
-import choco.cp.solver.constraints.global.automata.multicostregular.algo.FastPathFinder;
 
 /**
  * Created by IntelliJ IDEA.
@@ -51,42 +48,30 @@ public class StoredDirectedMultiGraph {
     int[] starts;
     int[] offsets;
 
-    public int sourceIndex;
-    public int tinIndex;
-
 
 
     StoredIndexedBipartiteSetWithOffset[] supports;
-    public int[][] layers;
-    FastPathFinder pf;
-    private IStateBitSet inStack;
 
 
-    public class Nodes
+
+
+    class Nodes
     {
-        public int[] states;
-        public int[] layers;
-        public StoredIndexedBipartiteSetWithOffset[] outArcs;
-        public StoredIndexedBipartiteSetWithOffset[] inArcs;
+        int[] states;
+        int[] layers;
+        StoredIndexedBipartiteSetWithOffset[] outArcs;
+        StoredIndexedBipartiteSetWithOffset[] inArcs;
 
-        public int[] nextSP;
-        public int[] prevSP;
-        public int[] nextLP;
-        public int[] prevLP;
 
-        public double[] spfs;
-        public double[] spft;
-        public double[] lpfs;
-        public double[] lpft;
 
     }
 
 
     public class Arcs
     {
-        public int[] values;
-        public int[] dests;
-        public int[] origs;
+        int[] values;
+        int[] dests;
+        int[] origs;
     }
 
 
@@ -99,14 +84,11 @@ public class StoredDirectedMultiGraph {
 
 
 
-    public StoredDirectedMultiGraph(IntSConstraint constraint,DirectedMultigraph<Node, Arc> graph, int[][] layers, int[] starts, int[] offsets, int supportLength)
+    public StoredDirectedMultiGraph(IntSConstraint constraint,DirectedMultigraph<Node, Arc> graph, int[] starts, int[] offsets, int supportLength)
     {
         this.constraint = constraint;
         this.starts = starts;
         this.offsets =offsets;
-        this.layers = layers;
-        this.sourceIndex = layers[0][0];
-        this.tinIndex = layers[layers.length-1][0];
 
         this.GNodes = new Nodes();
         this.GArcs = new Arcs();
@@ -117,27 +99,21 @@ public class StoredDirectedMultiGraph {
 
         Set<Arc> arcs = graph.edgeSet();
 
-        this.inStack = constraint.getSolver().getEnvironment().makeBitSet(arcs.size());
-
         GArcs.values = new int[arcs.size()];
         GArcs.dests = new int[arcs.size()];
         GArcs.origs = new int[arcs.size()];
 
-
         for (Arc a : arcs)
         {
-
             GArcs.values[a.id] = a.value;
             GArcs.dests[a.id] = a.dest.id;
             GArcs.origs[a.id] = a.orig.id;
 
-            if (a.orig.layer < starts.length)
-            {
-                int idx = starts[a.orig.layer]+a.value-offsets[a.orig.layer];
-                if (sups[idx] == null)
-                    sups[idx] = new TIntHashSet();
-                sups[idx].add(a.id);
-            }
+            int idx = starts[a.orig.layer]+a.value-offsets[a.orig.layer];
+            if (sups[idx] == null)
+                sups[idx] = new TIntHashSet();
+            sups[idx].add(a.id);
+
 
         }
 
@@ -152,23 +128,6 @@ public class StoredDirectedMultiGraph {
         GNodes.inArcs = new StoredIndexedBipartiteSetWithOffset[nodes.size()];
         GNodes.layers = new int[nodes.size()];
         GNodes.states = new int[nodes.size()];
-
-        GNodes.prevLP = new int[nodes.size()];
-        Arrays.fill(GNodes.prevLP,Integer.MIN_VALUE);
-        GNodes.nextLP = new int[nodes.size()];
-        Arrays.fill(GNodes.nextLP,Integer.MIN_VALUE);
-        GNodes.prevSP = new int[nodes.size()];
-        Arrays.fill(GNodes.prevSP,Integer.MIN_VALUE);
-        GNodes.nextSP = new int[nodes.size()];
-        Arrays.fill(GNodes.nextSP,Integer.MIN_VALUE);
-
-
-        GNodes.lpfs = new double[nodes.size()];
-        GNodes.lpft = new double[nodes.size()];
-        GNodes.spfs = new double[nodes.size()];
-        GNodes.spft = new double[nodes.size()];
-
-
 
 
         for (Node n : nodes)
@@ -202,7 +161,6 @@ public class StoredDirectedMultiGraph {
         }
 
 
-        this.pf = new FastPathFinder(this);
 
     }
 
@@ -214,35 +172,33 @@ public class StoredDirectedMultiGraph {
 
     }
 
-    public final FastPathFinder getPathFinder()
-    {
-        return pf;
-    }
 
 
 
 
 
+    TIntStack stack = new TIntStack();
 
-
-    public void removeArc(int arcId, IStateIntVector toRemove) throws ContradictionException {
-        inStack.clear(arcId);
-
+    public void removeArc(int arcId) throws ContradictionException {
         int orig = GArcs.origs[arcId];
         int dest = GArcs.dests[arcId];
 
         int layer = GNodes.layers[orig];
         int value = GArcs.values[arcId];
 
-        if (layer < starts.length)
-        {
-            StoredIndexedBipartiteSetWithOffset support = getSupport(layer,value);
-            support.remove(arcId);
+        StoredIndexedBipartiteSetWithOffset support = getSupport(layer,value);
+        support.remove(arcId);
 
-            if (support.isEmpty())
+        if (support.isEmpty())
+        {
+            IntDomainVar var = this.constraint.getIntVar(layer);
+            try
             {
-                IntDomainVar var = this.constraint.getIntVar(layer);
                 var.removeVal(value,this.constraint.getConstraintIdx(layer));
+            }   catch (ContradictionException ce)
+            {
+                stack.clear();
+                throw ce;
             }
         }
 
@@ -260,11 +216,7 @@ public class StoredDirectedMultiGraph {
             while(it.hasNext())
             {
                 int id = it.next();
-                if(!isInStack(id))
-                {
-                    setInStack(id);
-                    toRemove.add(id);
-                }
+                stack.push(id);
             }
             it.dispose();
         }
@@ -281,54 +233,19 @@ public class StoredDirectedMultiGraph {
             while (it.hasNext())
             {
                 int id = it.next();
-                if (!isInStack(id))
-                {
-                    setInStack(id);
-                    toRemove.add(id);
-                }
+                stack.push(id);
             }
             it.dispose();
 
         }
 
+
+        while(!(stack.size() ==0))
+        {
+            removeArc(stack.pop());
+        }
+
     }
 
-
-    /**
-     * Getter to the is arc in to be removed stack bitSet
-     * @return an instance of a storable bitset
-     */
-    public final IStateBitSet getInStack()
-    {
-        return inStack;
-    }
-
-    /**
-     *  Getter, the idx th bit of the inStack bitSet
-     * @param idx the index of the arc
-     * @return true if a given arc is to be deleted
-     */
-    public final boolean isInStack(int idx)
-    {
-        return inStack.get(idx);
-    }
-
-    /**
-     * Set the idx th bit of the to be removed bitset
-     * @param idx the index of the bit
-     */
-    public final void setInStack(int idx)
-    {
-        inStack.set(idx);
-    }
-
-    /**
-     * Clear the idx th bit of the to be removed bitset
-     * @param idx the index of the bit
-     */
-    public final void clearInStack(int idx)
-    {
-        inStack.clear(idx);
-    }
 
 }

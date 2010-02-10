@@ -76,7 +76,7 @@ public enum ConstraintType {
     MEMBER("member", "constraint.member"),
     MIN("min", "constraint.min"),
     MOD("mod", "constraint.mod"),
-    MULTICOSTREGULAR("multicostregular", "constraint.multicostregular"),
+    MULTICOSTREGULAR("fast_multicostregular", "constraint.multicostregular"),
     NEQ("neq", "constraint.neq"),
     NONE("none"),
     NOT("not", "constraint.not"),

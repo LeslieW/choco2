@@ -30,6 +30,8 @@ import java.util.AbstractSet;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import gnu.trove.TIntHashSet;
+
 /**
  * Created by IntelliJ IDEA.
  * User: julien
@@ -72,5 +74,16 @@ public class ASAPShiftSet extends AbstractSet<ASAPPatternElement> implements ASA
         }
         b.deleteCharAt(b.length()-1).append(")");
         return b.toString();
+    }
+
+    @Override
+    public int[] getElementValues() {
+        TIntHashSet set = new TIntHashSet();
+        for (ASAPPatternElement pat : this)
+        {
+            set.addAll(pat.getElementValues());
+        }
+        return set.toArray();
+
     }
 }

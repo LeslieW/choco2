@@ -20,14 +20,14 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.constraints.global.automata.multicostregular;
+package choco.cp.solver.constraints.global.automata.fast_multicostregular;
 
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.automata.multicostregular.algo.FastPathFinder;
-import choco.cp.solver.constraints.global.automata.multicostregular.structure.Arc;
-import choco.cp.solver.constraints.global.automata.multicostregular.structure.Node;
-import choco.cp.solver.constraints.global.automata.multicostregular.structure.StoredDirectedMultiGraph;
+import choco.kernel.solver.constraints.global.automata.fast_multicostregular.algo.FastPathFinder;
+import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.Arc;
+import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.Node;
+import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.StoredDirectedMultiGraph;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
@@ -445,7 +445,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         intLayer[n+1] = new int[]{tink.id};
 
         if (intLayer[0].length > 0)
-            this.graph = new StoredDirectedMultiGraph(this,graph,intLayer,starts,offsets,totalSizes);
+            this.graph = new StoredDirectedMultiGraph(this,graph,intLayer,starts,offsets,totalSizes,D_PREC);
     }
 
 

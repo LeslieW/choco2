@@ -140,8 +140,6 @@ public class ASAPParser {
                         }
                     }
                 }
-
-
             }
             else if (name.equals("DayOfWeekCover"))
             {
@@ -175,6 +173,40 @@ public class ASAPParser {
                 }
 
             }
+            else if (name.equals("DateSpecificCover"))
+            {
+	            NodeList l = n.getChildNodes();
+	            ASAPCover d = handler.makeCover();
+	            for (int i =0 ; i < l.getLength() ; i++)
+	            {
+		            Node o = l.item(i);
+
+		            if (o.getNodeName().equals("Date")) {
+			            d.setDay(o.getFirstChild().getNodeValue());
+		            }
+		            else if (o.getNodeName().equals("Cover"))
+		            {
+			            NodeList l2 = o.getChildNodes();
+			            String shi = null;
+			            String ski = null;
+			            Integer pre = null;
+			            Integer min = null;
+			            Integer max = null;
+			            for (int j = 0 ; j < l2.getLength() ; j++)
+			            {
+				            Node o2 = l2.item(j);
+				            if (o2.getNodeName().equals("Shift")) shi = (o2.getFirstChild().getNodeValue());
+				            else if (o2.getNodeName().equals("Skill")) ski = (o2.getFirstChild().getNodeValue());
+				            else if (o2.getNodeName().equals("Preferred")) pre = Integer.parseInt(o2.getFirstChild().getNodeValue());
+				            else if (o2.getNodeName().equals("Min")) min = Integer.parseInt(o2.getFirstChild().getNodeValue());
+				            else if (o2.getNodeName().equals("Max")) max = Integer.parseInt(o2.getFirstChild().getNodeValue());
+
+			            }
+			            d.push(handler.getSkill(ski), handler.getShift(shi),pre,min,max);
+		            }
+	            }
+
+            }
             else if (name.equals("MasterWeights"))
             {
                 NodeList l = n.getChildNodes();
@@ -191,7 +223,7 @@ public class ASAPParser {
 
 
             }
-            else if (name.equals("ShiftOn"))
+            else if (name.equals("ShiftOn") || name.equals("ShiftOff"))
             {
                 String a = getAttr(n);
                 ASAPShiftOn s = handler.makeShiftOn(Integer.parseInt(a));
@@ -199,14 +231,41 @@ public class ASAPParser {
                 for (int i = 0 ; i < l.getLength() ; i++)
                 {
                     Node o = l.item(i);
-                    if (o.getNodeName().equals("ShiftTypeID")) s.setShift(o.getFirstChild().getNodeValue());
+                    if (o.getNodeName().equals("ShiftTypeID")) { s.setShift(o.getFirstChild().getNodeValue()); if (name.equals("ShiftOff")) s.setOff(); }
                     else if (o.getNodeName().equals("EmployeeID")) s.setEmployee(o.getFirstChild().getNodeValue());
                     else if (o.getNodeName().equals("Date")) s.setDate(ASAPDate.parseDate(o.getFirstChild().getNodeValue()));
                 }
 
             }
+            else if (name.equals("DayOff"))
+            {
+	            int weight = Integer.parseInt(n.getAttributes().getNamedItem("weight").getNodeValue());
+	            if (n.getAttributes().getNamedItem("working") == null || n.getAttributes().getNamedItem("working").getNodeValue().equals("false")) {
+		            ASAPShiftOn s = handler.makeShiftOn(weight);
+		            NodeList l = n.getChildNodes();
+		            for (int i = 0 ; i < l.getLength() ; i++)
+		            {
+			            Node o = l.item(i);
+			            s.setShift(null); s.setOff();
+			            if (o.getNodeName().equals("EmployeeID")) s.setEmployee(o.getFirstChild().getNodeValue());
+			            else if (o.getNodeName().equals("Date")) s.setDate(ASAPDate.parseDate(o.getFirstChild().getNodeValue()));
+		            }
+	            } else
+		            System.out.println("not parsed XML tag DayOff with 'working=true' attribute");
+
+            }
+            else if (name.equals("Skills")||name.equals("SkillGroups")||name.equals("ShiftTypes")||name.equals("ShiftGroups")||name.equals("Contracts")||name.equals("Employees")
+	            ||name.equals("CoverRequirements")||name.equals("DayOffRequests")||name.equals("ShiftOffRequests")||name.equals("ShiftOnRequests")) {
+	        expand(n);
+            }
+            else if (name.equals("SkillGroup")) {
+	            System.out.println("through XML tag " + name);
+            }
+            else if (name.equals("SchedulingHistory")) {
+	            System.out.println("not parsed XML tag " + name);
+            }
             else {
-                expand(n);
+	            System.out.println("unknown XML tag " + name);
             }
         }
 
@@ -417,6 +476,7 @@ public class ASAPParser {
         for (int m = 0 ; m < c.getMinConsecutiveFreeDays()-1 ; m++)
             pat.add(rest);
         pat.add(allW);
+
         if (LET_INFEASABILITY)
             c.addPattern(pat);
 

@@ -23,6 +23,7 @@
 package samples.multicostregular.asap.data.base;
 
 import java.util.ArrayList;
+import java.util.AbstractList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,14 +32,14 @@ import java.util.ArrayList;
  * Date: Dec 16, 2008
  * Time: 3:59:43 PM
  */
-public class ASAPPattern {
+public class ASAPPattern extends AbstractList<ASAPPatternElement> {
 
     
     int weight;
     boolean weekPattern;
     boolean bad;
     String startDay;
-    ArrayList<ASAPPatternElement> pattern;
+    public ArrayList<ASAPPatternElement> pattern;
     private boolean complete;
 
     public ASAPPattern(int weight,boolean bad)
@@ -58,6 +59,12 @@ public class ASAPPattern {
     {
         return pattern.add(s);
     }
+
+    @Override
+    public ASAPPatternElement get(int index) {
+        return pattern.get(index);
+    }
+
     public int size()
     {
         return pattern.size();

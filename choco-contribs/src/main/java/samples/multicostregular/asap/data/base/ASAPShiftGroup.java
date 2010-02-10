@@ -103,4 +103,17 @@ public class ASAPShiftGroup extends AbstractList<ASAPShift> implements ASAPPatte
         return b.toString();
 
     }
+
+    @Override
+    public int[] getElementValues() {
+        int[] ret = new int[this.size()];
+        Iterator<ASAPShift> it = this.iterator();
+        int i  = 0;
+        while (it.hasNext())
+        {
+            ret[i++] = it.next().getElementValues()[0];
+        }
+        return ret;
+
+    }
 }

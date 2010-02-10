@@ -49,6 +49,11 @@ public class ASAPContract {
     int maxConsecutiveWorkingWeekEndsPenalty;
     int maxConsecutiveWorkingWeekEnds;
     int maxShiftTypesPenalty;
+
+    public int getMinShiftTypesPenalty() {
+        return minShiftTypesPenalty;
+    }
+
     int minShiftTypesPenalty;
     int maxWorkingWeekEndsPenalty;
     int maxWorkingWeekEnds = -1;

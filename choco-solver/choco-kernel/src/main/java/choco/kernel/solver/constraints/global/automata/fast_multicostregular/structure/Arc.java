@@ -1,4 +1,4 @@
-package choco.cp.solver.constraints.global.automata.fast_regular.structure;
+package choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure;
 
 import org.jgrapht.EdgeFactory;
 import choco.kernel.memory.structure.IndexedObject;

@@ -1,7 +1,7 @@
 package samples.multicostregular.nsp;
 
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.automata.multicostregular.FastMultiCostRegular;
+import choco.cp.solver.constraints.global.automata.fast_multicostregular.FastMultiCostRegular;
 
 /**
  * Created by IntelliJ IDEA.
