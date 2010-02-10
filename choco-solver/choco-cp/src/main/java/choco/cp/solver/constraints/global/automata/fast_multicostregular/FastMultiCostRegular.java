@@ -747,11 +747,14 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
     {
         for (int i = 0 ;i < costs.length ; i++)
         {
-            for (int j = 0 ; j < costs[i].length ; j++)
+            int lg = costs[i].length;
+            for (int j = graph.offsets[i] ; j < lg ; j++)
+         //   for (int j = vs[i].getInf(); j <= vs[i].getSup() ; j = vs[i].getNextDomainValue(j))
             {
-              //  StoredIndexedBipartiteSet bs = this.graph.getSupport(i,j+this.graph.offsets[i]);
-               // if (bs != null && !bs.isEmpty())
+                StoredIndexedBipartiteSet bs = this.graph.getSupport(i,j);
+                if (bs != null && !bs.isEmpty())
                 {
+
                     double tmp = 0;
                     for (int k = 1 ; k < costs[i][j].length; k++)
                     {
@@ -759,6 +762,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
                         tmp+= (u[k-1]-u[k-1+nbR])*costs[i][j][k];
 
                     }
+
                     if (max) tmp = -tmp;
                     newCosts[i][j] = costs[i][j][resource]+ tmp;
                 }

@@ -209,6 +209,8 @@ public class StoredDirectedMultiGraph {
     public final StoredIndexedBipartiteSetWithOffset getSupport(int i, int j)
     {
         int idx = starts[i]+j-offsets[i];
+        if (idx == -1)
+            System.err.println("stop");
         return supports[idx];
 
 
