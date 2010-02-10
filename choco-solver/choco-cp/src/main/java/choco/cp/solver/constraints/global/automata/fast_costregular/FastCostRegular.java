@@ -1,14 +1,13 @@
 package choco.cp.solver.constraints.global.automata.fast_costregular;
 
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.automata.fast_costregular.structure.Arc;
-import choco.cp.solver.constraints.global.automata.fast_costregular.structure.Node;
-import choco.cp.solver.constraints.global.automata.fast_costregular.structure.StoredValuedDirectedMultiGraph;
+import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Arc;
+import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Node;
+import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.StoredValuedDirectedMultiGraph;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateBool;
-import choco.kernel.memory.IStateIntVector;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.solver.ContradictionException;
@@ -17,11 +16,10 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntHashSet;
 import gnu.trove.TIntIterator;
 import gnu.trove.TIntStack;
+import gnu.trove.TIntArrayList;
 import org.jgrapht.graph.DirectedMultigraph;
 
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.HashSet;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -32,8 +30,6 @@ import java.util.HashSet;
 public class FastCostRegular extends AbstractLargeIntSConstraint{
 
 
-    Automaton pi;
-    double[][][] costs;
     IntDomainVar[] vs;
     IntDomainVar z;
     StoredValuedDirectedMultiGraph graph;
@@ -44,20 +40,89 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
 
     public FastCostRegular(IntDomainVar[] vars, Automaton pi, double[][][] costs) {
         super(vars);
-        this.pi = pi;
-        this.costs = costs;
+
 
         this.vs = new IntDomainVar[vars.length-1];
         System.arraycopy(vars, 0, vs, 0, vs.length);
         this.z = vars[vars.length-1];
-        //this.toRemove = this.getSolver().getEnvironment().makeIntVector();
         this.toRemove = new TIntStack();
         this.boundChange = this.getSolver().getEnvironment().makeBool(false);
-        initGraph();
+        initGraph(costs,pi);
+    }
+    public FastCostRegular(IntDomainVar[] vars, DirectedMultigraph<Node,Arc> graph,Node source)
+    {
+        super(vars);
+        this.vs = new IntDomainVar[vars.length-1];
+        System.arraycopy(vars, 0, vs, 0, vs.length);
+        this.z = vars[vars.length-1];
+        this.toRemove = new TIntStack();
+        this.boundChange = this.getSolver().getEnvironment().makeBool(false);
+
+
+        initGraph(graph,source);
+
+
+
+
+    }
+
+    public void initGraph(DirectedMultigraph<Node,Arc> graph, Node source)
+    {
+
+        int[] offsets = new int[vs.length];
+        int[] sizes = new int[vs.length];
+        int[] starts = new int[vs.length];
+
+        int totalSizes = 0;
+
+        starts[0] = 0;
+        for (int i = 0 ; i < vs.length ; i++)
+        {
+            offsets[i] = vs[i].getInf();
+            sizes[i] = vs[i].getSup() - vs[i].getInf()+1;
+            if (i > 0) starts[i] = sizes[i-1] + starts[i-1];
+            totalSizes += sizes[i];
+        }
+
+
+        TIntArrayList[] layers = new TIntArrayList[vs.length+1];
+        for (int i = 0 ; i < layers.length ;i++)
+        {
+            layers[i] = new TIntArrayList();
+        }
+        Queue<Node> queue = new ArrayDeque<Node>();
+        source.layer = 0;
+        queue.add(source);
+
+        int nid = 0;
+        int aid = 0;
+        while(!queue.isEmpty())
+        {
+            Node n = queue.remove();
+            n.id  = nid++;
+            layers[n.layer].add(n.id);
+            Set<Arc> tmp = graph.outgoingEdgesOf(n);
+            for (Arc a : tmp)
+            {
+                a.id = aid++;
+                Node next = graph.getEdgeTarget(a);
+                next.layer = n.layer+1;
+                queue.add(next);
+            }
+        }
+        int[][] lays = new int[layers.length][];
+        for (int i = 0 ; i < lays.length ;i++)
+        {
+            lays[i] = layers[i].toNativeArray();
+        }
+        this.graph = new StoredValuedDirectedMultiGraph(this,graph,lays,starts,offsets,totalSizes);
+
+        
+
     }
 
 
-    public void initGraph()
+    public void initGraph(double[][][] costs, Automaton pi)
     {
         int aid = 0;
         int nid = 0;
