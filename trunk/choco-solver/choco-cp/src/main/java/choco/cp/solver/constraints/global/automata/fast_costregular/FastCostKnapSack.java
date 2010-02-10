@@ -3,12 +3,12 @@ package choco.cp.solver.constraints.global.automata.fast_costregular;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.Solver;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.Model;
-import choco.cp.solver.constraints.global.automata.fast_costregular.structure.Node;
-import choco.cp.solver.constraints.global.automata.fast_costregular.structure.Arc;
-import choco.cp.solver.constraints.global.automata.fast_costregular.structure.StoredValuedDirectedMultiGraph;
+import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Node;
+import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Arc;
+import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.StoredValuedDirectedMultiGraph;
 import choco.cp.solver.CPSolver;
 import choco.cp.model.CPModel;
 import static choco.Choco.makeIntVar;
@@ -49,7 +49,7 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
 
     public FastCostKnapSack(IntDomainVar[] vars, IntDomainVar bVar, IntDomainVar cVar,  int[] cost, int[] gain)
     {
-        super(merge(vars,bVar,cVar),null,null);
+        super(merge(vars,bVar,cVar), (Automaton) null,null);
         this.bVar = bVar;
         this.cVar = cVar;
         this.cost = cost;
