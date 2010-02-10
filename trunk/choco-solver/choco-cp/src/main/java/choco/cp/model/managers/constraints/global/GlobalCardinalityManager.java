@@ -35,7 +35,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /*
  *  ______
@@ -54,7 +54,7 @@ import java.util.HashSet;
 public class GlobalCardinalityManager extends IntConstraintManager {
 
 
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         if(solver instanceof CPSolver){
             if(parameters instanceof Object[]){
                 Object[] params = (Object[])parameters;
@@ -109,7 +109,7 @@ public class GlobalCardinalityManager extends IntConstraintManager {
         throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 
-    public int[] getFavoriteDomains(HashSet<String> options) {
+    public int[] getFavoriteDomains(Set<String> options) {
         if (options.contains("cp:bc")) {
             return getBCFavoriteIntDomains();
         } else {

@@ -1,6 +1,6 @@
 /* ************************************************
 *           _       _                            *
-*          |  °(..)  |                           *
+*          |  ï¿½(..)  |                           *
 *          |_  J||L _|        CHOCO solver       *
 *                                                *
 *     Choco is a java library for constraint     *
@@ -30,7 +30,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /*
 * User : charles
@@ -51,7 +51,7 @@ public class ReifiedImplManager extends IntConstraintManager {
      * @return SConstraint
      */
     @Override
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         if (solver instanceof CPSolver) {
             if (parameters == null) {
                 return new ReifiedBinImplication(solver.getVar(variables[0]), solver.getVar(variables[1]), solver.getVar(variables[2]));

@@ -34,7 +34,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -53,7 +53,7 @@ public class AbsoluteManager extends IntConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         if(solver instanceof CPSolver){
             if(parameters == null){
                 return new Absolute(solver.getVar(variables[0]), solver.getVar(variables[1]));
@@ -75,7 +75,7 @@ public class AbsoluteManager extends IntConstraintManager {
             if(vars.length==1){
                 INode[] nodes = new INode[vars.length];
                 for(int i = 0; i < vars.length; i++){
-                    nodes[i] = vars[i].getEm().makeNode(s, vars[i].getConstraints(), vars[i].getVariables());
+                    nodes[i] = vars[i].getExpressionManager().makeNode(s, vars[i].getConstraints(), vars[i].getVariables());
                 }
                 return new AbsNode(nodes);
             }else{

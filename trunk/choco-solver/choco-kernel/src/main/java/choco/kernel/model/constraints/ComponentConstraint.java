@@ -85,10 +85,7 @@ public class ComponentConstraint <V extends Variable> extends AbstractConstraint
 
     @Override
 	public int[] getFavoriteDomains() {
-        if (cm == null) {
-            cm = (ConstraintManager)loadManager(getManager());
-        }
-        return  cm.getFavoriteDomains(options);
+        return ManagerFactory.loadConstraintManager(getManager()).getFavoriteDomains(options);
     }
 
     /**

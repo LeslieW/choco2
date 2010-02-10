@@ -35,7 +35,7 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
 
-import java.util.HashSet;
+import java.util.Set;
 /**
  * Created by IntelliJ IDEA.
  * User: charles
@@ -54,7 +54,7 @@ public class PackManager extends MixedConstraintManager {
 	 * @return
 	 */
 	@Override
-	public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+	public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, Set<String> options) {
 		if(solver instanceof CPSolver){
 			CPSolver s = (CPSolver) solver;
 			if(parameters instanceof Object[]){
@@ -78,7 +78,7 @@ public class PackManager extends MixedConstraintManager {
 	}
 
 	@Override
-	public int[] getFavoriteDomains(final HashSet<String> options) {
+	public int[] getFavoriteDomains(final Set<String> options) {
 		return getBCFavoriteIntDomains();
 	}
 

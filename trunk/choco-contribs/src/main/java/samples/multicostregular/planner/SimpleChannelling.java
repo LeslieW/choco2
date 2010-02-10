@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular.planner;
 
+import java.util.Set;
+
 import choco.cp.model.managers.IntConstraintManager;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -29,8 +31,6 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.HashSet;
 
 /**
  * Created by IntelliJ IDEA.
@@ -135,7 +135,7 @@ public class SimpleChannelling extends AbstractBinIntSConstraint {
     public static class SimpleManager extends IntConstraintManager
     {
 
-        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
             return new SimpleChannelling(solver.getVar(variables[0]),solver.getVar(
                     variables[1]));
 

@@ -36,7 +36,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * ***********************************************
@@ -75,7 +75,7 @@ public class OrManager extends IntConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         if(solver instanceof CPSolver){
             if(parameters == null){
                 if(variables.length==2){
@@ -107,7 +107,7 @@ public class OrManager extends IntConstraintManager {
             for(int j = 0; j < c.getNbVars(); j++){
                 ev[j]  = (IntegerExpressionVariable)c.getVariables()[j];
             }
-            nt[i] = c.getEm().makeNode(solver, new Constraint[]{c}, ev);
+            nt[i] = c.getExpressionManager().makeNode(solver, new Constraint[]{c}, ev);
         }
         return new OrNode(nt);
     }

@@ -8,13 +8,13 @@ package choco.cp.solver.constraints.global.softscheduling;
  * Var-based manager. Todo : change with taskVars
  */
 
+import java.util.Set;
+
 import choco.cp.model.managers.IntConstraintManager;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.HashSet;
 
 public class SoftCumulativeManager extends IntConstraintManager {
 
@@ -22,7 +22,7 @@ public class SoftCumulativeManager extends IntConstraintManager {
 	  public SConstraint makeConstraint(Solver solver,
 			                            IntegerVariable[] variables,
 			                            Object parameters,
-			                            HashSet<String> options){
+			                            Set<String> options){
           Object[] par = (Object[]) parameters;
           int[] durations = (int[]) par[0];
           int[] heights = (int[]) par[1];

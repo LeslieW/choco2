@@ -32,7 +32,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /*
  *  ______
@@ -50,7 +50,7 @@ import java.util.HashSet;
  */
 public class AllDifferentManager extends IntConstraintManager {
 
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] vars, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] vars, Object parameters, Set<String> options) {
         if (solver instanceof CPSolver) {
             IntDomainVar[] variables = solver.getVar((IntegerVariable[]) vars);
             if (options.contains("cp:ac"))
@@ -65,7 +65,7 @@ public class AllDifferentManager extends IntConstraintManager {
         throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 
-    public int[] getFavoriteDomains(HashSet<String> options) {
+    public int[] getFavoriteDomains(Set<String> options) {
         if (options.contains("cp:bc")) {
             return getBCFavoriteIntDomains();
         } else {

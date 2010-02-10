@@ -34,7 +34,7 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.extension.*;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.HashSet;
+import java.util.Set;
 import java.util.List;
 
 /*
@@ -55,7 +55,7 @@ public class TableManager extends IntConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] vars, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] vars, Object parameters, Set<String> options) {
         Object[] ps = (Object[]) parameters;
         IntegerVariable[] vars2 = new IntegerVariable[vars.length];
         System.arraycopy(vars,0,vars2,0,vars.length);
@@ -74,7 +74,7 @@ public class TableManager extends IntConstraintManager {
     //*************** Binairy AC ******************//    
     //*********************************************//
 
-    public SConstraint buildBinaryTable(IntDomainVar[] vs, Object parameters, HashSet<String> options) {
+    public SConstraint buildBinaryTable(IntDomainVar[] vs, Object parameters, Set<String> options) {
         Object[] ps = (Object[]) parameters;
         IntDomainVar v1 = vs[0];
         IntDomainVar v2 = vs[1];
@@ -87,7 +87,7 @@ public class TableManager extends IntConstraintManager {
         }
     }
 
-    public SConstraint buildBinaryTable(IntDomainVar v1, IntDomainVar v2, BinRelation binR, HashSet<String> options) {
+    public SConstraint buildBinaryTable(IntDomainVar v1, IntDomainVar v2, BinRelation binR, Set<String> options) {
         if (options.contains("cp:fc")) {
             return new FCBinSConstraint(v1,v2,binR);
         } else if (options.contains("cp:ac3")) {
@@ -107,7 +107,7 @@ public class TableManager extends IntConstraintManager {
         }
     }
 
-    private BinRelation makePairAC(IntDomainVar x, IntDomainVar y, Object mat, boolean feas, HashSet<String> options) {
+    private BinRelation makePairAC(IntDomainVar x, IntDomainVar y, Object mat, boolean feas, Set<String> options) {
         int[] min = new int[]{x.getInf(), y.getInf()};
         int[] max = new int[]{x.getSup(), y.getSup()};
         if (mat instanceof List)
@@ -121,7 +121,7 @@ public class TableManager extends IntConstraintManager {
     //*************** Nary AC *********************//    
     //*********************************************//
 
-    public SConstraint buildNaryTable(IntDomainVar[] vs, Object parameters, HashSet<String> options) {
+    public SConstraint buildNaryTable(IntDomainVar[] vs, Object parameters, Set<String> options) {
         Object[] ps = (Object[]) parameters;
         if (ps[1] instanceof LargeRelation) {
             return buildNaryTable(vs, (LargeRelation) ps[1], options);
@@ -132,7 +132,7 @@ public class TableManager extends IntConstraintManager {
         }
     }
 
-    public SConstraint buildNaryTable(IntDomainVar[] vs, LargeRelation rela, HashSet<String> options) {
+    public SConstraint buildNaryTable(IntDomainVar[] vs, LargeRelation rela, Set<String> options) {
         if (options.contains("cp:fc")) {
             return new CspLargeSConstraint(vs, rela);
         } else {
@@ -167,7 +167,7 @@ public class TableManager extends IntConstraintManager {
      * @param feas   specify if the tuples are feasible or infeasible tuples
      * @return
      */
-    private LargeRelation makeTupleAC(IntDomainVar[] vs, List<int[]> tuples, boolean feas, HashSet<String> options) {
+    private LargeRelation makeTupleAC(IntDomainVar[] vs, List<int[]> tuples, boolean feas, Set<String> options) {
         int[] min = new int[vs.length];
         int[] max = new int[vs.length];
         for (int i = 0; i < vs.length; i++) {
@@ -188,7 +188,7 @@ public class TableManager extends IntConstraintManager {
     //*********************************************//
 
 
-    public int[] getFavoriteDomains(HashSet<String> options) {
+    public int[] getFavoriteDomains(Set<String> options) {
         if (options.contains("cp:ac322")) {
             return new int[]{IntDomainVar.BITSET};
         } else {

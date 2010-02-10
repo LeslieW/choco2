@@ -22,6 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.seminar.tsp;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
@@ -33,16 +38,11 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 
 public class MinSpanningTree extends AbstractLargeIntSConstraint {
 
     public static class MinSpanningTreeManager extends IntConstraintManager {
-        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
             if(solver instanceof CPSolver){
                 Object[] p = (Object[]) parameters;
                 int[][] dist = (int[][])(p[0]);

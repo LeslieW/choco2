@@ -89,9 +89,8 @@ public class IntegerVariable extends IntegerExpressionVariable {
 
 
     public boolean isBoolean(){
-        return (getLowB()==0 && getUppB()==1)||
-                (getLowB()==0 && getUppB()==0)||
-                (getLowB()==1 && getUppB()==1);
+        return (getLowB()==0 && ( getUppB() == 0 || getUppB()==1) )||
+               (getLowB()==1 && getUppB()==1);
     }
 
     public boolean isConstant(){

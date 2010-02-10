@@ -7,7 +7,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -19,7 +19,7 @@ import java.util.HashSet;
 public class KnapsackProblemManager extends IntConstraintManager {
 
 
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         IntegerVariable cVar = variables[variables.length-1];
         IntegerVariable bVar = variables[variables.length-2];
         IntegerVariable[] vars = new IntegerVariable[variables.length-2];

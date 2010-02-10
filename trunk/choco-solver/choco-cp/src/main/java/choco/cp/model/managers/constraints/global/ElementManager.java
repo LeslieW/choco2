@@ -43,7 +43,7 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -62,7 +62,7 @@ public class ElementManager extends IntConstraintManager{
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         if(solver instanceof CPSolver){
             if(parameters instanceof Integer){
                 int offset = (Integer)parameters;
@@ -110,7 +110,7 @@ public class ElementManager extends IntConstraintManager{
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
     @Override
-    public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
 
         SConstraint[] cs = new SConstraint[2];
         if(solver instanceof CPSolver){

@@ -59,7 +59,7 @@ public class IfThenElseManager implements ExpressionManager {
                     for(int j = 0; j < c.getNbVars(); j++){
                         ev[j]  = (IntegerExpressionVariable)c.getVariables()[j];
                     }
-                    nt[i] = c.getEm().makeNode(solver, new Constraint[]{c}, ev);
+                    nt[i] = c.getExpressionManager().makeNode(solver, new Constraint[]{c}, ev);
                 }
                 return new IfThenElseNode(nt);
             }else /*if(cstrs[0] instanceof ComponentConstraint)*/{
@@ -67,9 +67,9 @@ public class IfThenElseManager implements ExpressionManager {
                 for(int j = 0; j < cstrs[0].getNbVars(); j++){
                     ev[j]  = (IntegerExpressionVariable)cstrs[0].getVariables()[j];
                 }
-                nt[0] = cstrs[0].getEm().makeNode(solver, new Constraint[]{cstrs[0]}, ev);
-                nt[1] = vars[0].getEm().makeNode(s, vars[0].getConstraints(), vars[0].getVariables());
-                nt[2] = vars[1].getEm().makeNode(s, vars[1].getConstraints(), vars[1].getVariables());
+                nt[0] = cstrs[0].getExpressionManager().makeNode(solver, new Constraint[]{cstrs[0]}, ev);
+                nt[1] = vars[0].getExpressionManager().makeNode(s, vars[0].getConstraints(), vars[0].getVariables());
+                nt[2] = vars[1].getExpressionManager().makeNode(s, vars[1].getConstraints(), vars[1].getVariables());
                 return new IfThenElseNode(nt);
             }
         }

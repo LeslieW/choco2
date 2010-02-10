@@ -1,5 +1,7 @@
 package choco.cp.model.managers.constraints.integer;
 
+import java.util.Set;
+
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.Element2D;
@@ -11,8 +13,6 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.HashSet;
 
 /**
  * User: ebeb
@@ -30,7 +30,7 @@ public final class ElementGManager extends IntConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {        System.out.println("myElementManager");
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {        System.out.println("myElementManager");
     	if(solver instanceof CPSolver){
             if(parameters instanceof Integer){
                 int offset = (Integer)parameters;

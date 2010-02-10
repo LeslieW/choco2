@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
- *         |  °(..)  |                           *
+ *         |  ï¿½(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -22,12 +22,19 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.automata.fast_multicostregular;
 
+import gnu.trove.TIntHashSet;
+import gnu.trove.TIntIterator;
+import gnu.trove.TObjectIntHashMap;
+
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.jgrapht.graph.DirectedMultigraph;
+
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
-import choco.kernel.solver.constraints.global.automata.fast_multicostregular.algo.FastPathFinder;
-import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.Arc;
-import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.Node;
-import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.StoredDirectedMultiGraph;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
@@ -39,16 +46,12 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.global.automata.fast_multicostregular.algo.FastPathFinder;
+import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.Arc;
+import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.Node;
+import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.StoredDirectedMultiGraph;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.TIntHashSet;
-import gnu.trove.TIntIterator;
-import gnu.trove.TObjectIntHashMap;
-import org.jgrapht.graph.DirectedMultigraph;
-
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.HashSet;
 
 
 /**
@@ -1018,7 +1021,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
     public static class MCRManager extends IntConstraintManager
     {
 
-        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options)
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options)
         {
             if (solver instanceof CPSolver && parameters instanceof Object[])
             {

@@ -24,6 +24,7 @@ package choco.kernel.common.util.tools;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
 
 import choco.IPretty;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
@@ -60,8 +61,24 @@ public class StringUtils {
             padding.append(pad);
         }
         return (padlen < 0 ? padding.append(str).toString() : padding.insert(0,str).toString());
-    }//*****************************************************************//
+    }
 
+    /**
+     * faster than split or tokenizer methods.
+     */
+    public static void fastOptionReader(String options, Set<String> optSet) {
+    	if(options != null && options.length() > 0) {
+			int b = 0;
+			int e = -1;
+			while( (e = options.indexOf(' ', b)) > 0) {
+				if(e > b) optSet.add(options.substring(b, e));
+				b = e+1;
+			}
+			e = options.length();
+			if(e > b) optSet.add(options.substring(b, options.length()));
+		}
+    }
+    //*****************************************************************//
     //*******************  Pretty  ********************************//
     //***************************************************************//
     public static String pretty(final IPretty[] elems, int begin, int end) {

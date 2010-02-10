@@ -36,7 +36,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /*
  * User:    charles
@@ -53,7 +53,7 @@ public class NotManager extends IntConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         if(solver instanceof CPSolver){
             Constraint[] constraints = (Constraint[])((Object[])parameters)[1];
             if(constraints.length == 1){
@@ -90,7 +90,7 @@ public class NotManager extends IntConstraintManager {
                 for(int j = 0; j < c.getNbVars(); j++){
                     ev[j]  = (IntegerExpressionVariable)c.getVariables()[j];
                 }
-                nt[i] = c.getEm().makeNode(solver, new Constraint[]{c}, ev);
+                nt[i] = c.getExpressionManager().makeNode(solver, new Constraint[]{c}, ev);
             }
             return new NotNode(nt);
         }
@@ -132,7 +132,7 @@ public class NotManager extends IntConstraintManager {
                 for (int j = 0; j < cons.getNbVars(); j++) {
                     ev[j] = (IntegerExpressionVariable) cons.getVariables()[j];
                 }
-                nt[0] = cons.getEm().makeNode(solver, new Constraint[]{cons}, ev);
+                nt[0] = cons.getExpressionManager().makeNode(solver, new Constraint[]{cons}, ev);
                 return new NotNode(nt);
         }
     }
@@ -147,7 +147,7 @@ public class NotManager extends IntConstraintManager {
         INode[] nt = new INode[cc.getVariables().length];
         for (int i = 0; i < cc.getVariables().length; i++) {
             IntegerExpressionVariable v = (IntegerExpressionVariable) cc.getVariable(i);
-            nt[i] = v.getEm().makeNode(solver, v.getConstraints(), v.getVariables());
+            nt[i] = v.getExpressionManager().makeNode(solver, v.getConstraints(), v.getVariables());
         }
         return nt;
     }

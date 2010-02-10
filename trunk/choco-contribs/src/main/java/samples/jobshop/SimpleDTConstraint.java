@@ -1,5 +1,8 @@
 package samples.jobshop;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.constraints.strong.ISpecializedConstraint;
 import choco.kernel.model.constraints.Constraint;
@@ -11,8 +14,6 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.HashSet;
 
 public class SimpleDTConstraint extends AbstractBinIntSConstraint implements
         ISpecializedConstraint {
@@ -97,13 +98,13 @@ public class SimpleDTConstraint extends AbstractBinIntSConstraint implements
     public static class SimpleDTConstraintManager extends IntConstraintManager {
 
         @Override
-        public int[] getFavoriteDomains(HashSet<String> options) {
+        public int[] getFavoriteDomains(Set<String> options) {
             return new int[] { IntDomainVar.BITSET };
         }
 
         @Override
         public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables,
-                Object parameters, HashSet<String> options) {
+                Object parameters, Set<String> options) {
             final int[] durations = (int[]) parameters;
             final IntDomainVar[] sv = new IntDomainVar[variables.length];
             for (int i = variables.length; --i >= 0;) {
@@ -123,7 +124,7 @@ public class SimpleDTConstraint extends AbstractBinIntSConstraint implements
          * @return array of 2 SConstraint object, the constraint and its opposite
          */
         @Override
-        public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+        public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
             SConstraint c = makeConstraint(solver, variables, parameters, options);
             SConstraint opp = c.opposite();
             return new SConstraint[]{c, opp};

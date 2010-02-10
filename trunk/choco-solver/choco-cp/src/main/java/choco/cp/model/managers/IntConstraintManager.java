@@ -22,6 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers;
 
+import java.util.Set;
+import java.util.Set;
+
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.reified.leaves.ConstraintLeaf;
@@ -32,9 +35,6 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /*
  * Created by IntelliJ IDEA.
@@ -51,7 +51,7 @@ public abstract class IntConstraintManager extends ConstraintManager<IntegerVari
      * @return a list of domains accepted by the constraint and sorted
      *         by order of preference
      */
-    public int[] getFavoriteDomains(HashSet<String> options) {
+    public int[] getFavoriteDomains(Set<String> options) {
         return getACFavoriteIntDomains();
     }
 
@@ -82,7 +82,7 @@ public abstract class IntConstraintManager extends ConstraintManager<IntegerVari
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
     @Override
-    public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         SConstraint c = makeConstraint(solver, variables, parameters, options);
         SConstraint opp = c.opposite();
         return new SConstraint[]{c, opp};

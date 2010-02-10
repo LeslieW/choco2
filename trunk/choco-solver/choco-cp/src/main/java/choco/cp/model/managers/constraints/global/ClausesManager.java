@@ -34,7 +34,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /*
 * User : charles
@@ -45,7 +45,7 @@ import java.util.HashSet;
 */
 public class ClausesManager extends MixedConstraintManager {
 
-    public SConstraint makeConstraint(Solver solver, Variable[] vars, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, Variable[] vars, Object parameters, Set<String> options) {
         if (solver instanceof CPSolver) {
             IntDomainVar[] vs = new IntDomainVar[vars.length];
             solver._to(vars, vs);

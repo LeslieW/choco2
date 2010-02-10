@@ -33,7 +33,7 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -52,7 +52,7 @@ public class MemberManager extends MixedConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, Variable[] vars, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, Variable[] vars, Object parameters, Set<String> options) {
 
         if (solver instanceof CPSolver) {
             if (vars.length == 2) {

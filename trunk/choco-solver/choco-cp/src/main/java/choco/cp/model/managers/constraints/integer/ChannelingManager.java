@@ -38,7 +38,7 @@ import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /*
  *  ______
@@ -57,7 +57,7 @@ import java.util.HashSet;
 public class ChannelingManager extends IntConstraintManager {
 
 
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         if(solver instanceof CPSolver){
             if(parameters instanceof ConstraintType){
                 ConstraintType type = (ConstraintType)parameters;

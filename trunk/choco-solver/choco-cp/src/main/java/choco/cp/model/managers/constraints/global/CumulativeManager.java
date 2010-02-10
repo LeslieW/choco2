@@ -27,7 +27,7 @@ import gnu.trove.TIntArrayList;
 import gnu.trove.TIntProcedure;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Set;
 import java.util.List;
 
 import choco.cp.solver.CPSolver;
@@ -127,7 +127,7 @@ public class CumulativeManager extends AbstractResourceManager {
 	}
 
 
-	protected final void makeDisjunctive(CPSolver solver, RscData rdata, HashSet<String> options) {
+	protected final void makeDisjunctive(CPSolver solver, RscData rdata, Set<String> options) {
 		final int n = dclique.size();
 		if(n > 3) {
 			//make tasks array
@@ -156,7 +156,7 @@ public class CumulativeManager extends AbstractResourceManager {
 		}
 	}
 
-	protected final void makeCumulative(RscData rdata, HashSet<String> options) {
+	protected final void makeCumulative(RscData rdata, Set<String> options) {
 		final Cumulative cstr = (
 				rdata.getNbOptionalTasks() > 0 ? 
 						new AltCumulative(rdata.getRscName(), tasks, heights, usages, consumption, capacity, uppBound) : 
@@ -174,7 +174,7 @@ public class CumulativeManager extends AbstractResourceManager {
 
 	@Override
 	protected void makeDecompositionConstraint(CPSolver solver,
-			Variable[] variables, RscData rdata, HashSet<String> options) {
+			Variable[] variables, RscData rdata, Set<String> options) {
 		initializeDecomposition(rdata);
 		makeDisjunctions(solver);
 		makeGlobalConstraint(solver, variables, rdata, options);
@@ -182,14 +182,14 @@ public class CumulativeManager extends AbstractResourceManager {
 
 	@Override
 	protected void makeGlobalConstraint(CPSolver solver,
-			Variable[] variables, RscData rdata, HashSet<String> options) {
+			Variable[] variables, RscData rdata, Set<String> options) {
 		makeConsCapaConstraint(solver);
 		makeCumulative(rdata, options);
 	}
 
 	@Override
 	protected void makeMixedConstraint(CPSolver solver,
-			Variable[] variables, RscData rdata, HashSet<String> options) {
+			Variable[] variables, RscData rdata, Set<String> options) {
 		initializeDecomposition(rdata);
 		makeDisjunctive(solver, rdata, options);
 		makeGlobalConstraint(solver, variables, rdata, options);
