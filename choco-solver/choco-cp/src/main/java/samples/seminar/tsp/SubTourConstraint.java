@@ -22,6 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.seminar.tsp;
 
+import java.util.BitSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
+
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
@@ -34,15 +39,10 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.BitSet;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-
 public class SubTourConstraint extends AbstractLargeIntSConstraint {
 
     public static class SubTourConstraintManager extends IntConstraintManager {
-        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
             if(solver instanceof CPSolver){
                 return new SubTourConstraint(solver.getVar(variables));
             }

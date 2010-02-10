@@ -141,8 +141,8 @@ public class ModelTest {
 		//        s1.setVarIntSelector(new DomOverWDeg(s1, s1.getVar(queens)));
 		s1.attachGoal(new DomOverWDegBranching(s1, new IncreasingDomain(), s1.getVar(queens)));
 
-		m.addOption("cp:no_decision", toto);
-		m.addOption("cp:no_decision", queensdual);
+		m.addOptions("cp:no_decision", toto);
+		m.addOptions("cp:no_decision", queensdual);
 		Solver s2 = new CPSolver();
 		s2.read(m);
 

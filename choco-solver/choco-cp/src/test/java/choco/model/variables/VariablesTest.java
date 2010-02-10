@@ -28,6 +28,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
@@ -39,6 +40,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -176,12 +178,21 @@ public class VariablesTest {
 			assertEquals("Option lenght: |"+str+"|", length, str.length());
 		}
 	}
+	
 	@Test
-	public void testOptions() {
+	public void testOptions1() {
 		final IntegerVariable v = Choco.makeBooleanVar("b", "   foo","   bar","foo   ","fou");
 		checkOptions(v.getOptions(), 3, 3);
 		final SetVariable s = Choco.makeSetVar("s", 0, 18, "foo","    bar","   bar","    foo    ");
 		checkOptions(s.getOptions(), 2, 3);
+	}
+	
+	@Test
+	public void testOptions2() {
+		final IntegerVariable v = Choco.makeBooleanVar("b");
+		final Model m = new CPModel();
+		m.addVariable("foo bar   foo bar   bar  bao    foo   ", v);
+		checkOptions(v.getOptions(), 3, 3);
 		
 	}
 

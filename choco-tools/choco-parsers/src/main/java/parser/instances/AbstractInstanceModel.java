@@ -95,7 +95,8 @@ public abstract class AbstractInstanceModel {
 		status = ERROR;
 		if(model != null) model.freeMemory();
         model = null;
-		if(solver != null) solver.freeMemory();
+		//if(solver != null) solver.freeMemory();
+		//if(solver != null) solver.clear();
 		solver = null;
 		initialObjective = null;
 		objective = null;

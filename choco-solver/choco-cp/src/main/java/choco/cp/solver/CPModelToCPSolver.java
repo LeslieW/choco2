@@ -87,11 +87,8 @@ public class CPModelToCPSolver {
 
 	protected ExpressionDetector expDetect;
 
-	public final static ArrayList<Class> CLASS_LIST = new ArrayList<Class>();
-
-	protected HashMap<String, VariableManager> variableManagers = new HashMap<String, VariableManager>();
-
 	private final HashSet<IntDomainVar> intDecisionVar = new HashSet<IntDomainVar>();
+	
 	private final HashSet<IntDomainVar> intNoDecisionVar = new HashSet<IntDomainVar>();
 
 	private final HashSet<SetVar> setDecisionVar = new HashSet<SetVar>();
@@ -230,32 +227,9 @@ public class CPModelToCPSolver {
     @SuppressWarnings({"unchecked"})
     public Var readModelVariable(Variable v) {
 		if (v instanceof IComponentVariable) {
-			IComponentVariable vv = (IComponentVariable) v;
-
-			VariableManager vm = variableManagers.get(vv.getComponentClass());
-
-			if (vm == null) {
-				//We get it by reflection !
-				Class componentClass = null;
-				try {
-					componentClass = Class.forName(vv.getComponentClass());
-				} catch (ClassNotFoundException e) {
-					LOGGER.severe("Component class could not be found: " + vv.getComponentClass());
-					System.exit(-1);
-				}
-				try {
-					vm = (VariableManager) componentClass.newInstance();
-				} catch (InstantiationException e) {
-					LOGGER.severe("Component class could not be instantiated: " + vv.getComponentClass());
-					System.exit(-1);
-				} catch (IllegalAccessException e) {
-					LOGGER.severe("Component class could not be accessed: " + vv.getComponentClass());
-					System.exit(-1);
-				}
-				variableManagers.put(vv.getComponentClass(), vm);
-			}
-
-			Var var = vm.makeVariable(cpsolver, v);
+			final IComponentVariable vv = (IComponentVariable) v;
+			final VariableManager vm = ManagerFactory.loadVariableManager(vv.getComponentClass());
+			final Var var = vm.makeVariable(cpsolver, v);
 			checkOptions(v, var);
 			return var;
 		}
@@ -388,9 +362,9 @@ public class CPModelToCPSolver {
                 cs[1] = cs[0].opposite();
                 return cs;
 			}
-			ComponentConstraint cc = (ComponentConstraint) ic;
-			ConstraintManager cm = cc.getCm();
-			return cm.makeConstraintAndOpposite(cpsolver, cc.getVariables(), cc.getParameters(), cc.getOptions());
+			final ComponentConstraint cc = (ComponentConstraint) ic;
+			final ConstraintManager cm = cc.getConstraintManager();
+			return cm.makeConstraintAndOpposite(cpsolver, cc.getVariables(), cc.getParameters(),  cc.getOptions());
 		}
 		return null;
 	}
@@ -410,9 +384,9 @@ public class CPModelToCPSolver {
 					!allSimpleVariable(ic.getVariables())) {
 				return createMetaConstraint(ic, decomp);
 			}
-			ComponentConstraint cc = (ComponentConstraint) ic;
-			ConstraintManager cm = cc.getCm();
-			return cm.makeConstraint(cpsolver, cc.getVariables(), cc.getParameters(), cc.getOptions());
+			final ComponentConstraint cc = (ComponentConstraint) ic;
+			final ConstraintManager cm = cc.getConstraintManager();
+			return cm.makeConstraint(cpsolver, cc.getVariables(), cc.getParameters(),  cc.getOptions());
 		}
 		return null;
 	}
@@ -423,11 +397,13 @@ public class CPModelToCPSolver {
 	 * @return true if only simple variable,
 	 */
 	private boolean allSimpleVariable(Variable[] vars){
+		//TODO improve the detection of expression 
+		//add a fields in the constraint type that indicates if it can contains expression ?
 		if (vars == null) {
 			return true;
 		}
         for (Variable v : vars) {
-            VariableType type = v.getVariableType();
+            final VariableType type = v.getVariableType();
             if (type == VariableType.INTEGER_EXPRESSION
                 //                    || type == VariableType.SET_EXPRESSION
                 //                    || type == VariableType.REAL_EXPRESSION
@@ -492,7 +468,7 @@ public class CPModelToCPSolver {
 				vars[i] = (IntegerExpressionVariable)ic.getVariables()[i];
 			}
 		}
-		return (BoolNode)ic.getEm().makeNode(cpsolver, new Constraint[]{ic}, vars);
+		return (BoolNode)ic.getExpressionManager().makeNode(cpsolver, new Constraint[]{ic}, vars);
 	}
 
 }

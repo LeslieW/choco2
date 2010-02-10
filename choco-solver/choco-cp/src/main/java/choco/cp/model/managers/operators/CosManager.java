@@ -35,7 +35,7 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.real.RealExp;
 import choco.kernel.solver.constraints.reified.INode;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /* User:    charles
  * Date:    20 août 2008
@@ -52,7 +52,7 @@ public class CosManager extends RealConstraintManager{
      * @return
      */
     @Override
-    public SConstraint makeConstraint(Solver solver, RealVariable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, RealVariable[] variables, Object parameters, Set<String> options) {
         return null;
     }
 

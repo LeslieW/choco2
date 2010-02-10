@@ -23,6 +23,9 @@
 package samples.seminar.socialgolfer;
 
 import static choco.Choco.makeIntVar;
+
+import java.util.Set;
+
 import choco.cp.model.CPModel;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
@@ -39,8 +42,6 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.HashSet;
-
 /*
  * Created by IntelliJ IDEA.
  * User: charles
@@ -51,7 +52,7 @@ import java.util.HashSet;
 public class ScalarAtMost extends AbstractLargeIntSConstraint {
 
     public static class ScalarAtMostManager extends IntConstraintManager {
-        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
             int[] params = (int[])parameters;
             return new ScalarAtMost(solver.getVar(variables), params[0], params[1]);
         }

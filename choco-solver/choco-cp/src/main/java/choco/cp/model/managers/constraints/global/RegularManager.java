@@ -34,7 +34,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.HashSet;
+import java.util.Set;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -53,7 +53,7 @@ import java.util.List;
  * A manager to build new regular constraint
  */
 public class RegularManager extends IntConstraintManager {
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] vars, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] vars, Object parameters, Set<String> options) {
         if (solver instanceof CPSolver) {
             IntDomainVar[] variables = solver.getVar((IntegerVariable[]) vars);
             if (parameters instanceof int[][]) {
@@ -74,7 +74,7 @@ public class RegularManager extends IntConstraintManager {
         throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
 
-    public int[] getFavoriteDomains(HashSet<String> options) {
+    public int[] getFavoriteDomains(Set<String> options) {
         return new int[]{
                 IntDomainVar.BITSET,
                 IntDomainVar.LINKEDLIST,

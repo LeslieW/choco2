@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints;
 
+import java.util.Set;
+
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.leaves.bool.FalseNode;
 import choco.cp.solver.constraints.reified.leaves.bool.TrueNode;
@@ -33,8 +35,6 @@ import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
-
-import java.util.HashSet;
 
 /**
  * Created by IntelliJ IDEA.
@@ -54,7 +54,7 @@ public class BooleanManager extends ConstraintManager<Variable> {
      * @return
      */
     @Override
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, Set<String> options) {
         if(parameters instanceof Boolean){
             boolean bool = (Boolean)parameters;
             if(bool){
@@ -76,7 +76,7 @@ public class BooleanManager extends ConstraintManager<Variable> {
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
     @Override
-    public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, Set<String> options) {
          if(parameters instanceof Boolean){
             boolean bool = (Boolean)parameters;
             if(bool){
@@ -94,7 +94,7 @@ public class BooleanManager extends ConstraintManager<Variable> {
      *         by order of preference
      */
     @Override
-    public int[] getFavoriteDomains(HashSet<String> options) {
+    public int[] getFavoriteDomains(Set<String> options) {
         return null;
     }
 

@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
- *         |  °(..)  |                           *
+ *         |  ï¿½(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -29,7 +29,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * User : xlorca
@@ -39,7 +39,7 @@ import java.util.HashSet;
  */
 public class IncreasingNValueManager extends IntConstraintManager {
 
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] integerVariables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] integerVariables, Object parameters, Set<String> options) {
         IntDomainVar[] vars = new IntDomainVar[integerVariables.length-1];
         System.arraycopy(solver.getVar(integerVariables),1,vars,0,integerVariables.length-1);
         if(options.contains("cp:atleast")){

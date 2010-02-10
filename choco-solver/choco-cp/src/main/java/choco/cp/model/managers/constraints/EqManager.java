@@ -53,7 +53,7 @@ import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.variables.real.RealIntervalConstant;
 import choco.kernel.solver.variables.real.RealVar;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /*
  * User:    charles
@@ -70,7 +70,7 @@ public class EqManager extends MixedConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, Set<String> options) {
         if (solver instanceof CPSolver) {
             if (parameters instanceof ConstraintType) {
                 ConstraintType type = (ConstraintType) parameters;
@@ -180,7 +180,7 @@ public class EqManager extends MixedConstraintManager {
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
     @Override
-    public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, Set<String> options) {
         SConstraint c = this.makeConstraint(solver, variables, parameters, options);
         SConstraint opp = c.opposite();
         return new SConstraint[]{c, opp};
@@ -202,7 +202,7 @@ public class EqManager extends MixedConstraintManager {
             INode[] nt = new INode[cc.getVariables().length];
             for (int i = 0; i < cc.getVariables().length; i++) {
                 IntegerExpressionVariable v = (IntegerExpressionVariable) cc.getVariable(i);
-                nt[i] = v.getEm().makeNode(solver, v.getConstraints(), v.getVariables());
+                nt[i] = v.getExpressionManager().makeNode(solver, v.getConstraints(), v.getVariables());
             }
             if (EQ == type) {
                 return new EqNode(nt);

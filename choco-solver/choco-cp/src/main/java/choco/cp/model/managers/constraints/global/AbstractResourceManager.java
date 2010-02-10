@@ -35,7 +35,7 @@ import choco.kernel.solver.constraints.global.scheduling.RscData;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
-import java.util.HashSet;
+import java.util.Set;
 import java.util.LinkedList;
 import java.util.logging.Level;
 
@@ -71,7 +71,7 @@ public abstract class AbstractResourceManager extends MixedConstraintManager {
 
 	@Override
 	public SConstraint makeConstraint(Solver solver, Variable[] variables,
-			Object parameters, HashSet<String> options) {
+			Object parameters, Set<String> options) {
 		if(solver instanceof CPSolver){
 			CPSolver s = (CPSolver) solver;
 			if (parameters instanceof RscData) {
@@ -97,13 +97,13 @@ public abstract class AbstractResourceManager extends MixedConstraintManager {
 		else return new MetaSConstraint( name, constraints.toArray(new SConstraint[n]), tasks, null);
 	}
 
-	protected abstract void makeDecompositionConstraint(CPSolver solver, Variable[] variables, RscData rdata, HashSet<String> options);
+	protected abstract void makeDecompositionConstraint(CPSolver solver, Variable[] variables, RscData rdata, Set<String> options);
 
-	protected abstract void makeGlobalConstraint(CPSolver solver, Variable[] variables, RscData rdata, HashSet<String> options);
+	protected abstract void makeGlobalConstraint(CPSolver solver, Variable[] variables, RscData rdata, Set<String> options);
 
-	protected abstract void makeMixedConstraint(CPSolver solver, Variable[] variables, RscData rdata, HashSet<String> options);
+	protected abstract void makeMixedConstraint(CPSolver solver, Variable[] variables, RscData rdata, Set<String> options);
 
-	protected void makeDefaultConstraint(CPSolver solver, Variable[] variables, RscData rdata, HashSet<String> options) {
+	protected void makeDefaultConstraint(CPSolver solver, Variable[] variables, RscData rdata, Set<String> options) {
 		 makeGlobalConstraint(solver, variables, rdata, options);
 	}
 
@@ -113,10 +113,10 @@ public abstract class AbstractResourceManager extends MixedConstraintManager {
 
 
 	/**
-	 * @see choco.kernel.model.constraints.ConstraintManager#getFavoriteDomains(java.util.HashSet)
+	 * @see choco.kernel.model.constraints.ConstraintManager#getFavoriteDomains(java.util.Set)
 	 */
 	@Override
-	public int[] getFavoriteDomains(final HashSet<String> options) {
+	public int[] getFavoriteDomains(final Set<String> options) {
 		return getBCFavoriteIntDomains();
 	}
 

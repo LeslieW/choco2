@@ -33,7 +33,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /*
 *  ______
@@ -55,7 +55,7 @@ public class OccurrenceManager extends IntConstraintManager {
     private static final int MIN = -1;
     private static final int MAX = 1;
 
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         if(solver instanceof CPSolver){
             if(parameters instanceof Integer){
                 int type = (Integer)parameters;
@@ -87,7 +87,7 @@ public class OccurrenceManager extends IntConstraintManager {
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
     @Override
-    public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         SConstraint[] cs = new SConstraint[2];
         if (solver instanceof CPSolver) {
 			if(parameters instanceof Integer){

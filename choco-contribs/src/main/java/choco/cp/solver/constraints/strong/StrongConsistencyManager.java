@@ -22,6 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.strong;
 
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.kernel.model.constraints.ComponentConstraint;
@@ -37,23 +43,17 @@ import choco.kernel.solver.constraints.reified.BoolNode;
 import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 public class StrongConsistencyManager extends IntConstraintManager {
 
     @Override
-    public int[] getFavoriteDomains(HashSet<String> options) {
+    public int[] getFavoriteDomains(Set<String> options) {
         // TODO Auto-generated method stub
         return new int[0];
     }
 
     @Override
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables,
-            Object parameters, HashSet<String> options) {
+            Object parameters, Set<String> options) {
         final Class<? extends AbstractStrongConsistency> scImplementation;
         final Constraint[] modelConstraints;
         try {
@@ -81,9 +81,9 @@ public class StrongConsistencyManager extends IntConstraintManager {
             final ComponentConstraint mc = (ComponentConstraint) modelConstraints[i];
 
             if (allSimpleVariable(mc.getVariables())) {
-                final SConstraint solverConstraint = mc.getCm().makeConstraint(
+                final SConstraint solverConstraint = mc.getConstraintManager().makeConstraint(
                         solver, mc.getVariables(), mc.getParameters(),
-                        mc.getOptions());
+                        (HashSet) mc.getOptions());
                 if (solverConstraint instanceof ISpecializedConstraint) {
                     constraints.add((ISpecializedConstraint) solverConstraint);
                 } else {
@@ -134,7 +134,7 @@ public class StrongConsistencyManager extends IntConstraintManager {
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
     @Override
-    public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         SConstraint c = makeConstraint(solver, variables, parameters, options);
         SConstraint opp = c.opposite();
         return new SConstraint[]{c, opp};
@@ -163,7 +163,7 @@ public class StrongConsistencyManager extends IntConstraintManager {
                 vars[i] = (IntegerExpressionVariable) ic.getVariables()[i];
             }
         }
-        return (BoolNode) ic.getEm().makeNode(cpsolver,
+        return (BoolNode) ic.getExpressionManager().makeNode(cpsolver,
                 new Constraint[] { ic }, vars);
     }
 

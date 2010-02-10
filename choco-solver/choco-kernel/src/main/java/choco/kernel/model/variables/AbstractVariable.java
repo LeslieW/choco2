@@ -28,6 +28,7 @@ import choco.kernel.model.ModelException;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -41,10 +42,10 @@ public abstract class AbstractVariable implements Variable, Comparable{
 
 	protected VariableType type;
     protected int hashCode;
-	protected HashSet<String> options = new HashSet<String>();
+	protected final HashSet<String> options = new HashSet<String>();
     protected Variable[] listVars;
     protected final long indice;
-    protected int hook = NO_HOOK; //a utility field
+    protected int hook = NO_HOOK; //utility field
     
 	public AbstractVariable(VariableType type) {
 		this.type = type;
@@ -114,7 +115,7 @@ public abstract class AbstractVariable implements Variable, Comparable{
      * @param options set of options
      */
     @Override
-    public void addOptions(HashSet<String> options) {
+    public void addOptions(Set<String> options) {
         this.options.addAll(options);
     }
 
@@ -124,7 +125,7 @@ public abstract class AbstractVariable implements Variable, Comparable{
      * @return set of options
      */
     @Override
-    public HashSet<String> getOptions() {
+    public Set<String> getOptions() {
         return options;
     }
 

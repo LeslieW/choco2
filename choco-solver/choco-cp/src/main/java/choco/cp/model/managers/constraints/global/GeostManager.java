@@ -14,7 +14,7 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 
-import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 
 /**
@@ -34,7 +34,7 @@ public class GeostManager extends IntConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables/*variables model*/, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables/*variables model*/, Object parameters, Set<String> options) {
         if (solver instanceof CPSolver) {
             if(parameters instanceof Object[]){
                 Object[] params = (Object[])parameters;

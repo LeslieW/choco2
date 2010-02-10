@@ -54,7 +54,7 @@ public class DeterministicIndicedList<O extends IIndex>{
     /**
      * All the object
      */
-    protected O[] objects;
+    private O[] objects;
 
     /**
      * indice of the last object

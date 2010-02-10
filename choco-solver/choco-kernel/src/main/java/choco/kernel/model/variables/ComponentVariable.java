@@ -27,6 +27,7 @@ import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ExpressionManager;
+import choco.kernel.model.constraints.ManagerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +38,7 @@ import java.util.Properties;
  * User:    charles
  * Date: 8 août 2008
  */
-public abstract class ComponentVariable extends AbstractVariable implements IComponentVariable{
+public abstract class ComponentVariable extends AbstractVariable implements IComponentVariable {
 
     protected final Object parameters;
     protected String componentClass;
@@ -46,38 +47,30 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
     protected String name;
     protected Operator operator;
     protected ComponentVariable[] variables;
+
     protected final ArrayList<Constraint> constraints=new ArrayList<Constraint>(1);
+    private Constraint[] cstr = null;
 
-    //null by default until it has been loaded
-    protected VariableManager vm;
-    protected ExpressionManager em;
-
-    Constraint[] cstr = null;
-
-    public ComponentVariable(final VariableType variableType, final Operator operator, final Object parameters, final String name, final ComponentVariable... vars) {
+    private ComponentVariable(final VariableType variableType, final Object parameters, final String name, final ComponentVariable... vars) {
         super(variableType);
-        build(name, vars);
-        this.parameters = parameters;
-        this.operator = operator;
+          this.parameters = parameters;
+          this.name = name;
+          this.variables = vars;
+      }
+    
+    public ComponentVariable(final VariableType variableType, final Operator operator, final Object parameters, final String name, final ComponentVariable... vars) {
+      this(variableType, parameters, name, vars);
+      this.operator = operator;
     }
 
     public ComponentVariable(final VariableType variableType, final String operatorManager, final Object parameters, final String name, final ComponentVariable... vars) {
-        super(variableType);
-        build(name, vars);
-        this.parameters = parameters;
+    	this(variableType, parameters, name, vars);
         this.expressionManager = operatorManager;
     }
 
     public ComponentVariable(final VariableType variableType, final Class operatorClass, final Object parameters, final String name, final ComponentVariable... vars) {
-        super(variableType);
-        build(name, vars);
+    	this(variableType, parameters, name, vars);
         this.expressionManager = operatorClass.getName();
-        this.parameters = parameters;
-    }
-
-    private void build(final String name, final ComponentVariable... vars){
-        this.name = name;
-        this.variables = vars;
     }
 
     /**
@@ -92,11 +85,11 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
         super.freeMemory();
     }
 
-    public String getComponentClass() {
+    public final String getComponentClass() {
         return variableManager;
     }
 
-    public String getOperatorClass(){
+    public final String getOperatorClass(){
         if(expressionManager!=null){
             return expressionManager;
         }
@@ -104,7 +97,7 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
     }
 
 
-    public Object getParameters() {
+    public final Object getParameters() {
         return parameters;
     }
 
@@ -116,28 +109,29 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
         return variables[idx];
     }
 
-    public int getNbVars() {
+    public final int getNbVars() {
         return variables.length;
     }
 
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public final void setName(String name) {
         this.name = name;
     }
 
-    public Operator getOperator() {
+    public final Operator getOperator() {
         return operator;
     }
 
-    public void setOperator(Operator operator) {
+    public final void setOperator(Operator operator) {
         this.operator = operator;
     }
 
     public void _addConstraint(Constraint c) {
-        if (variables.length == 0) {
+        cstr = null;
+    	if (variables.length == 0) {
             constraints.add(c);
         } else {
             for(Variable v : variables){
@@ -147,7 +141,8 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
     }
 
     public void _removeConstraint(Constraint c) {
-        if (variables.length == 0) {
+    	cstr = null;
+    	if (variables.length == 0) {
             constraints.remove(c);
         } else {
             for(Variable v : variables){
@@ -285,36 +280,13 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
          }
      }
 
-    public VariableManager getVm() {
-            if (vm == null) {
-                vm = (VariableManager)loadManager(getComponentClass());
-            }
-            return vm;
-        }
-
-    public Object loadManager(String manager) {
-             //We get it by reflection !
-        try {
-            return Class.forName(manager).newInstance();
-        } catch (InstantiationException e) {
-            LOGGER.severe("Component class could not be instantiated: " + manager);
-            System.exit(-1);
-        } catch (IllegalAccessException e) {
-            LOGGER.severe("Component class could not be accessed: " + manager);
-            System.exit(-1);
-        } catch (ClassNotFoundException e) {
-            LOGGER.severe("Component class could not be found: " + manager);
-            System.exit(-1);
-        }
-        return null;
+    public VariableManager<?> getVariableManager() {
+          return ManagerFactory.loadVariableManager(getComponentClass());
     }
 
 
-    public ExpressionManager getEm() {
-        if (em == null) {
-            em = (ExpressionManager)loadManager(getOperatorClass());
-        }
-        return em;
+    public ExpressionManager getExpressionManager() {
+    	return ManagerFactory.loadExpressionManager(getOperatorClass());
     }
 
 

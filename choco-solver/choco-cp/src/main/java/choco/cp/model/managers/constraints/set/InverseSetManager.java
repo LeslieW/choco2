@@ -8,13 +8,13 @@ import choco.kernel.model.variables.Variable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 
-import java.util.HashSet;
+import java.util.Set;
 
 public class InverseSetManager extends MixedConstraintManager {
 
 	@Override
 	public SConstraint makeConstraint(Solver solver, Variable[] variables,
-			Object parameters, HashSet<String> options) {
+			Object parameters, Set<String> options) {
 		if (solver instanceof CPSolver) {
 			final CPSolver s = (CPSolver) solver;
 			final int nbIntVars = (Integer) parameters;

@@ -71,7 +71,7 @@ public interface Constraint extends IPretty, IIndex, IOptions, IGarbageCollector
      * Return the constraint manager
      * @return constraint manager
      */
-    public ExpressionManager getEm();
+    public ExpressionManager getExpressionManager();
 
     /**
      * Set the class manager

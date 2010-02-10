@@ -33,10 +33,6 @@ import choco.kernel.model.variables.VariableType;
  */
 public class IntegerConstantVariable extends IntegerVariable implements Comparable {
 
-    private static String toString(int value){
-        return Integer.toString(value);
-    }
-
 	public IntegerConstantVariable(int value) {
         super(Integer.toString(value), VariableType.CONSTANT_INTEGER, value, value);
         this.values = new int[]{value};
@@ -65,8 +61,8 @@ public class IntegerConstantVariable extends IntegerVariable implements Comparab
     public String pretty() {
         return name;
     }
-
-
+    
+    
 	@Override
 	public int compareTo(Object o) {
         if(o instanceof IntegerConstantVariable){

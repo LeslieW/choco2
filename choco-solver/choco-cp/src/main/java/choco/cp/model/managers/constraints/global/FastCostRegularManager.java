@@ -10,7 +10,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.HashSet;
+import java.util.Set;
 
 import org.jgrapht.graph.DirectedMultigraph;
 
@@ -23,7 +23,7 @@ import org.jgrapht.graph.DirectedMultigraph;
 
 public class FastCostRegularManager extends IntConstraintManager {
 
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
 
         if (parameters instanceof Object[] && ((Object[])parameters).length == 2)
         {

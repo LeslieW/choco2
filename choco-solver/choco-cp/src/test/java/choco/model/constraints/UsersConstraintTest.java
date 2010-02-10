@@ -22,7 +22,19 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints;
 
-import static choco.Choco.*;
+import static choco.Choco.allDifferent;
+import static choco.Choco.constant;
+import static choco.Choco.eq;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.makeIntVarArray;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import org.junit.Test;
+
 import choco.cp.model.CPModel;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
@@ -37,11 +49,6 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
-
-import java.util.HashSet;
-import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -55,7 +62,7 @@ public class UsersConstraintTest {
     protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
     public static class MyConstraintEqualManager extends IntConstraintManager {
-        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
             if(solver instanceof CPSolver){
                 IntDomainVar x = solver.getVar(variables[0]);
                 IntDomainVar y = solver.getVar(variables[1]);
@@ -112,7 +119,7 @@ public class UsersConstraintTest {
     }
 
     public static class MyConstraintAllDifferentManager extends IntConstraintManager{
-        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
             if(solver instanceof CPSolver){
                 return new AllDifferent(solver.getVar((IntegerVariable[])variables));
             }

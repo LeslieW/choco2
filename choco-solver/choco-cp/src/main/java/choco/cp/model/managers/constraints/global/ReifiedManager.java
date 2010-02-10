@@ -33,7 +33,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -52,7 +52,7 @@ public class ReifiedManager extends MixedConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, Set<String> options) {
         if(solver instanceof CPSolver){
             Constraint[] constraints = (Constraint[])((Object[])parameters)[1];
             if(constraints.length == 1){

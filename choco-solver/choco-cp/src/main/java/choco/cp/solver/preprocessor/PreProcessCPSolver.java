@@ -565,7 +565,7 @@ public class PreProcessCPSolver extends CPSolver {
         protected int upp;
         // values is null if domain is bounded
         int[] values;
-        HashSet<String> options;
+        Set<String> options;
 
         private Domain() {
             options = new HashSet<String>();
@@ -678,7 +678,7 @@ public class PreProcessCPSolver extends CPSolver {
         protected IntegerVariable duration;
         protected IntegerVariable end;
 
-        HashSet<String> options;
+        private Set<String> options;
 
         private TaskObjects() {
             options = new HashSet<String>();

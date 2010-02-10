@@ -22,7 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
-import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 
 import choco.cp.solver.CPSolver;
@@ -42,7 +42,7 @@ public class DisjunctiveManager extends AbstractResourceManager {
 
 	@Override
 	protected void makeDecompositionConstraint(CPSolver solver,
-			Variable[] variables, RscData rdata, HashSet<String> options) {
+			Variable[] variables, RscData rdata, Set<String> options) {
 		if( rdata.isAlternative()) {
 			LOGGER.log(Level.INFO, "no decomposition available: use {0} instead",  SettingType.MIXED);
 			makeMixedConstraint(solver, variables, rdata, options);
@@ -54,20 +54,20 @@ public class DisjunctiveManager extends AbstractResourceManager {
 
 	@Override
 	protected void makeGlobalConstraint(CPSolver solver,
-			Variable[] variables, RscData rdata, HashSet<String> options) {
+			Variable[] variables, RscData rdata, Set<String> options) {
 		makeForbiddenIntervalConstraint(rdata, options);
 		makeDisjunctive(rdata, options);	
 	}
 
 	@Override
 	protected void makeMixedConstraint(CPSolver solver,
-			Variable[] variables, RscData rdata, HashSet<String> options) {
+			Variable[] variables, RscData rdata, Set<String> options) {
 		makeGlobalConstraint(solver, variables, rdata, options);
 		makeDecompositionDisjunctive(solver, rdata);
 	}
 	
 	
-	protected final void makeDisjunctive(RscData rdata, HashSet<String> options) {
+	protected final void makeDisjunctive(RscData rdata, Set<String> options) {
 		final Disjunctive cstr = (
 				rdata.isAlternative() ? 
 						new AltDisjunctive(rdata.getRscName(), tasks, usages, uppBound) : 
@@ -86,7 +86,7 @@ public class DisjunctiveManager extends AbstractResourceManager {
 		}
 	}
 	
-	protected void makeForbiddenIntervalConstraint(RscData rdata, HashSet<String> options) {
+	protected void makeForbiddenIntervalConstraint(RscData rdata, Set<String> options) {
 		if( options.contains(SettingType.FORBIDDEN_INTERVALS.getOptionName()) ) {
 			if ( rdata.getNbOptionalTasks() > 0 ) {
 				LOGGER.log(Level.WARNING, "no Forbidden intervals with alternative resources {0}", rdata);
@@ -97,7 +97,7 @@ public class DisjunctiveManager extends AbstractResourceManager {
 //
 //	@Override
 //	public SConstraint makeConstraint(Solver solver, Variable[] variables,
-//			Object parameters, HashSet<String> options) {
+//			Object parameters, Set<String> options) {
 //		if (solver instanceof CPSolver) {
 //			final RscData param = (RscData) parameters;
 //			final CPSolver s = (CPSolver) solver;

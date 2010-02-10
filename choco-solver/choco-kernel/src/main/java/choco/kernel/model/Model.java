@@ -228,9 +228,8 @@ public interface Model extends IPretty, IGarbageCollectorAssistant {
      */
     public int getNbTotVars();
 
-
-    public <E extends IOptions> void addOption(String option, E... element);
-
+    void addOptions(String options, IOptions... element);
+    
     /**
      * Add a variable to the model
      * @param v a variable

@@ -24,6 +24,7 @@ package choco.kernel.model.variables.real;
 
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.constraints.ConstraintManager;
+import choco.kernel.model.constraints.ManagerFactory;
 import choco.kernel.model.variables.*;
 
 /*
@@ -36,8 +37,7 @@ import choco.kernel.model.variables.*;
 public class RealExpressionVariable extends ComponentVariable implements DoubleBoundedVariable{
 
 	protected double lowB, uppB;
-    protected ConstraintManager rcm;
-
+   
 	public RealExpressionVariable(Object parameters, Operator operator, VariableType type, RealExpressionVariable... variables) {
         super(type, operator, parameters, "", variables);
 
@@ -90,11 +90,8 @@ public class RealExpressionVariable extends ComponentVariable implements DoubleB
     }
 
 
-    public ConstraintManager getRcm(){
-        if(rcm == null){
-            rcm = (ConstraintManager)loadManager(getOperatorClass());
-        }
-        return rcm;
+    public ConstraintManager<?> getRcm(){
+    	return ManagerFactory.loadConstraintManager(getOperatorClass());
     }
 
 }

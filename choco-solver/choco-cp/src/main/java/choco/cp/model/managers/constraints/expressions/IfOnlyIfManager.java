@@ -34,7 +34,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /*
  * User:    charles
@@ -51,7 +51,7 @@ public class IfOnlyIfManager extends IntConstraintManager{
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         return null;
     }
 
@@ -72,7 +72,7 @@ public class IfOnlyIfManager extends IntConstraintManager{
             for(int j = 0; j < c.getNbVars(); j++){
                 ev[j]  = (IntegerExpressionVariable)c.getVariables()[j];
             }
-            nt[i] = c.getEm().makeNode(solver, new Constraint[]{c}, ev);
+            nt[i] = c.getExpressionManager().makeNode(solver, new Constraint[]{c}, ev);
         }
         INode[] nt2 = new INode[2];
         nt2[0] = new OrNode(nt[0], new NotNode(new INode[]{nt[1]}));

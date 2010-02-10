@@ -22,7 +22,7 @@
  **************************************************/
 package choco.kernel.model;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /*
 * User : charles
@@ -55,11 +55,11 @@ public interface IOptions {
      * of the object
      * @param options set of options
      */
-    void addOptions(HashSet<String> options);
+    void addOptions(Set<String> options);
 
     /**
      * Get the pool of unique options
      * @return set of options
      */
-    HashSet<String> getOptions();
+    Set<String> getOptions();
 }

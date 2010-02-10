@@ -1,6 +1,6 @@
 /* ************************************************
 *           _       _                            *
-*          |  °(..)  |                           *
+*          |  ï¿½(..)  |                           *
 *          |_  J||L _|        CHOCO solver       *
 *                                                *
 *     Choco is a java library for constraint     *
@@ -22,6 +22,8 @@
 **************************************************/
 package choco.cp.model.managers.constraints.global;
 
+import java.util.Set;
+
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.channeling.ReifiedLargeAnd;
@@ -29,8 +31,6 @@ import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
-
-import java.util.HashSet;
 
 /*
 * User : charles
@@ -51,7 +51,7 @@ public class ReifiedAndManager extends IntConstraintManager {
      * @return SConstraint
      */
     @Override
-    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, HashSet<String> options) {
+    public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         if (solver instanceof CPSolver) {
             if (parameters == null) {
                 return new ReifiedLargeAnd(solver.getVar(variables));

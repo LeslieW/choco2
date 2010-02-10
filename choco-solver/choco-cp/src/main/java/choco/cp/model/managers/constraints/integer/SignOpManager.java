@@ -37,7 +37,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /*
  *  ______
@@ -54,7 +54,7 @@ import java.util.HashSet;
  * A manager to build new signop constraint
  */
 public class SignOpManager extends MixedConstraintManager {
-  public SConstraint makeConstraint(Solver solver, Variable[] vars, Object parameters, HashSet<String> options) {
+  public SConstraint makeConstraint(Solver solver, Variable[] vars, Object parameters, Set<String> options) {
     if (solver instanceof CPSolver) {
         return new SignOp(
           solver.getVar((IntegerVariable)vars[0]),
@@ -79,7 +79,7 @@ public class SignOpManager extends MixedConstraintManager {
             if(vars.length == 2){
                 INode[] nodes = new INode[vars.length];
                 for(int i = 0; i < vars.length; i++){
-                    nodes[i] = vars[i].getEm().makeNode(s, vars[i].getConstraints(), vars[i].getVariables());
+                    nodes[i] = vars[i].getExpressionManager().makeNode(s, vars[i].getConstraints(), vars[i].getVariables());
                 }
                 if (((ComponentConstraint) cstrs[0]).getParameters() == Boolean.FALSE)
                     return new OppSignNode(nodes);
