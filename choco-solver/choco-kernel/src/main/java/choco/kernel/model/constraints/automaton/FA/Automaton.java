@@ -399,23 +399,21 @@ public class Automaton {
     public boolean run(int[] word) {
         int start = this.getStartingState();
 
-        return (run(start,word));
+        return (run(start,word,0));
 
     }
 
-    private boolean run(int state, int[] word) {
-        if (word.length == 1) {
-            int last = delta(state,word[0]);
+    private boolean run(int state, int[] word,int pos) {
+        if (word.length == pos+1) {
+            int last = delta(state,word[pos]);
             return (last >= 0 && this.isAccepting(last));
 
         }
         else {
-            int first = word[0];
+            int first = word[pos];
             int next = delta(state,first);
             if (next >= 0) {
-                int[] queue = new int[word.length -1];
-                System.arraycopy(word,1,queue,0,queue.length);
-                return (run(next,queue));
+                return (run(next,word,pos+1));
             }
             else
                 return false;

@@ -49,7 +49,7 @@ public class StoredDirectedMultiGraph {
     IntSConstraint constraint;
 
     int[] starts;
-    int[] offsets;
+    public int[] offsets;
 
     public int sourceIndex;
     public int tinIndex;

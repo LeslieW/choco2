@@ -696,8 +696,8 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
                 p.resetNodeShortestandLongestPathValues();
                 p.computeShortestAndLongestPath(toRemove,newCosts,binf,bsup);
                 b |= toRemove.size() > 0;
-                z[i].updateInf((int)Math.ceil(p.getShortestPathValue()),this.getConstraintIdx(-1/*vs.length+i*/));
-                z[i].updateSup((int)Math.floor(p.getLongestPathValue()),this.getConstraintIdx(-1/*vs.length+i*/));
+                z[i].updateInf((int)Math.ceil(p.getShortestPathValue()),this.getConstraintIdx(vs.length+i));
+                z[i].updateSup((int)Math.floor(p.getLongestPathValue()),this.getConstraintIdx(vs.length+i));
                 /*  if (b)
                {
                    this.delayedGraphUpdate();
@@ -772,19 +772,32 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         {
             for (int j = 0 ; j < costs[i].length ; j++)
             {
-
-                double tmp = 0;
-                for (int k = 1 ; k < costs[i][j].length; k++)
+              //  StoredIndexedBipartiteSet bs = this.graph.getSupport(i,j+this.graph.offsets[i]);
+               // if (bs != null && !bs.isEmpty())
                 {
-                    // if (k != resource)
-                    tmp+= (u[k-1]-u[k-1+nbR])*costs[i][j][k];
+                    double tmp = 0;
+                    for (int k = 1 ; k < costs[i][j].length; k++)
+                    {
+                        // if (k != resource)
+                        tmp+= (u[k-1]-u[k-1+nbR])*costs[i][j][k];
 
+                    }
+                    if (max) tmp = -tmp;
+                    newCosts[i][j] = costs[i][j][resource]+ tmp;
                 }
-                if (max) tmp = -tmp;
-                newCosts[i][j] = costs[i][j][resource]+ tmp;
 
             }
         }
+    }
+    /**
+     * updates the graph arc costs given lagrangian multipliers
+     * @param u lagrangian multipliers
+     * @param resource cost variable index that will not be relaxed
+     * @param max are we computing an upper bound ?
+     */
+    protected void updateCosts2(final double[] u,final int resource, final boolean max)
+    {
+
     }
 
 
@@ -943,6 +956,21 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
 
     }
 
+    public final void awakeOnInst(final int idx)
+    {
+        this.constAwake(false);
+    }
+
+    public final void awakeOnSup(final int idx)
+    {
+        this.constAwake(false);
+    }
+
+    public final void awakeOnInf(final int idx)
+    {
+        this.constAwake(false);
+    }
+
 
 
 
@@ -980,7 +1008,32 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         if (toRemove.size() > 0)
             System.out.println("PB");
         assert(check());
+        assert(isGraphConsistent());
     }
+
+    public boolean isGraphConsistent()
+    {
+        boolean ret = true;
+        for (int i = 0 ; i < vs.length ; i++)
+        {
+            for (int n : this.graph.layers[i])
+            {
+                DisposableIntIterator it = this.graph.GNodes.outArcs[n].getIterator();
+                while(it.hasNext())
+                {
+                    int arc = it.next();
+                    int val = this.graph.GArcs.values[arc];
+                    if (!vars[i].canBeInstantiatedTo(val))
+                    {
+                        System.err.println("Arc "+arc+" from node "+n+" to node"+this.graph.GArcs.dests[arc]+" with value "+val+" in layer "+i+" should not be here");
+                        return false;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
 
 
     private static int[][][][] make4dim(int[][][] costs,Automaton auto)
