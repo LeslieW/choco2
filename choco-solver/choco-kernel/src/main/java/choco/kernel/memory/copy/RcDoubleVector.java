@@ -34,6 +34,7 @@ import choco.kernel.memory.IStateDoubleVector;
  */
 public class RcDoubleVector implements IStateDoubleVector, RecomputableElement {
 
+
     /**
      * Minimal capacity of a vector
      */
