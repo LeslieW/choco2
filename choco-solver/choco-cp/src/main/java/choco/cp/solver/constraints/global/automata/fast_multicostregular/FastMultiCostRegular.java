@@ -766,16 +766,6 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
             }
         }
     }
-    /**
-     * updates the graph arc costs given lagrangian multipliers
-     * @param u lagrangian multipliers
-     * @param resource cost variable index that will not be relaxed
-     * @param max are we computing an upper bound ?
-     */
-    protected void updateCosts2(final double[] u,final int resource, final boolean max)
-    {
-
-    }
 
 
     public boolean isSatisfied()
@@ -1013,29 +1003,6 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
 
 
 
-    private static int[][][][] make4dim(int[][][] costs,Automaton auto)
-    {
-        int n = auto.getNbStates();
-        int[][][][] out = new int[costs.length][][][];
-        for (int i = 0 ; i < out.length ; i++)
-        {
-            out[i] = new int[costs[i].length][][];
-
-            for (int j = 0 ; j < out[i].length ; j++)
-            {
-                out[i][j] = new int[n][costs[i][j].length];
-
-                for (int k = 0 ; k < costs[i][j].length ; k++)
-                {
-                    for (int s = 0 ; s < n ; s++)
-                        out[i][j][s][k] = costs[i][j][k];
-                }
-            }
-
-        }
-
-        return out;
-    }
 
 
     public final StoredDirectedMultiGraph getGraph()
