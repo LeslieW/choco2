@@ -4033,7 +4033,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static  Constraint startsBeforeBegin(final TaskVariable t1,final TaskVariable t2, final int delta) {
-		return new MetaTaskConstraint(new Variable[]{t1, t2}, leq(plus(t1.start(), delta),t2.start()));
+		return new MetaTaskConstraint(new TaskVariable[]{t1, t2}, leq(plus(t1.start(), delta),t2.start()));
 	}
 
 	/**
@@ -4122,7 +4122,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint startsBeforeEnd(final TaskVariable t1, final TaskVariable t2, final int delta) {
-		return new MetaTaskConstraint(new Variable[]{t1, t2}, leq( plus(t1.start(), delta), t2.end()));
+		return new MetaTaskConstraint(new TaskVariable[]{t1, t2}, leq( plus(t1.start(), delta), t2.end()));
 	}
 
 	/**
@@ -4165,7 +4165,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static  Constraint endsBeforeEnd(final TaskVariable t1, final TaskVariable t2, final int delta) {
-		return  new MetaTaskConstraint(new Variable[]{t1, t2},leq(t1.end(), plus(t2.end(), delta)));
+		return  new MetaTaskConstraint(new TaskVariable[]{t1, t2},leq(t1.end(), plus(t2.end(), delta)));
 	}
 
 	/**

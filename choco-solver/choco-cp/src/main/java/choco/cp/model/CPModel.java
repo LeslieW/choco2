@@ -110,10 +110,6 @@ public class CPModel implements Model {
     private EnumMap<ConstraintType, TIntHashSet> constraintsByType;
 
     /**
-     * The variable modelling the objective function
-     */
-    protected IntVar objective;
-    /**
      * Maximization / Minimization model
      */
     protected boolean doMaximize;
@@ -165,6 +161,46 @@ public class CPModel implements Model {
             properties.load(is);
         } catch (IOException e) {
             LOGGER.severe("Could not open application.properties");
+        }
+    }
+
+    /**
+     * Preprocessing that helps the garbage collector.
+     */
+    @Override
+    public void freeMemory() {
+        for(Iterator<IntegerVariable> it = intVars.iterator();it.hasNext();){
+            it.next().freeMemory();
+        }
+        intVars.clear();
+        for(Iterator<SetVariable> it = setVars.iterator();it.hasNext();){
+            it.next().freeMemory();
+        }
+        setVars.clear();
+        for(Iterator<RealVariable> it = floatVars.iterator();it.hasNext();){
+            it.next().freeMemory();
+        }
+        floatVars.clear();
+        for(Iterator<Variable> it = constantVars.iterator();it.hasNext();){
+            it.next().freeMemory();
+        }
+        constantVars.clear();
+        for(Iterator<IntegerExpressionVariable> it = expVars.iterator();it.hasNext();){
+            it.next().freeMemory();
+        }
+        expVars.clear();
+        for(Iterator<MultipleVariables> it = storedMultipleVariables.iterator();it.hasNext();){
+            it.next().freeMemory();
+        }
+        storedMultipleVariables.clear();
+        for(Iterator<Constraint> it = constraints.iterator();it.hasNext();){
+            it.next().freeMemory();
+        }
+        constraints.clear();
+        constraintsByType.clear();
+        if(clausesStore!=null){
+            clausesStore.freeMemory();
+            clausesStore = null;
         }
     }
 
@@ -425,7 +461,7 @@ public class CPModel implements Model {
                  */
                 @Override
                 public void remove() {
-                    //To change body of implemented methods use File | Settings | File Templates.
+                    throw new UnsupportedOperationException();
                 }
             };
         } else {
@@ -951,8 +987,8 @@ public class CPModel implements Model {
         if(clausesStore==null){
             clausesStore = new ComponentConstraintWithSubConstraints(ConstraintType.CLAUSES, clause.getVariables(), null, clause);
             HashSet<String> opt = clause.getOptions();
-            for (Iterator<String> iterator = opt.iterator(); iterator.hasNext();) {
-                clausesStore.addOption(iterator.next());
+            for (String anOpt : opt) {
+                clausesStore.addOption(anOpt);
             }
             clausesStore.findManager(properties);
             constraints.add(clausesStore);

@@ -71,6 +71,15 @@ public class GeostObject extends MultipleVariables{
         this.radius = radius;
     }
 
+    /**
+     * Preprocessing that helps the garbage collector.
+     */
+    @Override
+    public void freeMemory() {
+        Arrays.fill(coordinates, null);
+        super.freeMemory();
+    }
+
     public String pretty() {
         return "GeostObject.pretty() : Not already defined";  
     }

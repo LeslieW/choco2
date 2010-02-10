@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.variables;
 
+import choco.IGarbageCollectorAssistant;
 import choco.IPretty;
 import choco.kernel.common.IIndex;
 import choco.kernel.common.logging.ChocoLogging;
@@ -42,7 +43,7 @@ import java.util.logging.Logger;
  * Define all the methods for a variable to be used
  * on the Model.
  */
-public interface Variable extends IPretty, IIndex, IOptions, IHook {
+public interface Variable extends IPretty, IIndex, IOptions, IHook, IGarbageCollectorAssistant {
 
     final static Logger LOGGER = ChocoLogging.getEngineLogger();
 

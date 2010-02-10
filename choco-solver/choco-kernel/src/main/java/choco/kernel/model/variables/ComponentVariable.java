@@ -29,6 +29,7 @@ import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ExpressionManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -79,7 +80,18 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
         this.variables = vars;
     }
 
-    
+    /**
+     * Preprocessing that helps the garbage collector.
+     */
+    @Override
+    public void freeMemory() {
+        Arrays.fill(variables, null);
+        variables = null;
+        constraints.clear();
+        cstr = null;
+        super.freeMemory();
+    }
+
     public String getComponentClass() {
         return variableManager;
     }

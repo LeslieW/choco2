@@ -44,7 +44,16 @@ public class BinaryConstraint<E extends Variable> extends AbstractConstraint {
 		this.v2 = v2;
 	}
 
-	/**
+    /**
+     * Preprocessing that helps the garbage collector.
+     */
+    @Override
+    public void freeMemory() {
+        v1 = null;
+        v2 = null;
+    }
+
+    /**
 	 * @see choco.kernel.model.constraints.Constraint#getNbVars()
 	 */
 	@Override

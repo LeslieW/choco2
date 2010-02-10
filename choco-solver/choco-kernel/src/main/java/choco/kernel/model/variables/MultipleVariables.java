@@ -57,6 +57,16 @@ public abstract class MultipleVariables extends AbstractVariable {
     	this.variables = new ArrayList<Variable>(initialCapacity);
     }
 
+    /**
+     * Preprocessing that helps the garbage collector.
+     */
+    @Override
+    public void freeMemory() {
+        variables.clear();
+        variables = null;
+        super.freeMemory();
+    }
+
     public void addConstraint(Constraint c) {
         for (Variable variable : variables) {
             variable.addConstraint(c);

@@ -26,6 +26,7 @@ import choco.kernel.common.IIndex;
 import gnu.trove.TLongIntHashMap;
 
 import static java.lang.reflect.Array.newInstance;
+import java.util.Arrays;
 import java.util.Iterator;
 
 /*
@@ -78,6 +79,12 @@ public class DeterministicIndicedList<O extends IIndex>{
      */
     public DeterministicIndicedList(Class clazz) {
         this(clazz, 32);
+    }
+
+    public void clear(){
+        indices.clear();
+        Arrays.fill(objects, null);
+        objects = null;
     }
 
     /**

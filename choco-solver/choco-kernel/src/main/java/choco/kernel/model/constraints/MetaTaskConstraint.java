@@ -5,6 +5,7 @@ package choco.kernel.model.constraints;
 
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.variables.Variable;
+import choco.kernel.model.variables.scheduling.TaskVariable;
 
 import java.util.Properties;
 
@@ -16,16 +17,25 @@ import java.util.Properties;
  * @since 28 janv. 2009 version 2.0.3</br>
  * @version 2.0.3</br>
  */
-public class MetaTaskConstraint extends ComponentConstraint {
+public class MetaTaskConstraint extends ComponentConstraint <TaskVariable>{
 
 	protected Constraint constraint;
 
 
-	public MetaTaskConstraint(Variable[] taskvariables,
+	public MetaTaskConstraint(TaskVariable[] taskvariables,
 			Constraint constraint) {
 		super(ConstraintType.METATASKCONSTRAINT,constraint,taskvariables);
 		this.constraint = constraint;
 	}
+
+    /**
+     * Preprocessing that helps the garbage collector.
+     */
+    @Override
+    public void freeMemory() {
+        constraint = null;
+        super.freeMemory();
+    }
 
     /**
      * Extract variables of a constraint

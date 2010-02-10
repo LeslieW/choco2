@@ -51,6 +51,18 @@ public abstract class AbstractVariable implements Variable, Comparable{
         indice = IndexFactory.getId();
 	}
 
+    /**
+     * Preprocessing that helps the garbage collector.
+     */
+    @Override
+    public void freeMemory() {
+        if(listVars!=null){
+            Arrays.fill(listVars, null);
+        }
+        listVars = null;
+        options.clear();
+    }
+
     public final VariableType getVariableType() {
 		return type;
 	}
