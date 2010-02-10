@@ -99,7 +99,7 @@ public class StoredDirectedMultiGraph {
 
 
 
-    public StoredDirectedMultiGraph(IntSConstraint constraint,DirectedMultigraph<Node, Arc> graph, int[][] layers, int[] starts, int[] offsets, int supportLength, double D_PREC)
+    public StoredDirectedMultiGraph(IntSConstraint constraint,DirectedMultigraph<Node, Arc> graph, int[][] layers, int[] starts, int[] offsets, int supportLength)
     {
         this.constraint = constraint;
         this.starts = starts;
@@ -202,7 +202,7 @@ public class StoredDirectedMultiGraph {
         }
 
 
-        this.pf = new FastPathFinder(this,D_PREC);
+        this.pf = new FastPathFinder(this);
 
     }
 

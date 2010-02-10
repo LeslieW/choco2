@@ -213,11 +213,10 @@ public class Code4Doc4 {
             csts[i][NIGHT][1] = new int[]{9, 0, 1, 1}; // costs of transition (1,NIGHT,2)
             csts[i][REST][2] = new int[]{2, 0, 0, 0}; // costs of transition (2,REST,0)
         }
-        //5- Set a constraint parameter
-        FastMultiCostRegular.DATA_STRUCT = FastMultiCostRegular.LIST;
-        //6- add the constraint
+
+        //5- add the constraint
         m.addConstraint(multiCostRegular(sequence, bounds, auto, csts));
-        //7- create the solver, read the model and solve it
+        //6- create the solver, read the model and solve it
         Solver s = new CPSolver();
         s.read(m);
         s.solve();
