@@ -22,25 +22,24 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package maif;
 
-import maif.parser.FileReader;
-import maif.parser.FileWriter;
-import maif.entities.Person;
-import maif.entities.Preference;
-import maif.cp.MaifModel;
-import maif.cp.heuristics.PrefValSelector;
-import maif.ihm.MainWindow;
-
-import java.util.*;
-import java.io.File;
-import java.lang.Boolean;
-
+import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.Choco;
 import jxl.write.WriteException;
+import maif.cp.MaifModel;
+import maif.cp.heuristics.PrefValSelector;
+import maif.entities.Person;
+import maif.entities.Preference;
+import maif.ihm.MainWindow;
+import maif.parser.FileReader;
+import maif.parser.FileWriter;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by IntelliJ IDEA.
@@ -112,7 +111,7 @@ public class MaifPlanner {
 
         valselector = new PrefValSelector(toSolverMap(s,m.getVarMap(),read.getPrefMap()),read.getBouchon()) ;
         s.setValIntSelector(valselector);
-        s.setVarIntSelector(new StaticVarOrder(s.getVar(m.getDayVars())));
+        s.setVarIntSelector(new StaticVarOrder(s, s.getVar(m.getDayVars())));
 
 
         s.setTimeLimit(1600);
@@ -144,7 +143,7 @@ public class MaifPlanner {
 
             valselector = new PrefValSelector(toSolverMap(s,m.getVarMap(),read.getPrefMap()),read.getBouchon()) ;
             s.setValIntSelector(valselector);
-            s.setVarIntSelector(new StaticVarOrder(s.getVar(m.getDayVars())));
+            s.setVarIntSelector(new StaticVarOrder(s, s.getVar(m.getDayVars())));
 
             s.setTimeLimit(2000);
 
@@ -180,7 +179,7 @@ public class MaifPlanner {
         s = new CPSolver();
         s.read(m);
         s.setValIntSelector(valselector);
-        s.setVarIntSelector(new StaticVarOrder(s.getVar(m.getDayVars())));
+        s.setVarIntSelector(new StaticVarOrder(s, s.getVar(m.getDayVars())));
 
         if (s.solve() == Boolean.TRUE)
         {

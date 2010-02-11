@@ -24,6 +24,7 @@ package choco.cp.solver.constraints.global.scheduling;
 import static choco.cp.solver.SettingType.OVERLOAD_CHECKING;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
@@ -36,10 +37,10 @@ public class AltDisjunctive extends Disjunctive {
 
 	protected final int nbRequired;
 	
-	public AltDisjunctive(final String name, final TaskVar[] taskvars,final IntDomainVar[] usages, final IntDomainVar makespan) {
-		super(name, taskvars, makespan, usages);
+	public AltDisjunctive(final String name, final TaskVar[] taskvars, final IntDomainVar[] usages, final IntDomainVar makespan, Solver solver) {
+		super(solver, name, taskvars, makespan, usages);
 		nbRequired = computeNbRequired();
-		rules = new AltDisjRules(rtasks);
+		rules = new AltDisjRules(rtasks, solver.getEnvironment());
 	}
 
 	

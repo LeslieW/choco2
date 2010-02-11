@@ -65,16 +65,13 @@ public class Equation extends AbstractLargeRealSConstraint {
     return sb.toString();
   }
 
-
-
-  public Object clone() throws CloneNotSupportedException {
-    Equation newc = (Equation) super.clone();
-    newc.initEquation(this.solver, this.exp, this.cste);
-    return newc;
-  }
+//  public Object clone() throws CloneNotSupportedException {
+//    Equation newc = (Equation) super.clone();
+//    newc.initEquation(this.solver, this.exp, this.cste);
+//    return newc;
+//  }
 
   public void initEquation(Solver solver, RealExp exp, RealInterval cste) {
-    this.solver = solver;
     this.cste = cste;
     this.exp = exp;
     boxedVars = new RealVar[vars.length];
@@ -172,7 +169,7 @@ public class Equation extends AbstractLargeRealSConstraint {
         var.silentlyAssign(unexplored[--idx]);
         depth = depths[idx];
       } else {
-        this.solver.getPropagationEngine().raiseContradiction(this, CONSTRAINT);
+        propagationEngine.raiseContradiction(this, CONSTRAINT);
       }
     }
 
@@ -240,19 +237,21 @@ public class Equation extends AbstractLargeRealSConstraint {
   // ==== Constraint properties ====
 
 public boolean isSatisfied() {
-    boolean ok = true;
-    this.solver.getEnvironment().worldPush();
-    try {
-      this.propagate();
-    } catch (ContradictionException e) {
-      ok = false;
-    }
-    this.solver.getEnvironment().worldPop();
-    return ok;
+//    boolean ok = true;
+//    this.solver.getEnvironment().worldPush();
+//    try {
+//      this.propagate();
+//    } catch (ContradictionException e) {
+//      ok = false;
+//    }
+//    this.solver.getEnvironment().worldPop();
+//    return ok;
+    //TODO : do a unplugged satisfaction checker
+    return false;
   }
 
   public boolean isConsistent() {
-    return false;  //To change body of implemented methods use File | Settings | File Templates.
+    return false;
   }
 
 

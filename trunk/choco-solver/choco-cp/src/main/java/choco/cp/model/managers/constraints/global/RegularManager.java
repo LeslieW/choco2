@@ -34,9 +34,9 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Set;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /*
  *  ______
@@ -62,13 +62,13 @@ public class RegularManager extends IntConstraintManager {
                 return knapsack(solver, vars, value, coefs);
             } else if (parameters instanceof Object[]) { // List of tuples, min and max lists
                 Object[] params = (Object[]) parameters;
-                return new Regular(new DFA((List<int[]>) params[0], (int[]) params[1], (int[]) params[2]), variables);
+                return new Regular(new DFA((List<int[]>) params[0], (int[]) params[1], (int[]) params[2]), variables, solver.getEnvironment());
             } else if (parameters instanceof List) { // List of tuples
-                return new Regular(new DFA((List<int[]>) parameters), variables);
+                return new Regular(new DFA((List<int[]>) parameters), variables, solver.getEnvironment());
             } else if (parameters instanceof DFA) { // Direct DFA
-                return new Regular((DFA) parameters, variables);
+                return new Regular((DFA) parameters, variables, solver.getEnvironment());
             } else if (parameters instanceof String) { // Regexp
-                return new Regular(new DFA((String) parameters, vars.length), variables);
+                return new Regular(new DFA((String) parameters, vars.length), variables, solver.getEnvironment());
             }
         }
         throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
@@ -150,7 +150,7 @@ public class RegularManager extends IntConstraintManager {
                 ints.add(G.length + i - 1);
             }
             DFA dfa = new DFA(t, ints, ints.get(0));
-            return new Regular(dfa, s.getVar(bools));
+            return new Regular(dfa, s.getVar(bools), s.getEnvironment());
         } else {
             return CPSolver.FALSE;// not satisfiable
         }

@@ -22,10 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular.planner;
 
+import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.memory.IStateInt;
 
 /**
  * Created by IntelliJ IDEA.
@@ -43,13 +44,13 @@ public class CenterVarSelec extends AbstractIntVarSelector {
     IStateInt lastl;
 
 
-    public CenterVarSelec(IntDomainVar[] vars)
+    public CenterVarSelec(IntDomainVar[] vars, IEnvironment environment)
     {
         this.l = true;
         this.vars = vars;
         center =   this.vars.length/2;
-        lastr = vars[0].getSolver().getEnvironment().makeInt(center);
-        lastl = vars[0].getSolver().getEnvironment().makeInt(center+1);
+        lastr = environment.makeInt(center);
+        lastl = environment.makeInt(center+1);
 
 
 

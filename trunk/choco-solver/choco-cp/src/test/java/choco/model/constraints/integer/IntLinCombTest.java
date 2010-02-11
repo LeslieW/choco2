@@ -354,7 +354,7 @@ public class IntLinCombTest {
         m.addConstraint(eq(scalar(a, zeroCoef), 0));
         s.read(m);
         s.solve();
-        System.out.println(s.pretty());
+        LOGGER.info(s.pretty());
         assertTrue(s.isFeasible());
     }
     
@@ -365,7 +365,7 @@ public class IntLinCombTest {
         m.addConstraint(eq(scalar(a, zeroCoef), 0));
         s.read(m);
         s.solve();
-        System.out.println(s.pretty());
+        LOGGER.info(s.pretty());
         assertTrue(s.isFeasible());
     }
     

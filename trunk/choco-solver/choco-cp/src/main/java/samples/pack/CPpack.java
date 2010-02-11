@@ -168,7 +168,7 @@ public class CPpack {
 
 	public void makeBranching(Solver s) {
 		final PackSConstraint cstr = (PackSConstraint) s.getCstr(pack);
-		VarSelector varsel = new StaticVarOrder(s.getVar(modeler.bins));
+		VarSelector varsel = new StaticVarOrder(s, s.getVar(modeler.bins));
 		ValSelector valsel= branching==Branching.BASIC ? new MinVal() : new BestFit(cstr);
 		s.attachGoal( branching==Branching.DYN_RM ?
 					new PackDynRemovals(varsel,valsel,cstr) :

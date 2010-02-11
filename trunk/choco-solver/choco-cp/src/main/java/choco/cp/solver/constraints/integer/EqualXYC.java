@@ -194,8 +194,7 @@ public class EqualXYC extends AbstractBinIntSConstraint {
 	}
 
 	@Override
-	public final AbstractSConstraint opposite() {
-		Solver solver = getSolver();
+	public final AbstractSConstraint opposite(Solver solver) {
 		return (AbstractSConstraint) solver.neq(v0, solver.plus(v1, cste));
 	}
 

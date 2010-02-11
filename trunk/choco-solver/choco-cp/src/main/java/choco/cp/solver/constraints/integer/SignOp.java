@@ -25,6 +25,7 @@ package choco.cp.solver.constraints.integer;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -186,7 +187,7 @@ public class SignOp extends AbstractBinIntSConstraint {
 	}
 
 	@Override
-	public AbstractSConstraint opposite() {
+	public AbstractSConstraint opposite(Solver solver) {
 		return new SignOp(v0,v1,!same);
 	}
 

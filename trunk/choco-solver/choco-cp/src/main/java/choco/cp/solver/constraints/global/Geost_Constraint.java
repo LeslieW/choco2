@@ -38,24 +38,25 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 	/**
 	 * Creates a geost constraint with the given parameters.
 	 * @param vars Array of Variables for choco
-	 * @param k Dimension of the problem we are working with
-	 * @param objects A vector containing the objects (obj)
-	 * @param shiftedBoxes A vector containing the shifted boxes
-	 * @param ectr A vector containing the External Constraints in our problem
-	 * @param ctrlVs A list of controlling vectors used in the greedy mode
-	 */
+     * @param k Dimension of the problem we are working with
+     * @param objects A vector containing the objects (obj)
+     * @param shiftedBoxes A vector containing the shifted boxes
+     * @param ectr A vector containing the External Constraints in our problem
+     * @param ctrlVs A list of controlling vectors used in the greedy mode
+     * @param solver
+     */
 
-	public Geost_Constraint(IntDomainVar[] vars, int k, Vector<Obj> objects, Vector<ShiftedBox> shiftedBoxes, Vector<ExternalConstraint> ectr, Vector<int[]> ctrlVs, boolean memo_active, HashMap<Pair<Integer,Integer>,Boolean> included,
-                            boolean increment_)
+	public Geost_Constraint(IntDomainVar[] vars, int k, Vector<Obj> objects, Vector<ShiftedBox> shiftedBoxes, Vector<ExternalConstraint> ectr, Vector<int[]> ctrlVs, boolean memo_active, HashMap<Pair<Integer, Integer>, Boolean> included,
+                            boolean increment_, Solver solver)
 	{
 
         super(vars);
 
         cst = new Constants();
-		stp = new Setup(cst);
+		stp = new Setup(cst, solver.getPropagationEngine());
 		intermediateLayer = new IntermediateLayer();
 		externalLayer = new ExternalLayer(cst, stp);
-		geometricKernel = new GeometricKernel(cst, stp, externalLayer, intermediateLayer,memo_active,included);
+		geometricKernel = new GeometricKernel(cst, stp, externalLayer, intermediateLayer,memo_active,included, solver);
 
 		cst.setDIM(k);
         this.ctrlVs = ctrlVs;
@@ -68,7 +69,7 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 			oIDs[i] = objects.elementAt(i).getObjectId();
 
 
-        this.s = vars[0].getSolver();
+        this.s = solver;
         this.greedyMode = 1;
         this.increment=increment_;
 
@@ -82,21 +83,22 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 	/**
 	 * Creates a geost constraint with the given parameters.
 	 * @param vars Array of Variables for choco
-	 * @param k Dimension of the problem we are working with
-	 * @param objects A vector containing the objects (obj)
-	 * @param shiftedBoxes A vector containing the shifted boxes
-	 * @param ectr A vector containing the External Constraints in our problem
-	 */
+     * @param k Dimension of the problem we are working with
+     * @param objects A vector containing the objects (obj)
+     * @param shiftedBoxes A vector containing the shifted boxes
+     * @param ectr A vector containing the External Constraints in our problem
+     * @param solver
+     */
 
-	public Geost_Constraint(IntDomainVar[] vars, int k, Vector<Obj> objects, Vector<ShiftedBox> shiftedBoxes, Vector<ExternalConstraint> ectr, boolean memo, HashMap<Pair<Integer,Integer>, Boolean> included)
+	public Geost_Constraint(IntDomainVar[] vars, int k, Vector<Obj> objects, Vector<ShiftedBox> shiftedBoxes, Vector<ExternalConstraint> ectr, boolean memo, HashMap<Pair<Integer, Integer>, Boolean> included, Solver solver)
 	{
         super(vars);
 
         cst = new Constants();
-		stp = new Setup(cst);
+		stp = new Setup(cst, solver.getPropagationEngine());
 		intermediateLayer = new IntermediateLayer();
 		externalLayer = new ExternalLayer(cst, stp);
-		geometricKernel = new GeometricKernel(cst, stp, externalLayer, intermediateLayer, memo, included);
+		geometricKernel = new GeometricKernel(cst, stp, externalLayer, intermediateLayer, memo, included, solver);
 
 		cst.setDIM(k);
 
@@ -108,7 +110,7 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 			oIDs[i] = objects.elementAt(i).getObjectId();
 
 
-        this.s = vars[0].getSolver();
+        this.s = solver;
 
 	}
     
@@ -126,7 +128,7 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 	}
 
 	private void filterWithGreedyMode() throws ContradictionException{
-        if (stp.opt.debug) System.out.println("Geost_Constraint:filterWithGreedyMode()");
+        if (stp.opt.debug) LOGGER.info("Geost_Constraint:filterWithGreedyMode()");
         s.worldPush();    //Starts a new branch in the search tree
         boolean result = false;
 
@@ -176,7 +178,7 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 
 
 	private void filterWithoutGreedyMode() throws ContradictionException{
-        if (stp.opt.debug) System.out.println("Geost_Constraint:filterWithoutGreedyMode()");
+        if (stp.opt.debug) LOGGER.info("Geost_Constraint:filterWithoutGreedyMode()");
         if(!geometricKernel.FilterCtrs(cst.getDIM(), oIDs, stp.getConstraints()))
 			this.fail();
 	}
@@ -198,9 +200,9 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 	public void propagate() throws ContradictionException {
 //        int l=vars.length;
 //        for (int i=0; i<l; i++)
-//            System.out.println("Geost_Constraint:propagate():vars["+i+"]:"+vars[i]+","+vars[i].getInf()+","+vars[i].getSup());
-//        System.out.println("----propagate");          ^
-        if (stp.opt.debug) System.out.println("GeostConstraint:propagate()");
+//            LOGGER.info("Geost_Constraint:propagate():vars["+i+"]:"+vars[i]+","+vars[i].getInf()+","+vars[i].getSup());
+//        LOGGER.info("----propagate");          ^
+        if (stp.opt.debug) LOGGER.info("GeostConstraint:propagate()");
 		filter();
 	}
 

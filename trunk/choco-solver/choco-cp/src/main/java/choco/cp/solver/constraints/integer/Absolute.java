@@ -25,6 +25,7 @@ package choco.cp.solver.constraints.integer;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.propagation.event.VarEvent;
@@ -311,7 +312,7 @@ public class Absolute extends AbstractBinIntSConstraint {
 		throw new UnsupportedOperationException("Absolute.isConsistent is not implemented!");
 	}
 
-	public AbstractSConstraint opposite() {
+	public AbstractSConstraint opposite(Solver solver) {
 		throw new UnsupportedOperationException("Absolute.opposite is not implemented!");
 	}
 

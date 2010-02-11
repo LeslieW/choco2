@@ -166,8 +166,7 @@ public final class NotEqualXY_C extends AbstractBinIntSConstraint {
 	}
 
 	@Override
-	public AbstractSConstraint opposite() {
-		final Solver solver = getSolver();
+	public AbstractSConstraint opposite(Solver solver) {
 		return (AbstractSConstraint) solver.eq(solver.plus(v0, v1), cste);
 	}
 

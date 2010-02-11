@@ -23,30 +23,21 @@
 package samples.seminar.binpacking;
 
 
-import static choco.Choco.cumulativeMax;
-import static choco.Choco.eq;
-import static choco.Choco.geq;
-import static choco.Choco.leq;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.makeTaskVarArray;
-import static choco.Choco.scalar;
-import static choco.Choco.sum;
-import static java.text.MessageFormat.format;
-
-import java.util.Random;
-import java.util.logging.Logger;
-
-import samples.pack.CPpack;
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.Solver;
+import samples.pack.CPpack;
+
+import static java.text.MessageFormat.format;
+import java.util.Random;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -128,7 +119,7 @@ public class ExBinPacking {
 
             Solver s = new CPSolver();
             s.read(m);
-            s.setVarIntSelector(new StaticVarOrder(s.getVar(vars)));
+            s.setVarIntSelector(new StaticVarOrder(s, s.getVar(vars)));
             s.setValIntIterator(new DecreasingDomain());
             s.solve();
             // Print of solution
@@ -189,7 +180,7 @@ public class ExBinPacking {
         s.monitorNodeLimit(true);
         s.monitorTimeLimit(false);
         s.monitorFailLimit(false);
-        s.setVarIntSelector(new StaticVarOrder(s.getVar(branchvars)));
+        s.setVarIntSelector(new StaticVarOrder(s, s.getVar(branchvars)));
         s.minimize(s.getVar(obj), false);
         LOGGER.info("------------------------ " + (s.getVar(obj).getVal() + 1) + " bins");
         if (s.isFeasible() == Boolean.TRUE) {

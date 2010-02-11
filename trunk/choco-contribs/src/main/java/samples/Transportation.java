@@ -1,20 +1,12 @@
 package samples;
 
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Level;
-
-import samples.Examples.PatternExample;
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.integer.IntLinComb;
 import choco.cp.solver.constraints.integer.IntLinComb2;
 import choco.cp.solver.constraints.integer.IntSum;
 import choco.cp.solver.search.integer.valselector.MaxVal;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.comparator.IPermutation;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.MathUtils;
@@ -25,6 +17,11 @@ import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import samples.Examples.PatternExample;
+
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Level;
 
 /**
  * Assume that a product is to be shipped in the amounts u1, ... , um, from each of m shipping origins, and received in amounts v1, ... , vn, by each of n shipping destinations. 
@@ -135,7 +132,7 @@ public class Transportation extends PatternExample {
 		final IntDomainVar[] sdvars = new IntDomainVar[dvars.size()];
 		final IPermutation permutation = PermutationUtils.getSortingPermuation( ArrayUtils.flatten(costs));
 		permutation.applyPermutation(dvars, sdvars);
-		_s.setVarIntSelector(new StaticVarOrder(sdvars));
+		_s.setVarIntSelector(new StaticVarOrder(_s, sdvars));
 		_s.setValIntSelector(new MaxVal());
 	}
 

@@ -24,6 +24,7 @@ package choco.kernel.solver.constraints.global.scheduling;
 
 import choco.kernel.common.IDotty;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
 /**
@@ -39,6 +40,6 @@ public interface IPrecedenceNetwork extends IDotty {
 		
 	void firePrecedenceAdded(TaskVar t1, TaskVar t2) throws ContradictionException;
 	
-	void addStaticPrecedence(TaskVar t1, TaskVar t2);
+	void addStaticPrecedence(Solver solver, TaskVar t1, TaskVar t2);
 }
 

@@ -25,12 +25,6 @@ import java.util.Iterator;
  */
 public final class TaskVar extends AbstractTask implements Var, ITaskVariable<IntDomainVar>, IIndex {
 
-
-	/**
-	 * The (optimization or decision) model to which the entity belongs.
-	 */
-	public Solver solver;
-
 	protected final IntDomainVar start;
 
 	protected final IntDomainVar end;
@@ -51,12 +45,11 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 	 */
 	public TaskVar(final Solver solver, final int id, final String name, final IntDomainVar start, final IntDomainVar end, final IntDomainVar duration) {
 		super(id, name);
-		this.solver =solver;
 		this.start = start;
 		this.end = end;
 		this.duration = duration;
 		IEnvironment env = solver.getEnvironment();
-		constraints = env.<SConstraint>makePartiallyStoredVector();
+		constraints = env.makePartiallyStoredVector();
         index = solver.getIndexfactory().getIndex();
 	}
 
@@ -261,16 +254,6 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 			}
 		};
 
-	}
-	
-	@Override
-	public void setSolver(Solver solver) {
-		this.solver = solver;
-	}
-
-	@Override
-	public Solver getSolver() {
-		return solver;
 	}
 
 	@Override

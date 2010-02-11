@@ -5,6 +5,7 @@
 package choco.cp.solver.constraints.set;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractLargeSetSConstraint;
@@ -24,7 +25,7 @@ public class SetNaryUnion extends AbstractLargeSetSConstraint {
     protected IStateInt[] occurCpt;
     protected final static int UNION_SET_INDEX = 0;
     
-    public SetNaryUnion(SetVar[] vars) {
+    public SetNaryUnion(SetVar[] vars, IEnvironment environment) {
         super(vars);
         unionSet = vars[UNION_SET_INDEX];
         setVars = Arrays.copyOfRange(vars, 1, vars.length);
@@ -41,7 +42,7 @@ public class SetNaryUnion extends AbstractLargeSetSConstraint {
         for (int v : allValues.keySet())  max = (v > max ? v : max);
         occurCpt = new IStateInt[max+1];
         for (int v : allValues.keySet()) {
-            occurCpt[v] = getSolver().getEnvironment().makeInt();
+            occurCpt[v] = environment.makeInt();
             occurCpt[v].set(allValues.get(v));
         }
     }

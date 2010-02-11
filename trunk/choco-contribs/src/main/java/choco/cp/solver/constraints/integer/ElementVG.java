@@ -10,6 +10,7 @@ package choco.cp.solver.constraints.integer;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.StringUtils;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
@@ -21,9 +22,10 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public class ElementVG extends AbstractLargeIntSConstraint {
   protected IStateInt[] lastInf,lastSup; 
-  
-  public ElementVG(IntDomainVar[] vars, int offset) {
+  private final IEnvironment environment;
+  public ElementVG(IntDomainVar[] vars, int offset, IEnvironment environment) {
     super(vars);
+      this.environment = environment;
     this.cste = offset;
     initElementV();
   }
@@ -228,8 +230,8 @@ public class ElementVG extends AbstractLargeIntSConstraint {
     for (int i=0;i<n-2;i++) {		  
     	minval = Math.min(minval, vars[i].getInf());
     	maxval = Math.max(maxval, vars[i].getSup());
-    	lastInf[i] = this.getSolver().getEnvironment().makeInt(vars[i].getInf());		  
-    	lastSup[i] = this.getSolver().getEnvironment().makeInt(vars[i].getSup());	      
+    	lastInf[i] = environment.makeInt(vars[i].getInf());
+    	lastSup[i] = environment.makeInt(vars[i].getSup());
     }
     offset = minval;
     heigth = maxval - offset + 1;
@@ -305,26 +307,26 @@ public class ElementVG extends AbstractLargeIntSConstraint {
 	  }
 	  
 	  /* Elegage des bornes d'Index et enregistrement des premieres valeurs */
-	  lastInf[n-2] = this.getSolver().getEnvironment().makeInt(idxVar.getInf());		  
+	  lastInf[n-2] = environment.makeInt(idxVar.getInf());
 	  if (n < idxVar.getSup()) {
 		  idxVar.updateSup(n, cIndices[n - 2]);
-		  lastSup[n-2] = this.getSolver().getEnvironment().makeInt(n);
+		  lastSup[n-2] = environment.makeInt(n);
 	  } else {
-		  lastSup[n-2] = this.getSolver().getEnvironment().makeInt(idxVar.getSup());
+		  lastSup[n-2] = environment.makeInt(idxVar.getSup());
 	  }
 	  
 	  /* Elegage des bornes de Var et enregistrement des premieres valeurs */
 	  if (offset > valVar.getInf()) {
 		  valVar.updateInf(offset, cIndices[n - 1]);
-		  lastInf[n-1] = this.getSolver().getEnvironment().makeInt(offset);
+		  lastInf[n-1] = environment.makeInt(offset);
 	  } else {
-		  lastInf[n-1] = this.getSolver().getEnvironment().makeInt(valVar.getInf());
+		  lastInf[n-1] = environment.makeInt(valVar.getInf());
 	  }
 	  if (valVar.getSup() > (heigth + offset - 1)) {
 		  valVar.updateSup(heigth + offset - 1, cIndices[n - 1]);
-		  lastSup[n-1] = this.getSolver().getEnvironment().makeInt(heigth + offset - 1);
+		  lastSup[n-1] = environment.makeInt(heigth + offset - 1);
 	  } else {
-		  lastSup[n-1] = this.getSolver().getEnvironment().makeInt(valVar.getSup());
+		  lastSup[n-1] = environment.makeInt(valVar.getSup());
 	  }
 	  	  
 	  /* update Var via Tableau = cas 1-0-0 :

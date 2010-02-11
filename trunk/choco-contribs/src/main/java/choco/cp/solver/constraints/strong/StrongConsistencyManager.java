@@ -22,12 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.strong;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.kernel.model.constraints.ComponentConstraint;
@@ -42,6 +36,12 @@ import choco.kernel.solver.constraints.integer.IntSConstraint;
 import choco.kernel.solver.constraints.reified.BoolNode;
 import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class StrongConsistencyManager extends IntConstraintManager {
 
@@ -136,7 +136,7 @@ public class StrongConsistencyManager extends IntConstraintManager {
     @Override
     public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         SConstraint c = makeConstraint(solver, variables, parameters, options);
-        SConstraint opp = c.opposite();
+        SConstraint opp = c.opposite(solver);
         return new SConstraint[]{c, opp};
     }
 

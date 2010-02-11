@@ -26,6 +26,7 @@ import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.BoundAllDiff;
 import choco.cp.solver.constraints.global.matching.AllDifferent;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -54,13 +55,13 @@ public class AllDifferentManager extends IntConstraintManager {
         if (solver instanceof CPSolver) {
             IntDomainVar[] variables = solver.getVar((IntegerVariable[]) vars);
             if (options.contains("cp:ac"))
-                return new AllDifferent(variables);
+                return new AllDifferent(variables, solver.getEnvironment());
             if (options.contains("cp:bc"))
                 return new BoundAllDiff(variables, true);
             if (options.contains("cp:clique"))
                 return new BoundAllDiff(variables, false);
 
-            return defaultDetection(variables);
+            return defaultDetection(variables, solver.getEnvironment());
         }
         throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
     }
@@ -76,9 +77,10 @@ public class AllDifferentManager extends IntConstraintManager {
     /**
      * make a choice if the user didn't specify the type of consistency desired
      * @param vars
+     * @param environment
      * @return
      */
-    public SConstraint defaultDetection(IntDomainVar[] vars) {
+    public SConstraint defaultDetection(IntDomainVar[] vars, IEnvironment environment) {
             int maxdszise = 0;
             int nbnoninstvar = 0;
             boolean holes = false;
@@ -102,7 +104,7 @@ public class AllDifferentManager extends IntConstraintManager {
                       (nbnoninstvar < vars.length && nbnoninstvar < 20)))) {
                 //clique containing relatively small domains (less than 30) and
                 //instantiated variables (so less than 20 real variables)
-                return new AllDifferent(vars);
+                return new AllDifferent(vars, environment);
             }
             //return new AllDifferent(vars);
             return new BoundAllDiff(vars,true);

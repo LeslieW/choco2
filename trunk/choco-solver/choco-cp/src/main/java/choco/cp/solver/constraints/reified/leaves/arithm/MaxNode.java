@@ -78,7 +78,7 @@ public class MaxNode extends INode implements ArithmNode {
 		IntDomainVar[] tmpVars = new IntDomainVar[vs.length + 1];
         tmpVars[0] = vmax;
         System.arraycopy(vs, 0, tmpVars, 1, vs.length);
-        s.post(new MaxOfAList(tmpVars));
+        s.post(new MaxOfAList(s.getEnvironment(), tmpVars));
 		return vmax;
 	}
 

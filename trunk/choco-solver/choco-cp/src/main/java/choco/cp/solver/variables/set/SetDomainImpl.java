@@ -23,8 +23,9 @@
 package choco.cp.solver.variables.set;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
+import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.variables.set.SetDomain;
 import choco.kernel.solver.variables.set.SetSubDomain;
 import choco.kernel.solver.variables.set.SetVar;
@@ -39,11 +40,7 @@ import java.util.Arrays;
  */
 public final class SetDomainImpl implements SetDomain {
 
-    /**
-     * The (optimization or decision) model to which the entity belongs.
-     */
-
-  public Solver solver;
+  protected final PropagationEngine propagationEngine;
 
   protected SetVar variable;
   /**
@@ -59,21 +56,20 @@ public final class SetDomainImpl implements SetDomain {
 
 //    protected SetOpenDomainIterator openiterator;
 
-  public SetDomainImpl(SetVar v, int a, int b) {
+  public SetDomainImpl(SetVar v, int a, int b, IEnvironment environment, PropagationEngine propagationEngine) {
     variable = v;
-    solver = v.getSolver();
     capacity = b - a + 1;           // number of entries
-    kernel = new BitSetEnumeratedDomain(v, a, b, false);
-    enveloppe = new BitSetEnumeratedDomain(v, a, b, true);
-
+    kernel = new BitSetEnumeratedDomain(v, a, b, false, environment);
+    enveloppe = new BitSetEnumeratedDomain(v, a, b, true, environment);
+    this.propagationEngine = propagationEngine;
   }
 
-  public SetDomainImpl(SetVar v, int[] sortedValues) {
+  public SetDomainImpl(SetVar v, int[] sortedValues, IEnvironment environment, PropagationEngine propagationEngine) {
     variable = v;
-    solver = v.getSolver();
     capacity = sortedValues.length;           // number of entries
-    kernel = new BitSetEnumeratedDomain(v, sortedValues, false);
-    enveloppe = new BitSetEnumeratedDomain(v, sortedValues, true);
+    kernel = new BitSetEnumeratedDomain(v, sortedValues, false, environment);
+    enveloppe = new BitSetEnumeratedDomain(v, sortedValues, true, environment);
+      this.propagationEngine = propagationEngine;
   }
 
     /**
@@ -81,18 +77,20 @@ public final class SetDomainImpl implements SetDomain {
      * @param v
      * @param sortedValues values of the set var. If null or lenght=0 => empty set
      * @param constant if true, build a constant set var
+     * @param environment
+     * @param propagationEngine
      */
-  public SetDomainImpl(SetVar v, int[] sortedValues, boolean constant) {
+  public SetDomainImpl(SetVar v, int[] sortedValues, boolean constant, IEnvironment environment, PropagationEngine propagationEngine) {
       variable = v;
-      solver = v.getSolver();
       capacity = sortedValues.length;           // number of entries
-      if (sortedValues!=null && sortedValues.length > 0) {
-          kernel = new BitSetEnumeratedDomain(v, sortedValues, constant);
-          enveloppe = new BitSetEnumeratedDomain(v, sortedValues, true);
+      if (sortedValues.length > 0) {
+          kernel = new BitSetEnumeratedDomain(v, sortedValues, constant, environment);
+          enveloppe = new BitSetEnumeratedDomain(v, sortedValues, true, environment);
       } else {
-          kernel = BitSetEnumeratedDomain.empty(v);
-          enveloppe = BitSetEnumeratedDomain.empty(v);
+          kernel = BitSetEnumeratedDomain.empty(v, environment);
+          enveloppe = BitSetEnumeratedDomain.empty(v, environment);
       }
+        this.propagationEngine = propagationEngine;
   }
 
 
@@ -174,9 +172,9 @@ public final class SetDomainImpl implements SetDomain {
   public boolean remFromEnveloppe(int x, int idx) throws ContradictionException {
     if (_remFromEnveloppe(x, idx)) {
       if (isInstantiated())
-        solver.getPropagationEngine().postInstSet(variable, SetVarEvent.NOCAUSE);
+        propagationEngine.postInstSet(variable, SetVarEvent.NOCAUSE);
       else
-        solver.getPropagationEngine().postRemEnv(variable, idx);
+        propagationEngine.postRemEnv(variable, idx);
       return true;
     }
     return false;
@@ -186,9 +184,9 @@ public final class SetDomainImpl implements SetDomain {
   public boolean addToKernel(int x, int idx) throws ContradictionException {
     if (_addToKernel(x,idx)) {
       if (isInstantiated())
-        solver.getPropagationEngine().postInstSet(variable, SetVarEvent.NOCAUSE);
+        propagationEngine.postInstSet(variable, SetVarEvent.NOCAUSE);
       else
-        solver.getPropagationEngine().postAddKer(variable, idx);
+        propagationEngine.postAddKer(variable, idx);
       return true;
     }
     return false;
@@ -196,7 +194,7 @@ public final class SetDomainImpl implements SetDomain {
 
   public boolean instantiate(int[] x, int idx) throws ContradictionException {
     if (_instantiate(x, idx)) {
-      solver.getPropagationEngine().postInstSet(variable, idx);
+      propagationEngine.postInstSet(variable, idx);
       return true;
     } else
       return false;
@@ -205,7 +203,7 @@ public final class SetDomainImpl implements SetDomain {
   // Si promotion, il faut annuler la cause
 	protected boolean _remFromEnveloppe(int x, int idx) throws ContradictionException {
 		if (kernel.contains(x)) {
-			this.getSolver().getPropagationEngine().raiseContradiction(idx, variable);
+			propagationEngine.raiseContradiction(idx, variable);
             return true; // just for compilation
 		} else if (enveloppe.contains(x)) {
 			enveloppe.remove(x);
@@ -217,7 +215,7 @@ public final class SetDomainImpl implements SetDomain {
 	// Si promotion, il faut annuler la cause
 	protected boolean _addToKernel(int x, int idx) throws ContradictionException {
 		if (!enveloppe.contains(x)) {
-		    this.getSolver().getPropagationEngine().raiseContradiction(idx, variable);
+		    propagationEngine.raiseContradiction(idx, variable);
       return true; // just for compilation
 		} else if (!kernel.contains(x)) {
 			kernel.add(x);
@@ -229,13 +227,13 @@ public final class SetDomainImpl implements SetDomain {
 	protected boolean _instantiate(int[] values, int idx) throws ContradictionException {
 		if (isInstantiated()) {
 			if (!isInstantiatedTo(values)) {
-				this.getSolver().getPropagationEngine().raiseContradiction(idx, variable);
+				propagationEngine.raiseContradiction(idx, variable);
                 return true; // just for compilation
 			} else
 				return true;
 		} else {
 			if (!canBeInstantiatedTo(values)) {
-				this.getSolver().getPropagationEngine().raiseContradiction(idx, variable);
+				propagationEngine.raiseContradiction(idx, variable);
                 return true; // just for compilation
 			} else {
 				for (int i = 0; i < values.length; i++) // TODO: ajouter un restrict(int[] val) dans le BitSetEnumeratedDomain
@@ -361,17 +359,5 @@ public final class SetDomainImpl implements SetDomain {
         throw new UnsupportedOperationException();
       }
     }
-  }
-
-     /**
-   * Retrieves the solver of the entity
-   */
-
-  public Solver getSolver() {
-    return solver;
-  }
-
-  public void setSolver(Solver solver) {
-    this.solver = solver;
   }
 }

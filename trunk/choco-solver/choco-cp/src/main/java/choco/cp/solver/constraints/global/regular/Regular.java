@@ -25,6 +25,7 @@ package choco.cp.solver.constraints.global.regular;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.IntEnumeration;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.structure.IndexedObject;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
@@ -68,9 +69,9 @@ public class Regular extends AbstractLargeIntSConstraint {
      */
     protected PropagationData sdata;
 
-    public Regular(DFA auto, IntDomainVar[] vs, int[] lbs, int[] dsize) {
+    public Regular(DFA auto, IntDomainVar[] vs, int[] lbs, int[] dsize, IEnvironment environment) {
         super(vs);
-        init(auto.lightGraph, lbs, dsize);
+        init(auto.lightGraph, lbs, dsize, environment);
     }
 
     /**
@@ -78,8 +79,9 @@ public class Regular extends AbstractLargeIntSConstraint {
      *
      * @param auto
      * @param vs
+     * @param environment
      */
-    public Regular(DFA auto, IntDomainVar[] vs) {
+    public Regular(DFA auto, IntDomainVar[] vs, IEnvironment environment) {
         super(vs);
         int[] offset = new int[vars.length];
         int[] sizes = new int[vars.length];
@@ -87,10 +89,10 @@ public class Regular extends AbstractLargeIntSConstraint {
             offset[i] = vars[i].getInf();
             sizes[i] = vars[i].getSup() - vars[i].getInf() + 1;
         }
-        init(auto.lightGraph, offset, sizes);
+        init(auto.lightGraph, offset, sizes, environment);
     }
 
-    public void init(LightLayeredDFA auto, int[] lbs, int[] dsize) {
+    public void init(LightLayeredDFA auto, int[] lbs, int[] dsize, IEnvironment environment) {
         autom = auto;
         cste = vars.length;
         start = new int[vars.length];
@@ -98,19 +100,19 @@ public class Regular extends AbstractLargeIntSConstraint {
         sizes = dsize;
         // nbNode = autom.getNbStates();
         nbNode = autom.getAutomateSize();
-        sdata = new PropagationData(this);
+        sdata = new PropagationData(this, environment);
         start[0] = 0;
         for (int i = 0; i < vars.length; i++) {
             if (i > 0) start[i] = start[i - 1] + sizes[i - 1];
         }
         Qij = new StoredIndexedBipartiteSet[start[cste - 1] + sizes[cste - 1]];
-        ArrayList<IndexedObject>[] qijvalues = new ArrayList[Qij.length];
+        ArrayList<IndexedObject>[] qijvalues = new <IndexedObject>ArrayList[Qij.length];
         for (int i = 0; i < qijvalues.length; i++) {
             qijvalues[i] = new ArrayList<IndexedObject>();
         }
         initQij(qijvalues);
         for (int i = 0; i < Qij.length; i++) {
-            Qij[i] = (StoredIndexedBipartiteSet) vars[0].getSolver().getEnvironment().makeBipartiteSet(qijvalues[i]);
+            Qij[i] = (StoredIndexedBipartiteSet)environment.makeBipartiteSet(qijvalues[i]);
         }
     }
 
@@ -471,18 +473,17 @@ public class Regular extends AbstractLargeIntSConstraint {
 
         protected int fstate;
 
-        public PropagationData(AbstractSConstraint ct) {
-            solver = ct.getSolver();
-            initDegree(autom.getAutomateSize(), ct);
+        public PropagationData(AbstractSConstraint ct, IEnvironment environment) {
+            initDegree(autom.getAutomateSize(), ct, environment);
         }
 
-        public void initDegree(int nbNode, AbstractSConstraint ct) {
+        public void initDegree(int nbNode, AbstractSConstraint ct, IEnvironment environment) {
             indeg = new IStateInt[nbNode];
             outdeg = new IStateInt[nbNode];
             fstate = nbNode - 1;
             for (int node = 0; node < nbNode; node++) {
-                indeg[node] = (ct.getSolver()).getEnvironment().makeInt(0);
-                outdeg[node] = (ct.getSolver()).getEnvironment().makeInt(0);
+                indeg[node] = environment.makeInt(0);
+                outdeg[node] = environment.makeInt(0);
             }
         }
 

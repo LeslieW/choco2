@@ -28,9 +28,9 @@ import choco.cp.solver.constraints.BitFlags;
 import choco.kernel.common.opres.AbstractNoSum;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
@@ -95,22 +95,17 @@ public class PackFiltering {
 
 	/**
 	 * Instantiates a new 1BP constraint.
-	 * @param assigned contains the set of items which are packed into the bin
-	 * @param loads the loads contains the load of the bin
+	 * @param environment
 	 */
-	public PackFiltering(IPackSConstraint cstr, BitFlags flags) {
+	public PackFiltering(IEnvironment environment, IPackSConstraint cstr, BitFlags flags) {
 		this.cstr = cstr;
 		this.sizes = cstr.getSizes();
 		this.loads = cstr.getLoads();
 		loadSum = new SumDataStruct(loads,computeTotalSize());
 		this.flags = flags;
+        availableBins = environment.makeBipartiteIntList(ArrayUtils.zeroToN( cstr.getNbBins()));
 	}
 
-	
-	protected final void setSolver(Solver solver) {
-		availableBins = solver.getEnvironment().makeBipartiteIntList(ArrayUtils.zeroToN( cstr.getNbBins()));
-	}
-	
 	/**
 	 * Compute the total size and check that sizes are constant.
 	 *

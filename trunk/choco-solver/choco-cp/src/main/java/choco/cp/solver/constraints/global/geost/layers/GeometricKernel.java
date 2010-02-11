@@ -8,15 +8,18 @@ import choco.cp.solver.constraints.global.geost.geometricPrim.Obj;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Point;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Region;
 import choco.cp.solver.constraints.global.geost.internalConstraints.*;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.objects.Pair;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import static java.text.MessageFormat.format;
 import java.util.HashMap;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 class MemoStore {
     public boolean active = false;
@@ -32,6 +35,8 @@ class MemoStore {
  */
 public class GeometricKernel {
 
+    public final static Logger LOGGER = ChocoLogging.getEngineLogger();
+
 	Constants cst;
 	Setup stp;
 	ExternalLayer externalLayer;
@@ -45,7 +50,7 @@ public class GeometricKernel {
     IntDomainVar[] E=null;
     IntDomainVar[] D=null;
     GeostNumeric engine=null;
-
+    private final Solver solver;
 
 
 
@@ -54,11 +59,12 @@ public class GeometricKernel {
 	 * IntermediateLayer class.
 	 *
 	 * @param c  The constants class
-	 * @param s  The Setup class
-	 * @param extrL
-	 * @param intermL
-	 */
-	public GeometricKernel(Constants c, Setup s, ExternalLayer extrL, IntermediateLayer intermL, boolean memo_, HashMap<Pair<Integer,Integer>,Boolean> included_)
+     * @param s  The Setup class
+     * @param extrL
+     * @param intermL
+     * @param solver
+     */
+	public GeometricKernel(Constants c, Setup s, ExternalLayer extrL, IntermediateLayer intermL, boolean memo_, HashMap<Pair<Integer, Integer>, Boolean> included_, Solver solver)
 	{
 		cst = c;
 		stp = s;
@@ -72,11 +78,11 @@ public class GeometricKernel {
         memo.listObj = new Vector<Vector<Obj> >(0);
         memo.m = new HashMap<int[],Integer>();
         included=included_;
+        this.solver = solver;
 
 
 
-
-        System.out.println("memo_active="+memo_active);
+        LOGGER.info("memo_active="+memo_active);
     }
 
 	/**
@@ -286,7 +292,7 @@ public class GeometricKernel {
         stp.opt.propag_failed=false;
 
         if (stp.opt.try_propagation) {
-            stp.getSolver().getPropagationEngine().raiseContradiction(null, ContradictionException.Type.UNKNOWN);
+            stp.propagationEngine.raiseContradiction(null, ContradictionException.Type.UNKNOWN);
         }
 
 		return true;
@@ -332,7 +338,7 @@ public class GeometricKernel {
 
 	            // We call FilterObj with the fixed shape sid. To avoid the creation of another object we use worldPush and worldPop. Actually, by doing so, the object o
 				//is modified between worldPush() and worldPop() (where we collect the information we interested to : b, max, min) and restored into its state after worldPop
-				o.getCoord(0).getSolver().worldPushDuringPropagation();
+				solver.worldPushDuringPropagation();
 			    o.getShapeId().instantiate(sid, VarEvent.NOCAUSE);
 
 
@@ -346,7 +352,7 @@ public class GeometricKernel {
 						min[d] = o.getCoord(d).getInf();
 					}
 				}
-				o.getCoord(0).getSolver().worldPopDuringPropagation();
+				solver.worldPopDuringPropagation();
 
 				if (!b)
 					o.getShapeId().removeVal(sid, VarEvent.NOCAUSE);
@@ -4274,16 +4280,5 @@ public class GeometricKernel {
         return nonFix;
 
     }
-
-
-    /***Unit testing***************************/
-
-    public GeometricKernel(){} //for unit testing purposes
-
-    public int unitTesting() {
-
-        return 0;
-    }
-
 
 }

@@ -22,14 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.seminar.tsp;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -37,6 +33,11 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 
 public class MinSpanningTree extends AbstractLargeIntSConstraint {
@@ -47,7 +48,7 @@ public class MinSpanningTree extends AbstractLargeIntSConstraint {
                 Object[] p = (Object[]) parameters;
                 int[][] dist = (int[][])(p[0]);
                 IntDomainVar[] vars = solver.getVar(variables);
-                return new MinSpanningTree(vars, dist);
+                return new MinSpanningTree(vars, dist, solver.getEnvironment());
             }
 
             return null;
@@ -60,7 +61,7 @@ public class MinSpanningTree extends AbstractLargeIntSConstraint {
     protected IStateInt[][] dist;
     protected IStateInt lowerBound;
 
-    public MinSpanningTree(IntDomainVar[] allVars, int[][] dist) {
+    public MinSpanningTree(IntDomainVar[] allVars, int[][] dist, IEnvironment environment) {
         super(allVars);
         this.n = allVars.length - 1;
         this.s = new IntDomainVar[n];
@@ -69,10 +70,10 @@ public class MinSpanningTree extends AbstractLargeIntSConstraint {
         this.dist = new IStateInt[n][n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                this.dist[i][j] = s[i].getSolver().getEnvironment().makeInt(dist[i][j]);
+                this.dist[i][j] = environment.makeInt(dist[i][j]);
             }
         }
-        this.lowerBound = s[0].getSolver().getEnvironment().makeInt(0);
+        this.lowerBound = environment.makeInt(0);
     }
 
     public int arpm() {

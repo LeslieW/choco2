@@ -172,15 +172,6 @@ public Object clone() throws CloneNotSupportedException {
     return true;
   }
 
-  /**
-   * Returns the index associated with this constraint by the model.
-   * @return this constraint index according to the model
-   */
-  public int getSelfIndex() {
-    // TODO
-    return 0;
-  }
-
     @Override
     public SConstraintType getConstraintType() {
         return SConstraintType.REAL;

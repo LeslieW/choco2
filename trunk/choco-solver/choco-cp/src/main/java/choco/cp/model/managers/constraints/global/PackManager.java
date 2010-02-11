@@ -71,7 +71,7 @@ public class PackManager extends MixedConstraintManager {
 				IntDomainVar  nbNonEmpty = solver.getVar((IntegerVariable)variables[v3]);
 				BitFlags flags = new BitFlags();
 				flags.readPackOptions(options);
-				return new PackSConstraint(itemSets, loads, sizes, bins, nbNonEmpty, flags);
+				return new PackSConstraint(s.getEnvironment(), itemSets, loads, sizes, bins, nbNonEmpty, flags);
 			}
 		}
 		return fail("pack");

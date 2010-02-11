@@ -74,17 +74,17 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
    * @param a    Minimal value.
    * @param b    Maximal value.
    * @param full indicate if the initial bitSetDomain is full or empty (env or ker)
+   * @param environment
    */
 
-  public BitSetEnumeratedDomain(SetVar v, int a, int b, boolean full) {
-    final IEnvironment env = v.getSolver().getEnvironment();
-    capacity = b - a + 1;           // number of entries
+  public BitSetEnumeratedDomain(SetVar v, int a, int b, boolean full, IEnvironment environment) {
+      capacity = b - a + 1;           // number of entries
     this.offset = a;
     if (full)
-      size = env.makeInt(capacity);
+      size = environment.makeInt(capacity);
     else
-      size = env.makeInt(0);
-    contents = env.makeBitSet(capacity);
+      size = environment.makeInt(0);
+    contents = environment.makeBitSet(capacity);
     if (full) {
       for (int i = 0; i < capacity; i++)
         contents.set(i);
@@ -93,18 +93,17 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
         delatDom = new BitSetDeltaDomain(capacity, offset);
   }
 
-  public BitSetEnumeratedDomain(SetVar v, int[] sortedValues, boolean full) {
-      IEnvironment env = v.getSolver().getEnvironment();
+  public BitSetEnumeratedDomain(SetVar v, int[] sortedValues, boolean full, IEnvironment environment) {
       int a = sortedValues[0];
       int b = sortedValues[sortedValues.length - 1];
       capacity = b - a + 1;           // number of entries
       this.offset = a;
       if (full) {
-          size = env.makeInt(sortedValues.length);
+          size = environment.makeInt(sortedValues.length);
       } else {
-          size = env.makeInt(0);
+          size = environment.makeInt(0);
       }
-      contents = env.makeBitSet(capacity);
+      contents = environment.makeBitSet(capacity);
       if (full) {
           // TODO : could be improved...
           for (int sortedValue : sortedValues) {
@@ -118,13 +117,13 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
     /**
      * Specific constructor for set variable with empty domain
      * @param v
+     * @param environment
      */
-    private BitSetEnumeratedDomain(SetVar v) {
-      IEnvironment env = v.getSolver().getEnvironment();
-      capacity = 0;           // number of entries
+    private BitSetEnumeratedDomain(SetVar v, IEnvironment environment) {
+        capacity = 0;           // number of entries
       this.offset = 0;
-      size = env.makeInt(0);
-      contents = env.makeBitSet(capacity);
+      size = environment.makeInt(0);
+      contents = environment.makeBitSet(capacity);
 //      delatDom = new ChainDeltaDomain(capacity, offset);
         delatDom = new BitSetDeltaDomain(capacity, offset);
   }
@@ -133,10 +132,11 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
     /**
      * Specific constructor for empty set variable
      * @param v the set variable with no value
+     * @param environment
      * @return empty BitSetEnumeratedDomain
      */
-    public static BitSetEnumeratedDomain empty(SetVar v) {
-        return new BitSetEnumeratedDomain(v);
+    public static BitSetEnumeratedDomain empty(SetVar v, IEnvironment environment) {
+        return new BitSetEnumeratedDomain(v, environment);
     }
 
 

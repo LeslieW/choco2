@@ -1,12 +1,12 @@
 package choco.cp.solver.constraints.global.softscheduling;
 
-import java.util.Set;
-
 import choco.cp.model.managers.IntConstraintManager;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,7 +36,7 @@ public SConstraint makeConstraint(Solver solver,
               costVars[i] = solver.getVar(variables[i+nbTasks]);
           }
           IntDomainVar obj = solver.getVar(variables[variables.length-1]);
-          return new SoftCumulativeSum(starts,durations,heights,costVars,obj,wishCapa);
+          return new SoftCumulativeSum(starts,durations,heights,costVars,obj,wishCapa, solver);
 
       }
 }

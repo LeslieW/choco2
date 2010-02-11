@@ -23,6 +23,7 @@
 package choco.cp.solver.constraints.global.automata.costregular;
 
 
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
@@ -51,14 +52,14 @@ public class CostKnapsack extends CostRegular
         return nyv;
     }
 
-    public static CostKnapsack make(IntDomainVar[] vars, IntDomainVar bVar, IntDomainVar cVar, int[] cost, int[] gain)
+    public static CostKnapsack make(IntDomainVar[] vars, IntDomainVar bVar, IntDomainVar cVar, int[] cost, int[] gain, IEnvironment environment)
     {
-        return new CostKnapsack(vars,bVar,cVar,cost,gain);
+        return new CostKnapsack(vars,bVar,cVar,cost,gain, environment);
     }
 
-    protected CostKnapsack(IntDomainVar[] vars, IntDomainVar bVar, IntDomainVar cVar,  int[] cost, int[] gain)
+    protected CostKnapsack(IntDomainVar[] vars, IntDomainVar bVar, IntDomainVar cVar, int[] cost, int[] gain, IEnvironment environment)
     {
-        super(merge(vars,bVar,cVar),null,null);
+        super(merge(vars,bVar,cVar),null,null, environment);
         this.bVar = bVar;
         this.cVar = cVar;
         this.cost = cost;

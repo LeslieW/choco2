@@ -137,7 +137,7 @@ public class StretchPathManager extends IntConstraintManager {
 
                 DFA auto = new DFA(t, fs, vars.length);
 
-                return new Regular(auto, tmpVars);
+                return new Regular(auto, tmpVars, solver.getEnvironment());
             }
         }
         throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");

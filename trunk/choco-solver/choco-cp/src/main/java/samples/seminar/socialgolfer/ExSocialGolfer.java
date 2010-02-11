@@ -177,7 +177,7 @@ public class ExSocialGolfer {
 
         Solver s = new CPSolver();
         s.read(m);
-        s.setVarIntSelector(new StaticVarOrder(s.getVar(staticvars)));
+        s.setVarIntSelector(new StaticVarOrder(s, s.getVar(staticvars)));
 
         s.setTimeLimit(120000);
 

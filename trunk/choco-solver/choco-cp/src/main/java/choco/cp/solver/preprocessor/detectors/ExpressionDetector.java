@@ -213,22 +213,22 @@ public class ExpressionDetector {
                 IntDomainVar[] tmpVars = new IntDomainVar[expr.getSubtree(0).getScope(s).length + 1];
                 tmpVars[0] = expr.getSubtree(1).getScope(s)[0];
                 System.arraycopy(expr.getSubtree(0).getScope(s), 0, tmpVars, 1, expr.getSubtree(0).getScope(s).length);
-                return new MinOfAList(tmpVars);
+                return new MinOfAList(tmpVars, s.getEnvironment());
             } else if (isMin(expr, 1, 0)) {
                 IntDomainVar[] tmpVars = new IntDomainVar[expr.getSubtree(1).getScope(s).length + 1];
                 tmpVars[0] = expr.getSubtree(0).getScope(s)[0];
                 System.arraycopy(expr.getSubtree(1).getScope(s), 0, tmpVars, 1, expr.getSubtree(1).getScope(s).length);
-                return new MinOfAList(tmpVars);
+                return new MinOfAList(tmpVars, s.getEnvironment());
             } else if (isMax(expr, 0, 1)) {
                 IntDomainVar[] tmpVars = new IntDomainVar[expr.getSubtree(0).getScope(s).length + 1];
                 tmpVars[0] = expr.getSubtree(1).getScope(s)[0];
                 System.arraycopy(expr.getSubtree(0).getScope(s), 0, tmpVars, 1, expr.getSubtree(0).getScope(s).length);
-                return new MaxOfAList(tmpVars);
+                return new MaxOfAList(s.getEnvironment(), tmpVars);
             } else if (isMax(expr, 1, 0)) {
                 IntDomainVar[] tmpVars = new IntDomainVar[expr.getSubtree(1).getScope(s).length + 1];
                 tmpVars[0] = expr.getSubtree(0).getScope(s)[0];
                 System.arraycopy(expr.getSubtree(1).getScope(s), 0, tmpVars, 1, expr.getSubtree(1).getScope(s).length);
-                return new MaxOfAList(tmpVars);
+                return new MaxOfAList(s.getEnvironment(), tmpVars);
             }
         }
         return null;

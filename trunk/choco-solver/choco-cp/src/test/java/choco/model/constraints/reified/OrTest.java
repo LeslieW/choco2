@@ -127,7 +127,7 @@ public class OrTest {
             Solver s2 = new CPSolver();
 
             IntegerVariable bin = makeBooleanVar("bin");
-            IntegerVariable[] bool = makeBooleanVarArray("b", 1+r.nextInt(20));
+            IntegerVariable[] bool = makeBooleanVarArray("b", 1+r.nextInt(10));
 
             Constraint c = reifiedOr(bin, bool);
 
@@ -213,7 +213,7 @@ public class OrTest {
             r = new Random(i);
             Model m1 = new CPModel();
             IntegerVariable[] bin = makeBooleanVarArray("bin", 1);
-            IntegerVariable[] bool = makeBooleanVarArray("b", 1+r.nextInt(15));
+            IntegerVariable[] bool = makeBooleanVarArray("b", 1+r.nextInt(10));
             IntegerVariable[] bools = ArrayUtils.append(bin, bool);
             Constraint c = reifiedOr(bin[0], bool);
             m1.addConstraint(c);

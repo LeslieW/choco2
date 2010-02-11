@@ -28,7 +28,6 @@ import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.After;
@@ -288,7 +287,7 @@ public class CutTest {
 
         SConstraint ct = s.neq(s.getVar(v1), s.getVar(v2));
         s.postCut(ct);
-        ((AbstractSConstraint) ct).delete();
+        s.eraseConstraint(ct);
 
         s.solveAll();
 

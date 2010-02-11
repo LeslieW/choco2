@@ -64,13 +64,13 @@ public class OccurrenceManager extends IntConstraintManager {
                 //noinspection SuspiciousSystemArraycopy
                 System.arraycopy(variables, 2, vars, 0, vars.length-1);
                 if(type == NOR){
-                    return new Occurrence(solver.getVar(vars), ((IntegerConstantVariable)variables[0]).getValue(), true, true);
+                    return new Occurrence(solver.getVar(vars), ((IntegerConstantVariable)variables[0]).getValue(), true, true, solver.getEnvironment());
                 }else
                 if(type == MIN){
-                    return new Occurrence(solver.getVar(vars), ((IntegerConstantVariable)variables[0]).getValue(), true, false);
+                    return new Occurrence(solver.getVar(vars), ((IntegerConstantVariable)variables[0]).getValue(), true, false, solver.getEnvironment());
                 }else
                 if(type == MAX){
-                    return new Occurrence(solver.getVar(vars), ((IntegerConstantVariable)variables[0]).getValue(), false, true);
+                    return new Occurrence(solver.getVar(vars), ((IntegerConstantVariable)variables[0]).getValue(), false, true, solver.getEnvironment());
                 }
             }
         }
@@ -109,13 +109,13 @@ public class OccurrenceManager extends IntConstraintManager {
                 IntDomainVar[] vars = ArrayUtils.append(solver.getVar(tvars), new IntDomainVar[]{Y});
 
                 if(type == NOR){
-                    solver.post(new Occurrence(vars, ((IntegerConstantVariable)variables[0]).getValue(), true, true));
+                    solver.post(new Occurrence(vars, ((IntegerConstantVariable)variables[0]).getValue(), true, true, solver.getEnvironment()));
                 }else
                 if(type == MIN){
-                    solver.post(new Occurrence(vars, ((IntegerConstantVariable)variables[0]).getValue(), true, false));
+                    solver.post(new Occurrence(vars, ((IntegerConstantVariable)variables[0]).getValue(), true, false, solver.getEnvironment()));
                 }else
                 if(type == MAX){
-                    solver.post(new Occurrence(vars, ((IntegerConstantVariable)variables[0]).getValue(), false, true));
+                    solver.post(new Occurrence(vars, ((IntegerConstantVariable)variables[0]).getValue(), false, true, solver.getEnvironment()));
                 }
                 cs[0] = solver.eq(Y, X);
                 cs[1] = solver.neq(Y, X);

@@ -11,6 +11,7 @@ package choco.cp.solver.constraints.integer;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.StringUtils;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
@@ -21,9 +22,12 @@ public class ElementG extends AbstractBinIntSConstraint {
   protected IStateInt lastIndexInf,lastIndexSup,lastVarInf,lastVarSup;  
   protected IStateInt[] domainSize;
   boolean verbose = true;
+  private final IEnvironment environment;
 
-  public ElementG(IntDomainVar index, int[] values, IntDomainVar var) {
+
+  public ElementG(IntDomainVar index, int[] values, IntDomainVar var, IEnvironment environment) {
 	    super(index, var);
+        this.environment = environment;
 	    System.out.println("elementG");
 	    this.lval = values;
 	    this.domainSize = new IStateInt[2];
@@ -260,29 +264,29 @@ public class ElementG extends AbstractBinIntSConstraint {
 	  /* Elegage des bornes d'Index et enregistrement des premieres valeurs pour LastIndex */
 	  if (this.v0.getInf() < 1) {
 		  this.v0.updateInf(1,this.cIdx0);
-		  this.lastIndexInf = this.getSolver().getEnvironment().makeInt(1);		  
+		  this.lastIndexInf = environment.makeInt(1);
 	  } else {
-		  this.lastIndexInf = this.getSolver().getEnvironment().makeInt(this.v0.getInf());		  
+		  this.lastIndexInf = environment.makeInt(this.v0.getInf());
 	  }
 	  if (this.lval.length < this.v0.getSup()) {
 		  this.v0.updateSup(this.lval.length, this.cIdx0);
-		  this.lastIndexSup = this.getSolver().getEnvironment().makeInt(this.lval.length);
+		  this.lastIndexSup = environment.makeInt(this.lval.length);
 	  } else {
-		  this.lastIndexSup = this.getSolver().getEnvironment().makeInt(this.v0.getSup());
+		  this.lastIndexSup = environment.makeInt(this.v0.getSup());
 	  }
 	  
 	  /* Elegage des bornes de Var et enregistrement des premieres valeurs pour LastVar */
 	  if (offset > this.v1.getInf()) {
 		  this.v1.updateInf(offset, this.cIdx1);
-		  this.lastVarInf = this.getSolver().getEnvironment().makeInt(offset);
+		  this.lastVarInf = environment.makeInt(offset);
 	  } else {
-		  this.lastVarInf = this.getSolver().getEnvironment().makeInt(this.v1.getInf());
+		  this.lastVarInf = environment.makeInt(this.v1.getInf());
 	  }
 	  if (this.v1.getSup() > (heigth + offset - 1)) {
 		  this.v1.updateSup(heigth + offset - 1, this.cIdx1);
-		  this.lastVarSup = this.getSolver().getEnvironment().makeInt(heigth + offset - 1);
+		  this.lastVarSup = environment.makeInt(heigth + offset - 1);
 	  } else {
-		  this.lastVarSup = this.getSolver().getEnvironment().makeInt(this.v1.getSup());
+		  this.lastVarSup = environment.makeInt(this.v1.getSup());
 	  }
 	  
 	  /* update Var via Tableau = cas 1-0-0 :
@@ -294,8 +298,8 @@ public class ElementG extends AbstractBinIntSConstraint {
 		  }
 	  }
 
-	  this.domainSize[0] = this.getSolver().getEnvironment().makeInt(v0DomainSize);
-	  this.domainSize[1] = this.getSolver().getEnvironment().makeInt(v1DomainSize);
+	  this.domainSize[0] = environment.makeInt(v0DomainSize);
+	  this.domainSize[1] = environment.makeInt(v1DomainSize);
 	  if (verbose) {
 		  System.out.println("update initial sortie var : "+this.v0.pretty()+"var1 : "+this.v1.pretty()+" v1Ds "+v1DomainSize+" v0Ds "+v0DomainSize);
 	  }

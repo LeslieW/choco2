@@ -1,10 +1,6 @@
 package choco.kernel.common.util.tools;
 
 import static choco.Choco.makeBooleanVar;
-
-import java.util.List;
-import java.util.ListIterator;
-
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -15,6 +11,9 @@ import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
+
+import java.util.List;
+import java.util.ListIterator;
 
 public final class VariableUtils {
 
@@ -229,11 +228,9 @@ public final class VariableUtils {
     	return makeBooleanVar("dir-"+t1.getName()+"-"+t2.getName(), boolOptions);
     }
     
-    public static IntDomainVar createDirectionVar(TaskVar t1, TaskVar t2) {
+    public static IntDomainVar createDirectionVar(Solver solver, TaskVar t1, TaskVar t2) {
     	String name = "dir-"+t1.getName()+"-"+t2.getName();
-    	return t1.getSolver() == null ? 
-    			( t2.getSolver() == null ? null : t2.getSolver().createBooleanVar(name) )
-    			: t1.getSolver().createBooleanVar(name);
+    	return solver.createBooleanVar(name);
     }
     
     public static IntegerVariable[] getStartVars(TaskVariable... tasks) {

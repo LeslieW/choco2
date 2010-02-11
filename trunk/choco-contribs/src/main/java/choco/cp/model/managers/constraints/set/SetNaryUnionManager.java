@@ -4,8 +4,6 @@
  */
 package choco.cp.model.managers.constraints.set;
 
-import java.util.Set;
-
 import choco.cp.model.managers.SetConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.set.SetNaryUnion;
@@ -14,6 +12,8 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 
+import java.util.Set;
+
 public class SetNaryUnionManager extends SetConstraintManager {
 
     
@@ -21,7 +21,7 @@ public class SetNaryUnionManager extends SetConstraintManager {
     public SConstraint makeConstraint(Solver solver, SetVariable[] variables,
             Object parameters, Set<String> options) {
         if (solver instanceof CPSolver) {
-            return new SetNaryUnion(solver.getVar((SetVariable[])variables));
+            return new SetNaryUnion(solver.getVar((SetVariable[])variables), solver.getEnvironment());
         }
         throw new ModelException("Could not found implementation for setNaryUnion !");
     }

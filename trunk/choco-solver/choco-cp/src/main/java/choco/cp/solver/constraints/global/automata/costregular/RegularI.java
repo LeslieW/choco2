@@ -22,12 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.automata.costregular;
 
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Set;
-
 import choco.cp.model.managers.IntConstraintManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -35,6 +32,10 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Set;
 
 
 /**
@@ -112,19 +113,22 @@ public class RegularI extends AbstractLargeIntSConstraint
      */
     private int lastPropagatedWorld;
 
+    private final IEnvironment environment;
+
 
     /**
      * Constuct a new constraint RegularI
      * @param vars Variables that must respect the sequence allowed by the automaton
      * @param auto Automaton that describes the allowed tuples.
+     * @param solver
      */
-    public RegularI(IntDomainVar[] vars, Automaton auto)
+    public RegularI(IntDomainVar[] vars, Automaton auto, Solver solver)
     {
         super(vars);
 
         this.automaton = auto;
         this.nbNodes = automaton.size();
-
+        this.environment = solver.getEnvironment();
 
         this.start = new int[vars.length];
         this.size = new int[vars.length];
@@ -145,8 +149,8 @@ public class RegularI extends AbstractLargeIntSConstraint
         Q = new DLList[totalSize];
         outarc = new DLList[(nbNodes+1)*vars.length];
         inarc = new DLList[(nbNodes+1)*(vars.length)];
-        outSave = new DLList[vars[0].getSolver().getNbIntVars()+2][];
-        outSave = new DLList[vars[0].getSolver().getNbIntVars()+2][];
+        outSave = new DLList[solver.getNbIntVars()+2][];
+        outSave = new DLList[solver.getNbIntVars()+2][];
 
     }
 
@@ -155,10 +159,11 @@ public class RegularI extends AbstractLargeIntSConstraint
      * Constuct a new constraint RegularI
      * @param vars Variables that must respect the sequence allowed by the automaton
      * @param regexp Regular expression, equivalent to a DFA, that describes the allowed tuples.
+     * @param solver
      */
-    public RegularI(IntDomainVar[] vars, String regexp)
+    public RegularI(IntDomainVar[] vars, String regexp, Solver solver)
     {
-        this(vars,new Automaton(regexp));
+        this(vars,new Automaton(regexp), solver);
     }
 
 
@@ -168,7 +173,7 @@ public class RegularI extends AbstractLargeIntSConstraint
      */
     private int getCurrentWorld()
     {
-        return vars[0].getSolver().getEnvironment().getWorldIndex();
+        return environment.getWorldIndex();
     }
 
 
@@ -995,7 +1000,7 @@ public class RegularI extends AbstractLargeIntSConstraint
             {
                 Automaton auto = (Automaton) parameters;
                 IntDomainVar[] vs = solver.getVar((IntegerVariable[]) variables);
-                return new RegularI(vs,auto);
+                return new RegularI(vs,auto, solver);
 
             }
             return null;

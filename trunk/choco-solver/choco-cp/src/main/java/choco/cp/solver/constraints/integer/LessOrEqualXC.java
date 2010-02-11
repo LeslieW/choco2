@@ -123,8 +123,7 @@ public final class LessOrEqualXC extends AbstractUnIntSConstraint {
 	}
 
 	@Override
-	public AbstractSConstraint opposite() {
-		final Solver solver = getSolver();
+	public AbstractSConstraint opposite(Solver solver) {
 		return (AbstractSConstraint) solver.gt(v0, cste);
 	}
 

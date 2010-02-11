@@ -25,7 +25,6 @@ package choco.cp.solver.constraints.integer.soft;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.matching.AllDifferent;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.integer.IntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -83,7 +82,7 @@ public class SoftTest {
         }
         IntDomainVar dist = s.createBooleanVar("dist");
 
-        IntSConstraint allDiff = new AllDifferent(vars);
+        IntSConstraint allDiff = new AllDifferent(vars, s.getEnvironment());
         SoftIntSConstraint softC = new SoftIntSConstraint(dist, allDiff);
 
         s.post(softC);
@@ -104,7 +103,7 @@ public class SoftTest {
         }
 
         int k =0;
-        IntSConstraint allDiff = new AllDifferent(vars);
+        IntSConstraint allDiff = new AllDifferent(vars, s.getEnvironment());
         SoftIntSConstraint softC = new SoftIntSConstraint(dists[k++], allDiff);
         s.post(softC);
 

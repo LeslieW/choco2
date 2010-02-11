@@ -86,8 +86,8 @@ public class ChannelingManager extends IntConstraintManager {
                 } else if(DOMAIN_CHANNELING.equals(type)){
                 	return new DomainChanneling(
                 			VariableUtils.getIntVar(solver, variables, 0, variables.length - 1), 
-                			solver.getVar(variables[variables.length - 1])
-                	);
+                			solver.getVar(variables[variables.length - 1]),
+                            solver.getEnvironment());
                 }
             }
         }

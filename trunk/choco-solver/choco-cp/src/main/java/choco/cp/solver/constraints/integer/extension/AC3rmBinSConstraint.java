@@ -27,10 +27,11 @@ import choco.cp.solver.variables.integer.AbstractIntDomain;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.constraints.integer.extension.BinRelation;
-import choco.kernel.solver.constraints.integer.extension.CspBinSConstraint;
-import choco.kernel.solver.constraints.integer.extension.ConsistencyRelation;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
+import choco.kernel.solver.constraints.integer.extension.BinRelation;
+import choco.kernel.solver.constraints.integer.extension.ConsistencyRelation;
+import choco.kernel.solver.constraints.integer.extension.CspBinSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.Arrays;
@@ -102,7 +103,7 @@ public class AC3rmBinSConstraint extends CspBinSConstraint {
 		return new AC3rmBinSConstraint(this.v0, this.v1, this.relation);
 	}
 
-    public AbstractSConstraint opposite() {
+    public AbstractSConstraint opposite(Solver solver) {
         return new AC3rmBinSConstraint(this.v0, this.v1, (BinRelation) ((ConsistencyRelation) this.relation).getOpposite());        
     }
 

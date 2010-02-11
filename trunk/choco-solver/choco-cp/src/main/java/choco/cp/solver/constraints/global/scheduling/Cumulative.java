@@ -22,18 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
-import static choco.cp.solver.SettingType.TASK_INTERVAL;
-import static choco.cp.solver.SettingType.TASK_INTERVAL_SLOW;
-import static choco.cp.solver.SettingType.VHM_CEF_ALGO_N2K;
-import static choco.cp.solver.SettingType.VILIM_CEF_ALGO;
-
-import java.util.Arrays;
-
+import static choco.cp.solver.SettingType.*;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+
+import java.util.Arrays;
 
 
 
@@ -49,12 +45,12 @@ public class Cumulative extends AbstractCumulativeSConstraint  {
 
 	protected boolean noFixPoint;
 
-	protected Cumulative(String name, final TaskVar[] taskvars,final IntDomainVar[] heights, IntDomainVar consumption, IntDomainVar capacity, IntDomainVar uppBound, IntDomainVar... otherVars) {
-		super(name,taskvars,heights,consumption,capacity,uppBound,otherVars);
+	protected Cumulative(Solver solver, String name, final TaskVar[] taskvars, final IntDomainVar[] heights, IntDomainVar consumption, IntDomainVar capacity, IntDomainVar uppBound, IntDomainVar... otherVars) {
+		super(solver, name,taskvars,heights,consumption,capacity,uppBound,otherVars);
 	}
 
-	public Cumulative(String name, final TaskVar[] taskvars,final IntDomainVar[] heights, IntDomainVar consumption, IntDomainVar capacity, IntDomainVar uppBound) {
-		super(name,taskvars,heights,consumption,capacity, uppBound);
+	public Cumulative(Solver solver, String name, final TaskVar[] taskvars, final IntDomainVar[] heights, IntDomainVar consumption, IntDomainVar capacity, IntDomainVar uppBound) {
+		super(solver, name,taskvars,heights,consumption,capacity, uppBound);
 		cumulSweep = new CumulSweep(this, Arrays.asList(rtasks));
 		cumulRules = new CumulRules(this);
 	}

@@ -26,12 +26,10 @@ package choco.cp.solver.constraints.integer;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
-import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -191,8 +189,7 @@ public class EqualXY_C extends AbstractBinIntSConstraint {
 	}
 
 	@Override
-	public final AbstractSConstraint opposite() {
-		final Solver solver = getSolver();
+	public final AbstractSConstraint opposite(Solver solver) {
 		return (AbstractSConstraint) solver.neq(solver.plus(v0, v1), cste);
 	}
 

@@ -27,6 +27,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.IStateIntVector;
+import choco.kernel.solver.propagation.PropagationEngine;
 import gnu.trove.TIntIntHashMap;
 
 import java.util.Random;
@@ -92,19 +93,20 @@ public class LinkedIntDomain extends AbstractIntDomain {
      * @param v The involved variable.
      * @param a Minimal value.
      * @param b Maximal value.
+     * @param environment
+     * @param propagationEngine
      */
 
-    public LinkedIntDomain(IntDomainVarImpl v, int a, int b) {
-        super(v.getSolver().getPropagationEngine());
+    public LinkedIntDomain(IntDomainVarImpl v, int a, int b, IEnvironment environment, PropagationEngine propagationEngine) {
+        super(propagationEngine);
         variable = v;
-        final IEnvironment env = v.getSolver().getEnvironment();
         this.offset = a;
-        lowerBound = env.makeInt(a);
-        upperBound = env.makeInt(b);
+        lowerBound = environment.makeInt(a);
+        upperBound = environment.makeInt(b);
         int size = b - a + 1;
         sortedValues = new int[size];
         val2ind = new TIntIntHashMap();
-        this.size = env.makeInt(size);
+        this.size = environment.makeInt(size);
         int[] prevIndices = new int[size];
         int[] nextIndices = new int[size];
         for (int i = 0; i < nextIndices.length; i++) {
@@ -113,25 +115,24 @@ public class LinkedIntDomain extends AbstractIntDomain {
             nextIndices[i] = (i + 1) % size;
             prevIndices[i] = (i - 1 + size) % size;
         }
-        nextIndex = env.makeIntVector(nextIndices);
-        prevIndex = env.makeIntVector(prevIndices);
+        nextIndex = environment.makeIntVector(nextIndices);
+        prevIndex = environment.makeIntVector(prevIndices);
 
         //deltaDom = new ChainDeltaDomain(size, offset);
         deltaDom = new StackDeltaDomain();
 
     }
 
-    public LinkedIntDomain(IntDomainVarImpl v, int[] sortedValues) {
-        super(v.getSolver().getPropagationEngine());
+    public LinkedIntDomain(IntDomainVarImpl v, int[] sortedValues, IEnvironment environment, PropagationEngine propagationEngine) {
+        super(propagationEngine);
         variable = v;
-        final IEnvironment env = v.getSolver().getEnvironment();
         this.offset = sortedValues[0];
-        lowerBound = env.makeInt(sortedValues[0]);
-        upperBound = env.makeInt(sortedValues[sortedValues.length - 1]);
+        lowerBound = environment.makeInt(sortedValues[0]);
+        upperBound = environment.makeInt(sortedValues[sortedValues.length - 1]);
         int size = sortedValues.length;
         this.sortedValues = sortedValues;
         val2ind = new TIntIntHashMap();
-        this.size = env.makeInt(size);
+        this.size = environment.makeInt(size);
         int[] prevIndices = new int[size];
         int[] nextIndices = new int[size];
         for (int i = 0; i < sortedValues.length; i++) {
@@ -139,8 +140,8 @@ public class LinkedIntDomain extends AbstractIntDomain {
             nextIndices[i] = (i + 1) % sortedValues.length;
             prevIndices[i] = (i - 1 + sortedValues.length) % sortedValues.length;
         }
-        nextIndex = env.makeIntVector(nextIndices);
-        prevIndex = env.makeIntVector(prevIndices);
+        nextIndex = environment.makeIntVector(nextIndices);
+        prevIndex = environment.makeIntVector(prevIndices);
 
 //    deltaDom = new ChainDeltaDomain(size, offset);
         deltaDom = new StackDeltaDomain();

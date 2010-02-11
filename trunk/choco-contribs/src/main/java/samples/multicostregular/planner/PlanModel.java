@@ -306,7 +306,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
         //IntDomainVar[] tmp =s.getVar(shifts);
         //UtilAlgo.reverse(tmp);
        if (!varheur) s.setVarIntSelector(new MinDomain(s,s.getVar(shifts)));
-        else s.setVarIntSelector(new CenterVarSelec(s.getVar(shifts)));
+        else s.setVarIntSelector(new CenterVarSelec(s.getVar(shifts), s.getEnvironment()));
         //else s.setVarIntSelector(new StaticVarOrder(tmp));
 
         //CPSolver.setVerbosity(CPSolver.SOLUTION);
@@ -365,7 +365,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
         s = new CPSolver();
         s.read(m);
 
-        s.setVarIntSelector(new CenterVarSelec(s.getVar(shifts)));
+        s.setVarIntSelector(new CenterVarSelec(s.getVar(shifts), s.getEnvironment()));
         //s.setValIntSelector(new MCRValSelector(new MultiCostRegular[]{(MultiCostRegular)s.getCstr(main)},false));
 
         int bui = 0;

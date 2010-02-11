@@ -1,8 +1,5 @@
 package samples.jobshop;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.constraints.strong.ISpecializedConstraint;
 import choco.kernel.model.constraints.Constraint;
@@ -14,6 +11,8 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.Set;
 
 public class SimpleDTConstraint extends AbstractBinIntSConstraint implements
         ISpecializedConstraint {
@@ -126,7 +125,7 @@ public class SimpleDTConstraint extends AbstractBinIntSConstraint implements
         @Override
         public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
             SConstraint c = makeConstraint(solver, variables, parameters, options);
-            SConstraint opp = c.opposite();
+            SConstraint opp = c.opposite(solver);
             return new SConstraint[]{c, opp};
         }
 

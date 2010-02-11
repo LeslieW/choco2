@@ -23,9 +23,8 @@
 package choco.cp.solver.constraints.global.scheduling;
 
 
-
-import choco.cp.solver.constraints.global.scheduling.AbstractTaskSConstraint;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.global.scheduling.IPrecedenceNetwork;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -117,8 +116,8 @@ public class Precedence  extends AbstractTaskSConstraint {
 		//notify propagation engine
 		final int idxI = getStartIndex(i);
 		final int idxJ = getStartIndex(j);
-		solver.getPropagationEngine().postUpdateInf(vars[idxI], cIndices[idxI]);
-		solver.getPropagationEngine().postUpdateSup(vars[idxJ], cIndices[idxJ]);
+		propagationEngine.postUpdateInf(vars[idxI], cIndices[idxI]);
+		propagationEngine.postUpdateSup(vars[idxJ], cIndices[idxJ]);
 	}
 
 	protected final void notifyDecision() throws ContradictionException {
@@ -235,7 +234,7 @@ public class Precedence  extends AbstractTaskSConstraint {
 	}
 
 	@Override
-	public AbstractSConstraint opposite() {
+	public AbstractSConstraint opposite(Solver solver) {
 		//TODO
 		return null;
 	}

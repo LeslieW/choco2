@@ -28,6 +28,7 @@ import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.propagation.PropagationEngine;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -92,12 +93,14 @@ public class BipartiteIntDomain extends AbstractIntDomain {
      *
      * @param v   The involved variable.
      * @param sortedValues arry of sorted values.
+     * @param environment
+     * @param propagationEngine
      */
-    public BipartiteIntDomain(IntDomainVarImpl v, int[] sortedValues) {
-        super(v.getSolver().getPropagationEngine());
+    public BipartiteIntDomain(IntDomainVarImpl v, int[] sortedValues, IEnvironment environment, PropagationEngine propagationEngine) {
+        super(propagationEngine);
         assert(v!=null);
         assert(sortedValues!=null);
-        init(v, sortedValues);
+        init(v, sortedValues, environment);
     }
 
     /**
@@ -106,9 +109,11 @@ public class BipartiteIntDomain extends AbstractIntDomain {
      * @param v   The involved variable.
      * @param low Minimal value.
      * @param up  Maximal value.
+     * @param environment
+     * @param propagationEngine
      */
-    public BipartiteIntDomain(IntDomainVarImpl v, int low, int up) {
-        super(v.getSolver().getPropagationEngine());
+    public BipartiteIntDomain(IntDomainVarImpl v, int low, int up, IEnvironment environment, PropagationEngine propagationEngine) {
+        super(propagationEngine);
         // Pre-condition
         assert(v!=null);
         assert(low <= up);
@@ -116,13 +121,12 @@ public class BipartiteIntDomain extends AbstractIntDomain {
         for (int i = 0; i < sortedValues.length; i++) {
             sortedValues[i] = low + i;
         }
-        init(v, sortedValues);
+        init(v, sortedValues, environment);
     }
 
-    public void init(IntDomainVarImpl v, int[] sortedValues) {
+    public void init(IntDomainVarImpl v, int[] sortedValues, IEnvironment environment) {
         // Constructor
         variable = v;
-        final IEnvironment env = v.getSolver().getEnvironment();
         int low = sortedValues[0];
         int up = sortedValues[sortedValues.length - 1];
         int size = sortedValues.length;
@@ -132,7 +136,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
         values = new int[size];
         System.arraycopy(sortedValues, 0, values, 0, sortedValues.length);
         // By default all values are in...
-        valuesInDomainNumber = env.makeInt(size - 1);
+        valuesInDomainNumber = environment.makeInt(size - 1);
         // Indices are first simply offset...
         indices = new int[up - low + 1];
         Arrays.fill(indices, Integer.MAX_VALUE);
@@ -141,8 +145,8 @@ public class BipartiteIntDomain extends AbstractIntDomain {
         }
         // At the beginning nothing has been propageted !
         deltaDom = new BipartiteDeltaDomain(size, values, valuesInDomainNumber);
-        inf = env.makeInt(low);
-        sup = env.makeInt(up);
+        inf = environment.makeInt(low);
+        sup = environment.makeInt(up);
     }
 
     /**

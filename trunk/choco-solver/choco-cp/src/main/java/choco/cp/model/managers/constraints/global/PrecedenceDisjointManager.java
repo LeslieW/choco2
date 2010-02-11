@@ -26,7 +26,6 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.scheduling.Precedence;
 import choco.cp.solver.constraints.global.scheduling.PrecedenceDisjoint;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.constraints.global.scheduling.IPrecedenceNetwork;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
@@ -60,7 +59,7 @@ public class PrecedenceDisjointManager extends AbstractPrecedenceManager {
 	protected SConstraint makeTaskConstraintB0(CPSolver s, TaskVar t1, int k1,
 			TaskVar t2, int k2) {
 		if( s.getSchedulerConfiguration().isUsingPrecedenceNetwork() && k2 == 0) {
-			s.getSchedulerConfiguration().makePrecedenceNetwork(s).addStaticPrecedence(t2, t1);
+			s.getSchedulerConfiguration().makePrecedenceNetwork(s).addStaticPrecedence(s, t2, t1);
 			return CPSolver.TRUE;
 		}
 		return s.preceding(t2, k2, t1);
@@ -70,7 +69,7 @@ public class PrecedenceDisjointManager extends AbstractPrecedenceManager {
 	protected SConstraint makeTaskConstraintB1(CPSolver s, TaskVar t1, int k1,
 			TaskVar t2, int k2) {
 		if( s.getSchedulerConfiguration().isUsingPrecedenceNetwork() && k1 == 0) {
-			s.getSchedulerConfiguration().makePrecedenceNetwork(s).addStaticPrecedence(t1, t2);
+			s.getSchedulerConfiguration().makePrecedenceNetwork(s).addStaticPrecedence(s, t1, t2);
 			return CPSolver.TRUE;
 		}
 		return s.preceding(t1, k1, t2);

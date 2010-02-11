@@ -40,7 +40,7 @@ public abstract class AbstractBoolNode extends INode implements BoolNode {
     @Override
     public IntDomainVar extractResult(Solver s) {
         IntDomainVar var = s.createBooleanVar(StringUtils.randomName());
-        s.post(new ReifiedIntSConstraint(var, (AbstractIntSConstraint) extractConstraint(s)));
+        s.post(new ReifiedIntSConstraint(var, (AbstractIntSConstraint) extractConstraint(s), s));
         return var;
     }
 

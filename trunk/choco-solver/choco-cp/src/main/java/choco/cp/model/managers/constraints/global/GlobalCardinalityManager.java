@@ -66,15 +66,15 @@ public class GlobalCardinalityManager extends IntConstraintManager {
                     int[] up = (int[])params[4];
                     IntDomainVar[] vars = solver.getVar(variables);
                     if(options.contains("cp:ac")){
-                        return new GlobalCardinality(vars, min, max, low, up);
+                        return new GlobalCardinality(vars, min, max, low, up, solver.getEnvironment());
                     }
                     if(options.contains("cp:bc")){
-                        return new BoundGcc(vars, min, max, low, up);
+                        return new BoundGcc(vars, min, max, low, up, solver.getEnvironment());
                     }
                     if(vars[0].hasEnumeratedDomain()){
-                        return new GlobalCardinality(vars, min, max, low, up);
+                        return new GlobalCardinality(vars, min, max, low, up, solver.getEnvironment());
                     }else{
-                        return new BoundGcc(vars, min, max, low, up);
+                        return new BoundGcc(vars, min, max, low, up, solver.getEnvironment());
                     }
                 }
                 if(GLOBALCARDINALITY.equals(type)){
@@ -82,15 +82,15 @@ public class GlobalCardinalityManager extends IntConstraintManager {
                     int[] up = (int[])params[2];
                     IntDomainVar[] vars = solver.getVar(variables);
                     if(options.contains("cp:ac")){
-                        return new GlobalCardinality(vars, 1, low.length, low, up);
+                        return new GlobalCardinality(vars, 1, low.length, low, up, solver.getEnvironment());
                     }
                     if(options.contains("cp:bc")){
-                        return new BoundGcc(vars, 1, low.length, low, up);
+                        return new BoundGcc(vars, 1, low.length, low, up, solver.getEnvironment());
                     }
                     if ((vars[0]).hasEnumeratedDomain()) {
-                        return new GlobalCardinality(vars, 1, low.length, low, up);
+                        return new GlobalCardinality(vars, 1, low.length, low, up, solver.getEnvironment());
                     } else {
-                        return new BoundGcc(vars, 1, low.length, low, up);
+                        return new BoundGcc(vars, 1, low.length, low, up, solver.getEnvironment());
                     }
                 }
                 if(GLOBALCARDINALITYVAR.equals(type)){
@@ -102,7 +102,7 @@ public class GlobalCardinalityManager extends IntConstraintManager {
                     IntDomainVar[] card = new IntDomainVar[vars.length-n];
                     System.arraycopy(vars, 0, varT, 0, n);
                     System.arraycopy(vars, n, card, 0, card.length);
-                    return new BoundGccVar(varT, card, min ,max);
+                    return new BoundGccVar(varT, card, min ,max, solver.getEnvironment());
                 }
             }
         }

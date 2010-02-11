@@ -2,17 +2,16 @@ package choco.cp.model.managers.constraints.global;
 
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.constraints.global.automata.fast_costregular.FastCostRegular;
-import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Arc;
-import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Node;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Arc;
+import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Node;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import org.jgrapht.graph.DirectedMultigraph;
 
 import java.util.Set;
-
-import org.jgrapht.graph.DirectedMultigraph;
 
 /**
  * Created by IntelliJ IDEA.
@@ -51,9 +50,9 @@ public class FastCostRegularManager extends IntConstraintManager {
                 }
             }
             if (auto != null)
-                return new FastCostRegular(vars,auto,csts);
+                return new FastCostRegular(vars,auto,csts, solver.getEnvironment());
             else
-                return new FastCostRegular(vars,graph,source);
+                return new FastCostRegular(vars,graph,source, solver.getEnvironment());
         }
         return null;
 

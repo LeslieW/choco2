@@ -26,6 +26,7 @@ import choco.cp.solver.variables.delta.StackDeltaDomain;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBinaryTree;
 import choco.kernel.memory.IStateInt;
+import choco.kernel.solver.propagation.PropagationEngine;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -65,15 +66,16 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
      * @param v the associatede variable
      * @param a the lower bound
      * @param b the upper bound
+     * @param environment
+     * @param propagationEngine
      */
-    public IntervalBTreeDomain(IntDomainVarImpl v, int a, int b)
+    public IntervalBTreeDomain(IntDomainVarImpl v, int a, int b, IEnvironment environment, PropagationEngine propagationEngine)
     {
-        super(v.getSolver().getPropagationEngine());
+        super(propagationEngine);
         variable = v;
-        final IEnvironment env = v.getSolver().getEnvironment();
-        btree= env.makeBinaryTree(a,b);
+        btree= environment.makeBinaryTree(a,b);
         capacity = b - a + 1;
-        size = env.makeInt(capacity);
+        size = environment.makeInt(capacity);
         deltaDom = new StackDeltaDomain();
     }
 
@@ -81,14 +83,15 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
      * Construct a new domain represented by a Binary Tree of Interval
      * @param v the associatede variable
      * @param sortedValues array of values
+     * @param environment
+     * @param propagationEngine
      */
-    public IntervalBTreeDomain(IntDomainVarImpl v, int[] sortedValues)
+    public IntervalBTreeDomain(IntDomainVarImpl v, int[] sortedValues, IEnvironment environment, PropagationEngine propagationEngine)
     {
-        super(v.getSolver().getPropagationEngine());
+        super(propagationEngine);
         variable = v;
-        final IEnvironment env = v.getSolver().getEnvironment();
         int a = sortedValues[0];
-        btree= env.makeBinaryTree(a,a);
+        btree= environment.makeBinaryTree(a,a);
         capacity = sortedValues.length;
         IStateBinaryTree.Node n = btree.getRoot();
         for(int i = 1; i< capacity; i++){
@@ -101,7 +104,7 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
             }
             a = b;
         }
-        size = env.makeInt(btree.getSize());
+        size = environment.makeInt(btree.getSize());
         deltaDom = new StackDeltaDomain();
     }
 

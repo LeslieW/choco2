@@ -27,6 +27,7 @@ package choco.cp.solver.constraints.integer;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.StringUtils;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBool;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
@@ -40,22 +41,22 @@ public class ElementV extends AbstractLargeIntSConstraint {
   protected IStateBool valueUpdateNeeded;
   protected IStateBool indexUpdateNeeded;
 
-  public ElementV(IntDomainVar[] vars, int offset) {
+  public ElementV(IntDomainVar[] vars, int offset, IEnvironment environment) {
     super(vars);
     this.cste = offset;
-    initElementV();
+    initElementV(environment);
   }
 
-  private void initElementV() {
-    valueUpdateNeeded = getSolver().getEnvironment().makeBool(true);
-    indexUpdateNeeded = getSolver().getEnvironment().makeBool(true);
+  private void initElementV(IEnvironment environment) {
+    valueUpdateNeeded = environment.makeBool(true);
+    indexUpdateNeeded = environment.makeBool(true);
   }
 
-  public Object clone() throws CloneNotSupportedException {
-    Object res = super.clone();
-    ((ElementV) res).initElementV();
-    return res;
-  }
+//  public Object clone() throws CloneNotSupportedException {
+//    Object res = super.clone();
+//    ((ElementV) res).initElementV(environment);
+//    return res;
+//  }
 
   public String toString() {
     return "eltV";

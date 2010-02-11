@@ -23,6 +23,7 @@
 package choco.cp.solver.constraints.set;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntVar;
@@ -42,9 +43,9 @@ public class MinOfASet extends AbstractBoundOfASet {
 	protected final IStateInt indexOfMinimumVariable;
 
 
-	public MinOfASet(IntVar[] intvars, SetVar setvar) {
+	public MinOfASet(IEnvironment environment, IntVar[] intvars, SetVar setvar) {
 		super(intvars, setvar);
-		indexOfMinimumVariable = this.getSolver().getEnvironment().makeInt(-1);
+		indexOfMinimumVariable = environment.makeInt(-1);
 	}
 	
 	@Override

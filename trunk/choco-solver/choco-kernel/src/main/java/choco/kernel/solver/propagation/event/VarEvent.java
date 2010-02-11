@@ -24,7 +24,6 @@ package choco.kernel.solver.propagation.event;
 
 import choco.kernel.common.util.objects.IPrioritizable;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.Var;
 
 /**
@@ -161,14 +160,6 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
 //    return activeCycle.isInCycle(idx);
 //      return activeConstraints.get(idx);
     return true; // TODO FIXME
-  }
-
-  /**
-   * Retrieving the model.
-   */
-
-  public Solver getSolver() {
-    return modifiedVar.getSolver();
   }
 
   /**

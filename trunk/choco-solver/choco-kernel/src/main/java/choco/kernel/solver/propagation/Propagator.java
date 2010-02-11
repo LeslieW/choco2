@@ -23,7 +23,6 @@
 package choco.kernel.solver.propagation;
 
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.event.PropagationEvent;
 import choco.kernel.solver.propagation.listener.VarEventListener;
@@ -83,13 +82,6 @@ public interface Propagator extends VarEventListener, SConstraint {
 
 
   /**
-   * Removes a constraint from the network.
-   * Beware, this is a permanent removal, it may not be backtracked
-   */
-
-  public void delete();
-
-  /**
    * Returns the constraint awake var associated with this constraint.
    * @return the constraint awake var associated with this constraint.
    */
@@ -109,14 +101,6 @@ public interface Propagator extends VarEventListener, SConstraint {
    */
   public boolean isConsistent();
 
-  /**
-   * Retrieves the solver of the entity
-   */
-  public Solver getSolver();
-
-
   public int getFilteredEventMask(int idx);
-
-  public void setSolver(Solver solver);
 
 }

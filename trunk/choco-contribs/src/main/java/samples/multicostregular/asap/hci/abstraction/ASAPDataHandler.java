@@ -23,19 +23,14 @@
 package samples.multicostregular.asap.hci.abstraction;
 
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.integer.varselector.StaticVarOrder;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import choco.kernel.common.util.tools.ArrayUtils;
-
-import java.util.Observable;
-
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import samples.multicostregular.asap.ASAPCPModel;
-import samples.multicostregular.asap.heuristics.ASAPValSelector;
-import samples.multicostregular.asap.heuristics.ASAPVarSelector;
 import samples.multicostregular.asap.heuristics.CoverVarSelector;
-import samples.multicostregular.asap.parser.ASAPParser;
+
+import java.util.Observable;
 
 /**
  * Created by IntelliJ IDEA.
@@ -89,7 +84,7 @@ public class ASAPDataHandler extends Observable {
             vs[i] = solver.getVar(trans[i]);
         }
 
-        CoverVarSelector vsel = new CoverVarSelector(vs,this.model.lowb);
+        CoverVarSelector vsel = new CoverVarSelector(vs,this.model.lowb, solver);
         this.solver.setVarIntSelector(vsel);
 
         this.solver.setValIntSelector(vsel);

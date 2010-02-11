@@ -23,12 +23,11 @@
 
 package choco.kernel.solver.constraints.global.matching;
 
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBool;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.logging.Level;
 
 /**
  * A general assignment constraint with constraints on the flow bounds
@@ -44,35 +43,41 @@ public abstract class AbstractBipartiteFlow extends AbstractBipartiteGraph {
 	/**
 	 * Constructor for AbstractBipartiteFlow
 	 *
-	 * @param vars    nbLeft domain variables
-	 * @param nbLeft  number of domain variables to assign
-	 * @param nbRight number of values for assignment
+	 * @param environment
+     * @param vars    nbLeft domain variables
+     * @param nbLeft  number of domain variables to assign
+     * @param nbRight number of values for assignment
 	 */
-	public AbstractBipartiteFlow(IntDomainVar[] vars, int nbLeft, int nbRight) {
-		super(vars, nbLeft, nbRight);
-		initAbstractBipartiteFlow();
-	}
-
-	/**
-	 * Builds a clone of this object.
-	 *
-	 * @return
-	 * @throws CloneNotSupportedException
-	 */
-	public Object clone() throws CloneNotSupportedException {
-		AbstractBipartiteFlow newc = (AbstractBipartiteFlow) super.clone();
-		newc.initAbstractBipartiteFlow();
-		return newc;
-	}
-
-	protected void initAbstractBipartiteFlow() {
-		this.flow = this.getSolver().getEnvironment().makeIntVector(this.nbRightVertices, 0);
+	public AbstractBipartiteFlow(IEnvironment environment, IntDomainVar[] vars, int nbLeft, int nbRight) {
+		super(environment, vars, nbLeft, nbRight);
+		this.flow = environment.makeIntVector(this.nbRightVertices, 0);
 		this.minFlow = new int[this.nbRightVertices];
 		this.maxFlow = new int[this.nbRightVertices];
 		this.left2rightArc = new int[this.nbLeftVertices + 1];
 		this.queue = new IntQueue(this.nbVertices);
-		this.compatibleSupport = this.getSolver().getEnvironment().makeBool(true);
+		this.compatibleSupport = environment.makeBool(true);
 	}
+
+//	/**
+//	 * Builds a clone of this object.
+//	 *
+//	 * @return
+//	 * @throws CloneNotSupportedException
+//	 */
+//	public Object clone() throws CloneNotSupportedException {
+//		AbstractBipartiteFlow newc = (AbstractBipartiteFlow) super.clone();
+//		newc.initAbstractBipartiteFlow();
+//		return newc;
+//	}
+//
+//	protected void initAbstractBipartiteFlow() {
+//		this.flow = this.getSolver().getEnvironment().makeIntVector(this.nbRightVertices, 0);
+//		this.minFlow = new int[this.nbRightVertices];
+//		this.maxFlow = new int[this.nbRightVertices];
+//		this.left2rightArc = new int[this.nbLeftVertices + 1];
+//		this.queue = new IntQueue(this.nbVertices);
+//		this.compatibleSupport = this.getSolver().getEnvironment().makeBool(true);
+//	}
 
 	protected int getMinFlow(int j) {
 		return minFlow[j];

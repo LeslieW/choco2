@@ -186,9 +186,8 @@ public class SolverTest {
         final AbstractSConstraint c2 = (AbstractSConstraint)solver.eqCard(sv, 3);
         solver.post(c1);
         solver.post(c2);
-        c1.delete();
-        c2.delete();
-
+        solver.eraseConstraint(c1);
+        solver.eraseConstraint(c2);
     }
 
 }

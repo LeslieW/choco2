@@ -26,11 +26,11 @@ import choco.cp.solver.variables.integer.BitSetIntDomain;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.AbstractSConstraint;
+import choco.kernel.solver.constraints.integer.extension.ConsistencyRelation;
 import choco.kernel.solver.constraints.integer.extension.CouplesBitSetTable;
 import choco.kernel.solver.constraints.integer.extension.CspBinSConstraint;
-import choco.kernel.solver.constraints.integer.extension.BinRelation;
-import choco.kernel.solver.constraints.integer.extension.ConsistencyRelation;
-import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /*
@@ -92,7 +92,7 @@ public class AC3rmBitBinSConstraint extends CspBinSConstraint {
 		return new AC3rmBitBinSConstraint(this.v0, this.v1, (CouplesBitSetTable) this.relation);
 	}
 
-    public AbstractSConstraint opposite() {
+    public AbstractSConstraint opposite(Solver solver) {
         return new AC3rmBitBinSConstraint(this.v0, this.v1, (CouplesBitSetTable) ((ConsistencyRelation) this.relation).getOpposite());        
     }
 

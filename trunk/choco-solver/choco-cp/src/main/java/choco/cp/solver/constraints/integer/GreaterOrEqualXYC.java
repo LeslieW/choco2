@@ -165,10 +165,8 @@ public final class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
     }
 
     @Override
-	public AbstractSConstraint opposite() {
-        final Solver solver = getSolver();
+	public AbstractSConstraint opposite(Solver solver) {
         return (AbstractSConstraint) solver.lt(v0, solver.plus(v1, cste));
-//    return new GreaterOrEqualXYC(v1, v0, 1 - cste);
     }
 
     @Override

@@ -209,7 +209,7 @@ public class SolveGoal {
         IntVarSelector varSelector;
         switch (index(exp.value, varchoiceannos)){
             case 0:
-                varSelector = new StaticVarOrder(scope);
+                varSelector = new StaticVarOrder(solver, scope);
                 break;
             case 1:
                 varSelector = new MinDomain(solver, scope);

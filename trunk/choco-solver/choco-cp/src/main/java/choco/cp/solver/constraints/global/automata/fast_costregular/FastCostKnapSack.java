@@ -1,27 +1,25 @@
 package choco.cp.solver.constraints.global.automata.fast_costregular;
 
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.Solver;
+import static choco.Choco.*;
+import choco.cp.model.CPModel;
+import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
-import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Node;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Arc;
+import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Node;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.StoredValuedDirectedMultiGraph;
-import choco.cp.solver.CPSolver;
-import choco.cp.model.CPModel;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.makeIntVarArray;
-import static choco.Choco.knapsackProblem;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+import gnu.trove.TIntHashSet;
+import gnu.trove.TIntIterator;
 import org.jgrapht.graph.DirectedMultigraph;
 
-import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.BitSet;
-
-import gnu.trove.TIntIterator;
-import gnu.trove.TIntHashSet;
+import java.util.HashSet;
 
 /**
  * Created by IntelliJ IDEA.
@@ -47,19 +45,19 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
 
 
 
-    public FastCostKnapSack(IntDomainVar[] vars, IntDomainVar bVar, IntDomainVar cVar,  int[] cost, int[] gain)
+    public FastCostKnapSack(IntDomainVar[] vars, IntDomainVar bVar, IntDomainVar cVar, int[] cost, int[] gain, IEnvironment environment)
     {
-        super(merge(vars,bVar,cVar), (Automaton) null,null);
+        super(merge(vars,bVar,cVar), (Automaton) null,null, environment);
         this.bVar = bVar;
         this.cVar = cVar;
         this.cost = cost;
         this.gain = gain;
-        this.initGraphDelayed();
+        this.initGraphDelayed(environment);
     }
 
     public void initGraph(){}
 
-    public void initGraphDelayed()
+    public void initGraphDelayed(IEnvironment environment)
     {
         int aid = 0;
         int nid = 0;
@@ -253,7 +251,7 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
 
 
         if (intLayer[0].length > 0)
-            this.graph = new StoredValuedDirectedMultiGraph(this,graph,intLayer,starts,offsets,totalSizes);
+            this.graph = new StoredValuedDirectedMultiGraph(environment, this,graph,intLayer,starts,offsets,totalSizes);
         graph = null;
     }
 

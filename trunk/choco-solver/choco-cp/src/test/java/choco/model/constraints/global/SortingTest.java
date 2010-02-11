@@ -21,19 +21,8 @@
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.global;
-import static choco.Choco.allDifferent;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.makeIntVarArray;
-import static choco.Choco.sorting;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 
-import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.junit.Test;
-
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.SortingSConstraint;
@@ -44,6 +33,13 @@ import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import org.junit.Test;
+
+import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -122,7 +118,7 @@ public class SortingTest {
             s1.read(m);
 //            s.setValIntSelector(new RandomIntValSelector(seed));
 //            s.setVarIntSelector(new RandomIntVarSelector(s, seed + 2));
-            s1.setVarIntSelector(new StaticVarOrder(s1.getVar((IntegerVariable[]) ArrayUtils.append(x,y))));
+            s1.setVarIntSelector(new StaticVarOrder(s1, s1.getVar((IntegerVariable[]) ArrayUtils.append(x,y))));
             s1.setValIntIterator(new IncreasingDomain());
             s1.solve();
             if(s1.isFeasible()){
@@ -162,7 +158,7 @@ public class SortingTest {
         m.addConstraint(allDifferent(x));
         CPSolver s = new CPSolver();
         s.read(m);
-        s.setVarIntSelector(new StaticVarOrder(s.getVar(x)));
+        s.setVarIntSelector(new StaticVarOrder(s, s.getVar(x)));
         s.setValIntIterator(new IncreasingDomain());
         s.solve();
         if(s.isFeasible()){

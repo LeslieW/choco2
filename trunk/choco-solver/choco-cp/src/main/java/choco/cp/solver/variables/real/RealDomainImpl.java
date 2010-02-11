@@ -22,10 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.real;
 
-import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateDouble;
 import choco.kernel.solver.ContradictionException;
 import static choco.kernel.solver.ContradictionException.Type.DOMAIN;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.real.RealDomain;
@@ -60,12 +60,15 @@ public class RealDomainImpl implements RealDomain {
 
 	protected RealVar variable;
 
-	public RealDomainImpl(RealVar v, double a, double b) {
+    private final Solver solver;
+
+	public RealDomainImpl(RealVar v, double a, double b, Solver solver) {
 		variable = v;
-        propagationEngine = v.getSolver().getPropagationEngine();
-		final IEnvironment env = v.getSolver().getEnvironment();
-		inf = env.makeFloat(a);
-		sup = env.makeFloat(b);
+        this.solver = solver;
+        this.propagationEngine = solver.getPropagationEngine();
+
+        inf = solver.getEnvironment().makeFloat(a);
+		sup = solver.getEnvironment().makeFloat(b);
 	}
 
 	@Override
@@ -97,8 +100,8 @@ public class RealDomainImpl implements RealDomain {
 		double old_width = this.getSup() - this.getInf();
 		double new_width = Math.min(interval.getSup(), this.getSup()) -
 		Math.max(interval.getInf(), this.getInf());
-		boolean toAwake = (variable.getSolver().getPrecision() / 100. <= old_width)
-		&& (new_width < old_width * variable.getSolver().getReduction());
+		boolean toAwake = (solver.getPrecision() / 100. <= old_width)
+		&& (new_width < old_width * solver.getReduction());
 
 		if (interval.getInf() > this.getInf()) {
 			if (toAwake) propagationEngine.postUpdateInf(variable, index);

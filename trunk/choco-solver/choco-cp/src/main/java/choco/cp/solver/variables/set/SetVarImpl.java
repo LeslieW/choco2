@@ -50,7 +50,7 @@ public final class SetVarImpl extends AbstractVar implements SetVar {
 
 	public SetVarImpl(Solver solver, String name, int a, int b, IntDomainVar card) {
 		this(solver, name);
-		this.domain = new SetDomainImpl(this, a, b);
+		this.domain = new SetDomainImpl(this, a, b, solver.getEnvironment(), propagationEngine);
 		this.event = new SetVarEvent(this);
 		this.card = card;
 
@@ -67,7 +67,7 @@ public final class SetVarImpl extends AbstractVar implements SetVar {
      */
     public SetVarImpl(Solver solver, String name, int a, int b,IntDomainVar card, int type) {
 		this(solver, name);
-		this.domain = new SetDomainImpl(this, a, b);
+		this.domain = new SetDomainImpl(this, a, b, solver.getEnvironment(), propagationEngine);
 		this.event = new SetVarEvent(this);
         if(card==null){
             if (type == SetVar.BOUNDSET_ENUMCARD) {
@@ -82,7 +82,7 @@ public final class SetVarImpl extends AbstractVar implements SetVar {
 
     public SetVarImpl(Solver solver, String name, int[] sortedValues, IntDomainVar card) {
 		this(solver, name);
-		this.domain = new SetDomainImpl(this, sortedValues);
+		this.domain = new SetDomainImpl(this, sortedValues, solver.getEnvironment(), propagationEngine);
 		this.event = new SetVarEvent(this);
 		this.card = card;
 	}
@@ -112,7 +112,7 @@ public final class SetVarImpl extends AbstractVar implements SetVar {
             this.card = card;
         }
         boolean constant = (type == BOUNDSET_CONSTANT);
-        this.domain = new SetDomainImpl(this, sortedValues, constant);
+        this.domain = new SetDomainImpl(this, sortedValues, constant, solver.getEnvironment(), propagationEngine);
 	}
 
     public final DisposableIterator<Couple<SetSConstraint>> getActiveConstraints(int cstrCause){

@@ -108,7 +108,7 @@ public class MixedCstElt extends AbstractBinRealIntSConstraint{
     while (values[inf] < v0.getInf()) {
       inf++;
     }
-    if (inf > v1.getSup()) this.solver.getPropagationEngine().raiseContradiction(this, CONSTRAINT);
+    if (inf > v1.getSup()) propagationEngine.raiseContradiction(this, CONSTRAINT);
     v1.updateInf(inf, cIdx1);
   }
 
@@ -117,7 +117,7 @@ public class MixedCstElt extends AbstractBinRealIntSConstraint{
     while (values[sup] > v0.getSup()) {
       sup--;
     }
-    if (sup < v1.getInf()) this.solver.getPropagationEngine().raiseContradiction(this, CONSTRAINT);
+    if (sup < v1.getInf()) propagationEngine.raiseContradiction(this, CONSTRAINT);
     v1.updateSup(sup, cIdx1);
   }
 

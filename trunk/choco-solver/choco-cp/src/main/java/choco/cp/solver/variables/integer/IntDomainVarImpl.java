@@ -70,17 +70,17 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 	public IntDomainVarImpl(Solver solver, String name, int domainType, int a, int b) {
 		this(solver, name);
 		if (domainType == IntDomainVar.BITSET) {
-			domain = new BitSetIntDomain(this, a, b);
+			domain = new BitSetIntDomain(this, a, b, solver.getEnvironment(), propagationEngine);
 		} else if (domainType == IntDomainVar.LINKEDLIST) {
-			domain = new LinkedIntDomain(this, a, b);
+			domain = new LinkedIntDomain(this, a, b, solver.getEnvironment(), propagationEngine);
 		} else if (domainType == IntDomainVar.BINARYTREE) {
-			domain = new IntervalBTreeDomain(this, a, b);
+			domain = new IntervalBTreeDomain(this, a, b, solver.getEnvironment(), propagationEngine);
 		} else if (domainType == IntDomainVar.BIPARTITELIST) {
-			domain = new BipartiteIntDomain(this, a, b);
+			domain = new BipartiteIntDomain(this, a, b, solver.getEnvironment(), propagationEngine);
 		} else if (domainType == IntDomainVar.BOOLEAN) {
-			domain = new BooleanDomain(this);
+			domain = new BooleanDomain(this, solver.getEnvironment(), propagationEngine);
 		} else {
-			domain = new IntervalIntDomain(this, a, b);
+			domain = new IntervalIntDomain(this, a, b, solver.getEnvironment(), propagationEngine);
 		}
 		this.event = new IntVarEvent(this);
 	}
@@ -88,14 +88,14 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 	public IntDomainVarImpl(Solver solver, String name, int domainType, int[] distinctSortedValues) {
 		this(solver, name);
 		if (domainType == IntDomainVar.BINARYTREE) {
-			domain = new IntervalBTreeDomain(this, distinctSortedValues);
+			domain = new IntervalBTreeDomain(this, distinctSortedValues, solver.getEnvironment(), propagationEngine);
 		} else
 			if (domainType == IntDomainVar.LINKEDLIST) {
-				domain = new LinkedIntDomain(this, distinctSortedValues);
+				domain = new LinkedIntDomain(this, distinctSortedValues, solver.getEnvironment(), propagationEngine);
 			} else if (domainType == IntDomainVar.BIPARTITELIST) {
-				domain = new BipartiteIntDomain(this, distinctSortedValues);
+				domain = new BipartiteIntDomain(this, distinctSortedValues, solver.getEnvironment(), propagationEngine);
 			} else {
-				domain = new BitSetIntDomain(this, distinctSortedValues);
+				domain = new BitSetIntDomain(this, distinctSortedValues, solver.getEnvironment(), propagationEngine);
 			}
 		this.event = new IntVarEvent(this);
 	}
@@ -204,7 +204,7 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 	}
 
 	public final void wipeOut() throws ContradictionException {
-		this.getSolver().getPropagationEngine().raiseContradiction(this, DOMAIN);
+		propagationEngine.raiseContradiction(this, DOMAIN);
 	}
 
 	public boolean hasEnumeratedDomain() {

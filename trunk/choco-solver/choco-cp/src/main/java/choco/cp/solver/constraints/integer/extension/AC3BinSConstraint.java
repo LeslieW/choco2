@@ -26,6 +26,7 @@ package choco.cp.solver.constraints.integer.extension;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.extension.BinRelation;
 import choco.kernel.solver.constraints.integer.extension.ConsistencyRelation;
@@ -142,7 +143,7 @@ public class AC3BinSConstraint extends CspBinSConstraint {
 	}
 
 
-	public AbstractSConstraint opposite() {
+	public AbstractSConstraint opposite(Solver solver) {
 		BinRelation rela2 = (BinRelation) ((ConsistencyRelation) relation).getOpposite();
 		AbstractSConstraint ct = new AC3BinSConstraint(v0, v1, rela2);
 		return ct;

@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global;
 
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
@@ -99,18 +100,17 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
     public BoundGccVar(IntDomainVar[] vars,
                        IntDomainVar[] card,
                        int firstDomainValue,
-                       int lastDomainValue) {
+                       int lastDomainValue, IEnvironment environment) {
         super(makeVarTable(vars, card));
         this.card = card;
-        build(vars.length, firstDomainValue, lastDomainValue);
+        build(vars.length, firstDomainValue, lastDomainValue, environment);
     }
 
     public void build(int n,
                       int firstDomainValue,
-                      int lastDomainValue) {
+                      int lastDomainValue, IEnvironment environment) {
         int range = lastDomainValue - firstDomainValue + 1;
         this.nbVars = n;
-        this.solver = vars[0].getSolver();
         t = new int[2 * n + 2];
         d = new int[2 * n + 2];
         h = new int[2 * n + 2];
@@ -135,8 +135,8 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         val_maxOcc = new IStateInt[range];
         val_minOcc = new IStateInt[range];
         for (int i = 0; i < range; i++) {
-            val_maxOcc[i] = solver.getEnvironment().makeInt(0);
-            val_minOcc[i] = solver.getEnvironment().makeInt(0);
+            val_maxOcc[i] = environment.makeInt(0);
+            val_minOcc[i] = environment.makeInt(0);
         }        
     }
 

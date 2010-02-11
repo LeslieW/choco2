@@ -4,14 +4,16 @@ import choco.cp.solver.constraints.global.geost.dataStructures.HeapAscending;
 import choco.cp.solver.constraints.global.geost.dataStructures.HeapDescending;
 import choco.cp.solver.constraints.global.geost.externalConstraints.ExternalConstraint;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Obj;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.geost.GeostOptions;
 import choco.kernel.model.variables.geost.ShiftedBox;
-import choco.kernel.solver.Solver;
+import choco.kernel.solver.propagation.PropagationEngine;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * This is a very important class. It contains all the variables and objects the constraint needs.
@@ -19,20 +21,25 @@ import java.util.*;
  */
 
 public class Setup {
+
+    public final static Logger LOGGER = ChocoLogging.getEngineLogger();
+
 	Constants cst;
 
     public GeostOptions opt = new GeostOptions();
 
-
+    public final PropagationEngine propagationEngine;
 
 
     /**
 	 * Creates a Setup instance for a given Constants class
 	 * @param c An instance of the constants class
+     * @param propagationEngine
 	 */
-	public Setup(Constants c)
+	public Setup(Constants c, PropagationEngine propagationEngine)
 	{
 		cst = c;
+        this.propagationEngine = propagationEngine;
 	}
 
 	/**
@@ -196,7 +203,7 @@ public class Setup {
 	public void addObject(Obj o)
 	{
 		if (objects.containsKey(new Integer(o.getObjectId()))) {
-			System.out.println("Trying to add an already existing object. In addObject in Setup");
+			LOGGER.info("Trying to add an already existing object. In addObject in Setup");
 		} else {
 			objects.put(new Integer(o.getObjectId()), o);
 		}
@@ -232,10 +239,10 @@ public class Setup {
 		{
 			int id = ((Integer)itr.next()).intValue();
 			Obj o = objects.get(new Integer(id));
-			System.out.println("object id: " + id);
-			System.out.println("    shape id: " + o.getShapeId().getInf());
+			LOGGER.info("object id: " + id);
+			LOGGER.info("    shape id: " + o.getShapeId().getInf());
 			for (int i = 0; i < cst.getDIM(); i++) {
-				System.out.println("    Coords x" + i + " : " + o.getCoord(i).getInf() + "    " + o.getCoord(i).getSup());
+				LOGGER.info("    Coords x" + i + " : " + o.getCoord(i).getInf() + "    " + o.getCoord(i).getSup());
 			}
 		}
 
@@ -244,7 +251,7 @@ public class Setup {
 		{
 			int sid = ((Integer)itr.next()).intValue();
 			Vector<ShiftedBox> sb = shapes.get(new Integer(sid));
-			System.out.println("shape id: " + sid);
+			LOGGER.info("shape id: " + sid);
 			for(int i = 0; i < sb.size(); i++)
 			{
 				StringBuilder offset = new StringBuilder();
@@ -254,9 +261,9 @@ public class Setup {
                     offset.append(sb.elementAt(i).getOffset(j)).append("  ");
                     size.append(sb.elementAt(i).getSize(j)).append("  ");
 				}
-				System.out.println("    sb" + i + ": ");
-				System.out.println("       Offset: " +  offset.toString());
-				System.out.println("       Size: " +  size.toString());
+				LOGGER.info("    sb" + i + ": ");
+				LOGGER.info("       Offset: " +  offset.toString());
+				LOGGER.info("       Size: " +  size.toString());
 			}
 		}
 	}
@@ -386,14 +393,6 @@ public class Setup {
 		ictrMinHeap.clear();
 		ictrMaxHeap.clear();
 	}
-
-    public Solver getSolver() {
-        if (opt.debug) if (getObject(0)==null) { System.out.println("Setup:getSolver():no object defined, unable to return solver."); System.exit(-1); }
-        if (opt.debug) if (getObject(0).getCoord(0)==null) { System.out.println("Setup:getSolver():no coord associated with object 0 defined, unable to return solver."); System.exit(-1); }
-        return getObject(0).getCoord(0).getSolver();
-    }
-
-
 //	public static void setIctrHeap(HeapAscending ictrHeap) {
 //		Setup.ictrHeap = ictrHeap;
 //	}

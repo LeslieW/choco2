@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.search.integer;
 
-import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -37,10 +36,6 @@ public final class IntVarValPair {
 	public IntVarValPair(IntDomainVar var, int val) {
 		this.var = var;
 		this.val = val;
-	}
-
-	public Solver getSolver() {
-		return var.getSolver();
 	}
 
 	public String pretty() {

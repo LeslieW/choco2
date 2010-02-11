@@ -26,6 +26,7 @@ package choco.cp.solver.constraints.integer.extension;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.constraints.integer.extension.ConsistencyRelation;
@@ -134,7 +135,7 @@ public class CspLargeSConstraint extends AbstractLargeIntSConstraint {
 	}
 
 	@Override
-	public AbstractSConstraint opposite() {
+	public AbstractSConstraint opposite(Solver solver) {
 		LargeRelation rela2 = (LargeRelation) ((ConsistencyRelation) relation).getOpposite();
 		AbstractSConstraint ct = new CspLargeSConstraint(vars, rela2);
 		return ct;

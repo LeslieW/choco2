@@ -30,6 +30,7 @@ import choco.cp.solver.constraints.integer.MinOfAList;
 import choco.cp.solver.constraints.integer.MinXYZ;
 import choco.cp.solver.constraints.set.MaxOfASet;
 import choco.cp.solver.constraints.set.MinOfASet;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -67,7 +68,7 @@ public class MinMaxManager extends MixedConstraintManager {
                     //noinspection SuspiciousSystemArraycopy
                     System.arraycopy(variables, 0, vars, 0, n);
                 }
-                return buildConstraint(min, varOpt, set, solver.getVar(vars));
+                return buildConstraint(min, varOpt, set, solver.getVar(vars), solver.getEnvironment());
 			}
 		}
 		throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
@@ -112,7 +113,7 @@ public class MinMaxManager extends MixedConstraintManager {
                     //noinspection SuspiciousSystemArraycopy
                     System.arraycopy(variables, 0, vars, 0, n);
                 }
-                solver.post(buildConstraint(min, Y, set, solver.getVar(vars)));
+                solver.post(buildConstraint(min, Y, set, solver.getVar(vars), solver.getEnvironment()));
                 cs[0] = solver.eq(Y, X);
                 cs[1] = solver.neq(Y, X);
                 return cs;
@@ -128,9 +129,10 @@ public class MinMaxManager extends MixedConstraintManager {
      * @param varOpt min variable
      * @param set set variable
      * @param vars pool of variables
+     * @param environment
      * @return SConstraint
      */
-    private static SConstraint buildConstraint(Boolean isMin, IntDomainVar varOpt, SetVar set, IntDomainVar[] vars) {
+    private static SConstraint buildConstraint(Boolean isMin, IntDomainVar varOpt, SetVar set, IntDomainVar[] vars, IEnvironment environment) {
         if (isMin) {
             if(vars.length == 2){
                 return new MinXYZ(vars[0], vars[1], varOpt);
@@ -138,12 +140,12 @@ public class MinMaxManager extends MixedConstraintManager {
                 IntDomainVar[] tmpVars = new IntDomainVar[vars.length+1];
                 tmpVars[0] = varOpt;
                 System.arraycopy(vars, 0, tmpVars, 1, vars.length);
-                return new MinOfASet(tmpVars, set);
+                return new MinOfASet(environment, tmpVars, set);
             }else{
                 IntDomainVar[] tmpVars = new IntDomainVar[vars.length+1];
                 tmpVars[0] = varOpt;
                 System.arraycopy(vars, 0, tmpVars, 1, vars.length);
-                return new MinOfAList(tmpVars);
+                return new MinOfAList(tmpVars, environment);
             }
         } else {
             if(vars.length == 2){
@@ -152,12 +154,12 @@ public class MinMaxManager extends MixedConstraintManager {
                 IntDomainVar[] tmpVars = new IntDomainVar[vars.length+1];
                 tmpVars[0] = varOpt;
                 System.arraycopy(vars, 0, tmpVars, 1, vars.length);
-                return new MaxOfASet(tmpVars, set);
+                return new MaxOfASet(tmpVars, set, environment);
             }else{
                 IntDomainVar[] tmpVars = new IntDomainVar[vars.length+1];
                 tmpVars[0] = varOpt;
                 System.arraycopy(vars, 0, tmpVars, 1, vars.length);
-                return new MaxOfAList(tmpVars);
+                return new MaxOfAList(environment, tmpVars);
             }
         }
     }

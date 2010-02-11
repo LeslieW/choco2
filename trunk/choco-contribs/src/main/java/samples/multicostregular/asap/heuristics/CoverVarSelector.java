@@ -3,7 +3,6 @@ package samples.multicostregular.asap.heuristics;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.IStateInt;
-import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
@@ -28,13 +27,13 @@ public class CoverVarSelector extends AbstractIntVarSelector implements ValSelec
     IStateInt lastCol;
     int[][] lowb;
 
-    public CoverVarSelector(IntDomainVar[][] vars, int[][] lowb)
+    public CoverVarSelector(IntDomainVar[][] vars, int[][] lowb, Solver solver)
     {
         this.vars = vars;
         this.lowb = lowb;
-        this.other = new StaticVarOrder(ArrayUtils.flatten(vars));
+        this.other = new StaticVarOrder(solver, ArrayUtils.flatten(vars));
 
-        lastCol = vars[0][0].getSolver().getEnvironment().makeInt(0);
+        lastCol = solver.getEnvironment().makeInt(0);
 
     }
 

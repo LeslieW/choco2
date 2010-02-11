@@ -79,7 +79,7 @@ public class ReifiedIntConstraintTest {
             //m.addVariable(b, y, z);
 			s.read(m);
 
-			s.post(new ReifiedIntSConstraint(s.getVar(b), (AbstractIntSConstraint) s.lt(s.getVar(y), s.getVar(z))));
+			s.post(new ReifiedIntSConstraint(s.getVar(b), (AbstractIntSConstraint) s.lt(s.getVar(y), s.getVar(z)), s));
 
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));
@@ -102,7 +102,7 @@ public class ReifiedIntConstraintTest {
             m.addVariables(b, y, z);
 			s.read(m);
 
-			s.post(new ReifiedIntSConstraint(s.getVar(b), (AbstractIntSConstraint) s.eq(s.getVar(y), s.getVar(z))));
+			s.post(new ReifiedIntSConstraint(s.getVar(b), (AbstractIntSConstraint) s.eq(s.getVar(y), s.getVar(z)), s));
 
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed));
 			s.setValIntSelector(new RandomIntValSelector(seed + 1));

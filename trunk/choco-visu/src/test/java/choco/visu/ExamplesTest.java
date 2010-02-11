@@ -573,7 +573,7 @@ public class ExamplesTest {
 
         Solver s = new CPSolver();
         s.read(m);
-        s.setVarIntSelector(new StaticVarOrder(s.getVar(vars)));
+        s.setVarIntSelector(new StaticVarOrder(s, s.getVar(vars)));
 
         Visu v = Visu.createVisu(700, 700);
         v.addPanel(new VarChocoPanel("Domain", vars, FULLDOMAIN, null));

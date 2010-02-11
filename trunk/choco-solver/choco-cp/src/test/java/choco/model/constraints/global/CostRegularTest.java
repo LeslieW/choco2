@@ -1,35 +1,19 @@
 package choco.model.constraints.global;
 
-import choco.Choco;
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
-import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.common.util.tools.StringUtils;
-import choco.kernel.model.Model;
-import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.automaton.DFA;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
-import choco.kernel.model.constraints.automaton.Transition;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.solver.Solver;
-import org.junit.*;
-
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Logger;
-
-import static choco.Choco.*;
-import static choco.Choco.makeIntVarArray;
-import static choco.Choco.stretchPath;
+import org.junit.After;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -129,7 +113,7 @@ public class CostRegularTest {
 
         s.read(m);
 
-        s.setVarIntSelector(new StaticVarOrder(s.getVar(ArrayUtils.append(new IntegerVariable[]{z},vars))));
+        s.setVarIntSelector(new StaticVarOrder(s, s.getVar(ArrayUtils.append(new IntegerVariable[]{z},vars))));
 
         s.solveAll();
         assertEquals(67584,s.getNbSolutions());
@@ -214,7 +198,7 @@ public class CostRegularTest {
 
         s.read(m);
 
-        s.setVarIntSelector(new StaticVarOrder(s.getVar(ArrayUtils.append(new IntegerVariable[]{z},vars))));
+        s.setVarIntSelector(new StaticVarOrder(s, s.getVar(ArrayUtils.append(new IntegerVariable[]{z},vars))));
 
         s.solveAll();
 

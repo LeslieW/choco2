@@ -583,13 +583,13 @@ public class DistanceTest {
 //        s2.solveAll();
         s1.solve();
         do{
-            System.out.println("x:"+s1.getVar(x).getVal()+" y:"+s1.getVar(y).getVal());
+            LOGGER.info("x:"+s1.getVar(x).getVal()+" y:"+s1.getVar(y).getVal());
         }while(s1.nextSolution());
-        System.out.println("=======");
+        LOGGER.info("=======");
 
         s2.solve();
         do{
-            System.out.println("x:"+s2.getVar(x).getVal()+" y:"+s2.getVar(y).getVal());
+            LOGGER.info("x:"+s2.getVar(x).getVal()+" y:"+s2.getVar(y).getVal());
         }while(s2.nextSolution());
 
         Assert.assertEquals("nb sol", s1.getNbSolutions(), s2.getNbSolutions());

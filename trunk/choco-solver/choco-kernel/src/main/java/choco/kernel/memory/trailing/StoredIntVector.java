@@ -24,7 +24,6 @@ package choco.kernel.memory.trailing;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IStateIntVector;
-import choco.kernel.memory.trailing.trail.StoredIntVectorTrail;
 
 /**
  * Implements a backtrackable search vector.
@@ -232,6 +231,14 @@ public final class StoredIntVector implements IStateIntVector {
     	return elementData[index] ;
     }
 
+
+    public boolean contain(int val){
+        int ssize = size.get();
+        for(int i = 0; i < ssize; i++){
+            if(val == elementData[i])return true;
+        }
+        return false;
+    }
 
 	/**
 	 * Assigns a new value <code>val</code> to the element <code>index</code>.

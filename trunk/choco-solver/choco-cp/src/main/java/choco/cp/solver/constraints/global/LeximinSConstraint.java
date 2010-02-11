@@ -24,6 +24,7 @@ package choco.cp.solver.constraints.global;
 
 
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
@@ -73,13 +74,16 @@ public class LeximinSConstraint extends AbstractLargeIntSConstraint {
 
 	private static final boolean VERBOSE = false;
 
+    private final IEnvironment environment;
+
 	/**
 	 * Creates a new <code>LeximinConstraint</code> instance.
 	 *
 	 * @param x the first array of integer variables
-	 * @param y the second array of integer variables
-	 */
-	public LeximinSConstraint(IntVar[] x, IntVar[] y) {
+     * @param y the second array of integer variables
+     * @param environment
+     */
+	public LeximinSConstraint(IntVar[] x, IntVar[] y, IEnvironment environment) {
 		super(LeximinSConstraint.mergeIntVarArrays(x, y));
 		if (x.length != y.length || x.length == 0 || y.length == 0) {
 			throw new IllegalArgumentException("LeximinConstraint Error: the two vectors "
@@ -87,14 +91,12 @@ public class LeximinSConstraint extends AbstractLargeIntSConstraint {
 		}
 		this.n = x.length;
 
-		super.solver = x[0].getSolver();
-
-		this.alpha = super.solver.getEnvironment().makeInt();
-		this.beta = super.solver.getEnvironment().makeInt();
-		this.gamma = super.solver.getEnvironment().makeInt();
-		this.delta = super.solver.getEnvironment().makeInt();
-		this.epsilon = super.solver.getEnvironment().makeBitSet(4);
-
+		this.alpha = environment.makeInt();
+		this.beta = environment.makeInt();
+		this.gamma = environment.makeInt();
+		this.delta = environment.makeInt();
+		this.epsilon = environment.makeBitSet(4);
+        this.environment = environment;
 		this.generateVectors();
 	}
 
@@ -102,8 +104,9 @@ public class LeximinSConstraint extends AbstractLargeIntSConstraint {
 	 * Creates a new <code>LeximinConstraint</code> instance.
 	 *
 	 * @param x the concatenation of two integer variables array
+     * @param environment
 	 */
-	public LeximinSConstraint(IntDomainVar[] x) {
+	public LeximinSConstraint(IntDomainVar[] x, IEnvironment environment) {
 		super(x);
 		if (x.length % 2 != 0 || x.length == 0) {
 			throw new IllegalArgumentException("LeximinConstraint Error: the two vectors "
@@ -111,14 +114,12 @@ public class LeximinSConstraint extends AbstractLargeIntSConstraint {
 		}
 		this.n = x.length / 2;
 
-		super.solver = x[0].getSolver();
-
-		this.alpha = super.solver.getEnvironment().makeInt();
-		this.beta = super.solver.getEnvironment().makeInt();
-		this.gamma = super.solver.getEnvironment().makeInt();
-		this.delta = super.solver.getEnvironment().makeInt();
-		this.epsilon = super.solver.getEnvironment().makeBitSet(4);
-
+		this.alpha = environment.makeInt();
+		this.beta = environment.makeInt();
+		this.gamma = environment.makeInt();
+		this.delta = environment.makeInt();
+		this.epsilon = environment.makeBitSet(4);
+        this.environment = environment;
 		this.generateVectors();
 	}
 
@@ -160,12 +161,12 @@ public class LeximinSConstraint extends AbstractLargeIntSConstraint {
 		int maximumX = 0;
 		int maximumY = 0;
 		for (int i = 0; i < n; i++) {
-			this.sortedFloorx[i] = this.solver.getEnvironment().makeInt(super.vars[i].getInf());
-			this.floorx[i] = this.solver.getEnvironment().makeInt(super.vars[i].getInf());
+			this.sortedFloorx[i] = environment.makeInt(super.vars[i].getInf());
+			this.floorx[i] = environment.makeInt(super.vars[i].getInf());
 			minimumX = minimumX > this.sortedFloorx[i].get() ? this.sortedFloorx[i].get() : minimumX;
 			maximumX = maximumX < this.sortedFloorx[i].get() ? this.sortedFloorx[i].get() : maximumX;
-			this.sortedCeily[i] = this.solver.getEnvironment().makeInt(super.vars[n + i].getSup());
-			this.ceily[i] = this.solver.getEnvironment().makeInt(super.vars[n + i].getSup());
+			this.sortedCeily[i] = environment.makeInt(super.vars[n + i].getSup());
+			this.ceily[i] = environment.makeInt(super.vars[n + i].getSup());
 			minimumY = minimumY > this.sortedCeily[i].get() ? this.sortedCeily[i].get() : minimumY;
 			maximumY = maximumY < this.sortedCeily[i].get() ? this.sortedCeily[i].get() : maximumY;
 		}

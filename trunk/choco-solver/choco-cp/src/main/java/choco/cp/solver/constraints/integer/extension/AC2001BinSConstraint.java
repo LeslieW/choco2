@@ -24,6 +24,7 @@ package choco.cp.solver.constraints.integer.extension;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.extension.BinRelation;
@@ -38,18 +39,18 @@ public class AC2001BinSConstraint extends CspBinSConstraint {
     protected int offset0;
     protected int offset1;
 
-    public AC2001BinSConstraint(IntDomainVar x0, IntDomainVar x1, BinRelation relation) {
+    public AC2001BinSConstraint(IntDomainVar x0, IntDomainVar x1, BinRelation relation, IEnvironment environment) {
         super(x0, x1, relation);
         offset0 = x0.getInf();
         offset1 = x1.getInf();
         currentSupport0 = new IStateInt[x0.getSup() - x0.getInf() + 1];
         currentSupport1 = new IStateInt[x1.getSup() - x1.getInf() + 1];
         for (int i = 0; i < currentSupport0.length; i++) {
-            currentSupport0[i] = this.getSolver().getEnvironment().makeInt();
+            currentSupport0[i] = environment.makeInt();
             currentSupport0[i].set(-1);
         }
         for (int i = 0; i < currentSupport1.length; i++) {
-            currentSupport1[i] = this.getSolver().getEnvironment().makeInt();
+            currentSupport1[i] = environment.makeInt();
             currentSupport1[i].set(-1);
         }
     }
@@ -58,10 +59,9 @@ public class AC2001BinSConstraint extends CspBinSConstraint {
         return IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
     }
 
-
-    public Object clone() {
-        return new AC2001BinSConstraint(this.v0, this.v1, this.relation);
-    }
+//    public Object clone() {
+//        return new AC2001BinSConstraint(this.v0, this.v1, this.relation, solver.getEnvironment());
+//    }
 
     // updates the support for all values in the domain of v1, and remove unsupported values for v1
     public void reviseV1() throws ContradictionException {

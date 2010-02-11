@@ -59,6 +59,7 @@ public interface IStateIntVector {
 
   public void add(int i);
 
+    public boolean contain(int val);
 
   /**
    * Removes an int.

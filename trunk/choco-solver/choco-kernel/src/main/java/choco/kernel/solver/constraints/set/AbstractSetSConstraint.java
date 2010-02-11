@@ -24,10 +24,8 @@ package choco.kernel.solver.constraints.set;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
-import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.SConstraintType;
 
 
@@ -92,21 +90,6 @@ public abstract class AbstractSetSConstraint extends AbstractSConstraint impleme
 	}
     }
     return true;
-  }
-
-  /**
-   * returns the (global) index of the constraint among all constraints of the model
-   */
-  public int getSelfIndex() {
-    Solver solver = getSolver();
-    for (int i = 0; i < solver.getNbIntConstraints(); i++) {
-      SConstraint c = null;
-      //c = pb.getSetConstraint(i);  //TODO
-      if (c == this) {
-        return i;
-      }
-    }
-    return -1;
   }
 
     @Override

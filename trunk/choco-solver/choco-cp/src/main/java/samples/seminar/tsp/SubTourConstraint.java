@@ -22,14 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.seminar.tsp;
 
-import java.util.BitSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
-
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -39,12 +35,17 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+import java.util.BitSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
+
 public class SubTourConstraint extends AbstractLargeIntSConstraint {
 
     public static class SubTourConstraintManager extends IntConstraintManager {
         public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
             if(solver instanceof CPSolver){
-                return new SubTourConstraint(solver.getVar(variables));
+                return new SubTourConstraint(solver.getVar(variables), solver.getEnvironment());
             }
 
             return null;
@@ -60,15 +61,15 @@ public class SubTourConstraint extends AbstractLargeIntSConstraint {
     protected IStateBitSet[] inPath;
     protected IStateInt[] end;
 
-    public SubTourConstraint(IntDomainVar[] s) {
+    public SubTourConstraint(IntDomainVar[] s, IEnvironment environment) {
         super(s);
         this.s = s;
         this.n = s.length;
         this.inPath = new IStateBitSet[n];
         this.end = new IStateInt[n];
         for (int i = 0; i < this.n; i++) {
-            this.inPath[i] = s[i].getSolver().getEnvironment().makeBitSet(n);
-            this.end[i] = s[i].getSolver().getEnvironment().makeInt(i);
+            this.inPath[i] = environment.makeBitSet(n);
+            this.end[i] = environment.makeInt(i);
         }
     }
 

@@ -1,24 +1,28 @@
 package choco.kernel.solver.constraints.global;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
 import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.common.util.tools.StringUtils;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.global.scheduling.IResource;
+import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
 public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 
-	private final static TaskVar[] EMPTY_TASK_ARRAY = new TaskVar[0];
+	protected PropagationEngine propagationEngine;
+
+    private final static TaskVar[] EMPTY_TASK_ARRAY = new TaskVar[0];
 
 	private final static IntDomainVar[] EMPTY_INTVAR_ARRAY = new IntDomainVar[0];
 
@@ -28,8 +32,6 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 	public final TaskVar[] tasks;
 
 	public final SConstraint[] constraints;
-
-	public Solver solver;
 
 	protected String name;
 
@@ -84,11 +86,6 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 	}
 
 	@Override
-	public final Solver getSolver() {
-		return solver;
-	}
-
-	@Override
 	public final Var getVar(int i) {
 		return i < tasks.length ? tasks[i] : vars[i];
 	}
@@ -126,7 +123,7 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 	}
 
 	@Override
-	public AbstractSConstraint opposite() {
+	public AbstractSConstraint opposite(Solver solver) {
 		throw new UnsupportedOperationException("opposite is not supported");
 	}
 
@@ -139,11 +136,6 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
-	}
-
-	@Override
-	public final void setSolver(Solver solver) {
-		this.solver = solver;
 	}
 
 	@Override
@@ -182,5 +174,21 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 		return IteratorUtils.iterator(tasks);
 	}
 
+    /**
+     * Activate a constraint.
+     * @param environment current environment
+     */
+    @Override
+    public void activate(IEnvironment environment) {}
 
+
+    /**
+     * Define the propagation engine within the constraint.
+     * Mandatory to throw {@link ContradictionException}.
+     * @param propEng the current propagation engine
+     */
+    @Override
+    public void setPropagationEngine(PropagationEngine propEng) {
+        this.propagationEngine = propEng;
+    }
 }

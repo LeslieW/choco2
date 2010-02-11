@@ -63,9 +63,9 @@ public class LexManager extends IntConstraintManager {
                 ConstraintType type = (ConstraintType)((Object[])parameters)[0];
                 int offset = (Integer)((Object[])parameters)[1];
                 if(type.equals(LEX)){
-                    return new Lex(solver.getVar(variables), offset, true);
+                    return new Lex(solver.getVar(variables), offset, true, solver.getEnvironment());
                 }else if(type.equals(LEXEQ)){
-                    return new Lex(solver.getVar(variables), offset, false);
+                    return new Lex(solver.getVar(variables), offset, false, solver.getEnvironment());
                 }
             }
         }

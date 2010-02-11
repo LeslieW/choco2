@@ -23,6 +23,7 @@
 package choco.cp.solver.constraints.integer;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
@@ -46,9 +47,9 @@ public class MinOfAList extends AbstractLargeIntSConstraint {
    */
   protected final IStateInt indexOfMinimumVariable;
 
-  public MinOfAList(final IntDomainVar[] vars) {
+  public MinOfAList(final IntDomainVar[] vars, IEnvironment environment) {
     super(vars);
-    indexOfMinimumVariable = this.getSolver().getEnvironment().makeInt(-1);
+    indexOfMinimumVariable = environment.makeInt(-1);
   }
 
   public int getFilteredEventMask(int idx) {

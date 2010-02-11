@@ -22,10 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.constraints;
 
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBool;
 import choco.kernel.solver.ContradictionException;
 import static choco.kernel.solver.ContradictionException.Type.CONSTRAINT;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.propagation.Propagator;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.propagation.event.PropagationEvent;
@@ -41,12 +43,7 @@ import java.util.HashMap;
  */
 public abstract class AbstractSConstraint implements Propagator {
 
-
-	/**
-	 * The (optimization or decision) model to which the entity belongs.
-	 */
-
-	public Solver solver;
+    protected PropagationEngine propagationEngine;
 
 	/**
 	 * The priority of the constraint.
@@ -163,8 +160,7 @@ public abstract class AbstractSConstraint implements Propagator {
 	 */
 
 	public void constAwake(boolean isInitialPropagation) {
-		solver.getPropagationEngine()
-		.postConstAwake(this, isInitialPropagation);
+		propagationEngine.postConstAwake(this, isInitialPropagation);
 	}
 
 
@@ -184,26 +180,6 @@ public abstract class AbstractSConstraint implements Propagator {
 
 	public void awake() throws ContradictionException {
 		propagate();
-	}
-
-
-	/**
-	 * Retrieve the solver of the constraint.
-	 * @return the solver linked to the constraint
-	 */
-
-	// ??????????? add the case when the constraint c involves only
-	// constant variables, considered as belonging to CURRENT_PB
-	public Solver getSolver() {
-		if (solver != null) return solver;
-		int nVars = getNbVars();
-		for (int i = 0; i < nVars; i++) {
-			Var v;
-			v = getVar(i);
-			if (!(v.getSolver() == null))
-				return v.getSolver();
-		}
-		return null;
 	}
 
 
@@ -233,7 +209,7 @@ public abstract class AbstractSConstraint implements Propagator {
 		if (active != null) {
 			active.set(false);
 			ConstraintEvent evt = constAwakeEvent;
-			EventQueue q = solver.getPropagationEngine().getQueue(evt);
+			EventQueue q = propagationEngine.getQueue(evt);
 			q.remove(evt);
 		}
 	}
@@ -246,20 +222,11 @@ public abstract class AbstractSConstraint implements Propagator {
 	}
 
 	/**
-	 * Removes a constraint from the network.
-	 * Beware, this is a permanent removal, it may not be backtracked
-	 */
-
-	public void delete() {
-		solver.eraseConstraint(this);
-	}
-
-	/**
 	 * raise a contradiction during propagation when the constraint can definitely not be satisfied given the current domains
 	 * @throws ContradictionException contradiction exception
 	 */
 	public void fail() throws ContradictionException {
-		solver.getPropagationEngine().raiseContradiction(this, CONSTRAINT);
+		propagationEngine.raiseContradiction(this, CONSTRAINT);
 	}
 
 	/**
@@ -321,9 +288,9 @@ public abstract class AbstractSConstraint implements Propagator {
 
 	/**
 	 * Get the opposite constraint
-	 * @return the opposite constraint
+	 * @return the opposite constraint  @param solver
 	 */
-	public AbstractSConstraint opposite() {
+	public AbstractSConstraint opposite(Solver solver) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -387,23 +354,26 @@ public abstract class AbstractSConstraint implements Propagator {
 		return notInst;
 	}
 
-	/*
-	 * CPRU 07/12/2007: DomOverWDeg implementation
-	 * This method sets the number of variables not already instanciated to nbVarNotInst
-	 *
-	 * @param nbVarNotInst number of not instantiated variables
-	 * @return the number of failure
+    /**
+     * Activate a constraint.
+     * @param environment current environment
+     */
+    @Override
+    public void activate(IEnvironment environment) {
+        this.active = environment.makeBool(false);
+    }
 
-    public void setNbVarNotInst(StoredInt nbVarNotInst) {
-        this.nbVarNotInst = nbVarNotInst;
-    } */
+    /**
+     * Define the propagation engine within the constraint.
+     * Mandatory to throw {@link ContradictionException}.
+     * @param propEng the current propagation engine
+     */
+    @Override
+    public void setPropagationEngine(PropagationEngine propEng) {
+        this.propagationEngine = propEng;
+    }
 
-	public void setSolver(Solver solver){
-		this.solver = solver;
-		this.active = this.solver.getEnvironment().makeBool(false);
-	}
-
-	public abstract SConstraintType getConstraintType();
+    public abstract SConstraintType getConstraintType();
 
 
 	public String pretty() {
