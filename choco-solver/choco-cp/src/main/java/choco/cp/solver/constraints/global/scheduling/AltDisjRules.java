@@ -24,11 +24,11 @@ package choco.cp.solver.constraints.global.scheduling;
 
 import choco.cp.solver.constraints.global.scheduling.trees.AltDisjTreeTL;
 import choco.cp.solver.constraints.global.scheduling.trees.AltDisjTreeTLTO;
-import choco.cp.solver.constraints.global.scheduling.trees.IThetaLambdaTree;
 import choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode;
 import static choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode.ECT;
 import static choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode.LST;
 import static choco.kernel.common.util.comparator.TaskComparators.*;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.IStateIntProcedure;
 import choco.kernel.solver.ContradictionException;
@@ -62,9 +62,9 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 	////*****************************/////
 
 	//FIXME should try to avoid insertions/deletions when the rules are not used
-	public AltDisjRules(final IRTask[] rtasks) {
+	public AltDisjRules(final IRTask[] rtasks, IEnvironment environment) {
 		super(rtasks);
-		size = rtasks[0].getTaskVar().getSolver().getEnvironment().makeIntProcedure(this, rtasks.length);
+		size = environment.makeIntProcedure(this, rtasks.length);
 		rqueue = new AltBipartiteQueue<IRTask>(rtasks);
 		altDisjTreeTL = new AltDisjTreeTL(Arrays.asList(getTaskArray()));
 		///*****************///

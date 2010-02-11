@@ -24,8 +24,10 @@ package choco.cp.solver.constraints.integer.bool;
 
 import choco.cp.solver.constraints.integer.IntLinComb;
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
@@ -55,14 +57,13 @@ public class BoolSum extends AbstractLargeIntSConstraint {
     protected int gap;
 
 
-    public BoolSum(IntDomainVar[] vars, int coef, int op) {
+    public BoolSum(IntDomainVar[] vars, int coef, int op, IEnvironment environment) {
         super(vars);
-        this.solver = vars[0].getSolver();
         this.cste = coef;
         this.op = op;
         this.gap = vars.length - cste;
-        nbz = solver.getEnvironment().makeInt(0);
-        nbo = solver.getEnvironment().makeInt(0);
+        nbz = environment.makeInt(0);
+        nbo = environment.makeInt(0);
 //        int[] lvar = new int[vars.length];
 //        for (int i = 0; i < lvar.length; i++) {
 //            lvar[i] = i;
@@ -179,20 +180,20 @@ public class BoolSum extends AbstractLargeIntSConstraint {
     /**
      * Computes the opposite of this constraint.
      *
-     * @return a constraint with the opposite semantic
+     * @return a constraint with the opposite semantic  @param solver
      */
     @Override
-    public AbstractSConstraint opposite() {
+    public AbstractSConstraint opposite(Solver solver) {
         IntDomainVar[] bvs = new IntDomainVar[vars.length];
         System.arraycopy(vars, 0, bvs, 0, vars.length);
         if (op == IntLinComb.EQ) {
-            return new BoolSum(bvs, cste, IntLinComb.NEQ);
+            return new BoolSum(bvs, cste, IntLinComb.NEQ, solver.getEnvironment());
         } else if (op == IntLinComb.NEQ) {
-            return new BoolSum(bvs, cste, IntLinComb.EQ);
+            return new BoolSum(bvs, cste, IntLinComb.EQ, solver.getEnvironment());
         } else if (op == IntLinComb.GEQ) {
-            return new BoolSum(bvs, cste - 1, IntLinComb.LEQ);
+            return new BoolSum(bvs, cste - 1, IntLinComb.LEQ, solver.getEnvironment());
         } else if (op == IntLinComb.LEQ) {
-            return new BoolSum(bvs, cste + 1, IntLinComb.GEQ);
+            return new BoolSum(bvs, cste + 1, IntLinComb.GEQ, solver.getEnvironment());
         } else {
             throw new SolverException("operator unknown for BoolIntLinComb");
         }

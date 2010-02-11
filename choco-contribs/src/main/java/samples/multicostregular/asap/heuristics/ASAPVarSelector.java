@@ -22,12 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular.asap.heuristics;
 
-import choco.kernel.solver.search.integer.AbstractIntVarSelector;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.kernel.solver.search.integer.AbstractIntVarSelector;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
  * Created by IntelliJ IDEA.
@@ -41,13 +41,13 @@ public class ASAPVarSelector extends AbstractIntVarSelector {
     IntDomainVar[][] vars;
     AbstractIntVarSelector[] varselec;
 
-    public ASAPVarSelector(IntDomainVar[][] vars)
+    public ASAPVarSelector(IntDomainVar[][] vars, Solver solver)
     {
         this.vars=  vars;
         this.varselec = new AbstractIntVarSelector[vars.length];
         for (int i = 0; i < this.varselec.length ;i++)
         {
-            varselec[i] = new MinDomain(this.vars[i][0].getSolver(),vars[i]);
+            varselec[i] = new MinDomain(solver,vars[i]);
         }
 
     }

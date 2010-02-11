@@ -22,16 +22,17 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
-import java.util.Set;
-import java.util.logging.Level;
-
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.global.scheduling.AltDisjunctive;
 import choco.cp.solver.constraints.global.scheduling.Disjunctive;
 import choco.cp.solver.constraints.global.scheduling.ForbiddenIntervals;
 import choco.kernel.model.variables.Variable;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.global.scheduling.RscData;
+
+import java.util.Set;
+import java.util.logging.Level;
 
 /**
  * @author Arnaud Malapert
@@ -47,7 +48,7 @@ public class DisjunctiveManager extends AbstractResourceManager {
 			LOGGER.log(Level.INFO, "no decomposition available: use {0} instead",  SettingType.MIXED);
 			makeMixedConstraint(solver, variables, rdata, options);
 		}else {
-			makeForbiddenIntervalConstraint(rdata, options);
+			makeForbiddenIntervalConstraint(rdata, options, solver);
 			makeDecompositionDisjunctive(solver, rdata);
 		}
 	}
@@ -55,8 +56,8 @@ public class DisjunctiveManager extends AbstractResourceManager {
 	@Override
 	protected void makeGlobalConstraint(CPSolver solver,
 			Variable[] variables, RscData rdata, Set<String> options) {
-		makeForbiddenIntervalConstraint(rdata, options);
-		makeDisjunctive(rdata, options);	
+		makeForbiddenIntervalConstraint(rdata, options, solver);
+		makeDisjunctive(solver, rdata, options);
 	}
 
 	@Override
@@ -67,11 +68,11 @@ public class DisjunctiveManager extends AbstractResourceManager {
 	}
 	
 	
-	protected final void makeDisjunctive(RscData rdata, Set<String> options) {
+	protected final void makeDisjunctive(Solver solver, RscData rdata, Set<String> options) {
 		final Disjunctive cstr = (
 				rdata.isAlternative() ? 
-						new AltDisjunctive(rdata.getRscName(), tasks, usages, uppBound) : 
-							new Disjunctive(rdata.getRscName(), tasks, uppBound)
+						new AltDisjunctive(rdata.getRscName(), tasks, usages, uppBound, solver) :
+							new Disjunctive(rdata.getRscName(), tasks, uppBound, solver)
 		);
 		cstr.getFlags().readDisjunctiveOptions(options);
 		constraints.addFirst(cstr);
@@ -86,12 +87,12 @@ public class DisjunctiveManager extends AbstractResourceManager {
 		}
 	}
 	
-	protected void makeForbiddenIntervalConstraint(RscData rdata, Set<String> options) {
+	protected void makeForbiddenIntervalConstraint(RscData rdata, Set<String> options, Solver solver) {
 		if( options.contains(SettingType.FORBIDDEN_INTERVALS.getOptionName()) ) {
 			if ( rdata.getNbOptionalTasks() > 0 ) {
 				LOGGER.log(Level.WARNING, "no Forbidden intervals with alternative resources {0}", rdata);
 			} 
-			constraints.add(new ForbiddenIntervals("ForbInt-"+rdata.getRscName(), tasks, uppBound));
+			constraints.add(new ForbiddenIntervals(solver, "ForbInt-"+rdata.getRscName(), tasks, uppBound));
 		}
 	}
 //

@@ -57,7 +57,7 @@ public class PertSConstraint extends AbstractResourceSConstraint implements IPre
 
 
 	public PertSConstraint(Solver solver, IntDomainVar uppBound) {
-		super("PERT",createTaskVarArray(solver), uppBound);
+		super(solver, "PERT",createTaskVarArray(solver), uppBound);
 		final int n = getNbTasks();
 		network = new DagDTC(n);
 		network.setTransitiveArcAdded(false);
@@ -162,10 +162,10 @@ public class PertSConstraint extends AbstractResourceSConstraint implements IPre
 
 
 	@Override
-	public void addStaticPrecedence(TaskVar t1, TaskVar t2) {
+	public void addStaticPrecedence(Solver solver, TaskVar t1, TaskVar t2) {
 		final int i = t1.getID();
 		final int j = t2.getID();
-		final boolean initialWorld = getSolver().getEnvironment().getWorldIndex() == 0;
+		final boolean initialWorld = solver.getEnvironment().getWorldIndex() == 0;
 		switch(network.add(i, j)) {
 		case GraphDTC.ADDED : break;
 		case GraphDTC.CYCLE : {

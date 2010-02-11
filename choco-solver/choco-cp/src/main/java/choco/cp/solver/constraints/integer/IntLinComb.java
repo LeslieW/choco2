@@ -579,10 +579,9 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
 
 	/**
 	 * Computes the opposite of this constraint.
-	 * @return a constraint with the opposite semantic
+	 * @return a constraint with the opposite semantic  @param solver
 	 */
-	public AbstractSConstraint opposite() {
-		Solver solver = getSolver();
+	public AbstractSConstraint opposite(Solver solver) {
 		IntExp term = solver.scalar(coeffs, vars);
 		if (op == EQ) {
 			return (AbstractSConstraint) solver.neq(term, -cste);

@@ -49,9 +49,9 @@ public class LayeredGraph {
 
 
 
-    public LayeredGraph(IntDomainVar[] vars, IntDomainVar z, Automaton pi, double[][][] costs)
+    public LayeredGraph(IntDomainVar[] vars, IntDomainVar z, Automaton pi, double[][][] costs, IEnvironment environment)
     {
-        this.env = vars[0].getSolver().getEnvironment();
+        this.env = environment;
         this.vars = vars;
         this.z = z;
         this.pi = pi;
@@ -271,8 +271,8 @@ public class LayeredGraph {
         }
 
 
-        activeOut = vars[0].getSolver().getEnvironment().makeBitSet(sortOut.size());
-        activeIn = vars[0].getSolver().getEnvironment().makeBitSet(sortOut.size());
+        activeOut = env.makeBitSet(sortOut.size());
+        activeIn = env.makeBitSet(sortOut.size());
 
         for (int i = 0  ; i < sortOut.size() ; i++) {
             activeOut.set(i);
@@ -619,7 +619,7 @@ public class LayeredGraph {
                     csts[i][j][k] = r.nextInt(5);
 
 
-        LayeredGraph g = new LayeredGraph(vars,z,pi,csts);
+        LayeredGraph g = new LayeredGraph(vars,z,pi,csts, s.getEnvironment());
         try {
             g.makeGraph();
         } catch (ContradictionException e) {

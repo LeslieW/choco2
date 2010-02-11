@@ -28,6 +28,7 @@ import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
+import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.variables.integer.IBitSetIntDomain;
 
 import java.util.Random;
@@ -82,39 +83,39 @@ public class BitSetIntDomain extends AbstractIntDomain implements IBitSetIntDoma
      * @param v The involved variable.
      * @param a Minimal value.
      * @param b Maximal value.
+     * @param environment
+     * @param propagationEngine
      */
 
-    public BitSetIntDomain(IntDomainVarImpl v, int a, int b) {
-        super(v.getSolver().getPropagationEngine());
+    public BitSetIntDomain(IntDomainVarImpl v, int a, int b, IEnvironment environment, PropagationEngine propagationEngine) {
+        super(propagationEngine);
         variable = v;
-        final IEnvironment env = v.getSolver().getEnvironment();
         capacity = b - a + 1;           // number of entries
         this.offset = a;
-        size = env.makeInt(capacity);
-        contents = env.makeBitSet(capacity);
+        size = environment.makeInt(capacity);
+        contents = environment.makeBitSet(capacity);
         contents.set(0, capacity);
         deltaDom = new BitSetDeltaDomain(capacity, offset);
-        inf = env.makeInt(a);
-        sup = env.makeInt(b);
+        inf = environment.makeInt(a);
+        sup = environment.makeInt(b);
     }
 
-    public BitSetIntDomain(IntDomainVarImpl v, int[] sortedValues) {
-        super(v.getSolver().getPropagationEngine());
+    public BitSetIntDomain(IntDomainVarImpl v, int[] sortedValues, IEnvironment environment, PropagationEngine propagationEngine) {
+        super(propagationEngine);
         int a = sortedValues[0];
         int b = sortedValues[sortedValues.length - 1];
         variable = v;
-        final IEnvironment env = v.getSolver().getEnvironment();
         capacity = b - a + 1;           // number of entries
         this.offset = a;
-        size = env.makeInt(sortedValues.length);
-        contents = env.makeBitSet(capacity);
+        size = environment.makeInt(sortedValues.length);
+        contents = environment.makeBitSet(capacity);
         // TODO : could be improved...
         for (int sortedValue : sortedValues) {
             contents.set(sortedValue - a);
         }
         deltaDom = new BitSetDeltaDomain(capacity, offset);
-        inf =  env.makeInt(a);
-        sup =  env.makeInt(b);
+        inf =  environment.makeInt(a);
+        sup =  environment.makeInt(b);
     }
 
 	public IStateBitSet getContent() {

@@ -22,9 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.varselector;
 
+import choco.kernel.memory.IStateInt;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.memory.IStateInt;
 
 /**
  * A variable selector selecting the first non instantiated variable according to a given static order
@@ -33,8 +34,8 @@ public class StaticVarOrder extends AbstractIntVarSelector {
 
   private final IStateInt last;
 
-  public StaticVarOrder(IntDomainVar[] vars) {
-    this.last = vars[0].getSolver().getEnvironment().makeInt(0);
+  public StaticVarOrder(Solver solver, IntDomainVar[] vars) {
+    this.last = solver.getEnvironment().makeInt(0);
     this.vars = vars;
   }
 

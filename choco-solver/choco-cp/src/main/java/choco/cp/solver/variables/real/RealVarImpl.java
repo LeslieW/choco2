@@ -45,12 +45,15 @@ import java.util.Set;
 public final class RealVarImpl extends AbstractVar implements RealVar {
   protected RealDomain domain;
 
+    private final Solver solver;
+
   public RealVarImpl(Solver solver, String name, double a, double b, int domaintype) {
-    super(solver, name, new PartiallyStoredRealCstrList(solver.getEnvironment()));
+    super(solver, name, new PartiallyStoredRealCstrList<RealSConstraint>(solver.getEnvironment()));
     if (domaintype == RealVar.BOUNDS) {
-     this.domain = new RealDomainImpl(this, a, b);
+     this.domain = new RealDomainImpl(this, a, b, solver);
     } else throw new SolverException("Unknown real domain");
     this.event = new RealVarEvent(this);
+      this.solver = solver;
   }
 
     public final DisposableIterator<Couple<RealSConstraint>> getActiveConstraints(int cstrCause){

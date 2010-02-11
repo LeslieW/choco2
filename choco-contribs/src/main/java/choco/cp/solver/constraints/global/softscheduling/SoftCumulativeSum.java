@@ -26,22 +26,21 @@ public class SoftCumulativeSum extends SoftCumulative {
 	protected StoredInt profileMinSum;  // must be maintained for interval-based LB
 
 	public SoftCumulativeSum(IntDomainVar[] starts,
-                                  IntDomainVar[] ends,
-                                  IntDomainVar[] durations,
-                                  IntDomainVar[] heights,
-                                  IntDomainVar[] costVars,
-                                  IntDomainVar obj,
-                                  int wishCapa,
-                                  int capa) {
+                             IntDomainVar[] ends,
+                             IntDomainVar[] durations,
+                             IntDomainVar[] heights,
+                             IntDomainVar[] costVars,
+                             IntDomainVar obj,
+                             int wishCapa,
+                             int capa, Solver solver) {
 		super(starts,ends,durations,heights,costVars,wishCapa,capa);
-		initialize(costVars, obj);
+		initialize(costVars, obj, solver);
 	}
 
-	protected void initialize(IntDomainVar[] costVars, IntDomainVar obj) {
+	protected void initialize(IntDomainVar[] costVars, IntDomainVar obj, Solver solver) {
 		recomputeVars(obj);
-		Solver pb = obj.getSolver();
-		pb.post(pb.eq(pb.sum(costVars), obj)); //  to be improved
-		EnvironmentTrailing env = (EnvironmentTrailing) pb.getEnvironment();
+        solver.post(solver.eq(solver.sum(costVars), obj)); //  to be improved
+		EnvironmentTrailing env = (EnvironmentTrailing) solver.getEnvironment();
 		profileMinSum = new StoredInt(env,0);
 	}
 
@@ -59,14 +58,14 @@ public class SoftCumulativeSum extends SoftCumulative {
 		}
 	}
 
-	public SoftCumulativeSum(     IntDomainVar[] starts,
-            			  		  int[] durations,
-            			  		  int[] heights,
-            			  		  IntDomainVar[] costVars,
-            			  		  IntDomainVar obj,
-            			  		  int wishCapa) {
-		super(starts,durations,heights,costVars,wishCapa);
-		initialize(costVars, obj);
+	public SoftCumulativeSum(IntDomainVar[] starts,
+                             int[] durations,
+                             int[] heights,
+                             IntDomainVar[] costVars,
+                             IntDomainVar obj,
+                             int wishCapa, Solver solver) {
+		super(starts,durations,heights,costVars,wishCapa, solver);
+		initialize(costVars, obj, solver);
 	}
 
 	// --------------

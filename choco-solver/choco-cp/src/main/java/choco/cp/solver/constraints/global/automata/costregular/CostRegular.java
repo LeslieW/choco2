@@ -140,14 +140,15 @@ public class CostRegular extends AbstractLargeIntSConstraint
      * @param costVar the cost variable
      * @param auto  the automaton describing the regular language
      * @param costs the cost of taking value j for the variable i
+     * @param environment
      * @return  a instance of the constraint
      */
-    public static CostRegular make(IntDomainVar[] vars, IntDomainVar costVar, Automaton auto, int[][] costs)
+    public static CostRegular make(IntDomainVar[] vars, IntDomainVar costVar, Automaton auto, int[][] costs, IEnvironment environment)
     {
         IntDomainVar[] tab = new IntDomainVar[vars.length+1];
         System.arraycopy(vars,0,tab,0,vars.length);
         tab[vars.length] = costVar;
-        return new CostRegular(tab,auto,costs);
+        return new CostRegular(tab,auto,costs, environment);
     }
 
 
@@ -158,9 +159,10 @@ public class CostRegular extends AbstractLargeIntSConstraint
      * @param vars The variables of the constraint, the last variable is the cost one
      * @param auto the automaton that defined the allowed tuples
      * @param costs the cost of taking value j for the variable i
+     * @param environment
      */
     @SuppressWarnings("unchecked")
-    protected CostRegular(IntDomainVar[] vars, Automaton auto, int[][] costs)
+    protected CostRegular(IntDomainVar[] vars, Automaton auto, int[][] costs, IEnvironment environment)
     {
         super(vars);
         this.automaton = auto;
@@ -171,7 +173,7 @@ public class CostRegular extends AbstractLargeIntSConstraint
             this.costs[costs.length] = new int[1] ;
         }
 
-        this.env = vars[0].getSolver().getEnvironment();
+        this.env = environment;
         if (auto != null)
             this.nbNodes = auto.size();
 
@@ -519,7 +521,7 @@ public class CostRegular extends AbstractLargeIntSConstraint
         for (int i = 0 ; i < map.length ; i++)
         {
             st.append("\n");
-            st.append("VAR = ").append(i).append("  AT WORLD : ").append(vars[0].getSolver().getEnvironment().getWorldIndex()).append("\n");
+            st.append("VAR = ").append(i).append("  AT WORLD : ").append(env.getWorldIndex()).append("\n");
             for (Object a : map[i])
                 st.append(a).append("\n");
         }
@@ -1036,7 +1038,7 @@ public class CostRegular extends AbstractLargeIntSConstraint
          */
         public State(int layer, int index, CostRegular constraint)
         {
-            IEnvironment env = constraint.getSolver().getEnvironment();
+            IEnvironment env = constraint.env;
             cr = constraint;
             this.layer = layer;
             this.index = index;

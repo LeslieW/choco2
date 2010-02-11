@@ -23,6 +23,7 @@
 package choco.cp.solver.constraints.global;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBool;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
@@ -46,7 +47,7 @@ public class Lex extends AbstractLargeIntSConstraint {
 	public boolean strict = false;
 
 	// two vectors of same size n vars = [.. v1 ..,.. v2 ..]
-	public Lex(IntDomainVar[] vars, int n, boolean strict) {
+	public Lex(IntDomainVar[] vars, int n, boolean strict, IEnvironment environment) {
 		super(vars);
 		x = new IntDomainVar[n];
 		y = new IntDomainVar[n];
@@ -56,9 +57,9 @@ public class Lex extends AbstractLargeIntSConstraint {
 		}
 		this.strict = strict;
 		this.n = n;
-		alpha = vars[0].getSolver().getEnvironment().makeInt(0);
-		beta = vars[0].getSolver().getEnvironment().makeInt(0);
-		entailed = vars[0].getSolver().getEnvironment().makeBool(false);
+		alpha = environment.makeInt(0);
+		beta = environment.makeInt(0);
+		entailed = environment.makeBool(false);
 	}
 
     @Override

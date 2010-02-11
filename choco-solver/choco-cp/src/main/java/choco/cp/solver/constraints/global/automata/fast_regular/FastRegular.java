@@ -1,24 +1,25 @@
 package choco.cp.solver.constraints.global.automata.fast_regular;
 
 
+import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
+import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.global.automata.fast_regular.structure.Arc;
 import choco.kernel.solver.constraints.global.automata.fast_regular.structure.Node;
 import choco.kernel.solver.constraints.global.automata.fast_regular.structure.StoredDirectedMultiGraph;
-import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
-import org.jgrapht.graph.DirectedMultigraph;
-
-
-import java.util.*;
-
 import gnu.trove.TIntHashSet;
 import gnu.trove.TIntIterator;
 import gnu.trove.TIntStack;
+import org.jgrapht.graph.DirectedMultigraph;
+
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashSet;
 
 /**
  * Created by IntelliJ IDEA.
@@ -43,10 +44,11 @@ public class FastRegular extends AbstractLargeIntSConstraint {
 
     /**
      * Construct a new explained regular constraint
+     * @param environment
      * @param vars Variables that must form a word accepted by auto
      * @param auto An automaton forming a regular languauge
      */
-    public FastRegular(IntDomainVar[] vars, Automaton auto) {
+    public FastRegular(IEnvironment environment, IntDomainVar[] vars, Automaton auto) {
         super(vars);
         this.auto = auto;
 
@@ -211,7 +213,7 @@ public class FastRegular extends AbstractLargeIntSConstraint {
 
 
 
-        this.graph = new StoredDirectedMultiGraph(this,graph,starts,offsets,totalSizes);
+        this.graph = new StoredDirectedMultiGraph(environment, this,graph,starts,offsets,totalSizes);
 
 
     }

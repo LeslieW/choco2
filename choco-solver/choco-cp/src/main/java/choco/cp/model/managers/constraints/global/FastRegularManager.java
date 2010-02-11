@@ -22,7 +22,7 @@ public class FastRegularManager extends IntConstraintManager {
             {
                 Automaton auto = (Automaton) parameters;
                 IntDomainVar[] vs = solver.getVar((IntegerVariable[]) variables);
-                return new FastRegular(vs,auto);
+                return new FastRegular(solver.getEnvironment(), vs,auto);
 
             }
             return null;

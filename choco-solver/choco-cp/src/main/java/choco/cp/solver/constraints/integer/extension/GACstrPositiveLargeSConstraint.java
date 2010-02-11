@@ -24,8 +24,8 @@ package choco.cp.solver.constraints.integer.extension;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.memory.structure.StoredIntBipartiteList;
-import choco.kernel.memory.trailing.EnvironmentTrailing;
+import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.constraints.integer.extension.TuplesList;
@@ -74,13 +74,12 @@ public class GACstrPositiveLargeSConstraint extends CspLargeSConstraint {
      * The backtrackable list of tuples representing the current
      * allowed tuples of the constraint
      */
-    protected StoredIntBipartiteList ltuples;
+    protected IStateIntVector ltuples;
 
 
-    public GACstrPositiveLargeSConstraint(IntDomainVar[] vs, LargeRelation relation) {
+    public GACstrPositiveLargeSConstraint(IntDomainVar[] vs, LargeRelation relation, IEnvironment environment) {
         super(vs, relation);
         this.arity = vs.length;
-        this.solver = vs[0].getSolver();
         this.relation = (TuplesList) relation;
         this.futureVars = new LinkedList<Integer>();
         this.gacValues = new BitSet[arity];
@@ -96,7 +95,7 @@ public class GACstrPositiveLargeSConstraint extends CspLargeSConstraint {
         for (int i = 0; i < listuples.length; i++) {
             listuples[i] = i;
         }
-        ltuples = (StoredIntBipartiteList) ((EnvironmentTrailing) this.solver.getEnvironment()).makeBipartiteIntList(listuples);
+        ltuples = environment.makeBipartiteIntList(listuples);
 
         int[][] tt = this.relation.getTupleTable();
         boolean fastValidCheckAllowed = true;

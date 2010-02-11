@@ -24,6 +24,7 @@
 package choco.kernel.solver.constraints.global.matching;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.ContradictionException;
@@ -77,30 +78,31 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	/**
 	 * Constructor
 	 *
-	 * @param vars    the graph, a left vextex per vars, a right vertex per domain value
-	 * @param nbLeft  number of left nodes, = vars.length
-	 * @param nbRight number of right nodes, domain values of vars
-	 */
-	public AbstractBipartiteGraph(IntDomainVar[] vars, int nbLeft, int nbRight) {
+	 * @param environment
+     * @param vars    the graph, a left vextex per vars, a right vertex per domain value
+     * @param nbLeft  number of left nodes, = vars.length
+     * @param nbRight number of right nodes, domain values of vars
+     */
+	public AbstractBipartiteGraph(IEnvironment environment, IntDomainVar[] vars, int nbLeft, int nbRight) {
 		super(vars);
-		init(nbLeft, nbRight);
+		init(environment, nbLeft, nbRight);
 	}
+//
+//	public Object clone() throws CloneNotSupportedException {
+//		AbstractBipartiteGraph newc = (AbstractBipartiteGraph) super.clone();
+//		newc.init(s.getEnvironment(), this.nbLeftVertices, this.nbRightVertices);
+//		return newc;
+//	}
 
-	public Object clone() throws CloneNotSupportedException {
-		AbstractBipartiteGraph newc = (AbstractBipartiteGraph) super.clone();
-		newc.init(this.nbLeftVertices, this.nbRightVertices);
-		return newc;
-	}
-
-	protected void init(int nbLeft, int nbRight) {
+	protected void init(IEnvironment environment, int nbLeft, int nbRight) {
 		//this.nbLeftVertices = this.vars.length;
 		this.nbLeftVertices = nbLeft;
 		//this.nbRightVertices = this.maxValue - this.minValue + 1;
 		this.nbRightVertices = nbRight;
 		this.nbVertices = this.nbLeftVertices + this.nbRightVertices + 1;
 
-		this.refMatch = this.getSolver().getEnvironment().makeIntVector(this.nbLeftVertices, -1);
-		this.matchingSize = this.getSolver().getEnvironment().makeInt(0);
+		this.refMatch = environment.makeIntVector(this.nbLeftVertices, -1);
+		this.matchingSize = environment.makeInt(0);
 		this.queue = new IntQueue(this.nbVertices - 1);
 		this.left2rightArc = new int[this.nbLeftVertices];
 		this.right2leftArc = new int[this.nbRightVertices];

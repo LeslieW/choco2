@@ -27,6 +27,7 @@ import static choco.Choco.makeLargeRelation;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.constraints.integer.extension.*;
 import choco.cp.solver.variables.integer.BitSetIntDomain;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -34,8 +35,8 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.extension.*;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 
 /*
  * Created by IntelliJ IDEA.
@@ -63,9 +64,9 @@ public class TableManager extends IntConstraintManager {
         if (vs.length == 2
                 && !options.contains("cp:ac2008") 
                 && !(ps[1] instanceof LargeRelation)) { //ac binaire
-            return buildBinaryTable(vs, parameters, options);
+            return buildBinaryTable(vs, parameters, options, solver.getEnvironment());
         } else { //ac naire
-            return buildNaryTable(vs, parameters, options);
+            return buildNaryTable(vs, parameters, options, solver.getEnvironment());
 
         }
     }
@@ -74,20 +75,20 @@ public class TableManager extends IntConstraintManager {
     //*************** Binairy AC ******************//    
     //*********************************************//
 
-    public SConstraint buildBinaryTable(IntDomainVar[] vs, Object parameters, Set<String> options) {
+    public SConstraint buildBinaryTable(IntDomainVar[] vs, Object parameters, Set<String> options, IEnvironment environment) {
         Object[] ps = (Object[]) parameters;
         IntDomainVar v1 = vs[0];
         IntDomainVar v2 = vs[1];
         if (ps[1] instanceof BinRelation) {
-            return buildBinaryTable(v1, v2, (BinRelation) ps[1], options);
+            return buildBinaryTable(v1, v2, (BinRelation) ps[1], options, environment);
         } else {
             boolean feas = (Boolean) ps[0];
             BinRelation binR = makePairAC(v1, v2, ps[1], feas, options);
-            return buildBinaryTable(v1, v2, binR, options);
+            return buildBinaryTable(v1, v2, binR, options, environment);
         }
     }
 
-    public SConstraint buildBinaryTable(IntDomainVar v1, IntDomainVar v2, BinRelation binR, Set<String> options) {
+    public SConstraint buildBinaryTable(IntDomainVar v1, IntDomainVar v2, BinRelation binR, Set<String> options, IEnvironment environment) {
         if (options.contains("cp:fc")) {
             return new FCBinSConstraint(v1,v2,binR);
         } else if (options.contains("cp:ac3")) {
@@ -97,7 +98,7 @@ public class TableManager extends IntConstraintManager {
         } else if (options.contains("cp:ac322")) {
             return new AC3rmBitBinSConstraint(v1, v2, (CouplesBitSetTable) binR);
         } else if (options.contains("cp:ac2001")) {
-            return new AC2001BinSConstraint(v1, v2, binR);
+            return new AC2001BinSConstraint(v1, v2, binR, environment);
         } else { //default choice
             if (binR instanceof CouplesBitSetTable && (v1.getDomain() instanceof BitSetIntDomain) && (v2.getDomain() instanceof BitSetIntDomain)) {
                 return new AC3rmBitBinSConstraint(v1, v2, (CouplesBitSetTable) binR);
@@ -121,18 +122,18 @@ public class TableManager extends IntConstraintManager {
     //*************** Nary AC *********************//    
     //*********************************************//
 
-    public SConstraint buildNaryTable(IntDomainVar[] vs, Object parameters, Set<String> options) {
+    public SConstraint buildNaryTable(IntDomainVar[] vs, Object parameters, Set<String> options, IEnvironment environment) {
         Object[] ps = (Object[]) parameters;
         if (ps[1] instanceof LargeRelation) {
-            return buildNaryTable(vs, (LargeRelation) ps[1], options);
+            return buildNaryTable(vs, (LargeRelation) ps[1], options, environment);
         } else {
             boolean feas = (Boolean) ps[0];
             LargeRelation rela = makeTupleAC(vs,(List<int[]>) ps[1],feas,options);
-            return buildNaryTable(vs, rela, options);
+            return buildNaryTable(vs, rela, options, environment);
         }
     }
 
-    public SConstraint buildNaryTable(IntDomainVar[] vs, LargeRelation rela, Set<String> options) {
+    public SConstraint buildNaryTable(IntDomainVar[] vs, LargeRelation rela, Set<String> options, IEnvironment environment) {
         if (options.contains("cp:fc")) {
             return new CspLargeSConstraint(vs, rela);
         } else {
@@ -140,7 +141,7 @@ public class TableManager extends IntConstraintManager {
                 if (options.contains("cp:ac32")) {
                     return new GAC3rmPositiveLargeConstraint(vs, (IterTuplesTable) rela);
                 } else if (options.contains("cp:ac2001")) {
-                    return new GAC2001PositiveLargeConstraint(vs, (IterTuplesTable) rela);
+                    return new GAC2001PositiveLargeConstraint(environment, vs, (IterTuplesTable) rela);
                 } else {
                     return new GAC3rmPositiveLargeConstraint(vs, (IterTuplesTable) rela);
                 }
@@ -148,9 +149,9 @@ public class TableManager extends IntConstraintManager {
                 if (options.contains("cp:ac32")) {
                     return new GAC3rmLargeConstraint(vs, rela);
                 } else if (options.contains("cp:ac2001")) {
-                    return new GAC2001LargeSConstraint(vs, rela);
+                    return new GAC2001LargeSConstraint(vs, rela, environment);
                 } else if (options.contains("cp:ac2008") && rela instanceof TuplesList) {
-                    return new GACstrPositiveLargeSConstraint(vs, rela);
+                    return new GACstrPositiveLargeSConstraint(vs, rela, environment);
                 } else {
                     return new GAC3rmLargeConstraint(vs, rela); 
                 }

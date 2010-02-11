@@ -26,6 +26,7 @@ package choco.cp.solver.constraints.integer;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractUnIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -136,8 +137,8 @@ public final class EqualXC extends AbstractUnIntSConstraint {
 	}
 
 	@Override
-	public AbstractSConstraint opposite() {
-		return (AbstractSConstraint) getSolver().neq(v0, cste);
+	public AbstractSConstraint opposite(Solver solver) {
+		return (AbstractSConstraint) solver.neq(v0, cste);
 	}
 
 

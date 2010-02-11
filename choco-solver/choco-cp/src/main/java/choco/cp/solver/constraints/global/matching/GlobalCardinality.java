@@ -24,6 +24,7 @@
 
 package choco.cp.solver.constraints.global.matching;
 
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.global.matching.AbstractBipartiteFlow;
@@ -45,9 +46,10 @@ public class GlobalCardinality extends AbstractBipartiteFlow implements IntSCons
    * @param maxValue greatest value that could be assigned to variable
    * @param low      minimum for each value
    * @param up       maximum occurences for each value
+   * @param environment
    */
-  public GlobalCardinality(IntDomainVar[] vars, int minValue, int maxValue, int[] low, int[] up) {
-      super(vars, vars.length, maxValue - minValue + 1);
+  public GlobalCardinality(IntDomainVar[] vars, int minValue, int maxValue, int[] low, int[] up, IEnvironment environment) {
+      super(environment, vars, vars.length, maxValue - minValue + 1);
       globalCardinalityTest(vars, minValue, maxValue, low, up);
       this.minValue = minValue;
       this.maxValue = maxValue;
@@ -64,9 +66,10 @@ public class GlobalCardinality extends AbstractBipartiteFlow implements IntSCons
    * @param vars the variable list
    * @param low  minimum for each value
    * @param up   maximum occurences for each value
+   * @param environment
    */
-  public GlobalCardinality(IntDomainVar[] vars, int[] low, int[] up) {
-    super(vars, vars.length, low.length);
+  public GlobalCardinality(IntDomainVar[] vars, int[] low, int[] up, IEnvironment environment) {
+    super(environment, vars, vars.length, low.length);
     globalCardinalityTest(vars, 1, low.length, low, up);
     this.minValue = 1;
     this.maxValue = low.length;

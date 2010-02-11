@@ -90,6 +90,15 @@ public class StoredIntBipartiteList implements IStateIntVector {
         return list[index];
     }
 
+    @Override
+    public boolean contain(int val) {
+        int llast = last.get();
+        for (int i = 0; i< llast; i++){
+            if(val == list[i])return true;
+        }
+        return false;
+    }
+
     public int set(final int index, final int val) {
         throw new SolverException("setting an element is not permitted on this structure");
     }

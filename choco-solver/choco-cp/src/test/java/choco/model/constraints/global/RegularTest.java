@@ -873,10 +873,6 @@ public class RegularTest {
         s.solve();
         if (s.isFeasible()) {
             do {
-                for(IntegerVariable v : vars){
-                    System.out.print(s.getVar(v).getVal()+ " ");
-                }
-                System.out.println();
                 Assert.assertTrue(s.checkSolution());
             }while (s.nextSolution());
         }

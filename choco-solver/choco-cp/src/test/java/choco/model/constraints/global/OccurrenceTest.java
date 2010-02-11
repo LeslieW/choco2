@@ -29,9 +29,9 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.model.Model;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import org.junit.After;
@@ -333,7 +333,7 @@ public class OccurrenceTest {
             int nbc = version3(seed, tableVars, cubeVars);
             assertEquals(nba, nbb);
             assertEquals(nbb, nbc);
-            System.out.println("---------");
+            LOGGER.info("---------");
         }
     }
 
@@ -368,7 +368,7 @@ public class OccurrenceTest {
         solver.setVarIntSelector(new RandomIntVarSelector(solver,seed));
         solver.setValIntSelector(new RandomIntValSelector(seed));
         solver.solveAll();
-        System.out.println("Version1: " + seed + " number of solution : " + solver.getNbSolutions()+ " node: " + solver.getNodeCount() + " time: " + solver.getTimeCount());
+        LOGGER.info("Version1: " + seed + " number of solution : " + solver.getNbSolutions()+ " node: " + solver.getNodeCount() + " time: " + solver.getTimeCount());
         return solver.getNbSolutions();
         
     }
@@ -400,7 +400,7 @@ public class OccurrenceTest {
         solver.setVarIntSelector(new RandomIntVarSelector(solver,seed));
         solver.setValIntSelector(new RandomIntValSelector(seed));
         solver.solveAll();
-        System.out.println("Version2: "+ seed + " number of solution : " + solver.getNbSolutions() + " node: " + solver.getNodeCount() + " time: " + solver.getTimeCount());
+        LOGGER.info("Version2: "+ seed + " number of solution : " + solver.getNbSolutions() + " node: " + solver.getNodeCount() + " time: " + solver.getTimeCount());
         return solver.getNbSolutions();
         
     }
@@ -442,7 +442,7 @@ public class OccurrenceTest {
         solver.setVarIntSelector(new RandomIntVarSelector(solver,seed));
         solver.setValIntSelector(new RandomIntValSelector(seed));
         solver.solveAll();
-        System.out.println("Version 3: "+ seed + " number of solution : " + solver.getNbSolutions() + " node: " + solver.getNodeCount() + " time: " + solver.getTimeCount());
+        LOGGER.info("Version 3: "+ seed + " number of solution : " + solver.getNbSolutions() + " node: " + solver.getNodeCount() + " time: " + solver.getTimeCount());
         return solver.getNbSolutions();
     }
 

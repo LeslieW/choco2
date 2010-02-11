@@ -44,7 +44,6 @@ public abstract class AbstractBinRealIntSConstraint extends AbstractMixedSRealIn
   public AbstractBinRealIntSConstraint(RealVar v0, IntDomainVar v1) {
     this.v0 = v0;
     this.v1 = v1;
-    this.solver = v0.getSolver();
   }
 
   @Override

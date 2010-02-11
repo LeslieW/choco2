@@ -22,12 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.constraints;
 
-import java.util.logging.Logger;
-
 import choco.IPretty;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.variables.Var;
+
+import java.util.logging.Logger;
 
 public interface SConstraint extends Cloneable,IPretty {
 
@@ -75,9 +77,9 @@ public interface SConstraint extends Cloneable,IPretty {
 	/**
 	 * computes the constraint modelling the counter-opposite condition of this
 	 *
-	 * @return a new constraint (modelling the opposite condition)
+	 * @return a new constraint (modelling the opposite condition)  @param solver
 	 */
-	AbstractSConstraint opposite();
+	AbstractSConstraint opposite(Solver solver);
 
 	/**
 	 * returns a copy of the constraint. This copy is a new object, may be a recursive copy in case
@@ -128,14 +130,17 @@ public interface SConstraint extends Cloneable,IPretty {
 	 */
 	int getFineDegree(int idx);
 
-	/**
-	 * Retrieves the model of the entity.
-	 */
+    /**
+     * Activate a constraint.
+     * @param environment current environment
+     */
+    public void activate(IEnvironment environment);
 
-	public Solver getSolver();
-
-
-	public void setSolver(Solver solver);
-
+    /**
+     * Define the propagation engine within the constraint.
+     * Mandatory to throw {@link ContradictionException}.
+     * @param propEng the current propagation engine
+     */
+    void setPropagationEngine(PropagationEngine propEng);
 
 }

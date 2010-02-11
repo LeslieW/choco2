@@ -28,6 +28,7 @@ import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.propagation.PropagationEngine;
 
 import java.util.Random;
 
@@ -51,12 +52,11 @@ public class IntervalIntDomain extends AbstractIntDomain {
 
     protected final IStateInt sup;
 
-    public IntervalIntDomain(IntDomainVarImpl v, int a, int b) {
-        super(v.getSolver().getPropagationEngine());
+    public IntervalIntDomain(IntDomainVarImpl v, int a, int b, IEnvironment environment, PropagationEngine propagationEngine) {
+        super(propagationEngine);
         variable = v;
-        final IEnvironment env = v.getSolver().getEnvironment();
-        inf = env.makeInt(a);
-        sup = env.makeInt(b);
+        inf = environment.makeInt(a);
+        sup = environment.makeInt(b);
         deltaDom = new IntervalDeltaDomain(this, a,b);
 
     }

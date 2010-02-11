@@ -28,7 +28,6 @@ import choco.kernel.common.IIndex;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
-import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.event.VarEvent;
 
@@ -50,15 +49,6 @@ public interface Var extends IPretty, IIndex {
 	 */
 	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
-	/**
-	 * <b>Public user API:</b>
-	 * <i>Util :</i> retrieves the solver to which the variable belongs.
-	 * @return the solver to which the variable belongs
-	 */
-	public Solver getSolver();
-
-
-	public void setSolver(Solver solver);
 
 	/**
 	 * Returns the number of listeners involving the variable.

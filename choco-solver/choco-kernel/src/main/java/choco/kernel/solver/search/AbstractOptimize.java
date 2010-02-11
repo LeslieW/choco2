@@ -22,11 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.search;
 
-import java.util.logging.Level;
-
-import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.Var;
 
 
@@ -50,11 +48,11 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 
 	/**
 	 * constructor
-	 * @param maximize maximization or minimization ?
 	 * @param solver the solver
-	 */
-	protected AbstractOptimize(IObjectiveManager bounds, boolean maximize) {
-		super(bounds.getObjective().getSolver());
+     * @param maximize maximization or minimization ?
+     */
+	protected AbstractOptimize(Solver solver, IObjectiveManager bounds, boolean maximize) {
+		super(solver);
 		this.bounds = bounds;
 		objective = bounds.getObjective();
 		doMaximize = maximize;

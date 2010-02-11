@@ -22,23 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.automata.fast_multicostregular;
 
-import gnu.trove.TIntHashSet;
-import gnu.trove.TIntIterator;
-import gnu.trove.TObjectIntHashMap;
-
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.jgrapht.graph.DirectedMultigraph;
-
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.Constants;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.common.Constants;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
@@ -52,6 +42,15 @@ import choco.kernel.solver.constraints.global.automata.fast_multicostregular.str
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.StoredDirectedMultiGraph;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import gnu.trove.TIntHashSet;
+import gnu.trove.TIntIterator;
+import gnu.trove.TObjectIntHashMap;
+import org.jgrapht.graph.DirectedMultigraph;
+
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -182,6 +181,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
      */
     protected final TIntHashSet removed = new TIntHashSet();
 
+    private final IEnvironment environment;
 
     /**
      * Constructs a multi-cost-regular constraint propagator
@@ -202,10 +202,12 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
      * @param CR    cost variables
      * @param auto  finite automaton
      * @param costs assignment cost arrays
+     * @param environment
      */
-    public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final Automaton auto, final double[][][] costs)
+    public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final Automaton auto, final double[][][] costs, IEnvironment environment)
     {
         super(ArrayUtils.<IntDomainVar>append(vars,CR));
+        this.environment = environment;
         this.vs = vars;
         this.costs = costs;
         this.z= CR;
@@ -225,7 +227,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         {
             this.map.put(vars[i],i);
         }
-        this.toRemove = this.getSolver().getEnvironment().makeIntVector();
+        this.toRemove = environment.makeIntVector();
 
 
 
@@ -425,7 +427,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         intLayer[n+1] = new int[]{tink.id};
 
         if (intLayer[0].length > 0)
-            this.graph = new StoredDirectedMultiGraph(this,graph,intLayer,starts,offsets,totalSizes);
+            this.graph = new StoredDirectedMultiGraph(environment, this,graph,intLayer,starts,offsets,totalSizes);
     }
 
 
@@ -1039,7 +1041,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
                     System.arraycopy(tmp,vs.length,zs,0,zs.length);
 
 
-                    return new FastMultiCostRegular(vs,zs,pi,csts);
+                    return new FastMultiCostRegular(vs,zs,pi,csts, solver.getEnvironment());
                 }
 
             }

@@ -22,10 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
 import choco.cp.solver.constraints.BitFlags;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.IteratorUtils;
@@ -37,6 +33,10 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.AbstractRTask;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -60,13 +60,14 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 	/**
 	 * 
 	 * Create a ressource constraint.
-	 * @param name the ressource name
-	 * @param taskvars the tasks using the resources
-	 * @param uppBound is an integer variable such that max(end(T))<= uppBound
-	 * @param otherVars other integer variables of the constraint
+	 * @param solver
+     * @param name the ressource name
+     * @param taskvars the tasks using the resources
+     * @param uppBound is an integer variable such that max(end(T))<= uppBound
+     * @param otherVars other integer variables of the constraint
 	 */
-	public AbstractResourceSConstraint(String name, final TaskVar[] taskvars, final IntDomainVar uppBound, final IntDomainVar... otherVars) {
-		super(taskvars, createIntVarArray(otherVars, uppBound));
+	public AbstractResourceSConstraint(Solver solver, String name, final TaskVar[] taskvars, final IntDomainVar uppBound, final IntDomainVar... otherVars) {
+		super(taskvars, createIntVarArray(solver, otherVars, uppBound));
 		this.rtasks = new RTask[getNbTasks()];
 		this.name = name;
 		this.indexUnit = getNbVars()-1;
@@ -98,21 +99,16 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		return indexUnit;
 	}
 
-	@Override
-	public void setSolver(final Solver solver) {
-		super.setSolver(solver);
-	}
-
 	public final void ensureTaskConsistency() throws ContradictionException {
 		for (IRTask rt : rtasks) {
 			rt.updateCompulsoryPart();
 		}
 	}
-	private final static IntDomainVar[] createIntVarArray(final IntDomainVar[] otherVars,final IntDomainVar uppBound) {
+	private static IntDomainVar[] createIntVarArray(Solver solver, final IntDomainVar[] otherVars, final IntDomainVar uppBound) {
 		if(uppBound == null) {
 			throw new SolverException("no makespan for resource constraint");
 		}
-		IntDomainVar unit = uppBound.getSolver().createIntegerConstant("unit", 1);
+		IntDomainVar unit = solver.createIntegerConstant("unit", 1);
 		return ArrayUtils.append(otherVars, new IntDomainVar[]{uppBound, unit});
 	}
 
@@ -133,7 +129,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		super.awake();
 	}
 
-	private final void checkTask(final int varIdx) throws ContradictionException {
+	private void checkTask(final int varIdx) throws ContradictionException {
 		if(varIdx < taskIntVarOffset) {rtasks[varIdx % getNbTasks()].updateCompulsoryPart();}
 	}
 

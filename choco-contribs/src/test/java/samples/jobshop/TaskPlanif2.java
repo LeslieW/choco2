@@ -8,8 +8,6 @@ import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -67,7 +65,7 @@ public class TaskPlanif2 extends PatternExample {
 		_s = new CPSolver();
 		_s.read(_m);
 		final IntDomainVar[] v = { _s.getVar(sumDurations)};
-		_s.attachGoal( new AssignOrForbidIntVarVal(new StaticVarOrder(v), new MinVal()));
+		_s.attachGoal( new AssignOrForbidIntVarVal(new StaticVarOrder(_s, v), new MinVal()));
 		_s.addGoal( new AssignVar(new MinDomain(_s, _s.getVar(durations)), new MinVal()));
 		_s.addGoal( new IncompleteAssignvar(_s.getVar(tasks)));
 	}
@@ -105,7 +103,7 @@ public class TaskPlanif2 extends PatternExample {
 
 		public IncompleteAssignvar(TaskVar[] tasks) {
 			super(
-					new StaticVarOrder(VariableUtils.getStartVars(tasks)), 
+					new StaticVarOrder(_s, VariableUtils.getStartVars(tasks)),
 					new MinVal()
 			);
 		}

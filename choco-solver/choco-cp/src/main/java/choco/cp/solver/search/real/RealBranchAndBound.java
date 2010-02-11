@@ -24,6 +24,7 @@ package choco.cp.solver.search.real;
 
 import choco.cp.solver.search.real.objective.MaxRealObjManager;
 import choco.cp.solver.search.real.objective.MinRealObjManager;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.AbstractOptimize;
 import choco.kernel.solver.search.IObjectiveManager;
 import choco.kernel.solver.variables.Var;
@@ -42,12 +43,12 @@ public class RealBranchAndBound extends AbstractOptimize {
 
 	public final RealVar objective;
 
-	public RealBranchAndBound(RealVar objective, boolean maximize) {
-		super( makeDefaultObjManager(objective, maximize), maximize);
+	public RealBranchAndBound(Solver solver, RealVar objective, boolean maximize) {
+		super(solver, makeDefaultObjManager(objective, maximize), maximize);
 		this.objective = objective;
 	}
 	
-	protected final static IObjectiveManager makeDefaultObjManager(RealVar objective, boolean maximize) {
+	protected static IObjectiveManager makeDefaultObjManager(RealVar objective, boolean maximize) {
 		return maximize ? new MaxRealObjManager(objective) : new MinRealObjManager(objective);
 	}
 	

@@ -23,6 +23,7 @@
 
 package choco.kernel.solver.constraints.global.matching;
 
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -40,36 +41,37 @@ public abstract class AbstractBipartiteMatching
 
   /**
    * Builds a new instance for the specified vars.
+   * @param environment
    * @param vars the variables
    * @param nbLeft number of nodes in the first part of the bipartite matching
    * @param nbRight number of nodes in the second part
    */
-  public AbstractBipartiteMatching(final IntDomainVar[] vars,
-      final int nbLeft, final int nbRight) {
-    super(vars, nbLeft, nbRight);
-    initAbstractBipartiteMatching();
+  public AbstractBipartiteMatching(IEnvironment environment, final IntDomainVar[] vars,
+                                   final int nbLeft, final int nbRight) {
+    super(environment, vars, nbLeft, nbRight);
+    this.refInverseMatch = environment.makeIntVector(this.nbRightVertices, -1);
   }
+//
+//  /**
+//   * Builds a copy of this contraint.
+//   * @return a clone of this constraint
+//   * @throws CloneNotSupportedException if an error occurs during cloning
+//   */
+//  public Object clone() throws CloneNotSupportedException {
+//    AbstractBipartiteMatching newc = (AbstractBipartiteMatching) super.clone();
+//    newc.initAbstractBipartiteMatching();
+//    return newc;
+//  }
 
-  /**
-   * Builds a copy of this contraint.
-   * @return a clone of this constraint
-   * @throws CloneNotSupportedException if an error occurs during cloning
-   */
-  public Object clone() throws CloneNotSupportedException {
-    AbstractBipartiteMatching newc = (AbstractBipartiteMatching) super.clone();
-    newc.initAbstractBipartiteMatching();
-    return newc;
-  }
-
-  /**
-   * Initializes the matching by building the backtrackable vector for the
-   * right vertices values.
-   */
-  public void initAbstractBipartiteMatching() {
-    this.refInverseMatch = 
-        this.getSolver().getEnvironment()
-        .makeIntVector(this.nbRightVertices, -1);
-  }
+//  /**
+//   * Initializes the matching by building the backtrackable vector for the
+//   * right vertices values.
+//   */
+//  public void initAbstractBipartiteMatching() {
+//    this.refInverseMatch =
+//        this.getSolver().getEnvironment()
+//        .makeIntVector(this.nbRightVertices, -1);
+//  }
 
   /**
    * Accessing the left vertex matched to j.

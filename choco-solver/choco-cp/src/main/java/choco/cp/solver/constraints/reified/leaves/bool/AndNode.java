@@ -66,7 +66,7 @@ public class AndNode extends AbstractBoolNode{
 			vs[i] = subtrees[i].extractResult(s);
 		}
 		s.post(s.eq(s.sum(vs),sand));
-		s.post(new ReifiedIntSConstraint(v,(AbstractIntSConstraint)s.eq(sand,subtrees.length)));
+		s.post(new ReifiedIntSConstraint(v,(AbstractIntSConstraint)s.eq(sand,subtrees.length), s));
 		return v;
 	}
 
@@ -82,7 +82,7 @@ public class AndNode extends AbstractBoolNode{
 			vs[i] = subtrees[i].extractResult(s);
 		}
         vs[vs.length - 1] = new IntDomainVarImpl(s, StringUtils.randomName(), IntDomainVar.BOUNDS, subtrees.length, subtrees.length);
-        return new Occurrence(vs, 1, true, true);
+        return new Occurrence(vs, 1, true, true, s.getEnvironment());
     }
 
     @Override

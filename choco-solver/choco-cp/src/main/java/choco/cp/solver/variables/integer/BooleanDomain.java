@@ -29,6 +29,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
+import choco.kernel.solver.propagation.PropagationEngine;
 
 import java.util.Random;
 
@@ -71,14 +72,15 @@ public class BooleanDomain extends AbstractIntDomain {
      * Constructs a new domain for the specified variable and bounds.
      *
      * @param v The involved variable.
+     * @param environment
+     * @param propagationEngine
      */
 
-    public BooleanDomain(IntDomainVarImpl v) {
-        super(v.getSolver().getPropagationEngine());
+    public BooleanDomain(IntDomainVarImpl v, IEnvironment environment, PropagationEngine propagationEngine) {
+        super(propagationEngine);
         variable = v;
-        final IEnvironment env = v.getSolver().getEnvironment();
-        notInstanciated = (StoredIndexedBipartiteSet)env.getSharedBipartiteSetForBooleanVars();
-        this.offset = env.getNextOffset();
+        notInstanciated = (StoredIndexedBipartiteSet) environment.getSharedBipartiteSetForBooleanVars();
+        this.offset = environment.getNextOffset();
         value = 0;
         deltaDom = new BooleanDeltaDomain(this, 0,1);
     }

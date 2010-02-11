@@ -28,6 +28,7 @@ import static choco.cp.solver.SettingType.*;
 import choco.kernel.common.util.comparator.IPermutation;
 import choco.kernel.common.util.tools.PermutationUtils;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
@@ -51,13 +52,13 @@ public class Disjunctive extends AbstractResourceSConstraint {
 	private boolean noFixPoint;
 
 
-	protected Disjunctive(String name, TaskVar[] taskvars,
-			IntDomainVar uppBound, IntDomainVar... otherVars) {
-		super(name, taskvars, uppBound, otherVars);
+	protected Disjunctive(Solver solver, String name, TaskVar[] taskvars,
+                          IntDomainVar uppBound, IntDomainVar... otherVars) {
+		super(solver, name, taskvars, uppBound, otherVars);
 	}
 
-	public Disjunctive(String name, TaskVar[] taskvars, IntDomainVar makespan) {
-		super(name, taskvars, makespan);
+	public Disjunctive(String name, TaskVar[] taskvars, IntDomainVar makespan, Solver solver) {
+		super(solver, name, taskvars, makespan);
 		this.rules = new DisjRules(this.rtasks);
 	}
 

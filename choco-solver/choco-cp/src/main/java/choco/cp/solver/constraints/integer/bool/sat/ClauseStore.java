@@ -2,7 +2,7 @@ package choco.cp.solver.constraints.integer.bool.sat;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
+import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.propagation.event.VarEvent;
@@ -50,19 +50,21 @@ public class ClauseStore extends AbstractLargeIntSConstraint {
     //                        entailed by setting x_i to 1    
     protected int[][][] clause_entailed;
     //the set of clauses not yet entailed
-    protected StoredIndexedBipartiteSet clauses_not_entailed;
+    protected IStateIntVector clauses_not_entailed;
 
+    private final IEnvironment environment;
     /**
      * @param vars must be a table of BooleanVarImpl
+     * @param environment
      */
-    public ClauseStore(IntDomainVar[] vars) {
-        this(vars, new ArrayList<WLClause>(), new Lits());
+    public ClauseStore(IntDomainVar[] vars, IEnvironment environment) {
+        this(vars, new ArrayList<WLClause>(), new Lits(), environment);
         voc.init(vars);
     }
 
-    public ClauseStore(IntDomainVar[] vars, ArrayList<WLClause> listclause, Lits voc) {
+    public ClauseStore(IntDomainVar[] vars, ArrayList<WLClause> listclause, Lits voc, IEnvironment environment) {
         super(vars);
-        solver = vars[0].getSolver();
+        this.environment = environment;
         this.voc = voc;
         this.listclause = listclause;
         listToPropagate = new LinkedList<WLClause>();
@@ -290,8 +292,7 @@ public class ClauseStore extends AbstractLargeIntSConstraint {
         for (int i = 0; i < lclauses.length; i++) {
             lclauses[i] = i;
         }
-        IEnvironment env = vars[0].getSolver().getEnvironment();
-        clauses_not_entailed = (StoredIndexedBipartiteSet) env.makeBipartiteSet(lclauses);
+        clauses_not_entailed = environment.makeBipartiteSet(lclauses);
     }
 
     public void initEntailmentStructures() {

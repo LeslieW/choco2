@@ -26,8 +26,10 @@ import choco.cp.solver.constraints.integer.IntLinComb;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.tools.MathUtils;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
@@ -116,7 +118,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 	 * - objcoef is strictly POSITIVE
 	 * - op belongs to EQ, GT, NEQ and LEQ
 	 */
-	public BoolIntLinComb(IntDomainVar[] vs, int[] coefs, IntDomainVar c, int objcoef, int scste, int op) {
+	public BoolIntLinComb(IEnvironment environment, IntDomainVar[] vs, int[] coefs, IntDomainVar c, int objcoef, int scste, int op) {
 		super(makeTableVar(vs, c));
 		this.sCoeffs = coefs;
 		this.op = op;
@@ -124,20 +126,19 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 		this.varCste = (IntDomainVarImpl) vars[cste];
 		this.objCoef = objcoef;
 		this.addcste = scste;
-		this.solver = vars[0].getSolver();
 		nbNegCoef = 0;
 		while (nbNegCoef < cste && sCoeffs[nbNegCoef] < 0) {
 			nbNegCoef++;
 		}
 		if (op == IntLinComb.EQ || op == IntLinComb.GEQ || op == IntLinComb.LEQ) {
-			this.maxPosCoeff = solver.getEnvironment().makeInt();
-			this.maxNegCoeff = solver.getEnvironment().makeInt();
+			this.maxPosCoeff = environment.makeInt();
+			this.maxNegCoeff = environment.makeInt();
 		}
 		if (op == IntLinComb.EQ || op == IntLinComb.GEQ) {
-			this.ub = solver.getEnvironment().makeInt();
+			this.ub = environment.makeInt();
 		}
 		if (op == IntLinComb.EQ || op == IntLinComb.LEQ) {
-			this.lb = solver.getEnvironment().makeInt();
+			this.lb = environment.makeInt();
 		}
 		if (objCoef == 1) {
 			rmemb = new SimpleRightMemberBounds();
@@ -738,10 +739,10 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 	/**
 	 * Computes the opposite of this constraint.
 	 *
-	 * @return a constraint with the opposite semantic
+	 * @return a constraint with the opposite semantic  @param solver
 	 */
 	@Override
-	public AbstractSConstraint opposite() {
+	public AbstractSConstraint opposite(Solver solver) {
 		IntDomainVar[] bvs = new IntDomainVar[cste];
 		System.arraycopy(vars, 0, bvs, 0, cste);
 		if (op == IntLinComb.EQ) {
@@ -753,11 +754,11 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 			return (AbstractSConstraint) solver.neq(solver.scalar(vs, coeff), -addcste);
 			//throw new Error("NEQ not yet implemented in BoolIntLinComb for opposite");
 		} else if (op == IntLinComb.NEQ) {
-			return new BoolIntLinComb(bvs, sCoeffs, varCste, objCoef, addcste, IntLinComb.EQ);
+			return new BoolIntLinComb(solver.getEnvironment(), bvs, sCoeffs, varCste, objCoef, addcste, IntLinComb.EQ);
 		} else if (op == IntLinComb.GEQ) {
-			return new BoolIntLinComb(bvs, sCoeffs, varCste, objCoef, addcste + 1, IntLinComb.LEQ);
+			return new BoolIntLinComb(solver.getEnvironment(), bvs, sCoeffs, varCste, objCoef, addcste + 1, IntLinComb.LEQ);
 		} else if (op == IntLinComb.LEQ) {
-			return new BoolIntLinComb(bvs, sCoeffs, varCste, objCoef, addcste - 1, IntLinComb.GEQ);
+			return new BoolIntLinComb(solver.getEnvironment(), bvs, sCoeffs, varCste, objCoef, addcste - 1, IntLinComb.GEQ);
 		} else {
 			throw new SolverException("operator unknown for BoolIntLinComb");
 		}

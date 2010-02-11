@@ -121,18 +121,6 @@ public abstract class AbstractEnvironment implements IEnvironment {
         return new PartiallyStoredIntVector(this);
     }
 
-    public PartiallyStoredBitSet makePartiallyStoredBitSet(){
-        return new PartiallyStoredBitSet(this);
-    }
-
-    public TwoStatesIntVector makeTwoStateIntVector(int initialSize, int initialValue){
-        return new TwoStatesIntVector(this, initialSize, initialValue);
-    }
-
-    public TwoStatesPartiallyStoredIntVector makeTwoStatesPartiallyStoredIntVector(){
-        return new TwoStatesPartiallyStoredIntVector(this);
-    }
-
     public IntInterval makeIntInterval(int inf, int sup){
         return new IntInterval(this, inf, sup);
     }

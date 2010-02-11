@@ -22,34 +22,27 @@
  **************************************************/
 package samples.documentation;
 
+import choco.Choco;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-//totex cpack_import
 import choco.cp.solver.SettingType;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-//totex
 import choco.kernel.model.Model;
-//totex cregular1_import
+import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.automaton.DFA;
 import choco.kernel.model.constraints.automaton.Transition;
-import choco.kernel.model.constraints.Constraint;
-//totex
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
-//totex ctree_import
 import choco.kernel.model.variables.tree.TreeParametersObject;
-//totex
 import choco.kernel.solver.Solver;
-//totex crelationpairac_import
 import choco.kernel.solver.constraints.integer.extension.CouplesTest;
 import choco.kernel.solver.constraints.integer.extension.TuplesTest;
-//totex
-import choco.Choco;
-import java.util.LinkedList;
-import java.util.List;
+
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.LinkedList;
+import java.util.List;
 
 
 /*
@@ -456,7 +449,7 @@ public class Code4Doc5 {
         Solver s = new CPSolver();
         s.read(m);
         //6- heuristic: choose successor variables as the only decision variables
-        s.setVarIntSelector(new StaticVarOrder(s.getVar(parameters.getSuccVars())));
+        s.setVarIntSelector(new StaticVarOrder(s, s.getVar(parameters.getSuccVars())));
         s.solveAll();
         //totex
     }

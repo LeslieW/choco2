@@ -22,20 +22,21 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.constraints.global.automata.fast_costregular.structure;
 
-import choco.kernel.solver.constraints.global.automata.common.StoredIndexedBipartiteSetWithOffset;
-import choco.kernel.memory.*;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.IStateDoubleVector;
+import choco.kernel.memory.IStateIntVector;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.global.automata.common.StoredIndexedBipartiteSetWithOffset;
+import choco.kernel.solver.constraints.integer.IntSConstraint;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntHashSet;
 import gnu.trove.TIntStack;
 import org.jgrapht.graph.DirectedMultigraph;
 
 import java.util.BitSet;
 import java.util.Set;
-
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 
 /**
  * Created by IntelliJ IDEA.
@@ -102,7 +103,7 @@ public class StoredValuedDirectedMultiGraph {
 
 
 
-    public StoredValuedDirectedMultiGraph(IntSConstraint constraint, DirectedMultigraph<Node, Arc> graph, int[][] layers, int[] starts, int[] offsets, int supportLength)
+    public StoredValuedDirectedMultiGraph(IEnvironment environment, IntSConstraint constraint, DirectedMultigraph<Node, Arc> graph, int[][] layers, int[] starts, int[] offsets, int supportLength)
     {
         this.constraint = constraint;
         this.starts = starts;
@@ -150,14 +151,14 @@ public class StoredValuedDirectedMultiGraph {
 
         }
 
-        this.inGraph = new StoredIndexedBipartiteSet(constraint.getSolver().getEnvironment(),inginit);
+        this.inGraph = new StoredIndexedBipartiteSet(environment,inginit);
         // this.inGraph = constraint.getSolver().getEnvironment().makeBitSet(arcs.size());
 //        this.inGraph.set(0,arcs.size());
         // System.out.println(this.inGraph.size());
         for (int i =0 ;i < sups.length ;i++)
         {
             if (sups[i] != null)
-                supports[i] = new StoredIndexedBipartiteSetWithOffset(this.constraint.getSolver().getEnvironment(),sups[i].toArray());
+                supports[i] = new StoredIndexedBipartiteSetWithOffset(environment,sups[i].toArray());
         }
 
         Set<Node> nodes = graph.vertexSet();
@@ -166,18 +167,16 @@ public class StoredValuedDirectedMultiGraph {
         GNodes.layers = new int[nodes.size()];
         GNodes.states = new int[nodes.size()];
 
-        IEnvironment env = constraint.getSolver().getEnvironment();
-
-        GNodes.prevLP = env.makeIntVector(nodes.size(),Integer.MIN_VALUE);
-        GNodes.nextLP = env.makeIntVector(nodes.size(),Integer.MIN_VALUE);
-        GNodes.prevSP = env.makeIntVector(nodes.size(),Integer.MIN_VALUE);
-        GNodes.nextSP = env.makeIntVector(nodes.size(),Integer.MIN_VALUE);
+        GNodes.prevLP = environment.makeIntVector(nodes.size(),Integer.MIN_VALUE);
+        GNodes.nextLP = environment.makeIntVector(nodes.size(),Integer.MIN_VALUE);
+        GNodes.prevSP = environment.makeIntVector(nodes.size(),Integer.MIN_VALUE);
+        GNodes.nextSP = environment.makeIntVector(nodes.size(),Integer.MIN_VALUE);
 
 
-        GNodes.lpfs = env.makeDoubleVector(nodes.size(),Double.NEGATIVE_INFINITY);
-        GNodes.lpft = env.makeDoubleVector(nodes.size(),Double.NEGATIVE_INFINITY);
-        GNodes.spfs = env.makeDoubleVector(nodes.size(),Double.POSITIVE_INFINITY);
-        GNodes.spft = env.makeDoubleVector(nodes.size(),Double.POSITIVE_INFINITY);
+        GNodes.lpfs = environment.makeDoubleVector(nodes.size(),Double.NEGATIVE_INFINITY);
+        GNodes.lpft = environment.makeDoubleVector(nodes.size(),Double.NEGATIVE_INFINITY);
+        GNodes.spfs = environment.makeDoubleVector(nodes.size(),Double.POSITIVE_INFINITY);
+        GNodes.spft = environment.makeDoubleVector(nodes.size(),Double.POSITIVE_INFINITY);
 
 
 
@@ -198,7 +197,7 @@ public class StoredValuedDirectedMultiGraph {
                 {
                     out[i++] = a.id;
                 }
-                GNodes.outArcs[n.id] = new StoredIndexedBipartiteSetWithOffset(this.constraint.getSolver().getEnvironment(),out);
+                GNodes.outArcs[n.id] = new StoredIndexedBipartiteSetWithOffset(environment,out);
             }
 
             Set<Arc> inarc = graph.incomingEdgesOf(n);
@@ -210,7 +209,7 @@ public class StoredValuedDirectedMultiGraph {
                 {
                     in[i++] = a.id;
                 }
-                GNodes.inArcs[n.id] = new StoredIndexedBipartiteSetWithOffset(this.constraint.getSolver().getEnvironment(),in);
+                GNodes.inArcs[n.id] = new StoredIndexedBipartiteSetWithOffset(environment,in);
             }
         }
 

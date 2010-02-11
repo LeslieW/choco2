@@ -30,9 +30,9 @@ import choco.kernel.common.opres.pack.BestFit1BP;
 import choco.kernel.common.opres.pack.LowerBoundFactory;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.set.AbstractLargeSetIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -71,16 +71,17 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 
 	public final BitFlags flags;
 
-	public PackSConstraint(SetVar[] itemSets, IntDomainVar[] loads, IntDomainVar[] sizes,
-			IntDomainVar[] bins,IntDomainVar nbNonEmpty, BitFlags  flags) {
+	public PackSConstraint(IEnvironment environment, SetVar[] itemSets, IntDomainVar[] loads, IntDomainVar[] sizes,
+                           IntDomainVar[] bins, IntDomainVar nbNonEmpty, BitFlags flags) {
 		super(ArrayUtils.append(loads,sizes,bins,new IntDomainVar[]{nbNonEmpty}),itemSets);
 		this.loads=loads;
 		this.sizes=sizes;
 		this.bins =bins;
 		this.flags = flags;
 		this.bounds = new BoundNumberOfBins();
-		filtering = new PackFiltering(this,flags);
+		filtering = new PackFiltering(environment, this,flags);
 		status = new BinStatus(this.sizes);
+        maximumNumberOfNewBins = environment.makeInt( getNbBins());
 	}
 
 	public final boolean isEmpty(int bin) {
@@ -114,14 +115,6 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 	protected final int getItemCindice(final int item) {
 		return int_cIndices[loads.length+sizes.length+item];
 	}
-
-	@Override
-	public void setSolver(Solver solver) {
-		super.setSolver(solver);
-		filtering.setSolver(solver);
-		maximumNumberOfNewBins = solver.getEnvironment().makeInt( getNbBins());
-	}
-
 
 	public final void setMaximumNumberOfNewBins(int value) {
 		if(value != maximumNumberOfNewBins.get()) {

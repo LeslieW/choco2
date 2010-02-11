@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global;
 
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
@@ -58,14 +59,16 @@ public class SemiLeximinSConstraint extends AbstractLargeIntSConstraint {
     private int n;
 
     private final static boolean VERBOSE = false;
+    private final IEnvironment environment;
 
     /**
      * Creates a new <code>LeximinConstraint</code> instance.
      *
      * @param x the first array of integers
      * @param y the second array of integer variables
+     * @param environment
      */
-    public SemiLeximinSConstraint(int[] x, IntDomainVar[] y) {
+    public SemiLeximinSConstraint(int[] x, IntDomainVar[] y, IEnvironment environment) {
         super(y);
         if (x.length != y.length || x.length == 0 || y.length == 0) {
             throw new IllegalArgumentException("LeximinConstraint Error: the two vectors "
@@ -75,19 +78,18 @@ public class SemiLeximinSConstraint extends AbstractLargeIntSConstraint {
         this.x = new int[n];
         System.arraycopy(x, 0, this.x, 0, x.length);
 
-        super.solver = y[0].getSolver();
-
-        this.alpha = super.solver.getEnvironment().makeInt();
-        this.beta = super.solver.getEnvironment().makeInt();
-        this.gamma = super.solver.getEnvironment().makeInt();
-        this.delta = super.solver.getEnvironment().makeInt();
-        this.epsilon = super.solver.getEnvironment().makeBitSet(4);
-
+        this.alpha = environment.makeInt();
+        this.beta = environment.makeInt();
+        this.gamma = environment.makeInt();
+        this.delta = environment.makeInt();
+        this.epsilon = environment.makeBitSet(4);
+        this.environment = environment;
         this.generateVectors();
     }
 
     /**
      * This methods builds the vectors used by the gac algorithm.
+     * @param environment
      */
     private void generateVectors() {
         this.ceily = new IStateInt[n];
@@ -99,8 +101,8 @@ public class SemiLeximinSConstraint extends AbstractLargeIntSConstraint {
         for (int i = 0; i < n; i++) {
             minimumX = minimumX > this.x[i] ? this.x[i] : minimumX;
             maximumX = maximumX < this.x[i] ? this.x[i] : maximumX;
-            this.sortedCeily[i] = this.solver.getEnvironment().makeInt(super.vars[i].getSup());
-            this.ceily[i] = this.solver.getEnvironment().makeInt(super.vars[i].getSup());
+            this.sortedCeily[i] = environment.makeInt(super.vars[i].getSup());
+            this.ceily[i] = environment.makeInt(super.vars[i].getSup());
             minimumY = minimumY > this.sortedCeily[i].get() ? this.sortedCeily[i].get() : minimumY;
             maximumY = maximumY < this.sortedCeily[i].get() ? this.sortedCeily[i].get() : maximumY;
         }
@@ -137,8 +139,8 @@ public class SemiLeximinSConstraint extends AbstractLargeIntSConstraint {
         //this.ceily = new StoredInt[n];
         //this.sortedCeily = new StoredInt[n];
         for (int i = 0; i < n; i++) {
-            this.sortedCeily[i] = this.solver.getEnvironment().makeInt(super.vars[i].getSup());
-            this.ceily[i] = this.solver.getEnvironment().makeInt(super.vars[i].getSup());
+            this.sortedCeily[i] = environment.makeInt(super.vars[i].getSup());
+            this.ceily[i] = environment.makeInt(super.vars[i].getSup());
         }
 
         java.util.Arrays.sort(this.sortedCeily, new SemiLeximinSConstraint.SIComparator());

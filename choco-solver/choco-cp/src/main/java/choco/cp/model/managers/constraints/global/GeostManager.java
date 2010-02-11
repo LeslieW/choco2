@@ -95,9 +95,9 @@ public class GeostManager extends IntConstraintManager {
 
 
                 if (ctrlVs == null) {
-                    return new Geost_Constraint(solver.getVar((IntegerVariable[])variables)/*solver variables*/, dim, vo, shiftedBoxes, ectrs,false, opt.included);
+                    return new Geost_Constraint(solver.getVar((IntegerVariable[])variables)/*solver variables*/, dim, vo, shiftedBoxes, ectrs,false, opt.included, solver);
                 } else {
-                    return new Geost_Constraint(solver.getVar((IntegerVariable[])variables), dim, vo, shiftedBoxes, ectrs, ctrlVs,opt.memoisation, opt.included,opt.increment);
+                    return new Geost_Constraint(solver.getVar((IntegerVariable[])variables), dim, vo, shiftedBoxes, ectrs, ctrlVs,opt.memoisation, opt.included,opt.increment, solver);
                 }
                         }
                     }

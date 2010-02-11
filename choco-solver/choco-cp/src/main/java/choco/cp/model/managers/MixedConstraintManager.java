@@ -22,8 +22,6 @@
  **************************************************/
 package choco.cp.model.managers;
 
-import java.util.Set;
-
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.leaves.ConstraintLeaf;
 import choco.kernel.model.constraints.Constraint;
@@ -33,6 +31,8 @@ import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
+
+import java.util.Set;
 
 /*
 * User : charles
@@ -58,7 +58,7 @@ public abstract class MixedConstraintManager  extends ConstraintManager<Variable
     @Override
     public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, Set<String> options) {
         SConstraint c = makeConstraint(solver, variables, parameters, options);
-        SConstraint opp = c.opposite();
+        SConstraint opp = c.opposite(solver);
         return new SConstraint[]{c, opp};
     }
 

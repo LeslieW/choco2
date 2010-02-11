@@ -23,14 +23,12 @@
 package samples.seminar.socialgolfer;
 
 import static choco.Choco.makeIntVar;
-
-import java.util.Set;
-
 import choco.cp.model.CPModel;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.model.Model;
@@ -41,6 +39,8 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.Set;
 
 /*
  * Created by IntelliJ IDEA.
@@ -54,7 +54,7 @@ public class ScalarAtMost extends AbstractLargeIntSConstraint {
     public static class ScalarAtMostManager extends IntConstraintManager {
         public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
             int[] params = (int[])parameters;
-            return new ScalarAtMost(solver.getVar(variables), params[0], params[1]);
+            return new ScalarAtMost(solver.getEnvironment(), solver.getVar(variables), params[0], params[1]);
         }
     }
 
@@ -68,12 +68,12 @@ public class ScalarAtMost extends AbstractLargeIntSConstraint {
     // invariant vars.length == 2*n
     // les paires correspondent à (vars[i],vars[i + n])
     // impose le produit sigma_i (vars[i] * vars[i + n]) = k
-    public ScalarAtMost(IntDomainVar[] vars, int n, int k) {
+    public ScalarAtMost(IEnvironment environment, IntDomainVar[] vars, int n, int k) {
         super(vars);
         this.n = n;
         this.k = k;
-        nbEqs = vars[0].getSolver().getEnvironment().makeInt(0);
-        instPairs = vars[0].getSolver().getEnvironment().makeBitSet(n);
+        nbEqs = environment.makeInt(0);
+        instPairs = environment.makeBitSet(n);
     }
 
     public boolean productNull(IntDomainVar v1, IntDomainVar v2) {

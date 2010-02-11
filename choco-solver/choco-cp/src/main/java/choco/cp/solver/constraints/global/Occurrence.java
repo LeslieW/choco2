@@ -64,27 +64,26 @@ public class Occurrence extends AbstractLargeIntSConstraint {
      * @param occval checking value
      * @param onInf  if true, constraint insures size{forall v in lvars | v = occval} <= occVar
      * @param onSup  if true, constraint insure size{forall v in lvars | v = occval} >= occVar
+     * @param environment
      */
-    public Occurrence(IntDomainVar[] vars, int occval, boolean onInf, boolean onSup) {
+    public Occurrence(IntDomainVar[] vars, int occval, boolean onInf, boolean onSup, IEnvironment environment) {
         super(vars);
-        init(occval, onInf, onSup);
+        init(occval, onInf, onSup, environment);
     }
 
-    public Object clone() throws CloneNotSupportedException {
-        Occurrence newc = (Occurrence) super.clone();
-        newc.init(this.cste, this.constrainOnInfNumber, this.constrainOnSupNumber);
-        return newc;
-    }
+//    public Object clone() throws CloneNotSupportedException {
+//        Occurrence newc = (Occurrence) super.clone();
+//        newc.init(this.cste, this.constrainOnInfNumber, this.constrainOnSupNumber);
+//        return newc;
+//    }
 
-    public void init(int occval, boolean onInf, boolean onSup) {
+    public void init(int occval, boolean onInf, boolean onSup, IEnvironment environment) {
         this.cste = occval;
         this.constrainOnInfNumber = onInf;
         this.constrainOnSupNumber = onSup;
         this.nbListVars = vars.length - 1;
-        IEnvironment envi = vars[0].getSolver().getEnvironment();
-        this.solver = vars[0].getSolver();
-        nbPossible = envi.makeInt(0);
-        nbSure = envi.makeInt(0);
+        nbPossible = environment.makeInt(0);
+        nbSure = environment.makeInt(0);
         int cpt = 0;
         for (int i = 0; i < (vars.length - 1); i++) {
             if (vars[i].canBeInstantiatedTo(cste)) {

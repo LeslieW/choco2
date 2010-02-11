@@ -25,9 +25,7 @@ package choco.kernel.solver.constraints.integer;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
-import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.SConstraintType;
 
 
@@ -103,24 +101,6 @@ public abstract class AbstractIntSConstraint extends AbstractSConstraint impleme
    */
   public boolean isConsistent() {
     return (isEntailed() == Boolean.TRUE);
-  }
-
-  /**
-   * returns the (global) index of the constraint among all constraints of the model
-   *
-   * This method is dangerous since the introduction of dynamic constraint post.
-   * @deprecated
-   */
-  @Deprecated
-public int getSelfIndex() {
-    final Solver solver = getSolver();
-    for (int i = 0; i < solver.getNbIntConstraints(); i++) {
-      SConstraint c = solver.getIntConstraint(i);
-      if (c == this) {
-        return i;
-      }
-    }
-    return -1;
   }
 
     /**

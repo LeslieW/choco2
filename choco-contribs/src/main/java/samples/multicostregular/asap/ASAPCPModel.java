@@ -382,7 +382,7 @@ public class ASAPCPModel extends CPModel {
 
 
         s.read(this);
-        s.setVarIntSelector(new StaticVarOrder(s.getVar(ArrayUtils.flatten(ArrayUtils.transpose(shifts)))));
+        s.setVarIntSelector(new StaticVarOrder(s, s.getVar(ArrayUtils.flatten(ArrayUtils.transpose(shifts)))));
         s.monitorFailLimit(true);
         //s.setValIntSelector(new MaxVal());
 

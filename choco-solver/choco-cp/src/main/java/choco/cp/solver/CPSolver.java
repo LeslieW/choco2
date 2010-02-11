@@ -798,9 +798,9 @@ public class CPSolver implements Solver {
 				}
 				if (objective instanceof IntDomainVar) {
 					strategy = new BranchAndBound(
-							(IntDomainVar) objective, doMaximize);
+                            this, (IntDomainVar) objective, doMaximize);
 				} else if (objective instanceof RealVar) {
-					strategy = new RealBranchAndBound((RealVar) objective,
+					strategy = new RealBranchAndBound(this, (RealVar) objective,
 							doMaximize);
 				}
 			}
@@ -1606,7 +1606,7 @@ public class CPSolver implements Solver {
 		for (int i = 0; i < getNbTaskVars(); i++) {
 			vars[i + 1] = getTaskVar(i).end();
 		}
-		return new MaxOfAList(vars);
+		return new MaxOfAList(environment, vars);
 	}
 
 
@@ -1623,7 +1623,7 @@ public class CPSolver implements Solver {
 				for (int i = 0; i < getNbTaskVars(); i++) {
 					vars[i + 1] = getTaskVar(i).end();
 				}
-				post(new MaxOfAList(vars));
+				post(new MaxOfAList(environment, vars));
 			}else {
 				final int h = schedulerConfiguration.getHorizon();
 				if( h != Choco.MAX_UPPER_BOUND) {
@@ -2012,7 +2012,8 @@ public class CPSolver implements Solver {
 					&& (!cc.equals(FALSE) || !constraints.contains(FALSE))) {
 				// avoid adding the TRUE or FALSE constraint more than once
 				Propagator c = (Propagator) cc;
-				c.setSolver(this);
+				c.activate(environment);
+                c.setPropagationEngine(propagationEngine);
 				constraints.add(c);
 				c.addListener(true);
 				ConstraintEvent event = (ConstraintEvent) c.getEvent();
@@ -2132,7 +2133,8 @@ public class CPSolver implements Solver {
 					&& (!cc.equals(FALSE) || !constraints.contains(FALSE))) {
 				// avoid adding the TRUE or FALSE constraint more than once
 				Propagator c = (Propagator) cc;
-				c.setSolver(this);
+				c.activate(environment);
+                c.setPropagationEngine(propagationEngine);
 				int idx = constraints.staticAdd(c);
 				indexOfLastInitializedStaticConstraint.set(idx);
 				c.addListener(false);
@@ -2163,7 +2165,7 @@ public class CPSolver implements Solver {
 	 */
 	public void addNogood(IntDomainVar[] poslit, IntDomainVar[] neglit) {
 		if (nogoodStore == null) {
-			nogoodStore = new ClauseStore(getBooleanVariables());
+			nogoodStore = new ClauseStore(getBooleanVariables(), environment);
 			postCut(nogoodStore);
 		}
 		nogoodStore.addNoGood(poslit,neglit);
@@ -3345,7 +3347,7 @@ public class CPSolver implements Solver {
 		IntDomainVar[] tmpvars = new IntDomainVar[vars.length + 1];
 		System.arraycopy(vars, 0, tmpvars, 0, vars.length);
 		tmpvars[tmpvars.length - 1] = occ;
-		return new Occurrence(tmpvars, value, true, true);
+		return new Occurrence(tmpvars, value, true, true, environment);
 	}
 
 
@@ -3363,7 +3365,7 @@ public class CPSolver implements Solver {
 
 	public SConstraint preceding(IntDomainVar direction, TaskVar t1, int k1, TaskVar t2, int k2) {
 		if( direction == null) {
-			direction = VariableUtils.createDirectionVar(t1, t2);
+			direction = VariableUtils.createDirectionVar(this, t1, t2);
 		}else if( ! direction.hasBooleanDomain()) {
 			throw new SolverException("The direction variable "+direction.pretty()+"is not a boolean variable for the precedence ("+t1+","+t2+")");
 		}
@@ -3537,10 +3539,10 @@ public class CPSolver implements Solver {
 				}
 			}
 			if (isAsum) {
-				return new BoolSum(vs, -c, linOperator);
+				return new BoolSum(vs, -c, linOperator, environment);
 			} else {
 				IntDomainVar dummyObj = makeConstantIntVar(-c);
-				return new BoolIntLinComb(vs, coefs, dummyObj, 1, 0,
+				return new BoolIntLinComb(environment, vs, coefs, dummyObj, 1, 0,
 						linOperator);
 			}
 		} else {
@@ -3558,7 +3560,7 @@ public class CPSolver implements Solver {
 					newLinOp = IntLinComb.GEQ;
 				}
 			}
-			return new BoolIntLinComb(vs, coefs, obj, objcoef, c, newLinOp);
+			return new BoolIntLinComb(environment, vs, coefs, obj, objcoef, c, newLinOp);
 		}
 	}
 
@@ -4050,7 +4052,7 @@ public class CPSolver implements Solver {
 			int ac) {
 		LargeRelation relation = makeRelation(vars, tuples, true);
 		if (ac == 2001) {
-			return new GAC2001PositiveLargeConstraint(vars,
+			return new GAC2001PositiveLargeConstraint(environment, vars,
 					(IterTuplesTable) relation);
 		} else if (ac == 32) {
 			return new GAC3rmPositiveLargeConstraint(vars,
@@ -4073,7 +4075,7 @@ public class CPSolver implements Solver {
 			List<int[]> tuples, int ac) {
 		LargeRelation relation = makeRelation(vars, tuples, false);
 		if (ac == 2001) {
-			return new GAC2001PositiveLargeConstraint(vars,
+			return new GAC2001PositiveLargeConstraint(environment, vars,
 					(IterTuplesTable) relation);
 		} else if (ac == 32) {
 			return new GAC3rmPositiveLargeConstraint(vars,
@@ -4091,7 +4093,7 @@ public class CPSolver implements Solver {
 		} else if (ac == 4) {
 			throw new SolverException("ac4 not implemented in choco2");
 		} else if (ac == 2001) {
-			return new AC2001BinSConstraint(v1, v2, binR);
+			return new AC2001BinSConstraint(v1, v2, binR, environment);
 		} else if (ac == 32) {
 			return new AC3rmBinSConstraint(v1, v2, binR);
 		} else if (ac == 322) {
@@ -4344,7 +4346,7 @@ public class CPSolver implements Solver {
 				return new GAC3rmPositiveLargeConstraint(vs,
 						(IterTuplesTable) rela);
 			} else if (ac == 2001) {
-				return new GAC2001PositiveLargeConstraint(vs,
+				return new GAC2001PositiveLargeConstraint(environment, vs,
 						(IterTuplesTable) rela);
 			} else {
 				throw new SolverException(
@@ -4354,9 +4356,9 @@ public class CPSolver implements Solver {
 			if (ac == 32) {
 				return new GAC3rmLargeConstraint(vs, rela);
 			} else if (ac == 2001) {
-				return new GAC2001LargeSConstraint(vs, rela);
+				return new GAC2001LargeSConstraint(vs, rela, environment);
 			} else if (ac == 2008) {
-				return new GACstrPositiveLargeSConstraint(vs, rela);
+				return new GACstrPositiveLargeSConstraint(vs, rela, environment);
 			} else {
 				throw new SolverException(
 				"GAC algo unknown, choose between 32, 2001, 2008");
@@ -4411,7 +4413,7 @@ public class CPSolver implements Solver {
 	}
 
 	public SConstraint reifiedIntConstraint(IntDomainVar binVar, SConstraint c) {
-		return new ReifiedIntSConstraint(binVar, (AbstractIntSConstraint) c);
+		return new ReifiedIntSConstraint(binVar, (AbstractIntSConstraint) c, this);
 	}
 
 	public SConstraint reifiedIntConstraint(IntDomainVar binVar, SConstraint c,

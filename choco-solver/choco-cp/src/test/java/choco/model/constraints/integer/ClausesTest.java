@@ -63,7 +63,7 @@ public class ClausesTest {
             mod.addVariables(vars);
             s.read(mod);
             IntDomainVar[] bvs = s.getVar(vars);
-            ClauseStore store = new ClauseStore(s.getVar(vars));
+            ClauseStore store = new ClauseStore(s.getVar(vars), s.getEnvironment());
             store.addClause(new IntDomainVar[]{bvs[0], bvs[3], bvs[4]}, new IntDomainVar[]{bvs[1], bvs[2], bvs[7]});
             store.addClause(new IntDomainVar[]{bvs[5], bvs[3]}, new IntDomainVar[]{bvs[1], bvs[5], bvs[4]});
             store.addClause(new IntDomainVar[]{bvs[8]}, new IntDomainVar[]{bvs[4]});
@@ -105,7 +105,7 @@ public class ClausesTest {
         mod.addConstraint(clause(new IntegerVariable[]{vars[0], vars[1], vars[2]}, new IntegerVariable[]{}));
         s.read(mod);
         s.setGeometricRestart(1, 1.1);
-        s.setVarIntSelector(new StaticVarOrder(s.getVar(vars)));
+        s.setVarIntSelector(new StaticVarOrder(s, s.getVar(vars)));
         s.solve();
         LOGGER.info(s.getVar(vars[0]) + " " + s.getVar(vars[1]) + " " + s.getVar(vars[2]));
         s.addNogood(new IntDomainVar[]{s.getVar(vars[0]), s.getVar(vars[1])}, new IntDomainVar[]{});
@@ -258,7 +258,7 @@ public class ClausesTest {
             mod.addVariables(vars);
             s.read(mod);
             IntDomainVar[] bvs = s.getVar(vars);
-            ClauseStore store = new ClauseStore(s.getVar(vars));
+            ClauseStore store = new ClauseStore(s.getVar(vars), s.getEnvironment());
             store.addClause(new IntDomainVar[]{bvs[0]}, new IntDomainVar[]{bvs[1], bvs[2]});
             s.post(store);
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));

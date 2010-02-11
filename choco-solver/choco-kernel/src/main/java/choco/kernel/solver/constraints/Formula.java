@@ -22,7 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.constraints;
 
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.variables.Var;
 
 /**
@@ -32,11 +34,6 @@ import choco.kernel.solver.variables.Var;
  */
 public class Formula implements SConstraint {
 
-  /**
-   * The (optimization or decision) model to which the entity belongs.
-   */
-
-  public Solver solver;
   /** possible static values for the constraintOperator field */
   public final static int EQUAL_XC = 0;
   public final static int NOT_EQUAL_XC = 1;
@@ -71,13 +68,13 @@ public class Formula implements SConstraint {
 
   public Formula(Var v0, int c, int cop) {
     variables = new Var[]{v0};
-    parameters = new Object[]{new Integer(c)};
+    parameters = new Object[]{c};
     constraintOperator = cop;
   }
 
   public Formula(Var v0,  Var v1, int c, int cop) {
     variables = new Var[]{v0, v1};
-    parameters = new Object[]{new Integer(c)};
+    parameters = new Object[]{c};
     constraintOperator = cop;
   }
 
@@ -89,13 +86,13 @@ public class Formula implements SConstraint {
 
   public Formula(Var[] vars, int[] coeffs, int c1, int c2, int cop) {
     variables = vars;
-    parameters = new Object[]{coeffs, new Integer(c1), new Integer(c2)};
+    parameters = new Object[]{coeffs, c1, c2};
     constraintOperator = cop;
   }
 
 public Formula(Var[] vars, int[] coeffs, int c1, int c2, int c3, int cop) {
   variables = vars;
-  parameters = new Object[]{coeffs, new Integer(c1), new Integer(c2), new Integer(c3)};
+  parameters = new Object[]{coeffs, c1, c2, c3};
   constraintOperator = cop;
 }
 
@@ -115,7 +112,7 @@ public Formula(Var[] vars, int[] coeffs, int c1, int c2, int c3, int cop) {
     throw new UnsupportedOperationException();
   }
 
-  public AbstractSConstraint opposite() {
+  public AbstractSConstraint opposite(Solver solver) {
     throw new UnsupportedOperationException();
   }
 
@@ -128,34 +125,38 @@ public Formula(Var[] vars, int[] coeffs, int c1, int c2, int c3, int cop) {
   }
 
   public int getVarIdxInOpposite(int i) {
-    return 0;  //To change body of implemented methods use File | Settings | File Templates.
+    return 0;
   }
 
   public void setConstraintIndex(int i, int idx) {
-    //To change body of implemented methods use File | Settings | File Templates.
   }
 
   public int getConstraintIdx(int idx) {
     throw new UnsupportedOperationException();
   }
 
-    /**
-   * Retrieves the solver of the entity
-   */
-
-  public Solver getSolver() {
-    return solver;
-  }
-
-  public void setSolver(Solver solver) {
-    this.solver = solver;
-  }
-
     public String pretty() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return null;
   }
 
     public int getFineDegree(int idx) {
         return 1;
+    }
+
+    /**
+     * Activate a constraint.
+     * @param environment current environment
+     */
+    @Override
+    public void activate(IEnvironment environment) {
+    }
+
+    /**
+     * Define the propagation engine within the constraint.
+     * Mandatory to throw {@link ContradictionException}.
+     * @param propEng the current propagation engine
+     */
+    @Override
+    public void setPropagationEngine(PropagationEngine propEng) {
     }
 }

@@ -28,6 +28,7 @@ import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.propagation.event.VarEvent;
 
 import java.util.HashMap;
@@ -37,11 +38,7 @@ import java.util.Iterator;
  */
 public abstract class AbstractVar implements Var {
 
-	/**
-	 * The (optimization or decision) model to which the entity belongs.
-	 */
-	public Solver solver;
-
+    protected PropagationEngine propagationEngine;
 
 	/**
 	 * A name may be associated to each variable.
@@ -95,19 +92,6 @@ public abstract class AbstractVar implements Var {
 		return name;
 	}
 
-	
-	@Override
-	public final Solver getSolver() {
-		return solver;
-	}
-
-
-	@Override
-	public void setSolver(Solver solver) {
-		this.solver = solver;
-		
-	}
-
 
 	/**
 	 * Initializes a new variable.
@@ -117,11 +101,12 @@ public abstract class AbstractVar implements Var {
 	 */
 	public AbstractVar(final Solver solver, final String name,
                        final APartiallyStoredCstrList<? extends SConstraint> constraints) {
-		this.solver =solver;
+		this.propagationEngine = solver.getPropagationEngine();
 		this.name = name;
 		this.constraints = constraints;
 		index = solver.getIndexfactory().getIndex();
 	}
+
 
 
 	@Override

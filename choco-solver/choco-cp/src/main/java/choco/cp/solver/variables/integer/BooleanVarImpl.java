@@ -17,7 +17,7 @@ public class BooleanVarImpl extends IntDomainVarImpl {
 
     public BooleanVarImpl(Solver solver, String name) {
         super(solver,name);
-        this.booldomain = new BooleanDomain(this);
+        this.booldomain = new BooleanDomain(this, solver.getEnvironment(), propagationEngine);
         this.event = new BoolVarEvent(this);
     }
 

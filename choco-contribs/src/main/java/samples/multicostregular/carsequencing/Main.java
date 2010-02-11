@@ -52,7 +52,7 @@ public class Main {
        // s.setValIntSelector(new MostOptionValHeur(m.getInstance()));
         //s.setValIntSelector(new BothValHeur(m.getInstance()));
 
-         s.setVarIntSelector(new StaticVarOrder(seqVars));
+         s.setVarIntSelector(new StaticVarOrder(s, seqVars));
         //s.setVarIntSelector(new ManInTheMiddleVarHeur(seqVars));
         s.monitorFailLimit(true);
         	

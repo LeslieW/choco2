@@ -26,6 +26,7 @@ import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.cp.solver.variables.set.SetVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.StringUtils;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
@@ -182,9 +183,9 @@ public class MaxOfASet extends AbstractBoundOfASet {
 	protected final IStateInt indexOfMaximumVariable;
 
 
-	public MaxOfASet(IntVar[] intvars, SetVar setvar) {
+	public MaxOfASet(IntVar[] intvars, SetVar setvar, IEnvironment environment) {
 		super(intvars, setvar);
-		indexOfMaximumVariable = this.getSolver().getEnvironment().makeInt(-1);
+		indexOfMaximumVariable = environment.makeInt(-1);
 	}
 
 

@@ -182,7 +182,7 @@ public class EqManager extends MixedConstraintManager {
     @Override
     public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, Set<String> options) {
         SConstraint c = this.makeConstraint(solver, variables, parameters, options);
-        SConstraint opp = c.opposite();
+        SConstraint opp = c.opposite(solver);
         return new SConstraint[]{c, opp};
     }
 

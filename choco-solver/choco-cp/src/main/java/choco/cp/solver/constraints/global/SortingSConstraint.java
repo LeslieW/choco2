@@ -68,8 +68,8 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
 	 * Creates a new <code>SortingConstraint</code> instance.
 	 *
 	 * @param x the first array of integer variables
-	 * @param y the second array of integer variables
-	 */
+     * @param y the second array of integer variables
+     */
 	public SortingSConstraint(IntDomainVar[] x, IntDomainVar[] y) {
 		super(SortingSConstraint.mergeIntVarArrays(x, y));
 		if (x.length != y.length || x.length == 0 || y.length == 0) {
@@ -77,7 +77,6 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
 					+ "must be of the same (non zero) size");
 		}
 		this.n = x.length;
-		super.solver = x[0].getSolver();
 		this.x = x;
 		this.y = y;
 		this.f = new int[this.n];
@@ -261,11 +260,11 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
 
 	private int computeF(int j) throws ContradictionException {
 		if (this.pQueue.isEmpty()) {
-			this.getSolver().getPropagationEngine().raiseContradiction(this, CONSTRAINT);
+			propagationEngine.raiseContradiction(this, CONSTRAINT);
 		}
 		int i = this.pQueue.pop();
 		if (x[i].getSup() < y[j].getInf()) {
-			this.getSolver().getPropagationEngine().raiseContradiction(this, CONSTRAINT);
+			propagationEngine.raiseContradiction(this, CONSTRAINT);
 		}
 
 		return i;
@@ -273,11 +272,11 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
 
 	private int computeFPrime(int j) throws ContradictionException {
 		if (this.pQueue.isEmpty()) {
-			this.getSolver().getPropagationEngine().raiseContradiction(this, CONSTRAINT);
+			propagationEngine.raiseContradiction(this, CONSTRAINT);
 		}
 		int i = this.pQueue.pop();
 		if (x[i].getInf() > y[j].getSup()) {
-			this.getSolver().getPropagationEngine().raiseContradiction(this, CONSTRAINT);
+			propagationEngine.raiseContradiction(this, CONSTRAINT);
 		}
 
 		return i;

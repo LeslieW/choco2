@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global;
 
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -47,11 +48,11 @@ public class BoundGcc extends BoundGccVar {
 	 * CP-2003.
 	 */
 	public BoundGcc(IntDomainVar[] vars,
-	                int firstDomainValue,
-	                int lastDomainValue,
-	                int[] minOccurrences,
-	                int[] maxOccurrences) {
-		super(vars, null, firstDomainValue, lastDomainValue);
+                    int firstDomainValue,
+                    int lastDomainValue,
+                    int[] minOccurrences,
+                    int[] maxOccurrences, IEnvironment environment) {
+		super(vars, null, firstDomainValue, lastDomainValue, environment);
 		this.maxOccurrences = maxOccurrences;
 		this.minOccurrences = minOccurrences;
 		l = new PartialSum(firstDomainValue, range, minOccurrences);

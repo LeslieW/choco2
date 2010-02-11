@@ -22,13 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
-import java.util.BitSet;
-
 import choco.kernel.common.opres.ssp.BellmanWithLists;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+
+import java.util.BitSet;
 
 
 /**
@@ -45,8 +46,8 @@ public class ForbiddenIntervals extends AbstractResourceSConstraint {
 
 	private final int load;
 
-	public ForbiddenIntervals(String name, final TaskVar[] taskvars,final IntDomainVar upperBound) {
-		super(name, taskvars, upperBound);
+	public ForbiddenIntervals(Solver solver, String name, final TaskVar[] taskvars, final IntDomainVar upperBound) {
+		super(solver, name, taskvars, upperBound);
 		//initialize intervals by solving a Subset-Sum Problem
 		int[] p=new int[getNbTasks()];
 		IntDomainVar d;
@@ -66,7 +67,7 @@ public class ForbiddenIntervals extends AbstractResourceSConstraint {
 
 
 
-	private final boolean checkHead(final int head, final int ub) {
+	private boolean checkHead(final int head, final int ub) {
 		if(!forbidden.get(head)) {
 			final int before=forbidden.prevSetBit(head);
 			final int after=this.load-before;
@@ -81,7 +82,7 @@ public class ForbiddenIntervals extends AbstractResourceSConstraint {
 	 * Update the head of an operation.
 	 *
 	 */
-	private final void updateHead(final int operation) throws ContradictionException {
+	private void updateHead(final int operation) throws ContradictionException {
 		final TaskVar t= getTask(operation);
 		final int ub = this.vars[indexUB].getSup();
 		int head=t.getEST();
@@ -110,7 +111,7 @@ public class ForbiddenIntervals extends AbstractResourceSConstraint {
 	 * Update the tail of an operation.
 	 *
 	 */
-	private final void updateTail(final int operation) throws ContradictionException {
+	private void updateTail(final int operation) throws ContradictionException {
 		final TaskVar t= getTask(operation);
 		final int ub = this.vars[indexUB].getSup();
 		int val=checkTail(t.getLST(), ub);

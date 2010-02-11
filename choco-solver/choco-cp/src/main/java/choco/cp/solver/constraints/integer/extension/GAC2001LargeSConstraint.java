@@ -25,6 +25,7 @@ package choco.cp.solver.constraints.integer.extension;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
@@ -56,9 +57,8 @@ public class GAC2001LargeSConstraint extends CspLargeSConstraint {
     //by avoiding checking the bounds
     protected ValidityChecker valcheck;
 
-    public GAC2001LargeSConstraint(IntDomainVar[] vs, LargeRelation relation) {
+    public GAC2001LargeSConstraint(IntDomainVar[] vs, LargeRelation relation, IEnvironment environment) {
         super(vs, relation);
-        this.solver = vs[0].getSolver();
         this.size = vs.length;
         this.blocks = new int[size];
         this.offsets = new int[size];
@@ -76,7 +76,7 @@ public class GAC2001LargeSConstraint extends CspLargeSConstraint {
         this.supports = new IStateInt[nbElt * size];
 
         for (int i = 0; i < supports.length; i++) {
-            supports[i] = solver.getEnvironment().makeInt(Integer.MIN_VALUE);
+            supports[i] = environment.makeInt(Integer.MIN_VALUE);
         }
         if (allboolean)
             valcheck = new FastBooleanValidityChecker(size, vars);

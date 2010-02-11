@@ -172,10 +172,8 @@ public final class NotEqualXC extends AbstractUnIntSConstraint {
 	}
 
 	@Override
-	public AbstractSConstraint opposite() {
-		//    return new EqualXC(v0, cste);
-		final Solver s = getSolver();
-		return (AbstractSConstraint) s.eq(v0, cste);
+	public AbstractSConstraint opposite(Solver solver) {
+		return (AbstractSConstraint) solver.eq(v0, cste);
 	}
 
 

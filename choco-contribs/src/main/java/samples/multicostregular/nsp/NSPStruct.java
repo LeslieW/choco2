@@ -1,9 +1,8 @@
 package samples.multicostregular.nsp;
 
-import java.util.Set;
-
 import choco.cp.model.managers.IntConstraintManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -11,6 +10,8 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,14 +29,15 @@ public class NSPStruct extends AbstractLargeIntSConstraint {
     IStateInt[] sumPerDay;
     IStateInt positiveSum;
     public NSPInstance instance;
+    private final IEnvironment environment;
 
 
-
-    public NSPStruct(IntDomainVar[] vars,NSPInstance instance) {
+    public NSPStruct(IntDomainVar[] vars, NSPInstance instance, IEnvironment environment) {
         super(vars);
+        this.environment = environment;
         this.instance = instance;
-        this.nbInstanciated = this.getSolver().getEnvironment().makeInt(0);
-        this.positiveSum = this.getSolver().getEnvironment().makeInt(0);
+        this.nbInstanciated = environment.makeInt(0);
+        this.positiveSum = environment.makeInt(0);
 
         this.need = new IStateInt[instance.nbDays][instance.nbShifts];
 
@@ -44,8 +46,8 @@ public class NSPStruct extends AbstractLargeIntSConstraint {
 
         for (int i = 0 ; i < this.instPerDay.length ; i++)
         {
-            this.instPerDay[i] = this.getSolver().getEnvironment().makeInt(0);
-            this.sumPerDay[i] = this.getSolver().getEnvironment().makeInt(0);
+            this.instPerDay[i] = environment.makeInt(0);
+            this.sumPerDay[i] = environment.makeInt(0);
         }
 
 
@@ -56,7 +58,7 @@ public class NSPStruct extends AbstractLargeIntSConstraint {
         IStateInt tmp = need[nbDays][shiftType] ;
         if (tmp == null)
         {
-            tmp = need[nbDays][shiftType] = this.getSolver().getEnvironment().makeInt(0);
+            tmp = need[nbDays][shiftType] = environment.makeInt(0);
         }
         return tmp;
     }
@@ -139,7 +141,7 @@ public class NSPStruct extends AbstractLargeIntSConstraint {
             if (parameters instanceof NSPInstance)
             {
                 NSPInstance instance = (NSPInstance) parameters;
-                return new NSPStruct(solver.getVar(variables),instance);
+                return new NSPStruct(solver.getVar(variables),instance, solver.getEnvironment());
             }
             return null;
         }

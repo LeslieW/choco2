@@ -1,7 +1,5 @@
 package choco.cp.model.managers.constraints.integer;
 
-import java.util.Set;
-
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.Element2D;
@@ -13,6 +11,8 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.Set;
 
 /**
  * User: ebeb
@@ -41,10 +41,10 @@ public final class ElementGManager extends IntConstraintManager {
                     for(int i = 0; i < variables.length-2; i++){
                         values[i] = ((IntegerConstantVariable)variables[i]).getValue();
                     }
-                    return new ElementG(index, values, val);
+                    return new ElementG(index, values, val, solver.getEnvironment());
                 }else{
                     if (index.hasEnumeratedDomain()) {
-                        return new ElementVG(solver.getVar((IntegerVariable[])variables), offset);
+                        return new ElementVG(solver.getVar((IntegerVariable[])variables), offset, solver.getEnvironment());
                     }
                 }
             }else if(parameters instanceof int[][]){

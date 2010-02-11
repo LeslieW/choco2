@@ -22,25 +22,24 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
-import static choco.kernel.common.util.tools.VariableUtils.getIntVar;
-import gnu.trove.TIntArrayList;
-import gnu.trove.TIntProcedure;
-
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.List;
-
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.scheduling.AltCumulative;
 import choco.cp.solver.constraints.global.scheduling.AltDisjunctive;
 import choco.cp.solver.constraints.global.scheduling.Cumulative;
 import choco.cp.solver.constraints.global.scheduling.Disjunctive;
+import static choco.kernel.common.util.tools.VariableUtils.getIntVar;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.global.scheduling.RscData;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+import gnu.trove.TIntArrayList;
+import gnu.trove.TIntProcedure;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 
 /**
@@ -143,10 +142,10 @@ public class CumulativeManager extends AbstractResourceManager {
 					uv[i - dcnr] = usages[ dclique.get(i)];
 				}
 				//alternative disj.
-				cstr = new AltDisjunctive("disj-"+rdata.getRscName(), tv, uv, uppBound);
+				cstr = new AltDisjunctive("disj-"+rdata.getRscName(), tv, uv, uppBound, solver);
 			}else {
 				//disj.
-				cstr = new Disjunctive("disj-"+rdata.getRscName(), tv, uppBound);
+				cstr = new Disjunctive("disj-"+rdata.getRscName(), tv, uppBound, solver);
 			}
 			cstr.getFlags().readDisjunctiveOptions(options);
 			constraints.add(cstr);
@@ -156,11 +155,11 @@ public class CumulativeManager extends AbstractResourceManager {
 		}
 	}
 
-	protected final void makeCumulative(RscData rdata, Set<String> options) {
+	protected final void makeCumulative(RscData rdata, Set<String> options, Solver solver) {
 		final Cumulative cstr = (
 				rdata.getNbOptionalTasks() > 0 ? 
-						new AltCumulative(rdata.getRscName(), tasks, heights, usages, consumption, capacity, uppBound) : 
-							new Cumulative(rdata.getRscName(), tasks, heights ,  consumption, capacity, uppBound)
+						new AltCumulative(solver, rdata.getRscName(), tasks, heights, usages, consumption, capacity, uppBound) :
+							new Cumulative(solver, rdata.getRscName(), tasks, heights ,  consumption, capacity, uppBound)
 		);
 		cstr.getFlags().readCumulativeOptions(options);
 		constraints.addFirst(cstr);
@@ -184,7 +183,7 @@ public class CumulativeManager extends AbstractResourceManager {
 	protected void makeGlobalConstraint(CPSolver solver,
 			Variable[] variables, RscData rdata, Set<String> options) {
 		makeConsCapaConstraint(solver);
-		makeCumulative(rdata, options);
+		makeCumulative(rdata, options, solver);
 	}
 
 	@Override

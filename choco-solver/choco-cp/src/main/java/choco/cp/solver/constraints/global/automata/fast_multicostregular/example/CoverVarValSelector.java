@@ -28,13 +28,13 @@ public class CoverVarValSelector extends AbstractIntVarSelector implements ValSe
     IStateInt lastCol;
     int[][] lowb;
 
-    public CoverVarValSelector(IntDomainVar[][] vars, int[][] lowb)
+    public CoverVarValSelector(IntDomainVar[][] vars, int[][] lowb, Solver solver)
     {
         this.vars = vars;
         this.lowb = lowb;
-        this.other = new StaticVarOrder(ArrayUtils.flatten(vars));
+        this.other = new StaticVarOrder(solver, ArrayUtils.flatten(vars));
 
-        lastCol = vars[0][0].getSolver().getEnvironment().makeInt(0);
+        lastCol = solver.getEnvironment().makeInt(0);
 
     }
     public CoverVarValSelector(Solver s, IntegerVariable[][] mvars, int[][] lowb)
@@ -46,9 +46,9 @@ public class CoverVarValSelector extends AbstractIntVarSelector implements ValSe
 
            this.lowb = lowb;
 
-           this.other = new StaticVarOrder(ArrayUtils.flatten(vars));
+           this.other = new StaticVarOrder(s, ArrayUtils.flatten(vars));
 
-           lastCol = vars[0][0].getSolver().getEnvironment().makeInt(0);
+           lastCol = solver.getEnvironment().makeInt(0);
        }
 
 

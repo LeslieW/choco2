@@ -22,20 +22,20 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure;
 
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.IStateBitSet;
+import choco.kernel.memory.IStateIntVector;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.global.automata.common.StoredIndexedBipartiteSetWithOffset;
+import choco.kernel.solver.constraints.global.automata.fast_multicostregular.algo.FastPathFinder;
+import choco.kernel.solver.constraints.integer.IntSConstraint;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntHashSet;
 import org.jgrapht.graph.DirectedMultigraph;
 
-import java.util.Set;
 import java.util.Arrays;
-
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.memory.IStateIntVector;
-import choco.kernel.memory.IStateBitSet;
-import choco.kernel.solver.constraints.global.automata.fast_multicostregular.algo.FastPathFinder;
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -99,7 +99,7 @@ public class StoredDirectedMultiGraph {
 
 
 
-    public StoredDirectedMultiGraph(IntSConstraint constraint,DirectedMultigraph<Node, Arc> graph, int[][] layers, int[] starts, int[] offsets, int supportLength)
+    public StoredDirectedMultiGraph(IEnvironment environment, IntSConstraint constraint, DirectedMultigraph<Node, Arc> graph, int[][] layers, int[] starts, int[] offsets, int supportLength)
     {
         this.constraint = constraint;
         this.starts = starts;
@@ -117,7 +117,7 @@ public class StoredDirectedMultiGraph {
 
         Set<Arc> arcs = graph.edgeSet();
 
-        this.inStack = constraint.getSolver().getEnvironment().makeBitSet(arcs.size());
+        this.inStack = environment.makeBitSet(arcs.size());
 
         GArcs.values = new int[arcs.size()];
         GArcs.dests = new int[arcs.size()];
@@ -144,7 +144,7 @@ public class StoredDirectedMultiGraph {
         for (int i =0 ;i < sups.length ;i++)
         {
             if (sups[i] != null)
-                supports[i] = new StoredIndexedBipartiteSetWithOffset(this.constraint.getSolver().getEnvironment(),sups[i].toArray());
+                supports[i] = new StoredIndexedBipartiteSetWithOffset(environment,sups[i].toArray());
         }
 
         Set<Node> nodes = graph.vertexSet();
@@ -185,7 +185,7 @@ public class StoredDirectedMultiGraph {
                 {
                     out[i++] = a.id;
                 }
-                GNodes.outArcs[n.id] = new StoredIndexedBipartiteSetWithOffset(this.constraint.getSolver().getEnvironment(),out);
+                GNodes.outArcs[n.id] = new StoredIndexedBipartiteSetWithOffset(environment,out);
             }
 
             Set<Arc> inarc = graph.incomingEdgesOf(n);
@@ -197,7 +197,7 @@ public class StoredDirectedMultiGraph {
                 {
                     in[i++] = a.id;
                 }
-                GNodes.inArcs[n.id] = new StoredIndexedBipartiteSetWithOffset(this.constraint.getSolver().getEnvironment(),in);
+                GNodes.inArcs[n.id] = new StoredIndexedBipartiteSetWithOffset(environment,in);
             }
         }
 

@@ -49,7 +49,7 @@ public class ClausesManager extends MixedConstraintManager {
         if (solver instanceof CPSolver) {
             IntDomainVar[] vs = new IntDomainVar[vars.length];
             solver._to(vars, vs);
-            ClauseStore cs =  new ClauseStore(vs);
+            ClauseStore cs =  new ClauseStore(vs, solver.getEnvironment());
             if (options.contains("cp:entail")) {
                 cs.setEfficientEntailmentTest();
             }

@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.matching;
 
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -34,14 +35,14 @@ public class GlobalCardinalityVar extends GlobalCardinality {
   //protected StoredIntVector maxOccurence;
 
   public GlobalCardinalityVar(IntDomainVar[] values,
-                              IntDomainVar[] occurences) {
-    this(values, 1, occurences.length, occurences);
+                              IntDomainVar[] occurences, IEnvironment environment) {
+    this(values, 1, occurences.length, occurences, environment);
   }
 
   public GlobalCardinalityVar(IntDomainVar[] values,
-                           int minValue, int maxValue,
-                           IntDomainVar[] occurences) {
-    super(values, minValue, maxValue, new int[occurences.length], new int[occurences.length]);
+                              int minValue, int maxValue,
+                              IntDomainVar[] occurences, IEnvironment environment) {
+    super(values, minValue, maxValue, new int[occurences.length], new int[occurences.length], environment);
     int nbVarsTotal = values.length + occurences.length;
     vars = new IntDomainVar[nbVarsTotal];
     System.arraycopy(values, 0, vars, 0, values.length);

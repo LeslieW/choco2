@@ -201,7 +201,13 @@ public final class RcIntVector implements IStateIntVector, RecomputableElement {
         return elementData[index];
     }
 
-
+    public boolean contain(int val){
+        int ssize = size.get();
+         for(int i = 0; i < ssize; i++){
+             if(val == elementData[i])return true;
+         }
+        return false;
+    }
     /**
      * Assigns a new value <code>val</code> to the element <code>index</code>.
      */

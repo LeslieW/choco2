@@ -40,7 +40,6 @@ public class Adapter extends AbstractIntSConstraint implements
     public Adapter(IntSConstraint sConstraint) {
         super(ConstraintEvent.MEDIUM);
         this.sConstraint = sConstraint;
-        setSolver(sConstraint.getSolver());
     }
 
     public int firstSupport(int position, int value) {

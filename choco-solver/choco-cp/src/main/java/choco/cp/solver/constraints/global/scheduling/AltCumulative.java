@@ -1,19 +1,20 @@
 package choco.cp.solver.constraints.global.scheduling;
 
-import java.util.Arrays;
-
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+
+import java.util.Arrays;
 
 public class AltCumulative extends Cumulative {
 
 
-	public AltCumulative(String name, TaskVar[] taskvars,
-			IntDomainVar[] heights, IntDomainVar[] usages,
-			IntDomainVar consumption, IntDomainVar capacity,
-			IntDomainVar uppBound) {
-		super(name, taskvars, heights, consumption, capacity, uppBound,
+	public AltCumulative(Solver solver, String name, TaskVar[] taskvars,
+                         IntDomainVar[] heights, IntDomainVar[] usages,
+                         IntDomainVar consumption, IntDomainVar capacity,
+                         IntDomainVar uppBound) {
+		super(solver, name, taskvars, heights, consumption, capacity, uppBound,
 				usages);
 		cumulSweep = new CumulSweep(this, Arrays.asList(rtasks));
 	}

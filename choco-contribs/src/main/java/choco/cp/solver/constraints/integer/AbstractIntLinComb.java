@@ -26,7 +26,6 @@ package choco.cp.solver.constraints.integer;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
@@ -296,9 +295,8 @@ public abstract class AbstractIntLinComb extends AbstractLargeIntSConstraint imp
 	}
 
 	@Override
-	public AbstractSConstraint opposite() {
-		final Solver s = getSolver();
-		return operator.opposite(s, s.scalar(coeffs, vars), cste);
+	public AbstractSConstraint opposite(Solver solver) {
+		return operator.opposite(solver, solver.scalar(coeffs, vars), cste);
 	}	
 
 	@Override

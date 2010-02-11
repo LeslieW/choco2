@@ -25,6 +25,7 @@
 package choco.cp.solver.constraints.global.matching;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.global.matching.AbstractBipartiteMatching;
 import choco.kernel.solver.constraints.integer.IntSConstraint;
@@ -42,9 +43,10 @@ public class AllDifferent extends AbstractBipartiteMatching implements IntSConst
    * API entry point: creating an ice alldifferent constraint (before posting it)
    *
    * @param vars
+   * @param environment
    */
-  public AllDifferent(IntDomainVar[] vars) {
-    super(vars, vars.length, AllDifferent.getValueGap(vars));
+  public AllDifferent(IntDomainVar[] vars, IEnvironment environment) {
+    super(environment, vars, vars.length, AllDifferent.getValueGap(vars));
     minValue = Integer.MAX_VALUE;
     maxValue = Integer.MIN_VALUE;
     for (int i = 0; i < vars.length; i++) {
@@ -64,11 +66,12 @@ public class AllDifferent extends AbstractBipartiteMatching implements IntSConst
    * AllDiff constraint constructor
    *
    * @param vars     the choco variable list
-   * @param minValue minimal value in vars domain
-   * @param maxValue maximal value in vars domain
-   */
-  public AllDifferent(IntDomainVar[] vars, int minValue, int maxValue) {
-    super(vars, vars.length, maxValue - minValue + 1);
+     * @param minValue minimal value in vars domain
+     * @param maxValue maximal value in vars domain
+     * @param environment
+     */
+  public AllDifferent(IntDomainVar[] vars, int minValue, int maxValue, IEnvironment environment) {
+    super(environment, vars, vars.length, maxValue - minValue + 1);
     this.minValue = minValue;
     this.maxValue = maxValue;
   }

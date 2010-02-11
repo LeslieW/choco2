@@ -22,20 +22,20 @@ package choco.cp.solver.constraints.global.automata.fast_multicostregular.exampl
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.TIntHashSet;
 import dk.brics.automaton.RegExp;
-import static choco.Choco.*;
+import gnu.trove.TIntHashSet;
 
 import java.util.ArrayList;
 
@@ -432,7 +432,7 @@ public class RuleModel extends CPModel {
 
 
        // s.attachGoal(new AssignVar(new StaticVarOrder(mars.toArray(new IntDomainVar[8])),new DecreasingDomain()));
-        s.attachGoal(new AssignVar(new StaticVarOrder(s.getVar(ArrayUtils.flatten(ArrayUtils.transpose(m.vs)))),new IncreasingDomain()));
+        s.attachGoal(new AssignVar(new StaticVarOrder(s, s.getVar(ArrayUtils.flatten(ArrayUtils.transpose(m.vs)))),new IncreasingDomain()));
         //s.addGoal(new AssignVar(new RandomIntVarSelector(s,s.getVar(ArrayUtils.flatten(ArrayUtils.transpose(m.vs))),0),new RandomIntValSelector()));
 
 

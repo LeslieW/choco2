@@ -22,8 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers;
 
-import java.util.Set;
-
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintManager;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
@@ -32,6 +30,8 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.variables.set.SetVar;
+
+import java.util.Set;
 
 /*
  * Created by IntelliJ IDEA.
@@ -77,7 +77,7 @@ public abstract class SetConstraintManager extends ConstraintManager<SetVariable
     @Override
     public SConstraint[] makeConstraintAndOpposite(Solver solver, SetVariable[] variables, Object parameters, Set<String> options) {
         SConstraint c = makeConstraint(solver, variables, parameters, options);
-        SConstraint opp = c.opposite();
+        SConstraint opp = c.opposite(solver);
         return new SConstraint[]{c, opp};
     }
 }

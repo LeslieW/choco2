@@ -73,14 +73,14 @@ public class SoftCumulative extends AbstractSoftCumulative {
 	// ----------------------------------------------------------------
 
 	public SoftCumulative(IntDomainVar[] starts,
-            			  int[] durations,
-            			  int[] heights,
-            			  IntDomainVar[] costVars,
-            			  int wishCapa) {
+                          int[] durations,
+                          int[] heights,
+                          IntDomainVar[] costVars,
+                          int wishCapa, Solver solver) {
 		this(starts,
-			 createEndVarArray(starts, durations),
-			 createIntVarArray("duration",durations,starts[0].getSolver()),
-			 createIntVarArray("heights",heights,starts[0].getSolver()),
+			 createEndVarArray(starts, durations, solver),
+			 createIntVarArray("duration",durations,solver),
+			 createIntVarArray("heights",heights,solver),
 			 costVars,
 			 wishCapa,
 			 computeCapa(costVars, wishCapa));
@@ -92,14 +92,13 @@ public class SoftCumulative extends AbstractSoftCumulative {
 	// ----------------------------------------------------------------
 
 	// create end variables from start variables and fixed durations
-	protected static IntDomainVar[] createEndVarArray(IntDomainVar[] starts, int[] durations) {
-		Solver pb = starts[0].getSolver();
-		if(durations.length!=starts.length) {
+	protected static IntDomainVar[] createEndVarArray(IntDomainVar[] starts, int[] durations, Solver solver) {
+        if(durations.length!=starts.length) {
 			throw new Error("SofCumulative : duration.length != starts.length");
 		} else {
 			IntDomainVar[] res = new IntDomainVar[starts.length];
 			for(int i=0; i<starts.length; i++) {
-				res[i] = pb.createBoundIntVar("end: "+i, starts[i].getInf()+durations[i], starts[i].getSup()+durations[i]);
+				res[i] = solver.createBoundIntVar("end: "+i, starts[i].getInf()+durations[i], starts[i].getSup()+durations[i]);
 			}
 			return res;
 		}

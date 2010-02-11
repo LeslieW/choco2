@@ -22,9 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers;
 
-import java.util.Set;
-import java.util.Set;
-
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.reified.leaves.ConstraintLeaf;
@@ -35,6 +32,8 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
+
+import java.util.Set;
 
 /*
  * Created by IntelliJ IDEA.
@@ -84,7 +83,7 @@ public abstract class IntConstraintManager extends ConstraintManager<IntegerVari
     @Override
     public SConstraint[] makeConstraintAndOpposite(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         SConstraint c = makeConstraint(solver, variables, parameters, options);
-        SConstraint opp = c.opposite();
+        SConstraint opp = c.opposite(solver);
         return new SConstraint[]{c, opp};
     }
 }

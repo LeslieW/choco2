@@ -174,7 +174,6 @@ public class SoftIntSConstraint extends AbstractLargeIntSConstraint {
         for (int i = 0; i < n; i++) {
             thecons.setConstraintIndex(i, getIndex((AbstractVar) thecons.getVar(i)));
         }
-        thecons.setSolver(this.solver);
     }
 
     public int getIndex(AbstractVar v) {

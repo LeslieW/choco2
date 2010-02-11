@@ -629,7 +629,7 @@ public class DistLeqIC extends ForbiddenRegion {
                 DVar.updateInf(newInf,0);
                 if (stp.opt.debug) { System.out.println("DistLeqIC:"+this+" updateDistance:["+DVar.getInf()+","+DVar.getSup()+"]"); };
                 if ((DVar.getInf()>DVar.getSup()) || (DVar.getSup()<DVar.getInf())){
-                    stp.getSolver().getPropagationEngine().raiseContradiction(null, ContradictionException.Type.UNKNOWN);
+                    stp.propagationEngine.raiseContradiction(null, ContradictionException.Type.UNKNOWN);
                 }
                 return true;
         }

@@ -4,6 +4,7 @@ package choco.cp.solver.constraints.integer.channeling;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.StringUtils;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
@@ -40,13 +41,14 @@ public final class DomainChanneling extends AbstractLargeIntSConstraint {
 	 * Make a new Channeling.
 	 * Warning : no offset ! the lower bound of x_i should be O !!!!!
 	 * @param yij The boolean assignment var for a virtual machine
-	 * @param xi the associated assignment var 
-	 */
-	public DomainChanneling(IntDomainVar[] yij, IntDomainVar xi) {
+     * @param xi the associated assignment var
+     * @param environment
+     */
+	public DomainChanneling(IntDomainVar[] yij, IntDomainVar xi, IEnvironment environment) {
 		super(ArrayUtils.append(yij, new IntDomainVar[]{xi}));    	
 		this.dsize = yij.length;        
-		oldinf = xi.getSolver().getEnvironment().makeInt();
-		oldsup = xi.getSolver().getEnvironment().makeInt();
+		oldinf = environment.makeInt();
+		oldsup = environment.makeInt();
 	}
 
 

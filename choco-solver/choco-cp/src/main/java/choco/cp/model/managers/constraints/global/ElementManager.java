@@ -83,7 +83,7 @@ public class ElementManager extends IntConstraintManager{
                     return new Element(index, values, val, offset);
                 }else{
                     if (index.hasEnumeratedDomain()) {
-                        return new ElementV(solver.getVar((IntegerVariable[])variables), offset);
+                        return new ElementV(solver.getVar((IntegerVariable[])variables), offset, solver.getEnvironment());
                     }else{
                         throw new SolverException(index.getName()+" has not an enumerated domain");
                     }
@@ -138,7 +138,7 @@ public class ElementManager extends IntConstraintManager{
                     if (Y.hasEnumeratedDomain()) {
                         IntDomainVar[] tvars = solver.getVar((IntegerVariable[])variables);
                         tvars[variables.length-2] = Y;
-                        solver.post(new ElementV(tvars, offset));
+                        solver.post(new ElementV(tvars, offset, solver.getEnvironment()));
                     }else{
                         throw new SolverException(X.getName()+" has not an enumerated domain");
                     }

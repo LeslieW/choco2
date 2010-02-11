@@ -122,7 +122,7 @@ public class IntVarSelectorFactory {
                 ivs = new RandomIntVarSelector(s, vars, r.nextLong());
                 break;
             case STATIC:
-                ivs = new StaticVarOrder(vars);
+                ivs = new StaticVarOrder(s, vars);
                 break;
         }
         return ivs;

@@ -43,8 +43,6 @@ import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.logging.Logger;
@@ -351,15 +349,14 @@ public class CPModelToCPSolver {
 		SConstraint[] cs = new SConstraint[2];
         if (ic instanceof MetaConstraint) {
 			cs[0] =  createMetaConstraint(ic, decomp);
-            cs[1] = cs[0].opposite();
+            cs[1] = cs[0].opposite(cpsolver);
             return cs;
 		}
 
 		if (ic instanceof ComponentConstraint) {
-			if (!ic.getConstraintType().equals(ConstraintType.REIFIEDINTCONSTRAINT) &&
-					!allSimpleVariable(ic.getVariables())) {
+			if (ic.getConstraintType().canContainExpression && containExpression(ic.getVariables())) {
 				cs[0] =  createMetaConstraint(ic, decomp);
-                cs[1] = cs[0].opposite();
+                cs[1] = cs[0].opposite(cpsolver);
                 return cs;
 			}
 			final ComponentConstraint cc = (ComponentConstraint) ic;
@@ -380,8 +377,7 @@ public class CPModelToCPSolver {
 		}
 
 		if (ic instanceof ComponentConstraint) {
-			if (!ic.getConstraintType().equals(ConstraintType.REIFIEDINTCONSTRAINT) &&
-					!allSimpleVariable(ic.getVariables())) {
+			if (ic.getConstraintType().canContainExpression && containExpression(ic.getVariables())) {
 				return createMetaConstraint(ic, decomp);
 			}
 			final ComponentConstraint cc = (ComponentConstraint) ic;
@@ -396,24 +392,17 @@ public class CPModelToCPSolver {
 	 * @param vars pool of variables
 	 * @return true if only simple variable,
 	 */
-	private boolean allSimpleVariable(Variable[] vars){
-		//TODO improve the detection of expression 
-		//add a fields in the constraint type that indicates if it can contains expression ?
+	private boolean containExpression(Variable[] vars){
 		if (vars == null) {
-			return true;
+			return false;
 		}
         for (Variable v : vars) {
             final VariableType type = v.getVariableType();
-            if (type == VariableType.INTEGER_EXPRESSION
-                //                    || type == VariableType.SET_EXPRESSION
-                //                    || type == VariableType.REAL_EXPRESSION
-                //                    || type == VariableType.REAL
-                //                    || type == VariableType.SET
-                    ) {
-                return false;
+            if (type == VariableType.INTEGER_EXPRESSION) {
+                return true;
             }
         }
-		return true;
+		return false;
 	}
 
 	private IntDomainVar[] integerVariableToIntDomainVar(Variable[] tab) {

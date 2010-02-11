@@ -25,8 +25,10 @@ package choco.cp.solver.constraints.integer.channeling;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -78,11 +80,12 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
      * by giving yourself the opposite constraint !
      * @param bool reified variable
      * @param cons the reified constraint
+     * @param solver
      */
-    public ReifiedIntSConstraint(IntDomainVar bool, AbstractIntSConstraint cons) {
-        super(makeTableVar(bool, cons, (AbstractIntSConstraint) cons.opposite()));
+    public ReifiedIntSConstraint(IntDomainVar bool, AbstractIntSConstraint cons, Solver solver) {
+        super(makeTableVar(bool, cons, (AbstractIntSConstraint) cons.opposite(solver)));
         this.cons = cons;
-        this.oppositeCons = (AbstractIntSConstraint) cons.opposite();
+        this.oppositeCons = (AbstractIntSConstraint) cons.opposite(solver);
         init();
     }
 
@@ -210,7 +213,6 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
         for (int i = 0; i < n; i++) {
             thecons.setConstraintIndex(i, getIndex((AbstractVar) thecons.getVar(i)));
         }
-        thecons.solver = this.solver;
     }
 
     public int getIndex(AbstractVar v) {
@@ -226,6 +228,18 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
         addListener(oppositeCons);
     }
 
+    /**
+     * Define the propagation engine within the constraint.
+     * Mandatory to throw {@link choco.kernel.solver.ContradictionException}.
+     *
+     * @param propEng the current propagation engine
+     */
+    @Override
+    public void setPropagationEngine(PropagationEngine propEng) {
+        super.setPropagationEngine(propEng);
+        cons.setPropagationEngine(propEng);
+        oppositeCons.setPropagationEngine(propEng);
+    }
 
     public String pretty() {
         StringBuffer sb = new StringBuffer("(");

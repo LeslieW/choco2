@@ -24,6 +24,7 @@ package choco.cp.solver.constraints.integer.extension;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.extension.IterTuplesTable;
@@ -57,10 +58,9 @@ public class GAC2001PositiveLargeConstraint extends CspLargeSConstraint {
 	//by avoiding checking the bounds
 	protected ValidityChecker valcheck;
 
-	public GAC2001PositiveLargeConstraint(IntDomainVar[] vs, IterTuplesTable relation) {
+	public GAC2001PositiveLargeConstraint(IEnvironment environment, IntDomainVar[] vs, IterTuplesTable relation) {
 		super(vs, null);
 		this.relation = relation;
-		this.solver = vs[0].getSolver();
 		this.arity = vs.length;
 		this.blocks = new int[arity];
 		this.offsets = new int[arity];
@@ -71,7 +71,7 @@ public class GAC2001PositiveLargeConstraint extends CspLargeSConstraint {
 			offsets[i] = vs[i].getInf();
             this.supports[i] = new IStateInt[vs[i].getSup() - vs[i].getInf() + 1];
             for (int j= 0; j < supports[i].length; j++) {
-                this.supports[i][j] = solver.getEnvironment().makeInt(0);
+                this.supports[i][j] = environment.makeInt(0);
             }
 
 		}

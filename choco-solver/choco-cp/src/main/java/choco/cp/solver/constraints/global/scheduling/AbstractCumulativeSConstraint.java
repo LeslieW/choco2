@@ -26,6 +26,7 @@ import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBool;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -54,16 +55,16 @@ public abstract class AbstractCumulativeSConstraint extends AbstractResourceSCon
 
 	protected final int indexCapacity;
 
-	public AbstractCumulativeSConstraint(final String name, final TaskVar[] taskvars, final IntDomainVar[] heights,
-			final IntDomainVar consumption,final IntDomainVar capacity,
-			final IntDomainVar uppBound, final IntDomainVar... otherVars) {
-		super(name, taskvars, uppBound, ArrayUtils.append(heights,new IntDomainVar[]{consumption, capacity},otherVars));
+	public AbstractCumulativeSConstraint(Solver solver, final String name, final TaskVar[] taskvars, final IntDomainVar[] heights,
+                                         final IntDomainVar consumption, final IntDomainVar capacity,
+                                         final IntDomainVar uppBound, final IntDomainVar... otherVars) {
+		super(solver, name, taskvars, uppBound, ArrayUtils.append(heights,new IntDomainVar[]{consumption, capacity},otherVars));
 		if(taskvars.length != heights.length) {
 			throw new SolverException("tasks and heights array have different length.");
 		}
 		indexConsumption = taskIntVarOffset + heights.length;
 		indexCapacity = indexConsumption + 1;
-		IEnvironment env = getVar(0).getSolver().getEnvironment();
+		IEnvironment env = solver.getEnvironment();
 		fixedHeights = env.makeBool(false);
 		positiveHeights = env.makeBool(false);
 		regularWithNegativeHeight = env.makeBool(false);

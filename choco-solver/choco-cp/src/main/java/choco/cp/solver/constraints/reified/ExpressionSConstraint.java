@@ -27,6 +27,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.extension.FCBinSConstraint;
 import choco.cp.solver.constraints.reified.leaves.bool.NotNode;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -37,6 +38,7 @@ import choco.kernel.solver.constraints.integer.extension.BinRelation;
 import choco.kernel.solver.constraints.integer.extension.TuplesTest;
 import choco.kernel.solver.constraints.reified.BoolNode;
 import choco.kernel.solver.constraints.reified.INode;
+import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -51,11 +53,6 @@ import java.util.List;
  * range of operators
  */
 public class ExpressionSConstraint extends TuplesTest implements SConstraint, BinRelation {
-
-    /**
-     * A reference to the problem to which this predicat belong
-     */
-    protected Solver s;
 
     /**
      * The scope of the predicat
@@ -156,15 +153,6 @@ public class ExpressionSConstraint extends TuplesTest implements SConstraint, Bi
     public void setVar(int i, Var v) {
         vars[i] = (IntDomainVar) v;
     }
-
-    public Solver getSolver() {
-        return s;
-    }
-
-    public void setSolver(Solver s) {
-        this.s = s;
-    }
-
 
     public int getLevelAc() {
         return levelAc;
@@ -391,10 +379,25 @@ public class ExpressionSConstraint extends TuplesTest implements SConstraint, Bi
         throw new SolverException("isSatisfiedTo should not be called on a predicat");
     }
 
-    public AbstractSConstraint opposite() {
+    public AbstractSConstraint opposite(Solver solver) {
         throw new SolverException("opposite should not be called on a predicat");
     }
 
+    /**
+     * Activate a constraint.
+     * @param environment current environment
+     */
+    @Override
+    public void activate(IEnvironment environment) {}
+
+    /**
+     * Define the propagation engine within the constraint.
+     * Mandatory to throw {@link ContradictionException}.
+     * @param propEng the current propagation engine
+     */
+    @Override
+    public void setPropagationEngine(PropagationEngine propEng) {
+    }
 
     // public Constraint copy();
     @Override
@@ -403,7 +406,7 @@ public class ExpressionSConstraint extends TuplesTest implements SConstraint, Bi
     }
 
     public int getVarIdxInOpposite(int i) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return 0;
     }
 
     public int[] copy(int[] tab) {

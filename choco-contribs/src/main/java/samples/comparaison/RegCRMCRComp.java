@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.comparaison;
 
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
@@ -33,8 +34,6 @@ import dk.brics.automaton.RegExp;
 import gnu.trove.TIntHashSet;
 
 import java.util.Random;
-
-import static choco.Choco.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -154,7 +153,7 @@ public class RegCRMCRComp
 
 
         s.read(m);
-        s.setVarIntSelector(new StaticVarOrder(s.getVar(vars)));
+        s.setVarIntSelector(new StaticVarOrder(s, s.getVar(vars)));
 
         s.minimize(s.getVar(objectif),false);
         //s.solve();
@@ -186,7 +185,7 @@ public class RegCRMCRComp
 
 
         s.read(m);
-        s.setVarIntSelector(new StaticVarOrder(s.getVar(vars)));
+        s.setVarIntSelector(new StaticVarOrder(s, s.getVar(vars)));
 
         s.minimize(s.getVar(objectif),false);
         printSolution(s);
@@ -223,7 +222,7 @@ public class RegCRMCRComp
 
 
         s.read(m);
-        s.setVarIntSelector(new StaticVarOrder(s.getVar(vars)));
+        s.setVarIntSelector(new StaticVarOrder(s, s.getVar(vars)));
 
         s.minimize(s.getVar(objectif),false);
         printSolution(s);
