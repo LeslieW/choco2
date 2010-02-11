@@ -68,7 +68,7 @@ public class ImpactTest {
         s.attachGoal(ibb);
         s.setFirstSolution(true);
         s.generateSearchStrategy();
-        s.printRuntimeSatistics();
+        s.printRuntimeStatistics();
         s.launch();
     }
 
@@ -91,7 +91,7 @@ public class ImpactTest {
         s.attachGoal(ibb);
         s.setFirstSolution(true);
         s.generateSearchStrategy();
-        s.printRuntimeSatistics();
+        s.printRuntimeStatistics();
         s.launch();
     }
 

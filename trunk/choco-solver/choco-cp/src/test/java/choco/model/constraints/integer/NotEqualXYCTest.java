@@ -125,7 +125,7 @@ public class NotEqualXYCTest {
 		s.read(mod);
 		s.setBackTrackLimit(Integer.MAX_VALUE);
 		s.solve();
-		s.printRuntimeSatistics();
+		s.printRuntimeStatistics();
 	}
 
 }

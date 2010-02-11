@@ -326,7 +326,7 @@ public class IntegerExpressionVariableTest {
 
         s.solve();
         Assert.assertEquals(s.isFeasible(),true);
-        s.printRuntimeSatistics();
+        s.printRuntimeStatistics();
     }
 
     @Test

@@ -33,16 +33,6 @@ import choco.kernel.solver.variables.Var;
  */
 public abstract class VarEvent <E extends Var> implements PropagationEvent, IPrioritizable {
 
-
-    /**
-     * Indicates wether the state of a constraint should be tested as unit or
-     * if the states should be maintened directly in the structure.
-     *
-     * If set to TRUE, means the iteration will call the active checker of each constraints,
-     * If set to FALSE, means the iteration will be done on active constraints only
-     */
-    public final static boolean CHECK_ACTIVE = true;
-
     /**
    * empty bitvector for the event type.
    */

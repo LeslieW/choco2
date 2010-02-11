@@ -22,27 +22,26 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular.asap;
 
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-import samples.multicostregular.asap.data.*;
-import samples.multicostregular.asap.data.base.*;
-import samples.multicostregular.asap.data.base.ASAPDate;
-import samples.multicostregular.asap.parser.ASAPParser;
-import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.StringUtils;
-import static choco.Choco.*;
-
-import java.util.*;
-import java.io.BufferedWriter;
-import java.awt.*;
-
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntHashSet;
+import samples.multicostregular.asap.data.ASAPItemHandler;
+import samples.multicostregular.asap.data.ASAPShiftOnRequest;
+import samples.multicostregular.asap.data.base.*;
+import samples.multicostregular.asap.parser.ASAPParser;
+
+import java.awt.*;
+import java.io.BufferedWriter;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -407,7 +406,7 @@ public class ASAPCPModel extends CPModel {
             while (all && s.nextSolution());
         }
         else System.out.println("NO SOLUTION");
-        s.printRuntimeSatistics();
+        s.printRuntimeStatistics();
 
 
 

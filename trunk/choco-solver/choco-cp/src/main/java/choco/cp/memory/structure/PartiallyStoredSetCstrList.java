@@ -26,9 +26,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.APartiallyStoredCstrList;
-import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.set.SetSConstraint;
-import static choco.kernel.solver.propagation.event.VarEvent.CHECK_ACTIVE;
 
 /*
 * User : charles
@@ -42,10 +40,6 @@ public final class PartiallyStoredSetCstrList<C extends SetSConstraint> extends 
     public PartiallyStoredSetCstrList(IEnvironment env) {
         super(env);
     }
-
-    @Override
-    public void updateConstraintState(int vidx, int cidx, SConstraint c, boolean state) {}
-
 
     private QuickIterator _quickIterator = null;
 
@@ -98,12 +92,7 @@ public final class PartiallyStoredSetCstrList<C extends SetSConstraint> extends 
             while (cit.hasNext()) {
                 int idx = cit.next();
                 if (idx != cstrCause) {
-                    if(CHECK_ACTIVE){
-                        if (elements.get(idx).isActive()) {
-                            cc.init(elements.get(idx), indices.get(idx));
-                            return true;
-                        }
-                    }else{
+                    if (elements.get(idx).isActive()) {
                         cc.init(elements.get(idx), indices.get(idx));
                         return true;
                     }

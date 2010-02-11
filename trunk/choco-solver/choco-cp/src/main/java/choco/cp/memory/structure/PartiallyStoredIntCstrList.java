@@ -22,19 +22,16 @@
  **************************************************/
 package choco.cp.memory.structure;
 
-import choco.cp.solver.variables.integer.IntVarEvent;
 import static choco.cp.solver.variables.integer.IntVarEvent.*;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.structure.APartiallyStoredCstrList;
-import choco.kernel.memory.structure.PartiallyStoredActiveIntVector;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.IntSConstraint;
 import choco.kernel.solver.propagation.Propagator;
-import choco.kernel.solver.propagation.event.VarEvent;
 
 /*
 * User : charles
@@ -53,11 +50,7 @@ public final class PartiallyStoredIntCstrList <C extends IntSConstraint> extends
         super(env);
         events = new PartiallyStoredIntVector[4];
 		for(int i = 0; i < 4; i++){
-			if(VarEvent.CHECK_ACTIVE){
-                events[i] = env.makePartiallyStoredIntVector();
-            }else{
-                events[i] = new PartiallyStoredActiveIntVector(env);
-            }
+            events[i] = env.makePartiallyStoredIntVector();
 		}
         priority = env.makeInt(0);
     }
@@ -79,32 +72,16 @@ public final class PartiallyStoredIntCstrList <C extends IntSConstraint> extends
 		computePriority(ic);
 		int mask = ic.getFilteredEventMask(varIdx);
 		if((mask & INSTINTbitvector) != 0){
-			if(CHECK_ACTIVE){
-                addEvent(dynamicAddition, 0, constraintIdx);
-            }else{
-                addEvent(dynamicAddition, 0, constraintIdx, ic.isActive());
-            }
+            addEvent(dynamicAddition, 0, constraintIdx);
 		}
 		if((mask & INCINFbitvector) != 0){
-			if(CHECK_ACTIVE){
-                addEvent(dynamicAddition, 1, constraintIdx);
-            }else{
-                addEvent(dynamicAddition, 1, constraintIdx, ic.isActive());
-            }
+            addEvent(dynamicAddition, 1, constraintIdx);
 		}
 		if((mask & DECSUPbitvector) != 0){
-			if(CHECK_ACTIVE){
-                addEvent(dynamicAddition, 2, constraintIdx);
-            }else{
-                addEvent(dynamicAddition, 2, constraintIdx, ic.isActive());
-            }
+            addEvent(dynamicAddition, 2, constraintIdx);
 		}
 		if((mask & REMVALbitvector) != 0){
-			if(CHECK_ACTIVE){
-                addEvent(dynamicAddition, 3, constraintIdx);
-            }else{
-                addEvent(dynamicAddition, 3, constraintIdx, ic.isActive());
-            }
+            addEvent(dynamicAddition, 3, constraintIdx);
 		}
 		return constraintIdx;
 	}
@@ -128,21 +105,6 @@ public final class PartiallyStoredIntCstrList <C extends IntSConstraint> extends
 			events[indice].add(constraintIdx);
 		} else {
 			events[indice].staticAdd(constraintIdx);
-		}
-	}
-
-    /**
-	 * Add event to the correct partially stored int vector
-	 * @param dynamicAddition static or dynamic constraint
-	 * @param indice indice of teh event type
-	 * @param constraintIdx index of the constraint
-     * @param active is the constraint active?
-	 */
-	private void addEvent(boolean dynamicAddition, int indice, int constraintIdx, boolean active) {
-		if (dynamicAddition) {
-			((PartiallyStoredActiveIntVector)events[indice]).add(constraintIdx, active);
-		} else {
-			((PartiallyStoredActiveIntVector)events[indice]).staticAdd(constraintIdx, active);
 		}
 	}
 
@@ -178,32 +140,6 @@ public final class PartiallyStoredIntCstrList <C extends IntSConstraint> extends
 	public int getPriority() {
 		return priority.get();
 	}
-
-    /**
-     * Update the constraint state
-     *
-     * @param vidx  index of the variable in the constraint
-     * @param cidx  constraint idx
-     * @param c     the constraint
-     * @param state new state (active/passive)
-     */
-    public void updateConstraintState(int vidx, int cidx, SConstraint c, boolean state) {
-        if(!IntVarEvent.CHECK_ACTIVE){
-            int mask = ((IntSConstraint)c).getFilteredEventMask(vidx);
-            if((mask & INSTINTbitvector) != 0){
-                ((PartiallyStoredActiveIntVector)events[0]).set(cidx, state);
-            }
-            if((mask & INCINFbitvector) != 0){
-                ((PartiallyStoredActiveIntVector)events[1]).set(cidx, state);
-            }
-            if((mask & DECSUPbitvector) != 0){
-                ((PartiallyStoredActiveIntVector)events[2]).set(cidx, state);
-            }
-            if((mask & REMVALbitvector) != 0){
-                ((PartiallyStoredActiveIntVector)events[3]).set(cidx, state);
-            }
-        }
-    }
 
     private QuickIterator _quickIterator = null;
 
@@ -256,14 +192,9 @@ public final class PartiallyStoredIntCstrList <C extends IntSConstraint> extends
         @Override
         public boolean hasNext() {
             while (cit.hasNext()) {
-                int idx = CHECK_ACTIVE?event.get(cit.next()):cit.next();
+                int idx = event.get(cit.next());
                 if (idx != cstrCause) {
-                    if(CHECK_ACTIVE){
-                        if (elements.get(idx).isActive()) {
-                            cc.init(elements.get(idx), indices.get(idx));
-                            return true;
-                        }
-                    }else{
+                    if (elements.get(idx).isActive()) {
                         cc.init(elements.get(idx), indices.get(idx));
                         return true;
                     }

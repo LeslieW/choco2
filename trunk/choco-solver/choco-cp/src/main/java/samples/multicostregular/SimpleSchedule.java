@@ -22,13 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular;
 
-import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.constraints.SConstraint;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
  * This class present a simple scheduling problem defined in multicost-regular documentation.
@@ -216,7 +215,7 @@ public class SimpleSchedule extends CPModel
            while(s.nextSolution());
         }
 
-        s.printRuntimeSatistics();
+        s.printRuntimeStatistics();
         System.out.println(s.getNbSolutions()+"[+0] solutions");
     }
 }

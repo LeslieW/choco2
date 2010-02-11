@@ -147,7 +147,7 @@ public class AirPlaneLanding {
 		LOGGER.info(solver.pretty());
 		//TODO add (find !) a good search strategy
 		solver.minimize(false);
-		solver.printRuntimeSatistics();
+		solver.printRuntimeStatistics();
 
 	}
 	public static void main(String[] args) {

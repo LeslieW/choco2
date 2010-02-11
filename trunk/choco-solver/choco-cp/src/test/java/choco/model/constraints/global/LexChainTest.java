@@ -201,7 +201,7 @@ public class LexChainTest {
 
 //        out.println(" number of solutions of lexChain - increasing  domain &  mid Value is  = " + solver[1].getNbSolutions());
 //        out.print("increasing  domain & mid Value   ");
-        solver[2].printRuntimeSatistics();
+        solver[2].printRuntimeStatistics();
         Assert.assertEquals("Not same number of solution", solver[0].getNbSolutions(), solver[1].getNbSolutions());
         Assert.assertEquals("Not same number of solution", solver[1].getNbSolutions(), solver[2].getNbSolutions());
 

@@ -85,7 +85,7 @@ public class SolveGoal {
     }
 
     public boolean defineGoal(CPSolver solver){
-        boolean searchSet = readAnnotations(annotations, solver);
+        boolean searchSet = false;//readAnnotations(annotations, solver);
         switch (type) {
             case SATISFY:
                 solver.setFirstSolution(true);

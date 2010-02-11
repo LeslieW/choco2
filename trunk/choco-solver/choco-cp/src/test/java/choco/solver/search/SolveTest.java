@@ -30,34 +30,7 @@
 /* File choco.currentElement.search.SolveTest.java, last modified by Francois 2 d�c. 2003 23:49:19 */
 package choco.solver.search;
 
-import static choco.Choco.abs;
-import static choco.Choco.and;
-import static choco.Choco.eq;
-import static choco.Choco.geq;
-import static choco.Choco.gt;
-import static choco.Choco.leq;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.makeIntVarArray;
-import static choco.Choco.minus;
-import static choco.Choco.neq;
-import static choco.Choco.regular;
-import static choco.Choco.scalar;
-import static java.text.MessageFormat.format;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.logging.Logger;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
@@ -72,10 +45,21 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.Propagator;
-import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.search.restart.AbstractRestartStrategy;
 import choco.kernel.solver.search.restart.GeometricalRestartStrategy;
 import choco.kernel.solver.search.restart.LubyRestartStrategy;
+import org.junit.After;
+import static org.junit.Assert.*;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import static java.text.MessageFormat.format;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Random;
+import java.util.logging.Logger;
 
 public class SolveTest {
 	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
@@ -194,7 +178,7 @@ public class SolveTest {
 		s.solve();
 		while (s.nextSolution() == Boolean.TRUE) {
 		}
-		s.printRuntimeSatistics();
+		s.printRuntimeStatistics();
 		assertEquals(s.isFeasible(), Boolean.TRUE);
 		assertEquals(s.getNbSolutions(), 12);
 	}
@@ -478,7 +462,7 @@ public class SolveTest {
 		s.read(mod);
 		s.monitorBackTrackLimit(true);
 		s.solve();
-		s.printRuntimeSatistics();
+		s.printRuntimeStatistics();
         assertEquals(s.getNbSolutions(), 0);
 	}
 
@@ -730,7 +714,7 @@ public class SolveTest {
 
         s.solve();
         //LOGGER.info("" + s.isFeasible());
-        s.printRuntimeSatistics();
+        s.printRuntimeStatistics();
         assertTrue(s.isFeasible());
     }
 }

@@ -152,6 +152,4 @@ public abstract class APartiallyStoredCstrList<C extends SConstraint> {
 			}
 		};
 	}
-
-    public abstract void updateConstraintState(int vidx, int cidx, SConstraint c, boolean state);
 }

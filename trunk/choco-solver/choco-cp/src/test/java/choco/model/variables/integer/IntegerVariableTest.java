@@ -23,6 +23,7 @@
 package choco.model.variables.integer;
 
 import choco.Choco;
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.MinDomain;
@@ -39,8 +40,6 @@ import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.logging.Logger;
-
-import static choco.Choco.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -209,7 +208,7 @@ public class IntegerVariableTest {
         //s.setTimeLimit(timeLimit);
         s.solveAll();
         LOGGER.info("-------------\n" + typeList.get(type) + ":");
-        s.printRuntimeSatistics();
+        s.printRuntimeStatistics();
         Assert.assertEquals("nbSol incorrect", nbSol, s.getNbSolutions());
     }
 
@@ -225,7 +224,7 @@ public class IntegerVariableTest {
         //s.setTimeLimit(timeLimit);
         s.solveAll();
         LOGGER.info("-------------\n" + typeList.get(type) + ":");
-        s.printRuntimeSatistics();
+        s.printRuntimeStatistics();
         Assert.assertEquals("nbSol incorrect", nbSol, s.getNbSolutions());
 
     }
@@ -242,7 +241,7 @@ public class IntegerVariableTest {
 //        s.setTimeLimit(timeLimit);
         s.solve();
         LOGGER.info("-------------\n" + typeList.get(type) + ":");
-        s.printRuntimeSatistics();
+        s.printRuntimeStatistics();
 
     }
 

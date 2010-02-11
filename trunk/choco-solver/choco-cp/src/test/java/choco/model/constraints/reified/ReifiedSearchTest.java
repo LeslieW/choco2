@@ -1078,7 +1078,7 @@ public class ReifiedSearchTest {
 				LOGGER.log(Level.INFO, st.toString());
 			}while(s1.nextSolution());
 		}
-		LOGGER.info(s1.runtimeSatistics());
+		LOGGER.info(s1.runtimeStatistics());
 		LOGGER.log(Level.INFO, "------------");
 
 		Model m2  = new CPModel();
@@ -1113,7 +1113,7 @@ public class ReifiedSearchTest {
 			}while(s2.nextSolution());
 		}
 
-		LOGGER.info(s2.runtimeSatistics());
+		LOGGER.info(s2.runtimeStatistics());
 		Assert.assertEquals("number of solution", s1.getNbSolutions(), s2.getNbSolutions());
 
 	}
@@ -1151,7 +1151,7 @@ public class ReifiedSearchTest {
 				LOGGER.log(Level.INFO, st.toString());
 			}while(s1.nextSolution());
 		}
-		LOGGER.info(s1.runtimeSatistics());
+		LOGGER.info(s1.runtimeStatistics());
 		LOGGER.log(Level.INFO, "------------");
 	}
 
@@ -1190,7 +1190,7 @@ public class ReifiedSearchTest {
 				LOGGER.log(Level.INFO, st.toString());
 			}while(s1.nextSolution());
 		}
-		LOGGER.info(s1.runtimeSatistics());
+		LOGGER.info(s1.runtimeStatistics());
 		LOGGER.log(Level.INFO, "------------");
 
 		Model m2  = new CPModel();
@@ -1225,7 +1225,7 @@ public class ReifiedSearchTest {
 			}while(s2.nextSolution());
 		}
 
-		LOGGER.info(s2.runtimeSatistics());
+		LOGGER.info(s2.runtimeStatistics());
 		Assert.assertEquals("number of solution", s1.getNbSolutions(), s2.getNbSolutions());
 
 	}
@@ -1265,7 +1265,7 @@ public class ReifiedSearchTest {
 				LOGGER.log(Level.INFO, st.toString());
 			}while(s1.nextSolution());
 		}
-		LOGGER.info(s1.runtimeSatistics());
+		LOGGER.info(s1.runtimeStatistics());
 		LOGGER.log(Level.INFO, "------------");
 
 		Model m2  = new CPModel();
@@ -1300,7 +1300,7 @@ public class ReifiedSearchTest {
 			}while(s2.nextSolution());
 		}
 
-		LOGGER.info(s2.runtimeSatistics());
+		LOGGER.info(s2.runtimeStatistics());
 		Assert.assertEquals("number of solution", s1.getNbSolutions(), s2.getNbSolutions());
 	}
 }

@@ -269,7 +269,7 @@ public class ExamplesTest {
         s.generateSearchStrategy();
         s.visualize(v);
         s.launch();
-        s.printRuntimeSatistics();
+        s.printRuntimeStatistics();
         // Print name value
         LOGGER.info("donald = " + s.getVar(_d).getVal() + s.getVar(_o).getVal() + s.getVar(_n).getVal() + s.getVar(_a).getVal() + s.getVar(_l).getVal() + s.getVar(_d).getVal());
         LOGGER.info("gerald = " + s.getVar(_g).getVal() + s.getVar(_e).getVal() + s.getVar(_r).getVal() + s.getVar(_a).getVal() + s.getVar(_l).getVal() + s.getVar(_d).getVal());
