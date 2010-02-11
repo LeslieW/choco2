@@ -27,7 +27,6 @@ import choco.kernel.model.Model;
 import choco.kernel.solver.Solver;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /*
  * User : charles
@@ -65,7 +64,7 @@ public abstract class PatternExample implements Example {
 			if( _s == null) {
 				LOGGER.info("\n***********\n solver object is null.");
 			}else {
-				LOGGER.log(Level.INFO, "\n***********\n#sol : {0}\n{1}", new Object[]{ _s.getSolutionCount(), _s.runtimeSatistics()});
+				LOGGER.log(Level.INFO, "\n***********\n#sol : {0}\n{1}", new Object[]{ _s.getSolutionCount(), _s.runtimeStatistics()});
 			}
 			ChocoLogging.flushLogs();
 		}

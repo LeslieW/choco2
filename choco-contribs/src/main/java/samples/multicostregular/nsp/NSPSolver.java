@@ -44,7 +44,7 @@ public class NSPSolver {
                     System.out.println(mod.solution(s));
                     s.postCut(s.lt(s.getVar(mod.globalCost),s.getVar(mod.globalCost).getVal()));
                  } while(false && s.nextSolution());
-                s.printRuntimeSatistics();
+                s.printRuntimeStatistics();
                 System.out.println("");
                 System.out.println("");
             }

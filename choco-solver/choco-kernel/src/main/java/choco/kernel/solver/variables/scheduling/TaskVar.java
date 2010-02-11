@@ -277,16 +277,4 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 	public boolean isInstantiated() {
 		return  start.isInstantiated() && end.isInstantiated() && duration.isInstantiated();
 	}
-
-    /**
-     * Update the constraint state
-     *
-     * @param vidx  index of the variable in the constraint
-     * @param cidx  constraint idx
-     * @param c     the constraint
-     * @param state new state (active/passive)
-     */
-    @Override
-    public void updateConstraintState(int vidx, int cidx, SConstraint c, boolean state) {
-    }
 }

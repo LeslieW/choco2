@@ -463,15 +463,7 @@ public interface Solver extends IMeasures, IPretty, IGarbageCollectorAssistant {
 
     public void setSolutionPoolCapacity(int capacity);
 
-    // bug 2874124
-    @Deprecated
-    public void printRuntimeSatistics();
-    
     public void printRuntimeStatistics();
-
-    // bug 2874124
-    @Deprecated
-    public String runtimeSatistics();
 
     public String runtimeStatistics();
     /**

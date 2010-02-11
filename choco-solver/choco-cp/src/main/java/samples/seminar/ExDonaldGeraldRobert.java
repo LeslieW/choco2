@@ -176,7 +176,7 @@ public class ExDonaldGeraldRobert {
         LOGGER.info("gerald = " + s.getVar(_g).getVal()+s.getVar(_e).getVal()+s.getVar(_r).getVal()+s.getVar(_a).getVal()+s.getVar(_l).getVal()+s.getVar(_d).getVal());
         LOGGER.info("robert = " + s.getVar(_r).getVal()+s.getVar(_o).getVal()+s.getVar(_b).getVal()+s.getVar(_e).getVal()+s.getVar(_r).getVal()+s.getVar(_t).getVal());
         LOGGER.info(s.getNbSolutions()+" solution(s)");
-        s.printRuntimeSatistics();
+        s.printRuntimeStatistics();
     }
 
 

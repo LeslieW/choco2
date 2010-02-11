@@ -141,14 +141,4 @@ public interface Var extends IPretty, IIndex {
 
 
 	public String getName();
-
-
-    /**
-     * Update the constraint state
-     * @param vidx index of the variable in the constraint
-     * @param cidx constraint idx
-     * @param c the constraint
-     * @param state new state (active/passive)
-     */
-    public void updateConstraintState(int vidx, int cidx, SConstraint c, boolean state);
 }

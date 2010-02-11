@@ -80,7 +80,7 @@ public class Main {
 
 
         }
-        s.printRuntimeSatistics();
+        s.printRuntimeStatistics();
         System.out.println(s.getNbSolutions()+" SOLUTIONS" );
 
     }

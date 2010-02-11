@@ -22,16 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.solver.search;
 
-import static choco.Choco.eq;
-import static choco.Choco.makeIntVarArray;
-import static choco.Choco.neq;
-import static choco.Choco.sum;
-import static org.junit.Assert.assertTrue;
-
-import java.util.logging.Logger;
-
-import org.junit.Test;
-
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.DomOverWDegBranching;
@@ -43,6 +34,10 @@ import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.limit.Limit;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -113,7 +108,7 @@ public class HeuristicTest {
     int nb = s.getNodeCount();
     long delta = System.currentTimeMillis() - start;
     LOGGER.info(nb + " nodes in " + delta + " ms");
-    s.printRuntimeSatistics();
+    s.printRuntimeStatistics();
     return nb;
   }
 }

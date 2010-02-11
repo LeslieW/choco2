@@ -22,17 +22,16 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.fastregular;
 
-import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
-import choco.kernel.model.constraints.ComponentConstraint;
-import choco.kernel.model.Model;
-import choco.kernel.common.util.tools.StringUtils;
-import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.util.tools.StringUtils;
+import choco.kernel.model.Model;
+import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 import dk.brics.automaton.State;
 import dk.brics.automaton.Transition;
 import gnu.trove.TIntHashSet;
@@ -145,7 +144,7 @@ public class NRPExample {
         }
 
 
-        s.printRuntimeSatistics();
+        s.printRuntimeStatistics();
 
 
 

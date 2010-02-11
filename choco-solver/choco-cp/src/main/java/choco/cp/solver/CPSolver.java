@@ -2386,34 +2386,11 @@ public class CPSolver implements Solver {
 		return isOk;
 	}
 
-	
-
-	/**
-     * bug 2874124
-	 * Displays all the runtime statistics.
-     * @see choco.cp.solver.CPSolver#printRuntimeStatistics()
-	 */
-    @Deprecated
-	public void printRuntimeSatistics() {
-		printRuntimeStatistics();
-	}
-
     /**
 	 * Displays all the runtime statistics.
 	 */
 	public void printRuntimeStatistics() {
-		System.out.println(runtimeStatistics());
-	}
-
-	/**
-	 * bug 2874124
-	 * Print run time statistics
-	 * @return
-	 * @see choco.cp.solver.CPSolver#runtimeStatistics() 
-	 */
-	@Deprecated
-	public String runtimeSatistics() {
-		return this.runtimeStatistics();
+		LOGGER.info(runtimeStatistics());
 	}
 
 	/**

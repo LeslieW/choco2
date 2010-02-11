@@ -273,17 +273,4 @@ public abstract class AbstractVar implements Var {
 		return constraints.getConstraintsIterator();
 
 	}
-
-    /**
-     * Update the constraint state
-     *
-     * @param vidx  index of the variable in the constraint
-     * @param cidx  constraint idx
-     * @param c     the constraint
-     * @param state new state (active/passive)
-     */
-    @Override
-    public void updateConstraintState(int vidx, int cidx, SConstraint c, boolean state) {
-        constraints.updateConstraintState(vidx, cidx, c, state);
-    }
 }

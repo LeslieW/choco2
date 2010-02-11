@@ -22,13 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.pack;
 
-import static choco.Choco.geq;
-import static choco.Choco.leq;
-import static choco.Choco.pack;
-
-import java.util.Arrays;
-import java.util.logging.Logger;
-
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
@@ -48,6 +42,9 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.integer.ValSelector;
+
+import java.util.Arrays;
+import java.util.logging.Logger;
 
 /**
  * @author Arnaud Malapert</br>
@@ -217,7 +214,7 @@ public class CPpack {
 	 */
 	protected int analyze() {
 		//Analyze
-		solver.printRuntimeSatistics();
+		solver.printRuntimeStatistics();
 		if(solver.isFeasible()==Boolean.TRUE) {
 			LOGGER.info(solver.solutionToString()+"\n");
 			if(solver.isEncounteredLimit()) {

@@ -29,15 +29,8 @@
 package samples.Examples;
 
 
-import static choco.Choco.makeIntVar;
-import static choco.Choco.minus;
-import static choco.Choco.neq;
-import static choco.Choco.plus;
-
-import java.text.MessageFormat;
-import java.util.List;
-
 import choco.Choco;
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
@@ -46,6 +39,9 @@ import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.memory.recomputation.EnvironmentRecomputation;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solution;
+
+import java.text.MessageFormat;
+import java.util.List;
 
 public class Queen extends PatternExample {
 
@@ -127,7 +123,7 @@ public class Queen extends PatternExample {
 			ret.append("\n\n\n");
 		}
 		LOGGER.info(ret.toString());
-		_s.printRuntimeSatistics();
+		_s.printRuntimeStatistics();
 	}
 
 	

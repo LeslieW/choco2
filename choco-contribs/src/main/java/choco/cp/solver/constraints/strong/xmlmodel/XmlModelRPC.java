@@ -138,7 +138,7 @@ public class XmlModelRPC extends XmlModel {
 		}
 
 		// LOGGER.info(s.pretty());
-		s.printRuntimeSatistics();
+		s.printRuntimeStatistics();
 
 		for (Iterator<SConstraint> itr = s.getIntConstraintIterator(); itr
 				.hasNext();) {

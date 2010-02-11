@@ -29,7 +29,6 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.propagation.Propagator;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.propagation.event.PropagationEvent;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.propagation.queue.EventQueue;
 import choco.kernel.solver.variables.Var;
 
@@ -222,12 +221,6 @@ public abstract class AbstractSConstraint implements Propagator {
 
 	public void setActiveSilently() {
 		active.set(true);
-		if(!VarEvent.CHECK_ACTIVE){
-			int nbVar = getNbVars();
-			for(int i = 0; i< nbVar; i++){
-				getVar(i).updateConstraintState(i, getConstraintIdx(i), this, true);
-			}
-		}
 	}
 
 
@@ -242,13 +235,6 @@ public abstract class AbstractSConstraint implements Propagator {
 			ConstraintEvent evt = constAwakeEvent;
 			EventQueue q = solver.getPropagationEngine().getQueue(evt);
 			q.remove(evt);
-
-			if(!VarEvent.CHECK_ACTIVE){
-				int nbVar = getNbVars();
-				for(int i = 0; i< nbVar; i++){
-					getVar(i).updateConstraintState(i, getConstraintIdx(i), this, false);
-				}
-			}
 		}
 	}
 

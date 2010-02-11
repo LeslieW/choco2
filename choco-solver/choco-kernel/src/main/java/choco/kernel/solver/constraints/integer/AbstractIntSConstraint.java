@@ -51,7 +51,7 @@ public abstract class AbstractIntSConstraint extends AbstractSConstraint impleme
    */
 
   public void awakeOnInst(int idx) throws ContradictionException {
-    propagate();
+    constAwake(false);
   }
 
 

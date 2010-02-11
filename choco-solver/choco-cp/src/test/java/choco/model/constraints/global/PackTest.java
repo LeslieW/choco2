@@ -22,36 +22,28 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.global;
 
-import static choco.Choco.constantArray;
-import static choco.Choco.eq;
-import static choco.Choco.geq;
-import static choco.Choco.leq;
-import static choco.Choco.pack;
-import static org.junit.Assert.assertEquals;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.junit.Ignore;
-import org.junit.Test;
-
 import choco.Choco;
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.pack.PackModeler;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
-import choco.kernel.model.variables.integer.IntegerVariable;
+import static org.junit.Assert.assertEquals;
+import org.junit.Ignore;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -278,7 +270,7 @@ public class PackTest {
 				s.post(s.leq(s.getVar(modeler.nbNonEmpty), ub));
 				//CPSolver.setVerbosity(CPSolver.SEARCH);
 				s.launch();
-				LOGGER.log(Level.INFO, "Nb solutions: {0}\n{1}", new Object[]{s.getNbSolutions(), s.runtimeSatistics()});
+				LOGGER.log(Level.INFO, "Nb solutions: {0}\n{1}", new Object[]{s.getNbSolutions(), s.runtimeStatistics()});
 				if(last!=null) {
 					assertEquals("sat ", last.isFeasible(), s.isFeasible());
 				}
