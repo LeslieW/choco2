@@ -56,12 +56,13 @@ public class BoolSum extends AbstractLargeIntSConstraint {
 
     protected int gap;
 
+    private int coeff;
 
     public BoolSum(IntDomainVar[] vars, int coef, int op, IEnvironment environment) {
         super(vars);
-        this.cste = coef;
+        this.coeff = coef;
         this.op = op;
-        this.gap = vars.length - cste;
+        this.gap = vars.length - coeff;
         nbz = environment.makeInt(0);
         nbo = environment.makeInt(0);
 //        int[] lvar = new int[vars.length];
@@ -78,10 +79,10 @@ public class BoolSum extends AbstractLargeIntSConstraint {
     }
 
     public void propagate() throws ContradictionException {
-        if (cste == 0 && (op == IntLinComb.EQ || op == IntLinComb.LEQ)) {
+        if (coeff == 0 && (op == IntLinComb.EQ || op == IntLinComb.LEQ)) {
             for (int i = 0; i < vars.length; i++)
                 vars[i].instantiate(0, cIndices[i]);
-        } else if (cste == vars.length && (op == IntLinComb.EQ || op == IntLinComb.GEQ)) {
+        } else if (coeff == vars.length && (op == IntLinComb.EQ || op == IntLinComb.GEQ)) {
             for (int i = 0; i < vars.length; i++)
                 vars[i].instantiate(1, cIndices[i]);
         } else {
@@ -131,7 +132,7 @@ public class BoolSum extends AbstractLargeIntSConstraint {
         }
         //noninst.remove(idx);
         if (op == IntLinComb.GEQ) {
-            if (nbo.get() >= cste) {
+            if (nbo.get() >= coeff) {
                 setEntailed();
             } else if (nbz.get() > gap) {
                 fail();
@@ -141,15 +142,15 @@ public class BoolSum extends AbstractLargeIntSConstraint {
         } else if (op == IntLinComb.LEQ) {
             if (nbz.get() >= gap) {
                 setEntailed();
-            } else if (nbo.get() > cste) {
+            } else if (nbo.get() > coeff) {
                 fail();
-            } else if (nbo.get() == cste) {
+            } else if (nbo.get() == coeff) {
                 putAllZero();
             }
         } else if (op == IntLinComb.EQ) {
-            if (nbo.get() > cste || nbz.get() > gap)
+            if (nbo.get() > coeff || nbz.get() > gap)
                 fail();
-            if (nbo.get() == cste) {
+            if (nbo.get() == coeff) {
                 putAllZero();
             } else if (nbz.get() == gap) {
                 putAllOne();
@@ -165,13 +166,13 @@ public class BoolSum extends AbstractLargeIntSConstraint {
             s += tuple[i];
         }
         if (op == IntLinComb.GEQ) {
-            return s >= cste;
+            return s >= coeff;
         } else if (op == IntLinComb.LEQ) {
-            return s <= cste;
+            return s <= coeff;
         } else if (op == IntLinComb.EQ) {
-            return s == cste;
+            return s == coeff;
         } else if (op == IntLinComb.NEQ) {
-            return s != cste;
+            return s != coeff;
         } else {
             throw new SolverException("operator unknown for BoolIntLinComb");
         }
@@ -187,13 +188,13 @@ public class BoolSum extends AbstractLargeIntSConstraint {
         IntDomainVar[] bvs = new IntDomainVar[vars.length];
         System.arraycopy(vars, 0, bvs, 0, vars.length);
         if (op == IntLinComb.EQ) {
-            return new BoolSum(bvs, cste, IntLinComb.NEQ, solver.getEnvironment());
+            return new BoolSum(bvs, coeff, IntLinComb.NEQ, solver.getEnvironment());
         } else if (op == IntLinComb.NEQ) {
-            return new BoolSum(bvs, cste, IntLinComb.EQ, solver.getEnvironment());
+            return new BoolSum(bvs, coeff, IntLinComb.EQ, solver.getEnvironment());
         } else if (op == IntLinComb.GEQ) {
-            return new BoolSum(bvs, cste - 1, IntLinComb.LEQ, solver.getEnvironment());
+            return new BoolSum(bvs, coeff - 1, IntLinComb.LEQ, solver.getEnvironment());
         } else if (op == IntLinComb.LEQ) {
-            return new BoolSum(bvs, cste + 1, IntLinComb.GEQ, solver.getEnvironment());
+            return new BoolSum(bvs, coeff + 1, IntLinComb.GEQ, solver.getEnvironment());
         } else {
             throw new SolverException("operator unknown for BoolIntLinComb");
         }
@@ -237,25 +238,25 @@ public class BoolSum extends AbstractLargeIntSConstraint {
         if (op == IntLinComb.EQ) {
             int lb = computeLbFromScratch();
             int ub = computeUbFromScratch();
-            if (lb > cste || ub < cste) {
+            if (lb > coeff || ub < coeff) {
                 return Boolean.FALSE;
-            } else if (lb == ub && cste == lb) {
+            } else if (lb == ub && coeff == lb) {
                 return Boolean.TRUE;
             } else {
                 return null;
             }
         } else if (op == IntLinComb.GEQ) {
-            if (computeLbFromScratch() >= cste) {
+            if (computeLbFromScratch() >= coeff) {
                 return Boolean.TRUE;
-            } else if (computeUbFromScratch() < cste) {
+            } else if (computeUbFromScratch() < coeff) {
                 return Boolean.FALSE;
             } else {
                 return null;
             }
         } else if (op == IntLinComb.LEQ) {
-            if (computeUbFromScratch() <= cste) {
+            if (computeUbFromScratch() <= coeff) {
                 return Boolean.TRUE;
-            } else if (computeLbFromScratch() > cste) {
+            } else if (computeLbFromScratch() > coeff) {
                 return Boolean.FALSE;
             } else {
                 return null;

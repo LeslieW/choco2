@@ -65,6 +65,8 @@ public abstract class AbstractIntLinComb extends AbstractLargeIntSConstraint imp
 
 	private boolean noFixPoint;
 
+    int cste;
+
 	/**
 	 * Constructs the constraint with the specified variables and constant.
 	 * Use the Model.createIntLinComb API instead of this constructor.

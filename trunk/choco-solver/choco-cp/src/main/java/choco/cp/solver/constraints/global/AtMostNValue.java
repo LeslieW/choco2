@@ -64,7 +64,9 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
 
 	protected int nVars;
 
-	public static IntDomainVar[] makeVarTable(IntDomainVar[] vars, IntDomainVar Nvalue) {
+    private int offset;
+
+    public static IntDomainVar[] makeVarTable(IntDomainVar[] vars, IntDomainVar Nvalue) {
 		IntDomainVar[] vs = new IntDomainVar[vars.length + 1];
 		System.arraycopy(vars, 0, vs, 0, vars.length);
 		vs[vars.length] = Nvalue;
@@ -73,15 +75,15 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
 
 	public AtMostNValue(IntDomainVar[] vars, IntDomainVar Nvalue) {
 		super(makeVarTable(vars, Nvalue));
-		this.cste = Integer.MAX_VALUE;
+		this.offset = Integer.MAX_VALUE;
 		this.maxDSize = 0;
 		for (IntDomainVar v : vars) {
-			if (cste > v.getInf()) cste = v.getInf();
+			if (offset > v.getInf()) offset = v.getInf();
 			if (maxDSize > (v.getSup() - v.getInf() + 1))
 				maxDSize = v.getSup() - v.getInf() + 1;
 		}
 		// An offset to deal with negative domains and positive domains whose minimum is not 0
-		this.cste = -this.cste;
+		this.offset = -this.offset;
 		gval = new BitSet(maxDSize);
 		dVar = new IntList(vars.length);
 		freeVars = new IntList(vars.length);
@@ -104,7 +106,7 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
 	public void restrict(int db, IntDomainVar v, BitSet allowvalues) throws ContradictionException {
 		//if (!v.intersect(BitSet val, cste)) this.fail()!
 		int offset = v.getInf();
-		BitSet allowedDomain = allowvalues.get(v.getInf() + cste, v.getSup() + cste + 1);
+		BitSet allowedDomain = allowvalues.get(v.getInf() + this.offset, v.getSup() + this.offset + 1);
 		int newInf = allowedDomain.nextSetBit(0) + offset;
 		int newSup = allowedDomain.length() + offset;
 		//LOGGER.log(Level.INFO, "{0} updateInf {1} of {2}", new Object[]{db, newInf, v});
@@ -141,7 +143,7 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
 	public boolean emptyIntersectionWithGval(IntDomainVar v) {
 		DisposableIntIterator vdom = v.getDomain().getIterator();
 		while (vdom.hasNext()) {
-			if (gval.get(vdom.next() + cste)) return false;
+			if (gval.get(vdom.next() + offset)) return false;
 		}
         vdom.dispose();
 		return true;
@@ -170,7 +172,7 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
             intIt.dispose();
 			BitSet interDvar = new BitSet(maxDSize);
 			for (Integer i : inter) {
-				interDvar.set(i + cste);
+				interDvar.set(i + offset);
 			}
 			return interDvar;
 		} else return new BitSet();
@@ -193,10 +195,10 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
 		for (int i = 0; i < nVars; i++) {
 			IntDomainVar v = vars[i];
 			if (v.isInstantiated()) {
-				if (!gval.get(v.getVal() + cste)) {
+				if (!gval.get(v.getVal() + offset)) {
 					nGval++;
 				}
-				gval.set(v.getVal() + cste);
+				gval.set(v.getVal() + offset);
 			} else {
 				freeVars.add(i);
 			}
@@ -324,7 +326,7 @@ public class AtMostNValue extends AbstractLargeIntSConstraint {
             try{
 			while (it.hasNext()) {
 				int value = it.next();
-				unionOfAllowedValue.set(value + cste);
+				unionOfAllowedValue.set(value + offset);
 			}
             }finally {
                 it.dispose();
