@@ -344,7 +344,7 @@ public class LeximinSConstraint extends AbstractLargeIntSConstraint {
 			// Check support for x
 			if ((a = super.vars[i].getInf()) < (b = super.vars[i].getSup())) {
 				if (a < this.alpha.get()) {
-					super.vars[i].instantiate(a, super.cste);
+					super.vars[i].instantiate(a, i);
 				}
 				if (a == this.alpha.get() && this.epsilon.get(1)) {
 					if (b >= this.beta.get() && this.gamma.get() > 0) {
@@ -368,7 +368,7 @@ public class LeximinSConstraint extends AbstractLargeIntSConstraint {
 			// Check support for y
 			if ((a = super.vars[n + i].getInf()) < (b = super.vars[n + i].getSup())) {
 				if (b <= this.alpha.get()) {
-					super.vars[n + i].instantiate(b, super.cste);
+					super.vars[n + i].instantiate(b, n+i);
 				}
 				if (this.alpha.get() < b &&
 						b < this.beta.get() &&

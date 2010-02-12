@@ -23,10 +23,12 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 public class ElementVG extends AbstractLargeIntSConstraint {
   protected IStateInt[] lastInf,lastSup; 
   private final IEnvironment environment;
-  public ElementVG(IntDomainVar[] vars, int offset, IEnvironment environment) {
+    private int offset;
+
+    public ElementVG(IntDomainVar[] vars, int offset, IEnvironment environment) {
     super(vars);
       this.environment = environment;
-    this.cste = offset;
+    this.offset = offset;
     initElementV();
   }
 
@@ -71,7 +73,7 @@ public class ElementVG extends AbstractLargeIntSConstraint {
 	          DisposableIntIterator it = idxVar.getDomain().getIterator();
 	          while ((it.hasNext()) && !(possibleV) ) {
 	        	  int tentativeIdx = it.next();  
-	        	  if (vars[tentativeIdx + cste].canBeInstantiatedTo(v)) {	              
+	        	  if (vars[tentativeIdx + offset].canBeInstantiatedTo(v)) {
 	        		  possibleV = true;
 	        		  break;	        	  
 	        	  }	          	
@@ -90,8 +92,8 @@ public class ElementVG extends AbstractLargeIntSConstraint {
     int maxval = Integer.MIN_VALUE;
     for (DisposableIntIterator iter = idxVar.getDomain().getIterator(); iter.hasNext();) {
       int feasibleIndex = iter.next();
-      minval = Math.min(minval, vars[feasibleIndex + cste].getInf());
-      maxval = Math.max(maxval, vars[feasibleIndex + cste].getSup());
+      minval = Math.min(minval, vars[feasibleIndex + offset].getInf());
+      maxval = Math.max(maxval, vars[feasibleIndex + offset].getSup());
     }
     // further optimization:
     // I should consider for the min, the minimum value in domain(c.vars[feasibleIndex) that is >= to valVar.inf
@@ -106,7 +108,7 @@ public class ElementVG extends AbstractLargeIntSConstraint {
         while ((it.hasNext()) && !(possibleV) ) {
         int tentativeIdx = it.next();
   //      for (int tentativeIdx = idxVar.getInf(); tentativeIdx <= idxVar.getSup(); tentativeIdx = idxVar.getNextDomainValue(tentativeIdx)) {
-          if (vars[tentativeIdx + cste].canBeInstantiatedTo(v)) {
+          if (vars[tentativeIdx + offset].canBeInstantiatedTo(v)) {
             possibleV = true;
             break;
           }
@@ -126,7 +128,7 @@ public class ElementVG extends AbstractLargeIntSConstraint {
 		  equalityBehaviour();	    
 	  } else {	        
 		  for (int idx = idxVar.getInf(); idx < idxVar.getSup(); idx = idxVar.getNextDomainValue(idx)) {    
-			  if (!valVar.canBeEqualTo(vars[idx + cste])) {
+			  if (!valVar.canBeEqualTo(vars[idx + offset])) {
 		            idxVar.removeVal(idx, cIndices[vars.length - 2]);
 		          }
 		        }	    	
@@ -136,28 +138,28 @@ public class ElementVG extends AbstractLargeIntSConstraint {
   protected void updateIndexFromValue() throws ContradictionException {
     IntDomainVar idxVar = getIndexVar();
     IntDomainVar valVar = getValueVar();
-    int minFeasibleIndex = Math.max(0 - cste, idxVar.getInf());
-    int maxFeasibleIndex = Math.min(idxVar.getSup(), vars.length - 3 - cste);
+    int minFeasibleIndex = Math.max(0 - offset, idxVar.getInf());
+    int maxFeasibleIndex = Math.min(idxVar.getSup(), vars.length - 3 - offset);
     int cause = cIndices[vars.length - 2];
     if (valVar.hasEnumeratedDomain()) {
       cause = VarEvent.NOCAUSE;
     }
     while (idxVar.canBeInstantiatedTo(minFeasibleIndex) &&
-        !(valVar.canBeEqualTo(vars[minFeasibleIndex + cste]))) {
+        !(valVar.canBeEqualTo(vars[minFeasibleIndex + offset]))) {
       minFeasibleIndex++;
     }
     idxVar.updateInf(minFeasibleIndex, cause);
 
 
     while (idxVar.canBeInstantiatedTo(maxFeasibleIndex) &&
-        !(valVar.canBeEqualTo(vars[maxFeasibleIndex + cste]))) {
+        !(valVar.canBeEqualTo(vars[maxFeasibleIndex + offset]))) {
       maxFeasibleIndex--;
     }
     idxVar.updateSup(maxFeasibleIndex, cause);
 
     if (idxVar.hasEnumeratedDomain()) { //those remVal would be ignored for variables using an interval approximation for domain
       for (int i = minFeasibleIndex + 1; i < maxFeasibleIndex - 1; i++) {
-        if (idxVar.canBeInstantiatedTo(i) && !valVar.canBeEqualTo(vars[i + cste])) {
+        if (idxVar.canBeInstantiatedTo(i) && !valVar.canBeEqualTo(vars[i + offset])) {
           idxVar.removeVal(i, cause);
         }
       }
@@ -175,7 +177,7 @@ public class ElementVG extends AbstractLargeIntSConstraint {
       IntDomainVar valVar = getValueVar();
       DisposableIntIterator it = idxVar.getDomain().getIterator();
       while (it.hasNext() && (existsSupport == false)) {
-        int feasibleIndex = it.next() + this.cste;
+        int feasibleIndex = it.next() + this.offset;
         if (vars[feasibleIndex].canBeInstantiatedTo(value)) {
           existsSupport = true;
         }
@@ -191,12 +193,12 @@ public class ElementVG extends AbstractLargeIntSConstraint {
     assert(getIndexVar().isInstantiated());
     int indexVal = getIndexVar().getVal();
     IntDomainVar valVar = getValueVar();
-    IntDomainVar targetVar = vars[indexVal + cste];
+    IntDomainVar targetVar = vars[indexVal + offset];
     // code similar to awake@Equalxyc
     valVar.updateInf(targetVar.getInf(), cIndices[vars.length - 1]);
     valVar.updateSup(targetVar.getSup(), cIndices[vars.length - 1]);
-    targetVar.updateInf(valVar.getInf(), cIndices[indexVal + cste]);
-    targetVar.updateSup(valVar.getSup(), cIndices[indexVal + cste]);
+    targetVar.updateInf(valVar.getInf(), cIndices[indexVal + offset]);
+    targetVar.updateSup(valVar.getSup(), cIndices[indexVal + offset]);
     if (targetVar.hasEnumeratedDomain()) {
       for (int val = valVar.getInf(); val < valVar.getSup(); val = valVar.getNextDomainValue(val)) {
         if (!targetVar.canBeInstantiatedTo(val)) {
@@ -354,7 +356,7 @@ public class ElementVG extends AbstractLargeIntSConstraint {
     } else if (idx == vars.length - 1) { // the event concerns valVar
       if (idxVar.isInstantiated()) {
         int idxVal = idxVar.getVal();
-        vars[idxVal + cste].updateInf(valVar.getInf(), cIndices[idxVal + cste]);
+        vars[idxVal + offset].updateInf(valVar.getInf(), cIndices[idxVal + offset]);
       } else {
       	int minVar = valVar.getInf();
     	for (int index=lastInf[vars.length-1].get();index<minVar;index++) {
@@ -365,12 +367,12 @@ public class ElementVG extends AbstractLargeIntSConstraint {
     } else {                            // the event concerns a variable from the array
       if (idxVar.isInstantiated()) {
         int idxVal = idxVar.getVal();
-        if (idx == idxVal + cste) {
+        if (idx == idxVal + offset) {
           valVar.updateInf(vars[idx].getInf(), cIndices[vars.length - 1]);
         }
-      } else if (idxVar.canBeInstantiatedTo(idx - cste)) {  //otherwise the variable is not in scope
+      } else if (idxVar.canBeInstantiatedTo(idx - offset)) {  //otherwise the variable is not in scope
         if (!valVar.canBeEqualTo(vars[idx])) {
-          idxVar.removeVal(idx - cste, VarEvent.NOCAUSE);
+          idxVar.removeVal(idx - offset, VarEvent.NOCAUSE);
           // NOCAUSE because if it changes the domain of IndexVar (what is not sure if idxVar
           // uses an interval approximated domain) then it must cause updateValueFromIndex(c)
         } else {
@@ -401,7 +403,7 @@ public class ElementVG extends AbstractLargeIntSConstraint {
     } else if (idx == vars.length - 1) {  // the event concerns valVar
       if (idxVar.isInstantiated()) {
         int idxVal = idxVar.getVal();
-        vars[idxVal + cste].updateSup(valVar.getSup(), cIndices[idxVal + cste]);
+        vars[idxVal + offset].updateSup(valVar.getSup(), cIndices[idxVal + offset]);
       } else {
       	int maxVar = lastSup[vars.length-1].get();
     	for (int index=valVar.getSup()+1;index<=maxVar;index++) {
@@ -412,12 +414,12 @@ public class ElementVG extends AbstractLargeIntSConstraint {
     } else {                            // the event concerns a variable from the array
       if (idxVar.isInstantiated()) {
         int idxVal = idxVar.getVal();
-        if (idx == idxVal + cste) {
+        if (idx == idxVal + offset) {
           valVar.updateSup(vars[idx].getSup(), cIndices[vars.length - 1]);
         }
-      } else if (idxVar.canBeInstantiatedTo(idx - cste)) {  //otherwise the variable is not in scope
+      } else if (idxVar.canBeInstantiatedTo(idx - offset)) {  //otherwise the variable is not in scope
         if (!valVar.canBeEqualTo(vars[idx])) {
-          idxVar.removeVal(idx - cste, VarEvent.NOCAUSE);
+          idxVar.removeVal(idx - offset, VarEvent.NOCAUSE);
           // NOCAUSE because if it changes the domain of IndexVar (what is not sure if idxVar
           // uses an interval approximated domain) then it must cause updateValueFromIndex(c)
         } else {
@@ -439,7 +441,7 @@ public class ElementVG extends AbstractLargeIntSConstraint {
     } else if (idx == vars.length - 1) {  // the event concerns valVar
       if (idxVar.isInstantiated()) {
         int idxVal = idxVar.getVal();
-        vars[idxVal + cste].instantiate(valVar.getVal(), cIndices[idxVal + cste]);
+        vars[idxVal + offset].instantiate(valVar.getVal(), cIndices[idxVal + offset]);
       } else {
         	int minVar = valVar.getInf();
         	for (int index=lastInf[vars.length-1].get();index<minVar;index++) {
@@ -455,12 +457,12 @@ public class ElementVG extends AbstractLargeIntSConstraint {
     } else {                            // the event concerns a variable from the array
       if (idxVar.isInstantiated()) {
         int idxVal = idxVar.getVal();
-        if (idx == idxVal + cste) {
+        if (idx == idxVal + offset) {
           valVar.instantiate(vars[idx].getVal(), cIndices[vars.length - 1]);
         }
-      } else if (idxVar.canBeInstantiatedTo(idx - cste)) {  //otherwise the variable is not in scope
+      } else if (idxVar.canBeInstantiatedTo(idx - offset)) {  //otherwise the variable is not in scope
         if (!valVar.canBeEqualTo(vars[idx])) {
-          idxVar.removeVal(idx - cste, VarEvent.NOCAUSE);
+          idxVar.removeVal(idx - offset, VarEvent.NOCAUSE);
           // NOCAUSE because if it changes the domain of IndexVar (what is not sure if idxVar
           // uses an interval approximated domain) then it must cause updateValueFromIndex(c)
         } else {
@@ -487,17 +489,17 @@ public class ElementVG extends AbstractLargeIntSConstraint {
     } else if (idx == vars.length - 1) {  // the event concerns valVar
       if (idxVar.isInstantiated()) {
         int idxVal = idxVar.getVal();
-        vars[idxVal + cste].removeVal(x, cIndices[idxVal + cste]);
+        vars[idxVal + offset].removeVal(x, cIndices[idxVal + offset]);
       } else {
         updateIndexFromValue(x);
       }
     } else {                            // the event concerns a variable from the array
       if (idxVar.isInstantiated()) {
         int idxVal = idxVar.getVal();
-        if (idx == idxVal + cste) {
+        if (idx == idxVal + offset) {
           valVar.removeVal(x, cIndices[vars.length - 1]);
         }
-      } else if ((idxVar.canBeInstantiatedTo(idx - cste)) && (valVar.hasEnumeratedDomain())) {
+      } else if ((idxVar.canBeInstantiatedTo(idx - offset)) && (valVar.hasEnumeratedDomain())) {
     	  updateVariable(idx,x);
       }
     }
@@ -515,12 +517,12 @@ public class ElementVG extends AbstractLargeIntSConstraint {
     } else if (idx == vars.length - 1) {
       if (idxVar.isInstantiated()) {
         int idxVal = idxVar.getVal();
-        vars[idxVal + cste].updateSup(valVar.getSup(), cIndices[idxVal + cste]);
-        vars[idxVal + cste].updateInf(valVar.getInf(), cIndices[idxVal + cste]);
-        for (DisposableIntIterator it = vars[idxVal + cste].getDomain().getIterator(); it.hasNext();) {
+        vars[idxVal + offset].updateSup(valVar.getSup(), cIndices[idxVal + offset]);
+        vars[idxVal + offset].updateInf(valVar.getInf(), cIndices[idxVal + offset]);
+        for (DisposableIntIterator it = vars[idxVal + offset].getDomain().getIterator(); it.hasNext();) {
           int v = it.next();
           if (!(valVar.canBeInstantiatedTo(v))) {
-            vars[idxVal + cste].removeVal(v, cIndices[idxVal + cste]);
+            vars[idxVal + offset].removeVal(v, cIndices[idxVal + offset]);
           }
         }
       } else {
@@ -529,7 +531,7 @@ public class ElementVG extends AbstractLargeIntSConstraint {
     } else {
       if (idxVar.isInstantiated()) {
         int idxVal = idxVar.getVal();
-        if (idx == idxVal + cste) {
+        if (idx == idxVal + offset) {
           valVar.updateSup(vars[idx].getSup(), cIndices[vars.length - 1]);
           valVar.updateInf(vars[idx].getInf(), cIndices[vars.length - 1]);
           for (DisposableIntIterator it = valVar.getDomain().getIterator(); it.hasNext();) {
@@ -539,7 +541,7 @@ public class ElementVG extends AbstractLargeIntSConstraint {
             }
           }
         }
-      } else if (idxVar.canBeInstantiatedTo(idx - cste)) {  // otherwise the variable is not in scope
+      } else if (idxVar.canBeInstantiatedTo(idx - offset)) {  // otherwise the variable is not in scope
         // TODO : there is probably something missing here ....
       }
     }
@@ -550,11 +552,11 @@ public class ElementVG extends AbstractLargeIntSConstraint {
     IntDomainVar idxVar = getIndexVar();
     IntDomainVar valVar = getValueVar();
     if ((valVar.isInstantiated()) &&
-        (idxVar.getInf() + this.cste >= 0) &&
-        (idxVar.getSup() + this.cste < vars.length - 2)) {
+        (idxVar.getInf() + this.offset >= 0) &&
+        (idxVar.getSup() + this.offset < vars.length - 2)) {
       boolean allEqualToValVar = true;
       for (DisposableIntIterator it = idxVar.getDomain().getIterator(); it.hasNext();) {
-        int feasibleIndex = it.next() + this.cste;
+        int feasibleIndex = it.next() + this.offset;
         if (!vars[feasibleIndex].isInstantiatedTo(valVar.getVal())) {
           allEqualToValVar = false;
         }
@@ -566,7 +568,7 @@ public class ElementVG extends AbstractLargeIntSConstraint {
     if (isEntailed != Boolean.TRUE) {
       boolean existsSupport = false;
       for (DisposableIntIterator it = idxVar.getDomain().getIterator(); it.hasNext();) {
-        int feasibleIndex = it.next() + this.cste;
+        int feasibleIndex = it.next() + this.offset;
         if ((feasibleIndex >= 0) && (feasibleIndex < vars.length - 2) && (valVar.canBeEqualTo(vars[feasibleIndex]))) {
           existsSupport = true;
         }

@@ -287,7 +287,7 @@ public class SemiLeximinSConstraint extends AbstractLargeIntSConstraint {
             // Check support for y
             if ((a = super.vars[i].getInf()) < (b = super.vars[i].getSup())) {
                 if (b <= this.alpha.get()) {
-                    super.vars[i].instantiate(b, super.cste);
+                    super.vars[i].instantiate(b, i);
                 }
                 if (this.alpha.get() < b &&
                         b < this.beta.get() &&

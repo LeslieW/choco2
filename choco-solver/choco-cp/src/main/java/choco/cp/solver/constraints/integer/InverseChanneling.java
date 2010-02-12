@@ -24,22 +24,24 @@
 
 package choco.cp.solver.constraints.integer;
 
+import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.cp.solver.variables.integer.IntVarEvent;
 
 public class InverseChanneling extends AbstractLargeIntSConstraint {
 
   protected int n;
 
-  /**
+    private int min;
+
+    /**
    * link x and y so that x[i] = j <=> y[j] = i
    * It is used to maintain both model on permutation problems
    */
   public InverseChanneling(IntDomainVar[] allVars, int n) {
     super(allVars);
-    this.cste = ((IntDomainVar) allVars[0]).getInf();
+    this.min = allVars[0].getInf();
     this.n = n;
   }
 
@@ -56,10 +58,10 @@ public class InverseChanneling extends AbstractLargeIntSConstraint {
   public void propagate() throws ContradictionException {
     for (int idx = 0; idx < vars.length; idx++) {
       for (int i = 0; i < n; i++) {
-        if (idx < n && !vars[idx].canBeInstantiatedTo(i + cste)) {
-          vars[i + n].removeVal(idx + cste, cIndices[i + n]);
-        } else if (!vars[idx].canBeInstantiatedTo(i + cste)) {
-          vars[i].removeVal(idx - n + cste, cIndices[i]);
+        if (idx < n && !vars[idx].canBeInstantiatedTo(i + min)) {
+          vars[i + n].removeVal(idx + min, cIndices[i + n]);
+        } else if (!vars[idx].canBeInstantiatedTo(i + min)) {
+          vars[i].removeVal(idx - n + min, cIndices[i]);
         }
       }
     }
@@ -67,45 +69,45 @@ public class InverseChanneling extends AbstractLargeIntSConstraint {
 
 
   public void awakeOnInf(int idx) throws ContradictionException {
-    int val = vars[idx].getInf() - cste;
+    int val = vars[idx].getInf() - min;
     if (idx < n) {
       for (int i = 0; i < val; i++) {
-        vars[i + n].removeVal(idx + cste, cIndices[i + n]);
+        vars[i + n].removeVal(idx + min, cIndices[i + n]);
       }
     } else {
       for (int i = 0; i < val; i++) {
-        vars[i].removeVal(idx - n + cste, cIndices[i]);
+        vars[i].removeVal(idx - n + min, cIndices[i]);
       }
     }
   }
 
   public void awakeOnSup(int idx) throws ContradictionException {
-    int val = vars[idx].getSup() + 1 - cste;
+    int val = vars[idx].getSup() + 1 - min;
     if (idx < n) {
       for (int i = val; i < n; i++) {
-        vars[i + n].removeVal(idx + cste, cIndices[i + n]);
+        vars[i + n].removeVal(idx + min, cIndices[i + n]);
       }
     } else {
       for (int i = val; i < n; i++) {
-        vars[i].removeVal(idx - n + cste, cIndices[i]);
+        vars[i].removeVal(idx - n + min, cIndices[i]);
       }
     }    //To change body of overridden methods use File | Settings | File Templates.
   }
 
   public void awakeOnInst(int idx) throws ContradictionException {
-    int val = vars[idx].getVal() - cste;
+    int val = vars[idx].getVal() - min;
     if (idx < n) {
-      vars[val + n].instantiate(idx + cste, cIndices[val + n]);
+      vars[val + n].instantiate(idx + min, cIndices[val + n]);
       for (int i = 0; i < n; i++) {
         if (i != idx) {
-          vars[i].removeVal(val + cste, cIndices[i]);
+          vars[i].removeVal(val + min, cIndices[i]);
         }
       }
     } else {
-      vars[val].instantiate(idx - n + cste, cIndices[val]);
+      vars[val].instantiate(idx - n + min, cIndices[val]);
       for (int i = n; i < 2 * n; i++) {
         if (i != idx) {
-          vars[i].removeVal(val + cste, cIndices[i]);
+          vars[i].removeVal(val + min, cIndices[i]);
         }
       }
     }
@@ -113,9 +115,9 @@ public class InverseChanneling extends AbstractLargeIntSConstraint {
 
   public void awakeOnRem(int idx, int x) throws ContradictionException {
     if (idx < n) {
-      vars[x - cste + n].removeVal(idx + cste, cIndices[x - cste + n]);
+      vars[x - min + n].removeVal(idx + min, cIndices[x - min + n]);
     } else {
-      vars[x - cste].removeVal(idx - n + cste, cIndices[x - cste]);
+      vars[x - min].removeVal(idx - n + min, cIndices[x - min]);
     }
   }
 
@@ -123,7 +125,7 @@ public class InverseChanneling extends AbstractLargeIntSConstraint {
   public boolean isSatisfied(int[] tuple) {
     for (int i = 0; i < n; i++) {
       int x = tuple[i];
-      if (tuple[x -cste + n] != i+cste) return false;
+      if (tuple[x - min + n] != i+ min) return false;
     }
     return true;
   }

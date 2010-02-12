@@ -101,7 +101,9 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 
 	final IntDomainVarImpl varCste;
 
-	public static IntDomainVar[] makeTableVar(IntDomainVar[] vs, IntDomainVar v) {
+    private int nbVars;
+
+    public static IntDomainVar[] makeTableVar(IntDomainVar[] vs, IntDomainVar v) {
 		IntDomainVar[] nvars = new IntDomainVar[vs.length + 1];
 		System.arraycopy(vs, 0, nvars, 0, vs.length);
 		nvars[vs.length] = v;
@@ -122,12 +124,12 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 		super(makeTableVar(vs, c));
 		this.sCoeffs = coefs;
 		this.op = op;
-		this.cste = vs.length;
-		this.varCste = (IntDomainVarImpl) vars[cste];
+		this.nbVars = vs.length;
+		this.varCste = (IntDomainVarImpl) vars[nbVars];
 		this.objCoef = objcoef;
 		this.addcste = scste;
 		nbNegCoef = 0;
-		while (nbNegCoef < cste && sCoeffs[nbNegCoef] < 0) {
+		while (nbNegCoef < nbVars && sCoeffs[nbNegCoef] < 0) {
 			nbNegCoef++;
 		}
 		if (op == IntLinComb.EQ || op == IntLinComb.GEQ || op == IntLinComb.LEQ) {
@@ -149,7 +151,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 
 
     public int getFilteredEventMask(int idx) {
-        if(idx<cste){
+        if(idx< nbVars){
             return IntVarEvent.INSTINTbitvector;
         }else{
             return IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
@@ -262,8 +264,8 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 		boolean fixpoint = true;
 		while (fixpoint) {
 			fixpoint = false;
-			varCste.updateSup(rmemb.getNewSupForObj(), cIndices[cste]);
-			varCste.updateInf(rmemb.getNewInfForObj(), cIndices[cste]);
+			varCste.updateSup(rmemb.getNewSupForObj(), cIndices[nbVars]);
+			varCste.updateInf(rmemb.getNewInfForObj(), cIndices[nbVars]);
 			fixpoint |= updateForGEQ();
 			fixpoint |= updateForLEQ();
 		}
@@ -370,17 +372,17 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 	@Override
 	public void awakeOnInst(int idx) throws ContradictionException {
 
-		if (idx < cste) {
+		if (idx < nbVars) {
 			int i = vars[idx].getVal();
 			//if (!initCopy.get(idx)) {
 				if (op == IntLinComb.GEQ) {
 					if (sCoeffs[idx] < 0 && i == 1) {
 						ub.add(sCoeffs[idx]);
-						varCste.updateSup(rmemb.getNewSupForObj(), cIndices[cste]);
+						varCste.updateSup(rmemb.getNewSupForObj(), cIndices[nbVars]);
 						updateForGEQ();
 					} else if (sCoeffs[idx] > 0 && i == 0) {
 						ub.add(-sCoeffs[idx]);
-						varCste.updateSup(rmemb.getNewSupForObj(), cIndices[cste]);
+						varCste.updateSup(rmemb.getNewSupForObj(), cIndices[nbVars]);
 						updateForGEQ();
 					} else if (idx == maxPosCoeff.get()) {
 						lookForNewMaxPosCoeff();
@@ -390,11 +392,11 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 				} else if (op == IntLinComb.LEQ) {
 					if (sCoeffs[idx] > 0 && i == 1) {
 						lb.add(sCoeffs[idx]);
-						varCste.updateInf(rmemb.getNewInfForObj(), cIndices[cste]);
+						varCste.updateInf(rmemb.getNewInfForObj(), cIndices[nbVars]);
 						updateForLEQ();
 					} else if (sCoeffs[idx] < 0 && i == 0) {
 						lb.add(-sCoeffs[idx]);
-						varCste.updateInf(rmemb.getNewInfForObj(), cIndices[cste]);
+						varCste.updateInf(rmemb.getNewInfForObj(), cIndices[nbVars]);
 						updateForLEQ();
 					} else if (idx == maxPosCoeff.get()) {
 						lookForNewMaxPosCoeff();
@@ -454,7 +456,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 	public void propagate() throws ContradictionException {
 		if (op == IntLinComb.GEQ || op == IntLinComb.EQ || op == IntLinComb.LEQ) {
 			maxNegCoeff.set(0);
-			maxPosCoeff.set(cste - 1);
+			maxPosCoeff.set(nbVars - 1);
 		}
 		if (op == IntLinComb.NEQ) {
 			//TODO
@@ -482,7 +484,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 				vars[i].instantiate(0, cIndices[i]);
 			}
 		}
-		for (int i = nbNegCoef; i < cste; i++) {
+		for (int i = nbNegCoef; i < nbVars; i++) {
 			if (ub.get() - sCoeffs[i] < rmemb.getInfRight()) {
 				vars[i].instantiate(1, cIndices[i]);
 			}
@@ -494,13 +496,13 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 			}
 		}
 
-		for (int i = nbNegCoef; i < cste; i++) {
+		for (int i = nbNegCoef; i < nbVars; i++) {
 			if (lb.get() + sCoeffs[i] > rmemb.getSupRight()) {
 				vars[i].instantiate(0, cIndices[i]);
 			}
 		}
 
-		for (int i = 0; i < cste; i++) {
+		for (int i = 0; i < nbVars; i++) {
 			if (vars[i].isInstantiated()) {
 				updateUbLbOnInst(i, vars[i].getVal());
 			}
@@ -519,7 +521,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 				awakeOnInst(i);
 			}
 		}
-		for (int i = nbNegCoef; i < cste; i++) {
+		for (int i = nbNegCoef; i < nbVars; i++) {
 			if (ub.get() - sCoeffs[i] < rmemb.getInfRight()) {
 				vars[i].instantiate(1, cIndices[i]);
 			}
@@ -528,7 +530,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 				awakeOnInst(i);
 			}
 		}
-		varCste.updateSup(rmemb.getNewSupForObj(), cIndices[cste]);
+		varCste.updateSup(rmemb.getNewSupForObj(), cIndices[nbVars]);
 		updateForGEQ();
 	}
 
@@ -542,7 +544,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 				awakeOnInst(i);
 			}
 		}
-		for (int i = nbNegCoef; i < cste; i++) {
+		for (int i = nbNegCoef; i < nbVars; i++) {
 			if (lb.get() + sCoeffs[i] > rmemb.getSupRight()) {
 				vars[i].instantiate(0, VarEvent.domOverWDegIdx(cIndices[i]));
 			}
@@ -550,7 +552,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 				awakeOnInst(i);
 			}
 		}
-		varCste.updateInf(rmemb.getNewInfForObj(), cIndices[cste]);
+		varCste.updateInf(rmemb.getNewInfForObj(), cIndices[nbVars]);
 		updateForLEQ();
 	}
 
@@ -609,7 +611,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 					return false;
 				}
 			}
-			for (int i = nbNegCoef; i < cste; i++) {
+			for (int i = nbNegCoef; i < nbVars; i++) {
 				if (ub.get() - vars[i].getInf() * sCoeffs[i] < rmemb.getInfRight()) {
 					return false;
 				}
@@ -634,7 +636,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 					return false;
 				}
 			}
-			for (int i = nbNegCoef; i < cste; i++) {
+			for (int i = nbNegCoef; i < nbVars; i++) {
 				if (lb.get() + vars[i].getSup() * sCoeffs[i] > rmemb.getSupRight()) {
 					return false;
 				}
@@ -689,17 +691,17 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 	@Override
 	public boolean isSatisfied(int[] tuple) {
 		int exp = 0;
-		for (int i = 0; i < cste; i++) {
+		for (int i = 0; i < nbVars; i++) {
 			exp += tuple[i] * sCoeffs[i];
 		}
 		if (op == IntLinComb.GEQ) {
-			return exp + addcste >= objCoef * tuple[cste];
+			return exp + addcste >= objCoef * tuple[nbVars];
 		} else if (op == IntLinComb.LEQ) {
-			return exp + addcste <= objCoef * tuple[cste];
+			return exp + addcste <= objCoef * tuple[nbVars];
 		} else if (op == IntLinComb.EQ) {
-			return exp + addcste == objCoef * tuple[cste];
+			return exp + addcste == objCoef * tuple[nbVars];
 		} else if (op == IntLinComb.NEQ) {
-			return exp + addcste != objCoef * tuple[cste];
+			return exp + addcste != objCoef * tuple[nbVars];
 		} else {
 			throw new SolverException("operator unknown for BoolIntLinComb");
 		}
@@ -708,7 +710,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 	@Override
 	public String pretty() {
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < cste; i++) {
+		for (int i = 0; i < nbVars; i++) {
 			if (i > 0) {
 				sb.append(" + ");
 			}
@@ -743,14 +745,14 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 	 */
 	@Override
 	public AbstractSConstraint opposite(Solver solver) {
-		IntDomainVar[] bvs = new IntDomainVar[cste];
-		System.arraycopy(vars, 0, bvs, 0, cste);
+		IntDomainVar[] bvs = new IntDomainVar[nbVars];
+		System.arraycopy(vars, 0, bvs, 0, nbVars);
 		if (op == IntLinComb.EQ) {
 			IntDomainVar[] vs = new IntDomainVar[vars.length];
 			System.arraycopy(vars, 0, vs, 0, vars.length);
-			int[] coeff = new int[cste + 1];
-			System.arraycopy(sCoeffs, 0, coeff, 0, cste);
-			coeff[cste] = -objCoef;
+			int[] coeff = new int[nbVars + 1];
+			System.arraycopy(sCoeffs, 0, coeff, 0, nbVars);
+			coeff[nbVars] = -objCoef;
 			return (AbstractSConstraint) solver.neq(solver.scalar(vs, coeff), -addcste);
 			//throw new Error("NEQ not yet implemented in BoolIntLinComb for opposite");
 		} else if (op == IntLinComb.NEQ) {
@@ -775,7 +777,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 		for (i = 0; i < nbNegCoef; i++) {
 			s += (vars[i].getInf() * sCoeffs[i]);
 		}
-		for (i = nbNegCoef; i < cste; i++) {
+		for (i = nbNegCoef; i < nbVars; i++) {
 			s += (vars[i].getSup() * sCoeffs[i]);
 		}
 		return s;
@@ -792,7 +794,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 		for (i = 0; i < nbNegCoef; i++) {
 			s += (vars[i].getSup() * sCoeffs[i]);
 		}
-		for (i = nbNegCoef; i < cste; i++) {
+		for (i = nbNegCoef; i < nbVars; i++) {
 			s += (vars[i].getInf() * sCoeffs[i]);
 		}
 		return s;

@@ -48,11 +48,6 @@ public abstract class AbstractLargeIntSConstraint extends AbstractIntSConstraint
   public int[] cIndices;
 
   /**
-   * The search constant attached to the constraint.
-   */
-  public int cste;
-
-  /**
    * constructor: allocates the data util for n variables
    *
    * @param n the number of variables involved in the constraint

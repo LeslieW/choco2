@@ -69,6 +69,8 @@ public class Regular extends AbstractLargeIntSConstraint {
      */
     protected PropagationData sdata;
 
+    private int nbVars;
+
     public Regular(DFA auto, IntDomainVar[] vs, int[] lbs, int[] dsize, IEnvironment environment) {
         super(vs);
         init(auto.lightGraph, lbs, dsize, environment);
@@ -94,7 +96,7 @@ public class Regular extends AbstractLargeIntSConstraint {
 
     public void init(LightLayeredDFA auto, int[] lbs, int[] dsize, IEnvironment environment) {
         autom = auto;
-        cste = vars.length;
+        nbVars = vars.length;
         start = new int[vars.length];
         offset = lbs;
         sizes = dsize;
@@ -105,7 +107,7 @@ public class Regular extends AbstractLargeIntSConstraint {
         for (int i = 0; i < vars.length; i++) {
             if (i > 0) start[i] = start[i - 1] + sizes[i - 1];
         }
-        Qij = new StoredIndexedBipartiteSet[start[cste - 1] + sizes[cste - 1]];
+        Qij = new StoredIndexedBipartiteSet[start[nbVars - 1] + sizes[nbVars - 1]];
         ArrayList<IndexedObject>[] qijvalues = new <IndexedObject>ArrayList[Qij.length];
         for (int i = 0; i < qijvalues.length; i++) {
             qijvalues[i] = new ArrayList<IndexedObject>();
@@ -120,8 +122,8 @@ public class Regular extends AbstractLargeIntSConstraint {
     // can not be used as a cut...
     public void initQij(ArrayList[] qijvalues) {
         mark = new BitSet(nbNode);
-        Ni = new ArrayList[cste + 1]; // le dernier niveau
-        for (int i = 0; i < cste + 1; i++) {
+        Ni = new ArrayList[nbVars + 1]; // le dernier niveau
+        for (int i = 0; i < nbVars + 1; i++) {
             Ni[i] = new ArrayList<LightState>();
         }
         Ni[0].add(autom.getInitState());
@@ -169,8 +171,8 @@ public class Regular extends AbstractLargeIntSConstraint {
         for (int i = 0; i < Qij.length; i++) {
             qijvalues[i] = new HashSet<IndexedObject>();
         }
-        Ni = new ArrayList[cste + 1]; // le dernier niveau
-        for (int i = 0; i < cste + 1; i++) {
+        Ni = new ArrayList[nbVars + 1]; // le dernier niveau
+        for (int i = 0; i < nbVars + 1; i++) {
             Ni[i] = new ArrayList<LightState>();
         }
     }
@@ -277,8 +279,8 @@ public class Regular extends AbstractLargeIntSConstraint {
      *
      */
     public void cleanUp() throws ContradictionException {
-        for (int i = 0; i < cste; i++) {
-            int fin = i == (cste - 1) ? Qij.length : start[i + 1];
+        for (int i = 0; i < nbVars; i++) {
+            int fin = i == (nbVars - 1) ? Qij.length : start[i + 1];
             for (int j = start[i]; j < fin; j++) {
                 if (Qij[j].isEmpty()) {
                     int val = j - start[i];

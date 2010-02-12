@@ -52,6 +52,9 @@ public class Occurrence extends AbstractLargeIntSConstraint {
     public IntDomainVar[] relevantVar;
 
     public int nbListVars;
+
+    private int occval;
+
     /**
      * Constructor,
      * API: should be used through the Model.createOccurrence API
@@ -78,7 +81,7 @@ public class Occurrence extends AbstractLargeIntSConstraint {
 //    }
 
     public void init(int occval, boolean onInf, boolean onSup, IEnvironment environment) {
-        this.cste = occval;
+        this.occval = occval;
         this.constrainOnInfNumber = onInf;
         this.constrainOnSupNumber = onSup;
         this.nbListVars = vars.length - 1;
@@ -86,7 +89,7 @@ public class Occurrence extends AbstractLargeIntSConstraint {
         nbSure = environment.makeInt(0);
         int cpt = 0;
         for (int i = 0; i < (vars.length - 1); i++) {
-            if (vars[i].canBeInstantiatedTo(cste)) {
+            if (vars[i].canBeInstantiatedTo(this.occval)) {
                 nbPossible.add(1);
                 cpt++;
             }
@@ -94,7 +97,7 @@ public class Occurrence extends AbstractLargeIntSConstraint {
         relevantVar = new IntDomainVar[cpt];
         cpt = 0;
         for (int i = 0; i < (vars.length - 1); i++) {
-            if (vars[i].canBeInstantiatedTo(cste)) {
+            if (vars[i].canBeInstantiatedTo(this.occval)) {
                 relevantVar[cpt] = vars[i];
                 cpt++;
             }
@@ -119,7 +122,7 @@ public class Occurrence extends AbstractLargeIntSConstraint {
 
     public void awakeOnInst(int idx) throws ContradictionException {
         //assumption : we only get the inst events on all variables except the occurrence variable
-        if (vars[idx].getVal() == cste) {
+        if (vars[idx].getVal() == occval) {
             nbSure.add(1);
             checkNbSure();
         }
@@ -129,7 +132,7 @@ public class Occurrence extends AbstractLargeIntSConstraint {
         //assumption : we only get the inst events on all variables except the occurrence variable
             while (deltaDomain.hasNext()) {
                 int x = deltaDomain.next();
-                if (x == cste) {
+                if (x == occval) {
                     nbPossible.add(-1);
                 }
             }
@@ -141,7 +144,7 @@ public class Occurrence extends AbstractLargeIntSConstraint {
         int nbVars = vars.length - 1;
         int cptVal = 0;
         for (int i = 0; i < nbVars; i++) {
-            if (tuple[i] == cste) cptVal++;
+            if (tuple[i] == occval) cptVal++;
         }
         if (constrainOnInfNumber & constrainOnSupNumber)
             return cptVal == tuple[nbVars];
@@ -159,9 +162,9 @@ public class Occurrence extends AbstractLargeIntSConstraint {
                 for(int i = 0; i < relevantVar.length; i++){
                 //for (IntDomainVar aRelevantVar : relevantVar) {
                     IntDomainVar aRelevantVar = relevantVar[i];
-                    if (aRelevantVar.getDomain().contains(cste) && !aRelevantVar.isInstantiated()) {
+                    if (aRelevantVar.getDomain().contains(occval) && !aRelevantVar.isInstantiated()) {
                         //nbSure.add(1); // must be dealed by the event listener not here !!
-                        aRelevantVar.instantiate(cste, VarEvent.domOverWDegIdx(cIndices[i]) /*cIndices[i]*/);
+                        aRelevantVar.instantiate(occval, VarEvent.domOverWDegIdx(cIndices[i]) /*cIndices[i]*/);
                     }
                 }
             }
@@ -175,9 +178,9 @@ public class Occurrence extends AbstractLargeIntSConstraint {
                 for(int i = 0; i< relevantVar.length; i++){
 //                for (IntDomainVar aRelevantVar : relevantVar) {
                     IntDomainVar aRelevantVar = relevantVar[i];
-                    if (aRelevantVar.getDomain().contains(cste) && !aRelevantVar.isInstantiated()) {
+                    if (aRelevantVar.getDomain().contains(occval) && !aRelevantVar.isInstantiated()) {
                         //nbPossible.add(-1);
-                        aRelevantVar.removeVal(cste, VarEvent.domOverWDegIdx(cIndices[i]) /*cIndices[i]*/);
+                        aRelevantVar.removeVal(occval, VarEvent.domOverWDegIdx(cIndices[i]) /*cIndices[i]*/);
                     }
                 }
             }
@@ -192,9 +195,9 @@ public class Occurrence extends AbstractLargeIntSConstraint {
     public void propagate() throws ContradictionException {
         int nbSure = 0, nbPossible = 0;
         for (int i = 0; i < (nbListVars); i++) {
-            if (vars[i].canBeInstantiatedTo(cste)) {
+            if (vars[i].canBeInstantiatedTo(occval)) {
                 nbPossible++;
-                if (vars[i].isInstantiatedTo(cste)) {
+                if (vars[i].isInstantiatedTo(occval)) {
                     nbSure++;
                 }
             }
@@ -214,9 +217,9 @@ public class Occurrence extends AbstractLargeIntSConstraint {
         int nbPos = 0;
         int nbSur = 0;
         for (int i = 0; i < relevantVar.length; i++) {
-            if (vars[i].getDomain().contains(cste)) {
+            if (vars[i].getDomain().contains(occval)) {
                 nbPos++;
-                if (vars[i].isInstantiated() && vars[i].getVal() == cste)
+                if (vars[i].isInstantiated() && vars[i].getVal() == occval)
                     nbSur++;
             }
         }
@@ -248,7 +251,7 @@ public class Occurrence extends AbstractLargeIntSConstraint {
         for (int i = 0; i < vars.length - 2; i++) {
             s.append(vars[i]).append(",");
         }
-        s.append(vars[vars.length - 2]).append("], ").append(cste).append(")");
+        s.append(vars[vars.length - 2]).append("], ").append(occval).append(")");
         if (constrainOnInfNumber && constrainOnSupNumber)
             s.append(" = ");
         else if (constrainOnInfNumber)
