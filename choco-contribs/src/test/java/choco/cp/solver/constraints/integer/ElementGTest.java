@@ -23,6 +23,7 @@
 package choco.cp.solver.constraints.integer;
 
 import choco.Choco;
+import static choco.Choco.makeIntVar;
 import choco.cp.model.CPModel;
 import choco.cp.model.managers.constraints.integer.ElementGManager;
 import choco.cp.solver.CPSolver;
@@ -32,13 +33,11 @@ import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.logging.Logger;
-
-import static choco.Choco.makeIntVar;
-import static org.junit.Assert.assertEquals;
 
 /*
 * User : charles
@@ -75,7 +74,7 @@ public class ElementGTest {
 		vars[vars.length-2] = index;
 		vars[vars.length-1] = var;
 
-        Constraint element = new ComponentConstraint(ElementGManager.class, 0, vars);
+        Constraint element = new ComponentConstraint<IntegerVariable>(ElementGManager.class, 0, vars);
         // fin
 
         m.addConstraint(element);
