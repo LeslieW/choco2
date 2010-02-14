@@ -147,7 +147,7 @@ public class NotManager extends IntConstraintManager {
         INode[] nt = new INode[cc.getVariables().length];
         for (int i = 0; i < cc.getVariables().length; i++) {
             IntegerExpressionVariable v = (IntegerExpressionVariable) cc.getVariable(i);
-            nt[i] = v.getExpressionManager().makeNode(solver, v.getConstraints(), v.getVariables());
+            nt[i] = v.getExpressionManager().makeNode(solver, v.getConstraints(), v.getExpVariables());
         }
         return nt;
     }

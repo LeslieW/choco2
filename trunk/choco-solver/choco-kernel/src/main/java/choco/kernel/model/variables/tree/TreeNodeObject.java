@@ -23,11 +23,13 @@
 package choco.kernel.model.variables.tree;
 
 import static choco.Choco.makeIntVar;
-import choco.kernel.model.variables.MultipleVariables;
-import choco.kernel.model.variables.integer.IntegerVariable;
 
 import java.util.BitSet;
 import java.util.List;
+
+import choco.kernel.model.variables.MultipleVariables;
+import choco.kernel.model.variables.Variable;
+import choco.kernel.model.variables.integer.IntegerVariable;
 
 /*
  * User:    charles
@@ -56,27 +58,17 @@ public class TreeNodeObject extends MultipleVariables{
     protected IntegerVariable timeWindow;
 
     public TreeNodeObject(int idx, int nbNodes, List<BitSet[]> graphs, List<int[][]> matrix) {
-        this.idx = idx;
+        super();
+    	this.idx = idx;
         this.successors = makeIntVar("next_" + idx, 0, nbNodes-1, "cp:enum");
         for (int i = 0; i < nbNodes; i++) {
             if (!graphs.get(0)[idx].get(i)) this.successors.removeVal(i);
         }
         this.inDegree = makeIntVar("deg_" + idx, matrix.get(0)[idx][0], matrix.get(0)[idx][1], "cp:bound");
         this.timeWindow = makeIntVar("tw_" + idx, matrix.get(1)[idx][0], matrix.get(1)[idx][1], "cp:bound");
-        this.addVariable(this.successors);
-        this.addVariable(this.inDegree);
-        this.addVariable(this.timeWindow);
+        setVariables(new Variable[]{ this.successors, this.inDegree, this.timeWindow});
     }
 
-
-    /**
-     * pretty printing of the object. This String is not constant and may depend on the context.
-     *
-     * @return a readable string representation of the object
-     */
-    public String pretty() {
-        return null;
-    }
 
     public IntegerVariable getSuccessors() {
         return successors;

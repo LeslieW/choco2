@@ -55,7 +55,7 @@ public class DeprecatedChoco extends Choco{
         if(binf>bsup) {
 			throw new ModelException("makeIntVar : binf > bsup");
 		}
-		return new IntegerVariable(name,type, binf, bsup);
+		return new IntegerVariable(name, binf, bsup);
 	}
 
     @Deprecated

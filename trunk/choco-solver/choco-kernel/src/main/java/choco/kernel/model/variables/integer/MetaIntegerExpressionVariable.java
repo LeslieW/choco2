@@ -38,52 +38,43 @@ import java.util.Properties;
  *
  */
 public class MetaIntegerExpressionVariable extends IntegerExpressionVariable {
-  protected Constraint[] constraints;
+	protected Constraint[] constraints;
 
-  public MetaIntegerExpressionVariable(Operator operator, Constraint c, IntegerExpressionVariable... variables) {
-    super(null, operator, variables);
-    constraints = new Constraint[]{c};
-  }
+	public MetaIntegerExpressionVariable(Operator operator, Constraint c, IntegerExpressionVariable... variables) {
+		super(null, operator, variables);
+		constraints = new Constraint[]{c};
+	}
 
-  public Constraint[] getConstraints() {
-    return constraints;
-  }
+	public Constraint[] getConstraints() {
+		return constraints;
+	}
 
-    /**
-     * Preprocessing that helps the garbage collector.
-     */
-    @Override
-    public void freeMemory() {
-        Arrays.fill(constraints, null);
-        constraints = null;
-        super.freeMemory();
-    }
+	/**
+	 * Preprocessing that helps the garbage collector.
+	 */
+	@Override
+	public void freeMemory() {
+		Arrays.fill(constraints, null);
+		constraints = null;
+		super.freeMemory();
+	}
 
-    /**
-     * Extract first level sub-variables of a variable
-     * and return an array of non redundant sub-variable.
-     * In simple variable case, return a an array
-     * with just one element.
-     * Really usefull when expression variables.
-     * @return a hashset of every sub variables contained in the Variable.
-     */
-    public Variable[] extractVariables() {
-        if(listVars == null){
-            listVars = variables;
-            for(Constraint c : constraints){
-                listVars = ArrayUtils.append(listVars, c.extractVariables());
-            }
-            listVars = ArrayUtils.getNonRedundantObjects(Variable.class, listVars);
-        }
-        return listVars;
-    }
+	@Override
+	protected Variable[] doExtractVariables() {
+		Variable[] tmp = getExpVariables();
+		for(Constraint c : constraints){
+			tmp = ArrayUtils.append(tmp, c.extractVariables());
+		}
+		return ArrayUtils.getNonRedundantObjects(Variable.class, tmp);
+	}
+	
 
-    public final void findManager(Properties propertiesFile) {
-        super.findManager(propertiesFile);
-        for (int i = 0; i < constraints.length; i++) {
-            Constraint constraint = constraints[i];
-            constraint.findManager(propertiesFile);
-        }
-    }
+	public final void findManager(Properties propertiesFile) {
+		super.findManager(propertiesFile);
+		for (int i = 0; i < constraints.length; i++) {
+			Constraint constraint = constraints[i];
+			constraint.findManager(propertiesFile);
+		}
+	}
 
 }

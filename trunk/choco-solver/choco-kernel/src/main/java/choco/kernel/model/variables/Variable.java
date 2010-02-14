@@ -22,17 +22,18 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.variables;
 
+import java.util.Iterator;
+import java.util.logging.Logger;
+
 import choco.IGarbageCollectorAssistant;
 import choco.IPretty;
 import choco.kernel.common.IIndex;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.model.IConstraintList;
+import choco.kernel.model.IFindManager;
 import choco.kernel.model.IOptions;
-import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
-
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.logging.Logger;
+import choco.kernel.model.constraints.ExpressionManager;
 
 /**
  * Created by IntelliJ IDEA.
@@ -43,41 +44,25 @@ import java.util.logging.Logger;
  * Define all the methods for a variable to be used
  * on the Model.
  */
-public interface Variable extends IPretty, IIndex, IOptions, IHook, IGarbageCollectorAssistant {
+public interface Variable extends IConstraintList, IPretty, IIndex, IFindManager, IOptions, IHook, IGarbageCollectorAssistant {
 
-    final static Logger LOGGER = ChocoLogging.getEngineLogger();
+	final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
+	String getName();
+	
 	public VariableType getVariableType();
 
-    public void _addConstraint(Constraint c);
-
-    public void _removeConstraint(Constraint c);
-
-    @Deprecated
-    public Iterator<Constraint> getConstraintIterator();
-    //replaced by
-    public Iterator<Constraint> getConstraintIterator(Model m);
+	@Deprecated
+	public Iterator<Constraint> getConstraintIterator();
+	//replaced by
+	//public Iterator<Constraint> getConstraintIterator(Model m);
 
 
-    @Deprecated
-    public int getNbConstraint();
-    //replaced by
-    public int getNbConstraint(Model m);
+	@Deprecated
+	public int getNbConstraint();
+	//replaced by
+	//public int getNbConstraint(Model m);
 
-    /**
-     * Extract first level sub-variables of a variable
-     * and return an array of non redundant sub-variable.
-     * In simple variable case, return a an array
-     * with just one element.
-     * Really usefull when expression variables.
-     * @return a hashset of every sub variables contained in the Variable.
-     */
-    public Variable[] extractVariables();
-
-
-    /**
-     * Set the class manager
-     * @param properties
-     */
-    public void findManager(Properties properties);
 }
+
+

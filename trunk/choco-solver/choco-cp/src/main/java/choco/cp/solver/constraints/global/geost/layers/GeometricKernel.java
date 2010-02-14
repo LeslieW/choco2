@@ -79,10 +79,7 @@ public class GeometricKernel {
         memo.m = new HashMap<int[],Integer>();
         included=included_;
         this.solver = solver;
-
-
-
-        LOGGER.info("memo_active="+memo_active);
+       LOGGER.info("memo_active="+memo_active);
     }
 
 	/**

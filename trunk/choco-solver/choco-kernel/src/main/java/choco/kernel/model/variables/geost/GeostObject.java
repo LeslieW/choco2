@@ -1,5 +1,6 @@
 package choco.kernel.model.variables.geost;
 
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.variables.MultipleVariables;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -38,37 +39,25 @@ public class GeostObject extends MultipleVariables{
 	 * @param endTime An Integer Domain Variable representing the time that the object ends in
 	 */
     public GeostObject(int dim, int objectId, IntegerVariable shapeId, IntegerVariable[] coordinates, IntegerVariable startTime, IntegerVariable durationTime, IntegerVariable endTime) {
-        this.dim = dim;
-        this.objectId = objectId;
-        this.shapeId = shapeId;
-        this.addVariable(shapeId);
-        this.coordinates = coordinates;
-        ArrayList<Variable> list = new ArrayList<Variable>(Arrays.asList(coordinates));
-        this.addVariables(list);
-        this.startTime = startTime;
-        this.addVariable(startTime);
-        this.durationTime = durationTime;
-        this.addVariable(durationTime);
-        this.endTime = endTime;
-        this.addVariable(endTime);
-        this.radius=-1;
+       this(dim, objectId, shapeId, coordinates, startTime, durationTime, endTime, -1);
     }
 
     public GeostObject(int dim, int objectId, IntegerVariable shapeId, IntegerVariable[] coordinates, IntegerVariable startTime, IntegerVariable durationTime, IntegerVariable endTime, int radius) {
-        this.dim = dim;
-        this.objectId = objectId;
-        this.shapeId = shapeId;
-        this.addVariable(shapeId);
-        this.coordinates = coordinates;
-        ArrayList<Variable> list = new ArrayList<Variable>(Arrays.asList(coordinates));
-        this.addVariables(list);
-        this.startTime = startTime;
-        this.addVariable(startTime);
-        this.durationTime = durationTime;
-        this.addVariable(durationTime);
-        this.endTime = endTime;
-        this.addVariable(endTime);
-        this.radius = radius;
+    	 this.dim = dim;
+         this.objectId = objectId;
+         this.shapeId = shapeId;
+         this.coordinates = coordinates;
+         this.startTime = startTime;
+         this.durationTime = durationTime;
+         this.endTime = endTime;
+         this.radius=radius;
+         Variable[] vars = new Variable[coordinates.length + 3];
+         vars[0] = shapeId;
+         System.arraycopy(coordinates, 0, vars, 1, coordinates.length);
+         vars[vars.length-3]=startTime;
+         vars[vars.length-2]=durationTime;
+         vars[vars.length-1]=endTime;
+         setVariables(vars);
     }
 
     /**
@@ -78,10 +67,6 @@ public class GeostObject extends MultipleVariables{
     public void freeMemory() {
         Arrays.fill(coordinates, null);
         super.freeMemory();
-    }
-
-    public String pretty() {
-        return "GeostObject.pretty() : Not already defined";  
     }
 
     public int getDim() {

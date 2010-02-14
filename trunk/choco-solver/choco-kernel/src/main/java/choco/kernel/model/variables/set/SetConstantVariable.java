@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.variables.set;
 
+import java.util.Arrays;
+
 import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
@@ -35,19 +37,11 @@ import choco.kernel.model.variables.integer.IntegerConstantVariable;
  */
 public class SetConstantVariable extends SetVariable {
 
-    private static String toString(int[] values){
-        StringBuffer sb = new StringBuffer();
-        sb.append("{");
-        for(int i = 0; i < values.length; i++){
-            sb.append(i);
-            if(i<values.length-1)sb.append(",");
-        }
-        sb.append("}");
-        return sb.toString();
-    }
 
-	public SetConstantVariable(IntegerConstantVariable card, int... value) {
-        super(toString(value), VariableType.CONSTANT_SET, value, card);
+	public SetConstantVariable(IntegerConstantVariable card, int... values) {
+        super(VariableType.CONSTANT_SET, false, values, NO_CONSTRAINTS_DS, card);
+        this.setName(Arrays.toString(values));
+        this.values = values;
     }
 
     public int[] getValues() {
@@ -63,6 +57,16 @@ public class SetConstantVariable extends SetVariable {
         if(values.length>0)return values[values.length-1];
         throw new ModelException("Cannot access lower bound of an empty set");
     }
+    
+	@Override
+	public void setLowB(int lowB) {
+		throwConstantException();
+	}
+
+	@Override
+	public void setUppB(int uppB) {
+		throwConstantException();
+	}
 
     /**
      * pretty printing of the object. This String is not constant and may depend on the context.

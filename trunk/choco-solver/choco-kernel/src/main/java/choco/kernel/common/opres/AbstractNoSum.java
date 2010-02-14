@@ -97,7 +97,6 @@ public abstract class AbstractNoSum {
 	 */
 	public boolean noSum(final int alpha,final int beta) {
 		if(alpha<=0 || beta>= getCandidatesLoad()) {return false;}
-		//FIXME tentative
 		else if(this.getCandidatesLoad()<alpha) {return true;}
 		int sa=0,sb=0,sc=0;
 		int k1=getLargestItemIndex();
@@ -110,7 +109,7 @@ public abstract class AbstractNoSum {
 		sb=sizes[k2].getVal();
 		while(sa<alpha && sb<=beta) {
 			sa+=sizes[k1].getVal();
-			//TODO vu que sa est croissante on peutse servir de la condition s_0>=alpha pour ne pas lancer l'algorithme : ca evite la première boucle
+			//sa est croissante => s_0>=alpha pour ne pas lancer l'algorithme : ca evite la première boucle
 			k1=next(k1);
 			cpt++;
 			if(sa<alpha) {

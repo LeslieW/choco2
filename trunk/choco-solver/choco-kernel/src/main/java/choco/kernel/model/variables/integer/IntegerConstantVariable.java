@@ -23,6 +23,7 @@
 package choco.kernel.model.variables.integer;
 
 import choco.kernel.model.variables.VariableType;
+import choco.kernel.solver.SolverException;
 
 /*
  * Created by IntelliJ IDEA.
@@ -31,16 +32,27 @@ import choco.kernel.model.variables.VariableType;
  * Since : Choco 2.0.0
  *
  */
-public class IntegerConstantVariable extends IntegerVariable implements Comparable {
+public final class IntegerConstantVariable extends IntegerVariable implements Comparable {
 
 	public IntegerConstantVariable(int value) {
-        super(Integer.toString(value), VariableType.CONSTANT_INTEGER, value, value);
+        super(VariableType.CONSTANT_INTEGER, new int[]{value},false, NO_CONSTRAINTS_DS);
+        setName(Integer.toString(value));
         this.values = new int[]{value};
     }
 
     public int getValue() {
         return values[0];
     }
+
+	@Override
+	public void setLowB(int lowB) {
+		throwConstantException();
+	}
+
+	@Override
+	public void setUppB(int uppB) {
+		throwConstantException();
+	}
 
 
 	@Override

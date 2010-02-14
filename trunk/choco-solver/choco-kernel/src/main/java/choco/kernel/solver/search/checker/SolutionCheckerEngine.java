@@ -11,7 +11,7 @@ import java.util.logging.Level;
 
 public class SolutionCheckerEngine extends AbstractSolutionCheckerEngine {
 
-	//TODO 
+	//TODO add Ignore nogood 
 	public boolean ignoreNogoodStore;
 	
 	public boolean enableConsistency;

@@ -75,26 +75,38 @@ import choco.visu.components.chart.renderer.MyXYBarRenderer.ResourceRenderer;
 
 public final class ChocoChartFactory {
 
+
+	public final static StandardChartTheme CHOCO_THEME= new StandardChartTheme("Choco");
 	
-	public final static ChartTheme CHOCO_THEME= createChocoChartTheme();
+	static {
+		CHOCO_THEME.setPlotBackgroundPaint(Color.white);
+		CHOCO_THEME.setDomainGridlinePaint(Color.black);
+		CHOCO_THEME.setRangeGridlinePaint(Color.black);
+		CHOCO_THEME.setXYBarPainter(new StandardXYBarPainter());
+		CHOCO_THEME.setShadowVisible(false);
+		CHOCO_THEME.setErrorIndicatorPaint(Color.RED);
+		CHOCO_THEME.setAxisOffset(new RectangleInsets());
+		//setColorTerminal();
+		setMonochromeTerminal();
+		//setJFreeColorTerminal();
+		
+	}
 
 	public final static DateFormat INTEGER_DATE_FORMAT = new IntegerDateFormat();
 
 	private ChocoChartFactory() {}
 
-	protected static ChartTheme createChocoChartTheme() {
-		StandardChartTheme theme = new StandardChartTheme("Choco");
-		theme.setPlotBackgroundPaint(Color.white);
-		theme.setDomainGridlinePaint(Color.black);
-		theme.setRangeGridlinePaint(Color.black);
-		theme.setXYBarPainter(new StandardXYBarPainter());
-		theme.setShadowVisible(false);
-		theme.setErrorIndicatorPaint(Color.RED);
-		theme.setAxisOffset(new RectangleInsets());
-		theme.setDrawingSupplier( ChocoColor.createDefaultDrawingSupplier());
-		return theme;
+	public static void setMonochromeTerminal() {
+		CHOCO_THEME.setDrawingSupplier(ChocoColor.createMonochromeDrawingSupplier());
 	}
 
+	public static void setColorTerminal() {
+		CHOCO_THEME.setDrawingSupplier( ChocoColor.createDefaultDrawingSupplier());
+	}
+	
+	public static void setJFreeColorTerminal() {
+		CHOCO_THEME.setDrawingSupplier( ChocoColor.createJFreeDrawingSupplier());
+	}
 	public static DateFormat getIntegerDateFormat() {
 		return INTEGER_DATE_FORMAT;
 	}
@@ -261,14 +273,14 @@ public final class ChocoChartFactory {
 		domainAxis.setDateFormatOverride(ChocoChartFactory.INTEGER_DATE_FORMAT);
 		return domainAxis;
 	}
-	
+
 	public static NumberAxis createIntegerAxis(String title) {
 		NumberAxis rangeAxis = new NumberAxis(title);
 		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 		rangeAxis.setPositiveArrowVisible(true);
 		return rangeAxis;		
 	}
-	
+
 	public static JFreeChart createUnaryChart(String title, Solver scheduler, ResourceRenderer type) {
 		final TaskSeriesCollection coll = createUnaryTaskCollection(scheduler);
 		final MyXYTaskDataset dataset = new MyXYTaskDataset(coll);

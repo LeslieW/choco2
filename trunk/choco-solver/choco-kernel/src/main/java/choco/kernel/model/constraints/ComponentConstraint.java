@@ -22,77 +22,45 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.constraints;
 
-import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.model.variables.Variable;
 
-import java.util.Arrays;
-import java.util.Iterator;
+public class ComponentConstraint<V extends Variable> extends AbstractConstraint {
+	//TODO remove generic ?
+	protected final Object parameters;
 
-public class ComponentConstraint <V extends Variable> extends AbstractConstraint {
-
-    protected V[] variables;
-    protected Object parameters;
-
-
-    public ComponentConstraint(final ConstraintType constraintType, final Object parameters, final V[] variables) {
-        super(constraintType);
-        this.variables = variables;
+    public ComponentConstraint(final ConstraintType constraintType, final Object parameters, final Variable[] variables) {
+        super(constraintType, variables);
         this.parameters = parameters;
     }
 
-    public ComponentConstraint(final String componentClassName, final Object parameters, final V[] variables) {
-        super(componentClassName);
-        this.variables = variables;
+    public ComponentConstraint(final String componentClassName, final Object parameters, final Variable[] variables) {
+        super(componentClassName, variables);
         this.parameters = parameters;
     }
 
-    public ComponentConstraint(final Class componentClass, final Object parameters, final V[] variables) {
-        super(componentClass.getName());
-        this.variables = variables;
+    public ComponentConstraint(final Class componentClass, final Object parameters, final Variable[] variables) {
+        super(componentClass.getName(), variables);
         this.parameters = parameters;
     }
-
-    /**
+    
+	/**
      * Preprocessing that helps the garbage collector.
      */
     @Override
     public void freeMemory() {
-        Arrays.fill(variables, null);
-        variables = null;
-        parameters = null;
+        //Arrays.fill(variables, null);
+        //variables = null;
+        //parameters = null;
     }
 
     public Object getParameters() {
         return parameters;
-    }
-
-    @Override
-	public V[] getVariables() {
-        return variables;
-    }
-
-    public final V getVariable(final int idx) {
-        return variables[idx];
-    }
-    /**
-     * @see choco.kernel.model.constraints.Constraint#getNbVars()
-     */
-    @Override
-    public int getNbVars() {
-        return variables.length;
-    }
-
+    } 
 
     @Override
 	public int[] getFavoriteDomains() {
-        return ManagerFactory.loadConstraintManager(getManager()).getFavoriteDomains(options);
+        return ManagerFactory.loadConstraintManager(getManager()).getFavoriteDomains(getOptions());
     }
 
-    /**
-     * @see choco.kernel.model.constraints.Constraint#getVariableIterator()
-     */
-    @Override
-    public Iterator<Variable> getVariableIterator() {
-       return IteratorUtils.iterator(extractVariables());
-    }
+
 }

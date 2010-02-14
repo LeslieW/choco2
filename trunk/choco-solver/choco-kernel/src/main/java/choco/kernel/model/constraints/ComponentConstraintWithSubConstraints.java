@@ -22,11 +22,13 @@
  **************************************************/
 package choco.kernel.model.constraints;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.variables.Variable;
-
-import java.util.ArrayList;
-import java.util.Properties;
 
 /*
 * User : charles
@@ -37,28 +39,24 @@ import java.util.Properties;
 */
 public class ComponentConstraintWithSubConstraints extends ComponentConstraint<Variable>{
 
-    private final ArrayList<Constraint> constraints;
-    private final ArrayList<Variable> listVars;
-
+    private final List<Constraint> constraints;
+   
     public ComponentConstraintWithSubConstraints(ConstraintType constraintType, Variable[] variables,
                                                  Object params, Constraint... constraints) {
         super(constraintType, params, variables);
-        this.constraints = new ArrayList<Constraint>(ArrayUtils.toList(constraints));
-        this.listVars = new ArrayList<Variable>(ArrayUtils.toList(variables));
+        this.constraints = new LinkedList<Constraint>(ArrayUtils.toList(constraints));
     }
 
     public ComponentConstraintWithSubConstraints(String componentClassName, Variable[] variables,
                                                  Object params, Constraint... constraints) {
         super(componentClassName, appendParameters(params, constraints), variables);
-        this.constraints = new ArrayList<Constraint>(ArrayUtils.toList(constraints));
-        this.listVars = new ArrayList<Variable>(ArrayUtils.toList(variables));
+        this.constraints = new LinkedList<Constraint>(ArrayUtils.toList(constraints));
     }
 
     public ComponentConstraintWithSubConstraints(Class componentClass, Variable[] variables,
                                                  Object params, Constraint... constraints) {
         super(componentClass, appendParameters(params, constraints), variables);
-        this.constraints = new ArrayList<Constraint>(ArrayUtils.toList(constraints));
-        this.listVars = new ArrayList<Variable>(ArrayUtils.toList(variables));
+        this.constraints = new LinkedList<Constraint>(ArrayUtils.toList(constraints));
     }
 
     /**
@@ -67,40 +65,21 @@ public class ComponentConstraintWithSubConstraints extends ComponentConstraint<V
     @Override
     public void freeMemory() {
         constraints.clear();
-        listVars.clear();
+        //listVars.clear();
         super.freeMemory();
     }
 
-    public <V extends Variable> void addElements(V[] vars, Constraint[] cstrs){
-        recordIndexes(vars);
-        constraints.addAll(ArrayUtils.toList(cstrs));
+    public void addElements(Variable[] vars, Constraint... cstrs){
+    	Variable[] currentV = getVariables();
+    	List<Variable> newV = new LinkedList<Variable>();
+    	for (Variable var : vars) {
+            	if( ! ArrayUtils.contains(currentV, var))  newV.add(var);
+    	}
+    	if( ! newV.isEmpty() ) setVariables(ArrayUtils.append(currentV, newV.toArray(new Variable[newV.size()])));
+    	constraints.addAll(ArrayUtils.toList(cstrs));
     }
 
-
-
-    private <V extends Variable> void recordIndexes(V[] vars){
-        for (V var : vars) {
-            if (!listVars.contains(var)) {
-                listVars.add(var);
-                variables = ArrayUtils.append(variables, new Variable[]{var});
-            }
-        }
-    }
-
-
-    @Override
-    public Variable[] getVariables() {
-        return ArrayUtils.toArray(Variable.class, listVars);
-    }
-
-    /**
-     * @see choco.kernel.model.constraints.Constraint#getNbVars()
-     */
-    @Override
-    public int getNbVars() {
-        return listVars.size();
-    }
-
+  
     @Override
     public Object getParameters() {
         return appendParameters(parameters, ArrayUtils.toArray(Constraint.class, constraints));
@@ -111,7 +90,8 @@ public class ComponentConstraintWithSubConstraints extends ComponentConstraint<V
     }
 
 
-    public final void findManager(Properties propertiesFile) {
+    @Override
+	public final void findManager(Properties propertiesFile) {
         super.findManager(propertiesFile);
         for (Constraint constraint : constraints) {
             constraint.findManager(propertiesFile);
@@ -124,7 +104,8 @@ public class ComponentConstraintWithSubConstraints extends ComponentConstraint<V
      * and return an array of variables.
      * @return an array of every variables contained in the Constraint.
      */
-    public Variable[] extractVariables() {
+    @Override
+	public Variable[] doExtractVariables() {
         Variable[] listVars = this.getVariables();
         for (Constraint c : constraints) {
             listVars = ArrayUtils.append(listVars, c.extractVariables());

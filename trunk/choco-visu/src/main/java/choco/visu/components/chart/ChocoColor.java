@@ -3,7 +3,9 @@ package choco.visu.components.chart;
 import static org.jfree.chart.plot.DefaultDrawingSupplier.*;
 import java.awt.Color;
 import java.awt.Paint;
+import java.util.Arrays;
 
+import org.jfree.chart.ChartColor;
 import org.jfree.chart.plot.DefaultDrawingSupplier;
 import org.jfree.chart.plot.DrawingSupplier;
 
@@ -46,6 +48,7 @@ public final class ChocoColor {
 	public final static Color COLOR_148_6 = new Color(0x9F, 0x02, 0x51);
 
 
+	
 	/**
 	 * Convenience method to return an array of <code>Paint</code> objects that
 	 * represent the pre-defined colors in the <code>Color<code> and
@@ -54,7 +57,6 @@ public final class ChocoColor {
 	 * @return An array of objects with the <code>Paint</code> interface.
 	 */
 	public static Paint[] createDefaultPaintArray() {
-
 		return new Paint[] {
 				COLOR_124_1,	
 				COLOR_124_2,
@@ -64,16 +66,52 @@ public final class ChocoColor {
 				COLOR_124_6,				COLOR_211_1,				COLOR_211_2,				COLOR_211_3,				COLOR_211_4,				COLOR_211_5,				COLOR_211_6,				COLOR_142_1,				COLOR_142_2,				COLOR_142_3,				COLOR_142_4,				COLOR_142_5,				COLOR_142_6,				COLOR_274_1,				COLOR_274_2,				COLOR_274_3,				COLOR_274_4,				COLOR_274_5,				COLOR_274_6,				COLOR_148_1,				COLOR_148_2,				COLOR_148_3,				COLOR_148_4,				COLOR_148_5,				COLOR_148_6,
 		};
 	}
+	
+	private static Color gray(int val) {
+		return new Color(val,val,val);
+	}
 
-	public static DrawingSupplier createDefaultDrawingSupplier() {
+	
+	public static Paint[] createMonochromePaintArray(int start, int end,int step, int gap) {
+		int idx=0;
+		final Paint[] palette = new Paint[(end-start)/step +1];
+		int instep = 0;
+		while(instep<gap) {
+			int val = start + instep;
+			do{
+				palette[idx++]=gray(val);
+				val+=gap;
+			}while(val<=end);
+			instep+=step;
+		}
+		return palette;
+	}
+	
+	protected static DrawingSupplier createDrawingSupplier(Paint[] palette) {
 		return new DefaultDrawingSupplier(
-				createDefaultPaintArray(), 
+				palette, 
 				DEFAULT_FILL_PAINT_SEQUENCE,
 				DEFAULT_OUTLINE_PAINT_SEQUENCE,
 				DEFAULT_STROKE_SEQUENCE,
 				DEFAULT_OUTLINE_STROKE_SEQUENCE,
 				DEFAULT_SHAPE_SEQUENCE);
 
+	}
+	
+	public static DrawingSupplier createDefaultDrawingSupplier() {
+		return createDrawingSupplier(createDefaultPaintArray());
+	}
+	
+	public static DrawingSupplier createMonochromeDrawingSupplier() {
+		return createDrawingSupplier(createMonochromePaintArray(120,220,10,30));
+	}
+	
+	public static DrawingSupplier createJFreeDrawingSupplier() {
+		return createDrawingSupplier(ChartColor.createDefaultPaintArray());
+	}
+	
+	public static void main(String[] args) {
+		createMonochromeDrawingSupplier();
 	}
 
 

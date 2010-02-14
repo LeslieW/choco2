@@ -23,6 +23,7 @@
 package choco.kernel.model.variables.real;
 
 import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.model.IConstraintList;
 import choco.kernel.model.constraints.ConstraintManager;
 import choco.kernel.model.constraints.ManagerFactory;
 import choco.kernel.model.variables.*;
@@ -38,20 +39,24 @@ public class RealExpressionVariable extends ComponentVariable implements DoubleB
 
 	protected double lowB, uppB;
    
-	public RealExpressionVariable(Object parameters, Operator operator, VariableType type, RealExpressionVariable... variables) {
-        super(type, operator, parameters, "", variables);
-
+	
+    protected RealExpressionVariable(VariableType variableType,
+			boolean enableOption, Object parameters, IConstraintList constraints) {
+		super(variableType, enableOption, parameters, constraints);
     }
 
-    public RealExpressionVariable(Object parameters, Operator operator, RealExpressionVariable... variables) {
-        this(parameters, operator, VariableType.REAL_EXPRESSION, variables);
+	public RealExpressionVariable(Object parameters, Operator operator, RealExpressionVariable... variables) {
+        super( VariableType.REAL_EXPRESSION, operator, parameters, variables);
     }
 
-    public RealExpressionVariable[] getVariables() {
-        return (RealExpressionVariable[]) variables;
+    public RealExpressionVariable[] getExpVariables() {
+    	//FIXME remove function (deal with only with variable or component-variable ?)
+		RealExpressionVariable[] r = new RealExpressionVariable[getNbVars()];
+		System.arraycopy(getVariables(), 0, r, 0, getNbVars());
+		return r;
     }
 
-    public double getUppB() {
+    public final double getUppB() {
         return uppB;
     }
 
@@ -59,7 +64,7 @@ public class RealExpressionVariable extends ComponentVariable implements DoubleB
         this.uppB = uppB;
     }
 
-    public double getLowB() {
+    public final double getLowB() {
         return lowB;
     }
 
@@ -67,30 +72,7 @@ public class RealExpressionVariable extends ComponentVariable implements DoubleB
         this.lowB = lowB;
     }
 
-    @Override
-	public String pretty() {
-        //TODO : do pretty
-        //return operator==Operator.NONE ? this.pretty(binf, bsup) : super.pretty() ;
-        return null;
-    }
-
-    /**
-     * Extract first level sub-variables of a variable
-     * and return an array of non redundant sub-variable.
-     * In simple variable case, return a an array
-     * with just one element.
-     * Really usefull when expression variables.
-     * @return a hashset of every sub variables contained in the Variable.
-     */
-    public Variable[] extractVariables() {
-        if(listVars == null){
-            listVars = ArrayUtils.getNonRedundantObjects(Variable.class, variables);
-        }
-        return listVars;
-    }
-
-
-    public ConstraintManager<?> getRcm(){
+    public ConstraintManager<?> getRealConstraintManager(){
     	return ManagerFactory.loadConstraintManager(getOperatorClass());
     }
 

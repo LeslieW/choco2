@@ -22,13 +22,16 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.variables.real;
 
+import java.util.Iterator;
+
+import choco.kernel.common.util.tools.IteratorUtils;
+import choco.kernel.model.IConstraintList;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Operator;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableType;
-
-import java.util.Iterator;
+import choco.kernel.model.variables.set.SetVariable;
 
 /*
  * Created by IntelliJ IDEA.
@@ -39,18 +42,22 @@ import java.util.Iterator;
  */
 public class RealVariable extends RealExpressionVariable {
 
-	public RealVariable(String name, VariableType type, double lowB, double uppB) {
-        //noinspection NullArgumentToVariableArgMethod
-        super(new double[]{lowB, uppB}, Operator.NONE, type);
-		this.name = name;
-		this.setLowB(lowB);
-		this.setUppB(uppB);
+	
+	protected RealVariable(VariableType variableType, boolean enableOption,
+			IConstraintList constraints,double lowB, double uppB) {
+		super(variableType, enableOption, new double[]{lowB, uppB}, constraints);
+		this.lowB = lowB;
+		this.uppB = uppB;
+		setVariables(this);
 	}
 
 
 	public RealVariable(String name, double lowB, double uppB) {
-		this(name, VariableType.REAL, lowB, uppB);
+        //noinspection NullArgumentToVariableArgMethod
+        this(VariableType.REAL, true, new ConstraintsDataStructure(), lowB, uppB);
+		this.setName(name);
 	}
+
 
 
     /**
@@ -63,77 +70,8 @@ public class RealVariable extends RealExpressionVariable {
         return name+" ["+getLowB()+", "+getUppB()+"]";
     }
 
-    @Override
-    public void _addConstraint(Constraint c) {
-        constraints.add(c);
-    }
-
-    @Override
-    public void _removeConstraint(Constraint c) {
-        constraints.remove(c);
-    }
-
-    @Override
-    @Deprecated
-    public Iterator<Constraint> getConstraintIterator() {
-        return constraints.iterator();
-    }
-
-    @Override
-    public Iterator<Constraint> getConstraintIterator(final Model m) {
-        return new Iterator<Constraint>(){
-            Constraint c;
-            Iterator<Constraint> it = constraints.iterator();
-
-            public boolean hasNext() {
-                while(true){
-                    if(it == null){
-                        return false;
-                    }else
-                    if(it.hasNext()){
-                        c = it.next();
-                        if(Boolean.TRUE.equals(m.contains(c))){
-                            return true;
-                        }
-                    }else{
-                        return false;
-                    }
-                }
-            }
-
-            /**
-             * Returns the next element in the iteration.
-             *
-             * @return the next element in the iteration.
-             * @throws java.util.NoSuchElementException
-             *          iteration has no more elements.
-             */
-            @Override
-            public Constraint next() {
-                return c;
-            }
-
-            /**
-             * Removes from the underlying collection the last element returned by the
-             * iterator (optional operation).  This method can be called only once per
-             * call to <tt>next</tt>.  The behavior of an iterator is unspecified if
-             * the underlying collection is modified while the iteration is in
-             * progress in any way other than by calling this method.
-             *
-             * @throws UnsupportedOperationException if the <tt>remove</tt>
-             *                                       operation is not supported by this Iterator.
-             * @throws IllegalStateException         if the <tt>next</tt> method has not
-             *                                       yet been called, or the <tt>remove</tt> method has already
-             *                                       been called after the last call to the <tt>next</tt>
-             *                                       method.
-             */
-            @Override
-            public void remove() {
-                it.remove();
-            }
-    };
-    }
-
+   
+    
     /**
      * Extract first level sub-variables of a variable
      * and return an array of non redundant sub-variable.
@@ -143,10 +81,7 @@ public class RealVariable extends RealExpressionVariable {
      * @return a hashset of every sub variables contained in the Variable.
      */
     @Override
-     public Variable[] extractVariables() {
-        if(listVars==null){
-            listVars = new Variable[]{this};
-        }
-        return listVars;
+     public Variable[] doExtractVariables() {
+        return getVariables();
     }
 }

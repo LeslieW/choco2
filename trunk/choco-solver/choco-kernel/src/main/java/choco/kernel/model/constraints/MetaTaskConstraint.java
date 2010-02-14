@@ -21,7 +21,6 @@ public class MetaTaskConstraint extends ComponentConstraint <TaskVariable>{
 
 	protected Constraint constraint;
 
-
 	public MetaTaskConstraint(TaskVariable[] taskvariables,
 			Constraint constraint) {
 		super(ConstraintType.METATASKCONSTRAINT,constraint,taskvariables);
@@ -43,8 +42,8 @@ public class MetaTaskConstraint extends ComponentConstraint <TaskVariable>{
      * @return an array of every variables contained in the Constraint.
      */
 	@Override
-	public Variable[] extractVariables() {
-		Variable[] listVars = super.extractVariables();
+	public Variable[] doExtractVariables() {
+		Variable[] listVars = super.doExtractVariables();
 		listVars = ArrayUtils.append(listVars, constraint.extractVariables());
 		return ArrayUtils.getNonRedundantObjects(Variable.class, listVars);
 	}

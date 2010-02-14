@@ -46,7 +46,7 @@ public class IntegerExpressionManager implements ExpressionManager {
         if(solver instanceof CPSolver){
             if(variables.length == 1){
                 IntegerExpressionVariable var = variables[0];
-                return var.getExpressionManager().makeNode(solver, cstrs, var.getVariables());
+                return var.getExpressionManager().makeNode(solver, cstrs, var.getExpVariables());
             }
         }
         return null;

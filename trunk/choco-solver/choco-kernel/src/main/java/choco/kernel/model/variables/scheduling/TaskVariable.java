@@ -39,17 +39,11 @@ import java.util.Properties;
  */
 public class TaskVariable extends MultipleVariables implements IComponentVariable, ITaskVariable<IntegerVariable>{
 
-	protected final String name;
-
 	protected String variableManager;
 
 	public TaskVariable(String name, IntegerVariable start, IntegerVariable end, IntegerVariable duration) {
-		super(3);
-		this.variables.add(start);
-		this.variables.add(end);
-		this.variables.add(duration);
-		this.name = name;
-		this.stored = true;
+		super(true, true, start,end,duration);
+		this.setName(name);
 	}
 
 
@@ -63,7 +57,7 @@ public class TaskVariable extends MultipleVariables implements IComponentVariabl
 	 * @return
 	 */
 	public final IntegerVariable duration() {
-		return (IntegerVariable) variables.get(2);
+		return (IntegerVariable) getVariable(2);
 	}
 
 
@@ -72,7 +66,7 @@ public class TaskVariable extends MultipleVariables implements IComponentVariabl
 	 * @return
 	 */
 	public final IntegerVariable end() {
-		return (IntegerVariable)variables.get(1);
+		return (IntegerVariable) getVariable(1);
 	}
 
 
@@ -81,17 +75,9 @@ public class TaskVariable extends MultipleVariables implements IComponentVariabl
 	 * @return
 	 */
 	public final IntegerVariable start() {
-		return (IntegerVariable)variables.get(0);
+		return (IntegerVariable)getVariable(0);
 	}
 
-	/**
-	 * @return the name
-	 */
-	public final String getName() {
-		return name;
-	}
-
-	
 
     @Override
     public boolean isEquivalentTo(MultipleVariables mv) {
@@ -108,7 +94,8 @@ public class TaskVariable extends MultipleVariables implements IComponentVariabl
         return false;
     }
 
-    public String pretty() {
+    @Override
+	public String pretty() {
 		final StringBuilder buffer = new StringBuilder();
 		buffer.append(name).append(" {").append(start().pretty());
 		buffer.append(" + ").append(duration().pretty());

@@ -68,8 +68,8 @@ public class IfThenElseManager implements ExpressionManager {
                     ev[j]  = (IntegerExpressionVariable)cstrs[0].getVariables()[j];
                 }
                 nt[0] = cstrs[0].getExpressionManager().makeNode(solver, new Constraint[]{cstrs[0]}, ev);
-                nt[1] = vars[0].getExpressionManager().makeNode(s, vars[0].getConstraints(), vars[0].getVariables());
-                nt[2] = vars[1].getExpressionManager().makeNode(s, vars[1].getConstraints(), vars[1].getVariables());
+                nt[1] = vars[0].getExpressionManager().makeNode(s, vars[0].getConstraints(), vars[0].getExpVariables());
+                nt[2] = vars[1].getExpressionManager().makeNode(s, vars[1].getConstraints(), vars[1].getExpVariables());
                 return new IfThenElseNode(nt);
             }
         }

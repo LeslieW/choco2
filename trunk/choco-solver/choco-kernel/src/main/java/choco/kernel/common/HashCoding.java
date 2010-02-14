@@ -124,6 +124,9 @@ public class HashCoding {
         return aObject.getClass().isArray();
     }
 
+    public static final int hashCodeMe(Object field) {
+    	return hashCodeMe(new Object[]{field});
+    }
 
     public static final int hashCodeMe(Object[] fields) {
         int result = SEED;

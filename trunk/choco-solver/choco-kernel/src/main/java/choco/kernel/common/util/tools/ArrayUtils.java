@@ -91,6 +91,13 @@ public final class ArrayUtils {
         return length;
     }
 
+	public static <T> boolean contains(T[] array,T obj) {
+		for (T elem : array) {
+			if(elem.equals(obj)) return true;
+		}
+		return false;
+	}
+	
     public static <T> T get(int index, final T[]... arrays) {
         int shift = index;
         for (T[] tab : arrays) {
@@ -102,6 +109,7 @@ public final class ArrayUtils {
         }
         return null;
     }
+
 
     public static <T> T get(int index, final List<T>... arrays) {
         int shift = index;

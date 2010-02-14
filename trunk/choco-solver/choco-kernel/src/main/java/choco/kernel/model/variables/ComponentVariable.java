@@ -22,17 +22,18 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.variables;
 
-import choco.kernel.common.util.tools.IteratorUtils;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+
+import choco.kernel.model.IConstraintList;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ExpressionManager;
 import choco.kernel.model.constraints.ManagerFactory;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Properties;
 
 /*
  * User:    charles
@@ -40,271 +41,233 @@ import java.util.Properties;
  */
 public abstract class ComponentVariable extends AbstractVariable implements IComponentVariable {
 
-    protected final Object parameters;
-    protected String componentClass;
-    protected String variableManager;
-    protected String expressionManager;
-    protected String name;
-    protected Operator operator;
-    protected ComponentVariable[] variables;
 
-    protected final ArrayList<Constraint> constraints=new ArrayList<Constraint>(1);
-    private Constraint[] cstr = null;
+	public final static IConstraintList NO_CONSTRAINTS_DS = new NoConstraintDataStructure();
+	
+	protected final Object parameters;
+	protected String variableManager;
+	protected String expressionManager;
+	protected Operator operator;
+	
+	/**
+	 * For IntegerVariable, RealVariable, SetVariable.
+	 */
+	protected ComponentVariable(final VariableType variableType, boolean enableOption, final Object parameters,IConstraintList constraints) {
+		super(variableType,enableOption,constraints);
+		this.parameters = parameters;
+		this.operator = Operator.NONE;
+	}
+	
+	/**
+	 * For expressions 
+	 */
+	protected ComponentVariable(final VariableType variableType, final Object parameters, final ComponentVariable... vars) {
+		super(variableType, vars, true);
+		this.parameters=parameters;
+	}
+	
+	/**
+	 * For expressions 
+	 */
+	public ComponentVariable(final VariableType variableType, final Operator operator, final Object parameters, final ComponentVariable... vars) {
+		this(variableType, parameters, vars);
+		this.operator = operator;
+	}
 
-    private ComponentVariable(final VariableType variableType, final Object parameters, final String name, final ComponentVariable... vars) {
-        super(variableType);
-          this.parameters = parameters;
-          this.name = name;
-          this.variables = vars;
-      }
-    
-    public ComponentVariable(final VariableType variableType, final Operator operator, final Object parameters, final String name, final ComponentVariable... vars) {
-      this(variableType, parameters, name, vars);
-      this.operator = operator;
-    }
+	/**
+	 * For Expressions 
+	 */
+	public ComponentVariable(final VariableType variableType, final String operatorManager, final Object parameters, final ComponentVariable... vars) {
+		this(variableType, parameters, vars);
+		this.expressionManager = operatorManager;
+	}
 
-    public ComponentVariable(final VariableType variableType, final String operatorManager, final Object parameters, final String name, final ComponentVariable... vars) {
-    	this(variableType, parameters, name, vars);
-        this.expressionManager = operatorManager;
-    }
+	/**
+	 * Preprocessing that helps the garbage collector.
+	 */
+	@Override
+	public void freeMemory() {
+//		Arrays.fill(variables, null);
+//		variables = null;
+		//constraints.clear();
+		//cstr = null;
+		super.freeMemory();
+	}
 
-    public ComponentVariable(final VariableType variableType, final Class operatorClass, final Object parameters, final String name, final ComponentVariable... vars) {
-    	this(variableType, parameters, name, vars);
-        this.expressionManager = operatorClass.getName();
-    }
+	public final String getComponentClass() {
+		return variableManager;
+	}
 
-    /**
-     * Preprocessing that helps the garbage collector.
-     */
-    @Override
-    public void freeMemory() {
-        Arrays.fill(variables, null);
-        variables = null;
-        constraints.clear();
-        cstr = null;
-        super.freeMemory();
-    }
-
-    public final String getComponentClass() {
-        return variableManager;
-    }
-
-    public final String getOperatorClass(){
-        if(expressionManager!=null){
-            return expressionManager;
-        }
-        return variableManager;
-    }
-
-
-    public final Object getParameters() {
-        return parameters;
-    }
-
-    public Variable[] getVariables() {
-        return variables;
-    }
-
-    public final Variable getVariable(final int idx) {
-        return variables[idx];
-    }
-
-    public final int getNbVars() {
-        return variables.length;
-    }
-
-    public final String getName() {
-        return name;
-    }
-
-    public final void setName(String name) {
-        this.name = name;
-    }
-
-    public final Operator getOperator() {
-        return operator;
-    }
-
-    public final void setOperator(Operator operator) {
-        this.operator = operator;
-    }
-
-    public void _addConstraint(Constraint c) {
-        cstr = null;
-    	if (variables.length == 0) {
-            constraints.add(c);
-        } else {
-            for(Variable v : variables){
-                v._addConstraint(c);
-            }
-        }
-    }
-
-    public void _removeConstraint(Constraint c) {
-    	cstr = null;
-    	if (variables.length == 0) {
-            constraints.remove(c);
-        } else {
-            for(Variable v : variables){
-                v._removeConstraint(c);
-            }
-        }
-    }
-
-    @Deprecated
-    public Iterator<Constraint> getConstraintIterator() {
-        return new Iterator<Constraint>(){
-            int n = 0;
-            Iterator<Constraint> it = (variables.length > 0? variables[n].getConstraintIterator():constraints.iterator());
-
-            public boolean hasNext() {
-                if (it == null) {
-                    return false;
-                }
-                while (n < variables.length && !it.hasNext()) {
-                    n++;
-                    if (n < variables.length) {
-                        it = variables[n].getConstraintIterator();
-                    }
-                }
-                return n < variables.length && it.hasNext();
-            }
-
-            public Constraint next() {
-                return it.next();
-            }
-
-            public void remove() {
-                it.remove();
-            }
-        };
-    }
-
-    public Iterator<Constraint> getConstraintIterator(final Model m) {
-        return new Iterator<Constraint>(){
-            int n = 0;
-            Iterator<Constraint> it = (variables.length > 0? variables[n].getConstraintIterator(m):constraints.iterator());
-            Constraint c = null;
-
-            public boolean hasNext() {
-                while(true){
-                    if(it == null){
-                        return false;
-                    }else
-                    if(it.hasNext()){
-                        c = it.next();
-                        if(Boolean.TRUE.equals(m.contains(c))){
-                            return true;
-                        }
-                    }else
-                    if(n < variables.length){
-                        n++;
-                        if (n < variables.length) {
-                            it = variables[n].getConstraintIterator(m);
-                        }
-                    }else{
-                        return false;
-                    }
-                }
-            }
-
-            public Constraint next() {
-                return c;
-            }
-
-            public void remove() {
-                it.remove();
-            }
-        };
-    }
+	public final String getOperatorClass(){
+		if(expressionManager!=null){
+			return expressionManager;
+		}
+		return variableManager;
+	}
 
 
-    public Iterator<Variable> getVariableIterator() {
-       return IteratorUtils.iterator(extractVariables());
-      }
+	public final Object getParameters() {
+		return parameters;
+	}
+
+	public final Operator getOperator() {
+		return operator;
+	}
+
+	public final void setOperator(Operator operator) {
+		this.operator = operator;
+	}
+
+	
 
 
-    public Constraint[] getConstraints() {
-        if(cstr == null){
-            cstr = new Constraint[constraints.size()];
-            constraints.toArray(cstr);
-        }
-        return cstr;
-    }
 
-    public final Constraint getConstraint(final int idx) {
-        return constraints.get(idx);
-    }
+	public void findManager(Properties propertiesFile) {
+		if (variableManager == null && !type.equals(VariableType.NONE)){
+			variableManager = propertiesFile.getProperty(type.property);
+		}
+		if(expressionManager == null && !operator.equals(Operator.NONE)){
+			expressionManager = propertiesFile.getProperty(operator.property);
+		}
+		if(variableManager == null && expressionManager == null){
+			throw new ModelException("Can not find "+type.property+" or "
+					+ operator.property+" in application.properties");
+		}
+	}
 
-    @Deprecated
-    public int getNbConstraint() {
-        if (variables.length == 0) {
-            return constraints.size();
-        } else {
-            int sum = 0;
-            for(Variable v : variables){
-                sum = v.getNbConstraint();
-            }
-            return sum;
-        }
-    }
-
-    public int getNbConstraint(Model m) {
-        int sum = 0;
-        if (variables.length == 0) {
-            for(Constraint c: constraints){
-                if(Boolean.TRUE.equals(m.contains(c))){
-                    sum++;
-                }
-            }
-            return sum;
-        } else {
-            for(Variable v : variables){
-                sum = v.getNbConstraint(m);
-            }
-            return sum;
-        }
-    }
+	public VariableManager<?> getVariableManager() {
+		return ManagerFactory.loadVariableManager(getComponentClass());
+	}
 
 
-     public void findManager(Properties propertiesFile) {
-         if (variableManager == null && !type.equals(VariableType.NONE)){
-            variableManager = propertiesFile.getProperty(type.property);
-         }
-         if(expressionManager == null && !operator.equals(Operator.NONE)){
-                expressionManager = propertiesFile.getProperty(operator.property);
-         }
-         if(variableManager == null && expressionManager == null){
-             throw new ModelException("Can not find "+type.property+" or "
-                     + operator.property+" in application.properties");
-         }
-     }
-
-    public VariableManager<?> getVariableManager() {
-          return ManagerFactory.loadVariableManager(getComponentClass());
-    }
+	public ExpressionManager getExpressionManager() {
+		return ManagerFactory.loadExpressionManager(getOperatorClass());
+	}
 
 
-    public ExpressionManager getExpressionManager() {
-    	return ManagerFactory.loadExpressionManager(getOperatorClass());
-    }
+	
+	protected final static class ConstraintsDataStructure implements IConstraintList {
+
+		List<Constraint> constraints;
+		Constraint[] reuseConstraints;
+
+		public ConstraintsDataStructure() {
+			super();
+			constraints = new LinkedList<Constraint>();
+		}
+
+		@Override
+		public void _addConstraint(Constraint c) {
+			reuseConstraints=null;
+			constraints.add(c);
+
+		}
+
+		@Override
+		public void _removeConstraint(Constraint c) {
+			if(constraints.remove(c)) reuseConstraints=null;			
+		}
+
+		@Override
+		public void removeConstraints() {
+			constraints.clear();
+			reuseConstraints=null;
+
+		}
+
+		@Override
+		public Constraint getConstraint(int i) {
+			return constraints.get(i);
+
+		}
+
+		@Override
+		public Iterator<Constraint> getConstraintIterator(final Model m) {
+			  return new Iterator<Constraint>(){
+		            Constraint c;
+		            Iterator<Constraint> it = constraints.iterator();
+
+		            public boolean hasNext() {
+		                while(true){
+		                    if(it == null){
+		                        return false;
+		                    }else
+		                    if(it.hasNext()){
+		                        c = it.next();
+		                        if(Boolean.TRUE.equals(m.contains(c))){
+		                            return true;
+		                        }
+		                    }else{
+		                        return false;
+		                    }
+		                }
+		            }
+
+		            @Override
+		            public Constraint next() {
+		                return c;
+		            }
+
+		            @Override
+		            public void remove() {
+		                it.remove();
+		            }
+		    };
+		    
+		}
+
+		@Override
+		public Constraint[] getConstraints() {
+			if(reuseConstraints == null) {
+				reuseConstraints = constraints.toArray(new Constraint[constraints.size()]);
+			}
+			return reuseConstraints;
+		}
+
+		@Override
+		public int getNbConstraint(Model m) {
+			int sum = 0;
+			for(Constraint c: constraints){
+				if(Boolean.TRUE.equals(m.contains(c))){
+					sum++;
+				}
+			}
+			return sum;
+		}
+	}
+
+	private final static class NoConstraintDataStructure implements IConstraintList {
+
+		@Override
+		public void _addConstraint(Constraint c) {}
+
+		@Override
+		public void _removeConstraint(Constraint c) {}
+
+		@Override
+		public void removeConstraints() {}
+
+		@Override
+		public Constraint getConstraint(int i) {
+			return null;
+		}
+
+		@Override
+		public Iterator<Constraint> getConstraintIterator(Model m) {
+			return Collections.<Constraint>emptyList().iterator();
+		}
+
+		@Override
+		public Constraint[] getConstraints() {
+			return NO_CONSTRAINTS;
+		}
+
+		@Override
+		public int getNbConstraint(Model m) {
+			return 0;
+		}
 
 
-    /**
-     * pretty printing of the object. This String is not constant and may depend on the context.
-     *
-     * @return a readable string representation of the object
-     */
-    public String pretty() {
-        if (variables.length == 0) {
-            return name;
-        } else {
-            StringBuffer st = new StringBuffer();
-            for(Variable v : variables){
-                st.append(v.pretty());
-            }
-            return st.toString();
-        }
-    }
+	}
 
 }

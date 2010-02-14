@@ -180,10 +180,33 @@ public class VariablesTest {
 	}
 	
 	@Test
+	public void testOptions0() {
+		Iterator<String> iter = StringUtils.getOptionIterator("foo");
+		assertTrue(iter.hasNext());
+		assertEquals("foo", iter.next());
+		assertFalse(iter.hasNext());
+		
+		iter = StringUtils.getOptionIterator(" foo ");
+		assertTrue(iter.hasNext());
+		assertEquals("foo", iter.next());
+		assertFalse(iter.hasNext());
+		
+		iter = StringUtils.getOptionIterator(" foo  bar  foo   ");
+		assertTrue(iter.hasNext());
+		assertEquals("foo", iter.next());
+		assertTrue(iter.hasNext());
+		assertEquals("bar", iter.next());
+		assertTrue(iter.hasNext());
+		assertEquals("foo", iter.next());
+		assertFalse(iter.hasNext());
+	}
+	@Test
 	public void testOptions1() {
-		final IntegerVariable v = Choco.makeBooleanVar("b", "   foo","   bar","foo   ","fou");
+		final IntegerVariable v = Choco.makeBooleanVar("b");
+		v.addOptions("   foo   bar foo   fou");
 		checkOptions(v.getOptions(), 3, 3);
-		final SetVariable s = Choco.makeSetVar("s", 0, 18, "foo","    bar","   bar","    foo    ");
+		final SetVariable s = Choco.makeSetVar("s", 0, 18, "foo");
+		s.addOptions("    bar   bar    foo    ");
 		checkOptions(s.getOptions(), 2, 3);
 	}
 	
