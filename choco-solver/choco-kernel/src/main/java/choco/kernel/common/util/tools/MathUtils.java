@@ -152,7 +152,7 @@ public final class MathUtils {
 		else if( b > 0) { 
 			if (a >= 0) return (a / b);
 			else return (a - b + 1) / b;
-		} else assert(a==0); return Integer.MAX_VALUE;
+		} else assert(b==0); return Integer.MAX_VALUE;
 	}
 
 	public static int divCeil(int a, int b) {
@@ -160,6 +160,6 @@ public final class MathUtils {
 		else if( b > 0) {
 			if (a >= 0) return ((a + b - 1) / b);
 			else return a / b;
-		}else assert(a == 0); return Integer.MIN_VALUE;
+		}else assert(b == 0); return Integer.MIN_VALUE;
 	}
 }

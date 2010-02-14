@@ -41,7 +41,6 @@ public final class PermutationUtils {
 	
 	private PermutationUtils() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public static IPermutation getIdentity() {

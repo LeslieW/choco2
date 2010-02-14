@@ -49,7 +49,7 @@ public class AbsManager implements ExpressionManager {
             if(vars.length==1){
                 INode[] nodes = new INode[vars.length];
                 for(int i = 0; i < vars.length; i++){
-                    nodes[i] = vars[i].getExpressionManager().makeNode(s, vars[i].getConstraints(), vars[i].getVariables());
+                    nodes[i] = vars[i].getExpressionManager().makeNode(s, vars[i].getConstraints(), vars[i].getExpVariables());
                 }
                 return new AbsNode(nodes);
             }

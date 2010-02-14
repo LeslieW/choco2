@@ -36,13 +36,17 @@ import java.util.Set;
 public interface IOptions {
 
     /**
-     * Add a single option to the pool of options
-     * of the object.
+     * Add a single option to the pool of option.
      *
-     * @param option an option
+     *@param the option.
      */
     void addOption(String option);
-
+    
+    /**
+     * Add several options to the pool of option.
+     * @param options
+     */
+    void addOptions(String options);
     /**
      * Add an array of options to the pool of options
      * of the object

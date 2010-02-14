@@ -137,7 +137,7 @@ public class Choco{
 	 */
 	public static IntegerVariable makeIntVar(String name, int lowB, int uppB, String... options) {
 		checkIntVarBounds(lowB, uppB);
-		IntegerVariable v = new IntegerVariable(name, VariableType.INTEGER, lowB, uppB);
+		IntegerVariable v = new IntegerVariable(name, lowB, uppB);
 		for (String option : options) {
 			v.addOption(option);
 		}
@@ -202,7 +202,7 @@ public class Choco{
 	public static IntegerVariable makeIntVar(String name, TIntArrayList valuesList, String... options) {
 		int[] values = ArrayUtils.getNonRedundantSortedValues(valuesList);
 		checkIntVarBounds(values[0], values[values.length-1]);
-		IntegerVariable v = new IntegerVariable(name, VariableType.INTEGER, values);
+		IntegerVariable v = new IntegerVariable(name, values);
 		for (String option : options) {
 			v.addOption(option);
 		}
@@ -241,7 +241,7 @@ public class Choco{
 	public static IntegerVariable makeIntVar(String name, int[] valuesArray, String... options) {
 		int[] values = ArrayUtils.getNonRedundantSortedValues(valuesArray);
 		checkIntVarBounds(values[0], values[values.length-1]);
-		IntegerVariable v = new IntegerVariable(name, VariableType.INTEGER, values);
+		IntegerVariable v = new IntegerVariable(name, values);
 		for (String option : options) {
 			v.addOption(option);
 		}
@@ -270,7 +270,7 @@ public class Choco{
 	 *                </ul>
 	 */
 	public static IntegerVariable makeBooleanVar(String name, String... options) {
-		IntegerVariable v = new IntegerVariable(name, VariableType.INTEGER, 0,1);
+		IntegerVariable v = new IntegerVariable(name, 0,1);
 		for (String option : options) {
 			v.addOption(option);
 		}
@@ -548,7 +548,7 @@ public class Choco{
 	public static SetVariable makeSetVar(String name, int lowB, int uppB, String... options) {
 		int c = uppB - lowB + 1;
 		IntegerVariable card = makeIntVar(name, 0, c, options);
-		SetVariable var = new SetVariable(name, VariableType.SET, lowB, uppB, card);
+		SetVariable var = new SetVariable(name, lowB, uppB, card);
 		for (String option : options) {
 			var.addOption(option);
 		}
@@ -587,7 +587,7 @@ public class Choco{
 		Arrays.sort(values2);
 		int c = values2.length;
 		IntegerVariable card = makeIntVar("|"+name+"|", 0, c, options);
-		SetVariable var = new SetVariable(name, VariableType.SET, values2, card);
+		SetVariable var = new SetVariable(name, values2, card);
 		for (String option : options) {
 			var.addOption(option);
 		}
@@ -657,7 +657,7 @@ public class Choco{
 		if (lowB > uppB) {
 			throw new ModelException("makeRealVar : lowB > uppB");
 		}
-		RealVariable v = new RealVariable(name, VariableType.REAL, lowB, uppB);
+		RealVariable v = new RealVariable(name, lowB, uppB);
 		for (String option : options) {
 			v.addOption(option);
 		}

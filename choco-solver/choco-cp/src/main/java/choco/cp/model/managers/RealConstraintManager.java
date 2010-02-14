@@ -67,7 +67,7 @@ public abstract class RealConstraintManager extends ConstraintManager<RealVariab
         }else if(rev.getVariableType() == VariableType.REAL){
             return (RealVar)s.getVar(rev);
         }else if(rev.getVariableType() == VariableType.REAL_EXPRESSION){
-            return ((RealConstraintManager)rev.getRcm()).makeRealExpression(s, rev.getVariables());
+            return ((RealConstraintManager)rev.getRealConstraintManager()).makeRealExpression(s, rev.getExpVariables());
         }
         return null;
     }

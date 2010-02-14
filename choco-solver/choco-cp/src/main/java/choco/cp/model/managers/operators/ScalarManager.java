@@ -50,7 +50,7 @@ public class ScalarManager implements ExpressionManager {
             INode[] scalarNodes = new INode[vars.length / 2];
             int[] coeffs = new int[vars.length / 2];
             for (int i = 0; i < scalarNodes.length; i++) {
-                scalarNodes[i] = vars[i].getExpressionManager().makeNode(s, vars[i].getConstraints(), vars[i+scalarNodes.length].getVariables());
+                scalarNodes[i] = vars[i].getExpressionManager().makeNode(s, vars[i].getConstraints(), vars[i+scalarNodes.length].getExpVariables());
                 coeffs[i] = ((IntegerConstantVariable) vars[i]).getValue();
             }
             return new ScalarNode(scalarNodes, coeffs);

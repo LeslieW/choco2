@@ -108,7 +108,7 @@ public class Regular extends AbstractLargeIntSConstraint {
             if (i > 0) start[i] = start[i - 1] + sizes[i - 1];
         }
         Qij = new StoredIndexedBipartiteSet[start[nbVars - 1] + sizes[nbVars - 1]];
-        ArrayList<IndexedObject>[] qijvalues = new <IndexedObject>ArrayList[Qij.length];
+        ArrayList[] qijvalues = new ArrayList[Qij.length];
         for (int i = 0; i < qijvalues.length; i++) {
             qijvalues[i] = new ArrayList<IndexedObject>();
         }

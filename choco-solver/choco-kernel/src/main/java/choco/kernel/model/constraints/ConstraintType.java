@@ -124,4 +124,10 @@ public enum ConstraintType {
     ConstraintType(String name) {
         this(name, "", false);
     }
+
+	public final String getName() {
+		return name;
+	}
+    
+    
 }

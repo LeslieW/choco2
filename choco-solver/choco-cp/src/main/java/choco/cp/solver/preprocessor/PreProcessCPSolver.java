@@ -480,9 +480,9 @@ public class PreProcessCPSolver extends CPSolver {
                     if(var[col] == null){
                         dtmp = domainByColor.get(col);
                         if(dtmp.values != null){
-                            vtmp = new IntegerVariable(v.getName(), VariableType.INTEGER, dtmp.values);
+                            vtmp = new IntegerVariable(v.getName(), dtmp.values);
                         }else{
-                            vtmp = new IntegerVariable(v.getName(), VariableType.INTEGER, dtmp.low, dtmp.upp);
+                            vtmp = new IntegerVariable(v.getName(), dtmp.low, dtmp.upp);
                         }
                         vtmp.addOptions(dtmp.options);
                         vtmp.findManager(model.properties);

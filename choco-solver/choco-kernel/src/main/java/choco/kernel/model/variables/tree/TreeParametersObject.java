@@ -22,11 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.variables.tree;
 
-import choco.kernel.model.variables.MultipleVariables;
-import choco.kernel.model.variables.integer.IntegerVariable;
-
 import java.util.BitSet;
 import java.util.List;
+
+import choco.kernel.model.variables.MultipleVariables;
+import choco.kernel.model.variables.Variable;
+import choco.kernel.model.variables.integer.IntegerVariable;
 
 /*
  * User:    charles
@@ -46,31 +47,26 @@ public class TreeParametersObject extends MultipleVariables {
 
     public TreeParametersObject(int nbNodes, IntegerVariable nTree, IntegerVariable nproper,
                                 IntegerVariable objective, List<BitSet[]> graphs, List<int[][]> matrix, int[][] travel) {
-        this.nTree = nTree;
-        this.addVariable(nTree);
-        this.nbNodes = nbNodes;
+        super();
+    	this.nTree = nTree;
+    	this.nbNodes = nbNodes;
         this.nproper = nproper;
-        this.addVariable(nproper);
         this.objective = objective;
-        this.addVariable(objective);
         this.graphs = graphs;
         this.matrix = matrix;
         this.travel = travel;
         this.nodes = new TreeNodeObject[this.nbNodes];
+        final Variable[] vars = new Variable[this.nbNodes+3];
+        vars[0]=nTree;
+        vars[1]=nproper;
+        vars[2]=objective;
         for (int i = 0; i < this.nbNodes; i++){
             this.nodes[i] = new TreeNodeObject(i, nbNodes, graphs, matrix);
-            this.addVariable(this.nodes[i]);
+            vars[3+i] = this.nodes[i];
         }
+        setVariables(vars);
     }
 
-    /**
-     * pretty printing of the object. This String is not constant and may depend on the context.
-     *
-     * @return a readable string representation of the object
-     */
-    public String pretty() {
-        return null;
-    }
 
     public IntegerVariable[] getSuccVars(){
         IntegerVariable[] succVars = new IntegerVariable[nbNodes];

@@ -39,20 +39,22 @@ import java.util.Properties;
  */
 public class MetaConstraint<E extends Constraint> extends AbstractConstraint {
 
+	private final static Variable[] EMPTY_ARRAY = {};
+	
     protected E[] constraints;
 
     public MetaConstraint(final ConstraintType type, final E... constraints) {
-        super(type);
+        super(type, EMPTY_ARRAY);
         this.constraints = constraints;
     }
 
     public MetaConstraint(final Class metaManager, final E... constraints) {
-        super(metaManager.getName());
+        super(metaManager.getName(),EMPTY_ARRAY);
         this.constraints = constraints;
     }
 
     public MetaConstraint(final String metaManager, final E... constraints) {
-        super(metaManager);
+        super(metaManager,EMPTY_ARRAY);
         this.constraints = constraints;
     }
 
@@ -73,21 +75,13 @@ public class MetaConstraint<E extends Constraint> extends AbstractConstraint {
         return constraints[idx];
     }
 
-    public Iterator<Variable> getVariableIterator() {
-        return IteratorUtils.iterator(extractVariables());
-    }
-
-
-    public int getNbVars() {
-        return 0;
-    }
-
     /**
      * Extract variables of a constraint
      * and return an array of variables.
      * @return an array of every variables contained in the Constraint.
      */
-    public Variable[] extractVariables() {
+    @Override
+	public Variable[] doExtractVariables() {
         Variable[] listVars = new Variable[0];
         for (Constraint c : constraints) {
             listVars = ArrayUtils.append(listVars, c.extractVariables());

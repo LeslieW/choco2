@@ -91,9 +91,7 @@ public class SearchTest {
 		}
 
 		s.solveAll();
-		LOGGER.warning("Nb solutions = " + s.getNbSolutions());
-
-		s.printRuntimeStatistics();
+		LOGGER.info("Nb solutions = " + s.getNbSolutions());
 		return s.getNodeCount();
 	}
 

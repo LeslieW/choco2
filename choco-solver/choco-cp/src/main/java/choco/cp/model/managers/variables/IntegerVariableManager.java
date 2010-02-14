@@ -22,12 +22,16 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.variables;
 
+import java.util.BitSet;
+import java.util.Iterator;
+
 import choco.Choco;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.leaves.ConstantLeaf;
 import choco.cp.solver.constraints.reified.leaves.VariableLeaf;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
+import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.VariableManager;
@@ -38,9 +42,6 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.BitSet;
-import java.util.Iterator;
 
 /**
  * Created by IntelliJ IDEA.
@@ -97,7 +98,7 @@ public class IntegerVariableManager implements VariableManager<IntegerVariable> 
                     } else if (var.getOptions().contains("cp:blist")) {
                         type = IntDomainVar.BIPARTITELIST;
                     } else{
-                        type = getIntelligentDomain(var);
+                        type = getIntelligentDomain(solver.getModel(),var);
                     }
                     v =  new IntDomainVarImpl(solver, var.getName(), type, var.getLowB(), var.getUppB());
                 }
@@ -146,7 +147,7 @@ public class IntegerVariableManager implements VariableManager<IntegerVariable> 
      * @param v unknown domain type variable
      * @return a domain type
      */
-    public int getIntelligentDomain(IntegerVariable v) {
+    public int getIntelligentDomain(Model model,IntegerVariable v) {
         // specific case, deal with unbounded domain
         if(v.getLowB()<= Choco.MIN_LOWER_BOUND && v.getUppB() >= Choco.MAX_UPPER_BOUND){
             return IntDomainVar.BOUNDS;
@@ -169,7 +170,7 @@ public class IntegerVariableManager implements VariableManager<IntegerVariable> 
         }
 
         //take preferences and possibilities of constraints
-        Iterator<Constraint> it = v.getConstraintIterator();
+        Iterator<Constraint> it = v.getConstraintIterator(model);
         while (it.hasNext()) {
             Constraint cc = it.next();
             int[] prefereddoms = cc.getFavoriteDomains();

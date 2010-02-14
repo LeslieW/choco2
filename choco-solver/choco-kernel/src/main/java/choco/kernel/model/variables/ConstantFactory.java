@@ -39,30 +39,36 @@ import java.util.logging.Logger;
 * Since : Choco 2.0.1
 * Update : Choco 2.0.1
 */
-public class ConstantFactory {
+public final class ConstantFactory {
 
     protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
-    static TIntObjectHashMap<IntegerConstantVariable> integerMap = new TIntObjectHashMap<IntegerConstantVariable>();
-    static HashMap<int[], SetConstantVariable> setMap = new HashMap<int[], SetConstantVariable>();
-    static TDoubleObjectHashMap<RealConstantVariable> realMap = new TDoubleObjectHashMap<RealConstantVariable>();
+    private final static TIntObjectHashMap<IntegerConstantVariable> INTEGER_MAP = new TIntObjectHashMap<IntegerConstantVariable>();
+    private final static HashMap<int[], SetConstantVariable> SET_MAP = new HashMap<int[], SetConstantVariable>();
+    private final static TDoubleObjectHashMap<RealConstantVariable> REAL_MAP = new TDoubleObjectHashMap<RealConstantVariable>();
 
-    /**
+    
+    
+    protected ConstantFactory() {
+		super();
+    }
+
+	/**
      * Create if necessary and return the IntegerConstantVariable that
      * corresponds to the value
      * @param value int constant value
      * @return IntegerConstantVariable
      */
     public static IntegerConstantVariable getConstant(int value){
-        if(integerMap.get(0)!=null
-                &&integerMap.get(0).getValue() !=0){
+        if(INTEGER_MAP.get(0)!=null
+                &&INTEGER_MAP.get(0).getValue() !=0){
             LOGGER.severe("$$$$$$$$$$$$$ ALARM $$$$$$$$$$$$$$$$$$$$$$$$$$");
             System.exit(-1589);
         }
-        if(!integerMap.containsKey(value)){
-            integerMap.put(value, new IntegerConstantVariable(value));
+        if(!INTEGER_MAP.containsKey(value)){
+            INTEGER_MAP.put(value, new IntegerConstantVariable(value));
         }
-        return integerMap.get(value);
+        return INTEGER_MAP.get(value);
     }
 
     /**
@@ -72,10 +78,10 @@ public class ConstantFactory {
      * @return SetConstantVariable
      */
     public static SetConstantVariable getConstant(int[] values){
-        if(!setMap.containsKey(values)){
-            setMap.put(values, new SetConstantVariable(getConstant(values.length), values));
+        if(!SET_MAP.containsKey(values)){
+            SET_MAP.put(values, new SetConstantVariable(getConstant(values.length), values));
         }
-        return setMap.get(values);
+        return SET_MAP.get(values);
     }
 
     /**
@@ -85,10 +91,10 @@ public class ConstantFactory {
      * @return RealConstantVariable
      */
     public static RealConstantVariable getConstant(double value){
-        if(!realMap.containsKey(value)){
-            realMap.put(value, new RealConstantVariable(value));
+        if(!REAL_MAP.containsKey(value)){
+            REAL_MAP.put(value, new RealConstantVariable(value));
         }
-        return realMap.get(value);
+        return REAL_MAP.get(value);
     }
 
 }

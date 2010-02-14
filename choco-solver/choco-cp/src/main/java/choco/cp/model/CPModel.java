@@ -491,11 +491,10 @@ public class CPModel implements Model {
 	private Set<String> reuseOptions = new HashSet<String>(3);
 
 	public void addOptions(String options, IOptions... element) {
-		reuseOptions.clear();
-		StringUtils.fastOptionReader(options, reuseOptions);
-		if( ! reuseOptions.isEmpty()) {
+		Iterator<String> iter = StringUtils.getOptionIterator(options);
+		while(iter.hasNext()) {
 			for (IOptions anElement : element) {
-				anElement.addOptions(reuseOptions);
+				anElement.addOption(iter.next());
 			}
 		}
 	}
@@ -599,10 +598,8 @@ public class CPModel implements Model {
 	 *                </ul>
 	 */
 	public void addVariables(String options, Variable... tabv) {
-		reuseOptions.clear();
-		StringUtils.fastOptionReader(options, reuseOptions);
+		addOptions(options, tabv);
 		for (Variable v : tabv) {
-			v.addOptions(reuseOptions);
 			v.findManager(properties);
 			switch (v.getVariableType()) {
 			case INTEGER:
@@ -955,8 +952,7 @@ public class CPModel implements Model {
 	 *                </ul>
 	 */
 	public void addConstraints(String options, Constraint... tabc) {
-		reuseOptions.clear();
-		StringUtils.fastOptionReader(options, reuseOptions);
+		addOptions(options, tabc);
 		for (Constraint c: tabc) {
 			c.addOptions(reuseOptions);
 			c.findManager(properties);
@@ -998,7 +994,7 @@ public class CPModel implements Model {
 			constraints.add(clausesStore);
 
 		}else{
-			clausesStore.addElements(clause.getVariables(), new Constraint[]{clause});
+			clausesStore.addElements(clause.getVariables(), clause);
 		}
 	}
 

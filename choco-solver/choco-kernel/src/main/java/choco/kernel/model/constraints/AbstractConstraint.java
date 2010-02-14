@@ -22,124 +22,60 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.constraints;
 
-import choco.kernel.common.HashCoding;
-import choco.kernel.common.IndexFactory;
-import choco.kernel.common.util.tools.ArrayUtils;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Properties;
+
 import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.ModelException;
+import choco.kernel.model.ModelObject;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.Set;
-
-import javax.net.ssl.ManagerFactoryParameters;
-
 
 /**
  * @author Arnaud Malapert
  */
-public abstract class AbstractConstraint implements Constraint, Comparable {
+public abstract class AbstractConstraint extends ModelObject implements Constraint, Comparable {
 
 	protected ConstraintType type;
-	protected HashSet<String> options = new HashSet<String>();
-	long indice;
-
+	
 	//null by default until it has been loaded
 	protected String manager;
 
-	public AbstractConstraint(final ConstraintType type) {
-		super();
+	public AbstractConstraint(final ConstraintType type, Variable[] variables) {
+		super(variables, true);
 		this.type = type;
-		indice = IndexFactory.getId();
 	}
 
-	public AbstractConstraint(final String consMan) {
-		super();
-		this.type = ConstraintType.NONE;
+	public AbstractConstraint(final String consMan, Variable[] variables) {
+		this(ConstraintType.NONE, variables);
 		this.manager = consMan;
-		indice = IndexFactory.getId();
 	}
 
-	@Override
-	public int hashCode() {
-		return HashCoding.hashCodeMe(new Object[]{this});
-	}
-
-	/**
-	 * Add a single option to the pool of options
-	 * of the object.
-	 *
-	 * @param option an option
-	 */
-	@Override
-	public void addOption(String option) {
-		this.options.add(option.trim());
-	}
-
-	/**
-	 * Add an array of options to the pool of options
-	 * of the object
-	 *
-	 * @param options array of options
-	 */
-	@Override
-	public void addOptions(String[] options) {
-		this.options.addAll(Arrays.asList(options));
-	}
-
-	/**
-	 * Add a set of options to the pool of options
-	 * of the object
-	 *
-	 * @param options set of options
-	 */
-	@Override
-	public void addOptions(Set<String> options) {
-		this.options.addAll(options);
-	}
-
-	/**
-	 * Get the pool of unique options
-	 *
-	 * @return set of options
-	 */
-	@Override
-	public Set<String> getOptions() {
-		return options;
-	}
-
-	/**
-	 * Unique index
-	 * (Different from hashCode, can change from one execution to another one)
-	 *
-	 * @return the indice of the objet
-	 */
-	@Override
-	public long getIndex() {
-		return indice;
-	}
-
-	public Variable[] getVariables() {
-		return null;
-	}
 
 	protected void variablesPrettyPrint(final StringBuilder buffer) {
 		buffer.append(StringUtils.pretty(this.getVariableIterator()));
 	}
 
 
+	
+	@Override
+	public String getName() {
+		return type == null || type.equals(ConstraintType.NONE) ? manager : type.getName();
+	}
+
+	@Override
+	public void freeMemory() {}
+
 	@Override
 	public String pretty() {
-		final StringBuilder st = new StringBuilder("Constraint ");
-		st.append(type.name).append(" ( ");
+		final StringBuilder st = new StringBuilder(getName());
+		st.append(" ( ");
 		variablesPrettyPrint(st);
 		st.append(" )");
 		return st.toString();
@@ -221,18 +157,6 @@ public abstract class AbstractConstraint implements Constraint, Comparable {
 		};
 	}
 
-	/**
-	 * Extract variables of a constraint
-	 * and return an array of variables.
-	 * @return an array of every variables contained in the Constraint.
-	 */
-	public Variable[] extractVariables() {
-		Variable[] listVars = null;
-		if (getVariables() != null) {
-			listVars = ArrayUtils.getNonRedundantObjects(Variable.class, getVariables());
-		}
-		return listVars;
-	}
 
 	public ConstraintManager getConstraintManager() {
 		return  ManagerFactory.loadConstraintManager(getManager());
@@ -242,7 +166,7 @@ public abstract class AbstractConstraint implements Constraint, Comparable {
 		return ManagerFactory.loadExpressionManager(getManager());
 	}
 
-	public String getManager() {
+	public final String getManager() {
 		return manager;
 	}
 

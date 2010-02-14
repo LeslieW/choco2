@@ -202,7 +202,7 @@ public class EqManager extends MixedConstraintManager {
             INode[] nt = new INode[cc.getVariables().length];
             for (int i = 0; i < cc.getVariables().length; i++) {
                 IntegerExpressionVariable v = (IntegerExpressionVariable) cc.getVariable(i);
-                nt[i] = v.getExpressionManager().makeNode(solver, v.getConstraints(), v.getVariables());
+                nt[i] = v.getExpressionManager().makeNode(solver, v.getConstraints(), v.getExpVariables());
             }
             if (EQ == type) {
                 return new EqNode(nt);
@@ -273,7 +273,7 @@ public class EqManager extends MixedConstraintManager {
                         t2 = (RealVar)s.getVar(v2);
                         return s.makeEquation(t2, (RealIntervalConstant)t1);
                     case REAL_EXPRESSION:
-                        t2 = ((RealConstraintManager)v2.getRcm()).makeRealExpression(s, v2.getVariables());
+                        t2 = ((RealConstraintManager)v2.getRealConstraintManager()).makeRealExpression(s, v2.getExpVariables());
                         return s.makeEquation(t2, (RealIntervalConstant)t1);
                 }
             case REAL:
@@ -286,11 +286,11 @@ public class EqManager extends MixedConstraintManager {
                         t2 = (RealVar)s.getVar(v2);
                         return s.makeEquation(new RealMinus(s, t1, t2), zero);
                     case REAL_EXPRESSION:
-                        t2 = ((RealConstraintManager)v2.getRcm()).makeRealExpression(s, v2.getVariables());
+                        t2 = ((RealConstraintManager)v2.getRealConstraintManager()).makeRealExpression(s, v2.getExpVariables());
                         return s.makeEquation(new RealMinus(s, t1, t2), zero);
                 }
             case REAL_EXPRESSION:
-                t1 = ((RealConstraintManager)v1.getRcm()).makeRealExpression(s, v1.getVariables());
+                t1 = ((RealConstraintManager)v1.getRealConstraintManager()).makeRealExpression(s, v1.getExpVariables());
                 switch (tv2) {
                     case CONSTANT_DOUBLE:
                         t2 = ((RealIntervalConstant) s.getVar(v2));
@@ -299,7 +299,7 @@ public class EqManager extends MixedConstraintManager {
                         t2 = (RealExp)s.getVar(v2);
                         return s.makeEquation(new RealMinus(s, t1, t2), zero);
                     case REAL_EXPRESSION:
-                        t2 = ((RealConstraintManager)v2.getRcm()).makeRealExpression(s, v2.getVariables());
+                        t2 = ((RealConstraintManager)v2.getRealConstraintManager()).makeRealExpression(s, v2.getExpVariables());
                         return s.makeEquation(new RealMinus(s, t1, t2), zero);
                 }
 
@@ -447,7 +447,7 @@ public class EqManager extends MixedConstraintManager {
                         t2 = (RealVar)s.getVar(v2);
                         return s.makeEquation(t2, cst);
                     case REAL_EXPRESSION:
-                        t2 = ((RealConstraintManager)v2.getRcm()).makeRealExpression(s, v2.getVariables());
+                        t2 = ((RealConstraintManager)v2.getRealConstraintManager()).makeRealExpression(s, v2.getExpVariables());
                         return s.makeEquation(t2, cst);
                 }
             case REAL:
@@ -460,11 +460,11 @@ public class EqManager extends MixedConstraintManager {
                         t2 = (RealVar)s.getVar(v2);
                         return s.makeEquation(new RealMinus(s, t1, t2), INF);
                     case REAL_EXPRESSION:
-                        t2 = ((RealConstraintManager)v2.getRcm()).makeRealExpression(s, v2.getVariables());
+                        t2 = ((RealConstraintManager)v2.getRealConstraintManager()).makeRealExpression(s, v2.getExpVariables());
                         return s.makeEquation(new RealMinus(s, t1, t2), INF);
                 }
             case REAL_EXPRESSION:
-                t1 = ((RealConstraintManager)v1.getRcm()).makeRealExpression(s, v1.getVariables());
+                t1 = ((RealConstraintManager)v1.getRealConstraintManager()).makeRealExpression(s, v1.getExpVariables());
                 switch (tv2) {
                     case CONSTANT_DOUBLE:
                         cst = new RealIntervalConstant(NEG, v2.getLowB());
@@ -473,7 +473,7 @@ public class EqManager extends MixedConstraintManager {
                         t2 = (RealExp)s.getVar(v2);
                         return s.makeEquation(new RealMinus(s, t1, t2), INF);
                     case REAL_EXPRESSION:
-                        t2 = ((RealConstraintManager)v2.getRcm()).makeRealExpression(s, v2.getVariables());
+                        t2 = ((RealConstraintManager)v2.getRealConstraintManager()).makeRealExpression(s, v2.getExpVariables());
                         return s.makeEquation(new RealMinus(s, t1, t2), INF);
                 }
 

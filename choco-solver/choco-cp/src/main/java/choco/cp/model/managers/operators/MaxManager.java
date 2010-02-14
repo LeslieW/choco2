@@ -49,7 +49,7 @@ public class MaxManager implements ExpressionManager {
             CPSolver s = (CPSolver)solver;
             INode[] nodes = new INode[vars.length];
             for(int i = 0; i < vars.length; i++){
-                nodes[i] = vars[i].getExpressionManager().makeNode(s, vars[i].getConstraints(), vars[i].getVariables());
+                nodes[i] = vars[i].getExpressionManager().makeNode(s, vars[i].getConstraints(), vars[i].getExpVariables());
             }
             return new MaxNode(nodes);
         }

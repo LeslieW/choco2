@@ -23,7 +23,9 @@
 package choco.kernel.model.variables.set;
 
 import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.model.IConstraintList;
 import choco.kernel.model.variables.*;
+import choco.kernel.model.variables.real.RealExpressionVariable;
 
 /*
  * Created by IntelliJ IDEA.
@@ -35,20 +37,22 @@ import choco.kernel.model.variables.*;
 public class SetExpressionVariable extends ComponentVariable implements IntBoundedVariable {
 
 
-    private int lowB;
-    private int uppB;
+    protected int lowB;
+    protected int uppB;
 
-    public SetExpressionVariable(Object parameters, Operator operator, VariableType type, SetExpressionVariable... variables) {
-        super(type, operator,parameters, "", variables);
+    protected SetExpressionVariable(VariableType variableType,
+			boolean enableOption, Object parameters, IConstraintList constraints) {
+		super(variableType, enableOption, parameters, constraints);
     }
 
-    public SetExpressionVariable(Object parameters, Operator operator, SetExpressionVariable... variables) {
-        this(parameters, operator, VariableType.SET_EXPRESSION, variables);
+	public SetExpressionVariable(Object parameters, Operator operator, SetExpressionVariable... variables) {
+        super(VariableType.SET_EXPRESSION, operator, parameters, variables);
     }
+   
 
-    public SetExpressionVariable[] getVariables() {
-        return (SetExpressionVariable[]) variables;
-    }
+    public final SetExpressionVariable getSetExpressionVariable(int i) {
+    	return (SetExpressionVariable) getVariable(i);
+	}
 
     public int getLowB() {
         return lowB;
@@ -82,11 +86,13 @@ public class SetExpressionVariable extends ComponentVariable implements IntBound
 
 
     private int[] computeByOperator(int i, int j){
-        int i1 = ((SetExpressionVariable)variables[i]).getLowB();
-        int i2 = ((SetExpressionVariable)variables[j]).getLowB();
-        int s1 = ((SetExpressionVariable)variables[i]).getUppB();
-        int s2 = ((SetExpressionVariable)variables[i]).getUppB();
-        int[]vals = new int[4];
+    	final SetExpressionVariable v1 =  getSetExpressionVariable(i);
+        final int i1 = v1.getLowB();
+        final int s1 = v1.getUppB();
+        final SetExpressionVariable v2 =  getSetExpressionVariable(i);
+        final int i2 = v2.getLowB();
+        final int s2 = v2.getUppB();
+        final int[]vals = new int[4];
         switch (operator) {
             case MINUS:
                 vals[0] = i1 - i2;
@@ -120,21 +126,6 @@ public class SetExpressionVariable extends ComponentVariable implements IntBound
             bounds[1] = Math.max(bounds[1], val);
         }
         return bounds;
-    }
-
-    /**
-     * Extract first level sub-variables of a variable
-     * and return an array of non redundant sub-variable.
-     * In simple variable case, return a an array
-     * with just one element.
-     * Really usefull when expression variables.
-     * @return a hashset of every sub variables contained in the Variable.
-     */
-    public Variable[] extractVariables() {
-        if(listVars == null){
-            listVars = ArrayUtils.getNonRedundantObjects(Variable.class, variables);
-        }
-        return listVars;
     }
 
 }

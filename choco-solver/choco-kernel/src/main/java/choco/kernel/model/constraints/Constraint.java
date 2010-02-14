@@ -26,7 +26,9 @@ import choco.IGarbageCollectorAssistant;
 import choco.IPretty;
 import choco.kernel.common.IIndex;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.model.IFindManager;
 import choco.kernel.model.IOptions;
+import choco.kernel.model.IVariableArray;
 import choco.kernel.model.variables.Variable;
 
 import java.util.Iterator;
@@ -40,20 +42,16 @@ import java.util.logging.Logger;
  * Since : Choco 2.0.0
  *
  */
-public interface Constraint extends IPretty, IIndex, IOptions, IGarbageCollectorAssistant {
+public interface Constraint extends IPretty, IIndex,IVariableArray, IFindManager, IOptions, IGarbageCollectorAssistant {
 
     final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     public ConstraintType getConstraintType();
-
+    
     public void setType(ConstraintType type);
 
-    public Iterator<Variable> getVariableIterator();
-
-    public Variable[] getVariables();
-
-    public int getNbVars();
-
+    String getName();
+    
     /**
      * @return a list of domains accepted by the constraint and sorted
      *         by order of preference
@@ -61,21 +59,10 @@ public interface Constraint extends IPretty, IIndex, IOptions, IGarbageCollector
     public int[] getFavoriteDomains();
 
     /**
-     * Extract variables of a constraint
-     * and return an array of variables.
-     * @return an array of every variables contained in the Constraint.
-     */
-    public Variable[] extractVariables();
-
-    /**
      * Return the constraint manager
      * @return constraint manager
      */
     public ExpressionManager getExpressionManager();
 
-    /**
-     * Set the class manager
-     * @param properties
-     */
-    public void findManager(Properties properties);
+   
 }

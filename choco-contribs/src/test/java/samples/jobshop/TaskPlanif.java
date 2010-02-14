@@ -63,8 +63,8 @@ public class TaskPlanif {
          * @param binf
          * @param bsup
          */
-        public myIntegerVariable(String name, VariableType type, int binf, int bsup) {
-            super(name, type, binf, bsup);
+        public myIntegerVariable(String name, int binf, int bsup) {
+            super(name, binf, bsup);
             // TODO Auto-generated constructor stub
         }
 
