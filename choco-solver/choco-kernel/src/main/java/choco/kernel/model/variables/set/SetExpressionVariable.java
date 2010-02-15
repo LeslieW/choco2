@@ -22,10 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.variables.set;
 
-import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.IConstraintList;
-import choco.kernel.model.variables.*;
-import choco.kernel.model.variables.real.RealExpressionVariable;
+import choco.kernel.model.variables.ComponentVariable;
+import choco.kernel.model.variables.IntBoundedVariable;
+import choco.kernel.model.variables.Operator;
+import choco.kernel.model.variables.VariableType;
 
 /*
  * Created by IntelliJ IDEA.
@@ -50,7 +51,7 @@ public class SetExpressionVariable extends ComponentVariable implements IntBound
     }
    
 
-    public final SetExpressionVariable getSetExpressionVariable(int i) {
+    public final SetExpressionVariable getExpressionVariable(int i) {
     	return (SetExpressionVariable) getVariable(i);
 	}
 
@@ -86,10 +87,10 @@ public class SetExpressionVariable extends ComponentVariable implements IntBound
 
 
     private int[] computeByOperator(int i, int j){
-    	final SetExpressionVariable v1 =  getSetExpressionVariable(i);
+    	final SetExpressionVariable v1 =  getExpressionVariable(i);
         final int i1 = v1.getLowB();
         final int s1 = v1.getUppB();
-        final SetExpressionVariable v2 =  getSetExpressionVariable(i);
+        final SetExpressionVariable v2 =  getExpressionVariable(i);
         final int i2 = v2.getLowB();
         final int s2 = v2.getUppB();
         final int[]vals = new int[4];

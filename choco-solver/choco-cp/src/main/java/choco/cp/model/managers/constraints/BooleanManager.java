@@ -31,7 +31,6 @@ import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintManager;
 import choco.kernel.model.variables.Variable;
-import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
@@ -106,7 +105,7 @@ public class BooleanManager extends ConstraintManager<Variable> {
      * @param vars   variables
      * @return
      */
-    public INode makeNode(Solver solver, Constraint[] cstrs, IntegerExpressionVariable[] vars) {
+    public INode makeNode(Solver solver, Constraint[] cstrs, Variable[] vars) {
         ComponentConstraint cc = (ComponentConstraint)cstrs[0];
         if(cc.getParameters() instanceof Boolean){
             boolean bool = (Boolean)cc.getParameters();

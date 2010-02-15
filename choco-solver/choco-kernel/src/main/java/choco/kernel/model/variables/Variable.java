@@ -31,7 +31,9 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.IConstraintList;
 import choco.kernel.model.IFindManager;
 import choco.kernel.model.IOptions;
+import choco.kernel.model.IVariableArray;
 import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.ConstraintManager;
 import choco.kernel.model.constraints.ExpressionManager;
 
 /**
@@ -43,7 +45,7 @@ import choco.kernel.model.constraints.ExpressionManager;
  * Define all the methods for a variable to be used
  * on the Model.
  */
-public interface Variable extends IConstraintList, IPretty, IIndex, IFindManager, IOptions, IHook {
+public interface Variable extends IConstraintList,IVariableArray, IPretty, IIndex, IFindManager, IOptions, IHook {
 
 	final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
@@ -65,6 +67,9 @@ public interface Variable extends IConstraintList, IPretty, IIndex, IFindManager
 	VariableManager<?> getVariableManager();
 	
 	ExpressionManager getExpressionManager();
+	
+	ConstraintManager<?> getConstraintManager();
+	
 }
 
 

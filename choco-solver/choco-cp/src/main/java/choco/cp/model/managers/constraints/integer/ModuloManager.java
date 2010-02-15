@@ -28,7 +28,7 @@ import choco.cp.solver.constraints.integer.ModuloXYC2;
 import choco.cp.solver.constraints.reified.leaves.arithm.ModNode;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.integer.IntegerExpressionVariable;
+import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -62,13 +62,13 @@ public class ModuloManager extends IntConstraintManager {
      * @param vars
      * @return
      */
-    public INode makeNode(Solver solver, Constraint[] cstrs, IntegerExpressionVariable[] vars) {
+    public INode makeNode(Solver solver, Constraint[] cstrs, Variable[] vars) {
         if(solver instanceof CPSolver){
             CPSolver s = (CPSolver)solver;
             if(vars.length == 2){
                 INode[] nodes = new INode[vars.length];
                 for(int i = 0; i < vars.length; i++){
-                    nodes[i] = vars[i].getExpressionManager().makeNode(s, vars[i].getConstraints(), vars[i].getExpVariables());
+                    nodes[i] = vars[i].getExpressionManager().makeNode(s, vars[i].getConstraints(), vars[i].getVariables());
                 }
                 return new ModNode(nodes);
             }else{

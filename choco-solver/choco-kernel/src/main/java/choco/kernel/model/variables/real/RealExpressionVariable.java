@@ -22,11 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.variables.real;
 
-import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.IConstraintList;
-import choco.kernel.model.constraints.ConstraintManager;
-import choco.kernel.model.constraints.ManagerFactory;
-import choco.kernel.model.variables.*;
+import choco.kernel.model.variables.ComponentVariable;
+import choco.kernel.model.variables.DoubleBoundedVariable;
+import choco.kernel.model.variables.Operator;
+import choco.kernel.model.variables.VariableType;
 
 /*
  * Created by IntelliJ IDEA.
@@ -49,12 +49,6 @@ public class RealExpressionVariable extends ComponentVariable implements DoubleB
         super( VariableType.REAL_EXPRESSION, operator, parameters, variables);
     }
 
-    public RealExpressionVariable[] getExpVariables() {
-    	//FIXME remove function (deal with only with variable or component-variable ?)
-		RealExpressionVariable[] r = new RealExpressionVariable[getNbVars()];
-		System.arraycopy(getVariables(), 0, r, 0, getNbVars());
-		return r;
-    }
 
     public final double getUppB() {
         return uppB;
@@ -70,10 +64,6 @@ public class RealExpressionVariable extends ComponentVariable implements DoubleB
 
     public void setLowB(double lowB) {
         this.lowB = lowB;
-    }
-
-    public ConstraintManager<?> getRealConstraintManager(){
-    	return ManagerFactory.loadConstraintManager(getOperatorClass());
     }
 
 }

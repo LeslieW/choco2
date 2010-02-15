@@ -26,8 +26,8 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.real.RealVarImpl;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableManager;
-import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.real.RealConstantVariable;
 import choco.kernel.model.variables.real.RealVariable;
 import choco.kernel.solver.Solver;
@@ -77,7 +77,7 @@ public class RealVariableManager implements VariableManager<RealVariable> {
      * @param vars   variables
      * @return
      */
-    public INode makeNode(Solver solver, Constraint[] cstrs, IntegerExpressionVariable[] vars) {
+    public INode makeNode(Solver solver, Constraint[] cstrs, Variable[] vars) {
         return null;
     }
 }

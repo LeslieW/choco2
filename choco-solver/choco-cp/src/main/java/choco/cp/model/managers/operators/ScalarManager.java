@@ -27,8 +27,8 @@ import choco.cp.solver.constraints.reified.leaves.arithm.ScalarNode;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ExpressionManager;
+import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
-import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.INode;
 
@@ -44,13 +44,13 @@ public class ScalarManager implements ExpressionManager {
      * @param vars
      * @return
      */
-    public INode makeNode(Solver solver, Constraint[] cstrs, IntegerExpressionVariable[] vars) {
+    public INode makeNode(Solver solver, Constraint[] cstrs, Variable[] vars) {
         if(solver instanceof CPSolver){
             CPSolver s = (CPSolver)solver;
             INode[] scalarNodes = new INode[vars.length / 2];
             int[] coeffs = new int[vars.length / 2];
             for (int i = 0; i < scalarNodes.length; i++) {
-                scalarNodes[i] = vars[i].getExpressionManager().makeNode(s, vars[i].getConstraints(), vars[i+scalarNodes.length].getExpVariables());
+                scalarNodes[i] = vars[i].getExpressionManager().makeNode(s, vars[i].getConstraints(), vars[i+scalarNodes.length].getVariables());
                 coeffs[i] = ((IntegerConstantVariable) vars[i]).getValue();
             }
             return new ScalarNode(scalarNodes, coeffs);

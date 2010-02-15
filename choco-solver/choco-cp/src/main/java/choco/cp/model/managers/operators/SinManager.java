@@ -27,8 +27,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.real.exp.RealSin;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.integer.IntegerExpressionVariable;
-import choco.kernel.model.variables.real.RealExpressionVariable;
+import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.real.RealVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -63,7 +62,7 @@ public class SinManager extends RealConstraintManager{
      * @param vars
      * @return
      */
-    public INode makeNode(Solver solver, Constraint[] cstrs, IntegerExpressionVariable[] vars) {
+    public INode makeNode(Solver solver, Constraint[] cstrs, Variable[] vars) {
         return null;
     }
 
@@ -74,7 +73,7 @@ public class SinManager extends RealConstraintManager{
      * @param vars
      * @return
      */
-    public RealExp makeRealExpression(Solver solver, RealExpressionVariable... vars){
+    public RealExp makeRealExpression(Solver solver, Variable... vars){
         if(solver instanceof CPSolver){
             CPSolver s = (CPSolver)solver;
             if(vars.length == 1){

@@ -34,9 +34,9 @@ import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableManager;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
-import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.INode;
@@ -130,7 +130,7 @@ public class IntegerVariableManager implements VariableManager<IntegerVariable> 
      * @param vars   variables
      * @return a variable leaf or constant leaf (for expression tree)
      */
-    public INode makeNode(Solver solver, Constraint[] cstrs, IntegerExpressionVariable[] vars) {
+    public INode makeNode(Solver solver, Constraint[] cstrs, Variable[] vars) {
         if (vars[0] instanceof IntegerConstantVariable) {
             IntegerConstantVariable c = (IntegerConstantVariable) vars[0];
             return new ConstantLeaf(c.getValue());

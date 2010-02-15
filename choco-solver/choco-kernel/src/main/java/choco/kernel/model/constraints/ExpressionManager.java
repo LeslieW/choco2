@@ -23,7 +23,7 @@
 package choco.kernel.model.constraints;
 
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.model.variables.integer.IntegerExpressionVariable;
+import choco.kernel.model.variables.Variable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.INode;
 
@@ -45,6 +45,6 @@ public interface ExpressionManager {
      * @param vars   variables
      * @return
      */
-    INode makeNode(Solver solver, Constraint[] cstrs, IntegerExpressionVariable[] vars);
+    INode makeNode(Solver solver, Constraint[] cstrs, Variable[] vars);
     
 }

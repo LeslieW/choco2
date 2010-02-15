@@ -30,6 +30,7 @@ import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.constraints.MetaConstraint;
+import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -77,7 +78,7 @@ public class NotManager extends IntConstraintManager {
      * @param vars   variables
      * @return
      */
-    public INode makeNode(Solver solver, Constraint[] cstrs, IntegerExpressionVariable[] vars) {
+    public INode makeNode(Solver solver, Constraint[] cstrs, Variable[] vars) {
         MetaConstraint mc = (MetaConstraint)cstrs[0];
         Constraint cons = mc.getConstraints()[0];
         if(cons instanceof ComponentConstraint){
@@ -147,7 +148,7 @@ public class NotManager extends IntConstraintManager {
         INode[] nt = new INode[cc.getVariables().length];
         for (int i = 0; i < cc.getVariables().length; i++) {
             IntegerExpressionVariable v = (IntegerExpressionVariable) cc.getVariable(i);
-            nt[i] = v.getExpressionManager().makeNode(solver, v.getConstraints(), v.getExpVariables());
+            nt[i] = v.getExpressionManager().makeNode(solver, v.getConstraints(), v.getVariables());
         }
         return nt;
     }
