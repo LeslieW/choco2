@@ -78,17 +78,6 @@ public abstract class AbstractVariable extends ModelObject implements Variable, 
 		this.name = name;
 	}
 
-	/**
-	 * Preprocessing that helps the garbage collector.
-	 */
-	@Override
-	public void freeMemory() {
-		//        if(listVars!=null){
-		//            Arrays.fill(listVars, null);
-		//        }
-		//        listVars = null;
-		//options.clear();
-	}
 
 	public final VariableType getVariableType() {
 		return type;

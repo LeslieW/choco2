@@ -22,7 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver;
 
-import choco.IGarbageCollectorAssistant;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
+
 import choco.IPretty;
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
@@ -62,11 +66,6 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
 import choco.kernel.visu.IVisu;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Logger;
-
 
 /**
  * Created by IntelliJ IDEA.
@@ -75,7 +74,7 @@ import java.util.logging.Logger;
  * Time: 16:43:08
  * Interface for Solver class, declare main expected methods.
  */
-public interface Solver extends IMeasures, IPretty, IGarbageCollectorAssistant {
+public interface Solver extends IMeasures, IPretty {
 	
 	/**
 	 * Reference to an object for logging trace statements related to Abtract

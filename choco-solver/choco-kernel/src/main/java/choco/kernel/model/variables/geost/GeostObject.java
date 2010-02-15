@@ -60,14 +60,6 @@ public class GeostObject extends MultipleVariables{
          setVariables(vars);
     }
 
-    /**
-     * Preprocessing that helps the garbage collector.
-     */
-    @Override
-    public void freeMemory() {
-        Arrays.fill(coordinates, null);
-        super.freeMemory();
-    }
 
     public int getDim() {
         return dim;

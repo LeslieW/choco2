@@ -53,14 +53,6 @@ public abstract class MultipleVariables extends AbstractVariable {
     	this.enableStorage= enableStorage;
     }
 
-    /**
-     * Preprocessing that helps the garbage collector.
-     */
-    @Override
-    public void freeMemory() {
-    	super.freeMemory();
-    }
-
   
     public boolean isStored() {
         return enableStorage;

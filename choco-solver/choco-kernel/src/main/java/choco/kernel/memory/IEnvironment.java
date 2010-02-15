@@ -22,13 +22,16 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory;
 
-import choco.IGarbageCollectorAssistant;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.memory.structure.*;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Logger;
+
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.memory.structure.IndexedObject;
+import choco.kernel.memory.structure.IntInterval;
+import choco.kernel.memory.structure.PartiallyStoredIntVector;
+import choco.kernel.memory.structure.PartiallyStoredVector;
+import choco.kernel.memory.structure.StoredBipartiteSet;
 
 /* ************************************************
 *           _       _                            *
@@ -52,7 +55,7 @@ import java.util.logging.Logger;
 *     Copyright (C) F. Laburthe,                 *
 *                    N. Jussien   1999-2008      *
 **************************************************/
-public interface IEnvironment extends IGarbageCollectorAssistant {
+public interface IEnvironment {
    
 	/**
 	 * Reference to an object for logging trace statements related memory & backtrack (using the java.util.logging package)

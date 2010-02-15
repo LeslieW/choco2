@@ -122,13 +122,6 @@ public class EnvironmentRecomputation extends AbstractEnvironment {
 
     }
 
-
-    @Override
-	public void freeMemory() {
-		LOGGER.severe("deprecated: not implemented");
-		
-	}
-
     public void worldPush() {
         if ( currentWorld == 0|| (currentWorld-1) % gap == 0 || (lastFail - savedWorldIdxStack.peek())/2 == currentWorld ) {
             delegatedEnv.worldPush();

@@ -65,15 +65,14 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 	
 	//Contains all the {@link ITrailStorage} trails for
 	// storing different kinds of data.
-	//private -> garbage collector can quickly delete trail from the heap after freeMemory();
-	private StoredIntTrail intTrail;
-	private StoredBoolTrail boolTrail;
-	private StoredVectorTrail vectorTrail;
-	private StoredIntVectorTrail intVectorTrail;
-	private StoredDoubleVectorTrail doubleVectorTrail;
-	private StoredDoubleTrail doubleTrail;
-	private StoredLongTrail longTrail;
-	private StoredBinaryTreeTrail btreeTrail;
+	private final StoredIntTrail intTrail;
+	private final StoredBoolTrail boolTrail;
+	private final StoredVectorTrail vectorTrail;
+	private final StoredIntVectorTrail intVectorTrail;
+	private final StoredDoubleVectorTrail doubleVectorTrail;
+	private final StoredDoubleTrail doubleTrail;
+	private final StoredLongTrail longTrail;
+	private final StoredBinaryTreeTrail btreeTrail;
 	
 	/**
 	 * Contains all the {@link ITrailStorage} trails for
@@ -105,22 +104,7 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 	}
 
 
-	@Override
-	public void freeMemory() {
-		Arrays.fill(trails, null);
-		intTrail = null;
-		boolTrail = null;
-		vectorTrail = null;
-		intVectorTrail = null;
-		doubleVectorTrail = null;
-		doubleTrail = null;
-		longTrail = null;
-		btreeTrail = null;
-	}
-
-
-
-
+	
 	@Override
 	public void worldPush() {
 		//code optim.: replace loop by enumeration

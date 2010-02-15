@@ -25,7 +25,6 @@ package choco.kernel.model.variables;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
-import choco.IGarbageCollectorAssistant;
 import choco.IPretty;
 import choco.kernel.common.IIndex;
 import choco.kernel.common.logging.ChocoLogging;
@@ -33,7 +32,6 @@ import choco.kernel.model.IConstraintList;
 import choco.kernel.model.IFindManager;
 import choco.kernel.model.IOptions;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.ExpressionManager;
 
 /**
  * Created by IntelliJ IDEA.
@@ -44,7 +42,7 @@ import choco.kernel.model.constraints.ExpressionManager;
  * Define all the methods for a variable to be used
  * on the Model.
  */
-public interface Variable extends IConstraintList, IPretty, IIndex, IFindManager, IOptions, IHook, IGarbageCollectorAssistant {
+public interface Variable extends IConstraintList, IPretty, IIndex, IFindManager, IOptions, IHook {
 
 	final static Logger LOGGER = ChocoLogging.getEngineLogger();
 

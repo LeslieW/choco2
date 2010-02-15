@@ -1114,7 +1114,7 @@ public class GlobalCardinalityTest {
 
         Model m = new CPModel();
 
-        m.addConstraints(c2);
+        m.addConstraint(c2);
 
 
         Solver s = new CPSolver();

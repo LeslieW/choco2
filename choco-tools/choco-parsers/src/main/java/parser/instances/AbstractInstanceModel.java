@@ -93,10 +93,7 @@ public abstract class AbstractInstanceModel {
 		Arrays.fill(time, 0);
 		isFeasible = null;
 		status = ERROR;
-		if(model != null) model.freeMemory();
-        model = null;
-		//if(solver != null) solver.freeMemory();
-		//if(solver != null) solver.clear();
+		model = null;
 		solver = null;
 		initialObjective = null;
 		objective = null;

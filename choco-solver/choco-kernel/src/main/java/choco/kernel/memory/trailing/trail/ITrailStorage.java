@@ -23,10 +23,9 @@
 
 package choco.kernel.memory.trailing.trail;
 
-import choco.IGarbageCollectorAssistant;
-import choco.kernel.common.logging.ChocoLogging;
-
 import java.util.logging.Logger;
+
+import choco.kernel.common.logging.ChocoLogging;
 
 /**
  * An interface for classes implementing trails of modifications to objects.
