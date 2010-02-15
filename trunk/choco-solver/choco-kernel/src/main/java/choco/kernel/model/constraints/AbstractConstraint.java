@@ -70,9 +70,6 @@ public abstract class AbstractConstraint extends ModelObject implements Constrai
 	}
 
 	@Override
-	public void freeMemory() {}
-
-	@Override
 	public String pretty() {
 		final StringBuilder st = new StringBuilder(getName());
 		st.append(" ( ");

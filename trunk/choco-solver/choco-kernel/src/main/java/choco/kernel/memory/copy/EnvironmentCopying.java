@@ -57,15 +57,6 @@ public class EnvironmentCopying extends AbstractEnvironment {
         clonedWorldIdxStack.clear();
         save = new RcSave(this);
 	}
-	
-	
-
-    @Override
-	public void freeMemory() {
-		//do nothing (static storage)		
-	}
-
-
 
 	public int getNbCopy() {
 		return nbCopy;

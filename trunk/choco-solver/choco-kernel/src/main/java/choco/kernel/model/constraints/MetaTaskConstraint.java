@@ -17,7 +17,7 @@ import java.util.Properties;
  * @since 28 janv. 2009 version 2.0.3</br>
  * @version 2.0.3</br>
  */
-public class MetaTaskConstraint extends ComponentConstraint <TaskVariable>{
+public class MetaTaskConstraint extends ComponentConstraint {
 
 	protected Constraint constraint;
 
@@ -26,15 +26,6 @@ public class MetaTaskConstraint extends ComponentConstraint <TaskVariable>{
 		super(ConstraintType.METATASKCONSTRAINT,constraint,taskvariables);
 		this.constraint = constraint;
 	}
-
-    /**
-     * Preprocessing that helps the garbage collector.
-     */
-    @Override
-    public void freeMemory() {
-        constraint = null;
-        super.freeMemory();
-    }
 
     /**
      * Extract variables of a constraint

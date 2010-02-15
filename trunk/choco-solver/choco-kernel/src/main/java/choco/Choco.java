@@ -873,9 +873,9 @@ public class Choco{
 	// ######                                       CONSTRAINTS                                                 ###
 	// ############################################################################################################
 
-	public static final Constraint TRUE = new ComponentConstraint<IntegerVariable>(ConstraintType.TRUE, true, new IntegerVariable[0]);
+	public static final Constraint TRUE = new ComponentConstraint(ConstraintType.TRUE, true, new IntegerVariable[0]);
 
-	public static final Constraint FALSE = new ComponentConstraint<IntegerVariable>(ConstraintType.FALSE, false, new IntegerVariable[0]);
+	public static final Constraint FALSE = new ComponentConstraint(ConstraintType.FALSE, false, new IntegerVariable[0]);
 
 	/**
 	 * Creates a constraint by stating that a term is not equal than a constant
@@ -885,7 +885,7 @@ public class Choco{
 	 * @return the linear disequality constraint
 	 */
 	public static Constraint neq(IntegerExpressionVariable x, int c) {
-		return new ComponentConstraint<Variable>(ConstraintType.NEQ, ConstraintType.NEQ, new Variable[]{x, constant(c)});
+		return new ComponentConstraint(ConstraintType.NEQ, ConstraintType.NEQ, new Variable[]{x, constant(c)});
 	}
 
 	public static Constraint neq(int c, IntegerExpressionVariable x) {
@@ -893,31 +893,31 @@ public class Choco{
 	}
 
 	public static Constraint neq(IntegerExpressionVariable x, IntegerExpressionVariable y) {
-		return new ComponentConstraint<Variable>(ConstraintType.NEQ, ConstraintType.NEQ, new Variable[]{x, y});
+		return new ComponentConstraint(ConstraintType.NEQ, ConstraintType.NEQ, new Variable[]{x, y});
 	}
 
 	public static Constraint geq(IntegerExpressionVariable x, IntegerExpressionVariable y) {
-		return new ComponentConstraint<Variable>(ConstraintType.GEQ, ConstraintType.GEQ, new Variable[]{x, y});
+		return new ComponentConstraint(ConstraintType.GEQ, ConstraintType.GEQ, new Variable[]{x, y});
 	}
 
 	public static Constraint geq(IntegerExpressionVariable x, int c) {
-		return new ComponentConstraint<Variable>(ConstraintType.GEQ, ConstraintType.GEQ, new Variable[]{x, constant(c)});
+		return new ComponentConstraint(ConstraintType.GEQ, ConstraintType.GEQ, new Variable[]{x, constant(c)});
 	}
 
 	public static Constraint geq(int c, IntegerExpressionVariable x) {
-		return new ComponentConstraint<Variable>(ConstraintType.GEQ, ConstraintType.GEQ, new Variable[]{constant(c), x});
+		return new ComponentConstraint(ConstraintType.GEQ, ConstraintType.GEQ, new Variable[]{constant(c), x});
 	}
 
 	public static Constraint geq(RealExpressionVariable x, RealExpressionVariable y) {
-		return new ComponentConstraint<Variable>(ConstraintType.GEQ, ConstraintType.GEQ, new Variable[]{x, y});
+		return new ComponentConstraint(ConstraintType.GEQ, ConstraintType.GEQ, new Variable[]{x, y});
 	}
 
 	public static Constraint geq(RealExpressionVariable x, double c) {
-		return new ComponentConstraint<Variable>(ConstraintType.GEQ, ConstraintType.GEQ, new Variable[]{x, constant(c)});
+		return new ComponentConstraint(ConstraintType.GEQ, ConstraintType.GEQ, new Variable[]{x, constant(c)});
 	}
 
 	public static Constraint geq(double c, RealExpressionVariable x) {
-		return new ComponentConstraint<Variable>(ConstraintType.GEQ, ConstraintType.GEQ, new Variable[]{constant(c), x});
+		return new ComponentConstraint(ConstraintType.GEQ, ConstraintType.GEQ, new Variable[]{constant(c), x});
 	}
 
 	/**
@@ -927,7 +927,7 @@ public class Choco{
 	 * @return a constraint that ensures x > y
 	 */
 	public static Constraint gt(IntegerExpressionVariable x, IntegerExpressionVariable y) {
-		return new ComponentConstraint<Variable>(ConstraintType.GT, ConstraintType.GT, new Variable[]{x, y});
+		return new ComponentConstraint(ConstraintType.GT, ConstraintType.GT, new Variable[]{x, y});
 	}
 
 	/**
@@ -937,7 +937,7 @@ public class Choco{
 	 * @return a constraint that ensures x > y
 	 */
 	public static Constraint gt(IntegerExpressionVariable x, int c) {
-		return new ComponentConstraint<Variable>(ConstraintType.GT, ConstraintType.GT, new Variable[]{x, constant(c)});
+		return new ComponentConstraint(ConstraintType.GT, ConstraintType.GT, new Variable[]{x, constant(c)});
 	}
 
 	/**
@@ -947,7 +947,7 @@ public class Choco{
 	 * @return a constraint that ensures x > y
 	 */
 	public static Constraint gt(int c, IntegerExpressionVariable x) {
-		return new ComponentConstraint<Variable>(ConstraintType.GT, ConstraintType.GT, new Variable[]{constant(c), x});
+		return new ComponentConstraint(ConstraintType.GT, ConstraintType.GT, new Variable[]{constant(c), x});
 	}
 
 	/**
@@ -957,7 +957,7 @@ public class Choco{
 	 * @return a constraint that ensures x == y
 	 */
 	public static Constraint eq(IntegerExpressionVariable x, IntegerExpressionVariable y) {
-		return new ComponentConstraint<Variable>(ConstraintType.EQ, ConstraintType.EQ, new Variable[]{x, y});
+		return new ComponentConstraint(ConstraintType.EQ, ConstraintType.EQ, new Variable[]{x, y});
 	}
 
 	/**
@@ -967,7 +967,7 @@ public class Choco{
 	 * @return a constraint that ensure x == c
 	 */
 	public static Constraint eq(IntegerExpressionVariable x, int c) {
-		return new ComponentConstraint<Variable>(ConstraintType.EQ, ConstraintType.EQ, new Variable[]{x, constant(c)});
+		return new ComponentConstraint(ConstraintType.EQ, ConstraintType.EQ, new Variable[]{x, constant(c)});
 	}
 
 	/**
@@ -987,7 +987,7 @@ public class Choco{
 	 * @return a constraint that ensures x == y
 	 */
 	public static Constraint eq(RealExpressionVariable x, RealExpressionVariable y) {
-		return new ComponentConstraint<Variable>(ConstraintType.EQ, ConstraintType.EQ, new Variable[]{x, y});
+		return new ComponentConstraint(ConstraintType.EQ, ConstraintType.EQ, new Variable[]{x, y});
 	}
 
 	/**
@@ -997,7 +997,7 @@ public class Choco{
 	 * @return a constraint that ensures x == c
 	 */
 	public static Constraint eq(RealExpressionVariable x, double c) {
-		return new ComponentConstraint<Variable>(ConstraintType.EQ, ConstraintType.EQ, new Variable[]{x, constant(c)});
+		return new ComponentConstraint(ConstraintType.EQ, ConstraintType.EQ, new Variable[]{x, constant(c)});
 	}
 
 	/**
@@ -1017,7 +1017,7 @@ public class Choco{
 	 * @return a constraint that ensures r == i
 	 */
 	public static Constraint eq(RealVariable r, IntegerVariable i) {
-		return new ComponentConstraint<Variable>(ConstraintType.EQ, ConstraintType.EQ, new Variable[]{r, i});
+		return new ComponentConstraint(ConstraintType.EQ, ConstraintType.EQ, new Variable[]{r, i});
 	}
 
 	/**
@@ -1031,27 +1031,27 @@ public class Choco{
 	}
 
 	public static Constraint leq(IntegerExpressionVariable x, int c) {
-		return new ComponentConstraint<Variable>(ConstraintType.LEQ, ConstraintType.LEQ, new Variable[]{x, constant(c)});
+		return new ComponentConstraint(ConstraintType.LEQ, ConstraintType.LEQ, new Variable[]{x, constant(c)});
 	}
 
 	public static Constraint leq(int c, IntegerExpressionVariable x) {
-		return new ComponentConstraint<Variable>(ConstraintType.LEQ, ConstraintType.LEQ, new Variable[]{constant(c), x});
+		return new ComponentConstraint(ConstraintType.LEQ, ConstraintType.LEQ, new Variable[]{constant(c), x});
 	}
 
 	public static Constraint leq(IntegerExpressionVariable x, IntegerExpressionVariable y) {
-		return new ComponentConstraint<Variable>(ConstraintType.LEQ, ConstraintType.LEQ, new Variable[]{x, y});
+		return new ComponentConstraint(ConstraintType.LEQ, ConstraintType.LEQ, new Variable[]{x, y});
 	}
 
 	public static Constraint leq(RealExpressionVariable x, double c) {
-		return new ComponentConstraint<Variable>(ConstraintType.LEQ, ConstraintType.LEQ, new Variable[]{x, constant(c)});
+		return new ComponentConstraint(ConstraintType.LEQ, ConstraintType.LEQ, new Variable[]{x, constant(c)});
 	}
 
 	public static Constraint leq(double c, RealExpressionVariable x) {
-		return new ComponentConstraint<Variable>(ConstraintType.LEQ, ConstraintType.LEQ, new Variable[]{constant(c), x});
+		return new ComponentConstraint(ConstraintType.LEQ, ConstraintType.LEQ, new Variable[]{constant(c), x});
 	}
 
 	public static Constraint leq(RealExpressionVariable x, RealExpressionVariable y) {
-		return new ComponentConstraint<Variable>(ConstraintType.LEQ, ConstraintType.LEQ, new Variable[]{x, y});
+		return new ComponentConstraint(ConstraintType.LEQ, ConstraintType.LEQ, new Variable[]{x, y});
 	}
 
 	/**
@@ -1061,7 +1061,7 @@ public class Choco{
 	 * @return a constraint that ensures x < c
 	 */
 	public static Constraint lt(IntegerExpressionVariable x, int c) {
-		return new ComponentConstraint<Variable>(ConstraintType.LT, ConstraintType.LT, new Variable[]{x, constant(c)});
+		return new ComponentConstraint(ConstraintType.LT, ConstraintType.LT, new Variable[]{x, constant(c)});
 	}
 
 	/**
@@ -1071,7 +1071,7 @@ public class Choco{
 	 * @return a constraint that ensures x < c
 	 */
 	public static Constraint lt(int c, IntegerExpressionVariable x) {
-		return new ComponentConstraint<Variable>(ConstraintType.LT, ConstraintType.LT, new Variable[]{constant(c), x});
+		return new ComponentConstraint(ConstraintType.LT, ConstraintType.LT, new Variable[]{constant(c), x});
 	}
 
 	/**
@@ -1081,7 +1081,7 @@ public class Choco{
 	 * @return a constraint that ensures x < y
 	 */
 	public static Constraint lt(IntegerExpressionVariable x, IntegerExpressionVariable y) {
-		return new ComponentConstraint<Variable>(ConstraintType.LT, ConstraintType.LT, new Variable[]{x, y});
+		return new ComponentConstraint(ConstraintType.LT, ConstraintType.LT, new Variable[]{x, y});
 	}
 
 
@@ -1094,7 +1094,7 @@ public class Choco{
 	 * @return the times constraint
 	 */
 	public static Constraint times(IntegerVariable x, IntegerVariable y, IntegerVariable z) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.TIMES, null, new IntegerVariable[]{x, y, z});
+		return new ComponentConstraint(ConstraintType.TIMES, null, new IntegerVariable[]{x, y, z});
 	}
 
 	/**
@@ -1106,7 +1106,7 @@ public class Choco{
 	 * @return the times constraint
 	 */
 	public static Constraint times(int x, IntegerVariable y, IntegerVariable z) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.TIMES, null, new IntegerVariable[]{constant(x), y, z});
+		return new ComponentConstraint(ConstraintType.TIMES, null, new IntegerVariable[]{constant(x), y, z});
 	}
 
 	/**
@@ -1118,7 +1118,7 @@ public class Choco{
 	 * @return the times constraint
 	 */
 	public static Constraint times(IntegerVariable x, int y, IntegerVariable z) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.TIMES, null, new IntegerVariable[]{x, constant(y), z});
+		return new ComponentConstraint(ConstraintType.TIMES, null, new IntegerVariable[]{x, constant(y), z});
 	}
 
 
@@ -1131,7 +1131,7 @@ public class Choco{
 	 * @return the intDiv constraint
 	 */
 	public static Constraint intDiv(IntegerVariable x, IntegerVariable y, IntegerVariable z) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.EUCLIDEANDIVISION, null, new IntegerVariable[]{x, y, z});
+		return new ComponentConstraint(ConstraintType.EUCLIDEANDIVISION, null, new IntegerVariable[]{x, y, z});
 	}
 
 	//******************************************************//
@@ -1266,11 +1266,11 @@ public class Choco{
 
 	private static Constraint makePairAC(String options, IntegerVariable v1, IntegerVariable v2, Object mat, boolean feas) {
 		if (options == null) {
-			return new ComponentConstraint<IntegerVariable>(ConstraintType.TABLE,
+			return new ComponentConstraint(ConstraintType.TABLE,
 					new Object[]{feas, mat},
 					new IntegerVariable[]{v1, v2});
 		} else {
-			Constraint c = new ComponentConstraint<IntegerVariable>(ConstraintType.TABLE,
+			Constraint c = new ComponentConstraint(ConstraintType.TABLE,
 					new Object[]{feas, mat},
 					new IntegerVariable[]{v1, v2});
 			c.addOption(options);
@@ -1503,11 +1503,11 @@ public class Choco{
 
 	private static Constraint makeTupleACFC(String options, IntegerVariable[] vs, Object mat, boolean feas) {
 		if (options == null) {
-			return new ComponentConstraint<IntegerVariable>(ConstraintType.TABLE,
+			return new ComponentConstraint(ConstraintType.TABLE,
 					new Object[]{feas, mat},
 					vs);
 		} else {
-			Constraint c = new ComponentConstraint<IntegerVariable>(ConstraintType.TABLE,
+			Constraint c = new ComponentConstraint(ConstraintType.TABLE,
 					new Object[]{feas, mat},
 					vs);
 			c.addOption(options);
@@ -1631,7 +1631,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint distanceEQ(IntegerVariable x, IntegerVariable y, int c) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.DISTANCE, 0, new IntegerVariable[]{x, y, constant(c)});
+		return new ComponentConstraint(ConstraintType.DISTANCE, 0, new IntegerVariable[]{x, y, constant(c)});
 	}
 
 	/**
@@ -1643,7 +1643,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint distanceNEQ(IntegerVariable x, IntegerVariable y, int c) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.DISTANCE, 3, new IntegerVariable[]{x, y, constant(c)});
+		return new ComponentConstraint(ConstraintType.DISTANCE, 3, new IntegerVariable[]{x, y, constant(c)});
 	}
 
 
@@ -1656,7 +1656,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint distanceLT(IntegerVariable x, IntegerVariable y, int c) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.DISTANCE, 1, new IntegerVariable[]{x, y, constant(c)});
+		return new ComponentConstraint(ConstraintType.DISTANCE, 1, new IntegerVariable[]{x, y, constant(c)});
 	}
 
 	/**
@@ -1668,7 +1668,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint distanceGT(IntegerVariable x, IntegerVariable y, int c) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.DISTANCE, 2, new IntegerVariable[]{x, y, constant(c)});
+		return new ComponentConstraint(ConstraintType.DISTANCE, 2, new IntegerVariable[]{x, y, constant(c)});
 	}
 
 	/**
@@ -1681,7 +1681,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint distanceEQ(IntegerVariable x, IntegerVariable y, IntegerVariable z, int c) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.DISTANCE, 0, new IntegerVariable[]{x, y, z, constant(c)});
+		return new ComponentConstraint(ConstraintType.DISTANCE, 0, new IntegerVariable[]{x, y, z, constant(c)});
 	}
 
 	/**
@@ -1693,7 +1693,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint distanceEQ(IntegerVariable x, IntegerVariable y, IntegerVariable z) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.DISTANCE, 0, new IntegerVariable[]{x, y, z, constant(0)});
+		return new ComponentConstraint(ConstraintType.DISTANCE, 0, new IntegerVariable[]{x, y, z, constant(0)});
 	}
 
 
@@ -1707,7 +1707,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint distanceLT(IntegerVariable x, IntegerVariable y, IntegerVariable z, int c) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.DISTANCE, 1, new IntegerVariable[]{x, y, z, constant(c)});
+		return new ComponentConstraint(ConstraintType.DISTANCE, 1, new IntegerVariable[]{x, y, z, constant(c)});
 	}
 
 	/**
@@ -1719,7 +1719,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint distanceLT(IntegerVariable x, IntegerVariable y, IntegerVariable z) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.DISTANCE, 1, new IntegerVariable[]{x, y, z, constant(0)});
+		return new ComponentConstraint(ConstraintType.DISTANCE, 1, new IntegerVariable[]{x, y, z, constant(0)});
 	}
 
 	/**
@@ -1732,7 +1732,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint distanceGT(IntegerVariable x, IntegerVariable y, IntegerVariable z, int c) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.DISTANCE, 2, new IntegerVariable[]{x, y, z, constant(c)});
+		return new ComponentConstraint(ConstraintType.DISTANCE, 2, new IntegerVariable[]{x, y, z, constant(c)});
 	}
 
 	/**
@@ -1744,7 +1744,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint distanceGT(IntegerVariable x, IntegerVariable y, IntegerVariable z) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.DISTANCE, 2, new IntegerVariable[]{x, y, z, constant(0)});
+		return new ComponentConstraint(ConstraintType.DISTANCE, 2, new IntegerVariable[]{x, y, z, constant(0)});
 	}
 
 	/**
@@ -1755,7 +1755,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint abs(IntegerVariable x, IntegerVariable y) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.ABS, null, new IntegerVariable[]{x, y});
+		return new ComponentConstraint(ConstraintType.ABS, null, new IntegerVariable[]{x, y});
 	}
 
 	/**
@@ -1771,7 +1771,7 @@ public class Choco{
 		tmp[0] = svar;
 		arraycopy(vars, 0, tmp, 1, vars.length);
 		tmp[tmp.length - 1] = min;
-		return new ComponentConstraint<Variable>(ConstraintType.MIN, true, tmp);
+		return new ComponentConstraint(ConstraintType.MIN, true, tmp);
 	}
 	/**
 	 * Ensures the variable "min" to represent the minimum value
@@ -1785,7 +1785,7 @@ public class Choco{
 		Variable[] tmp = new Variable[vars.length + 1];
 		arraycopy(vars, 0, tmp, 0, vars.length);
 		tmp[tmp.length - 1] = min;
-		return new ComponentConstraint<Variable>(ConstraintType.MIN, true, tmp);
+		return new ComponentConstraint(ConstraintType.MIN, true, tmp);
 	}
 
 
@@ -1803,7 +1803,7 @@ public class Choco{
 		tmp[0] = svar;
 		arraycopy(vars, 0, tmp, 1, vars.length);
 		tmp[tmp.length - 1] = max;
-		return new ComponentConstraint<Variable>(ConstraintType.MAX, false, tmp);
+		return new ComponentConstraint(ConstraintType.MAX, false, tmp);
 	}
 	/**
 	 * Ensures the variable "max" to represent the maximum value
@@ -1817,7 +1817,7 @@ public class Choco{
 		Variable[] tmp = new Variable[vars.length + 1];
 		arraycopy(vars, 0, tmp, 0, vars.length);
 		tmp[tmp.length - 1] = max;
-		return new ComponentConstraint<Variable>(ConstraintType.MAX, false, tmp);
+		return new ComponentConstraint(ConstraintType.MAX, false, tmp);
 	}
 
 	/**
@@ -1830,7 +1830,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint min(IntegerVariable x, IntegerVariable y, IntegerVariable min) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.MIN, true, new IntegerVariable[]{x, y, min});
+		return new ComponentConstraint(ConstraintType.MIN, true, new IntegerVariable[]{x, y, min});
 	}
 
 	/**
@@ -1843,7 +1843,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint min(int x, IntegerVariable y, IntegerVariable min) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.MIN, true, new IntegerVariable[]{constant(x), y, min});
+		return new ComponentConstraint(ConstraintType.MIN, true, new IntegerVariable[]{constant(x), y, min});
 	}
 
 	/**
@@ -1856,7 +1856,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint min(IntegerVariable x, int y, IntegerVariable min) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.MIN, true, new IntegerVariable[]{x, constant(y), min});
+		return new ComponentConstraint(ConstraintType.MIN, true, new IntegerVariable[]{x, constant(y), min});
 	}
 
 	/**
@@ -1869,7 +1869,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint max(IntegerVariable x, IntegerVariable y, IntegerVariable max) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.MAX, false, new IntegerVariable[]{x, y, max});
+		return new ComponentConstraint(ConstraintType.MAX, false, new IntegerVariable[]{x, y, max});
 	}
 
 	/**
@@ -1882,7 +1882,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint max(int x, IntegerVariable y, IntegerVariable max) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.MAX, false, new IntegerVariable[]{constant(x), y, max});
+		return new ComponentConstraint(ConstraintType.MAX, false, new IntegerVariable[]{constant(x), y, max});
 	}
 
 	/**
@@ -1895,7 +1895,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint max(IntegerVariable x, int y, IntegerVariable max) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.MAX, false, new IntegerVariable[]{x, constant(y), max});
+		return new ComponentConstraint(ConstraintType.MAX, false, new IntegerVariable[]{x, constant(y), max});
 	}
 
 	/**
@@ -1913,7 +1913,7 @@ public class Choco{
 		variables[0] = constant(value);
 		variables[1] = occurrence;
 		arraycopy(vars, 0, variables, 2, vars.length);
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.OCCURRENCE, 0, variables);
+		return new ComponentConstraint(ConstraintType.OCCURRENCE, 0, variables);
 	}
 
 	/**
@@ -1929,7 +1929,7 @@ public class Choco{
 		variables[0] = constant(value);
 		variables[1] = occurrence;
 		arraycopy(vars, 0, variables, 2, vars.length);
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.OCCURRENCE, -1, variables);
+		return new ComponentConstraint(ConstraintType.OCCURRENCE, -1, variables);
 	}
 
 	/**
@@ -1945,7 +1945,7 @@ public class Choco{
 		variables[0] = constant(value);
 		variables[1] = occurrence;
 		arraycopy(vars, 0, variables, 2, vars.length);
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.OCCURRENCE, 1, variables);
+		return new ComponentConstraint(ConstraintType.OCCURRENCE, 1, variables);
 	}
 
 	/**
@@ -1975,7 +1975,7 @@ public class Choco{
 		}
 		vars[vars.length-2] = index;
 		vars[vars.length-1] = val;
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.NTH, offset, vars);
+		return new ComponentConstraint(ConstraintType.NTH, offset, vars);
 	}
 
 
@@ -1988,7 +1988,7 @@ public class Choco{
 	 */
 	public static Constraint nth(IntegerVariable index, IntegerVariable[] varArray, IntegerVariable val) {
 		IntegerVariable[] vars = ArrayUtils.append(varArray, new IntegerVariable[]{index, val});
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.NTH, 0, vars);
+		return new ComponentConstraint(ConstraintType.NTH, 0, vars);
 	}
 
 	/**
@@ -2000,7 +2000,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint nth(IntegerVariable index, IntegerVariable index2, int[][] varArray, IntegerVariable val) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.NTH, varArray, new IntegerVariable[]{index, index2, val});
+		return new ComponentConstraint(ConstraintType.NTH, varArray, new IntegerVariable[]{index, index2, val});
 	}
 
 	/**
@@ -2014,7 +2014,7 @@ public class Choco{
 	 */
 	public static Constraint nth(IntegerVariable index, IntegerVariable[] varArray, IntegerVariable val, int offset) {
 		IntegerVariable[] vars = ArrayUtils.append(varArray, new IntegerVariable[]{index, val});
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.NTH, offset, vars);
+		return new ComponentConstraint(ConstraintType.NTH, offset, vars);
 	}
 
 
@@ -2028,7 +2028,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint boolChanneling(IntegerVariable b, IntegerVariable x, int j) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.CHANNELING, ConstraintType.CHANNELING, new IntegerVariable[]{b, x, constant(j)});
+		return new ComponentConstraint(ConstraintType.CHANNELING, ConstraintType.CHANNELING, new IntegerVariable[]{b, x, constant(j)});
 	}
 
 	/**
@@ -2042,7 +2042,7 @@ public class Choco{
 		if (y.length != x.length) {
 			throw new ModelException("not a valid inverse channeling constraint with two arrays of different sizes");
 		}
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.INVERSECHANNELING, ConstraintType.INVERSECHANNELING, ArrayUtils.append(x, y));
+		return new ComponentConstraint(ConstraintType.INVERSECHANNELING, ConstraintType.INVERSECHANNELING, ArrayUtils.append(x, y));
 	}
 	
 	/**
@@ -2053,7 +2053,7 @@ public class Choco{
      * @return DomainConstraint
 	 */
 	public static Constraint domainConstraint(IntegerVariable x, IntegerVariable[] b) {
-		return new ComponentConstraint<IntegerVariable>(
+		return new ComponentConstraint(
 				ConstraintType.DOMAIN_CHANNELING, ConstraintType.DOMAIN_CHANNELING, 
 				ArrayUtils.append(b, new IntegerVariable[]{x}));
 	}
@@ -2069,7 +2069,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint allDifferent(IntegerVariable... vars) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.ALLDIFFERENT, null, vars);
+		return new ComponentConstraint(ConstraintType.ALLDIFFERENT, null, vars);
 	}
 
 	/**
@@ -2157,7 +2157,7 @@ public class Choco{
 
 	public static Constraint globalCardinality(IntegerVariable[] vars, int min, int max, int[] low, int[] up) {
 		globalCardinalityTest(vars, low, up);
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.GLOBALCARDINALITY,
+		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY,
 				new Object[]{ConstraintType.GLOBALCARDINALITYMAX, min, max, low, up}, vars);
 	}
 
@@ -2231,7 +2231,7 @@ public class Choco{
 		int min  = getMinOfLowB(vars);
 		int max = getMaxOfUppB(vars);
 		globalCardinalityTest(vars, low, up);
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.GLOBALCARDINALITY,
+		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY,
 				new Object[]{ConstraintType.GLOBALCARDINALITYMAX, min, max, low, up}, vars);
 	}
 
@@ -2293,7 +2293,7 @@ public class Choco{
 		IntegerVariable[] variables = new IntegerVariable[vars.length + card.length];
 		arraycopy(vars, 0, variables, 0, n);
 		arraycopy(card, 0, variables, n, card.length);
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.GLOBALCARDINALITY, new Object[]{ConstraintType.GLOBALCARDINALITYVAR, min, max, n}, variables);
+		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY, new Object[]{ConstraintType.GLOBALCARDINALITYVAR, min, max, n}, variables);
 	}
 
 	/**
@@ -2315,7 +2315,7 @@ public class Choco{
 		IntegerVariable[] variables = new IntegerVariable[vars.length + card.length];
 		arraycopy(vars, 0, variables, 0, n);
 		arraycopy(card, 0, variables, n, card.length);
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.GLOBALCARDINALITY,
+		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY,
 				new Object[]{ConstraintType.GLOBALCARDINALITYVAR, getMinOfLowB(vars), getMaxOfUppB(vars), n}, variables);
 	}
 
@@ -2331,7 +2331,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint stretchPath(List<int[]> stretchesParameters, IntegerVariable... vars) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.STRETCHPATH, stretchesParameters, vars);
+		return new ComponentConstraint(ConstraintType.STRETCHPATH, stretchesParameters, vars);
 	}
 
     /**
@@ -2342,7 +2342,7 @@ public class Choco{
      * @return increasing n value constraint
      */
     public static Constraint increasing_nvalue(IntegerVariable nval, IntegerVariable[] vars){
-        return new ComponentConstraint<IntegerVariable>(ConstraintType.INCREASINGNVALUE, null,
+        return new ComponentConstraint(ConstraintType.INCREASINGNVALUE, null,
                 ArrayUtils.append(new IntegerVariable[]{nval},vars));
     }
 
@@ -2376,7 +2376,7 @@ public class Choco{
 		arraycopy(bins, 0, vars, 2*m, n);
 		arraycopy(sizes, 0, vars, 2*m+n,n);
 		vars[vars.length-1]=nbNonEmpty;
-		Constraint pack = new ComponentConstraint<Variable>(ConstraintType.PACK, new Object[]{n,m},vars);
+		Constraint pack = new ComponentConstraint(ConstraintType.PACK, new Object[]{n,m},vars);
 		pack.addOptions(options);
 		return pack;
 	}
@@ -2417,7 +2417,7 @@ public class Choco{
 		//build constraint
 		RscData param = new RscData(name, tasks, usages, uppBound);
 		final Variable[] vars=  ArrayUtils.append(tasks, usages, heights, new IntegerVariable[]{consumption, capacity}, uppBound == null ? null : new IntegerVariable[]{uppBound});
-		final ComponentConstraint c=new ComponentConstraint<Variable>(ConstraintType.CUMULATIVE, param,vars);
+		final ComponentConstraint c=new ComponentConstraint(ConstraintType.CUMULATIVE, param,vars);
 		c.addOptions(options);
 		return c;
 
@@ -2573,7 +2573,7 @@ public class Choco{
 	public static Constraint disjunctive(String name, TaskVariable[] tasks,IntegerVariable[] usages, IntegerVariable uppBound, String... options) {
 		RscData param = new RscData(name, tasks, usages, uppBound);
 		Variable[] vars = uppBound==null ? ArrayUtils.<Variable>append(tasks, usages) :   ArrayUtils.append(tasks, usages, new IntegerVariable[]{ uppBound});
-		final ComponentConstraint c=new ComponentConstraint<Variable>(ConstraintType.DISJUNCTIVE, param,vars);
+		final ComponentConstraint c=new ComponentConstraint(ConstraintType.DISJUNCTIVE, param,vars);
 		c.addOptions(options);
 		return c;
 	}
@@ -2636,7 +2636,7 @@ public class Choco{
 	 * </ul>  
 	 */
 	public static Constraint precedenceDisjoint(IntegerVariable v1, int dur1, IntegerVariable v2, int dur2, IntegerVariable bool) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.PRECEDENCE_DISJOINT, Boolean.FALSE, new IntegerVariable[]{v1, constant(dur1), v2, constant(dur2), bool});
+		return new ComponentConstraint(ConstraintType.PRECEDENCE_DISJOINT, Boolean.FALSE, new IntegerVariable[]{v1, constant(dur1), v2, constant(dur2), bool});
 	}
 
 
@@ -2675,7 +2675,7 @@ public class Choco{
      * @return precedence disjoint constraint
 	 */
 	public static Constraint precedenceDisjoint(TaskVariable t1, TaskVariable t2, IntegerVariable direction, int forwardSetup, int backwardSetup) {
-		return new ComponentConstraint<Variable>(ConstraintType.PRECEDENCE_DISJOINT, Boolean.TRUE, new Variable[]{t1,constant(forwardSetup), t2, constant(backwardSetup), direction});
+		return new ComponentConstraint(ConstraintType.PRECEDENCE_DISJOINT, Boolean.TRUE, new Variable[]{t1,constant(forwardSetup), t2, constant(backwardSetup), direction});
 	}
 
 
@@ -2706,7 +2706,7 @@ public class Choco{
 	 *
 	 */
 	public static Constraint precedenceReified(IntegerVariable x1, int k1, IntegerVariable x2, IntegerVariable b) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.PRECEDENCE_REIFIED, Boolean.FALSE, new IntegerVariable[]{x1, constant(k1), x2, ZERO, b});
+		return new ComponentConstraint(ConstraintType.PRECEDENCE_REIFIED, Boolean.FALSE, new IntegerVariable[]{x1, constant(k1), x2, ZERO, b});
 	}
 
 	/**
@@ -2717,7 +2717,7 @@ public class Choco{
 	 * </ul>  
 	 */
 	public static Constraint precedenceReified(TaskVariable t1, int k1, TaskVariable t2, IntegerVariable b) {
-		return new ComponentConstraint<Variable>(ConstraintType.PRECEDENCE_REIFIED, Boolean.TRUE, new Variable[]{t1, constant(k1), t2, ZERO, b});
+		return new ComponentConstraint(ConstraintType.PRECEDENCE_REIFIED, Boolean.TRUE, new Variable[]{t1, constant(k1), t2, ZERO, b});
 	}
 
 	/**
@@ -2728,7 +2728,7 @@ public class Choco{
 	 * </ul>  
 	 */
 	public static Constraint precedenceImplied(IntegerVariable x1, int k1, IntegerVariable x2, IntegerVariable b) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.PRECEDENCE_IMPLIED, Boolean.FALSE, new IntegerVariable[]{x1, constant(k1), x2, ZERO, b});
+		return new ComponentConstraint(ConstraintType.PRECEDENCE_IMPLIED, Boolean.FALSE, new IntegerVariable[]{x1, constant(k1), x2, ZERO, b});
 	}
 
 	/**
@@ -2739,7 +2739,7 @@ public class Choco{
 	 * </ul>  
 	 */
 	public static Constraint precedenceImplied(TaskVariable t1, int k1, TaskVariable t2, IntegerVariable b) {
-		return new ComponentConstraint<Variable>(ConstraintType.PRECEDENCE_IMPLIED, Boolean.TRUE, new Variable[]{t1, constant(k1), t2, ZERO, b});
+		return new ComponentConstraint(ConstraintType.PRECEDENCE_IMPLIED, Boolean.TRUE, new Variable[]{t1, constant(k1), t2, ZERO, b});
 	}
 
 
@@ -2826,7 +2826,7 @@ public class Choco{
 			ind++;
 		}
 
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.GEOST, new Object[]{dim, shiftedBoxes, eCtrs, objects, ctrlVs, opt}, vars);
+		return new ComponentConstraint(ConstraintType.GEOST, new Object[]{dim, shiftedBoxes, eCtrs, objects, ctrlVs, opt}, vars);
 		//return new GeostConstraint(dim, objects, shiftedBoxes, eCtrs, ctrlVs);
 	}
 
@@ -2840,7 +2840,7 @@ public class Choco{
 	 */
 	public static Constraint lexeq(IntegerVariable[] v1, IntegerVariable[] v2) {
 		int offset = v1.length;
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.LEX, new Object[]{ConstraintType.LEXEQ, offset}, ArrayUtils.append(v1, v2));
+		return new ComponentConstraint(ConstraintType.LEX, new Object[]{ConstraintType.LEXEQ, offset}, ArrayUtils.append(v1, v2));
 	}
 
 	/**
@@ -2853,7 +2853,7 @@ public class Choco{
 	 */
 	public static Constraint lex(IntegerVariable[] v1, IntegerVariable[] v2) {
 		int offset = v1.length;
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.LEX, new Object[]{ConstraintType.LEX, offset}, ArrayUtils.append(v1, v2));
+		return new ComponentConstraint(ConstraintType.LEX, new Object[]{ConstraintType.LEX, offset}, ArrayUtils.append(v1, v2));
 	}
 
 
@@ -2875,7 +2875,7 @@ public class Choco{
 			}
 			arraycopy(arrayOfVectors[i], 0, vs, n * i, n);
 		}
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.LEXCHAIN, new Object[]{true, n}, vs);
+		return new ComponentConstraint(ConstraintType.LEXCHAIN, new Object[]{true, n}, vs);
 	}
 
 	/**
@@ -2893,7 +2893,7 @@ public class Choco{
 		for (int i = 0; i < arrayOfVectors.length; i++) {
 			arraycopy(arrayOfVectors[i], 0, vs, n * i, n);
 		}
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.LEXCHAIN, new Object[]{false, n}, vs);
+		return new ComponentConstraint(ConstraintType.LEXCHAIN, new Object[]{false, n}, vs);
 	}
 
 	/**
@@ -2912,7 +2912,7 @@ public class Choco{
 	public static Constraint sorting(IntegerVariable[] v1, IntegerVariable[] v2) {
 		int offset = v1.length;
 		IntegerVariable[] vars = ArrayUtils.append(v1, v2);
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.SORTING, offset, vars);
+		return new ComponentConstraint(ConstraintType.SORTING, offset, vars);
 	}
 
 	/**
@@ -2931,7 +2931,7 @@ public class Choco{
 		IntegerVariable[] vars = new IntegerVariable[v1.length + v2.length];
 		arraycopy(v1, 0, vars, 0, v1.length);
 		arraycopy(v2, 0, vars, v1.length, v2.length);
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.LEXIMIN,
+		return new ComponentConstraint(ConstraintType.LEXIMIN,
 				null, vars);
 	}
 
@@ -2949,7 +2949,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint leximin(int[] v1, IntegerVariable[] v2) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.LEXIMIN,
+		return new ComponentConstraint(ConstraintType.LEXIMIN,
 				v1, v2);
 	}
 
@@ -2963,7 +2963,7 @@ public class Choco{
 		IntegerVariable[] tmp = new IntegerVariable[vars.length + 1];
 		arraycopy(vars, 0, tmp, 0, vars.length);
 		tmp[tmp.length - 1] = nvalue;
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.ATMOSTNVALUE, null, tmp);
+		return new ComponentConstraint(ConstraintType.ATMOSTNVALUE, null, tmp);
 	}
 
 	// ------------- Constraints over sets -------------------------------
@@ -2976,7 +2976,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint setInter(SetVariable sv1, SetVariable sv2, SetVariable inter) {
-		return new ComponentConstraint<SetVariable>(ConstraintType.SETINTER, null, new SetVariable[]{sv1, sv2, inter});
+		return new ComponentConstraint(ConstraintType.SETINTER, null, new SetVariable[]{sv1, sv2, inter});
 	}
 
 	/**
@@ -2988,7 +2988,7 @@ public class Choco{
 	 * @return the union constraint
 	 */
 	public static Constraint setUnion(SetVariable sv1, SetVariable sv2, SetVariable union) {
-		return new ComponentConstraint<SetVariable>(ConstraintType.SETUNION, null, new SetVariable[]{sv1, sv2, union});
+		return new ComponentConstraint(ConstraintType.SETUNION, null, new SetVariable[]{sv1, sv2, union});
 	}
 
 	//UNDERDEVELOPMENT
@@ -3005,7 +3005,7 @@ public class Choco{
 	 * @return a constraint that ensures sv1 == sv2
 	 */
 	public static Constraint eq(SetVariable sv1, SetVariable sv2) {
-		return new ComponentConstraint<SetVariable>(ConstraintType.EQ, ConstraintType.EQ, new SetVariable[]{sv1, sv2});
+		return new ComponentConstraint(ConstraintType.EQ, ConstraintType.EQ, new SetVariable[]{sv1, sv2});
 	}
 
 	/**
@@ -3016,7 +3016,7 @@ public class Choco{
 	 */
 	public static Constraint eqCard(SetVariable sv, IntegerVariable v) {
 		//return new GenericConstraint<Variable>(ConstraintType.EQCARD, sv, v);
-		return new ComponentConstraint<Variable>(ConstraintType.EQ, ConstraintType.EQ, new Variable[]{sv, v});
+		return new ComponentConstraint(ConstraintType.EQ, ConstraintType.EQ, new Variable[]{sv, v});
 	}
 
 	/**
@@ -3027,7 +3027,7 @@ public class Choco{
 	 */
 	public static Constraint eqCard(SetVariable sv, int val) {
 		//        return new GenericConstraint<Variable>(ConstraintType.EQCARD, sv, constant(val));
-        return new ComponentConstraint<Variable>(ConstraintType.EQ, ConstraintType.EQ, new Variable[]{sv, constant(val)});
+        return new ComponentConstraint(ConstraintType.EQ, ConstraintType.EQ, new Variable[]{sv, constant(val)});
 	}
 
 	/**
@@ -3038,7 +3038,7 @@ public class Choco{
 	 */
 	public static Constraint neqCard(SetVariable sv, IntegerVariable v) {
 		//return new GenericConstraint<Variable>(ConstraintType.EQCARD, sv, v);
-		return new ComponentConstraint<Variable>(ConstraintType.NEQ, ConstraintType.NEQ, new Variable[]{sv, v});
+		return new ComponentConstraint(ConstraintType.NEQ, ConstraintType.NEQ, new Variable[]{sv, v});
 	}
 
 	/**
@@ -3049,28 +3049,28 @@ public class Choco{
 	 */
 	public static Constraint neqCard(SetVariable sv, int val) {
 		//        return new GenericConstraint<Variable>(ConstraintType.EQCARD, sv, constant(val));
-		return new ComponentConstraint<Variable>(ConstraintType.NEQ, ConstraintType.NEQ, new Variable[]{sv, constant(val)});
+		return new ComponentConstraint(ConstraintType.NEQ, ConstraintType.NEQ, new Variable[]{sv, constant(val)});
 	}
 
 	public static Constraint geqCard(SetVariable sv, IntegerVariable v) {
 		//return new GenericConstraint<Variable>(ConstraintType.GEQCARD, sv, v);
-		return new ComponentConstraint<Variable>(ConstraintType.GEQ, ConstraintType.GEQ, new Variable[]{sv, v});
+		return new ComponentConstraint(ConstraintType.GEQ, ConstraintType.GEQ, new Variable[]{sv, v});
 	}
 
 	public static Constraint geqCard(SetVariable sv, int val) {
-		return new ComponentConstraint<Variable>(ConstraintType.GEQ, ConstraintType.GEQ, new Variable[]{sv, constant(val)});
+		return new ComponentConstraint(ConstraintType.GEQ, ConstraintType.GEQ, new Variable[]{sv, constant(val)});
 	}
 
 	public static Constraint leqCard(SetVariable sv, IntegerVariable v) {
-		return new ComponentConstraint<Variable>(ConstraintType.LEQ, ConstraintType.LEQ, new Variable[]{sv, v});
+		return new ComponentConstraint(ConstraintType.LEQ, ConstraintType.LEQ, new Variable[]{sv, v});
 	}
 
 	public static Constraint leqCard(SetVariable sv, int val) {
-		return new ComponentConstraint<Variable>(ConstraintType.LEQ, ConstraintType.LEQ, new Variable[]{sv, constant(val)});
+		return new ComponentConstraint(ConstraintType.LEQ, ConstraintType.LEQ, new Variable[]{sv, constant(val)});
 	}
 
 	public static Constraint setDisjoint(SetVariable sv1, SetVariable sv2) {
-		return new ComponentConstraint<SetVariable>(ConstraintType.SETDISJOINT, null, new SetVariable[]{sv1, sv2});
+		return new ComponentConstraint(ConstraintType.SETDISJOINT, null, new SetVariable[]{sv1, sv2});
 	}
 
 	// UNDERDEVELOPMENT
@@ -3088,7 +3088,7 @@ public class Choco{
 	 * @return the new constraint
 	 */
 	public static Constraint member(int val, SetVariable sv1) {
-		return new ComponentConstraint<Variable>(ConstraintType.MEMBER, val, new Variable[]{sv1});
+		return new ComponentConstraint(ConstraintType.MEMBER, val, new Variable[]{sv1});
 	}
 
 	/**
@@ -3099,7 +3099,7 @@ public class Choco{
 	 * @return the new constraint
 	 */
 	public static Constraint member(SetVariable sv1, int val) {
-		return new ComponentConstraint<Variable>(ConstraintType.MEMBER, val, new Variable[]{sv1});
+		return new ComponentConstraint(ConstraintType.MEMBER, val, new Variable[]{sv1});
 	}
 
 	/**
@@ -3110,7 +3110,7 @@ public class Choco{
 	 * @return the new constraint
 	 */
 	public static Constraint member(SetVariable sv1, IntegerVariable var) {
-		return new ComponentConstraint<Variable>(ConstraintType.MEMBER, null, new Variable[]{sv1, var});
+		return new ComponentConstraint(ConstraintType.MEMBER, null, new Variable[]{sv1, var});
 	}
 
 	/**
@@ -3121,7 +3121,7 @@ public class Choco{
 	 * @return the new constraint
 	 */
 	public static Constraint member(IntegerVariable var, SetVariable sv1) {
-		return new ComponentConstraint<Variable>(ConstraintType.MEMBER, null, new Variable[]{sv1, var});
+		return new ComponentConstraint(ConstraintType.MEMBER, null, new Variable[]{sv1, var});
 	}
 
 	/**
@@ -3132,7 +3132,7 @@ public class Choco{
 	 * @return the new constraint
 	 */
 	public static Constraint notMember(int val, SetVariable sv1) {
-		return new ComponentConstraint<Variable>(ConstraintType.NOTMEMBER,
+		return new ComponentConstraint(ConstraintType.NOTMEMBER,
 				val, new Variable[]{sv1});
 	}
 
@@ -3144,7 +3144,7 @@ public class Choco{
 	 * @return the new constraint
 	 */
 	public static Constraint notMember(SetVariable sv1, int val) {
-		return new ComponentConstraint<Variable>(ConstraintType.NOTMEMBER,
+		return new ComponentConstraint(ConstraintType.NOTMEMBER,
 				val, new Variable[]{sv1});
 	}
 
@@ -3157,7 +3157,7 @@ public class Choco{
 	 */
 	public static Constraint notMember(SetVariable sv1, IntegerVariable var) {
 		//return notMember(var, sv1);
-		return new ComponentConstraint<Variable>(ConstraintType.NOTMEMBER,
+		return new ComponentConstraint(ConstraintType.NOTMEMBER,
 				null, new Variable[]{sv1, var});
 	}
 
@@ -3170,7 +3170,7 @@ public class Choco{
 	 */
 	public static Constraint notMember(IntegerVariable var, SetVariable sv1) {
 		//return new GenericConstraint<Variable>(ConstraintType.NOTMEMBER, var, sv1);
-		return new ComponentConstraint<Variable>(ConstraintType.NOTMEMBER,
+		return new ComponentConstraint(ConstraintType.NOTMEMBER,
 				null, new Variable[]{sv1, var});
 	}
 
@@ -3183,7 +3183,7 @@ public class Choco{
 	 * @return the new constraint
 	 */
 	public static Constraint inverseSet(IntegerVariable[] iv, SetVariable[] sv) {
-		return new ComponentConstraint<Variable>(ConstraintType.INVERSE_SET,
+		return new ComponentConstraint(ConstraintType.INVERSE_SET,
                 iv.length, ArrayUtils.<Variable>append(iv, sv));
 	}
 	/**
@@ -3195,7 +3195,7 @@ public class Choco{
 	 */
 	public static Constraint neq(SetVariable sv1, SetVariable sv2) {
 		//return new GenericConstraint<Variable>(ConstraintType.NEQ, sv1, sv2);
-		return new ComponentConstraint<Variable>(ConstraintType.NEQ,
+		return new ComponentConstraint(ConstraintType.NEQ,
 				ConstraintType.NEQ, new SetVariable[]{sv1, sv2});
 	}
 
@@ -3208,7 +3208,7 @@ public class Choco{
 	 */
 	public static Constraint isIncluded(SetVariable sv1, SetVariable sv2) {
 		//return new GenericConstraint<Variable>(ConstraintType.ISINCLUDED, sv, in);
-		return new ComponentConstraint<Variable>(ConstraintType.ISINCLUDED,
+		return new ComponentConstraint(ConstraintType.ISINCLUDED,
 				null, new SetVariable[]{sv1, sv2});
 	}
 
@@ -3221,7 +3221,7 @@ public class Choco{
 	 */
 	public static Constraint isNotIncluded(SetVariable sv1, SetVariable sv2) {
 		//return new GenericConstraint<Variable>(ConstraintType.ISNOTINCLUDED, sv, in);
-		return new ComponentConstraint<Variable>(ConstraintType.ISNOTINCLUDED,
+		return new ComponentConstraint(ConstraintType.ISNOTINCLUDED,
 				null, new SetVariable[]{sv1, sv2});
 	}
 
@@ -3237,7 +3237,7 @@ public class Choco{
 	 * @return the new constraint
 	 */
 	public static Constraint regular(DFA auto, IntegerVariable[] vars) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.REGULAR,
+		return new ComponentConstraint(ConstraintType.REGULAR,
 				auto, vars);
 	}
 
@@ -3252,7 +3252,7 @@ public class Choco{
 	 * @return the new constraint
 	 */
 	public static Constraint regular(Automaton auto, IntegerVariable[] vars) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.FASTREGULAR,
+		return new ComponentConstraint(ConstraintType.FASTREGULAR,
 				auto, vars);
 	}
 
@@ -3268,7 +3268,7 @@ public class Choco{
 	 */
 	public static Constraint regular(String regexp, IntegerVariable[] vars) {
 		//return new Regular2Constraint(vars, regexp);
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.REGULAR,
+		return new ComponentConstraint(ConstraintType.REGULAR,
 				regexp, vars);
 	}
 
@@ -3285,7 +3285,7 @@ public class Choco{
 	 */
 	public static Constraint regular(IntegerVariable[] vars, List<int[]> tuples) {
 		//return new Regular3Constraint(vars, tuples);
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.REGULAR,
+		return new ComponentConstraint(ConstraintType.REGULAR,
 				tuples, vars);
 	}
 
@@ -3306,7 +3306,7 @@ public class Choco{
 	 */
 	public static Constraint regular(IntegerVariable[] vars, List<int[]> tuples, int[] min, int[] max) {
 		//return new Regular4Constraint(vars, tuples, min, max);
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.REGULAR,
+		return new ComponentConstraint(ConstraintType.REGULAR,
 				new Object[]{tuples, min, max}, vars);
 	}
 
@@ -3321,7 +3321,7 @@ public class Choco{
 	 * @return  a instance of the constraint
 	 */
 	public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable cvar, Automaton auto, int[][] costs){
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.COSTREGULAR, new Object[]{auto, costs},
+		return new ComponentConstraint(ConstraintType.COSTREGULAR, new Object[]{auto, costs},
 				ArrayUtils.append(vars, new IntegerVariable[]{cvar}));
 	}
 
@@ -3336,7 +3336,7 @@ public class Choco{
 	 * @return  a instance of the constraint
 	 */
 	public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable cvar, Automaton auto, double[][][] costs){
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.FASTCOSTREGULAR, new Object[]{auto, costs},
+		return new ComponentConstraint(ConstraintType.FASTCOSTREGULAR, new Object[]{auto, costs},
 				ArrayUtils.append(vars, new IntegerVariable[]{cvar}));
 	}
 
@@ -3351,7 +3351,7 @@ public class Choco{
 	 * @return  a instance of the constraint
 	 */
 	public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable cvar, DirectedMultigraph<Node, Arc> graph, Node source){
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.FASTCOSTREGULAR, new Object[]{graph, source},
+		return new ComponentConstraint(ConstraintType.FASTCOSTREGULAR, new Object[]{graph, source},
 				ArrayUtils.append(vars, new IntegerVariable[]{cvar}));
 	}
 
@@ -3367,7 +3367,7 @@ public class Choco{
      */
     public static Constraint knapsackProblem(IntegerVariable[] vars, IntegerVariable cVar1, IntegerVariable cVar2, int[] costs1, int[] costs2)
     {
-       return new ComponentConstraint<IntegerVariable>(ConstraintType.COSTKNAPSACK,new Object[]{costs1,costs2},
+       return new ComponentConstraint(ConstraintType.COSTKNAPSACK,new Object[]{costs1,costs2},
               ArrayUtils.append(vars,new IntegerVariable[]{cVar1,cVar2}));
     }
 
@@ -3396,7 +3396,7 @@ public class Choco{
         }
 
 
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,dcosts},
+		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,dcosts},
 				ArrayUtils.append(vars, cvar));
 	}
 
@@ -3411,7 +3411,7 @@ public class Choco{
 	 * @return  a instance of the constraint
 	 */
 	public static Constraint multiCostRegular(IntegerVariable[] vars, IntegerVariable[] cvar, Automaton auto, double[][][] costs){
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,costs},
+		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,costs},
 				ArrayUtils.append(vars, cvar));
 	}
 	/**
@@ -3426,14 +3426,14 @@ public class Choco{
 	 */
     @Deprecated
 	public static Constraint multiCostRegular(IntegerVariable[] vars, IntegerVariable[] cvar, Automaton auto, int[][][][] costs){
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,costs},
+		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,costs},
 				ArrayUtils.append(vars, cvar));
 	}
 
 
 
 	public static Constraint tree(TreeParametersObject param){
-		return new ComponentConstraint<Variable>(ConstraintType.TREE, param, param.extractVariables());
+		return new ComponentConstraint(ConstraintType.TREE, param, param.extractVariables());
 	}
 
 	/**
@@ -3445,20 +3445,20 @@ public class Choco{
 	 * @return a constraint
 	 */
 	public static Constraint equation(IntegerVariable[] vars,int[] coeffs, int val) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.REGULAR,
+		return new ComponentConstraint(ConstraintType.REGULAR,
 				new int[][]{coeffs,new int[]{val}}, vars);
 	}
 
 	public static Constraint sameSign(IntegerExpressionVariable n1, IntegerExpressionVariable n2) {
-		return new ComponentConstraint<Variable>(ConstraintType.SIGNOP, true, new Variable[]{n1, n2});
+		return new ComponentConstraint(ConstraintType.SIGNOP, true, new Variable[]{n1, n2});
 	}
 
 	public static Constraint oppositeSign(IntegerExpressionVariable n1, IntegerExpressionVariable n2) {
-		return new ComponentConstraint<Variable>(ConstraintType.SIGNOP, false, new Variable[]{n1, n2});
+		return new ComponentConstraint(ConstraintType.SIGNOP, false, new Variable[]{n1, n2});
 	}
 
 	public static Constraint mod(IntegerVariable v0, IntegerVariable v1, int c) {
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.MOD, null, new IntegerVariable[]{v0, v1, constant(c)});
+		return new ComponentConstraint(ConstraintType.MOD, null, new IntegerVariable[]{v0, v1, constant(c)});
 	}
 
 	public static Constraint reifiedIntConstraint(IntegerVariable binVar, Constraint cst) {
@@ -3478,7 +3478,7 @@ public class Choco{
 	 */
 	public static Constraint clause(IntegerVariable[] positiveLiterals, IntegerVariable[] negativeLiterals){
 		IntegerVariable[] literals = ArrayUtils.append(positiveLiterals, negativeLiterals);
-		return new ComponentConstraint<IntegerVariable>(ConstraintType.CLAUSES, positiveLiterals.length, literals);
+		return new ComponentConstraint(ConstraintType.CLAUSES, positiveLiterals.length, literals);
 
 	}
 
@@ -3492,7 +3492,7 @@ public class Choco{
         for(IntegerVariable lit : literals){
             if(!lit.isBoolean())throw new ModelException("OR constraint must be used with boolean variables");
         }
-        return new ComponentConstraint<IntegerVariable>(ConstraintType.OR, null, literals);
+        return new ComponentConstraint(ConstraintType.OR, null, literals);
     }
 
     /**
@@ -3507,7 +3507,7 @@ public class Choco{
         for(IntegerVariable var : vars){
             if(!var.isBoolean())throw new ModelException("reifiedOr constraint must be used with boolean variables");
         }
-        return new ComponentConstraint<IntegerVariable>(ConstraintType.REIFIEDOR, null, vars);
+        return new ComponentConstraint(ConstraintType.REIFIEDOR, null, vars);
     }
 
     /**
@@ -3520,7 +3520,7 @@ public class Choco{
         for(IntegerVariable lit : literals){
             if(!lit.isBoolean())throw new ModelException("AND constraint must be used with boolean variables");
         }
-        return new ComponentConstraint<IntegerVariable>(ConstraintType.AND, null, literals);
+        return new ComponentConstraint(ConstraintType.AND, null, literals);
     }
 
     /**
@@ -3535,7 +3535,7 @@ public class Choco{
         for(IntegerVariable var : vars){
             if(!var.isBoolean())throw new ModelException("reifiedOr constraint must be used with boolean variables");
         }
-        return new ComponentConstraint<IntegerVariable>(ConstraintType.REIFIEDAND, null, vars);
+        return new ComponentConstraint(ConstraintType.REIFIEDAND, null, vars);
     }
 
     /**
@@ -3550,7 +3550,7 @@ public class Choco{
         for(IntegerVariable var : vars){
             if(!var.isBoolean())throw new ModelException("xor constraint must be used with boolean variables");
         }
-        return new ComponentConstraint<IntegerVariable>(ConstraintType.XOR, null, vars);
+        return new ComponentConstraint(ConstraintType.XOR, null, vars);
 	}
 
     /**
@@ -3565,7 +3565,7 @@ public class Choco{
         for(IntegerVariable var : lits){
             if(!var.isBoolean())throw new ModelException("xor constraint must be used with boolean variables");
         }
-        return new ComponentConstraint<IntegerVariable>(ConstraintType.XOR, null, lits);
+        return new ComponentConstraint(ConstraintType.XOR, null, lits);
 	}
 
     /**
@@ -3581,7 +3581,7 @@ public class Choco{
         for(IntegerVariable var : vars){
             if(!var.isBoolean())throw new ModelException("reifiedXor constraint must be used with boolean variables");
         }
-        return new ComponentConstraint<IntegerVariable>(ConstraintType.REIFIEDXOR, null, vars);
+        return new ComponentConstraint(ConstraintType.REIFIEDXOR, null, vars);
     }
 
     /**
@@ -3596,7 +3596,7 @@ public class Choco{
         for(IntegerVariable var : lits){
             if(!var.isBoolean())throw new ModelException("xnor constraint must be used with boolean variables");
         }
-        return new ComponentConstraint<IntegerVariable>(ConstraintType.XNOR, null, lits);
+        return new ComponentConstraint(ConstraintType.XNOR, null, lits);
 	}
 
     /**
@@ -3612,7 +3612,7 @@ public class Choco{
         for(IntegerVariable var : vars){
             if(!var.isBoolean())throw new ModelException("reifiedXnor constraint must be used with boolean variables");
         }
-        return new ComponentConstraint<IntegerVariable>(ConstraintType.REIFIEDXNOR, null, vars);
+        return new ComponentConstraint(ConstraintType.REIFIEDXNOR, null, vars);
     }
 
     /**
@@ -3628,7 +3628,7 @@ public class Choco{
         for(IntegerVariable var : vars){
             if(!var.isBoolean())throw new ModelException("reifiedLeftImpl constraint must be used with boolean variables");
         }
-        return new ComponentConstraint<IntegerVariable>(ConstraintType.REIFIEDIMPLICATION, null, vars);
+        return new ComponentConstraint(ConstraintType.REIFIEDIMPLICATION, null, vars);
     }
 
     /**
@@ -3644,7 +3644,7 @@ public class Choco{
         for(IntegerVariable var : vars){
             if(!var.isBoolean())throw new ModelException("reifiedRightImp constraint must be used with boolean variables");
         }
-        return new ComponentConstraint<IntegerVariable>(ConstraintType.REIFIEDIMPLICATION, null, vars);
+        return new ComponentConstraint(ConstraintType.REIFIEDIMPLICATION, null, vars);
     }
 
 	// ############################################################################################################

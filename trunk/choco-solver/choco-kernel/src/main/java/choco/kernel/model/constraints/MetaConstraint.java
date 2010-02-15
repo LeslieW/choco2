@@ -58,15 +58,6 @@ public class MetaConstraint<E extends Constraint> extends AbstractConstraint {
         this.constraints = constraints;
     }
 
-    /**
-     * Preprocessing that helps the garbage collector.
-     */
-    @Override
-    public void freeMemory() {
-        Arrays.fill(constraints, null);
-        constraints = null;
-    }
-
     public E[] getConstraints() {
         return constraints;
     }

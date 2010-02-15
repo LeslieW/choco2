@@ -74,7 +74,7 @@ public class ElementGTest {
 		vars[vars.length-2] = index;
 		vars[vars.length-1] = var;
 
-        Constraint element = new ComponentConstraint<IntegerVariable>(ElementGManager.class, 0, vars);
+        Constraint element = new ComponentConstraint(ElementGManager.class, 0, vars);
         // fin
 
         m.addConstraint(element);

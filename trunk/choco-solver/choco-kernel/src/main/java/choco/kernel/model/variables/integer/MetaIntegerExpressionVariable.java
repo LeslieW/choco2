@@ -49,15 +49,6 @@ public class MetaIntegerExpressionVariable extends IntegerExpressionVariable {
 		return constraints;
 	}
 
-	/**
-	 * Preprocessing that helps the garbage collector.
-	 */
-	@Override
-	public void freeMemory() {
-		Arrays.fill(constraints, null);
-		constraints = null;
-		super.freeMemory();
-	}
 
 	@Override
 	protected Variable[] doExtractVariables() {

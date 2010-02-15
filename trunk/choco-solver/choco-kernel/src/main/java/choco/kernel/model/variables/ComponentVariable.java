@@ -62,7 +62,7 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
 	 * For expressions 
 	 */
 	protected ComponentVariable(final VariableType variableType, final Object parameters, final ComponentVariable... vars) {
-		super(variableType, vars, true);
+		super(variableType, vars, false); //disable options
 		this.parameters=parameters;
 	}
 	
@@ -82,17 +82,6 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
 		this.expressionManager = operatorManager;
 	}
 
-	/**
-	 * Preprocessing that helps the garbage collector.
-	 */
-	@Override
-	public void freeMemory() {
-//		Arrays.fill(variables, null);
-//		variables = null;
-		//constraints.clear();
-		//cstr = null;
-		super.freeMemory();
-	}
 
 	public final String getComponentClass() {
 		return variableManager;

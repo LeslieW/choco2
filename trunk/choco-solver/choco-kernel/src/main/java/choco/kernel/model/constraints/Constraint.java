@@ -22,18 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.constraints;
 
-import choco.IGarbageCollectorAssistant;
+import java.util.logging.Logger;
+
 import choco.IPretty;
 import choco.kernel.common.IIndex;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.IFindManager;
 import choco.kernel.model.IOptions;
 import choco.kernel.model.IVariableArray;
-import choco.kernel.model.variables.Variable;
-
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.logging.Logger;
 
 /*
  * Created by IntelliJ IDEA.
@@ -42,7 +38,7 @@ import java.util.logging.Logger;
  * Since : Choco 2.0.0
  *
  */
-public interface Constraint extends IPretty, IIndex,IVariableArray, IFindManager, IOptions, IGarbageCollectorAssistant {
+public interface Constraint extends IPretty, IIndex,IVariableArray, IFindManager, IOptions {
 
     final static Logger LOGGER = ChocoLogging.getEngineLogger();
 

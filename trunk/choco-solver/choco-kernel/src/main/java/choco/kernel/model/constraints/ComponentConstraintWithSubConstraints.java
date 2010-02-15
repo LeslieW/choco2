@@ -37,7 +37,7 @@ import choco.kernel.model.variables.Variable;
 * Since : Choco 2.0.1
 * Update : Choco 2.0.1
 */
-public class ComponentConstraintWithSubConstraints extends ComponentConstraint<Variable>{
+public class ComponentConstraintWithSubConstraints extends ComponentConstraint {
 
     private final List<Constraint> constraints;
    
@@ -59,15 +59,6 @@ public class ComponentConstraintWithSubConstraints extends ComponentConstraint<V
         this.constraints = new LinkedList<Constraint>(ArrayUtils.toList(constraints));
     }
 
-    /**
-     * Preprocessing that helps the garbage collector.
-     */
-    @Override
-    public void freeMemory() {
-        constraints.clear();
-        //listVars.clear();
-        super.freeMemory();
-    }
 
     public void addElements(Variable[] vars, Constraint... cstrs){
     	Variable[] currentV = getVariables();

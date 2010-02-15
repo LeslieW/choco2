@@ -24,8 +24,8 @@ package choco.kernel.model.constraints;
 
 import choco.kernel.model.variables.Variable;
 
-public class ComponentConstraint<V extends Variable> extends AbstractConstraint {
-	//TODO remove generic ?
+public class ComponentConstraint extends AbstractConstraint {
+
 	protected final Object parameters;
 
     public ComponentConstraint(final ConstraintType constraintType, final Object parameters, final Variable[] variables) {
@@ -42,16 +42,7 @@ public class ComponentConstraint<V extends Variable> extends AbstractConstraint 
         super(componentClass.getName(), variables);
         this.parameters = parameters;
     }
-    
-	/**
-     * Preprocessing that helps the garbage collector.
-     */
-    @Override
-    public void freeMemory() {
-        //Arrays.fill(variables, null);
-        //variables = null;
-        //parameters = null;
-    }
+   
 
     public Object getParameters() {
         return parameters;

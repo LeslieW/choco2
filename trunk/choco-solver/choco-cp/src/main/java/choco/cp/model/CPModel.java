@@ -165,46 +165,6 @@ public class CPModel implements Model {
 		}
 	}
 
-	/**
-	 * Preprocessing that helps the garbage collector.
-	 */
-	@Override
-	public void freeMemory() {
-		for(Iterator<IntegerVariable> it = intVars.iterator();it.hasNext();){
-			it.next().freeMemory();
-		}
-		intVars.clear();
-		for(Iterator<SetVariable> it = setVars.iterator();it.hasNext();){
-			it.next().freeMemory();
-		}
-		setVars.clear();
-		for(Iterator<RealVariable> it = floatVars.iterator();it.hasNext();){
-			it.next().freeMemory();
-		}
-		floatVars.clear();
-		for(Iterator<Variable> it = constantVars.iterator();it.hasNext();){
-			it.next().freeMemory();
-		}
-		constantVars.clear();
-		for(Iterator<IntegerExpressionVariable> it = expVars.iterator();it.hasNext();){
-			it.next().freeMemory();
-		}
-		expVars.clear();
-		for(Iterator<MultipleVariables> it = storedMultipleVariables.iterator();it.hasNext();){
-			it.next().freeMemory();
-		}
-		storedMultipleVariables.clear();
-		for(Iterator<Constraint> it = constraints.iterator();it.hasNext();){
-			it.next().freeMemory();
-		}
-		constraints.clear();
-		constraintsByType.clear();
-		if(clausesStore!=null){
-			clausesStore.freeMemory();
-			clausesStore = null;
-		}
-	}
-
 	public String pretty() {
 		StringBuffer buf = new StringBuffer("Pb[" + getNbTotVars() + " vars, "+getNbStoredMultipleVars() + " multiple vars, " + getNbConstraints() + " cons]\n");
 		buf.append(this.varsToString());
