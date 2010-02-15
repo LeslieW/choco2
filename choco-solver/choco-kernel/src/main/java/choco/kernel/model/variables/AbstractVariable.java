@@ -155,31 +155,6 @@ public abstract class AbstractVariable extends ModelObject implements Variable, 
 	@Deprecated
 	public Iterator<Constraint> getConstraintIterator() {
 		throw new UnsupportedOperationException("deprecated");
-//		new Iterator<Constraint>(){
-//			int n = 0;
-//			Iterator<Constraint> it = (variables.length > 0? variables[n].getConstraintIterator(): null);
-//
-//			public boolean hasNext() {
-//				if (it == null) {
-//					return false;
-//				}
-//				while (n < variables.length && !it.hasNext()) {
-//					n++;
-//					if (n < variables.length) {
-//						it = variables[n].getConstraintIterator();
-//					}
-//				}
-//				return n < variables.length && it.hasNext();
-//			}
-//
-//			public Constraint next() {
-//				return it.next();
-//			}
-//
-//			public void remove() {
-//				it.remove();
-//			}
-//		};
 	}
 
 	public final Iterator<Constraint> getConstraintIterator(final Model m) {

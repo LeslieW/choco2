@@ -32,6 +32,7 @@ import choco.kernel.model.IConstraintList;
 import choco.kernel.model.IFindManager;
 import choco.kernel.model.IOptions;
 import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.ExpressionManager;
 
 /**
  * Created by IntelliJ IDEA.
@@ -61,6 +62,9 @@ public interface Variable extends IConstraintList, IPretty, IIndex, IFindManager
 	//replaced by
 	//public int getNbConstraint(Model m);
 
+	VariableManager<?> getVariableManager();
+	
+	ExpressionManager getExpressionManager();
 }
 
 
