@@ -38,6 +38,8 @@ import choco.kernel.solver.variables.scheduling.ITask;
 
 import java.util.*;
 
+import junit.framework.Assert;
+
 /**
  * @author Arnaud Malapert</br> 
  * @since 2 mars 2009 version 2.0.3</br>
@@ -87,8 +89,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 
 	protected void applyRemovals() throws ContradictionException {
 		for (IRTask t : removals) {
-			assert(t.isOptional());
-			t.remove();
+			Assert.assertEquals(true, t.isEliminated());
 			this.remove(t);
 		}
 	}
@@ -135,8 +136,10 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		}
 	}
 
-	private void setAsRemoval() {
+	private void setAsRemoval() throws ContradictionException{
 		final IRTask j = (IRTask) altDisjTreeTL.getResponsibleTask();
+		//Disable optional task
+		j.remove();
 		removals.add(j);
 		altDisjTreeTL.removeFromLambda(j.getTaskVar());
 	}
@@ -146,8 +149,9 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 	 * @param respTask: task that will be removed
 	 * @param omega: specifies whether the task should be removed from Omega, or Lambda
 	 */
-	private void setAsRemoval(IRTask respTask, boolean omega)
-	{
+	private void setAsRemoval(IRTask respTask, boolean omega) throws ContradictionException{
+		//Disable optional task.
+		respTask.remove();
 		removals.add(respTask);
 		if(!omega)
 			altDisjTreeTLTO.removeFromLambda(respTask.getTaskVar());
@@ -157,7 +161,6 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 
 	@Override
 	public void remove(IRTask rtask) {
-		//assert(rtask.isOptional()); move into applyRemovals to avoid failure of awakeOnInst
 		makeRemovalSwap(rtasks, rtask);
 		makeRemovalSwap(rqueue.elementData, rtask);
 		//Remove disabled task from TL, and TLTO trees.
@@ -278,7 +281,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 	}
 
 	@Override
-	public boolean overloadChecking() {
+	public boolean overloadChecking(){
 		this.clear();
 		Arrays.sort(rtasks, 0, size.get(), makeRLatestCompletionTimeCmp());
 		this.setup(altDisjTreeTL, ECT);
@@ -287,7 +290,11 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 			insertInTree(t);
 			if(altDisjTreeTL.getTime()> i.getLCT()) {return true;}
 			while( altDisjTreeTL.getGrayTime() >  i.getLCT()) {
-				setAsRemoval();
+				try {
+					setAsRemoval();
+				} catch (ContradictionException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		setMakespanLB(altDisjTreeTL);
@@ -400,9 +407,8 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 	 * is optional
 	 * @param j
 	 */
-	private void checkSTLO(IRTask j, TreeMode mode){
-		if(!removals.contains(j)){
-			//To overcome the problem of not applying a removal of optional tasks immediately.
+	private void checkSTLO(IRTask j, TreeMode mode)throws ContradictionException{
+			
 			//Temporarily remove task j from omega, and embed it in Theta
 			altDisjTreeTLTO.removeFromOmega(j);
 			altDisjTreeTLTO.insertInTheta(j);
@@ -447,7 +453,6 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 				}
 				break;
 			}
-		}
 	}
 
 	private void checkTL(ITask j, TreeMode mode) throws ContradictionException{
@@ -508,7 +513,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 	}
 
 
-	private void checkTO(ITask j, TreeMode mode)
+	private void checkTO(ITask j, TreeMode mode) throws ContradictionException
 	{
 		switch(mode){
 		case ECT:
