@@ -22,13 +22,14 @@
  **************************************************/
 package choco.kernel.model.variables.scheduling;
 
+import java.util.Properties;
+
 import choco.kernel.model.ModelException;
-import choco.kernel.model.variables.IComponentVariable;
+import choco.kernel.model.constraints.ManagerFactory;
 import choco.kernel.model.variables.MultipleVariables;
+import choco.kernel.model.variables.VariableManager;
 import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerVariable;
-
-import java.util.Properties;
 
 /*
  * User : charles
@@ -37,7 +38,7 @@ import java.util.Properties;
  * Since : Choco 2.0.1
  * Update : Choco 2.0.1
  */
-public class TaskVariable extends MultipleVariables implements IComponentVariable, ITaskVariable<IntegerVariable>{
+public class TaskVariable extends MultipleVariables implements ITaskVariable<IntegerVariable>{
 
 	protected String variableManager;
 
@@ -47,9 +48,9 @@ public class TaskVariable extends MultipleVariables implements IComponentVariabl
 	}
 
 
-
-	public String getComponentClass() {
-		return variableManager;
+	@Override
+	public VariableManager<?> getVariableManager() {
+		return ManagerFactory.loadVariableManager(variableManager);
 	}
 
 	/**
@@ -79,22 +80,22 @@ public class TaskVariable extends MultipleVariables implements IComponentVariabl
 	}
 
 
-    @Override
-    public boolean isEquivalentTo(MultipleVariables mv) {
-        if (mv instanceof TaskVariable) {
-            TaskVariable t = (TaskVariable) mv;
-            boolean r = (t.start().getIndex() == this.start().getIndex() &&
-                t.duration().getIndex() == this.duration().getIndex());
-            /*r &= (t.end() == null ||
+	@Override
+	public boolean isEquivalentTo(MultipleVariables mv) {
+		if (mv instanceof TaskVariable) {
+			TaskVariable t = (TaskVariable) mv;
+			boolean r = (t.start().getIndex() == this.start().getIndex() &&
+					t.duration().getIndex() == this.duration().getIndex());
+			/*r &= (t.end() == null ||
                     this.end() == null ||
                     t.end().getIndex() == this.end().getIndex());*/
-            return r;
+			return r;
 
-        }
-        return false;
-    }
+		}
+		return false;
+	}
 
-    @Override
+	@Override
 	public String pretty() {
 		final StringBuilder buffer = new StringBuilder();
 		buffer.append(name).append(" {").append(start().pretty());

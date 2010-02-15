@@ -224,9 +224,8 @@ public class CPModelToCPSolver {
 
     @SuppressWarnings({"unchecked"})
     public Var readModelVariable(Variable v) {
-		if (v instanceof IComponentVariable) {
-			final IComponentVariable vv = (IComponentVariable) v;
-			final VariableManager vm = ManagerFactory.loadVariableManager(vv.getComponentClass());
+		final VariableManager vm = v.getVariableManager();
+    	if (vm != null) {
 			final Var var = vm.makeVariable(cpsolver, v);
 			checkOptions(v, var);
 			return var;

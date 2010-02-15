@@ -24,6 +24,8 @@ package choco.kernel.model.variables;
 
 import java.util.Properties;
 
+import choco.kernel.model.constraints.ExpressionManager;
+
 /* 
  * Created by IntelliJ IDEA.
  * User: charles
@@ -71,8 +73,20 @@ public abstract class MultipleVariables extends AbstractVariable {
 			getVariable(i).findManager(properties);
 		}
     }
+    
+    
 
-    /**
+    @Override
+	public ExpressionManager getExpressionManager() {
+    	return null;
+	}
+
+	@Override
+	public VariableManager<?> getVariableManager() {
+		return null;
+	}
+
+	/**
      * Check wether to Multiple variables are equivalents
      * @param mv
      * @return

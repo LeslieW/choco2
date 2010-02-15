@@ -39,7 +39,7 @@ import choco.kernel.model.constraints.ManagerFactory;
  * User:    charles
  * Date: 8 août 2008
  */
-public abstract class ComponentVariable extends AbstractVariable implements IComponentVariable {
+public abstract class ComponentVariable extends AbstractVariable {
 
 
 	public final static IConstraintList NO_CONSTRAINTS_DS = new NoConstraintDataStructure();
@@ -83,11 +83,11 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
 	}
 
 
-	public final String getComponentClass() {
+	protected final String getComponentClass() {
 		return variableManager;
 	}
 
-	public final String getOperatorClass(){
+	protected final String getOperatorClass(){
 		if(expressionManager!=null){
 			return expressionManager;
 		}
@@ -103,9 +103,9 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
 		return operator;
 	}
 
-	public final void setOperator(Operator operator) {
-		this.operator = operator;
-	}
+//	public final void setOperator(Operator operator) {
+//		this.operator = operator;
+//	}
 
 	
 
@@ -149,7 +149,6 @@ public abstract class ComponentVariable extends AbstractVariable implements ICom
 		public void _addConstraint(Constraint c) {
 			reuseConstraints=null;
 			constraints.add(c);
-
 		}
 
 		@Override
