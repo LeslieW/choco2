@@ -29,6 +29,7 @@ import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.constraints.ExpressionManager;
 import choco.kernel.model.constraints.MetaConstraint;
+import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.INode;
@@ -47,7 +48,7 @@ public class IfThenElseManager implements ExpressionManager {
      * @param vars   variables
      * @return
      */
-    public INode makeNode(Solver solver, Constraint[] cstrs, IntegerExpressionVariable[] vars) {
+    public INode makeNode(Solver solver, Constraint[] cstrs, Variable[] vars) {
         if(solver instanceof CPSolver){
             CPSolver s = (CPSolver)solver;
             INode[] nt = new INode[3];
@@ -68,8 +69,8 @@ public class IfThenElseManager implements ExpressionManager {
                     ev[j]  = (IntegerExpressionVariable)cstrs[0].getVariables()[j];
                 }
                 nt[0] = cstrs[0].getExpressionManager().makeNode(solver, new Constraint[]{cstrs[0]}, ev);
-                nt[1] = vars[0].getExpressionManager().makeNode(s, vars[0].getConstraints(), vars[0].getExpVariables());
-                nt[2] = vars[1].getExpressionManager().makeNode(s, vars[1].getConstraints(), vars[1].getExpVariables());
+                nt[1] = vars[0].getExpressionManager().makeNode(s, vars[0].getConstraints(), vars[0].getVariables());
+                nt[2] = vars[1].getExpressionManager().makeNode(s, vars[1].getConstraints(), vars[1].getVariables());
                 return new IfThenElseNode(nt);
             }
         }

@@ -189,7 +189,7 @@ public class StrongConsistencyManager extends IntConstraintManager {
 
     @Override
     public INode makeNode(Solver solver, Constraint[] cstrs,
-            IntegerExpressionVariable[] vars) {
+            Variable[] vars) {
         // TODO Auto-generated method stub
         return null;
     }

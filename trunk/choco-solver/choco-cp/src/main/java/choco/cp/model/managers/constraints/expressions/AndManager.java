@@ -30,6 +30,7 @@ import choco.cp.solver.constraints.reified.leaves.bool.AndNode;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.MetaConstraint;
+import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -75,7 +76,7 @@ public class AndManager extends IntConstraintManager {
      * @param vars   variables
      * @return
      */
-    public INode makeNode(Solver solver, Constraint[] cstrs, IntegerExpressionVariable[] vars) {
+    public INode makeNode(Solver solver, Constraint[] cstrs, Variable[] vars) {
         MetaConstraint mc = (MetaConstraint)cstrs[0];
         INode[] nt = new INode[mc.getConstraints().length];
         for (int i = 0; i < mc.getConstraints().length; i++) {

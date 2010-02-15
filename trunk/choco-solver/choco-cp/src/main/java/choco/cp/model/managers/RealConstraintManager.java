@@ -26,6 +26,7 @@ import choco.kernel.model.constraints.ConstraintManager;
 import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.real.RealExpressionVariable;
 import choco.kernel.model.variables.real.RealVariable;
+import choco.kernel.model.variables.Variable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.real.RealExp;
@@ -47,7 +48,8 @@ public abstract class RealConstraintManager extends ConstraintManager<RealVariab
      * @return a list of domains accepted by the constraint and sorted
      *         by order of preference
      */
-    public int[] getFavoriteDomains(Set<String> options) {
+    @Override
+	public int[] getFavoriteDomains(Set<String> options) {
         return new int[]{RealVar.BOUNDS};
     }
 
@@ -58,16 +60,17 @@ public abstract class RealConstraintManager extends ConstraintManager<RealVariab
      * @param vars   variables
      * @return
      */
-    public abstract RealExp makeRealExpression(Solver solver, RealExpressionVariable... vars);
+    public abstract RealExp makeRealExpression(Solver solver, Variable... vars);
 
 
-    public final RealExp getRealExp(Solver s, RealExpressionVariable rev){
+    public final RealExp getRealExp(Solver s, Variable rev){
         if(rev.getVariableType() == VariableType.CONSTANT_DOUBLE){
             return (RealVar)s.getVar(rev);
         }else if(rev.getVariableType() == VariableType.REAL){
             return (RealVar)s.getVar(rev);
         }else if(rev.getVariableType() == VariableType.REAL_EXPRESSION){
-            return ((RealConstraintManager)rev.getRealConstraintManager()).makeRealExpression(s, rev.getExpVariables());
+        	//FIXME avoid cast RealExpressionVariable
+            return ((RealConstraintManager) rev.getConstraintManager()).makeRealExpression(s, rev.getVariables());
         }
         return null;
     }

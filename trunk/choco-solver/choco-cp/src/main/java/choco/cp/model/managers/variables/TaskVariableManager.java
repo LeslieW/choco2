@@ -25,8 +25,8 @@ package choco.cp.model.managers.variables;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableManager;
-import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.INode;
@@ -60,7 +60,7 @@ public class TaskVariableManager implements VariableManager<TaskVariable> {
      * @param vars   variables
      * @return
      */
-    public INode makeNode(Solver solver, Constraint[] cstrs, IntegerExpressionVariable[] vars) {
+    public INode makeNode(Solver solver, Constraint[] cstrs, Variable[] vars) {
         return null;
     }
 }

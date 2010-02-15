@@ -74,6 +74,7 @@ public abstract class AbstractVariable extends ModelObject implements Variable, 
 		return name;
 	}
 
+
 	public final void setName(String name) {
 		this.name = name;
 	}

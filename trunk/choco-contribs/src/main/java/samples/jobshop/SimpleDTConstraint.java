@@ -3,7 +3,7 @@ package samples.jobshop;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.constraints.strong.ISpecializedConstraint;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.integer.IntegerExpressionVariable;
+import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -131,7 +131,7 @@ public class SimpleDTConstraint extends AbstractBinIntSConstraint implements
 
             @Override
         public INode makeNode(Solver solver, Constraint[] cstrs,
-                IntegerExpressionVariable[] vars) {
+                Variable[] vars) {
             // TODO Auto-generated method stub
             return null;
         }

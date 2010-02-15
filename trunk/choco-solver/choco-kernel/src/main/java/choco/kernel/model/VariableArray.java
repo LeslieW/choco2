@@ -92,7 +92,9 @@ public class VariableArray implements IVariableArray {
 
 		@Override
 		public void removeConstraints() {
-			//TODO Charles, specifications ?
+			for(Variable v : variables){
+				v.removeConstraints();
+			}
 		}
 
 		@Override

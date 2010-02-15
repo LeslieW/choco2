@@ -25,6 +25,7 @@ package choco.cp.model.managers.variables;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ExpressionManager;
+import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.INode;
@@ -42,11 +43,11 @@ public class IntegerExpressionManager implements ExpressionManager {
      * @param variables
      * @return
      */
-    public INode makeNode(Solver solver, Constraint[] cstrs, IntegerExpressionVariable[] variables) {
+    public INode makeNode(Solver solver, Constraint[] cstrs, Variable[] variables) {
         if(solver instanceof CPSolver){
             if(variables.length == 1){
-                IntegerExpressionVariable var = variables[0];
-                return var.getExpressionManager().makeNode(solver, cstrs, var.getExpVariables());
+                final Variable var = variables[0];
+                return var.getExpressionManager().makeNode(solver, cstrs, var.getVariables());
             }
         }
         return null;

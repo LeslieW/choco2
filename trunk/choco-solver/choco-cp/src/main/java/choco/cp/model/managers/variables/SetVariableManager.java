@@ -27,9 +27,9 @@ import choco.cp.solver.constraints.set.SetCard;
 import choco.cp.solver.variables.set.SetVarImpl;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableManager;
 import choco.kernel.model.variables.VariableType;
-import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.INode;
@@ -91,7 +91,7 @@ public class SetVariableManager implements VariableManager<SetVariable> {
      * @param vars   variables
      * @return
      */
-    public INode makeNode(Solver solver, Constraint[] cstrs, IntegerExpressionVariable[] vars) {
+    public INode makeNode(Solver solver, Constraint[] cstrs, Variable[] vars) {
         return null;
     }
 }

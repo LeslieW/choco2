@@ -62,16 +62,10 @@ public class IntegerExpressionVariable extends ComponentVariable implements IntB
 		}
 	}
 
-	public IntegerExpressionVariable getExpressionVariable(int i) {
+	public final IntegerExpressionVariable getExpressionVariable(int i) {
 		return (IntegerExpressionVariable) getVariable(i);
 	}
 
-	public IntegerExpressionVariable[] getExpVariables() {
-		//FIXME remove function (deal with only with variable or component-variable ?)
-		IntegerExpressionVariable[] r = new IntegerExpressionVariable[getNbVars()];
-		System.arraycopy(getVariables(), 0, r, 0, getNbVars());
-		return r;
-	}
 
 
 	public final int getLowB() {

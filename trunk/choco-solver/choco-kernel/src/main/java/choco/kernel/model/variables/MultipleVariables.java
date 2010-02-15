@@ -24,6 +24,7 @@ package choco.kernel.model.variables;
 
 import java.util.Properties;
 
+import choco.kernel.model.constraints.ConstraintManager;
 import choco.kernel.model.constraints.ExpressionManager;
 
 /* 
@@ -74,11 +75,14 @@ public abstract class MultipleVariables extends AbstractVariable {
 		}
     }
     
-    
-
     @Override
 	public ExpressionManager getExpressionManager() {
     	return null;
+	}
+    
+    @Override
+	public ConstraintManager<?> getConstraintManager() {
+		return null;
 	}
 
 	@Override

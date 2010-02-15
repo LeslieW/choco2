@@ -32,6 +32,7 @@ import choco.kernel.model.IConstraintList;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.ConstraintManager;
 import choco.kernel.model.constraints.ExpressionManager;
 import choco.kernel.model.constraints.ManagerFactory;
 
@@ -132,9 +133,16 @@ public abstract class ComponentVariable extends AbstractVariable {
 	public ExpressionManager getExpressionManager() {
 		return ManagerFactory.loadExpressionManager(getOperatorClass());
 	}
-
-
 	
+	@Override
+	public ConstraintManager<?> getConstraintManager() {
+		return ManagerFactory.loadConstraintManager(getOperatorClass());
+	}
+
+
+
+
+
 	protected final static class ConstraintsDataStructure implements IConstraintList {
 
 		List<Constraint> constraints;

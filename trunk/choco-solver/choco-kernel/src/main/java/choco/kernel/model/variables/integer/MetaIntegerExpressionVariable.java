@@ -52,7 +52,7 @@ public class MetaIntegerExpressionVariable extends IntegerExpressionVariable {
 
 	@Override
 	protected Variable[] doExtractVariables() {
-		Variable[] tmp = getExpVariables();
+		Variable[] tmp = getVariables();
 		for(Constraint c : constraints){
 			tmp = ArrayUtils.append(tmp, c.extractVariables());
 		}

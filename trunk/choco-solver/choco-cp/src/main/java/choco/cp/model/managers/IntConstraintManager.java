@@ -27,7 +27,7 @@ import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.reified.leaves.ConstraintLeaf;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintManager;
-import choco.kernel.model.variables.integer.IntegerExpressionVariable;
+import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -67,7 +67,7 @@ public abstract class IntConstraintManager extends ConstraintManager<IntegerVari
      * @param vars   variables
      * @return
      */
-    public INode makeNode(Solver solver, Constraint[] cstrs, IntegerExpressionVariable[] vars) {
+    public INode makeNode(Solver solver, Constraint[] cstrs, Variable[] vars) {
         return new ConstraintLeaf(((CPSolver)solver).makeSConstraint(cstrs[0]), null);
     }
 

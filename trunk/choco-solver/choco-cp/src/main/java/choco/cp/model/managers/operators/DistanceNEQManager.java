@@ -27,7 +27,7 @@ import choco.cp.solver.constraints.reified.leaves.bool.DistNeqNode;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ExpressionManager;
-import choco.kernel.model.variables.integer.IntegerExpressionVariable;
+import choco.kernel.model.variables.Variable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.INode;
 
@@ -44,13 +44,13 @@ public class DistanceNEQManager implements ExpressionManager {
      * @param vars
      * @return
      */
-    public INode makeNode(Solver solver, Constraint[] cstrs, IntegerExpressionVariable[] vars) {
+    public INode makeNode(Solver solver, Constraint[] cstrs, Variable[] vars) {
         if(solver instanceof CPSolver){
             CPSolver s = (CPSolver)solver;
             if(vars.length == 2){
                 INode[] nodes = new INode[vars.length];
                 for(int i = 0; i < vars.length; i++){
-                    nodes[i] = vars[i].getExpressionManager().makeNode(s, vars[i].getConstraints(), vars[i].getExpVariables());
+                    nodes[i] = vars[i].getExpressionManager().makeNode(s, vars[i].getConstraints(), vars[i].getVariables());
                 }
                 return new DistNeqNode(nodes);
             }
