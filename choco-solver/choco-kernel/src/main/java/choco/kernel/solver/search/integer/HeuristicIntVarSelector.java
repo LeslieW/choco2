@@ -24,7 +24,7 @@ package choco.kernel.solver.search.integer;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
+import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.List;
@@ -64,10 +64,10 @@ public abstract class HeuristicIntVarSelector extends AbstractIntVarSelector {
       return getMinVar(solver);
   }
 
-  public IntDomainVar getMinVar(IntSConstraint c) throws ContradictionException {
+  public IntDomainVar getMinVar(AbstractIntSConstraint c) throws ContradictionException {
     IntDomainVar[] vars = new IntDomainVar[c.getNbVars()];
     for(int i = 0; i < c.getNbVars(); i++) {
-      vars[i] = c.getIntVar(i);
+      vars[i] = c.getVar(i);
     }
     return getMinVar(vars);
   }
@@ -76,7 +76,7 @@ public abstract class HeuristicIntVarSelector extends AbstractIntVarSelector {
 
   public abstract List<IntDomainVar> getAllMinVars(IntDomainVar[] vars) throws ContradictionException;
 
-  public abstract List<IntDomainVar> getAllMinVars(IntSConstraint c) throws ContradictionException;
+  public abstract List<IntDomainVar> getAllMinVars(AbstractIntSConstraint c) throws ContradictionException;
 
 
 

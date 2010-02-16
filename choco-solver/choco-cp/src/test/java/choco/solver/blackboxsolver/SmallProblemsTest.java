@@ -76,9 +76,7 @@ public class SmallProblemsTest {
         }
 
         CPSolver s = new PreProcessCPSolver();
-//        CPSolver s = new CPSolver();
         s.read(m);
-        System.out.println(s.pretty());
         s.solve();
         Assert.assertTrue(s.getNbSolutions()>0);
 
@@ -97,7 +95,6 @@ public class SmallProblemsTest {
         }
         CPSolver s = new CPSolver();
         s.read(m);
-        System.out.println(s.pretty());
         s.solve();
         Assert.assertTrue(s.getNbSolutions()>0);
     }

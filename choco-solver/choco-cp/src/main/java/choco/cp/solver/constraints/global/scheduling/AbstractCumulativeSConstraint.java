@@ -95,7 +95,7 @@ public abstract class AbstractCumulativeSConstraint extends AbstractResourceSCon
 
 	@Override
 	public final IntDomainVar getCapacity() {
-		return getIntVar(indexCapacity);
+		return getVar(indexCapacity);
 	}
 
 	@Override
@@ -125,7 +125,7 @@ public abstract class AbstractCumulativeSConstraint extends AbstractResourceSCon
 	}
 
 	public final IntDomainVar getHeight(final int idx) {
-		return getIntVar(getTaskIntVarOffset() + idx);
+		return getVar(getTaskIntVarOffset() + idx);
 	}
 
 	@Override

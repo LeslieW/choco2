@@ -25,20 +25,17 @@ package choco.cp.solver.constraints.strong;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
-import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public class Adapter extends AbstractIntSConstraint implements
-        ISpecializedConstraint {
+public class Adapter extends AbstractIntSConstraint implements ISpecializedConstraint {
 
     private static final int[] tuple = new int[2];
 
-    private final IntSConstraint sConstraint;
+    private final AbstractIntSConstraint sConstraint;
 
-    public Adapter(IntSConstraint sConstraint) {
-        super(ConstraintEvent.MEDIUM);
+    public Adapter(AbstractIntSConstraint sConstraint) {
+        super(ConstraintEvent.MEDIUM, new IntDomainVar[]{});
         this.sConstraint = sConstraint;
     }
 
@@ -93,7 +90,7 @@ public class Adapter extends AbstractIntSConstraint implements
     }
 
     @Override
-    public void setVar(int i, Var v) {
+    public void setVar(int i, IntDomainVar v) {
         sConstraint.setVar(i, v);
     }
 
@@ -119,7 +116,7 @@ public class Adapter extends AbstractIntSConstraint implements
 
     @Override
     public IntDomainVar getVar(int i) {
-        return sConstraint.getIntVar(i);
+        return sConstraint.getVar(i);
     }
 
     @Override
@@ -137,8 +134,4 @@ public class Adapter extends AbstractIntSConstraint implements
         sConstraint.propagate();
     }
 
-    @Override
-    public IntDomainVar getIntVar(int i) {
-        return sConstraint.getIntVar(i);
-    }
 }

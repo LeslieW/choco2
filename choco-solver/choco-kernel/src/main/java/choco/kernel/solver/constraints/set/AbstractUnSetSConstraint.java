@@ -22,8 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.constraints.set;
 
-import choco.kernel.solver.SolverException;
-import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.set.SetVar;
 
 // **************************************************
@@ -34,114 +32,84 @@ import choco.kernel.solver.variables.set.SetVar;
 // *     for Research and Education                 *
 // **************************************************
 
-public abstract class AbstractUnSetSConstraint extends AbstractSetSConstraint {
+public abstract class AbstractUnSetSConstraint extends AbstractLargeSetSConstraint {
 
-  /**
-   * The unique variable of the constraint.
-   */
+    /**
+     * The unique variable of the constraint.
+     */
 
-  public SetVar v0;
-
-
-  /**
-   * The index of the constraint among all listeners of its first (and unique)
-   * variable.
-   */
-
-  public int cIdx0;
-
-  public AbstractUnSetSConstraint(SetVar v0) {
-    super();
-    this.v0 = v0;
-  }
-
-  @Override
-public Object clone() throws CloneNotSupportedException {
-    return super.clone();
-  }
-
-  /**
-   * Let v be the i-th var of c, records that c is the n-th constraint involving v.
-   */
-
-  public void setConstraintIndex(int i, int val) {
-    if (i == 0) {
-		cIdx0 = val;
-	} else {
-		throw new SolverException("bug in setConstraintIndex i:" + i + " this: " + this);
-	}
-  }
+    public SetVar v0;
 
 
-  /**
-   * Returns the index of this listeners in the variable <code>idx</code>.
-   *
-   * @param idx Index of the variable.
-   */
+    /**
+     * The index of the constraint among all listeners of its first (and unique)
+     * variable.
+     */
 
-  public int getConstraintIdx(int idx) {
-    if (idx == 0) {
-		return cIdx0;
-	} else {
-		return -1;
-	}
-  }
+    public int cIdx0;
 
-
-  /**
-   * Checks if all the variables of the constraint are instantiated.
-   */
-
-  @Override
-public boolean isCompletelyInstantiated() {
-    return v0.isInstantiated();
-  }
-
-
-  /**
-   * Returns the number of variables: 1 for an unIntConstraint.
-   */
-
-  public int getNbVars() {
-    return (1);
-  }
-
-
-  /**
-   * Returns the variable number <code>i</code>. Here, <code>i</code>
-   * should be 0.
-   */
-
-  public Var getVar(int i) {
-    if (i == 0) {
-		return v0;
-	} else {
-		return null;
-	}
-  }
-
-  public void setVar(int i, Var v) {
-    if (v instanceof SetVar) {
-      if (i == 0) {
-		this.v0 = (SetVar) v;
-	} else {
-		throw new SolverException("BUG in CSP network management: too large index for setVar");
-	}
-    } else {
-      throw new SolverException("BUG in CSP network management: wrong type of Var for setVar");
+    public AbstractUnSetSConstraint(SetVar v0) {
+        super(new SetVar[]{v0});
+        this.v0 = v0;
     }
-  }
 
-  /**
-   * Gets the <code>i</code>th search valued variable.
-   */
+    /**
+     * Returns the number of variables: 1 for an unIntConstraint.
+     */
 
-  public SetVar getSetVar(int i) {
-    if (i == 0) {
-		return v0;
-	} else {
-		return null;
-	}
-  }
+    public int getNbVars() {
+        return (1);
+    }
+
+
+    /**
+     * Returns the variable number <code>i</code>. Here, <code>i</code>
+     * should be 0.
+     */
+
+    public SetVar getVar(int i) {
+        if (i == 0) {
+            return v0;
+        } else {
+            return null;
+        }
+    }
+
+
+    /**
+     * Returns the index of this listeners in the variable <code>idx</code>.
+     *
+     * @param idx Index of the variable.
+     */
+
+    public int getConstraintIdx(int idx) {
+        if (idx == 0) {
+            return cIdx0;
+        } else {
+            return -1;
+        }
+    }
+
+
+    /**
+     * Let v be the i-th var of c, records that c is the n-th constraint involving v.
+     */
+
+    public void setConstraintIndex(int i, int val) {
+        super.setConstraintIndex(i, val);
+        if (i == 0) {
+            cIdx0 = val;
+        }
+    }
+
+
+    /**
+     * Checks if all the variables of the constraint are instantiated.
+     */
+
+    @Override
+    public boolean isCompletelyInstantiated() {
+        return v0.isInstantiated();
+    }
 
 }

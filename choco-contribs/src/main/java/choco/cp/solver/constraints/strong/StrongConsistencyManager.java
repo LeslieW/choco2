@@ -32,7 +32,7 @@ import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
+import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.reified.BoolNode;
 import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -40,7 +40,6 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 public class StrongConsistencyManager extends IntConstraintManager {
@@ -70,7 +69,7 @@ public class StrongConsistencyManager extends IntConstraintManager {
         final IntDomainVar[] solverVariables = new IntDomainVar[variables.length];
 
         for (int i = variables.length; --i >= 0;) {
-            solverVariables[i] = solver.getVar((IntegerVariable) variables[i]);
+            solverVariables[i] = solver.getVar(variables[i]);
         }
 
         // Création des contraintes solveur
@@ -83,20 +82,20 @@ public class StrongConsistencyManager extends IntConstraintManager {
             if (allSimpleVariable(mc.getVariables())) {
                 final SConstraint solverConstraint = mc.getConstraintManager().makeConstraint(
                         solver, mc.getVariables(), mc.getParameters(),
-                        (HashSet) mc.getOptions());
+                        mc.getOptions());
                 if (solverConstraint instanceof ISpecializedConstraint) {
                     constraints.add((ISpecializedConstraint) solverConstraint);
                 } else {
                     try {
                         constraints.add(new Adapter(
-                                (IntSConstraint) solverConstraint));
+                                (AbstractIntSConstraint) solverConstraint));
                     } catch (Exception e) {
                         throw new IllegalArgumentException(solverConstraint
                                 + " is not treatable", e);
                     }
                 }
             } else {
-                final IntSConstraint solverConstraint = (IntSConstraint) createMetaConstraint(
+                final AbstractIntSConstraint solverConstraint = (AbstractIntSConstraint) createMetaConstraint(
                         mc, solver).getExtensionnal(solver);
                 constraints.add(new Adapter(solverConstraint));
             }

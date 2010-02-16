@@ -50,7 +50,6 @@ public final class EqualXC extends AbstractUnIntSConstraint {
 
 	public EqualXC(IntDomainVar x0, int c) {
 		super(x0);
-		this.v0 = x0;
 		this.cste = c;
 	}
 

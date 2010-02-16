@@ -26,7 +26,8 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.APartiallyStoredCstrList;
-import choco.kernel.solver.constraints.real.RealSConstraint;
+import choco.kernel.solver.constraints.AbstractSConstraint;
+import choco.kernel.solver.propagation.listener.RealPropagator;
 
 /*
 * User : charles
@@ -35,7 +36,7 @@ import choco.kernel.solver.constraints.real.RealSConstraint;
 * Since : Choco 2.1.0
 * Update : Choco 2.1.0
 */
-public final class PartiallyStoredRealCstrList<C extends RealSConstraint> extends APartiallyStoredCstrList<C> {
+public final class PartiallyStoredRealCstrList<C extends AbstractSConstraint & RealPropagator> extends APartiallyStoredCstrList<C> {
 
     public PartiallyStoredRealCstrList(IEnvironment env) {
         super(env);
@@ -43,7 +44,7 @@ public final class PartiallyStoredRealCstrList<C extends RealSConstraint> extend
 
     private QuickIterator _quickIterator = null;
 
-    public DisposableIterator<Couple> getActiveConstraint(int cstrCause){
+    public DisposableIterator<Couple<C>> getActiveConstraint(int cstrCause){
         QuickIterator iter = _quickIterator;
         if (iter != null && iter.reusable) {
             iter.init(cstrCause);
@@ -53,11 +54,11 @@ public final class PartiallyStoredRealCstrList<C extends RealSConstraint> extend
         return _quickIterator;
     }
 
-    private final class QuickIterator extends DisposableIterator<Couple> {
+    private final class QuickIterator extends DisposableIterator<Couple<C>> {
         boolean reusable;
         int cstrCause;
         DisposableIntIterator cit;
-        Couple<RealSConstraint> cc  = new Couple<RealSConstraint>();
+        Couple<C> cc  = new Couple<C>();
 
 
         public QuickIterator(int cstrCause) {
@@ -109,7 +110,7 @@ public final class PartiallyStoredRealCstrList<C extends RealSConstraint> extend
          *          iteration has no more elements.
          */
         @Override
-        public Couple next() {
+        public Couple<C> next() {
             return cc;
         }
 

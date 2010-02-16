@@ -62,8 +62,8 @@ public class SimpleDTConstraint extends AbstractBinIntSConstraint implements
     }
 
      private void propagate(int position) throws ContradictionException {
-        final IntDomainVar variable = getIntVar(position);
-        final IntDomainVar otherVariable = getIntVar(1 - position);
+        final IntDomainVar variable = getVar(position);
+        final IntDomainVar otherVariable = getVar(1 - position);
 
         final int lBound = otherVariable.getSup() - duration[position];
 
@@ -159,7 +159,7 @@ public class SimpleDTConstraint extends AbstractBinIntSConstraint implements
 
     int nextSupportFrom(int position, int value, int last) {
         int current = nextAllowed(position, value, last);
-        final IntDomainVar var = getIntVar(1 - position);
+        final IntDomainVar var = getVar(1 - position);
 
         while (!var.canBeInstantiatedTo(current)) {
             current = var.getNextDomainValue(current);
@@ -174,13 +174,13 @@ public class SimpleDTConstraint extends AbstractBinIntSConstraint implements
 
      @Override
     public int firstSupport(int position, int value) {
-        return nextSupportFrom(position, value, getIntVar(1 - position)
+        return nextSupportFrom(position, value, getVar(1 - position)
                 .getInf());
     }
 
     @Override
     public int nextSupport(int position, int value, int lastSupport) {
-        final int next = getIntVar(1 - position)
+        final int next = getVar(1 - position)
                 .getNextDomainValue(lastSupport);
         if (next == Integer.MAX_VALUE) {
             return Integer.MAX_VALUE;

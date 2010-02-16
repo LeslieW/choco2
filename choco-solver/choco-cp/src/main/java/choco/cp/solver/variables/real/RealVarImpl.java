@@ -29,8 +29,9 @@ import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
+import choco.kernel.solver.constraints.real.AbstractRealSConstraint;
 import choco.kernel.solver.constraints.real.RealExp;
-import choco.kernel.solver.constraints.real.RealSConstraint;
+import choco.kernel.solver.propagation.listener.RealPropagator;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.real.*;
 
@@ -48,7 +49,7 @@ public final class RealVarImpl extends AbstractVar implements RealVar {
     private final Solver solver;
 
   public RealVarImpl(Solver solver, String name, double a, double b, int domaintype) {
-    super(solver, name, new PartiallyStoredRealCstrList<RealSConstraint>(solver.getEnvironment()));
+    super(solver, name, new PartiallyStoredRealCstrList<AbstractRealSConstraint>(solver.getEnvironment()));
     if (domaintype == RealVar.BOUNDS) {
      this.domain = new RealDomainImpl(this, a, b, solver);
     } else throw new SolverException("Unknown real domain");
@@ -56,7 +57,7 @@ public final class RealVarImpl extends AbstractVar implements RealVar {
       this.solver = solver;
   }
 
-    public final DisposableIterator<Couple<RealSConstraint>> getActiveConstraints(int cstrCause){
+    public final DisposableIterator<Couple<? extends RealPropagator>> getActiveConstraints(int cstrCause){
         //noinspection unchecked
         return ((PartiallyStoredRealCstrList)constraints).getActiveConstraint(cstrCause);
     }

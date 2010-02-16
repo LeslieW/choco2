@@ -59,34 +59,10 @@ public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy impl
 	protected static final int ABSTRACTCONTRAINT_EXTENSION =
 		AbstractSConstraint.getAbstractSConstraintExtensionNumber("choco.cp.cpsolver.search.integer.varselector.DomOverWDeg");
 
-	protected static final class DomOverWDegBranchingConstraintExtension {
-		protected int nbFailure = 0;
-
-		public int getSumWeights() {
-			return nbFailure;
-		}
-
-		public void addFailure() {
-			nbFailure++;
-		}
-	}
-
-	protected static final int ABSTRACTVAR_EXTENSION =
+    protected static final int ABSTRACTVAR_EXTENSION =
 		AbstractVar.getAbstractVarExtensionNumber("choco.cp.cpsolver.search.integer.varselector.DomOverWDeg");
 
-	protected static final class DomOverWDegBranchingVarExtension {
-		protected int sum_weighted = 0;
-
-		public int getSumWeights() {
-			return sum_weighted;
-		}
-
-		public void addWeight(int w) {
-			sum_weighted += w;
-		}
-	}
-
-	// Les variables parmis lesquelles on veut brancher !
+    // Les variables parmis lesquelles on veut brancher !
 	private IntVar[] _vars;
 
 	// L'heuristique pour le svaleurs
@@ -109,19 +85,19 @@ public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy impl
 	public DomOverWDegBranching(Solver s, ValIterator valHeuri, IntVar[] vars) {
 		_solver = s;
 
-		for (Iterator iter = s.getIntConstraintIterator(); iter.hasNext();) {
+		for (Iterator iter = s.getConstraintIterator(); iter.hasNext();) {
 			AbstractSConstraint c = (AbstractSConstraint) iter.next();
-			c.setExtension(ABSTRACTCONTRAINT_EXTENSION, new DomOverWDegBranchingConstraintExtension());
+			c.addExtension(ABSTRACTCONTRAINT_EXTENSION);
 		}
 		for (int i = 0; i < s.getNbIntVars(); i++) {
 			IntVar v = s.getIntVar(i);
-			((AbstractVar) v).setExtension(ABSTRACTVAR_EXTENSION, new DomOverWDegBranchingVarExtension());
+			((AbstractVar) v).addExtension(ABSTRACTVAR_EXTENSION);
 		}
 
 		for (Iterator it = s.getIntConstantSet().iterator(); it.hasNext();) {
 			int val = (Integer) it.next();
 			Var v = s.getIntConstant(val);
-			((AbstractVar) v).setExtension(ABSTRACTVAR_EXTENSION, new DomOverWDegBranchingVarExtension());
+			((AbstractVar) v).addExtension(ABSTRACTVAR_EXTENSION);
 		}
 
 		s.getPropagationEngine().addPropagationEngineListener(this);
@@ -146,19 +122,19 @@ public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy impl
 	public DomOverWDegBranching(Solver s, ValSelector valHeuri, IntVar[] vars) {
 		_solver = s;
 
-		for (Iterator iter = s.getIntConstraintIterator(); iter.hasNext();) {
+		for (Iterator iter = s.getConstraintIterator(); iter.hasNext();) {
 			AbstractSConstraint c = (AbstractSConstraint) iter.next();
-			c.setExtension(ABSTRACTCONTRAINT_EXTENSION, new DomOverWDegBranchingConstraintExtension());
+			c.addExtension(ABSTRACTCONTRAINT_EXTENSION);
 		}
 		for (int i = 0; i < s.getNbIntVars(); i++) {
 			IntVar v = s.getIntVar(i);
-			((AbstractVar) v).setExtension(ABSTRACTVAR_EXTENSION, new DomOverWDegBranchingVarExtension());
+			((AbstractVar) v).addExtension(ABSTRACTVAR_EXTENSION);
 		}
 
 		for (Iterator it = s.getIntConstantSet().iterator(); it.hasNext();) {
 			int val = (Integer) it.next();
 			Var v = s.getIntConstant(val);
-			((AbstractVar) v).setExtension(ABSTRACTVAR_EXTENSION, new DomOverWDegBranchingVarExtension());
+			((AbstractVar) v).addExtension(ABSTRACTVAR_EXTENSION);
 		}
 
 		s.getPropagationEngine().addPropagationEngineListener(this);
@@ -195,17 +171,17 @@ public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy impl
 				idx = c.next();
 				AbstractSConstraint cstr = (AbstractSConstraint) v.getConstraint(idx);
 				if (cstr.getNbVarNotInst() > 1) {
-					weight += ((DomOverWDegBranchingConstraintExtension) cstr.getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure + cstr.getFineDegree(v.getVarIndex(idx));
+					weight += cstr.getExtension(ABSTRACTCONTRAINT_EXTENSION).get() + cstr.getFineDegree(v.getVarIndex(idx));
 				}
 			}
-			((DomOverWDegBranchingVarExtension) ((AbstractVar) v).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted = weight;
+			((AbstractVar) v).getExtension(ABSTRACTVAR_EXTENSION).set(weight);
 		}
 		//logWeights(ChocoLogging.getChocoLogger(), Level.INFO);
 	}
 
 	@Override
 	public void initConstraintForBranching(SConstraint c) {
-		((AbstractSConstraint) c).setExtension(ABSTRACTCONTRAINT_EXTENSION, new DomOverWDegBranchingConstraintExtension());
+		((AbstractSConstraint) c).addExtension(ABSTRACTCONTRAINT_EXTENSION);
 	}
 
 	public void setBranchingVars(IntVar[] vs) {
@@ -228,13 +204,13 @@ public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy impl
 					if (previous_Variable == null) {
 						previous_Variable = var;
 						previous_Size = var.getDomainSize();
-						previous_Weight = ((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted;
+						previous_Weight = ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION).get();
 					} else {
-						if (((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted
+						if (( ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).get()
 								* previous_Size - previous_Weight * var.getDomainSize() > 0) {
 							previous_Variable = var;
 							previous_Size = var.getDomainSize();
-							previous_Weight = ((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted;
+							previous_Weight = ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION).get();
 						}
 					}
 				}
@@ -250,16 +226,16 @@ public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy impl
 					if (previous_Variable == null) {
 						previous_Variable = var;
 						previous_Size = var.getDomainSize();
-						previous_Weight = ((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted;
+						previous_Weight = ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION).get();
 						lvs.add(var);
 					} else {
-						int note = ((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted
+						int note = ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION).get()
 						* previous_Size - previous_Weight * var.getDomainSize();
 						if (note > 0) {
 							lvs.clear();
 							lvs.add(var);
 							previous_Size = var.getDomainSize();
-							previous_Weight = ((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted;
+							previous_Weight = ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION).get();
 						} else if (note >= 0) {
 							lvs.add(var);
 						}
@@ -280,10 +256,9 @@ public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy impl
 			if (SConstraintType.INTEGER.equals(reuseCstr.getConstraintType())) {
 				if (reuseCstr.getNbVarNotInst() == 2) {
 					for (int k = 0; k < reuseCstr.getNbVars(); k++) {
-						AbstractVar var = (AbstractVar) ((AbstractIntSConstraint) reuseCstr).getIntVar(k);
+						AbstractVar var = (AbstractVar) ((AbstractIntSConstraint) reuseCstr).getVar(k);
 						if (var != v && !var.isInstantiated()) {
-							((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted -=
-								((DomOverWDegBranchingConstraintExtension) reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure;
+							var.getExtension(ABSTRACTVAR_EXTENSION).add(-reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION).get());
 						}
 					}
 				}
@@ -314,10 +289,9 @@ public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy impl
 					if (SConstraintType.INTEGER.equals(reuseCstr.getConstraintType())) {
 						if (reuseCstr.getNbVarNotInst() == 2) {
 							for (int k = 0; k < reuseCstr.getNbVars(); k++) {
-								AbstractVar var = (AbstractVar) ((AbstractIntSConstraint) reuseCstr).getIntVar(k);
+								AbstractVar var = (AbstractVar) ((AbstractIntSConstraint) reuseCstr).getVar(k);
 								if (var != v && !var.isInstantiated()) {
-									((DomOverWDegBranchingVarExtension) ((AbstractVar) var).getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted +=
-										((DomOverWDegBranchingConstraintExtension) reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure;
+									var.getExtension(ABSTRACTVAR_EXTENSION).add(reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION).get());
 								}
 							}
 						}
@@ -353,16 +327,15 @@ public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy impl
 			reuseCstr = (AbstractSConstraint) cause;
 			if (SConstraintType.INTEGER.equals(reuseCstr.getConstraintType())) {
 				try {
-					((DomOverWDegBranchingConstraintExtension) reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure++;
+					reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION).add(1);
 				} catch (NullPointerException npe) {
 					// If there was a postCut, the extension has not been generated at the Branching creation
-					reuseCstr.setExtension(ABSTRACTCONTRAINT_EXTENSION, new DomOverWDegBranchingConstraintExtension());
-					((DomOverWDegBranchingConstraintExtension) reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure++;
+					reuseCstr.addExtension(ABSTRACTCONTRAINT_EXTENSION);
+					reuseCstr.getExtension(ABSTRACTCONTRAINT_EXTENSION).add(1);
 				}
 				for (int k = 0; k < reuseCstr.getNbVars(); k++) {
-					AbstractVar var = (AbstractVar) ((AbstractIntSConstraint) reuseCstr).getIntVar(k);
-					DomOverWDegBranchingVarExtension extens = (DomOverWDegBranchingVarExtension) var.getExtension(ABSTRACTVAR_EXTENSION);
-					extens.sum_weighted++;
+					AbstractVar var = (AbstractVar) ((AbstractIntSConstraint) reuseCstr).getVar(k);
+					var.getExtension(ABSTRACTVAR_EXTENSION).add(1);
 				}
 			}
 		}
@@ -370,14 +343,14 @@ public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy impl
 
 	protected final void appendConstraint( StringBuilder b, SConstraint c) {
 		final AbstractSConstraint cstr = (AbstractSConstraint) c;
-		b.append("w=").append( ( (DomOverWDegBranchingConstraintExtension) cstr.getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure);
+		b.append("w=").append( cstr.getExtension(ABSTRACTCONTRAINT_EXTENSION).get());
 		b.append("\t").append(cstr.pretty());
 		b.append('\n');
 	}
 
 	protected final void appendVariable( StringBuilder b, Var v) {
 		AbstractVar var = (AbstractVar) v;
-		b.append("w=").append( ( (DomOverWDegBranchingVarExtension) var.getExtension(ABSTRACTVAR_EXTENSION)).sum_weighted);
+		b.append("w=").append( var.getExtension(ABSTRACTVAR_EXTENSION).get());
 		b.append("\t").append(var.pretty());
 		b.append('\n');
 	}
@@ -387,7 +360,7 @@ public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy impl
 			final StringBuilder b = new StringBuilder();
 			b.append("===> Display DomWDeg weights\n");
 			b.append("\n###\tConstraints\t###\n");
-			for (Iterator<SConstraint> iter = _solver.getIntConstraintIterator(); iter.hasNext();) {
+			for (Iterator<SConstraint> iter = _solver.getConstraintIterator(); iter.hasNext();) {
 				appendConstraint(b, iter.next());
 			}
 			b.append("\n###\tVariables\t###\n");

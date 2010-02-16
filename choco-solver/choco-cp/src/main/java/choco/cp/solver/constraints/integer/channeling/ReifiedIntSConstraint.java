@@ -56,9 +56,9 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
     public static IntDomainVar[] makeTableVar(IntDomainVar bool, AbstractIntSConstraint cons, AbstractIntSConstraint oppcons) {
         HashSet<IntDomainVar> consV = new HashSet<IntDomainVar>();
         for (int i = 0; i < cons.getNbVars(); i++)
-            consV.add(cons.getIntVar(i));
+            consV.add(cons.getVar(i));
         for (int i = 0; i < oppcons.getNbVars(); i++)
-            consV.add(oppcons.getIntVar(i));
+            consV.add(oppcons.getVar(i));
         consV.add(bool);
         IntDomainVar[] vars = new IntDomainVar[consV.size()];
         consV.remove(bool);
@@ -113,7 +113,7 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
         scopeCons = new int[cons.getNbVars()];
         scopeOCons = new int[oppositeCons.getNbVars()];
         for (int i = 0; i < cons.getNbVars(); i++) {
-            IntDomainVar v = cons.getIntVar(i);
+            IntDomainVar v = cons.getVar(i);
             for (int j = 0; j < vars.length; j++) {
                 if (v.equals(vars[j])) {
                     scopeCons[i] = j;
@@ -122,7 +122,7 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
             }
         }
         for (int i = 0; i < oppositeCons.getNbVars(); i++) {
-            IntDomainVar v = oppositeCons.getIntVar(i);
+            IntDomainVar v = oppositeCons.getVar(i);
             for (int j = 0; j < vars.length; j++) {
                 if (v.equals(vars[j])) {
                     scopeOCons[i] = j;

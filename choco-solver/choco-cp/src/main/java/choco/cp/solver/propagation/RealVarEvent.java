@@ -26,8 +26,8 @@ import choco.cp.memory.structure.Couple;
 import choco.cp.solver.variables.real.RealVarImpl;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.constraints.real.RealSConstraint;
 import choco.kernel.solver.propagation.event.VarEvent;
+import choco.kernel.solver.propagation.listener.RealPropagator;
 
 /**
  * An event for real interval variable modifications.
@@ -102,11 +102,11 @@ public class RealVarEvent extends VarEvent<RealVarImpl> {
      */
     public void propagateSupEvent(int evtCause) throws ContradictionException {
         RealVarImpl v = getModifiedVar();
-        DisposableIterator<Couple<RealSConstraint>> cit = v.getActiveConstraints(evtCause);
+        DisposableIterator<Couple<? extends RealPropagator>> cit = v.getActiveConstraints(evtCause);
 
         try {
             while (cit.hasNext()) {
-                Couple<RealSConstraint> cc = cit.next();
+                Couple<? extends RealPropagator> cc = cit.next();
                 cc.c.awakeOnSup(cc.i);
             }
         } finally {
@@ -119,11 +119,11 @@ public class RealVarEvent extends VarEvent<RealVarImpl> {
      */
     public void propagateInfEvent(int evtCause) throws ContradictionException {
         RealVarImpl v = getModifiedVar();
-        DisposableIterator<Couple<RealSConstraint>> cit = v.getActiveConstraints(evtCause);
+        DisposableIterator<Couple<? extends RealPropagator>> cit = v.getActiveConstraints(evtCause);
 
         try {
             while (cit.hasNext()) {
-                Couple<RealSConstraint> cc = cit.next();
+                Couple<? extends RealPropagator> cc = cit.next();
                 cc.c.awakeOnInf(cc.i);
             }
         } finally {
@@ -131,23 +131,4 @@ public class RealVarEvent extends VarEvent<RealVarImpl> {
         }
 
     }
-
-//    /**
-//     * Propagates the update to the domain lower and upper bounds
-//     */
-//    public void propagateBoundsEvent(int evtCause) throws ContradictionException {
-//        RealVarImpl v = getModifiedVar();
-//        DisposableIterator<Couple<RealSConstraint>> cit = v.getActiveConstraints(evtCause);
-//
-//        try {
-//            while (cit.hasNext()) {
-//                Couple<RealSConstraint> cc = cit.next();
-//                cc.c.awakeOnInf(cc.i);
-//                cc.c.awakeOnSup(cc.i);
-//            }
-//        } finally {
-//            cit.dispose();
-//        }
-//
-//    }
 }

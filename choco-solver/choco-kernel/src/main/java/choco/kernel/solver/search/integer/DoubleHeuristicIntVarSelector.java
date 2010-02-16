@@ -24,7 +24,7 @@ package choco.kernel.solver.search.integer;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
+import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
@@ -49,9 +49,9 @@ public abstract class DoubleHeuristicIntVarSelector extends
 	public abstract double getHeuristic(IntDomainVar v)
 			throws ContradictionException;
 
-	public double getHeuristic(IntSConstraint c, int i)
+	public double getHeuristic(AbstractIntSConstraint c, int i)
 			throws ContradictionException {
-		return getHeuristic(c.getIntVar(i));
+		return getHeuristic(c.getVar(i));
 	}
 
 	/**
@@ -161,12 +161,12 @@ public abstract class DoubleHeuristicIntVarSelector extends
 		return res;
 	}
 
-	public List<IntDomainVar> getAllMinVars(IntSConstraint c)
+	public List<IntDomainVar> getAllMinVars(AbstractIntSConstraint c)
 			throws ContradictionException {
 		List<IntDomainVar> res = new ArrayList<IntDomainVar>();
 		double minValue = Double.POSITIVE_INFINITY;
 		for (int i = 0; i < c.getNbVars(); i++) {
-			IntDomainVar v = c.getIntVar(i);
+			IntDomainVar v = c.getVar(i);
 			if (!v.isInstantiated()) {
 				double val = getHeuristic(v);
 				if (val < minValue) {
@@ -182,12 +182,12 @@ public abstract class DoubleHeuristicIntVarSelector extends
 		return res;
 	}
 
-	public IntDomainVar getMinVar(IntSConstraint c)
+	public IntDomainVar getMinVar(AbstractIntSConstraint c)
 			throws ContradictionException {
 		double minValue = Double.POSITIVE_INFINITY;
 		IntDomainVar v0 = null;
 		for (int i = 0; i < c.getNbVars(); i++) {
-			IntDomainVar v = c.getIntVar(i);
+			IntDomainVar v = c.getVar(i);
 			if (!v.isInstantiated()) {
 				double val = getHeuristic(c, i);
 				if (val < minValue) {

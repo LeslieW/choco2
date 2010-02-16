@@ -34,7 +34,7 @@ import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
- * Implements a constraint X !== Y + C, with X and Y two variables and C a constant.
+ * Implements a constraint X + Y !== C, with X and Y two variables and C a constant.
  */
 public final class NotEqualXY_C extends AbstractBinIntSConstraint {
 
@@ -105,7 +105,10 @@ public final class NotEqualXY_C extends AbstractBinIntSConstraint {
 	@Override
 	public final void awakeOnInst(int idx) throws ContradictionException {
 		if (idx == 0) removeValV1();
-		else assert (idx == 1); removeValV0();
+		else{
+            assert (idx == 1);
+            removeValV0();
+        }
 	}
 	
 	

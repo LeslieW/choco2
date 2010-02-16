@@ -222,14 +222,6 @@ public class Equation extends AbstractLargeRealSConstraint {
     var.intersect(new RealIntervalConstant(leftB, rightB));
   }
 
-  public void awakeOnInf(int idx) throws ContradictionException {
-    this.constAwake(false);
-  }
-
-  public void awakeOnSup(int idx) throws ContradictionException {
-    this.constAwake(false);
-  }
-
 
   // ==== Variable Management ====
 

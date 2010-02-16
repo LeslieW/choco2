@@ -133,7 +133,4 @@ public class MixedCstElt extends AbstractBinRealIntSConstraint{
     return isConsistent();
   }
 
-    public int getFineDegree(int idx) {
-        return 1;
-    }
 }

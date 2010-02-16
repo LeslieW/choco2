@@ -43,17 +43,13 @@ public class DomOverWDegRPC extends DoubleHeuristicIntVarSelector implements
     private static final int ABSTRACTCONTRAINT_EXTENSION = AbstractSConstraint
             .getAbstractSConstraintExtensionNumber("choco.cp.cpsolver.search.integer.varselector.DomOverWDeg");
 
-    protected final static class DomOverWDegConstraintExtension {
-        private int nbFailure = 0;
-    }
-
     public DomOverWDegRPC(Solver solver) {
         super(solver);
-        for (Iterator<SConstraint> iter = solver.getIntConstraintIterator(); iter
+        for (Iterator<SConstraint> iter = solver.getConstraintIterator(); iter
                 .hasNext();) {
-            ((AbstractSConstraint) iter.next()).setExtension(
-                    ABSTRACTCONTRAINT_EXTENSION,
-                    new DomOverWDegConstraintExtension());
+            ((AbstractSConstraint) iter.next()).addExtension(
+                    ABSTRACTCONTRAINT_EXTENSION
+            );
         }
         solver.getPropagationEngine().addPropagationEngineListener(this);
     }
@@ -61,11 +57,11 @@ public class DomOverWDegRPC extends DoubleHeuristicIntVarSelector implements
     public DomOverWDegRPC(Solver solver, IntDomainVar[] vs) {
         super(solver);
         vars = vs;
-        for (Iterator<SConstraint> iter = solver.getIntConstraintIterator(); iter
+        for (Iterator<SConstraint> iter = solver.getConstraintIterator(); iter
                 .hasNext();) {
-            ((AbstractSConstraint) iter.next()).setExtension(
-                    ABSTRACTCONTRAINT_EXTENSION,
-                    new DomOverWDegConstraintExtension());
+            ((AbstractSConstraint) iter.next()).addExtension(
+                    ABSTRACTCONTRAINT_EXTENSION
+            );
         }
         solver.getPropagationEngine().addPropagationEngineListener(this);
     }
@@ -91,9 +87,8 @@ public class DomOverWDegRPC extends DoubleHeuristicIntVarSelector implements
             } else {
                 AbstractSConstraint cstr = (AbstractSConstraint) ct;
                 if (cstr.getNbVarNotInst() > 1) {
-                    weight += ((DomOverWDegConstraintExtension) cstr
-                            .getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure
-                            + ct.getFineDegree(v.getVarIndex(idx));
+                    weight += cstr.getExtension(ABSTRACTCONTRAINT_EXTENSION).get()
+                            + cstr.getFineDegree(v.getVarIndex(idx));
                 }
             }
         }
@@ -109,8 +104,7 @@ public class DomOverWDegRPC extends DoubleHeuristicIntVarSelector implements
         Object cause = e.getContradictionCause();
         if (cause != null && cause instanceof AbstractSConstraint) {
             AbstractSConstraint c = (AbstractSConstraint) cause;
-            ((DomOverWDegConstraintExtension) c
-                    .getExtension(ABSTRACTCONTRAINT_EXTENSION)).nbFailure++;
+            c.getExtension(ABSTRACTCONTRAINT_EXTENSION).add(1);
         }
     }
 }

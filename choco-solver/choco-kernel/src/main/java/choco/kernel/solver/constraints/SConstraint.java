@@ -24,14 +24,12 @@ package choco.kernel.solver.constraints;
 
 import choco.IPretty;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.variables.Var;
 
 import java.util.logging.Logger;
 
-public interface SConstraint extends Cloneable,IPretty {
+public interface SConstraint<V extends Var> extends Cloneable,IPretty {
 
 
 	/**
@@ -43,7 +41,8 @@ public interface SConstraint extends Cloneable,IPretty {
 	/**
 	 * <i>Network management:</i>
 	 * Get the number of variables involved in the constraint.
-	 */
+     * @return number of variables involved in the constraint
+     */
 
 	int getNbVars();
 
@@ -52,9 +51,10 @@ public interface SConstraint extends Cloneable,IPretty {
 	 * Accessing the ith variable of a constraint.
 	 *
 	 * @param i index of the variable in the constraint
+     * @return the i^th variable involved in the constraint
 	 */
 
-	Var getVar(int i);
+	V getVar(int i);
 
 	/**
 	 * <i>Network management:</i>
@@ -63,21 +63,23 @@ public interface SConstraint extends Cloneable,IPretty {
 	 * @param i index of the variable in the constraint
 	 * @param v the variable (may be an IntDomainVar, SetVar, RealVar, ...
 	 */
-	void setVar(int i, Var v);
+	void setVar(int i, V v);
 
 	/**
 	 * <i>Semantic:</i>
 	 * Testing if the constraint is satisfied.
 	 * Note that all variables involved in the constraint must be
 	 * instantiated when this method is called.
-	 */
+     * @return true if the constraint is satisfied
+     */
 
 	boolean isSatisfied();
 
 	/**
 	 * computes the constraint modelling the counter-opposite condition of this
 	 *
-	 * @return a new constraint (modelling the opposite condition)  @param solver
+	 * @param solver the current solver
+     * @return a new constraint (modelling the opposite condition)  @param solver
 	 */
 	AbstractSConstraint opposite(Solver solver);
 
@@ -85,19 +87,10 @@ public interface SConstraint extends Cloneable,IPretty {
 	 * returns a copy of the constraint. This copy is a new object, may be a recursive copy in case
 	 * of composite constraints. The original and the copy share the same variables & plugins
 	 *
-	 * @return
+	 * @return a copy of the constraint
 	 */
 	// public Constraint copy();
 	Object clone() throws CloneNotSupportedException;
-
-
-	/**
-	 * computes the index of the i-th variable in the counter-opposite of the constraint
-	 *
-	 * @param i the index of the variable in the current constraint (this)
-	 * @return the index of the variable in the opposite constraint (this.opposite())
-	 */
-	int getVarIdxInOpposite(int i);
 
 	/**
 	 * <i>Network management:</i>
@@ -116,31 +109,9 @@ public interface SConstraint extends Cloneable,IPretty {
 	 * find the index of constraint c.
 	 *
 	 * @param idx index of the variable in the constraint
+     * @return  index of the constraint within the variable network
 	 */
 
 	int getConstraintIdx(int idx);
-
-	/**
-	 * Some global constraint might be able to provide
-	 * some fine grained information about the "real" degree of a variables.
-	 * For example the global constraint on clauses can give the real number of
-	 * clauses on each variable
-	 * @param idx index of the variable in the constraint
-	 * @return a weight given to the variable by the constraint
-	 */
-	int getFineDegree(int idx);
-
-    /**
-     * Activate a constraint.
-     * @param environment current environment
-     */
-    public void activate(IEnvironment environment);
-
-    /**
-     * Define the propagation engine within the constraint.
-     * Mandatory to throw {@link ContradictionException}.
-     * @param propEng the current propagation engine
-     */
-    void setPropagationEngine(PropagationEngine propEng);
 
 }

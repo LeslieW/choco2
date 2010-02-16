@@ -47,8 +47,6 @@ public class IsNotIncluded extends AbstractBinSetSConstraint {
 	 */
 	public IsNotIncluded(SetVar sv1, SetVar sv2) {
         super(sv1, sv2);
-        v0 = sv1;
-		v1 = sv2;
 	}
 
 	public boolean isKer1IncludedInKer2(SetVar x0, SetVar x1) {

@@ -45,8 +45,6 @@ public class SetEq extends AbstractBinSetSConstraint {
 	 */
 	public SetEq(SetVar sv1, SetVar sv2) {
         super(sv1, sv2);
-        v0 = sv1;
-		v1 = sv2;
 	}
 
 

@@ -42,7 +42,6 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.propagation.Propagator;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.shaker.tools.factory.CPModelFactory;
@@ -77,10 +76,9 @@ public class ConstraintsDetectionTest {
         s.read(m);
 
         LOGGER.info(s.getCstr(c).pretty());
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        Iterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
-            //assertTrue(p instanceof IntLinComb);
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
         }
         s.solveAll();
@@ -102,7 +100,7 @@ public class ConstraintsDetectionTest {
         LOGGER.info(s.getCstr(c).pretty());
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             assertTrue(p instanceof IntLinComb);
             LOGGER.info(p.pretty());
         }
@@ -125,7 +123,7 @@ public class ConstraintsDetectionTest {
         LOGGER.info(s.getCstr(c).pretty());
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             assertTrue(p instanceof IntLinComb);
             LOGGER.info(p.pretty());
         }
@@ -166,7 +164,7 @@ public class ConstraintsDetectionTest {
         LOGGER.info(s.getCstr(c).pretty());
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             assertTrue(p instanceof BoolIntLinComb);
             LOGGER.info(p.pretty());
         }
@@ -189,7 +187,7 @@ public class ConstraintsDetectionTest {
         LOGGER.info(s.getCstr(c).pretty());
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             assertTrue(p instanceof IntLinComb);
             LOGGER.info(p.pretty());
         }
@@ -212,7 +210,7 @@ public class ConstraintsDetectionTest {
         LOGGER.info(s.getCstr(c).pretty());
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             assertTrue(p instanceof IntLinComb);
             LOGGER.info(p.pretty());
         }
@@ -235,7 +233,7 @@ public class ConstraintsDetectionTest {
         LOGGER.info(s.getCstr(c).pretty());
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             //assertTrue(p instanceof IntLinComb);
         }
@@ -258,7 +256,7 @@ public class ConstraintsDetectionTest {
         LOGGER.info(s.getCstr(c).pretty());
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof IntLinComb);
         }
@@ -281,7 +279,7 @@ public class ConstraintsDetectionTest {
         LOGGER.info(s.getCstr(c).pretty());
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof IntLinComb);
         }
@@ -304,7 +302,7 @@ public class ConstraintsDetectionTest {
         LOGGER.info(s.getCstr(c).pretty());
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof IntLinComb);
         }
@@ -327,7 +325,7 @@ public class ConstraintsDetectionTest {
         LOGGER.info(s.getCstr(c).pretty());
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof IntLinComb);
         }
@@ -350,7 +348,7 @@ public class ConstraintsDetectionTest {
         LOGGER.info(s.getCstr(c).pretty());
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             //assertTrue(p instanceof IntLinComb);
         }
@@ -376,7 +374,7 @@ public class ConstraintsDetectionTest {
         LOGGER.info(s.getCstr(c).pretty());
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             //assertTrue(p instanceof IntLinComb);
         }
@@ -398,7 +396,7 @@ public class ConstraintsDetectionTest {
 
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof SignOp);
         }
@@ -421,7 +419,7 @@ public class ConstraintsDetectionTest {
 
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof SignOp);
         }
@@ -508,7 +506,7 @@ public class ConstraintsDetectionTest {
 
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof MinOfAList);
         }
@@ -532,7 +530,7 @@ public class ConstraintsDetectionTest {
 
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof MinOfAList);
         }
@@ -556,7 +554,7 @@ public class ConstraintsDetectionTest {
 
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof MaxOfAList);
         }
@@ -582,7 +580,7 @@ public class ConstraintsDetectionTest {
 
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof MaxOfAList);
         }
@@ -609,7 +607,7 @@ public class ConstraintsDetectionTest {
 
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof DistanceXYZ);
         }
@@ -635,7 +633,7 @@ public class ConstraintsDetectionTest {
 
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof DistanceXYZ);
         }
@@ -660,7 +658,7 @@ public class ConstraintsDetectionTest {
 
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof DistanceXYC);
         }
@@ -686,7 +684,7 @@ public class ConstraintsDetectionTest {
 
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof DistanceXYZ);
         }
@@ -715,7 +713,7 @@ public class ConstraintsDetectionTest {
 
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof DistanceXYZ);
         }
@@ -743,7 +741,7 @@ public class ConstraintsDetectionTest {
         Iterator<SConstraint> it = s.getIntConstraintIterator();
          boolean b=false;
          while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             b |= (p instanceof BoundAllDiff || p instanceof AllDifferent);
         }
@@ -779,7 +777,7 @@ public class ConstraintsDetectionTest {
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         boolean disjunctivedetected = false;
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             disjunctivedetected |= p instanceof Disjunctive;
         }
@@ -816,7 +814,7 @@ public class ConstraintsDetectionTest {
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         boolean disjunctivedetected = false;
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             disjunctivedetected |= p instanceof Disjunctive;
         }
@@ -848,7 +846,7 @@ public class ConstraintsDetectionTest {
         Iterator<SConstraint> it = s.getIntConstraintIterator();
         boolean alldiffd = false;
         while (it.hasNext()) {
-            Propagator p = (Propagator)it.next();
+            SConstraint p = it.next();
             LOGGER.info(p.pretty());
             LOGGER.info("" + p);
             alldiffd |= (p instanceof AllDifferent || p instanceof BoundAllDiff);

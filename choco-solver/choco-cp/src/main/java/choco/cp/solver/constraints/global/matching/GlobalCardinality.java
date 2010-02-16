@@ -28,14 +28,13 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.global.matching.AbstractBipartiteFlow;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
  * very simple version of the cardinality constraint where the values
  * the set of values whose occurrences are counted in the interval (minValue .. maxValue)
  */
-public class GlobalCardinality extends AbstractBipartiteFlow implements IntSConstraint {
+public class GlobalCardinality extends AbstractBipartiteFlow {
   
   /**
    * Constructor, Global cardinality constraint API
