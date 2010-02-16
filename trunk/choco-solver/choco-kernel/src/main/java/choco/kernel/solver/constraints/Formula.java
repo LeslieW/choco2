@@ -22,9 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.constraints;
 
-import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.variables.Var;
 
 /**
@@ -124,10 +122,6 @@ public Formula(Var[] vars, int[] coeffs, int c1, int c2, int c3, int cop) {
     return constraintOperator;
   }
 
-  public int getVarIdxInOpposite(int i) {
-    return 0;
-  }
-
   public void setConstraintIndex(int i, int idx) {
   }
 
@@ -138,25 +132,4 @@ public Formula(Var[] vars, int[] coeffs, int c1, int c2, int c3, int cop) {
     public String pretty() {
     return null;
   }
-
-    public int getFineDegree(int idx) {
-        return 1;
-    }
-
-    /**
-     * Activate a constraint.
-     * @param environment current environment
-     */
-    @Override
-    public void activate(IEnvironment environment) {
-    }
-
-    /**
-     * Define the propagation engine within the constraint.
-     * Mandatory to throw {@link ContradictionException}.
-     * @param propEng the current propagation engine
-     */
-    @Override
-    public void setPropagationEngine(PropagationEngine propEng) {
-    }
 }

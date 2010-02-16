@@ -26,7 +26,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.ConstraintSelector;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
+import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.search.integer.HeuristicIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -48,7 +48,7 @@ public class CompositeIntVarSelector extends AbstractIntVarSelector implements V
     public IntDomainVar selectIntVar() throws ContradictionException {
         SConstraint c = cs.getConstraint();
         if (c == null) return null;
-        else return cvs.getMinVar((IntSConstraint) c);
+        else return cvs.getMinVar((AbstractIntSConstraint) c);
     }
 
     public ConstraintSelector getCs() {

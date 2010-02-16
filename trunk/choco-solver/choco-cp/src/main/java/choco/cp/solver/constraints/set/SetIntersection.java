@@ -54,9 +54,6 @@ public class SetIntersection extends AbstractTernSetSConstraint {
 
 	public SetIntersection(SetVar sv1, SetVar sv2, SetVar sv3) {
         super(sv1, sv2, sv3);
-        v0 = sv1;
-		v1 = sv2;
-		v2 = sv3;
 	}
 
 	public Object clone() throws CloneNotSupportedException {

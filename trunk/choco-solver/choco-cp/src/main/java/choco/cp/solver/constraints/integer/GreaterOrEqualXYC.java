@@ -169,16 +169,6 @@ public final class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
         return (AbstractSConstraint) solver.lt(v0, solver.plus(v1, cste));
     }
 
-    @Override
-	public int getVarIdxInOpposite(int i) {
-        if (i == 0)
-            return 1;
-        else if (i == 1)
-            return 0;
-        else
-            return -1;
-    }
-
 
     @Override
 	public String pretty() {

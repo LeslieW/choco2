@@ -22,11 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Logger;
-
 import choco.IPretty;
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
@@ -41,8 +36,8 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.integer.IntExp;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
 import choco.kernel.solver.constraints.integer.extension.BinRelation;
 import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.goals.Goal;
@@ -65,6 +60,11 @@ import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
 import choco.kernel.visu.IVisu;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 
 /**
@@ -225,7 +225,13 @@ public interface Solver extends IMeasures, IPretty {
 	 */
 	public void setValSetSelector(SetValSelector setValIntSelector);
 
+    /**
+     * @deprecated
+     */
+    @Deprecated
 	public Iterator<SConstraint> getIntConstraintIterator();
+
+    public Iterator<SConstraint> getConstraintIterator();
 	
 	public Iterator<IntDomainVar> getIntVarIterator();
 	
@@ -560,7 +566,7 @@ public interface Solver extends IMeasures, IPretty {
 	 */
 
 	@Deprecated
-	public IntSConstraint getIntConstraint(int i);
+	public AbstractIntSConstraint getIntConstraint(int i);
 
 	public abstract IntExp plus(IntExp v1, int v2);
 

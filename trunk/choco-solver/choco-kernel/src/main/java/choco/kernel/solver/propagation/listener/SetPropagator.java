@@ -22,23 +22,36 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.propagation.listener;
 
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.propagation.Propagator;
 
-/**
- * An interface for real event listener (like real constraints for instance).
+/*
+ * Created by IntelliJ IDEA.
+ * User: Hadrien
+ * Date: 6 juin 2004
+ * Since : Choco 2.0.0
+ *
  */
-public interface RealVarEventListener extends VarEventListener, Propagator {
-  /**
-   * Default propagation on improved lower bound: propagation on domain revision.
-   */
+public interface SetPropagator {
+    /**
+     * Default propagation on kernel modification: propagation on adding a value to the kernel.
+     */
+    public void awakeOnKer(int varIdx, int x) throws ContradictionException;
 
-  public void awakeOnInf(int idx) throws ContradictionException;
+
+    /**
+     * Default propagation on enveloppe modification: propagation on removing a value from the enveloppe.
+     */
+    public void awakeOnEnv(int varIdx, int x) throws ContradictionException;
 
 
-  /**
-   * Default propagation on improved upper bound: propagation on domain revision.
-   */
+    /**
+     * Default propagation on instantiation.
+     */
+    public void awakeOnInst(int varIdx) throws ContradictionException;
 
-  public void awakeOnSup(int idx) throws ContradictionException;
+    public void awakeOnkerAdditions(int varIdx, DisposableIntIterator deltaDomain) throws ContradictionException;
+
+    public void awakeOnEnvRemovals(int varIdx, DisposableIntIterator deltaDomain) throws ContradictionException;
+
 }

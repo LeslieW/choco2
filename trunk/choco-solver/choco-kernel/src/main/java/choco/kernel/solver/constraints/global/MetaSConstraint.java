@@ -2,13 +2,11 @@ package choco.kernel.solver.constraints.global;
 
 import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.common.util.tools.StringUtils;
-import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.global.scheduling.IResource;
-import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.IRTask;
@@ -19,8 +17,6 @@ import java.util.Iterator;
 import java.util.List;
 
 public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
-
-	protected PropagationEngine propagationEngine;
 
     private final static TaskVar[] EMPTY_TASK_ARRAY = new TaskVar[0];
 
@@ -64,20 +60,12 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 	 * @param dynamicAddition
 	 */
 	public void addListener(final boolean dynamicAddition) {
-		//		for (TaskVar t : tasks) {
-		//			t.addConstraint(this, -1, dynamicAddition);
-		//		}
 	}
 
 
 	@Override
 	public final int getConstraintIdx(int idx) {
 		return -1;
-	}
-
-	@Override
-	public int getFineDegree(int idx) {
-		return 0;
 	}
 
 	@Override
@@ -100,16 +88,6 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 
 	public final SConstraint getSubConstraints(int i) {
 		return constraints[i];
-	}
-	/**
-	 * returns the same numbering in a constraint and its counterpart
-	 * @param i the idx of a variable
-	 * @return the same numbering in a constraint and its counterpart
-	 */
-	// defaut implementation: returns the same numbering in a constraint and its counterpart.
-	@Override
-	public int getVarIdxInOpposite(int i) {
-		return i;
 	}
 
 	@Override
@@ -173,22 +151,4 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 	public Iterator<TaskVar> getTaskIterator() {
 		return IteratorUtils.iterator(tasks);
 	}
-
-    /**
-     * Activate a constraint.
-     * @param environment current environment
-     */
-    @Override
-    public void activate(IEnvironment environment) {}
-
-
-    /**
-     * Define the propagation engine within the constraint.
-     * Mandatory to throw {@link ContradictionException}.
-     * @param propEng the current propagation engine
-     */
-    @Override
-    public void setPropagationEngine(PropagationEngine propEng) {
-        this.propagationEngine = propEng;
-    }
 }

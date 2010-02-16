@@ -117,7 +117,4 @@ public class MixedEqXY extends AbstractBinRealIntSConstraint{
     v0.intersect(new RealIntervalConstant(v1.getInf(), v1.getSup()), cIdx0);
   }
 
-    public int getFineDegree(int idx) {
-        return 1;
-    }
 }

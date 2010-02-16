@@ -26,8 +26,8 @@ import choco.cp.memory.structure.Couple;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.constraints.set.SetSConstraint;
 import choco.kernel.solver.propagation.event.VarEvent;
+import choco.kernel.solver.propagation.listener.SetPropagator;
 
 /*
  * Created by IntelliJ IDEA.
@@ -145,11 +145,11 @@ public class SetVarEvent extends VarEvent<SetVarImpl> {
 	 */
 	public void propagateInstEvent(int evtCause) throws ContradictionException {
 		SetVarImpl v = getModifiedVar();
-        DisposableIterator<Couple<SetSConstraint>> cit = v.getActiveConstraints(evtCause);
+        DisposableIterator<Couple<? extends SetPropagator>> cit = v.getActiveConstraints(evtCause);
 
         try{
             while(cit.hasNext()){
-                Couple<SetSConstraint> cc = cit.next();
+                Couple<? extends SetPropagator> cc = cit.next();
                 cc.c.awakeOnInst(cc.i);
             }
         }finally{
@@ -162,11 +162,11 @@ public class SetVarEvent extends VarEvent<SetVarImpl> {
 	 */
 	public void propagateKernelEvents(int evtCause) throws ContradictionException {
 		SetVarImpl v = getModifiedVar();
-        DisposableIterator<Couple<SetSConstraint>> cit = v.getActiveConstraints(evtCause);
+        DisposableIterator<Couple<? extends SetPropagator>> cit = v.getActiveConstraints(evtCause);
 
         try{
             while(cit.hasNext()){
-                Couple<SetSConstraint> cc = cit.next();
+                Couple<? extends SetPropagator> cc = cit.next();
                 cc.c.awakeOnkerAdditions(cc.i, this.getKerEventIterator());
             }
         }finally{
@@ -179,11 +179,11 @@ public class SetVarEvent extends VarEvent<SetVarImpl> {
 	 */
 	public void propagateEnveloppeEvents(int evtCause) throws ContradictionException {
 		SetVarImpl v = getModifiedVar();
-        DisposableIterator<Couple<SetSConstraint>> cit = v.getActiveConstraints(evtCause);
+        DisposableIterator<Couple<? extends SetPropagator>> cit = v.getActiveConstraints(evtCause);
 
         try{
             while(cit.hasNext()){
-                Couple<SetSConstraint> cc = cit.next();
+                Couple<? extends SetPropagator> cc = cit.next();
                 cc.c.awakeOnEnvRemovals(cc.i, this.getEnvEventIterator());
 
             }

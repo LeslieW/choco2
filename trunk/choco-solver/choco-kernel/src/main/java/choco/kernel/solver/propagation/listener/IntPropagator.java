@@ -21,34 +21,48 @@
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 
-package choco.kernel.solver.constraints.integer;
+package choco.kernel.solver.propagation.listener;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.propagation.Propagator;
-import choco.kernel.solver.propagation.listener.IntVarEventListener;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+
 
 /**
- * An interface for all implementations of listeners using search variables.
+ * An interface for all the search variable listeners.
  */
-public interface IntSConstraint extends SConstraint, Propagator, IntVarEventListener {
+public interface IntPropagator {
 
-  /**
-   * <i>Network management:</i>
-   * Accessing the i-th search variable of a constraint.
-   *
-   * @param i index of the variable among all search variables in the constraint. Numbering start from 0 on.
-   * @return the variable, or null when no such variable is found
-   */
+    /**
+     * Default propagation on improved lower bound: propagation on domain revision.
+     */
 
-  public IntDomainVar getIntVar(int i);
+    public void awakeOnInf(int varIdx) throws ContradictionException;
 
-  public void awakeOnRemovals(int varIdx, DisposableIntIterator deltaDomain) throws ContradictionException;
 
-  public void awakeOnBounds(int varIdx) throws ContradictionException;
+    /**
+     * Default propagation on improved upper bound: propagation on domain revision.
+     */
 
-  public boolean isSatisfied(int[] tuple);
+    public void awakeOnSup(int varIdx) throws ContradictionException;
 
+
+    /**
+     * Default propagation on instantiation: full constraint re-propagation.
+     */
+
+    public void awakeOnInst(int varIdx) throws ContradictionException;
+
+
+    /**
+     * Default propagation on one value removal: propagation on domain revision.
+     */
+
+    public void awakeOnRem(int varIdx, int val) throws ContradictionException;
+
+
+    public void awakeOnRemovals(int varIdx, DisposableIntIterator deltaDomain) throws ContradictionException;
+
+    public void awakeOnBounds(int varIdx) throws ContradictionException;
+
+    public boolean isSatisfied(int[] tuple);
 }

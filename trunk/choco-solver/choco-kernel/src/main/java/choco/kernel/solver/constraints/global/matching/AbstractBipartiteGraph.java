@@ -651,11 +651,6 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 		this.removeUselessEdges();
 	}
 
-	@Override
-	public int getPriority() {
-		return 2;
-	}
-
 	public void prettyPrintForDebug() {
 		if(LOGGER.isLoggable(Level.INFO)) {
 			for(int i = 0; i < nbLeftVertices; i++) {

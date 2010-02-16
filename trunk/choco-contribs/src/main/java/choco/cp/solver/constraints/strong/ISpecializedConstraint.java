@@ -22,9 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.strong;
 
-import choco.kernel.solver.constraints.integer.IntSConstraint;
+import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.propagation.listener.IntPropagator;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public interface ISpecializedConstraint extends IntSConstraint {
+public interface ISpecializedConstraint extends IntPropagator, SConstraint<IntDomainVar> {
+
 	int firstSupport(int position, int value);
 
 	int nextSupport(int position, int value, int lastSupport);

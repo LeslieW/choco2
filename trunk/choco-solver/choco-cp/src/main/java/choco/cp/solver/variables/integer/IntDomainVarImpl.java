@@ -30,8 +30,9 @@ import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.solver.ContradictionException;
 import static choco.kernel.solver.ContradictionException.Type.DOMAIN;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
+import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.propagation.event.VarEvent;
+import choco.kernel.solver.propagation.listener.IntPropagator;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -52,7 +53,7 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
      * @param solver master solver
      * @param name name of the variable
      */
-	protected <C extends IntSConstraint> IntDomainVarImpl(Solver solver, String name) {
+	protected <C extends AbstractIntSConstraint> IntDomainVarImpl(Solver solver, String name) {
 		super(solver, name, new PartiallyStoredIntCstrList<C>(solver.getEnvironment()));
 	}
 
@@ -100,7 +101,7 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 		this.event = new IntVarEvent(this);
 	}
 
-    public final DisposableIterator<Couple<IntSConstraint>> getActiveConstraints(int evtType, int cstrCause){
+    public final DisposableIterator<Couple<? extends IntPropagator>> getActiveConstraints(int evtType, int cstrCause){
         //noinspection unchecked
         return ((PartiallyStoredIntCstrList)constraints).getActiveConstraint(evtType, cstrCause);
     }

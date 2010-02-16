@@ -29,7 +29,7 @@ import choco.kernel.memory.IStateIntVector;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.global.automata.common.StoredIndexedBipartiteSetWithOffset;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
+import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntHashSet;
 import gnu.trove.TIntStack;
@@ -47,7 +47,7 @@ import java.util.Set;
  */
 public class StoredValuedDirectedMultiGraph {
 
-    IntSConstraint constraint;
+    AbstractIntSConstraint constraint;
 
     int[] starts;
     int[] offsets;
@@ -103,7 +103,7 @@ public class StoredValuedDirectedMultiGraph {
 
 
 
-    public StoredValuedDirectedMultiGraph(IEnvironment environment, IntSConstraint constraint, DirectedMultigraph<Node, Arc> graph, int[][] layers, int[] starts, int[] offsets, int supportLength)
+    public StoredValuedDirectedMultiGraph(IEnvironment environment, AbstractIntSConstraint constraint, DirectedMultigraph<Node, Arc> graph, int[][] layers, int[] starts, int[] offsets, int supportLength)
     {
         this.constraint = constraint;
         this.starts = starts;
@@ -327,7 +327,7 @@ public class StoredValuedDirectedMultiGraph {
 
             if (support.isEmpty())
             {
-                IntDomainVar var = this.constraint.getIntVar(layer);
+                IntDomainVar var = this.constraint.getVar(layer);
                 var.removeVal(value,this.constraint.getConstraintIdx(layer));
             }
         }
@@ -408,8 +408,8 @@ public class StoredValuedDirectedMultiGraph {
                 double lpfs = GNodes.lpfs.quickGet(orig);
 
                 double acost = GArcs.costs[arcId];
-                if (!isInStack(arcId) && (tempPval + spfs+acost > constraint.getIntVar(starts.length).getSup()
-                        || tempPval2 + lpfs+acost < constraint.getIntVar(starts.length).getInf()))
+                if (!isInStack(arcId) && (tempPval + spfs+acost > constraint.getVar(starts.length).getSup()
+                        || tempPval2 + lpfs+acost < constraint.getVar(starts.length).getInf()))
                 {
                     setInStack(arcId);
                     toRemove.push(arcId);
@@ -461,7 +461,7 @@ public class StoredValuedDirectedMultiGraph {
                 }
                 double spfs = GNodes.spfs.quickGet(orig);
                 double acost = GArcs.costs[arcId];
-                if (!isInStack(arcId) && tempPval + spfs+acost > constraint.getIntVar(starts.length).getSup())
+                if (!isInStack(arcId) && tempPval + spfs+acost > constraint.getVar(starts.length).getSup())
                 {
                     setInStack(arcId);
                     toRemove.push(arcId);
@@ -511,7 +511,7 @@ public class StoredValuedDirectedMultiGraph {
                 }
                 double lpfs = GNodes.lpfs.quickGet(orig);
                 double acost = GArcs.costs[arcId];
-                if (!isInStack(arcId) && tempPval + lpfs+acost < constraint.getIntVar(starts.length).getInf())
+                if (!isInStack(arcId) && tempPval + lpfs+acost < constraint.getVar(starts.length).getInf())
                 {
                     setInStack(arcId);
                     toRemove.push(arcId);
@@ -574,8 +574,8 @@ public class StoredValuedDirectedMultiGraph {
                 double spft = GNodes.spft.quickGet(dest);
                 double acost = GArcs.costs[arcId];
                 double lpft = GNodes.lpft.quickGet(dest);
-                if (!isInStack(arcId) && (tempPval + spft+acost > constraint.getIntVar(starts.length).getSup()
-                        ||tempPval2 + lpft+acost < constraint.getIntVar(starts.length).getInf()))
+                if (!isInStack(arcId) && (tempPval + spft+acost > constraint.getVar(starts.length).getSup()
+                        ||tempPval2 + lpft+acost < constraint.getVar(starts.length).getInf()))
                 {
                     setInStack(arcId);
                     toRemove.push(arcId);
@@ -626,7 +626,7 @@ public class StoredValuedDirectedMultiGraph {
                 }
                 double spft = GNodes.spft.quickGet(dest);
                 double acost = GArcs.costs[arcId];
-                if (!isInStack(arcId) && tempPval + spft+acost > constraint.getIntVar(starts.length).getSup())
+                if (!isInStack(arcId) && tempPval + spft+acost > constraint.getVar(starts.length).getSup())
                 {
                     setInStack(arcId);
                     toRemove.push(arcId);
@@ -677,7 +677,7 @@ public class StoredValuedDirectedMultiGraph {
                 }
                 double lpft = GNodes.lpft.quickGet(dest);
                 double acost = GArcs.costs[arcId];
-                if (!isInStack(arcId) && tempPval + lpft+acost < constraint.getIntVar(starts.length).getInf())
+                if (!isInStack(arcId) && tempPval + lpft+acost < constraint.getVar(starts.length).getInf())
                 {
                     setInStack(arcId);
                     toRemove.push(arcId);

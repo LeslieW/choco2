@@ -29,9 +29,11 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.structure.APartiallyStoredCstrList;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
+import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.propagation.Propagator;
+import choco.kernel.solver.propagation.listener.IntPropagator;
 
 /*
 * User : charles
@@ -40,7 +42,7 @@ import choco.kernel.solver.propagation.Propagator;
 * Since : Choco 2.1.0
 * Update : Choco 2.1.0
 */
-public final class PartiallyStoredIntCstrList <C extends IntSConstraint> extends APartiallyStoredCstrList<C>{
+public final class PartiallyStoredIntCstrList <C extends AbstractSConstraint & IntPropagator> extends APartiallyStoredCstrList<C>{
 
     private final PartiallyStoredIntVector[] events;
 
@@ -68,7 +70,7 @@ public final class PartiallyStoredIntCstrList <C extends IntSConstraint> extends
 	 */
 	public int addConstraint(SConstraint c, int varIdx, boolean dynamicAddition) {
 		int constraintIdx = super.addConstraint(c, varIdx, dynamicAddition);
-        IntSConstraint ic = ((IntSConstraint)c);
+        AbstractSConstraint ic = ((AbstractSConstraint)c);
 		computePriority(ic);
 		int mask = ic.getFilteredEventMask(varIdx);
 		if((mask & INSTINTbitvector) != 0){
@@ -117,7 +119,7 @@ public final class PartiallyStoredIntCstrList <C extends IntSConstraint> extends
 	 */
 	public int eraseConstraint(SConstraint c) {
 		int idx = super.eraseConstraint(c);
-		int mask = ((IntSConstraint)c).getFilteredEventMask(indices.get(idx));
+		int mask = ((AbstractIntSConstraint)c).getFilteredEventMask(indices.get(idx));
 		if((mask & INSTINTbitvector) != 0){
 			events[0].remove(idx);
 		}
@@ -143,7 +145,7 @@ public final class PartiallyStoredIntCstrList <C extends IntSConstraint> extends
 
     private QuickIterator _quickIterator = null;
 
-    public DisposableIterator<Couple> getActiveConstraint(int event, int cstrCause){
+    public DisposableIterator<Couple<C>> getActiveConstraint(int event, int cstrCause){
         QuickIterator iter = _quickIterator;
         if (iter != null && iter.reusable) {
             iter.init(events[event], cstrCause);
@@ -153,12 +155,12 @@ public final class PartiallyStoredIntCstrList <C extends IntSConstraint> extends
         return _quickIterator;
     }
 
-    private final class QuickIterator extends DisposableIterator<Couple> {
+    private final class QuickIterator extends DisposableIterator<Couple<C>> {
         boolean reusable;
         PartiallyStoredIntVector event;
         int cstrCause;
         DisposableIntIterator cit;
-        Couple<IntSConstraint> cc  = new Couple<IntSConstraint>();
+        Couple<C> cc  = new Couple<C>();
 
 
         public QuickIterator(PartiallyStoredIntVector event, int cstrCause) {
@@ -211,7 +213,7 @@ public final class PartiallyStoredIntCstrList <C extends IntSConstraint> extends
          *          iteration has no more elements.
          */
         @Override
-        public Couple next() {
+        public Couple<C> next() {
             return cc;
         }
 

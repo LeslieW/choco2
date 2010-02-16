@@ -25,7 +25,7 @@ package choco.kernel.solver.search.integer;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
+import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
@@ -45,8 +45,8 @@ public abstract class IntHeuristicIntVarSelector extends HeuristicIntVarSelector
    */
   public abstract int getHeuristic(IntDomainVar v) throws ContradictionException;
 
-  public int getHeuristic(IntSConstraint c, int i) throws ContradictionException {
-    return getHeuristic(c.getIntVar(i));
+  public int getHeuristic(AbstractIntSConstraint c, int i) throws ContradictionException {
+    return getHeuristic(c.getVar(i));
   }
 
   /**
@@ -107,11 +107,11 @@ public abstract class IntHeuristicIntVarSelector extends HeuristicIntVarSelector
     return v0;
   }
 
-  public IntDomainVar getMinVar(IntSConstraint c) throws ContradictionException {
+  public IntDomainVar getMinVar(AbstractIntSConstraint c) throws ContradictionException {
     double minValue = Double.POSITIVE_INFINITY;
     IntDomainVar v0 = null;
     for (int i=0; i<c.getNbVars(); i++) {
-      IntDomainVar v = c.getIntVar(i);
+      IntDomainVar v = c.getVar(i);
       if (!v.isInstantiated()) {
         double val = getHeuristic(c,i);
         if (val < minValue)  {
@@ -163,11 +163,11 @@ public abstract class IntHeuristicIntVarSelector extends HeuristicIntVarSelector
     return res;
   }
 
-   public List<IntDomainVar> getAllMinVars(IntSConstraint c) throws ContradictionException {
+   public List<IntDomainVar> getAllMinVars(AbstractIntSConstraint c) throws ContradictionException {
     List<IntDomainVar> res = new ArrayList<IntDomainVar>();
     int minValue = IStateInt.MAXINT;
     for (int i = 0; i < c.getNbVars(); i++) {
-      IntDomainVar v = c.getIntVar(i);
+      IntDomainVar v = c.getVar(i);
       if (!v.isInstantiated()) {
         int val = getHeuristic(v);
         if (val < minValue)  {

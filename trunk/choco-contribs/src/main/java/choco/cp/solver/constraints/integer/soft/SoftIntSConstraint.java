@@ -26,8 +26,8 @@ import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
 import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -43,7 +43,7 @@ import java.util.HashSet;
 */
 public class SoftIntSConstraint extends AbstractLargeIntSConstraint {
 
-    protected IntSConstraint cons;
+    protected AbstractIntSConstraint cons;
 
     //scopeCons[i] = j means that the i-th variable of cons is the j-th in reifiedIntConstraint
     protected int[] scopeCons;
@@ -51,10 +51,10 @@ public class SoftIntSConstraint extends AbstractLargeIntSConstraint {
     //temporary data to store tuples
     int[] tupleCons;
 
-    public static IntDomainVar[] makeTableVar(IntDomainVar bool, IntSConstraint cons) {
+    public static IntDomainVar[] makeTableVar(IntDomainVar bool, AbstractIntSConstraint cons) {
         HashSet<IntDomainVar> consV = new HashSet<IntDomainVar>();
         for (int i = 0; i < cons.getNbVars(); i++)
-            consV.add(cons.getIntVar(i));
+            consV.add(cons.getVar(i));
         consV.add(bool);
         IntDomainVar[] vars = new IntDomainVar[consV.size()];
         consV.remove(bool);
@@ -75,7 +75,7 @@ public class SoftIntSConstraint extends AbstractLargeIntSConstraint {
      * @param dist distance to satisfaction
      * @param cons the constraint to softy
      */
-    public SoftIntSConstraint(IntDomainVar dist, IntSConstraint cons) {
+    public SoftIntSConstraint(IntDomainVar dist, AbstractIntSConstraint cons) {
         super(makeTableVar(dist, cons));
         this.cons = cons;
         init();
@@ -85,7 +85,7 @@ public class SoftIntSConstraint extends AbstractLargeIntSConstraint {
         tupleCons = new int[cons.getNbVars()];
         scopeCons = new int[cons.getNbVars()];
         for (int i = 0; i < cons.getNbVars(); i++) {
-            IntDomainVar v = cons.getIntVar(i);
+            IntDomainVar v = cons.getVar(i);
             for (int j = 0; j < vars.length; j++) {
                 if (v.equals(vars[j])) {
                     scopeCons[i] = j;

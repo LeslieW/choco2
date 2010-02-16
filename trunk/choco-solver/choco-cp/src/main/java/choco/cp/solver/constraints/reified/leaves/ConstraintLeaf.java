@@ -101,7 +101,7 @@ public class ConstraintLeaf extends INode implements BoolNode {
 	public IntDomainVar[] getScope(Solver s) {
 		IntDomainVar[] vars = new IntDomainVar[c.getNbVars()];
 		for (int i = 0; i < vars.length; i++) {
-			vars[i] = c.getIntVar(i);
+			vars[i] = c.getVar(i);
 		}
 		return vars;
 	}
@@ -109,7 +109,7 @@ public class ConstraintLeaf extends INode implements BoolNode {
 	public void setIndexes(IntDomainVar[] vs) {
 		idxtuple = new int[c.getNbVars()];
 		for (int i = 0; i < c.getNbVars(); i++) {
-			IntDomainVar v = c.getIntVar(i);
+			IntDomainVar v = c.getVar(i);
 			for (int j = 0; j < vs.length; j++) {
 				if (vs[j].equals(v)) {
 			        idxtuple[i] = j;

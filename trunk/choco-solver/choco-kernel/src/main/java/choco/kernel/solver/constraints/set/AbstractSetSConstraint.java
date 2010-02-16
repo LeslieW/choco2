@@ -27,6 +27,8 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraintType;
+import choco.kernel.solver.propagation.listener.SetPropagator;
+import choco.kernel.solver.variables.set.SetVar;
 
 
 // **************************************************
@@ -37,67 +39,59 @@ import choco.kernel.solver.constraints.SConstraintType;
 // *     for Research and Education                 *
 // **************************************************
 
-public abstract class AbstractSetSConstraint extends AbstractSConstraint implements SetSConstraint {
+public abstract class AbstractSetSConstraint extends AbstractSConstraint<SetVar> implements SetPropagator {
 
-
-  public void awakeOnKer(int varIdx, int x) throws ContradictionException {
-    propagate();
-  }
-
-  public void awakeOnEnv(int varIdx, int x) throws ContradictionException {
-    propagate();
-  }
-
-  public void awakeOnInst(int varIdx) throws ContradictionException {
-    propagate();
-  }
-
-  public void awakeOnEnvRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
-    if (deltaDomain != null) {
-        try{
-      for (; deltaDomain.hasNext();) {
-        int val = deltaDomain.next();
-        awakeOnEnv(idx, val);
-      }
-        }finally {
-            deltaDomain.dispose();
-        }
-    } else {
-		throw new SolverException("deltaDomain should not be null in awakeOnEnvRemovals");
-	}
-  }
-
-  public void awakeOnkerAdditions(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
-    if (deltaDomain != null) {
-        try{
-      for (; deltaDomain.hasNext();) {
-        int val = deltaDomain.next();
-        awakeOnKer(idx, val);
-      }
-        }finally {
-            deltaDomain.dispose();
-        }
-    } else {
-		throw new SolverException("deltaDomain should not be null in awakeOnKerAdditions");
-	}
-  }
-
-  public boolean isCompletelyInstantiated() {
-    int n = getNbVars();
-    for (int i = 0; i < n; i++) {
-      if (!(getSetVar(i).isInstantiated())) {
-		return false;
-	}
+    /**
+     * Constraucts a constraint with the priority 0.
+     */
+    protected AbstractSetSConstraint(SetVar[] vars) {
+        super(vars);
     }
-    return true;
-  }
+
+    public void awakeOnKer(int varIdx, int x) throws ContradictionException {
+        this.constAwake(false);
+    }
+
+    public void awakeOnEnv(int varIdx, int x) throws ContradictionException {
+        this.constAwake(false);
+    }
+
+    public void awakeOnInst(int varIdx) throws ContradictionException {
+        this.constAwake(false);
+    }
+
+    public void awakeOnEnvRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
+        if (deltaDomain != null) {
+            try {
+                for (; deltaDomain.hasNext();) {
+                    int val = deltaDomain.next();
+                    awakeOnEnv(idx, val);
+                }
+            } finally {
+                deltaDomain.dispose();
+            }
+        } else {
+            throw new SolverException("deltaDomain should not be null in awakeOnEnvRemovals");
+        }
+    }
+
+    public void awakeOnkerAdditions(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
+        if (deltaDomain != null) {
+            try {
+                for (; deltaDomain.hasNext();) {
+                    int val = deltaDomain.next();
+                    awakeOnKer(idx, val);
+                }
+            } finally {
+                deltaDomain.dispose();
+            }
+        } else {
+            throw new SolverException("deltaDomain should not be null in awakeOnKerAdditions");
+        }
+    }
 
     @Override
     public SConstraintType getConstraintType() {
         return SConstraintType.SET;
-    }
-
-    public int getFineDegree(int idx) {
-        return 1;
     }
 }

@@ -29,7 +29,7 @@ import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
-import choco.kernel.solver.constraints.set.SetSConstraint;
+import choco.kernel.solver.propagation.listener.SetPropagator;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetDomain;
@@ -115,7 +115,7 @@ public final class SetVarImpl extends AbstractVar implements SetVar {
         this.domain = new SetDomainImpl(this, sortedValues, constant, solver.getEnvironment(), propagationEngine);
 	}
 
-    public final DisposableIterator<Couple<SetSConstraint>> getActiveConstraints(int cstrCause){
+    public final DisposableIterator<Couple<? extends SetPropagator>> getActiveConstraints(int cstrCause){
         //noinspection unchecked
         return ((PartiallyStoredSetCstrList)constraints).getActiveConstraint(cstrCause);
     }

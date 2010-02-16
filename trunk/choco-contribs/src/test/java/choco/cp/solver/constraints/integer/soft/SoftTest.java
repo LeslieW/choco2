@@ -26,7 +26,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.matching.AllDifferent;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
+import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.Test;
 
@@ -50,7 +50,7 @@ public class SoftTest {
         IntDomainVar v2 = s.createEnumIntVar("v2", 1, 5);
         IntDomainVar dist = s.createBooleanVar("dist");
 
-        IntSConstraint eq = (IntSConstraint)s.eq(v1, v2);
+        AbstractIntSConstraint eq = (AbstractIntSConstraint)s.eq(v1, v2);
         SoftIntSConstraint softC = new SoftIntSConstraint(dist, eq);
 
         s.post(softC);
@@ -65,7 +65,7 @@ public class SoftTest {
         IntDomainVar v2 = s.createEnumIntVar("v2", 1, 5);
         IntDomainVar dist = s.createBooleanVar("dist");
 
-        IntSConstraint neq = (IntSConstraint)s.neq(v1, v2);
+        AbstractIntSConstraint neq = (AbstractIntSConstraint)s.neq(v1, v2);
         SoftIntSConstraint softC = new SoftIntSConstraint(dist, neq);
 
         s.post(softC);
@@ -82,7 +82,7 @@ public class SoftTest {
         }
         IntDomainVar dist = s.createBooleanVar("dist");
 
-        IntSConstraint allDiff = new AllDifferent(vars, s.getEnvironment());
+        AbstractIntSConstraint allDiff = new AllDifferent(vars, s.getEnvironment());
         SoftIntSConstraint softC = new SoftIntSConstraint(dist, allDiff);
 
         s.post(softC);
@@ -103,13 +103,13 @@ public class SoftTest {
         }
 
         int k =0;
-        IntSConstraint allDiff = new AllDifferent(vars, s.getEnvironment());
+        AbstractIntSConstraint allDiff = new AllDifferent(vars, s.getEnvironment());
         SoftIntSConstraint softC = new SoftIntSConstraint(dists[k++], allDiff);
         s.post(softC);
 
 
         for(int i = 0; i < n ; i+=2){
-            IntSConstraint eq = (IntSConstraint)s.eq(vars[i], vars[i+1]);
+            AbstractIntSConstraint eq = (AbstractIntSConstraint)s.eq(vars[i], vars[i+1]);
             SoftIntSConstraint seq = new SoftIntSConstraint(dists[k++],eq);
             s.post(seq);
         }

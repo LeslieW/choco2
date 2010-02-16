@@ -60,22 +60,8 @@ public abstract class AbstractLargeSetIntSConstraint extends AbstractMixedSetInt
 	 */
 	public int[] int_cIndices;
 
-	/**
-	 * Allocate the data used for both sets of variables
-	 * @param nbSetVar
-	 * @param nbIntVar
-	 */
-	public AbstractLargeSetIntSConstraint(int nbSetVar, int nbIntVar) {
-		super();
-		svars = new SetVar[nbSetVar];
-		set_cIndices = new int[nbSetVar];
-		ivars = new IntDomainVar[nbIntVar];
-		int_cIndices = new int[nbIntVar];
-		nbvar = nbSetVar + nbIntVar;
-	}
-
 	public AbstractLargeSetIntSConstraint(IntVar[] intvars, SetVar[] setvars) {
-		super();
+		super(new Var[]{});
 		ivars = new IntDomainVar[intvars.length];
 		System.arraycopy(intvars, 0, ivars, 0, intvars.length);
 		int_cIndices = new int[intvars.length];
@@ -167,26 +153,10 @@ public abstract class AbstractLargeSetIntSConstraint extends AbstractMixedSetInt
 		return i >= svars.length;
 	}
 
-	public final SetVar getSetVar(int i) {
-		//FIXME is is really good to check index as we are gonna raise an null pointer exception !
-		if (i >= 0 && i < svars.length) {
-				return svars[i];
-		} else {
-			return null;
-		}
-	}
-
-	public final IntDomainVar getIntVar(int i) {
-		if (i >= 0 && i < ivars.length) {
-				return ivars[i];
-		} else {
-			return null;
-		}
-	}
-
 	/**
 	 * Gets the specified variable.
 	 */
+    @Override
 	public Var getVar(int i) {
 		if (i >= 0) {
 			if (i < svars.length) {
@@ -201,7 +171,7 @@ public abstract class AbstractLargeSetIntSConstraint extends AbstractMixedSetInt
 		}
 	}
 
-
+    @Override
 	public void setVar(int i, Var v) {
 		if (i >= 0) {
 			if (i < svars.length) {

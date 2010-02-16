@@ -3,7 +3,10 @@ package samples.multicostregular.nsp;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,10 +26,10 @@ public class NSPVarSelector extends AbstractIntVarSelector {
         this.vc = new VarCompar();
         this.map = new HashMap<IntDomainVar,int[]>();
         this.queue = new ArrayList<IntDomainVar>();
-        for (int i = 0 ; i < struct.vars.length ; i++)
+        for (int i = 0 ; i < struct.getNbVars(); i++)
         {
-            map.put(struct.vars[i],new int[]{i/struct.instance.nbDays,i%struct.instance.nbDays});
-            queue.add(struct.vars[i]);
+            map.put(struct.getVar(i),new int[]{i/struct.instance.nbDays,i%struct.instance.nbDays});
+            queue.add(struct.getVar(i));
         }
 
 

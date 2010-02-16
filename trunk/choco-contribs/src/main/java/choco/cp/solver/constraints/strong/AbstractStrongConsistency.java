@@ -63,7 +63,7 @@ public abstract class AbstractStrongConsistency<MyVariable extends SCVariable<? 
 		for (int i = 0; i < getNbVars(); i++) {
 			final MyVariable var;
 			try {
-				var = variableConstructor.newInstance(getIntVar(i), i);
+				var = variableConstructor.newInstance(getVar(i), i);
 			} catch (InstantiationException e) {
 				throw new IllegalArgumentException(e);
 			} catch (IllegalAccessException e) {
@@ -72,7 +72,7 @@ public abstract class AbstractStrongConsistency<MyVariable extends SCVariable<? 
 				throw new IllegalArgumentException(e);
 			}
 			this.variables.add(var);
-			variablesMap.put(getIntVar(i), var);
+			variablesMap.put(getVar(i), var);
 		}
 
 		// Initialisation du réseau interne

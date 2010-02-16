@@ -26,8 +26,8 @@ import choco.cp.memory.structure.Couple;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
 import choco.kernel.solver.propagation.event.VarEvent;
+import choco.kernel.solver.propagation.listener.IntPropagator;
 
 public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
 
@@ -177,10 +177,10 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
      */
     public void propagateInstEvent(int evtCause) throws ContradictionException {
         IntDomainVarImpl v = modifiedVar;
-        DisposableIterator<Couple<IntSConstraint>> cit = v.getActiveConstraints(0, evtCause);
+        DisposableIterator<Couple<? extends IntPropagator>> cit = v.getActiveConstraints(0, evtCause);
         try {
             while (cit.hasNext()) {
-                Couple<IntSConstraint> cc = cit.next();
+                Couple<? extends IntPropagator> cc = cit.next();
                 cc.c.awakeOnInst(cc.i);
             }
         } finally {
@@ -194,10 +194,10 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
      */
     public void propagateInfEvent(int evtCause) throws ContradictionException {
         IntDomainVarImpl v = modifiedVar;
-        DisposableIterator<Couple<IntSConstraint>> cit = v.getActiveConstraints(1, evtCause);
+        DisposableIterator<Couple<? extends IntPropagator>> cit = v.getActiveConstraints(1, evtCause);
         try {
             while (cit.hasNext()) {
-                Couple<IntSConstraint> cc = cit.next();
+                Couple<? extends IntPropagator> cc = cit.next();
                 cc.c.awakeOnInf(cc.i);
             }
         } finally {
@@ -210,10 +210,10 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
      */
     public void propagateSupEvent(int evtCause) throws ContradictionException {
         IntDomainVarImpl v = modifiedVar;
-        DisposableIterator<Couple<IntSConstraint>> cit = v.getActiveConstraints(2, evtCause);
+        DisposableIterator<Couple<? extends IntPropagator>> cit = v.getActiveConstraints(2, evtCause);
         try {
             while (cit.hasNext()) {
-                Couple<IntSConstraint> cc = cit.next();
+                Couple<? extends IntPropagator> cc = cit.next();
                 cc.c.awakeOnSup(cc.i);
             }
         } finally {
@@ -226,10 +226,10 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
      */
     public void propagateRemovalsEvent(int evtCause) throws ContradictionException {
         IntDomainVarImpl v = modifiedVar;
-        DisposableIterator<Couple<IntSConstraint>> cit = v.getActiveConstraints(3, evtCause);
+        DisposableIterator<Couple<? extends IntPropagator>> cit = v.getActiveConstraints(3, evtCause);
         try {
             while (cit.hasNext()) {
-                Couple<IntSConstraint> cc = cit.next();
+                Couple<? extends IntPropagator> cc = cit.next();
                 DisposableIntIterator iter = this.getEventIterator();
                 try {
                     cc.c.awakeOnRemovals(cc.i, iter);

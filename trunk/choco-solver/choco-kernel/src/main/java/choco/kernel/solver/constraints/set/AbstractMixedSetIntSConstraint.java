@@ -27,7 +27,9 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraintType;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
+import choco.kernel.solver.propagation.listener.IntPropagator;
+import choco.kernel.solver.propagation.listener.SetPropagator;
+import choco.kernel.solver.variables.Var;
 
 //**************************************************
 //*                   J-CHOCO                      *
@@ -42,10 +44,19 @@ import choco.kernel.solver.constraints.integer.IntSConstraint;
  * SetConstraint and IntConstraint and implements a default behaviour
  * for all events awakeOn...
  */
-public abstract class AbstractMixedSetIntSConstraint extends AbstractSConstraint implements SetSConstraint, IntSConstraint {
+public abstract class AbstractMixedSetIntSConstraint extends AbstractSConstraint<Var> implements SetPropagator, IntPropagator{
+
+    /**
+     * Constructs a constraint with the specified priority.
+     *
+     * @param priority The wished priority.
+     */
+    protected AbstractMixedSetIntSConstraint(Var[] vars) {
+        super(vars);
+    }
 
 
-	/**
+    /**
 	 * The default implementation of propagation when a variable has been modified
 	 * consists in iterating all values that have been removed (the delta domain)
 	 * and propagate them one after another, incrementally.
@@ -155,9 +166,5 @@ public abstract class AbstractMixedSetIntSConstraint extends AbstractSConstraint
     @Override
     public SConstraintType getConstraintType() {
         return SConstraintType.INT_SET;
-    }
-
-    public int getFineDegree(int idx) {
-        return 1;
     }
 }

@@ -50,7 +50,6 @@ public final class NotEqualXC extends AbstractUnIntSConstraint {
 
 	public NotEqualXC(IntDomainVar x0, int c) {
 		super(x0);
-		this.v0 = x0;
 		this.cste = c;
 	}
 

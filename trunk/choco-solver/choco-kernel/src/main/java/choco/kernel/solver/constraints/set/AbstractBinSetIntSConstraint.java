@@ -67,7 +67,8 @@ public abstract class AbstractBinSetIntSConstraint extends AbstractMixedSetIntSC
    * @param S the set variable
    */
   public AbstractBinSetIntSConstraint(IntDomainVar X, SetVar S) {
-    this.v0 = X;
+      super(new Var[]{});
+      this.v0 = X;
     this.v1 = S;
   }
 

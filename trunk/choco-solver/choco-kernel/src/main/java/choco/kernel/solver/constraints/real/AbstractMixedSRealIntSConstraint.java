@@ -23,11 +23,19 @@
 package choco.kernel.solver.constraints.real;
 
 import choco.kernel.solver.constraints.AbstractSConstraint;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
+import choco.kernel.solver.propagation.listener.IntPropagator;
+import choco.kernel.solver.propagation.listener.RealPropagator;
+import choco.kernel.solver.variables.Var;
 
 /**
  * An interface for mixed constraint : interger and flot variables.
  */
-public abstract class AbstractMixedSRealIntSConstraint extends AbstractSConstraint implements IntSConstraint, RealSConstraint {
+public abstract class AbstractMixedSRealIntSConstraint extends AbstractSConstraint<Var> implements IntPropagator, RealPropagator{
 
+    /**
+     * Constraucts a constraint with the priority 0.
+     */
+    protected AbstractMixedSRealIntSConstraint(Var[] vars) {
+        super(vars);
+    }
 }

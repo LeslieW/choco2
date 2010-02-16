@@ -27,6 +27,7 @@ import choco.kernel.memory.structure.APartiallyStoredCstrList;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.branch.Extension;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.propagation.event.VarEvent;
@@ -86,7 +87,7 @@ public abstract class AbstractVar implements Var {
 	/**
 	 * The extensions of this constraint, in order to add some data linked to this constraint (for specific algorithms)
 	 */
-	public Object[] extensions = new Object[4];
+	public Extension[] extensions = new Extension[4];
 
 	public String getName() {
 		return name;
@@ -128,15 +129,14 @@ public abstract class AbstractVar implements Var {
     /**
 	 * Adds a new extension.
 	 * @param extensionNumber should use the number returned by getAbstractSConstraintExtensionNumber
-	 * @param extension the extension to store to add some algorithm specific data
-	 */
-	public void setExtension(int extensionNumber, Object extension) {
+     */
+	public void addExtension(int extensionNumber) {
 		if (extensionNumber >= extensions.length) {
-			Object[] newArray = new Object[extensions.length * 2];
+			Extension[] newArray = new Extension[extensions.length * 2];
 			System.arraycopy(extensions, 0, newArray, 0, extensions.length);
 			extensions = newArray;
 		}
-		extensions[extensionNumber] = extension;
+		extensions[extensionNumber] = new Extension();
 	}
 
 	/**
@@ -144,7 +144,7 @@ public abstract class AbstractVar implements Var {
 	 * @param extensionNumber should use the number returned by getAbstractSConstraintExtensionNumber
 	 * @return the queried extension
 	 */
-	public Object getExtension(int extensionNumber) {
+	public Extension getExtension(int extensionNumber) {
 		return extensions[extensionNumber];
 	}
 

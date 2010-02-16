@@ -26,7 +26,6 @@ import choco.cp.solver.constraints.strong.maxrpcrm.MaxRPCrm;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
-import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.search.integer.DoubleHeuristicIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -41,7 +40,7 @@ public final class DomOverDDegRPC extends DoubleHeuristicIntVarSelector {
         final DisposableIntIterator it = v.getIndexVector().getIndexIterator();
         for (; it.hasNext();) {
             idx = it.next();
-            SConstraint ct = v.getConstraint(idx);
+            AbstractSConstraint ct = (AbstractSConstraint)v.getConstraint(idx);
 			if (ct instanceof MaxRPCrm) {
 				ddeg += ((MaxRPCrm) ct).getDDeg(v);
 			} else if (((AbstractSConstraint) ct).getNbVarNotInst() > 1) {

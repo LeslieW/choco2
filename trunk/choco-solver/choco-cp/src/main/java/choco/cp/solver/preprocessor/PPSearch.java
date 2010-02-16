@@ -36,11 +36,10 @@ import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.branching.DomOverWDegBranching;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
-import choco.cp.solver.search.integer.varselector.DomOverDynDeg;
-import choco.cp.solver.search.integer.varselector.MinDomain;
-import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
-import choco.cp.solver.search.integer.varselector.DomOverWDeg;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
+import choco.cp.solver.search.integer.varselector.DomOverDynDeg;
+import choco.cp.solver.search.integer.varselector.DomOverWDeg;
+import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.AbstractVar;
@@ -224,8 +223,8 @@ public class PPSearch {
      */
     public static class BoolSchedComparator implements Comparator {
         public int compare(Object o, Object o1) {
-            int sd1 = (Integer) ((AbstractVar) o).getExtension(2);
-            int sd2 = (Integer) ((AbstractVar) o1).getExtension(2);
+            int sd1 = ((AbstractVar) o).getExtension(2).get();
+            int sd2 = ((AbstractVar) o1).getExtension(2).get();
             if (sd1 > sd2) {
                 return -1;  //To change body of implemented methods use File | Settings | File Templates.
             } else if (sd1 == sd2) {
@@ -281,7 +280,7 @@ public class PPSearch {
      * return 1 (domWdeg) or 2 (Impact) depending on the nature of the problem
      */
     public int determineHeuristic(CPSolver s) {
-        Iterator it = s.getIntConstraintIterator();
+        Iterator it = s.getConstraintIterator();
         int heuristic = 1;
         if (isSat()) return 2; //degree is unrelevant using the clause propagator
         if (isNaryExtensional()) {

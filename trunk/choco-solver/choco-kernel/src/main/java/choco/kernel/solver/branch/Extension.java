@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
- *         |  Â°(..)  |                           *
+ *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -18,20 +18,31 @@
  *    + support : choco@emn.fr                   *
  *                                               *
  *    Copyright (C) F. Laburthe,                 *
- *                  N. Jussien    1999-2008      *
+ *                  N. Jussien    1999-2010      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.solver.constraints.real;
-
-import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.propagation.Propagator;
-import choco.kernel.solver.propagation.listener.RealVarEventListener;
-import choco.kernel.solver.variables.real.RealVar;
+package choco.kernel.solver.branch;
 
 /**
- * An interface for float constraints.
+ * User : cprudhom
+ * Mail : cprudhom(a)emn.fr
+ * Date : 16 févr. 2010
+ * Since : Choco 2.1.1
+ *
+ * Extension for Constraint and Variable.
+ * Usefull for dynamic branching like {@link DomOverWDegBranching}
  */
-public interface RealSConstraint extends SConstraint, Propagator, RealVarEventListener {
-  public RealVar getRealVar(int i);
+public final class Extension {
+    protected int nb = 0;
 
-  public int getRealVarNb();
+    public final void set(int val){
+        nb = val;
+    }
+
+    public final int get(){
+        return nb;
+    }
+
+    public final void add(int val){
+        nb +=val;
+    }
 }

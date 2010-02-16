@@ -18,7 +18,7 @@ public abstract class AbstractSolutionCheckerEngine implements ISolutionCheckerE
      */
 	@Override
 	public final void checkConstraints(Solver solver) throws SolutionCheckerException {
-		final Iterator<SConstraint> ctit = solver.getIntConstraintIterator();
+		final Iterator<SConstraint> ctit = solver.getConstraintIterator();
 		while (ctit.hasNext()) {
 			checkConstraint(ctit.next());
 		}		
@@ -67,7 +67,7 @@ public abstract class AbstractSolutionCheckerEngine implements ISolutionCheckerE
 	@Override
 	public final boolean inspectConstraints(Solver solver) {
 		boolean isOk = true;
-		Iterator<SConstraint> ctit =  solver.getIntConstraintIterator();
+		Iterator<SConstraint> ctit =  solver.getConstraintIterator();
 		while (ctit.hasNext()) {
 			isOk &= inspectConstraint(ctit.next());
 		}

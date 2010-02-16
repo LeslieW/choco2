@@ -45,8 +45,6 @@ public class Disjoint extends AbstractBinSetSConstraint {
 
 	public Disjoint(SetVar sv1, SetVar sv2) {
         super(sv1, sv2);
-        v0 = sv1;
-		v1 = sv2;
 	}
 
 	public void filter(int idx) throws ContradictionException {

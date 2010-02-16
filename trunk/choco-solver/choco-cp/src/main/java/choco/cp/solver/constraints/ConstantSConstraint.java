@@ -28,16 +28,14 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
-import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public class ConstantSConstraint extends AbstractIntSConstraint implements IntSConstraint {
+public class ConstantSConstraint extends AbstractIntSConstraint{
     private boolean satisfied;
 
     public ConstantSConstraint(boolean value) {
-        super(ConstraintEvent.HIGH);
+        super(ConstraintEvent.HIGH, new IntDomainVar[]{});
         satisfied = value;
     }
 
@@ -51,11 +49,7 @@ public class ConstantSConstraint extends AbstractIntSConstraint implements IntSC
         return 0;
     }
 
-    public Var getVar(int i) {
-        return null;
-    }
-
-    public IntDomainVar getIntVar(int i) {
+    public IntDomainVar getVar(int i) {
         return null;
     }
 
@@ -64,7 +58,7 @@ public class ConstantSConstraint extends AbstractIntSConstraint implements IntSC
         return satisfied;
     }
 
-    public void setVar(int i, Var v) {
+    public void setVar(int i, IntDomainVar v) {
         throw new SolverException("BUG in CSP network management: too large index for setVar");
     }
 

@@ -26,7 +26,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.global.automata.common.StoredIndexedBipartiteSetWithOffset;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
+import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntHashSet;
 import gnu.trove.TIntStack;
@@ -43,7 +43,7 @@ import java.util.Set;
  */
 public class StoredDirectedMultiGraph {
 
-    IntSConstraint constraint;
+    AbstractIntSConstraint constraint;
 
     int[] starts;
     int[] offsets;
@@ -84,7 +84,7 @@ public class StoredDirectedMultiGraph {
 
 
 
-    public StoredDirectedMultiGraph(IEnvironment environment, IntSConstraint constraint, DirectedMultigraph<Node, Arc> graph, int[] starts, int[] offsets, int supportLength)
+    public StoredDirectedMultiGraph(IEnvironment environment, AbstractIntSConstraint constraint, DirectedMultigraph<Node, Arc> graph, int[] starts, int[] offsets, int supportLength)
     {
         this.constraint = constraint;
         this.starts = starts;
@@ -191,7 +191,7 @@ public class StoredDirectedMultiGraph {
 
         if (support.isEmpty())
         {
-            IntDomainVar var = this.constraint.getIntVar(layer);
+            IntDomainVar var = this.constraint.getVar(layer);
             try
             {
                 var.removeVal(value,this.constraint.getConstraintIdx(layer));
