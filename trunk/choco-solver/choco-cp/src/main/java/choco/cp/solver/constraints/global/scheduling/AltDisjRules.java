@@ -38,8 +38,6 @@ import choco.kernel.solver.variables.scheduling.ITask;
 
 import java.util.*;
 
-import junit.framework.Assert;
-
 /**
  * @author Arnaud Malapert</br> 
  * @since 2 mars 2009 version 2.0.3</br>
@@ -89,7 +87,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 
 	protected void applyRemovals() throws ContradictionException {
 		for (IRTask t : removals) {
-			Assert.assertEquals(true, t.isEliminated());
+			assert(t.isEliminated());
 			this.remove(t);
 		}
 	}
