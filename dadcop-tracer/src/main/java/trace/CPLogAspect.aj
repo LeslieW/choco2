@@ -7,7 +7,6 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntVar;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.propagation.AbstractPropagationEngine;
 import choco.kernel.common.util.iterators.DisposableIntIterator;

@@ -21,7 +21,7 @@ import choco.cp.solver.CPSolver;
 import choco.kernel.solver.variables.integer.IntVar;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.constraints.integer.IntSConstraint;
+import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.search.ISolutionPool;
 import choco.cp.solver.constraints.ConstantSConstraint;
@@ -126,11 +126,11 @@ public abstract aspect ALogAspect {
 		!cflow(execution(* Solver+.solve*(..)));
 
 	// User constraint creation
-	pointcut constraintCreation() : call(IntSConstraint+.new(..)) && 
+	pointcut constraintCreation() : call(AbstractIntSConstraint+.new(..)) && 
 		!cflow(execution(* Solver+.solve*(..)));
 
 	// Classical constraint post
-	pointcut constraintPost(IntSConstraint c) : execution(void Solver+.post(SConstraint)) &&
+	pointcut constraintPost(AbstractIntSConstraint c) : execution(void Solver+.post(SConstraint)) &&
 		args(c) && !cflow(execution(* Solver+.solve*(..)));
 
 	// Solution storing
@@ -140,43 +140,43 @@ public abstract aspect ALogAspect {
 		&& !cflowbelow(execution(* ISolutionPool.recordSolution(..)));
 
 	// Any constraint awake
-	pointcut anyAwake() : execution(* IntSConstraint+.awake*(..)) ||
-		execution(* IntSConstraint+.propagate(..));
+	pointcut anyAwake() : execution(* AbstractIntSConstraint+.awake*(..)) ||
+		execution(* AbstractIntSConstraint+.propagate(..));
 
 	// Awake on lower bound
-	pointcut awakeOnInf(IntSConstraint c, int idx) :
+	pointcut awakeOnInf(AbstractIntSConstraint c, int idx) :
 		!cflowbelow(anyAwake()) && 
-		execution(* IntSConstraint+.awakeOnInf(..)) &&
+		execution(* AbstractIntSConstraint+.awakeOnInf(..)) &&
 		target(c) && args(idx);
 
 	// Awake on upper bound
-	pointcut awakeOnSup(IntSConstraint c, int idx) :
+	pointcut awakeOnSup(AbstractIntSConstraint c, int idx) :
 		!cflowbelow(anyAwake()) &&
-		execution(* IntSConstraint+.awakeOnSup(..)) && 
+		execution(* AbstractIntSConstraint+.awakeOnSup(..)) && 
 		target(c) && args(idx);
 
 	// Awake on both bounds
-	pointcut awakeOnBounds(IntSConstraint c, int idx) :
+	pointcut awakeOnBounds(AbstractIntSConstraint c, int idx) :
 		!cflowbelow(anyAwake()) &&
-		execution(* IntSConstraint+.awakeOnBounds(..)) &&
+		execution(* AbstractIntSConstraint+.awakeOnBounds(..)) &&
 		target(c) && args(idx);
 
 	// Awake on instantiation
-	pointcut awakeOnInst(IntSConstraint c, int idx) :
+	pointcut awakeOnInst(AbstractIntSConstraint c, int idx) :
 		!cflowbelow(anyAwake()) &&
-		execution(* IntSConstraint+.awakeOnInst(..)) &&
+		execution(* AbstractIntSConstraint+.awakeOnInst(..)) &&
 		target(c) && args(idx);
 
 	// Awake on removals
-	pointcut awakeOnRemovals(IntSConstraint c, int idx) :
+	pointcut awakeOnRemovals(AbstractIntSConstraint c, int idx) :
 		!cflowbelow(anyAwake()) &&
-		execution(* IntSConstraint+.awakeOnRemovals(..)) &&
+		execution(* AbstractIntSConstraint+.awakeOnRemovals(..)) &&
 		target(c) && args(idx, *);
 
 	// Awake or propagate
-	pointcut awakeOrPropagate(IntSConstraint c) :
+	pointcut awakeOrPropagate(AbstractIntSConstraint c) :
 		!cflowbelow(anyAwake()) && target(c) &&
-		(execution(* IntSConstraint+.awake(..)) || execution(* IntSConstraint+.propagate(..)));
+		(execution(* AbstractIntSConstraint+.awake(..)) || execution(* AbstractIntSConstraint+.propagate(..)));
 
 	/*************************************************/
 	/** 											**/
@@ -232,7 +232,7 @@ public abstract aspect ALogAspect {
 	}
 	
 	// Constraint creation   *********** NEW CST ***********
-	after() returning(IntSConstraint c): constraintCreation() {
+	after() returning(AbstractIntSConstraint c): constraintCreation() {
 		if(!ConstantSConstraint.class.isInstance(c)){		
 			c.constNumber = constNb++;
 			singleElementLn("<new-constraint " + eventAttributes(thisJoinPointStaticPart) +
@@ -241,7 +241,7 @@ public abstract aspect ALogAspect {
 	}
 	
 	// Constraint post   *********** POST ***********
-	after(IntSConstraint c) : constraintPost(c) {
+	after(AbstractIntSConstraint c) : constraintPost(c) {
 		singleElementLn("<post " + eventAttributes(thisJoinPointStaticPart) +
 				" cident=\"c" + c.constNumber + "\"/>");
 	}
@@ -261,7 +261,7 @@ public abstract aspect ALogAspect {
 	
 	//   *********** AWAKE ***********
 	// Awake on lower bound   
-	before(IntSConstraint cst, int idx) : awakeOnInf(cst, idx) {
+	before(AbstractIntSConstraint cst, int idx) : awakeOnInf(cst, idx) {
 		elementOpening("<awake " + eventAttributes(thisJoinPointStaticPart) +
 				" cident=\"c" + cst.constNumber + "\">");
 		singleElementLn("<update vident=\"v" + ((IntVar)cst.getVar(idx)).varNumber + 
@@ -270,7 +270,7 @@ public abstract aspect ALogAspect {
 	}
 	
 	// Awake on upper bound
-	before(IntSConstraint cst, int idx) : awakeOnSup(cst, idx) {
+	before(AbstractIntSConstraint cst, int idx) : awakeOnSup(cst, idx) {
 		elementOpening("<awake " + eventAttributes(thisJoinPointStaticPart) +
 				" cident=\"c" + cst.constNumber + "\">");
 		singleElementLn("<update vident=\"v" + ((IntVar)cst.getVar(idx)).varNumber + 
@@ -279,7 +279,7 @@ public abstract aspect ALogAspect {
 	}
 	
 	// Awake on both bounds
-	before(IntSConstraint cst, int idx) : awakeOnBounds(cst, idx) {
+	before(AbstractIntSConstraint cst, int idx) : awakeOnBounds(cst, idx) {
 		elementOpening("<awake " + eventAttributes(thisJoinPointStaticPart) +
 				" cident=\"c" + cst.constNumber + "\">");
 		singleElementLn("<update vident=\"v" + ((IntVar)cst.getVar(idx)).varNumber + 
@@ -288,7 +288,7 @@ public abstract aspect ALogAspect {
 	}
 	
 	// Awake on instantiation
-	before(IntSConstraint cst, int idx) : awakeOnInst(cst, idx) {
+	before(AbstractIntSConstraint cst, int idx) : awakeOnInst(cst, idx) {
 		elementOpening("<awake " + eventAttributes(thisJoinPointStaticPart) +
 				" cident=\"c" + cst.constNumber + "\">");
 		singleElementLn("<update vident=\"v" + ((IntVar)cst.getVar(idx)).varNumber + 
@@ -297,7 +297,7 @@ public abstract aspect ALogAspect {
 	}
 	
 	// Awake on removals
-	before(IntSConstraint cst, int idx) : awakeOnRemovals(cst, idx) {
+	before(AbstractIntSConstraint cst, int idx) : awakeOnRemovals(cst, idx) {
 		elementOpening("<awake " + eventAttributes(thisJoinPointStaticPart) +
 				" cident=\"c" + cst.constNumber + "\">");
 		singleElementLn("<update vident=\"v" + ((IntVar)cst.getVar(idx)).varNumber + 
@@ -306,7 +306,7 @@ public abstract aspect ALogAspect {
 	}
 	
 	// Awake on constraint
-	before(IntSConstraint cst) : awakeOrPropagate(cst) {
+	before(AbstractIntSConstraint cst) : awakeOrPropagate(cst) {
 		elementOpening("<awake " + eventAttributes(thisJoinPointStaticPart) +
 				" cident=\"c" + cst.constNumber + "\">");
 		elementClosing("</awake>");
