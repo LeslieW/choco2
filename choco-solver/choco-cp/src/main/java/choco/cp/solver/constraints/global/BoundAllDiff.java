@@ -32,7 +32,7 @@ import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public class BoundAllDiff extends AbstractLargeIntSConstraint {
-    public boolean PROPAGATE_ON_INSTANTIATIONS = true;
+    public static boolean PROPAGATE_ON_INSTANTIATIONS = true;
     public boolean PROPAGATE_ON_BOUNDS = true;
 
     int[] t; // Tree links

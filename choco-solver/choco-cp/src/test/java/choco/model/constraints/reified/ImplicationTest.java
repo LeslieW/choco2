@@ -37,6 +37,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /*
 * User : charles
@@ -49,7 +50,7 @@ public class ImplicationTest {
 
     @Test
     public void test1(){
-        for (int i = 0; i< 100; i++){
+        for (int i = 0; i< 200; i++){
             IntegerVariable b = Choco.makeBooleanVar("b");
             IntegerVariable[] bs = Choco.makeBooleanVarArray("bs", 2);
 
@@ -72,7 +73,14 @@ public class ImplicationTest {
             s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, i));
             s.setValIntSelector(new RandomIntValSelector(i));
-            s.solveAll();
+            s.solve();
+            do{
+                if(s.getVar(b).getVal() == 1) {
+                    Assert.assertTrue(s.getVar(bs[0]).getVal()<=s.getVar(bs[1]).getVal());
+                }else{
+                    Assert.assertTrue(s.getVar(bs[0]).getVal()>s.getVar(bs[1]).getVal());
+                }
+            }while(s.nextSolution());
 
             Solver s_v = new CPSolver();
             s_v.read(m);
@@ -81,6 +89,277 @@ public class ImplicationTest {
             s_v.solveAll();
 
             Assert.assertEquals("nb sol", s_v.getNbSolutions(), s.getSolutionCount());
+        }
+    }
+
+    @Test
+    public void test1_(){
+        for (int i = 0; i< 200; i++){
+            IntegerVariable b = Choco.makeBooleanVar("b");
+            IntegerVariable[] bs = Choco.makeBooleanVarArray("bs", 2);
+
+            Constraint c = Choco.reifiedLeftImp(b, bs[0], bs[1]);
+
+            List<int[]> feas = new ArrayList<int[]>();
+            feas.add(new int[]{1,1,1});
+            feas.add(new int[]{0,0,1});
+            feas.add(new int[]{1,1,0});
+            feas.add(new int[]{1,0,0});
+            Constraint verif = Choco.feasTupleAC(feas, ArrayUtils.append(new IntegerVariable[]{b}, bs));
+
+            Model m = new CPModel();
+            m.addConstraint(c);
+
+            Model m_v = new CPModel();
+            m_v.addConstraint(verif);
+
+            Solver s = new CPSolver();
+            s.read(m);
+            s.setVarIntSelector(new RandomIntVarSelector(s, i));
+            s.setValIntSelector(new RandomIntValSelector(i));
+            s.solve();
+            do{
+                if(s.getVar(b).getVal() == 1) {
+                    Assert.assertTrue(s.getVar(bs[0]).getVal()>=s.getVar(bs[1]).getVal());
+                }else{
+                    Assert.assertTrue(s.getVar(bs[0]).getVal()<s.getVar(bs[1]).getVal());
+                }
+            }while(s.nextSolution());
+
+
+            Solver s_v = new CPSolver();
+            s_v.read(m);
+            s_v.setVarIntSelector(new RandomIntVarSelector(s_v, i));
+            s_v.setValIntSelector(new RandomIntValSelector(i));
+            s_v.solveAll();
+
+            Assert.assertEquals("nb sol", s_v.getNbSolutions(), s.getSolutionCount());
+            Assert.assertEquals("nb sol", s_v.getNbSolutions(), s.getSolutionCount());
+        }
+    }
+
+    @Test
+    public void test2(){
+        for (int i = 0; i< 200; i++){
+            IntegerVariable b = Choco.makeBooleanVar("b");
+            IntegerVariable[] bs = Choco.makeBooleanVarArray("bs", 2);
+
+            Constraint c = Choco.reifiedRightImp(b, bs[0], bs[1]);
+
+            Constraint verif = Choco.reifiedIntConstraint(b, Choco.leq(bs[0], bs[1]));
+
+            Model m = new CPModel();
+            m.addConstraint(c);
+
+            Model m_v = new CPModel();
+            m_v.addConstraint(verif);
+
+            Solver s = new CPSolver();
+            s.read(m);
+            s.setVarIntSelector(new RandomIntVarSelector(s, i));
+            s.setValIntSelector(new RandomIntValSelector(i));
+            s.solve();
+            do{
+                if(s.getVar(b).getVal() == 1) {
+                    Assert.assertTrue(s.getVar(bs[0]).getVal()<=s.getVar(bs[1]).getVal());
+                }else{
+                    Assert.assertTrue(s.getVar(bs[0]).getVal()>s.getVar(bs[1]).getVal());
+                }
+            }while(s.nextSolution());
+
+            Solver s_v = new CPSolver();
+            s_v.read(m);
+            s_v.setVarIntSelector(new RandomIntVarSelector(s_v, i));
+            s_v.setValIntSelector(new RandomIntValSelector(i));
+            s_v.solveAll();
+
+            Assert.assertEquals("nb sol", s_v.getNbSolutions(), s.getSolutionCount());
+        }
+    }
+
+    @Test
+    public void test2_(){
+        for (int i = 0; i< 200; i++){
+            IntegerVariable b = Choco.makeBooleanVar("b");
+            IntegerVariable[] bs = Choco.makeBooleanVarArray("bs", 2);
+
+            Constraint c = Choco.reifiedLeftImp(b, bs[0], bs[1]);
+
+            Constraint verif = Choco.reifiedIntConstraint(b, Choco.geq(bs[0], bs[1]));
+
+            Model m = new CPModel();
+            m.addConstraint(c);
+
+            Model m_v = new CPModel();
+            m_v.addConstraint(verif);
+
+            Solver s = new CPSolver();
+            s.read(m);
+            s.setVarIntSelector(new RandomIntVarSelector(s, i));
+            s.setValIntSelector(new RandomIntValSelector(i));
+            s.solve();
+            do{
+                if(s.getVar(b).getVal() == 1) {
+                    Assert.assertTrue(s.getVar(bs[0]).getVal()>=s.getVar(bs[1]).getVal());
+                }else{
+                    Assert.assertTrue(s.getVar(bs[0]).getVal()<s.getVar(bs[1]).getVal());
+                }
+            }while(s.nextSolution());
+
+            Solver s_v = new CPSolver();
+            s_v.read(m);
+            s_v.setVarIntSelector(new RandomIntVarSelector(s_v, i));
+            s_v.setValIntSelector(new RandomIntValSelector(i));
+            s_v.solveAll();
+
+            Assert.assertEquals("nb sol", s_v.getNbSolutions(), s.getSolutionCount());
+        }
+    }
+
+
+    @Test
+    public void test3(){
+        Random r;
+        for (int i = 0; i< 300; i++){
+            r = new Random(i);
+            IntegerVariable b = Choco.makeBooleanVar("b");
+            IntegerVariable[] bs = Choco.makeBooleanVarArray("bs", 2);
+
+            Constraint c = Choco.reifiedRightImp(b, bs[0], bs[1]);
+
+            Constraint verif = Choco.reifiedIntConstraint(b, Choco.leq(bs[0], bs[1]));
+
+            Constraint eq = Choco.TRUE;
+            int nbSol = 4;
+            switch(r.nextInt(7)){
+                case 0:
+                    eq = Choco.eq(b, 0);
+                    nbSol = 1;
+                    break;
+                case 1:
+                    eq = Choco.eq(bs[0], 0);
+                    nbSol = 2;
+                    break;
+                case 2:
+                    eq = Choco.eq(bs[1], 0);
+                    nbSol = 2;
+                    break;
+                case 3:
+                    eq = Choco.eq(b, 1);
+                    nbSol = 3;
+                    break;
+                case 4:
+                    eq = Choco.eq(bs[0], 1);
+                    nbSol = 2;
+                    break;
+                case 5:
+                    eq = Choco.eq(bs[1], 1);
+                    nbSol = 2;
+                    break;
+            }
+
+            Model m = new CPModel();
+            m.addConstraint(c);
+            m.addConstraint(eq);
+
+            Model m_v = new CPModel();
+            m_v.addConstraint(verif);
+            m_v.addConstraint(eq);
+
+            Solver s = new CPSolver();
+            s.read(m);
+            s.setVarIntSelector(new RandomIntVarSelector(s, i));
+            s.setValIntSelector(new RandomIntValSelector(i));
+            s.solve();
+            do{
+                if(s.getVar(b).getVal() == 1) {
+                    Assert.assertTrue("seed:"+i,s.getVar(bs[0]).getVal()<=s.getVar(bs[1]).getVal());
+                }else{
+                    Assert.assertTrue("seed:"+i,s.getVar(bs[0]).getVal()>s.getVar(bs[1]).getVal());
+                }
+            }while(s.nextSolution());
+
+            Solver s_v = new CPSolver();
+            s_v.read(m);
+            s_v.setVarIntSelector(new RandomIntVarSelector(s_v, i));
+            s_v.setValIntSelector(new RandomIntValSelector(i));
+            s_v.solveAll();
+
+            Assert.assertEquals("seed:"+i, s_v.getNbSolutions(), s.getSolutionCount());
+            Assert.assertEquals("seed:"+i, nbSol, s.getSolutionCount());
+        }
+    }
+
+    @Test
+    public void test3_(){
+        Random r;
+        for (int i = 0; i< 300; i++){
+            r = new Random(i);
+            IntegerVariable b = Choco.makeBooleanVar("b");
+            IntegerVariable[] bs = Choco.makeBooleanVarArray("bs", 2);
+
+            Constraint c = Choco.reifiedLeftImp(b, bs[0], bs[1]);
+
+            Constraint verif = Choco.reifiedIntConstraint(b, Choco.leq(bs[0], bs[1]));
+
+            Constraint eq = Choco.TRUE;
+            int nbSol = 4;
+            switch(r.nextInt(7)){
+                case 0:
+                    eq = Choco.eq(b, 0);
+                    nbSol = 1;
+                    break;
+                case 1:
+                    eq = Choco.eq(bs[0], 0);
+                    nbSol = 2;
+                    break;
+                case 2:
+                    eq = Choco.eq(bs[1], 0);
+                    nbSol = 2;
+                    break;
+                case 3:
+                    eq = Choco.eq(b, 1);
+                    nbSol = 3;
+                    break;
+                case 4:
+                    eq = Choco.eq(bs[0], 1);
+                    nbSol = 2;
+                    break;
+                case 5:
+                    eq = Choco.eq(bs[1], 1);
+                    nbSol = 2;
+                    break;
+            }
+
+            Model m = new CPModel();
+            m.addConstraint(c);
+            m.addConstraint(eq);
+
+            Model m_v = new CPModel();
+            m_v.addConstraint(verif);
+            m_v.addConstraint(eq);
+
+            Solver s = new CPSolver();
+            s.read(m);
+            s.setVarIntSelector(new RandomIntVarSelector(s, i));
+            s.setValIntSelector(new RandomIntValSelector(i));
+            s.solve();
+            do{
+                if(s.getVar(b).getVal() == 1) {
+                    Assert.assertTrue("seed:"+i,s.getVar(bs[0]).getVal()>=s.getVar(bs[1]).getVal());
+                }else{
+                    Assert.assertTrue("seed:"+i,s.getVar(bs[0]).getVal()<s.getVar(bs[1]).getVal());
+                }
+            }while(s.nextSolution());
+
+            Solver s_v = new CPSolver();
+            s_v.read(m);
+            s_v.setVarIntSelector(new RandomIntVarSelector(s_v, i));
+            s_v.setValIntSelector(new RandomIntValSelector(i));
+            s_v.solveAll();
+
+            Assert.assertEquals("seed:"+i, s_v.getNbSolutions(), s.getSolutionCount());
+            Assert.assertEquals("seed:"+i, nbSol, s.getSolutionCount());
         }
     }
 

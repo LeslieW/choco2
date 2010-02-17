@@ -177,8 +177,6 @@ public final class PVariable extends ParVar{
         return null;
     }
 
-    int[] roster = new int[]{
-                        1, 1, 1, 4, 3, 4, 1, 1, 1, 3, 1, 1, 1, 3, 1, 1, 3, 1, 1, 1, 3, 1, 1, 5, 1, 1, 1, 3, 1, 1, 5, 5, 3, 1, 1, 3, 4, 1, 1, 4, 1, 1, 3, 4, 1, 1, 4, 1, 1, 4, 4, 1, 1, 5, 1, 1, 5, 5, 5, 1, 1, 5, 5};
 
     /**
      * Build an array of <? extends {@link choco.kernel.model.variables.Variable}>.
@@ -212,13 +210,7 @@ public final class PVariable extends ParVar{
             case INT2:
                 vs = new IntegerVariable[size];
                 for (int i = 1; i <= size; i++) {
-                    /*if(i < 30 && name.equals("roster")
-                        *//*|| name.equals("flatroster")*//*){
-                        vs[i - 1] = Choco.makeIntVar(name+"_"+i, roster[i - 1], roster[i - 1]);
-                        map.put(name+"_"+i, vs[i - 1]);
-                    }else*/{
-                        vs[i - 1] = buildWithInt2(name + "_" + i, (DInt2) what, map);
-                    }
+                    vs[i - 1] = buildWithInt2(name + "_" + i, (DInt2) what, map);
                 }
                 map.put(name, vs);
                 break;

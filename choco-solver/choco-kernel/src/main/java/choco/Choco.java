@@ -38,7 +38,6 @@ import choco.kernel.model.constraints.pack.PackModeler;
 import choco.kernel.model.variables.ConstantFactory;
 import choco.kernel.model.variables.Operator;
 import choco.kernel.model.variables.Variable;
-import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.geost.GeostObject;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
@@ -53,11 +52,12 @@ import choco.kernel.model.variables.set.SetConstantVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.model.variables.tree.TreeParametersObject;
 import choco.kernel.solver.SolverException;
-import choco.kernel.solver.constraints.global.scheduling.RscData;
-import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Node;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Arc;
+import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Node;
+import choco.kernel.solver.constraints.global.scheduling.RscData;
 import choco.kernel.solver.constraints.integer.extension.*;
 import gnu.trove.TIntArrayList;
+import org.jgrapht.graph.DirectedMultigraph;
 
 import static java.lang.System.arraycopy;
 import java.util.Arrays;
@@ -65,8 +65,6 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.jgrapht.graph.DirectedMultigraph;
 
 /**
  * Created by IntelliJ IDEA.
@@ -3624,7 +3622,7 @@ public class Choco{
      * @return Constraint
      */
     public static Constraint reifiedLeftImp(IntegerVariable binVar, IntegerVariable lit1, IntegerVariable lit2){
-        IntegerVariable[] vars = new IntegerVariable[]{binVar, lit1, lit2};
+        IntegerVariable[] vars = new IntegerVariable[]{binVar, lit2, lit1};
         for(IntegerVariable var : vars){
             if(!var.isBoolean())throw new ModelException("reifiedLeftImpl constraint must be used with boolean variables");
         }
@@ -3640,7 +3638,7 @@ public class Choco{
      * @return Constraint
      */
     public static Constraint reifiedRightImp(IntegerVariable binVar, IntegerVariable lit1, IntegerVariable lit2){
-        IntegerVariable[] vars = new IntegerVariable[]{binVar, lit2, lit1};
+        IntegerVariable[] vars = new IntegerVariable[]{binVar, lit1, lit2};
         for(IntegerVariable var : vars){
             if(!var.isBoolean())throw new ModelException("reifiedRightImp constraint must be used with boolean variables");
         }
