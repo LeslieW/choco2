@@ -65,7 +65,7 @@ public class OrNode extends AbstractBoolNode implements BoolNode {
         if (vs.length > 1) {
             IntDomainVar v = s.createBooleanVar(StringUtils.randomName());
             IntDomainVar[] vars = ArrayUtils.append(new IntDomainVar[]{v}, vs);
-            s.post(new ReifiedLargeOr(vars));
+            s.post(new ReifiedLargeOr(vars, s.getEnvironment()));
             return v;
         } else {
             return vs[0];

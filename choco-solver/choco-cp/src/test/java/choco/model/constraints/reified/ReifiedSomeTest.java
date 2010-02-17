@@ -23,6 +23,7 @@
 package choco.model.constraints.reified;
 
 import choco.Choco;
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.model.managers.operators.SqrtManager;
 import choco.cp.solver.CPSolver;
@@ -35,6 +36,7 @@ import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
+import static choco.kernel.model.constraints.ConstraintType.*;
 import choco.kernel.model.variables.Operator;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
@@ -48,14 +50,11 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.*;
+import static org.junit.Assert.*;
 
+import static java.text.MessageFormat.format;
 import java.util.*;
 import java.util.logging.Logger;
-
-import static choco.Choco.*;
-import static choco.kernel.model.constraints.ConstraintType.*;
-import static java.text.MessageFormat.format;
-import static org.junit.Assert.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -1158,6 +1157,7 @@ public class ReifiedSomeTest {
 
             CPSolver solver = new CPSolver();
             solver.read(model);
+
             IntDomainVar[] decVars = new IntDomainVar[n + n - 1];
             System.arraycopy(solver.getVar(svars), 0, decVars, 0, n);
             System.arraycopy(solver.getVar(lvars), 0, decVars, n, n - 1);
@@ -1166,7 +1166,13 @@ public class ReifiedSomeTest {
             solver.setValIntSelector(new RandomIntValSelector());
             LOGGER.info("solve nbv: " + solver.getNbIntVars() + " nbc: " + solver.getNbIntConstraints());
             solver.solveAll();
+
+            model.setDefaultExpressionDecomposition(false);
+            CPSolver solver_ = new CPSolver();
+            solver_.read(model);
+            solver_.solveAll();
             Assert.assertEquals(solver.getNbSolutions(), 1166);
+            Assert.assertEquals(solver_.getNbSolutions(), 1166);
             LOGGER.info(" " + solver.getNbSolutions() + " " + solver.getTimeCount() + " " + solver.getNodeCount());
         }
     }
@@ -1676,7 +1682,6 @@ public class ReifiedSomeTest {
              s.setVarIntSelector(new RandomIntVarSelector(s, seed));
              s.setValIntSelector(new RandomIntValSelector(seed));
              s.solveAll();
-             System.out.println(""+ s.getNbSolutions());
              LOGGER.info("" + s.getNbSolutions());
              Assert.assertEquals("nb de solutions", 512, s.getNbSolutions());
         }
@@ -1703,7 +1708,6 @@ public class ReifiedSomeTest {
              s.setVarIntSelector(new RandomIntVarSelector(s, seed));
              s.setValIntSelector(new RandomIntValSelector(seed));
              s.solveAll();
-             System.out.println(""+ s.getNbSolutions());
              LOGGER.info("" + s.getNbSolutions());
              Assert.assertEquals("nb de solutions", 10, s.getNbSolutions());
         }
@@ -1759,7 +1763,7 @@ public class ReifiedSomeTest {
         long t = -System.currentTimeMillis();
         s.read(m);
         t += System.currentTimeMillis();
-        System.out.println("t:"+t);
+        LOGGER.info("t:"+t);
         Assert.assertTrue("time!!", t < 6000);
     }
 
@@ -1783,7 +1787,7 @@ public class ReifiedSomeTest {
         long t = -System.currentTimeMillis();
         s.read(m);
         t += System.currentTimeMillis();
-        System.out.println("t:"+t);
+        LOGGER.info("t:"+t);
         Assert.assertTrue("time!!", t < 6000);
     }
 

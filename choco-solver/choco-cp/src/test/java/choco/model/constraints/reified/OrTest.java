@@ -25,9 +25,11 @@ package choco.model.constraints.reified;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.integer.EqualXC;
 import choco.cp.solver.constraints.integer.channeling.ReifiedLargeOr;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -51,7 +53,7 @@ public class OrTest {
 
     @Test
     public void test1(){
-        for(int i = 0; i < 50; i++){
+        for(int i = 0; i < 100; i++){
             Model m1 = new CPModel();
             Model m2 = new CPModel();
             Solver s1 = new CPSolver();
@@ -82,7 +84,7 @@ public class OrTest {
     @Test
     public void test2(){
         Random r;
-        for(int i = 0; i < 50; i++){
+        for(int i = 0; i < 100; i++){
             r = new Random(i);
             Model m1 = new CPModel();
             Model m2 = new CPModel();
@@ -119,7 +121,7 @@ public class OrTest {
     @Test
     public void test3(){
         Random r;
-        for(int i = 0; i < 100; i++){
+        for(int i = 0; i < 200; i++){
             r = new Random(i);
             Model m1 = new CPModel();
             Model m2 = new CPModel();
@@ -161,7 +163,7 @@ public class OrTest {
     @Test
     public void test4(){
         Random r;
-        for(int i = 0; i< 100; i++){
+        for(int i = 1; i< 200; i++){
             r = new Random(i);
             Model m1 = new CPModel();
             IntegerVariable[] bool = makeBooleanVarArray("b", 3);
@@ -201,7 +203,7 @@ public class OrTest {
             s1.setVarIntSelector(new RandomIntVarSelector(s1, i));
             s1.setValIntSelector(new RandomIntValSelector(i));
             s1.solveAll();
-            Assert.assertEquals("solutions", nbSol , s1.getNbSolutions());
+            Assert.assertEquals("solutions -- seed:"+i, nbSol , s1.getNbSolutions());
 
         }
     }
@@ -235,7 +237,7 @@ public class OrTest {
             s1.setVarIntSelector(new RandomIntVarSelector(s1, i));
             s1.setValIntSelector(new RandomIntValSelector(i));
             s1.solveAll();
-            Assert.assertEquals("solutions", nbSol , s1.getNbSolutions());
+            Assert.assertEquals("solutions  -- seed:"+i, nbSol , s1.getNbSolutions());
 
         }
     }
@@ -257,7 +259,7 @@ public class OrTest {
     @Test
     public void test6(){
         Random r;
-        for(int i = 34; i< 200; i++){
+        for(int i = 0; i< 200; i++){
             r = new Random(i);
             Model m1 = new CPModel();
             Model m2 = new CPModel();
@@ -311,11 +313,33 @@ public class OrTest {
         IntDomainVar b  = s.createEnumIntVar("b", 1, 1);
         IntDomainVar c  = s.createEnumIntVar("c", 1, 1);
 
-        s.post(new ReifiedLargeOr(new IntDomainVar[]{a,b,c}));
+        s.post(new ReifiedLargeOr(new IntDomainVar[]{a,b,c}, s.getEnvironment()));
 
         s.solveAll();
 
         Assert.assertEquals(1, s.getNbSolutions());
+
+    }
+
+    @Test
+    public void test8(){
+        Solver s = new CPSolver();
+        IntDomainVar a  = s.createEnumIntVar("a", 0, 1);
+        IntDomainVar b  = s.createEnumIntVar("b", 0, 1);
+        IntDomainVar c  = s.createEnumIntVar("c", 0, 0);
+        IntDomainVar d  = s.createEnumIntVar("d", 0, 0);
+        IntDomainVar e  = s.createEnumIntVar("e", 0, 1);
+        IntDomainVar f  = s.createEnumIntVar("f", 0, 0);
+        IntDomainVar g  = s.createEnumIntVar("g", 0, 1);
+        IntDomainVar h  = s.createEnumIntVar("h", 0, 0);
+
+        s.post(new EqualXC(b, 0));
+        s.post(new ReifiedLargeOr(new IntDomainVar[]{a,b,c, d, e, f, g, h}, s.getEnvironment()));
+
+        s.setVarIntSelector(new StaticVarOrder(s, new IntDomainVar[]{a,b ,c, d, e, f, g, h}));
+        s.solveAll();
+
+        Assert.assertEquals(4, s.getNbSolutions());
 
     }
 }
