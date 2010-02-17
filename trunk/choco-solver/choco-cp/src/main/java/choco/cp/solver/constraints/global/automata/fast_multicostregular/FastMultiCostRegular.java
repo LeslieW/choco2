@@ -752,7 +752,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
     {
         for (int i = 0 ;i < costs.length ; i++)
         {
-            int lg = costs[i].length;
+            int lg = vs[i].getSup()+1;
             for (int j = graph.offsets[i] ; j < lg ; j++)
          //   for (int j = vs[i].getInf(); j <= vs[i].getSup() ; j = vs[i].getNextDomainValue(j))
             {
