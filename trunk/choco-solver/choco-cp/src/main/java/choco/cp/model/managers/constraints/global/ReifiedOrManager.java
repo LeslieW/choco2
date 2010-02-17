@@ -54,7 +54,7 @@ public class ReifiedOrManager extends IntConstraintManager {
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         if (solver instanceof CPSolver) {
             if (parameters == null) {
-                return new ReifiedLargeOr(solver.getVar(variables));
+                return new ReifiedLargeOr(solver.getVar(variables), solver.getEnvironment());
             }
         }
         throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");

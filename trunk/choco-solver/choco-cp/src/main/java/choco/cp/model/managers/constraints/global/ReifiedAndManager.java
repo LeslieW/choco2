@@ -22,8 +22,6 @@
 **************************************************/
 package choco.cp.model.managers.constraints.global;
 
-import java.util.Set;
-
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.channeling.ReifiedLargeAnd;
@@ -31,6 +29,8 @@ import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
+
+import java.util.Set;
 
 /*
 * User : charles
@@ -54,7 +54,7 @@ public class ReifiedAndManager extends IntConstraintManager {
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         if (solver instanceof CPSolver) {
             if (parameters == null) {
-                return new ReifiedLargeAnd(solver.getVar(variables));
+                return new ReifiedLargeAnd(solver.getVar(variables), solver.getEnvironment());
             }
         }
         throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
