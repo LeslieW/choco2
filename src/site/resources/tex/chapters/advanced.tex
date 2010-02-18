@@ -548,52 +548,65 @@ The following table summarizes the verbosities available in choco:
 			\item ON START
 				\lstset{language={sh},columns=fixed}
 \begin{lstlisting}
- * * * * * * * * * * * * * * * * * * * * * *
- *    CHOCO is an open-source software,    *
- *    distributed under a BSD licence      *
- *    and hosted by sourceforge.net        *
- *                                         *
- *    + website : http://choco.emn.fr      *
- *                                         *
- *                Copyleft 1999-2010       *
- * * * * * * * * * * * * * * * * * * * * * *\end{lstlisting}
+ ** CHOCO : Constraint Programming Solver
+ ** CHOCO v2.1.1 (April, 2009), Copyleft (c) 1999-2010
+ \end{lstlisting}
 			\item ON COMPLETE SEARCH:
 				\begin{lstlisting}
 - Search completed -
-  Solutions     : {0},
-  Nodes         : {1},
-  [Objective    : {2},]
-  Time (ms)     : {3}.\end{lstlisting}
-Brackets [\textit{line}] indicate \textit{line} is optionnal}.
+ [Maximize		: {0},]
+ [Minimize		: {1},]
+  Solutions		: {2},
+  Times (ms)	: {3},
+  Nodes			: {4},
+  Backtracks	: {5},
+  Restarts		: {6}.
+  \end{lstlisting}
+	brackets [\textit{line}] indicate \textit{line} is optionnal,\\
+ 	\texttt{Maximize} --resp. \texttt{Minimize}-- indicates the best known value before exiting of the objective value in \textit{maximize()} -- --resp. \textit{minimize()}-- strategy.
 
 			\item ON COMPLETE SEARCH WITHOUT SOLUTIONS :
 				\begin{lstlisting}
 - Search completed - No solutions
-  Nodes		: {0},
-  Time (ms)	: {1}.\end{lstlisting}
+ [Maximize		: {0},]
+ [Minimize		: {1},]
+  Solutions		: {2},
+  Times (ms)	: {3},
+  Nodes			: {4},
+  Backtracks	: {5},
+  Restarts		: {6}.
+\end{lstlisting}
+	brackets [\textit{line}] indicate \textit{line} is optionnal,\\
+ 	\texttt{Maximize} --resp. \texttt{Minimize}-- indicates the best known value before exiting of the objective value in \textit{maximize()} -- --resp. \textit{minimize()}-- strategy.
 
 			\item ON INCOMPLETE SEARCH:
 				\begin{lstlisting}
-- Search incompleted - Exiting on l limit
-  Solutions 	: {0},
-  Nodes			: {1},
-  [Objective 	: {2},]
-  Time (ms)		: {3}.\end{lstlisting}
-				brackets [\textit{line}] indicate \textit{line} is optionnal},\\
-				\texttt{Objective} indicates the best known value before exiting.
+- Search incompleted - Exiting on limit reached
+  Limit			: {0},
+ [Maximize		: {1},]
+ [Minimize		: {2},]
+  Solutions		: {3},
+  Times (ms)	: {4},
+  Nodes			: {5},
+  Backtracks	: {6},
+  Restarts		: {7}.
+  
+  \end{lstlisting}
+	brackets [\textit{line}] indicate \textit{line} is optionnal,\\
+ 	\texttt{Maximize} --resp. \texttt{Minimize}-- indicates the best known value before exiting of the objective value in \textit{maximize()} -- --resp. \textit{minimize()}-- strategy.
 		\end{itemize}			
 
 	\item \textbf{VERBOSE -- level 3:} Display informations on search state.
 		\begin{itemize}
 			\item EVERY X (default=1000) NODES:
 			\begin{lstlisting}
-- Partial search - {0} solutions, {1} nodes, {2} ms, {3} depth [, objective : {4}].
+- Partial search - [Objective : {0}, ]{1} solutions, {2} Time (ms), {3} Nodes, {4} Backtracks, {5} Restarts.
 			\end{lstlisting}
-			\texttt{objective} indicates the best known value.
+			\texttt{Objective} indicates the best known value.
 
 			\item ON RESTART : 
 			\begin{lstlisting}
-- Restarting search - {0} restarts[, next cutoff {1}].
+- Restarting search - {0} Restarts.
 			\end{lstlisting}
 		\end{itemize}
 
@@ -601,7 +614,7 @@ Brackets [\textit{line}] indicate \textit{line} is optionnal}.
 		\begin{itemize}
 			\item AT EACH SOLUTION:
 			\begin{lstlisting}
-- Solution {0} found : {1} nodes, {2} ms[, objective : {3}]
+- Solution #{0} found. [Objective: {0}, ]{1} Solutions, {2} Time (ms), {3} Nodes, {4} Backtracks, {5} Restarts.
   X_1:v1, x_2:v2...
 			\end{lstlisting}
 		\end{itemize}

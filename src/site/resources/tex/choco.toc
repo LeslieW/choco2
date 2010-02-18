@@ -154,15 +154,15 @@
 \contentsline {chapter}{\numberline {9}Constraints}{85}{chapter.9}
 \contentsline {section}{\numberline {9.1}abs (constraint)}{85}{section.9.1}
 \contentsline {section}{\numberline {9.2}allDifferent (constraint)}{85}{section.9.2}
-\contentsline {section}{\numberline {9.3}and (constraint)}{86}{section.9.3}
+\contentsline {section}{\numberline {9.3}and (constraint)}{87}{section.9.3}
 \contentsline {section}{\numberline {9.4}atMostNValue (constraint)}{87}{section.9.4}
 \contentsline {section}{\numberline {9.5}boolChanneling (constraint)}{88}{section.9.5}
-\contentsline {section}{\numberline {9.6}cumulative (constraint)}{88}{section.9.6}
+\contentsline {section}{\numberline {9.6}cumulative (constraint)}{89}{section.9.6}
 \contentsline {section}{\numberline {9.7}disjunctive (constraint)}{90}{section.9.7}
 \contentsline {section}{\numberline {9.8}distanceEQ (constraint)}{91}{section.9.8}
 \contentsline {section}{\numberline {9.9}distanceGT (constraint)}{91}{section.9.9}
 \contentsline {section}{\numberline {9.10}distanceLT (constraint)}{92}{section.9.10}
-\contentsline {section}{\numberline {9.11}distanceNEQ (constraint)}{92}{section.9.11}
+\contentsline {section}{\numberline {9.11}distanceNEQ (constraint)}{93}{section.9.11}
 \contentsline {section}{\numberline {9.12}domainconstraint (constraint)}{93}{section.9.12}
 \contentsline {section}{\numberline {9.13}eq (constraint)}{94}{section.9.13}
 \contentsline {section}{\numberline {9.14}eqCard (constraint)}{95}{section.9.14}
@@ -171,119 +171,122 @@
 \contentsline {section}{\numberline {9.17}feasPairAC (constraint)}{96}{section.9.17}
 \contentsline {section}{\numberline {9.18}feasTupleAC (constraint)}{97}{section.9.18}
 \contentsline {section}{\numberline {9.19}feasTupleFC (constraint)}{98}{section.9.19}
-\contentsline {section}{\numberline {9.20}geost (constraint)}{98}{section.9.20}
-\contentsline {section}{\numberline {9.21}geq (constraint)}{100}{section.9.21}
-\contentsline {section}{\numberline {9.22}geqCard (constraint)}{101}{section.9.22}
+\contentsline {section}{\numberline {9.20}geost (constraint)}{99}{section.9.20}
+\contentsline {section}{\numberline {9.21}geq (constraint)}{101}{section.9.21}
+\contentsline {section}{\numberline {9.22}geqCard (constraint)}{102}{section.9.22}
 \contentsline {section}{\numberline {9.23}globalCardinality (constraint)}{102}{section.9.23}
-\contentsline {section}{\numberline {9.24}gt (constraint)}{103}{section.9.24}
+\contentsline {section}{\numberline {9.24}gt (constraint)}{104}{section.9.24}
 \contentsline {section}{\numberline {9.25}ifOnlyIf (constraint)}{104}{section.9.25}
-\contentsline {section}{\numberline {9.26}ifThenElse (constraint)}{104}{section.9.26}
+\contentsline {section}{\numberline {9.26}ifThenElse (constraint)}{105}{section.9.26}
 \contentsline {section}{\numberline {9.27}implies (constraint)}{105}{section.9.27}
-\contentsline {section}{\numberline {9.28}infeasPairAC (constraint)}{105}{section.9.28}
-\contentsline {section}{\numberline {9.29}infeasTupleAC (constraint)}{106}{section.9.29}
-\contentsline {section}{\numberline {9.30}infeasTupleFC (constraint)}{107}{section.9.30}
-\contentsline {section}{\numberline {9.31}intDiv (constraint)}{108}{section.9.31}
-\contentsline {section}{\numberline {9.32}inverseChanneling (constraint)}{108}{section.9.32}
-\contentsline {section}{\numberline {9.33}isIncluded (constraint)}{109}{section.9.33}
-\contentsline {section}{\numberline {9.34}isNotIncluded (constraint)}{110}{section.9.34}
-\contentsline {section}{\numberline {9.35}leq (constraint)}{110}{section.9.35}
-\contentsline {section}{\numberline {9.36}leqCard (constraint)}{111}{section.9.36}
-\contentsline {section}{\numberline {9.37}lex (constraint)}{111}{section.9.37}
-\contentsline {section}{\numberline {9.38}lexChain (constraint)}{112}{section.9.38}
-\contentsline {section}{\numberline {9.39}lexChainEq (constraint)}{113}{section.9.39}
-\contentsline {section}{\numberline {9.40}lexeq (constraint)}{113}{section.9.40}
-\contentsline {section}{\numberline {9.41}leximin (constraint)}{114}{section.9.41}
-\contentsline {section}{\numberline {9.42}lt (constraint)}{115}{section.9.42}
-\contentsline {section}{\numberline {9.43}max (constraint)}{115}{section.9.43}
-\contentsline {subsection}{\numberline {9.43.1}max of a list}{115}{subsection.9.43.1}
-\contentsline {subsection}{\numberline {9.43.2}max of a set}{116}{subsection.9.43.2}
-\contentsline {section}{\numberline {9.44}member (constraint)}{116}{section.9.44}
-\contentsline {section}{\numberline {9.45}min (constraint)}{117}{section.9.45}
-\contentsline {subsection}{\numberline {9.45.1}min of a list}{117}{subsection.9.45.1}
-\contentsline {subsection}{\numberline {9.45.2}min of a set}{118}{subsection.9.45.2}
-\contentsline {section}{\numberline {9.46}mod (constraint)}{118}{section.9.46}
-\contentsline {section}{\numberline {9.47}multiCostRegular (constraint)}{119}{section.9.47}
-\contentsline {section}{\numberline {9.48}neq (constraint)}{121}{section.9.48}
-\contentsline {section}{\numberline {9.49}neqCard (constraint)}{121}{section.9.49}
-\contentsline {section}{\numberline {9.50}not (constraint)}{122}{section.9.50}
-\contentsline {section}{\numberline {9.51}notMember (constraint)}{122}{section.9.51}
-\contentsline {section}{\numberline {9.52}nth (constraint)}{123}{section.9.52}
-\contentsline {section}{\numberline {9.53}occurrence (constraint)}{124}{section.9.53}
-\contentsline {section}{\numberline {9.54}occurrenceMax (constraint)}{125}{section.9.54}
-\contentsline {section}{\numberline {9.55}occurrenceMin (constraint)}{125}{section.9.55}
-\contentsline {section}{\numberline {9.56}oppositeSign (constraint)}{126}{section.9.56}
-\contentsline {section}{\numberline {9.57}or (constraint)}{127}{section.9.57}
-\contentsline {section}{\numberline {9.58}pack (constraint)}{127}{section.9.58}
-\contentsline {section}{\numberline {9.59}precedenceReified (constraint)}{128}{section.9.59}
-\contentsline {section}{\numberline {9.60}regular (constraint)}{129}{section.9.60}
-\contentsline {section}{\numberline {9.61}reifiedIntConstraint (constraint)}{131}{section.9.61}
-\contentsline {section}{\numberline {9.62}relationPairAC (constraint)}{132}{section.9.62}
-\contentsline {section}{\numberline {9.63}relationTupleAC (constraint)}{133}{section.9.63}
-\contentsline {section}{\numberline {9.64}relationTupleFC (constraint)}{134}{section.9.64}
-\contentsline {section}{\numberline {9.65}sameSign (constraint)}{134}{section.9.65}
-\contentsline {section}{\numberline {9.66}setDisjoint (constraint)}{135}{section.9.66}
-\contentsline {section}{\numberline {9.67}setInter (constraint)}{136}{section.9.67}
-\contentsline {section}{\numberline {9.68}setUnion (constraint)}{136}{section.9.68}
-\contentsline {section}{\numberline {9.69}sorting (constraint)}{137}{section.9.69}
-\contentsline {section}{\numberline {9.70}stretchPath (constraint)}{137}{section.9.70}
-\contentsline {section}{\numberline {9.71}times (constraint)}{138}{section.9.71}
-\contentsline {section}{\numberline {9.72}tree (constraint)}{139}{section.9.72}
-\contentsline {section}{\numberline {9.73}TRUE (constraint)}{141}{section.9.73}
-\contentsline {section}{\numberline {9.74}xnor (constraint)}{141}{section.9.74}
-\contentsline {section}{\numberline {9.75}xor (constraint)}{142}{section.9.75}
-\contentsline {part}{III\hspace {1em}Tutorials}{143}{part.3}
-\contentsline {chapter}{\numberline {10}Getting started: welcome to Choco}{147}{chapter.10}
-\contentsline {section}{\numberline {10.1}Before starting}{147}{section.10.1}
-\contentsline {section}{\numberline {10.2}Download Choco}{147}{section.10.2}
-\contentsline {chapter}{\numberline {11}First Example: Magic square}{149}{chapter.11}
-\contentsline {section}{\numberline {11.1}First, the model}{149}{section.11.1}
-\contentsline {section}{\numberline {11.2}Then, the solver}{151}{section.11.2}
-\contentsline {section}{\numberline {11.3}Conclusion}{152}{section.11.3}
-\contentsline {chapter}{\numberline {12}Exercises}{153}{chapter.12}
-\contentsline {section}{\numberline {12.1}I'm new to CP}{153}{section.12.1}
-\contentsline {subsection}{\numberline {12.1.1}Exercise 1.1 (A soft start)}{153}{subsection.12.1.1}
-\contentsline {subsection}{\numberline {12.1.2}Exercise 1.2 (DONALD + GERALD = ROBERT)}{154}{subsection.12.1.2}
-\contentsline {subsection}{\numberline {12.1.3}Exercise 1.3 (A famous example. . . a sudoku grid)}{154}{subsection.12.1.3}
-\contentsline {subsection}{\numberline {12.1.4}Exercise 1.4 (The knapsack problem)}{155}{subsection.12.1.4}
-\contentsline {subsection}{\numberline {12.1.5}Exercise 1.5 (The n-queens problem)}{155}{subsection.12.1.5}
-\contentsline {section}{\numberline {12.2}I know CP}{156}{section.12.2}
-\contentsline {subsection}{\numberline {12.2.1}Exercise 2.1 (Bin packing, cumulative and search strategies)}{156}{subsection.12.2.1}
-\contentsline {subsection}{\numberline {12.2.2}Exercise 2.2 (Social golfer)}{157}{subsection.12.2.2}
-\contentsline {subsection}{\numberline {12.2.3}Exercise 2.3 (Golomb rule)}{159}{subsection.12.2.3}
-\contentsline {section}{\numberline {12.3}I know CP and Choco}{159}{section.12.3}
-\contentsline {subsection}{\numberline {12.3.1}Exercise 3.1 (Hamiltonian Cycle Problem Traveling Salesman Problem)}{159}{subsection.12.3.1}
-\contentsline {subsubsection}{Question 1 [Hamiltonian Cycle Problem]:}{160}{section*.43}
-\contentsline {subsubsection}{Question 2 [Traveling Salesman Problem]:}{160}{section*.44}
-\contentsline {subsection}{\numberline {12.3.2}Exercise 3.2 (Shop scheduling)}{160}{subsection.12.3.2}
-\contentsline {chapter}{\numberline {13}Solutions}{163}{chapter.13}
-\contentsline {section}{\numberline {13.1}I'm new to CP}{163}{section.13.1}
-\contentsline {subsection}{\numberline {13.1.1}Solution of Exercise 1.1 (A soft start)}{163}{subsection.13.1.1}
-\contentsline {subsection}{\numberline {13.1.2}Solution of Exercise 1.2 (DONALD + GERALD = ROBERT)}{163}{subsection.13.1.2}
-\contentsline {subsection}{\numberline {13.1.3}Solution of Exercise 1.3 (A famous example. . . a sudoku grid)}{164}{subsection.13.1.3}
-\contentsline {subsection}{\numberline {13.1.4}Solution of Exercise 1.4 (The knapsack problem)}{166}{subsection.13.1.4}
-\contentsline {subsection}{\numberline {13.1.5}Solution of Exercise 1.5 (The n-queens problem)}{166}{subsection.13.1.5}
-\contentsline {section}{\numberline {13.2}I know CP}{169}{section.13.2}
-\contentsline {subsection}{\numberline {13.2.1}Solution of Exercise 2.1 (Bin packing, cumulative and search strategies)}{169}{subsection.13.2.1}
-\contentsline {subsection}{\numberline {13.2.2}Solution of Exercise 2.2 (Social golfer)}{169}{subsection.13.2.2}
-\contentsline {subsection}{\numberline {13.2.3}Solution of Exercise 2.3 (Golomb rule)}{169}{subsection.13.2.3}
-\contentsline {section}{\numberline {13.3}I know CP and Choco2.0}{170}{section.13.3}
-\contentsline {subsection}{\numberline {13.3.1}Solution of Exercise 3.1 (Hamiltonian Cycle Problem Traveling Salesman Problem)}{170}{subsection.13.3.1}
-\contentsline {subsection}{\numberline {13.3.2}Solution of Exercise 3.2 (Shop scheduling)}{170}{subsection.13.3.2}
-\contentsline {part}{IV\hspace {1em}Extras}{171}{part.4}
-\contentsline {chapter}{\numberline {14}Choco and Visu}{173}{chapter.14}
-\contentsline {section}{\numberline {14.1}Why?}{173}{section.14.1}
-\contentsline {section}{\numberline {14.2}The visu package}{173}{section.14.2}
-\contentsline {section}{\numberline {14.3}Steps to use the Visu}{173}{section.14.3}
-\contentsline {subsection}{\numberline {14.3.1}Visu creation}{173}{subsection.14.3.1}
-\contentsline {subsection}{\numberline {14.3.2}Adding panel}{175}{subsection.14.3.2}
-\contentsline {subsubsection}{Existing ChocoPApplet}{175}{section*.45}
-\contentsline {subsubsection}{User ChocoPApplet}{176}{section*.46}
-\contentsline {section}{\numberline {14.4}Examples}{176}{section.14.4}
-\contentsline {chapter}{\numberline {15}Sudoku and Constraint Programming}{177}{chapter.15}
-\contentsline {section}{\numberline {15.1}Sudoku ?!?}{177}{section.15.1}
-\contentsline {subsection}{\numberline {15.1.1}Solving sudokus}{177}{subsection.15.1.1}
-\contentsline {section}{\numberline {15.2}Sudoku and Artificial Intelligence}{178}{section.15.2}
-\contentsline {subsection}{\numberline {15.2.1}Simple rules: single candidate and single position}{178}{subsection.15.2.1}
-\contentsline {subsection}{\numberline {15.2.2}Human reasoning principles}{178}{subsection.15.2.2}
-\contentsline {subsection}{\numberline {15.2.3}Towards Constraint Programming}{179}{subsection.15.2.3}
-\contentsline {section}{\numberline {15.3}See also}{180}{section.15.3}
+\contentsline {section}{\numberline {9.28}increasingnvalue (constraint)}{106}{section.9.28}
+\contentsline {section}{\numberline {9.29}infeasPairAC (constraint)}{107}{section.9.29}
+\contentsline {section}{\numberline {9.30}infeasTupleAC (constraint)}{108}{section.9.30}
+\contentsline {section}{\numberline {9.31}infeasTupleFC (constraint)}{108}{section.9.31}
+\contentsline {section}{\numberline {9.32}intDiv (constraint)}{109}{section.9.32}
+\contentsline {section}{\numberline {9.33}inverseChanneling (constraint)}{109}{section.9.33}
+\contentsline {section}{\numberline {9.34}inverseset (constraint)}{110}{section.9.34}
+\contentsline {section}{\numberline {9.35}isIncluded (constraint)}{111}{section.9.35}
+\contentsline {section}{\numberline {9.36}isNotIncluded (constraint)}{111}{section.9.36}
+\contentsline {section}{\numberline {9.37}leq (constraint)}{112}{section.9.37}
+\contentsline {section}{\numberline {9.38}leqCard (constraint)}{113}{section.9.38}
+\contentsline {section}{\numberline {9.39}lex (constraint)}{113}{section.9.39}
+\contentsline {section}{\numberline {9.40}lexChain (constraint)}{114}{section.9.40}
+\contentsline {section}{\numberline {9.41}lexChainEq (constraint)}{115}{section.9.41}
+\contentsline {section}{\numberline {9.42}lexeq (constraint)}{115}{section.9.42}
+\contentsline {section}{\numberline {9.43}leximin (constraint)}{116}{section.9.43}
+\contentsline {section}{\numberline {9.44}lt (constraint)}{117}{section.9.44}
+\contentsline {section}{\numberline {9.45}max (constraint)}{117}{section.9.45}
+\contentsline {subsection}{\numberline {9.45.1}max of a list}{117}{subsection.9.45.1}
+\contentsline {subsection}{\numberline {9.45.2}max of a set}{118}{subsection.9.45.2}
+\contentsline {section}{\numberline {9.46}member (constraint)}{118}{section.9.46}
+\contentsline {section}{\numberline {9.47}min (constraint)}{119}{section.9.47}
+\contentsline {subsection}{\numberline {9.47.1}min of a list}{119}{subsection.9.47.1}
+\contentsline {subsection}{\numberline {9.47.2}min of a set}{120}{subsection.9.47.2}
+\contentsline {section}{\numberline {9.48}mod (constraint)}{120}{section.9.48}
+\contentsline {section}{\numberline {9.49}multiCostRegular (constraint)}{121}{section.9.49}
+\contentsline {section}{\numberline {9.50}neq (constraint)}{123}{section.9.50}
+\contentsline {section}{\numberline {9.51}neqCard (constraint)}{123}{section.9.51}
+\contentsline {section}{\numberline {9.52}not (constraint)}{124}{section.9.52}
+\contentsline {section}{\numberline {9.53}notMember (constraint)}{124}{section.9.53}
+\contentsline {section}{\numberline {9.54}nth (constraint)}{125}{section.9.54}
+\contentsline {section}{\numberline {9.55}occurrence (constraint)}{126}{section.9.55}
+\contentsline {section}{\numberline {9.56}occurrenceMax (constraint)}{127}{section.9.56}
+\contentsline {section}{\numberline {9.57}occurrenceMin (constraint)}{127}{section.9.57}
+\contentsline {section}{\numberline {9.58}oppositeSign (constraint)}{128}{section.9.58}
+\contentsline {section}{\numberline {9.59}or (constraint)}{129}{section.9.59}
+\contentsline {section}{\numberline {9.60}pack (constraint)}{129}{section.9.60}
+\contentsline {section}{\numberline {9.61}precedenceReified (constraint)}{130}{section.9.61}
+\contentsline {section}{\numberline {9.62}regular (constraint)}{131}{section.9.62}
+\contentsline {section}{\numberline {9.63}reifiedIntConstraint (constraint)}{133}{section.9.63}
+\contentsline {section}{\numberline {9.64}relationPairAC (constraint)}{134}{section.9.64}
+\contentsline {section}{\numberline {9.65}relationTupleAC (constraint)}{135}{section.9.65}
+\contentsline {section}{\numberline {9.66}relationTupleFC (constraint)}{136}{section.9.66}
+\contentsline {section}{\numberline {9.67}sameSign (constraint)}{136}{section.9.67}
+\contentsline {section}{\numberline {9.68}setDisjoint (constraint)}{137}{section.9.68}
+\contentsline {section}{\numberline {9.69}setInter (constraint)}{138}{section.9.69}
+\contentsline {section}{\numberline {9.70}setUnion (constraint)}{138}{section.9.70}
+\contentsline {section}{\numberline {9.71}sorting (constraint)}{139}{section.9.71}
+\contentsline {section}{\numberline {9.72}stretchPath (constraint)}{139}{section.9.72}
+\contentsline {section}{\numberline {9.73}times (constraint)}{140}{section.9.73}
+\contentsline {section}{\numberline {9.74}tree (constraint)}{141}{section.9.74}
+\contentsline {section}{\numberline {9.75}TRUE (constraint)}{143}{section.9.75}
+\contentsline {section}{\numberline {9.76}xnor (constraint)}{143}{section.9.76}
+\contentsline {section}{\numberline {9.77}xor (constraint)}{144}{section.9.77}
+\contentsline {part}{III\hspace {1em}Tutorials}{145}{part.3}
+\contentsline {chapter}{\numberline {10}Getting started: welcome to Choco}{149}{chapter.10}
+\contentsline {section}{\numberline {10.1}Before starting}{149}{section.10.1}
+\contentsline {section}{\numberline {10.2}Download Choco}{149}{section.10.2}
+\contentsline {chapter}{\numberline {11}First Example: Magic square}{151}{chapter.11}
+\contentsline {section}{\numberline {11.1}First, the model}{151}{section.11.1}
+\contentsline {section}{\numberline {11.2}Then, the solver}{153}{section.11.2}
+\contentsline {section}{\numberline {11.3}Conclusion}{154}{section.11.3}
+\contentsline {chapter}{\numberline {12}Exercises}{155}{chapter.12}
+\contentsline {section}{\numberline {12.1}I'm new to CP}{155}{section.12.1}
+\contentsline {subsection}{\numberline {12.1.1}Exercise 1.1 (A soft start)}{155}{subsection.12.1.1}
+\contentsline {subsection}{\numberline {12.1.2}Exercise 1.2 (DONALD + GERALD = ROBERT)}{156}{subsection.12.1.2}
+\contentsline {subsection}{\numberline {12.1.3}Exercise 1.3 (A famous example. . . a sudoku grid)}{156}{subsection.12.1.3}
+\contentsline {subsection}{\numberline {12.1.4}Exercise 1.4 (The knapsack problem)}{157}{subsection.12.1.4}
+\contentsline {subsection}{\numberline {12.1.5}Exercise 1.5 (The n-queens problem)}{157}{subsection.12.1.5}
+\contentsline {section}{\numberline {12.2}I know CP}{158}{section.12.2}
+\contentsline {subsection}{\numberline {12.2.1}Exercise 2.1 (Bin packing, cumulative and search strategies)}{158}{subsection.12.2.1}
+\contentsline {subsection}{\numberline {12.2.2}Exercise 2.2 (Social golfer)}{159}{subsection.12.2.2}
+\contentsline {subsection}{\numberline {12.2.3}Exercise 2.3 (Golomb rule)}{161}{subsection.12.2.3}
+\contentsline {section}{\numberline {12.3}I know CP and Choco}{161}{section.12.3}
+\contentsline {subsection}{\numberline {12.3.1}Exercise 3.1 (Hamiltonian Cycle Problem Traveling Salesman Problem)}{161}{subsection.12.3.1}
+\contentsline {subsubsection}{Question 1 [Hamiltonian Cycle Problem]:}{162}{section*.43}
+\contentsline {subsubsection}{Question 2 [Traveling Salesman Problem]:}{162}{section*.44}
+\contentsline {subsection}{\numberline {12.3.2}Exercise 3.2 (Shop scheduling)}{162}{subsection.12.3.2}
+\contentsline {chapter}{\numberline {13}Solutions}{165}{chapter.13}
+\contentsline {section}{\numberline {13.1}I'm new to CP}{165}{section.13.1}
+\contentsline {subsection}{\numberline {13.1.1}Solution of Exercise 1.1 (A soft start)}{165}{subsection.13.1.1}
+\contentsline {subsection}{\numberline {13.1.2}Solution of Exercise 1.2 (DONALD + GERALD = ROBERT)}{165}{subsection.13.1.2}
+\contentsline {subsection}{\numberline {13.1.3}Solution of Exercise 1.3 (A famous example. . . a sudoku grid)}{166}{subsection.13.1.3}
+\contentsline {subsection}{\numberline {13.1.4}Solution of Exercise 1.4 (The knapsack problem)}{168}{subsection.13.1.4}
+\contentsline {subsection}{\numberline {13.1.5}Solution of Exercise 1.5 (The n-queens problem)}{168}{subsection.13.1.5}
+\contentsline {section}{\numberline {13.2}I know CP}{171}{section.13.2}
+\contentsline {subsection}{\numberline {13.2.1}Solution of Exercise 2.1 (Bin packing, cumulative and search strategies)}{171}{subsection.13.2.1}
+\contentsline {subsection}{\numberline {13.2.2}Solution of Exercise 2.2 (Social golfer)}{171}{subsection.13.2.2}
+\contentsline {subsection}{\numberline {13.2.3}Solution of Exercise 2.3 (Golomb rule)}{171}{subsection.13.2.3}
+\contentsline {section}{\numberline {13.3}I know CP and Choco2.0}{172}{section.13.3}
+\contentsline {subsection}{\numberline {13.3.1}Solution of Exercise 3.1 (Hamiltonian Cycle Problem Traveling Salesman Problem)}{172}{subsection.13.3.1}
+\contentsline {subsection}{\numberline {13.3.2}Solution of Exercise 3.2 (Shop scheduling)}{172}{subsection.13.3.2}
+\contentsline {part}{IV\hspace {1em}Extras}{173}{part.4}
+\contentsline {chapter}{\numberline {14}Choco and Visu}{175}{chapter.14}
+\contentsline {section}{\numberline {14.1}Why?}{175}{section.14.1}
+\contentsline {section}{\numberline {14.2}The visu package}{175}{section.14.2}
+\contentsline {section}{\numberline {14.3}Steps to use the Visu}{175}{section.14.3}
+\contentsline {subsection}{\numberline {14.3.1}Visu creation}{175}{subsection.14.3.1}
+\contentsline {subsection}{\numberline {14.3.2}Adding panel}{177}{subsection.14.3.2}
+\contentsline {subsubsection}{Existing ChocoPApplet}{177}{section*.45}
+\contentsline {subsubsection}{User ChocoPApplet}{178}{section*.46}
+\contentsline {section}{\numberline {14.4}Examples}{178}{section.14.4}
+\contentsline {chapter}{\numberline {15}Sudoku and Constraint Programming}{179}{chapter.15}
+\contentsline {section}{\numberline {15.1}Sudoku ?!?}{179}{section.15.1}
+\contentsline {subsection}{\numberline {15.1.1}Solving sudokus}{179}{subsection.15.1.1}
+\contentsline {section}{\numberline {15.2}Sudoku and Artificial Intelligence}{180}{section.15.2}
+\contentsline {subsection}{\numberline {15.2.1}Simple rules: single candidate and single position}{180}{subsection.15.2.1}
+\contentsline {subsection}{\numberline {15.2.2}Human reasoning principles}{180}{subsection.15.2.2}
+\contentsline {subsection}{\numberline {15.2.3}Towards Constraint Programming}{181}{subsection.15.2.3}
+\contentsline {section}{\numberline {15.3}See also}{182}{section.15.3}
+\contentsline {part}{Bibliography}{183}{section.15.3}

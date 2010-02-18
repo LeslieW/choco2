@@ -139,58 +139,60 @@
 \BOOKMARK [1][-]{section.9.25}{ifOnlyIf \(constraint\)}{chapter.9}
 \BOOKMARK [1][-]{section.9.26}{ifThenElse \(constraint\)}{chapter.9}
 \BOOKMARK [1][-]{section.9.27}{implies \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.28}{infeasPairAC \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.29}{infeasTupleAC \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.30}{infeasTupleFC \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.31}{intDiv \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.32}{inverseChanneling \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.33}{isIncluded \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.34}{isNotIncluded \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.35}{leq \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.36}{leqCard \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.37}{lex \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.38}{lexChain \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.39}{lexChainEq \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.40}{lexeq \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.41}{leximin \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.42}{lt \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.43}{max \(constraint\)}{chapter.9}
-\BOOKMARK [2][-]{subsection.9.43.1}{max of a list}{section.9.43}
-\BOOKMARK [2][-]{subsection.9.43.2}{max of a set}{section.9.43}
-\BOOKMARK [1][-]{section.9.44}{member \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.45}{min \(constraint\)}{chapter.9}
-\BOOKMARK [2][-]{subsection.9.45.1}{min of a list}{section.9.45}
-\BOOKMARK [2][-]{subsection.9.45.2}{min of a set}{section.9.45}
-\BOOKMARK [1][-]{section.9.46}{mod \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.47}{multiCostRegular \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.48}{neq \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.49}{neqCard \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.50}{not \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.51}{notMember \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.52}{nth \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.53}{occurrence \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.54}{occurrenceMax \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.55}{occurrenceMin \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.56}{oppositeSign \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.57}{or \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.58}{pack \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.59}{precedenceReified \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.60}{regular \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.61}{reifiedIntConstraint \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.62}{relationPairAC \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.63}{relationTupleAC \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.64}{relationTupleFC \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.65}{sameSign \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.66}{setDisjoint \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.67}{setInter \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.68}{setUnion \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.69}{sorting \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.70}{stretchPath \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.71}{times \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.72}{tree \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.73}{TRUE \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.74}{xnor \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.75}{xor \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.28}{increasingnvalue \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.29}{infeasPairAC \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.30}{infeasTupleAC \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.31}{infeasTupleFC \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.32}{intDiv \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.33}{inverseChanneling \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.34}{inverseset \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.35}{isIncluded \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.36}{isNotIncluded \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.37}{leq \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.38}{leqCard \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.39}{lex \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.40}{lexChain \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.41}{lexChainEq \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.42}{lexeq \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.43}{leximin \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.44}{lt \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.45}{max \(constraint\)}{chapter.9}
+\BOOKMARK [2][-]{subsection.9.45.1}{max of a list}{section.9.45}
+\BOOKMARK [2][-]{subsection.9.45.2}{max of a set}{section.9.45}
+\BOOKMARK [1][-]{section.9.46}{member \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.47}{min \(constraint\)}{chapter.9}
+\BOOKMARK [2][-]{subsection.9.47.1}{min of a list}{section.9.47}
+\BOOKMARK [2][-]{subsection.9.47.2}{min of a set}{section.9.47}
+\BOOKMARK [1][-]{section.9.48}{mod \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.49}{multiCostRegular \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.50}{neq \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.51}{neqCard \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.52}{not \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.53}{notMember \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.54}{nth \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.55}{occurrence \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.56}{occurrenceMax \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.57}{occurrenceMin \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.58}{oppositeSign \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.59}{or \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.60}{pack \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.61}{precedenceReified \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.62}{regular \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.63}{reifiedIntConstraint \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.64}{relationPairAC \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.65}{relationTupleAC \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.66}{relationTupleFC \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.67}{sameSign \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.68}{setDisjoint \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.69}{setInter \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.70}{setUnion \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.71}{sorting \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.72}{stretchPath \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.73}{times \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.74}{tree \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.75}{TRUE \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.76}{xnor \(constraint\)}{chapter.9}
+\BOOKMARK [1][-]{section.9.77}{xor \(constraint\)}{chapter.9}
 \BOOKMARK [-1][-]{part.3}{III Tutorials}{}
 \BOOKMARK [0][-]{chapter.10}{Getting started: welcome to Choco}{part.3}
 \BOOKMARK [1][-]{section.10.1}{Before starting}{chapter.10}
@@ -243,3 +245,4 @@
 \BOOKMARK [2][-]{subsection.15.2.2}{Human reasoning principles}{section.15.2}
 \BOOKMARK [2][-]{subsection.15.2.3}{Towards Constraint Programming}{section.15.2}
 \BOOKMARK [1][-]{section.15.3}{See also}{chapter.15}
+\BOOKMARK [-1][-]{section.15.3}{Bibliography}{}

@@ -293,7 +293,8 @@ public class Code4Doc5 {
         Solver s = new CPSolver();
         SetVariable x = makeSetVar("X", 1, 3);
         SetVariable y = makeSetVar("Y", 1, 3);
-        Constraint c1 = setDisjoint(x, y);
+        SetVariable z = makeSetVar("Z", 1, 3);
+        Constraint c1 = setDisjoint(x, y, z);
         m.addConstraint(c1);
         s.read(m);
         s.solveAll();

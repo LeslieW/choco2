@@ -24,6 +24,7 @@ package choco.cp.model.managers.constraints.set;
 
 import choco.cp.model.managers.SetConstraintManager;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.set.SetNaryUnion;
 import choco.cp.solver.constraints.set.SetUnion;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.set.SetVariable;
@@ -53,7 +54,11 @@ public class UnionManager extends SetConstraintManager {
 
         if(solver instanceof CPSolver){
             if(parameters == null){
-                return new SetUnion(solver.getVar(variables[0]), solver.getVar(variables[1]), solver.getVar(variables[2]));
+                if(variables.length == 3){
+                    return new SetUnion(solver.getVar(variables[1]), solver.getVar(variables[2]), solver.getVar(variables[0]));
+                }else{
+                    return new SetNaryUnion(solver.getVar(variables), solver.getEnvironment());
+                }
             }
         }
         throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");

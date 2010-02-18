@@ -22,16 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.rackconfig;
 
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
-import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.DomOverDynDeg;
-import choco.cp.solver.search.integer.varselector.DomOverWDeg;
-import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -39,8 +36,6 @@ import gnu.trove.TIntArrayList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import static choco.Choco.*;
 /**
  * Created by IntelliJ IDEA.
  * User: julien
@@ -94,7 +89,7 @@ public class RackConfig extends CPModel
         IntegerVariable[] boundOccur = makeIntVarArray("boundOccur",occur.length,0,Integer.MAX_VALUE/1000,"cp:bound");
         this.boundOccur = boundOccur;
 
-        this.addConstraint(globalCardinality(flatcard,occur));
+        this.addConstraint(globalCardinality(flatcard,occur, 0));
 
         int[] capa = new int[inst.getNbRackModels()+1];
         for (int i  = 0 ;i < inst.getNbRackModels() ; i++)

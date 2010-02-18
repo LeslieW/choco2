@@ -166,6 +166,18 @@ public class ResolutionTest {
         }
             }
 
+    @Test
+    public void gccTest() {
+        XmlModel xm = new XmlModel();
+        args[1] = args[1] + "/gcc2.xml";
+        try {
+            xm.generate(args);
+        } catch (Exception e) {
+            LOGGER.severe(e.toString());
+            Assert.fail();
+        }
+            }
+
 
     //***************************************************************************************
 /**

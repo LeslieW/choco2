@@ -27,6 +27,8 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
@@ -86,8 +88,8 @@ public class Code4Doc3 {
         //totex
     }
 
-    public void cglobalcardinality(){
-        //totex cglobalcardinality
+    public void cglobalcardinality1(){
+        //totex cglobalcardinality1
         int n = 5;
         Model m = new CPModel();
         Solver s = new CPSolver();
@@ -97,7 +99,22 @@ public class Code4Doc3 {
         }
         int[] LB2 = {0, 1, 1, 0, 3};
         int[] UB2 = {0, 1, 1, 0, 3};
-        m.addConstraint("cp:bc", globalCardinality(vars, LB2, UB2));
+        m.addConstraint("cp:bc", globalCardinality(vars, LB2, UB2, 1));
+        s.read(m);
+        s.solve();
+        //totex
+    }
+
+    public void cglobalcardinality2(){
+        //totex cglobalcardinality2
+        int n = 5;
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+        IntegerVariable[] vars = makeIntVarArray("vars", n, 1, n);
+        IntegerVariable[] cards = makeIntVarArray("cards", n, 0, 1);
+
+
+        m.addConstraint("cp:bc", globalCardinality(vars, cards, 1));
         s.read(m);
         s.solve();
         //totex
@@ -160,6 +177,23 @@ public class Code4Doc3 {
         //totex
     }
 
+    public static void main(String[] args) {
+        ChocoLogging.setVerbosity(Verbosity.SEARCH);
+        new Code4Doc3().cincreasingnvalue();
+    }
+
+    public void cincreasingnvalue(){
+        //totex cincreasingnvalue
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+        IntegerVariable nval = makeIntVar("nval", 1, 3);
+        IntegerVariable[] variables = makeIntVarArray("vars", 6, 1, 4);
+        m.addConstraint(increasing_nvalue("cp:both", nval, variables));
+        s.read(m);
+        s.solveAll();
+        //totex
+    }
+
     public void cinfeaspairac(){
         //totex cinfeaspairac
         Model m = new CPModel();
@@ -173,6 +207,7 @@ public class Code4Doc3 {
         IntegerVariable v2 = makeIntVar("v2", 1, 4);
         m.addConstraint(feasPairAC("cp:ac32",v1, v2, matrice2));
         s.read(m);
+        s.solveAll();
         //totex
     }
 
@@ -258,6 +293,21 @@ public class Code4Doc3 {
         s.read(m);
         s.solveAll();
         //totex 
+    }
+
+    public void cinverseset(){
+        //totex cinverseset
+        int i = 4;
+        int j = 2;
+        Model m = new CPModel();
+        IntegerVariable[] iv = makeIntVarArray("iv", i, 0, j);
+        SetVariable[] sv = makeSetVarArray("sv", j, 0, i);
+
+        m.addConstraint(inverseSet(iv, sv));
+        Solver s = new CPSolver();
+        s.read(m);
+        s.solveAll();
+        //totex
     }
 
     public void cisincluded(){

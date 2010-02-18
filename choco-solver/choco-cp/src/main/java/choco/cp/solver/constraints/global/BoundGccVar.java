@@ -100,16 +100,16 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
     public BoundGccVar(IntDomainVar[] vars,
                        IntDomainVar[] card,
                        int firstDomainValue,
-                       int lastDomainValue, IEnvironment environment) {
+                       int nbCard, IEnvironment environment) {
         super(makeVarTable(vars, card));
         this.card = card;
-        build(vars.length, firstDomainValue, lastDomainValue, environment);
+        build(vars.length, firstDomainValue, nbCard, environment);
     }
 
     public void build(int n,
                       int firstDomainValue,
-                      int lastDomainValue, IEnvironment environment) {
-        int range = lastDomainValue - firstDomainValue + 1;
+                      int nbCard, IEnvironment environment) {
+        int range = nbCard - firstDomainValue + 1;
         this.nbVars = n;
         t = new int[2 * n + 2];
         d = new int[2 * n + 2];
@@ -137,7 +137,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         for (int i = 0; i < range; i++) {
             val_maxOcc[i] = environment.makeInt(0);
             val_minOcc[i] = environment.makeInt(0);
-        }        
+        }
     }
 
     public int getMaxOcc(int i) {
@@ -515,13 +515,31 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         }
     }
 
+    private void initCard() throws ContradictionException {
+        for (int i = 0; i < range ; i++) {
+            if(val_maxOcc[i].get() == 0){
+                card[i].instantiate(0, cIndices[i + nbVars]);
+            }
+        }
+    }
 
     @Override
     public void awake() throws ContradictionException {
         initBackDataStruct();
-        for (IntDomainVar var : vars) {
+        initCard();
+        for (int i = 0; i < vars.length; i++) {
+            IntDomainVar var = vars[i];
             if (var.isInstantiated()) {
-                filterBCOnInst(var.getVal());
+                // if a value has been instantiated to its max number of occurrences
+                // remove it from all variables
+                if (i < nbVars) {
+                    int val = vars[i].getVal();
+                    //update lower bounds of cardinalities
+                    card[val - offset].updateInf(val_minOcc[val-offset].get(), cIndices[nbVars + val - offset]);
+                    filterBCOnInst(val);
+                } else {
+                    filterBCOnInst(i - nbVars + offset);
+                }
             }
         }
         if (directInconsistentCount())

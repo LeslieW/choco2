@@ -313,7 +313,7 @@ public class RuleModel extends CPModel {
         IntegerVariable[][] trans = ArrayUtils.transpose(vs);
         for (int i  = 0 ; i < 28 ; i++)
         {
-            this.addConstraint("cp:bc",globalCardinality(trans[i],low,up));
+            this.addConstraint("cp:bc",globalCardinality(trans[i],low,up, 0));
         }
 
 

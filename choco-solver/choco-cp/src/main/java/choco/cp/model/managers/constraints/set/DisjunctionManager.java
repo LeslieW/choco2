@@ -24,6 +24,7 @@ package choco.cp.model.managers.constraints.set;
 
 import choco.cp.model.managers.SetConstraintManager;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.set.AllDisjoint;
 import choco.cp.solver.constraints.set.Disjoint;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.set.SetVariable;
@@ -53,7 +54,11 @@ public class DisjunctionManager extends SetConstraintManager{
 
         if(solver instanceof CPSolver){
             if(parameters == null){
-                return new Disjoint(solver.getVar(variables[0]), solver.getVar(variables[1]));
+                if(variables.length == 2){
+                    return new Disjoint(solver.getVar(variables[0]), solver.getVar(variables[1]));
+                }else{
+                    return new AllDisjoint(solver.getVar(variables));
+                }
             }
         }
 

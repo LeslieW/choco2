@@ -1,10 +1,25 @@
-// **************************************************
-// *  CHOCO: an open-source Constraint Programming  *
-// *     System for Research and Education          *
-// *                                                *
-// *    contributors listed in choco.Entity.java    *
-// *           Copyright (C) F. Laburthe, 1999-2006 *
-// **************************************************
+/* ************************************************
+ *           _       _                            *
+ *          |   (..)  |                           *
+ *          |_  J||L _|        CHOCO solver       *
+ *                                                *
+ *     Choco is a java library for constraint     *
+ *     satisfaction problems (CSP), constraint    *
+ *     programming (CP) and explanation-based     *
+ *     constraint solving (e-CP). It is built     *
+ *     on a event-based propagation mechanism     *
+ *     with backtrackable structures.             *
+ *                                                *
+ *     Choco is an open-source software,          *
+ *     distributed under a BSD licence            *
+ *     and hosted by sourceforge.net              *
+ *                                                *
+ *     + website : http://choco.emn.fr            *
+ *     + support : choco@emn.fr                   *
+ *                                                *
+ *     Copyright (C) F. Laburthe,                 *
+ *                   N. Jussien    1999-2010      *
+ **************************************************/
 
 package choco.cp.solver.constraints.integer;
 
@@ -21,14 +36,12 @@ public class ElementG extends AbstractBinIntSConstraint {
   int[] lval;
   protected IStateInt lastIndexInf,lastIndexSup,lastVarInf,lastVarSup;  
   protected IStateInt[] domainSize;
-  boolean verbose = true;
   private final IEnvironment environment;
 
 
   public ElementG(IntDomainVar index, int[] values, IntDomainVar var, IEnvironment environment) {
 	    super(index, var);
         this.environment = environment;
-	    System.out.println("elementG");
 	    this.lval = values;
 	    this.domainSize = new IStateInt[2];
   }
@@ -133,7 +146,7 @@ public class ElementG extends AbstractBinIntSConstraint {
       DisposableIntIterator iter = this.v0.getDomain().getIterator();
       while (iter.hasNext() && !b) {
         int val = iter.next();
-        b &= (val) >= 0;
+        b = (val) >= 0;
         b &= (val) < this.lval.length;
         b &= this.v1.canBeInstantiatedTo(this.lval[val]);
       }
@@ -190,10 +203,6 @@ public class ElementG extends AbstractBinIntSConstraint {
 	  v0DomainSize = this.v0.getDomainSize();
 	  v1DomainSize = this.v1.getDomainSize();
 
-	  if (verbose) {
-		  System.out.println("update initial entree var : "+this.v0.pretty()+"var1 : "+this.v1.pretty()+" v1Ds "+v1DomainSize+" v0Ds "+v0DomainSize);
-	  }
-
 	  /* On précalcule la taille minimale du tableau redirect */
 	  int heigth = lval[0] ; // length of redirect (use first as a max value)
 	  int offset = lval[0] ; // starting value in redirect
@@ -236,7 +245,7 @@ public class ElementG extends AbstractBinIntSConstraint {
 	  for (DisposableIntIterator iter = this.v0.getDomain().getIterator(); iter.hasNext();) {
 		  int index = iter.next();
 		  // bug "index - 1 > 0" change to "index - 1 >= 0"  [EBo 6/4/8]
-		  if ((index-1 < this.lval.length) && (index - 1 >= 0) && (this.v1.canBeInstantiatedTo(this.lval[index-1]) == false)) {
+		  if ((index-1 < this.lval.length) && (index - 1 >= 0) && (!this.v1.canBeInstantiatedTo(this.lval[index - 1]))) {
 			  this.v0.removeVal(index,this.cIdx0);
 			  v0DomainSize = v0DomainSize - 1;
 		  } 
@@ -245,8 +254,8 @@ public class ElementG extends AbstractBinIntSConstraint {
 	  /* update Var via Index = cas 1-0-1 :
 		v in Tableau, i not in Index => remove v from Var si occur = 1 sinon update FirstPos */	  
 	  for (int i=0;i<nbVal;i++) {
-		  if (this.v1.canBeInstantiatedTo(value[i]) == true) {
-			  while ((occur[i] > 1) && (this.v0.canBeInstantiatedTo(firstPos[i]) == false)) {
+		  if (this.v1.canBeInstantiatedTo(value[i])) {
+			  while ((occur[i] > 1) && (!this.v0.canBeInstantiatedTo(firstPos[i]))) {
 				  occur[i] = occur[i] - 1;
 				  int j = firstPos[i] + 1;
 				  while (this.lval[j-1] != value[i]) {
@@ -254,7 +263,7 @@ public class ElementG extends AbstractBinIntSConstraint {
 				  }
 				  firstPos[i] = j;
 			  }
-			  if ((occur[i] == 1) && (this.v0.canBeInstantiatedTo(firstPos[i]) == false)) {
+			  if ((occur[i] == 1) && (!this.v0.canBeInstantiatedTo(firstPos[i]))) {
 				  this.v1.removeVal(value[i], this.cIdx1);
 				  v1DomainSize = v1DomainSize - 1;
 			  } 	  /* sinon, firstPos est mis a une véritable première position de v , cas 1-1-1 */
@@ -300,9 +309,6 @@ public class ElementG extends AbstractBinIntSConstraint {
 
 	  this.domainSize[0] = environment.makeInt(v0DomainSize);
 	  this.domainSize[1] = environment.makeInt(v1DomainSize);
-	  if (verbose) {
-		  System.out.println("update initial sortie var : "+this.v0.pretty()+"var1 : "+this.v1.pretty()+" v1Ds "+v1DomainSize+" v0Ds "+v0DomainSize);
-	  }
   }
 
   
@@ -322,15 +328,13 @@ public class ElementG extends AbstractBinIntSConstraint {
 			  fail();
 		  }		  		  
 		  int j = this.v0.getInf();
-		  if (verbose) {
-			  System.out.println("var : "+this.v0.toString()+"var1 : "+this.v1.toString()+" index i "+i+" val "+val+" v1Ds "+v1DomainSize+" v0Ds "+v0DomainSize+" DS "+(this.domainSize[0].get())+" min is "+j);
-		  }
+
 //		  if ((i == 13) && (val == 4) && (v1DomainSize == 4) && (v0DomainSize == 36) && (j == 2) && (this.domainSize[0].get() == 52)) {
 //			  val = val;
 //		  };
 		  // bug (as in awake)
 //	      while ((j <= this.v0.getSup()) && (j <= this.lval.length) && ((j == i) || ((j-1 > 0) && (this.lval[j-1] != val)) || (this.v0.canBeInstantiatedTo(j) == false))) {			  
-		  while ((j <= this.v0.getSup()) && (j <= this.lval.length) && ((j == i) || ((j-1 >= 0) && (this.lval[j-1] != val)) || (this.v0.canBeInstantiatedTo(j) == false))) {			  
+		  while ((j <= this.v0.getSup()) && (j <= this.lval.length) && ((j == i) || ((j-1 >= 0) && (this.lval[j-1] != val)) || (!this.v0.canBeInstantiatedTo(j)))) {			  
 			  j = j + 1;		
 		  }		  
 //	      if (j > this.lval.length) {  // Bug EBo 6/4/8 on testait max de lval mais pas max de dom(Index)
@@ -338,9 +342,6 @@ public class ElementG extends AbstractBinIntSConstraint {
 			  if (this.v1.canBeInstantiatedTo(val)) {
 				  this.v1.removeVal(val,this.cIdx1);  		  
 				  v1DomainSize = v1DomainSize - 1;
-				  if (verbose) {
-					  System.out.println("v1 decrease from "+val+"  remainginDomainSize "+v1DomainSize+" le tableau "+lval[0]+";"+lval[1]);
-				  }
 				  this.domainSize[1].set(v1DomainSize);
 			  }
 		  }  
@@ -356,9 +357,6 @@ public class ElementG extends AbstractBinIntSConstraint {
 	  if ((v1DomainSize == this.domainSize[1].get())) {
 		  // already test in a previous awake !
 	  } else {
-		  if (verbose) {
-			  System.out.println("var0 : "+this.v0.toString()+"var1 : "+this.v1.toString()+"value v "+v+" v1Ds "+v1DomainSize+" DS1 "+(this.domainSize[1].get())+" v0Ds "+v0DomainSize+" DS0 "+(this.domainSize[0].get())+" le tableau:"+lval[0]+";"+lval[1]);
-		  }
 		  for (DisposableIntIterator iter = this.v0.getDomain().getIterator(); iter.hasNext();) {
 			  int index = iter.next();			  
 //		      if ((index - 1 < this.lval.length) && (index - 1 > 0) && (this.lval[index-1] == v)) {				  
@@ -366,9 +364,6 @@ public class ElementG extends AbstractBinIntSConstraint {
 			  		if (this.v0.canBeInstantiatedTo(index)) {
 			  			this.v0.removeVal(index,this.cIdx0);
 			  			v0DomainSize = v0DomainSize - 1;
-			  			if (verbose) {
-			  				System.out.println("v0 decrease from "+index);
-			  			}
 			  			this.domainSize[0].set(v0DomainSize);
 			  		}
 			  	} 		  	  

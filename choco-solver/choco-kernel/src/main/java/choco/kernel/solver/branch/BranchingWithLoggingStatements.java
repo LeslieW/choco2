@@ -27,7 +27,6 @@ import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
 import choco.kernel.solver.search.IntBranchingDecision;
 
 import java.util.logging.Level;
@@ -82,7 +81,7 @@ public class BranchingWithLoggingStatements extends AbstractIntBranchingStrategy
 	throws ContradictionException {
 		if(LOGGER.isLoggable(Level.INFO)) {
 			if(manager.getNodeCount() >= nextInformationNode) {
-				LOGGER.log(Level.INFO, "- Partial Seach: {0}", manager.partialRuntimeStatistics(false));
+				LOGGER.log(Level.INFO, "- Partial Seach - {0}.", manager.partialRuntimeStatistics(true));
 				nextInformationNode = manager.getNodeCount() + ChocoLogging.getEveryXNodes();
 				ChocoLogging.flushLogs();
 			}  

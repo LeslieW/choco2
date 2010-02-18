@@ -1,0 +1,21 @@
+%\part{inversechanneling}
+\label{inverseset}
+\hypertarget{inverseset}{}
+
+\section{inverseset (constraint)}\label{inverseset:inversesetconstraint}\hypertarget{inverseset:inversesetconstraint}{}
+\begin{notedef}
+  \texttt{inverseset}$(iv,sv)$ states a channeling between an array  $iv$ of integer variables and an array $sv$ of set variables. It enforces that value $j$ belongs to $sv[i]$ if and only if $iv[j]$ is equal to $i$ and conversely:
+  %It enforces that if the $i$-th element of $x$ is equal to $j$ then the $j$-th element of $y$ is equal to $i$ and conversely:
+$$sv_i = j\quad\iff\quad iv_i = j$$
+\end{notedef}
+\begin{itemize}
+	\item \textbf{API} : \mylst{inverseSet(IntegerVariable[] iv, SetVariable[] sv)}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} : \emph{no options}
+	\item \textbf{favorite domain} : enumerated for iv
+	\item \textbf{references} :\\
+      global constraint catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Cinverse_set.html}{inverse\_set}
+\end{itemize}
+
+\textbf{Example}:
+\lstinputlisting{java/cinverseset.j2t}

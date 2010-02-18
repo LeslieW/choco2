@@ -73,5 +73,5 @@
         Solver s = new CPSolver();
         s.read(m);
         //6- heuristic: choose successor variables as the only decision variables
-        s.setVarIntSelector(new StaticVarOrder(s.getVar(parameters.getSuccVars())));
+        s.setVarIntSelector(new StaticVarOrder(s, s.getVar(parameters.getSuccVars())));
         s.solveAll();

@@ -48,7 +48,7 @@ public class CoverVarValSelector extends AbstractIntVarSelector implements ValSe
 
            this.other = new StaticVarOrder(s, ArrayUtils.flatten(vars));
 
-           lastCol = solver.getEnvironment().makeInt(0);
+           lastCol = s.getEnvironment().makeInt(0);
        }
 
 

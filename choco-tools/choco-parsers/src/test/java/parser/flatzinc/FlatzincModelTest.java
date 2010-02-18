@@ -152,6 +152,28 @@ public class FlatzincModelTest {
         tester("black-hole_17.fzn", false, 0, "objective", 0);
     }
 
+    @Test
+    public void test10() throws URISyntaxException {
+        tester("debruijn_binary_02_03.fzn", false, 0, "objective", 0);
+    }
+
+    @Test
+    public void test11() {
+        fzn.instance =
+                "array[1 .. 3] of var 1 .. 10: vars;\n" +
+                "array[1 .. 3] of int: covers = [1,5,8];\n" +
+                "array[1 .. 3] of int: lbound = [0,1,0];\n" +
+                "array[1 .. 3] of int: ubound = [1,1,1];\n" +
+                "constraint global_globalCardinalityLowUp(vars, covers, lbound, ubound);\n" +
+                "solve satisfy;";
+
+        SolveGoal sg = fzn.parse();
+        s.read(fzn.model);
+        sg.defineGoal(s);
+        s.launch();
+        Assert.assertEquals(1, s.getSolutionCount());
+    }
+
     /******************************************************************************************************************/
     /**
      * **************************************************************************************************************

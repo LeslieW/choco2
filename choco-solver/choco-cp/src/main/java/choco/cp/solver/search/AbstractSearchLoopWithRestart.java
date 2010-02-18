@@ -22,16 +22,16 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search;
 
-import java.util.logging.Level;
-
 import choco.cp.solver.search.restart.IKickRestart;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.AbstractBranchingStrategy;
 import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.AbstractSearchLoop;
 import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.*;
+import choco.kernel.solver.search.AbstractSearchLoop;
 import choco.kernel.solver.search.IntBranchingTrace;
+
+import java.util.logging.Level;
 
 
 public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
@@ -272,7 +272,7 @@ public void downBranch() {
  */
 @Override
 public void restart() {
-	if(LOGGER.isLoggable(Level.CONFIG)) LOGGER.log(Level.CONFIG, "- Restarting search: {0} restarts", getRestartCount());
+	if(LOGGER.isLoggable(Level.CONFIG)) LOGGER.log(Level.CONFIG, "- Restarting search - {0} Restarts", getRestartCount());
 	kickRestart.restoreRootNode(ctx);
 	try {
 		searchStrategy.postDynamicCut();

@@ -22,14 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package maif.cp;
 
+import static choco.Choco.*;
+import choco.cp.model.CPModel;
+import choco.kernel.model.variables.integer.IntegerVariable;
 import maif.entities.Person;
 import maif.entities.Preference;
 
 import java.util.*;
-
-import static choco.Choco.*;
-import choco.cp.model.CPModel;
-import choco.kernel.model.variables.integer.IntegerVariable;
 
 /**
  * Created by IntelliJ IDEA.
@@ -94,7 +93,7 @@ public class MaifModel extends CPModel {
 
         card = makeIntVarArray("card",this.people.size(),0,this.dayVars.length);
 
-        this.addConstraint(globalCardinality(dayVars,card));
+        this.addConstraint(globalCardinality(dayVars,card, 0));
         max = makeIntVar("max",0,this.dayVars.length,"cp:bound");
         this.addConstraint(max(card,max));
         min = makeIntVar("max",0,this.dayVars.length,"cp:bound");

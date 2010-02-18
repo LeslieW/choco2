@@ -4,12 +4,12 @@
 
 \section{setDisjoint (constraint)}\label{setdisjoint:setdisjointconstraint}\hypertarget{setdisjoint:setdisjointconstraint}{}
 \begin{notedef}
-  \texttt{setDisjoint}$(s_1,s_2)$ states that the two set arguments are disjoint:
-$$s_1\cap s_2=\emptyset$$
+  \texttt{setDisjoint}$(s_1,\ldots,s_n)$ states that the arguments are pairwise disjoint:
+$$s_i\cap s_j=\emptyset, \quad \forall\ i\neq j $$
 \end{notedef}
 
 \begin{itemize}
-	\item \textbf{API} : \mylst{setDisjoint(SetVariable s1, SetVariable s2)}
+	\item \textbf{API} : \mylst{setDisjoint(SetVariable[] sv)}
 	\item \textbf{return type} : \texttt{Constraint}
 	\item \textbf{options} :\emph{n/a}
 	\item \textbf{favorite domain} : \emph{to complete}

@@ -209,7 +209,7 @@ public class ConstraintTest {
         int low[] = new int[]{0,0,2,0,0,0,3,0,0,0};
         int up[] = new int[]{5,5,5,5,5,5,5,5,5,5};
 
-        m.addConstraint(Choco.globalCardinality("cp:bc",vars, low, up));
+        m.addConstraint(Choco.globalCardinality("cp:bc",vars, low, up, 0));
 
         checker(new Random(14106));
     }
@@ -228,7 +228,7 @@ public class ConstraintTest {
         int low[] = new int[]{2,0,0,0,0,1,2};
         int up[] = new int[]{5,4,0,0,0,1,5};
 
-        m.addConstraint(Choco.globalCardinality("cp:bc",vars, low, up));
+        m.addConstraint(Choco.globalCardinality("cp:bc",vars, low, up, 0));
 
         checker(new Random(0));
     }
@@ -274,7 +274,7 @@ public class ConstraintTest {
         m.addConstraint(Choco.reifiedIntConstraint(
                 vars[7],
                 Choco.globalCardinality(new IntegerVariable[]{vars[0], vars[1], vars[2], vars[3], vars[4]},
-                        new int[]{0,5,0,0,0,0,0,0,0,0,0}, new int[]{5,5,2,5,5,5,5,5,5,5,5}) ,
+                        new int[]{0,5,0,0,0,0,0,0,0,0,0}, new int[]{5,5,2,5,5,5,5,5,5,5,5}, -1) ,
                 Choco.gt(vars[5], vars[6])
                 ));
 
