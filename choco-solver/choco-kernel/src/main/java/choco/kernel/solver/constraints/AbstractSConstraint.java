@@ -91,7 +91,7 @@ public abstract class AbstractSConstraint<V extends Var> extends Propagator impl
     public Extension[] extensions = new Extension[1];
 
     /**
-     * Constraucts a constraint with the priority 0.
+     * Constructs a constraint with the priority 0.
      * @param vars variables involved in the constraint
      */
 

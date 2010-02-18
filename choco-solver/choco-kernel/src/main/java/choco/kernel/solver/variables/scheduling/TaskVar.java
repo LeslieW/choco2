@@ -11,8 +11,9 @@ import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.model.variables.scheduling.ITaskVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.propagation.PropagationEngine;
+import choco.kernel.solver.propagation.event.TaskVarEvent;
 import choco.kernel.solver.propagation.event.VarEvent;
-import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -37,6 +38,9 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 	 */
 	protected PartiallyStoredVector<SConstraint> constraints;
 
+    protected final VarEvent<? extends Var> event;
+
+    private final PropagationEngine propagationEngine;
 	
 	/**
 	 * Initializes a new variable.
@@ -51,6 +55,8 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 		IEnvironment env = solver.getEnvironment();
 		constraints = env.makePartiallyStoredVector();
         index = solver.getIndexfactory().getIndex();
+        this.event = new TaskVarEvent(this);
+        this.propagationEngine = solver.getPropagationEngine();
 	}
 
 	/**
@@ -137,8 +143,8 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 	 * Returns the variable event.
 	 * @return the event responsible for propagating variable modifications
 	 */
-	public VarEvent<? extends AbstractVar> getEvent() {
-		return null;
+	public VarEvent<? extends Var> getEvent() {
+		return event;
 	}
 
 
@@ -260,4 +266,12 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 	public boolean isInstantiated() {
 		return  start.isInstantiated() && end.isInstantiated() && duration.isInstantiated();
 	}
+
+    /**
+     * Call awake on TaskVar.
+     * @param idx index of the constraint calling #awake().
+     */
+    public void awake(int idx){
+        propagationEngine.postEvent(this, idx, TaskVarEvent.TASK_AWAKE); 
+    }
 }

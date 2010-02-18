@@ -52,7 +52,7 @@ public abstract class AbstractVar implements Var {
 	/**
 	 * The variable var associated to this variable.
 	 */
-	protected VarEvent<? extends AbstractVar> event;
+	protected VarEvent<? extends Var> event;
 
 
 	/**
@@ -160,7 +160,7 @@ public abstract class AbstractVar implements Var {
 	 * Returns the variable event.
 	 * @return the event responsible for propagating variable modifications
 	 */
-	public VarEvent<? extends AbstractVar> getEvent() {
+	public VarEvent<? extends Var> getEvent() {
 		return event;
 	}
 
