@@ -10,15 +10,16 @@ $$low[v-min]\le|\{i\ |\ x_i=v\}|\le up[v-min],\quad\forall \text{ value } v$$
 
 Mulitple APIs exist:
 \begin{itemize}
-	\item \emph{bounds on cardinalities:} Given an array of variables $x$, $min$ the minimal value over all variables, and $max$ the maximal value over all variables, the constraint ensures that the number of occurrences of value $v$ among the variables is between $low[v-min]$ and $up[v-min]$. Note that the length of $low$ and $up$ should be $max - min + 1$. Use the propagator of \cite{QuimperCP03}.
-	\item \emph{default offset $min=1$:} Given an array of variables $x$, the constraint ensures that the number of occurrences of the value 1 in all the variables $x$ is between $low[0]$ and $up[0]$, and generally the number of occurrences of the value $v$ in $x$ is between $low[v-1]$ and $up[v-1]$.
-	\item \emph{variable cardinalities:} Given an array of variables $x$, an array of variables $card$ to represent the cardinalities, the constraint ensures that the number of occurrences of the value $v$ among the variables is equal to $card[v]$. This constraint:
+%	\item \emph{bounds on cardinalities:} Given an array of variables $x$, $min$ the minimal value over all variables, and $max$ the maximal value over all variables, the constraint ensures that the number of occurrences of value $v$ among the variables is between $low[v-min]$ and $up[v-min]$. Note that the length of $low$ and $up$ should be $max - min + 1$. Use the propagator of \cite{QuimperCP03}.
+	\item Given an array of variables $x$ and an $offset$, the constraint ensures that the number of occurrences of the value $v$ in $x$ is between $low[v-offset]$ and $up[v-offset]$. Use the propagator of \cite{QuimperCP03}.
+	\item \emph{variable cardinalities:} Given an array of variables $x$, an array of variables $card$ to represent the cardinalities and an $offset$, the constraint ensures that the number of occurrences of the value $v$ among the variables is equal to $card[v-offset]$. This constraint:
       \begin{itemize}
       \item enforces Bound Consistency over $x$ regarding the lower and upper bounds of $card$, 
       \item maintains the upper bounds of $card$ by counting the number of variables in which each value can occur, 
       \item maintains the lower bounds of $card$ by counting the number of variables instantiated to each value, 
       \item enforces $card[0] + \cdots + card[m] = n$, where \emph{n} is the number of variables and \emph{m} the number of values.
       \end{itemize}
+	Use the propagator of \cite{QuimperCP03}.      
 
 \end{itemize}
 
@@ -27,9 +28,9 @@ The APIs are duplicated to define options.
 \begin{itemize}
 	\item \textbf{API} :
       \begin{itemize}
-	\item \mylst{globalCardinality(IntegerVariable[] x, int[] low, int[] up)}
-	\item \mylst{globalCardinality(String options, IntegerVariable[] x, int[] low, int[] up)}
-	\item \mylst{globalCardinality(IntegerVariable[] x, int min, int max, IntegerVariable[] card)}
+	\item \mylst{globalCardinality(IntegerVariable[] x, int[] low, int[] up, int offset)}
+	\item \mylst{globalCardinality(String options, IntegerVariable[] x, int[] low, int[] up, int offset)}
+	\item \mylst{globalCardinality(IntegerVariable[] x, IntegerVariable[] card, int offset)}
       \end{itemize}
 	\item \textbf{return type} : \texttt{Constraint}
 	\item \textbf{options}:
@@ -47,5 +48,15 @@ The APIs are duplicated to define options.
       \end{itemize}
 \end{itemize}
 
-\textbf{Example}:
-\lstinputlisting{java/cglobalcardinality.j2t}
+\textbf{Examples:}
+\begin{itemize}
+	\item example1:
+\end{itemize}
+
+\lstinputlisting{java/cglobalcardinality1.j2t}
+
+\begin{itemize}
+	\item example2
+\end{itemize}
+
+\lstinputlisting{java/cglobalcardinality2.j2t}

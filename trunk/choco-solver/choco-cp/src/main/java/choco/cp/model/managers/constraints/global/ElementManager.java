@@ -24,9 +24,7 @@ package choco.cp.model.managers.constraints.global;
 
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.integer.Element;
-import choco.cp.solver.constraints.integer.Element2D;
-import choco.cp.solver.constraints.integer.ElementV;
+import choco.cp.solver.constraints.integer.*;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.cp.solver.constraints.reified.leaves.VariableLeaf;
 import choco.cp.solver.constraints.reified.leaves.bool.AndNode;
@@ -80,9 +78,15 @@ public class ElementManager extends IntConstraintManager{
                     }
                 }
                 if(areConstants){
+                    if(options.contains("cp:G")){
+                        return new ElementG(index, values, val, solver.getEnvironment());
+                    }
                     return new Element(index, values, val, offset);
                 }else{
                     if (index.hasEnumeratedDomain()) {
+                        if(options.contains("cp:G")){
+                            return new ElementVG(solver.getVar((IntegerVariable[])variables), offset, solver.getEnvironment());
+                        }
                         return new ElementV(solver.getVar((IntegerVariable[])variables), offset, solver.getEnvironment());
                     }else{
                         throw new SolverException(index.getName()+" has not an enumerated domain");
@@ -133,12 +137,20 @@ public class ElementManager extends IntConstraintManager{
                     for(int i = 0; i < variables.length-2; i++){
                         values[i] = ((IntegerConstantVariable)variables[i]).getValue();
                     }
-                    solver.post(new Element(Y, values, val, offset));
+                    if(options.contains("cp:G")){
+                        solver.post(new ElementG(Y, values, val, solver.getEnvironment()));
+                    }else{
+                        solver.post(new Element(Y, values, val, offset));
+                    }
                 }else{
                     if (Y.hasEnumeratedDomain()) {
                         IntDomainVar[] tvars = solver.getVar((IntegerVariable[])variables);
                         tvars[variables.length-2] = Y;
-                        solver.post(new ElementV(tvars, offset, solver.getEnvironment()));
+                        if(options.contains("cp:G")){
+                            solver.post(new ElementVG(tvars, offset, solver.getEnvironment()));
+                        }else{
+                            solver.post(new ElementV(tvars, offset, solver.getEnvironment()));
+                        }
                     }else{
                         throw new SolverException(X.getName()+" has not an enumerated domain");
                     }

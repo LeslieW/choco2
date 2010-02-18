@@ -141,7 +141,7 @@ public class RegCRMCRComp
             m.addConstraint(nth(vars[i],costs[i],cvar[i]));
         }
 
-        m.addConstraint(globalCardinality(vars,gccvar));
+        m.addConstraint(globalCardinality(vars,gccvar, 0));
         m.addConstraint(eq(nbTravail,(plus(gccvar[1],gccvar[2]))));
         m.addConstraint(eq(nbRepos,(gccvar[0])));
 
@@ -176,7 +176,7 @@ public class RegCRMCRComp
         IntegerVariable[] gccvar = makeIntVarArray("gcc",3,0,vars.length);
         IntegerVariable nbTravail = makeIntVar("trav",6,8,"cp:bound");
         IntegerVariable nbRepos = makeIntVar("rep",costs.length-8,costs.length-6,"cp:bound");
-        m.addConstraint(globalCardinality(vars,gccvar));
+        m.addConstraint(globalCardinality(vars,gccvar, 0));
         m.addConstraint(eq(nbTravail,(plus(gccvar[1],gccvar[2]))));
         m.addConstraint(eq(nbRepos,(gccvar[0])));
 

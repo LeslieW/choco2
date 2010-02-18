@@ -24,6 +24,7 @@ package parser.flatzinc.ast;
 
 import static choco.Choco.*;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -32,6 +33,7 @@ import choco.kernel.model.variables.set.SetVariable;
 import parser.flatzinc.ast.expression.EAnnotation;
 import parser.flatzinc.ast.expression.Expression;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -462,13 +464,27 @@ public final class PConstraint {
         }else
         if(name.contains(_globalCardinalityLowUp)){
             IntegerVariable[] vars = exps.get(0).toIntVarArray();
-            IntegerVariable[] cards = exps.get(1).toIntVarArray();
-            c = globalCardinality(vars, cards);
+            int[] covers = exps.get(1).toIntArray();
+            int[] lbound = exps.get(2).toIntArray();
+            int[] ubound = exps.get(3).toIntArray();
+
+            int min  = MathUtils.min(covers)-1;
+            int max = MathUtils.max(covers)+1;
+
+            int[] low = new int[max-min];
+            int[] upp = new int[max-min];
+            Arrays.fill(low, 0);
+            Arrays.fill(upp, 0);
+            for(int i = 0; i < covers.length; i++){
+                low[covers[i]] = lbound[i];
+                upp[covers[i]] = ubound[i];
+            }
+            c = globalCardinality(vars, low, upp, 0);
         }else
         if(name.contains(_globalCardinality)){
             IntegerVariable[] vars = exps.get(0).toIntVarArray();
             IntegerVariable[] cards = exps.get(1).toIntVarArray();
-            c = globalCardinality(vars, cards);
+            c = globalCardinality(vars, cards, 0);
         }else
         if(name.contains(_inverseSet)){
             IntegerVariable[] ivars = exps.get(0).toIntVarArray();

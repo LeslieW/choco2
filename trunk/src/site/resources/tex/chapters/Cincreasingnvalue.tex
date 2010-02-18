@@ -1,0 +1,26 @@
+%\part{increasingnvalue}
+\label{increasingnvalue}
+\hypertarget{increasingnvalue}{}
+
+\section{increasingnvalue (constraint)}\label{increasingnvalue:increasingnvalueconstraint}\hypertarget{increasingnvalue:increasingnvalueconstraint}{}
+\begin{notedef}
+  \texttt{increasing\_nvalue}$(nval, variables)$ states that $variables$ are increasing. In addition, $nval$ is the number of distinct values taken by $variables$.
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} : \mylst{increasing\_nvalue(IntegerVariable nval, IntegerVariable[] variables)}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} :
+	\begin{itemize}
+		\item \emph{no option} filter on lower bound and on lower bound
+		\item \texttt{cp:atleast} filter on lower bound only
+		\item \texttt{cp:atmost} filter on upper bound only
+		\item \texttt{cp:both} \textit{--default value--} filter on lower bound and on upper bound
+	\end{itemize}
+	\item \textbf{favorite domain} : \emph{to complete}
+	\item \textbf{references} :\\
+      global constraint catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Cincreasing_nvalue.html}{increasing\_nvalue}
+\end{itemize}
+
+\textbf{Example}:
+\lstinputlisting{java/cincreasingnvalue.j2t} 

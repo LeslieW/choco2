@@ -108,7 +108,7 @@ public final class ChocoLogging {
 	/**
 	 * display information about search every x nodes.
 	 */
-	private static int EVERY_X_NODES = 10;
+	private static int EVERY_X_NODES = 1000;
 
 	private ChocoLogging() {
 		super();

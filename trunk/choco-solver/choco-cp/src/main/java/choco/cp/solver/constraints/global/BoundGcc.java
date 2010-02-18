@@ -80,7 +80,7 @@ public class BoundGcc extends BoundGccVar {
 //	public void updateInf(IntDomainVar v, int ninf, int idx) throws ContradictionException {
 //		v.updateInf(ninf, VarEvent.domOverWDegIdx(cIndices[idx]));//cIndices[idx]);
 //	}
-
+    
 
 	@Override
 	public void awake() throws ContradictionException {

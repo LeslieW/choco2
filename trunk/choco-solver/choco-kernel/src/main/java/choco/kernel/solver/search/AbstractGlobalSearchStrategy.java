@@ -28,10 +28,9 @@
 //**************************************************
 package choco.kernel.solver.search;
 
-import java.util.logging.Level;
-
 import choco.kernel.common.logging.ChocoLogging;
-import static choco.kernel.common.util.tools.StringUtils.*;
+import static choco.kernel.common.util.tools.StringUtils.pretty;
+import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
@@ -41,6 +40,8 @@ import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.measure.ISearchMeasures;
+
+import java.util.logging.Level;
 
 /**
  * An abstract class for controlling tree search in various ways
@@ -238,7 +239,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		limitManager.endTreeSearch();
 		if (LOGGER.isLoggable(Level.INFO)) {
 			if( isEncounteredLimit() ) {
-				LOGGER.log(Level.INFO, "- Search incompleted: Exiting on 1 limit\n  Limit: {0}\n{1}", 
+				LOGGER.log(Level.INFO, "- Search incompleted: Exiting on limit reached\n  Limit: {0}\n{1}", 
 						new Object[]{limitManager.toString(), runtimeStatistics()});
 			}else if( solver.isFeasible() == Boolean.TRUE) {
 				LOGGER.log(Level.INFO, "- Search completed\n{0}",runtimeStatistics());
@@ -279,7 +280,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		if(solver.checkDecisionVariables()){
 			super.recordSolution();
 			if (LOGGER.isLoggable(Level.FINE)) {
-				LOGGER.log(Level.FINE, "- Solution #{0} found: {1}",
+				LOGGER.log(Level.FINE, "- Solution #{0} found. {1}.",
 						new Object[]{getSolutionCount(),partialRuntimeStatistics(true)}
 				);	
 				if (LOGGER.isLoggable(Level.FINER)) {
@@ -385,7 +386,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	
 	public String partialRuntimeStatistics(boolean logOnSolution) {
 		return logOnSolution ? 
-				getSolutionCount()+" solutions, "+pretty(this) :
+				getSolutionCount()+" Solutions, "+pretty(this) :
 			pretty(this);
 	}
 

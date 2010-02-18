@@ -1,80 +1,133 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
- *          _       _                            *
- *         |  °(..)  |                           *
- *         |_  J||L _|        CHOCO solver       *
- *                                               *
- *    Choco is a java library for constraint     *
- *    satisfaction problems (CSP), constraint    *
- *    programming (CP) and explanation-based     *
- *    constraint solving (e-CP). It is built     *
- *    on a event-based propagation mechanism     *
- *    with backtrackable structures.             *
- *                                               *
- *    Choco is an open-source software,          *
- *    distributed under a BSD licence            *
- *    and hosted by sourceforge.net              *
- *                                               *
- *    + website : http://choco.emn.fr            *
- *    + support : choco@emn.fr                   *
- *                                               *
- *    Copyright (C) F. Laburthe,                 *
- *                  N. Jussien    1999-2008      *
- * * * * * * * * * * * * * * * * * * * * * * * * */
+/* ************************************************
+ *           _       _                            *
+ *          |  �(..)  |                           *
+ *          |_  J||L _|        CHOCO solver       *
+ *                                                *
+ *     Choco is a java library for constraint     *
+ *     satisfaction problems (CSP), constraint    *
+ *     programming (CP) and explanation-based     *
+ *     constraint solving (e-CP). It is built     *
+ *     on a event-based propagation mechanism     *
+ *     with backtrackable structures.             *
+ *                                                *
+ *     Choco is an open-source software,          *
+ *     distributed under a BSD licence            *
+ *     and hosted by sourceforge.net              *
+ *                                                *
+ *     + website : http://choco.emn.fr            *
+ *     + support : choco@emn.fr                   *
+ *                                                *
+ *     Copyright (C) F. Laburthe,                 *
+ *                   N. Jussien    1999-2009      *
+ **************************************************/
 package choco.model.constraints.integer;
 
 import choco.Choco;
-import static choco.Choco.*;
+import static choco.Choco.constant;
+import static choco.Choco.makeIntVar;
 import choco.cp.model.CPModel;
+import choco.cp.model.managers.constraints.global.ElementManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
-import org.junit.After;
-import org.junit.Assert;
+import org.junit.*;
 import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.util.Random;
 import java.util.logging.Logger;
 
-/**
- * Created by IntelliJ IDEA.
- * User: Narendra Jussien
- * Date: 18 mai 2005
- * Time: 16:29:42
- */
-public class ElementTest {
+/*
+* User : charles
+* Mail : cprudhom(a)emn.fr
+* Date : 14 oct. 2009
+* Since : Choco 2.1.0
+* Update : Choco 2.1.0
+*/
+@Ignore
+public class ElementGTest {
 
     protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
-	CPModel m;
-	CPSolver s;
-    String option="";
+    CPModel m;
+    CPSolver s;
 
 
-	@Before
-	public void before() {
-		m = new CPModel();
-		s = new CPSolver();
+    @Before
+    public void before() {
+        m = new CPModel();
+        s = new CPSolver();
+    }
+
+    @After
+    public void after() {
+        m = null;
+        s = null;
+    }
+
+    private static Constraint element(IntegerVariable index, int[] values, IntegerVariable val, int offset) {
+		IntegerVariable[] vars = new IntegerVariable[values.length+2];
+		for (int i = 0; i < values.length; i++) {
+			vars[i] = constant(values[i]);
+		}
+		vars[vars.length-2] = index;
+		vars[vars.length-1] = val;
+		Constraint c =new ComponentConstraint(ElementManager.class, offset, vars);
+        c.addOption("cp:G");
+        return c;
 	}
 
-	@After
-	public void after() {
-		m = null;
-		s = null;
+    private static Constraint element(IntegerVariable index, int[] values, IntegerVariable val) {
+		return element(index, values, val,0);
+	}
+
+    private static Constraint element(IntegerVariable index, IntegerVariable[] varArray, IntegerVariable val, int offset) {
+		IntegerVariable[] vars = ArrayUtils.append(varArray, new IntegerVariable[]{index, val});
+		Constraint c = new ComponentConstraint(ElementManager.class, offset, vars);
+        c.addOption("cp:G");
+        return c;
+	}
+
+    private static Constraint element(IntegerVariable index, IntegerVariable[] varArray, IntegerVariable val) {
+		return element(index, varArray, val, 0);
 	}
 
 
-	@Test
+
+    @Test
+    public void test0(){
+        int[] values = new int[]{1, 2, 0, 4, 3};
+		IntegerVariable index = makeIntVar("index", -3, 10);
+		IntegerVariable value = makeIntVar("value", -20, 20);
+
+        // actions normalement effectuees dans Choco.java
+        // debut
+        IntegerVariable[] vars = new IntegerVariable[values.length];
+		for (int i = 0; i < values.length; i++) {
+			vars[i] = Choco.constant(values[i]);
+		}
+
+        Constraint element = element(index, vars, value, 0);
+        // fin
+        m.addConstraint(element);
+		s.read(m);
+		s.solveAll();
+
+		assertEquals(5, s.getNbSolutions());
+    }
+
+
+    @Test
 	public void test1() {
 		int[] values = new int[]{1, 2, 0, 4, 3};
 		IntegerVariable index = makeIntVar("index", -3, 10);
 		IntegerVariable var = makeIntVar("value", -20, 20);
-		m.addConstraint(nth(option,index, values, var));
+		m.addConstraint(element(index, values, var));
 		s.read(m);
 		s.solve();
 		do {
@@ -92,7 +145,7 @@ public class ElementTest {
 		int[] values = new int[]{1, 2, 0, 4, 3};
 		IntegerVariable index = makeIntVar("index", 2, 10);
 		IntegerVariable var = makeIntVar("value", -20, 20);
-		m.addConstraint(nth(option,index, values, var));
+		m.addConstraint(element(index, values, var));
 		s.read(m);
 		s.solve();
 		do {
@@ -112,7 +165,7 @@ public class ElementTest {
 		IntegerVariable Z = makeIntVar("Z", 5, 8);
 		IntegerVariable I = makeIntVar("index", -5, 12);
 		IntegerVariable V = makeIntVar("V", -3, 20);
-		m.addConstraint(nth(option,I, new IntegerVariable[]{X, Y, Z}, V));
+		m.addConstraint(element(I, new IntegerVariable[]{X, Y, Z}, V));
 		s.read(m);
 		try {
 			s.propagate();
@@ -146,7 +199,7 @@ public class ElementTest {
 		IntegerVariable X = makeIntVar("X", 10, 50);
 		IntegerVariable Y = makeIntVar("Y", 0, 1000);
 		IntegerVariable I = makeIntVar("I", 0, 1);
-		m.addConstraint(nth(option,I, new IntegerVariable[]{X, Y}, V));
+		m.addConstraint(element(I, new IntegerVariable[]{X, Y}, V));
 		s.read(m);
 		try {
 			s.propagate();
@@ -175,7 +228,7 @@ public class ElementTest {
 		IntegerVariable index = makeIntVar("index", -3, 15);
 		IntegerVariable var = makeIntVar("value", -25, 20);
 
-		m.addConstraint(nth(option,index, vars, var));
+		m.addConstraint(element(index, vars, var));
 		s.read(m);
 		try {
 			s.propagate();
@@ -224,7 +277,7 @@ public class ElementTest {
 
 	private void subtest6(int n) {
 		m = new CPModel();
-		s = new CPSolver();		
+		s = new CPSolver();
 		IntegerVariable[] vars = new IntegerVariable[n];
 		for (int idx = 0; idx < n; idx++) {
 			vars[idx] = makeIntVar("t" + idx, 3 * idx, 2 + 3 * idx);
@@ -232,7 +285,7 @@ public class ElementTest {
 		IntegerVariable index = makeIntVar("index", -3, n + 15);
 		IntegerVariable var = makeIntVar("value", -25, 4 * n + 20);
 
-		m.addConstraint(nth(option,index, vars, var));
+		m.addConstraint(element(index, vars, var));
 		s.read(m);
 		try {
 			s.propagate();
@@ -256,64 +309,16 @@ public class ElementTest {
 	}
 
 	@Test
-	public void testElement1() {
-		for (int i = 0; i < 10; i++) {
-			m = new CPModel();
-			s = new CPSolver();			
-			int[][] values = new int[][]{
-					{1, 2, 0, 4, -323},
-					{2, 1, 0, 3, 42},
-					{6, 1, -7, 4, -40},
-					{-1, 0, 6, 2, -33},
-					{2, 3, 0, -1, 49}};
-			IntegerVariable index1 = makeIntVar("index1", -3, 10);
-			IntegerVariable index2 = makeIntVar("index2", -3, 10);
-			IntegerVariable var = makeIntVar("value", -20, 20);
-			Constraint c = nth(index1, index2, values, var);
-			LOGGER.info("posted constraint = " + c.pretty());
-			m.addConstraint(c);
-			s.setVarIntSelector(new RandomIntVarSelector(s, i));
-			s.setValIntSelector(new RandomIntValSelector(i + 1));
-			s.read(m);
-			s.solveAll();
-			assertEquals(s.getNbSolutions(), 20);
-		}
-	}
-
-	@Test
-	public void testElement2() {
-		for (int i = 0; i < 10; i++) {
-			m = new CPModel();
-			s = new CPSolver();			
-			int[][] values = new int[][]{
-					{1, 2, 0, 4, 3},
-					{2, 1, 0, 3, 3},
-					{6, 1, -7, 4, -4},
-					{-1, 0, 6, 2, -33},
-					{2, -3, 0, -1, 4}};
-			IntegerVariable index1 = makeIntVar("index1", 2, 10);
-			IntegerVariable index2 = makeIntVar("index2", -3, 2);
-			IntegerVariable var = makeIntVar("value", -20, 20);
-			m.addConstraint(nth(index1, index2, values, var));
-			s.setVarIntSelector(new RandomIntVarSelector(s, i));
-			s.setValIntSelector(new RandomIntValSelector(i + 1));
-			s.read(m);
-			s.solveAll();
-			assertEquals(s.getNbSolutions(), 9);
-		}
-	}
-
-	@Test
 	public void testNthG() {
 		for (int i = 0; i < 100; i++) {
 			m = new CPModel();
-			s = new CPSolver();			
+			s = new CPSolver();
 			IntegerVariable X = makeIntVar("X", 0, 5);
 			IntegerVariable Y = makeIntVar("Y", 3, 7);
 			IntegerVariable Z = makeIntVar("Z", 5, 8);
 			IntegerVariable I = makeIntVar("index", -5, 12);
 			IntegerVariable V = makeIntVar("V", -3, 20);
-			m.addConstraint(nth(option,I, new IntegerVariable[]{X, Y, Z}, V));
+			m.addConstraint(element(I, new IntegerVariable[]{X, Y, Z}, V));
 			s.setVarIntSelector(new RandomIntVarSelector(s, i));
 			s.setValIntSelector(new RandomIntValSelector(i + 1));
 			s.read(m);
@@ -329,12 +334,12 @@ public class ElementTest {
 	public void testNthG2() {
 		for (int i = 0; i < 30; i++) {
 			m = new CPModel();
-			s = new CPSolver();			
+			s = new CPSolver();
 			IntegerVariable X = makeIntVar("X", 0, 5);
 			IntegerVariable Z = makeIntVar("Z", 5, 8);
 			IntegerVariable I = makeIntVar("index", -5, 12);
 			IntegerVariable V = makeIntVar("V", -3, 20);
-			m.addConstraint(nth(option,I, new IntegerVariable[]{X, V, Z}, V));
+			m.addConstraint(element(I, new IntegerVariable[]{X, V, Z}, V));
 			s.setVarIntSelector(new RandomIntVarSelector(s, i));
 			s.setValIntSelector(new RandomIntValSelector(i + 1));
 			s.read(m);
@@ -349,12 +354,12 @@ public class ElementTest {
 	public void testNthG3() {
 		for (int i = 0; i < 30; i++) {
 			m = new CPModel();
-			s = new CPSolver();			
+			s = new CPSolver();
 			IntegerVariable X = makeIntVar("X", 0, 5);
 			IntegerVariable Z = makeIntVar("Z", 5, 8);
 			IntegerVariable I = makeIntVar("index", -5, 12);
 			IntegerVariable V = makeIntVar("V", -3, 20);
-			m.addConstraint(nth(option,I, new IntegerVariable[]{X, I, Z}, V));
+			m.addConstraint(element(I, new IntegerVariable[]{X, I, Z}, V));
 			s.setVarIntSelector(new RandomIntVarSelector(s, i));
 			s.setValIntSelector(new RandomIntValSelector(i + 1));
 			s.read(m);
@@ -365,17 +370,17 @@ public class ElementTest {
 		}
 
 	}
-	
+
 	@Test
     //BUG ID: 2860512
 	public void testNthManager() {
 		IntegerVariable I = makeIntVar("index", 0, 2);
 		IntegerVariable V = makeIntVar("V", 0, 5);
-		m.addConstraint(nth(option,I, new IntegerVariable[]{constant(0),constant(1), makeIntVar("VV",2,3)}, V));
+		m.addConstraint(element(I, new IntegerVariable[]{constant(0),constant(1), makeIntVar("VV",2,3)}, V));
 		s.read(m);
 		//ChocoLogging.setVerbosity(Verbosity.SOLUTION);
 		s.solveAll();
-		assertEquals(6, s.getSolutionCount());	
+		assertEquals(6, s.getSolutionCount());
 	}
 
     @Test
@@ -383,7 +388,7 @@ public class ElementTest {
     public void testNthManager2() {
         IntegerVariable I = makeIntVar("index", 0, 2);
         IntegerVariable V = makeIntVar("V", 0, 5);
-        m.addConstraint(nth(option,I, new IntegerVariable[]{constant(0),constant(1), constant(2)}, V));
+        m.addConstraint(element(I, new IntegerVariable[]{constant(0),constant(1), constant(2)}, V));
         s.read(m);
         //ChocoLogging.setVerbosity(Verbosity.SOLUTION);
         s.solveAll();
@@ -395,7 +400,7 @@ public class ElementTest {
 	public void testNthManager3() {
 		IntegerVariable I = makeIntVar("index", 0, 2);
 		IntegerVariable V = makeIntVar("V", 0, 5);
-		m.addConstraint(nth(option,I, new IntegerVariable[]{makeIntVar("VV",0,1), makeIntVar("VV",1,2), makeIntVar("VV",2,3)}, V));
+		m.addConstraint(element(I, new IntegerVariable[]{makeIntVar("VV",0,1), makeIntVar("VV",1,2), makeIntVar("VV",2,3)}, V));
 		s.read(m);
 		//ChocoLogging.setVerbosity(Verbosity.SOLUTION);
 		s.solveAll();
@@ -412,12 +417,11 @@ public class ElementTest {
             for(int i = 0; i < values.length; i++){
                 values[i] = r.nextInt(2);
             }
-            m.addConstraint(nth(option,index, values, val));
+            m.addConstraint(element(index, values, val));
             s.read(m);
             s.solveAll();
             Assert.assertEquals(20, s.getSolutionCount());
         }
 
     }
-
 }

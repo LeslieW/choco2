@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.chocogen;
 
+import static choco.Choco.*;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.Constraint;
@@ -30,8 +31,6 @@ import choco.kernel.model.variables.scheduling.TaskVariable;
 import gnu.trove.TIntObjectHashMap;
 import parser.absconparseur.components.*;
 import parser.absconparseur.tools.InstanceParser;
-
-import static choco.Choco.*;
 
 /**
  * The factory for global constraints
@@ -42,7 +41,7 @@ public class GloConstraintFactory extends ObjectFactory {
 		super(m, parser);
 	}
 
-	public final static Constraint buildAllDiff(IntegerVariable[] vars) {
+	public static Constraint buildAllDiff(IntegerVariable[] vars) {
 		int maxdszise = 0;
 		boolean holes = false;
 		int nbnoninstvar = 0;
@@ -66,7 +65,7 @@ public class GloConstraintFactory extends ObjectFactory {
 			return allDifferent("cp:bc", vars);
 	}
 
-	public final static Constraint buildGcc(IntegerVariable[] vars, Integer[] values, IntegerVariable[] noccurrences) {
+	public static Constraint buildGcc(IntegerVariable[] vars, Integer[] values, IntegerVariable[] noccurrences) {
 		int maxdszise = 0;
 		boolean holes = false;
 		int nbnoninstvar = 0;
@@ -75,7 +74,7 @@ public class GloConstraintFactory extends ObjectFactory {
 		boolean constant = true;
 		int noc = 0;
 		while(constant && noc < noccurrences.length){
-			constant &= noccurrences[noc].isConstant();
+			constant = noccurrences[noc].isConstant();
 			low[noc] = noccurrences[noc].getLowB();
 			up[noc] = noccurrences[noc++].getUppB();
 		}
@@ -92,13 +91,13 @@ public class GloConstraintFactory extends ObjectFactory {
 			}
 			if (holes || (maxdszise <= 30 &&
 					(vars.length <= 10 || (nbnoninstvar < vars.length && nbnoninstvar < 20)))) {
-				return globalCardinality("cp:ac", vars, low, up);
+				return globalCardinality("cp:ac", vars, low, up, values[0]);
 			}else{
-				return globalCardinality("cp:bc", vars, low, up);
+				return globalCardinality("cp:bc", vars, low, up, values[0]);
 			}
 		}
 		else
-			return globalCardinality(vars, noccurrences);
+			return globalCardinality(vars, noccurrences, values[0]);
 	}
 
 

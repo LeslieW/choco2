@@ -9,3 +9,4 @@
         IntegerVariable v2 = makeIntVar("v2", 1, 4);
         m.addConstraint(feasPairAC("cp:ac32",v1, v2, matrice2));
         s.read(m);
+        s.solveAll();

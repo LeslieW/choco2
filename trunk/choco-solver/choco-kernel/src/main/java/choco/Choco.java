@@ -1957,6 +1957,19 @@ public class Choco{
 		return nth(index, values, val, 0);
 	}
 
+    /**
+	 * subscript constraint: accessing an array with a variable index
+	 * @param index the index variable
+	 * @param values the possible value
+	 * @param val the indexth value
+	 * @return Constraint
+	 */
+	public static Constraint nth(String options, IntegerVariable index, int[] values, IntegerVariable val) {
+		Constraint c = nth(index, values, val, 0);
+        c.addOption(options);
+        return c;
+	}
+
 	/**
 	 * subscript constraint: accessing an array with a variable index
 	 * The offset can be used when the index variable needs to be shifted of a given value (the offset)
@@ -1976,6 +1989,21 @@ public class Choco{
 		return new ComponentConstraint(ConstraintType.NTH, offset, vars);
 	}
 
+    /**
+	 * subscript constraint: accessing an array with a variable index
+	 * The offset can be used when the index variable needs to be shifted of a given value (the offset)
+	 * @param index the index variable
+	 * @param values the possible value
+	 * @param offset the offset value
+	 * @param val the indexth value
+	 * @return Constraint
+	 */
+	public static Constraint nth(String options, IntegerVariable index, int[] values, IntegerVariable val, int offset) {
+		Constraint c = nth(index, values, val, offset);
+        c.addOption(options);
+        return c;
+	}
+
 
 	/**
 	 * subscript constraint: accessing an array of variables with a variable index
@@ -1985,8 +2013,20 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint nth(IntegerVariable index, IntegerVariable[] varArray, IntegerVariable val) {
-		IntegerVariable[] vars = ArrayUtils.append(varArray, new IntegerVariable[]{index, val});
-		return new ComponentConstraint(ConstraintType.NTH, 0, vars);
+		return nth(index, varArray, val, 0);
+	}
+
+    /**
+	 * subscript constraint: accessing an array of variables with a variable index
+	 * @param index the index variable
+	 * @param varArray array of possible variables
+	 * @param val indexth variable
+	 * @return Constraint
+	 */
+	public static Constraint nth(String option, IntegerVariable index, IntegerVariable[] varArray, IntegerVariable val) {
+		Constraint c = nth(index, varArray, val, 0);
+        c.addOption(option);
+        return c;
 	}
 
 	/**
@@ -2013,6 +2053,21 @@ public class Choco{
 	public static Constraint nth(IntegerVariable index, IntegerVariable[] varArray, IntegerVariable val, int offset) {
 		IntegerVariable[] vars = ArrayUtils.append(varArray, new IntegerVariable[]{index, val});
 		return new ComponentConstraint(ConstraintType.NTH, offset, vars);
+	}
+
+    /**
+	 * subscript constraint: accessing an array of variables with a variable index
+	 * The offset can be used when the index variable needs to be shifted of a given value (the offset)
+	 * @param index index variable in the array
+	 * @param varArray array of variables
+	 * @param val resulting variable
+	 * @param offset the offset value
+	 * @return Constraint
+	 */
+	public static Constraint nth(String options, IntegerVariable index, IntegerVariable[] varArray, IntegerVariable val, int offset) {
+		Constraint c = nth(index, varArray, val, offset);
+        c.addOption(options);
+        return c;
 	}
 
 
@@ -2092,24 +2147,6 @@ public class Choco{
 		return c;
 	}
 
-	private static int getMinOfLowB(IntegerVariable[] vars) {
-		int minval = Integer.MAX_VALUE;
-		for (IntegerVariable var : vars) {
-			if (var.getLowB() < minval)
-				minval = var.getLowB();
-		}
-		return minval;
-	}
-
-	private static int getMaxOfUppB(IntegerVariable[] vars) {
-		int maxval = Integer.MIN_VALUE;
-		for (IntegerVariable var : vars) {
-			if (var.getUppB() > maxval)
-				maxval = var.getUppB();
-		}
-		return maxval;
-	}
-
 	private static void globalCardinalityTest(IntegerVariable[] vars, int[] low, int[] up){
 		if (low.length != up.length) {
 			throw new ModelException("globalCardinality : low and up do not have same size");
@@ -2150,7 +2187,7 @@ public class Choco{
 	 * @param up array of upper occurence
 	 * @return Constraint
 	 * @deprecated
-	 * @see Choco#globalCardinality(IntegerVariable[] vars, int[] low, int[] up)
+	 * @see Choco#globalCardinality(choco.kernel.model.variables.integer.IntegerVariable[],int[],int[],int)
 	 */
 
 	public static Constraint globalCardinality(IntegerVariable[] vars, int min, int max, int[] low, int[] up) {
@@ -2189,7 +2226,7 @@ public class Choco{
 	 * @param up array of upper occurence
 	 * @return Constraint
 	 * @deprecated
-	 * @see Choco#globalCardinality(String options, IntegerVariable[] vars, int[] low, int[] up)
+	 * @see Choco#globalCardinality(String,choco.kernel.model.variables.integer.IntegerVariable[],int[],int[],int)
 	 */
 	public static Constraint globalCardinality(String options, IntegerVariable[] vars, int min, int max, int[] low, int[] up) {
 		@SuppressWarnings({"deprecation"})
@@ -2198,7 +2235,7 @@ public class Choco{
 		return c;
 	}
 
-	/**
+    /**
 	 * Concerns GCC and boundGCC
 	 * <p/>
 	 * Global cardinality : Given an array of variables vars, the constraint ensures that the number of occurences
@@ -2223,17 +2260,17 @@ public class Choco{
 	 * @param vars list of variables
 	 * @param low array of lower occurence
 	 * @param up array of upper occurence
+     * @param offset first value constrained by {@code low[0]} and {@code up[0]}
 	 * @return Constraint
 	 */
-	public static Constraint globalCardinality(IntegerVariable[] vars, int[] low, int[] up) {
-		int min  = getMinOfLowB(vars);
-		int max = getMaxOfUppB(vars);
+	public static Constraint globalCardinality(IntegerVariable[] vars, int[] low, int[] up, int offset) {
 		globalCardinalityTest(vars, low, up);
-		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY,
-				new Object[]{ConstraintType.GLOBALCARDINALITYMAX, min, max, low, up}, vars);
+        int max = low.length-1 + offset;
+        return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY,
+				new Object[]{ConstraintType.GLOBALCARDINALITYMAX, offset, max, low, up}, vars);
 	}
 
-	/**
+    /**
 	 * Concerns GCC and boundGCC
 	 * <p/>
 	 * Global cardinality : Given an array of variables vars, the constraint ensures that the number of occurences
@@ -2259,10 +2296,11 @@ public class Choco{
 	 * @param vars list of variables
 	 * @param low array of lower occurence
 	 * @param up array of upper occurence
+     * @param offset first value constrained by {@code low[0]} and {@code up[0]}
 	 * @return Constraint
 	 */
-	public static Constraint globalCardinality(String options, IntegerVariable[] vars, int[] low, int[] up) {
-		Constraint c = globalCardinality(vars, low, up);
+	public static Constraint globalCardinality(String options, IntegerVariable[] vars, int[] low, int[] up, int offset) {
+		Constraint c = globalCardinality(vars, low, up, offset);
 		c.addOption(options);
 		return c;
 	}
@@ -2284,7 +2322,7 @@ public class Choco{
 	 * @param card array of cardinality variables
 	 * @return Constraint
 	 * @deprecated
-	 * @see Choco#globalCardinality(IntegerVariable[] vars, IntegerVariable[] card)
+	 * @see Choco#globalCardinality(choco.kernel.model.variables.integer.IntegerVariable[],choco.kernel.model.variables.integer.IntegerVariable[],int)
 	 */
 	public static Constraint globalCardinality(IntegerVariable[] vars, int min, int max, IntegerVariable[] card) {
 		int n = vars.length;
@@ -2294,7 +2332,7 @@ public class Choco{
 		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY, new Object[]{ConstraintType.GLOBALCARDINALITYVAR, min, max, n}, variables);
 	}
 
-	/**
+    /**
 	 * * Bound Global cardinality : Given an array of variables vars, an array of variables card to represent the cardinalities, the constraint ensures that the number of occurences
 	 * of the value i among the variables is equal to card[i].
 	 * this constraint enforces :
@@ -2306,15 +2344,16 @@ public class Choco{
 	 *
 	 * @param vars list of variables
 	 * @param card array of cardinality variables
-	 * @return Constraint
+	 * @param offset first value constrained by {@code card[0]}
+     * @return Constraint
 	 */
-	public static Constraint globalCardinality(IntegerVariable[] vars, IntegerVariable[] card) {
+	public static Constraint globalCardinality(IntegerVariable[] vars, IntegerVariable[] card, int offset) {
 		int n = vars.length;
 		IntegerVariable[] variables = new IntegerVariable[vars.length + card.length];
 		arraycopy(vars, 0, variables, 0, n);
 		arraycopy(card, 0, variables, n, card.length);
 		return new ComponentConstraint(ConstraintType.GLOBALCARDINALITY,
-				new Object[]{ConstraintType.GLOBALCARDINALITYVAR, getMinOfLowB(vars), getMaxOfUppB(vars), n}, variables);
+				new Object[]{ConstraintType.GLOBALCARDINALITYVAR, offset, card.length-1 + offset, n}, variables);
 	}
 
 	/**
@@ -2342,6 +2381,25 @@ public class Choco{
     public static Constraint increasing_nvalue(IntegerVariable nval, IntegerVariable[] vars){
         return new ComponentConstraint(ConstraintType.INCREASINGNVALUE, null,
                 ArrayUtils.append(new IntegerVariable[]{nval},vars));
+    }
+
+    /**
+     * The variables of the collection VARIABLES are increasing.
+     * In addition, NVAL is the number of distinct values taken by the variables of the collection VARIABLES.
+     * @param option  Available options are:
+	 * <ul>
+	 * <i>cp:atleast</i>: filter on lower bound only<br/>
+     * <i>cp:atmost</i>:  filter on upper bound only<br/>
+     * <i>cp:both</i>: (default value) filter on lower bound and upper bound<br/>
+     * </ul>
+     * @param nval number of distinct values
+     * @param vars collection of variables
+     * @return increasing n value constraint
+     */
+    public static Constraint increasing_nvalue(String option, IntegerVariable nval, IntegerVariable[] vars){
+        Constraint c = increasing_nvalue(nval, vars);
+        c.addOption(option);
+        return c;
     }
 
 
@@ -2986,15 +3044,19 @@ public class Choco{
 	 * @return the union constraint
 	 */
 	public static Constraint setUnion(SetVariable sv1, SetVariable sv2, SetVariable union) {
-		return new ComponentConstraint(ConstraintType.SETUNION, null, new SetVariable[]{sv1, sv2, union});
+		return new ComponentConstraint(ConstraintType.SETUNION, null, new SetVariable[]{union, sv1, sv2});
 	}
 
-	//UNDERDEVELOPMENT
-	/*
-    public static Constraint setUnion(SetVariable[] sv, SetVariable union) {
-		return new ComponentConstraint(ConstraintType.SETUNION, null, UtilAlgo.append(new SetVariable[]{union}, sv));
-	}
+    /**
+	 * Enforce a set to be the union of n others
+	 *
+	 * @param sv array of set variables
+     * @param union the union of {@code sv}
+	 * @return the union constraint
 	 */
+	public static Constraint setUnion(SetVariable[] sv, SetVariable union) {
+		return new ComponentConstraint(ConstraintType.SETUNION, null, ArrayUtils.append(new SetVariable[]{union}, sv));
+	}
 
 	/**
 	 * Return a constraint that ensures sv1 == sv2
@@ -3067,16 +3129,17 @@ public class Choco{
 		return new ComponentConstraint(ConstraintType.LEQ, ConstraintType.LEQ, new Variable[]{sv, constant(val)});
 	}
 
-	public static Constraint setDisjoint(SetVariable sv1, SetVariable sv2) {
-		return new ComponentConstraint(ConstraintType.SETDISJOINT, null, new SetVariable[]{sv1, sv2});
-	}
-
-	// UNDERDEVELOPMENT
-	/*
-    public static Constraint setDisjoint(SetVariable[] sv) {
+    /**
+     * Ensure every set of {@code sv} are disjoints from each other.
+     * @param sv array of set variables
+     * @return disjoint constraint
+     */
+    public static Constraint setDisjoint(SetVariable... sv) {
+        if(sv.length < 2){
+            throw new ModelException("setDisjoint : bad number of arguments (>=2)");
+        }
 		return new ComponentConstraint(ConstraintType.SETDISJOINT, null, sv);
 	}
-	 */
 
 	/**
 	 * Ensures that a value is contained in a set variable.
