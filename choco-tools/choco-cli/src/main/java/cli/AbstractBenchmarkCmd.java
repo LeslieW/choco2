@@ -3,10 +3,6 @@
 package cli;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Properties;
 import java.util.Random;
 import java.util.logging.Level;
@@ -16,8 +12,10 @@ import org.kohsuke.args4j.Option;
 
 import parser.instances.AbstractInstanceModel;
 import parser.instances.BasicSettings;
+import parser.instances.checker.SCheckFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
+import choco.kernel.common.util.tools.PropertyUtils;
 import cli.explorer.FileExplorer;
 import cli.explorer.FileProcedure;
 import db.DbManager;
@@ -45,7 +43,7 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 	@Option(name="-e",aliases={"--export"},usage="activate embedded database and export it to odb file")
 	protected File databaseFile;
 
-	@Option(name="-p",aliases={"--properties"},usage="user property file")
+	@Option(name="-p",aliases={"--properties"},usage="user properties file")
 	protected File propertyFile;
 
 	@Option(name="-o",aliases={"--output"},usage="specify output directory (logs, solutions, ...)")
@@ -89,47 +87,33 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 		}
 	}
 
-	private String initializeProperties() {
-		String r ="null";
+	protected void initializeProperties() {
 		properties =new Properties();
-		if( propertyFile == null) {
-			if( defaultPropertiesResource != null) {
-				try {
-					properties.load(new InputStreamReader(getClass().getResourceAsStream(defaultPropertiesResource)));
-					r = defaultPropertiesResource;
-				} catch (IOException e) {
-					LOGGER.log(Level.WARNING,"cmd...[read_default_properties][FAIL]",e);
-				}
-			}
-		}else {
-			try {
-				properties.load(new FileReader(propertyFile));
-				r = propertyFile.getName();
-			} catch (FileNotFoundException e) {
-				LOGGER.log(Level.WARNING,"cmd...[read_properties][FAIL]",e);
-			} catch (IOException e) {
-				LOGGER.log(Level.WARNING,"cmd...[read_properties][FAIL]",e);
-			}
+		if( defaultPropertiesResource != null) {
+			PropertyUtils.loadProperties(properties, defaultPropertiesResource);
+		} 
+		if( propertyFile != null) {
+			PropertyUtils.loadProperties(properties, propertyFile);
 		}
 		if(properties.isEmpty()) LOGGER.warning("cmd...[empty_properties]");
-		return r;
 	}
+	
 
 	@Override
 	protected void checkData() throws CmdLineException {
 		if( !inputFile.exists() || !inputFile.canRead() ) {
-			throw new CmdLineException(inputFile + "is not a readble file.");
+			throw new CmdLineException(inputFile + "is not a readable file.");
 		}
 		if( outputDirectory != null && ! outputDirectory.isDirectory()) {
 			throw new CmdLineException(outputDirectory+" is not a directory");
 		}
+		initializeProperties();
 		makeDbConnector();
-		String desc = initializeProperties();
 		if( settings != null) {
 			if(properties != null) settings.configure(properties);
 			if( timeLimit != null) settings.setTimeLimit(timeLimit);
 		}
-		LOGGER.log(Level.CONFIG, "cmd...[seed:{3}][properties:{0}][db:{2}][output:{1}]", new Object[]{desc, outputDirectory, dbConnector, seed});
+		LOGGER.log(Level.CONFIG, "cmd...[seed:{1}][db:{2}][output:{3}]", new Object[]{seed, dbConnector, outputDirectory});
 	}
 
 

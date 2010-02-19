@@ -157,8 +157,6 @@ import java.util.logging.Level;
  */
 public class CPSolver implements Solver {
 
-	public final static SolutionCheckerEngine DEFAULT_SOLUTION_CHECKER = new SolutionCheckerEngine();
-	
 	/**
 	 * A constant denoting the true constraint (always satisfied)
 	 */

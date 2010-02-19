@@ -1,6 +1,7 @@
 package parser.instances;
 
 import choco.cp.solver.CPSolver;
+import static choco.kernel.common.util.tools.PropertyUtils.*;
 import choco.kernel.solver.SolverException;
 
 import java.util.Properties;
@@ -103,11 +104,11 @@ public class RestartSettings extends BasicSettings {
 		super.configure(properties);
 		//final String s = getString(properties, PP+"restart.policy", null);
 		//if ( s != null) restartPolicy = Enum.valueOf(RestartPolicy.class, s);
-		restartPolicy = readEnum(properties, PP+"restart.policy", restartPolicy);
-		scaleFactor = readInteger(properties, PP+"restart.scale", scaleFactor);
-		lubyGeometricalFactor = readInteger(properties, PP+"restart.luby.geom", lubyGeometricalFactor);
-		walshGeometricalFactor = readDouble(properties, PP+"restart.walsh.geom", walshGeometricalFactor);
-		nogoodRecording = readBoolean(properties, PP+"restart.nogood", nogoodRecording);
+		restartPolicy = readEnum(properties, TOOLS_PREFIX+"restart.policy", restartPolicy);
+		scaleFactor = readInteger(properties, TOOLS_PREFIX+"restart.scale", scaleFactor);
+		lubyGeometricalFactor = readInteger(properties, TOOLS_PREFIX+"restart.luby.geom", lubyGeometricalFactor);
+		walshGeometricalFactor = readDouble(properties, TOOLS_PREFIX+"restart.walsh.geom", walshGeometricalFactor);
+		nogoodRecording = readBoolean(properties, TOOLS_PREFIX+"restart.nogood", nogoodRecording);
 	}
 	
 	

@@ -86,8 +86,8 @@ public final class ChocoChartFactory {
 		CHOCO_THEME.setShadowVisible(false);
 		CHOCO_THEME.setErrorIndicatorPaint(Color.RED);
 		CHOCO_THEME.setAxisOffset(new RectangleInsets());
-		//setColorTerminal();
-		setMonochromeTerminal();
+		setColorTerminal();
+		//setMonochromeTerminal();
 		//setJFreeColorTerminal();
 		
 	}

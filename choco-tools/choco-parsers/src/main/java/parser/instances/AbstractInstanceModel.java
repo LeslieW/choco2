@@ -34,6 +34,8 @@ import choco.kernel.solver.search.measure.IMeasures;
 import db.DbManager;
 import db.DbTables;
 import parser.absconparseur.tools.UnsupportedConstraintException;
+import parser.instances.checker.IStatusChecker;
+import parser.instances.checker.SCheckFactory;
 import static parser.instances.ResolutionStatus.*;
 
 import java.io.File;
@@ -54,7 +56,6 @@ public abstract class AbstractInstanceModel {
 	private long seed;
 
 	protected Boolean doMaximize;
-
 
 	//computed fields
 	private final long[] time = new long[6];
@@ -88,6 +89,16 @@ public abstract class AbstractInstanceModel {
 
 	}
 
+	public String getInstanceName() {
+		final File file = parser.getInstanceFile();
+		if(file != null) {
+			final String filename = file.getName();
+			final int extIdx = filename.lastIndexOf('.');
+			return extIdx == -1 ? filename : filename.substring(0, extIdx);
+		}
+		return null;
+	}
+	
 	public void initialize() {
 		parser.cleanup();
 		Arrays.fill(time, 0);
@@ -328,12 +339,15 @@ public abstract class AbstractInstanceModel {
 	public abstract Boolean solve();
 
 
-	protected void checkIsSatisfied() throws SolutionCheckerException {
+	protected final void checkIsSatisfied() throws SolutionCheckerException {
 		//check with isSatisfied(int[])
-		if(solver != null && solver.existsSolution() && solver instanceof CPSolver &&
-				( ! ( (CPSolver) solver).checkSolution(false) == Boolean.TRUE)) {
-			throw new SolutionCheckerException("isSatisfied(int[]) checker");
-		}
+		if(solver != null && solver.existsSolution()) Solver.DEFAULT_SOLUTION_CHECKER.checkSolution(solver);
+	}
+	
+	protected final void checkStatus() throws SolutionCheckerException {
+		//Request status checker from factory
+		final IStatusChecker scheck = SCheckFactory.makeStatusChecker(this);
+		if( scheck != null) scheck.checkStatus(doMaximize, status, objective);
 	}
 
 
@@ -344,7 +358,8 @@ public abstract class AbstractInstanceModel {
 	 * @return <code>true</code> if the solution is valid, <code>false</code> otherwise.
 	 */
 	public void checkSolution() throws SolutionCheckerException {
-		//FIXME checkIsSatisfied(); checks les clauses
+		checkIsSatisfied(); 
+		checkStatus();
 	}
 
 
@@ -450,7 +465,7 @@ public abstract class AbstractInstanceModel {
 	public void databaseReport() {
 		//insert solver
 		Integer solverID = dbManager.insertEntryAndRetrieveGPK(DbTables.T_SOLVERS, 
-				new Object[]{ parser.getInstanceFile().getName(), status.getName(), getFullSecTime(), "", //getValuesMessage(),
+				new Object[]{ getInstanceName(), status.getName(), getFullSecTime(), "", //getValuesMessage(),
 				dbManager.getModelID(solver), dbManager.getEnvironmentID(), seed, new Timestamp(System.currentTimeMillis())}
 		);
 		//TODO remettre getModelID en protected quand dans choco

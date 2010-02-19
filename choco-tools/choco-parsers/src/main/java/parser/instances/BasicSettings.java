@@ -1,18 +1,20 @@
 package parser.instances;
 
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.solver.Solver;
+import static choco.kernel.common.util.tools.PropertyUtils.TOOLS_PREFIX;
+import static choco.kernel.common.util.tools.PropertyUtils.readBoolean;
+import static choco.kernel.common.util.tools.PropertyUtils.readInteger;
 
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.solver.Solver;
 
 
 public class BasicSettings {
 
 	public final static Logger LOGGER= ChocoLogging.getMainLogger();
 
-	protected static final String PP = "chocotools.";
 	/**
 	 * time limit of the solver in seconds
 	 */
@@ -130,53 +132,11 @@ public class BasicSettings {
 
 
 	public void configure(Properties properties) {
-		timeLimit = readInteger(properties, PP+"timelimit.cp", timeLimit);
-		timeLimitPP = readInteger(properties, PP+"timelimit.pp", timeLimit);
-		lightModel = readBoolean(properties, PP+"lightmodel", lightModel);
-		randomValue = readBoolean(properties, PP+"random.value", randomValue);
-		randomValue = readBoolean(properties, PP+"random.breaktie", randomValue);
-	}
-
-	protected final static boolean readBoolean(Properties properties, final String key, boolean defaultValue) {
-		final String b = properties.getProperty(key);
-		if( b == null ) {
-			LOGGER.log(Level.CONFIG, "properties...[key:{0}][MISSING]", key);
-			return defaultValue;
-		} else return Boolean.parseBoolean(b);
-	}
-
-
-	protected final static int readInteger(Properties properties, final String key, int defaultValue) {
-		final String b = properties.getProperty(key);
-		if( b == null ) {
-			LOGGER.log(Level.CONFIG, "properties...[key:{0}][MISSING]", key);
-			return defaultValue;
-		} else return Integer.parseInt(b);
-	}
-
-	protected final static double readDouble(Properties properties, final String key, double defaultValue) {
-		final String b = properties.getProperty(key);
-		if( b == null ) {
-			LOGGER.log(Level.CONFIG, "properties...[key:{0}][MISSING]", key);
-			return defaultValue;
-		} else return Double.parseDouble(b);
-	}
-
-	protected final static String readString(Properties properties, final String key, String defaultValue) {
-		final String b = properties.getProperty(key);
-		if( b == null ) {
-			LOGGER.log(Level.CONFIG, "properties...[key:{0}][MISSING]", key);
-			return defaultValue;
-		} else return b;
-	}
-	
-	@SuppressWarnings("unchecked")
-	protected final static   <T extends Enum<T>> T readEnum(Properties properties, final String key, T defaultValue) {
-		final String b = properties.getProperty(key);
-		if( b == null ) {
-			LOGGER.log(Level.CONFIG, "properties...[key:{0}][MISSING]", key);
-			return defaultValue;
-		} else return (T) Enum.valueOf(defaultValue.getClass(), b);
+		timeLimit = readInteger(properties, TOOLS_PREFIX+"timelimit.cp", timeLimit);
+		timeLimitPP = readInteger(properties, TOOLS_PREFIX+"timelimit.pp", timeLimit);
+		lightModel = readBoolean(properties, TOOLS_PREFIX+"lightmodel", lightModel);
+		randomValue = readBoolean(properties, TOOLS_PREFIX+"random.value", randomValue);
+		randomBreakTies= readBoolean(properties, TOOLS_PREFIX+"random.breaktie", randomBreakTies);
 	}
 
 

@@ -61,14 +61,15 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 	private int[] ectWith; //holds the ECT(Theta Union task t).
 	////*****************************/////
 
-	//FIXME should try to avoid insertions/deletions when the rules are not used
+	//FIXME should try to avoid insertions/deletions in trees when the rules are off
 	public AltDisjRules(final IRTask[] rtasks, IEnvironment environment) {
 		super(rtasks);
 		size = environment.makeIntProcedure(this, rtasks.length);
 		rqueue = new AltBipartiteQueue<IRTask>(rtasks);
-		altDisjTreeTL = new AltDisjTreeTL(Arrays.asList(getTaskArray()));
+		final ITask[] tasks = getTaskArray();
+		altDisjTreeTL = new AltDisjTreeTL(Arrays.asList(tasks));
 		///*****************///
-		altDisjTreeTLTO = new AltDisjTreeTLTO(Arrays.asList(getTaskArray()));
+		altDisjTreeTLTO = new AltDisjTreeTLTO(Arrays.asList(tasks));
 		///*****************///
 	}
 
@@ -87,7 +88,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 
 	protected void applyRemovals() throws ContradictionException {
 		for (IRTask t : removals) {
-			assert(t.isEliminated());
+			assert(t.isEliminated()); //assertions are activated by junit
 			this.remove(t);
 		}
 	}
