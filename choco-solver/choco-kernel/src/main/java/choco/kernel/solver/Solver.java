@@ -43,6 +43,8 @@ import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import choco.kernel.solver.search.checker.ISolutionCheckerEngine;
+import choco.kernel.solver.search.checker.SolutionCheckerEngine;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
@@ -76,11 +78,14 @@ import java.util.logging.Logger;
  */
 public interface Solver extends IMeasures, IPretty {
 	
+	public static final SolutionCheckerEngine DEFAULT_SOLUTION_CHECKER = new SolutionCheckerEngine();
+	
 	/**
 	 * Reference to an object for logging trace statements related to Abtract
 	 * Solver (using the java.util.logging package)
 	 */
 	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
+	
 	
 	/**
      * Removes all of the elements from this solver (optional operation).
