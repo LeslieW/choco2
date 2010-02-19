@@ -1,18 +1,15 @@
 package choco.kernel.solver.search.checker;
 
+import java.util.logging.Level;
+
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.logging.Level;
-
 
 
 public class SolutionCheckerEngine extends AbstractSolutionCheckerEngine {
-
-	//TODO add Ignore nogood 
-	public boolean ignoreNogoodStore;
 	
 	public boolean enableConsistency;
 
@@ -22,7 +19,6 @@ public class SolutionCheckerEngine extends AbstractSolutionCheckerEngine {
 	public SolutionCheckerEngine() {
 		super();
 		enableConsistency = true;
-		ignoreNogoodStore = false;
 	}
 
 
