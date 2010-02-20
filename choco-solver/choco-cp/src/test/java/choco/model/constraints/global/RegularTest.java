@@ -869,13 +869,13 @@ public class RegularTest {
 
         Solver s = new CPSolver();
         s.read(m);
-
-        s.solve();
-        if (s.isFeasible()) {
-            do {
-                Assert.assertTrue(s.checkSolution());
-            }while (s.nextSolution());
-        }
+        s.solveAll(); //chechSolution enabled by assertions
+//        s.solve();
+//        if (s.isFeasible()) {
+//            do {
+//                Assert.assertTrue(s.checkSolution());
+//            }while (s.nextSolution());
+//        }
     }
 
     @Test

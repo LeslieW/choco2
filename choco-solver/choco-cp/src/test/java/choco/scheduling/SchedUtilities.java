@@ -98,7 +98,6 @@ public final class SchedUtilities {
 			if(nbsol > 0) {
 				assertEquals("check-cmp NbSols "+str,nbsol,s.getSolutionCount());
 				assertTrue("isFeasible", s.isFeasible());
-				assertTrue("solution checker", s.checkSolution());
 			}else if(nbsol>=0) {
 				assertEquals("check-cmp NbSols "+str,nbsol,s.getSolutionCount());
 				assertFalse("isFeasible", s.isFeasible());
@@ -138,7 +137,6 @@ public final class SchedUtilities {
 			if(nbNodes>=0) {
 				assertEquals(jmsg("check nb nodes",label),nbNodes,solver.getNodeCount());
 			}
-			assertTrue("solution checker", solver.checkSolution());
 		}
 	}
 

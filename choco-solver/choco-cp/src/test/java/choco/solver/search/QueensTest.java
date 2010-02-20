@@ -92,10 +92,11 @@ public class QueensTest {
 
   
     public void incrementalSolve(Solver solver, int n) {
-    	solver.solve();
-        do{
-            Assert.assertTrue("Not a solution", solver.checkSolution());
-        }while(Boolean.TRUE.equals(solver.nextSolution()));
+    	solver.solveAll(); //check solution is enabled by assertion
+//    	solver.solve();
+//        do{
+//            Assert.assertTrue("Not a solution", solver.checkSolution());
+//        }while(Boolean.TRUE.equals(solver.nextSolution()));
         solver.printRuntimeStatistics();
         assertEquals(Boolean.valueOf( NB_QUEENS_SOLUTION[n] > 0), solver.isFeasible());
         assertEquals(NB_QUEENS_SOLUTION[n], solver.getNbSolutions());

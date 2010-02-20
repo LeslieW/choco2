@@ -60,21 +60,24 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 		ChocoLogging.setVerbosity(verbosity);
 	}
 
-	private final String defaultPropertiesResource;
-
 	protected BasicSettings settings;
 	
 	protected Random seeder;
 
-	protected Properties properties;
+	public final Properties properties;
 
 	private IDbConnector dbConnector;
 
 	protected AbstractInstanceModel instance;
 
-	public AbstractBenchmarkCmd(String defaultPropertiesResource) {
+	public AbstractBenchmarkCmd(String... defaultPropertiesResources) {
 		super(true);
-		this.defaultPropertiesResource = defaultPropertiesResource;
+		Properties tmp =new Properties();
+		PropertyUtils.loadProperties(tmp, "/default.properties");
+		properties = new Properties(tmp);
+		if( defaultPropertiesResources != null) {
+			PropertyUtils.loadProperties(properties, defaultPropertiesResources);
+		}
 	}
 
 	private void makeDbConnector() throws CmdLineException {
@@ -87,11 +90,7 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 		}
 	}
 
-	protected void initializeProperties() {
-		properties =new Properties();
-		if( defaultPropertiesResource != null) {
-			PropertyUtils.loadProperties(properties, defaultPropertiesResource);
-		} 
+	private void initializeProperties() {
 		if( propertyFile != null) {
 			PropertyUtils.loadProperties(properties, propertyFile);
 		}
@@ -131,7 +130,8 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 		dbConnector.setUp();
 		instance = createInstance();
 		configureInstance();
-		FileExplorer.explore(this, inputFile, arguments); //run benchmark
+		final boolean ok = FileExplorer.explore(this, inputFile, arguments); //run benchmark
+		assert ok; //for junit 
 		dbConnector.tearDown();
 	}
 

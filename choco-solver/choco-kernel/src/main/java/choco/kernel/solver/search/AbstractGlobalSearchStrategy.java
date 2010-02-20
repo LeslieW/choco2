@@ -277,7 +277,8 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	@Override
 	public void recordSolution() {
 		//Check wether every decisions variables have been instantiated
-		if(solver.checkDecisionVariables()){
+		//if(solver.checkDecisionVariables()){
+			assert(solver.checkSolution());
 			super.recordSolution();
 			if (LOGGER.isLoggable(Level.FINE)) {
 				LOGGER.log(Level.FINE, "- Solution #{0} found. {1}.",
@@ -287,9 +288,9 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 					LOGGER.log(Level.FINER,"  {0}", solver.solutionToString());
 				}
 			}
-		}else{
-			throw new SolverException("Bug in solution :one or more decisions variables is not instantiated");
-		}
+//		}else{
+//			throw new SolverException("Bug in solution :one or more decisions variables is not instantiated");
+//		}
 	}
 
 
