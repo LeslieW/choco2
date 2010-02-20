@@ -89,7 +89,7 @@ public final class FileExplorer {
 	 */
 	public static boolean explore(FileProcedure proc, File file, List<String> wildcards) {
 		if(file.isDirectory()) {
-			exploreDirectory(proc, file, makeFileFilter(wildcards));
+			return exploreDirectory(proc, file, makeFileFilter(wildcards));
 		}else if(file.isFile()) {
 			if( ! proc.execute(file) ) {
 				LOGGER.log(Level.SEVERE,"explore...[file:{0}][FAIL]", file);

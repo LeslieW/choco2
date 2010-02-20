@@ -127,7 +127,6 @@ public class MinimumEdgeDeletion extends PatternExample {
 		//_s.setSolutionPoolCapacity(5);
 		_s.generateSearchStrategy();
 		_s.launch();
-		_s.checkSolution();
 	}
 
 	@Override

@@ -123,7 +123,7 @@ public class ProfileSelector implements VarValPairSelector {
 				}
 			}
 		}
-        assert(precStore.containsReifiedPrecedence());
+        assert(!precStore.containsReifiedPrecedence());
 		return null;
 	}
 

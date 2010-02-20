@@ -1,9 +1,13 @@
 package parser.instances.xcsp;
 
-import parser.chocogen.ObjectFactory;
-import parser.instances.RestartSettings;
+import static choco.kernel.common.util.tools.PropertyUtils.TOOLS_PREFIX;
+import static choco.kernel.common.util.tools.PropertyUtils.readBoolean;
+import static choco.kernel.common.util.tools.PropertyUtils.readInteger;
 
 import java.util.Properties;
+
+import parser.chocogen.ObjectFactory;
+import parser.instances.RestartSettings;
 
 public class XcspSettings extends RestartSettings {
 	
@@ -71,10 +75,10 @@ public class XcspSettings extends RestartSettings {
 	@Override
 	public void configure(Properties properties) {
 		super.configure(properties);
-		heuristic = readInteger(properties, PP+"xcsp.heuristic", heuristic);
-		ObjectFactory.algorithmAC = readInteger(properties, PP+"xcsp.ac", ObjectFactory.algorithmAC);
-		singletonConsistency = readBoolean(properties, PP+"xcsp.singloton", singletonConsistency);
-		externalCheck = readBoolean(properties, PP+"xcsp.externalcheck", externalCheck);
+		heuristic = readInteger(properties, TOOLS_PREFIX+"xcsp.heuristic", heuristic);
+		ObjectFactory.algorithmAC = readInteger(properties, TOOLS_PREFIX+"xcsp.ac", ObjectFactory.algorithmAC);
+		singletonConsistency = readBoolean(properties, TOOLS_PREFIX+"xcsp.singloton", singletonConsistency);
+		externalCheck = readBoolean(properties, TOOLS_PREFIX+"xcsp.externalcheck", externalCheck);
 	}
 
 	

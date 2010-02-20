@@ -152,12 +152,13 @@ public class StrategyTest {
     }
 
     private void checker() {
-        s.solve();
-        if(Boolean.TRUE.equals(s.isFeasible())){
-            do{
-                Assert.assertTrue(s.checkSolution());
-            }while(s.nextSolution());
-        }
+    	s.solveAll(); //checkSolution enbaled by assertion
+//        s.solve();
+//        if(Boolean.TRUE.equals(s.isFeasible())){
+//            do{
+//                Assert.assertTrue(s.checkSolution());
+//            }while(s.nextSolution());
+//        }
         Assert.assertEquals("feasibility incoherence", pe._s.isFeasible(), s.isFeasible());
         Assert.assertEquals("nb sol incoherence", pe._s.getNbSolutions(), s.getNbSolutions());
 
