@@ -49,18 +49,6 @@ public class AltDisjTreeTLTO extends AbstractThetaTree implements IThetaLambdaTr
 	 * @param rtask
 	 * @return true if task is not in Theta, false otherwise.
 	 */
-	public boolean isTaskRegularAndNotInTheta(IRTask rtask){
-		if(rtask.isRegular()){
-			//If the task is regular, then check whether it is in Theta or not
-			int tType=this.getTaskType(rtask);
-			if(tType == 2)
-				throw new SolverException("Regular tasks cannot be found in Omega Tree");
-			else{
-				return (tType != 1);
-			}
-		}else
-			return false;
-	}
 	
 	public int getTaskType(IRTask rtask){
 		final IBinaryNode leaf = getLeaf(rtask.getTaskVar());
@@ -82,6 +70,7 @@ public class AltDisjTreeTLTO extends AbstractThetaTree implements IThetaLambdaTr
 		this.setMode(mode);
 		//After the previous step, List of leaf nodes in the tree should be sorted according to there
 		//Earliest Starting times
+		this.nbOmegaTasks = 0;
 		for (IRTask rtask : rtasks) {
 			if(rtask.isRegular()) {
 				//Task is Regular, Add to Theta
@@ -99,7 +88,7 @@ public class AltDisjTreeTLTO extends AbstractThetaTree implements IThetaLambdaTr
 				final AltDisjStatusTLTO status = (AltDisjStatusTLTO) leaf.getNodeStatus();
 				if(status.getType() == AbstractVilimTree.NodeType.NIL){
 					status.insertInOmega(rtask);
-					nbOmegaTasks++;
+					nbOmegaTasks ++;
 				}else{
 					throw new SolverException("can't initialize Omega Node in Alternative Edge Finding TLTO Tree");
 				}
@@ -175,7 +164,7 @@ public class AltDisjTreeTLTO extends AbstractThetaTree implements IThetaLambdaTr
 				//Remove task first from Omega
 				status.removeFromOmega();
 				//leaf.fireStatusChanged();
-				nbOmegaTasks --;
+				nbOmegaTasks--;
 				//Then add the Task to Lambda 
 				status.insertInLambda(resp);
 				leaf.fireStatusChanged();
@@ -199,7 +188,7 @@ public class AltDisjTreeTLTO extends AbstractThetaTree implements IThetaLambdaTr
 			//Task is not assigned to any tree.
 			//Add task to OMEGA
 			status.insertInOmega(rtask);
-			nbOmegaTasks++;
+			nbOmegaTasks ++;
 			leaf.fireStatusChanged();
 			return true;
 		}
@@ -212,7 +201,7 @@ public class AltDisjTreeTLTO extends AbstractThetaTree implements IThetaLambdaTr
 		if(status.getType() == AbstractVilimTree.NodeType.OMEGA){
 			//Task already exists in OMEGA
 			status.removeFromOmega();
-			nbOmegaTasks--;
+			nbOmegaTasks --;
 			leaf.fireStatusChanged();
 			return true;
 		}
