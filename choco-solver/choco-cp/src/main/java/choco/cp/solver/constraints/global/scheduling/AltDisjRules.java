@@ -55,10 +55,6 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 
 	////*****************************/////
 	protected AltDisjTreeTLTO altDisjTreeTLTO;
-	private int[] ectAfter; //Used to hold the total sum of ECT of Theta tasks after task t. 
-	private int[] ectBefore; // holds the total sum of ECT of Theta tasks before task t.
-	private int[] pAfter; // holds the total sum of processing time of Theta tasks after task t.
-	private int[] ectWith; //holds the ECT(Theta Union task t).
 	////*****************************/////
 
 	//FIXME should try to avoid insertions/deletions in trees when the rules are off
@@ -72,7 +68,6 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		altDisjTreeTLTO = new AltDisjTreeTLTO(Arrays.asList(tasks));
 		///*****************///
 	}
-
 
 	/**
 	 * call during backtrack if necessary
@@ -316,7 +311,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 			if(altDisjTreeTLTO.getTime() > j.getLCT()) {rtj.fail();}
 		do{
 			//Remove Task j from either Theta, or Omega, and insert it in Lambda
-			if(rtj.isOptional()){
+			if(rtj.isOptional()){;
 				altDisjTreeTLTO.removeFromOmegaAndInsertInLambda(rtj);
 			}
 			else if(rtj.isRegular()){
@@ -335,7 +330,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 				checkFTLO(j, ECT);
 			}
 			else if(rtj.isOptional()){
-				checkSTLO(rtj, ECT);
+				checkSTLOEST(rtj);
 			}
 		}while(!rqueue.isEmpty());
 		//Apply all removals
@@ -343,71 +338,397 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		return updateEST();
 	}
 
-	private void checkFTLO(ITask j, TreeMode mode){
-
+	private int [] calculateECTTOL(int [] ectTUnionOArr){
+		//Array holds the ectTOL in the first postion, and index
+		//(if any)of responsible optional task
+		int [] results = new int[2];
+		int ectT = Integer.MIN_VALUE; //ECT(Theta)
+		int ectTL = Integer.MIN_VALUE; //ECT(Theta,Lambda)
+		int ectTO = Integer.MIN_VALUE; //ECT(Theta,Omega)
+		int ectTOL = Integer.MIN_VALUE;	//ECT(Theta,Lambda',Omega)
+		int respTOLIdx = -1; //Contains the index of optional task responsible for highest ECT(T,O,L').
+		int respTOIdx = -1; //Contains the index of optional task responsible for highest ECT(T,O).
+		int respEnabledIdx = -1;//Contains the index of enabled task responsible for highest ECT(T,L').
+		for(int j=0; j< size.get(); j++){
+			final IRTask rtaskAtj = rtasks[j];
+			final ITask taskAtj = rtaskAtj.getTaskVar();
+			final int taskType = altDisjTreeTLTO.getTaskType(rtaskAtj);
+			if(taskType == 1){
+				//Theta
+				//======
+				assert rtaskAtj.isRegular();
+				//-- ECT(T) -------
+				final int newEctT = ectT + taskAtj.getMinDuration();
+				ectT = Math.max(newEctT, taskAtj.getECT());
+				//-----------------
+				//-- ECT(T,L) -----
+				final int newEctTL = ectTL +taskAtj.getMinDuration();
+				ectTL = Math.max(newEctTL, taskAtj.getECT());
+				//-----------------
+				//-- ECT(T,O) -----
+				final int newEctTO = ectTO + taskAtj.getMinDuration();
+				if( respTOIdx == -1 ){ ectTO = Math.max(newEctTO, taskAtj.getECT());}
+				else{ ectTO = newEctTO;}
+				//-----------------
+				//-- ECT(T,O,L) ---
+				final int newEctTOL = ectTOL + taskAtj.getMinDuration();
+				if( respTOLIdx == -1 ){ 
+					ectTOL = Math.max(newEctTOL, taskAtj.getECT());}
+				else {ectTOL = newEctTOL;}
+				//-----------------
+			}else if(taskType == 2){
+				assert rtaskAtj.isOptional();
+				//Omega
+				//--- ECT(T,O,L)---
+				int newEctTOL = ectTOL;
+				if( (respTOLIdx == -1) || newEctTOL < taskAtj.getECT()){
+					 newEctTOL = taskAtj.getECT();
+					 respTOLIdx = j;
+				}
+				if( newEctTOL < ectT + taskAtj.getMinDuration()){
+					newEctTOL = ectT + taskAtj.getMinDuration();
+					respTOLIdx = j;
+				}
+				if( newEctTOL < ectTL + taskAtj.getMinDuration()){
+					if(respEnabledIdx != -1){
+						//Comparing the task's LST that causes the highest ect(Theta, Lamda')
+						//With the ECT(Theta Union j) j: current task.
+						if(rtasks[respEnabledIdx].getTaskVar().getLST() < ectTUnionOArr[j]){
+							newEctTOL = ectTL + taskAtj.getMinDuration();
+							respTOLIdx = j;
+						}
+					}
+				}
+				ectTOL = newEctTOL;
+				//-----------------
+				//---- ECT(T,O) ---
+				int newEctTO = ectTO;
+				if( respTOIdx == -1 || newEctTO < taskAtj.getECT()){
+						newEctTO = taskAtj.getECT();
+						//Index of the rtaskAtj
+						respTOIdx = j;
+				}
+				if(newEctTO < ectT + taskAtj.getMinDuration()){
+					newEctTO = ectT + taskAtj.getMinDuration();
+					respTOIdx = j;
+				}
+				ectTO = newEctTO; 
+				//-----------------
+				// ectT, ectTL are unchanged
+				//-----------------
+			}else{
+				//Either Lambda or NIL
+				if(rtaskAtj.isRegular()){
+					//--- ECT(T,O,L) ------
+					int newEctTOL = ectTOL;
+					if(newEctTOL < ectTO + taskAtj.getMinDuration()){
+						if(respTOLIdx == -1){
+							//They should both be the same.
+							assert respTOIdx == -1;
+							newEctTOL = ectTO + taskAtj.getMinDuration();
+						}
+						//comparing LST of the task at j with ECT(Theta Union o)
+						//Where O is the optional task that gives the highest ECT(Theta,O)
+						else if(taskAtj.getLST() < ectTUnionOArr[respTOIdx]){
+							newEctTOL = ectTO + taskAtj.getMinDuration();
+							respTOLIdx = respTOIdx;
+						}
+					}
+					if(newEctTOL < taskAtj.getECT() && respTOLIdx == -1){
+						newEctTOL = taskAtj.getECT();
+					}
+					ectTOL = newEctTOL;
+					//---------------------
+					//--- ECT(T,L) --------
+					int newEctTL  = Math.max(taskAtj.getECT(), ectT + taskAtj.getMinDuration());
+					if(newEctTL > ectTL){
+						ectTL = newEctTL;
+						respEnabledIdx = j;
+					}
+					//---------------------
+					// ectT, ectTO are unchanged.
+				}
+			}	
+		}
+		assert altDisjTreeTLTO.getTime() == ectT;
+		results[0] = ectTOL;
+		results[1] = respTOLIdx;
+		return results;
 	}
 
-	private void calculateECT()
+	private void checkFTLO(ITask j, TreeMode mode)throws ContradictionException{
+		
+		//Sort array
+		switch(mode){
+		case ECT:
+			//sort array in ascending order of est
+			Arrays.sort(rtasks, 0 , size.get(), makeREarliestStartingTimeCmp());
+			break;
+		case LST:
+			//Sort array in ascending order of lct
+			Arrays.sort(rtasks,0, size.get(), makeRLatestCompletionTimeCmp());
+			break;
+		default:
+			throw new UnsupportedOperationException("unknown tree mode.");
+		}
+		//Stores the results
+		int [] results ;
+		switch (mode){
+		case ECT:
+			//If number of omega tasks equal to zero, then ectTOL cannot be calculated.
+			//Initialise The array only once per iteration of the main loop in EF.
+			int [] ectTUnionOArr = this.calculateECT();
+			while(altDisjTreeTLTO.getNbOmegaTasks() != 0){
+				  assert altDisjTreeTLTO.getNbOmegaTasks() >= 0;	
+				  results = calculateECTTOL(ectTUnionOArr);	
+				  assert results[0] >=0;
+				  if(results[0] > j.getLCT()){
+					  //get responsible task.
+					  assert results[1]!= -1;
+					  final IRTask resprTask = rtasks[results[1]];
+					  setAsRemoval(resprTask, true);
+				  }
+				  else
+					  break;
+			}
+			break;
+		case LST:
+			//If number of omega tasks equal to zero, then ectTOL cannot be calculated.
+			int [] lctTUnionOArr = this.calculateLST();
+			while(altDisjTreeTLTO.getNbOmegaTasks() != 0){
+				  assert altDisjTreeTLTO.getNbOmegaTasks() >= 0;		
+				  results = calculateLSTTOL(lctTUnionOArr);	
+				  if(results[0] < j.getEST()){
+					  //get responsible task.
+					  assert results[1]!= -1;
+					  final IRTask resprTask = rtasks[results[1]];
+					  setAsRemoval(resprTask, true);
+				  }
+				  else
+					  break;
+			}
+			break;
+		default:
+			throw new UnsupportedOperationException("unknown tree mode.");
+		}
+	}
+
+	private int [] calculateLSTTOL(int [] lstTUnionOArr){
+		int [] results = new int [2];
+		int lstT = Integer.MAX_VALUE; //LST(Theta)
+		int lstTL = Integer.MAX_VALUE; //LST(Theta,Lambda)
+		int lstTO = Integer.MAX_VALUE; //LST(Theta,Omega)
+		int lstTOL = Integer.MAX_VALUE;	//LST(Theta,Lambda',Omega)
+		int pTOL = 0;
+		int pTL = 0;
+		int pTO = 0;
+		int pT = 0;
+		int respTOLIdx = -1; //Contains the index of optional task responsible for highest LST(T,O,L').
+		int respTOIdx = -1; //Contains the index of optional task responsible for highest LST(T,O).
+		int respEnabledIdx = -1;//Contains the index of enabled task responsible for highest LST(T,L').
+		for(int j=0; j< size.get(); j++){
+			final IRTask rtaskAtj = rtasks[j];
+			final ITask taskAtj = rtaskAtj.getTaskVar();
+			final int taskType = altDisjTreeTLTO.getTaskType(rtaskAtj);
+			if(taskType == 1){
+				//Theta
+				assert rtaskAtj.isRegular();
+				//-- LST(T,L,O) ---
+				lstTOL = Math.min(lstTOL, taskAtj.getLST() - pTOL);
+				//-----------------
+				//-- LST(T,O) -----
+				lstTO = Math.min(lstTO, taskAtj.getLST() - pTO);
+				//-----------------
+				//-- LST(T,L) -----
+				lstTL = Math.min(lstTL, taskAtj.getLST() - pTL);  
+				//-----------------
+				//-- LST(T) -------
+				lstT = Math.min(lstT, taskAtj.getLST() - pT);
+				//-----------------
+				//Update duration
+				pT = pT + taskAtj.getMinDuration();
+			}else if(taskType ==2){
+				//Omega
+				//-- LST(T,L,O) ---
+				int newLSTTOL = lstTOL;
+				if(respTOLIdx == -1 || newLSTTOL > taskAtj.getLST() - pT){
+					newLSTTOL = taskAtj.getLST() - pT;
+					pTOL = pT + taskAtj.getMinDuration();
+					respTOLIdx = j;
+				}
+				if(newLSTTOL > taskAtj.getLST() - pTL){
+					if(respEnabledIdx != -1){
+						if(rtasks[respEnabledIdx].getTaskVar().getECT() > lstTUnionOArr[j]){
+							newLSTTOL = taskAtj.getLST() - pTL;
+							//update the duration according to the selected optional task.
+							pTOL = pTL + taskAtj.getMinDuration();
+							respTOLIdx = j;
+						}
+					}
+				}
+				lstTOL = newLSTTOL;
+				//-----------------
+				//-- LST(T,O) -----
+				int newLSTTO = lstTO;
+				if(respTOIdx == -1 || newLSTTO > taskAtj.getLST() - pT){
+					newLSTTO = taskAtj.getLST() - pT;
+					pTO = pT + taskAtj.getMinDuration();
+					respTOIdx = j;
+				}
+				lstTO = newLSTTO;
+				//-----------------
+				//LST(T,L), and LST(T) are not changed
+			}else if(rtaskAtj.isRegular()){
+				//-- LST(T,L,O) ---
+				int newLSTTOL = lstTOL;
+				if(newLSTTOL > taskAtj.getLST() - pTO){
+					if(respTOLIdx == -1){
+						assert respTOIdx == -1;
+						newLSTTOL = taskAtj.getLST() - pTO;
+						assert pTO == pT;
+						pTOL = pTO + taskAtj.getMinDuration();
+					}
+					else if(taskAtj.getECT() > lstTUnionOArr[respTOIdx]){
+						newLSTTOL = taskAtj.getLST() - pTO;
+						pTOL = pTO + taskAtj.getMinDuration();
+						respTOLIdx = respTOIdx;
+					}	
+				}
+				lstTOL = newLSTTOL; 
+				//-----------------
+				//-- LST(T,L) -----
+				int newLSTTL = lstTL;
+				if(newLSTTL > taskAtj.getLST() - pT){
+					newLSTTL = taskAtj.getLST() - pT;
+					pTL = pT + taskAtj.getMinDuration();
+					respEnabledIdx = j;
+				}
+				lstTL = newLSTTL;
+				//-----------------
+				//LST(T,O), and LST(T) are not changed
+			}
+		}
+		assert lstT == altDisjTreeTLTO.getTime();
+		results[0] = lstTOL;
+		results[1] = respTOLIdx;
+		return results;
+	}
+	
+	private int [] calculateLST(){
+		
+		int [] lstAfter = new int[size.get()];
+		int [] lstBefore = new int[size.get()];
+		int [] pBefore = new int[size.get()];
+		int [] lstWith = new int[size.get()];
+		//set lctBefore_0 to + Infinity, the same for lstAfter_(size-1)
+		final int first = 0; 
+		final int last = size.get()-1;
+		lstBefore[first] = Integer.MAX_VALUE;
+		lstAfter[last] = Integer.MAX_VALUE;
+		pBefore[first] = 0;
+		//Looping over tasks list front to back.
+		for(int i = 0; i < size.get()-1; i++){
+			final IRTask taskAtI = rtasks[i];
+			final ITask tAtI = taskAtI.getTaskVar();
+			if(altDisjTreeTLTO.getTaskType(taskAtI)==1){
+				lstBefore[i+1] = Math.min(lstBefore[i], tAtI.getLST() - pBefore[i]);
+				pBefore[i+1] = pBefore[i]+tAtI.getMinDuration();
+			}else{
+				lstBefore[i+1] = lstBefore[i];
+				pBefore[i+1] = pBefore[i];
+			}
+		}
+		//Looping over tasks list back to front.
+		for(int i = size.get()-1 ; i >= 1; i--){
+			final IRTask taskAtI = rtasks[i];
+			final ITask tAtI = taskAtI.getTaskVar();
+			final IRTask trBeforeI = rtasks[i-1];
+			final ITask tBeforeI = trBeforeI.getTaskVar();
+			if(altDisjTreeTLTO.getTaskType(taskAtI)== 1){
+				lstAfter[i-1] = Math.min( tAtI.getLST(), lstAfter[i] - tAtI.getMinDuration());
+			}
+			else{
+				lstAfter[i-1] = lstAfter[i];
+			}
+			//calculate lstWith
+			int newLST = lstBefore[i-1];
+			if(newLST > tBeforeI.getLST() - pBefore[i-1]){
+				newLST = tBeforeI.getLST() - pBefore[i-1];
+			}
+			int totalP = pBefore[i-1]+ tBeforeI.getMinDuration();
+			if(newLST > lstAfter[i-1] - totalP){
+				newLST = lstAfter[i-1] - totalP;
+			}
+			lstWith[i-1] = newLST;
+		}
+		//Calculate lstWith[size-1].
+		lstWith[last] = Math.min(lstBefore[last], rtasks[last].getTaskVar().getLST() - pBefore[last]);
+		return lstWith;
+	}
+	
+	/**
+	 * This method is used to calculate ECT(Theta Union O) for each optional task in Omega
+	 * It allows accessing this value in constant time. Has time complexity O(n)
+	 */
+	private int[] calculateECT()
 	{
-		// will be used in checkFTLO
-		int oldESTValue;
-		//Clear all lists before starting.
-		ectAfter = new int[size.get()];
-		ectBefore = new int[size.get()];
-		pAfter = new int[size.get()];
-		ectWith = new int[size.get()];
+		int[] ectAfter = new int[size.get()]; //Used to hold the total sum of ECT of Theta tasks after task t. 
+		int[] ectBefore = new int [size.get()]; // holds the total sum of ECT of Theta tasks before task t.
+		int[] pAfter = new int[size.get()]; // holds the total sum of processing time of Theta tasks after task t.
+		int[] ectWith = new int[size.get()]; //holds the ECT(Theta Union task t).
 		//Set ectBefore_0 to -Infinity, the same for ectAfter_(size-1)
 		ectBefore[0] = Integer.MIN_VALUE;
 		ectAfter[size.get() - 1] = Integer.MIN_VALUE;
 		//Set pAfter_(size-1) to zero.
 		pAfter[size.get() - 1] = 0;
 		//Looping over rtasks list back to front to calculate ectAfter, and pAfter
-		oldESTValue = Integer.MAX_VALUE;
 		for(int i = size.get() - 1 ; i >= 1; i--){
 			final IRTask taskAtI = rtasks[i];
 			final ITask tAtI = taskAtI.getTaskVar();
-			assert oldESTValue >= tAtI.getEST();
 			//THETA = 1
 			if(altDisjTreeTLTO.getTaskType(taskAtI) == 1){
+				
 				pAfter[i-1] =  pAfter[i] + tAtI.getMinDuration() ;
 				ectAfter[i-1] = Math.max(ectAfter[i], tAtI.getECT()+ pAfter[i]);
+				
 			}else{
+				
 				//task is not in theta, pass the values
 				pAfter[i-1] =  pAfter[i];
 				ectAfter[i-1] = ectAfter[i];
 			}
-			oldESTValue = tAtI.getEST();
 		}
-		//Looping over rtasks list front to back, to calculate ectBefore, and ectWith
-		oldESTValue = Integer.MIN_VALUE;
+		//Looping again over rtasks list front to back, to calculate ectBefore, and ectWith
 		for(int i=0; i < size.get()-1; i++){
 			final IRTask taskAtI = rtasks[i];
-			final ITask taskAfterI = rtasks[i+1].getTaskVar();
-			assert oldESTValue <= taskAtI.getTaskVar().getEST();
+			final ITask taskAfterI = rtasks[i+1].getTaskVar();//used in calculation of ectWith
 			if(altDisjTreeTLTO.getTaskType(taskAtI) == 1){
-				ectBefore[i+1] = Math.max( taskAfterI.getECT() , ectBefore[i] + 
-						taskAfterI.getMinDuration());
+				//Theta
+				ectBefore[i+1] = Math.max( taskAtI.getTaskVar().getECT() , ectBefore[i] + 
+						taskAtI.getTaskVar().getMinDuration());
 			}else{ ectBefore[i+1] = ectBefore[i];}
 			//Calculate ECT
-			final int r = ectAfter[i+1];
-			final int l1 = taskAfterI.getECT() + pAfter[i+1];
-			final int l2 = ectBefore[i+1] + taskAfterI.getMinDuration() + pAfter[i+1]; 
-			if( r >= l1){ectWith[i+1] = Math.max(r, l2);}
-			else{ectWith[i+1] = Math.max(l1, l2);}
-			//Add here the steps for calculation of max ECT(theta union i2 which belongs to Tenabled\theta)
-			oldESTValue = taskAtI.getTaskVar().getEST();
+			int newEctWith = ectAfter[i+1];
+			if(newEctWith < taskAfterI.getECT() + pAfter[i+1])
+				newEctWith = taskAfterI.getECT() + pAfter[i+1];
+			if(newEctWith < ectBefore[i+1] + taskAfterI.getMinDuration() + pAfter[i+1])
+				newEctWith = ectBefore[i+1] + taskAfterI.getMinDuration() + pAfter[i+1];  
+			ectWith[i+1] = newEctWith;
 		}
 		final ITask first = rtasks[0].getTaskVar();
 		ectWith[0] = Math.max(ectAfter[0], first.getECT() + pAfter[0]);
+		
+		return ectWith;
 	}
-
+	
 	/**
 	 * Method calculates the ECT(Theta,Omega,Lambda), when the current task from the queue
 	 * is optional
 	 * @param j
 	 */
-	private void checkSTLO(IRTask j, TreeMode mode)throws ContradictionException{
-			
+	private void checkSTLOEST(IRTask j)throws ContradictionException{
+			//Sort array in ascending order of est.
+		    Arrays.sort(rtasks, 0 , size.get(), makeREarliestStartingTimeCmp());
 			//Temporarily remove task j from omega, and embed it in Theta
 			altDisjTreeTLTO.removeFromOmega(j);
 			altDisjTreeTLTO.insertInTheta(j);
@@ -415,17 +736,15 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 			final int ectTUO = altDisjTreeTLTO.getTime();
 			int ectT = Integer.MIN_VALUE;
 			int ectTL = Integer.MIN_VALUE;
-			int oldESTValue = Integer.MIN_VALUE;
 			//Tasks in the list are in ascending order of est
 			for(IRTask rtask: this){
 				final ITask i = rtask.getTaskVar();
-				assert oldESTValue <= i.getEST();
 				final int taskType = altDisjTreeTLTO.getTaskType(rtask);
 				if(taskType == 1){
 					//Theta
 					ectTL = Math.max( ectTL + i.getMinDuration() , i.getECT());
 					ectT = Math.max( ectT + i.getMinDuration() , i.getECT());
-				}else if(altDisjTreeTLTO.isTaskRegularAndNotInTheta(rtask)){
+				}else if(rtask.isRegular()){
 					//Then task i belongs to Tenabled\Theta
 					if(i.getLST() < ectTUO){
 						final int l = ectT + i.getMinDuration();
@@ -433,25 +752,54 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 						ectTL = Math.max(ectTL, Math.max(l, r));
 					}
 				}
-				oldESTValue = i.getEST();
 			}
 			//Reverse the operation
 			altDisjTreeTLTO.removeFromTheta(j.getTaskVar());
 			altDisjTreeTLTO.insertInOmega(j);
-			switch(mode){
-			case ECT:
-				final int lct = j.getTaskVar().getLCT();
-				if( ectTUO > lct || ectTL > lct ){
-					setAsRemoval(j, true);
-				}
-				break;
-			case LST:
-				final int est = j.getTaskVar().getEST();
-				if( ectTUO < est || ectTL < est){
-					setAsRemoval(j, true);
-				}
-				break;
+			final int lct = j.getTaskVar().getLCT();
+			if( ectTUO > lct || ectTL > lct ){
+				setAsRemoval(j, true);
 			}
+	}
+
+	private void checkSTLOLCT(IRTask j)throws ContradictionException{
+		//Sort array in ascending order of lct
+		Arrays.sort(rtasks,0, size.get(), makeRLatestCompletionTimeCmp());
+		//Temporarily remove task j from omega, and embed it in Theta
+		altDisjTreeTLTO.removeFromOmega(j);
+		altDisjTreeTLTO.insertInTheta(j);
+		//Cache the value
+		final int lstTUO = altDisjTreeTLTO.getTime();
+		int lstT = Integer.MAX_VALUE;
+		int lstTL = Integer.MAX_VALUE;
+		int pT = 0;
+		int pTL = 0;
+		for(int tIdx =0; tIdx < size.get(); tIdx++){
+			final IRTask ir = rtasks[tIdx];
+			final ITask i = ir.getTaskVar();
+			final int taskType = altDisjTreeTLTO.getTaskType(rtasks[tIdx]);
+			if( taskType == 1){
+				//Theta
+				lstTL = Math.min(lstTL, i.getLST() - pTL );
+				lstT = Math.min(lstT, i.getLST() - pT);
+				pT = pT + i.getMinDuration();
+			}else if(ir.isRegular()){
+				if(i.getECT() > lstTUO){
+					if(lstTL > i.getLST() - pT){
+						lstTL = i.getLST() - pT;
+						pTL = pT + i.getMinDuration();
+					}
+				}
+			}
+		}
+		//Reverse the operation
+		altDisjTreeTLTO.removeFromTheta(j.getTaskVar());
+		altDisjTreeTLTO.insertInOmega(j);
+		final int est = j.getTaskVar().getEST();
+		if(lstTL < est||lstTUO < est){
+			setAsRemoval(j, true);
+		}
+		
 	}
 
 	private void checkTL(ITask j, TreeMode mode) throws ContradictionException{
@@ -511,7 +859,6 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		}
 	}
 
-
 	private void checkTO(ITask j, TreeMode mode) throws ContradictionException
 	{
 		switch(mode){
@@ -519,6 +866,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 			while(altDisjTreeTLTO.getTOTime() > j.getLCT()){
 				//get responsible optional task.
 				final IRTask rti= (IRTask) altDisjTreeTLTO.getResponsibleTOTask();
+				assert rti != null;
 				//Remove optional task from OMEGA
 				setAsRemoval(rti, true);
 			}
@@ -526,6 +874,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		case LST:
 			while(altDisjTreeTLTO.getTOTime() < j.getEST()){
 				final IRTask rti = (IRTask) altDisjTreeTLTO.getResponsibleTOTask();
+				assert rti != null;
 				setAsRemoval(rti, true);
 			}
 			break;
@@ -534,12 +883,10 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		}
 	}
 
-
 	private void setupEF(final TreeMode mode,final Comparator<IRTask> queueComp){
 		this.clear();
 		//Initialise Edge Finding Tree
 		this.altDisjTreeTLTO.initializeEdgeFinding(mode, this);
-		Arrays.sort(rtasks, 0 , size.get(), makeREarliestStartingTimeCmp());
 		this.rqueue.sort(queueComp);
 	}
 
@@ -573,7 +920,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 				checkTO(j, LST);
 				checkFTLO(j, LST);
 			}else if(rtj.isOptional()){
-				checkSTLO(rtj, LST);
+				checkSTLOLCT(rtj);
 			}
 		}while(!rqueue.isEmpty());
 		applyRemovals();
