@@ -22,11 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global;
 
+import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.cp.solver.variables.integer.IntVarEvent;
 
 
 /**
@@ -58,19 +58,19 @@ public class LexChain extends AbstractLargeIntSConstraint {
      */
 
 
-     public int  [][] upperBoundVector;
+    public int  [][] upperBoundVector;
 
     /**
      *     array for holding lexicographically smallest  feasible  lower bound of each vector
      */
 
-     public int  [][] lowerBoundVector;
+    public int  [][] lowerBoundVector;
 
     /**
      * If strict's value is true then  lexChain  is implemented  , if false lexChainEq
      */
 
-     public boolean strict ;
+    public boolean strict ;
 
     /**
      * total number of vector in the  lex chain constraint 
@@ -86,20 +86,20 @@ public class LexChain extends AbstractLargeIntSConstraint {
      * @param strict   whether strict lexicographic ordering or not .True value means lexChain { < }  else lexChainEq { <= }
      */
 
-   public  LexChain(IntDomainVar[] vars, int n, boolean strict ) {
+    public  LexChain(IntDomainVar[] vars, int n, boolean strict ) {
 
-           super(vars);
-           this.strict = strict;
-           this.n = n;
-           numOfVectors = vars.length / n;
-           x = new IntDomainVar[numOfVectors][n];
-           upperBoundVector = new int[numOfVectors][n];
-           lowerBoundVector = new int [numOfVectors][n];
-           for(int i = 0 ; i< numOfVectors ; i++){
-               System.arraycopy(vars, n * i, x[i], 0, n);
+        super(vars);
+        this.strict = strict;
+        this.n = n;
+        numOfVectors = vars.length / n;
+        x = new IntDomainVar[numOfVectors][n];
+        upperBoundVector = new int[numOfVectors][n];
+        lowerBoundVector = new int [numOfVectors][n];
+        for(int i = 0 ; i< numOfVectors ; i++){
+            System.arraycopy(vars, n * i, x[i], 0, n);
 
-           }
-       
+        }
+
     }
 
 
@@ -121,55 +121,55 @@ public class LexChain extends AbstractLargeIntSConstraint {
 
     public void  boundsLex(int [] a , IntDomainVar [] x , int [] b,int j) throws ContradictionException{
 
-         int i =0;
+        int i =0;
 
 
-          while( i< n &&  a[i]==b[i]){
+        while( i< n &&  a[i]==b[i]){
 
 
-                if((x[i].getInf()==a[i] || x[i].updateInf(a[i],cIndices[j*n+i])) &&
-                     (x[i].getSup()==b[i] || x[i].updateSup(b[i],cIndices[j*n+i]))){
-                    i++;
-                }else{
-                    this.fail();
-                }
-
-          }
-
-
-            if(i<n )
-            if ((x[i].getInf()==a[i] || x[i].updateInf(a[i],cIndices[j*n+i])) &&
-                 (x[i].getSup()==b[i] || x[i].updateSup(b[i],cIndices[j*n+i]))){
+            if((x[i].getInf()==a[i] || x[i].updateInf(a[i],cIndices[j*n+i])) &&
+                    (x[i].getSup()==b[i] || x[i].updateSup(b[i],cIndices[j*n+i]))){
+                i++;
             }else{
-               this.fail();
+                this.fail();
+            }
+
+        }
+
+
+        if(i<n )
+            if ((x[i].getInf()==a[i] || x[i].updateInf(a[i],cIndices[j*n+i])) &&
+                    (x[i].getSup()==b[i] || x[i].updateSup(b[i],cIndices[j*n+i]))){
+            }else{
+                this.fail();
             }
 
 
-            if(i==n || x[i].getNextDomainValue(a[i])<b[i]){
-                return ;
-           }
+        if(i==n || x[i].getNextDomainValue(a[i])<b[i]){
+            return ;
+        }
 
-           i+=1;
+        i+=1;
 
-           while(i<n && (b[i]+1 <= a[i]-1) && x[i].getInf()==b[i] && x[i].getSup()==a[i]){
+        while(i<n && (b[i]+1 <= a[i]-1) && x[i].getInf()==b[i] && x[i].getSup()==a[i]){
             if(x[i].removeInterval(b[i]+1,a[i]-1,cIndices[j*n+i])){
                 i++;
             }else{
-               this.fail();
+                this.fail();
 
             }
-         }
-
-           if(i<n) {
-               if (b[i] + 1 <= a[i] - 1 && x[i].getInf() <= b[i] &&
-                       b[i] <= x[i].getSup() && x[i].getSup() >= a[i] && a[i] >= x[i].getInf()) {
-                   if (!x[i].removeInterval(b[i] + 1, a[i] - 1, cIndices[j * n + i])) {
-                       this.fail();
-                   }
-               }
-           }
-
         }
+
+        if(i<n) {
+            if (b[i] + 1 <= a[i] - 1 && x[i].getInf() <= b[i] &&
+                    b[i] <= x[i].getSup() && x[i].getSup() >= a[i] && a[i] >= x[i].getInf()) {
+                if (!x[i].removeInterval(b[i] + 1, a[i] - 1, cIndices[j * n + i])) {
+                    this.fail();
+                }
+            }
+        }
+
+    }
 
 
     /** computes alpha for use in computing lexicographically largest feasible upper  bound  of x in
@@ -181,29 +181,29 @@ public class LexChain extends AbstractLargeIntSConstraint {
      */
 
 
-      public int computeAlpha(IntDomainVar [] x ,int [] b )throws ContradictionException {
+    public int computeAlpha(IntDomainVar [] x ,int [] b )throws ContradictionException {
         int i =0;
 
 
         int alpha = -1;
-                  
+
 
         while(i< n &&  x[i].getInf()<= b[i] && x[i].getSup()>= b[i] && x[i].getDomain().contains(b[i])){
-              
-                if(b[i] > x[i].getInf()){
+
+            if(b[i] > x[i].getInf()){
                 alpha = i;
-             }
+            }
             i++;
 
         }
         if(!strict){
-          if( i==n || b[i] > x[i].getInf()){
-            alpha = i;
-        }
+            if( i==n || b[i] > x[i].getInf()){
+                alpha = i;
+            }
         }else{
-           if(i< n && b[i] > x[i].getInf()){
-               alpha = i;
-           }
+            if(i< n && b[i] > x[i].getInf()){
+                alpha = i;
+            }
         }
 
         return alpha;
@@ -219,25 +219,25 @@ public class LexChain extends AbstractLargeIntSConstraint {
      */
 
     public int  computeBeta(IntDomainVar [] x ,int [] a)throws ContradictionException {
-           int i =0;
-           int beta = -1;
-           while(i< n && x[i].getInf()<= a[i] && x[i].getSup()>= a[i] && x[i].getDomain().contains(a[i])){
+        int i =0;
+        int beta = -1;
+        while(i< n && x[i].getInf()<= a[i] && x[i].getSup()>= a[i] && x[i].getDomain().contains(a[i])){
             if(a[i] < x[i].getSup()){
                 beta= i;
-             }
+            }
             i++;
 
-           }
-           if(!strict){
-               if( i==n || a[i] < x[i].getSup()){
-            beta = i;
-           }
-           }else{
-               if(i<n && a[i] < x[i].getSup()){
-                   beta = i;
-               }
-           }
-           return beta; 
+        }
+        if(!strict){
+            if( i==n || a[i] < x[i].getSup()){
+                beta = i;
+            }
+        }else{
+            if(i<n && a[i] < x[i].getSup()){
+                beta = i;
+            }
+        }
+        return beta;
 
 
 
@@ -254,23 +254,23 @@ public class LexChain extends AbstractLargeIntSConstraint {
      * @throws ContradictionException
      */
 
-     public  void   computeUB(IntDomainVar [] x ,int [] b,int  [] u)throws ContradictionException {
+    public  void   computeUB(IntDomainVar [] x ,int [] b,int  [] u)throws ContradictionException {
 
-         int  alpha = computeAlpha(x,b);
-         if(alpha==-1) this.fail();
-         for(int i =0; i<n;i++){
-             if(i<alpha){
-                 u[i]=b[i];
-             }else if(i==alpha){
-                 u[i] = x[i].getPrevDomainValue(b[i]);
+        int  alpha = computeAlpha(x,b);
+        if(alpha==-1) this.fail();
+        for(int i =0; i<n;i++){
+            if(i<alpha){
+                u[i]=b[i];
+            }else if(i==alpha){
+                u[i] = x[i].getPrevDomainValue(b[i]);
 
-             }else {
-                 u[i] = x[i].getSup();
-                 
-             }
-         }
+            }else {
+                u[i] = x[i].getSup();
 
-     }
+            }
+        }
+
+    }
 
     /**  Computes the   lexicographically smallest feasible  lower bound vector of integers of x .
      * if beta computed in  {@link  LexChain#computeBeta(choco.kernel.solver.variables.integer.IntDomainVar[], int[]) computeBeta} is -1 then
@@ -283,23 +283,23 @@ public class LexChain extends AbstractLargeIntSConstraint {
      */
 
 
-     public void  computeLB(IntDomainVar [] x ,int [] a,int  [] lower)throws ContradictionException {
+    public void  computeLB(IntDomainVar [] x ,int [] a,int  [] lower)throws ContradictionException {
 
-         int beta = computeBeta(x,a);
-         if(beta==-1) this.fail();
-         for(int i =0; i<n;i++){
-             if(i<beta){
-                 lower[i] = a[i];
-             }else if(i==beta){
-                 lower[i] = x[i].getNextDomainValue(a[i]);
+        int beta = computeBeta(x,a);
+        if(beta==-1) this.fail();
+        for(int i =0; i<n;i++){
+            if(i<beta){
+                lower[i] = a[i];
+            }else if(i==beta){
+                lower[i] = x[i].getNextDomainValue(a[i]);
 
-             }else {
-                 lower[i]=  x[i].getInf();
-                 
-             }
-         }
-         
-     }
+            }else {
+                lower[i]=  x[i].getInf();
+
+            }
+        }
+
+    }
 
     /**
      * Implements the main filtering algorithm by calling
@@ -312,51 +312,51 @@ public class LexChain extends AbstractLargeIntSConstraint {
 
     public void filter() throws ContradictionException {
 
-             for(int i =0; i< n ;i++)
-             upperBoundVector[numOfVectors-1][i] = x[numOfVectors-1][i].getSup();
-               
-
-
-        
-             for(int i = numOfVectors -2 ; i>=0 ; i--)
-              computeUB(x[i],upperBoundVector[i+1],upperBoundVector[i]);
-
-
-
-             for(int i =0 ;i< n ;i++)
-             lowerBoundVector[0][i] = x[0][i].getInf();
+        for(int i =0; i< n ;i++)
+            upperBoundVector[numOfVectors-1][i] = x[numOfVectors-1][i].getSup();
 
 
 
 
-             for(int i =1 ;i<numOfVectors ;i++)
-             computeLB(x[i],lowerBoundVector[i-1],lowerBoundVector[i]);
+        for(int i = numOfVectors -2 ; i>=0 ; i--)
+            computeUB(x[i],upperBoundVector[i+1],upperBoundVector[i]);
 
 
 
-             for(int  i =0 ; i< numOfVectors ; i++)
-             boundsLex(lowerBoundVector[i],x[i],upperBoundVector[i],i);
+        for(int i =0 ;i< n ;i++)
+            lowerBoundVector[0][i] = x[0][i].getInf();
+
+
+
+
+        for(int i =1 ;i<numOfVectors ;i++)
+            computeLB(x[i],lowerBoundVector[i-1],lowerBoundVector[i]);
+
+
+
+        for(int  i =0 ; i< numOfVectors ; i++)
+            boundsLex(lowerBoundVector[i],x[i],upperBoundVector[i],i);
 
 
 
 
 
-           }
+    }
 
 
-        public void awake() throws ContradictionException {
-              filter();
-        }
+    public void awake() throws ContradictionException {
+        filter();
+    }
 
-         public Boolean isEntailed() {
-            throw new SolverException("isEntailed not yet implemented on choco.cp.cpsolver.constraints.global.LexChain");
-        }
+    public Boolean isEntailed() {
+        throw new SolverException("isEntailed not yet implemented on choco.cp.cpsolver.constraints.global.LexChain");
+    }
 
 
 
-          public void propagate() throws ContradictionException {
-                 filter();
-          }
+    public void propagate() throws ContradictionException {
+        filter();
+    }
 
 
 //         public void awakeOnInf(int idx) throws ContradictionException {
@@ -372,37 +372,36 @@ public class LexChain extends AbstractLargeIntSConstraint {
 //         }
 
 
-         public void awakeOnInst(int idx) throws ContradictionException {
-                 filter();
-           
-        }
+    public void awakeOnInst(int idx) throws ContradictionException {
+        filter();
 
-    /**
-     * TEMPORARY: if not overriden by the constraint, throws an error
-     * to avoid bug using reified constraints in constraints
-     * that have not been changed to fulfill this api yet !
-     *
-     * @param tuple
-     * @return
-     */
-    public boolean isSatisfied(int[] tuple) {
-        return checkSubTuple(0, tuple);
     }
 
-    private boolean checkSubTuple(int i, int[] tuple){
-        if(i==n-1)return true;
-        int xi = tuple[i];
-        for(int j = 1; j < x.length; j++){
-            int yi = tuple[i+(j*n)];
-            if(xi > yi)return false;
-            if(xi==yi){
-                if(!checkSubTuple(i+1, tuple)){
-                    return false;
-                }
-            }
-            xi=yi;
+
+
+    public boolean isSatisfied(int[] tuple)
+    {
+        return checkTuple(0,tuple);
+    }
+    /**
+     * check the feasibility of a tuple, recursively on each pair of consecutive vectors.
+     * Compare vector xi with vector x(i+1):
+     * return false if xij > x(i+1)j or if (strict && xi=x(i+1)), and checkTuple(i+1, tuple) otherwise.
+     * @param i the index of the first vector to be considered
+     * @param tuple the instantiation [[x11,..,x1n],[x21..x2n],..,[xk1..xkn]] to be checked
+     * @return true iff lexChain(xi,x(i+1)) && lexChain(x(i+1),..,xk)
+     */
+    private boolean checkTuple(int i, int[] tuple)
+    {
+        if (i == x.length-1) return true;
+        int index = n*i;
+        for (int j=0; j < n; j++, index++) {
+            if(tuple[index] > tuple[index+n])
+                return false;
+            if(tuple[index] < tuple[index+n])
+                return checkTuple(i+1,tuple);
         }
-        return true;
+        return (!strict) && checkTuple(i + 1, tuple);
     }
 
 
@@ -411,16 +410,16 @@ public class LexChain extends AbstractLargeIntSConstraint {
      * @return     a readable representation of the constraint as a String
      */
 
-         public String pretty() {
-         StringBuffer sb = new StringBuffer();
-         for(int i =0;i<numOfVectors;i++){
-         for (int j = 0; j < n; j++) {
-         sb = j>0?sb.append(", "):sb.append("{");
-         sb.append(x[i][j].pretty());
-         }
-         sb= i+1==numOfVectors?sb.append("} "):strict?sb.append("} < lex "):sb.append("} <= lex ");
-         }
-         return sb.toString();
-      }
+    public String pretty() {
+        StringBuffer sb = new StringBuffer();
+        for(int i =0;i<numOfVectors;i++){
+            for (int j = 0; j < n; j++) {
+                sb = j>0?sb.append(", "):sb.append("{");
+                sb.append(x[i][j].pretty());
+            }
+            sb= i+1==numOfVectors?sb.append("} "):strict?sb.append("} < lex "):sb.append("} <= lex ");
+        }
+        return sb.toString();
+    }
 
-    }    
+}

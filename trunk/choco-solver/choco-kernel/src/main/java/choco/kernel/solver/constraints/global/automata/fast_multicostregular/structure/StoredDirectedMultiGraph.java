@@ -46,18 +46,19 @@ import java.util.Set;
  */
 public class StoredDirectedMultiGraph {
 
-    AbstractIntSConstraint constraint;
+    public AbstractIntSConstraint constraint;
 
     int[] starts;
     public int[] offsets;
 
     public int sourceIndex;
     public int tinIndex;
+    public int nbR;
 
 
 
     StoredIndexedBipartiteSetWithOffset[] supports;
-    public int[][] layers;
+    public StoredIndexedBipartiteSetWithOffset[] layers;
     FastPathFinder pf;
     private IStateBitSet inStack;
 
@@ -87,6 +88,10 @@ public class StoredDirectedMultiGraph {
         public int[] values;
         public int[] dests;
         public int[] origs;
+        public double[][] originalCost;
+        public double[] temporaryCost;
+
+
     }
 
 
@@ -99,12 +104,17 @@ public class StoredDirectedMultiGraph {
 
 
 
-    public StoredDirectedMultiGraph(IEnvironment environment, AbstractIntSConstraint constraint, DirectedMultigraph<Node, Arc> graph, int[][] layers, int[] starts, int[] offsets, int supportLength)
+    public StoredDirectedMultiGraph(IEnvironment environment, AbstractIntSConstraint constraint, DirectedMultigraph<Node, Arc> graph, int[][] layers, int[] starts, int[] offsets, int supportLength,double[][][][] costs)
     {
+        this.nbR = costs[0][0].length;
         this.constraint = constraint;
         this.starts = starts;
         this.offsets =offsets;
-        this.layers = layers;
+        this.layers = new StoredIndexedBipartiteSetWithOffset[layers.length];
+        for (int i = 0 ; i < layers.length ; i++)
+        {
+            this.layers[i] = new StoredIndexedBipartiteSetWithOffset(environment,layers[i]);
+        }
         this.sourceIndex = layers[0][0];
         this.tinIndex = layers[layers.length-1][0];
 
@@ -122,6 +132,9 @@ public class StoredDirectedMultiGraph {
         GArcs.values = new int[arcs.size()];
         GArcs.dests = new int[arcs.size()];
         GArcs.origs = new int[arcs.size()];
+        GArcs.originalCost = new double[arcs.size()][nbR];
+        GArcs.temporaryCost = new double[arcs.size()];
+
 
 
         for (Arc a : arcs)
@@ -130,6 +143,14 @@ public class StoredDirectedMultiGraph {
             GArcs.values[a.id] = a.value;
             GArcs.dests[a.id] = a.dest.id;
             GArcs.origs[a.id] = a.orig.id;
+            int state = a.orig.state;
+            int layer = a.orig.layer;
+            for (int r = 0 ; r < nbR ; r++)
+            {
+                GArcs.originalCost[a.id][r] = layer < layers.length -2 ?costs[layer][a.value][r][state]:0.0;
+            }
+
+
 
             if (a.orig.layer < starts.length)
             {
@@ -255,42 +276,48 @@ public class StoredDirectedMultiGraph {
         out.remove(arcId);
 
 
-        if (GNodes.layers[orig] > 0 && out.isEmpty())
-        {
-            in = GNodes.inArcs[orig];
-            it = in.getIterator();
-            while(it.hasNext())
+        if (out.isEmpty())
+        {    layers[layer].remove(orig);
+            if (layer > 0 )
             {
-                int id = it.next();
-                if(!isInStack(id))
+                in = GNodes.inArcs[orig];
+                it = in.getIterator();
+                while(it.hasNext())
                 {
-                    setInStack(id);
-                    toRemove.add(id);
+                    int id = it.next();
+                    if(!isInStack(id))
+                    {
+                        setInStack(id);
+                        toRemove.add(id);
+                    }
                 }
+                it.dispose();
             }
-            it.dispose();
         }
 
         in = GNodes.inArcs[dest];
         in.remove(arcId);
 
 
-
-        if (GNodes.layers[dest] < this.constraint.getNbVars() && in.isEmpty())
+        if (in.isEmpty())
         {
-            out = GNodes.outArcs[dest];
-            it = out.getIterator();
-            while (it.hasNext())
+            layers[layer+1].remove(dest);
+            if (layer+1 < this.constraint.getNbVars())
             {
-                int id = it.next();
-                if (!isInStack(id))
+                out = GNodes.outArcs[dest];
+                it = out.getIterator();
+                while (it.hasNext())
                 {
-                    setInStack(id);
-                    toRemove.add(id);
+                    int id = it.next();
+                    if (!isInStack(id))
+                    {
+                        setInStack(id);
+                        toRemove.add(id);
+                    }
                 }
-            }
-            it.dispose();
+                it.dispose();
 
+            }
         }
 
     }

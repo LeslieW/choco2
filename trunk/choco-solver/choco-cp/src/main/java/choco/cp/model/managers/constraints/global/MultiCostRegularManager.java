@@ -66,11 +66,11 @@ public class MultiCostRegularManager extends IntConstraintManager
                     double[][][] csts = (double[][][]) param[2];
                     return new FastMultiCostRegular(vs,z,pi,csts, solver.getEnvironment());
                 }
-              /*  else if (param[2] instanceof int[][][][])
+                else if (param[2] instanceof double[][][][])
                 {
-                    int[][][][] csts = (int[][][][]) param[2];
-                    return new MultiCostRegular(vs,z,pi,csts);
-                } */
+                    double[][][][] csts = (double[][][][]) param[2];
+                    return new FastMultiCostRegular(vs,z,pi,csts, solver.getEnvironment());
+                }
             }
         }
         return null;

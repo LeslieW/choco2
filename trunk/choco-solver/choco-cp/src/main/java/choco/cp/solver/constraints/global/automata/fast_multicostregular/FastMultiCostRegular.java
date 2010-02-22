@@ -22,8 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.automata.fast_multicostregular;
 
-import choco.cp.model.managers.IntConstraintManager;
-import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.Constants;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
@@ -32,10 +30,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
-import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.algo.FastPathFinder;
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.Arc;
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.Node;
@@ -48,9 +43,9 @@ import gnu.trove.TObjectIntHashMap;
 import org.jgrapht.graph.DirectedMultigraph;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashSet;
-import java.util.Set;
 
 
 /**
@@ -126,7 +121,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
     /**
      * Integral costs : c[i][j][k][s] is the cost over dimension k of x_i = j on state s
      */
-    protected final double[][][] costs;
+    protected final double[][][][] costs;
 
     /**
      * The finite automaton which defines the regular language the variable sequence must belong
@@ -146,7 +141,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
     /**
      * Cost to be applied to the graph for a given relaxation
      */
-    protected final double[][] newCosts;
+    // protected final double[][] newCosts;
 
     /**
      * Lagrangian multiplier container to compute an UB
@@ -189,11 +184,35 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
      * @param CR    cost variables
      * @param auto  finite automaton
      * @param costs assignment cost arrays
-
-    public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final Automaton auto, final int[][][] costs)
-    {
-    this(vars,CR,auto,make4dim(costs,auto));
+     * @param environment environment
      */
+    public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final Automaton auto, final double[][][] costs, IEnvironment environment)
+    {
+        this(vars,CR,auto,make4dim(costs,auto),environment);
+    }
+
+    private static double[][][][] make4dim(double[][][] costs, Automaton auto) {
+        int nbStates = auto.getNbStates();
+        double[][][][] out = new double[costs.length][][][];
+        for (int i = 0 ; i < costs.length ; i++)
+        {
+            out[i] = new double[costs[i].length][][];
+            for (int j = 0 ; j < out[i].length ; j++)
+            {
+                out[i][j] = new double[costs[i][j].length][nbStates];
+                for (int k = 0 ; k < out[i][j].length ; k++)
+                {
+                    for (int s = 0 ; s < nbStates ; s++)
+                    {
+                        out[i][j][k][s] = costs[i][j][k];
+                    }
+                }
+            }
+
+        }
+        return out;
+
+    }
 
 
     /**
@@ -202,9 +221,9 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
      * @param CR    cost variables
      * @param auto  finite automaton
      * @param costs assignment cost arrays
-     * @param environment
+     * @param environment environment
      */
-    public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final Automaton auto, final double[][][] costs, IEnvironment environment)
+    public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final Automaton auto, final double[][][][] costs, IEnvironment environment)
     {
         super(ArrayUtils.<IntDomainVar>append(vars,CR));
         this.environment = environment;
@@ -214,11 +233,11 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         this.nbR = this.z.length-1;
         this.pi = auto;
         this.modifiedBound = new boolean[]{true,true};
-        this.newCosts = new double[costs.length+1][];
-        for (int i = 0; i < costs.length; i++) {
-            this.newCosts[i] = new double[costs[i].length];
-        }
-        this.newCosts[costs.length] = new double[1];
+        /*  this.newCosts = new double[costs.length+1][];
+    for (int i = 0; i < costs.length; i++) {
+        this.newCosts[i] = new double[costs[i].length];
+    }
+    this.newCosts[costs.length] = new double[1]; */
         this.uUb = new double[2*nbR];
         this.uLb = new double[2*nbR];
 
@@ -427,7 +446,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         intLayer[n+1] = new int[]{tink.id};
 
         if (intLayer[0].length > 0)
-            this.graph = new StoredDirectedMultiGraph(environment, this,graph,intLayer,starts,offsets,totalSizes);
+            this.graph = new StoredDirectedMultiGraph(environment, this,graph,intLayer,starts,offsets,totalSizes,costs);
     }
 
 
@@ -451,9 +470,8 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         int nbNSig = 0;
         int nbNSig2 = 0;
         double bestVal = Double.POSITIVE_INFINITY;
-        int nbIter = 0;
+        Arrays.fill(uUb,0.0);
         do {
-            nbIter++;
             coeff = 0.0;
             for (int i = 0 ; i < nbR ; i++)
             {
@@ -463,31 +481,9 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
 
 
             modif =false;
-            this.updateCosts(uUb,true);
 
-            boolean tmp = true;
-            while (tmp)
-            {
-                //     int bui = toRemove.size();
-                slp.resetNodeLongestPathValues();// slp.resetNodeShortestPathValues();
-                slp.computeLongestPath(toRemove,newCosts,z[0].getInf()-coeff);
-                tmp = false;
-                // tmp = toRemove.size() > 0;
-                // this.delayedGraphUpdate();
-                //     bui = toRemove.size()-bui;
-                /*     if (bui > 0)
-               {
-                   System.err.println("############## ITER "+nbIter+" ################");
-                   System.err.println("CA SERT A QQCH : "+bui);
-                   System.err.println("######################################");
-
-               } */
-
-
-            }
-
-
-
+            slp.resetNodeLongestPathValues();
+            slp.computeLongestPath(toRemove,z[0].getInf()-coeff,uUb,true,true,0);
 
             lp = slp.getLongestPathValue();
             P = slp.getLongestPath();
@@ -522,9 +518,9 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
                 for (int e : P)
                 {
                     int i = graph.GNodes.layers[graph.GArcs.origs[e]];//  e.getOrigin().getLayer();
-                    int j = graph.GArcs.values[e];//e.getLabel();
+                    //int j = graph.GArcs.values[e];//e.getLabel();
                     if (i < vs.length)
-                        axu+= costs[i][j][l+1];
+                        axu+= graph.GArcs.originalCost[e][l+1];//costs[i][j][l+1];
                 }
                 newLB = Math.max(uUb[l]- uk * (z[l+1].getSup()-axu),0);
                 newLA = Math.max(uUb[l+nbR]- uk*(axu-z[l+1].getInf()),0);
@@ -541,7 +537,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
             }
             k++;
 
-        } while (modif && nbNSig2 < MAXNONIMPROVEITER && nbIter < MAXBOUNDITER);
+        } while (modif && nbNSig2 < MAXNONIMPROVEITER && k < MAXBOUNDITER);
         this.lastLp = P;
 
     }
@@ -568,7 +564,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         double bestVal = Double.NEGATIVE_INFINITY;
         int nbNSig = 0;
         int nbNSig2 = 0;
-        int nbIter = 0;
+        Arrays.fill(uLb,0.0);
         do
         {
             coeff = 0.0;
@@ -578,23 +574,10 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
                 coeff-= (uLb[i+nbR]* z[i+1].getInf());
             }
 
-
-
             modif = false;
-            this.updateCosts(uLb,false);
 
-
-
-            boolean tmp = true;
-            while (tmp)
-            {
-                slp.resetNodeShortestPathValues();
-                slp.computeShortestPath(toRemove,newCosts,z[0].getSup()+coeff);
-                tmp = false;
-                // tmp = toRemove.size() > 0;
-                //this.delayedGraphUpdate();
-            }
-
+            slp.resetNodeShortestPathValues();
+            slp.computeShortestPath(toRemove,z[0].getSup()+coeff,uLb,true,false,0);
 
 
             sp = slp.getShortestPathValue();
@@ -632,10 +615,9 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
                 axu = 0.0;
                 for (int e : P)
                 {
-                    int i = graph.GNodes.layers[graph.GArcs.origs[e]];//  e.getOrigin().getLayer();
-                    int j = graph.GArcs.values[e];//e.getLabel();
+                    int i = graph.GNodes.layers[graph.GArcs.origs[e]];
                     if (i < vs.length)
-                        axu+= costs[i][j][l+1];
+                        axu+= graph.GArcs.originalCost[e][l+1];
                 }
 
                 newLB = Math.max(uLb[l]+ uk * (axu-z[l+1].getSup()),0);
@@ -654,7 +636,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
 
             }
             k++;
-        } while(modif && nbNSig2 < MAXNONIMPROVEITER && nbIter < MAXBOUNDITER);
+        } while(modif && nbNSig2 < MAXNONIMPROVEITER && k < MAXBOUNDITER);
         this.lastSp =P;
     }
 
@@ -664,30 +646,15 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
      * @throws ContradictionException if a domain is emptied
      */
     protected void prefilter() throws ContradictionException {
-        double[] u = new double[nbR+nbR];
         FastPathFinder p = this.graph.getPathFinder();
-        boolean b = true;
-        while (b)
+        for (int i = 0 ; i <nbR+1 ; i++)
         {
-            b = false;
-            for (int i = 0 ; i <nbR+1 ; i++)
-            {
-                int bsup = z[i].getSup();
-                int binf = z[i].getInf();
-                updateCosts(u,i,false);
-                p.resetNodeShortestandLongestPathValues();
-                p.computeShortestAndLongestPath(toRemove,newCosts,binf,bsup);
-                b |= toRemove.size() > 0;
-                z[i].updateInf((int)Math.ceil(p.getShortestPathValue()),this.getConstraintIdx(vs.length+i));
-                z[i].updateSup((int)Math.floor(p.getLongestPathValue()),this.getConstraintIdx(vs.length+i));
-                /*  if (b)
-               {
-                   this.delayedGraphUpdate();
-                   break;
-               } */
-
-            }
-            b = false;
+            int bsup = z[i].getSup();
+            int binf = z[i].getInf();
+            p.resetNodeShortestandLongestPathValues();
+            p.computeShortestAndLongestPath(toRemove,binf,bsup,null,false,false,i);
+            z[i].updateInf((int)Math.ceil(p.getShortestPathValue()),this.getConstraintIdx(vs.length+i));
+            z[i].updateSup((int)Math.floor(p.getLongestPathValue()),this.getConstraintIdx(vs.length+i));
         }
         this.delayedGraphUpdate();
     }
@@ -732,49 +699,6 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         }
     }
 
-    /**
-     * updates the graph arc costs given lagrangian multipliers
-     * @param u lagrangian multipliers
-     * @param max are we computing an upper bound ?
-     */
-    protected  void updateCosts(final double[] u, final boolean max)
-    {
-        updateCosts(u,0,max);
-    }
-
-    /**
-     * updates the graph arc costs given lagrangian multipliers
-     * @param u lagrangian multipliers
-     * @param resource cost variable index that will not be relaxed
-     * @param max are we computing an upper bound ?
-     */
-    protected void updateCosts(final double[] u,final int resource, final boolean max)
-    {
-        for (int i = 0 ;i < costs.length ; i++)
-        {
-            int lg = vs[i].getSup()+1;
-            for (int j = graph.offsets[i] ; j < lg ; j++)
-         //   for (int j = vs[i].getInf(); j <= vs[i].getSup() ; j = vs[i].getNextDomainValue(j))
-            {
-                StoredIndexedBipartiteSet bs = this.graph.getSupport(i,j);
-                if (bs != null && !bs.isEmpty())
-                {
-
-                    double tmp = 0;
-                    for (int k = 1 ; k < costs[i][j].length; k++)
-                    {
-                        // if (k != resource)
-                        tmp+= (u[k-1]-u[k-1+nbR])*costs[i][j][k];
-
-                    }
-
-                    if (max) tmp = -tmp;
-                    newCosts[i][j] = costs[i][j][resource]+ tmp;
-                }
-
-            }
-        }
-    }
 
 
     public boolean isSatisfied()
@@ -788,22 +712,16 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
 
     }
 
-    /**
-     * Necessary condition : checks whether the constraint is violted or not
-     * @return true if the constraint is not violated
-     */
-    public boolean check()
+    public boolean isSatisfied(int[] word)
     {
-        int[] word = new int[vs.length] ;
-        for (int i = 0; i < vs.length ; i++)
-        {
-            if (!vs[i].isInstantiated())
-                return true;
-            word[i] = vs[i].getVal();
-        }
-        for (IntDomainVar aZ : z) {
-            if (!aZ.isInstantiated()) return true;
-        }
+        int first[] = new int[vs.length];
+        System.arraycopy(word,0,first,0,first.length);
+
+        return check(first);
+    }
+
+    public boolean check(int[] word)
+    {
         if (!pi.run(word))
         {
             System.err.println("Word is not accepted by the automaton");
@@ -820,7 +738,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
             int init = this.pi.getStartingState();
             for (int i = 0 ; i < vs.length ; i++)
             {
-                cost+= costs[i][word[i]][k];
+                cost+= costs[i][word[i]][k][init];
                 init = this.pi.delta(init,word[i]);
 
             }
@@ -844,7 +762,25 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         }
         return true;
 
+    }
 
+    /**
+     * Necessary condition : checks whether the constraint is violted or not
+     * @return true if the constraint is not violated
+     */
+    public boolean check()
+    {
+        int[] word = new int[vs.length] ;
+        for (int i = 0; i < vs.length ; i++)
+        {
+            if (!vs[i].isInstantiated())
+                return true;
+            word[i] = vs[i].getVal();
+        }
+        for (IntDomainVar aZ : z) {
+            if (!aZ.isInstantiated()) return true;
+        }
+        return check(word);
     }
 
     public int getFilteredEventMask(int idx) {
@@ -959,6 +895,15 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
 
         this.slp = this.graph.getPathFinder();
 
+        /*    ArrayList<int[]> pattern = new ArrayList<int[]>();
+   pattern.add(new int[]{0});
+ //  pattern.add(new int[]{0});
+   pattern.add(new int[]{1});
+
+   System.out.println("NB OCCURENCE MAX : "+this.slp.getMaxNbOccurence(pattern,pi));
+   System.out.println("NB OCCURENCE MIN : "+this.slp.getMinNbOccurence(pattern,pi)); */
+
+
         for (int i  = 0 ; i < vs.length ; i++)
         {
             for (int j = vs[i].getInf() ; j <= vs[i].getSup() ; j = vs[i].getNextDomainValue(j))
@@ -992,8 +937,10 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         boolean ret = true;
         for (int i = 0 ; i < vs.length ; i++)
         {
-            for (int n : this.graph.layers[i])
+            DisposableIntIterator iter = this.graph.layers[i].getIterator();
+            while (iter.hasNext())
             {
+                int n = iter.next();
                 DisposableIntIterator it = this.graph.GNodes.outArcs[n].getIterator();
                 while(it.hasNext())
                 {
@@ -1006,6 +953,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
                     }
                 }
             }
+            iter.dispose();
         }
         return ret;
     }
@@ -1020,36 +968,6 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
     }
 
 
-    public static class MCRManager extends IntConstraintManager
-    {
-
-        public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options)
-        {
-            if (solver instanceof CPSolver && parameters instanceof Object[])
-            {
-                IntDomainVar[] tmp = solver.getVar((IntegerVariable[]) variables);
-
-                Object[] param = (Object[]) parameters;
-                if (param.length == 2)
-                {
-                    Automaton pi = (Automaton) param[0];
-                    double[][][] csts = (double[][][]) param[1];
-                    int nbCost = csts[0][0].length;
-                    IntDomainVar[] zs = new IntDomainVar[nbCost];
-                    IntDomainVar[] vs = new IntDomainVar[tmp.length-nbCost];
-                    System.arraycopy(tmp,0,vs,0,vs.length);
-                    System.arraycopy(tmp,vs.length,zs,0,zs.length);
-
-
-                    return new FastMultiCostRegular(vs,zs,pi,csts, solver.getEnvironment());
-                }
-
-            }
-            return null;
-        }
-
-
-    }
 
 
 
