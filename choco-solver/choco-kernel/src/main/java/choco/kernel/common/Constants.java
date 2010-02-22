@@ -11,7 +11,7 @@ public class Constants {
     /**
      * Defines the rounding precision for multicostregular algorithm
      */
-    public static final int MCR_PRECISION = 5; // MUST BE < 13 as java messes up the precisions starting from 10E-12 (34.0*0.05 == 1.70000000000005)
+    public static final int MCR_PRECISION = 4; // MUST BE < 13 as java messes up the precisions starting from 10E-12 (34.0*0.05 == 1.70000000000005)
 
       /**
      * Defines the smallest used double for multicostregular
