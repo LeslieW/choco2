@@ -59,12 +59,13 @@ import choco.kernel.solver.constraints.integer.extension.*;
 import gnu.trove.TIntArrayList;
 import org.jgrapht.graph.DirectedMultigraph;
 
-import static java.lang.System.arraycopy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static java.lang.System.arraycopy;
 
 /**
  * Created by IntelliJ IDEA.
@@ -3475,6 +3476,21 @@ public class Choco{
 		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,costs},
 				ArrayUtils.append(vars, cvar));
 	}
+    /**
+	 * Constructs a new CostRegular constraint
+	 * This constraint ensures that the sequence of variables values
+	 * will follow a pattern defined by a DFA and that this sequence has a cost bounded by the cost variable
+	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
+	 * @param cvar the cost variable
+	 * @param auto  the automaton describing the regular language
+	 * @param costs the cost of taking value j for the variable i at state s;
+	 * @return  a instance of the constraint
+	 */
+	public static Constraint multiCostRegular(IntegerVariable[] vars, IntegerVariable[] cvar, Automaton auto, double[][][][] costs){
+		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,costs},
+				ArrayUtils.append(vars, cvar));
+	}
+
 	/**
 	 * Constructs a new CostRegular constraint
 	 * This constraint ensures that the sequence of variables values
