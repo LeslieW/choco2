@@ -21,7 +21,6 @@ public class AltCumulative extends Cumulative {
 	
 	
 	
-	
 	@Override
 	public int getFilteredEventMask(int idx) {
 		return idx < 4* taskvars.length ? EVENT_MASK : IntVarEvent.INSTINTbitvector;

@@ -45,7 +45,7 @@ interface ICumulRTask extends IEnergyRTask {
 }
 
 /**
- * Update operations update the domain and ensure task consistency whereas set operations only update the domain. 
+ * Update operations update the domain and ensure task consistency whereas set operations update the domain without checking. 
  * @author Arnaud Malapert</br> 
  * @since 4 sept. 2009 version 2.1.1</br>
  * @version 2.1.1</br>
@@ -55,14 +55,15 @@ public interface IRTask extends ICumulRTask,IAltRTask, IPretty {
 	int getTaskIndex();
 
 	TaskVar getTaskVar();
+	
+	ITask getHTask();
 
+	void checkConsistency() throws ContradictionException;
+	
 	void updateCompulsoryPart() throws ContradictionException;
-
-	boolean schedule(final int startingTime,final int duration) throws ContradictionException;
 
 	void fail() throws ContradictionException;
 
-	
 	/**
 	 * Update the Earliest Completion Time (ECT).
 	 */

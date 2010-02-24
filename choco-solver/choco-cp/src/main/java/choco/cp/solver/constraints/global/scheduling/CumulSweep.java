@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 import choco.cp.solver.constraints.global.scheduling.AbstractResourceSConstraint.RTask;
+import choco.kernel.common.util.tools.TaskUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
@@ -115,7 +116,7 @@ public class CumulSweep implements ICumulSweep {
 		for (IRTask rtask: tasks) {
 			final int i = rtask.getTaskIndex();
 			final TaskVar task = rtask.getTaskVar();
-			if(rtask.isRegular() && task.hasCompulsoryPart()) {
+			if(rtask.isRegular() && TaskUtils.hasCompulsoryPart(task)) {
 				//Check events
 				if( rtask.getMaxHeight() < Math.max(0, rsc.getMaxConsumption())) {
 					task_evts[i].setCheckEvts(events, task);

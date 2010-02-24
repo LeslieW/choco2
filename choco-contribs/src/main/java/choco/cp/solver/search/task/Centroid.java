@@ -25,6 +25,7 @@ package choco.cp.solver.search.task;
 import java.util.Random;
 
 import choco.cp.solver.search.integer.branching.IRandomBreakTies;
+import choco.kernel.common.util.tools.TaskUtils;
 
 public class Centroid implements PrecValSelector, IRandomBreakTies {
 
@@ -53,8 +54,8 @@ public class Centroid implements PrecValSelector, IRandomBreakTies {
 
 	@Override
 	public int getBestVal(StoredPrecedence precedence) {
-		final double c1=precedence.t1.getCentroid();
-		final double c2=precedence.t2.getCentroid();
+		final double c1= TaskUtils.getCentroid(precedence.t1);
+		final double c2= TaskUtils.getCentroid(precedence.t2);
 		if(c1<c2) {return 1;}
 		else if(c1>c2) {return 0;}
 		else if(randomBreakTies == null) {return 0;}

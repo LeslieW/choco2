@@ -1,5 +1,6 @@
 package choco.cp.solver.search.task;
 
+import choco.kernel.common.util.tools.TaskUtils;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.ITask;
 
@@ -36,7 +37,7 @@ public final class StoredPrecedence {
 	}
 	
 	public final int getDomMesure() {
-		return t1.getSlack() + t2.getSlack() + 2;
+		return TaskUtils.getSlack(t1) + TaskUtils.getSlack(t2) + 2;
 	}
 	
 	@Override

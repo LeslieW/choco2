@@ -25,12 +25,12 @@ package choco.kernel.common.util.tools;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Set;
 
 import choco.IPretty;
 import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.search.measure.ISearchMeasures;
+import choco.kernel.solver.variables.scheduling.ITask;
 
 /*
  * User : charles
@@ -285,5 +285,58 @@ public class StringUtils {
 	 */
 	public static String randomName(){
 		return "TMP_" + next++;
+	}
+	
+	private static final String format(int lb, int ub) {
+		return lb == ub ? String.valueOf(lb) : lb + ".."+ub ;	
+	}
+
+	public static String pretty(ITask t) {
+		final StringBuilder  b = new StringBuilder();
+		b.append(t.getName()).append(":[");
+		b.append(format(t.getEST(), t.getLST())).append(" + ");
+		b.append(format(t.getMinDuration(), t.getMaxDuration())).append(" -> ");
+		b.append(format(t.getECT(), t.getLCT())).append("]");
+		return new String(b);
+	}
+	
+	
+	/**
+	 * convert a task into .dot format.
+	 * @param label  information appended to the default label
+	 * @param format if <code>true</code> then format the node, else do nothing
+	 * @param options the options passed to the .dot node.
+	 * @return
+	 */
+	public static String toDotty(ITask t, String label,boolean format,String... options) {
+		StringBuilder b= new StringBuilder();
+		b.append(t.getID()).append("[ shape=record,");
+		//label
+		b.append("label=\"{ ");
+		b.append('{').append(t.getEST()).append('|');
+		b.append(format(t.getMinDuration(), t.getMaxDuration()));
+		b.append('|').append(t.getECT()).append('}');
+		b.append('|').append(t.getName());
+		if(!t.isScheduled()) {
+			b.append('|');
+			b.append('{').append(t.getLST()).append('|').append(TaskUtils.getSlack(t)).append('|').append(t.getLCT()).append('}');
+		}
+		b.append(" }");
+		if(label!=null) {b.append(label);}
+		b.append(" \"");
+		if(format){
+			if(t.isScheduled()) {
+				b.append(", style=bold, color=firebrick");
+			}else {
+				b.append(", style=dashed, color=navyblue");
+			}
+		}
+		if(options!=null) {
+			for (int i = 0; i < options.length; i++) {
+				b.append(", ").append(options[i]);
+			}
+		}
+		b.append(" ];");
+		return new String(b);
 	}
 }
