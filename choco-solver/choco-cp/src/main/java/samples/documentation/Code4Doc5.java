@@ -203,7 +203,7 @@ public class Code4Doc5 {
         IntegerVariable x = makeIntVar("x", 0, 10);
         IntegerVariable y = makeIntVar("y", 0, 10);
          // reified constraint (x<=y)
-         m.addConstraint(reifiedIntConstraint(b, leq(x, y)));
+         m.addConstraint(reifiedConstraint(b, leq(x, y)));
         s.read(m);
         s.solveAll();        
         //totex

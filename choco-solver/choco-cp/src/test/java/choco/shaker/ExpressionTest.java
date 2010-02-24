@@ -435,7 +435,7 @@ public class ExpressionTest {
         v[1] = Choco.makeIntVar("v2", -2,3);
         v[2] = Choco.makeIntVar("v3", -2,3);
 
-        m.addConstraint(reifiedIntConstraint(v[0], and(eq(v[1],0), eq(v[2],0)), or(neq(v[1],0), neq(v[2],0))));
+        m.addConstraint(reifiedConstraint(v[0], and(eq(v[1],0), eq(v[2],0)), or(neq(v[1],0), neq(v[2],0))));
 
         checker();
     }
@@ -557,7 +557,7 @@ public class ExpressionTest {
         m.addConstraint(
                 ifThenElse(
                         eq(v[0], v[1]),
-                        reifiedIntConstraint(v[2], eq(v[3], v[4]), geq(v[0], v[2])),
+                        reifiedConstraint(v[2], eq(v[3], v[4]), geq(v[0], v[2])),
                         leq(v[0], v[4])
                 )
         );
@@ -580,7 +580,7 @@ public class ExpressionTest {
                 ifThenElse(
                         lt(v[0], v[1]),
                         TRUE,
-                        reifiedIntConstraint(v[2], leq(1, v[3]), oppositeSign(v[3], v[3]))
+                        reifiedConstraint(v[2], leq(1, v[3]), oppositeSign(v[3], v[3]))
                 )
         );
         checker();
@@ -600,7 +600,7 @@ public class ExpressionTest {
                 ifThenElse(
                         neq(v[0], v[1]),
                         oppositeSign(v[2], v[3]),
-                        reifiedIntConstraint(v[4], neq(v[0], v[1]), geq(v[2], v[0]))
+                        reifiedConstraint(v[4], neq(v[0], v[1]), geq(v[2], v[0]))
                 )
         );
         checker();

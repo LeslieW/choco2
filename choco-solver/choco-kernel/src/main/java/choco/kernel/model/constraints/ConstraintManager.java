@@ -28,7 +28,6 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.HashSet;
 import java.util.Set;
 
 public abstract class ConstraintManager <V extends Variable> implements ExpressionManager{
@@ -36,20 +35,20 @@ public abstract class ConstraintManager <V extends Variable> implements Expressi
 
     /**
      * Build a constraint for the given solver and "model variables"
-     * @param solver
-     * @param variables
-     * @param parameters : a "hook" to attach any kind of parameters to constraints
-     * @param options
-     * @return
+     * @param solver solver to build constraint in
+     * @param variables array of variables
+     * @param parameters Object defining the paramaters
+     * @param options set of options
+     * @return One SConstraint
      */
     public abstract SConstraint makeConstraint(Solver solver, V[] variables, Object parameters, Set<String> options);
 
     /**
      * Build a constraint and its opposite for the given solver and "model variables"
-     * @param solver
-     * @param variables
-     * @param parameters
-     * @param options
+     * @param solver solver to build constraint in
+     * @param variables array of variables
+     * @param parameters Object defining the paramaters
+     * @param options set of options
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
     public abstract SConstraint[] makeConstraintAndOpposite(Solver solver, V[] variables, Object parameters, Set<String> options);

@@ -146,7 +146,7 @@ public class ImplicationTest {
 
             Constraint c = Choco.reifiedRightImp(b, bs[0], bs[1]);
 
-            Constraint verif = Choco.reifiedIntConstraint(b, Choco.leq(bs[0], bs[1]));
+            Constraint verif = Choco.reifiedConstraint(b, Choco.leq(bs[0], bs[1]));
 
             Model m = new CPModel();
             m.addConstraint(c);
@@ -185,7 +185,7 @@ public class ImplicationTest {
 
             Constraint c = Choco.reifiedLeftImp(b, bs[0], bs[1]);
 
-            Constraint verif = Choco.reifiedIntConstraint(b, Choco.geq(bs[0], bs[1]));
+            Constraint verif = Choco.reifiedConstraint(b, Choco.geq(bs[0], bs[1]));
 
             Model m = new CPModel();
             m.addConstraint(c);
@@ -227,7 +227,7 @@ public class ImplicationTest {
 
             Constraint c = Choco.reifiedRightImp(b, bs[0], bs[1]);
 
-            Constraint verif = Choco.reifiedIntConstraint(b, Choco.leq(bs[0], bs[1]));
+            Constraint verif = Choco.reifiedConstraint(b, Choco.leq(bs[0], bs[1]));
 
             Constraint eq = Choco.TRUE;
             int nbSol = 4;
@@ -300,7 +300,7 @@ public class ImplicationTest {
 
             Constraint c = Choco.reifiedLeftImp(b, bs[0], bs[1]);
 
-            Constraint verif = Choco.reifiedIntConstraint(b, Choco.leq(bs[0], bs[1]));
+            Constraint verif = Choco.reifiedConstraint(b, Choco.leq(bs[0], bs[1]));
 
             Constraint eq = Choco.TRUE;
             int nbSol = 4;

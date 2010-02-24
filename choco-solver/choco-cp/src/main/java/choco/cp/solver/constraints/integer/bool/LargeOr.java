@@ -24,6 +24,8 @@ package choco.cp.solver.constraints.integer.bool;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -39,12 +41,9 @@ public class LargeOr extends AbstractLargeIntSConstraint {
 
 
     /**
-     * A pointer to one of the boolean variable that is not yet instantiated
-     * or assigned to true if b is true.
+     * Nb literals set to 0 (false).
      */
-    protected int lit1 = Integer.MAX_VALUE;
-
-    protected int lit2 = Integer.MAX_VALUE;
+    private final IStateInt toZERO;
 
 
     /**
@@ -52,99 +51,86 @@ public class LargeOr extends AbstractLargeIntSConstraint {
      * b = OR_{i} vars[i]
      *
      * @param vars
+     * @param environment
      */
-    public LargeOr(IntDomainVar[] vars) {
+    public LargeOr(IntDomainVar[] vars, IEnvironment environment) {
         super(vars);
+        toZERO = environment.makeInt(0);
     }
 
     public int getFilteredEventMask(int idx) {
         return IntVarEvent.INSTINTbitvector;
-        // return 0x0B;
     }
-
-    public void awake() throws ContradictionException {
-        lit1 = Integer.MAX_VALUE;
-        lit2 = Integer.MAX_VALUE;
-        propagate();
-    }
-
-
-    public void initFilterFrombOne() throws ContradictionException {
-        boolean updateLit1 = true;
-        boolean updateLit2 = true;
-
-        if (lit1 != Integer.MAX_VALUE && vars[lit1].fastCanBeInstantiatedTo(1))
-            updateLit1 = false;
-        if (lit2 != Integer.MAX_VALUE && vars[lit2].fastCanBeInstantiatedTo(1))
-            updateLit2 = false;
-        
-        if (updateLit1 || updateLit2) {
-            for (int i = 0; i < vars.length; i++) {
-                if (vars[i].isInstantiatedTo(1)) {
-                    setEntailed();
-                } else if (!vars[i].isInstantiated()) {
-                    if (updateLit1 && lit1 > i) {
-                        lit1 = i;
-                    } else if (updateLit2 && lit2 > i) {
-                        lit2 = i;
-                        break;
-                    }
-                }
-            }
-            if (lit1 == Integer.MAX_VALUE) {
-                this.fail();
-            } else if (lit2 == Integer.MAX_VALUE) {
-                vars[lit1].instantiate(1, cIndices[lit1]);
-            }
-        }
-    }
-
 
     public void propagate() throws ContradictionException {
-        initFilterFrombOne();
+        int toZERO = 0;
+        int lastIdx = 0;
+        for(int i = 0; i < vars.length; i++){
+            if(vars[i].isInstantiatedTo(1)){
+                setEntailed();
+                return;
+            }else if(vars[i].isInstantiatedTo(0)){
+                toZERO++;
+            }else{
+                lastIdx = i;
+            }
+        }
+        if(toZERO == vars.length){
+            this.fail();
+        }else if((toZERO == vars.length - 1)){
+            vars[lastIdx].instantiate(1, cIndices[lastIdx]);
+            setEntailed();
+            return;
+        }
+        this.toZERO.set(toZERO);
     }
 
     @Override
     public void awakeOnInst(int idx) throws ContradictionException {
         int val = vars[idx].getVal();
-        if (val == 1) {
-            setEntailed();
-        } else {
-            if (idx == lit1) {
-                for (int i = 0; i < vars.length; i++) {
-                    if (i != lit2 && vars[i].fastCanBeInstantiatedTo(1)) {
-                        lit1 = i;
-                        break;
-                    }
+        switch (val){
+            case 1:
+                setEntailed();
+                break;
+            case 0:
+                toZERO.add(1);
+                // 1 var inconnue
+                if(toZERO.get()>= vars.length-1){
+                    filter();
                 }
-                if (lit1 == idx) {
-                    vars[lit2].instantiate(1, cIndices[lit2]);
-                }
+                break;
+        }
+    }
 
-            } else if (idx == lit2) {
-                for (int i = 0; i < vars.length; i++) {
-                    if (i != lit1 && vars[i].fastCanBeInstantiatedTo(1)) {
-                        lit2 = i;
-                        break;
-                    }
+    private void filter() throws ContradictionException {
+        int toZero = toZERO.get();
+        int n = vars.length;
+        if(toZero == n){
+            this.fail();
+        }else{
+            for(int i = 0; i < n; i++){
+                if(!vars[i].isInstantiated()){
+                    vars[i].instantiate(1, cIndices[i]);
+                    setEntailed();
+                    break;
                 }
-                if (lit2 == idx) {
-                    vars[lit1].instantiate(1, cIndices[lit1]);
+                // speed up
+                else if(!vars[(n-1)-i].isInstantiated()){
+                    vars[(n-1)-i].instantiate(1, cIndices[(n-1)-i]);
+                    setEntailed();
+                    break;
                 }
             }
         }
     }
 
     public void awakeOnInf(int varIdx) throws ContradictionException {
-
     }
 
     public void awakeOnSup(int varIdx) throws ContradictionException {
-
     }
 
     public void awakeOnBounds(int varIndex) throws ContradictionException {
-
     }
 
     public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {

@@ -24,7 +24,6 @@ package choco.shaker;
 
 import choco.Choco;
 import static choco.Choco.distanceEQ;
-import static choco.Choco.reifiedIntConstraint;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -137,7 +136,7 @@ public class ConstraintTest {
         vars[2] = Choco.makeIntVar("v3", 4,6, "cp:enum");
         vars[3] = Choco.makeIntVar("v4", 9,9, "cp:enum");
 
-        m.addConstraint(reifiedIntConstraint(vars[0], distanceEQ(vars[1], vars[2], vars[3], -2)));
+        m.addConstraint(Choco.reifiedConstraint(vars[0], distanceEQ(vars[1], vars[2], vars[3], -2)));
 
         checker(new Random(37));
     }
@@ -185,7 +184,7 @@ public class ConstraintTest {
         vars[3] = Choco.makeBooleanVar("b4");
         vars[4] = Choco.makeBooleanVar("b5");
 
-        m.addConstraint(Choco.reifiedIntConstraint(
+        m.addConstraint(Choco.reifiedConstraint(
                 vars[0],
                 Choco.oppositeSign(vars[1], vars[2]),
                 Choco.distanceEQ(vars[3], vars[4], 0)
@@ -249,7 +248,7 @@ public class ConstraintTest {
         vars[8] = Choco.makeIntVar("v9", 0, 0);
         vars[9] = Choco.makeIntVar("v10", -7, 2);
 
-        m.addConstraint(Choco.reifiedIntConstraint(
+        m.addConstraint(Choco.reifiedConstraint(
                 vars[0],
                 Choco.allDifferent(vars[1], vars[2], vars[3], vars[4], vars[5], vars[6], vars[7]),
                 Choco.oppositeSign(vars[8], vars[9])
@@ -271,7 +270,7 @@ public class ConstraintTest {
         vars[6] = Choco.makeIntVar("v7", 0, 1);
         vars[7] = Choco.makeIntVar("v8", 0, 1);
 
-        m.addConstraint(Choco.reifiedIntConstraint(
+        m.addConstraint(Choco.reifiedConstraint(
                 vars[7],
                 Choco.globalCardinality(new IntegerVariable[]{vars[0], vars[1], vars[2], vars[3], vars[4]},
                         new int[]{0,5,0,0,0,0,0,0,0,0,0}, new int[]{5,5,2,5,5,5,5,5,5,5,5}, -1) ,
@@ -288,7 +287,7 @@ public class ConstraintTest {
         vars[0] = Choco.makeIntVar("v1", 0, 1);
         vars[1] = Choco.makeIntVar("v2", 3, 8);
 
-        m.addConstraint(Choco.reifiedIntConstraint(
+        m.addConstraint(Choco.reifiedConstraint(
                 vars[0],
                 Choco.neq(vars[1], 4),
                 Choco.eq(vars[1], 4)

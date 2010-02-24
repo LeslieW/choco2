@@ -89,7 +89,7 @@ public class PPSearch {
     }
 
     public boolean isReified() {
-        return mod.getConstraintByType(ConstraintType.REIFIEDINTCONSTRAINT).hasNext();
+        return mod.getConstraintByType(ConstraintType.REIFIEDCONSTRAINT).hasNext();
     }
 
     public boolean isMixedScheduling() {

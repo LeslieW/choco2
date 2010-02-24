@@ -986,7 +986,7 @@ public class ReifiedSomeTest {
             }
 
             Constraint c = new ComponentConstraint(EQ, types[r.nextInt(6)], new Variable[]{constant(n * n / 2), scalar(y, coefs)});
-            m.addConstraints(reifiedIntConstraint(x, c));
+            m.addConstraints(reifiedConstraint(x, c));
 
             s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
@@ -1016,7 +1016,7 @@ public class ReifiedSomeTest {
             }
 
             Constraint c = new ComponentConstraint(EQ, types[r.nextInt(6)], new Variable[]{constant(n * n / 2), scalar(y, coefs)});
-            m.addConstraints(reifiedIntConstraint(x, c));
+            m.addConstraints(reifiedConstraint(x, c));
 
             s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
@@ -1041,7 +1041,7 @@ public class ReifiedSomeTest {
 
             Random r = new Random(seed);
             Constraint c = new ComponentConstraint(EQ, types[r.nextInt(6)], new Variable[]{constant(n * n / 2), sum(y)});
-            m.addConstraints(reifiedIntConstraint(x, c));
+            m.addConstraints(reifiedConstraint(x, c));
 
             s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
@@ -1072,7 +1072,7 @@ public class ReifiedSomeTest {
             }
 
             Constraint c = new ComponentConstraint(EQ, types[r.nextInt(6)], new Variable[]{constant(n * n / 2), scalar(y, coefs)});
-            m.addConstraints(reifiedIntConstraint(x, c));
+            m.addConstraints(reifiedConstraint(x, c));
 
             s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
@@ -1380,7 +1380,7 @@ public class ReifiedSomeTest {
             IntegerVariable z = makeIntVar("z", 0, 1);
             IntegerVariable h = makeIntVar("h", 0, 4);
             //m.addConstraint(reifiedIntConstraint(x, eq(y, z)));
-            m.addConstraint(ifThenElse(geq(h, 2), reifiedIntConstraint(x, eq(y, z)), Choco.TRUE));
+            m.addConstraint(ifThenElse(geq(h, 2), reifiedConstraint(x, eq(y, z)), Choco.TRUE));
             s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
             s.setValIntSelector(new RandomIntValSelector());
@@ -1554,8 +1554,8 @@ public class ReifiedSomeTest {
       IntegerVariable y = makeIntVar("y", 0, 1);
       IntegerVariable z = makeIntVar("z", 0, 1);
       IntegerVariable t = makeIntVar("t", 0, 1);
-      m.addConstraint(reifiedIntConstraint(t, eq(x,0), eq(y,0)));
-      m.addConstraint(reifiedIntConstraint(t,eq(z,1)));
+      m.addConstraint(reifiedConstraint(t, eq(x,0), eq(y,0)));
+      m.addConstraint(reifiedConstraint(t,eq(z,1)));
       m.addConstraint(eq(x,0));
  
       CPSolver s = new CPSolver();
