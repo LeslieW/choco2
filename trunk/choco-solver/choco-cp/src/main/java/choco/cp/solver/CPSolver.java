@@ -48,6 +48,7 @@ import choco.cp.solver.constraints.real.Equation;
 import choco.cp.solver.constraints.real.MixedEqXY;
 import choco.cp.solver.constraints.real.exp.*;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
+import choco.cp.solver.constraints.set.Disjoint;
 import choco.cp.solver.constraints.set.*;
 import choco.cp.solver.goals.GoalSearchSolver;
 import choco.cp.solver.propagation.ChocEngine;
@@ -109,20 +110,19 @@ import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.integer.IntExp;
 import choco.kernel.solver.constraints.integer.extension.*;
 import choco.kernel.solver.constraints.real.RealExp;
-import choco.kernel.solver.constraints.set.AbstractSetSConstraint;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.propagation.AbstractPropagationEngine;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.propagation.Propagator;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.propagation.listener.PropagationEngineListener;
+import choco.kernel.solver.propagation.listener.SetPropagator;
 import choco.kernel.solver.propagation.queue.AbstractConstraintEventQueue;
 import choco.kernel.solver.propagation.queue.ConstraintEventQueue;
 import choco.kernel.solver.propagation.queue.EventQueue;
 import choco.kernel.solver.propagation.queue.VarEventQueue;
 import choco.kernel.solver.search.*;
 import static choco.kernel.solver.search.SolutionPoolFactory.makeDefaultSolutionPool;
-import choco.kernel.solver.search.checker.SolutionCheckerEngine;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
@@ -2077,7 +2077,7 @@ public class CPSolver implements Solver {
 	 * @param p constraint
 	 */
 	public void postRedundantSetConstraints(SConstraint p) {
-		if (cardinalityReasonningsOnSETS && p instanceof AbstractSetSConstraint
+		if (cardinalityReasonningsOnSETS && p instanceof SetPropagator
 				&& p.getNbVars() > 1) {
 
 			if (p instanceof MemberXY) {

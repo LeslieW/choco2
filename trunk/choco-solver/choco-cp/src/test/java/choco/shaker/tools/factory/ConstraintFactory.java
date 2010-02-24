@@ -181,9 +181,9 @@ public class ConstraintFactory {
             case NEQ:
                 return Choco.neq(of.make(r), of.make(r));
             case REIFIEDINTCONSTRAINT_1:
-                return Choco.reifiedIntConstraint(vf.make(VariableFactory.V.BOOLVAR, r), make(r));
+                return Choco.reifiedConstraint(vf.make(VariableFactory.V.BOOLVAR, r), make(r));
             case REIFIEDINTCONSTRAINT_2:
-                return Choco.reifiedIntConstraint(vf.make(VariableFactory.V.BOOLVAR, r), make(r), make(r));
+                return Choco.reifiedConstraint(vf.make(VariableFactory.V.BOOLVAR, r), make(r), make(r));
             case SIGNOPP:
                 return Choco.oppositeSign(of.make(r), of.make(r));
             case SAMESIGN:

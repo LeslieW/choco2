@@ -1053,7 +1053,7 @@ public class ReifiedSearchTest {
 		Constraint c = Choco.min(vars, X);
 
 		Model m1 = new CPModel();
-		m1.addConstraint(reifiedIntConstraint(bo, c));
+		m1.addConstraint(reifiedConstraint(bo, c));
 		m1.setDefaultExpressionDecomposition(true);
 		Solver s1 = new CPSolver();
 		s1.read(m1);
@@ -1085,7 +1085,7 @@ public class ReifiedSearchTest {
 		IntegerVariable Y = Choco.makeIntVar("oppcible", 0, n);
 		Constraint c2 = min(vars, Y);
 		m2.addConstraint(c2);
-		m2.addConstraints(reifiedIntConstraint(bo, eq(X,Y), neq(X,Y)));
+		m2.addConstraints(reifiedConstraint(bo, eq(X,Y), neq(X,Y)));
 		Solver s2 = new CPSolver();
 		s2.read(m2);
 		s2.setVarIntSelector(new MinDomain(s2));
@@ -1165,7 +1165,7 @@ public class ReifiedSearchTest {
 		Constraint c = Choco.occurrence(2, X, vars);
 
 		Model m1 = new CPModel();
-		m1.addConstraint(reifiedIntConstraint(bo, c));
+		m1.addConstraint(reifiedConstraint(bo, c));
 		m1.setDefaultExpressionDecomposition(true);
 		Solver s1 = new CPSolver();
 		s1.read(m1);
@@ -1197,7 +1197,7 @@ public class ReifiedSearchTest {
 		IntegerVariable Y = Choco.makeIntVar("oppcible", 0, n);
 		Constraint c2 = occurrence(2, Y, vars);
 		m2.addConstraint(c2);
-		m2.addConstraints(reifiedIntConstraint(bo, eq(X,Y), neq(X,Y)));
+		m2.addConstraints(reifiedConstraint(bo, eq(X,Y), neq(X,Y)));
 		Solver s2 = new CPSolver();
 		s2.read(m2);
 		s2.setVarIntSelector(new MinDomain(s2));
@@ -1240,7 +1240,7 @@ public class ReifiedSearchTest {
 		Constraint c = Choco.distanceEQ(vars[0], vars[1], X);
 
 		Model m1 = new CPModel();
-		m1.addConstraint(reifiedIntConstraint(bo, c));
+		m1.addConstraint(reifiedConstraint(bo, c));
 		m1.setDefaultExpressionDecomposition(true);
 		Solver s1 = new CPSolver();
 		s1.read(m1);
@@ -1272,7 +1272,7 @@ public class ReifiedSearchTest {
 		IntegerVariable Y = Choco.makeIntVar("oppcible", 0, n);
 		Constraint c2 = Choco.distanceEQ(vars[0], vars[1], Y);
 		m2.addConstraint(c2);
-		m2.addConstraints(reifiedIntConstraint(bo, eq(X,Y), neq(X,Y)));
+		m2.addConstraints(reifiedConstraint(bo, eq(X,Y), neq(X,Y)));
 		Solver s2 = new CPSolver();
 		s2.read(m2);
 		s2.setVarIntSelector(new MinDomain(s2));

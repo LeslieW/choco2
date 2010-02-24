@@ -32,6 +32,8 @@ package choco.kernel.model.constraints;
 public enum ConstraintType {
     ABS("abs", "constraint.abs", false),
     ALLDIFFERENT("allDifferent", "constraint.allDifferent", false),
+    AMONG("among", "constraint.among", false),
+    AMONGSET("among_set", "constraint.amongset", false),
     AND("and", "constraint.and", true),
     AROUND("around"),
     ATMOSTNVALUE("atMostNValue", "constraint.atMostNValue", false),
@@ -47,6 +49,7 @@ public enum ConstraintType {
     DISTANCE("distance", "constraint.distance", true),
     EQ("eq", "constraint.eq", true),
     EUCLIDEANDIVISION("div", "constraint.div", false),
+    EXACTLY("exactly", "constraint.exactly", false),
     EXPRESSION("expression"),
     FALSE("false", "constraint.false", false),
     FASTCOSTREGULAR("fastcostregular", "constraint.fastcostregular", false),
@@ -92,7 +95,7 @@ public enum ConstraintType {
     REGULAR("regular", "constraint.regular", false),
     REIFIEDAND("reifiedAnd", "constraint.reifiedAnd", false),
     REIFIEDIMPLICATION("reifiedImplication", "constraint.reifiedImplication", false),
-    REIFIEDINTCONSTRAINT("reifiedintconstraint", "constraint.reifiedintconstraint", false),
+    REIFIEDCONSTRAINT("reifiedconstraint", "constraint.reifiedconstraint", false),
     REIFIEDOR("reifiedOr", "constraint.reifiedOr", false),
     REIFIEDXNOR("reifiedXnor", "constraint.reifiedXnor", false),
     REIFIEDXOR("reifiedXor", "constraint.reifiedXor", false),
@@ -108,8 +111,7 @@ public enum ConstraintType {
     TREE("tree", "constraint.tree", false),
     TRUE("true", "constraint.true", false),
     XNOR("xnor", "constraint.xnor", true),
-    XOR("xor", "constraint.xor", true),
-    ;
+    XOR("xor", "constraint.xor", true);
 
     public final String name;
     public final String property;

@@ -80,7 +80,7 @@ public class OrNode extends AbstractBoolNode implements BoolNode {
         if (subtrees.length == 2) {
             return new BinOr(vs[0],vs[1]);
         } else {
-            return new LargeOr(vs);
+            return new LargeOr(vs, s.getEnvironment());
         }
     }
 

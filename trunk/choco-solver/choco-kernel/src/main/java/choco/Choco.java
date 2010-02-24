@@ -59,13 +59,12 @@ import choco.kernel.solver.constraints.integer.extension.*;
 import gnu.trove.TIntArrayList;
 import org.jgrapht.graph.DirectedMultigraph;
 
+import static java.lang.System.arraycopy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static java.lang.System.arraycopy;
 
 /**
  * Created by IntelliJ IDEA.
@@ -1620,6 +1619,98 @@ public class Choco{
 		return makeTupleACFC(options, vs, rela, false);
 	}
 
+    /**
+     * VAR takes it value in VALUES
+     * @param var int variable
+     * @param values array of int
+     * @return AMONG constraint
+     */
+    public static Constraint among(IntegerVariable var, int[] values){
+        if(values.length == 0){
+            throw new ModelException("AMONG requirement : |values| > 0");
+        }
+        return new ComponentConstraint(ConstraintType.AMONG, values, new IntegerVariable[]{var});
+    }
+
+    /**
+     * NVAR is the number of variables of the collection VARIABLES that take their value in VALUES.
+     * @param nvar counter
+     * @param variables collection of variables
+     * @param values array of values
+     * @return AMONG constraint
+     */
+    public static Constraint among(IntegerVariable nvar, IntegerVariable[] variables, int[] values){
+        if(nvar.getLowB()<0){
+            throw new ModelException("AMONG requirement: nvar >=0 ");
+        }
+        if(nvar.getUppB()> variables.length){
+            throw new ModelException("AMONG requirement : nvar <= |variables|");
+        }
+        if(variables.length == 0){
+            throw new ModelException("AMONG requirement : |variables| > 0");
+        }
+        return new ComponentConstraint(ConstraintType.AMONG, values, ArrayUtils.append(variables,new IntegerVariable[]{nvar}));
+    }
+
+    /**
+     * NVAR is the number of variables of the collection VARIABLES that take their value in SVAR.
+     * @param nvar counter
+     * @param variables collection of variables
+     * @param svar set variable
+     * @return AMONG constraint
+     */
+    public static Constraint among(IntegerVariable[] variables, SetVariable svar, IntegerVariable nvar){
+        if(nvar.getLowB()<0){
+            throw new ModelException("AMONG requirement: nvar >=0 ");
+        }
+        if(nvar.getUppB()> variables.length){
+            throw new ModelException("AMONG requirement : nvar <= |variables|");
+        }
+        if(variables.length == 0){
+            throw new ModelException("AMONG requirement : |variables| > 0");
+        }
+        if(svar.getLowB()<0){
+            throw new ModelException("AMONG requirement : svar > 0");
+        }
+        if(svar.getCard().getDomainSize()<1){
+            throw new ModelException("AMONG requirement : |svar| > 0");
+        }
+        Variable[] vars = new Variable[variables.length+2];
+        System.arraycopy(variables, 0, vars, 0, variables.length);
+        vars[variables.length] = svar;
+        vars[variables.length+1] = nvar;
+        return new ComponentConstraint(ConstraintType.AMONGSET, null, vars);
+    }
+
+    /**
+     * Exactly N variables of the VARIABLES collection are assigned to value VALUE.
+     * @param n counter
+     * @param variables collection of variables
+     * @param value int
+     * @return EXACTLY constraint
+     */
+    public static Constraint exactly(int n, IntegerVariable[] variables, int value){
+        if(n<0){
+            throw new ModelException("EXACTLY requirement: n >=0 ");
+        }
+        if(n > variables.length){
+            throw new ModelException("EXACTLY requirement : nvar <= |variables|");
+        }
+        if(variables.length == 0){
+            throw new ModelException("EXACTLY requirement : |variables| > 0");
+        }
+        return new ComponentConstraint(ConstraintType.EXACTLY, new int[]{n, value},variables);
+    }
+
+    /**
+     * VAR takes it value out of VALUES
+     * @param var int variable
+     * @param values array of int
+     * @return DISJOINT constraint
+     */
+    public static Constraint disjoint(IntegerVariable var, int[] values){
+        return new ComponentConstraint(ConstraintType.DISJOINT, values, new IntegerVariable[]{var});
+    }
 
 	/**
 	 * Ensures |x-y| = c;
@@ -3538,13 +3629,24 @@ public class Choco{
 		return new ComponentConstraint(ConstraintType.MOD, null, new IntegerVariable[]{v0, v1, constant(c)});
 	}
 
+    @Deprecated
 	public static Constraint reifiedIntConstraint(IntegerVariable binVar, Constraint cst) {
 		Variable[] vars = ArrayUtils.append(new IntegerVariable[]{binVar}, cst.getVariables());
-		return new ComponentConstraintWithSubConstraints(ConstraintType.REIFIEDINTCONSTRAINT, vars, null, cst);
+		return new ComponentConstraintWithSubConstraints(ConstraintType.REIFIEDCONSTRAINT, vars, null, cst);
 	}
 
+    @Deprecated
 	public static Constraint reifiedIntConstraint(IntegerVariable binVar, Constraint cst, Constraint oppCst) {
-		return new ComponentConstraintWithSubConstraints(ConstraintType.REIFIEDINTCONSTRAINT, new IntegerVariable[]{binVar}, null, cst, oppCst);
+		return new ComponentConstraintWithSubConstraints(ConstraintType.REIFIEDCONSTRAINT, new IntegerVariable[]{binVar}, null, cst, oppCst);
+	}
+
+    public static Constraint reifiedConstraint(IntegerVariable binVar, Constraint cst) {
+		Variable[] vars = ArrayUtils.append(new IntegerVariable[]{binVar}, cst.getVariables());
+		return new ComponentConstraintWithSubConstraints(ConstraintType.REIFIEDCONSTRAINT, vars, null, cst);
+	}
+
+	public static Constraint reifiedConstraint(IntegerVariable binVar, Constraint cst, Constraint oppCst) {
+		return new ComponentConstraintWithSubConstraints(ConstraintType.REIFIEDCONSTRAINT, new IntegerVariable[]{binVar}, null, cst, oppCst);
 	}
 
 	/**
@@ -3938,8 +4040,8 @@ public class Choco{
 		return new RealExpressionVariable(null, Operator.MULT, constant(a), x);
 	}
 
-	public static RealExpressionVariable mult(RealExpressionVariable x, int a) {
-		return mult(a, x);
+    public static RealExpressionVariable mult(RealExpressionVariable x, double a) {
+		return new RealExpressionVariable(null, Operator.MULT, constant(a), x);
 	}
 
 	public static RealExpressionVariable mult(RealExpressionVariable x, RealExpressionVariable y) {

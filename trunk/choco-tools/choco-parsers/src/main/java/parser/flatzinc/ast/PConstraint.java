@@ -112,12 +112,16 @@ public final class PConstraint {
     // GLOBAL CONSTRAINTS
     private static final String _global = "global";
     private static final String _allDifferent = "_allDifferent";
+    private static final String _allDisjoint = "_allDisjoint";
+    private static final String _among = "_among";
     private static final String _cumulative = "_cumulative";
+    private static final String _exactly = "_exactly";
     private static final String _setDisjoint = "_setDisjoint";
     private static final String _elementBool = "_elementBool";
     private static final String _elementInt = "_elementInt";
     private static final String _globalCardinalityLowUp = "_globalCardinalityLowUp";
     private static final String _globalCardinality = "_globalCardinality";
+    private static final String _inverseChanneling = "_inverseChanneling";
     private static final String _inverseSet = "_inverseSet";
     private static final String _lexEq = "_lexEq";
     private static final String _lex = "_lex";
@@ -256,7 +260,7 @@ public final class PConstraint {
                 model.addConstraint(c);
             } else {
                 IntegerVariable vr = exps.get(exps.size()-1).intVarValue();
-                model.addConstraint(reifiedIntConstraint(vr, c));
+                model.addConstraint(reifiedConstraint(vr, c));
             }
             return;
         }
@@ -353,7 +357,7 @@ public final class PConstraint {
                 model.addConstraint(c);
             } else {
                 IntegerVariable vr = exps.get(exps.size()-1).intVarValue();
-                model.addConstraint(reifiedIntConstraint(vr, c));
+                model.addConstraint(reifiedConstraint(vr, c));
             }
             return;
         }
@@ -439,6 +443,17 @@ public final class PConstraint {
             IntegerVariable[] vars = exps.get(0).toIntVarArray();
             c = allDifferent(vars);
         }else
+        if(name.contains(_allDisjoint)){
+            SetVariable[] vars = exps.get(0).toSetVarArray();
+            c = setDisjoint(vars);
+        }else
+        if(name.contains(_among)){
+            IntegerVariable nvar = exps.get(0).intVarValue();
+            IntegerVariable[] vars = exps.get(1).toIntVarArray();
+            SetVariable svar = exps.get(2).setVarValue();
+
+            c = among(vars, svar, nvar);
+        }else
         if(name.contains(_cumulative)){
             IntegerVariable[] starts = exps.get(0).toIntVarArray();
             IntegerVariable[] durations = exps.get(1).toIntVarArray();
@@ -455,6 +470,12 @@ public final class PConstraint {
             SetVariable s1 = exps.get(0).setVarValue();
             SetVariable s2 = exps.get(1).setVarValue();
             c = setDisjoint(s1, s2);
+        }else
+        if(name.contains(_exactly)){
+            int n = exps.get(0).intValue();
+            IntegerVariable[] vars = exps.get(1).toIntVarArray();
+            int value = exps.get(2).intValue();
+            c = exactly(n, vars, value);
         }else
         if(name.contains(_elementBool) || name.contains(_elementInt)){
             IntegerVariable index = exps.get(0).intVarValue();
@@ -485,6 +506,11 @@ public final class PConstraint {
             IntegerVariable[] vars = exps.get(0).toIntVarArray();
             IntegerVariable[] cards = exps.get(1).toIntVarArray();
             c = globalCardinality(vars, cards, 0);
+        }else
+        if(name.contains(_inverseChanneling)){
+            IntegerVariable[] ivars1 = exps.get(0).toIntVarArray();
+            IntegerVariable[] ivars2 = exps.get(1).toIntVarArray();
+            c = inverseChanneling(ivars1, ivars2);
         }else
         if(name.contains(_inverseSet)){
             IntegerVariable[] ivars = exps.get(0).toIntVarArray();
@@ -526,7 +552,7 @@ public final class PConstraint {
                 model.addConstraint(c);
             } else {
                 IntegerVariable vr = exps.get(exps.size()-1).intVarValue();
-                model.addConstraint(reifiedIntConstraint(vr, c));
+                model.addConstraint(reifiedConstraint(vr, c));
             }
             return;
         }

@@ -49,7 +49,6 @@ public class LargeAnd extends AbstractLargeIntSConstraint {
     @Override
     public int getFilteredEventMask(int idx) {
         return 0;
-        // return 0x0B;
     }
 
     public void propagate() throws ContradictionException {

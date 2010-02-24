@@ -167,4 +167,14 @@ public abstract class AbstractMixedSetIntSConstraint extends AbstractSConstraint
     public SConstraintType getConstraintType() {
         return SConstraintType.INT_SET;
     }
+
+    /**
+     * tests if the constraint is consistent with respect to the current state of domains
+     *
+     * @return wether the constraint is consistent
+     */
+    @Override
+    public boolean isConsistent() {
+        return (isEntailed() == Boolean.TRUE);
+    }
 }

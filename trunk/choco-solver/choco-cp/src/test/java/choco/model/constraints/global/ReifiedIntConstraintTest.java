@@ -122,7 +122,7 @@ public class ReifiedIntConstraintTest {
         IntegerVariable a = makeIntVar("a", 0, 10);
         IntegerVariable b = makeIntVar("b", 0, 10);
 
-        m.addConstraint(reifiedIntConstraint(binary, leq(a, b)));
+        m.addConstraint(reifiedConstraint(binary, leq(a, b)));
         m.addConstraint(lt(b,binary));
         s.read(m);
         s.solveAll();
@@ -135,7 +135,7 @@ public class ReifiedIntConstraintTest {
         int a = 0;
         IntegerVariable b = makeIntVar("b", 0, 10);
 
-        m.addConstraint(reifiedIntConstraint(binary, leq(a, b)));
+        m.addConstraint(reifiedConstraint(binary, leq(a, b)));
         m.addConstraint(lt(b,binary));
         s.read(m);
         s.solveAll();
@@ -148,7 +148,7 @@ public class ReifiedIntConstraintTest {
         IntegerVariable a = makeIntVar("a", 0, 10);
         IntegerVariable b = makeIntVar("b", 0, 0);
 
-        m.addConstraint(reifiedIntConstraint(binary, leq(a, b)));
+        m.addConstraint(reifiedConstraint(binary, leq(a, b)));
         m.addConstraint(lt(b,binary));
         s.read(m);
         s.solveAll();
@@ -156,7 +156,7 @@ public class ReifiedIntConstraintTest {
         Model m2 = new CPModel();
         Solver s2 = new CPSolver();
 
-        m2.addConstraint(reifiedIntConstraint(binary, leq(a, 0)));
+        m2.addConstraint(reifiedConstraint(binary, leq(a, 0)));
         m2.addConstraint(lt(b,binary));
         s2.read(m2);
         s2.solveAll();

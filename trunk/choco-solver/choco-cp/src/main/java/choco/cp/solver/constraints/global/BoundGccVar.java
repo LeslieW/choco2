@@ -99,11 +99,11 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
      */
     public BoundGccVar(IntDomainVar[] vars,
                        IntDomainVar[] card,
-                       int firstDomainValue,
-                       int nbCard, IEnvironment environment) {
+                       int firstCardValue,
+                       int lastCardValue, IEnvironment environment) {
         super(makeVarTable(vars, card));
         this.card = card;
-        build(vars.length, firstDomainValue, nbCard, environment);
+        build(vars.length, firstCardValue, lastCardValue, environment);
     }
 
     public void build(int n,
@@ -519,6 +519,8 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         for (int i = 0; i < range ; i++) {
             if(val_maxOcc[i].get() == 0){
                 card[i].instantiate(0, cIndices[i + nbVars]);
+            }else{
+                card[i].updateInf(val_minOcc[i].get(), i+nbVars);
             }
         }
     }
@@ -534,8 +536,6 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
                 // remove it from all variables
                 if (i < nbVars) {
                     int val = vars[i].getVal();
-                    //update lower bounds of cardinalities
-                    card[val - offset].updateInf(val_minOcc[val-offset].get(), cIndices[nbVars + val - offset]);
                     filterBCOnInst(val);
                 } else {
                     filterBCOnInst(i - nbVars + offset);

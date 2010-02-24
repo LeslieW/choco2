@@ -136,24 +136,23 @@ public class MemberXY extends AbstractBinSetIntSConstraint {
 
 
 	public Boolean isEntailed() {
-		boolean allValuesOutEnv = true, allValuesInKer = true;
-		DisposableIntIterator it = v0.getDomain().getIterator();
-		while (it.hasNext()) {
-			int val = it.next();
-			if (v1.isInDomainEnveloppe(val)) {
-				allValuesOutEnv = false;
-				if (v1.isInDomainKernel(val)) {
-					allValuesInKer = false;
-					break;
-				}
-			}
-		}
-        it.dispose();
-		if (allValuesInKer)
-			return Boolean.TRUE;
-		else if (allValuesOutEnv)
-			return Boolean.FALSE;
-		else
-			return null;
+		boolean allInKernel = true;
+        boolean allOutEnv = true;
+        DisposableIntIterator it = v0.getDomain().getIterator();
+        while(it.hasNext()){
+            int val = it.next();
+            if(!v1.isInDomainKernel(val)){
+                allInKernel = false;
+            }
+            if(v1.isInDomainEnveloppe(val)){
+                allOutEnv = false;
+            }
+        }
+        if(allInKernel){
+            return Boolean.TRUE;
+        }else if(allOutEnv){
+            return Boolean.FALSE;
+        }
+        return null;
 	}
 }

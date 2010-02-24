@@ -83,7 +83,7 @@ public class OrManager extends IntConstraintManager {
                     return new BinOr(solver.getVar(variables[0]), solver.getVar(variables[1]));
                 }
                 else{
-                    return new LargeOr(solver.getVar(variables));    
+                    return new LargeOr(solver.getVar(variables), solver.getEnvironment());
                 }
             }
         }
