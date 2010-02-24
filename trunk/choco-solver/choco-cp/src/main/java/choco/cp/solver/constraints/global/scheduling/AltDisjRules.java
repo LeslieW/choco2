@@ -63,6 +63,11 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		size = environment.makeIntProcedure(this, rtasks.length);
 		rqueue = new AltBipartiteQueue<IRTask>(rtasks);
 		final ITask[] tasks = getTaskArray();
+		//TODO plug-in hypothetical domain in Trees 
+		//final ITask[] tasks = new ITask[rtasks.length];
+        //for (int i = 0; i < tasks.length; i++) {
+        // tasks[i] = rtasks[i].getHTask();
+		//}
 		altDisjTreeTL = new AltDisjTreeTL(Arrays.asList(tasks));
 		///*****************///
 		altDisjTreeTLTO = new AltDisjTreeTLTO(Arrays.asList(tasks));
@@ -84,7 +89,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 	protected void applyRemovals() throws ContradictionException {
 		for (IRTask t : removals) {
 			assert(t.isEliminated()); //assertions are activated by junit
-			this.remove(t);
+			remove(t);
 		}
 	}
 

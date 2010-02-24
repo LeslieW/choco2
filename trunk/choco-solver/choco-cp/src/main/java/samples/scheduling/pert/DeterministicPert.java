@@ -28,6 +28,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.VizFactory;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.tools.TaskUtils;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.ContradictionException;
@@ -182,7 +183,7 @@ public class DeterministicPert {
 		return solver.getVar(tasks[i]).isScheduled();
 	}
 	protected int getSlack(TaskVariable task) {
-		return solver.getVar(task).getSlack();
+		return TaskUtils.getSlack(solver.getVar(task));
 	}
 
 	protected StringBuilder toString(int i) {

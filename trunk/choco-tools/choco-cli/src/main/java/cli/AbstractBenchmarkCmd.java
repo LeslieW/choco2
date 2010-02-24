@@ -94,7 +94,7 @@ public abstract class AbstractBenchmarkCmd extends AbstractCmdLine implements Fi
 		if( propertyFile != null) {
 			PropertyUtils.loadProperties(properties, propertyFile);
 		}
-		if(properties.isEmpty()) LOGGER.warning("cmd...[empty_properties]");
+		if(properties.isEmpty()) LOGGER.config("cmd...[empty_properties]");
 	}
 	
 

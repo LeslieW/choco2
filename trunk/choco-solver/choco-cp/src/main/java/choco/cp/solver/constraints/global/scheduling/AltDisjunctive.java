@@ -21,11 +21,12 @@
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
-import static choco.cp.solver.SettingType.OVERLOAD_CHECKING;
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
 /**
@@ -40,7 +41,13 @@ public class AltDisjunctive extends Disjunctive {
 	public AltDisjunctive(final String name, final TaskVar[] taskvars, final IntDomainVar[] usages, final IntDomainVar makespan, Solver solver) {
 		super(solver, name, taskvars, makespan, usages);
 		nbRequired = computeNbRequired();
-		rules = new AltDisjRules(rtasks, solver.getEnvironment());
+		final int n = getNbTasks();
+		final IEnvironment env = solver.getEnvironment();
+		//Aliaa plug-in the new Data Structure with hypothetical domain
+		for (int i = nbRequired; i < n; i++) {
+			rtasks[i] = new HRTask(i, env);
+		}
+		rules = new AltDisjRules(rtasks, env);
 	}
 
 	
@@ -48,7 +55,6 @@ public class AltDisjunctive extends Disjunctive {
 	public int getFilteredEventMask(int idx) {
 		return idx < taskIntVarOffset ? EVENT_MASK : IntVarEvent.INSTINTbitvector;
 	}
-
 
 	@Override
 	protected final int getUsageIndex(final int taskIdx) {
@@ -64,20 +70,19 @@ public class AltDisjunctive extends Disjunctive {
 	}
 
 	@Override
-	protected final boolean hasOverloadChecking() {
-		return flags.contains(OVERLOAD_CHECKING);
+	protected void fireTaskRemoval(IRTask rtask) {
+		rules.remove(rtask);
 	}
+
 
 	@Override
 	public void awakeOnInst(final int idx) throws ContradictionException {
-		if( idx < getTaskIntVarOffset()) {
-			//TaskVar event
-			//TODO do not use % (really slow operation)
-			rtasks[idx % getNbTasks()].updateCompulsoryPart();
-		} else if(vars[idx].isInstantiatedTo(0) && idx!=indexUB) {
+		if( ! checkTask(idx) && 
+				idx!=indexUB && // => usage variable
+				vars[idx].isInstantiatedTo(0)) {
 			//removal, update data structure
 			final int taskIdx = idx - getTaskIntVarOffset() + nbRequired;
-			rules.remove(rtasks[taskIdx]);
+			fireTaskRemoval(rtasks[taskIdx]);
 		}
 		this.constAwake(false);
 	}

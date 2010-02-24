@@ -176,6 +176,7 @@ public class Disjunctive extends AbstractResourceSConstraint {
 	public void propagate() throws ContradictionException {
 		//Solver.flushLogs();
 		if(rules.isActive()) {
+			//FIXME horrible ! instead set the constraint passive if necessary 
 			if(flags.contains(DEFAULT_FILTERING)) {
 				defaultFiltering();
 			}else if(flags.contains(VILIM_FILTERING)) {

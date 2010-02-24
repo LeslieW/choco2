@@ -109,11 +109,12 @@ public interface ITask extends IPretty {
 	 */
 	boolean isScheduled();
 
-	int getSlack();
+	//change into static methods (taskUtils)
+	//int getSlack();
 	
-	double getCentroid();
+	//double getCentroid();
 	
-	boolean hasCompulsoryPart();
+	//boolean hasCompulsoryPart();
 
 }
 

@@ -518,7 +518,7 @@ public class TestCumulative {
 		cstr.getRules().initializeEdgeFindingData();
 		cstr.getRules().initializeEdgeFindingStart();
 		try {
-			cstr.ensureTaskConsistency();
+			cstr.enforceTaskConsistency();
 		} catch (ContradictionException e2) {
 			fail("fail to ensure initial consistency");
 		}
