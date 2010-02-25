@@ -16,6 +16,8 @@ interface IAltRTask {
 	boolean assign() throws ContradictionException;
 
 	boolean remove() throws ContradictionException;
+	
+	void fireRemoval();
 
 }
 
@@ -147,5 +149,30 @@ public interface IRTask extends ICumulRTask,IAltRTask, IPretty {
 
 	boolean setEndingTime(final int endingTime) throws ContradictionException;
 
-
+	/**
+	 * Utility: A filtering algorithm can store a value to perform update operations (noargs) later.
+	 */
+	void storeValue(int val);
+	
+	int getStoredValue();
+	
+	/**
+	 * Update using {@link IRTask#getStoredValue()}   .
+	 */
+	boolean updateECT() throws ContradictionException;
+	
+	/**
+	 * Update using {@link IRTask#getStoredValue()}   .
+	 */
+	boolean updateEST() throws ContradictionException;
+	
+	/**
+	 * Update using {@link IRTask#getStoredValue()}   .
+	 */
+	boolean updateLCT() throws ContradictionException;
+	
+	/**
+	 * Update using {@link IRTask#getStoredValue()}   .
+	 */
+	boolean updateLST() throws ContradictionException;
 }

@@ -22,15 +22,18 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
+import choco.cp.solver.constraints.global.scheduling.trees.AltDisjTreeTL;
 import choco.cp.solver.constraints.global.scheduling.trees.DisjTreeT;
 import choco.cp.solver.constraints.global.scheduling.trees.DisjTreeTL;
 import choco.cp.solver.constraints.global.scheduling.trees.IThetaLambdaTree;
 import choco.cp.solver.constraints.global.scheduling.trees.IThetaTree;
+import choco.cp.solver.constraints.global.scheduling.trees.IVilimTree;
 import choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode;
 import static choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode.ECT;
 import static choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode.LST;
 import static choco.kernel.common.util.comparator.TaskComparators.*;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.variables.scheduling.IRMakespan;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
 
@@ -62,8 +65,8 @@ public final class DisjRules extends AbstractDisjRules {
 	 * @param tasks the vars the tasks involved in the constraint
 	 * @param constraint their processing times
 	 */
-	public DisjRules(IRTask[] rtasks) {
-		super(rtasks);
+	public DisjRules(IRTask[] rtasks, IRMakespan makespan) {
+		super(rtasks, makespan, false);
 		ITask[] tasks = getTaskArray();
 		this.rqueue = new BipartiteQueue<IRTask>(rtasks);
 		this.queue = new BipartiteQueue<ITask>(tasks);
@@ -85,14 +88,12 @@ public final class DisjRules extends AbstractDisjRules {
 	public void remove(IRTask rtask) {
 		throw new UnsupportedOperationException("The resource is not alternative");
 	}
-
-
+	
+	
 	private void setupListsAndTreeT(final Comparator<IRTask> taskComp,final Comparator<ITask> queueComp, TreeMode mode) {
-		clear();
-		this.queue.reset();
-		sort(rtasks,taskComp);
-		this.queue.sort(queueComp);
-		this.setup(disjTreeT, mode);
+		sortQueue(queue, queueComp);
+		sortRTasks(taskComp);
+		setupMasterTree(disjTreeT, mode);
 	}
 
 
@@ -106,17 +107,17 @@ public final class DisjRules extends AbstractDisjRules {
 	/**
 	 * Overload checking rule.
 	 *@return <code>true</code> if the resource is overloaded.
+	 * @throws ContradictionException 
 	 */
-	public boolean overloadChecking() {
-		sort(rtasks, makeRLatestCompletionTimeCmp());
-		this.setup(disjTreeT, ECT);
+	public void overloadChecking() throws ContradictionException {
+		sortRTasks(makeRLatestCompletionTimeCmp()); 
+		setupMasterTree(disjTreeT, ECT);
 		for(IRTask t : rtasks) {
 			final ITask i = t.getTaskVar();
 			disjTreeT.insertInTheta(i);
-			if(disjTreeT.getTime()> i.getLCT()) {return true;}
+			if(disjTreeT.getTime()> i.getLCT()) {t.fail();}
 		}
 		setMakespanLB(disjTreeT);
-		return false;
 	}
 
 
@@ -138,12 +139,12 @@ public final class DisjRules extends AbstractDisjRules {
 			}
 			final boolean rm=disjTreeT.removeFromTheta(i);
 			if(disjTreeT.getTime()<i.getECT()) {
-				addUpdate(rti,j.getECT());
+				updateManager.storeUpdate(rti,j.getECT());
 			}
 			if(rm) {disjTreeT.insertInTheta(i);}
 
 		}
-		return updateEST();
+		return updateManager.updateEST();
 	}
 
 
@@ -165,12 +166,12 @@ public final class DisjRules extends AbstractDisjRules {
 			//compute pruning
 			disjTreeT.removeFromTheta(i);
 			if(disjTreeT.getTime()>i.getLST()) {
-				addUpdate(rti,j.getLST());
+				updateManager.storeUpdate(rti,j.getLST());
 			}
 			disjTreeT.insertInTheta(i);
 		}
 		setMakespanLB(disjTreeT);
-		return updateLCT();
+		return updateManager.updateLCT();
 	}
 
 	//	//****************************************************************//
@@ -189,11 +190,11 @@ public final class DisjRules extends AbstractDisjRules {
 				disjTreeT.insertInTheta(queue.poll());
 			}
 			final boolean rm=disjTreeT.removeFromTheta(i);
-			addUpdate(rti,disjTreeT.getTime());
+			updateManager.storeUpdate(rti,disjTreeT.getTime());
 			if(rm) {disjTreeT.insertInTheta(i);}
 		}
 		setMakespanLB(disjTreeT);
-		return updateEST();
+		return updateManager.updateEST();
 	}
 
 	/**
@@ -209,11 +210,11 @@ public final class DisjRules extends AbstractDisjRules {
 				disjTreeT.insertInTheta(queue.poll());
 			}
 			final boolean rm=disjTreeT.removeFromTheta(i);
-			addUpdate(rti,disjTreeT.getTime());
-			//we have to be sure that i was active in disjTreeT
+			updateManager.storeUpdate(rti,disjTreeT.getTime());
+			//be sure that i was active in disjTreeT
 			if(rm) {disjTreeT.insertInTheta(i);}
 		}
-		return updateLCT();
+		return updateManager.updateLCT();
 
 	}
 
@@ -229,10 +230,8 @@ public final class DisjRules extends AbstractDisjRules {
 	 *
 	 */
 	public boolean edgeFindingEST() throws ContradictionException {
-		clear();
-		rqueue.reset();
+		sortQueue(rqueue, makeReverseRLatestCompletionTimeCmp());
 		this.disjTreeTL.setMode(ECT);
-		rqueue.sort(makeReverseRLatestCompletionTimeCmp());
 		setMakespanLB(disjTreeTL);
 		IRTask rtj=rqueue.peek();
 		ITask j= rtj.getTaskVar();
@@ -251,15 +250,13 @@ public final class DisjRules extends AbstractDisjRules {
 					final IRTask rti= (IRTask) disjTreeTL.getResponsibleTask();
 					final ITask i= rti.getTaskVar();
 					if(disjTreeTL.getTime()>i.getEST()) {
-						addUpdate(rti,disjTreeTL.getTime());
+						updateManager.storeUpdate(rti,disjTreeTL.getTime());
 					}
 					disjTreeTL.removeFromLambda(i);
 				}
 			}
 		} while (!rqueue.isEmpty());
-		return updateEST();
-		//return edgeFindingEST(disjTreeTL, rqueue);
-		
+		return updateManager.updateEST();
 	}
 
 
@@ -271,10 +268,8 @@ public final class DisjRules extends AbstractDisjRules {
 	 *
 	 */
 	public boolean edgeFindingLCT() throws ContradictionException  {
-		clear();
-		rqueue.reset();
+		sortQueue(rqueue, makeREarliestStartingTimeCmp());
 		disjTreeTL.setMode(LST);
-		rqueue.sort(makeREarliestStartingTimeCmp());
 		IRTask rtj=rqueue.peek();
 		ITask j= rtj.getTaskVar();
 		if(disjTreeTL.getTime()<j.getEST()) {rtj.fail();}
@@ -291,12 +286,12 @@ public final class DisjRules extends AbstractDisjRules {
 				while(disjTreeTL.getGrayTime() <j.getEST()) {
 					final IRTask rti= (IRTask) disjTreeTL.getResponsibleTask();
 					final ITask i= rti.getTaskVar();
-					addUpdate(rti,disjTreeTL.getTime());
+					updateManager.storeUpdate(rti,disjTreeTL.getTime());
 					disjTreeTL.removeFromLambda(i);
 				}
 			}
 		} while (!rqueue.isEmpty());
-		return updateLCT();
+		return updateManager.updateLCT();
 	}
 
 }

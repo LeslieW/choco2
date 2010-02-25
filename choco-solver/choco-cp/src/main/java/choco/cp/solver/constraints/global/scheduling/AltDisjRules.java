@@ -33,6 +33,7 @@ import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.IStateIntProcedure;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
+import choco.kernel.solver.variables.scheduling.IRMakespan;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
 
@@ -47,8 +48,6 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 
 	private final IStateInt size;
 
-	private final List<IRTask> removals = new LinkedList<IRTask>();
-
 	private AltBipartiteQueue<IRTask> rqueue;
 
 	protected AltDisjTreeTL altDisjTreeTL;
@@ -58,8 +57,8 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 	////*****************************/////
 
 	//FIXME should try to avoid insertions/deletions in trees when the rules are off
-	public AltDisjRules(final IRTask[] rtasks, IEnvironment environment) {
-		super(rtasks);
+	public AltDisjRules(final IRTask[] rtasks, IRMakespan makespan, IEnvironment environment) {
+		super(rtasks, makespan, true);
 		size = environment.makeIntProcedure(this, rtasks.length);
 		rqueue = new AltBipartiteQueue<IRTask>(rtasks);
 		final ITask[] tasks = getTaskArray();
@@ -73,6 +72,13 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		altDisjTreeTLTO = new AltDisjTreeTLTO(Arrays.asList(tasks));
 		///*****************///
 	}
+	
+	
+	@Override
+	protected void sortRTasks(Comparator<IRTask> cmp) {
+		Arrays.sort(rtasks, 0, size.get(), cmp);
+	}
+
 
 	/**
 	 * call during backtrack if necessary
@@ -86,26 +92,13 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		}
 	}
 
-	protected void applyRemovals() throws ContradictionException {
-		for (IRTask t : removals) {
-			assert(t.isEliminated()); //assertions are activated by junit
-			remove(t);
-		}
-	}
-
+	
 	private void setupListsAndTreeTL(final Comparator<IRTask> taskComp,final Comparator<IRTask> queueComp, final TreeMode mode) {
-		this.clear();
-		Arrays.sort(rtasks, 0, size.get(), taskComp);
-		rqueue.sort(queueComp);
-		this.setup(altDisjTreeTL, mode);
+		sortRTasks(taskComp);
+		sortQueue(rqueue, queueComp);
+		setupMasterTree(altDisjTreeTL, mode);
 	}
 
-	@Override
-	protected void clear() {
-		super.clear();
-		removals.clear();
-		rqueue.reset();
-	}
 
 	@Override
 	public boolean isActive() {
@@ -135,13 +128,6 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		}
 	}
 
-	private void setAsRemoval() throws ContradictionException{
-		final IRTask j = (IRTask) altDisjTreeTL.getResponsibleTask();
-		//Disable optional task
-		j.remove();
-		removals.add(j);
-		altDisjTreeTL.removeFromLambda(j.getTaskVar());
-	}
 
 	/**
 	 * Used by Edge Finding algorithm
@@ -150,12 +136,11 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 	 */
 	private void setAsRemoval(IRTask respTask, boolean omega) throws ContradictionException{
 		//Disable optional task.
-		respTask.remove();
-		removals.add(respTask);
 		if(!omega)
-			altDisjTreeTLTO.removeFromLambda(respTask.getTaskVar());
+			updateManager.storeLambdaRemoval(respTask, altDisjTreeTLTO);
+			//altDisjTreeTLTO.removeFromLambda(respTask.getTaskVar());
 		else
-			altDisjTreeTLTO.removeFromOmega(respTask);
+			updateManager.storeOmegaRemoval(respTask, altDisjTreeTLTO);
 	}
 
 	@Override
@@ -178,18 +163,17 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 			}
 			if(rti.isRegular()) {
 				final boolean rm=altDisjTreeTL.removeFromTheta(i);
-				addUpdate(rti,altDisjTreeTL.getTime());
+				updateManager.storeUpdate(rti,altDisjTreeTL.getTime());
 				//an additional check to avoid to find a null resp. optional activity
 				if(altDisjTreeTL.getTime() > i.getLST()) {rti.fail();}
 				while( altDisjTreeTL.getGrayTime() > i.getLST()) {
-					setAsRemoval();
+					updateManager.storeLambdaRemoval(altDisjTreeTL);
 				}
 				if(rm) {altDisjTreeTL.insertInTheta(i);}
 			}	
 		}
 		setMakespanLB(altDisjTreeTL);
-		applyRemovals();
-		return updateEST();
+		return updateManager.fireAndUpdateEST();
 	}
 
 	@Override
@@ -202,17 +186,16 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 			}
 			if(rti.isRegular()) {
 				final boolean rm=altDisjTreeTL.removeFromTheta(i);
-				addUpdate(rti,altDisjTreeTL.getTime());
+				updateManager.storeUpdate(rti,altDisjTreeTL.getTime());
 				if(altDisjTreeTL.getTime() < i.getECT()) { rti.fail();}
 				while( altDisjTreeTL.getGrayTime() < i.getECT()) {
-					setAsRemoval();
+					updateManager.storeLambdaRemoval(altDisjTreeTL);
 				}
 				//we have to be sure that i was active in disjTreeT
 				if(rm) {altDisjTreeTL.insertInTheta(i);}
 			}
 		}
-		applyRemovals();
-		return updateLCT();
+		return updateManager.fireAndUpdateLCT();
 	}
 
 	@Override
@@ -230,11 +213,11 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 			if(rti.isRegular()) {
 				final boolean rm= altDisjTreeTL.removeFromTheta(i);
 				if( altDisjTreeTL.getTime()< i.getECT()) {
-					addUpdate(rti,j.getECT());
+					updateManager.storeUpdate(rti,j.getECT());
 					if(i.getLST() < j.getECT()) { rti.fail();}
 					if(i.getLST() < ja.getECT()) {
 						while( altDisjTreeTL.getGrayTime() > i.getECT()) {
-							setAsRemoval();
+							updateManager.storeLambdaRemoval(altDisjTreeTL);
 						}
 					}
 				}
@@ -242,8 +225,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 
 			}
 		}
-		applyRemovals();
-		return updateEST();
+		return updateManager.fireAndUpdateEST();
 	}
 
 	@Override
@@ -263,11 +245,11 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 				//compute pruning
 				altDisjTreeTL.removeFromTheta(i);
 				if(altDisjTreeTL.getTime()>i.getLST()) {
-					addUpdate(rti,j.getLST());
+					updateManager.storeUpdate(rti,j.getLST());
 					if(j.getLST() < i.getECT()) { rti.fail();}
 					if(ja.getLST()< i.getECT()) {
 						while( altDisjTreeTL.getGrayTime() > i.getLST()) {
-							setAsRemoval();
+							updateManager.storeLambdaRemoval(altDisjTreeTL);
 						}
 					}
 				}
@@ -275,29 +257,22 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 			}
 		}
 		setMakespanLB(altDisjTreeTL);
-		applyRemovals();
-		return updateLCT();
+		return updateManager.fireAndUpdateLCT();
 	}
 
 	@Override
-	public boolean overloadChecking(){
-		this.clear();
-		Arrays.sort(rtasks, 0, size.get(), makeRLatestCompletionTimeCmp());
-		this.setup(altDisjTreeTL, ECT);
+	public void overloadChecking() throws ContradictionException{
+		sortRTasks(makeRLatestCompletionTimeCmp());
+		this.setupMasterTree(altDisjTreeTL, ECT);
 		for(IRTask t : this) {
 			final ITask i = t.getTaskVar();
 			insertInTree(t);
-			if(altDisjTreeTL.getTime()> i.getLCT()) {return true;}
+			if(altDisjTreeTL.getTime()> i.getLCT()) t.fail();
 			while( altDisjTreeTL.getGrayTime() >  i.getLCT()) {
-				try {
-					setAsRemoval();
-				} catch (ContradictionException e) {
-					e.printStackTrace();
-				}
+				updateManager.storeLambdaRemoval(altDisjTreeTL);
 			}
 		}
 		setMakespanLB(altDisjTreeTL);
-		return false;
 	}
 
 	/**
@@ -339,8 +314,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 			}
 		}while(!rqueue.isEmpty());
 		//Apply all removals
-		applyRemovals();
-		return updateEST();
+		return updateManager.fireAndUpdateEST();
 	}
 
 	private int [] calculateECTTOL(int [] ectTUnionOArr){
@@ -467,11 +441,11 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		switch(mode){
 		case ECT:
 			//sort array in ascending order of est
-			Arrays.sort(rtasks, 0 , size.get(), makeREarliestStartingTimeCmp());
+			sortRTasks(makeREarliestStartingTimeCmp());
 			break;
 		case LST:
 			//Sort array in ascending order of lct
-			Arrays.sort(rtasks,0, size.get(), makeRLatestCompletionTimeCmp());
+			sortRTasks(makeRLatestCompletionTimeCmp());
 			break;
 		default:
 			throw new UnsupportedOperationException("unknown tree mode.");
@@ -733,7 +707,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 	 */
 	private void checkSTLOEST(IRTask j)throws ContradictionException{
 			//Sort array in ascending order of est.
-		    Arrays.sort(rtasks, 0 , size.get(), makeREarliestStartingTimeCmp());
+		sortRTasks(makeREarliestStartingTimeCmp());
 			//Temporarily remove task j from omega, and embed it in Theta
 			altDisjTreeTLTO.removeFromOmega(j);
 			altDisjTreeTLTO.insertInTheta(j);
@@ -769,7 +743,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 
 	private void checkSTLOLCT(IRTask j)throws ContradictionException{
 		//Sort array in ascending order of lct
-		Arrays.sort(rtasks,0, size.get(), makeRLatestCompletionTimeCmp());
+		sortRTasks(makeRLatestCompletionTimeCmp());
 		//Temporarily remove task j from omega, and embed it in Theta
 		altDisjTreeTLTO.removeFromOmega(j);
 		altDisjTreeTLTO.insertInTheta(j);
@@ -830,7 +804,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 						//******************
 						if(rti.isRegular())
 							//******************	
-							addUpdate(rti,altDisjTreeTLTO.getTime());}
+							updateManager.storeUpdate(rti,altDisjTreeTLTO.getTime());}
 				}
 				altDisjTreeTLTO.removeFromLambda(i);
 			}
@@ -854,7 +828,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 						//*****************
 						if(rti.isRegular())
 							//*****************
-							addUpdate(rti,altDisjTreeTLTO.getTime());}
+							updateManager.storeUpdate(rti,altDisjTreeTLTO.getTime());}
 				}
 				altDisjTreeTLTO.removeFromLambda(i);
 			}
@@ -889,9 +863,9 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 	}
 
 	private void setupEF(final TreeMode mode,final Comparator<IRTask> queueComp){
-		this.clear();
 		//Initialise Edge Finding Tree
 		this.altDisjTreeTLTO.initializeEdgeFinding(mode, this);
+		rqueue.reset();
 		this.rqueue.sort(queueComp);
 	}
 
@@ -928,8 +902,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 				checkSTLOLCT(rtj);
 			}
 		}while(!rqueue.isEmpty());
-		applyRemovals();
-		return updateLCT();
+		return updateManager.fireAndUpdateLCT();
 	}
 
 

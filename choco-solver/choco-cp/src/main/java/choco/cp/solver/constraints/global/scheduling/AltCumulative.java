@@ -1,11 +1,12 @@
 package choco.cp.solver.constraints.global.scheduling;
 
-import choco.cp.solver.variables.integer.IntVarEvent;
+import java.util.Arrays;
+
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
-
-import java.util.Arrays;
 
 public class AltCumulative extends Cumulative {
 
@@ -14,40 +15,23 @@ public class AltCumulative extends Cumulative {
                          IntDomainVar[] heights, IntDomainVar[] usages,
                          IntDomainVar consumption, IntDomainVar capacity,
                          IntDomainVar uppBound) {
-		super(solver, name, taskvars, heights, consumption, capacity, uppBound,
-				usages);
+		super(solver, name, taskvars, usages.length, consumption, capacity, uppBound,
+				ArrayUtils.append(usages, heights));
 		cumulSweep = new CumulSweep(this, Arrays.asList(rtasks));
 	}
-	
-	
-	
-	@Override
-	public int getFilteredEventMask(int idx) {
-		return idx < 4* taskvars.length ? EVENT_MASK : IntVarEvent.INSTINTbitvector;
-	}
 
+	
+
+	@Override
+	public void fireTaskRemoval(IRTask rtask) {
+		//Do nothing (no dynamic data-structure
+	}
 
 
 
 	@Override
 	protected void checkRulesRequirement() {
 		throw new UnsupportedOperationException("Alternative Task Intervals and Edge finding remain to be done");
-	}
-
-
-	@Override
-	protected final int getUsageIndex(int tidx) {
-		final int nbRequired = computeNbRequired();
-		return  tidx < nbRequired ? indexUnit : 4 * startOffset+ 2 +  tidx - nbRequired;
-	}
-
-	private final int computeNbRequired() {
-		return 5 * taskvars.length + 4 - vars.length;
-	}
-	
-	@Override
-	protected boolean isRegular(int[] tuple, int tidx) {
-		return tuple[ getUsageIndex(tidx)] == 1;
 	}
 	
 	

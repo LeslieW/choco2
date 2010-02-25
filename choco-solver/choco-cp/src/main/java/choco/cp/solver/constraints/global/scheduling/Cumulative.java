@@ -45,12 +45,18 @@ public class Cumulative extends AbstractCumulativeSConstraint  {
 
 	protected boolean noFixPoint;
 
-	protected Cumulative(Solver solver, String name, final TaskVar[] taskvars, final IntDomainVar[] heights, IntDomainVar consumption, IntDomainVar capacity, IntDomainVar uppBound, IntDomainVar... otherVars) {
-		super(solver, name,taskvars,heights,consumption,capacity,uppBound,otherVars);
+	
+	protected Cumulative(Solver solver, String name, TaskVar[] taskvars,
+			int nbOptionalTasks, IntDomainVar consumption,
+			IntDomainVar capacity, IntDomainVar uppBound,
+			IntDomainVar... otherVars) {
+		super(solver, name, taskvars, nbOptionalTasks, consumption, capacity, uppBound,
+				otherVars);
 	}
 
+
 	public Cumulative(Solver solver, String name, final TaskVar[] taskvars, final IntDomainVar[] heights, IntDomainVar consumption, IntDomainVar capacity, IntDomainVar uppBound) {
-		super(solver, name,taskvars,heights,consumption,capacity, uppBound);
+		super(solver, name,taskvars,0, consumption,capacity, uppBound, heights);
 		cumulSweep = new CumulSweep(this, Arrays.asList(rtasks));
 		cumulRules = new CumulRules(this);
 	}
@@ -150,73 +156,6 @@ public class Cumulative extends AbstractCumulativeSConstraint  {
 		filter();
 	}
 
-	@Override
-	public boolean isSatisfied(int tuple[]) {
-		if(tuple[indexCapacity] < tuple[indexConsumption]) return false;
-
-		int start = Integer.MAX_VALUE, end = Integer.MIN_VALUE;
-		final int n = getNbTasks();
-		//compute execution interval.
-		for (int tidx = 0; tidx < n; tidx++) {
-			if( ! isTaskSatisfied(tuple, tidx)) return false;
-			else {
-				start = Math.min(start,  tuple[tidx]);
-				end = Math.max(end,  tuple[startOffset + tidx]);
-			}
-		}
-		if(start < end) {
-			//compute the profile
-			int[] load = new int[end - start];
-			for (int tidx = 0; tidx < n; tidx++) {
-				if( isRegular(tuple, tidx)) {
-					for(int i = tuple[tidx]; i < tuple[startOffset + tidx]; i++) {
-						load[i - start] += tuple[taskIntVarOffset + tidx];
-					}
-				}
-			}
-			//check profile
-			for (int aLoad : load) {
-				if ( aLoad > tuple[indexCapacity] ||
-						(aLoad != 0 && aLoad < tuple[indexConsumption]) ) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
-//	@Override
-//	public boolean isSatisfied() {
-//		int start = Integer.MAX_VALUE, end = Integer.MIN_VALUE;
-//		for ( IRTask crt : rtasks) {
-//			if(crt.isRegular()) {
-//				final TaskVar t = crt.getTaskVar();
-//				start = Math.min(start,  t.start().getVal());
-//				end = Math.max(end,  t.end().getVal());
-//			}
-//		}
-//
-//		int[] load = new int[end - start];
-//		for (IRTask t : rtasks) {
-//			if(t.isRegular()) {
-//				for(int i = t.getTaskVar().start().getVal(); i < t.getTaskVar().end().getVal(); i++) {
-//					load[i - start] += t.getHeight().getVal();
-//				}
-//			}
-//		}
-//		for (int aLoad : load) {
-//			if (aLoad > this.getCapacity().getVal()) {
-//				return false;
-//			}
-//		}
-//		return true;
-//	}
-
-
-	@Override
-	public Boolean isEntailed() {
-		throw new UnsupportedOperationException("isEntailed not yet implemented on choco.global.scheduling.Cumulative");
-	}
 
 
 }

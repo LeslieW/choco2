@@ -51,15 +51,15 @@ public class Disjunctive extends AbstractResourceSConstraint {
 
 	private boolean noFixPoint;
 
-
 	protected Disjunctive(Solver solver, String name, TaskVar[] taskvars,
-                          IntDomainVar uppBound, IntDomainVar... otherVars) {
-		super(solver, name, taskvars, uppBound, otherVars);
+			int nbOptionalTasks, boolean enableHypotheticalDomain, IntDomainVar[] intvars) {
+		super(solver, name, taskvars, nbOptionalTasks, false, enableHypotheticalDomain, intvars);
+		
 	}
 
 	public Disjunctive(String name, TaskVar[] taskvars, IntDomainVar makespan, Solver solver) {
 		super(solver, name, taskvars, makespan);
-		this.rules = new DisjRules(this.rtasks);
+		this.rules = new DisjRules(rtasks, this.makespan);
 	}
 
 	public final void setSingleRule(final Rule rule) {
@@ -91,16 +91,11 @@ public class Disjunctive extends AbstractResourceSConstraint {
 	//****************************************************************//
 
 
-	protected void singleRuleFiltering() throws ContradictionException {
+	protected final void singleRuleFiltering() throws ContradictionException {
 		do {
 			rules.fireDomainChanged();
 			noFixPoint = applySingleRule();
-			updateMakespan(rules.getMakespanLB());
 		} while(noFixPoint);
-	}
-
-	protected boolean hasOverloadChecking() {
-		return !flags.contains(EDGE_FINDING_D) && flags.contains(OVERLOAD_CHECKING); 
 	}
 
 	protected final void defaultFiltering() throws ContradictionException {
@@ -109,10 +104,13 @@ public class Disjunctive extends AbstractResourceSConstraint {
 			rules.fireDomainChanged();
 			if( flags.contains(EDGE_FINDING_D) ) {
 				noFixPoint |= rules.edgeFinding();
-			} 
+			} else if ( flags.contains(OVERLOAD_CHECKING)) {
+				rules.overloadChecking();
+			}
 			if(flags.contains(NF_NL)) {
 				noFixPoint |= rules.notLast();
 				if(flags.contains(DETECTABLE_PRECEDENCE)) {
+					//FIXME need rules.fireDomainChanged();
 					noFixPoint |= rules.detectablePrecedenceEST();
 					noFixPoint |= rules.notFirst();
 					noFixPoint |= rules.detectablePrecedenceLCT();
@@ -123,8 +121,6 @@ public class Disjunctive extends AbstractResourceSConstraint {
 				noFixPoint |= rules.detectablePrecedenceEST();
 				noFixPoint |= rules.detectablePrecedenceLCT();
 			}
-			if ( hasOverloadChecking() && rules.overloadChecking()) {fail();}
-			updateMakespan(rules.getMakespanLB());
 		}while(noFixPoint);
 
 
@@ -139,16 +135,15 @@ public class Disjunctive extends AbstractResourceSConstraint {
 				do {
 					rules.fireDomainChanged();
 					noFixPoint= rules.edgeFinding();
-					updateMakespan(rules.getMakespanLB());
 				} while (noFixPoint);
+			} else if ( flags.contains(OVERLOAD_CHECKING)) {
+				rules.overloadChecking();
 			}
-			if(hasOverloadChecking() && rules.overloadChecking()) {fail();}
-
+			
 			if(flags.contains(SettingType.NF_NL)) {
 				do {
 					rules.fireDomainChanged();
 					noFixPoint = rules.notFirstNotLast();
-					updateMakespan(rules.getMakespanLB());
 					noGlobalFixPoint |= noFixPoint;
 				} while (noFixPoint);
 			}
@@ -157,7 +152,6 @@ public class Disjunctive extends AbstractResourceSConstraint {
 				do {
 					rules.fireDomainChanged();
 					noFixPoint = rules.detectablePrecedence();
-					updateMakespan(rules.getMakespanLB());
 					noGlobalFixPoint |= noFixPoint;
 				} while (noFixPoint);
 			}
@@ -176,6 +170,7 @@ public class Disjunctive extends AbstractResourceSConstraint {
 	public void propagate() throws ContradictionException {
 		//Solver.flushLogs();
 		if(rules.isActive()) {
+			rules.initialize();
 			//FIXME horrible ! instead set the constraint passive if necessary 
 			if(flags.contains(DEFAULT_FILTERING)) {
 				defaultFiltering();
@@ -189,37 +184,10 @@ public class Disjunctive extends AbstractResourceSConstraint {
 		}
 	}
 
-
-	
 	
 	@Override
 	public boolean isSatisfied(int[] tuple) {
-		//System.out.println(Arrays.toString(tuple));
-		final int n = getNbTasks();
-		IPermutation permutation = PermutationUtils.getSortingPermuation(Arrays.copyOf(tuple, n));
-		int pstart = 0, pend = 0;
-		for (int i = 0; i < n; i++) {
-			final int tidx = permutation.getOriginalIndex(i);
-			//System.out.println(tuple[tidx] +" "+ tuple[endOffset + tidx]+" "+tuple[startOffset + tidx]);
-			if( !isTaskSatisfied(tuple, tidx)) return false; //s_i + p_i != e_i
-			else if(isRegular(tuple, tidx)) {
-				final int s = tuple[tidx];
-				if( tuple[endOffset + tidx] > 0) {
-					//task has a positive duration
-					if( s < pend) return false; //overlaps with previous task
-					pstart = tuple[tidx];
-					pend = tuple[ startOffset + tidx];
-				} else {
-					//task has a nil duration
-					assert(tuple[endOffset + tidx] == 0);
-					if(s >= pend) {
-						pstart = pend = s; //start after previous task
-					} else if(s > pstart) return false; //overlaps with previous task
-				}
-			}
-		}
-		if(pend > tuple[indexUB]) {return false;} //check makespan
-		return true;
+		return isCumulativeSatisfied(tuple, 0, 1);
 	}
 
 

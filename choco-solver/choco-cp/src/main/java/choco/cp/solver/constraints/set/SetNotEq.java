@@ -39,7 +39,7 @@ public class SetNotEq extends AbstractBinSetSConstraint {
 	 * @param sv2
 	 */
 	public SetNotEq(SetVar sv1, SetVar sv2) {
-        super(sv1, sv2);
+		super(sv1, sv2);
 	}
 
 	public boolean checkAreEqual() throws ContradictionException {
@@ -51,7 +51,7 @@ public class SetNotEq extends AbstractBinSetSConstraint {
 					return false;
 				}
 			}
-            it1.dispose();
+			it1.dispose();
 			fail();
 		}
 		return false;
@@ -62,18 +62,18 @@ public class SetNotEq extends AbstractBinSetSConstraint {
 		while (it1.hasNext()) {
 			if (!otherVar.isInDomainEnveloppe(it1.next())) {
 				it1.dispose();
-                return true;
-			}
-		}
-        it1.dispose();
-		it1 = otherVar.getDomain().getKernelIterator();
-		while (it1.hasNext()) {
-			if (!instVar.isInDomainEnveloppe(it1.next())) {
-                it1.dispose();
 				return true;
 			}
 		}
-        it1.dispose();
+		it1.dispose();
+		it1 = otherVar.getDomain().getKernelIterator();
+		while (it1.hasNext()) {
+			if (!instVar.isInDomainEnveloppe(it1.next())) {
+				it1.dispose();
+				return true;
+			}
+		}
+		it1.dispose();
 
 		return false;
 	}
@@ -93,7 +93,7 @@ public class SetNotEq extends AbstractBinSetSConstraint {
 						otherVar.addToKernel(val, idx);
 					}
 				}
-                it1.dispose();
+				it1.dispose();
 			} else {
 				//we need to remove the element missing in otherVar, otherwise they will be equal
 				DisposableIntIterator it1 = otherVar.getDomain().getEnveloppeIterator();
@@ -103,7 +103,7 @@ public class SetNotEq extends AbstractBinSetSConstraint {
 						otherVar.remFromEnveloppe(val, idx);
 					}
 				}
-                it1.dispose();
+				it1.dispose();
 			}
 		}
 	}
@@ -161,16 +161,17 @@ public class SetNotEq extends AbstractBinSetSConstraint {
 	}
 
 	public boolean isSatisfied() {
-		if (v0.isInstantiated() && v1.isInstantiated()
-				&& v0.getKernelDomainSize() == v1.getKernelDomainSize()) {
-			DisposableIntIterator it1 = v0.getDomain().getKernelIterator();
-			while (it1.hasNext()) {
-				if (!v1.isInDomainKernel(it1.next())) {
-					return false;
+		if (v0.isInstantiated() && v1.isInstantiated() ) {
+			if(v0.getKernelDomainSize() == v1.getKernelDomainSize()) {
+				final DisposableIntIterator it1 = v0.getDomain().getKernelIterator();
+				while (it1.hasNext()) {
+					if (! v1.isInDomainKernel(it1.next())) {
+						return true;
+					}
 				}
-			}
-            it1.dispose();
-			return true;
+				it1.dispose();
+				return false;
+			}else return true;
 		} else {
 			return false;
 		}

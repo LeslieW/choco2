@@ -22,14 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
-import gnu.trove.TIntArrayList;
-import gnu.trove.TIntProcedure;
-
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.omg.CORBA.Environment;
+
 import choco.cp.solver.constraints.BitFlags;
+import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.memory.IEnvironment;
@@ -38,8 +38,10 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.global.scheduling.IResource;
+import choco.kernel.solver.search.task.TaskSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.AbstractRTask;
+import choco.kernel.solver.variables.scheduling.IRMakespan;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
@@ -54,13 +56,26 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 	protected final IRTask[] rtasks;
 
+	protected final RMakespan makespan;
+
 	protected final String name;
 
 	protected final BitFlags flags;
 
-	protected final int indexUnit;
+	//TODO init
+	private final int nbRegularTasks;
+
+	private final int nbOptionalTasks;
+
+	private boolean enableHeights;
+
+	private final int indexUnit;
 
 	protected final int indexUB;
+
+	public AbstractResourceSConstraint(Solver solver, String name, final TaskVar[] taskvars, final IntDomainVar makespan) {
+		this(solver, name, taskvars, 0, false, false, makespan);
+	}
 
 	/**
 	 * 
@@ -68,20 +83,50 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 	 * @param solver
 	 * @param name the ressource name
 	 * @param taskvars the tasks using the resources
+	 * @param enableHypotheticalDomain TODO
 	 * @param uppBound is an integer variable such that max(end(T))<= uppBound
-	 * @param otherVars other integer variables of the constraint
+	 * @param otherVars = [ u_k, ...,u_n,h_1,...,h_n,v_1,v_m, ub, cste:1] 
 	 */
-	public AbstractResourceSConstraint(Solver solver, String name, final TaskVar[] taskvars, final IntDomainVar uppBound, final IntDomainVar... otherVars) {
-		super(taskvars, createIntVarArray(solver, otherVars, uppBound));
-		this.rtasks = new RTask[getNbTasks()];
+	public AbstractResourceSConstraint(Solver solver, String name, 
+			final TaskVar[] taskvars, int nbOptionalTasks
+			, boolean enableHeights, boolean enableHypotheticalDomain, final IntDomainVar... intvars) {
+		super(taskvars, intvars, solver.createIntegerConstant("unit", 1));
 		this.name = name;
+		this.nbOptionalTasks = nbOptionalTasks;
+		this.nbRegularTasks = taskvars.length - nbOptionalTasks;
+		this.enableHeights = enableHeights;
+		//TODO checkIntVars !
 		this.indexUnit = getNbVars()-1;
 		this.indexUB = indexUnit - 1;
 		this.flags = new BitFlags();
-		for (int i = 0; i < taskvars.length; i++) {
-			rtasks[i] = new RTask(i);
+		this.rtasks = new RTask[getNbTasks()];
+		final IEnvironment env = solver.getEnvironment();
+		if(enableHypotheticalDomain) {
+			for (int i = 0; i < nbRegularTasks; i++) {
+				rtasks[i] = new RTask(i);
+			}
+			for (int i = nbRegularTasks; i < rtasks.length; i++) {
+				rtasks[i] = new HRTask(i, env);
+			}
+		} else {
+			for (int i = 0; i < rtasks.length; i++) {
+				rtasks[i] = new RTask(i);
+			}
 		}
+
+		this.makespan = new RMakespan();
 	}
+
+	private void checkIntVars() {
+		//TODO
+	}
+
+	@Override
+	public int getFilteredEventMask(int idx) {
+		return idx < taskIntVarOffset || idx >= taskIntVarOffset + nbOptionalTasks ? 
+				EVENT_MASK : IntVarEvent.INSTINTbitvector;
+	}
+
 
 	@Override
 	public final IRTask getRTask(final int idx) {
@@ -91,15 +136,15 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 	/**
 	 * do not use subclass fields to compute the index because the function is called by the constructor.
 	 */
-	protected int getUsageIndex(final int taskIdx) {
-		return indexUnit;
+	protected final int getUsageIndex(final int taskIdx) {
+		return  taskIdx < nbRegularTasks ? indexUnit : taskIntVarOffset + taskIdx - nbRegularTasks;
 	}
 
 	/**
 	 * do not use subclass fields to compute the index because the function is called by the constructor.
 	 */
-	protected int getHeightIndex(final int taskIdx) {
-		return indexUnit;
+	protected final int getHeightIndex(final int taskIdx) {
+		return enableHeights ? taskIntVarOffset + nbOptionalTasks + taskIdx : indexUnit;
 	}
 
 	public final void enforceTaskConsistency() throws ContradictionException {
@@ -107,20 +152,6 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 			rt.checkConsistency();
 		}
 	}
-
-	private static IntDomainVar[] createIntVarArray(Solver solver, final IntDomainVar[] otherVars, final IntDomainVar uppBound) {
-		if(uppBound == null) {
-			throw new SolverException("no makespan for resource constraint");
-		}
-		IntDomainVar unit = solver.createIntegerConstant("unit", 1);
-		return ArrayUtils.append(otherVars, new IntDomainVar[]{uppBound, unit});
-	}
-
-
-	protected final void updateMakespan(final int value) throws ContradictionException {
-		vars[indexUB].updateInf(value, cIndices[indexUB]);
-	}	
-
 
 	public final BitFlags getFlags() {
 		return flags;
@@ -135,7 +166,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 	public final boolean checkTask(final int varIdx) throws ContradictionException {
 		if(varIdx < taskIntVarOffset) {
-			//avoid modulo because not it is not time-efficient
+			//avoid modulo because it is not time-efficient
 			if(varIdx < startOffset) rtasks[varIdx].checkConsistency();
 			else if (varIdx < endOffset) rtasks[varIdx - startOffset].checkConsistency();
 			else rtasks[varIdx -endOffset].checkConsistency();
@@ -161,7 +192,10 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 	@Override
 	public void awakeOnInst(final int idx) throws ContradictionException {
-		checkTask(idx);
+		if( ! checkTask(idx) && idx < taskIntVarOffset + nbOptionalTasks 
+				&& vars[idx].isInstantiatedTo(0) ) {
+			fireTaskRemoval(rtasks[idx - taskIntVarOffset + nbRegularTasks]);
+		}
 		super.awakeOnInst(idx);
 	}
 
@@ -171,8 +205,8 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		checkTask(varIdx);
 		super.awakeOnSup(varIdx);
 	}
-	
-	protected void fireTaskRemoval(IRTask rtask) {
+
+	public void fireTaskRemoval(IRTask rtask) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -185,11 +219,48 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 	}
 
 
-	protected boolean isRegular(int[] tuple, int tidx) {
-		return true;
+	protected final boolean isRegular(int[] tuple, int tidx) {
+		return tuple[getUsageIndex(tidx)] == 1;
+	}
+
+	protected final int getHeight(int[] tuple, int tidx) {
+		return tuple[getHeightIndex(tidx)];
 	}
 
 
+	public final boolean isCumulativeSatisfied(int tuple[],int consumption, int capacity) {
+		if( capacity < consumption) return false;
+		int start = Integer.MAX_VALUE, end = Integer.MIN_VALUE;
+		final int n = getNbTasks();
+		//compute execution interval.
+		for (int tidx = 0; tidx < n; tidx++) {
+			if( ! isTaskSatisfied(tuple, tidx)) return false;
+			else {
+				start = Math.min(start,  tuple[getStartIndex(tidx)]);
+				end = Math.max(end,  tuple[getEndIndex(tidx)]);
+			}
+		}
+		if(start < end) {
+			//compute the profile
+			int[] load = new int[end - start];
+			for (int tidx = 0; tidx < n; tidx++) {
+				if( isRegular(tuple, tidx)) {
+					for(int i = tuple[getStartIndex(tidx)]; i < tuple[getEndIndex(tidx)]; i++) {
+						load[i - start] += getHeight(tuple, tidx);
+					}
+				}
+			}
+			//FIXME how do I handle properly task with nil duration in disjunctive
+			//check profile
+			for (int aLoad : load) {
+				if ( aLoad > capacity ||
+						(aLoad != 0 && aLoad < consumption) ) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 
 	//*****************************************************************//
 	//*******************  Resource  ********************************//
@@ -203,24 +274,43 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 
 	@Override
-	public String getRscName() {
+	public final String getRscName() {
 		return name;
 	}
 
 
 
 	@Override
-	public List<TaskVar> asList() {
+	public final List<TaskVar> asList() {
 		return Arrays.asList(taskvars);
 	}
 
 
 	@Override
-	public Iterator<TaskVar> getTaskIterator() {
+	public final Iterator<TaskVar> getTaskIterator() {
 		return IteratorUtils.iterator(taskvars);
 	}
 
-	
+	private class RMakespan implements IRMakespan {
+
+		@Override
+		public IntDomainVar getMakespan() {
+			return vars[indexUB];
+		}
+
+		@Override
+		public void updateInf(int value) throws ContradictionException {
+			vars[indexUB].updateInf(value, cIndices[indexUB]);
+
+		}
+
+		@Override
+		public void updateSup(int value) throws ContradictionException {
+			vars[indexUB].updateSup(value, cIndices[indexUB]);
+		}
+
+
+	}
 
 	/**
 	 * Link task with the usage and height variables of a resource.
@@ -233,8 +323,8 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 		public RTask(final int taskidx) {
 			super(taskidx);
-			eidx = startOffset + taskIdx;
-			didx = endOffset + taskIdx;
+			eidx = getEndIndex(taskidx);
+			didx = getDurationIndex(taskidx);
 			uidx = getUsageIndex(taskIdx);
 			hidx = getHeightIndex(taskIdx);
 		}
@@ -497,11 +587,19 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		public final boolean isEliminated() {
 			return vars[uidx].isInstantiatedTo(0);
 		}
-		
+
 
 		@Override
 		public final boolean remove() throws ContradictionException {
 			return vars[uidx].instantiate(0, cIndices[uidx]);
+		}
+
+
+
+		@Override
+		public final void fireRemoval() {
+			assert isEliminated(); 
+			fireTaskRemoval(this);
 		}
 
 		@Override
@@ -530,6 +628,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		}
 	}
 
+	//FIXME adapt rtask comparators.
 	public final class HRTask extends RTask implements ITask {
 
 		private final IStateInt estH,lctH;
@@ -626,7 +725,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 			super.checkConsistency();
 			if(isOptional() && !checkHypotheticalConsistency()) {
 				remove();
-				fireTaskRemoval(this);
+				fireRemoval();
 			}
 		}
 
@@ -778,13 +877,6 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 			if( isOptional()) return setHStartNotIn(min, max);
 			else return super.setStartNotIn(min, max);
 		}
-
-
-
-
-
-
-
 
 
 	}

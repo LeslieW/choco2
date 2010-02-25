@@ -135,7 +135,7 @@ public abstract class AbstractSConstraint<V extends Var> extends Propagator impl
      * @param extensionNumber should use the number returned by getAbstractSConstraintExtensionNumber
      * @return the queried extension
      */
-    public Extension getExtension(int extensionNumber) {
+    public final Extension getExtension(int extensionNumber) {
         return extensions[extensionNumber];
     }
 
