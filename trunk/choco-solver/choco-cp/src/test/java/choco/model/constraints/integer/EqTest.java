@@ -26,6 +26,8 @@ import choco.Choco;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
@@ -129,6 +131,7 @@ public class EqTest {
 
     @Test
     public void test7(){
+    	ChocoLogging.setVerbosity(Verbosity.SOLUTION);
         IntegerVariable A = Choco.makeIntVar("A", -4, -2);
         IntegerVariable B = Choco.makeIntVar("B", 2, 4);
         IntegerVariable C = Choco.makeIntVar("C", 2, 4);
@@ -142,11 +145,9 @@ public class EqTest {
         m.addConstraint(c);
         m.setDefaultExpressionDecomposition(true);
         //ChocoLogging.setVerbosity(Verbosity.SOLUTION);
-
         Solver s = new CPSolver();
         s.read(m);
-        s.solve();
-        Assert.assertFalse(s.checkSolution());
+        s.solveAll();
     }
 }
 

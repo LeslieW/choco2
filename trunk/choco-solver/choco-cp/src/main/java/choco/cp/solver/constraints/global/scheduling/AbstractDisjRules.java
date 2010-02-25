@@ -24,13 +24,16 @@ package choco.cp.solver.constraints.global.scheduling;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
 
+import static choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode.ECT;
+import static choco.kernel.common.util.comparator.TaskComparators.*;
+import choco.cp.solver.constraints.global.scheduling.trees.IThetaLambdaTree;
+import choco.cp.solver.constraints.global.scheduling.trees.IThetaOmegaTree;
 import choco.cp.solver.constraints.global.scheduling.trees.IThetaTree;
 import choco.cp.solver.constraints.global.scheduling.trees.IVilimTree;
 import choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.variables.scheduling.IRMakespan;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
 
@@ -43,17 +46,18 @@ import choco.kernel.solver.variables.scheduling.ITask;
 public abstract class AbstractDisjRules implements IDisjRules {
 
 	protected final IRTask[] rtasks;
+	
+	protected final UpdateManager updateManager;
 
-	protected final List<Update> updateL;
+	protected final IRMakespan makespan;
 
-	protected int makespanLB;
+	private TreeMode state;
 
-	protected TreeMode state;
-
-	public AbstractDisjRules(IRTask[] rtasks) {
+	public AbstractDisjRules(IRTask[] rtasks, IRMakespan makespan, boolean enableRemove) {
 		super();
 		this.rtasks = Arrays.copyOf(rtasks, rtasks.length);
-		this.updateL = new LinkedList<Update>();
+		this.makespan = makespan;
+		this.updateManager = new UpdateManager(this, rtasks.length, enableRemove);
 		fireDomainChanged();
 	}
 
@@ -66,17 +70,31 @@ public abstract class AbstractDisjRules implements IDisjRules {
 		return tasks;
 	}
 
-	protected void clear() {
-		updateL.clear();
+
+	@Override
+	public void initialize() {
+		updateManager.clear();
+		fireDomainChanged();
+
 	}
+
 
 	@Override
 	public void fireDomainChanged() {
 		state = null;
-		makespanLB = Integer.MIN_VALUE;
 	}
 
-	protected final void setup(IVilimTree tree,TreeMode mode) {
+	protected void sortRTasks(Comparator<IRTask> cmp) {
+		Arrays.sort(rtasks, cmp);
+	}
+
+	protected final static <E> void sortQueue(IBipartiteQueue<E> queue, Comparator<E> cmp) {
+		queue.reset();
+		queue.sort(cmp);
+	}
+
+
+	protected final void setupMasterTree(IVilimTree tree,TreeMode mode) {
 		if(state == mode) {
 			tree.reset();
 		}else {
@@ -85,45 +103,10 @@ public abstract class AbstractDisjRules implements IDisjRules {
 		}
 	}
 
-	@Override
-	public final int getMakespanLB() {
-		return makespanLB;
+	protected final void setMakespanLB(final IThetaTree tree) throws ContradictionException {
+		makespan.updateInf(tree.getTime());
 	}
 
-	protected final void setMakespanLB(final IThetaTree tree) {
-		this.makespanLB = Math.max(this.makespanLB, tree.getTime());
-	}
-	
-	protected final void addUpdate(final IRTask task, final int value) {
-		updateL.add(new Update(task, value));		
-	}
-
-	/**
-	 * Update LCT.
-	 *
-	 * @throws ContradictionException the contradiction exception
-	 */
-	protected final boolean updateLCT() throws ContradictionException {
-		boolean noFixPoint=false;
-		for (Update p : updateL) {
-			noFixPoint|= p.rtask.updateLCT(p.value);
-		}
-		return noFixPoint;
-	}
-
-
-	/**
-	 * Update EST.
-	 *
-	 * @throws ContradictionException the contradiction exception
-	 */
-	protected final boolean updateEST() throws ContradictionException {
-		boolean noFixPoint=false;
-		for (Update p : updateL) {
-			noFixPoint|= p.rtask.updateEST(p.value);
-		}
-		return noFixPoint;
-	}
 
 	@Override
 	public final boolean detectablePrecedence() throws ContradictionException {
@@ -156,28 +139,107 @@ interface IBipartiteQueue<E> {
 }
 
 
+final class UpdateManager {
 
-final class Update {
+	public final IDisjRules rules;
 
-	protected final IRTask rtask;
+	private final IRTask[] updateL;
 
-	protected final int value;
+	private int updateCount;
 
-	/**
-	 * @param task
-	 * @param value
-	 */
-	public Update(final IRTask rtask, final int value) {
+	private final IRTask[] removeL;
+
+	private int removeCount;
+
+	protected UpdateManager(IDisjRules rules, int capacity, boolean enableRemove) {
 		super();
-		this.rtask = rtask;
-		this.value = value;
+		this.rules = rules;
+		removeL = enableRemove ? new IRTask[capacity] : null;
+		updateL = new IRTask[capacity];
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "task : "+rtask+" ; value : "+value;
+	public void clear() {
+		Arrays.fill(updateL, null);
+		updateCount=0;
+		if(removeL != null) {
+			Arrays.fill(removeL, null);
+			removeCount = 0;
+		}
 	}
+
+	public void storeUpdate(IRTask t, int value) {
+		t.storeValue(value);
+		updateL[updateCount++]=t;
+	}
+
+	public void storeRemoval(IRTask t) throws ContradictionException {
+		t.remove();
+		removeL[removeCount++]=t;
+	}
+
+	public void storeLambdaRemoval(IThetaLambdaTree tree) throws ContradictionException {
+		final IRTask t = (IRTask) tree.getResponsibleTask();
+		storeRemoval(t);
+		tree.removeFromLambda(t.getTaskVar());
+	}
+	
+	public void storeLambdaRemoval(IRTask t, IThetaLambdaTree tree) throws ContradictionException {
+		storeRemoval(t);
+		tree.removeFromLambda(t.getTaskVar());
+	}
+
+	public void storeOmegaRemoval(IRTask t, IThetaOmegaTree tree) throws ContradictionException {
+		storeRemoval(t);
+		tree.removeFromOmega(t);
+	}
+
+
+
+	public final void fireRemovals() {
+		if(removeCount > 0) {
+			for (int i = 0; i < removeCount; i++) {
+				removeL[i].fireRemoval();
+			}
+			removeCount=0;
+			rules.fireDomainChanged();
+		}
+	}
+
+
+	public boolean updateEST() throws ContradictionException {
+		if(updateCount > 0) {
+			boolean noFixPoint=false;
+			for (int i = 0; i < updateCount; i++) {
+				noFixPoint |= updateL[i].updateEST();
+			}
+			updateCount=0;
+			if(noFixPoint) rules.fireDomainChanged();
+			return noFixPoint;
+		}else return false;
+	}
+
+	public boolean fireAndUpdateEST() throws ContradictionException {
+		fireRemovals();
+		return updateEST();
+	}
+
+	public boolean updateLCT() throws ContradictionException {
+		if(updateCount > 0) {
+			boolean noFixPoint=false;
+			for (int i = 0; i < updateCount; i++) {
+				noFixPoint |= updateL[i].updateLCT();
+			}
+			updateCount=0;
+			if(noFixPoint) rules.fireDomainChanged();
+			return noFixPoint;
+		}else return false;
+	}
+
+	public boolean fireAndUpdateLCT() throws ContradictionException {
+		fireRemovals();
+		return updateLCT();
+	}
+
 }
+
+

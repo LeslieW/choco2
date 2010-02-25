@@ -29,6 +29,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.set.RandomSetValSelector;
 import choco.cp.solver.search.set.RandomSetVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
@@ -72,22 +73,12 @@ public class SetNeqTest {
             s = new CPSolver();
             SetVariable v1 = makeSetVar("v1", 1, 2);
 			SetVariable v2 = makeSetVar("v2", 1, 2);
-
             m.addConstraint(neq(v1, v2));
 			s.read(m);
 			s.setVarSetSelector(new RandomSetVarSelector(s, seed));
             s.setValSetSelector(new RandomSetValSelector(seed+1));
-            //CPSolver.setVerbosity(CPSolver.PROPAGATION);
-            s.solve();
-            do{
- //               LOGGER.info("v1 = " + s.getVar(v1));
- //               LOGGER.info("v2 = " + s.getVar(v2));
-//                LOGGER.info("======================");
-            } while(s.nextSolution());
-            LOGGER.info("nb solution: " + s.getNbSolutions());
-
+            s.solveAll();
             //CPSolver.flushLogs();
-
             assertEquals(12, s.getNbSolutions());
 		}
 	}

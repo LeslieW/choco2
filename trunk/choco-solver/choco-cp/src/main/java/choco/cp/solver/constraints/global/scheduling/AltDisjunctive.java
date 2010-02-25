@@ -21,9 +21,7 @@
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
-import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.memory.IEnvironment;
-import choco.kernel.solver.ContradictionException;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.IRTask;
@@ -36,61 +34,17 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
  */
 public class AltDisjunctive extends Disjunctive {
 
-	protected final int nbRequired;
-	
 	public AltDisjunctive(final String name, final TaskVar[] taskvars, final IntDomainVar[] usages, final IntDomainVar makespan, Solver solver) {
-		super(solver, name, taskvars, makespan, usages);
-		nbRequired = computeNbRequired();
-		final int n = getNbTasks();
-		final IEnvironment env = solver.getEnvironment();
-		//Aliaa plug-in the new Data Structure with hypothetical domain
-		for (int i = nbRequired; i < n; i++) {
-			rtasks[i] = new HRTask(i, env);
-		}
-		rules = new AltDisjRules(rtasks, env);
-	}
-
-	
-	@Override
-	public int getFilteredEventMask(int idx) {
-		return idx < taskIntVarOffset ? EVENT_MASK : IntVarEvent.INSTINTbitvector;
+		super(solver, name, taskvars, usages.length, true, ArrayUtils.append(usages, new IntDomainVar[]{makespan}));
+		rules = new AltDisjRules(rtasks, this.makespan, solver.getEnvironment());
 	}
 
 	@Override
-	protected final int getUsageIndex(final int taskIdx) {
-		return  getUsageIndex(taskIdx, computeNbRequired());
-	}
-
-	private final int computeNbRequired() {
-		return 4 * taskvars.length + 2 - vars.length;
-	}
-	
-	private final int getUsageIndex(int tidx, int nbRequired) {
-		return  tidx < nbRequired ? indexUnit : taskIntVarOffset + tidx - nbRequired;
-	}
-
-	@Override
-	protected void fireTaskRemoval(IRTask rtask) {
+	public void fireTaskRemoval(IRTask rtask) {
 		rules.remove(rtask);
 	}
 
 
-	@Override
-	public void awakeOnInst(final int idx) throws ContradictionException {
-		if( ! checkTask(idx) && 
-				idx!=indexUB && // => usage variable
-				vars[idx].isInstantiatedTo(0)) {
-			//removal, update data structure
-			final int taskIdx = idx - getTaskIntVarOffset() + nbRequired;
-			fireTaskRemoval(rtasks[taskIdx]);
-		}
-		this.constAwake(false);
-	}
-
-	@Override
-	protected final boolean isRegular(int[] tuple, int tidx) {
-		return tuple[ getUsageIndex(tidx, nbRequired)] == 1;
-	}
 	
 	
 	

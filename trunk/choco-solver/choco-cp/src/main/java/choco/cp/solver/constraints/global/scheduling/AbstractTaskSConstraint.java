@@ -16,6 +16,7 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 
 	protected final TaskVar[] taskvars;
 
+	//TODO should be private
 	protected final int startOffset;
 
 	protected final int endOffset;
@@ -39,12 +40,17 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 	 * @param otherVars other integer variables of the constraint
 	 */
 	public AbstractTaskSConstraint(final TaskVar[] taskvars, final IntDomainVar... otherVars) {
-		super(makeIntVarArray(taskvars, otherVars));
+		this(taskvars, null, otherVars);
+	}
+	
+	public AbstractTaskSConstraint(final TaskVar[] taskvars, final IntDomainVar[] intvars, final IntDomainVar... otherVars) {
+		super(makeIntVarArray(taskvars, intvars, otherVars));
 		this.taskvars = taskvars;
 		startOffset = getNbTasks();
 		endOffset = 2 * startOffset;
 		this.taskIntVarOffset = 3 * startOffset;
 	}
+	
 
 	public static final TaskVar[] createTaskVarArray(Solver solver) {
 		final int n = solver.getNbTaskVars();
@@ -58,35 +64,26 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 		return tasks;
 	}
 
-	public static final IntDomainVar[] makeIntVarArray(final TaskVar[] taskvars, IntDomainVar[] othervars) {
+	public static final IntDomainVar[] makeIntVarArray(final TaskVar[] taskvars, IntDomainVar[] intvars, IntDomainVar[] othervars) {
 		final int n=taskvars.length;
 		final int v1 = 2 * n;
 		final int v2 = 3 * n;
-		final int v3 =  v2 + (othervars == null ? 0 : othervars.length);
-		final IntDomainVar[] ivars=new IntDomainVar[v3];
+		final int v3 =  v2 + (intvars == null ? 0 : intvars.length);
+		final int v4 =  v3 + (othervars == null ? 0 : othervars.length);
+		final IntDomainVar[] ivars= new IntDomainVar[v4];
 		for (int i = 0; i < n; i++) {
 			ivars[i]=taskvars[i].start();
 			ivars[i + n]=taskvars[i].end();
 			ivars[i + v1]=taskvars[i].duration();
 		}
 		for (int i =v2; i < v3; i++) {
-			ivars[i] = othervars[i - v2];
+			ivars[i] = intvars[i - v2];
+		}
+		for (int i =v3; i < v4; i++) {
+			ivars[i] = othervars[i - v3];
 		}
 		return ivars;
 	}
-
-	//
-	//	protected boolean isStartEvent(int idx) {
-	//		return idx < startOffset;
-	//	}
-	//	
-	//	protected boolean isEndEvent(int idx) {
-	//		return startOffset <= idx && idx < endOffset;
-	//	}
-	//	
-	//	protected boolean isDurationEvent(int idx) {
-	//		return endOffset <= idx && idx < taskIntVarOffset;
-	//	}
 
 	protected final int getTaskIntVarOffset() {
 		return taskIntVarOffset;
@@ -105,7 +102,7 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 	}
 
 	protected final int getDurationIndex(final int tidx) {
-		return startOffset + tidx;
+		return endOffset+ tidx;
 	}
 
 	//	protected final int getCIndiceStart(final int taskIdx) {

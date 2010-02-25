@@ -59,14 +59,6 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
         this.propagationEngine = solver.getPropagationEngine();
 	}
 
-	/**
-	 * Useful for debugging.
-	 * @return the name of the variable
-	 */
-	@Override
-	public String toString() {
-		return name;
-	}
 
     /**
      * Unique index of an object in the master object

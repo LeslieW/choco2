@@ -33,32 +33,32 @@ import choco.kernel.solver.variables.scheduling.IRTask;
  * @version 2.0.3</br>
  */
 public interface IDisjRules {
-		
+	
+	void initialize();
+	
 	void fireDomainChanged();
 	
 	boolean isActive();
 	
-	int getMakespanLB();
-	
-	boolean overloadChecking();
+	void overloadChecking() throws ContradictionException;
 
-	public boolean notFirst() throws ContradictionException;
+	boolean notFirst() throws ContradictionException;
 
-	public boolean notLast() throws ContradictionException;
+	boolean notLast() throws ContradictionException;
 	
-	public boolean notFirstNotLast() throws ContradictionException;
+	boolean notFirstNotLast() throws ContradictionException;
 	
-	public boolean detectablePrecedenceEST() throws ContradictionException;
+	boolean detectablePrecedenceEST() throws ContradictionException;
 
-	public boolean detectablePrecedenceLCT() throws ContradictionException;
+	boolean detectablePrecedenceLCT() throws ContradictionException;
 	
-	public boolean detectablePrecedence() throws ContradictionException;
+	boolean detectablePrecedence() throws ContradictionException;
 	
-	public boolean edgeFindingEST() throws ContradictionException;
+	boolean edgeFindingEST() throws ContradictionException;
 	
-	public boolean edgeFindingLCT() throws ContradictionException;
+	boolean edgeFindingLCT() throws ContradictionException;
 	
-	public boolean edgeFinding() throws ContradictionException;
+	boolean edgeFinding() throws ContradictionException;
 	
 	/** optional operation */
 	void remove(IRTask rtask);

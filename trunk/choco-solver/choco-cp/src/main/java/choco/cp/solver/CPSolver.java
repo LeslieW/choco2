@@ -2796,8 +2796,7 @@ public class CPSolver implements Solver {
 	@Override
 	public TaskVar createTaskVar(String name, IntDomainVar start,
 			IntDomainVar end, IntDomainVar duration) {
-		TaskVar t = new TaskVar(this, getNbTaskVars(), name, start, end,
-				duration);
+		final TaskVar t = new TaskVar(this, getNbTaskVars(), name, start, end, duration);
 		taskVars.add(t);
 		return t;
 	}

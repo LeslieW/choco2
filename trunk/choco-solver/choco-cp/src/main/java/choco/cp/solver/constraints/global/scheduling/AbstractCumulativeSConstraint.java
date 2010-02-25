@@ -55,16 +55,13 @@ public abstract class AbstractCumulativeSConstraint extends AbstractResourceSCon
 
 	protected final int indexCapacity;
 
-	public AbstractCumulativeSConstraint(Solver solver, final String name, final TaskVar[] taskvars, final IntDomainVar[] heights,
+	public AbstractCumulativeSConstraint(Solver solver, final String name, final TaskVar[] taskvars,int nbOptionalTasks,
                                          final IntDomainVar consumption, final IntDomainVar capacity,
                                          final IntDomainVar uppBound, final IntDomainVar... otherVars) {
-		super(solver, name, taskvars, uppBound, ArrayUtils.append(heights,new IntDomainVar[]{consumption, capacity},otherVars));
-		if(taskvars.length != heights.length) {
-			throw new SolverException("tasks and heights array have different length.");
-		}
-		indexConsumption = taskIntVarOffset + heights.length;
+		super(solver, name, taskvars, nbOptionalTasks, true, false, ArrayUtils.append(otherVars,new IntDomainVar[]{consumption, capacity, uppBound}));
+		indexConsumption = taskIntVarOffset + otherVars.length;
 		indexCapacity = indexConsumption + 1;
-		IEnvironment env = solver.getEnvironment();
+		final IEnvironment env = solver.getEnvironment();
 		fixedHeights = env.makeBool(false);
 		positiveHeights = env.makeBool(false);
 		regularWithNegativeHeight = env.makeBool(false);
@@ -72,23 +69,18 @@ public abstract class AbstractCumulativeSConstraint extends AbstractResourceSCon
 
 	}
 	
-	@Override
-	protected final int getHeightIndex(final int taskIdx) {
-		return taskIntVarOffset + taskIdx;
-	}
-
-	public boolean updateMinCapacity(final int val) throws ContradictionException {
+	public final boolean updateMinCapacity(final int val) throws ContradictionException {
 		return vars[indexCapacity].updateInf(val, cIndices[indexCapacity]);
 	}
 
-	public boolean updateMaxCapacity(final int val) throws ContradictionException {
+	public final boolean updateMaxCapacity(final int val) throws ContradictionException {
 		return vars[indexCapacity].updateSup(val, cIndices[indexCapacity]);
 	}
 
-	public boolean updateMinConsumption(final int val) throws ContradictionException {
+	public final boolean updateMinConsumption(final int val) throws ContradictionException {
 		return vars[indexConsumption].updateInf(val, cIndices[indexConsumption]);
 	}
-	public boolean updateMaxConsumption(final int val) throws ContradictionException {
+	public final boolean updateMaxConsumption(final int val) throws ContradictionException {
 		return vars[indexConsumption].updateSup(val, cIndices[indexConsumption]);
 	}
 
@@ -125,7 +117,7 @@ public abstract class AbstractCumulativeSConstraint extends AbstractResourceSCon
 	}
 
 	public final IntDomainVar getHeight(final int idx) {
-		return getVar(getTaskIntVarOffset() + idx);
+		return getVar(getHeightIndex(idx));
 	}
 
 	@Override
@@ -161,4 +153,15 @@ public abstract class AbstractCumulativeSConstraint extends AbstractResourceSCon
 		}
 		return true;
 	}
+	
+	@Override
+	public final boolean isSatisfied(int tuple[]) {
+		return isCumulativeSatisfied(tuple, tuple[indexConsumption], tuple[indexCapacity]);
+	}
+	
+	@Override
+	public Boolean isEntailed() {
+		throw new UnsupportedOperationException("isEntailed not yet implemented on choco.global.scheduling.Cumulative");
+	}
+
 }

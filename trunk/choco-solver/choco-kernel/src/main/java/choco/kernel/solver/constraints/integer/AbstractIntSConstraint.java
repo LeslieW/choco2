@@ -82,19 +82,7 @@ public abstract class AbstractIntSConstraint extends AbstractSConstraint<IntDoma
         }
     }
 
-    /**
-     * Checks if all the variables are instantiated.
-     */
-
-    public boolean isCompletelyInstantiated() {
-        final int n = getNbVars();
-        for (int i = 0; i < n; i++) {
-            if (!(getVar(i).isInstantiated())) {
-                return false;
-            }
-        }
-        return true;
-    }
+ 
 
     public void awakeOnBounds(int varIndex) throws ContradictionException {
         this.awakeOnInf(varIndex);
