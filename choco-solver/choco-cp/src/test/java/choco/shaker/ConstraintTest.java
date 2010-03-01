@@ -48,7 +48,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /*
@@ -87,7 +86,7 @@ public class ConstraintTest {
     public void testConstraint() {
 
 //        print = true;
-        LOGGER.setLevel(Level.OFF);
+//        LOGGER.setLevel(Level.OFF);
         int mainLoop = 200000;
         int subLoop = 1000;
         int sl = 0;
@@ -208,13 +207,12 @@ public class ConstraintTest {
         int low[] = new int[]{0,0,2,0,0,0,3,0,0,0};
         int up[] = new int[]{5,5,5,5,5,5,5,5,5,5};
 
-        m.addConstraint(Choco.globalCardinality("cp:bc",vars, low, up, 0));
+        m.addConstraint(Choco.globalCardinality("cp:bc",vars, low, up, -4));
 
         checker(new Random(14106));
     }
 
     @Test
-    @Ignore
     public void test6(){
         m  = new CPModel();
         IntegerVariable[] vars = new IntegerVariable[5];
@@ -227,7 +225,7 @@ public class ConstraintTest {
         int low[] = new int[]{2,0,0,0,0,1,2};
         int up[] = new int[]{5,4,0,0,0,1,5};
 
-        m.addConstraint(Choco.globalCardinality("cp:bc",vars, low, up, 0));
+        m.addConstraint(Choco.globalCardinality("cp:bc",vars, low, up, -3));
 
         checker(new Random(0));
     }

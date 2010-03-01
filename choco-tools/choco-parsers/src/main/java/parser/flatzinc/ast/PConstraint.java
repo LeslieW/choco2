@@ -206,14 +206,14 @@ public final class PConstraint {
             if(name.contains(_var)){
                 try{
                     IntegerVariable[] values = exps.get(1).toIntVarArray();
-                    c = nth(index, values, val, -1);
+                    c = nth(index, values, val, 1);
                 }catch (ClassCastException e){
                     int[] values = exps.get(1).toIntArray();
-                    c = nth(index, values, val, -1);
+                    c = nth(index, values, val, 1);
                 }
             }else{
                 int[] values = exps.get(1).toIntArray();
-                c = nth(index, values, val, -1);
+                c = nth(index, values, val, 1);
             }
         } else {
             IntegerVariable[] vars = new IntegerVariable[exps.size()];
@@ -295,13 +295,13 @@ public final class PConstraint {
                     IntegerVariable index = exps.get(0).intVarValue();
                     IntegerVariable[] values = exps.get(1).toIntVarArray();
                     IntegerVariable val = exps.get(2).intVarValue();
-                    c = nth(index, values, val);
+                    c = nth(index, values, val,1);
                 } else {
                     IntegerVariable index = exps.get(0).intVarValue();
                     //TODO: must be change to smth like get_bools
                     int[] values = exps.get(1).toIntArray();
                     IntegerVariable val = exps.get(2).intVarValue();
-                    c = nth(index, values, val);
+                    c = nth(index, values, val,1);
                 }
             } else {
                 IntegerVariable[] vars = exps.get(0).toIntVarArray();
@@ -481,7 +481,7 @@ public final class PConstraint {
             IntegerVariable index = exps.get(0).intVarValue();
             IntegerVariable[] varArray = exps.get(1).toIntVarArray();
             IntegerVariable val = exps.get(2).intVarValue();
-            c = nth(index, varArray, val);
+            c = nth(index, varArray, val,1);
         }else
         if(name.contains(_globalCardinalityLowUp)){
             IntegerVariable[] vars = exps.get(0).toIntVarArray();

@@ -171,7 +171,7 @@ public class GloConstraintFactory extends ObjectFactory {
 			for (int i = 0; i < vars.length; i++) {
 				vars[i] = (Integer)pe.getTable()[i];
 			}
-			int offset = -1;//- pe.getIndex().getDomain().getMinValue();
+			int offset = 1;//- pe.getIndex().getDomain().getMinValue();
 			return new Constraint[]{nth(pe.getIndex().getChocovar(), vars, v, offset)};
 		}
 		throw new ModelException("Unknown global constraint");
