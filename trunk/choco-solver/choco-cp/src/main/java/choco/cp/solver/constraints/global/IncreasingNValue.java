@@ -26,6 +26,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import gnu.trove.TIntHashSet;
 
 /**
  * User : xlorca
@@ -351,5 +352,48 @@ public class IncreasingNValue extends AbstractLargeIntSConstraint {
             s += v.pretty() + "\n";
         }
         return s;
+    }
+
+    /**
+     * Default implementation of the isSatisfied by
+     * delegating to the isSatisfied(int[] tuple)
+     *
+     * @return
+     */
+    @Override
+    public boolean isSatisfied() {
+        if(isCompletelyInstantiated()){
+            TIntHashSet values = new TIntHashSet();
+            values.add(vars[0].getVal());
+            for(int i = 1; i< n; i++){
+                if(vars[i-1].getVal()>vars[i].getVal()){
+                    return false;
+                }
+                values.add(vars[i].getVal());
+            }
+            return values.size() == occ.getVal();
+        }
+        return false;
+    }
+
+    /**
+     * TEMPORARY: if not overriden by the constraint, throws an error
+     * to avoid bug using reified constraints in constraints
+     * that have not been changed to fulfill this api yet !
+     *
+     * @param tuple
+     * @return
+     */
+    @Override
+    public boolean isSatisfied(int[] tuple) {
+        TIntHashSet values = new TIntHashSet();
+        values.add(tuple[0]);
+        for(int i = 1; i< n; i++){
+            if(tuple[i-1]>tuple[i]){
+                return false;
+            }
+            values.add(tuple[i]);
+        }
+        return values.size() == tuple[n];
     }
 }
