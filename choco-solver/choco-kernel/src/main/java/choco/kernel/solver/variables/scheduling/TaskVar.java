@@ -4,16 +4,15 @@
 package choco.kernel.solver.variables.scheduling;
 
 import choco.kernel.common.IIndex;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.structure.PartiallyStoredIntVector;
-import choco.kernel.memory.structure.PartiallyStoredVector;
+import choco.kernel.common.util.iterators.DisposableIterator;
+import choco.kernel.memory.structure.*;
 import choco.kernel.model.variables.scheduling.ITaskVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.propagation.event.TaskVarEvent;
 import choco.kernel.solver.propagation.event.VarEvent;
+import choco.kernel.solver.propagation.listener.TaskPropagator;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -36,7 +35,7 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 	/**
 	 * The list of constraints (listeners) observing the variable.
 	 */
-	protected PartiallyStoredVector<SConstraint> constraints;
+	protected APartiallyStoredCstrList<SConstraint> constraints;
 
     protected final VarEvent<? extends Var> event;
 
@@ -52,8 +51,7 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 		this.start = start;
 		this.end = end;
 		this.duration = duration;
-		IEnvironment env = solver.getEnvironment();
-		constraints = env.makePartiallyStoredVector();
+		constraints = new PartiallyStoredTaskCstrList(solver.getEnvironment());
         index = solver.getIndexfactory().getIndex();
         this.event = new TaskVarEvent(this);
         this.propagationEngine = solver.getPropagationEngine();
@@ -149,7 +147,7 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 	 * @return the constraint number i according to the variable
 	 */
 	public SConstraint getConstraint(final int i) {
-		return constraints.get(i);
+		return constraints.getConstraint(i);
 	}
 
 
@@ -158,7 +156,7 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 	 * @return the number of constraints containing this variable
 	 */
 	public int getNbConstraints() {
-		return constraints.size();
+		return constraints.getNbConstraints();
 	}
 
 	/**
@@ -166,7 +164,7 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 	 * @return the backtrackable structure containing the constraints
 	 */
 	public PartiallyStoredVector<SConstraint> getConstraintVector() {
-		return constraints;
+		return constraints.getConstraintVector();
 	}
 
 	/**
@@ -194,8 +192,8 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 	 * @param c the constraint that should be removed from the list this variable
 	 * maintains.
 	 */
-	public void eraseConstraint(final SConstraint c) {
-		constraints.remove(c);
+	public void eraseConstraint(final SConstraint<? extends Var> c) {
+		constraints.eraseConstraint(c);
 	}
 
 	// ============================================
@@ -213,13 +211,7 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 	   */
 	  public int addConstraint(final SConstraint c, final int varIdx,
 	                           final boolean dynamicAddition) {
-	    int constraintIdx;
-	    if (dynamicAddition) {
-	      constraintIdx = constraints.add(c);
-	    } else {
-	      constraintIdx = constraints.staticAdd(c);
-	    }
-	    return constraintIdx;
+	     return constraints.addConstraint(c, varIdx, dynamicAddition);
 	  }
 
 	/**
@@ -236,24 +228,15 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 	 * @return an iterator over all constraints involving this variable
 	 */
 	public Iterator<SConstraint> getConstraintsIterator() {
-		return new Iterator<SConstraint>() {
-			DisposableIntIterator indices = constraints.getIndexIterator();
-
-			public boolean hasNext() {
-				return indices.hasNext();
-			}
-
-			public SConstraint next() {
-				return constraints.get(indices.next());
-			}
-
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
-		};
+		return constraints.getConstraintsIterator();
 
 	}
 
+    @SuppressWarnings({"unchecked"})
+    public final DisposableIterator<Couple<? extends TaskPropagator>> getActiveConstraints(int cstrCause){
+        return ((PartiallyStoredTaskCstrList)constraints).getActiveConstraint(cstrCause);
+    }
+    
 	@Override
 	public boolean isInstantiated() {
 		return  start.isInstantiated() && end.isInstantiated() && duration.isInstantiated();
@@ -263,7 +246,7 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
      * Call awake on TaskVar.
      * @param idx index of the constraint calling #awake().
      */
-    public void awake(int idx){
-        propagationEngine.postEvent(this, idx, TaskVarEvent.TASK_AWAKE); 
+    public void updateHypotheticalDomain(int idx){
+        propagationEngine.postEvent(this, idx, TaskVarEvent.HYPDOMMOD);
     }
 }

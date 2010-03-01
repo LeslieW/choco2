@@ -22,11 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.propagation.event;
 
-import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.memory.structure.PartiallyStoredVector;
+import choco.kernel.common.util.iterators.DisposableIterator;
+import choco.kernel.memory.structure.Couple;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.constraints.AbstractSConstraint;
-import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.propagation.listener.TaskPropagator;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
 /**
@@ -41,7 +40,9 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
  */
 public class TaskVarEvent extends VarEvent<TaskVar> {
 
-    public final static int TASK_AWAKE = 1;
+    public final static int HYPDOMMOD = 0;
+
+    public final static int HYPDOMMODbitvector = 1;
 
 
     /**
@@ -72,17 +73,30 @@ public class TaskVarEvent extends VarEvent<TaskVar> {
     @SuppressWarnings({"unchecked"})
     @Override
     public boolean propagateEvent() throws ContradictionException {
-        PartiallyStoredVector<SConstraint> cs = modifiedVar.getConstraintVector();
-        DisposableIntIterator it = cs.getIndexIterator();
-        for(;it.hasNext();){
-            int idx = it.next();
-            if(idx != cause){
-                AbstractSConstraint<TaskVar> c = (AbstractSConstraint<TaskVar>)cs.get(idx);
-                c.constAwake(false);
-            }
-        }
+        int evtType = eventType;
+		int evtCause = cause;
+
+        if ((propagatedEvents & HYPDOMMODbitvector) != 0 && (evtType & HYPDOMMODbitvector) != 0)
+            propagateHypDomModEvent(evtCause);
+        
         cause = NOEVENT;
         eventType = EMPTYEVENT;
         return false;
     }
+
+    /**
+	 * Propagates the instantiation event
+	 */
+	public void propagateHypDomModEvent(int evtCause) throws ContradictionException {
+		TaskVar v = getModifiedVar();
+        DisposableIterator<Couple<? extends TaskPropagator>> cit = v.getActiveConstraints(evtCause);
+        try{
+            while(cit.hasNext()){
+                Couple<? extends TaskPropagator> cc = cit.next();
+                cc.c.awakeOnHypDomMod(cc.i);
+            }
+        }finally{
+            cit.dispose();
+        }
+	}
 }

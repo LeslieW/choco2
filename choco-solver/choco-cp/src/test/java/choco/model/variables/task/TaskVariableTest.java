@@ -31,6 +31,8 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraintType;
+import choco.kernel.solver.propagation.event.TaskVarEvent;
+import choco.kernel.solver.propagation.listener.TaskPropagator;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import org.junit.Assert;
 import org.junit.Test;
@@ -82,7 +84,7 @@ public class TaskVariableTest {
         Assert.assertEquals(2,ftc2.getVal());
     }
 
-    private class FakeTaskConstraint extends AbstractSConstraint<TaskVar>{
+    private class FakeTaskConstraint extends AbstractSConstraint<TaskVar> implements TaskPropagator{
 
         int value;
 
@@ -95,6 +97,11 @@ public class TaskVariableTest {
         protected FakeTaskConstraint(TaskVar[] vars, int init) {
             super(vars);
             this.value = init;
+        }
+
+        @Override
+        public int getFilteredEventMask(int idx) {
+            return TaskVarEvent.HYPDOMMODbitvector;
         }
 
         @Override
@@ -138,12 +145,22 @@ public class TaskVariableTest {
         }
 
         public void forceAwake(int idx){
-            vars[idx].awake(cIndices[idx]);
+            vars[idx].updateHypotheticalDomain(cIndices[idx]);
         }
 
         public final int getVal(){
             return value;
         }
+
+        /**
+         * Default propagation on improved hypothetical domain: propagation on domain revision.
+         */
+        @Override
+        public void awakeOnHypDomMod(int varIdx) throws ContradictionException {
+            value++;
+        }
+
+        
     }
 
 }
