@@ -1,4 +1,4 @@
-package choco.cp.memory.structure;
+package choco.kernel.memory.structure;
 
 public class Couple<C> {
     public C c;

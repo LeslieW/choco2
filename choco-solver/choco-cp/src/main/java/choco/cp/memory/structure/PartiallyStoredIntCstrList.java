@@ -22,18 +22,17 @@
  **************************************************/
 package choco.cp.memory.structure;
 
-import static choco.cp.solver.variables.integer.IntVarEvent.*;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.structure.APartiallyStoredCstrList;
+import choco.kernel.memory.structure.Couple;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.propagation.Propagator;
-import choco.kernel.solver.propagation.listener.IntPropagator;
 
 /*
 * User : charles
@@ -42,17 +41,24 @@ import choco.kernel.solver.propagation.listener.IntPropagator;
 * Since : Choco 2.1.0
 * Update : Choco 2.1.0
 */
-public final class PartiallyStoredIntCstrList <C extends AbstractSConstraint & IntPropagator> extends APartiallyStoredCstrList<C>{
+public final class PartiallyStoredIntCstrList <C extends AbstractSConstraint> extends APartiallyStoredCstrList<C>{
 
     private final PartiallyStoredIntVector[] events;
 
     private final IStateInt priority;
 
-    public PartiallyStoredIntCstrList(IEnvironment env) {
+    private final int[] eventTypes;
+    private final int[] idxEventTypes;
+
+    public PartiallyStoredIntCstrList(IEnvironment env, int... eventTypes) {
         super(env);
-        events = new PartiallyStoredIntVector[4];
-		for(int i = 0; i < 4; i++){
+        int size = eventTypes.length;
+        events = new PartiallyStoredIntVector[size];
+        this.eventTypes = eventTypes;
+        this.idxEventTypes = new int[eventTypes[size-1]+1];
+		for(int i = 0; i < size; i++){
             events[i] = env.makePartiallyStoredIntVector();
+            idxEventTypes[eventTypes[i]] = i;
 		}
         priority = env.makeInt(0);
     }
@@ -73,18 +79,11 @@ public final class PartiallyStoredIntCstrList <C extends AbstractSConstraint & I
         AbstractSConstraint ic = ((AbstractSConstraint)c);
 		computePriority(ic);
 		int mask = ic.getFilteredEventMask(varIdx);
-		if((mask & INSTINTbitvector) != 0){
-            addEvent(dynamicAddition, 0, constraintIdx);
-		}
-		if((mask & INCINFbitvector) != 0){
-            addEvent(dynamicAddition, 1, constraintIdx);
-		}
-		if((mask & DECSUPbitvector) != 0){
-            addEvent(dynamicAddition, 2, constraintIdx);
-		}
-		if((mask & REMVALbitvector) != 0){
-            addEvent(dynamicAddition, 3, constraintIdx);
-		}
+        for(int evt : eventTypes){
+            if((mask & evt) !=0){
+                addEvent(dynamicAddition, idxEventTypes[evt], constraintIdx);
+            }
+        }
 		return constraintIdx;
 	}
 
@@ -120,18 +119,11 @@ public final class PartiallyStoredIntCstrList <C extends AbstractSConstraint & I
 	public int eraseConstraint(SConstraint c) {
 		int idx = super.eraseConstraint(c);
 		int mask = ((AbstractIntSConstraint)c).getFilteredEventMask(indices.get(idx));
-		if((mask & INSTINTbitvector) != 0){
-			events[0].remove(idx);
-		}
-		if((mask & INCINFbitvector) != 0){
-			events[1].remove(idx);
-		}
-		if((mask & DECSUPbitvector) != 0){
-			events[2].remove(idx);
-		}
-		if((mask & REMVALbitvector) != 0){
-			events[3].remove(idx);
-		}
+        for(int evt : eventTypes){
+            if((mask & evt) !=0){
+                events[idxEventTypes[evt]].remove(idx);
+            }
+        }
         return idx;
 	}
 
@@ -148,10 +140,10 @@ public final class PartiallyStoredIntCstrList <C extends AbstractSConstraint & I
     public DisposableIterator<Couple<C>> getActiveConstraint(int event, int cstrCause){
         QuickIterator iter = _quickIterator;
         if (iter != null && iter.reusable) {
-            iter.init(events[event], cstrCause);
+            iter.init(events[idxEventTypes[event]], cstrCause);
             return iter;
         }
-        _quickIterator = new QuickIterator(events[event], cstrCause);
+        _quickIterator = new QuickIterator(events[idxEventTypes[event]], cstrCause);
         return _quickIterator;
     }
 

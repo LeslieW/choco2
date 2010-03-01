@@ -22,10 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
-import choco.cp.memory.structure.Couple;
 import choco.cp.memory.structure.PartiallyStoredIntCstrList;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
+import choco.kernel.memory.structure.Couple;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.solver.ContradictionException;
 import static choco.kernel.solver.ContradictionException.Type.DOMAIN;
@@ -53,8 +53,8 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
      * @param solver master solver
      * @param name name of the variable
      */
-	protected <C extends AbstractIntSConstraint> IntDomainVarImpl(Solver solver, String name) {
-		super(solver, name, new PartiallyStoredIntCstrList<C>(solver.getEnvironment()));
+	protected <C extends AbstractIntSConstraint & IntPropagator> IntDomainVarImpl(Solver solver, String name) {
+		super(solver, name, new PartiallyStoredIntCstrList<C>(solver.getEnvironment(), IntVarEvent.EVENTS));
 	}
 
 	/**

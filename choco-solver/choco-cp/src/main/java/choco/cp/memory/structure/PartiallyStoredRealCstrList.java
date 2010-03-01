@@ -26,6 +26,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.APartiallyStoredCstrList;
+import choco.kernel.memory.structure.Couple;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.propagation.listener.RealPropagator;
 
