@@ -22,9 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.propagation;
 
-import choco.cp.memory.structure.Couple;
 import choco.cp.solver.variables.real.RealVarImpl;
 import choco.kernel.common.util.iterators.DisposableIterator;
+import choco.kernel.memory.structure.Couple;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.propagation.listener.RealPropagator;

@@ -22,9 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.set;
 
-import choco.cp.memory.structure.Couple;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
+import choco.kernel.memory.structure.Couple;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.propagation.listener.SetPropagator;

@@ -22,9 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
-import choco.cp.memory.structure.Couple;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
+import choco.kernel.memory.structure.Couple;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.propagation.listener.IntPropagator;
@@ -75,6 +75,9 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
      * Constants for the <i>eventType</i> bitvector: value of bitvector for instantiations of IntVars
      */
     public static final int INSTINTbitvector = 8;
+
+
+    public static final int[] EVENTS = new int[]{INCINFbitvector, DECSUPbitvector, REMVALbitvector, INSTINTbitvector};
 
     public IntVarEvent(IntDomainVarImpl var) {
         super(var);
@@ -177,7 +180,7 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
      */
     public void propagateInstEvent(int evtCause) throws ContradictionException {
         IntDomainVarImpl v = modifiedVar;
-        DisposableIterator<Couple<? extends IntPropagator>> cit = v.getActiveConstraints(0, evtCause);
+        DisposableIterator<Couple<? extends IntPropagator>> cit = v.getActiveConstraints(INSTINTbitvector, evtCause);
         try {
             while (cit.hasNext()) {
                 Couple<? extends IntPropagator> cc = cit.next();
@@ -194,7 +197,7 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
      */
     public void propagateInfEvent(int evtCause) throws ContradictionException {
         IntDomainVarImpl v = modifiedVar;
-        DisposableIterator<Couple<? extends IntPropagator>> cit = v.getActiveConstraints(1, evtCause);
+        DisposableIterator<Couple<? extends IntPropagator>> cit = v.getActiveConstraints(INCINFbitvector, evtCause);
         try {
             while (cit.hasNext()) {
                 Couple<? extends IntPropagator> cc = cit.next();
@@ -210,7 +213,7 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
      */
     public void propagateSupEvent(int evtCause) throws ContradictionException {
         IntDomainVarImpl v = modifiedVar;
-        DisposableIterator<Couple<? extends IntPropagator>> cit = v.getActiveConstraints(2, evtCause);
+        DisposableIterator<Couple<? extends IntPropagator>> cit = v.getActiveConstraints(DECSUPbitvector, evtCause);
         try {
             while (cit.hasNext()) {
                 Couple<? extends IntPropagator> cc = cit.next();
@@ -226,7 +229,7 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
      */
     public void propagateRemovalsEvent(int evtCause) throws ContradictionException {
         IntDomainVarImpl v = modifiedVar;
-        DisposableIterator<Couple<? extends IntPropagator>> cit = v.getActiveConstraints(3, evtCause);
+        DisposableIterator<Couple<? extends IntPropagator>> cit = v.getActiveConstraints(REMVALbitvector, evtCause);
         try {
             while (cit.hasNext()) {
                 Couple<? extends IntPropagator> cc = cit.next();

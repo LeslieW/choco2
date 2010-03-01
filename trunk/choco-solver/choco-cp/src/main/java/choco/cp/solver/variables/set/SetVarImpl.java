@@ -22,10 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.set;
 
-import choco.cp.memory.structure.Couple;
 import choco.cp.memory.structure.PartiallyStoredSetCstrList;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
+import choco.kernel.memory.structure.Couple;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
@@ -115,8 +115,8 @@ public final class SetVarImpl extends AbstractVar implements SetVar {
         this.domain = new SetDomainImpl(this, sortedValues, constant, solver.getEnvironment(), propagationEngine);
 	}
 
+    @SuppressWarnings({"unchecked"})
     public final DisposableIterator<Couple<? extends SetPropagator>> getActiveConstraints(int cstrCause){
-        //noinspection unchecked
         return ((PartiallyStoredSetCstrList)constraints).getActiveConstraint(cstrCause);
     }
 
