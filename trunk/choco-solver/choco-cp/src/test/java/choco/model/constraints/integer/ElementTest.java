@@ -29,6 +29,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -406,7 +407,7 @@ public class ElementTest {
     public void testFznElement(){
         for(int j = 0; j< 100; j++){
             Random r = new Random(j);
-            IntegerVariable index = Choco.makeIntVar("idx", 24, 25);
+            IntegerVariable index = Choco.makeIntVar("idx", 23, 25);
             IntegerVariable val = Choco.makeBooleanVar("val");
             int[] values = new int[24];
             for(int i = 0; i < values.length; i++){
@@ -415,8 +416,40 @@ public class ElementTest {
             m.addConstraint(nth(option,index, values, val));
             s.read(m);
             s.solveAll();
-            Assert.assertEquals(20, s.getSolutionCount());
+            Assert.assertEquals("seed:"+j, 1, s.getSolutionCount());
         }
+
+    }
+
+    @Test
+    public void testFznElement2() {
+        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+        int n = 3;
+        IntegerVariable index = Choco.makeIntVar("idx", 1, n);
+        IntegerVariable val = Choco.makeBooleanVar("val");
+        IntegerVariable[] values = Choco.makeBooleanVarArray("as", n);
+
+        m.addConstraint(nth(option, index, values, val, 1));
+        s.read(m);
+
+        s.solveAll();
+        Assert.assertEquals(8, s.getSolutionCount());
+
+    }
+
+     @Test
+    public void testFznElement3() {
+        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+        int n = 3;
+        IntegerVariable index = Choco.makeIntVar("idx", 1, n);
+        IntegerVariable val = Choco.makeBooleanVar("val");
+        int[] values = new int[]{0,0,1};
+
+        m.addConstraint(nth(option, index, values, val, 1));
+        s.read(m);
+
+        s.solveAll();
+        Assert.assertEquals(3, s.getSolutionCount());
 
     }
 

@@ -232,7 +232,7 @@ public class ConstraintFactory {
 //        if(minMax){
 //            return Choco.globalCardinality(option, vars, min, max, low, up);
 //        }
-        return Choco.globalCardinality(option, vars, low, up, 0);
+        return Choco.globalCardinality(option, vars, low, up, min);
     }
 
 

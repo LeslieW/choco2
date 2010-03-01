@@ -82,8 +82,8 @@ public class Element extends AbstractBinIntSConstraint {
         DisposableIntIterator iter = this.v0.getDomain().getIterator();
         for (; iter.hasNext();) {
             int index = iter.next();
-            if (minVal > this.lval[index + cste]) minVal = this.lval[index + cste];
-            if (maxVal < this.lval[index + cste]) maxVal = this.lval[index + cste];
+            if (minVal > this.lval[index - cste]) minVal = this.lval[index - cste];
+            if (maxVal < this.lval[index - cste]) maxVal = this.lval[index - cste];
         }
         iter.dispose();
         this.v1.updateInf(minVal, this.cIdx1);
@@ -93,8 +93,8 @@ public class Element extends AbstractBinIntSConstraint {
     }
 
     protected void updateIndexFromValue() throws ContradictionException {
-        int minFeasibleIndex = Math.max(0 - cste, this.v0.getInf());
-        int maxFeasibleIndex = Math.min(this.v0.getSup(), lval.length - 1 - cste);
+        int minFeasibleIndex = Math.max(0 + cste, this.v0.getInf());
+        int maxFeasibleIndex = Math.min(this.v0.getSup(), lval.length -1 + cste);
 
         if(minFeasibleIndex>maxFeasibleIndex){
             this.fail();
@@ -103,18 +103,18 @@ public class Element extends AbstractBinIntSConstraint {
         int cause = this.v1.hasEnumeratedDomain() ? this.cIdx0 : VarEvent.domOverWDegIdx(cIdx0);
 
         while ((this.v0.canBeInstantiatedTo(minFeasibleIndex))
-                && !(this.v1.canBeInstantiatedTo(lval[minFeasibleIndex + this.cste])))
+                && !(this.v1.canBeInstantiatedTo(lval[minFeasibleIndex - this.cste])))
             minFeasibleIndex++;
         this.v0.updateInf(minFeasibleIndex, cause);
 
         while ((this.v0.canBeInstantiatedTo(maxFeasibleIndex))
-                && !(this.v1.canBeInstantiatedTo(lval[maxFeasibleIndex + this.cste])))
+                && !(this.v1.canBeInstantiatedTo(lval[maxFeasibleIndex - this.cste])))
             maxFeasibleIndex--;
         this.v0.updateSup(maxFeasibleIndex, cause);
 
         if (this.v0.hasEnumeratedDomain()) {
             for (int i = minFeasibleIndex + 1; i <= maxFeasibleIndex - 1; i++) {
-                if (this.v0.canBeInstantiatedTo(i) && !(this.v1.canBeInstantiatedTo(this.lval[i + this.cste])))
+                if (this.v0.canBeInstantiatedTo(i) && !(this.v1.canBeInstantiatedTo(this.lval[i - this.cste])))
                     this.v0.removeVal(i, cause);
             }
         }
@@ -127,7 +127,7 @@ public class Element extends AbstractBinIntSConstraint {
 
     public void awakeOnInst(int i) throws ContradictionException {
         if (i == 0)
-            this.v1.instantiate(this.lval[this.v0.getVal() + this.cste], this.cIdx1);
+            this.v1.instantiate(this.lval[this.v0.getVal() - this.cste], this.cIdx1);
 //    else
 //      this.updateIndexFromValue();
     }
@@ -146,9 +146,9 @@ public class Element extends AbstractBinIntSConstraint {
             DisposableIntIterator iter = this.v0.getDomain().getIterator();
             for (; iter.hasNext();) {
                 int val = iter.next();
-                boolean b = (val + this.cste) >= 0
-                        && (val + this.cste) < this.lval.length
-                        && this.lval[val + this.cste] == this.v1.getVal();
+                boolean b = (val - this.cste) >= 0
+                        && (val - this.cste) < this.lval.length
+                        && this.lval[val - this.cste] == this.v1.getVal();
                 allVal &= b;
                 oneVal |= b;
             }
@@ -160,9 +160,9 @@ public class Element extends AbstractBinIntSConstraint {
             DisposableIntIterator iter = this.v0.getDomain().getIterator();
             while (iter.hasNext() && !b) {
                 int val = iter.next();
-                if ((val + this.cste) >= 0 &&
-                        (val + this.cste) < this.lval.length) {
-                    b |= this.v1.canBeInstantiatedTo(this.lval[val + this.cste]);
+                if ((val - this.cste) >= 0 &&
+                        (val - this.cste) < this.lval.length) {
+                    b |= this.v1.canBeInstantiatedTo(this.lval[val - this.cste]);
                 }
             }
             iter.dispose();
@@ -172,8 +172,8 @@ public class Element extends AbstractBinIntSConstraint {
     }
 
     public boolean isSatisfied(int[] tuple) {
-        if (tuple[0] + this.cste >= lval.length ||
-            tuple[0] + this.cste < 0) return false;
-        return this.lval[tuple[0] + this.cste] == tuple[1];
+        if (tuple[0] - this.cste >= lval.length ||
+            tuple[0] - this.cste < 0) return false;
+        return this.lval[tuple[0] - this.cste] == tuple[1];
     }
 }
