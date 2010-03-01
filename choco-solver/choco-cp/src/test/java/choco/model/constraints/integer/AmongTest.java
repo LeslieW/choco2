@@ -49,7 +49,7 @@ public class AmongTest {
 
 
     private static int[] buildValues(Random r, int low, int up){
-        int nb = r.nextInt(up-low+1);
+        int nb = 1+r.nextInt(up-low+1);
         TIntHashSet set = new TIntHashSet(nb);
         for(int i = 0 ; i < nb; i++){
             set.add(low + r.nextInt(up - low + 1));

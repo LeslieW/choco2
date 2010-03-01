@@ -55,7 +55,7 @@ public class AmongSetManager extends MixedConstraintManager{
             if(parameters  == null){
                 Var[] vars = new Var[variables.length];
                 solver._to(variables, vars);
-                return new AmongSet(vars);
+                return new AmongSet(vars, solver.getEnvironment());
             }
         }
         throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
