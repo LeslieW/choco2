@@ -52,7 +52,7 @@ public class Equation extends AbstractLargeRealSConstraint {
 
   public Equation(Solver solver, RealVar[] collectedVars, RealExp exp, RealInterval cste) {
     super(collectedVars);
-    initEquation(solver, exp, cste);
+    initEquation(exp, cste);
   }
 
   public Equation(Solver solver, RealVar[] collectedVars, RealExp exp) {
@@ -71,7 +71,7 @@ public class Equation extends AbstractLargeRealSConstraint {
 //    return newc;
 //  }
 
-  public void initEquation(Solver solver, RealExp exp, RealInterval cste) {
+  public void initEquation(RealExp exp, RealInterval cste) {
     this.cste = cste;
     this.exp = exp;
     boxedVars = new RealVar[vars.length];
@@ -229,16 +229,7 @@ public class Equation extends AbstractLargeRealSConstraint {
   // ==== Constraint properties ====
 
 public boolean isSatisfied() {
-//    boolean ok = true;
-//    this.solver.getEnvironment().worldPush();
-//    try {
-//      this.propagate();
-//    } catch (ContradictionException e) {
-//      ok = false;
-//    }
-//    this.solver.getEnvironment().worldPop();
-//    return ok;
-    //TODO : do a unplugged satisfaction checker
+//    TODO : do a unplugged satisfaction checker
     return false;
   }
 

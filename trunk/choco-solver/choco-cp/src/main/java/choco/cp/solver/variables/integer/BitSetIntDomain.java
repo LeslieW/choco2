@@ -33,7 +33,7 @@ import choco.kernel.solver.variables.integer.IBitSetIntDomain;
 
 import java.util.Random;
 
-public class BitSetIntDomain extends AbstractIntDomain implements IBitSetIntDomain {
+public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetIntDomain {
     /**
      * A random generator for random value from the domain
      */
@@ -254,7 +254,7 @@ public class BitSetIntDomain extends AbstractIntDomain implements IBitSetIntDoma
 
     private BitSetIntDomainIterator(BitSetIntDomain domain) {
         this.domain = domain;
-      init();
+        init();
     }
 
     @Override

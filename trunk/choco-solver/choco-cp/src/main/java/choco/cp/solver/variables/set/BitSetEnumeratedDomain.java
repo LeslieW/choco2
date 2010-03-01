@@ -336,12 +336,14 @@ public class BitSetEnumeratedDomain implements SetSubDomain {
         int maxDisplay = 15;
         int count = 0;
         int val = getFirstVal();
-        do{
-            count++;
-            if (count > 1) buf.append(", ");
-            buf.append(val);
-            val = getNextValue(val);
-        }while(val>-1 && count < maxDisplay);
+        if(val>-1){
+            do{
+                count++;
+                if (count > 1) buf.append(", ");
+                buf.append(val);
+                val = getNextValue(val);
+            }while(val>-1 && count < maxDisplay);
+        }
         if (this.getSize() > maxDisplay) {
             buf.append("..., ");
             buf.append(this.getLastVal());
