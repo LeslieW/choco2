@@ -30,7 +30,7 @@ public class AmongManager extends IntConstraintManager {
                     if(variables.length == 1){
                         return new Among(solver.getVar(variables[0]), values);
                     }else{
-                        return new AmongGAC(solver.getVar(variables), values);
+                        return new AmongGAC(solver.getVar(variables), values, solver.getEnvironment());
                     }
 
                 }

@@ -37,7 +37,6 @@ import choco.cp.solver.search.set.RandomSetVarSelector;
 import choco.cp.solver.search.set.StaticSetVarOrder;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.model.ModelException;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
@@ -87,8 +86,8 @@ public class AmongSetTest {
         int up = low + r.nextInt(2 * size);
         int[] values = buildValues(r, low, up);
         IntegerVariable[] vars = buildVars(r, low, up);
-        int min = r.nextInt(size);
-        int max = min + r.nextInt(size);
+        int max = 1+ r.nextInt(vars.length);
+        int min = max - r.nextInt(max);
         SetVariable S = Choco.makeSetVar("S", values);
         IntegerVariable N = Choco.makeIntVar("N", min, max);
 
@@ -295,26 +294,22 @@ public class AmongSetTest {
     @Test
     public void testRandom1() {
         Random r;
-        for (int i = 1; i < 200; i++) {
+        for (int i = 0; i < 500; i++) {
             r = new Random(i);
-            try {
-                CPModel[] ms = model(r, 4);
-                CPSolver[] ss = new CPSolver[ms.length];
-                for (int j = 0; j < ms.length; j++) {
-                    ss[j] = solve(i, ms[j], false);
-                }
-                for (int j = 1; j < ms.length; j++) {
-                    Assert.assertEquals("nb solutions, seed:" + i, ss[0].getSolutionCount(), ss[j].getSolutionCount());
+            CPModel[] ms = model(r, 4);
+            CPSolver[] ss = new CPSolver[ms.length];
+            for (int j = 0; j < ms.length; j++) {
+                ss[j] = solve(i, ms[j], false);
+            }
+            for (int j = 1; j < ms.length; j++) {
+                Assert.assertEquals("nb solutions, seed:" + i, ss[0].getSolutionCount(), ss[j].getSolutionCount());
 //                  See article for more explanation, but some examples can be found where the algo is better than BC
 //                  And others where the algo is worse than BC.
 //                  So no nodes comparisons
 //                  if(st > 0){
 //                        Assert.assertEquals("nb nodes, seed:"+i, ss[0].getNodeCount(), ss[j].getNodeCount());
 //                   }
-                }
-            } catch (ModelException ignored) {
             }
         }
     }
-
 }

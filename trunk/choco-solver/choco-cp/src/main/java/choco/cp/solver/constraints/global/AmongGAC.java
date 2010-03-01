@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -22,16 +22,16 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global;
 
+import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.objects.IntPair;
 import choco.kernel.common.util.tools.StringUtils;
+import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.IStateBitSet;
+import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import gnu.trove.TIntArrayList;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * User : cprudhom
@@ -51,9 +51,12 @@ import java.util.List;
 public class AmongGAC extends AbstractLargeIntSConstraint {
 
 
-    private final TIntArrayList values;
+    private final TIntArrayList valuesAsList;
+    private final int[] values;
     private final int nb_vars;
-    private final List<IntPair<IntDomainVar>> both = new ArrayList<IntPair<IntDomainVar>>();
+    private final IStateBitSet both;
+    private final IStateInt LB;
+    private final IStateInt UB;
 
     /**
      * Constructs a constraint with the specified priority.
@@ -61,12 +64,81 @@ public class AmongGAC extends AbstractLargeIntSConstraint {
      * The last variables of {@code vars} is the counter.
      * @param vars (n-1) variables + N as counter
      * @param values counted values
+     * @param environment
      */
-    public AmongGAC(IntDomainVar[] vars, int[] values) {
+    public AmongGAC(IntDomainVar[] vars, int[] values, IEnvironment environment) {
         super(vars);
         nb_vars = vars.length - 1;
-        this.values = new TIntArrayList(values);
+        this.values = values;
+        this.valuesAsList = new TIntArrayList(values);
+        both = environment.makeBitSet(nb_vars);
+        LB = environment.makeInt(0);
+        UB = environment.makeInt(0);
     }
+
+    @Override
+    public int getFilteredEventMask(int idx) {
+        if(idx == nb_vars){
+            return IntVarEvent.INSTINTbitvector + IntVarEvent.INCINFbitvector + IntVarEvent.DECSUPbitvector;
+        }
+        return IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
+    }
+
+    /**
+     * <i>Propagation:</i>
+     * Propagating the constraint for the very first time until local
+     * consistency is reached.
+     *
+     * @throws choco.kernel.solver.ContradictionException
+     *          contradiction exception
+     */
+    @Override
+    public void awake() throws ContradictionException {
+        int lb = 0;
+        int ub = nb_vars;
+        for(int i = 0 ; i < nb_vars; i++){
+            IntDomainVar var = vars[i];
+            int nb = 0;
+            for (int value : values) {
+                nb += (var.canBeInstantiatedTo(value)?1:0);
+            }
+            if(nb == var.getDomainSize()){
+                lb++;
+            }else if(nb == 0){
+
+                ub--;
+            }else if(nb > 0){
+                both.set(i, true);
+            }
+        }
+        LB.set(lb);
+        UB.set(ub);
+
+        filter();
+    }
+
+    private void filter() throws ContradictionException {
+        int lb = LB.get();
+        int ub = UB.get();
+        vars[nb_vars].updateInf(lb, cIndices[nb_vars]);
+        vars[nb_vars].updateSup(ub, cIndices[nb_vars]);
+
+        int min = Math.max(vars[nb_vars].getInf(), lb);
+        int max = Math.min(vars[nb_vars].getSup(), ub);
+
+        if(max < min) this.fail();
+
+        if(lb == min && lb == max){
+            removeOnlyValues();
+            setEntailed();
+        }
+
+        if(ub == min && ub == max){
+            removeButValues();
+            setEntailed();
+        }
+    }
+
 
     /**
      * <i>Propagation:</i>
@@ -77,45 +149,78 @@ public class AmongGAC extends AbstractLargeIntSConstraint {
      */
     @Override
     public void propagate() throws ContradictionException {
-        both.clear();
-        int lb = 0;
-        int ub = nb_vars;
-        for(int i = 0 ; i < nb_vars; i++){
-            IntDomainVar var = vars[i];
-            int nb = 0;
-            for (int value : values.toNativeArray()) {
-                nb += (var.canBeInstantiatedTo(value)?1:0);
-            }
-            if(nb == var.getDomainSize()){
-                lb++;
-            }else if(nb == 0){
+        filter();
+    }
 
-                ub--;
-            }else if(nb > 0){
-                both.add(new IntPair<IntDomainVar>(var,cIndices[i]));
+
+    /**
+     * Default propagation on instantiation: full constraint re-propagation.
+     */
+    @Override
+    public void awakeOnInst(int idx) throws ContradictionException {
+        if(idx ==  nb_vars){
+            filter();
+        }else{
+            if(both.get(idx)){
+                IntDomainVar var = vars[idx];
+                int val = var.getVal();
+                if(valuesAsList.contains(val)){
+                    LB.add(1);
+                    both.set(idx, false);
+                    filter();
+                }else{
+                    UB.add(-1);
+                    both.set(idx, false);
+                    filter();
+                }
             }
         }
+    }
 
-        vars[nb_vars].updateInf(lb, cIndices[nb_vars]);
-        vars[nb_vars].updateSup(ub, cIndices[nb_vars]);
-
-        int min = Math.max(vars[nb_vars].getInf(), lb);
-        int max = Math.min(vars[nb_vars].getSup(), ub);
-
-        if(max < min) this.fail();
-
-        if(lb == min && lb == max){
-            for(IntPair<IntDomainVar> pair : both){
-                removeOnlyValues(pair.o, pair.idx);
+    /**
+     * Default propagation on one value removal: propagation on domain revision.
+     */
+    @Override
+    public void awakeOnRem(int varIdx, int val) throws ContradictionException {
+        if(varIdx< nb_vars){
+            if(both.get(varIdx)){
+                IntDomainVar var = vars[varIdx];
+                int nb = 0;
+                for (int value : values) {
+                    if(var.canBeInstantiatedTo(value)){
+                        nb++;
+                    }
+                }
+                if(nb == var.getDomainSize()){
+                    LB.add(1);
+                    both.set(varIdx, false);
+                    filter();
+                }else if(nb == 0){
+                    UB.add(-1);
+                    both.set(varIdx, false);
+                    filter();
+                }
             }
-            setEntailed();
         }
+    }
 
-        if(ub == min && ub == max){
-            for(IntPair<IntDomainVar> pair : both){
-                removeButValues(pair.o, pair.idx);
-            }
-            setEntailed();
+    /**
+     * Default propagation on improved lower bound: propagation on domain revision.
+     */
+    @Override
+    public void awakeOnInf(int varIdx) throws ContradictionException {
+        if(varIdx ==  nb_vars){
+            filter();
+        }
+    }
+
+    /**
+     * Default propagation on improved upper bound: propagation on domain revision.
+     */
+    @Override
+    public void awakeOnSup(int varIdx) throws ContradictionException {
+        if(varIdx ==  nb_vars){
+            filter();
         }
     }
 
@@ -125,9 +230,12 @@ public class AmongGAC extends AbstractLargeIntSConstraint {
      * @param cidx index of {@code v} in the constraint
      * @throws ContradictionException if contradiction occurs.
      */
-    private void removeOnlyValues(IntDomainVar v, int cidx) throws ContradictionException {
-        for(int i = 0; i < values.size(); i++){
-            v.removeVal(values.get(i), cidx);
+    private void removeOnlyValues() throws ContradictionException {
+        for(int i = both.nextSetBit(0); i >=0; i = both.nextSetBit(i+1)){
+            IntDomainVar v = vars[i];
+            for(int value : values){
+                v.removeVal(value, cIndices[i]);
+            }
         }
     }
 
@@ -137,15 +245,18 @@ public class AmongGAC extends AbstractLargeIntSConstraint {
      * @param cidx index of {@code v} in the constraint
      * @throws ContradictionException if contradiction occurs.
      */
-    private void removeButValues(IntDomainVar v, int cidx) throws ContradictionException {
-        DisposableIntIterator it = v.getDomain().getIterator();
-        while(it.hasNext()){
-            int val = it.next();
-            if(!values.contains(val)){
-                v.removeVal(val, cidx);
+    private void removeButValues() throws ContradictionException {
+        for(int i = both.nextSetBit(0); i >=0; i = both.nextSetBit(i+1)){
+            IntDomainVar v = vars[i];
+            DisposableIntIterator it = v.getDomain().getIterator();
+            while(it.hasNext()){
+                int val = it.next();
+                if(!valuesAsList.contains(val)){
+                    v.removeVal(val, cIndices[i]);
+                }
             }
+            it.dispose();
         }
-        it.dispose();
     }
 
     @Override
@@ -157,7 +268,7 @@ public class AmongGAC extends AbstractLargeIntSConstraint {
             sb.append(vars[i].pretty());
         }
         sb.append("],{");
-        StringUtils.pretty(values.toNativeArray());
+        StringUtils.pretty(values);
         sb.append("},");
         sb.append(vars[nb_vars].pretty()).append(")");
         return sb.toString();
@@ -174,7 +285,7 @@ public class AmongGAC extends AbstractLargeIntSConstraint {
         if(isCompletelyInstantiated()){
             int nb = 0;
             for(int i = 0; i< nb_vars; i++){
-                if(values.contains(vars[i].getVal())){
+                if(valuesAsList.contains(vars[i].getVal())){
                     nb++;
                 }
             }
@@ -195,7 +306,7 @@ public class AmongGAC extends AbstractLargeIntSConstraint {
     public boolean isSatisfied(int[] tuple) {
         int nb = 0;
         for(int i = 0; i< nb_vars; i++){
-            if(values.contains(tuple[i])){
+            if(valuesAsList.contains(tuple[i])){
                 nb++;
             }
         }
