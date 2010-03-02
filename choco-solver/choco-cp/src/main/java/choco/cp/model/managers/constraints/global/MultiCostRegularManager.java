@@ -50,6 +50,7 @@ public class MultiCostRegularManager extends IntConstraintManager
 
             IntDomainVar[] all = solver.getVar((IntegerVariable[]) variables);
 
+int n;
 
             Object[] param = (Object[]) parameters;
             if (param.length == 3)
