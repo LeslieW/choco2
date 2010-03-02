@@ -750,8 +750,6 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		private void checkHConsistency() throws ContradictionException {
 			if( ! checkHypotheticalConsistency() ) {
 				remove();
-				//I think we also need to call here fireTaskRemoval
-				//****
 				fireRemoval();
 			}
 		}
