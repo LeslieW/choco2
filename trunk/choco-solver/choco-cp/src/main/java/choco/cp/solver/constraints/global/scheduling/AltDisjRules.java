@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
+import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.scheduling.trees.AltDisjTreeTL;
 import choco.cp.solver.constraints.global.scheduling.trees.AltDisjTreeTLTO;
 import choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode;
@@ -38,6 +39,8 @@ import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
 
 import java.util.*;
+
+import junit.framework.Assert;
 
 /**
  * @author Arnaud Malapert</br> 
@@ -61,18 +64,12 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		super(rtasks, makespan, true);
 		size = environment.makeIntProcedure(this, rtasks.length);
 		rqueue = new AltBipartiteQueue<IRTask>(rtasks);
-		final ITask[] tasks = getTaskArray();
-		//TODO plug-in hypothetical domain in Trees 
-		//final ITask[] tasks = new ITask[rtasks.length];
-        //for (int i = 0; i < tasks.length; i++) {
-        // tasks[i] = rtasks[i].getHTask();
-		//}
+		final ITask[] tasks = getTaskArray();//uses getHTask
 		altDisjTreeTL = new AltDisjTreeTL(Arrays.asList(tasks));
 		///*****************///
 		altDisjTreeTLTO = new AltDisjTreeTLTO(Arrays.asList(tasks));
 		///*****************///
 	}
-	
 	
 	@Override
 	protected void sortRTasks(Comparator<IRTask> cmp) {
@@ -86,19 +83,18 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 	@Override
 	public void apply(final int oldVal, final int newVal) {
 		for (int i = oldVal; i < newVal; i++) {
-			altDisjTreeTL.insert(rtasks[i].getTaskVar());
+			altDisjTreeTL.insert(rtasks[i].getHTask());
 			//Should insert tasks to TLTO tree as well
-			altDisjTreeTLTO.insert(rtasks[i].getTaskVar());
+			altDisjTreeTLTO.insert(rtasks[i].getHTask());
 		}
 	}
-
 	
 	private void setupListsAndTreeTL(final Comparator<IRTask> taskComp,final Comparator<IRTask> queueComp, final TreeMode mode) {
+		updateManager.clear();
 		sortRTasks(taskComp);
 		sortQueue(rqueue, queueComp);
 		setupMasterTree(altDisjTreeTL, mode);
 	}
-
 
 	@Override
 	public boolean isActive() {
@@ -122,12 +118,13 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 
 	private void insertInTree(final IRTask rtask) {
 		if(rtask.isOptional()) {
-			altDisjTreeTL.insertInLambda(rtask);
+			Assert.assertEquals(true, altDisjTreeTL.insertInLambda(rtask));
+			Assert.assertEquals(true, altDisjTreeTL.getTaskType(rtask) == 2);
 		}else if(rtask.isRegular()) {
-			altDisjTreeTL.insertInTheta(rtask);
+			Assert.assertEquals(true,altDisjTreeTL.insertInTheta(rtask));
+			Assert.assertEquals(true, altDisjTreeTL.getTaskType(rtask) == 1);
 		}
 	}
-
 
 	/**
 	 * Used by Edge Finding algorithm
@@ -138,7 +135,6 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		//Disable optional task.
 		if(!omega)
 			updateManager.storeLambdaRemoval(respTask, altDisjTreeTLTO);
-			//altDisjTreeTLTO.removeFromLambda(respTask.getTaskVar());
 		else
 			updateManager.storeOmegaRemoval(respTask, altDisjTreeTLTO);
 	}
@@ -148,8 +144,8 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		makeRemovalSwap(rtasks, rtask);
 		makeRemovalSwap(rqueue.elementData, rtask);
 		//Remove disabled task from TL, and TLTO trees.
-		altDisjTreeTL.remove(rtask.getTaskVar());
-		altDisjTreeTLTO.remove(rtask.getTaskVar());
+		altDisjTreeTL.remove(rtask.getHTask());
+		altDisjTreeTLTO.remove(rtask.getHTask());
 		size.add(-1);
 	}
 
@@ -157,20 +153,43 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 	public boolean detectablePrecedenceEST() throws ContradictionException {
 		setupListsAndTreeTL(makeREarliestCompletionTimeCmp(),makeRLatestStartingTimeCmp(), ECT);
 		for (IRTask rti : this) {
-			final ITask i = rti.getTaskVar();
-			while( !rqueue.isEmpty() && i.getECT()>rqueue.peek().getTaskVar().getLST()) {
-				insertInTree(rqueue.poll());
-			}
-			if(rti.isRegular()) {
-				final boolean rm=altDisjTreeTL.removeFromTheta(i);
-				updateManager.storeUpdate(rti,altDisjTreeTL.getTime());
-				//an additional check to avoid to find a null resp. optional activity
-				if(altDisjTreeTL.getTime() > i.getLST()) {rti.fail();}
-				while( altDisjTreeTL.getGrayTime() > i.getLST()) {
-					updateManager.storeLambdaRemoval(altDisjTreeTL);
+			final ITask i = rti.getHTask();
+			if(!rti.isEliminated()){
+				while( !rqueue.isEmpty() && i.getECT() > rqueue.peek().getHTask().getLST()){
+					insertInTree(rqueue.poll());
 				}
-				if(rm) {altDisjTreeTL.insertInTheta(i);}
-			}	
+				boolean rm = false;
+				if(rti.isRegular()){
+					rm = altDisjTreeTL.removeFromTheta(i);
+				}
+				//*****************************************
+				if(altDisjTreeTL.getTime() > i.getEST()){
+					//update is possible
+					if(altDisjTreeTL.getTime() > i.getLST()){
+						//update will lead to incoherent time window
+						if(rti.isRegular()) {rti.fail();}
+						if(rti.isOptional()){
+							if(altDisjTreeTL.getTaskType(rti) == 2)
+								updateManager.storeLambdaRemoval(rti,altDisjTreeTL);
+							else
+								updateManager.storeRemoval(rti);
+						}
+					}
+					else{
+						//Update will be done
+						updateManager.storeUpdate(rti,altDisjTreeTL.getTime());
+					}
+				}
+				//*******************************************
+				if(rti.isRegular()){
+					while( altDisjTreeTL.getGrayTime() > i.getLST()) {
+						final IRTask resp = (IRTask)altDisjTreeTL.getResponsibleTask();
+						Assert.assertEquals(true, resp!= null);
+						updateManager.storeLambdaRemoval(resp,altDisjTreeTL);
+					}
+					if(rm) {Assert.assertEquals(true, altDisjTreeTL.insertInTheta(i));}
+				}
+			}
 		}
 		setMakespanLB(altDisjTreeTL);
 		return updateManager.fireAndUpdateEST();
@@ -178,21 +197,43 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 
 	@Override
 	public boolean detectablePrecedenceLCT() throws ContradictionException {
-		setupListsAndTreeTL(makeReverseRLatestCompletionTimeCmp(), makeReverseREarliestCompletionTimeCmp(), LST);
+		System.out.println("dPLCT");
+		setupListsAndTreeTL(makeReverseRLatestStartingTimeCmp(), makeReverseREarliestCompletionTimeCmp(), LST);
 		for (IRTask rti : this) {
-			final ITask i = rti.getTaskVar();
-			while(!rqueue.isEmpty() && i.getLCT()<= rqueue.peek().getTaskVar().getECT()) {
-				insertInTree(rqueue.poll());
-			}
-			if(rti.isRegular()) {
-				final boolean rm=altDisjTreeTL.removeFromTheta(i);
-				updateManager.storeUpdate(rti,altDisjTreeTL.getTime());
-				if(altDisjTreeTL.getTime() < i.getECT()) { rti.fail();}
-				while( altDisjTreeTL.getGrayTime() < i.getECT()) {
-					updateManager.storeLambdaRemoval(altDisjTreeTL);
+			if(!rti.isEliminated()){
+				final ITask i = rti.getHTask();
+				while(!rqueue.isEmpty() && i.getLST()< rqueue.peek().getHTask().getECT()) {
+					insertInTree(rqueue.poll());
 				}
-				//we have to be sure that i was active in disjTreeT
-				if(rm) {altDisjTreeTL.insertInTheta(i);}
+				boolean rm = false;
+				if(rti.isRegular()) {
+					rm=altDisjTreeTL.removeFromTheta(i);
+				}
+				//updating regular, and optional tasks using regular tasks.
+				//*********************************************************
+				if(altDisjTreeTL.getTime() < i.getLCT()){
+					if(altDisjTreeTL.getTime() < i.getECT()){
+						if(rti.isRegular()) {rti.fail();}
+						if(rti.isOptional()){
+							if(altDisjTreeTL.getTaskType(rti) == 2)
+								//already added to lambda
+								updateManager.storeLambdaRemoval(rti,altDisjTreeTL);
+							else
+								//Not added to lambda
+								updateManager.storeRemoval(rti);
+						}
+					}
+					else
+						updateManager.storeUpdate(rti,altDisjTreeTL.getTime());
+				}
+				if(rti.isRegular()){
+					//if(altDisjTreeTL.getTime() < i.getECT()) { rti.fail();}
+					while( altDisjTreeTL.getGrayTime() < i.getECT()) {
+						updateManager.storeLambdaRemoval(altDisjTreeTL);
+					}
+					//we have to be sure that i was active in disjTreeT
+					if(rm) {altDisjTreeTL.insertInTheta(i);}
+				}
 			}
 		}
 		return updateManager.fireAndUpdateLCT();
@@ -200,29 +241,42 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 
 	@Override
 	public boolean notFirst() throws ContradictionException {
-		setupListsAndTreeTL(makeReverseREarliestCompletionTimeCmp(), makeReverseREarliestCompletionTimeCmp(), LST);
+		System.out.println("NF");
+		setupListsAndTreeTL(makeReverseREarliestStartingTimeCmp(), makeReverseREarliestCompletionTimeCmp(), LST);
 		ITask j=null, ja = null;
 		for (IRTask rti : this) {
-			final ITask i = rti.getTaskVar();
-			while(!rqueue.isEmpty()  && i.getEST() < rqueue.peek().getTaskVar().getECT()) {
-				final IRTask tmp = rqueue.poll();
-				ja = tmp.getTaskVar();
-				if(tmp.isRegular()) { j = ja;}
-				insertInTree(tmp);
-			}
-			if(rti.isRegular()) {
-				final boolean rm= altDisjTreeTL.removeFromTheta(i);
-				if( altDisjTreeTL.getTime()< i.getECT()) {
-					updateManager.storeUpdate(rti,j.getECT());
-					if(i.getLST() < j.getECT()) { rti.fail();}
-					if(i.getLST() < ja.getECT()) {
-						while( altDisjTreeTL.getGrayTime() > i.getECT()) {
-							updateManager.storeLambdaRemoval(altDisjTreeTL);
+			final ITask i = rti.getHTask();
+			if(!rti.isEliminated()){
+				while(!rqueue.isEmpty()  && i.getEST() < rqueue.peek().getHTask().getECT()) {
+					final IRTask tmp = rqueue.poll();
+					ja = tmp.getHTask();
+					if(tmp.isRegular()) { j = ja;}
+					insertInTree(tmp);
+				}
+				boolean rm =false;
+				if(rti.isRegular()) {
+					rm = altDisjTreeTL.removeFromTheta(i);
+				}
+				if( altDisjTreeTL.getTime() < i.getECT()) {
+					if(j.getECT() > i.getEST()){
+						//Update is possible
+						if(j.getECT() > i.getLST()){
+							if(rti.isRegular()) {rti.fail();}
+							if(rti.isOptional()) {updateManager.storeLambdaRemoval(rti, altDisjTreeTL);}
+						}
+						else{
+							Assert.assertEquals(true,!rti.isEliminated());
+							updateManager.storeUpdate(rti,j.getECT());
 						}
 					}
 				}
+				if(rti.isRegular() && i.getLST() < ja.getECT()){
+					while( altDisjTreeTL.getGrayTime() < i.getECT()) {
+							Assert.assertEquals(true, altDisjTreeTL.getResponsibleTask() != null);
+							updateManager.storeLambdaRemoval(altDisjTreeTL);
+						}
+				}
 				if(rm) {altDisjTreeTL.insertInTheta(i);}
-
 			}
 		}
 		return updateManager.fireAndUpdateEST();
@@ -230,30 +284,48 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 
 	@Override
 	public boolean notLast() throws ContradictionException {
+		System.out.println("NL");
 		setupListsAndTreeTL(makeRLatestCompletionTimeCmp(),makeRLatestStartingTimeCmp(), ECT);
 		ITask j=null, ja=null;
 		for (IRTask rti : this) {
-			final ITask i = rti.getTaskVar();
-			//update tree
-			while(!rqueue.isEmpty() && i.getLCT()> rqueue.peek().getTaskVar().getLST()) {
-				final IRTask tmp = rqueue.poll();
-				ja = tmp.getTaskVar();				
-				if(tmp.isRegular()) {j = ja;}
-				insertInTree(tmp);
-			}
-			if(rti.isRegular()) {
-				//compute pruning
-				altDisjTreeTL.removeFromTheta(i);
-				if(altDisjTreeTL.getTime()>i.getLST()) {
-					updateManager.storeUpdate(rti,j.getLST());
-					if(j.getLST() < i.getECT()) { rti.fail();}
-					if(ja.getLST()< i.getECT()) {
-						while( altDisjTreeTL.getGrayTime() > i.getLST()) {
-							updateManager.storeLambdaRemoval(altDisjTreeTL);
+			final ITask i = rti.getHTask();
+			if(!rti.isEliminated()){
+				while(!rqueue.isEmpty() && i.getLCT()> rqueue.peek().getHTask().getLST()) {
+					final IRTask tmp = rqueue.poll();
+					ja = tmp.getHTask();				
+					if(tmp.isRegular()) {j = ja;}
+					insertInTree(tmp);
+				}
+				boolean rm = false;
+				if(rti.isRegular()) {
+					//compute pruning
+					rm = altDisjTreeTL.removeFromTheta(i);
+				}
+				//********************************
+				if(altDisjTreeTL.getTime() > i.getLST()) {
+					//updating both regular, and optional tasks based on regular ones
+					if(j.getLST() < i.getLCT()){
+						//update is possible.
+						if(j.getLST() < i.getECT()){
+							//update that leads to Time window incoherence.
+							if(rti.isRegular()) {rti.fail();}
+							if(rti.isOptional()) {updateManager.storeLambdaRemoval(rti, altDisjTreeTL);}
+						}
+						else{
+							Assert.assertEquals(true, !rti.isEliminated());
+							updateManager.storeUpdate(rti,j.getLST());
 						}
 					}
 				}
-				altDisjTreeTL.insertInTheta(i);
+				//***********************************
+				if(rti.isRegular() && ja.getLST() < i.getECT()){
+					while( altDisjTreeTL.getGrayTime() > i.getLST()) {
+						Assert.assertEquals(true, altDisjTreeTL.getResponsibleTask()!=null);
+						updateManager.storeLambdaRemoval(altDisjTreeTL);
+					}
+				}
+				//return back the removed task i.
+				if(rm) { Assert.assertEquals(true,altDisjTreeTL.insertInTheta(i));}
 			}
 		}
 		setMakespanLB(altDisjTreeTL);
@@ -262,14 +334,19 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 
 	@Override
 	public void overloadChecking() throws ContradictionException{
+		System.out.println("OC");
 		sortRTasks(makeRLatestCompletionTimeCmp());
 		this.setupMasterTree(altDisjTreeTL, ECT);
 		for(IRTask t : this) {
-			final ITask i = t.getTaskVar();
+			final ITask i = t.getHTask();
 			insertInTree(t);
-			if(altDisjTreeTL.getTime()> i.getLCT()) t.fail();
-			while( altDisjTreeTL.getGrayTime() >  i.getLCT()) {
-				updateManager.storeLambdaRemoval(altDisjTreeTL);
+			if(t.isRegular()){
+			//This part is checked if the current task is regular (p. 419).
+			//In paper:"Extension of O(n log n) filtering algorithms"	
+				if(altDisjTreeTL.getTime()> i.getLCT()) t.fail();
+				while( altDisjTreeTL.getGrayTime() >  i.getLCT()) {
+					updateManager.storeLambdaRemoval(altDisjTreeTL);
+				}
 			}
 		}
 		setMakespanLB(altDisjTreeTL);
@@ -281,12 +358,13 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 	 */
 	@Override
 	public boolean edgeFindingEST()throws ContradictionException{
+		System.out.println("EFEST");
 		//rqueue should be sorted in descending order of LCT
 		//While the Tasks list should be sorted in ascending order of EST 
 		setupEF(ECT, makeReverseRLatestCompletionTimeCmp());
 		setMakespanLB(altDisjTreeTLTO);
 		IRTask rtj=rqueue.peek();
-		ITask j=rtj.getTaskVar();
+		ITask j=rtj.getHTask();
 		if(rtj.isRegular())
 			if(altDisjTreeTLTO.getTime() > j.getLCT()) {rtj.fail();}
 		do{
@@ -300,7 +378,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 			rqueue.poll();
 			if(!rqueue.isEmpty()) {
 				rtj=rqueue.peek();
-				j= rtj.getTaskVar();
+				j= rtj.getHTask();
 			}
 			else {break;}
 			if(rtj.isRegular()){
@@ -330,7 +408,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		int respEnabledIdx = -1;//Contains the index of enabled task responsible for highest ECT(T,L').
 		for(int j=0; j< size.get(); j++){
 			final IRTask rtaskAtj = rtasks[j];
-			final ITask taskAtj = rtaskAtj.getTaskVar();
+			final ITask taskAtj = rtaskAtj.getHTask();
 			final int taskType = altDisjTreeTLTO.getTaskType(rtaskAtj);
 			if(taskType == 1){
 				//Theta
@@ -372,7 +450,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 					if(respEnabledIdx != -1){
 						//Comparing the task's LST that causes the highest ect(Theta, Lamda')
 						//With the ECT(Theta Union j) j: current task.
-						if(rtasks[respEnabledIdx].getTaskVar().getLST() < ectTUnionOArr[j]){
+						if(rtasks[respEnabledIdx].getHTask().getLST() < ectTUnionOArr[j]){
 							newEctTOL = ectTL + taskAtj.getMinDuration();
 							respTOLIdx = j;
 						}
@@ -491,7 +569,12 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 			throw new UnsupportedOperationException("unknown tree mode.");
 		}
 	}
-
+ 
+	/**
+	 * Method calculates the minimum LST(Theta,Omega,Lambda') as defined by Sebastian
+	 * @param lstTUnionOArr
+	 * @return
+	 */
 	private int [] calculateLSTTOL(int [] lstTUnionOArr){
 		int [] results = new int [2];
 		int lstT = Integer.MAX_VALUE; //LST(Theta)
@@ -507,7 +590,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		int respEnabledIdx = -1;//Contains the index of enabled task responsible for highest LST(T,L').
 		for(int j=0; j< size.get(); j++){
 			final IRTask rtaskAtj = rtasks[j];
-			final ITask taskAtj = rtaskAtj.getTaskVar();
+			final ITask taskAtj = rtaskAtj.getHTask();
 			final int taskType = altDisjTreeTLTO.getTaskType(rtaskAtj);
 			if(taskType == 1){
 				//Theta
@@ -537,7 +620,8 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 				}
 				if(newLSTTOL > taskAtj.getLST() - pTL){
 					if(respEnabledIdx != -1){
-						if(rtasks[respEnabledIdx].getTaskVar().getECT() > lstTUnionOArr[j]){
+						//Condition for lambda'
+						if(rtasks[respEnabledIdx].getHTask().getECT() > lstTUnionOArr[j]){
 							newLSTTOL = taskAtj.getLST() - pTL;
 							//update the duration according to the selected optional task.
 							pTOL = pTL + taskAtj.getMinDuration();
@@ -567,6 +651,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 						assert pTO == pT;
 						pTOL = pTO + taskAtj.getMinDuration();
 					}
+					//Condition for Lambda'
 					else if(taskAtj.getECT() > lstTUnionOArr[respTOIdx]){
 						newLSTTOL = taskAtj.getLST() - pTO;
 						pTOL = pTO + taskAtj.getMinDuration();
@@ -608,7 +693,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		//Looping over tasks list front to back.
 		for(int i = 0; i < size.get()-1; i++){
 			final IRTask taskAtI = rtasks[i];
-			final ITask tAtI = taskAtI.getTaskVar();
+			final ITask tAtI = taskAtI.getHTask();
 			if(altDisjTreeTLTO.getTaskType(taskAtI)==1){
 				lstBefore[i+1] = Math.min(lstBefore[i], tAtI.getLST() - pBefore[i]);
 				pBefore[i+1] = pBefore[i]+tAtI.getMinDuration();
@@ -620,9 +705,9 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		//Looping over tasks list back to front.
 		for(int i = size.get()-1 ; i >= 1; i--){
 			final IRTask taskAtI = rtasks[i];
-			final ITask tAtI = taskAtI.getTaskVar();
+			final ITask tAtI = taskAtI.getHTask();
 			final IRTask trBeforeI = rtasks[i-1];
-			final ITask tBeforeI = trBeforeI.getTaskVar();
+			final ITask tBeforeI = trBeforeI.getHTask();
 			if(altDisjTreeTLTO.getTaskType(taskAtI)== 1){
 				lstAfter[i-1] = Math.min( tAtI.getLST(), lstAfter[i] - tAtI.getMinDuration());
 			}
@@ -641,7 +726,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 			lstWith[i-1] = newLST;
 		}
 		//Calculate lstWith[size-1].
-		lstWith[last] = Math.min(lstBefore[last], rtasks[last].getTaskVar().getLST() - pBefore[last]);
+		lstWith[last] = Math.min(lstBefore[last], rtasks[last].getHTask().getLST() - pBefore[last]);
 		return lstWith;
 	}
 	
@@ -663,7 +748,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		//Looping over rtasks list back to front to calculate ectAfter, and pAfter
 		for(int i = size.get() - 1 ; i >= 1; i--){
 			final IRTask taskAtI = rtasks[i];
-			final ITask tAtI = taskAtI.getTaskVar();
+			final ITask tAtI = taskAtI.getHTask();
 			//THETA = 1
 			if(altDisjTreeTLTO.getTaskType(taskAtI) == 1){
 				
@@ -680,11 +765,12 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		//Looping again over rtasks list front to back, to calculate ectBefore, and ectWith
 		for(int i=0; i < size.get()-1; i++){
 			final IRTask taskAtI = rtasks[i];
-			final ITask taskAfterI = rtasks[i+1].getTaskVar();//used in calculation of ectWith
+			final ITask tAtI = taskAtI.getHTask();
+			final ITask taskAfterI = rtasks[i+1].getHTask();//used in calculation of ectWith
 			if(altDisjTreeTLTO.getTaskType(taskAtI) == 1){
 				//Theta
-				ectBefore[i+1] = Math.max( taskAtI.getTaskVar().getECT() , ectBefore[i] + 
-						taskAtI.getTaskVar().getMinDuration());
+				ectBefore[i+1] = Math.max( tAtI.getECT() , ectBefore[i] + 
+						tAtI.getMinDuration());
 			}else{ ectBefore[i+1] = ectBefore[i];}
 			//Calculate ECT
 			int newEctWith = ectAfter[i+1];
@@ -694,7 +780,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 				newEctWith = ectBefore[i+1] + taskAfterI.getMinDuration() + pAfter[i+1];  
 			ectWith[i+1] = newEctWith;
 		}
-		final ITask first = rtasks[0].getTaskVar();
+		final ITask first = rtasks[0].getHTask();
 		ectWith[0] = Math.max(ectAfter[0], first.getECT() + pAfter[0]);
 		
 		return ectWith;
@@ -717,7 +803,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 			int ectTL = Integer.MIN_VALUE;
 			//Tasks in the list are in ascending order of est
 			for(IRTask rtask: this){
-				final ITask i = rtask.getTaskVar();
+				final ITask i = rtask.getHTask();
 				final int taskType = altDisjTreeTLTO.getTaskType(rtask);
 				if(taskType == 1){
 					//Theta
@@ -733,9 +819,9 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 				}
 			}
 			//Reverse the operation
-			altDisjTreeTLTO.removeFromTheta(j.getTaskVar());
+			altDisjTreeTLTO.removeFromTheta(j.getHTask());
 			altDisjTreeTLTO.insertInOmega(j);
-			final int lct = j.getTaskVar().getLCT();
+			final int lct = j.getHTask().getLCT();
 			if( ectTUO > lct || ectTL > lct ){
 				setAsRemoval(j, true);
 			}
@@ -755,7 +841,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		int pTL = 0;
 		for(int tIdx =0; tIdx < size.get(); tIdx++){
 			final IRTask ir = rtasks[tIdx];
-			final ITask i = ir.getTaskVar();
+			final ITask i = ir.getHTask();
 			final int taskType = altDisjTreeTLTO.getTaskType(rtasks[tIdx]);
 			if( taskType == 1){
 				//Theta
@@ -772,9 +858,9 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 			}
 		}
 		//Reverse the operation
-		altDisjTreeTLTO.removeFromTheta(j.getTaskVar());
+		altDisjTreeTLTO.removeFromTheta(j.getHTask());
 		altDisjTreeTLTO.insertInOmega(j);
-		final int est = j.getTaskVar().getEST();
+		final int est = j.getHTask().getEST();
 		if(lstTL < est||lstTUO < est){
 			setAsRemoval(j, true);
 		}
@@ -787,7 +873,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 			while(altDisjTreeTLTO.getGrayTime() > j.getLCT()){
 				//get responsible task from Lambda
 				final IRTask rti = (IRTask) altDisjTreeTLTO.getResponsibleTask();
-				final ITask i = rti.getTaskVar();
+				final ITask i = rti.getHTask();
 				if(altDisjTreeTLTO.getTime() > i.getEST()){
 					if(altDisjTreeTLTO.getTime() > i.getLST()){
 						//IF task is Regular, then its time window will become incoherent 
@@ -801,10 +887,9 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 							throw new SolverException("Eliminated tasks should not exist in a TL tree");
 						}
 					}else{
-						//******************
-						if(rti.isRegular())
-							//******************	
-							updateManager.storeUpdate(rti,altDisjTreeTLTO.getTime());}
+						Assert.assertEquals(true,!rti.isEliminated());
+						updateManager.storeUpdate(rti,altDisjTreeTLTO.getTime());
+					}
 				}
 				altDisjTreeTLTO.removeFromLambda(i);
 			}
@@ -812,7 +897,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		case LST:
 			while(altDisjTreeTLTO.getGrayTime() < j.getEST()){
 				final IRTask rti = (IRTask) altDisjTreeTLTO.getResponsibleTask();
-				final ITask i = rti.getTaskVar();
+				final ITask i = rti.getHTask();
 				if(altDisjTreeTLTO.getTime() < i.getLCT()){
 					if(altDisjTreeTLTO.getTime() < i.getECT()){ 
 						if(rti.isRegular()) { rti.fail();}
@@ -825,10 +910,9 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 						}
 					}
 					else{
-						//*****************
-						if(rti.isRegular())
-							//*****************
-							updateManager.storeUpdate(rti,altDisjTreeTLTO.getTime());}
+						Assert.assertEquals(true,! rti.isEliminated());
+						updateManager.storeUpdate(rti,altDisjTreeTLTO.getTime());
+					}
 				}
 				altDisjTreeTLTO.removeFromLambda(i);
 			}
@@ -864,6 +948,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 
 	private void setupEF(final TreeMode mode,final Comparator<IRTask> queueComp){
 		//Initialise Edge Finding Tree
+		updateManager.clear();
 		this.altDisjTreeTLTO.initializeEdgeFinding(mode, this);
 		rqueue.reset();
 		this.rqueue.sort(queueComp);
@@ -871,12 +956,12 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 
 	@Override
 	public boolean edgeFindingLCT()throws ContradictionException{
-
+		System.out.println("EFLCT");
 		//rqueue should be sorted in ascending order of EST.
 		//While Tasks List should still be sorted in ascending order of EST.
 		setupEF(LST, makeREarliestStartingTimeCmp());
 		IRTask rtj=rqueue.peek();
-		ITask j= rtj.getTaskVar();
+		ITask j= rtj.getHTask();
 		if(rtj.isRegular())
 			if(altDisjTreeTLTO.getTime() < j.getEST()) {rtj.fail();}
 		do{
@@ -890,7 +975,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 			rqueue.poll();
 			if(!rqueue.isEmpty()) {
 				rtj=rqueue.peek();
-				j= rtj.getTaskVar();
+				j= rtj.getHTask();
 			}
 			else {break;}
 			if(rtj.isRegular()){
@@ -904,8 +989,7 @@ public final class AltDisjRules extends AbstractDisjRules implements Iterable<IR
 		}while(!rqueue.isEmpty());
 		return updateManager.fireAndUpdateLCT();
 	}
-
-
+ 	
 	@Override
 	public Iterator<IRTask> iterator() {
 		return new Itr();

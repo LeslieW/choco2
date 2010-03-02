@@ -65,7 +65,7 @@ public class DisjTreeTL extends AbstractThetaTree implements IThetaLambdaTree {
 	
 	@Override
 	public final boolean insertInLambda(IRTask rtask) {
-		final IBinaryNode leaf = getLeaf(rtask.getTaskVar());
+		final IBinaryNode leaf = getLeaf(rtask.getHTask());
 		final DisjStatusTL status =  getNodeStatus(leaf);
 		if(status.getType() == AbstractVilimTree.NodeType.NIL) {
 			status.insertInLambda(rtask);
@@ -105,7 +105,7 @@ public class DisjTreeTL extends AbstractThetaTree implements IThetaLambdaTree {
 	
 	@Override
 	public final boolean removeFromThetaAndInsertInLambda(IRTask rtask) {
-		return removeFromThetaAndInsertInLambda(rtask.getTaskVar(), rtask);
+		return removeFromThetaAndInsertInLambda(rtask.getHTask(), rtask);
 	}
 
 	@Override

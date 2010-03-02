@@ -51,7 +51,7 @@ public class AltDisjTreeTLTO extends AbstractThetaTree implements IThetaLambdaTr
 	 */
 	
 	public int getTaskType(IRTask rtask){
-		final IBinaryNode leaf = getLeaf(rtask.getTaskVar());
+		final IBinaryNode leaf = getLeaf(rtask.getHTask());
 		final AltDisjStatusTLTO status = (AltDisjStatusTLTO) leaf.getNodeStatus();
 		switch(status.getType()){
 		case THETA:
@@ -74,7 +74,7 @@ public class AltDisjTreeTLTO extends AbstractThetaTree implements IThetaLambdaTr
 		for (IRTask rtask : rtasks) {
 			if(rtask.isRegular()) {
 				//Task is Regular, Add to Theta
-				final IBinaryNode leaf = getLeaf(rtask.getTaskVar());
+				final IBinaryNode leaf = getLeaf(rtask.getHTask());
 				final AltDisjStatusTLTO status =  (AltDisjStatusTLTO) leaf.getNodeStatus();
 				if(status.getType() == AbstractVilimTree.NodeType.NIL) {
 					status.insertInTheta();
@@ -84,7 +84,7 @@ public class AltDisjTreeTLTO extends AbstractThetaTree implements IThetaLambdaTr
 			}
 			else if(rtask.isOptional()){
 				//Task is optional,Add to Omega.
-				final IBinaryNode leaf=getLeaf(rtask.getTaskVar());
+				final IBinaryNode leaf=getLeaf(rtask.getHTask());
 				final AltDisjStatusTLTO status = (AltDisjStatusTLTO) leaf.getNodeStatus();
 				if(status.getType() == AbstractVilimTree.NodeType.NIL){
 					status.insertInOmega(rtask);
@@ -126,7 +126,7 @@ public class AltDisjTreeTLTO extends AbstractThetaTree implements IThetaLambdaTr
 	
 	@Override
 	public boolean insertInLambda(IRTask rtask) {
-		final IBinaryNode leaf = getLeaf(rtask.getTaskVar());
+		final IBinaryNode leaf = getLeaf(rtask.getHTask());
 		final AltDisjStatusTLTO status =  getNodeStatus(leaf);
 		if(status.getType() == AbstractVilimTree.NodeType.NIL) {
 			status.insertInLambda(rtask);
@@ -158,7 +158,7 @@ public class AltDisjTreeTLTO extends AbstractThetaTree implements IThetaLambdaTr
 	}
 	private boolean removeFromOmegaAndInsertInLambda(IRTask task,Object resp){
 			
-			final IBinaryNode leaf = getLeaf(task.getTaskVar());
+			final IBinaryNode leaf = getLeaf(task.getHTask());
 			final AltDisjStatusTLTO status =  getNodeStatus(leaf);
 			if(status.getType() == AbstractVilimTree.NodeType.OMEGA) {
 				//Remove task first from Omega
@@ -178,11 +178,11 @@ public class AltDisjTreeTLTO extends AbstractThetaTree implements IThetaLambdaTr
 	}
 	@Override
 	public boolean removeFromThetaAndInsertInLambda(IRTask task) {
-		return this.removeFromThetaAndInsertInLambda(task.getTaskVar(), task);
+		return this.removeFromThetaAndInsertInLambda(task.getHTask(), task);
 	}
 	@Override
 	public boolean insertInOmega(IRTask rtask) {
-		final IBinaryNode leaf = getLeaf(rtask.getTaskVar());
+		final IBinaryNode leaf = getLeaf(rtask.getHTask());
 		final AltDisjStatusTLTO status = getNodeStatus(leaf);
 		if(status.getType() == AbstractVilimTree.NodeType.NIL){
 			//Task is not assigned to any tree.
@@ -196,7 +196,7 @@ public class AltDisjTreeTLTO extends AbstractThetaTree implements IThetaLambdaTr
 	}
 	@Override
 	public boolean removeFromOmega(IRTask task) {
-		final IBinaryNode leaf = getLeaf(task.getTaskVar());
+		final IBinaryNode leaf = getLeaf(task.getHTask());
 		final AltDisjStatusTLTO status = getNodeStatus(leaf);
 		if(status.getType() == AbstractVilimTree.NodeType.OMEGA){
 			//Task already exists in OMEGA
