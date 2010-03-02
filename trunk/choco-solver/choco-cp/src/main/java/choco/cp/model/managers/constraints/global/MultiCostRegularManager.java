@@ -62,12 +62,12 @@ int n;
                 System.arraycopy(all, 0, vs, 0, vs.length);
                 System.arraycopy(all, vs.length, z, 0, all.length - vs.length);
 
-                if (param[2] instanceof double[][][])
+                if (param[2] instanceof int[][][])
                 {
                     int[][][] csts = (int[][][]) param[2];
                     return new FastMultiCostRegular(vs,z,pi,csts, solver.getEnvironment());
                 }
-                else if (param[2] instanceof double[][][][])
+                else if (param[2] instanceof int[][][][])
                 {
                     int[][][][] csts = (int[][][][]) param[2];
                     return new FastMultiCostRegular(vs,z,pi,csts, solver.getEnvironment());
