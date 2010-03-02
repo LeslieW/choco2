@@ -22,7 +22,7 @@
  **************************************************/
 package choco.cp.memory.structure;
 
-import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.cp.common.util.iterators.QuickIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
@@ -135,97 +135,7 @@ public final class PartiallyStoredIntCstrList <C extends AbstractSConstraint> ex
 		return priority.get();
 	}
 
-    private QuickIterator _quickIterator = null;
-
     public DisposableIterator<Couple<C>> getActiveConstraint(int event, int cstrCause){
-        QuickIterator iter = _quickIterator;
-        if (iter != null && iter.reusable) {
-            iter.init(events[idxEventTypes[event]], cstrCause);
-            return iter;
-        }
-        _quickIterator = new QuickIterator(events[idxEventTypes[event]], cstrCause);
-        return _quickIterator;
-    }
-
-    private final class QuickIterator extends DisposableIterator<Couple<C>> {
-        boolean reusable;
-        PartiallyStoredIntVector event;
-        int cstrCause;
-        DisposableIntIterator cit;
-        Couple<C> cc  = new Couple<C>();
-
-
-        public QuickIterator(PartiallyStoredIntVector event, int cstrCause) {
-             init(event, cstrCause);
-        }
-
-        public void init(PartiallyStoredIntVector event, int cstrCause){
-            super.init();
-            this.event = event;
-            cit = event.getIndexIterator();
-            this.cstrCause = cstrCause;
-        }
-
-        /**
-         * This method allows to declare that the iterator is not usefull anymoure. It
-         * can be reused by another object.
-         */
-        @Override
-        public void dispose() {
-            super.dispose();
-            cit.dispose();
-        }
-
-        /**
-         * Returns <tt>true</tt> if the iteration has more elements. (In other
-         * words, returns <tt>true</tt> if <tt>next</tt> would return an element
-         * rather than throwing an exception.)
-         *
-         * @return <tt>true</tt> if the iterator has more elements.
-         */
-        @Override
-        public boolean hasNext() {
-            while (cit.hasNext()) {
-                int idx = event.get(cit.next());
-                if (idx != cstrCause) {
-                    if (elements.get(idx).isActive()) {
-                        cc.init(elements.get(idx), indices.get(idx));
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        /**
-         * Returns the next element in the iteration.
-         *
-         * @return the next element in the iteration.
-         * @throws java.util.NoSuchElementException
-         *          iteration has no more elements.
-         */
-        @Override
-        public Couple<C> next() {
-            return cc;
-        }
-
-        /**
-         * Removes from the underlying collection the last element returned by the
-         * iterator (optional operation).  This method can be called only once per
-         * call to <tt>next</tt>.  The behavior of an iterator is unspecified if
-         * the underlying collection is modified while the iteration is in
-         * progress in any way other than by calling this method.
-         *
-         * @throws UnsupportedOperationException if the <tt>remove</tt>
-         *                                       operation is not supported by this Iterator.
-         * @throws IllegalStateException         if the <tt>next</tt> method has not
-         *                                       yet been called, or the <tt>remove</tt> method has already
-         *                                       been called after the last call to the <tt>next</tt>
-         *                                       method.
-         */
-        @Override
-        public void remove() {
-            cit.remove();
-        }
+        return QuickIterator.getIterator(events[idxEventTypes[event]],cstrCause, this.elements, this.indices);
     }
 }

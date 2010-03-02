@@ -30,9 +30,10 @@ public class AppendIterator<E> extends AbstractImmutableIterator<E> {
 
 	private Iterator<? extends E> slave;
 
-	public AppendIterator(final Iterator<? extends E>... iterators) {
+	@SuppressWarnings({"unchecked"})
+    public AppendIterator(final Iterator<? extends E>... iterators) {
 		super();
-		master=new ArrayIterator<Iterator<? extends E>>(iterators);
+		master=ArrayIterator.getIterator(iterators, iterators.length);
 	}
 
 	/**

@@ -22,27 +22,61 @@
  **************************************************/
 package choco.kernel.common.util.iterators;
 
-public class ArrayIterator<E> extends AbstractImmutableIterator<E> {
+public class ArrayIterator<E> extends DisposableIterator<E> {
 
-	protected final E[] array;
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////// STATIC ///////////////////////////////////////////////////////////////
+    static ArrayIterator _quickIterator = null;
 
-	private int index;
+    @SuppressWarnings({"unchecked"})
+    public static <E> ArrayIterator getIterator(final E[] elements, final int size) {
+        ArrayIterator iter = _quickIterator;
+        if (iter != null && iter.reusable) {
+            iter.init(elements, size);
+            return iter;
+        }
+        _quickIterator = new ArrayIterator(elements, size);
+        return _quickIterator;
+    }
+    ////////////////////////////////////////////\ STATIC ///////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	public ArrayIterator(final E[] array) {
-		this(array,0);
-	}
-	public ArrayIterator(final E[] array,final int index) {
-		super();
-		this.array=array;
-		this.index = index;
-	}
+    E[] elements;
+    int size = 0;
+    int cursor = 0;
 
-	@Override
-	public boolean hasNext() {
-		return index<array.length;
-	}
-	@Override
-	public E next() {
-		return array[index++];
-	}
+    private ArrayIterator(final E[] elements, final int size) {
+        init(elements, size);
+    }
+
+    private void init(final E[] elements, final int size) {
+        super.init();
+        this.elements = elements;
+        this.size = size;
+        cursor = 0;
+    }
+
+    /**
+     * Returns <tt>true</tt> if the iteration has more elements. (In other
+     * words, returns <tt>true</tt> if <tt>next</tt> would return an element
+     * rather than throwing an exception.)
+     *
+     * @return <tt>true</tt> if the getIterator has more elements.
+     */
+    @Override
+    public boolean hasNext() {
+        return cursor < size;
+    }
+
+    /**
+     * Returns the next element in the iteration.
+     *
+     * @return the next element in the iteration.
+     * @throws java.util.NoSuchElementException
+     *          iteration has no more elements.
+     */
+    @Override
+    public E next() {
+        return elements[cursor++];
+    }
 }

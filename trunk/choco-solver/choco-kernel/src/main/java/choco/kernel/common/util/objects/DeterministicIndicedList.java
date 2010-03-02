@@ -23,11 +23,12 @@
 package choco.kernel.common.util.objects;
 
 import choco.kernel.common.IIndex;
+import choco.kernel.common.util.iterators.ArrayIterator;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import gnu.trove.TLongIntHashMap;
 
 import static java.lang.reflect.Array.newInstance;
 import java.util.Arrays;
-import java.util.Iterator;
 
 /*
 * User : charles
@@ -180,52 +181,7 @@ public class DeterministicIndicedList<O extends IIndex>{
      * Iterator over objects
      * @return
      */
-    public Iterator<O> iterator(){
-        return new Iterator<O>(){
-            int current = 0;
-
-            /**
-             * Returns <tt>true</tt> if the iteration has more elements. (In other
-             * words, returns <tt>true</tt> if <tt>next</tt> would return an element
-             * rather than throwing an exception.)
-             *
-             * @return <tt>true</tt> if the iterator has more elements.
-             */
-            @Override
-            public boolean hasNext() {
-                return current < last;
-            }
-
-            /**
-             * Returns the next element in the iteration.
-             *
-             * @return the next element in the iteration.
-             * @throws java.util.NoSuchElementException
-             *          iteration has no more elements.
-             */
-            @Override
-            public O next() {
-                return objects[current++];
-            }
-
-            /**
-             * Removes from the underlying collection the last element returned by the
-             * iterator (optional operation).  This method can be called only once per
-             * call to <tt>next</tt>.  The behavior of an iterator is unspecified if
-             * the underlying collection is modified while the iteration is in
-             * progress in any way other than by calling this method.
-             *
-             * @throws UnsupportedOperationException if the <tt>remove</tt>
-             *                                       operation is not supported by this Iterator.
-             * @throws IllegalStateException         if the <tt>next</tt> method has not
-             *                                       yet been called, or the <tt>remove</tt> method has already
-             *                                       been called after the last call to the <tt>next</tt>
-             *                                       method.
-             */
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException("operation is not supported by this Iterator");
-            }
-        };
+    public DisposableIterator<O> iterator(){
+        return ArrayIterator.getIterator(objects, last);
     }
 }

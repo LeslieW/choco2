@@ -152,12 +152,12 @@ public class PartiallyStoredIntVector {
 //  }
 //
 
-    protected DisposableIntIterator _cachedIndexIterator = null;
+    protected static DisposableIntIterator _cachedIndexIterator = null;
 
     public DisposableIntIterator getIndexIterator() {
         IndexIterator iter = (IndexIterator) _cachedIndexIterator;
         if (iter != null && iter.reusable) {
-            iter.init();
+            iter.init(this);
             return iter;
         }
         _cachedIndexIterator = new IndexIterator(this);
@@ -168,16 +168,16 @@ public class PartiallyStoredIntVector {
     protected static class IndexIterator extends DisposableIntIterator {
         PartiallyStoredIntVector vector;
         int idx = -1;
-      boolean stats;
+        boolean stats;
         boolean storeds;
 
         public IndexIterator(PartiallyStoredIntVector vector) {
-            this.vector = vector;
-            init();
+            init(vector);
         }
 
-        public void init() {
+        public void init(PartiallyStoredIntVector vector) {
             super.init();
+            this.vector = vector;
             idx = -1;
             stats = (vector.nStaticInts> 0);
             storeds = (vector.nStoredInts.get() > 0);

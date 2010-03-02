@@ -23,6 +23,7 @@
 package choco.cp.solver.search.integer.branching;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.AbstractLargeIntBranchingStrategy;
@@ -85,11 +86,13 @@ public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy impl
 	public DomOverWDegBranching(Solver s, ValIterator valHeuri, IntVar[] vars) {
 		_solver = s;
 
-		for (Iterator iter = s.getConstraintIterator(); iter.hasNext();) {
-			AbstractSConstraint c = (AbstractSConstraint) iter.next();
-			c.addExtension(ABSTRACTCONTRAINT_EXTENSION);
-		}
-		for (int i = 0; i < s.getNbIntVars(); i++) {
+        DisposableIterator<SConstraint> iter = s.getConstraintIterator();
+        for (; iter.hasNext();) {
+            AbstractSConstraint c = (AbstractSConstraint) iter.next();
+            c.addExtension(ABSTRACTCONTRAINT_EXTENSION);
+        }
+        iter.dispose();
+        for (int i = 0; i < s.getNbIntVars(); i++) {
 			IntVar v = s.getIntVar(i);
 			((AbstractVar) v).addExtension(ABSTRACTVAR_EXTENSION);
 		}
@@ -122,10 +125,12 @@ public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy impl
 	public DomOverWDegBranching(Solver s, ValSelector valHeuri, IntVar[] vars) {
 		_solver = s;
 
-		for (Iterator iter = s.getConstraintIterator(); iter.hasNext();) {
+        DisposableIterator<SConstraint> iter = s.getConstraintIterator();
+		for (; iter.hasNext();) {
 			AbstractSConstraint c = (AbstractSConstraint) iter.next();
 			c.addExtension(ABSTRACTCONTRAINT_EXTENSION);
 		}
+        iter.dispose();
 		for (int i = 0; i < s.getNbIntVars(); i++) {
 			IntVar v = s.getIntVar(i);
 			((AbstractVar) v).addExtension(ABSTRACTVAR_EXTENSION);
@@ -360,9 +365,11 @@ public class DomOverWDegBranching extends AbstractLargeIntBranchingStrategy impl
 			final StringBuilder b = new StringBuilder();
 			b.append("===> Display DomWDeg weights\n");
 			b.append("\n###\tConstraints\t###\n");
-			for (Iterator<SConstraint> iter = _solver.getConstraintIterator(); iter.hasNext();) {
+            DisposableIterator<SConstraint> iter = _solver.getConstraintIterator();
+			for (; iter.hasNext();) {
 				appendConstraint(b, iter.next());
 			}
+            iter.dispose();
 			b.append("\n###\tVariables\t###\n");
 			for (int i = 0; i < _solver.getNbIntVars(); i++) {
 				appendVariable(b, _solver.getIntVar(i));

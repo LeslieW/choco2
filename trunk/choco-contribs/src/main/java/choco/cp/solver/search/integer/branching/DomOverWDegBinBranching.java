@@ -24,6 +24,7 @@ package choco.cp.solver.search.integer.branching;
 
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
@@ -72,11 +73,12 @@ public class DomOverWDegBinBranching extends AbstractAssignOrForbidBranching {
 	public DomOverWDegBinBranching(Solver s, ValSelector valHeuri,
 			IntDomainVar[] intDomainVars) {
 		super(valHeuri);
-		for (Iterator<SConstraint> iter = s.getConstraintIterator(); iter
-		.hasNext();) {
+        DisposableIterator<SConstraint> iter = s.getConstraintIterator();
+		for (; iter.hasNext();) {
 			AbstractSConstraint c = (AbstractSConstraint) iter.next();
 			c.addExtension(CONSTRAINT_EXTENSION);
 		}
+        iter.dispose();
 		for (int i = 0; i < s.getNbIntVars(); i++) {
 			IntVar v = s.getIntVar(i);
 			((AbstractVar) v).addExtension(VAR_EXTENSION);

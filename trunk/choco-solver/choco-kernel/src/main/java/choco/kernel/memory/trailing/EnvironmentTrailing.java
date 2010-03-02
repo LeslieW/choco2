@@ -23,29 +23,9 @@
 package choco.kernel.memory.trailing;
 
 
-import java.util.Arrays;
-
-import choco.kernel.memory.AbstractEnvironment;
-import choco.kernel.memory.IStateBinaryTree;
-import choco.kernel.memory.IStateBool;
-import choco.kernel.memory.IStateDouble;
-import choco.kernel.memory.IStateDoubleVector;
-import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.IStateIntProcedure;
-import choco.kernel.memory.IStateIntVector;
-import choco.kernel.memory.IStateLong;
-import choco.kernel.memory.IStateObject;
-import choco.kernel.memory.IStateVector;
+import choco.kernel.memory.*;
 import choco.kernel.memory.IStateBinaryTree.Node;
-import choco.kernel.memory.trailing.trail.ITrailStorage;
-import choco.kernel.memory.trailing.trail.StoredBinaryTreeTrail;
-import choco.kernel.memory.trailing.trail.StoredBoolTrail;
-import choco.kernel.memory.trailing.trail.StoredDoubleTrail;
-import choco.kernel.memory.trailing.trail.StoredDoubleVectorTrail;
-import choco.kernel.memory.trailing.trail.StoredIntTrail;
-import choco.kernel.memory.trailing.trail.StoredIntVectorTrail;
-import choco.kernel.memory.trailing.trail.StoredLongTrail;
-import choco.kernel.memory.trailing.trail.StoredVectorTrail;
+import choco.kernel.memory.trailing.trail.*;
 
 /**
  * The root class for managing memory and sessions.
@@ -56,54 +36,55 @@ import choco.kernel.memory.trailing.trail.StoredVectorTrail;
 public final class EnvironmentTrailing extends AbstractEnvironment {
 
 
-	/**
+    /**
 	 * The maximum numbers of worlds that a
 	 * {@link ITrailStorage} can handle.
 	 */
+    private int maxWorld = 100; //1000;
 
-	private int maxWorld;
-	
-	//Contains all the {@link ITrailStorage} trails for
+    /**
+	 * The maximum numbers of updates that a
+	 * {@link ITrailStorage} can handle.
+	 */
+    private static final int maxHist = 5000;
+
+    //Contains all the {@link ITrailStorage} trails for
 	// storing different kinds of data.
 	private final StoredIntTrail intTrail;
-	private final StoredBoolTrail boolTrail;
-	private final StoredVectorTrail vectorTrail;
-	private final StoredIntVectorTrail intVectorTrail;
-	private final StoredDoubleVectorTrail doubleVectorTrail;
-	private final StoredDoubleTrail doubleTrail;
-	private final StoredLongTrail longTrail;
-	private final StoredBinaryTreeTrail btreeTrail;
-	
-	/**
+    private final StoredBoolTrail boolTrail;
+    private final StoredVectorTrail vectorTrail;
+    private final StoredIntVectorTrail intVectorTrail;
+    private final StoredDoubleVectorTrail doubleVectorTrail;
+    private final StoredDoubleTrail doubleTrail;
+
+    private final StoredLongTrail longTrail;
+
+    private final StoredBinaryTreeTrail btreeTrail;
+    /**
 	 * Contains all the {@link ITrailStorage} trails for
 	 * storing different kinds of data.
 	 */
 	private final ITrailStorage[] trails;
 
-	/**
+    /**
 	 * Constructs a new <code>IEnvironment</code> with
 	 * the default stack sizes : 50000 and 1000.
 	 */
 
 	public EnvironmentTrailing() {
-		int maxHist = 5000;
-		maxWorld = 100; //1000;
-		boolTrail = new StoredBoolTrail(this, maxHist, maxWorld); 
+        boolTrail = new StoredBoolTrail(this, maxHist, maxWorld);
 		intTrail = new StoredIntTrail(this, maxHist, maxWorld);
 		vectorTrail = new StoredVectorTrail(this, maxHist, maxWorld);
 		intVectorTrail = new StoredIntVectorTrail(this, maxHist, maxWorld);
-		doubleVectorTrail = new StoredDoubleVectorTrail(this,maxHist,maxWorld);
+		doubleVectorTrail = new StoredDoubleVectorTrail(this,maxHist, maxWorld);
 		doubleTrail = new StoredDoubleTrail(this, maxHist, maxWorld);
 		longTrail = new StoredLongTrail(this, maxHist, maxWorld);
-		btreeTrail = new StoredBinaryTreeTrail(this, maxHist,maxWorld);
+		btreeTrail = new StoredBinaryTreeTrail(this, maxHist, maxWorld);
 		trails = new ITrailStorage[]{
 				boolTrail,intTrail,vectorTrail, intVectorTrail,
 				doubleVectorTrail, doubleTrail,longTrail,btreeTrail
 		};
-	
 	}
-
-
 	
 	@Override
 	public void worldPush() {

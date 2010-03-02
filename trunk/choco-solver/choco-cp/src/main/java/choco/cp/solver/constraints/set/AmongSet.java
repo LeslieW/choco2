@@ -357,9 +357,9 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
                 }
                 if(!outEnv.get(i)){
                     nb = 0;
-                    DisposableIntIterator itV = var.getDomain().getIterator();
-                    while(itV.hasNext()){
-                        int vv= itV.next();
+                    DisposableIntIterator it = var.getDomain().getIterator();
+                    while(it.hasNext()){
+                        int vv= it.next();
                         if(vv!=val){
                             if(s.isInDomainEnveloppe(vv)){
                                 nb++;
@@ -367,6 +367,7 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
                             }
                         }
                     }
+                    it.dispose();
                     if (nb == 0) {
                         ub--;
                     }

@@ -36,6 +36,7 @@ import choco.cp.solver.constraints.integer.extension.CspLargeSConstraint;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
 import choco.cp.solver.variables.integer.*;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -53,7 +54,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
-import java.util.Iterator;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -76,11 +76,12 @@ public class ConstraintsDetectionTest {
         s.read(m);
 
         LOGGER.info(s.getCstr(c).pretty());
-        Iterator<SConstraint> it = s.getConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
         }
+        it.dispose();
         s.solveAll();
         assertEquals(1, s.getNbSolutions());
 
@@ -98,12 +99,13 @@ public class ConstraintsDetectionTest {
         s.read(m);
 
         LOGGER.info(s.getCstr(c).pretty());
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             assertTrue(p instanceof IntLinComb);
             LOGGER.info(p.pretty());
         }
+        it.dispose();
         s.solveAll();
         assertEquals(27, s.getNbSolutions());
 
@@ -121,12 +123,13 @@ public class ConstraintsDetectionTest {
         s.read(m);
 
         LOGGER.info(s.getCstr(c).pretty());
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             assertTrue(p instanceof IntLinComb);
             LOGGER.info(p.pretty());
         }
+        it.dispose();
         s.solveAll();
         assertEquals(36, s.getNbSolutions());
 
@@ -162,12 +165,13 @@ public class ConstraintsDetectionTest {
         s.read(m);
 
         LOGGER.info(s.getCstr(c).pretty());
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             assertTrue(p instanceof BoolIntLinComb);
             LOGGER.info(p.pretty());
         }
+        it.dispose();
         s.solveAll();
         assertEquals(16, s.getNbSolutions());
 
@@ -185,12 +189,13 @@ public class ConstraintsDetectionTest {
         s.read(m);
 
         LOGGER.info(s.getCstr(c).pretty());
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             assertTrue(p instanceof IntLinComb);
             LOGGER.info(p.pretty());
         }
+        it.dispose();
         s.solveAll();
         assertEquals(5365, s.getNbSolutions());
 
@@ -208,12 +213,13 @@ public class ConstraintsDetectionTest {
         s.read(m);
 
         LOGGER.info(s.getCstr(c).pretty());
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             assertTrue(p instanceof IntLinComb);
             LOGGER.info(p.pretty());
         }
+        it.dispose();
         s.solveAll();
         assertEquals(9, s.getNbSolutions());
 
@@ -231,12 +237,13 @@ public class ConstraintsDetectionTest {
         s.read(m);
 
         LOGGER.info(s.getCstr(c).pretty());
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             //assertTrue(p instanceof IntLinComb);
         }
+        it.dispose();
         s.solveAll();
         assertEquals(7, s.getNbSolutions());
 
@@ -254,12 +261,13 @@ public class ConstraintsDetectionTest {
         s.read(m);
 
         LOGGER.info(s.getCstr(c).pretty());
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof IntLinComb);
         }
+        it.dispose();
         s.solveAll();
         assertEquals(2, s.getNbSolutions());
 
@@ -277,12 +285,13 @@ public class ConstraintsDetectionTest {
         s.read(m);
 
         LOGGER.info(s.getCstr(c).pretty());
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof IntLinComb);
         }
+        it.dispose();
         s.solveAll();
         assertEquals(19, s.getNbSolutions());
 
@@ -300,12 +309,13 @@ public class ConstraintsDetectionTest {
         s.read(m);
 
         LOGGER.info(s.getCstr(c).pretty());
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof IntLinComb);
         }
+        it.dispose();
         s.solveAll();
         assertEquals(19, s.getNbSolutions());
 
@@ -323,12 +333,13 @@ public class ConstraintsDetectionTest {
         s.read(m);
 
         LOGGER.info(s.getCstr(c).pretty());
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof IntLinComb);
         }
+        it.dispose();
         s.solveAll();
         assertEquals(5, s.getNbSolutions());
 
@@ -346,12 +357,13 @@ public class ConstraintsDetectionTest {
         s.read(m);
 
         LOGGER.info(s.getCstr(c).pretty());
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             //assertTrue(p instanceof IntLinComb);
         }
+        it.dispose();
         s.solveAll();
         assertEquals(338, s.getNbSolutions());
     }
@@ -372,12 +384,13 @@ public class ConstraintsDetectionTest {
         s.read(m);
 
         LOGGER.info(s.getCstr(c).pretty());
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             //assertTrue(p instanceof IntLinComb);
         }
+        it.dispose();
         s.solveAll();
         assertEquals(210, s.getNbSolutions());
     }
@@ -394,12 +407,13 @@ public class ConstraintsDetectionTest {
 
         s.read(m);
 
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof SignOp);
         }
+        it.dispose();
         s.solveAll();
         assertEquals(18, s.getNbSolutions());
 
@@ -417,12 +431,13 @@ public class ConstraintsDetectionTest {
 
         s.read(m);
 
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof SignOp);
         }
+        it.dispose();
         s.solveAll();
         assertEquals(18, s.getNbSolutions());
 
@@ -504,12 +519,13 @@ public class ConstraintsDetectionTest {
 
         s.read(m);
 
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof MinOfAList);
         }
+        it.dispose();
         s.solveAll();
         assertEquals(343, s.getNbSolutions());
     }
@@ -528,12 +544,13 @@ public class ConstraintsDetectionTest {
 
         s.read(m);
 
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof MinOfAList);
         }
+        it.dispose();
         s.solveAll();
         assertEquals(343, s.getNbSolutions());
     }
@@ -552,12 +569,13 @@ public class ConstraintsDetectionTest {
 
         s.read(m);
 
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof MaxOfAList);
         }
+        it.dispose();
         s.solveAll();
         assertEquals(343, s.getNbSolutions());
 
@@ -578,12 +596,13 @@ public class ConstraintsDetectionTest {
 
         s.read(m);
 
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof MaxOfAList);
         }
+        it.dispose();
         s.solveAll();
         assertEquals(343, s.getNbSolutions());
 
@@ -605,12 +624,13 @@ public class ConstraintsDetectionTest {
 
         s.read(m);
 
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof DistanceXYZ);
         }
+         it.dispose();
         s.solveAll();
         assertEquals(37, s.getNbSolutions());
 
@@ -631,12 +651,13 @@ public class ConstraintsDetectionTest {
 
         s.read(m);
 
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof DistanceXYZ);
         }
+         it.dispose();
         s.solveAll();
         assertEquals(37, s.getNbSolutions());
 
@@ -656,12 +677,13 @@ public class ConstraintsDetectionTest {
 
         s.read(m);
 
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof DistanceXYC);
         }
+          it.dispose();
         s.solveAll();
         assertEquals(8, s.getNbSolutions());
 
@@ -682,12 +704,13 @@ public class ConstraintsDetectionTest {
 
         s.read(m);
 
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof DistanceXYZ);
         }
+          it.dispose();
         s.solveAll();
         assertEquals(92, s.getNbSolutions());
 
@@ -711,12 +734,13 @@ public class ConstraintsDetectionTest {
 
         s.read(m);
 
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             assertTrue(p instanceof DistanceXYZ);
         }
+         it.dispose();
         s.solveAll();
         assertEquals(288, s.getNbSolutions());
 
@@ -738,13 +762,14 @@ public class ConstraintsDetectionTest {
 
         s.read(m);
 
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
          boolean b=false;
          while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             b |= (p instanceof BoundAllDiff || p instanceof AllDifferent);
         }
+         it.dispose();
         s.solveAll();
         assertEquals(0, s.getNbSolutions());
     }
@@ -774,13 +799,14 @@ public class ConstraintsDetectionTest {
 
         s.read(m);
 
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         boolean disjunctivedetected = false;
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             disjunctivedetected |= p instanceof Disjunctive;
         }
+        it.dispose();
         assertTrue(disjunctivedetected);
         s.solveAll();
         LOGGER.info("" + s.getNbSolutions());
@@ -811,13 +837,14 @@ public class ConstraintsDetectionTest {
 
         s.read(m);
 
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         boolean disjunctivedetected = false;
         while (it.hasNext()) {
             SConstraint p = it.next();
             LOGGER.info(p.pretty());
             disjunctivedetected |= p instanceof Disjunctive;
         }
+        it.dispose();
         assertTrue(disjunctivedetected);
         s.solveAll();
         LOGGER.info("" + s.getNbSolutions());
@@ -843,7 +870,7 @@ public class ConstraintsDetectionTest {
 
         s.read(m);
 
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         boolean alldiffd = false;
         while (it.hasNext()) {
             SConstraint p = it.next();
@@ -851,6 +878,7 @@ public class ConstraintsDetectionTest {
             LOGGER.info("" + p);
             alldiffd |= (p instanceof AllDifferent || p instanceof BoundAllDiff);
         }
+        it.dispose();
         assertTrue(alldiffd);
     }
 
@@ -1157,12 +1185,13 @@ public class ConstraintsDetectionTest {
             s = new CPSolver();
             s.read(m);
 
-            Iterator<SConstraint> it = s.getIntConstraintIterator();
+            DisposableIterator<SConstraint> it = s.getConstraintIterator();
             while(it.hasNext()){
                 SConstraint c = it.next();
                 boolean t = c instanceof CspLargeSConstraint;
                 Assert.assertFalse("unexpected type of constraint: "+seed, t);
             }
+            it.dispose();
 
         }
     }
@@ -1188,12 +1217,13 @@ public class ConstraintsDetectionTest {
             s = new CPSolver();
             s.read(m);
 
-            Iterator<SConstraint> it = s.getIntConstraintIterator();
+            DisposableIterator<SConstraint> it = s.getConstraintIterator();
             while(it.hasNext()){
                 SConstraint c = it.next();
                 boolean t = c instanceof SignOp;
                 Assert.assertTrue("unexpected type of constraint", t);
             }
+            it.dispose();
 
         }
     }
@@ -1218,12 +1248,13 @@ public class ConstraintsDetectionTest {
                s = new CPSolver();
                s.read(m);
 
-               Iterator<SConstraint> it = s.getIntConstraintIterator();
+               DisposableIterator<SConstraint> it = s.getConstraintIterator();
                while(it.hasNext()){
                    SConstraint c = it.next();
                    boolean t = c instanceof ClauseStore;
                    Assert.assertTrue("unexpected type of constraint", t);
                }
+               it.dispose();
 
            }
        }

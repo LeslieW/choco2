@@ -32,6 +32,7 @@ import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
@@ -662,7 +663,7 @@ public class ReifiedSomeTest {
             LOGGER.info("Prescription Acceptable");
         } else {
             LOGGER.info("Prescription Unacceptable");
-            Iterator it = s.getIntConstraintIterator();
+            DisposableIterator<SConstraint> it = s.getConstraintIterator();
             while (it.hasNext()) {
                 SConstraint c = (SConstraint) it.next();
                 //LOGGER.info(""  + c);
@@ -670,6 +671,7 @@ public class ReifiedSomeTest {
                     LOGGER.info(format("Failed: {0}", cardioConstraints.get(c)));
                 }
             }
+            it.dispose();
         }
     }
 

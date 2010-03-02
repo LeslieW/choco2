@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory.structure;
 
+import choco.kernel.common.util.iterators.ArrayIterator;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.variables.Var;
@@ -95,8 +97,8 @@ public class StoredBipartiteSet<E> extends AbstractList<E> {
 		return elementData[index];
 	}
 
-	public Iterator<E> quickIterator() {
-		return new QuickItr();
+	public DisposableIterator<E> quickIterator() {
+		return ArrayIterator.getIterator(elementData, size());
 		
 	}
 	

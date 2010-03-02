@@ -148,6 +148,7 @@ public class MemberXY extends AbstractBinSetIntSConstraint {
                 allOutEnv = false;
             }
         }
+        it.dispose();
         if(allInKernel){
             return Boolean.TRUE;
         }else if(allOutEnv){

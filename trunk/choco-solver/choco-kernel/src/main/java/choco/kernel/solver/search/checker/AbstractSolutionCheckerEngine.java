@@ -1,12 +1,12 @@
 package choco.kernel.solver.search.checker;
 
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.set.SetVar;
 
-import java.util.Iterator;
 import java.util.logging.Level;
 
 public abstract class AbstractSolutionCheckerEngine implements ISolutionCheckerEngine {
@@ -18,10 +18,15 @@ public abstract class AbstractSolutionCheckerEngine implements ISolutionCheckerE
      */
 	@Override
 	public final void checkConstraints(Solver solver) throws SolutionCheckerException {
-		final Iterator<SConstraint> ctit = solver.getConstraintIterator();
-		while (ctit.hasNext()) {
-			checkConstraint(ctit.next());
-		}		
+		final DisposableIterator<SConstraint> ctit = solver.getConstraintIterator();
+		try{
+            while (ctit.hasNext()) {
+                checkConstraint(ctit.next());
+            }
+        }finally {
+            ctit.dispose();
+        }
+
 	}
 
      /**
@@ -45,18 +50,21 @@ public abstract class AbstractSolutionCheckerEngine implements ISolutionCheckerE
      */
 	@Override
 	public final void checkVariables(Solver solver) throws SolutionCheckerException {
-		final Iterator<IntDomainVar> ivIter = solver.getIntVarIterator();
+		final DisposableIterator<IntDomainVar> ivIter = solver.getIntVarIterator();
 		while(ivIter.hasNext()) {
 			checkVariable(ivIter.next());
 		}
-		final Iterator<SetVar> svIter = solver.getSetVarIterator();
+        ivIter.dispose();
+		final DisposableIterator<SetVar> svIter = solver.getSetVarIterator();
 		while(svIter.hasNext()) {
 			checkVariable(svIter.next());
 		}
-		final Iterator<RealVar> rvIter = solver.getRealVarIterator();
+        svIter.dispose();
+		final DisposableIterator<RealVar> rvIter = solver.getRealVarIterator();
 		while(rvIter.hasNext()) {
 			checkVariable(rvIter.next());
-		}		
+		}
+        rvIter.dispose();
 	}
 
     /**
@@ -67,10 +75,11 @@ public abstract class AbstractSolutionCheckerEngine implements ISolutionCheckerE
 	@Override
 	public final boolean inspectConstraints(Solver solver) {
 		boolean isOk = true;
-		Iterator<SConstraint> ctit =  solver.getConstraintIterator();
+		DisposableIterator<SConstraint> ctit =  solver.getConstraintIterator();
 		while (ctit.hasNext()) {
 			isOk &= inspectConstraint(ctit.next());
 		}
+        ctit.dispose();
 		return isOk;
 	}
 
@@ -106,18 +115,21 @@ public abstract class AbstractSolutionCheckerEngine implements ISolutionCheckerE
 	@Override
 	public final boolean inspectVariables(Solver solver) {
 		boolean isOk = true;
-		final Iterator<IntDomainVar> ivIter = solver.getIntVarIterator();
+		final DisposableIterator<IntDomainVar> ivIter = solver.getIntVarIterator();
 		while(ivIter.hasNext()) {
 			isOk &= inspectVariable(ivIter.next());
 		}
-		final Iterator<SetVar> svIter = solver.getSetVarIterator();
+        ivIter.dispose();
+		final DisposableIterator<SetVar> svIter = solver.getSetVarIterator();
 		while(svIter.hasNext()) {
 			isOk &= inspectVariable(svIter.next());
 		}
-		final Iterator<RealVar> rvIter = solver.getRealVarIterator();
+        svIter.dispose();
+		final DisposableIterator<RealVar> rvIter = solver.getRealVarIterator();
 		while(rvIter.hasNext()) {
 			isOk &= inspectVariable(rvIter.next());
 		}
+        rvIter.dispose();
 		return isOk;
 	}
 

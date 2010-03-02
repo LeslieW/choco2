@@ -31,7 +31,7 @@ package choco.kernel.common.util.iterators;
 */
 public class OneValueIterator extends DisposableIntIterator {
 
-    static OneValueIterator onevalueiterator;
+    static OneValueIterator _cachedOnevalueiterator;
 
     int value;
     boolean next;
@@ -41,11 +41,12 @@ public class OneValueIterator extends DisposableIntIterator {
     }
 
     public static OneValueIterator getOneValueIterator(int value) {
-        if (onevalueiterator != null && onevalueiterator.reusable) {
-            onevalueiterator.init(value);
-            return onevalueiterator;
+        if (_cachedOnevalueiterator != null && _cachedOnevalueiterator.reusable) {
+            _cachedOnevalueiterator.init(value);
+            return _cachedOnevalueiterator;
         }
-        return new OneValueIterator(value);
+        _cachedOnevalueiterator = new OneValueIterator(value);
+        return _cachedOnevalueiterator;
     }
 
 

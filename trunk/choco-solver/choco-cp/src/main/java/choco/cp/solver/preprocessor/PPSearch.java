@@ -40,6 +40,7 @@ import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.DomOverDynDeg;
 import choco.cp.solver.search.integer.varselector.DomOverWDeg;
 import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.AbstractVar;
@@ -47,7 +48,6 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -280,14 +280,14 @@ public class PPSearch {
      * return 1 (domWdeg) or 2 (Impact) depending on the nature of the problem
      */
     public int determineHeuristic(CPSolver s) {
-        Iterator it = s.getConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         int heuristic = 1;
         if (isSat()) return 2; //degree is unrelevant using the clause propagator
         if (isNaryExtensional()) {
             return 1;
         }
         for (; it.hasNext();) {
-            SConstraint constraint = (SConstraint) it.next();
+            SConstraint constraint = it.next();
             if (constraint instanceof Cumulative) return 2;
             if (constraint instanceof AllDifferent) return 2;
             if (constraint instanceof BoundAllDiff) {
@@ -307,6 +307,7 @@ public class PPSearch {
             if (constraint instanceof DistanceXYC) return 1;
 
         }
+        it.dispose();
         if (getSumOfDomains(s) > 500000) {
             return 1;
         }
