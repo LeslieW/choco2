@@ -40,10 +40,10 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
     private final IEnvironment environment;
 
 
-    double[][][] costs;
-    Automaton pi;
+    int[][][] costs;
+    FiniteAutomaton pi;
 
-    public FastCostRegular(IntDomainVar[] vars, Automaton pi, double[][][] costs, IEnvironment environment) {
+    public FastCostRegular(IntDomainVar[] vars, FiniteAutomaton pi, int[][][] costs, IEnvironment environment) {
         super(vars);
         this.environment = environment;
         this.vs = new IntDomainVar[vars.length-1];
