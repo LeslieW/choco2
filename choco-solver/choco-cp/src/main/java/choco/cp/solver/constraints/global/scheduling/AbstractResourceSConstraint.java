@@ -22,31 +22,20 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
-import junit.framework.Assert;
-
-import org.omg.CORBA.Environment;
-
 import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.variables.integer.IntVarEvent;
-import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.global.scheduling.IResource;
-import choco.kernel.solver.search.task.TaskSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.scheduling.AbstractRTask;
-import choco.kernel.solver.variables.scheduling.IRMakespan;
-import choco.kernel.solver.variables.scheduling.IRTask;
-import choco.kernel.solver.variables.scheduling.ITask;
-import choco.kernel.solver.variables.scheduling.TaskVar;
+import choco.kernel.solver.variables.scheduling.*;
+
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
