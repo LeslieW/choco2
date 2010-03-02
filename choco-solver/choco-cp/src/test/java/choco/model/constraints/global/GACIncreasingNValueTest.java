@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
- *         |  °(..)  |                           *
+ *         |  ï¿½(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -132,7 +132,7 @@ public class GACIncreasingNValueTest {
 
     @Test
     public void test() {
-        ChocoLogging.setVerbosity(Verbosity.SILENT);
+        //ChocoLogging.setVerbosity(Verbosity.SILENT);
         int nbVars = 8;
         int maxVal = 10;
         double hole = 0.5;
@@ -191,7 +191,7 @@ public class GACIncreasingNValueTest {
             genVal[0] = min + rand.nextInt((max - min - valOcc < 1) ? 1 : (max - min - valOcc));
             if (debug) LOGGER.info("" + genVal[0]);
             for (int i = 1; i < valOcc; i++) {
-                genVal[i] = (1 + genVal[i - 1]) + rand.nextInt((max - genVal[i - 1] - (valOcc - i) < 1) ? 1 : (max - genVal[i - 1] - (valOcc - i))); // todo pb ! je veux generer 3 valeurs distinctes entre 0 et 2 en commenant par 1 ? impossible
+                genVal[i] = (1 + genVal[i - 1]) + rand.nextInt((max - genVal[i - 1] - (valOcc - i) < 1) ? 1 : (max - genVal[i - 1] - (valOcc - i))); // todo pb ! je veux generer 3 valeurs distinctes entre 0 et 2 en commenï¿½ant par 1 ? impossible
                 if (debug) LOGGER.info("" + genVal[i]);
             }
             if (debug) LOGGER.info("-----");

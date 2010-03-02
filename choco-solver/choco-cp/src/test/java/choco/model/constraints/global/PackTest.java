@@ -22,28 +22,35 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.global;
 
-import choco.Choco;
-import static choco.Choco.*;
-import choco.cp.model.CPModel;
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.SettingType;
-import choco.cp.solver.search.integer.varselector.MinDomain;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.common.util.tools.MathUtils;
-import choco.kernel.model.ModelException;
-import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.pack.PackModeler;
-import choco.kernel.model.variables.integer.IntegerConstantVariable;
+import static choco.Choco.constantArray;
+import static choco.Choco.eq;
+import static choco.Choco.geq;
+import static choco.Choco.leq;
+import static choco.Choco.pack;
 import static org.junit.Assert.assertEquals;
-import org.junit.Ignore;
-import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.junit.Ignore;
+import org.junit.Test;
+
+import choco.Choco;
+import choco.cp.model.CPModel;
+import choco.cp.solver.CPSolver;
+import choco.cp.solver.SettingType;
+import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
+import choco.kernel.common.util.tools.ArrayUtils;
+import choco.kernel.common.util.tools.MathUtils;
+import choco.kernel.model.ModelException;
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.pack.PackModeler;
+import choco.kernel.model.variables.integer.IntegerConstantVariable;
 
 /**
  *
@@ -248,12 +255,11 @@ public class PackTest {
 		modeler.setDefaultDecisionVariable();
 		models.clear();
 		initializeModels(null);
-		initializeModels(modeler.redundantCstrNbNonEmptyBins());
-		initializeModels(modeler.symBreakEndsWithEmptyBins(0, nbBins));
-		initializeModels(modeler.symBreakLoadOrdering(true));
-		initializeModels(modeler.symBreakPackLargeItems(true));
-		initializeModels(modeler.symBreakEqualSizedItems());
-		initializeModels(new Constraint[]{modeler.redundantCstrAllDiffLargeItems()});
+		initializeModels(modeler.getNbNonEmptyBinsRC());
+		initializeModels(modeler.getLoadOrderingSBC(true));
+		initializeModels(modeler.getPackLargeItemsSBC(true));
+		initializeModels(modeler.getEqualSizedItemsSBC(0));
+		initializeModels(new Constraint[]{modeler.getAllDiffLargeItemsRC("")});
 	}
 	
 	

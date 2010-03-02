@@ -24,19 +24,17 @@ package choco.cp.solver.constraints.global.pack;
 
 import static choco.cp.solver.SettingType.ADDITIONAL_RULES;
 import static choco.cp.solver.SettingType.FILL_BIN;
+
+import java.awt.Point;
+import java.util.ListIterator;
+
 import choco.cp.solver.constraints.BitFlags;
-import choco.kernel.common.opres.AbstractNoSum;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.memory.IEnvironment;
+import choco.kernel.common.opres.nosum.INoSumCell;
+import choco.kernel.common.opres.nosum.NoSumList;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.set.SetVar;
-
-import java.awt.*;
-import java.util.BitSet;
 
 
 /**
@@ -66,9 +64,8 @@ import java.util.BitSet;
 public class PackFiltering {
 
 	public final IPackSConstraint cstr;
-	
-	protected final BitFlags flags;
 
+	protected final BitFlags flags;
 
 	/** The sizes of the items. */
 	protected final IntDomainVar[] sizes;
@@ -79,31 +76,26 @@ public class PackFiltering {
 	//general propagation info
 
 	/** information about a given bin. */
-	protected BinStatus status;
+	private NoSumList reuseStatus;
 
-	/** the list of bin which can receive more items */
-	protected IStateIntVector availableBins;
-	
 	/** The no fix point. */
 	private boolean noFixPoint;
 
 	protected final SumDataStruct loadSum;
 
-
-	//FIXME protected SumDataStruct cardSum; implémenter les règles
+	//TODO protected SumDataStruct cardSum; implémenter les règles
 
 
 	/**
 	 * Instantiates a new 1BP constraint.
 	 * @param environment
 	 */
-	public PackFiltering(IEnvironment environment, IPackSConstraint cstr, BitFlags flags) {
+	public PackFiltering(IPackSConstraint cstr, BitFlags flags) {
 		this.cstr = cstr;
 		this.sizes = cstr.getSizes();
 		this.loads = cstr.getLoads();
 		loadSum = new SumDataStruct(loads,computeTotalSize());
 		this.flags = flags;
-        availableBins = environment.makeBipartiteIntList(ArrayUtils.zeroToN( cstr.getNbBins()));
 	}
 
 	/**
@@ -130,19 +122,6 @@ public class PackFiltering {
 
 
 
-	/**
-	 * Update the status of filled bins.
-	 */
-	private void updateAvailableBins() {
-		DisposableIntIterator iter = availableBins.getIterator();
-		while(iter.hasNext()) {
-			final int b = iter.next();
-			if( cstr.isFilled(b)) {
-				iter.remove();
-			}
-		}
-	}
-
 
 	/**
 	 * Update the minimal load of a given bin.
@@ -152,7 +131,7 @@ public class PackFiltering {
 	 *
 	 * @throws ContradictionException the contradiction exception
 	 */
-	protected void updateInfLoad(final int bin,final int load) throws ContradictionException {
+	protected final void updateInfLoad(final int bin,final int load) throws ContradictionException {
 		noFixPoint |= cstr.updateInfLoad(bin, load);
 	}
 
@@ -165,37 +144,23 @@ public class PackFiltering {
 	 *
 	 * @throws ContradictionException the contradiction exception
 	 */
-	protected void updateSupLoad(final int bin,final int load) throws ContradictionException {
+	protected final void updateSupLoad(final int bin,final int load) throws ContradictionException {
 		noFixPoint |= cstr.updateSupLoad(bin, load);
 	}
 
 	/**
-	 * Pack an item into a bin
-	 * @return true, if successful
-	 *
-	 * @throws ContradictionException the contradiction exception
+	 * Do not update status
 	 */
-	protected void pack(final int item,final int bin) throws ContradictionException {
-		if(cstr.pack(item, bin)) {
-			status.pack(item);
-			noFixPoint |= true;
-		}
+	protected final void pack(final int item,final int bin) throws ContradictionException {
+		noFixPoint |= cstr.pack(item, bin);
 	}
 
 
-
 	/**
-	 * Remove a possible assignment of an item into a bin.
-	 *
-	 * @return true, if successful
-	 *
-	 * @throws ContradictionException the contradiction exception
+	 * Do not update status
 	 */
-	protected void remove(final int item,final int bin) throws ContradictionException {
-		if(cstr.remove(item, bin)) {
-			status.remove(item);
-			noFixPoint |= true;
-		}
+	protected final void remove(final int item,final int bin) throws ContradictionException {
+		noFixPoint |=  cstr.remove(item, bin);
 	}
 
 
@@ -212,9 +177,9 @@ public class PackFiltering {
 	 *
 	 * @throws ContradictionException the contradiction exception
 	 */
-	protected void loadMaintenance(final int bin) throws ContradictionException {
-		updateInfLoad(bin,status.getRequiredLoad());
-		updateSupLoad(bin,status.getMaxLoad());
+	protected final void loadMaintenance(final int bin) throws ContradictionException {
+		updateInfLoad(bin,reuseStatus.getRequiredLoad());
+		updateSupLoad(bin,reuseStatus.getMaximumLoad());
 	}
 
 	/**
@@ -224,8 +189,8 @@ public class PackFiltering {
 	 *
 	 * @throws ContradictionException the contradiction exception
 	 */
-	protected void loadSizeAndCoherence(final int bin) throws ContradictionException {
-		Point p = loadSum.getBounds(bin);
+	protected final void loadSizeAndCoherence(final int bin) throws ContradictionException {
+		final Point p = loadSum.getBounds(bin);
 		updateInfLoad(bin, p.x);
 		updateSupLoad(bin, p.y);
 	}
@@ -238,13 +203,16 @@ public class PackFiltering {
 	 *
 	 * @throws ContradictionException the contradiction exception
 	 */
-	protected void singleItemEliminationAndCommitment(final int bin) throws ContradictionException {
-		final BitSet candidates=status.getCandidates();
-		for (int item = candidates.nextSetBit(0); item >= 0; item = candidates.nextSetBit(item + 1)) {
-			if(sizes[item].getInf()+status.getRequiredLoad()>loads[bin].getSup()) {
-				remove(item,bin);
-			}else if(status.getMaxLoad()-sizes[item].getSup()<loads[bin].getInf()) {
-				pack(item,bin);
+	protected final void singleItemEliminationAndCommitment(final int bin) throws ContradictionException {
+		final ListIterator<INoSumCell> iter = reuseStatus.listIterator();
+		while(iter.hasNext()) {
+			final int item = iter.next().getID();
+			if(sizes[item].getInf() + reuseStatus.getRequiredLoad()>loads[bin].getSup()) {
+				reuseStatus.remove(iter, item);
+				remove(item, bin);
+			}else if(reuseStatus.getMaximumLoad()-sizes[item].getSup()<loads[bin].getInf()) {
+				reuseStatus.pack(iter, item);
+				pack(item, bin);
 			}
 		}
 	}
@@ -255,16 +223,18 @@ public class PackFiltering {
 	 *
 	 * @throws ContradictionException the contradiction exception
 	 */
-	protected void singleItemEliminationAndCommitmentAndFill(final int bin) throws ContradictionException {
-		//FIXME no conflicts, equivalent bins ...
-		final BitSet candidates=status.getCandidates();
-		for (int item = candidates.nextSetBit(0); item >= 0; item = candidates.nextSetBit(item + 1)) {
-			if(sizes[item].getInf()+status.getRequiredLoad()>loads[bin].getSup()) {
-				remove(item,bin);
-			}else if(status.getMaxLoad()-sizes[item].getSup()<loads[bin].getInf()) {
-				pack(item,bin);
-			}else if(status.getRequiredLoad()+sizes[item].getInf()==loads[bin].getSup()) {
-				pack(item,bin);
+	protected final void singleItemEliminationAndCommitmentAndFill(final int bin) throws ContradictionException {
+		//Warning: bins must be equivalent ...
+		final ListIterator<INoSumCell> iter = reuseStatus.listIterator();
+		while(iter.hasNext()) {
+			final int item = iter.next().getID();
+			if(sizes[item].getInf() + reuseStatus.getRequiredLoad()>loads[bin].getSup()) {
+				reuseStatus.remove(iter, item);
+				remove(item, bin);
+			}else if( reuseStatus.getMaximumLoad()-sizes[item].getSup()<loads[bin].getInf() ||
+					reuseStatus.getRequiredLoad()+sizes[item].getInf()==loads[bin].getSup() ) {
+				reuseStatus.pack(iter, item);
+				pack(item, bin);
 			}
 		}
 	}
@@ -284,8 +254,8 @@ public class PackFiltering {
 	 *
 	 * @throws ContradictionException the contradiction exception
 	 */
-	protected final void noSumPruningRule(final AbstractNoSum nosum,final int bin) throws ContradictionException {
-		if(nosum.noSum(loads[bin].getInf()-status.getRequiredLoad(),loads[bin].getSup()-status.getRequiredLoad())) {
+	protected final void noSumPruningRule(final NoSumList nosum,final int bin) throws ContradictionException {
+		if(nosum.noSum(loads[bin].getInf()-reuseStatus.getRequiredLoad(),loads[bin].getSup()-reuseStatus.getRequiredLoad())) {
 			cstr.fail();
 		}
 	}
@@ -296,12 +266,14 @@ public class PackFiltering {
 	 *
 	 * @throws ContradictionException the contradiction exception
 	 */
-	protected final void noSumBinLoads(final AbstractNoSum nosum,final int bin) throws ContradictionException {
-		if(nosum.noSum(loads[bin].getInf()-status.getRequiredLoad(), loads[bin].getInf()-status.getRequiredLoad())) {
-			updateInfLoad(bin, status.getRequiredLoad()+nosum.getAlphaBeta().y);
+	protected final void noSumBinLoads(final NoSumList nosum,final int bin) throws ContradictionException {
+		int value = loads[bin].getInf()-reuseStatus.getRequiredLoad();
+		if(nosum.noSum(value, value) ) {
+			updateInfLoad(bin, reuseStatus.getRequiredLoad()+value);
 		}
-		if(nosum.noSum(loads[bin].getSup()-status.getRequiredLoad(),loads[bin].getSup()-status.getRequiredLoad())) {
-			updateSupLoad(bin,status.getRequiredLoad()+nosum.getAlphaBeta().x);
+		value = loads[bin].getSup()-reuseStatus.getRequiredLoad();
+		if(nosum.noSum(value, value)) {
+			updateSupLoad(bin,reuseStatus.getRequiredLoad()+ value);
 		}
 	}
 
@@ -311,24 +283,22 @@ public class PackFiltering {
 	 *
 	 * @throws ContradictionException the contradiction exception
 	 */
-	protected final void noSumItemEliminationAndCommitment(final AbstractNoSum nosum,final int bin) throws ContradictionException {
-		final BitSet candidates=status.getCandidates();
-		for (int item = candidates.nextSetBit(0); item >= 0; item = candidates.nextSetBit(item + 1)) {
-			status.remove(item);
-			if(candidates.isEmpty()) {break;}
-			else {
-				if(nosum.noSum(loads[bin].getInf()-status.getRequiredLoad()-sizes[item].getVal(), loads[bin].getSup()-status.getRequiredLoad()-sizes[item].getInf())) {
-					status.insertCandidate(item); //reset
-					remove(item, bin);
-				}else if (nosum.noSum(loads[bin].getInf()-status.getRequiredLoad(),loads[bin].getSup()-status.getRequiredLoad())) {
-					status.insertCandidate(item); //reset
-					pack(item, bin);
-				}else {
-					status.insertCandidate(item); //reset
-				}
+	protected final void noSumItemEliminationAndCommitment(final NoSumList nosum,final int bin) throws ContradictionException {
+		final ListIterator<INoSumCell> iter = reuseStatus.listIterator();
+		while(reuseStatus.getNbCandidates() > 1 && iter.hasNext()) {
+			final int item = iter.next().getID();
+			reuseStatus.remove(iter, item);
+			if(nosum.noSum(loads[bin].getInf()-reuseStatus.getRequiredLoad()-sizes[item].getVal(), loads[bin].getSup()-reuseStatus.getRequiredLoad()-sizes[item].getInf())) {
+				remove(item, bin);
+			}else if (nosum.noSum(loads[bin].getInf()-reuseStatus.getRequiredLoad(),loads[bin].getSup()-reuseStatus.getRequiredLoad())) {
+				reuseStatus.packRemoved(item);
+				pack(item, bin);
+			}else {
+				reuseStatus.undoRemove(iter, item);
 			}
 		}
 	}
+
 
 
 
@@ -340,15 +310,18 @@ public class PackFiltering {
 
 	public void propagate() throws ContradictionException {
 		//CPSolver.flushLogs();
+		final IStateIntVector abins = cstr.getAvailableBins();
+		final int n = abins.size();
 		noFixPoint=true;
 		while(noFixPoint) {
 			noFixPoint=false;
 			loadSum.update();
-			for (int i = 0; i < availableBins.size() ; i++) {
-				propagate( availableBins.get(i));
+			for (int i = 0; i < n ; i++) {
+				propagate( abins.quickGet(i));
 			}
 		}
-		updateAvailableBins();
+		cstr.fireAvailableBins(); 
+
 	}
 
 	/**
@@ -357,205 +330,49 @@ public class PackFiltering {
 	 */
 	private void propagate(final int bin) throws ContradictionException {
 		loadSizeAndCoherence(bin);
-		status = cstr.getStatus(bin);
+		reuseStatus = cstr.getStatus(bin);
 		loadMaintenance(bin);
 		if(flags.contains(FILL_BIN)) {singleItemEliminationAndCommitmentAndFill(bin);}
 		else {singleItemEliminationAndCommitment(bin);}
-		if( flags.contains(ADDITIONAL_RULES) && status.getCandidates().cardinality()>1) {
-			final AbstractNoSum nosum=new NoSum();
-			noSumPruningRule(nosum,bin);
-			noSumBinLoads(nosum,bin);
-			noSumItemEliminationAndCommitment(nosum, bin);
+		if( flags.contains(ADDITIONAL_RULES) && reuseStatus.getNbCandidates() > 1) {
+			noSumPruningRule(reuseStatus,bin);
+			noSumBinLoads(reuseStatus,bin);
+			noSumItemEliminationAndCommitment(reuseStatus, bin);
 		}
 	}
 
 
-	final class NoSum extends AbstractNoSum {
 
-		public NoSum() {
-			super(PackFiltering.this.sizes);
-		}
-		/**
-		 * @see choco.kernel.common.opres.AbstractNoSum#getCandidatesLoad()
-		 */
-		@Override
-		protected int getCandidatesLoad() {
-			return status.getCandidatesLoad();
-		}
+	final class SumDataStruct {
 
-		/**
-		 * @see choco.kernel.common.opres.AbstractNoSum#getLargestItemIndex()
-		 */
-		@Override
-		protected int getLargestItemIndex() {
-			return status.getCandidates().nextSetBit(0);
+		/** variables to sum */
+		protected final IntDomainVar[] vars;
+
+		/** the constant sum. */
+		public final long sum;
+
+		protected long sumMinusInfs;
+
+		protected long sumMinusSups;
+
+		public SumDataStruct(IntDomainVar[] vars, long sum) {
+			super();
+			this.vars = vars;
+			this.sum = sum;
 		}
 
-		/**
-		 * @see choco.kernel.common.opres.AbstractNoSum#getSmallestItemIndex()
-		 */
-		@Override
-		protected int getSmallestItemIndex() {
-			return status.getCandidates().length()-1;
-		}
-
-		/**
-		 * @see choco.kernel.common.opres.AbstractNoSum#next(int)
-		 */
-		@Override
-		protected int next(final int k) {
-			return status.getCandidates().nextSetBit(k+1);
-		}
-
-		/**
-		 * @see choco.kernel.common.opres.AbstractNoSum#previous(int)
-		 */
-		@Override
-		protected int previous(final int k) {
-			for (int i = k-1; i>=0; i--) {
-				if(status.getCandidates().get(i)) {return i;}
-			}
-			//FIXME implem plus efficace ?
-			return -1;
-		}
-
-
-
-
-	}
-
-
-}
-
-/**
- * information about load of a bin.
- * used during propagation.
- *
- */
-final class BinStatus {
-
-	private final IntDomainVar[] sizes;
-
-	/** The bin. */
-	private int bin;
-
-	/** The maximal load. */
-	private int mLoad;
-
-	/** The required load. */
-	private int rLoad;
-
-	/** The candidate items. */
-	private final BitSet candidates;
-
-
-	public BinStatus(IntDomainVar[] sizes) {
-		candidates=new BitSet(sizes.length);
-		this.sizes=sizes;
-	}
-
-	/**
-	 * Change the bin for which it computes the status.
-	 *
-	 * @param bin the new bin
-	 */
-	public void set(final int bin, SetVar set) {
-		this.bin=bin;
-		mLoad=0;
-		rLoad=0;
-		candidates.clear();
-		final DisposableIntIterator iter=set.getDomain().getEnveloppeIterator();
-		while(iter.hasNext()) {
-			final int item=iter.next();
-			if(set.isInDomainKernel(item)) {
-				rLoad+=sizes[item].getVal();
-			}else {
-				candidates.set(item);
-				mLoad+=sizes[item].getVal();
+		public void update() {
+			sumMinusInfs = sum;
+			sumMinusSups = sum;
+			for (int i = 0; i < vars.length; i++) {
+				sumMinusInfs -= vars[i].getInf();
+				sumMinusSups -= vars[i].getSup();
 			}
 		}
-        iter.dispose();
-		mLoad+=rLoad;
-	}
 
-
-	public void pack(final int item) {
-		candidates.clear(item);
-		rLoad+=sizes[item].getVal();
-	}
-
-	public void remove(final int item) {
-		candidates.clear(item);
-		mLoad-=sizes[item].getVal();
-	}
-
-	public void insertCandidate(final int item) {
-		candidates.set(item);
-		mLoad+=sizes[item].getVal();
-	}
-
-	public final int getBin() {
-		return bin;
-	}
-
-	public final int getMaxLoad() {
-		return mLoad;
-	}
-
-	/**
-	 * Gets the required load.
-	 *
-	 */
-	public final int getRequiredLoad() {
-		return rLoad;
-	}
-
-	/**
-	 * Gets the candidates load.
-	 *
-	 * @return the candidates load
-	 */
-	public final int getCandidatesLoad() {
-		return mLoad-rLoad;
-	}
-
-	public final BitSet getCandidates() {
-		return candidates;
-	}
-
-}
-
-
-final class SumDataStruct {
-
-	/** variables to sum */
-	protected final IntDomainVar[] vars;
-
-	/** the constant sum. */
-	public final long sum;
-
-	protected long sumMinusInfs;
-
-	protected long sumMinusSups;
-
-	public SumDataStruct(IntDomainVar[] vars, long sum) {
-		super();
-		this.vars = vars;
-		this.sum = sum;
-	}
-
-	public void update() {
-		sumMinusInfs = sum;
-		sumMinusSups = sum;
-		for (int i = 0; i < vars.length; i++) {
-			sumMinusInfs -= vars[i].getInf();
-			sumMinusSups -= vars[i].getSup();
+		public Point getBounds(int idx) {
+			return new Point( (int) (sumMinusSups + vars[idx].getSup()),
+					(int) (sumMinusInfs + vars[idx].getInf()));
 		}
 	}
-
-	public Point getBounds(int idx) {
-		return new Point( (int) (sumMinusSups + vars[idx].getSup()),
-				(int) (sumMinusInfs + vars[idx].getInf()));
-	}
 }
-

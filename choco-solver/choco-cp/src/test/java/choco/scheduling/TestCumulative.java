@@ -218,6 +218,8 @@ public class TestCumulative {
 	public void test1() {
 		launch(2, 3, 3, new CumulProblem(new int[]{2, 2, 1}, new int[]{2, 1, 3}));
 	}
+	
+	
 
 	/**
 	 * Trivial exemple with 2 solutions
@@ -230,6 +232,21 @@ public class TestCumulative {
 		launch(1, 3, 3, new CumulProblem(s, d, h));
 	}
 
+	/**
+	 * Trivial exemple with 6 solutions and one nil height
+	 */
+	@Test
+	public void test1Ter() {
+		launch(6, 3, 3, new CumulProblem(new int[]{2, 2, 1, 1}, new int[]{2, 1, 3, 0}));
+	}
+	
+	/**
+	 * Test nil heights
+	 */
+	@Test
+	public void testNilHeights() {
+		launch(36, 3, 3, new CumulProblem(new int[]{2, 2, 1, 1}, new int[]{0, 0, 0, 0}));
+	}
 	/**
 	 * Trivial exemple with 2 solutions
 	 *

@@ -22,25 +22,29 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.pack;
 
-import choco.cp.solver.SettingType;
 import static choco.cp.solver.SettingType.DYNAMIC_LB;
+import gnu.trove.TIntArrayList;
+import gnu.trove.TIntProcedure;
+
+import java.util.Arrays;
+
+import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.BitFlags;
+import choco.kernel.common.opres.nosum.NoSumList;
 import choco.kernel.common.opres.pack.AbstractHeurisic1BP;
 import choco.kernel.common.opres.pack.BestFit1BP;
 import choco.kernel.common.opres.pack.LowerBoundFactory;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.IStateInt;
+import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.set.AbstractLargeSetIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
-import gnu.trove.TIntArrayList;
-import gnu.trove.TIntProcedure;
 
-import java.util.Arrays;
+import com.sun.xml.internal.bind.v2.runtime.reflect.Lister.Pack;
 
 /**
  * <b>{@link Pack} which maintains a primal-dual packing model.</b><br>
@@ -52,13 +56,14 @@ import java.util.Arrays;
  */
 public class PackSConstraint extends AbstractLargeSetIntSConstraint implements IPackSConstraint {
 
+
 	public final PackFiltering filtering;
 
 	protected final BoundNumberOfBins bounds;
 
-	protected final BinStatus status;
+	private final NoSumList reuseStatus;
 
-	private IStateInt maximumNumberOfNewBins; 
+	private IStateIntVector availableBins;
 
 	/** The sizes of the items. */
 	protected final IntDomainVar[] sizes;
@@ -72,24 +77,43 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 	public final BitFlags flags;
 
 	public PackSConstraint(IEnvironment environment, SetVar[] itemSets, IntDomainVar[] loads, IntDomainVar[] sizes,
-                           IntDomainVar[] bins, IntDomainVar nbNonEmpty, BitFlags flags) {
+			IntDomainVar[] bins, IntDomainVar nbNonEmpty, BitFlags flags) {
 		super(ArrayUtils.append(loads,sizes,bins,new IntDomainVar[]{nbNonEmpty}),itemSets);
 		this.loads=loads;
 		this.sizes=sizes;
 		this.bins =bins;
 		this.flags = flags;
 		this.bounds = new BoundNumberOfBins();
-		filtering = new PackFiltering(environment, this,flags);
-		status = new BinStatus(this.sizes);
-        maximumNumberOfNewBins = environment.makeInt( getNbBins());
+		filtering = new PackFiltering(this,flags);
+		availableBins = environment.makeBipartiteIntList(ArrayUtils.zeroToN(getNbBins()));
+		reuseStatus = new NoSumList(this.sizes);
 	}
 
 	public final boolean isEmpty(int bin) {
 		return svars[bin].getKernelDomainSize()==0;
 	}
 
+
+	@Override
+	public void fireAvailableBins() {
+		final DisposableIntIterator iter = availableBins.getIterator();
+		while(iter.hasNext()) {
+			final int b = iter.next();
+			if( svars[b].isInstantiated()) {
+				iter.remove();
+			}
+		}
+		iter.dispose();
+
+	}
+
+	@Override
+	public final IStateIntVector getAvailableBins() {
+		return availableBins;
+	}
+
 	public final int getRequiredSpace(int bin) {
-		DisposableIntIterator iter= svars[bin].getDomain().getKernelIterator();
+		final DisposableIntIterator iter= svars[bin].getDomain().getKernelIterator();
 		int load = 0;
 		while(iter.hasNext()) {
 			load+= sizes[iter.next()].getVal();
@@ -107,22 +131,19 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 		return varIdx < svars.length;
 	}
 
+	protected final boolean isItemEvent(final int varIdx) {
+		final int a = 2*getNbBins() + getNbItems();
+		final int b = a + getNbItems();
+		return varIdx >= a && varIdx < b ;
+	}
+
 	protected final int getItemIndex(final int varIdx) {
-		int idx = varIdx-(2*loads.length+sizes.length);
-		return idx<0 || idx == sizes.length ? -1 : idx;
+		return varIdx- 2*getNbBins() - getNbItems();
 	}
 
 	protected final int getItemCindice(final int item) {
 		return int_cIndices[loads.length+sizes.length+item];
 	}
-
-	public final void setMaximumNumberOfNewBins(int value) {
-		if(value != maximumNumberOfNewBins.get()) {
-			this.maximumNumberOfNewBins.set(value);
-			constAwake(false);
-		}
-	}
-
 
 
 	public final IntDomainVar[] getBins() {
@@ -137,7 +158,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 
 	@Override
 	public final int getNbBins() {
-		return loads.length;
+		return svars.length;
 	}
 
 	@Override
@@ -158,15 +179,11 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 	}
 
 	@Override
-	public final BinStatus getStatus(int bin) {
-		status.set(bin, svars[bin]);
-		return status;
+	public final NoSumList getStatus(int bin) {
+		reuseStatus.setCandidatesFromVar(svars[bin]);
+		return reuseStatus;
 	}
 
-	@Override
-	public final boolean isFilled(int bin) {
-		return svars[bin].isInstantiated();
-	}
 
 	@Override
 	public final boolean pack(int item, int bin) throws ContradictionException {
@@ -253,7 +270,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 		bins[item].updateSup(svars.length-1, getItemCindice(item));
 	}
 
-	protected void checkEnveloppes() throws ContradictionException {
+	protected final void checkEnveloppes() throws ContradictionException {
 		for (int bin = 0; bin < svars.length; bin++) {
 			int inf;
 			while( (inf = svars[bin].getEnveloppeInf())<0) {
@@ -333,8 +350,8 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 
 	@Override
 	public void awakeOnBounds(int varIndex) throws ContradictionException {
-		final int item = getItemIndex(varIndex);
-		if(item>=0) {
+		if(isItemEvent(varIndex)) {
+			final int item = getItemIndex(varIndex);
 			//the item is not packed
 			//so, we can safely remove from other enveloppes
 			checkDeltaDomain(item);
@@ -363,20 +380,21 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 				iter.dispose();
 			}
 			iter= svars[varIdx].getDomain().getEnveloppeDomain().getDeltaIterator();
-			while(iter.hasNext()) {
-				final int item=iter.next();
-				if(bins[item].getDomain().contains(varIdx)) {
-					remove(item, varIdx);
+			try{
+				while(iter.hasNext()) {
+					final int item=iter.next();
+					if(bins[item].getDomain().contains(varIdx)) {
+						remove(item, varIdx);
+					}
 				}
+			}finally {
+				iter.dispose();
 			}
-
-		}else {
+		}else if(isItemEvent(varIdx)){
 			final int item=getItemIndex(varIdx);
-			if(item>=0) {
-				final int b = bins[item].getVal();
-				svars[b].addToKernel(item, set_cIndices[b]);
-				checkDeltaDomain(item);
-			}
+			final int b = bins[item].getVal();
+			svars[b].addToKernel(item, set_cIndices[b]);
+			checkDeltaDomain(item);
 		}
 		constAwake(false);
 	}
@@ -390,10 +408,9 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 
 	@Override
 	public void awakeOnRem(int varIdx, int val) throws ContradictionException {
-		final int item = getItemIndex(varIdx);
-		//remove from associated enveloppe
-		if(item>=0) {
-			svars[val].remFromEnveloppe(item, set_cIndices[val]);
+		if(isItemEvent(varIdx)) {
+			//remove from associated enveloppe
+			svars[val].remFromEnveloppe(getItemIndex(varIdx), set_cIndices[val]);
 		}
 		this.constAwake(false);
 	}
@@ -416,7 +433,6 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 
 	@Override
 	public boolean isSatisfied() {
-
 		int[] l = new int[loads.length];
 		int[] c = new int[loads.length];
 		for (int i = 0; i < bins.length; i++) {
@@ -439,15 +455,17 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 	protected final class BoundNumberOfBins {
 
 		private final int[] remainingSpace;
-		
+
 		private final int[] itemsMLB;
 
 		private int sizeMLB;
-		
+
 		protected int capacityMLB;
-		
+
 		private final TIntArrayList binsMLB;
 
+		private int sizeIMLB;
+		
 		private int totalSizeCLB;
 
 		private final TIntArrayList binsCLB;
@@ -459,7 +477,20 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 		protected int nbFull;
 
 		protected int nbNewCLB;
+		
+		private final TIntProcedure minimumNumberOfNewBins = new TIntProcedure() {
+			@Override
+			public boolean execute(int arg0) {
+				nbNewCLB++;
+				if( totalSizeCLB <= arg0) {
+					return false;
+				}
+				totalSizeCLB -= arg0;
+				return true;
+			}
+		};
 
+		
 		public BoundNumberOfBins() {
 			super();
 			itemsMLB=new int[getNbBins() + getNbItems()];
@@ -473,9 +504,9 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 			Arrays.fill(remainingSpace, 0);
 			sizeMLB = 0;
 			capacityMLB=0;
-			binsMLB.clear();
+			binsMLB.resetQuick();
 			totalSizeCLB = 0;
-			binsCLB.clear();
+			binsCLB.resetQuick();
 			nbEmpty=0;
 			nbSome = 0;
 			nbFull=0;
@@ -488,14 +519,15 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 		private void handleItems() {
 			final int n = getNbItems();
 			for (int i = 0; i < n; i++) {
-				final int s = sizes[i].getVal();
+				final int size = sizes[i].getVal();
 				if(bins[i].isInstantiated()) {
-					remainingSpace[bins[i].getVal()] -= s;
+					remainingSpace[bins[i].getVal()] -= size;
 				}else {
-					totalSizeCLB += s;
-					itemsMLB[sizeMLB++] = s;
+					totalSizeCLB += size;
+					itemsMLB[sizeMLB++] = size;
 				}
 			}
+			sizeIMLB = sizeMLB;
 		}
 
 
@@ -532,29 +564,16 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 		 * compute fake top-items which fills the bin until the current capacity.
 		 */
 		private void createFakeItems() {
-			binsMLB.forEach( new TIntProcedure() {
-				@Override
-				public boolean execute(int arg0) {
-					final int s = capacityMLB - remainingSpace[arg0];
-					if( s > 0) itemsMLB[sizeMLB++]  = s;
-					return true;
-				}
-			});
+			final int n = binsMLB.size();
+			for (int i = 0; i < n; i++) {
+				final int size = capacityMLB - remainingSpace[ binsMLB.getQuick(i)];
+				if( size > 0) itemsMLB[sizeMLB++]  = size;
+			}
 		}
 
 		private void computeMinimumNumberOfNewBins() {
 			binsCLB.sort();
-			binsCLB.forEachDescending( new TIntProcedure() {
-				@Override
-				public boolean execute(int arg0) {
-					nbNewCLB++;
-					if( totalSizeCLB <= arg0) {
-						return false;
-					}
-					totalSizeCLB -= arg0;
-					return true;
-				}
-			});
+			binsCLB.forEachDescending(minimumNumberOfNewBins);
 		}
 
 		/**
@@ -568,7 +587,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 			handleItems();
 			handleBins();
 			if( sizeMLB > 0) {
-				if( sizeMLB < maximumNumberOfNewBins.get() ) maximumNumberOfNewBins.set(sizeMLB); 
+				//if( sizeMLB < maximumNumberOfNewBins.get() ) maximumNumberOfNewBins.set(sizeMLB); 
 				//there is unpacked items
 				//handleBins();
 				if( totalSizeCLB > 0) {
@@ -598,12 +617,13 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 		}
 
 		public int getMaximumNumberOfBins() {
-			return Math.min(getNbBins() -nbEmpty, nbFull + nbSome + maximumNumberOfNewBins.get());
+			return Math.min(getNbBins() -nbEmpty, nbFull + nbSome + sizeIMLB);
 		}
 
 		public int getMinimumNumberOfBins() {
 			return nbFull + nbSome + nbNewCLB;
 		}
 	}
+
 
 }

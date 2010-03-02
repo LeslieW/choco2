@@ -41,12 +41,12 @@ public class DoubleLinkedList extends DisposableIntIterator {
 	/**
 	 *   Successors table
 	 */
-	protected int[] nextT;
+	protected final int[] nextT;
 
 	/**
 	 * Predecessors table
 	 */
-	protected int[] prevT;
+	protected final int[] prevT;
 
 
 	/**
@@ -62,7 +62,7 @@ public class DoubleLinkedList extends DisposableIntIterator {
 	/**
 	 * maximum size of the list
 	 */
-	protected int listSize;
+	protected final int listSize;
 
 
 	/**
@@ -100,11 +100,10 @@ public class DoubleLinkedList extends DisposableIntIterator {
 			nextT[val] = nextT[listSize];
 			nextT[listSize] = val;
 		}
-
 		size = size + 1;
 	}
-
-
+	
+	
 	/**
 	 * Remove an element "val"
 	 */
@@ -127,10 +126,14 @@ public class DoubleLinkedList extends DisposableIntIterator {
 		size--;
 	}
 
+	public final boolean contains(int val) {
+		return isIn(val);
+	}
+
 	/**
 	 *    Get current number of element
 	 */
-	public int getSize() {
+	public final int getSize() {
 		return size;
 	}
 
@@ -147,7 +150,7 @@ public class DoubleLinkedList extends DisposableIntIterator {
 	/**
 	 * Initialize the iterator
 	 */
-	public void restart() {
+	public final void restart() {
 		currentT = listSize;
 	}
 
@@ -155,7 +158,7 @@ public class DoubleLinkedList extends DisposableIntIterator {
 	 * Set the iterator from val
 	 * @param val
 	 */
-	public void restartFrom(int val) {
+	public final void restartFrom(int val) {
 		currentT = val;
 	}
 
@@ -182,15 +185,15 @@ public class DoubleLinkedList extends DisposableIntIterator {
 		return currentT;
 	}
 
-	public int getFirst() {
+	public final int getFirst() {
 		return nextT[listSize];
 	}
 
-	public int getLast() {
+	public final int getLast() {
 		return prevT[listSize];
 	}
 
-	public boolean isIn(int val) {
+	public final boolean isIn(int val) {
 		return nextT[listSize] == val || prevT[val] != -1;
 	}
 
@@ -198,12 +201,12 @@ public class DoubleLinkedList extends DisposableIntIterator {
 	 * Restrict the domain to the element val
 	 * @param val
 	 */
-	public void restrict(int val) {
+	public final void restrict(int val) {
 		reset();
 		addVal(val);
 	}
 
-	public int[] toTable() {
+	public final int[] toArray() {
 		int[] tab = new int[getSize()];
 		int cpt = 0;
 		restart();
@@ -247,8 +250,8 @@ public class DoubleLinkedList extends DisposableIntIterator {
 		StringBuilder n = new StringBuilder("next    :");
 		StringBuilder p = new StringBuilder("suivant :");
 		for (int i = 0; i < nextT.length; i++) {
-            n.append(nextT[i]).append(" ");
-            p.append(prevT[i]).append(" ");
+			n.append(nextT[i]).append(" ");
+			p.append(prevT[i]).append(" ");
 		}
 
 		return ("first :" + nextT[listSize] + "| " + "last :" + prevT[listSize] + "| " + n.toString() + "| " + p.toString());
