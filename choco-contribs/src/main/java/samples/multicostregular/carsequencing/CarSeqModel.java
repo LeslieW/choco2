@@ -32,8 +32,7 @@ import samples.multicostregular.carsequencing.parser.GraphGenerator;
 
 import java.util.ArrayList;
 
-import static choco.Choco.makeIntVar;
-import static choco.Choco.multiCostRegular;
+import static choco.Choco.*;
 
 /**
  * Created by IntelliJ IDEA.
