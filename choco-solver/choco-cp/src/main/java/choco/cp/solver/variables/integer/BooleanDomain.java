@@ -22,6 +22,7 @@
  **************************************************/
 package choco.cp.solver.variables.integer;
 
+import choco.cp.common.util.iterators.BooleanDomainIterator;
 import choco.cp.solver.variables.delta.BooleanDeltaDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.OneValueIterator;
@@ -185,40 +186,9 @@ public class BooleanDomain extends AbstractIntDomain {
 
     public DisposableIntIterator getIterator() {
         if(getSize() == 1) return OneValueIterator.getOneValueIterator(getInf());
-        BitSetIntDomainIterator iter = (BitSetIntDomainIterator) _cachedIterator;
-        if (iter != null && iter.reusable) {
-            iter.init();
-            return iter;
-        }
-        _cachedIterator = new BitSetIntDomainIterator();
-        return _cachedIterator;
+        return BooleanDomainIterator.getIterator(this);
     }
 
-    protected class BitSetIntDomainIterator extends DisposableIntIterator {
-        protected int nextValue;
-
-        private BitSetIntDomainIterator() { //AbstractIntDomain dom) {
-            init();
-        }
-
-        @Override
-        public void init() {
-            super.init();
-            nextValue = getInf();
-        }
-
-        public boolean hasNext() {
-            return nextValue <= 1;
-        }
-
-        public int next() {
-            int v = nextValue;
-            if (v == 0 && notInstanciated.contain(offset))
-                nextValue = 1;
-            else nextValue = 2;
-            return v;
-        }
-    }
 
     /**
      * Returns the value following <code>x</code>

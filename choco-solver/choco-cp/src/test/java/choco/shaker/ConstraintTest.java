@@ -27,6 +27,7 @@ import static choco.Choco.distanceEQ;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.common.util.objects.DeterministicIndicedList;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.Model;
@@ -402,7 +403,7 @@ public class ConstraintTest {
      * @return
      */
     private void init(DeterministicIndicedList<IntDomainVar> vars){
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         while(it.hasNext()){
             SConstraint c = it.next();
             for(int v = 0; v < c.getNbVars(); v++){
@@ -410,6 +411,7 @@ public class ConstraintTest {
                 vars.add(var);
             }
         }
+        it.dispose();
     }
 
     /**
@@ -422,7 +424,7 @@ public class ConstraintTest {
     private boolean satisifies(DeterministicIndicedList<IntDomainVar> vars, ArrayList<AbstractIntSConstraint> cstrs,
                            int[] values){
         // Check if constraints are satisfied
-        Iterator<SConstraint> it = s.getIntConstraintIterator();
+        DisposableIterator<SConstraint> it = s.getConstraintIterator();
         boolean satisfied = true;
         while(it.hasNext()){
             AbstractIntSConstraint c = (AbstractIntSConstraint)it.next();
@@ -433,6 +435,7 @@ public class ConstraintTest {
             }
             satisfied &= c.isSatisfied(tuple);
         }
+        it.dispose();
         return satisfied;
     }
 

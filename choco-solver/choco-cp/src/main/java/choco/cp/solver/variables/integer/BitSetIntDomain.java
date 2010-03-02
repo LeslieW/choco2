@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
+import choco.cp.common.util.iterators.BitSetIntDomainIterator;
 import choco.cp.solver.variables.delta.BitSetDeltaDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.OneValueIterator;
@@ -237,41 +238,7 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
 
   public DisposableIntIterator getIterator() {
       if(getSize() == 1) return OneValueIterator.getOneValueIterator(getInf());
-      DisposableIntIterator iter = _cachedIterator;
-      if (iter != null && iter.reusable) {
-          iter.init();
-          return iter;
-      }
-      _cachedIterator = new BitSetIntDomainIterator(this);
-      return _cachedIterator;
-  }
-
-
-  protected static class BitSetIntDomainIterator extends DisposableIntIterator {
-      BitSetIntDomain domain;
-
-      protected int nextValue;
-
-    private BitSetIntDomainIterator(BitSetIntDomain domain) {
-        this.domain = domain;
-        init();
-    }
-
-    @Override
-    public void init() {
-          super.init();
-      nextValue = domain.inf.get() - domain.offset;
-    }
-
-    public boolean hasNext() {
-      return nextValue >= 0;
-    }
-
-    public int next() {
-      int v = nextValue;
-      nextValue = domain.contents.nextSetBit(nextValue + 1);
-      return v + domain.offset;
-    }
+      return BitSetIntDomainIterator.getIterator(inf.get(), offset, contents);
   }
 
     /**

@@ -23,6 +23,7 @@
 package choco.kernel.memory.structure;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.MemoryException;
@@ -41,53 +42,54 @@ public class PartiallyStoredVector<E> {
     /**
      * Initial capacity of array of static objects
      */
-  static final int INITIAL_STATIC_CAPACITY = 16;
+    static final int INITIAL_STATIC_CAPACITY = 16;
 
     /**
      * Initial capacity of the array of stored objects
      */
-  static final int INITIAL_STORED_CAPACITY = 16;
+    static final int INITIAL_STORED_CAPACITY = 16;
 
     /**
      * Default offset.
      * Indicates the maximum size of the array for static objects.
      */
-  public static final int STORED_OFFSET = 1000000;
+    public static final int STORED_OFFSET = 1000000;
 
     /**
      * objects stored statically
      */
-  E[] staticObjects;
+    E[] staticObjects;
     /**
      * objects stored dynamically
      */
-  E[] storedObjects;
+    E[] storedObjects;
 
     /**
      * Number of static objects
      */
-  int nStaticObjects;
+    int nStaticObjects;
 
     /**
      * number of stored objects
      */
-  IStateInt nStoredObjects;
+    IStateInt nStoredObjects;
 
     /**
      * Constructor
+     *
      * @param env environment where the data structure should be created
      */
-  public PartiallyStoredVector(IEnvironment env) {
-    staticObjects = (E[])new Object[INITIAL_STATIC_CAPACITY];
-    storedObjects = (E[])new Object[INITIAL_STORED_CAPACITY];
-    nStaticObjects = 0;
-    nStoredObjects = env.makeInt(0);
-  }
+    public PartiallyStoredVector(IEnvironment env) {
+        staticObjects = (E[]) new Object[INITIAL_STATIC_CAPACITY];
+        storedObjects = (E[]) new Object[INITIAL_STORED_CAPACITY];
+        nStaticObjects = 0;
+        nStoredObjects = env.makeInt(0);
+    }
 
     /**
      * Clear datastructures for safe reuses
      */
-    public void clear(IEnvironment env){
+    public void clear(IEnvironment env) {
         Arrays.fill(staticObjects, null);
         Arrays.fill(storedObjects, null);
         nStaticObjects = 0;
@@ -98,61 +100,65 @@ public class PartiallyStoredVector<E> {
      * Check wether an object is stored.
      * First, try in the array of static objects, then in the array of stored objects.
      * Return true if the PartiallyStoredVector contains the object.
+     *
      * @param o the object to look for
      * @return true if it is contained
      */
-  public boolean contains(Object o) {
-    for (int i = 0; i < nStaticObjects; i++) {
-      if (staticObjects[i].equals(o)) {
-		return true;
-	}
+    public boolean contains(Object o) {
+        for (int i = 0; i < nStaticObjects; i++) {
+            if (staticObjects[i].equals(o)) {
+                return true;
+            }
+        }
+        for (int i = 0; i < nStoredObjects.get(); i++) {
+            if (storedObjects[i].equals(o)) {
+                return true;
+            }
+        }
+        return false;
     }
-    for (int i = 0; i < nStoredObjects.get(); i++) {
-      if (storedObjects[i].equals(o)) {
-		return true;
-	}
-    }
-    return false;
-  }
 
     /**
      * Add a object in the array of static object
+     *
      * @param o the object to add
      * @return the indice of this object in the structure
      */
-  public int staticAdd(E o) {
-    ensureStaticCapacity(nStaticObjects + 1);
-    staticObjects[nStaticObjects++] = o;
-    return nStaticObjects - 1;
-  }
+    public int staticAdd(E o) {
+        ensureStaticCapacity(nStaticObjects + 1);
+        staticObjects[nStaticObjects++] = o;
+        return nStaticObjects - 1;
+    }
 
     /**
      * Insert an object in the array of static object.
+     *
      * @param ind indice to insert in
-     * @param o object to insert
+     * @param o   object to insert
      * @return the indice of the last object in the array of static objects
      */
-  public int staticInsert(int ind, E o) {
-    ensureStaticCapacity(nStaticObjects++);
-    for (int i = nStaticObjects; i > ind;  i--) {
-          staticObjects[i] = staticObjects[i-1];
+    public int staticInsert(int ind, E o) {
+        ensureStaticCapacity(nStaticObjects++);
+        for (int i = nStaticObjects; i > ind; i--) {
+            staticObjects[i] = staticObjects[i - 1];
+        }
+        staticObjects[ind] = o;
+        return nStaticObjects - 1;
     }
-    staticObjects[ind] = o;
-    return nStaticObjects - 1;
-  }
 
     /**
      * Remove the object placed at indice idx
+     *
      * @param idx
      */
     protected void staticRemove(int idx) {
         staticObjects[idx] = null;
         if (idx == nStaticObjects - 1) {
-            while(staticObjects[nStaticObjects] == null && nStaticObjects > 0){
+            while (staticObjects[nStaticObjects] == null && nStaticObjects > 0) {
                 nStaticObjects--;
             }
-            if(staticObjects[nStaticObjects] != null){
-                nStaticObjects ++;
+            if (staticObjects[nStaticObjects] != null) {
+                nStaticObjects++;
             }
         }
     }
@@ -160,216 +166,181 @@ public class PartiallyStoredVector<E> {
 
     /**
      * Remove an object
+     *
      * @param o object to remove
      * @return indice of the object
-     * @throws choco.kernel.memory.MemoryException when trying to remove unknown object or stored object
+     * @throws choco.kernel.memory.MemoryException
+     *          when trying to remove unknown object or stored object
      */
-  public int remove(Object o) {
-    for (int i = 0; i < nStaticObjects; i++) {
-      Object staticObject = staticObjects[i];
-      if (staticObject == o) {
-        staticRemove(i);
-        return i;
-      }
+    public int remove(Object o) {
+        for (int i = 0; i < nStaticObjects; i++) {
+            Object staticObject = staticObjects[i];
+            if (staticObject == o) {
+                staticRemove(i);
+                return i;
+            }
+        }
+        throw new MemoryException("impossible to remove the object (a constraint ?) from the static part of the collection (cut manager ?)");
     }
-    throw new MemoryException("impossible to remove the object (a constraint ?) from the static part of the collection (cut manager ?)");
-  }
 
     /**
      * Ensure that the lenght of the array of static objects is always sufficient.
+     *
      * @param n the expected size
      */
-  public void ensureStaticCapacity(int n) {
-    if (n >= staticObjects.length) {
-      int newSize = staticObjects.length;
-      while (n >= newSize) {
-        newSize = (3 * newSize) / 2;
-      }
-      Object[] newStaticObjects = new Object[newSize];
-      System.arraycopy(staticObjects, 0, newStaticObjects, 0, staticObjects.length);
-      this.staticObjects = (E[])newStaticObjects;
+    public void ensureStaticCapacity(int n) {
+        if (n >= staticObjects.length) {
+            int newSize = staticObjects.length;
+            while (n >= newSize) {
+                newSize = (3 * newSize) / 2;
+            }
+            Object[] newStaticObjects = new Object[newSize];
+            System.arraycopy(staticObjects, 0, newStaticObjects, 0, staticObjects.length);
+            this.staticObjects = (E[]) newStaticObjects;
+        }
     }
-  }
 
     /**
      * Add an stored object
+     *
      * @param o the object to add
      * @return indice of the object in the structure
      */
-  public int add(E o) {
-    ensureStoredCapacity(nStoredObjects.get() + 1);
-    storedObjects[nStoredObjects.get()] = o;
-    nStoredObjects.add(1);
-    return STORED_OFFSET + nStoredObjects.get() - 1;
-  }
+    public int add(E o) {
+        ensureStoredCapacity(nStoredObjects.get() + 1);
+        storedObjects[nStoredObjects.get()] = o;
+        nStoredObjects.add(1);
+        return STORED_OFFSET + nStoredObjects.get() - 1;
+    }
 
     /**
      * Insert an stored object
+     *
      * @param ind indice where to add object
-     * @param o object to insert
+     * @param o   object to insert
      * @return the size of stored structure
      */
-  public int insert(int ind, E o) {
-      ensureStoredCapacity(nStoredObjects.get() + 1);
-      for (int i = nStoredObjects.get()+1; i > ind;  i--) {
-          storedObjects[i] = storedObjects[i-1];
-      }
-      storedObjects[ind] = o;
-      nStoredObjects.add(1);
-      return STORED_OFFSET + nStoredObjects.get() - 1;
-  }
+    public int insert(int ind, E o) {
+        ensureStoredCapacity(nStoredObjects.get() + 1);
+        for (int i = nStoredObjects.get() + 1; i > ind; i--) {
+            storedObjects[i] = storedObjects[i - 1];
+        }
+        storedObjects[ind] = o;
+        nStoredObjects.add(1);
+        return STORED_OFFSET + nStoredObjects.get() - 1;
+    }
 
     /**
      * Ensure that the stored structure is long enough to add a new element
+     *
      * @param n the expected size
      */
-  public void ensureStoredCapacity(int n) {
-    if (n >= storedObjects.length) {
-      int newSize = storedObjects.length;
-      while (n >= newSize) {
-        newSize = (3 * newSize) / 2;
-      }
-      Object[] newStoredObjects = new Object[newSize];
-      System.arraycopy(storedObjects, 0, newStoredObjects, 0, storedObjects.length);
-      this.storedObjects = (E[])newStoredObjects;
+    public void ensureStoredCapacity(int n) {
+        if (n >= storedObjects.length) {
+            int newSize = storedObjects.length;
+            while (n >= newSize) {
+                newSize = (3 * newSize) / 2;
+            }
+            Object[] newStoredObjects = new Object[newSize];
+            System.arraycopy(storedObjects, 0, newStoredObjects, 0, storedObjects.length);
+            this.storedObjects = (E[]) newStoredObjects;
+        }
     }
-  }
 
     /**
      * Get the index th stored object
+     *
      * @param index the indice of the required object
      * @return the 'index'th object
      */
-  public E get(int index) {
-    if (index < STORED_OFFSET) {
-      return staticObjects[index];
-    } else {
-      return storedObjects[index - STORED_OFFSET];
+    public E get(int index) {
+        if (index < STORED_OFFSET) {
+            return staticObjects[index];
+        } else {
+            return storedObjects[index - STORED_OFFSET];
+        }
     }
-  }
 
     /**
      * Check wether the structure is empty
+     *
      * @return true if the structure is empty
      */
-  public boolean isEmpty() {
-    return ((nStaticObjects == 0) && (nStoredObjects.get() == 0));
-  }
+    public boolean isEmpty() {
+        return ((nStaticObjects == 0) && (nStoredObjects.get() == 0));
+    }
 
     /**
      * Return the number of static and stored objects contained in the structure
+     *
      * @return int
      */
-  public int size() {
-    return (nStaticObjects + nStoredObjects.get());
-  }
-
-  private static class PSVIndexIterator extends DisposableIntIterator {
-      int idx;
-      PartiallyStoredVector vector;
-
-      private PSVIndexIterator(PartiallyStoredVector vector) {
-          this.vector = vector;
-          init();
-      }
-
-      @Override
-      public void init() {
-          super.init();
-          idx = -1;
-      }
-
-      public boolean hasNext() {
-        if (idx < STORED_OFFSET) {
-            return idx + 1 < vector.nStaticObjects || vector.nStoredObjects.get() > 0;
-        } else return idx + 1 < STORED_OFFSET + vector.nStoredObjects.get();
-      }
-
-      public int next() {
-        if (idx < STORED_OFFSET) {
-          if (idx + 1 < vector.nStaticObjects) {
-            idx++;
-            while (vector.staticObjects[idx] == null && idx < vector.nStaticObjects) {
-				idx++;
-			}
-          } else if (vector.nStoredObjects.get()> 0) {
-			idx = STORED_OFFSET;
-		} else {
-			throw new java.util.NoSuchElementException();
-		}
-        } else if (idx + 1 < STORED_OFFSET + vector.nStoredObjects.get()) {
-			idx++;
-		} else {
-			throw new java.util.NoSuchElementException();
-		}
-        return idx;
-      }
-  }
-  private PSVIndexIterator _cachedPSVIndexIterator;
-  public DisposableIntIterator getIndexIterator() {
-    if (_cachedPSVIndexIterator != null && _cachedPSVIndexIterator.reusable) {
-        _cachedPSVIndexIterator.init();
-      return _cachedPSVIndexIterator;
-    } else {
-      //if (_cachedPSVIndexIterator == null) {
-        _cachedPSVIndexIterator = new PSVIndexIterator(this);
-        return _cachedPSVIndexIterator;
-      //} else {
-      //  return new PSVIndexIterator();
-      //}
+    public int size() {
+        return (nStaticObjects + nStoredObjects.get());
     }
 
-  }
+    public DisposableIntIterator getIndexIterator(){
+        return PSVIndexIterator.getIndexIterator(this);
+    }
+
+    public DisposableIterator getIterator(){
+        return PSVIterator.getIterator(this);
+    }
 
     /**
      * Check wether the indice idx define a static object
+     *
      * @param idx
      * @return
      */
-  public static boolean isStaticIndex(int idx) {
-    return idx < STORED_OFFSET;
-  }
+    public static boolean isStaticIndex(int idx) {
+        return idx < STORED_OFFSET;
+    }
 
     /**
      * Return the indexe of an object minus the stored offset
+     *
      * @param idx
      * @return
      */
-  public static int getSmallIndex(int idx) {
-    if (idx < STORED_OFFSET) {
-		return idx;
-	} else {
-		return idx - STORED_OFFSET;
-	}
-  }
+    public static int getSmallIndex(int idx) {
+        if (idx < STORED_OFFSET) {
+            return idx;
+        } else {
+            return idx - STORED_OFFSET;
+        }
+    }
 
-  public static int getGlobalIndex(int idx, boolean isStatic) {
-    if (isStatic) {
-		return idx;
-	} else {
-		return idx + STORED_OFFSET;
-	}
-  }
+    public static int getGlobalIndex(int idx, boolean isStatic) {
+        if (isStatic) {
+            return idx;
+        } else {
+            return idx + STORED_OFFSET;
+        }
+    }
 
     /**
      * Return the indice of the last static object
+     *
      * @return
      */
-  public int getLastStaticIndex() {
-    return nStaticObjects - 1;
-  }
+    public int getLastStaticIndex() {
+        return nStaticObjects - 1;
+    }
 
     /**
      * Return the indice of the first static object
+     *
      * @return
      */
-  public static int getFirstStaticIndex() {
-    return 0;
+    public static int getFirstStaticIndex() {
+        return 0;
   }
 
 
     /**
      * Return the indice of the last stored object
+     *
      * @return
      */
     public int getLastStoredIndex(){

@@ -29,6 +29,7 @@ import choco.cp.solver.constraints.integer.IntLinComb;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -42,7 +43,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Iterator;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -103,9 +103,11 @@ public class BoolLinCombTest {
             s.propagate();
             s.getVar(vars[0]).setVal(1);
 	        //((Propagator) s.getCstr(prop)).constAwake(false);
-          for(Iterator<SConstraint> iter = s.getIntConstraintIterator(); iter.hasNext(); ) {
+            DisposableIterator<SConstraint> iter = s.getConstraintIterator();
+          for(; iter.hasNext(); ) {
             ((Propagator)iter.next()).constAwake(false);
           }
+            iter.dispose();
           s.propagate();
         } catch (ContradictionException e) {
             assertTrue(false);

@@ -51,22 +51,25 @@ public class NotMemberXY extends AbstractBinSetIntSConstraint {
 	 * @throws ContradictionException
 	 */
 	public void filter() throws ContradictionException {
-		DisposableIntIterator it = v0.getDomain().getIterator();
-		int count = 0, val = Integer.MAX_VALUE;
-		while (it.hasNext()) {
-			val = it.next();
-			if (!v1.isInDomainKernel(val)) {
-				count += 1;
-				if (count > 1) break;
-			}
-		}
-        it.dispose();
-		if (count == 0)
-			this.fail();
-		else if (count == 1) {
-			v0.instantiate(val, cIdx0);
-			v1.remFromEnveloppe(val, cIdx1);
-		}
+        DisposableIntIterator it = v0.getDomain().getIterator();
+            try{
+            int count = 0, val = Integer.MAX_VALUE;
+            while (it.hasNext()) {
+                val = it.next();
+                if (!v1.isInDomainKernel(val)) {
+                    count += 1;
+                    if (count > 1) break;
+                }
+            }
+            if (count == 0)
+                this.fail();
+            else if (count == 1) {
+                v0.instantiate(val, cIdx0);
+                v1.remFromEnveloppe(val, cIdx1);
+            }
+        }finally {
+            it.dispose();
+        }
 	}
 
 	public void awakeOnInf(int idx) throws ContradictionException {

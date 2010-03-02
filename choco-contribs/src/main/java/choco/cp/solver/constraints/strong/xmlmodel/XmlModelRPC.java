@@ -27,13 +27,13 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.strong.DomOverDDegRPC;
 import choco.cp.solver.constraints.strong.maxrpcrm.MaxRPCrm;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.constraints.SConstraint;
 import parser.absconparseur.tools.InstanceParser;
 import parser.chocogen.XmlModel;
 
 import java.io.File;
 import java.text.MessageFormat;
-import java.util.Iterator;
 
 /**
  * @author vion
@@ -140,7 +140,8 @@ public class XmlModelRPC extends XmlModel {
 		// LOGGER.info(s.pretty());
 		s.printRuntimeStatistics();
 
-		for (Iterator<SConstraint> itr = s.getIntConstraintIterator(); itr
+        DisposableIterator<SConstraint> itr = s.getConstraintIterator();
+		for (; itr
 				.hasNext();) {
 
 			SConstraint c = itr.next();
@@ -154,6 +155,7 @@ public class XmlModelRPC extends XmlModel {
 				LOGGER.info(c.pretty());
 			}
 		}
+        itr.dispose();
 
 	}
 }

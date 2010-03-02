@@ -30,7 +30,7 @@ import choco.cp.solver.search.set.MinEnv;
 import choco.cp.solver.search.set.RandomSetValSelector;
 import choco.cp.solver.search.set.RandomSetVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -44,7 +44,6 @@ import org.junit.Before;
 import org.junit.Test;
 import samples.Examples.MinimumEdgeDeletion;
 
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -212,11 +211,12 @@ public class SearchTest {
 			LOGGER.info("contradiction");
 		}
 
-		Iterator it = s.getIntConstraintIterator();
+		DisposableIterator it = s.getConstraintIterator();
 		while(it.hasNext()) {
 			Propagator prop = (Propagator) it.next();
 			prop.constAwake(true);
 		}
+        it.dispose();
 		s.solve();
 		assertFalse(s.isFeasible());
 	}

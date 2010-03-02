@@ -22,7 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
+import choco.cp.common.util.iterators.IntDomainIterator;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.propagation.event.VarEvent;
@@ -56,8 +58,6 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 */
 	protected int currentSupPropagated;
 
-	protected DisposableIntIterator _cachedIterator;
-
 
     IDeltaDomain deltaDom;
 
@@ -70,48 +70,8 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 */
 
 	public DisposableIntIterator getIterator() {
-		IntDomainIterator iter = (IntDomainIterator) _cachedIterator;
-		if (iter != null && iter.reusable) {
-			iter.init();
-			return iter;
-		}
-		_cachedIterator = new IntDomainIterator(this);
-		return _cachedIterator;
-	}
-
-	protected static class IntDomainIterator extends DisposableIntIterator {
-		protected AbstractIntDomain domain;
-		protected int nextValue;
-		protected int supBound = -1;
-
-		private IntDomainIterator(AbstractIntDomain dom) {
-			domain = dom;
-			init();
-		}
-
-		@Override
-		public void init() {
-			super.init();
-			if (domain.getSize() >= 1) {
-				nextValue = domain.getInf();
-			} else {
-				throw new UnsupportedOperationException();
-			}
-			supBound = domain.getSup();
-			//currentValue = Integer.MIN_VALUE; // dom.getInf();
-		}
-
-		public boolean hasNext() {
-			return /*(Integer.MIN_VALUE == currentValue) ||*/ (nextValue <= supBound);
-			// if currentValue equals MIN_VALUE it will be less than the upper bound => only one test is needed ! Moreover
-			// MIN_VALUE is a special case, should not be tested if useless !
-		}
-
-		public int next() {
-			int v = nextValue;
-			nextValue = domain.getNextValue(nextValue);
-			return v;
-		}
+        if(getSize() == 1) return OneValueIterator.getOneValueIterator(getInf());
+        return IntDomainIterator.getIterator(this);
 	}
 
 	/**

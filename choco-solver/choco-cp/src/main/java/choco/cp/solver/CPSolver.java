@@ -77,7 +77,7 @@ import choco.cp.solver.variables.set.SetVarImpl;
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.common.util.tools.StringUtils;
@@ -548,10 +548,9 @@ public class CPSolver implements Solver {
 	public String constraintsToString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("==== CONSTRAINTS ====\n");
-		DisposableIntIterator it = constraints.getIndexIterator();
+		DisposableIterator it = constraints.getIterator();
 		while (it.hasNext()) {
-			int i = it.next();
-			AbstractSConstraint c = (AbstractSConstraint) constraints.get(i);
+			AbstractSConstraint c = (AbstractSConstraint) it.next();
 			buf.append(c.pretty());
 			buf.append("\n");
 		}
@@ -1904,15 +1903,15 @@ public class CPSolver implements Solver {
 		return (AbstractIntSConstraint) constraints.get(i);
 	}
 	
-	public Iterator<IntDomainVar> getIntVarIterator() {
+	public DisposableIterator<IntDomainVar> getIntVarIterator() {
 		return intVars.quickIterator();
 	}
 	
-	public Iterator<SetVar> getSetVarIterator() {
+	public DisposableIterator<SetVar> getSetVarIterator() {
 		return setVars.quickIterator();
 	}
 
-	public Iterator<RealVar> getRealVarIterator() {
+	public DisposableIterator<RealVar> getRealVarIterator() {
 		return floatVars.quickIterator();
 	}
 
@@ -1920,26 +1919,12 @@ public class CPSolver implements Solver {
      * @deprecated
      */
     @Deprecated
-    public Iterator<SConstraint> getIntConstraintIterator() {
-        return this.getConstraintIterator();
+    public DisposableIterator<SConstraint> getIntConstraintIterator() {
+        return constraints.getIterator();
     }
 
-	public Iterator<SConstraint> getConstraintIterator() {
-		return new Iterator<SConstraint>() {
-			DisposableIntIterator it = constraints.getIndexIterator();
-
-			public boolean hasNext() {
-				return it.hasNext();
-			}
-
-			public AbstractSConstraint next() {
-				return (AbstractSConstraint)constraints.get(it.next());
-			}
-
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
-		};
+	public DisposableIterator<SConstraint> getConstraintIterator() {
+		return constraints.getIterator();
 	}
 
 	/**
@@ -1954,12 +1939,13 @@ public class CPSolver implements Solver {
 	}
 
 	public final boolean isConsistent() {
-		Iterator<SConstraint> ctit = this.getConstraintIterator();
+		DisposableIterator<SConstraint> ctit = this.getConstraintIterator();
 		while (ctit.hasNext()) {
 			if (!((AbstractSConstraint)ctit.next()).isConsistent()) {
 				return false;
 			}
 		}
+        ctit.dispose();
 		return true;
 	}
 

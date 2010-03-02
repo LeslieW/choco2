@@ -22,11 +22,6 @@
  **************************************************/
 package choco.kernel.common.util.tools;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-
 import choco.kernel.common.util.iterators.AppendIterator;
 import choco.kernel.common.util.iterators.ArrayIterator;
 import choco.kernel.common.util.iterators.ImmutableListIterator;
@@ -34,6 +29,11 @@ import choco.kernel.common.util.iterators.SingleElementIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 /*
  * User : charles
@@ -59,7 +59,7 @@ public class IteratorUtils {
 	}
 
 	public static <E> Iterator<E> iterator(final E[] array) {
-		return new ArrayIterator<E>(array);
+		return ArrayIterator.getIterator(array, array.length);
 	}
 
 	public static <E> Iterator<E> append(final Iterator<E>... iters) {

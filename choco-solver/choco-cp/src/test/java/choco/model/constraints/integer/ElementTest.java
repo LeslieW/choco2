@@ -29,7 +29,6 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -423,7 +422,6 @@ public class ElementTest {
 
     @Test
     public void testFznElement2() {
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
         int n = 3;
         IntegerVariable index = Choco.makeIntVar("idx", 1, n);
         IntegerVariable val = Choco.makeBooleanVar("val");
@@ -439,7 +437,6 @@ public class ElementTest {
 
      @Test
     public void testFznElement3() {
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
         int n = 3;
         IntegerVariable index = Choco.makeIntVar("idx", 1, n);
         IntegerVariable val = Choco.makeBooleanVar("val");

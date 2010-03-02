@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
+import choco.cp.common.util.iterators.BipartiteIntDomainIterator;
 import choco.cp.solver.variables.delta.BipartiteDeltaDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.OneValueIterator;
@@ -354,40 +355,9 @@ public class BipartiteIntDomain extends AbstractIntDomain {
 
     public DisposableIntIterator getIterator() {
         if(getSize() == 1) return OneValueIterator.getOneValueIterator(getInf());
-        BipartiteIntDomainIterator iter = (BipartiteIntDomainIterator) _cachedIterator;
-        if (iter != null && iter.reusable) {
-            iter.init();
-            return iter;
-        }
-        _cachedIterator = new BipartiteIntDomainIterator(this);
-        return _cachedIterator;
+        return BipartiteIntDomainIterator.getIterator(valuesInDomainNumber.get(), values);
     }
 
-    protected static class BipartiteIntDomainIterator extends DisposableIntIterator {
-        BipartiteIntDomain domain;
-        protected int nextIdx;
-
-        private BipartiteIntDomainIterator(BipartiteIntDomain dom) { //AbstractIntDomain dom) {
-            this.domain = dom;
-            init();
-        }
-
-        @Override
-        public void init() {
-            super.init();
-            nextIdx = domain.valuesInDomainNumber.get();
-        }
-
-        public boolean hasNext() {
-            return nextIdx >= 0;
-        }
-
-        public int next() {
-            int v = nextIdx;
-            nextIdx--;
-            return domain.values[v];
-        }
-    }
 
     public boolean isEnumerated() {
         return true;

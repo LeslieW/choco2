@@ -24,6 +24,7 @@ package choco.cp.solver.constraints.strong;
 
 import choco.cp.solver.constraints.strong.maxrpcrm.MaxRPCrm;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
@@ -31,8 +32,6 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.listener.PropagationEngineListener;
 import choco.kernel.solver.search.integer.DoubleHeuristicIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.Iterator;
 
 /**
  * History: 2007-12-07 : FR_1873619 CPRU: DomOverDeg+DomOverWDeg
@@ -45,24 +44,28 @@ public class DomOverWDegRPC extends DoubleHeuristicIntVarSelector implements
 
     public DomOverWDegRPC(Solver solver) {
         super(solver);
-        for (Iterator<SConstraint> iter = solver.getConstraintIterator(); iter
+        DisposableIterator<SConstraint> iter = solver.getConstraintIterator();
+        for (; iter
                 .hasNext();) {
             ((AbstractSConstraint) iter.next()).addExtension(
                     ABSTRACTCONTRAINT_EXTENSION
             );
         }
+        iter.dispose();
         solver.getPropagationEngine().addPropagationEngineListener(this);
     }
 
     public DomOverWDegRPC(Solver solver, IntDomainVar[] vs) {
         super(solver);
         vars = vs;
-        for (Iterator<SConstraint> iter = solver.getConstraintIterator(); iter
+        DisposableIterator<SConstraint> iter = solver.getConstraintIterator();
+        for (; iter
                 .hasNext();) {
             ((AbstractSConstraint) iter.next()).addExtension(
                     ABSTRACTCONTRAINT_EXTENSION
             );
         }
+        iter.dispose();
         solver.getPropagationEngine().addPropagationEngineListener(this);
     }
 

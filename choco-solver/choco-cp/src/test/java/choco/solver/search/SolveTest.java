@@ -38,6 +38,7 @@ import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -57,7 +58,6 @@ import org.junit.Test;
 import static java.text.MessageFormat.format;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -306,11 +306,12 @@ public class SolveTest {
 			s.worldPush();
 
 			//redemande le reveil initial des contraintes
-			Iterator<SConstraint> it = s.getIntConstraintIterator();
+			DisposableIterator<SConstraint> it = s.getConstraintIterator();
 			for (; it.hasNext();) {
 				Propagator o = (Propagator)it.next();
 				o.constAwake(true);
 			}
+            it.dispose();
 
 			//instancie au hasard au plus k variable a 0
 			try {

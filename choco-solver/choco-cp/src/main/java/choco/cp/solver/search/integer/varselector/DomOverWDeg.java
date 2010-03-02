@@ -23,6 +23,7 @@
 package choco.cp.solver.search.integer.varselector;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
@@ -31,8 +32,6 @@ import choco.kernel.solver.constraints.SConstraintType;
 import choco.kernel.solver.propagation.listener.PropagationEngineListener;
 import choco.kernel.solver.search.integer.DoubleHeuristicIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.Iterator;
 
 /**
  * History:
@@ -47,20 +46,24 @@ public class DomOverWDeg extends DoubleHeuristicIntVarSelector implements Propag
 
 	public DomOverWDeg(Solver solver) {
 		super(solver);
-		for (Iterator iter = solver.getConstraintIterator(); iter.hasNext();) {
+        DisposableIterator<SConstraint> iter = solver.getConstraintIterator();
+		for (; iter.hasNext();) {
 			AbstractSConstraint c = (AbstractSConstraint) iter.next();
 			c.addExtension(ABSTRACTCONTRAINT_EXTENSION);
 		}
+        iter.dispose();
 		solver.getPropagationEngine().addPropagationEngineListener(this);
 	}
 
 	public DomOverWDeg(Solver solver, IntDomainVar[] vs) {
 		super(solver);
 		vars = vs;
-		for (Iterator iter = solver.getConstraintIterator(); iter.hasNext();) {
+        DisposableIterator<SConstraint> iter = solver.getConstraintIterator();
+		for (; iter.hasNext();) {
 			AbstractSConstraint c = (AbstractSConstraint) iter.next();
 			c.addExtension(ABSTRACTCONTRAINT_EXTENSION);
 		}
+        iter.dispose();
 		solver.getPropagationEngine().addPropagationEngineListener(this);
 	}
 

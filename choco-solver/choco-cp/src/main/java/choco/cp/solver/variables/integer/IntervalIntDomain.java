@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
+import choco.cp.common.util.iterators.IntervalIntDomainIterator;
 import choco.cp.solver.variables.delta.IntervalDeltaDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.OneValueIterator;
@@ -107,38 +108,8 @@ public class IntervalIntDomain extends AbstractIntDomain {
 
     public DisposableIntIterator getIterator(){
         if(getSize() == 1) return OneValueIterator.getOneValueIterator(getInf());
-          IntervalIntDomainIterator iter = (IntervalIntDomainIterator) _iterator ;
-        if (iter != null && iter.reusable) {
-            iter.init();
-            return iter;
-        }
-        _iterator  = new IntervalIntDomainIterator(this);
-        return _iterator ;
+        return IntervalIntDomainIterator.getIterator(this);
       }
-
-    protected static class IntervalIntDomainIterator extends DisposableIntIterator{
-        IntervalIntDomain domain;
-        int x;
-
-        public IntervalIntDomainIterator(IntervalIntDomain domain) {
-            this.domain = domain;
-            init();
-        }
-
-        @Override
-        public void init() {
-            super.init();
-            x = domain.getInf() - 1;
-        }
-
-        public boolean hasNext() {
-                return x < domain.getSup();
-            }
-
-            public int next() {
-                return ++x;
-            }
-        }
 
     public boolean remove(int x) {
         return false;

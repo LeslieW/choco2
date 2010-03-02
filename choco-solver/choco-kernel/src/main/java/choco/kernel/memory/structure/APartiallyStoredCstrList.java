@@ -22,7 +22,6 @@
  **************************************************/
 package choco.kernel.memory.structure;
 
-import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.constraints.SConstraint;
 
@@ -136,20 +135,6 @@ public abstract class APartiallyStoredCstrList<C extends SConstraint> {
 	 * @return an iterator over all constraints involving this variable
 	 */
 	public final Iterator<SConstraint> getConstraintsIterator() {
-		return new Iterator<SConstraint>() {
-			DisposableIntIterator indices = elements.getIndexIterator();
-
-			public boolean hasNext() {
-				return indices.hasNext();
-			}
-
-			public C next() {
-				return elements.get(indices.next());
-			}
-
-			public void remove() {
-				throw new UnsupportedOperationException();
-			}
-		};
+		return elements.getIterator();
 	}
 }

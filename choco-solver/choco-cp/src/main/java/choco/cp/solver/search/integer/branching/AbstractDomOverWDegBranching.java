@@ -2,6 +2,7 @@ package choco.cp.solver.search.integer.branching;
 
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.AbstractLargeIntBranchingStrategy;
@@ -147,9 +148,11 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 	}
 
 	protected static void initExtensions(Solver s) {
-		for (Iterator<SConstraint> iter = s.getConstraintIterator(); iter.hasNext();) {
+		DisposableIterator<SConstraint> iter = s.getConstraintIterator();
+        for (; iter.hasNext();) {
 			addConstraintExtension(iter.next());
 		}
+        iter.dispose();
 		for (int i = 0; i < s.getNbIntVars(); i++) {
 			addVariableExtension(s.getIntVar(i));
 		}
@@ -317,9 +320,11 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 			final StringBuilder b = new StringBuilder();
 			b.append("===> Display DomWDeg weights\n");
 			b.append("\n###\tConstraints\t###\n");
-			for (Iterator<SConstraint> iter = solver.getIntConstraintIterator(); iter.hasNext();) {
+            DisposableIterator<SConstraint> iter = solver.getConstraintIterator();
+			for (; iter.hasNext();) {
 				appendConstraint(b, iter.next());
 			}
+            iter.dispose();
 			b.append("\n###\tVariables\t###\n");
 			for (int i = 0; i < solver.getNbIntVars(); i++) {
 				appendVariable(b, solver.getIntVar(i));

@@ -25,6 +25,7 @@ package choco.kernel.solver;
 import choco.IPretty;
 import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
@@ -43,7 +44,6 @@ import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
-import choco.kernel.solver.search.checker.ISolutionCheckerEngine;
 import choco.kernel.solver.search.checker.SolutionCheckerEngine;
 import choco.kernel.solver.search.integer.ValIterator;
 import choco.kernel.solver.search.integer.ValSelector;
@@ -64,7 +64,6 @@ import choco.kernel.solver.variables.set.SetVar;
 import choco.kernel.visu.IVisu;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -234,15 +233,15 @@ public interface Solver extends IMeasures, IPretty {
      * @deprecated
      */
     @Deprecated
-	public Iterator<SConstraint> getIntConstraintIterator();
+	public DisposableIterator<SConstraint> getIntConstraintIterator();
 
-    public Iterator<SConstraint> getConstraintIterator();
+    public DisposableIterator<SConstraint> getConstraintIterator();
 	
-	public Iterator<IntDomainVar> getIntVarIterator();
+	public DisposableIterator<IntDomainVar> getIntVarIterator();
 	
-	public Iterator<SetVar> getSetVarIterator();
+	public DisposableIterator<SetVar> getSetVarIterator();
 
-	public Iterator<RealVar> getRealVarIterator();
+	public DisposableIterator<RealVar> getRealVarIterator();
 	
 	/**
 	 * Returns the propagation engine associated to the model
