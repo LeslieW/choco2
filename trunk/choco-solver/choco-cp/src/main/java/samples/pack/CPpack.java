@@ -152,7 +152,7 @@ public class CPpack {
 				geq(o,ilb),
 				leq(o,iub-1)
 		);
-		model.addConstraints(modeler.redundantCstrNbNonEmptyBins());
+		model.addConstraints(modeler.getNbNonEmptyBinsRC());
 	}
 
 	public void initializeModel() {
@@ -161,7 +161,7 @@ public class CPpack {
 		pack = pack(modeler, SettingType.ADDITIONAL_RULES.getOptionName(),SettingType.DYNAMIC_LB.getOptionName());
 		pack.addOption(SettingType.FILL_BIN.getOptionName());
 		setObjective();
-		modeler.packAll(model); // best symmetry breaking ? seems better than sorting bins method
+		modeler.statePackLargeItems(model, false, true); // best symmetry breaking ? seems better than sorting bins method
 		model.addConstraint(pack);
 	}
 

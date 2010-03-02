@@ -25,7 +25,9 @@ package choco.kernel.model.constraints.pack;
 
 import static choco.Choco.*;
 import choco.kernel.common.util.comparator.IPermutation;
+import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.PermutationUtils;
+import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
@@ -33,6 +35,7 @@ import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,7 +44,7 @@ import java.util.List;
  * @since 4 déc. 2008 <b>version</b> 2.0.1</br>
  * @version 2.0.1</br>
  */
-public class PackModeler {
+public final class PackModeler {
 
 	private static int nextIndex;
 
@@ -116,7 +119,7 @@ public class PackModeler {
 		v.addOption("cp:no_decision");
 	}
 
-	public void setDefaultDecisionVariable() {
+	public final void setDefaultDecisionVariable() {
 		for (int b = 0; b < nbBins; b++) {
 			setNoDecision(loads[b]);
 			setNoDecision(itemSets[b].getCard());
@@ -125,21 +128,21 @@ public class PackModeler {
 		setNoDecision(nbEmpty);
 	}
 
-	protected Constraint[] toArray(List<Constraint> cstr) {
+	private static Constraint[] toArray(List<Constraint> cstr) {
 		return cstr.toArray(new Constraint[cstr.size()]);
 	}
 
 	/**
-	 * sort the items with equal size into the bins according to their index.
+	 * order the items with equal sizes into the bins according to their index.
 	 */
-	public Constraint[] symBreakEqualSizedItems() {
-		List<Constraint> cstr = new LinkedList<Constraint>();
-		int v = -1;
-		int idx = 0;
+	public Constraint[] getEqualSizedItemsSBC(int begin) {
+		List<Constraint> cstr = new ArrayList<Constraint>();
+		int oldS = -1;
+		int idx = begin;
 		while(idx<nbItems) {
-			final int s = sizes[idx].getValue();
-			if(s==v) {cstr.add(geq(bins[idx],bins[idx-1]));}
-			else {v=s;}
+			final int newS = sizes[idx].getValue();
+			if(newS==oldS) {cstr.add(geq(bins[idx],bins[idx-1]));}
+			else {oldS=newS;}
 			idx++;
 		}
 		return toArray(cstr);
@@ -150,82 +153,93 @@ public class PackModeler {
 	 * It state an occurence constraint over the nil loads.
 	 * It also provide an additional variables {@link NbEmptyBins}.
 	 */
-	public final Constraint[] redundantCstrNbNonEmptyBins() {
+	public final Constraint[] getNbNonEmptyBinsRC() {
 		return new Constraint[]{
 				occurrence(0, nbEmpty, loads),
 				eq(plus(nbEmpty,nbNonEmpty),nbBins)
 		};
 	}
 
-	private int nbPack;
+	private int reuseNbP;
+	
+	private int reuseNbT;
+
+	private boolean isLargeItem(int idx) {
+		return idx < nbItems && sizes[idx].getValue()> maxCapacity/2;	
+	}
+
+	private boolean isAdditionalLargeItem(int idx) {
+		//the capacity is even and the size of the item is C/2.
+		//So, for any previous items s_i + s_j >= C/2 (C/2+1) >= C+1
+		return idx < nbItems && 
+		sizes[idx].getValue() == maxCapacity/2 && 
+		maxCapacity % 2 == 0;
+	}
+	
 	/**
-	 * pack the large items in consecutive bins (beginning at 0), then add other leq constraints (bins[i]<=i) if any.
+	 * pack the large items in consecutive bins (beginning at 0), then add other leq constraints (bins[i]<=i) if activated.
 	 *
 	 * @param leqCstr if <code>true</code> then add leq constraints otherwise do not add them.
 	 * @return
 	 */
-	public final Constraint[] symBreakPackLargeItems(boolean leqCstr) {
+	public final Constraint[] getPackLargeItemsSBC(boolean leqCstr) {
 		List<Constraint> cstr = new LinkedList<Constraint>();
-		nbPack=0;
-		while(nbPack< nbItems && sizes[nbPack].getValue()> maxCapacity/2) {
-			cstr.add( eq(bins[nbPack],nbPack));
-			nbPack++;
+		reuseNbP=0;
+		while( isLargeItem(reuseNbP)) {
+			cstr.add( eq(bins[reuseNbP],reuseNbP));
+			reuseNbP++;
 		}
-		if( nbPack < nbItems &&
-				sizes[nbPack].getValue() == maxCapacity/2 && 
-				maxCapacity % 2 == 0) {
-			//the capacity is even and the size of the item is C/2.
-			//So, for any previous items s_i + s_j >= C/2 (C/2+1) >= C+1
-			cstr.add( eq(bins[nbPack],nbPack));
-			nbPack++;
+		if( isAdditionalLargeItem(reuseNbP)) {
+			cstr.add( eq(bins[reuseNbP],reuseNbP));
+			reuseNbP++;
 		}
+		reuseNbT=reuseNbP;
 		if(leqCstr) {
-			int m = Math.min(nbBins, nbItems);
-			while(nbPack<m) {
-				cstr.add( leq(bins[nbPack],nbPack));
-				nbPack++;
+			final int m = Math.min(nbBins, nbItems);
+			while(reuseNbT<m) {
+				cstr.add( leq(bins[reuseNbT],reuseNbT));
+				reuseNbT++;
 			}
 		}
 		return toArray(cstr);
 	}
 
 
+	//Pack Constraint Option 
+	//	public final Constraint[] symBreakEndsWithEmptyBins(int begin,int end) {
+	//		final int size= end-begin;
+	//		Constraint[] cstr = new Constraint[2*size-1];
+	//		IntegerVariable[] b = makeIntVarArray("bool-empty",nbBins, 0, 1);
+	//		int idx=0;
+	//		for (int i = begin; i < end; i++) {
+	//			int j = i-begin;
+	//			cstr[idx++]= boolChanneling(b[j], loads[i], 0);
+	//			if(i>begin) {
+	//				cstr[idx++]= geq(b[j], b[j-1]);
+	//			}
+	//		}
+	//		return cstr;
+	//	}
 
-	public final Constraint[] symBreakEndsWithEmptyBins(int begin,int end) {
-		final int size= end-begin;
-		Constraint[] cstr = new Constraint[2*size-1];
-		IntegerVariable[] b = makeIntVarArray("bool-empty",nbBins, 0, 1);
-		int idx=0;
-		for (int i = begin; i < end; i++) {
-			int j = i-begin;
-			cstr[idx++]= boolChanneling(b[j], loads[i], 0);
-			if(i>begin) {
-				cstr[idx++]= geq(b[j], b[j-1]);
-			}
-		}
-		return cstr;
-	}
-
-	public final Constraint redundantCstrAllDiffLargeItems() {
-		return redundantCstrAllDiffLargeItems(null);
-	}
 
 	/**
 	 * get the allDifferent constraint for the large items.
 	 * @param option allDifferent option
 	 */
-	public final Constraint redundantCstrAllDiffLargeItems(String option) {
+	public final Constraint getAllDiffLargeItemsRC(String option) {
 		final List<IntegerVariable> vars= new LinkedList<IntegerVariable>();
-		int idx=0;
-		while(sizes[idx].getValue()> maxCapacity/2) {
-			vars.add(bins[idx]);
-			idx++;
+		reuseNbP=0;
+		while( isLargeItem(reuseNbP)) {
+			vars.add( bins[reuseNbP++]);
 		}
-		final IntegerVariable[] large= vars.toArray(new IntegerVariable[vars.size()]);
-		return option==null ? allDifferent(large) : allDifferent(option,large);
+		if( isAdditionalLargeItem(reuseNbP)) {
+			vars.add( bins[reuseNbP++]);
+		}
+		reuseNbT=reuseNbP;
+		return allDifferent(option,vars.toArray(new IntegerVariable[reuseNbP]));
 	}
 
-	protected IntegerVariable[] getCardinality() {
+	private IntegerVariable[] getCardinality() {
 		IntegerVariable[] cards =new IntegerVariable[itemSets.length];
 		for (int i = 0; i < itemSets.length; i++) {
 			cards[i]=itemSets[i].getCard();
@@ -233,8 +247,9 @@ public class PackModeler {
 		return cards;
 	}
 
-	public final Constraint[] symBreakLoadOrdering(boolean breakTie) {
-		return symBreakLoadOrdering(0,nbBins,breakTie);
+
+	public final Constraint[] getLoadOrderingSBC(boolean breakTie) {
+		return getLoadOrderingSBC(0,nbBins,breakTie);
 	}
 
 	/**
@@ -244,13 +259,13 @@ public class PackModeler {
 	 * @param breakTie if <code>true</code> break tie with the cardinality of the itemSets, otherwise no.
 	 * @return
 	 */
-	public final Constraint[] symBreakLoadOrdering(int inf,int sup, boolean breakTie) {
+	protected final Constraint[] getLoadOrderingSBC(int inf,int sup, boolean breakTie) {
 		return symBreakOrdering(inf, sup, loads, breakTie ? getCardinality() : null);
 	}
 
 
 
-	public final Constraint[] symBreakOrdering(int inf,int sup, IntegerVariable[] vars, IntegerVariable[] breakTieVars) {
+	private final static Constraint[] symBreakOrdering(int inf,int sup, IntegerVariable[] vars, IntegerVariable[] breakTieVars) {
 		final int nb = sup-inf-1;
 		boolean breakTie = breakTieVars!=null;
 		if(nb>0) {
@@ -260,10 +275,9 @@ public class PackModeler {
 				final int idx = i-inf;
 				cstr[f*idx] = geq(vars[i], vars[i+1]);
 				if(breakTie) {
-					cstr[f*idx+1] = ifThenElse(
+					cstr[f*idx+1] = implies(
 							eq(vars[i], vars[i+1]),
-							geq(breakTieVars[i], breakTieVars[i+1]),
-							TRUE
+							geq(breakTieVars[i], breakTieVars[i+1])
 					);
 				}
 			}
@@ -272,40 +286,25 @@ public class PackModeler {
 
 	}
 
-	public void packAll(Model model) {
-		packAll(model, false, false);
+	
+	public final void statePackLargeItems(Model model,boolean leqCstr, boolean orderEqualSized) {
+		model.addConstraints(getPackLargeItemsSBC(leqCstr));
+		if(orderEqualSized) model.addConstraints( getEqualSizedItemsSBC(reuseNbP));
 	}
-
-	/**
-	 *
-	 * We pack the maximum number of items, then we sort the remaining empty bins according to their loads.
-	 * All bins should be equivalent.
-	 * @param model
-	 */
-	public void packAll(Model model,boolean leqCstr, boolean breakTie) {
-		model.addConstraints(symBreakPackLargeItems(leqCstr));
-		Constraint[] ordering =symBreakLoadOrdering(nbPack, nbBins, breakTie);
-		if(ordering!=null) {
-			model.addConstraints(ordering);
-		}
+	
+	public final void statePackLargeItemsThenSortLoad(Model model,boolean breakTie, boolean orderEqualSized) {
+		model.addConstraints(getPackLargeItemsSBC(false));
+		if(orderEqualSized) model.addConstraints( getEqualSizedItemsSBC(reuseNbP));
+		if( reuseNbT < nbBins) model.addConstraints(getLoadOrderingSBC(reuseNbT, nbBins, breakTie));
 	}
-
 	/**
-	 * we order the bins according to their loads.
-	 * <i>If it bins are equivalents, you should prefer the {@link packAll} symmetry breaking </i>
-	 * @param model
-	 */
-	public void sortAll(Model model) {
-		sortAll(model,false,null);
-	}
-
-	/**
-	 * We sort bins accroding to their load, then we post a allDifferent for large items.
+	 * We sort bins accroding to non-increasing loads, and 
+	 * state a redundant allDifferent for large items.
 	 * All bins should be equivalent.
 	 */
-	public void sortAll(Model model,boolean breakTie,String option) {
-		model.addConstraints(symBreakLoadOrdering(breakTie));
-		model.addConstraints(redundantCstrAllDiffLargeItems(option));
+	public void stateSortLoadAndAllDiff(Model model,boolean breakTie,String option) {
+		model.addConstraints(getLoadOrderingSBC(breakTie));
+		model.addConstraints(getAllDiffLargeItemsRC(option));
 	}
 
 }

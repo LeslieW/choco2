@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.pack;
 
+import choco.kernel.common.opres.nosum.NoSumList;
+import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -32,9 +34,12 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public interface IPackSConstraint {
 
+	//TODO should be super-interface
 	int getNbBins();
 	
 	int getNbItems();
+	
+	IntDomainVar[] getBins();
 	
 	IntDomainVar[] getLoads();
 
@@ -42,10 +47,12 @@ public interface IPackSConstraint {
 
 	void fail() throws ContradictionException;
 
-	BinStatus getStatus(int bin);
+	NoSumList getStatus(int bin);
+	
+	IStateIntVector getAvailableBins();
 
-	boolean isFilled(int bin);
-
+	void fireAvailableBins();
+	
 	/**
 	 * Update the minimal load of a given bin.
 	 *
