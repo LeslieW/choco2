@@ -509,7 +509,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
                     val_maxOcc[i].add(1);
                 }
                 if (vars[j].isInstantiatedTo(i + offset)) {
-                    val_minOcc[i].add(1);                    
+                    val_minOcc[i].add(1);
                 }
             }
         }
@@ -543,14 +543,14 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
             }
         }
         if (directInconsistentCount())
-           this.fail();
+            this.fail();
         propagate();
     }
 
     public boolean directInconsistentCount() {
         for (int i = 0; i < range; i++) {
-           if(val_maxOcc[i].get() < card[i].getInf() ||
-              val_minOcc[i].get() > card[i].getSup())
+            if(val_maxOcc[i].get() < card[i].getInf() ||
+                    val_minOcc[i].get() > card[i].getSup())
                 return true;
         }
         return false;
@@ -589,7 +589,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         // filterLower{Min,Max} and
         // filterUpper{Min,Max} do not check for this case.
         if ((l.sum(l.minValue(), minsorted[0].var.getInf() - 1) > 0) ||
-            (l.sum(maxsorted[nbVars - 1].var.getSup() + 1, l.maxValue()) > 0)) {
+                (l.sum(maxsorted[nbVars - 1].var.getSup() + 1, l.maxValue()) > 0)) {
             this.fail();
         }
         filterLowerMax();
@@ -836,8 +836,8 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         public int skipNonNullElementsLeft(int value) {
             value -= firstValue;
             return (ds[value] > value ? ds[ds[value]] : value) + firstValue;
-		}
-	}
+        }
+    }
 
 
 }
