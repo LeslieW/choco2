@@ -23,14 +23,15 @@
 package samples.multicostregular.asap.hci.control;
 
 
-import java.util.Observer;
-import java.util.Observable;
-
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import dk.brics.automaton.Automaton;
 import dk.brics.automaton.RegExp;
 import gnu.trove.TIntHashSet;
-import samples.multicostregular.asap.hci.presentation.ASAPResultPanel;
 import samples.multicostregular.asap.hci.abstraction.ASAPDataHandler;
+import samples.multicostregular.asap.hci.presentation.ASAPResultPanel;
+
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Created by IntelliJ IDEA.
@@ -90,8 +91,8 @@ public class ASAPResultControl implements Observer {
         a = r.toAutomaton();
         a = a.complement();
         a.minimize();
-        choco.kernel.model.constraints.automaton.FA.Automaton b;
-        b = new choco.kernel.model.constraints.automaton.FA.Automaton();
+        FiniteAutomaton b;
+        b = new FiniteAutomaton();
         b.fill(a,symb);
 
 

@@ -22,17 +22,17 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular.carsequencing.parser;
 
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import dk.brics.automaton.Automaton;
 import dk.brics.automaton.State;
 import dk.brics.automaton.Transition;
+import gnu.trove.TIntHashSet;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
-
-import gnu.trove.TIntHashSet;
 
 
 /**
@@ -237,7 +237,7 @@ public class GraphGenerator {
         alpha.add(1);alpha.add(2);alpha.add(8);alpha.add(9);
         Automaton auto = gg.toBricsAutomaton(new int[]{1,2},new int[]{8,9});
         write(auto.toDot());
-        choco.kernel.model.constraints.automaton.FA.Automaton a = new choco.kernel.model.constraints.automaton.FA.Automaton();
+        FiniteAutomaton a = new FiniteAutomaton();
 
         a.fill(auto,alpha);
 

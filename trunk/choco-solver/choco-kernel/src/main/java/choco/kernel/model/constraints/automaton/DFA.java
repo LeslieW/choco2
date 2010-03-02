@@ -23,7 +23,7 @@
 package choco.kernel.model.constraints.automaton;
 
 import choco.kernel.common.util.tools.StringUtils;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.solver.SolverException;
 import dk.brics.automaton.RegExp;
 
@@ -171,7 +171,7 @@ public class DFA {
                     if (!ct.containsKey(t.getDest())) {
 						ct.put(t.getDest(), nbStates++);
 					}
-                    int k = Automaton.getIntFromChar(i);
+                    int k = FiniteAutomaton.getIntFromChar(i);
                     ts.add(new Transition((Integer) ct.get(s), k, (Integer) ct.get(t.getDest())));
                 }
 

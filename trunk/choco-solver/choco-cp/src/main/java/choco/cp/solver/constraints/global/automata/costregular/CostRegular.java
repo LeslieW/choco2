@@ -28,7 +28,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.IStateVector;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.propagation.event.VarEvent;
@@ -67,7 +67,7 @@ public class CostRegular extends AbstractLargeIntSConstraint
      * Automaton describing
      */
     //private DFA automaton;
-    private Automaton automaton;
+    private FiniteAutomaton automaton;
 
 
     /**
@@ -143,7 +143,7 @@ public class CostRegular extends AbstractLargeIntSConstraint
      * @param environment
      * @return  a instance of the constraint
      */
-    public static CostRegular make(IntDomainVar[] vars, IntDomainVar costVar, Automaton auto, int[][] costs, IEnvironment environment)
+    public static CostRegular make(IntDomainVar[] vars, IntDomainVar costVar, FiniteAutomaton auto, int[][] costs, IEnvironment environment)
     {
         IntDomainVar[] tab = new IntDomainVar[vars.length+1];
         System.arraycopy(vars,0,tab,0,vars.length);
@@ -162,7 +162,7 @@ public class CostRegular extends AbstractLargeIntSConstraint
      * @param environment
      */
     @SuppressWarnings("unchecked")
-    protected CostRegular(IntDomainVar[] vars, Automaton auto, int[][] costs, IEnvironment environment)
+    protected CostRegular(IntDomainVar[] vars, FiniteAutomaton auto, int[][] costs, IEnvironment environment)
     {
         super(vars);
         this.automaton = auto;

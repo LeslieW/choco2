@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.constraints.global.automata.common;
 
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import dk.brics.automaton.Automaton;
 import dk.brics.automaton.State;
 import dk.brics.automaton.Transition;
@@ -48,7 +49,7 @@ public class AutomatonOperation {
             last = new State();
             for (int k : alphabet)
             {
-                tmp.addTransition(new Transition((char) choco.kernel.model.constraints.automaton.FA.Automaton.getCharFromInt(k),last));
+                tmp.addTransition(new Transition((char) FiniteAutomaton.getCharFromInt(k),last));
             }
             tmp = last;
 

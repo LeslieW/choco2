@@ -1,19 +1,20 @@
 package choco.model.constraints.global;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import org.junit.After;
-import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by IntelliJ IDEA.
@@ -46,24 +47,24 @@ public class CostRegularTest {
         IntegerVariable z = makeIntVar("z",3,4,"cp:bound");
         int n = vars.length;
 
-        Automaton auto = new Automaton();
+        FiniteAutomaton auto = new FiniteAutomaton();
         int start = auto.addState();
         int end = auto.addState();
         auto.setStartingState(start);
         auto.setAcceptingState(start);
         auto.setAcceptingState(end);
 
-        auto.addTransition(start,start,new int[]{0,1});
+        auto.addTransition(start,start, 0,1);
         auto.addTransition(start,end,2);
 
         auto.addTransition(end,start,2);
-        auto.addTransition(end,start,new int[]{0,1});
+        auto.addTransition(end,start, 0,1);
 
-        double[][][] costs = new double[n][3][2];
+        int[][][] costs = new int[n][3][2];
         for (int i = 0 ; i < costs.length ; i++)
         {
-            costs[i][0][1] = 1.0;
-            costs[i][1][1] = 1.0;
+            costs[i][0][1] = 1;
+            costs[i][1][1] = 1;
         }
 
         m.addConstraint(costRegular(vars,z,auto,costs));
@@ -81,31 +82,30 @@ public class CostRegularTest {
     public void isCorrect()
     {
 
-        long time = System.currentTimeMillis();
         IntegerVariable[] vars = makeIntVarArray("x",12,0,2,"cp:enum");
         IntegerVariable z = makeIntVar("z",10,10,"cp:bound");
         int n = vars.length;
 
-        Automaton auto = new Automaton();
+        FiniteAutomaton auto = new FiniteAutomaton();
         int start = auto.addState();
         int end = auto.addState();
         auto.setStartingState(start);
         auto.setAcceptingState(start);
         auto.setAcceptingState(end);
 
-        auto.addTransition(start,start,new int[]{0,1});
+        auto.addTransition(start,start, 0,1);
         auto.addTransition(start,end,2);
 
         auto.addTransition(end,start,2);
-        auto.addTransition(end,start,new int[]{0,1});
+        auto.addTransition(end,start, 0,1);
 
-        double[][][] costs = new double[n][3][2];
+        int[][][] costs = new int[n][3][2];
         for (int i = 0 ; i < costs.length ; i++)
         {
             for (int k = 0 ; k < 2 ; k++)
             {
-                costs[i][0][k] = 1.0;
-                costs[i][1][k] = 1.0;
+                costs[i][0][k] = 1;
+                costs[i][1][k] = 1;
             }
         }
 
@@ -166,30 +166,29 @@ public class CostRegularTest {
     public void isCorrect2()
     {
 
-        long time = System.currentTimeMillis();
         IntegerVariable[] vars = makeIntVarArray("x",13,0,2,"cp:enum");
         IntegerVariable z = makeIntVar("z",4,6,"cp:bound");
         int n = vars.length;
 
-        Automaton auto = new Automaton();
+        FiniteAutomaton auto = new FiniteAutomaton();
         int start = auto.addState();
         int end = auto.addState();
         auto.setStartingState(start);
         auto.setAcceptingState(start);
         auto.setAcceptingState(end);
 
-        auto.addTransition(start,start,new int[]{0,1});
+        auto.addTransition(start,start, 0,1);
         auto.addTransition(start,end,2);
 
         auto.addTransition(end,start,2);
-        auto.addTransition(end,start,new int[]{0,1});
+        auto.addTransition(end,start, 0,1);
 
-        double[][][] costs = new double[n][3][2];
+        int[][][] costs = new int[n][3][2];
         for (int i = 0 ; i < costs.length ; i++)
         {
-            costs[i][0][1] = 1.0;
+            costs[i][0][1] = 1;
 
-            costs[i][1][1] = 1.0;
+            costs[i][1][1] = 1;
 
 
         }
@@ -210,10 +209,10 @@ public class CostRegularTest {
     public void compareVersionSpeedNew()
     {
         int n = 14;
-        Automaton auto = new Automaton("(0|1|2)*(0|1)(0|1)(0|1)(0|1|2)*");
+        FiniteAutomaton auto = new FiniteAutomaton("(0|1|2)*(0|1)(0|1)(0|1)(0|1|2)*");
 
         int[][] c1 = new int[n][3];
-        double[][][] c2 = new double[n][3][auto.getNbStates()];
+        int[][][] c2 = new int[n][3][auto.getNbStates()];
         for (int i = 0 ; i < n ; i++)
         {
             for (int k = 0 ; k < auto.getNbStates() ; k++)
@@ -221,8 +220,8 @@ public class CostRegularTest {
                 c1[i][0] = 1;
                 c1[i][1] = 2;
 
-                c2[i][0][k] = 1.0;
-                c2[i][1][k] = 2.0;
+                c2[i][0][k] = 1;
+                c2[i][1][k] = 2;
             }
         }
 

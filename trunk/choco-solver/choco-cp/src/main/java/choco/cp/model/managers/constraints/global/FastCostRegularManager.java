@@ -2,7 +2,7 @@ package choco.cp.model.managers.constraints.global;
 
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.constraints.global.automata.fast_costregular.FastCostRegular;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -28,14 +28,14 @@ public class FastCostRegularManager extends IntConstraintManager {
         {
             IntDomainVar[] vars = (solver.getVar((IntegerVariable[]) variables));
 
-            Automaton auto = null;
-            double [][][] csts = new double[0][][];
+            FiniteAutomaton auto = null;
+            int [][][] csts = new int[0][][];
             DirectedMultigraph<Node, Arc> graph = null;
             Node source = null;
             Object[] tmp = (Object[]) parameters;
             try {
-                auto = (Automaton)tmp[0];
-                csts = (double[][][])tmp[1];
+                auto = (FiniteAutomaton)tmp[0];
+                csts = (int[][][])tmp[1];
             }
             catch (Exception e)
             {

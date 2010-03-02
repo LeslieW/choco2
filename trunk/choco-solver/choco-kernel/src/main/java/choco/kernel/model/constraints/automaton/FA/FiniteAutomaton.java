@@ -25,7 +25,9 @@ package choco.kernel.model.constraints.automaton.FA;
 
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.StringUtils;
+import dk.brics.automaton.Automaton;
 import dk.brics.automaton.RegExp;
+import dk.brics.automaton.State;
 import dk.brics.automaton.Transition;
 import gnu.trove.*;
 
@@ -44,18 +46,19 @@ import java.util.logging.Logger;
  * Time: 09:22:48
  */
 
-public class Automaton {
+public class FiniteAutomaton {
 
     protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 
-    protected ArrayList<int[]> representedBy;
+    protected ArrayList<TIntArrayList> representedBy;
     protected TIntHashSet acceptingStates;
     protected int startingState;
     protected int nbStates;
     protected TIntArrayList symbols;
     protected TIntHashSet alphabet;
     protected TIntArrayList indexs;
+    protected TIntIntHashMap indexToSymbol;
 
     protected static TIntIntHashMap charFromIntMap = new TIntIntHashMap();
     protected static TIntIntHashMap intFromCharMap = new TIntIntHashMap();
@@ -80,11 +83,12 @@ public class Automaton {
 
     //protected TreeMap<Integer,Integer> symbolMap;
 
-    public Automaton() {
+    public FiniteAutomaton() {
 
         this.symbols = new TIntArrayList(10);
         this.alphabet = new TIntHashSet(10);
-        this.representedBy = new ArrayList<int[]>();
+        this.indexToSymbol = new TIntIntHashMap();
+        this.representedBy = new ArrayList<TIntArrayList>();
         //this.symbolMap = new TreeMap<Integer,Integer>(new TokenComparator());
         this.indexs = new TIntArrayList(10);
         this.nbStates = 0;
@@ -114,7 +118,7 @@ public class Automaton {
         return out;
     }
 
-    public Automaton(dk.brics.automaton.Automaton a)
+    public FiniteAutomaton(dk.brics.automaton.Automaton a)
     {
         this();
         Set<dk.brics.automaton.State> dkStates = a.getStates();
@@ -160,13 +164,13 @@ public class Automaton {
                 int imin = t.getMin();
                 int imax = t.getMax();
                 if (imax >= amin && imin <= amax)
-                for (int i = Math.max(imin,amin); i <= Math.min(imax,amax); i++) {
-                    int k = getIntFromChar(i);
-                    if (alpha.contains(k))
-                    {
-                        addTransition(tmp1,tmp2,k);
+                    for (int i = Math.max(imin,amin); i <= Math.min(imax,amax); i++) {
+                        int k = getIntFromChar(i);
+                        if (alpha.contains(k))
+                        {
+                            addTransition(tmp1,tmp2,k);
+                        }
                     }
-                }
             }
         }
     }
@@ -185,7 +189,7 @@ public class Automaton {
     }
     public static int max(TIntHashSet alpha)
     {
-       TIntIterator it ;
+        TIntIterator it ;
         int max = Integer.MIN_VALUE;
         for (it = alpha.iterator() ;it.hasNext() ;)
         {
@@ -193,30 +197,29 @@ public class Automaton {
             if (tmp > max)
                 max = tmp;
         }
-        return max; 
+        return max;
     }
 
 
-    public Automaton(String regexp) {
+    public FiniteAutomaton(String regexp) {
         this(new RegExp(StringUtils.toCharExp(regexp)).toAutomaton());
 
 
     }
-    public Automaton(Automaton auto)
+    public FiniteAutomaton(FiniteAutomaton auto)
     {
         this.symbols = new TIntArrayList();
         this.symbols.ensureCapacity(auto.symbols.size());
         for (int i = 0 ; i < auto.symbols.size(); i++)
             this.symbols.add(auto.symbols.get(i));
         this.alphabet = new TIntHashSet(auto.alphabet.size());
-        this.alphabet.addAll(alphabet.toArray());
-        this.representedBy = new ArrayList<int[]>();
+        this.alphabet.addAll(auto.alphabet.toArray());
+        this.representedBy = new ArrayList<TIntArrayList>();
         this.representedBy.ensureCapacity(auto.representedBy.size());
         for (int i = 0 ; i < auto.representedBy.size() ;i++)
         {
-            int[] old = auto.representedBy.get(i);
-            int[] nt = new int[old.length];
-            System.arraycopy(old,0,nt,0,old.length);
+            int[] old = auto.representedBy.get(i).toNativeArray();
+            TIntArrayList nt = new TIntArrayList(old);
             this.representedBy.add(nt);
         }
         this.indexs = new TIntArrayList();
@@ -227,6 +230,7 @@ public class Automaton {
         this.acceptingStates = new TIntHashSet(auto.acceptingStates.size());
         this.acceptingStates.addAll(auto.acceptingStates.toArray());
         this.setStartingState(auto.getStartingState());
+        this.indexToSymbol = (TIntIntHashMap) auto.indexToSymbol.clone();
     }
 
 
@@ -245,7 +249,8 @@ public class Automaton {
         nbStates++;
         int[] tmp = new int[symbols.size()];
         Arrays.fill(tmp,-1);
-        representedBy.add(tmp);
+        TIntArrayList cont = new TIntArrayList(tmp);
+        representedBy.add(cont);
         return nbStates -1;
 
     }
@@ -253,13 +258,13 @@ public class Automaton {
         representedBy.remove(s);
         acceptingStates.remove(s);
         nbStates--;
-        for (int[] aRepresentedBy : representedBy) {
-            for (int j = 0; j < aRepresentedBy.length; j++) {
-                int k = aRepresentedBy[j];
+        for (TIntArrayList aRepresentedBy : representedBy) {
+            for (int j = 0; j < aRepresentedBy.size(); j++) {
+                int k = aRepresentedBy.get(j);
                 if (k == s)
-                    aRepresentedBy[j] = -1;
+                    aRepresentedBy.set(j,-1);
                 else if (k > s) {
-                    aRepresentedBy[j] = k - 1;
+                    aRepresentedBy.set(j,k - 1);
                 }
             }
         }
@@ -281,18 +286,15 @@ public class Automaton {
         if (symbol >= indexs.size())
             indexs.fill(indexs.size(),symbol+1,-1);
         indexs.set(symbol,symbols.size()-1);
+        indexToSymbol.put(symbols.size()-1,symbol);
 
         for (int i = 0 ; i < representedBy.size() ; i++) {
-            int [] tmp = representedBy.get(i);
-            int[] newTab = new int[symbols.size()];
-            System.arraycopy(tmp,0,newTab,0,tmp.length);
-            newTab[symbols.size()-1] = -1;
-            representedBy.set(i,newTab);
+            representedBy.get(i).add(-1);
         }
         return symbols.size() -1;
     }
 
-    public void addTransition(int source, int destination, int[] symbols)
+    public void addTransition(int source, int destination, int... symbols)
     {
         for (int i : symbols)
             addTransition(source,destination,i);
@@ -311,18 +313,22 @@ public class Automaton {
         }
 
         if (source < representedBy.size() && destination < representedBy.size()) {
-            representedBy.get(source)[idx] = destination;
+            representedBy.get(source).set(idx,destination);
         }
         else {
             LOGGER.severe("state does not exist... not adding transition");
         }
     }
 
+
+
+
+
     public void deleteTransition(int source, int destination, int symbol) {
         int idx = indexs.get(symbol);//symbolMap.get(symbol);
 
         if (idx != -1 && source < representedBy.size() && destination < representedBy.size()) {
-            representedBy.get(source)[idx] = -1;
+            representedBy.get(source).set(idx,-1);
         }
         else {
             LOGGER.severe("Symbol or state does not exist");
@@ -337,16 +343,31 @@ public class Automaton {
             return -1;
         }
         else {
-            return representedBy.get(source)[idx];
+            return representedBy.get(source).get(idx);
         }
     }
 
+    public TIntArrayList getOutSymbols(int source)
+    {
+        TIntArrayList out  = new TIntArrayList();
+        if (source >=0 && source < nbStates)
+        {
+            TIntArrayList list = representedBy.get(source);
+            for (int i = 0 ; i < list.size() ; i++)
+            {
+                if (list.get(i) >= 0)
+                    out.add(indexToSymbol.get(i));
+            }
+
+        }
+        return out;
+    }
 
 
-    public Automaton opposite()
+    public FiniteAutomaton opposite()
     {
 
-        Automaton out = new Automaton(this);
+        FiniteAutomaton out = new FiniteAutomaton(this);
         int fs = out.addState();
         for (int q = 0 ; q < out.representedBy.size()  ; q++)
         {
@@ -390,9 +411,18 @@ public class Automaton {
     {
         acceptingStates.add(state);
     }
+    public void setAcceptingState(int... states)
+    {
+        acceptingStates.addAll(states);
+    }
+
     public void setNonAcceptingState(int state)
     {
         acceptingStates.remove(state);
+    }
+    public void setNonAcceptingState(int... states)
+    {
+        acceptingStates.removeAll(states);
     }
 
 
@@ -419,6 +449,133 @@ public class Automaton {
                 return false;
         }
     }
+
+
+    public Automaton makeBricsAutomaton()
+    {
+        Automaton auto = new Automaton();
+        int nb = getNbStates();
+        State[] states = new State[nb];
+        for (int i = 0 ; i < nb; i++)
+        {
+            states[i] = new State();
+            if (isAccepting(i))
+                states[i].setAccept(true);
+        }
+        for (int i = 0 ; i < nb ; i++)
+        {
+            State orig = states[i];
+            TIntArrayList out = this.getOutSymbols(i);
+            for (int k = 0 ; k < out.size(); k++)
+            {
+                int symbol = out.get(k);
+                char equi = (char) getCharFromInt(symbol);
+                State next = states[delta(i,symbol)];
+                orig.addTransition(new Transition(equi,next));
+            }
+        }
+        auto.setInitialState(states[this.getStartingState()]);
+        return auto;
+
+
+    }
+
+    private void clearStructures()
+    {
+        this.alphabet.clear();
+        this.indexs.reset();
+        this.indexToSymbol.clear();
+        this.acceptingStates.clear();
+        this.nbStates = 0;
+        this.startingState = -1;
+        this.representedBy.clear();
+        this.symbols.reset();
+    }
+
+    public void minimize()
+    {
+        Automaton tmp = makeBricsAutomaton();
+        tmp.minimize();
+        TIntHashSet alpha = (TIntHashSet)this.alphabet.clone();
+        clearStructures();
+        this.fill(tmp,alpha);
+    }
+
+    public void reduce()
+    {
+        Automaton tmp = makeBricsAutomaton();
+        tmp.reduce();
+        TIntHashSet alpha = (TIntHashSet)this.alphabet.clone();
+        clearStructures();
+        this.fill(tmp,alpha);
+    }
+
+    public void removeDeadTransitions()
+    {
+        Automaton tmp = makeBricsAutomaton();
+        tmp.removeDeadTransitions();
+        TIntHashSet alpha = (TIntHashSet)this.alphabet.clone();
+        clearStructures();
+        this.fill(tmp,alpha);
+    }
+
+
+    public FiniteAutomaton union(FiniteAutomaton other)
+    {
+        Automaton fa = this.makeBricsAutomaton();
+        Automaton fb = other.makeBricsAutomaton();
+        TIntHashSet alpha = (TIntHashSet) this.alphabet.clone();
+        TIntHashSet alphab = (TIntHashSet) other.alphabet.clone();
+        alpha.addAll(alphab.toArray());
+
+        Automaton tmp = fa.union(fb);
+        FiniteAutomaton out = new FiniteAutomaton();
+        out.fill(tmp,alpha);
+
+
+        return out;
+    }
+
+    public FiniteAutomaton intersection(FiniteAutomaton other)
+    {
+        Automaton fa = this.makeBricsAutomaton();
+        Automaton fb = other.makeBricsAutomaton();
+        TIntHashSet alpha = (TIntHashSet) this.alphabet.clone();
+        TIntHashSet alphab = (TIntHashSet) other.alphabet.clone();
+        alpha.addAll(alphab.toArray());
+        Automaton tmp = fa.intersection(fb);
+        FiniteAutomaton out = new FiniteAutomaton();
+        out.fill(tmp,alpha);
+
+        return out;
+    }
+    public FiniteAutomaton complement()
+    {
+        FiniteAutomaton fa = new FiniteAutomaton();
+        fa.fill(this.makeBricsAutomaton().complement(),this.alphabet);
+        return fa;
+    }
+
+    public FiniteAutomaton concatenate(FiniteAutomaton other)
+    {
+        Automaton fa = this.makeBricsAutomaton();
+        Automaton fb = other.makeBricsAutomaton();
+        TIntHashSet alpha = (TIntHashSet) this.alphabet.clone();
+        TIntHashSet alphab = (TIntHashSet) other.alphabet.clone();
+        alpha.addAll(alphab.toArray());
+
+        Automaton tmp = fa.concatenate(fb);
+        FiniteAutomaton out = new FiniteAutomaton();
+        out.fill(tmp,alpha);
+        return out;
+
+    }
+
+
+
+
+
+
 
 
     public String toString() {

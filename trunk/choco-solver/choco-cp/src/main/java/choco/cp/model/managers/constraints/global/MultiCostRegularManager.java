@@ -25,7 +25,7 @@ package choco.cp.model.managers.constraints.global;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.automata.fast_multicostregular.FastMultiCostRegular;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -55,7 +55,7 @@ public class MultiCostRegularManager extends IntConstraintManager
             if (param.length == 3)
             {
                 int sz = (Integer) param[0];
-                Automaton pi = (Automaton) param[1];
+                FiniteAutomaton pi = (FiniteAutomaton) param[1];
                 IntDomainVar[] vs = new IntDomainVar[sz];
                 IntDomainVar[] z = new IntDomainVar[all.length-sz];
                 System.arraycopy(all, 0, vs, 0, vs.length);
@@ -63,12 +63,12 @@ public class MultiCostRegularManager extends IntConstraintManager
 
                 if (param[2] instanceof double[][][])
                 {
-                    double[][][] csts = (double[][][]) param[2];
+                    int[][][] csts = (int[][][]) param[2];
                     return new FastMultiCostRegular(vs,z,pi,csts, solver.getEnvironment());
                 }
                 else if (param[2] instanceof double[][][][])
                 {
-                    double[][][][] csts = (double[][][][]) param[2];
+                    int[][][][] csts = (int[][][][]) param[2];
                     return new FastMultiCostRegular(vs,z,pi,csts, solver.getEnvironment());
                 }
             }

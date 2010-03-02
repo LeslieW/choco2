@@ -27,7 +27,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import dk.brics.automaton.RegExp;
@@ -37,7 +37,8 @@ import gnu.trove.TIntHashSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static choco.Choco.*;
+import static choco.Choco.makeIntVarArray;
+import static choco.Choco.regular;
 
 /**
  * Created by IntelliJ IDEA.
@@ -103,7 +104,7 @@ public class JunkerMinSet {
         {
             dk.brics.automaton.Automaton tmp = autos.remove(autos.size()-1);
             in.add(tmp);
-            Automaton a = makeAutomaton(in);
+            FiniteAutomaton a = makeAutomaton(in);
             System.out.println(a);
             b = solve(a);
 
@@ -111,7 +112,7 @@ public class JunkerMinSet {
         cset.add(in.remove(in.size()-1));
         b = true;
 
-        Automaton a = makeAutomaton(cset);
+        FiniteAutomaton a = makeAutomaton(cset);
         if(solve(a))
         {
             autos.clear();
@@ -128,7 +129,7 @@ public class JunkerMinSet {
 
     }
 
-    private boolean solve(Automaton a)
+    private boolean solve(FiniteAutomaton a)
     {
         m.removeConstraint(in);
         in = regular(a,vars);
@@ -145,7 +146,7 @@ public class JunkerMinSet {
 
     }
 
-    private Automaton makeAutomaton(ArrayList<dk.brics.automaton.Automaton> in)
+    private FiniteAutomaton makeAutomaton(ArrayList<dk.brics.automaton.Automaton> in)
     {
         dk.brics.automaton.Automaton temp = in.get(0);
 
@@ -154,7 +155,7 @@ public class JunkerMinSet {
             temp = temp.intersection(in.get(i));
             temp.minimize();
         }
-        Automaton auto = new Automaton();
+        FiniteAutomaton auto = new FiniteAutomaton();
         auto.fill(temp,alpha);
         return auto;
     }

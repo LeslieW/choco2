@@ -24,7 +24,7 @@ package choco.cp.model.managers.constraints.global;
 
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.constraints.global.automata.costregular.CostRegular;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -50,11 +50,11 @@ public class CostRegularManager extends IntConstraintManager {
                 System.arraycopy(vars,0,vs,0,vs.length);
                 IntDomainVar z = vars[vs.length];
 
-                Automaton auto;
+                FiniteAutomaton auto;
                 int [][] csts;
                 Object[] tmp = (Object[]) parameters;
                 try {
-                    auto = (Automaton)tmp[0];
+                    auto = (FiniteAutomaton)tmp[0];
                     csts = (int[][])tmp[1];
                 }
                 catch (Exception e)

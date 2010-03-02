@@ -22,15 +22,15 @@
  **************************************************/
 package choco.kernel.common.util.tools;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-
 import choco.IPretty;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.search.measure.ISearchMeasures;
 import choco.kernel.solver.variables.scheduling.ITask;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 
 /*
  * User : charles
@@ -233,12 +233,12 @@ public class StringUtils {
 			{
 				int out = strRegExp.indexOf('>',i+1);
 				int tmp = Integer.parseInt(strRegExp.substring(i+1,out));
-				b.append((char) Automaton.getCharFromInt(tmp));
+				b.append((char) FiniteAutomaton.getCharFromInt(tmp));
 				i = out;
 			}
 			else if (Character.isDigit(c))
 			{
-				b.append((char) Automaton.getCharFromInt(Character.getNumericValue(c)));
+				b.append((char) FiniteAutomaton.getCharFromInt(Character.getNumericValue(c)));
 
 			}
 			else

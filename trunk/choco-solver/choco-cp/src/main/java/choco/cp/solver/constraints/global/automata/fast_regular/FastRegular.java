@@ -5,7 +5,7 @@ import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.global.automata.fast_regular.structure.Arc;
 import choco.kernel.solver.constraints.global.automata.fast_regular.structure.Node;
@@ -34,7 +34,7 @@ public class FastRegular extends AbstractLargeIntSConstraint {
     /**
      * Reference to the automaton representing the accepted language
      */
-    Automaton auto;
+    FiniteAutomaton auto;
 
 
 
@@ -48,7 +48,7 @@ public class FastRegular extends AbstractLargeIntSConstraint {
      * @param vars Variables that must form a word accepted by auto
      * @param auto An automaton forming a regular languauge
      */
-    public FastRegular(IEnvironment environment, IntDomainVar[] vars, Automaton auto) {
+    public FastRegular(IEnvironment environment, IntDomainVar[] vars, FiniteAutomaton auto) {
         super(vars);
         this.auto = auto;
 
