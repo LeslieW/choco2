@@ -25,7 +25,6 @@ package choco.cp.solver.constraints.global.scheduling;
 import java.util.Arrays;
 import java.util.Comparator;
 
-import junit.framework.Assert;
 
 import static choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode.ECT;
 import static choco.kernel.common.util.comparator.TaskComparators.*;
@@ -175,22 +174,21 @@ final class UpdateManager {
 	}
 
 	public void storeRemoval(IRTask t) throws ContradictionException {
-		Assert.assertEquals(true,t.remove());
-		Assert.assertEquals(true, t.isEliminated());
+		t.remove();
+		assert t.isEliminated();
 		removeL[removeCount++]=t;
 	}
 
 	public void storeLambdaRemoval(IThetaLambdaTree tree) throws ContradictionException {
 		final IRTask t = (IRTask) tree.getResponsibleTask();
-		Assert.assertEquals(true, t != null);
+		assert t != null;
 		storeRemoval(t);
 		tree.removeFromLambda(t.getHTask());
 	}
 	
 	public void storeLambdaRemoval(IRTask t, IThetaLambdaTree tree) throws ContradictionException {
-		Assert.assertEquals(true, t != null);
 		storeRemoval(t);
-		Assert.assertEquals(true, tree.removeFromLambda(t.getHTask()));
+		tree.removeFromLambda(t.getHTask());
 	}
 
 	public void storeOmegaRemoval(IRTask t, IThetaOmegaTree tree) throws ContradictionException {
@@ -215,8 +213,9 @@ final class UpdateManager {
 		if(updateCount > 0) {
 			boolean noFixPoint=false;
 			for (int i = 0; i < updateCount; i++) {
-				System.out.println("");
-				noFixPoint |= updateL[i].updateEST();
+				if(!updateL[i].isEliminated())
+					//applying updates only to regular, and optional tasks
+					noFixPoint |= updateL[i].updateEST();
 			}
 			updateCount=0;
 			if(noFixPoint) rules.fireDomainChanged();
@@ -234,6 +233,7 @@ final class UpdateManager {
 			boolean noFixPoint=false;
 			for (int i = 0; i < updateCount; i++) {
 				if(!updateL[i].isEliminated())
+					//applying updates only to regular, and optional tasks
 					noFixPoint |= updateL[i].updateLCT();
 			}
 			updateCount=0;

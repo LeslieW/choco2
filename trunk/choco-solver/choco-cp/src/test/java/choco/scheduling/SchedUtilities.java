@@ -127,7 +127,7 @@ public final class SchedUtilities {
 		checkRandom(solver, r, nbsol, nbNodes, label);
 		
 	}
-//
+
 	public static void checkRandom(Solver solver,Boolean r,int nbsol,int nbNodes,String label) {
 		if(nbsol==0) {
 			assertEquals(jmsg("unsat",label),Boolean.FALSE,r);

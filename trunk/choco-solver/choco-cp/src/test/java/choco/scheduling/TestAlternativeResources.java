@@ -277,7 +277,7 @@ public class TestAlternativeResources {
 		int[] durations = ArrayUtils.oneToN(n);
 		testAltDisjunctive(1,durations, (n * (n - 1)) / 2, 1);
 	}
-
+	
 	@Test
 	public void testAltDisj3() {
 		int n = 5;
@@ -326,10 +326,32 @@ public class TestAlternativeResources {
 	}
 	
 	private int horizon = 22;
-	private TaskVariable JobA = makeTaskVar("JobA", 0, horizon, 4);
-	private TaskVariable JobB = makeTaskVar("JobB", 0, horizon, 6);
-	private TaskVariable JobC = makeTaskVar("JobC", 0, horizon, 8);
+	//**************************
+	final int jobADur = 4;
+	private IntegerVariable stA = makeIntVar("startA", 0, horizon - jobADur);
+	private IntegerVariable endA = makeIntVar("endA", 0 + jobADur, horizon);
+	private IntegerVariable durA = makeIntVar("DurA", jobADur, jobADur);
 
+	final int jobBDur = 6;
+	private IntegerVariable stB = makeIntVar("startA", 0, horizon - jobBDur);
+	private IntegerVariable endB = makeIntVar("endA", 0 + jobBDur, horizon);
+	private IntegerVariable durB = makeIntVar("DurA", jobBDur, jobBDur);
+	
+	final int jobCDur = 8;
+	private IntegerVariable stC = makeIntVar("startA", 0, horizon - jobCDur);
+	private IntegerVariable endC = makeIntVar("endA", 0 + jobCDur, horizon);
+	private IntegerVariable durC = makeIntVar("DurA", jobCDur, jobCDur);
+	//**************************
+	//private TaskVariable JobA = makeTaskVar("JobA", 0, horizon, 4);
+	//private TaskVariable JobB = makeTaskVar("JobB", 0, horizon, 6);
+	//private TaskVariable JobC = makeTaskVar("JobC", 0, horizon, 8);
+	private TaskVariable JobA_Resc1 = makeTaskVar("JobA_Resc1", stA, endA, durA);
+	private TaskVariable JobA_Resc2 = makeTaskVar("JobA_Resc2", stA, endA, durA);
+	private TaskVariable JobB_Resc1 = makeTaskVar("JobB_Resc1", stB, endB, durB);
+	private TaskVariable JobB_Resc2 = makeTaskVar("JobB_Resc2", stB, endB, durB);
+	private TaskVariable JobC_Resc1 = makeTaskVar("JobC_Resc1", stC, endC, durC);
+	private TaskVariable JobC_Resc2 = makeTaskVar("JobC_Resc2", stC, endC, durC);
+	//***************************
 	
 	private IntegerVariable JobA_Res1 = makeBooleanVar("JobA_Res1");
 	private IntegerVariable JobA_Res2 = makeBooleanVar("JobA_Res2");
@@ -344,9 +366,9 @@ public class TestAlternativeResources {
 		model.addConstraint(eq(plus(JobB_Res1, JobB_Res2), 1));
 		model.addConstraint(eq(plus(JobC_Res1, JobC_Res2), 1));
 
-		model.addConstraint(disjunctive( new TaskVariable[]{JobA, JobB, JobC}, 
+		model.addConstraint(disjunctive( new TaskVariable[]{JobA_Resc1, JobB_Resc1, JobC_Resc1}, 
 				new IntegerVariable[] {JobA_Res1, JobB_Res1, JobC_Res1})) ; 
-		model.addConstraint(disjunctive( new TaskVariable[]{JobA, JobB, JobC}, 
+		model.addConstraint(disjunctive( new TaskVariable[]{JobA_Resc2, JobB_Resc2, JobC_Resc2}, 
 				new IntegerVariable[] {JobA_Res2, JobB_Res2, JobC_Res2})) ;
 		return model;
 	}
@@ -356,9 +378,9 @@ public class TestAlternativeResources {
 		model.addConstraint(eq(plus(JobB_Res1, JobB_Res2), 1));
 		model.addConstraint(eq(plus(JobC_Res1, JobC_Res2), 1));
 
-		model.addConstraint(disjunctive( new TaskVariable[]{JobA, JobB, JobC}, 
+		model.addConstraint(disjunctive( new TaskVariable[]{JobA_Resc1, JobB_Resc1, JobC_Resc1}, 
 				new IntegerVariable[] {JobB_Res1, JobC_Res1})) ; 
-		model.addConstraint(disjunctive( new TaskVariable[]{JobB, JobC}, 
+		model.addConstraint(disjunctive( new TaskVariable[]{JobB_Resc2, JobC_Resc2}, 
 				new IntegerVariable[] {JobB_Res2, JobC_Res2})) ;
 		return model;
 	}
@@ -374,8 +396,7 @@ public class TestAlternativeResources {
 		return solver.getObjectiveValue().intValue();
 	}
 	
-	protected int solveAll(CPModel model) {
-		CPSolver solver = new CPSolver();
+	protected int solveAll(CPModel model) {		CPSolver solver = new CPSolver();
 		solver.setHorizon(horizon);
 		solver.read(model);
 		solver.setRandomSelectors();
