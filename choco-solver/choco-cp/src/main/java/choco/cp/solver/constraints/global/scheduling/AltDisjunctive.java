@@ -21,6 +21,7 @@
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -43,10 +44,10 @@ public class AltDisjunctive extends Disjunctive {
 	public void fireTaskRemoval(IRTask rtask) {
 		rules.remove(rtask);
 	}
-
-
 	
-	
-	
-
+	@Override
+	public void propagate() throws ContradictionException {
+		checkHypotheticalDomains();
+		super.propagate();
+	}
 }

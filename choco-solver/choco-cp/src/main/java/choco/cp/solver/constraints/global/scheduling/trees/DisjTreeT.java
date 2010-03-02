@@ -71,7 +71,7 @@ abstract class AbstractThetaTree extends AbstractVilimTree implements IThetaTree
 
 	@Override
 	public final boolean insertInTheta(final IRTask rtask) {
-		final IBinaryNode leaf = getLeaf(rtask.getTaskVar());
+		final IBinaryNode leaf = getLeaf(rtask.getHTask());
 		final ThetaTreeLeaf status = getLeafStatus(leaf);
 		if(status.getType() == AbstractVilimTree.NodeType.NIL) {
 			status.insertInTheta(rtask);

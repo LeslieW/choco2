@@ -25,6 +25,8 @@ package choco.cp.solver.constraints.global.scheduling;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import junit.framework.Assert;
+
 import static choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode.ECT;
 import static choco.kernel.common.util.comparator.TaskComparators.*;
 import choco.cp.solver.constraints.global.scheduling.trees.IThetaLambdaTree;
@@ -65,7 +67,7 @@ public abstract class AbstractDisjRules implements IDisjRules {
 	protected final ITask[] getTaskArray() {
 		final ITask[] tasks = new ITask[rtasks.length];
 		for (int i = 0; i < tasks.length; i++) {
-			tasks[i] = rtasks[i].getTaskVar();
+			tasks[i] = rtasks[i].getHTask();
 		}
 		return tasks;
 	}
@@ -173,19 +175,22 @@ final class UpdateManager {
 	}
 
 	public void storeRemoval(IRTask t) throws ContradictionException {
-		t.remove();
+		Assert.assertEquals(true,t.remove());
+		Assert.assertEquals(true, t.isEliminated());
 		removeL[removeCount++]=t;
 	}
 
 	public void storeLambdaRemoval(IThetaLambdaTree tree) throws ContradictionException {
 		final IRTask t = (IRTask) tree.getResponsibleTask();
+		Assert.assertEquals(true, t != null);
 		storeRemoval(t);
-		tree.removeFromLambda(t.getTaskVar());
+		tree.removeFromLambda(t.getHTask());
 	}
 	
 	public void storeLambdaRemoval(IRTask t, IThetaLambdaTree tree) throws ContradictionException {
+		Assert.assertEquals(true, t != null);
 		storeRemoval(t);
-		tree.removeFromLambda(t.getTaskVar());
+		Assert.assertEquals(true, tree.removeFromLambda(t.getHTask()));
 	}
 
 	public void storeOmegaRemoval(IRTask t, IThetaOmegaTree tree) throws ContradictionException {
@@ -210,6 +215,7 @@ final class UpdateManager {
 		if(updateCount > 0) {
 			boolean noFixPoint=false;
 			for (int i = 0; i < updateCount; i++) {
+				System.out.println("");
 				noFixPoint |= updateL[i].updateEST();
 			}
 			updateCount=0;
@@ -227,7 +233,8 @@ final class UpdateManager {
 		if(updateCount > 0) {
 			boolean noFixPoint=false;
 			for (int i = 0; i < updateCount; i++) {
-				noFixPoint |= updateL[i].updateLCT();
+				if(!updateL[i].isEliminated())
+					noFixPoint |= updateL[i].updateLCT();
 			}
 			updateCount=0;
 			if(noFixPoint) rules.fireDomainChanged();

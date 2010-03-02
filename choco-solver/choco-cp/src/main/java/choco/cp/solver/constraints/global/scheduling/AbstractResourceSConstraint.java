@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import junit.framework.Assert;
+
 import org.omg.CORBA.Environment;
 
 import choco.cp.solver.constraints.BitFlags;
@@ -117,6 +119,12 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		this.makespan = new RMakespan();
 	}
 
+	public void checkHypotheticalDomains()throws ContradictionException{
+		for(int i = nbRegularTasks; i < rtasks.length; i++){
+			if(rtasks[i].isOptional())
+				rtasks[i].checkConsistency();
+		}
+	}
 	private void checkIntVars() {
 		//TODO
 	}
@@ -192,9 +200,13 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 	@Override
 	public void awakeOnInst(final int idx) throws ContradictionException {
-		if( ! checkTask(idx) && idx < taskIntVarOffset + nbOptionalTasks 
-				&& vars[idx].isInstantiatedTo(0) ) {
-			fireTaskRemoval(rtasks[idx - taskIntVarOffset + nbRegularTasks]);
+		if( ! checkTask(idx) && idx < taskIntVarOffset + nbOptionalTasks){
+			final int tIdx = idx - taskIntVarOffset + nbRegularTasks;
+			if(vars[idx].isInstantiatedTo(0)) 
+				fireTaskRemoval(rtasks[tIdx]);
+			else
+				//assigned value 1: Becomes a regular task.
+				rtasks[tIdx].assign();
 		}
 		super.awakeOnInst(idx);
 	}
@@ -638,28 +650,35 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 			estH = env.makeInt(getTaskVar().getEST());
 			lctH = env.makeInt(getTaskVar().getLCT());
 		}
-
-
+		
 		@Override
 		public ITask getHTask() {
 			return this;
 		}
 
-
-
 		//ITask interface : integrate the hypothetical domains for filtering algorithms.
 		@Override
 		public int getECT() {
 			final int valR = getTaskVar().getECT();
-			final int valH = estH.get() + getTaskVar().getMinDuration();
-			return valR >  valH ? valR : valH;
+			if(isRegular())
+				return valR;
+			else
+			{
+				final int valH = estH.get() + getTaskVar().getMinDuration();
+				return valR >  valH ? valR : valH;
+			}
 		}
 
 		@Override
 		public int getEST() {
 			final int valR = getTaskVar().getEST();
-			final int valH = estH.get();
-			return valR >  valH ? valR : valH;
+			if(isRegular())
+				return valR;
+			else
+			{
+				final int valH = estH.get();
+				return valR >  valH ? valR : valH;
+			}
 		}
 
 		@Override
@@ -670,22 +689,36 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		@Override
 		public int getLCT() {
 			final int valR = getTaskVar().getLCT();
-			final int valH = lctH.get();
-			return valR >  valH ? valH : valR;
+			if(isRegular())
+				return valR;
+			else
+			{
+				final int valH = lctH.get();
+				return valR >  valH ? valH : valR;
+			}
 		}
 
 		@Override
 		public int getLST() {
 			final int valR = getTaskVar().getLST();
-			final int valH = lctH.get() - getTaskVar().getMinDuration();
-			return valR >  valH ? valH : valR;
+			if(isRegular())
+				return valR;
+			else
+			{
+				final int valH = lctH.get() - getTaskVar().getMinDuration();
+				return valR >  valH ? valH : valR;
+			}
 		}
 
 		@Override
 		public int getMaxDuration() {
 			final int valR = getTaskVar().getMaxDuration();
-			final int valH = lctH.get() - estH.get();
-			return valR >  valH ? valH : valR;
+			if(isRegular())
+				return valR;
+			else{
+				final int valH = lctH.get() - estH.get();
+				return valR >  valH ? valH : valR;
+			}
 		}
 
 		@Override
@@ -717,6 +750,9 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		private void checkHConsistency() throws ContradictionException {
 			if( ! checkHypotheticalConsistency() ) {
 				remove();
+				//I think we also need to call here fireTaskRemoval
+				//****
+				fireRemoval();
 			}
 		}
 
@@ -732,13 +768,11 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 		@Override
 		public boolean assign() throws ContradictionException {
-			if( super.assign() ) {
-				super.setEST(estH.get());
-				super.setLCT(lctH.get());
-				updateCompulsoryPart();
-				return true;
-			}
-			return false;
+			final boolean assigned = super.assign();
+			super.setEST(estH.get());
+			super.setLCT(lctH.get());
+			updateCompulsoryPart();
+			return assigned;
 		}
 
 		private boolean setHEST(int val) throws ContradictionException {
@@ -822,8 +856,6 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 			else return super.setLCT(val);
 		}
 
-
-
 		private boolean setHLST(int val) throws ContradictionException {
 			if( val < getLST() ) {
 				lctH.set(val + getMaxDuration());
@@ -877,7 +909,25 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 			if( isOptional()) return setHStartNotIn(min, max);
 			else return super.setStartNotIn(min, max);
 		}
-
+        public boolean updateREST(int minEST)throws ContradictionException{
+        	//Applying the third rule
+        	if(super.setEST(minEST)){
+        		updateCompulsoryPart();
+        		return true;
+        	}
+        	else
+        		return false;
+        }
+        
+        public boolean updateRLCT(int maxLCT)throws ContradictionException{
+        	//Applying the third rule
+        	if(super.setLCT(maxLCT)){
+        		updateCompulsoryPart();
+        		return true;
+        	}
+        	else
+        		return false;
+        }
 
 	}
 

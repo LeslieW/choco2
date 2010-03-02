@@ -19,94 +19,94 @@ import choco.kernel.solver.variables.scheduling.ITask;
 ///////////////////// REMOVE class (import problem with cp.test) ///////////////////
 
 
-class SimpleTask extends AbstractTask {
-
-	private static int nextID=0;
-
-	private final Point domain;
-
-	private final int duration;
-
-
-    /**
-     *
-     * @param est
-     * @param lst
-     * @param duration
-     */
-	public SimpleTask(int est,int lst, int duration) {
-		super(nextID++, "T"+nextID);
-		this.domain = new Point(est, lst>=est ? lst :est);
-		this.duration = duration>0 ? duration : 0;
-	}
-
-
-	/**
-	 * @see ITask#getECT()
-	 */
-	@Override
-	public int getECT() {
-		return domain.x+duration;
-	}
-
-	/**
-	 * @see ITask#getEST()
-	 */
-	@Override
-	public int getEST() {
-		return domain.x;
-	}
-
-	/**
-	 * @see ITask#getLCT()
-	 */
-	@Override
-	public int getLCT() {
-		return domain.y+duration;
-	}
-
-	/**
-	 * @see ITask#getLST()
-	 */
-	@Override
-	public int getLST() {
-		return domain.y;
-	}
-
-	/**
-	 * @see ITask#getMinDuration()
-	 */
-	@Override
-	public int getMinDuration() {
-		return duration;
-	}
-
-	/**
-	 * @see ITask#hasConstantDuration()
-	 */
-	@Override
-	public boolean hasConstantDuration() {
-		return true;
-	}
-
-	/**
-	 * @see ITask#isScheduled()
-	 */
-	@Override
-	public boolean isScheduled() {
-		return domain.x==domain.y;
-	}
-
-	/**
-	 * @see ITask#getMaxDuration()
-	 */
-	@Override
-	public int getMaxDuration() {
-		return getMinDuration();
-	}
-
-
-}
+//class SimpleTask extends AbstractTask {
+//
+//	private static int nextID=0;
+//
+//	private final Point domain;
+//
+//	private final int duration;
+//
+//
+//    /**
+//     *
+//     * @param est
+//     * @param lst
+//     * @param duration
+//     */
+//	public SimpleTask(int est,int lst, int duration) {
+//		super(nextID++, "T"+nextID);
+//		this.domain = new Point(est, lst>=est ? lst :est);
+//		this.duration = duration>0 ? duration : 0;
+//	}
+//
+//
+//	/**
+//	 * @see ITask#getECT()
+//	 */
+//	@Override
+//	public int getECT() {
+//		return domain.x+duration;
+//	}
+//
+//	/**
+//	 * @see ITask#getEST()
+//	 */
+//	@Override
+//	public int getEST() {
+//		return domain.x;
+//	}
+//
+//	/**
+//	 * @see ITask#getLCT()
+//	 */
+//	@Override
+//	public int getLCT() {
+//		return domain.y+duration;
+//	}
+//
+//	/**
+//	 * @see ITask#getLST()
+//	 */
+//	@Override
+//	public int getLST() {
+//		return domain.y;
+//	}
+//
+//	/**
+//	 * @see ITask#getMinDuration()
+//	 */
+//	@Override
+//	public int getMinDuration() {
+//		return duration;
+//	}
+//
+//	/**
+//	 * @see ITask#hasConstantDuration()
+//	 */
+//	@Override
+//	public boolean hasConstantDuration() {
+//		return true;
+//	}
+//
+//	/**
+//	 * @see ITask#isScheduled()
+//	 */
+//	@Override
+//	public boolean isScheduled() {
+//		return domain.x==domain.y;
+//	}
+//
+//	/**
+//	 * @see ITask#getMaxDuration()
+//	 */
+//	@Override
+//	public int getMaxDuration() {
+//		return getMinDuration();
+//	}
+//
+//
+//}
 
 
 

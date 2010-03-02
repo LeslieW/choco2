@@ -46,7 +46,7 @@ final class TaskComparatorWrapper implements Comparator<IRTask> {
 	 */
 	@Override
 	public int compare(IRTask o1, IRTask o2) {
-		int cmp = taskComparator.compare(o1.getTaskVar(), o2.getTaskVar());
+		int cmp = taskComparator.compare(o1.getHTask(), o2.getHTask());
 		if(cmp == 0) {
 			if(o1.isOptional()) {
 				cmp = -1;
