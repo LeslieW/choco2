@@ -22,7 +22,6 @@ package choco.cp.solver.constraints.global.automata.fast_multicostregular.exampl
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
@@ -31,13 +30,15 @@ import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import dk.brics.automaton.RegExp;
 import gnu.trove.TIntHashSet;
 
 import java.util.ArrayList;
+
+import static choco.Choco.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -240,7 +241,7 @@ public class RuleModel extends CPModel {
 
         vs = makeIntVarArray("x",8,28,0,2);
 
-        double[][][] csts = new double[vs[0].length][3][7];
+        int[][][] csts = new int[vs[0].length][3][7];
 
 
         for (int i = 0 ; i < csts.length ; i++)
@@ -294,7 +295,7 @@ public class RuleModel extends CPModel {
 
         }
 
-        Automaton auto = new Automaton();
+        FiniteAutomaton auto = new FiniteAutomaton();
         auto.fill(full,alpha);
 
 

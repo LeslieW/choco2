@@ -23,7 +23,7 @@
 package samples.lattice;
 
 import choco.kernel.common.util.tools.StringUtils;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import dk.brics.automaton.RegExp;
 import dk.brics.automaton.State;
 import dk.brics.automaton.Transition;
@@ -60,7 +60,7 @@ public class Test {
             last = new State();
             for (int k : alphabet)
             {
-                tmp.addTransition(new Transition((char)Automaton.getCharFromInt(k),last));
+                tmp.addTransition(new Transition((char) FiniteAutomaton.getCharFromInt(k),last));
             }
             tmp = last;
 

@@ -22,18 +22,19 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.comparaison;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.util.tools.StringUtils;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import dk.brics.automaton.RegExp;
 import gnu.trove.TIntHashSet;
 
 import java.util.Random;
+
+import static choco.Choco.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -50,7 +51,7 @@ public class RegCRMCRComp
     public final static int MCR = 2;
 
 
-    Automaton automaton;
+    FiniteAutomaton automaton;
     IntegerVariable[] vars;
     IntegerVariable objectif;
     int[][] costs;
@@ -84,7 +85,7 @@ public class RegCRMCRComp
     }
 
 
-    Automaton makeAutomaton()
+    FiniteAutomaton makeAutomaton()
     {
         dk.brics.automaton.Automaton auto;
         // On commence toujours par du travail :)
@@ -105,7 +106,7 @@ public class RegCRMCRComp
 
         TIntHashSet alpha = new TIntHashSet(new int[]{0,1,2});
 
-        Automaton ret = new Automaton();
+        FiniteAutomaton ret = new FiniteAutomaton();
         ret.fill(auto,alpha);
         System.out.println(ret);
 

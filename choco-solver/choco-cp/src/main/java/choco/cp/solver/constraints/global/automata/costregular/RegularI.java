@@ -25,7 +25,7 @@ package choco.cp.solver.constraints.global.automata.costregular;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -57,7 +57,7 @@ public class RegularI extends AbstractLargeIntSConstraint
     /**
      * Automaton describing the authorized tuples
      */
-    public Automaton automaton;
+    public FiniteAutomaton automaton;
 
 
     /**
@@ -122,7 +122,7 @@ public class RegularI extends AbstractLargeIntSConstraint
      * @param auto Automaton that describes the allowed tuples.
      * @param solver
      */
-    public RegularI(IntDomainVar[] vars, Automaton auto, Solver solver)
+    public RegularI(IntDomainVar[] vars, FiniteAutomaton auto, Solver solver)
     {
         super(vars);
 
@@ -163,7 +163,7 @@ public class RegularI extends AbstractLargeIntSConstraint
      */
     public RegularI(IntDomainVar[] vars, String regexp, Solver solver)
     {
-        this(vars,new Automaton(regexp), solver);
+        this(vars,new FiniteAutomaton(regexp), solver);
     }
 
 
@@ -996,9 +996,9 @@ public class RegularI extends AbstractLargeIntSConstraint
     {
 
         public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
-            if (parameters instanceof Automaton)
+            if (parameters instanceof FiniteAutomaton)
             {
-                Automaton auto = (Automaton) parameters;
+                FiniteAutomaton auto = (FiniteAutomaton) parameters;
                 IntDomainVar[] vs = solver.getVar((IntegerVariable[]) variables);
                 return new RegularI(vs,auto, solver);
 

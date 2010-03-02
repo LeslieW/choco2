@@ -22,21 +22,23 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular;
 
-import choco.kernel.model.constraints.automaton.FA.Automaton;
-import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.model.Model;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.common.util.tools.StringUtils;
-import choco.kernel.common.util.iterators.DisposableIntIterator;
-
-import java.util.*;
-
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.tools.StringUtils;
+import choco.kernel.model.Model;
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
+
+import static choco.Choco.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -47,7 +49,7 @@ import choco.cp.solver.CPSolver;
  */
 public class FilteringTest {
 
-    private static Automaton generateRandomAutomaton(int nbVar, int[] val, Random r)
+    private static FiniteAutomaton generateRandomAutomaton(int nbVar, int[] val, Random r)
     {
         StringBuffer regexp = new StringBuffer();
         for (int i = 0 ; i  < nbVar ; i++)
@@ -55,7 +57,7 @@ public class FilteringTest {
             regexp.append(getRandomSubset(val,r));
         }
      //   System.out.println(regexp);
-        return new Automaton(regexp.toString());
+        return new FiniteAutomaton(regexp.toString());
 
     }
 
@@ -123,7 +125,7 @@ public class FilteringTest {
             m.addVariables(vars);
             int[] val = new int[d+1];
             for (int i  = 0 ; i <= d ; i++) val[i] =i;
-            Automaton a = generateRandomAutomaton(n,val,rand);
+            FiniteAutomaton a = generateRandomAutomaton(n,val,rand);
             int[][][] csts = generateRandomCosts(n,d,r,max,rand);
 
 
@@ -325,7 +327,7 @@ public class FilteringTest {
                 m.addVariables(vars);
                 int[] val = new int[d+1];
                 for (int i  = 0 ; i <= d ; i++) val[i] =i;
-                Automaton a = generateRandomAutomaton(n,val,rand);
+                FiniteAutomaton a = generateRandomAutomaton(n,val,rand);
 
 
 

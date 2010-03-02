@@ -22,18 +22,16 @@
  **************************************************/
 package samples.documentation;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.automata.fast_multicostregular.FastMultiCostRegular;
 import choco.kernel.model.Model;
-//totex cmulticosteregular_import
-import choco.kernel.model.constraints.automaton.FA.Automaton;
-//totex
-import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
+import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
+
+import static choco.Choco.*;
 
 /*
 * User : charles
@@ -190,7 +188,7 @@ public class Code4Doc4 {
         bounds[2] = makeIntVar("night", 3, 7, "cp:bound"); // 3 <= #NIGHT <= 7
         bounds[3] = makeIntVar("work", 7, 9, "cp:bound"); // 7 <= #WORK <= 9
         //3- Create the automaton
-        Automaton auto = new Automaton();
+        FiniteAutomaton auto = new FiniteAutomaton();
         // state 0: starting and accepting state
         int start = auto.addState();
         auto.setStartingState(start);

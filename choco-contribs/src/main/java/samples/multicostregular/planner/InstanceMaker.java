@@ -23,9 +23,8 @@
 package samples.multicostregular.planner;
 
 
-
-import choco.kernel.model.constraints.automaton.FA.Automaton;
 import choco.kernel.model.constraints.automaton.DFA;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.constraints.automaton.Transition;
 
 import java.util.ArrayList;
@@ -70,9 +69,9 @@ public class InstanceMaker {
 
 
 
-    public Automaton makeAutomaton(int nbAct)
+    public FiniteAutomaton makeAutomaton(int nbAct)
     {
-        Automaton auto = new Automaton();
+        FiniteAutomaton auto = new FiniteAutomaton();
         int start = auto.addState();
         auto.setStartingState(start);
         auto.addTransition(start,start,O);
@@ -107,7 +106,7 @@ public class InstanceMaker {
 
     }
 
-    private void makeActivityTransitions(Automaton auto, int start, int end, int symbol)
+    private void makeActivityTransitions(FiniteAutomaton auto, int start, int end, int symbol)
     {
         for (int i = start ; i < end ; i++)
         {
@@ -127,9 +126,9 @@ public class InstanceMaker {
      * 4 -> o
      * @return an instance of an Automaton
      */
-    public Automaton makeTwoActivitiesAutomaton()
+    public FiniteAutomaton makeTwoActivitiesAutomaton()
     {
-        Automaton auto = new Automaton();
+        FiniteAutomaton auto = new FiniteAutomaton();
         for (int i = 0 ; i < 15 ; i++)
         {
             auto.addState();

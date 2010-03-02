@@ -22,12 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import static choco.Choco.*;
 
 /**
  * This class present a simple scheduling problem defined in multicost-regular documentation.
@@ -65,7 +66,7 @@ public class SimpleSchedule extends CPModel
      * Automaton which embeds the work regulations that may be
      * represented by regular expressions
      */
-    Automaton auto;
+    FiniteAutomaton auto;
 
 
     /**
@@ -135,7 +136,7 @@ public class SimpleSchedule extends CPModel
      */
     private void makeAutomaton()
     {
-        this.auto = new Automaton();
+        this.auto = new FiniteAutomaton();
         int idx = this.auto.addState();
         this.auto.setStartingState(idx);
         this.auto.setAcceptingState(idx);

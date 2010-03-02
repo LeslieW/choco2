@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular.planner;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.automata.costregular.CostRegular;
@@ -35,11 +34,13 @@ import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import static choco.Choco.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -58,7 +59,7 @@ public class PlanModel {
     IntegerVariable[] shifts;
     IntegerVariable[] count;
     IntegerVariable z;
-    Automaton auto;
+    FiniteAutomaton auto;
     InstanceMaker imaker;
     String modelType;
     long seed;

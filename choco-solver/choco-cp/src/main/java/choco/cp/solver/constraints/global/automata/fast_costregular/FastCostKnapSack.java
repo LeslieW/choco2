@@ -1,12 +1,11 @@
 package choco.cp.solver.constraints.global.automata.fast_costregular;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.model.Model;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Arc;
@@ -20,6 +19,8 @@ import org.jgrapht.graph.DirectedMultigraph;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashSet;
+
+import static choco.Choco.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -47,7 +48,7 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
 
     public FastCostKnapSack(IntDomainVar[] vars, IntDomainVar bVar, IntDomainVar cVar, int[] cost, int[] gain, IEnvironment environment)
     {
-        super(merge(vars,bVar,cVar), (Automaton) null,null, environment);
+        super(merge(vars,bVar,cVar), (FiniteAutomaton) null,null, environment);
         this.bVar = bVar;
         this.cVar = cVar;
         this.cost = cost;

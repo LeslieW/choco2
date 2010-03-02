@@ -2,7 +2,7 @@ package choco.cp.model.managers.constraints.global;
 
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.constraints.global.automata.fast_regular.FastRegular;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
@@ -18,9 +18,9 @@ import java.util.Set;
  */
 public class FastRegularManager extends IntConstraintManager {
      public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
-            if (parameters instanceof Automaton)
+            if (parameters instanceof FiniteAutomaton)
             {
-                Automaton auto = (Automaton) parameters;
+                FiniteAutomaton auto = (FiniteAutomaton) parameters;
                 IntDomainVar[] vs = solver.getVar((IntegerVariable[]) variables);
                 return new FastRegular(solver.getEnvironment(), vs,auto);
 

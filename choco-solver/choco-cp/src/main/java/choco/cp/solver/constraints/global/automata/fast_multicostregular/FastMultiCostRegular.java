@@ -29,7 +29,7 @@ import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateIntVector;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.algo.FastPathFinder;
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.Arc;
@@ -121,12 +121,12 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
     /**
      * Integral costs : c[i][j][k][s] is the cost over dimension k of x_i = j on state s
      */
-    protected final double[][][][] costs;
+    protected final int[][][][] costs;
 
     /**
      * The finite automaton which defines the regular language the variable sequence must belong
      */
-    protected final Automaton pi;
+    protected final FiniteAutomaton pi;
 
     /**
      * Layered graph of the unfolded automaton
@@ -186,20 +186,20 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
      * @param costs assignment cost arrays
      * @param environment environment
      */
-    public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final Automaton auto, final double[][][] costs, IEnvironment environment)
+    public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final FiniteAutomaton auto, final int[][][] costs, IEnvironment environment)
     {
         this(vars,CR,auto,make4dim(costs,auto),environment);
     }
 
-    private static double[][][][] make4dim(double[][][] costs, Automaton auto) {
+    private static int[][][][] make4dim(int[][][] costs, FiniteAutomaton auto) {
         int nbStates = auto.getNbStates();
-        double[][][][] out = new double[costs.length][][][];
+        int[][][][] out = new int[costs.length][][][];
         for (int i = 0 ; i < costs.length ; i++)
         {
-            out[i] = new double[costs[i].length][][];
+            out[i] = new int[costs[i].length][][];
             for (int j = 0 ; j < out[i].length ; j++)
             {
-                out[i][j] = new double[costs[i][j].length][nbStates];
+                out[i][j] = new int[costs[i][j].length][nbStates];
                 for (int k = 0 ; k < out[i][j].length ; k++)
                 {
                     for (int s = 0 ; s < nbStates ; s++)
@@ -223,7 +223,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
      * @param costs assignment cost arrays
      * @param environment environment
      */
-    public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final Automaton auto, final double[][][][] costs, IEnvironment environment)
+    public FastMultiCostRegular(final IntDomainVar[] vars, final IntDomainVar[] CR, final FiniteAutomaton auto, final int[][][][] costs, IEnvironment environment)
     {
         super(ArrayUtils.<IntDomainVar>append(vars,CR));
         this.environment = environment;

@@ -1,17 +1,18 @@
 package samples.multicostregular.nsp;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.kernel.model.constraints.ComponentConstraint;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.automaton.DFA;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.constraints.automaton.Transition;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import static choco.Choco.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,7 +32,7 @@ public class NSPModel extends CPModel {
     NSPInstance instance;
     IntegerVariable[][] shifts;
     IntegerVariable globalCost;
-    Automaton auto;
+    FiniteAutomaton auto;
 
     public NSPModel(String file)
     {
@@ -184,9 +185,9 @@ public class NSPModel extends CPModel {
     }
 
 
-    private Automaton makeNSPAutomaton()
+    private FiniteAutomaton makeNSPAutomaton()
     {
-        Automaton auto = new Automaton();
+        FiniteAutomaton auto = new FiniteAutomaton();
         for (int i = 0 ; i < 17 ; i++)
         {
             auto.addState();

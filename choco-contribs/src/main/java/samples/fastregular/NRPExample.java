@@ -22,19 +22,20 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.fastregular;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.Model;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import dk.brics.automaton.State;
 import dk.brics.automaton.Transition;
 import gnu.trove.TIntHashSet;
+
+import static choco.Choco.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -100,7 +101,7 @@ public class NRPExample {
 
 
 
-        Automaton usable = new Automaton();
+        FiniteAutomaton usable = new FiniteAutomaton();
         TIntHashSet alpha = new TIntHashSet(new int[]{2,0,1});
         usable.fill(auto.intersection(auto2).intersection(auto3),alpha);
         System.out.println(usable);

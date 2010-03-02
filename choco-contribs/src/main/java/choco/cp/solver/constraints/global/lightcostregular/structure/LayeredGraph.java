@@ -7,7 +7,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.model.Model;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -29,7 +29,7 @@ public class LayeredGraph {
     IStateInt[] sp;
     IntDomainVar[] vars;
     IntDomainVar z;
-    Automaton pi;
+    FiniteAutomaton pi;
     double[][][] costs;
     Node source;
     Node tink;
@@ -49,7 +49,7 @@ public class LayeredGraph {
 
 
 
-    public LayeredGraph(IntDomainVar[] vars, IntDomainVar z, Automaton pi, double[][][] costs, IEnvironment environment)
+    public LayeredGraph(IntDomainVar[] vars, IntDomainVar z, FiniteAutomaton pi, double[][][] costs, IEnvironment environment)
     {
         this.env = environment;
         this.vars = vars;
@@ -610,7 +610,7 @@ public class LayeredGraph {
         s.read(m);
         IntDomainVar[] vars = s.getVar(vs);
         IntDomainVar z = s.getVar(z0);
-        Automaton pi = new Automaton("222|000|111|012");
+        FiniteAutomaton pi = new FiniteAutomaton("222|000|111|012");
         double[][][] csts= new double[vs.length][3][pi.getNbStates()];
 
         for (int i = 0 ; i < csts.length ;i++)

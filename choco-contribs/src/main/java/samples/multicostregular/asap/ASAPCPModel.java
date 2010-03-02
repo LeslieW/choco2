@@ -22,14 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular.asap;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -43,6 +42,8 @@ import java.awt.*;
 import java.io.BufferedWriter;
 import java.util.*;
 
+import static choco.Choco.*;
+
 /**
  * Created by IntelliJ IDEA.
  * User: julien
@@ -53,7 +54,7 @@ import java.util.*;
 public class ASAPCPModel extends CPModel {
 
     ASAPItemHandler handler;
-    HashMap<ASAPContract, Automaton> rules;
+    HashMap<ASAPContract, FiniteAutomaton> rules;
     HashMap<String, Color> colormap;
     public IntegerVariable[][] shifts;
     TIntHashSet alpha;
@@ -66,7 +67,7 @@ public class ASAPCPModel extends CPModel {
     public ASAPCPModel(String file)
     {
         this.handler = new ASAPParser(file).getHandler();
-        this.rules = new HashMap<ASAPContract,Automaton>();
+        this.rules = new HashMap<ASAPContract, FiniteAutomaton>();
         this.alpha = new TIntHashSet();
         this.nbDays = ASAPDate.getDaysBetween(handler.getStart(), handler.getEnd())+1;
         this.nbEmployees = handler.employees.values().size();
@@ -171,11 +172,11 @@ public class ASAPCPModel extends CPModel {
             IntegerVariable[] v =  shifts[m++];
             map.get(c).add(v);
             IntegerVariable[] z = vs.toArray(new IntegerVariable[vs.size()]);
-            Automaton a = rules.get(c);
+            FiniteAutomaton a = rules.get(c);
             //  IntegerVariable z = makeIntVar("z",0,1000000,"cp:bound");
             this.addVariables(z);
             this.addVariables(v);
-            int csts[][][] = new int[nbDays][Automaton.max(this.alpha)+1][vs.size()];
+            int csts[][][] = new int[nbDays][FiniteAutomaton.max(this.alpha)+1][vs.size()];
             for (int i  = 0 ;i < csts.length ; i++)
                 for (int j = 0 ; j < csts[i].length ; j++)
                 {
@@ -470,7 +471,7 @@ public class ASAPCPModel extends CPModel {
 
     public void makeSoftPatternRule(ASAPPattern pat)
     {
-        Automaton auto = new Automaton();
+        FiniteAutomaton auto = new FiniteAutomaton();
         ArrayList<ASAPPatternElement> elem = pat.pattern;
 
         int start = auto.addState();
@@ -557,7 +558,7 @@ public class ASAPCPModel extends CPModel {
             //System.out.println(nbStates+"\t"+nbTra);
 
 
-            Automaton myA = new Automaton();
+            FiniteAutomaton myA = new FiniteAutomaton();
             myA.fill(a,alpha);
             //myA.toDotty("myGreatAutomaton.dot");
             rules.put(c,myA);

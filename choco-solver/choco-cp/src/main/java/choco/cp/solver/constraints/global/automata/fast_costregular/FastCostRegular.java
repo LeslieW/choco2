@@ -7,7 +7,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBool;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Arc;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Node;
@@ -39,7 +39,7 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
     int lastWorld = -1;
     private final IEnvironment environment;
 
-    public FastCostRegular(IntDomainVar[] vars, Automaton pi, double[][][] costs, IEnvironment environment) {
+    public FastCostRegular(IntDomainVar[] vars, FiniteAutomaton pi, int[][][] costs, IEnvironment environment) {
         super(vars);
         this.environment = environment;
         this.vs = new IntDomainVar[vars.length-1];
@@ -123,7 +123,7 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
     }
 
 
-    public void initGraph(double[][][] costs, Automaton pi)
+    public void initGraph(int[][][] costs, FiniteAutomaton pi)
     {
         int aid = 0;
         int nid = 0;
@@ -318,7 +318,6 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
 
         if (intLayer[0].length > 0)
             this.graph = new StoredValuedDirectedMultiGraph(environment, this,graph,intLayer,starts,offsets,totalSizes);
-        graph = null;
     }
 
 
@@ -541,6 +540,37 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
         return (idx < vs.length ? IntVarEvent.REMVALbitvector: IntVarEvent.BOUNDSbitvector);
     }
 
+
+    public boolean isSatisfied(int[] tuple)
+    {
+
+        int first = this.graph.sourceIndex;
+        boolean found;
+        double cost = 0.0;
+        for (int i = 0 ; i< tuple.length -1 ; i ++)
+        {
+            found = false;
+            StoredIndexedBipartiteSet bs = this.graph.GNodes.outArcs[first];
+            DisposableIntIterator it = bs.getIterator();
+            while(!found && it.hasNext())
+            {
+                int idx = it.next();
+                if (this.graph.GArcs.values[idx] == tuple[i])
+                {
+                    found = true;
+                    first = this.graph.GArcs.dests[idx];
+                    cost+= this.graph.GArcs.costs[idx];
+                }
+            }
+            if (!found)
+                return false;
+
+        }
+        int intCost = tuple[tuple.length-1];
+        return cost == intCost;
+
+    }
+
     public static void main(String[] args) throws ContradictionException {
         CPSolver s = new CPSolver();
         int n = 10;
@@ -551,24 +581,24 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
         }
         v[n] = new IntDomainVarImpl(s,"z",IntDomainVar.BOUNDS,0,0);
 
-        Automaton auto = new Automaton();
+        FiniteAutomaton auto = new FiniteAutomaton();
         int start = auto.addState();
         int end = auto.addState();
         auto.setStartingState(start);
         auto.setAcceptingState(start);
         auto.setAcceptingState(end);
 
-        auto.addTransition(start,start,new int[]{0,1});
+        auto.addTransition(start,start, 0,1);
         auto.addTransition(start,end,2);
 
         auto.addTransition(end,start,2);
-        auto.addTransition(end,start,new int[]{0,1});
+        auto.addTransition(end,start, 0,1);
 
-        double[][][] costs = new double[n][3][2];
+        int[][][] costs = new int[n][3][2];
         for (int i = 0 ; i < costs.length ; i++)
         {
-            costs[i][0][1] = 1.0;
-            costs[i][1][1] = 1.0;
+            costs[i][0][1] = 1;
+            costs[i][1][1] = 1;
         }
 
         long t1 = System.currentTimeMillis();

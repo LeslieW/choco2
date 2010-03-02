@@ -29,7 +29,7 @@ import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.constraints.*;
 import choco.kernel.model.constraints.automaton.DFA;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.constraints.geost.GeostOptions;
 import choco.kernel.model.constraints.geost.externalConstraints.DistGeqModel;
 import choco.kernel.model.constraints.geost.externalConstraints.DistLeqModel;
@@ -59,12 +59,13 @@ import choco.kernel.solver.constraints.integer.extension.*;
 import gnu.trove.TIntArrayList;
 import org.jgrapht.graph.DirectedMultigraph;
 
-import static java.lang.System.arraycopy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static java.lang.System.arraycopy;
 
 /**
  * Created by IntelliJ IDEA.
@@ -3404,7 +3405,7 @@ public class Choco{
 	 * @param vars the variables of the constraint
 	 * @return the new constraint
 	 */
-	public static Constraint regular(Automaton auto, IntegerVariable[] vars) {
+	public static Constraint regular(FiniteAutomaton auto, IntegerVariable[] vars) {
 		return new ComponentConstraint(ConstraintType.FASTREGULAR,
 				auto, vars);
 	}
@@ -3473,7 +3474,7 @@ public class Choco{
 	 * @param costs the cost of taking value j for the variable i
 	 * @return  a instance of the constraint
 	 */
-	public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable cvar, Automaton auto, int[][] costs){
+	public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable cvar, FiniteAutomaton auto, int[][] costs){
 		return new ComponentConstraint(ConstraintType.COSTREGULAR, new Object[]{auto, costs},
 				ArrayUtils.append(vars, new IntegerVariable[]{cvar}));
 	}
@@ -3488,7 +3489,7 @@ public class Choco{
 	 * @param costs the cost of taking value j for the variable i
 	 * @return  a instance of the constraint
 	 */
-	public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable cvar, Automaton auto, double[][][] costs){
+	public static Constraint costRegular(IntegerVariable[] vars, IntegerVariable cvar, FiniteAutomaton auto, int[][][] costs){
 		return new ComponentConstraint(ConstraintType.FASTCOSTREGULAR, new Object[]{auto, costs},
 				ArrayUtils.append(vars, new IntegerVariable[]{cvar}));
 	}
@@ -3525,33 +3526,7 @@ public class Choco{
     }
 
 
-    /**
-	 * Constructs a new CostRegular constraint
-	 * This constraint ensures that the sequence of variables values
-	 * will follow a pattern defined by a DFA and that this sequence has a cost bounded by the cost variable
-	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-	 * @param cvar the cost variable
-	 * @param auto  the automaton describing the regular language
-	 * @param costs the cost of taking value j for the variable i
-	 * @return  a instance of the constraint
-	 */
-	public static Constraint multiCostRegular(IntegerVariable[] vars, IntegerVariable[] cvar, Automaton auto, int[][][] costs){
-        double[][][] dcosts = new double[costs.length][][];
-        for (int i  = 0 ; i < costs.length ; i++)
-        {
-            dcosts[i] = new double[costs[i].length][];
-            for (int j = 0; j < costs[i].length ; j++)
-            {
-                dcosts[i][j] = new double[costs[i][j].length];
-                for (int k = 0 ; k < costs[i][j].length;k++)
-                    dcosts[i][j][k] = costs[i][j][k];
-            }
-        }
 
-
-		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,dcosts},
-				ArrayUtils.append(vars, cvar));
-	}
 
 	/**
 	 * Constructs a new CostRegular constraint
@@ -3563,7 +3538,7 @@ public class Choco{
 	 * @param costs the cost of taking value j for the variable i
 	 * @return  a instance of the constraint
 	 */
-	public static Constraint multiCostRegular(IntegerVariable[] vars, IntegerVariable[] cvar, Automaton auto, double[][][] costs){
+	public static Constraint multiCostRegular(IntegerVariable[] vars, IntegerVariable[] cvar, FiniteAutomaton auto, int[][][] costs){
 		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,costs},
 				ArrayUtils.append(vars, cvar));
 	}
@@ -3577,26 +3552,11 @@ public class Choco{
 	 * @param costs the cost of taking value j for the variable i at state s;
 	 * @return  a instance of the constraint
 	 */
-	public static Constraint multiCostRegular(IntegerVariable[] vars, IntegerVariable[] cvar, Automaton auto, double[][][][] costs){
+	public static Constraint multiCostRegular(IntegerVariable[] vars, IntegerVariable[] cvar, FiniteAutomaton auto, int[][][][] costs){
 		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,costs},
 				ArrayUtils.append(vars, cvar));
 	}
 
-	/**
-	 * Constructs a new CostRegular constraint
-	 * This constraint ensures that the sequence of variables values
-	 * will follow a pattern defined by a DFA and that this sequence has a cost bounded by the cost variable
-	 * @param vars the sequence of variables the constraint must ensure it belongs to the regular language
-	 * @param cvar the cost variable
-	 * @param auto  the automaton describing the regular language
-	 * @param costs the cost of taking value j for the variable i from state s
-	 * @return  a instance of the constraint
-	 */
-    @Deprecated
-	public static Constraint multiCostRegular(IntegerVariable[] vars, IntegerVariable[] cvar, Automaton auto, int[][][][] costs){
-		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,costs},
-				ArrayUtils.append(vars, cvar));
-	}
 
 
 

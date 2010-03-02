@@ -23,20 +23,21 @@
 package samples.fastregular;
 
 
-
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import dk.brics.automaton.RegExp;
 import gnu.trove.TIntHashSet;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 
-import static choco.Choco.*;
+import static choco.Choco.makeIntVarArray;
+import static choco.Choco.regular;
 /**
  * Created by IntelliJ IDEA.
  * User: julien
@@ -98,7 +99,7 @@ public class MinimumRegularSet {
     {
         model.removeConstraint(in);
         solver.clear();
-        Automaton auto = new Automaton();
+        FiniteAutomaton auto = new FiniteAutomaton();
         auto.fill(current,alpha);
         in = regular(auto,vs);
         model.addConstraint(in);
@@ -232,7 +233,7 @@ public class MinimumRegularSet {
         alpha.addAll(new int[]{0,1,2});
         dk.brics.automaton.Automaton auto = reg.toAutomaton().complement();
         auto.minimize();
-        Automaton a = new Automaton();
+        FiniteAutomaton a = new FiniteAutomaton();
         a.fill(auto,alpha);
         System.out.println(a);
 

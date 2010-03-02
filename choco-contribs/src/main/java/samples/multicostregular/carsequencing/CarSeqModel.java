@@ -22,17 +22,18 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular.carsequencing;
 
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.automaton.FA.Automaton;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
-
-import java.util.ArrayList;
-
 import gnu.trove.TIntHashSet;
 import samples.multicostregular.carsequencing.parser.CarSeqInstance;
 import samples.multicostregular.carsequencing.parser.GraphGenerator;
+
+import java.util.ArrayList;
+
+import static choco.Choco.makeIntVar;
+import static choco.Choco.multiCostRegular;
 
 /**
  * Created by IntelliJ IDEA.
@@ -65,7 +66,7 @@ public class CarSeqModel extends CPModel {
     {
 
 
-        Automaton auto = new Automaton();
+        FiniteAutomaton auto = new FiniteAutomaton();
         ArrayList<dk.brics.automaton.Automaton> list = new ArrayList<dk.brics.automaton.Automaton>();
 
         IntegerVariable[] vs = makeIntVarArray("pos",make.nbCars,0,make.nbClasses-1);
@@ -147,7 +148,7 @@ public class CarSeqModel extends CPModel {
             {
                 if (true || i == 0)
                 {
-                    Automaton tomate = new Automaton();
+                    FiniteAutomaton tomate = new FiniteAutomaton();
                     tomate.fill(a,alphabet);
                     Constraint cons = multiCostRegular(vs,z,tomate,csts);
                     this.addConstraint(cons);
