@@ -23,6 +23,7 @@
 package choco.kernel.solver.variables;
 
 import choco.kernel.common.HashCoding;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.APartiallyStoredCstrList;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
@@ -33,7 +34,6 @@ import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.propagation.event.VarEvent;
 
 import java.util.HashMap;
-import java.util.Iterator;
 /**
  * An abstract class for all implementations of domain variables.
  */
@@ -254,7 +254,7 @@ public abstract class AbstractVar implements Var {
 	 *
 	 * @return an iterator over all constraints involving this variable
 	 */
-	public Iterator<SConstraint> getConstraintsIterator() {
+	public DisposableIterator<SConstraint> getConstraintsIterator() {
 		return constraints.getConstraintsIterator();
 
 	}

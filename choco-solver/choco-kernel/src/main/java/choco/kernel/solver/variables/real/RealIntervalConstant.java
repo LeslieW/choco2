@@ -23,6 +23,7 @@
 package choco.kernel.solver.variables.real;
 
 import choco.kernel.common.HashCoding;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.solver.ContradictionException;
@@ -31,7 +32,6 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.real.RealExp;
 import choco.kernel.solver.propagation.event.VarEvent;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -229,7 +229,7 @@ public class RealIntervalConstant implements RealConstant {
      * @return an iterator over all constraints involving this variable
      */
     @Override
-    public Iterator<SConstraint> getConstraintsIterator() {
+    public DisposableIterator<SConstraint> getConstraintsIterator() {
         return null;
     }
 

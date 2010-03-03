@@ -26,12 +26,12 @@ package choco.kernel.solver.variables;
 import choco.IPretty;
 import choco.kernel.common.IIndex;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.event.VarEvent;
 
-import java.util.Iterator;
 import java.util.logging.Logger;
 
 
@@ -127,7 +127,7 @@ public interface Var extends IPretty, IIndex {
 	 *
 	 * @return an iterator over all constraints involving this variable
 	 */
-	public Iterator<SConstraint> getConstraintsIterator();
+	public DisposableIterator<SConstraint> getConstraintsIterator();
 
 
 	public String getName();

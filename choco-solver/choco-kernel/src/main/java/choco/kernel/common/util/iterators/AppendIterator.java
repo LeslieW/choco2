@@ -24,7 +24,7 @@ package choco.kernel.common.util.iterators;
 
 import java.util.Iterator;
 
-public class AppendIterator<E> extends AbstractImmutableIterator<E> {
+public class AppendIterator<E> extends DisposableIterator<E> {
 
 	private final Iterator<Iterator<? extends E>> master;
 

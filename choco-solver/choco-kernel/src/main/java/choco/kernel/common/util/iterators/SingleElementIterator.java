@@ -25,7 +25,7 @@ package choco.kernel.common.util.iterators;
 import java.util.NoSuchElementException;
 
 
-public class SingleElementIterator<E> extends AbstractImmutableIterator<E> {
+public class SingleElementIterator<E> extends DisposableIterator<E> {
 
 	protected final E elem;
 
