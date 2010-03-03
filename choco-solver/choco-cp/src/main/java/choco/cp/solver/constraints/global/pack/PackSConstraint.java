@@ -305,7 +305,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 						if(svars[bin].isInDomainKernel(item)) {
 							//item is packed
 							bins[item].instantiate(bin, getItemCindice(item));
-						}else if(! bins[item].getDomain().contains(bin)) {
+						}else if(! bins[item].canBeInstantiatedTo(bin)) {
 							//in fact, channeling fails
 							svars[bin].remFromEnveloppe(item,set_cIndices[bin]);
 						}
