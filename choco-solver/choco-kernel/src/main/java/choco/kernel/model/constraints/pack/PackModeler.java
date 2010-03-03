@@ -103,9 +103,9 @@ public final class PackModeler {
 		//this.bins = makeIntVarArray("bin"+name, nbItems, 0, this.nbBins-1, "cp:bound");
 		this.itemSets = makeSetVarArray("S"+name, this.nbBins, 0, this.nbItems-1,"cp:bound");
 		this.loads = makeIntVarArray("L"+name, this.nbBins, 0,this.maxCapacity, "cp:bound");
-		this.nbNonEmpty = makeIntVar("nbNonEmpty-"+name,0, this.nbBins, "cp:bound");
+		this.nbNonEmpty = makeIntVar("NbNE"+name,0, this.nbBins, "cp:bound");
 		//handle permutation
-		this.nbEmpty = makeIntVar("nbEmpty-"+name,0, this.nbBins, "cp:bound");
+		this.nbEmpty = makeIntVar("NbE"+name,0, this.nbBins, "cp:bound");
 		IPermutation tmp = PermutationUtils.getSortingPermuation(sizes,true);
 		permutation = tmp.isIdentity() ? PermutationUtils.getIdentity() : tmp;
 		this.sizes= PermutationUtils.applyPermutation(permutation,sizes);

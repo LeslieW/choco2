@@ -77,12 +77,15 @@ public abstract class ConstraintManager <V extends Variable> implements Expressi
                 IntDomainVar.LINKEDLIST,
         };
     }
-
-    protected static SConstraint fail() {
+    
+	protected final static boolean checkParameter(Object[] o, int idx) {
+		return o.length>idx && o[idx] != null;
+	}
+    protected final static SConstraint fail() {
     	return fail("?");
     }
 
-    protected static SConstraint fail(String cname) {
+    protected final static SConstraint fail(String cname) {
     	LOGGER.severe("Could not found an implementation of "+cname+".");
     	ChocoLogging.flushLogs();
     	return null;

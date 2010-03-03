@@ -280,8 +280,14 @@ public abstract class AbstractSConstraint<V extends Var> extends Propagator impl
 
     public abstract SConstraintType getConstraintType();
 
+    
 
-    public String pretty() {
+    @Override
+	public String toString() {
+    	return pretty();
+	}
+
+	public String pretty() {
         StringBuilder b = new StringBuilder();
         b.append(getClass().getSimpleName()).append("{");
         final int n = getNbVars();
