@@ -42,7 +42,8 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
 
     int[][][] costs;
     FiniteAutomaton pi;
-    boolean init;
+    DirectedMultigraph<Node, Arc> originalGraph;
+    Node source;
 
     public FastCostRegular(IntDomainVar[] vars, FiniteAutomaton pi, int[][][] costs, IEnvironment environment) {
         super(vars);
@@ -54,7 +55,6 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
         this.boundChange = environment.makeBool(false);
         this.costs = costs;
         this.pi = pi;
-        this.init = false;
     }
     public FastCostRegular(IntDomainVar[] vars, DirectedMultigraph<Node, Arc> graph, Node source, IEnvironment environment)
     {
@@ -66,11 +66,8 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
         this.toRemove = new TIntStack();
         this.boundChange = environment.makeBool(false);
 
-
-        initGraph(graph,source);
-        this.init = true;
-
-
+        this.originalGraph =graph;
+        this.source = source;
 
 
     }
@@ -126,13 +123,12 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
         }
         this.graph = new StoredValuedDirectedMultiGraph(environment, this,graph,lays,starts,offsets,totalSizes);
 
-        
+
 
     }
 
 
-    public void initGraph(int[][][] costs, FiniteAutomaton pi)
-    {
+    public void initGraph(int[][][] costs, FiniteAutomaton pi) throws ContradictionException {
         int aid = 0;
         int nid = 0;
 
@@ -326,17 +322,25 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
 
         if (intLayer[0].length > 0)
             this.graph = new StoredValuedDirectedMultiGraph(environment, this,graph,intLayer,starts,offsets,totalSizes);
+        else
+            this.fail();
     }
 
 
 
     public void awake() throws ContradictionException
     {
-        if (!init)   {
+        if (pi !=null)
             initGraph(costs,pi);
-            init = true;
-        }
+        else if (originalGraph != null)
+            initGraph(originalGraph,source);
+        this.prefilter();
+        this.pi = null;
+        this.originalGraph = null;
+        this.source = null;
 
+    }
+    public void prefilter() throws ContradictionException {
         double zinf = this.graph.GNodes.spft.get(this.graph.sourceIndex);
         double zsup = this.graph.GNodes.lpfs.get(this.graph.tinkIndex);
 
@@ -465,6 +469,7 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
     public void awakeOnInf(int idx) throws ContradictionException {
         checkWorld();
         boundChange.set(true);
+        //propagate();
         this.constAwake(false);
 
     }
@@ -472,6 +477,7 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
     public void awakeOnSup(int idx) throws ContradictionException {
         checkWorld();
         boundChange.set(true);
+        //propagate();
         this.constAwake(false);
 
     }
