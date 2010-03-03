@@ -43,8 +43,6 @@ import choco.kernel.solver.variables.set.SetVar;
  */
 abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 
-	protected static final String MIN="min";
-	protected static final String MAX="max";
 
 	/** Index of the set variable*/
 	public static final int SET_INDEX = 0;
@@ -63,10 +61,13 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 
 	protected final static int INT_EVENTMASK = IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
 
-	public AbstractBoundOfASet(IntVar[] intvars, SetVar setvar) {
+	protected final Integer defaultValueEmptySet;
+
+	public AbstractBoundOfASet(IntVar[] intvars, SetVar setvar, Integer defaultValueEmptySet) {
 		super(intvars, new SetVar[]{setvar});
+		this.defaultValueEmptySet = defaultValueEmptySet;
 		if(setvar.getEnveloppeInf()<0 || setvar.getEnveloppeSup()>intvars.length-2) {
-			throw new SolverException("The enveloppe of the set variable "+setvar.pretty()+" is larger than the array");
+			throw new SolverException("The enveloppe of the set variable "+setvar.pretty()+" is greater than the array");
 		}
 	}
 
@@ -89,6 +90,11 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 
 	protected final SetDomain getSetDomain() {
 		return svars[SET_INDEX].getDomain();
+	}
+
+
+	protected final boolean isEmptySet() {
+		return this.svars[SET_INDEX].getEnveloppeDomainSize() == 0;
 	}
 
 	protected final boolean isNotEmptySet() {
@@ -153,14 +159,68 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 		return false;
 	}
 
+	protected void filterEmptySet()  throws ContradictionException {
+		if(defaultValueEmptySet != null) {
+			//a default value is assigned to the variable when the set is empty
+			ivars[BOUND_INDEX].instantiate(defaultValueEmptySet.intValue(), int_cIndices[BOUND_INDEX]);
+		}
+		setEntailed();
+	}
+	@Override
+	public final void propagate() throws ContradictionException {
+		if( isEmptySet() ) filterEmptySet();
+		else filter();
+	}
+
+	protected abstract void filter() throws ContradictionException;
 
 
-	protected String pretty(String operator) {
+	/**
+	 * Propagation when a variable is instantiated.
+	 *
+	 * @param idx the index of the modified variable.
+	 * @throws choco.kernel.solver.ContradictionException if a domain becomes empty.
+	 */
+	@Override
+	public final void awakeOnInst(final int idx) throws ContradictionException {
+		//CPSolver.flushLogs();
+		if (idx >= 2*VARS_OFFSET) { //of the list
+			final int i = idx-2*VARS_OFFSET;
+			if(isInEnveloppe(i)) { //of the set
+				awakeOnInstL(i);
+			}
+		} else if (idx == VARS_OFFSET) { // Minimum/Maximum variable
+			awakeOnInstV();
+		}else { //set is instantiated, propagate
+			if(isEmptySet()) filterEmptySet();
+			else this.propagate();
+		}
+	}
+
+
+	protected abstract void awakeOnInstL(int i) throws ContradictionException;
+
+	protected abstract void awakeOnInstV() throws ContradictionException;
+
+
+	protected abstract int isSatisfiedValue(DisposableIntIterator iter);
+	
+	@Override
+	public boolean isSatisfied() {
+		final DisposableIntIterator iter = svars[SET_INDEX].getDomain().getKernelIterator();
+		if(iter.hasNext()) {
+			return isSatisfiedValue(iter) == ivars[BOUND_INDEX].getVal(); 
+		}else if(defaultValueEmptySet == null) return true;
+		else return defaultValueEmptySet.intValue() == ivars[BOUND_INDEX].getVal();
+	}
+
+	protected String pretty(String name) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(ivars[BOUND_INDEX].pretty());
-		sb.append(" = ").append(operator).append("(");
+		sb.append(" = ").append(name).append("(");
 		sb.append(svars[SET_INDEX].pretty()).append(", ");
 		sb.append(StringUtils.pretty(ivars, VARS_OFFSET, ivars.length));
+		if(defaultValueEmptySet != null) sb.append(", defVal:").append(defaultValueEmptySet);
 		sb.append(")");
 		return new String(sb);
 
@@ -183,8 +243,8 @@ public class MaxOfASet extends AbstractBoundOfASet {
 	protected final IStateInt indexOfMaximumVariable;
 
 
-	public MaxOfASet(IntVar[] intvars, SetVar setvar, IEnvironment environment) {
-		super(intvars, setvar);
+	public MaxOfASet(IEnvironment environment, IntVar[] intvars, SetVar setvar, Integer defaultValueEmptySet) {
+		super(intvars, setvar, defaultValueEmptySet);
 		indexOfMaximumVariable = environment.makeInt(-1);
 	}
 
@@ -194,8 +254,6 @@ public class MaxOfASet extends AbstractBoundOfASet {
 	protected boolean removeFromEnv(int idx) throws ContradictionException {
 		return removeGreaterFromEnv(idx, ivars[BOUND_INDEX].getSup());
 	}
-
-
 
 	@Override
 	protected boolean updateEnveloppe() throws ContradictionException {
@@ -211,10 +269,10 @@ public class MaxOfASet extends AbstractBoundOfASet {
 
 
 
-	protected void updateIndexOfMaximumVariables() throws ContradictionException {
+	protected void updateIndexOfMaximumVariables() {
 		int maxMax = Integer.MIN_VALUE, maxMaxIdx = -1;
 		int maxMax2 = Integer.MIN_VALUE;
-		DisposableIntIterator iter= this.getSetDomain().getEnveloppeIterator();
+		final DisposableIntIterator iter= this.getSetDomain().getEnveloppeIterator();
 		while(iter.hasNext()) {
 			final int idx = iter.next() + VARS_OFFSET;
 			final int val = ivars[idx].getSup();
@@ -300,7 +358,7 @@ public class MaxOfASet extends AbstractBoundOfASet {
 	 * @throws choco.kernel.solver.ContradictionException if a domain becomes empty.
 	 */
 	@Override
-	public void propagate() throws ContradictionException {
+	public void filter() throws ContradictionException {
 		boolean noFixPoint = true;
 		while(noFixPoint) {
 			noFixPoint =false;
@@ -309,8 +367,7 @@ public class MaxOfASet extends AbstractBoundOfASet {
 			updateKernelSup();
 			noFixPoint |= updateEnveloppe();
 			noFixPoint |= onlyOneMaxCandidatePropagation();
-
-		}
+		} 
 	}
 
 	/**
@@ -376,36 +433,59 @@ public class MaxOfASet extends AbstractBoundOfASet {
 
 
 
-	/**
-	 * Propagation when a variable is instantiated.
-	 *
-	 * @param idx the index of the modified variable.
-	 * @throws choco.kernel.solver.ContradictionException if a domain becomes empty.
-	 */
 	@Override
-	public void awakeOnInst(final int idx) throws ContradictionException {
-		//CPSolver.flushLogs();
-		if (idx >= 2*VARS_OFFSET) { //of the list
-			final int i = idx-2*VARS_OFFSET;
-			if(isInEnveloppe(i)) { //of the set
-				boolean propagate = updateBoundSup(maxSup());
-				if(isInKernel(i)) {	propagate |= updateBoundInf(maxInf());}
-				if(propagate && !isSetInstantiated()) {
-					this.constAwake(false);
-				}
-			}
-
-		} else if (idx == VARS_OFFSET) { // Maximum variable
-			updateKernelSup();
-			boolean propagate = onlyOneMaxCandidatePropagation();
-			if(!isSetInstantiated()) {
-				propagate |= updateEnveloppe();
-				if(propagate) {this.constAwake(false);}
-			}
-		}else { //set is instantiated, propagate
-			this.propagate();
-		}
+	protected void awakeOnInstL(int i) throws ContradictionException {
+		boolean propagate = updateBoundSup(maxSup());
+		if(isInKernel(i)) {	propagate |= updateBoundInf(maxInf());}
+		if(propagate && !isSetInstantiated()) {
+			this.constAwake(false);
+		}		
 	}
+
+
+
+	@Override
+	protected void awakeOnInstV() throws ContradictionException {
+		updateKernelSup();
+		boolean propagate = onlyOneMaxCandidatePropagation();
+		if(!isSetInstantiated()) {
+			propagate |= updateEnveloppe();
+			if(propagate) {this.constAwake(false);}
+		}		
+	}
+
+
+
+	//	/**
+	//	 * Propagation when a variable is instantiated.
+	//	 *
+	//	 * @param idx the index of the modified variable.
+	//	 * @throws choco.kernel.solver.ContradictionException if a domain becomes empty.
+	//	 */
+	//	@Override
+	//	public void awakeOnInst(final int idx) throws ContradictionException {
+	//		//CPSolver.flushLogs();
+	//		if (idx >= 2*VARS_OFFSET) { //of the list
+	//			final int i = idx-2*VARS_OFFSET;
+	//			if(isInEnveloppe(i)) { //of the set
+	//				boolean propagate = updateBoundSup(maxSup());
+	//				if(isInKernel(i)) {	propagate |= updateBoundInf(maxInf());}
+	//				if(propagate && !isSetInstantiated()) {
+	//					this.constAwake(false);
+	//				}
+	//			}
+	//
+	//		} else if (idx == VARS_OFFSET) { // Maximum variable
+	//			updateKernelSup();
+	//			boolean propagate = onlyOneMaxCandidatePropagation();
+	//			if(!isSetInstantiated()) {
+	//				propagate |= updateEnveloppe();
+	//				if(propagate) {this.constAwake(false);}
+	//			}
+	//		}else { //set is instantiated, propagate
+	//			this.propagate();
+	//		}
+	//	}
 
 
 
@@ -428,23 +508,21 @@ public class MaxOfASet extends AbstractBoundOfASet {
 		}
 	}
 
+	
 
 	@Override
-	public boolean isSatisfied() {
-		DisposableIntIterator iter = svars[SET_INDEX].getDomain().getKernelIterator();
-		if( iter.hasNext()) {
-			int v = Integer.MIN_VALUE;
-			while(iter.hasNext()) {
-				v = Math.max(v, ivars[VARS_OFFSET +iter.next()].getVal());
-			}
-			return v == ivars[BOUND_INDEX].getVal(); 
-		}
-		return true;
+	protected int isSatisfiedValue(DisposableIntIterator iter) {
+		int v = Integer.MIN_VALUE;
+		do {
+			v = Math.max(v, ivars[VARS_OFFSET +iter.next()].getVal());
+		}while(iter.hasNext());
+		return v;
 	}
+
 
 	@Override
 	public String pretty() {
-		return pretty(MAX);
+		return pretty("max");
 	}
 
 

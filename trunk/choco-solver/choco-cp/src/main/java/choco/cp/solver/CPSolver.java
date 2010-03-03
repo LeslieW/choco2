@@ -2017,7 +2017,7 @@ public class CPSolver implements Solver {
 			}
 		} else {
 			throw new SolverException(
-					"impossible to post to a Model constraints : " + cc.getClass().getSimpleName());
+					"impossible to post to a Model constraints : " + cc == null ? "??" : cc.getClass().getSimpleName());
 		}
 	}
 

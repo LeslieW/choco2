@@ -419,6 +419,17 @@ public class MaxTest {
 	public void testSet2() {
 		testAll(false,false);
 	}
+	
+	@Test
+	public void testEmptySetDefValue() {
+		IntegerVariable[] vars = constantArray(new int[]{1,2,3});
+        IntegerVariable min = makeIntVar("min", 0, 3);
+        SetVariable svar = makeSetVar("sv", 0, 2);
+        m.addConstraint(max(svar, vars, min, Integer.valueOf(0)));
+        s.read(m);
+        s.solveAll();
+        assertEquals("nb-sols", 8, s.getNbSolutions());        
+	}
 
 	@Test
 	public void testOneVarMax() {

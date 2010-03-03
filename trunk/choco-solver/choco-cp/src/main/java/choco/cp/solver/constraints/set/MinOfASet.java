@@ -43,8 +43,8 @@ public class MinOfASet extends AbstractBoundOfASet {
 	protected final IStateInt indexOfMinimumVariable;
 
 
-	public MinOfASet(IEnvironment environment, IntVar[] intvars, SetVar setvar) {
-		super(intvars, setvar);
+	public MinOfASet(IEnvironment environment, IntVar[] intvars, SetVar setvar, Integer defaultValueEmptySet) {
+		super(intvars, setvar, defaultValueEmptySet);
 		indexOfMinimumVariable = environment.makeInt(-1);
 	}
 	
@@ -152,7 +152,7 @@ public class MinOfASet extends AbstractBoundOfASet {
 	 * @throws choco.kernel.solver.ContradictionException if a domain becomes empty.
 	 */
 	@Override
-	public void propagate() throws ContradictionException {
+	public void filter() throws ContradictionException {
 		//CPSolver.flushLogs();
 		boolean noFixPoint = true;
 		while(noFixPoint) {
@@ -225,36 +225,58 @@ public class MinOfASet extends AbstractBoundOfASet {
 			}
 		}
 	}
+	
+	
 
-	/**
-	 * Propagation when a variable is instantiated.
-	 *
-	 * @param idx the index of the modified variable.
-	 * @throws choco.kernel.solver.ContradictionException if a domain becomes empty.
-	 */
 	@Override
-	public void awakeOnInst(final int idx) throws ContradictionException {
-		if (idx >= 2*VARS_OFFSET) { //of the list
-			final int i = idx-2*VARS_OFFSET;
-			if(isInEnveloppe(i)) { //of the set
-				boolean propagate = updateBoundSup(minSup());
-				if(isInKernel(i)) {	propagate |= updateBoundInf(minInf());}
-				if(propagate && !isSetInstantiated()) {
-					this.constAwake(false);
-				}
-			}
-
-		} else if (idx == VARS_OFFSET) { // Maximum variable
-			updateKernelInf();
-			boolean propagate = onlyOneMinCandidatePropagation();
-			if(!isSetInstantiated()) {
-				propagate |= updateEnveloppe();
-				if(propagate) {this.constAwake(false);}
-			}
-		}else { //set is instantiated, propagate
-			this.propagate();
+	protected void awakeOnInstL(int i) throws ContradictionException {
+		boolean propagate = updateBoundSup(minSup());
+		if(isInKernel(i)) {	propagate |= updateBoundInf(minInf());}
+		if(propagate && !isSetInstantiated()) {
+			this.constAwake(false);
 		}
+		
 	}
+
+	@Override
+	protected void awakeOnInstV() throws ContradictionException {
+		updateKernelInf();
+		boolean propagate = onlyOneMinCandidatePropagation();
+		if(!isSetInstantiated()) {
+			propagate |= updateEnveloppe();
+			if(propagate) {this.constAwake(false);}
+		}		
+	}
+
+//	/**
+//	 * Propagation when a variable is instantiated.
+//	 *
+//	 * @param idx the index of the modified variable.
+//	 * @throws choco.kernel.solver.ContradictionException if a domain becomes empty.
+//	 */
+//	@Override
+//	public void awakeOnInst(final int idx) throws ContradictionException {
+//		if (idx >= 2*VARS_OFFSET) { //of the list
+//			final int i = idx-2*VARS_OFFSET;
+//			if(isInEnveloppe(i)) { //of the set
+//				boolean propagate = updateBoundSup(minSup());
+//				if(isInKernel(i)) {	propagate |= updateBoundInf(minInf());}
+//				if(propagate && !isSetInstantiated()) {
+//					this.constAwake(false);
+//				}
+//			}
+//
+//		} else if (idx == VARS_OFFSET) { // Maximum variable
+//			updateKernelInf();
+//			boolean propagate = onlyOneMinCandidatePropagation();
+//			if(!isSetInstantiated()) {
+//				propagate |= updateEnveloppe();
+//				if(propagate) {this.constAwake(false);}
+//			}
+//		}else { //set is instantiated, propagate
+//			this.propagate();
+//		}
+//	}
 
 	@Override
 	public void awakeOnEnv(int varIdx, int x) throws ContradictionException {
@@ -276,21 +298,17 @@ public class MinOfASet extends AbstractBoundOfASet {
 	}
 	
 	@Override
-	public boolean isSatisfied() {
-		DisposableIntIterator iter = svars[SET_INDEX].getDomain().getKernelIterator();
-		if( iter.hasNext()) {
-			int v = Integer.MAX_VALUE;
-			while(iter.hasNext()) {
-				v = Math.min(v, ivars[VARS_OFFSET +iter.next()].getVal());
-			}
-			return v == ivars[BOUND_INDEX].getVal(); 
-		}
-		return true;
+	protected int isSatisfiedValue(DisposableIntIterator iter) {
+		int v = Integer.MAX_VALUE;
+		do {
+			v = Math.min(v, ivars[VARS_OFFSET +iter.next()].getVal());
+		}while(iter.hasNext());
+		return v;
 	}
-
+	
 	@Override
 	public String pretty() {
-		return pretty(MIN);
+		return pretty("min");
 	}
 
 

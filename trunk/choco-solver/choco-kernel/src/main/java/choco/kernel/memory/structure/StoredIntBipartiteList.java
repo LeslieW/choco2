@@ -128,7 +128,8 @@ public class StoredIntBipartiteList implements IStateIntVector {
 
 
     protected static class BipartiteListIterator extends DisposableIntIterator {
-        StoredIntBipartiteList siblist;
+        
+    	private final StoredIntBipartiteList siblist;
 
         int idx;
 
@@ -139,7 +140,7 @@ public class StoredIntBipartiteList implements IStateIntVector {
 
         public void init() {
             super.init();
-           idx = 0;
+            idx = 0;
         }
 
         public boolean hasNext() {

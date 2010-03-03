@@ -169,6 +169,11 @@ public class Choco{
 		return makeIntVar(name, MIN_LOWER_BOUND, MAX_UPPER_BOUND, options);
 	}
 
+	private static IntegerVariable unsafeMakeIntVar(String name, int[] nonRedundantSortedvalues, String... options) {
+		IntegerVariable v = new IntegerVariable(name, nonRedundantSortedvalues);
+		v.addOptions(options);
+		return v;
+	} 
 	/**
 	 * Make an integer variable
 	 *
@@ -199,14 +204,18 @@ public class Choco{
 	 *                </ul>
 	 */
 	public static IntegerVariable makeIntVar(String name, TIntArrayList valuesList, String... options) {
-		int[] values = ArrayUtils.getNonRedundantSortedValues(valuesList);
+		final int[] values = ArrayUtils.getNonRedundantSortedValues(valuesList);
 		checkIntVarBounds(values[0], values[values.length-1]);
-		IntegerVariable v = new IntegerVariable(name, values);
-		for (String option : options) {
-			v.addOption(option);
-		}
-		return v;
+		return unsafeMakeIntVar(name, values, options);
 	}
+	
+	private static int[] makeValues(int[] valuesArray) {
+		final int[] values = ArrayUtils.getNonRedundantSortedValues(valuesArray);
+		checkIntVarBounds(values[0], values[values.length-1]);
+		return values;
+	}
+	
+	
 
 	/**
 	 * Make an integer variable
@@ -238,13 +247,7 @@ public class Choco{
 	 *                </ul>
 	 */
 	public static IntegerVariable makeIntVar(String name, int[] valuesArray, String... options) {
-		int[] values = ArrayUtils.getNonRedundantSortedValues(valuesArray);
-		checkIntVarBounds(values[0], values[values.length-1]);
-		IntegerVariable v = new IntegerVariable(name, values);
-		for (String option : options) {
-			v.addOption(option);
-		}
-		return v;
+		return unsafeMakeIntVar(name, makeValues(valuesArray), options);
 	}
 
 
@@ -336,7 +339,6 @@ public class Choco{
 	 *                </ul>
 	 */
 	public static IntegerVariable[] makeIntVarArray(String name, int dim, int lowB, int uppB, String... options) {
-
 		IntegerVariable[] vars = new IntegerVariable[dim];
 		for (int i = 0; i < vars.length; i++) {
 			vars[i] = makeIntVar(name + "_" + i, lowB, uppB, options);
@@ -402,9 +404,10 @@ public class Choco{
 	 *                </ul>
 	 */
 	public static IntegerVariable[] makeIntVarArray(String name, int dim, int[] valuesArray, String... options) {
-		IntegerVariable[] vars = new IntegerVariable[dim];
+		final int[] values = makeValues(valuesArray); 
+		final IntegerVariable[] vars = new IntegerVariable[dim];
 		for (int i = 0; i < vars.length; i++) {
-			vars[i] = makeIntVar(name + "_" + i, valuesArray, options);
+			vars[i] = unsafeMakeIntVar(name+"_"+i, values, options);
 		}
 		return vars;
 	}
@@ -509,9 +512,13 @@ public class Choco{
 	 *                </ul>
 	 */
 	public static IntegerVariable[][] makeIntVarArray(String name, int dim1, int dim2, int[] valuesArray, String... options) {
+		final int[] values = makeValues(valuesArray); 
 		IntegerVariable[][] vars = new IntegerVariable[dim1][dim2];
 		for (int i = 0; i < vars.length; i++) {
-			vars[i] = makeIntVarArray(name + "_" + i, dim2, valuesArray, options);
+			for (int j = 0; j < vars[i].length; j++) {
+				vars[i][j] = unsafeMakeIntVar(name + "_" + i+"_"+j, values, options);
+			}
+			
 		}
 		return vars;
 	}
@@ -1857,12 +1864,25 @@ public class Choco{
 	 * @param min Variable to represent the maximum among the sublist
 	 * @return Constraint
 	 */
-	public static Constraint min(SetVariable svar,IntegerVariable[] vars, IntegerVariable min) {
+	public final static Constraint min(SetVariable svar,IntegerVariable[] vars, IntegerVariable min) {
+		return min(svar, vars, min, null);
+	}
+	
+	/**
+	 * Ensures the variable min to represent the minimum value in vars that occurs in the sublist associated with set.
+	 * An element vars[i] belongs to the sublist if the set contains i.
+	 * @param svar the set which defined the sublist
+	 * @param vars  List of variables
+	 * @param min Variable to represent the maximum among the sublist
+	 * @param defaultValueEmptySet min is instantiated to this value if the set is empty (optional).
+	 * @return Constraint
+	 */
+	public static Constraint min(SetVariable svar,IntegerVariable[] vars, IntegerVariable min, Integer defaultValueEmptySet) {
 		final Variable[] tmp = new Variable[vars.length + 2];
-		tmp[0] = svar;
+		tmp[0] = min;
 		arraycopy(vars, 0, tmp, 1, vars.length);
-		tmp[tmp.length - 1] = min;
-		return new ComponentConstraint(ConstraintType.MIN, true, tmp);
+		tmp[tmp.length - 1] = svar;
+		return new ComponentConstraint(ConstraintType.MIN, new Object[]{Boolean.valueOf(true), defaultValueEmptySet}, tmp);
 	}
 	/**
 	 * Ensures the variable "min" to represent the minimum value
@@ -1873,9 +1893,9 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint min(IntegerVariable[] vars, IntegerVariable min) {
-		Variable[] tmp = new Variable[vars.length + 1];
-		arraycopy(vars, 0, tmp, 0, vars.length);
-		tmp[tmp.length - 1] = min;
+		final Variable[] tmp = new Variable[vars.length + 1];
+		tmp[0] = min;
+		arraycopy(vars, 0, tmp, 1, vars.length);
 		return new ComponentConstraint(ConstraintType.MIN, true, tmp);
 	}
 
@@ -1889,13 +1909,27 @@ public class Choco{
 	 * @param max Variable to represent the maximum among the sublist
 	 * @return Constraint
 	 */
-	public static Constraint max(SetVariable svar,IntegerVariable[] vars, IntegerVariable max) {
-		final Variable[] tmp = new Variable[vars.length + 2];
-		tmp[0] = svar;
-		arraycopy(vars, 0, tmp, 1, vars.length);
-		tmp[tmp.length - 1] = max;
-		return new ComponentConstraint(ConstraintType.MAX, false, tmp);
+	public static final Constraint max(SetVariable svar,IntegerVariable[] vars, IntegerVariable max) {
+		return max(svar, vars, max, null);
 	}
+	
+	/**
+	 * Ensures the variable "max" to represent the maximum value vars that occurs in the sublist associated with the set.
+	 * An element vars[i] belongs to the sublist if the set contains i.
+	 * @param svar the set which defined the sublist
+	 * @param vars  List of variables
+	 * @param max Variable to represent the maximum among the sublist
+	 * @param defaultValueEmptySet max is instantiated to this value if the set is empty (optional).
+	 * @return Constraint
+	 */
+	public static Constraint max(SetVariable svar,IntegerVariable[] vars, IntegerVariable max, Integer defaultValueEmptySet) {
+		final Variable[] tmp = new Variable[vars.length + 2];
+		tmp[0] = max;
+		arraycopy(vars, 0, tmp, 1, vars.length);
+		tmp[tmp.length - 1] = svar;
+		return new ComponentConstraint(ConstraintType.MAX, new Object[]{Boolean.valueOf(false), defaultValueEmptySet}, tmp);
+	}
+	
 	/**
 	 * Ensures the variable "max" to represent the maximum value
 	 * that occurs in the list vars
@@ -1906,8 +1940,8 @@ public class Choco{
 	 */
 	public static Constraint max(IntegerVariable[] vars, IntegerVariable max) {
 		Variable[] tmp = new Variable[vars.length + 1];
-		arraycopy(vars, 0, tmp, 0, vars.length);
-		tmp[tmp.length - 1] = max;
+		tmp[0] = max;
+		arraycopy(vars, 0, tmp, 1, vars.length);
 		return new ComponentConstraint(ConstraintType.MAX, false, tmp);
 	}
 
@@ -1921,7 +1955,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint min(IntegerVariable x, IntegerVariable y, IntegerVariable min) {
-		return new ComponentConstraint(ConstraintType.MIN, true, new IntegerVariable[]{x, y, min});
+		return new ComponentConstraint(ConstraintType.MIN, true, new IntegerVariable[]{min, x, y});
 	}
 
 	/**
@@ -1934,7 +1968,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint min(int x, IntegerVariable y, IntegerVariable min) {
-		return new ComponentConstraint(ConstraintType.MIN, true, new IntegerVariable[]{constant(x), y, min});
+		return min(constant(x), y, min);
 	}
 
 	/**
@@ -1946,8 +1980,8 @@ public class Choco{
 	 * @param min Variable to represent the minimum among vars
 	 * @return Constraint
 	 */
-	public static Constraint min(IntegerVariable x, int y, IntegerVariable min) {
-		return new ComponentConstraint(ConstraintType.MIN, true, new IntegerVariable[]{x, constant(y), min});
+	public final static Constraint min(IntegerVariable x, int y, IntegerVariable min) {
+		return min(x, constant(y), min);
 	}
 
 	/**
@@ -1960,7 +1994,7 @@ public class Choco{
 	 * @return Constraint
 	 */
 	public static Constraint max(IntegerVariable x, IntegerVariable y, IntegerVariable max) {
-		return new ComponentConstraint(ConstraintType.MAX, false, new IntegerVariable[]{x, y, max});
+		return new ComponentConstraint(ConstraintType.MAX, false, new IntegerVariable[]{max, x, y});
 	}
 
 	/**
@@ -1972,8 +2006,8 @@ public class Choco{
 	 * @param max Variable to represent the maximum among vars
 	 * @return Constraint
 	 */
-	public static Constraint max(int x, IntegerVariable y, IntegerVariable max) {
-		return new ComponentConstraint(ConstraintType.MAX, false, new IntegerVariable[]{constant(x), y, max});
+	public static final Constraint max(int x, IntegerVariable y, IntegerVariable max) {
+		return max(constant(x), y, max);
 	}
 
 	/**
@@ -1985,8 +2019,8 @@ public class Choco{
 	 * @param max Variable to represent the maximum among vars
 	 * @return Constraint
 	 */
-	public static Constraint max(IntegerVariable x, int y, IntegerVariable max) {
-		return new ComponentConstraint(ConstraintType.MAX, false, new IntegerVariable[]{x, constant(y), max});
+	public static final Constraint max(IntegerVariable x, int y, IntegerVariable max) {
+		return max(x, constant(y), max);
 	}
 
 	/**

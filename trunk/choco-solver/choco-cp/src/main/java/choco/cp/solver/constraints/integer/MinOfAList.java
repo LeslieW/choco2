@@ -47,7 +47,7 @@ public class MinOfAList extends AbstractLargeIntSConstraint {
    */
   protected final IStateInt indexOfMinimumVariable;
 
-  public MinOfAList(final IntDomainVar[] vars, IEnvironment environment) {
+  public MinOfAList(IEnvironment environment, final IntDomainVar[] vars) {
     super(vars);
     indexOfMinimumVariable = environment.makeInt(-1);
   }

@@ -78,7 +78,7 @@ public class MinNode extends INode implements ArithmNode {
 		IntDomainVar[] tmpVars = new IntDomainVar[vs.length + 1];
         tmpVars[0] = vmin;
         System.arraycopy(vs, 0, tmpVars, 1, vs.length);
-        s.post(new MinOfAList(tmpVars, s.getEnvironment()));
+        s.post(new MinOfAList(s.getEnvironment(), tmpVars));
 		return vmin;
 	}
 
