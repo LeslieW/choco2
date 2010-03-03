@@ -16,8 +16,6 @@ import choco.kernel.solver.propagation.listener.TaskPropagator;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-import java.util.Iterator;
-
 /**
  * @author Arnaud Malapert</br> 
  * @since 23 janv. 2009 version 2.0.3</br>
@@ -227,7 +225,7 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 	 *
 	 * @return an iterator over all constraints involving this variable
 	 */
-	public Iterator<SConstraint> getConstraintsIterator() {
+	public DisposableIterator<SConstraint> getConstraintsIterator() {
 		return constraints.getConstraintsIterator();
 
 	}

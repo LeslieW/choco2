@@ -22,10 +22,9 @@
  **************************************************/
 package choco.kernel.memory.structure;
 
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.constraints.SConstraint;
-
-import java.util.Iterator;
 
 /*
 * User : charles
@@ -134,7 +133,7 @@ public abstract class APartiallyStoredCstrList<C extends SConstraint> {
 	 *
 	 * @return an iterator over all constraints involving this variable
 	 */
-	public final Iterator<SConstraint> getConstraintsIterator() {
+	public final DisposableIterator<SConstraint> getConstraintsIterator() {
 		return elements.getIterator();
 	}
 }
