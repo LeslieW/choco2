@@ -7,6 +7,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Arc;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Node;
@@ -53,12 +54,15 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
         this.cVar = cVar;
         this.cost = cost;
         this.gain = gain;
-        this.initGraphDelayed(environment);
     }
 
-    public void initGraph(){}
+    public void awake() throws ContradictionException {
+        this.initGraphDelayed();
+        this.init = true;
+        super.awake();
+    }
 
-    public void initGraphDelayed(IEnvironment environment)
+    public void initGraphDelayed()
     {
         int aid = 0;
         int nid = 0;
@@ -253,7 +257,6 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
 
         if (intLayer[0].length > 0)
             this.graph = new StoredValuedDirectedMultiGraph(environment, this,graph,intLayer,starts,offsets,totalSizes);
-        graph = null;
     }
 
 

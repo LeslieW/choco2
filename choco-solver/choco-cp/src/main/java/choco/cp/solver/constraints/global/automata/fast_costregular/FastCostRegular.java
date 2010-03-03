@@ -37,11 +37,12 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
     TIntStack toRemove;
     IStateBool boundChange;
     int lastWorld = -1;
-    private final IEnvironment environment;
+    protected final IEnvironment environment;
 
 
     int[][][] costs;
     FiniteAutomaton pi;
+    boolean init;
 
     public FastCostRegular(IntDomainVar[] vars, FiniteAutomaton pi, int[][][] costs, IEnvironment environment) {
         super(vars);
@@ -53,6 +54,7 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
         this.boundChange = environment.makeBool(false);
         this.costs = costs;
         this.pi = pi;
+        this.init = false;
     }
     public FastCostRegular(IntDomainVar[] vars, DirectedMultigraph<Node, Arc> graph, Node source, IEnvironment environment)
     {
@@ -66,6 +68,7 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
 
 
         initGraph(graph,source);
+        this.init = true;
 
 
 
@@ -329,7 +332,11 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
 
     public void awake() throws ContradictionException
     {
-        initGraph(costs,pi);
+        if (!init)   {
+            initGraph(costs,pi);
+            init = true;
+        }
+
         double zinf = this.graph.GNodes.spft.get(this.graph.sourceIndex);
         double zsup = this.graph.GNodes.lpfs.get(this.graph.tinkIndex);
 
