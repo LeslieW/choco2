@@ -1,14 +1,9 @@
 package choco.cp.solver.constraints.global.automata.fast_costregular;
 
-import choco.cp.model.CPModel;
-import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
-import choco.kernel.model.Model;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
-import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Arc;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.Node;
 import choco.kernel.solver.constraints.global.automata.fast_costregular.structure.StoredValuedDirectedMultiGraph;
@@ -20,8 +15,6 @@ import org.jgrapht.graph.DirectedMultigraph;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashSet;
-
-import static choco.Choco.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -57,13 +50,11 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
     }
 
     public void awake() throws ContradictionException {
-        this.initGraphDelayed();
-        this.init = true;
-        super.awake();
+        this.initGraph();
+        this.prefilter();
     }
 
-    public void initGraphDelayed()
-    {
+    public void initGraph() throws ContradictionException {
         int aid = 0;
         int nid = 0;
 
@@ -157,7 +148,7 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
 
 
         //backward pass, removing arcs that does not lead to an accepting state
-        int nbNodes = bVar.getSup();
+        int nbNodes = bVar.getSup()+1;
         BitSet mark = new BitSet(nbNodes);
 
         Node[] in = new Node[nbNodes*(n+1)];
@@ -257,6 +248,8 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
 
         if (intLayer[0].length > 0)
             this.graph = new StoredValuedDirectedMultiGraph(environment, this,graph,intLayer,starts,offsets,totalSizes);
+        else
+            this.fail();
     }
 
 
@@ -289,37 +282,5 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
     {
         return idx == 0;
     }
-
-
-    public static void main(String[] args) {
-        
-        int[] gain = {1,2,3,4,5};
-        int[] profit = {4,10,1,3,9};
-        IntegerVariable g = makeIntVar("b",7,100);
-        IntegerVariable c = makeIntVar("c",5,100);
-
-        IntegerVariable[] x = makeIntVarArray("x",5,0,1);
-
-        Model m = new CPModel();
-        m.addConstraint(knapsackProblem(x,g,c,gain,profit));
-
-        Solver s = new CPSolver();
-
-        s.read(m);
-
-        s.maximize(s.getVar(c),false);
-
-        for (IntegerVariable i : x)
-        {
-            System.out.print(s.getVar(i).getVal()+" ");
-        }
-        System.out.println("COST : "+s.getVar(c).getVal());
-        System.out.println("GAIN : "+s.getVar(g).getVal());
-
-
-
-
-    }
-
 
 }
