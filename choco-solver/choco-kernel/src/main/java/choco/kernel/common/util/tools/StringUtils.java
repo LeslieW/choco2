@@ -241,6 +241,14 @@ public class StringUtils {
 				b.append((char) FiniteAutomaton.getCharFromInt(Character.getNumericValue(c)));
 
 			}
+            else if (c == '{')
+            {
+                int out = strRegExp.indexOf('}',i+1);
+                b.append(c);
+                for (int d = i+1; d <= out ; d++)
+                    b.append(strRegExp.charAt(d));
+                i = out;
+            }
 			else
 			{
 				b.append(c);
