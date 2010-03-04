@@ -57,7 +57,7 @@ public class FiniteAutomaton {
     protected int nbStates;
     protected TIntArrayList symbols;
     protected TIntHashSet alphabet;
-    protected TIntArrayList indexs;
+    protected TIntIntHashMap indexs;
     protected TIntIntHashMap indexToSymbol;
 
     protected static TIntIntHashMap charFromIntMap = new TIntIntHashMap();
@@ -90,7 +90,7 @@ public class FiniteAutomaton {
         this.indexToSymbol = new TIntIntHashMap();
         this.representedBy = new ArrayList<TIntArrayList>();
         //this.symbolMap = new TreeMap<Integer,Integer>(new TokenComparator());
-        this.indexs = new TIntArrayList(10);
+        this.indexs = new TIntIntHashMap(10);
         this.nbStates = 0;
         this.acceptingStates = new TIntHashSet();
 
@@ -161,11 +161,11 @@ public class FiniteAutomaton {
                 setAcceptingState(tmp1);
             for (dk.brics.automaton.Transition t : s.getTransitions()) {
                 int tmp2 = ct.get(t.getDest());
-                int imin = t.getMin();
-                int imax = t.getMax();
+                int imin = getIntFromChar(t.getMin());
+                int imax = getIntFromChar(t.getMax());
                 if (imax >= amin && imin <= amax)
                     for (int i = Math.max(imin,amin); i <= Math.min(imax,amax); i++) {
-                        int k = getIntFromChar(i);
+                        int k = i;
                         if (alpha.contains(k))
                         {
                             addTransition(tmp1,tmp2,k);
@@ -222,10 +222,8 @@ public class FiniteAutomaton {
             TIntArrayList nt = new TIntArrayList(old);
             this.representedBy.add(nt);
         }
-        this.indexs = new TIntArrayList();
-        this.indexs.ensureCapacity(auto.indexs.size());
-        for (int i = 0 ; i < auto.indexs.size() ; i++)
-            this.indexs.add(auto.indexs.get(i));
+        this.indexs = (TIntIntHashMap) auto.indexs.clone();
+
         this.nbStates = auto.nbStates;
         this.acceptingStates = new TIntHashSet(auto.acceptingStates.size());
         this.acceptingStates.addAll(auto.acceptingStates.toArray());
@@ -283,15 +281,39 @@ public class FiniteAutomaton {
     private int addSymbolToAutomaton(int symbol) {
         symbols.add(symbol);
         alphabet.add(symbol);
-        if (symbol >= indexs.size())
-            indexs.fill(indexs.size(),symbol+1,-1);
-        indexs.set(symbol,symbols.size()-1);
+
+        indexs.put(symbol,symbols.size()-1);
         indexToSymbol.put(symbols.size()-1,symbol);
 
         for (int i = 0 ; i < representedBy.size() ; i++) {
             representedBy.get(i).add(-1);
         }
         return symbols.size() -1;
+    }
+
+    protected void removeSymbolFromAutomaton(int symbol)
+    {
+        removeFromAlphabet(symbol);
+        int idx = symbols.indexOf(symbol);
+        symbols.remove(idx);
+
+        indexs.clear();
+        indexToSymbol.clear();
+        for (int i = 0 ;i < symbols.size(); i++)
+        {
+            int symb = symbols.get(i);
+            indexs.put(symb,i);
+            indexToSymbol.put(i,symb);
+        }
+
+      //  indexs.remove(symbol);
+       // indexToSymbol.remove(idx);
+
+        for (int i = 0 ; i < representedBy.size() ; i++) {
+            representedBy.get(i).remove(idx);
+        }
+          
+
     }
 
     public void addTransition(int source, int destination, int... symbols)
@@ -303,14 +325,10 @@ public class FiniteAutomaton {
     public void addTransition(int source, int destination, int symbol) {
 
         int idx;
-        if (symbol >= indexs.size())
-            idx = -1;
+        if (!indexs.containsKey(symbol))
+            idx = addSymbolToAutomaton(symbol);
         else
             idx = indexs.get(symbol);
-
-        if (idx == -1) {
-            idx = addSymbolToAutomaton(symbol);
-        }
 
         if (source < representedBy.size() && destination < representedBy.size()) {
             representedBy.get(source).set(idx,destination);
@@ -336,7 +354,7 @@ public class FiniteAutomaton {
     }
 
     public int delta(int source, int symbol) {
-        if (symbol >= indexs.size())
+        if (!alphabet.contains(symbol))
             return -1;
         int idx = indexs.get(symbol);//symbolMap.get(symbol);
         if (idx == -1 ||source >= nbStates) {
@@ -389,6 +407,10 @@ public class FiniteAutomaton {
     public void addToAlphabet(int a)
     {
         alphabet.add(a);
+    }
+    public void removeFromAlphabet(int a)
+    {
+        alphabet.remove(a);
     }
 
 
@@ -483,7 +505,7 @@ public class FiniteAutomaton {
     private void clearStructures()
     {
         this.alphabet.clear();
-        this.indexs.reset();
+        this.indexs.clear();
         this.indexToSymbol.clear();
         this.acceptingStates.clear();
         this.nbStates = 0;
