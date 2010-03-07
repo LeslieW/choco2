@@ -114,6 +114,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 				rtasks[i].checkConsistency();
 		}
 	}
+	
 	private void checkIntVars() {
 		//TODO
 	}
@@ -518,6 +519,9 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 		@Override
 		public boolean setEST(final int val) throws ContradictionException {
+			if( ! isRegular()) {
+				System.out.println("souci");
+			}
 			assert isRegular(); //do not change the domain of optional/eliminated tasks
 			return vars[taskIdx].updateInf(val, cIndices[taskIdx]);
 		}
@@ -629,7 +633,6 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		}
 	}
 
-	//FIXME adapt rtask comparators.
 	public final class HRTask extends RTask implements ITask {
 
 		private final IStateInt estH,lctH;

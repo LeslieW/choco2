@@ -21,9 +21,9 @@
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
-import choco.kernel.solver.ContradictionException;
+import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.solver.Solver;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
@@ -35,8 +35,8 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
  */
 public class AltDisjunctive extends Disjunctive {
 
-	public AltDisjunctive(final String name, final TaskVar[] taskvars, final IntDomainVar[] usages, final IntDomainVar makespan, Solver solver) {
-		super(solver, name, taskvars, usages.length, true, ArrayUtils.append(usages, new IntDomainVar[]{makespan}));
+	public AltDisjunctive(final String name, final TaskVar[] taskvars, final IntDomainVar[] usages, final IntDomainVar makespan, CPSolver solver) {
+		super(solver, name, taskvars, usages.length, solver.getSchedulerConfiguration().isUsingHypotheticalDomain(), ArrayUtils.append(usages, new IntDomainVar[]{makespan}));
 		rules = new AltDisjRules(rtasks, this.makespan, solver.getEnvironment());
 	}
 

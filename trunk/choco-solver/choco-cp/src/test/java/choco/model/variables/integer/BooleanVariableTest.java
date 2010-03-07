@@ -22,8 +22,11 @@
  **************************************************/
 package choco.model.variables.integer;
 
+import choco.Choco;
+import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.model.Model;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.propagation.event.VarEvent;
@@ -228,5 +231,6 @@ public class BooleanVariableTest {
             Assert.assertTrue("slower", enu>boo);
         }
     }
-
+    
+    
 }

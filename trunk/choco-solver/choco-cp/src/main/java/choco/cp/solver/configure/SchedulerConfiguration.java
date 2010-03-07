@@ -71,6 +71,10 @@ public class SchedulerConfiguration {
 	 */
 	protected boolean redundantReasonningsOnTasks = false;
 
+	/**
+	 * Decide if filtering algorithms of alternative resource use hypothetical domains.
+	 */
+	protected boolean useHypotheticalDomain = true;
 
 
 	public SchedulerConfiguration() {
@@ -179,6 +183,15 @@ public class SchedulerConfiguration {
 	public final void setRedundantReasonningsOnTasks(
 			boolean redundantReasonningsOnTasks) {
 		this.redundantReasonningsOnTasks = redundantReasonningsOnTasks;
+	}
+
+
+	public final boolean isUsingHypotheticalDomain() {
+		return useHypotheticalDomain;
+	}
+	
+	public final void setHypotheticalDomain(boolean usage) {
+		this.useHypotheticalDomain = usage;
 	}
 
 

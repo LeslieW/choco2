@@ -25,9 +25,6 @@ package choco.cp.solver.constraints.global.scheduling;
 import java.util.Arrays;
 import java.util.Comparator;
 
-
-import static choco.cp.solver.constraints.global.scheduling.trees.IVilimTree.TreeMode.ECT;
-import static choco.kernel.common.util.comparator.TaskComparators.*;
 import choco.cp.solver.constraints.global.scheduling.trees.IThetaLambdaTree;
 import choco.cp.solver.constraints.global.scheduling.trees.IThetaOmegaTree;
 import choco.cp.solver.constraints.global.scheduling.trees.IThetaTree;
@@ -121,7 +118,7 @@ public abstract class AbstractDisjRules implements IDisjRules {
 
 	@Override
 	public final boolean notFirstNotLast() throws ContradictionException {
-		return notFirst() | notFirstNotLast();
+		return notFirst() | notLast();
 	}
 
 }

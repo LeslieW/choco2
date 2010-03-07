@@ -71,7 +71,7 @@ public class DisjunctiveManager extends AbstractResourceManager {
 	protected final void makeDisjunctive(Solver solver, RscData rdata, Set<String> options) {
 		final Disjunctive cstr = (
 				rdata.isAlternative() ? 
-						new AltDisjunctive(rdata.getRscName(), tasks, usages, uppBound, solver) :
+						new AltDisjunctive(rdata.getRscName(), tasks, usages, uppBound, (CPSolver) solver) :
 							new Disjunctive(rdata.getRscName(), tasks, uppBound, solver)
 		);
 		cstr.getFlags().readDisjunctiveOptions(options);
