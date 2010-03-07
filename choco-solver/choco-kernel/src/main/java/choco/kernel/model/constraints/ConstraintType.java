@@ -99,6 +99,7 @@ public enum ConstraintType {
     REIFIEDOR("reifiedOr", "constraint.reifiedOr", false),
     REIFIEDXNOR("reifiedXnor", "constraint.reifiedXnor", false),
     REIFIEDXOR("reifiedXor", "constraint.reifiedXor", false),
+    USE_RESOURCES("useResources", "constraint.useResources", false),
     SETDISJOINT("setDisjoint", "constraint.setDisjoint", false),
     SETINTER("setInter", "constraint.setInter", false),
     SETUNION("union", "constraint.union", false),

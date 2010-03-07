@@ -105,18 +105,6 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 		return endOffset+ tidx;
 	}
 
-	//	protected final int getCIndiceStart(final int taskIdx) {
-	//		return this.cIndices[taskIdx];
-	//	}
-	//
-	//	protected final int getCIndiceEnd(final int taskIdx) {
-	//		return this.cIndices[startOffset + taskIdx];
-	//	}
-	//
-	//	protected final int getCIndiceDuration(final int taskIdx) {
-	//		return this.cIndices[endOffset + taskIdx];
-	//	}
-
 	@Override
 	public int getFilteredEventMask(final int idx) {
 		return EVENT_MASK;
@@ -130,34 +118,6 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 		}
 	}
 
-	//	public final void ensureTaskConsistency() throws ContradictionException {
-	//		final int n = getNbTasks();
-	//		for (int i = 0; i < n; i++) {
-	//			updateCompulsoryPart(i);
-	//		}
-	//	}
-
-	//	public final void updateCompulsoryPart(final int taskIdx)
-	//			throws ContradictionException {
-	//				final TaskVar t= taskvars[taskIdx];
-	//				final IntDomainVar s = t.start();
-	//				final IntDomainVar e = t.end();
-	//				final IntDomainVar d = t.duration();
-	//				final int sidx =getCIndiceStart(taskIdx);
-	//				final int eidx =getCIndiceEnd(taskIdx);
-	//				final int didx =getCIndiceDuration(taskIdx);
-	//				
-	//				boolean fixPoint = true;
-	//				while (fixPoint) {
-	//					fixPoint = false;
-	//					fixPoint |= s.updateInf(e.getInf() - d.getSup(), sidx);
-	//					fixPoint |= s.updateSup(e.getSup() - d.getInf(), sidx);
-	//					fixPoint |= e.updateInf(s.getInf() + d.getInf(), eidx);
-	//					fixPoint |= e.updateSup(s.getSup() + d.getSup(), eidx);
-	//					fixPoint |= d.updateInf(e.getInf() - s.getSup(), didx);
-	//					fixPoint |= d.updateSup(e.getSup() - s.getInf(), didx);
-	//				}
-	//			}
 
 	@Override
 	public void awakeOnRemovals(final int idx, final DisposableIntIterator deltaDomain)

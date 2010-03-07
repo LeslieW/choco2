@@ -406,7 +406,7 @@ public class TestAlternativeResources {
 	}
 
 	@Test
-	public void CosmicTest() {
+	public void cosmicTest() {
 		//ChocoLogging.setVerbosity(Verbosity.VERBOSE);
 		CPModel model = createModelJobARes1();
 		int obj = minimizeMakespan(model);
