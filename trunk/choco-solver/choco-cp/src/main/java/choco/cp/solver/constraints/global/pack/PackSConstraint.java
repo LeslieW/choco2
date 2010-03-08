@@ -380,7 +380,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 			try{
 				while(iter.hasNext()) {
 					final int item=iter.next();
-					if(bins[item].getDomain().contains(varIdx)) {
+					if(bins[item].canBeInstantiatedTo(varIdx)) {
 						remove(item, varIdx);
 					}
 				}
