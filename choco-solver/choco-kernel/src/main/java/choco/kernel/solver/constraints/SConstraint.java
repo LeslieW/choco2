@@ -90,7 +90,7 @@ public interface SConstraint<V extends Var> extends Cloneable,IPretty {
 	 * @return a copy of the constraint
 	 */
 	// public Constraint copy();
-	Object clone() throws CloneNotSupportedException;
+	public Object clone() throws CloneNotSupportedException;
 
 	/**
 	 * <i>Network management:</i>
