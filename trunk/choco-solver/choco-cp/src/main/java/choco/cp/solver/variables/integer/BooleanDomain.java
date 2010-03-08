@@ -30,6 +30,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.PropagationEngine;
 
 import java.util.Random;
@@ -270,14 +271,14 @@ public class BooleanDomain extends AbstractIntDomain {
      * Returns a boolean indicating whether the call indeed added new information.
      *
      * @param x   The new upper bound
-     * @param idx The index of the constraint (among all constraints linked to
-     *            the variable) responsible for the update
+     * @param cause
+     * @param forceAwake
      * @return a boolean indicating whether the call indeed added new information.
      * @throws ContradictionException contradiction exception
      */
-    public boolean updateSup(int x, int idx) throws ContradictionException {
-        if (_updateSup(x, idx)) {
-            propagationEngine.postInstInt(variable, idx);
+    public boolean updateSup(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+        if (_updateSup(x, cause)) {
+            propagationEngine.postInstInt(variable, cause, forceAwake);
 
             return true;
         } else
@@ -290,15 +291,15 @@ public class BooleanDomain extends AbstractIntDomain {
      * Returns a boolean indicating whether the call indeed added new information
      *
      * @param x   The new lower bound.
-     * @param idx The index of the constraint (among all constraints linked to
-     *            the variable) responsible for the update.
+     * @param cause
+     * @param forceAwake
      * @return a boolean indicating whether the call indeed added new information
      * @throws ContradictionException contradiction exception
      */
 
-    public boolean updateInf(int x, int idx) throws ContradictionException {
-        if (_updateInf(x, idx)) {
-            propagationEngine.postInstInt(variable, idx);
+    public boolean updateInf(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+        if (_updateInf(x, cause)) {
+            propagationEngine.postInstInt(variable, cause, forceAwake);
             return true;
         } else
             return false;
@@ -315,14 +316,15 @@ public class BooleanDomain extends AbstractIntDomain {
      * Returns a boolean indicating whether the call indeed added new information.
      *
      * @param x   The removed value
-     * @param idx The index of the constraint (among all constraints linked to the variable) responsible for the update
+     * @param cause
+     * @param forceAwake
      * @return a boolean indicating whether the call indeed added new information.
      * @throws ContradictionException contradiction exception
      */
 
-    public final boolean removeVal(int x, int idx) throws ContradictionException {
-        if (_removeVal(x, idx)) {
-            propagationEngine.postInstInt(variable, idx);
+    public final boolean removeVal(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+        if (_removeVal(x, cause)) {
+            propagationEngine.postInstInt(variable, cause, forceAwake);
             return true;
         } else
             return false;
@@ -333,22 +335,22 @@ public class BooleanDomain extends AbstractIntDomain {
      * Returns a boolean indicating whether the call indeed added new information.
      *
      * @param x   the new upper bound
-     * @param idx the index of the constraint (among all constraints linked to the
-     *            variable) responsible for the update
+     * @param cause
+     * @param forceAwake
      * @return a boolean indicating whether the call indeed added new information.
      * @throws ContradictionException contradiction exception
      */
 
-    public final boolean instantiate(int x, int idx) throws ContradictionException {
-        if (_instantiate(x, idx)) {
-            propagationEngine.postInstInt(variable, idx);
+    public final boolean instantiate(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+        if (_instantiate(x, cause)) {
+            propagationEngine.postInstInt(variable, cause, forceAwake);
             return true;
         } else
             return false;
     }
 
-    private void failOnIndex(int idx) throws ContradictionException {
-        propagationEngine.raiseContradiction(idx, variable);
+    private void failOnIndex(final SConstraint cause) throws ContradictionException {
+        propagationEngine.raiseContradiction(cause);
     }
     
 
@@ -357,15 +359,16 @@ public class BooleanDomain extends AbstractIntDomain {
      * a real modification or not
      *
      * @param x the new instantiate value
+     * @param cause
      * @return wether it is a real modification or not
      * @throws choco.kernel.solver.ContradictionException
      *          contradiction exception
      */
     @Override
-       protected final boolean _instantiate(int x, int idx) throws ContradictionException {
+       protected final boolean _instantiate(int x, final SConstraint cause) throws ContradictionException {
         if (!notInstanciated.contain(offset)) {
             if (value != x) {
-                failOnIndex(idx);
+                failOnIndex(cause);
             }
             return false;
         } else {
@@ -373,7 +376,7 @@ public class BooleanDomain extends AbstractIntDomain {
                 restrict(x);
                 return true;
             } else {
-                failOnIndex(idx);
+                failOnIndex(cause);
                 return false;
             }
         }
@@ -384,20 +387,21 @@ public class BooleanDomain extends AbstractIntDomain {
      * Improving the lower bound.
      *
      * @param x the new lower bound
+     * @param cause
      * @return a boolean indicating wether the update has been done
      * @throws choco.kernel.solver.ContradictionException
      *          contradiction exception
      */
     @Override
-    protected final boolean _updateInf(int x, int idx) throws ContradictionException {
+    protected final boolean _updateInf(int x, final SConstraint cause) throws ContradictionException {
         if (isInstantiated()) {
            if (getValueIfInst() < x) {
-            failOnIndex(idx);
+            failOnIndex(cause);
            }
            return false;
         } else {
            if (x > 1) {
-            failOnIndex(idx);
+            failOnIndex(cause);
            } else if (x == 1) {
                restrict(1);
                //variable.value.set(1);
@@ -412,20 +416,21 @@ public class BooleanDomain extends AbstractIntDomain {
       * Improving the upper bound.
       *
       * @param x the new upper bound
-      * @return wether the update has been done
+      * @param cause
+     * @return wether the update has been done
       * @throws choco.kernel.solver.ContradictionException
       *          contradiction exception
       */
      @Override
-     protected final boolean _updateSup(int x, int idx) throws ContradictionException {
+     protected final boolean _updateSup(int x, final SConstraint cause) throws ContradictionException {
          if (isInstantiated()) {
             if (getValueIfInst() > x) {
-             failOnIndex(idx);
+             failOnIndex(cause);
             }
             return false;
          } else {
             if (x < 0) {
-             failOnIndex(idx);
+             failOnIndex(cause);
             } else if (x == 0) {
                 restrict(0);
                 //variable.value.set(0);
@@ -441,15 +446,16 @@ public class BooleanDomain extends AbstractIntDomain {
       * was a real modification on the domain.
       *
       * @param x the value to remove
-      * @return wether the removal has been done
+      * @param cause
+     * @return wether the removal has been done
       * @throws choco.kernel.solver.ContradictionException
       *          contradiction excpetion
       */
      @Override
-     protected final boolean _removeVal(int x, int idx) throws ContradictionException {
+     protected final boolean _removeVal(int x, final SConstraint cause) throws ContradictionException {
         if (isInstantiated()) {
             if (getValueIfInst() == x) {
-             failOnIndex(idx);
+             failOnIndex(cause);
             }
             return false;
          } else {

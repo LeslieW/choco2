@@ -90,7 +90,7 @@ public class EnvironnementTest {
 
         // We post the fact that
         try {
-            v1.updateInf(1, 0);
+            v1.updateInf(1, null, false);
         } catch (ContradictionException e) {
             e.printStackTrace();
         }
@@ -106,7 +106,7 @@ public class EnvironnementTest {
         Assert.assertFalse("ceq is empty", ceq.isEmpty());
         Assert.assertTrue("ceqcop is not empty", ceqcop.isEmpty());
         try {
-            v2.updateInf(2, 0);
+            v2.updateInf(2, null, false);
         } catch (ContradictionException e) {
             e.printStackTrace();
         }

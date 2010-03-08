@@ -45,7 +45,7 @@ public class FCBinSConstraint extends CspBinSConstraint {
 				while (itv1.hasNext()) {
 					int val = itv1.next();
 					if (!relation.isConsistent(value, val)) {
-						v1.removeVal(val, cIdx1);
+						v1.removeVal(val, this, false);
 					}
 				}
 			} finally {
@@ -58,7 +58,7 @@ public class FCBinSConstraint extends CspBinSConstraint {
 				while (itv0.hasNext()) {
 					int val = itv0.next();
 					if (!relation.isConsistent(val, value)) {
-						v0.removeVal(val, cIdx0);
+						v0.removeVal(val, this, false);
 					}
 				}
 			} finally {

@@ -28,8 +28,9 @@ import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.Couple;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.solver.ContradictionException;
-import static choco.kernel.solver.ContradictionException.Type.DOMAIN;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.AbstractSConstraint;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.propagation.listener.IntPropagator;
@@ -40,7 +41,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /**
  * Implements search valued domain variables.
  */
-public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
+public class IntDomainVarImpl <C extends AbstractSConstraint & IntPropagator> extends AbstractVar implements IntDomainVar {
 
 	/**
 	 * The backtrackable domain of the variable.
@@ -98,10 +99,10 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 			} else {
 				domain = new BitSetIntDomain(this, distinctSortedValues, solver.getEnvironment(), propagationEngine);
 			}
-		this.event = new IntVarEvent(this);
+		this.event = new IntVarEvent<C>(this);
 	}
 
-    public final DisposableIterator<Couple<? extends IntPropagator>> getActiveConstraints(int evtType, int cstrCause){
+    public final DisposableIterator<Couple<C>> getActiveConstraints(int evtType, C cstrCause){
         //noinspection unchecked
         return ((PartiallyStoredIntCstrList)constraints).getActiveConstraint(evtType, cstrCause);
     }
@@ -158,14 +159,14 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 	 */
 
 	public final void setInf(int x) throws ContradictionException {
-		updateInf(x, VarEvent.NOCAUSE);
+		updateInf(x, null, true);
 	}
 
 	/**
 	 * @deprecated replaced by setInf
 	 */
 	public final void setMin(int x) throws ContradictionException {
-		updateInf(x, VarEvent.NOCAUSE);
+		updateInf(x, null, true);
 	}
 
 	/**
@@ -173,14 +174,14 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 	 */
 
 	public final void setSup(int x) throws ContradictionException {
-		updateSup(x, VarEvent.NOCAUSE);
+		updateSup(x, null, true);
 	}
 
 	/**
 	 * @deprecated replaced by setSup
 	 */
 	public final void setMax(int x) throws ContradictionException {
-		updateSup(x, VarEvent.NOCAUSE);
+		updateSup(x, null, true);
 	}
 
 	/**
@@ -190,7 +191,7 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 	 */
 
 	public final void setVal(int x) throws ContradictionException {
-		instantiate(x, VarEvent.NOCAUSE);
+		instantiate(x, null, true);
 	}
 
 
@@ -201,11 +202,11 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 	 */
 
 	public final void remVal(int x) throws ContradictionException {
-		removeVal(x, VarEvent.NOCAUSE);
+		removeVal(x, null, true);
 	}
 
 	public final void wipeOut() throws ContradictionException {
-		propagationEngine.raiseContradiction(this, DOMAIN);
+		propagationEngine.raiseContradiction(this);
 	}
 
 	public boolean hasEnumeratedDomain() {
@@ -323,6 +324,16 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 			return domain.getPrevValue(currentv);
 	}
 
+    @Deprecated
+    private SConstraint getCause(int idx){
+        if(idx < -1){
+//            this.getConstraintVector().get(VarEvent.domOverWDegInitialIdx(idx)));
+            return this.getConstraint(VarEvent.domOverWDegInitialIdx(idx));
+        }else if(idx > -1){
+            return this.getConstraint(idx);
+        }
+        return null;
+    }
 
 	/**
 	 * Internal var: update on the variable lower bound caused by its i-th
@@ -330,30 +341,41 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 	 * Returns a boolean indicating whether the call indeed added new information
 	 *
 	 * @param x   The new lower bound.
-	 * @param idx The index of the constraint (among all constraints linked to
-	 *            the variable) responsible for the update.
-	 */
+     * @param cause
+     * @param forceAwake
+     */
 
-	public boolean updateInf(int x, int idx) throws ContradictionException {
-		return domain.updateInf(x, idx);
+	public boolean updateInf(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+		return domain.updateInf(x, cause, forceAwake);
 	}
 
-	/**
+    @Override
+    @Deprecated
+    public boolean updateInf(final int x, final int idx) throws ContradictionException {
+        return domain.updateInf(x, getCause(idx), (idx>=0));
+    }
+
+    /**
 	 * Internal var: update on the variable upper bound caused by its i-th
 	 * constraint.
 	 * Returns a boolean indicating whether the call indeed added new information.
 	 *
 	 * @param x   The new upper bound
-	 * @param idx The index of the constraint (among all constraints linked to
-	 *            the variable) responsible for the update
-	 */
+     * @param cause
+     * @param forceAwake
+     */
 
-	public boolean updateSup(int x, int idx) throws ContradictionException {
-		return domain.updateSup(x, idx);
+	public boolean updateSup(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+		return domain.updateSup(x, cause, forceAwake);
 	}
 
+    @Override
+    @Deprecated
+    public boolean updateSup(final int x, final int idx) throws ContradictionException {
+        return domain.updateSup(x, getCause(idx), (idx>=0));
+    }
 
-	/**
+    /**
 	 * Internal var: update (value removal) on the domain of a variable caused by
 	 * its i-th constraint.
 	 * <i>Note:</i> Whenever the hole results in a stronger var (such as a bound update or
@@ -364,43 +386,61 @@ public class IntDomainVarImpl extends AbstractVar implements IntDomainVar {
 	 * Returns a boolean indicating whether the call indeed added new information.
 	 *
 	 * @param x   The removed value
-	 * @param idx The index of the constraint (among all constraints linked to the variable) responsible for the update
-	 */
+     * @param cause
+     * @param forceAwake
+     */
 
-	public boolean removeVal(int x, int idx) throws ContradictionException {
-		return domain.removeVal(x, idx);
+	public boolean removeVal(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+		return domain.removeVal(x, cause, forceAwake);
 	}
 
-	/**
+    @Override
+    @Deprecated
+    public boolean removeVal(final int x, final int idx) throws ContradictionException {
+        return domain.removeVal(x, getCause(idx), (idx>=0));
+    }
+
+    /**
 	 * Internal var: remove an interval (a sequence of consecutive values) from
 	 * the domain of a variable caused by its i-th constraint.
 	 * Returns a boolean indicating whether the call indeed added new information.
 	 *
 	 * @param a   the first removed value
-	 * @param b   the last removed value
-	 * @param idx the index of the constraint (among all constraints linked to the variable)
-	 *            responsible for the update
-	 */
+     * @param b   the last removed value
+     * @param cause
+     * @param forceAwake
+     */
 
-	public boolean removeInterval(int a, int b, int idx) throws ContradictionException {
-		return domain.removeInterval(a, b, idx);
+	public boolean removeInterval(int a, int b, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+		return domain.removeInterval(a, b, cause, forceAwake);
 	}
 
-	/**
+    @Override
+    @Deprecated
+    public boolean removeInterval(final int a, final int b, final int idx) throws ContradictionException {
+        return domain.removeInterval(a,b, getCause(idx), (idx>=0));
+    }
+
+    /**
 	 * Internal var: instantiation of the variable caused by its i-th constraint
 	 * Returns a boolean indicating whether the call indeed added new information.
 	 *
 	 * @param x   the new upper bound
-	 * @param idx the index of the constraint (among all constraints linked to the
-	 *            variable) responsible for the update
-	 */
+     * @param cause
+     * @param forceAwake
+     */
 
-	public boolean instantiate(int x, int idx) throws ContradictionException {
-		return domain.instantiate(x, idx);
+	public boolean instantiate(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+		return domain.instantiate(x, cause, forceAwake);
 	}
 
+    @Override
+    @Deprecated
+    public boolean instantiate(final int x, final int idx) throws ContradictionException {
+        return domain.instantiate(x, getCause(idx), (idx>=0));
+    }
 
-	/**
+    /**
 	 * Gets the minimal value of the variable.
 	 */
 

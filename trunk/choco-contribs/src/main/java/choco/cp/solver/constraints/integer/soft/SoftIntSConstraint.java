@@ -28,7 +28,6 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -114,9 +113,9 @@ public class SoftIntSConstraint extends AbstractLargeIntSConstraint {
         Boolean isEntailed = cons.isEntailed();
         if (isEntailed != null) {
             if (isEntailed) {
-                vars[0].instantiate(0, cIndices[0]);
+                vars[0].instantiate(0, this, false);
             } else {
-                vars[0].instantiate(1, VarEvent.domOverWDegIdx(cIndices[0]));//cIndices[0]);
+                vars[0].instantiate(1, this, true);//cIndices[0]);
             }
         }
     }

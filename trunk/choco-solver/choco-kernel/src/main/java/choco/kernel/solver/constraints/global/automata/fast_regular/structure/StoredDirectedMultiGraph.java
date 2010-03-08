@@ -194,7 +194,7 @@ public class StoredDirectedMultiGraph {
             IntDomainVar var = this.constraint.getVar(layer);
             try
             {
-                var.removeVal(value,this.constraint.getConstraintIdx(layer));
+                var.removeVal(value, this.constraint, false);
             }   catch (ContradictionException ce)
             {
                 stack.clear();

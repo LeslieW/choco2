@@ -102,9 +102,9 @@ public class MinOfASet extends AbstractBoundOfASet {
 			}
 			int idx = this.indexOfMinimumVariable.get();
 			if (idx != -1) {
-				update = svars[SET_INDEX].addToKernel(idx-1, getConstraintIdx(SET_INDEX));
+				update = svars[SET_INDEX].addToKernel(idx-1, this, false);
 				updateBoundSup(ivars[idx].getSup());
-				ivars[idx].updateSup(ivars[BOUND_INDEX].getSup(),int_cIndices[idx]);}
+				ivars[idx].updateSup(ivars[BOUND_INDEX].getSup(), this, false);}
 		}
 		return update;
 
@@ -141,7 +141,7 @@ public class MinOfASet extends AbstractBoundOfASet {
 		DisposableIntIterator iter= svars[SET_INDEX].getDomain().getKernelIterator();
 		while(iter.hasNext()) {
 			final int i = VARS_OFFSET+iter.next();
-			ivars[i].updateInf(minValue, int_cIndices[i]);
+			ivars[i].updateInf(minValue, this, false);
 		}
         iter.dispose();
 	}

@@ -31,7 +31,6 @@ import choco.kernel.memory.IStateVector;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.*;
@@ -555,7 +554,7 @@ public class CostRegular extends AbstractLargeIntSConstraint
             for (int j = 0 ; j < Q[i].length ; j++)
             {
                 if(Q[i][j] == null || Q[i][j].isEmpty())
-                    vars[i].removeVal(j+offset[i],cIndices[i]);
+                    vars[i].removeVal(j+offset[i], this, false);
             }
         }
 
@@ -574,7 +573,7 @@ public class CostRegular extends AbstractLargeIntSConstraint
             int pgcP = s.pgcP.get();
             if(pgcP < cVar.getSup())
             {
-                cVar.updateSup(pgcP, VarEvent.domOverWDegIdx(cIndices[myVars.length]));
+                cVar.updateSup(pgcP, this, true);
             }
         }
         for (State s : layer[myVars.length+1].values())
@@ -582,7 +581,7 @@ public class CostRegular extends AbstractLargeIntSConstraint
             int pccS = s.pccS.get();
             if(pccS > cVar.getInf())
             {
-                cVar.updateInf(pccS, VarEvent.domOverWDegIdx(cIndices[myVars.length]));
+                cVar.updateInf(pccS, this, true);
             }
         }
 
@@ -1301,7 +1300,7 @@ public class CostRegular extends AbstractLargeIntSConstraint
               }                             */
             if (i < cr.myVars.length)
                 if (getQij(i,j).isEmpty())
-                    getVar(i).removeVal(j,cr.cIndices[i]);
+                    getVar(i).removeVal(j, this.cr, false);
             return out;
         }
 

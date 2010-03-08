@@ -143,7 +143,7 @@ public class SubTourConstraint extends AbstractLargeIntSConstraint {
             for (int v = inPath[u].nextSetBit(0); v >= 0; v = inPath[u].nextSetBit(v + 1)) {
                 if (s[u].canBeInstantiatedTo(v)) {
                     if (filter) LOGGER.info("1- rem (" + u + "," + v + ")");
-                    s[u].removeVal(v, cIndices[v]);
+                    s[u].removeVal(v, this, false);
                 }
             }
         }
@@ -154,7 +154,7 @@ public class SubTourConstraint extends AbstractLargeIntSConstraint {
                     if (end[u].get() != n-1) {
                         if (s[end[u].get()].canBeInstantiatedTo(v)) {
                             if (filter) LOGGER.info("2- rem (" + end[u].get() + "," + v + ")");
-                            s[end[u].get()].removeVal(v, cIndices[end[u].get()]);
+                            s[end[u].get()].removeVal(v, this, false);
                         }
                     }
                 }
@@ -180,7 +180,7 @@ public class SubTourConstraint extends AbstractLargeIntSConstraint {
             for (int w = inPath[u].nextSetBit(0); w >= 0; w = inPath[u].nextSetBit(w + 1)) {
                 if ((end[v].get() != n-1 || w != 0) &&  s[end[v].get()].canBeInstantiatedTo(w)) {
                     if (filter) LOGGER.info("3- rem (" + end[v].get() + "," + w + ")");
-                    s[end[v].get()].removeVal(w, cIndices[end[v].get()]);
+                    s[end[v].get()].removeVal(w, this, false);
                 }
             }
         }

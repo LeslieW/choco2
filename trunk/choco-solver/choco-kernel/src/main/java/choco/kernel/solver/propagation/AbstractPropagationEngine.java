@@ -22,19 +22,16 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.propagation;
 
-import static choco.kernel.solver.ContradictionException.Type.CONSTRAINT;
-import static choco.kernel.solver.ContradictionException.Type.VARIABLE;
-
-import java.util.LinkedList;
-import java.util.List;
-
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.ContradictionExceptionFactory;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.propagation.event.VarEvent;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.listener.PropagationEngineListener;
 import choco.kernel.solver.propagation.queue.EventQueue;
 import choco.kernel.solver.variables.Var;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * An abstract class for all implementations of propagation engines.
@@ -75,47 +72,41 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
 	 * @throws choco.kernel.solver.ContradictionException
 	 */
 
-	public final void raiseContradiction(final Object cause, final ContradictionException.Type type) throws ContradictionException {
-		reuseException.set(cause,type);
+	public final void raiseContradiction(final Object cause) throws ContradictionException {
+		reuseException.set(cause);
 		for(PropagationEngineListener listener : propagationEngineListeners) {
 			listener.contradictionOccured(reuseException);
 		}
 		throw(reuseException);
 	}
 
-
-	/**
-	 * Throws a contradiction with the specified cause.
-	 *
-	 * @throws choco.kernel.solver.ContradictionException
-	 */
-
-	public final void raiseContradiction(final int cidx, final Var variable) throws ContradictionException {
-		if(cidx>=0){
-			reuseException.set(variable.getConstraintVector().get(cidx), CONSTRAINT,
-					variable.getConstraintVector().get(cidx));
-		}else if (cidx == -1){
-			reuseException.set(variable, VARIABLE);
-		}
-		else{
-			reuseException.set(variable, VARIABLE,
-					variable.getConstraintVector().get(VarEvent.domOverWDegInitialIdx(cidx)));
-		}
+    public final void raiseContradiction(final Object cause, final int move) throws ContradictionException {
+		reuseException.set(cause, move);
 		for(PropagationEngineListener listener : propagationEngineListeners) {
 			listener.contradictionOccured(reuseException);
 		}
 		throw(reuseException);
 	}
 
-	public final void raiseContradiction(final Object cause, final ContradictionException.Type type, final int move) throws ContradictionException {
-		reuseException.set(cause,type, move);
-		for(PropagationEngineListener listener : propagationEngineListeners) {
-			listener.contradictionOccured(reuseException);
-		}
-		throw(reuseException);
-	}
+    @Deprecated
+    public final void raiseContradiction(int cidx, Var variable, final SConstraint cause) throws ContradictionException {
+        if(cidx>=0){
+            reuseException.set(variable.getConstraintVector().get(cidx)
+            );
+        }else if (cidx == -1){
+            reuseException.set(variable);
+        }
+        else{
+            reuseException.set(variable
+            );
+        }
+        for(PropagationEngineListener listener : propagationEngineListeners) {
+            listener.contradictionOccured(reuseException);
+        }
+        throw(reuseException);
+    }
 
-	public final void addPropagationEngineListener(PropagationEngineListener listener) {
+    public final void addPropagationEngineListener(PropagationEngineListener listener) {
 		propagationEngineListeners.add(listener);
 	}
 

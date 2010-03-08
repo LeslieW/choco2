@@ -283,7 +283,7 @@ public class AllDifferentTest{
 
         try {
             ((AbstractIntSConstraint)s2.getCstr(c)).awake();
-            s2.getVar(vars[4]).removeVal(1, -1);
+            s2.getVar(vars[4]).removeVal(1, null, true);
         } catch (ContradictionException e) {
             Assert.fail();
         }

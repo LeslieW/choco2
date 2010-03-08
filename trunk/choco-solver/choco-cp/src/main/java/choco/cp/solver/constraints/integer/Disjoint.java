@@ -55,7 +55,7 @@ public class Disjoint extends AbstractUnIntSConstraint {
     @Override
     public void propagate() throws ContradictionException {
         for (int val : values) {
-            v0.removeVal(val, cIdx0);
+            v0.removeVal(val, this, false);
         }
         this.setEntailed();
     }

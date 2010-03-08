@@ -1,5 +1,6 @@
 package choco.cp.solver.constraints.global.geost;
 
+import choco.cp.solver.constraints.global.Geost_Constraint;
 import choco.cp.solver.constraints.global.geost.dataStructures.HeapAscending;
 import choco.cp.solver.constraints.global.geost.dataStructures.HeapDescending;
 import choco.cp.solver.constraints.global.geost.externalConstraints.ExternalConstraint;
@@ -30,16 +31,19 @@ public class Setup {
 
     public final PropagationEngine propagationEngine;
 
+    public Geost_Constraint g_constraint;
 
     /**
 	 * Creates a Setup instance for a given Constants class
 	 * @param c An instance of the constants class
      * @param propagationEngine
-	 */
-	public Setup(Constants c, PropagationEngine propagationEngine)
+     * @param constraint
+     */
+	public Setup(Constants c, PropagationEngine propagationEngine, final Geost_Constraint constraint)
 	{
 		cst = c;
         this.propagationEngine = propagationEngine;
+        this.g_constraint = constraint;
 	}
 
 	/**

@@ -11,7 +11,6 @@ import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.*;
@@ -405,7 +404,7 @@ public class LayeredGraph {
             IStateInt tmp = this.Q.get(idx);
             if (tmp == null || tmp.get() == 0)
             {
-                vars[i].removeVal(j,VarEvent.NOCAUSE);
+                vars[i].removeVal(j, null, true);
             }
         }
     }
@@ -586,7 +585,7 @@ public class LayeredGraph {
             IStateInt tmp = getQ(i,j);
             tmp.add(-1);
             if (tmp.get() == 0)
-                vars[i].removeVal(j, VarEvent.NOCAUSE);
+                vars[i].removeVal(j, null, true);
         }
 
     }

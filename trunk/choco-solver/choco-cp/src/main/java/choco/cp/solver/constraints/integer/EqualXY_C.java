@@ -76,19 +76,19 @@ public class EqualXY_C extends AbstractBinIntSConstraint {
 
 	
 	private final void updateInfV0() throws ContradictionException {
-		v0.updateInf(cste - v1.getSup(), cIdx0);
+		v0.updateInf(cste - v1.getSup(), this, false);
 	}
 	
 	private final void updateInfV1() throws ContradictionException {
-		v1.updateInf(cste - v0.getSup(), cIdx1);
+		v1.updateInf(cste - v0.getSup(), this, false);
 	}
 	
 	private final void updateSupV0() throws ContradictionException {
-		v0.updateSup(cste - v1.getInf(), cIdx0);
+		v0.updateSup(cste - v1.getInf(), this, false);
 	}
 	
 	private final void updateSupV1() throws ContradictionException {
-		v1.updateSup(cste - v0.getInf(), cIdx1);
+		v1.updateSup(cste - v0.getInf(), this, false);
 	}
 	/**
 	 * The one and only propagation method, using foward checking
@@ -106,7 +106,7 @@ public class EqualXY_C extends AbstractBinIntSConstraint {
 			while (reuseIter.hasNext()) {
 				val = reuseIter.next();
 				if ( ! v1.canBeInstantiatedTo( cste - val)) {
-					v0.removeVal(val, cIdx0);
+					v0.removeVal(val, this, false);
 				}
 			}
 		}finally{ 
@@ -117,7 +117,7 @@ public class EqualXY_C extends AbstractBinIntSConstraint {
 			while (reuseIter.hasNext()) {
 				val = reuseIter.next();
 				if ( ! v0.canBeInstantiatedTo( cste - val)) {
-					v1.removeVal(val, cIdx1);
+					v1.removeVal(val, this, false);
 				}
 			}
 		}finally{
@@ -141,15 +141,15 @@ public class EqualXY_C extends AbstractBinIntSConstraint {
 
 	@Override
 	public final void awakeOnInst(int idx) throws ContradictionException {
-		if (idx == 0) v1.instantiate(cste - v0.getVal(), cIdx1);
-		else v0.instantiate(cste - v1.getVal(), cIdx0);
+		if (idx == 0) v1.instantiate(cste - v0.getVal(), this, false);
+		else v0.instantiate(cste - v1.getVal(), this, false);
 	}
 
 
 	@Override
 	public void awakeOnRem(int idx, int x) throws ContradictionException {
-		if (idx == 0) v1.removeVal( cste - x, cIdx1);
-		else v0.removeVal( cste - x, cIdx0);
+		if (idx == 0) v1.removeVal( cste - x, this, false);
+		else v0.removeVal( cste - x, this, false);
 	}
 
 	/**

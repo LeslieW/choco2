@@ -53,10 +53,10 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
         super(vars);
 
         cst = new Constants();
-		stp = new Setup(cst, solver.getPropagationEngine());
+		stp = new Setup(cst, solver.getPropagationEngine(), this);
 		intermediateLayer = new IntermediateLayer();
 		externalLayer = new ExternalLayer(cst, stp);
-		geometricKernel = new GeometricKernel(cst, stp, externalLayer, intermediateLayer,memo_active,included, solver);
+		geometricKernel = new GeometricKernel(cst, stp, externalLayer, intermediateLayer,memo_active,included, solver, this);
 
 		cst.setDIM(k);
         this.ctrlVs = ctrlVs;
@@ -95,10 +95,10 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
         super(vars);
 
         cst = new Constants();
-		stp = new Setup(cst, solver.getPropagationEngine());
+		stp = new Setup(cst, solver.getPropagationEngine(), this);
 		intermediateLayer = new IntermediateLayer();
 		externalLayer = new ExternalLayer(cst, stp);
-		geometricKernel = new GeometricKernel(cst, stp, externalLayer, intermediateLayer, memo, included, solver);
+		geometricKernel = new GeometricKernel(cst, stp, externalLayer, intermediateLayer, memo, included, solver, this);
 
 		cst.setDIM(k);
 

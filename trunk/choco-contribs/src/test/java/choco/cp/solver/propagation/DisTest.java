@@ -24,8 +24,6 @@ package choco.cp.solver.propagation;
 
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolverDis;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.solver.search.QueensTest;
 import org.junit.After;
 import org.junit.Before;

@@ -24,6 +24,7 @@ package choco.kernel.solver.variables.set;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.Domain;
 
 /*
@@ -41,11 +42,11 @@ public interface SetDomain extends Domain {
 
     public SetSubDomain getEnveloppeDomain();
 
-    boolean addToKernel(int x, int idx) throws ContradictionException;
+    boolean addToKernel(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException;
 
-    boolean remFromEnveloppe(int x, int idx) throws ContradictionException;
+    boolean remFromEnveloppe(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException;
 
-    boolean instantiate(int[] x, int idx) throws ContradictionException;
+    boolean instantiate(int[] x, final SConstraint cause, final boolean forceAwake) throws ContradictionException;
 
     public DisposableIntIterator getKernelIterator();
 

@@ -653,8 +653,8 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
             int binf = z[i].getInf();
             p.resetNodeShortestandLongestPathValues();
             p.computeShortestAndLongestPath(toRemove,binf,bsup,null,false,false,i);
-            z[i].updateInf((int)Math.ceil(p.getShortestPathValue()),this.getConstraintIdx(vs.length+i));
-            z[i].updateSup((int)Math.floor(p.getLongestPathValue()),this.getConstraintIdx(vs.length+i));
+            z[i].updateInf((int)Math.ceil(p.getShortestPathValue()), this, false);
+            z[i].updateSup((int)Math.floor(p.getLongestPathValue()), this, false);
         }
         this.delayedGraphUpdate();
     }
@@ -675,7 +675,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         {
             double mr = Math.round(realsp);
             double rsp = (realsp-mr <= Constants.MCR_DECIMAL_PREC)? mr : realsp;
-            z[0].updateInf((int) Math.ceil(rsp),this.getConstraintIdx(vs.length));
+            z[0].updateInf((int) Math.ceil(rsp), this, false);
             modifiedBound[0] = true;
         }
     }
@@ -694,7 +694,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         {
             double mr = Math.round(reallp);
             double rsp = (reallp-mr <= Constants.MCR_DECIMAL_PREC)? mr : reallp;
-            z[0].updateSup((int) Math.floor(rsp),this.getConstraintIdx(vs.length));
+            z[0].updateSup((int) Math.floor(rsp), this, false);
             modifiedBound[1] = true;
         }
     }
@@ -911,7 +911,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
                 StoredIndexedBipartiteSet sup = graph.getSupport(i,j);
                 if (sup == null || sup.isEmpty())
                 {
-                    vs[i].removeVal(j,this.getConstraintIdx(i));
+                    vs[i].removeVal(j, this, false);
                 }
             }
         }

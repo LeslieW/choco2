@@ -36,7 +36,6 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.*;
@@ -319,7 +318,7 @@ public class Regular extends AbstractLargeIntSConstraint {
     public void prune(int i, int val) throws ContradictionException {
         if (DEBUG && vars[i].canBeInstantiatedTo(val))
             LOGGER.log(Level.INFO, "remove {0} from {1}", new Object[]{val, vars[i]});
-        vars[i].removeVal(val, cIndices[i]);
+        vars[i].removeVal(val, this, false);
     }
 
 
@@ -413,11 +412,11 @@ public class Regular extends AbstractLargeIntSConstraint {
         if (!vars[idx].hasEnumeratedDomain()){
             StoredIndexedBipartiteSet supports = getQij(idx, vars[idx].getInf());
             if (supports.isEmpty()) {
-                vars[idx].removeVal(vars[idx].getInf(), VarEvent.domOverWDegIdx(cIndices[idx]));
+                vars[idx].removeVal(vars[idx].getInf(), this, true);
             }
             supports = getQij(idx, vars[idx].getSup());
             if (supports.isEmpty()) {
-                vars[idx].removeVal(vars[idx].getSup(), VarEvent.domOverWDegIdx(cIndices[idx]));
+                vars[idx].removeVal(vars[idx].getSup(), this, true);
             }
         }
     }

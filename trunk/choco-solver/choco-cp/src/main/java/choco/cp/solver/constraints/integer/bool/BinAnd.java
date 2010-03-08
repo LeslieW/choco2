@@ -45,8 +45,8 @@ public class BinAnd extends AbstractBinIntSConstraint {
     }
 
     public void propagate() throws ContradictionException {
-        v0.instantiate(1, cIdx0);
-        v1.instantiate(1, cIdx1);
+        v0.instantiate(1, this, false);
+        v1.instantiate(1, this, false);
     }
 
     @Override

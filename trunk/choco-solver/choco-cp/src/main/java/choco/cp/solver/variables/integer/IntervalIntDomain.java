@@ -29,6 +29,7 @@ import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.PropagationEngine;
 
 import java.util.Random;
@@ -147,15 +148,15 @@ public class IntervalIntDomain extends AbstractIntDomain {
         return x;
     }
 
-    protected boolean _removeVal(int x, int idx) throws ContradictionException {
+    protected boolean _removeVal(int x, final SConstraint cause) throws ContradictionException {
         int infv = getInf(), supv = getSup();
         if (x == infv) {
-            _updateInf(x + 1, idx);
-            if (getInf() == supv) _instantiate(supv, idx);
+            _updateInf(x + 1, cause);
+            if (getInf() == supv) _instantiate(supv, cause);
             return true;
         } else if (x == supv) {
-            _updateSup(x - 1, idx);
-            if (getSup() == infv) _instantiate(infv, idx);
+            _updateSup(x - 1, cause);
+            if (getSup() == infv) _instantiate(infv, cause);
             return true;
         } else {
             return false;

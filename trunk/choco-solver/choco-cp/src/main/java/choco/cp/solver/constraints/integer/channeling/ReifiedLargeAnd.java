@@ -65,7 +65,7 @@ public class ReifiedLargeAnd  extends AbstractLargeIntSConstraint {
     public void propagate() throws ContradictionException {
         if(vars[0].isInstantiatedTo(1)){
             for(int i = 1 ; i < vars.length; i++){
-                vars[i].instantiate(1, cIndices[i]);
+                vars[i].instantiate(1, this, false);
             }
             setEntailed();
         }else{
@@ -73,7 +73,7 @@ public class ReifiedLargeAnd  extends AbstractLargeIntSConstraint {
             int lastIdx = 0;
             for(int i = 1; i < vars.length; i++){
                 if(vars[i].isInstantiatedTo(0)){
-                    vars[0].instantiate(0, cIndices[0]);
+                    vars[0].instantiate(0, this, false);
                     setEntailed();
                     return;
                 }else if(vars[i].isInstantiatedTo(1)){
@@ -83,12 +83,12 @@ public class ReifiedLargeAnd  extends AbstractLargeIntSConstraint {
                 }
             }
             if(toONE == vars.length-1){
-                vars[0].instantiate(1, cIndices[0]);
+                vars[0].instantiate(1, this, false);
                 setEntailed();
                 return;
             }else if((toONE == vars.length - 2)
                     && (vars[0].isInstantiatedTo(0))){
-                vars[lastIdx].instantiate(0, cIndices[lastIdx]);
+                vars[lastIdx].instantiate(0, this, false);
                 setEntailed();
                 return;
             }
@@ -105,7 +105,7 @@ public class ReifiedLargeAnd  extends AbstractLargeIntSConstraint {
                 switch (val){
                     case 1:
                         for(int i = 1 ; i < vars.length; i++){
-                            vars[i].instantiate(1, cIndices[i]);
+                            vars[i].instantiate(1, this, false);
                         }
                         setEntailed();
                         break;
@@ -119,7 +119,7 @@ public class ReifiedLargeAnd  extends AbstractLargeIntSConstraint {
             default:
                 switch (val){
                     case 0:
-                        vars[0].instantiate(0, cIndices[0]);
+                        vars[0].instantiate(0, this, false);
                         setEntailed();
                         break;
                     case 1:
@@ -139,18 +139,18 @@ public class ReifiedLargeAnd  extends AbstractLargeIntSConstraint {
         int toZero = toONE.get();
         int n = vars.length-1;
         if(toZero == n){
-            vars[0].instantiate(1, cIndices[0]);
+            vars[0].instantiate(1, this, false);
             setEntailed();
         }else if(vars[0].isInstantiatedTo(0)){
             for(int i = n; i > 0; i--){
                 if(!vars[i].isInstantiated()){
-                    vars[i].instantiate(0, cIndices[i]);
+                    vars[i].instantiate(0, this, false);
                     setEntailed();
                     break;
                 }
                 // speed up
                 else if(!vars[n+1-i].isInstantiated()){
-                    vars[n+1-i].instantiate(0, cIndices[n+1-i]);
+                    vars[n+1-i].instantiate(0, this, false);
                     setEntailed();
                     break;
                 }

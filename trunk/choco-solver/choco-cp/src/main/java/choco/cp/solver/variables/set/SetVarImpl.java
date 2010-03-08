@@ -29,6 +29,9 @@ import choco.kernel.memory.structure.Couple;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
+import choco.kernel.solver.constraints.AbstractSConstraint;
+import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.propagation.listener.SetPropagator;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -38,20 +41,16 @@ import choco.kernel.solver.variables.set.SetVar;
 /** History:
  * 2007-12-07 : FR_1873619 CPRU: DomOverDeg+DomOverWDeg
  * */
-public final class SetVarImpl extends AbstractVar implements SetVar {
+public final class SetVarImpl <C extends AbstractSConstraint & SetPropagator> extends AbstractVar implements SetVar {
 
 	protected SetDomain domain;
 
 	protected IntDomainVar card;
 
-    private SetVarImpl(Solver solver, String name){
-        super(solver, name, new PartiallyStoredSetCstrList(solver.getEnvironment()));
-    }
-
 	public SetVarImpl(Solver solver, String name, int a, int b, IntDomainVar card) {
-		this(solver, name);
+		super(solver, name, new PartiallyStoredSetCstrList<C>(solver.getEnvironment()));
 		this.domain = new SetDomainImpl(this, a, b, solver.getEnvironment(), propagationEngine);
-		this.event = new SetVarEvent(this);
+		this.event = new SetVarEvent<C>(this);
 		this.card = card;
 
 	}
@@ -66,9 +65,9 @@ public final class SetVarImpl extends AbstractVar implements SetVar {
      * @param type
      */
     public SetVarImpl(Solver solver, String name, int a, int b,IntDomainVar card, int type) {
-		this(solver, name);
+		super(solver, name, new PartiallyStoredSetCstrList<C>(solver.getEnvironment()));
 		this.domain = new SetDomainImpl(this, a, b, solver.getEnvironment(), propagationEngine);
-		this.event = new SetVarEvent(this);
+		this.event = new SetVarEvent<C>(this);
         if(card==null){
             if (type == SetVar.BOUNDSET_ENUMCARD) {
                 this.card = solver.createEnumIntVar(name, 0, b - a + 1);
@@ -81,9 +80,9 @@ public final class SetVarImpl extends AbstractVar implements SetVar {
     }
 
     public SetVarImpl(Solver solver, String name, int[] sortedValues, IntDomainVar card) {
-		this(solver, name);
+		super(solver, name, new PartiallyStoredSetCstrList<C>(solver.getEnvironment()));
 		this.domain = new SetDomainImpl(this, sortedValues, solver.getEnvironment(), propagationEngine);
-		this.event = new SetVarEvent(this);
+		this.event = new SetVarEvent<C>(this);
 		this.card = card;
 	}
 
@@ -96,8 +95,8 @@ public final class SetVarImpl extends AbstractVar implements SetVar {
      * @param type
      */
     public SetVarImpl(Solver solver, String name, int[] sortedValues, IntDomainVar card, int type) {
-        this(solver, name);
-		this.event = new SetVarEvent(this);
+        super(solver, name, new PartiallyStoredSetCstrList<C>(solver.getEnvironment()));
+		this.event = new SetVarEvent<C>(this);
         int size = sortedValues.length;
         if(card ==null){
             if (type == SetVar.BOUNDSET_ENUMCARD) {
@@ -116,7 +115,7 @@ public final class SetVarImpl extends AbstractVar implements SetVar {
 	}
 
     @SuppressWarnings({"unchecked"})
-    public final DisposableIterator<Couple<? extends SetPropagator>> getActiveConstraints(int cstrCause){
+    public final DisposableIterator<Couple<C>> getActiveConstraints(C cstrCause){
         return ((PartiallyStoredSetCstrList)constraints).getActiveConstraint(cstrCause);
     }
 
@@ -130,11 +129,11 @@ public final class SetVarImpl extends AbstractVar implements SetVar {
 	}
 
 	public final void setValIn(int x) throws ContradictionException {
-		addToKernel(x, SetVarEvent.NOCAUSE);
+		addToKernel(x, null, true);
 	}
 
 	public final void setValOut(int x) throws ContradictionException {
-		remFromEnveloppe(x, SetVarEvent.NOCAUSE);
+		remFromEnveloppe(x, null, true);
 	}
 
 	public boolean isInDomainKernel(int x) {
@@ -196,22 +195,51 @@ public final class SetVarImpl extends AbstractVar implements SetVar {
 	}
 
 	public final void setVal(int[] val) throws ContradictionException {
-		instantiate(val, SetVarEvent.NOCAUSE);
+		instantiate(val, null, true);
 	}
 
-	public boolean addToKernel(int x, int idx) throws ContradictionException {
-		return domain.addToKernel(x, idx);
+    @Deprecated
+    private SConstraint getCause(int idx){
+        if(idx < -1){
+//            this.getConstraintVector().get(VarEvent.domOverWDegInitialIdx(idx)));
+            return this.getConstraint(VarEvent.domOverWDegInitialIdx(idx));
+        }else if(idx > -1){
+            return this.getConstraint(idx);
+        }
+        return null;
+    }
+
+	public boolean addToKernel(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+		return domain.addToKernel(x, cause, forceAwake);
 	}
 
-	public boolean remFromEnveloppe(int x, int idx) throws ContradictionException {
-		return domain.remFromEnveloppe(x, idx);
+    public boolean remFromEnveloppe(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+		return domain.remFromEnveloppe(x, cause, forceAwake);
 	}
 
-	public boolean instantiate(int[] x, int idx) throws ContradictionException {
-		return domain.instantiate(x, idx);
+    public boolean instantiate(int[] x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+		return domain.instantiate(x, cause, forceAwake);
 	}
 
-	/**
+    @Override
+    @Deprecated
+    public boolean addToKernel(final int x, final int idx) throws ContradictionException {
+        return domain.addToKernel(x, getCause(idx), (idx>=0));
+    }
+
+    @Override
+    @Deprecated
+    public boolean remFromEnveloppe(final int x, final int idx) throws ContradictionException {
+        return domain.remFromEnveloppe(x, getCause(idx), (idx>=0));
+    }
+
+    @Override
+    @Deprecated
+    public boolean instantiate(final int[] x, final int idx) throws ContradictionException {
+        return instantiate(x, getCause(idx), (idx>=0));
+    }
+
+    /**
 	 * pretty printing
 	 *
 	 * @return a String representation of the variable

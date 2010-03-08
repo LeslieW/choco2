@@ -287,12 +287,12 @@ public class SemiLeximinSConstraint extends AbstractLargeIntSConstraint {
             // Check support for y
             if ((a = super.vars[i].getInf()) < (b = super.vars[i].getSup())) {
                 if (b <= this.alpha.get()) {
-                    super.vars[i].instantiate(b, i);
+                    super.vars[i].instantiate(b, this, false);
                 }
                 if (this.alpha.get() < b &&
                         b < this.beta.get() &&
                         a <= this.alpha.get()) {
-                    super.vars[i].updateInf(this.alpha.get(), cIndices[i]);
+                    super.vars[i].updateInf(this.alpha.get(), this, false);
                 }
                 if (b == this.beta.get() && a <= this.alpha.get()) {
                     if (this.epsilon.get(1)) {
@@ -300,23 +300,23 @@ public class SemiLeximinSConstraint extends AbstractLargeIntSConstraint {
                                 this.epsilon.get(2) &&
                                 this.delta.get() > 0) {
                             //super.vars[n + i].updateInf(this.alpha.get() + 1, super.cste);
-                            super.vars[i].updateInf(this.alpha.get(), cIndices[i]);
+                            super.vars[i].updateInf(this.alpha.get(), this, false);
                         } else {
-                            super.vars[i].updateInf(this.alpha.get(), cIndices[i]);
+                            super.vars[i].updateInf(this.alpha.get(), this, false);
                         }
                     } else {
-                        super.vars[i].updateInf(this.alpha.get(), cIndices[i]);
+                        super.vars[i].updateInf(this.alpha.get(), this, false);
                     }
                 }
                 if (b > this.beta.get() && a <= this.alpha.get()) {
                     if (this.epsilon.get(1)) {
                         if (this.gamma.get() > 0) {
                             //super.vars[n + i].updateInf(this.alpha.get() + 1, super.cste);
-                            super.vars[i].updateInf(this.alpha.get(), cIndices[i]);
+                            super.vars[i].updateInf(this.alpha.get(), this, false);
                         }
                     } else {
                         //super.vars[n + i].updateInf(this.alpha.get() + 1, super.cste);
-                        super.vars[i].updateInf(this.alpha.get(), cIndices[i]);
+                        super.vars[i].updateInf(this.alpha.get(), this, false);
                     }
                 }
 

@@ -48,7 +48,7 @@ public class IsIncluded extends AbstractBinSetSConstraint {
 			DisposableIntIterator it1 = v0.getDomain().getKernelIterator();
 			try{
                 while (it1.hasNext()) {
-                    v1.addToKernel(it1.next(), cIdx1);
+                    v1.addToKernel(it1.next(), this, false);
                 }
             }finally {
                 it1.dispose();
@@ -59,7 +59,7 @@ public class IsIncluded extends AbstractBinSetSConstraint {
                 while (it2.hasNext()) {
                     int val = it2.next();
                     if (!v1.isInDomainEnveloppe(val)) {
-                        v0.remFromEnveloppe(val, cIdx0);
+                        v0.remFromEnveloppe(val, this, false);
                     }
                 }
             }finally {
@@ -71,14 +71,14 @@ public class IsIncluded extends AbstractBinSetSConstraint {
 	@Override
 	public void awakeOnEnv(int varIdx, int x) throws ContradictionException {
 		if (varIdx == 1) {
-			v0.remFromEnveloppe(x, cIdx0);
+			v0.remFromEnveloppe(x, this, false);
 		}
 	}
 
 	@Override
 	public void awakeOnKer(int varIdx, int x) throws ContradictionException {
 		if (varIdx == 0) {
-			v1.addToKernel(x, cIdx1);
+			v1.addToKernel(x, this, false);
 		}
 	}
 

@@ -23,13 +23,13 @@ public class AllDisjoint extends AbstractLargeSetSConstraint {
         while (it.hasNext()) {
             int val = it.next();
             for (int idxi =0;idxi<vars.length;idxi++)
-                if (idxi != idx) vars[idxi].remFromEnveloppe(val, cIndices[idxi]);
+                if (idxi != idx) vars[idxi].remFromEnveloppe(val, this, false);
         }
     }
     
     public void awakeOnKer(int varIdx, int x) throws ContradictionException {
         for (int idx =0;idx<vars.length;idx++)
-            if (idx != varIdx) vars[idx].remFromEnveloppe(x, cIndices[idx]);
+            if (idx != varIdx) vars[idx].remFromEnveloppe(x, this, false);
     }
 
     public void awakeOnEnvRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {

@@ -92,7 +92,7 @@ public class ModuloXYC2 extends AbstractBinIntSConstraint {
         BitSet sup = searchSupports();
         if (v0.hasEnumeratedDomain()) {
             for (int j = sup.nextSetBit(0); j >= 0; j = sup.nextSetBit(j + 1)) {
-                v0.removeVal(j, cIdx1);
+                v0.removeVal(j, this, false);
             }
         } else {
             int min = sup.nextClearBit(0);
@@ -101,15 +101,15 @@ public class ModuloXYC2 extends AbstractBinIntSConstraint {
                 max = j;
             }
 
-            v0.updateSup(max, cIdx0);
-            v0.updateInf(min, cIdx0);
+            v0.updateSup(max, this, false);
+            v0.updateInf(min, this, false);
         }
 
         if (v1.hasEnumeratedDomain()) {
             IntDomain dom = v1.getDomain();
             for (int val = dom.getInf(); val <= dom.getSup(); val = dom.getNextValue(val)) {
                 if (!v0.canBeInstantiatedTo(val % m)) {
-                    v1.removeVal(val, cIdx1);
+                    v1.removeVal(val, this, false);
                 }
             }
 
@@ -160,11 +160,11 @@ public class ModuloXYC2 extends AbstractBinIntSConstraint {
     public void reviseV0OnInf(BitSet supports) throws ContradictionException {
         if (v0.hasEnumeratedDomain()) {
             for (int i = supports.nextSetBit(0); i >= 0; i = supports.nextSetBit(i + 1)) {
-                v0.removeVal(i, cIdx1);
+                v0.removeVal(i, this, false);
             }
         } else {
             int min = supports.nextClearBit(0);
-            v0.updateInf(min, cIdx0);
+            v0.updateInf(min, this, false);
         }
     }
 
@@ -175,7 +175,7 @@ public class ModuloXYC2 extends AbstractBinIntSConstraint {
             int inf = v0.getInf();
             for (int val = dom.getInf(); val <= dom.getSup(); val = dom.getNextValue(val)) {
                 if (val % m < inf) {
-                    v1.removeVal(val, cIdx1);
+                    v1.removeVal(val, this, false);
                 } /*else {
                     val = Math.max((val / m) * m + inf, dom.getInf());
 
@@ -217,14 +217,14 @@ public class ModuloXYC2 extends AbstractBinIntSConstraint {
     public void reviseV0OnSup(BitSet supports) throws ContradictionException {
         if (v0.hasEnumeratedDomain()) {
             for (int i = supports.nextSetBit(0); i >= 0; i = supports.nextSetBit(i + 1)) {
-                v0.removeVal(i, cIdx1);
+                v0.removeVal(i, this, false);
             }
         } else {
             int max = supports.nextClearBit(0);
             for (int j = max; j >= 0 && j < m; j = supports.nextClearBit(j + 1)) {
                 max = j;
             }
-            v0.updateSup(max, cIdx0);
+            v0.updateSup(max, this, false);
         }
     }
 
@@ -235,7 +235,7 @@ public class ModuloXYC2 extends AbstractBinIntSConstraint {
             int sup = v0.getSup();
             for (int val = dom.getInf(); val <= dom.getSup(); val = dom.getNextValue(val)) {
                 if (val % m > sup) {
-                    v1.removeVal(val, cIdx1);
+                    v1.removeVal(val, this, false);
                 } /* else {
                     val = Math.min((val / m) * m + sup,dom.getSup());
                 } */
@@ -272,7 +272,7 @@ public class ModuloXYC2 extends AbstractBinIntSConstraint {
     }
 
     public void reviseV0OnInst(int inst) throws ContradictionException {
-        v0.instantiate(inst % m, cIdx0);
+        v0.instantiate(inst % m, this, false);
     }
 
     public void reviseV1OnInst(int inst) throws ContradictionException {
@@ -280,7 +280,7 @@ public class ModuloXYC2 extends AbstractBinIntSConstraint {
             IntDomain dom = v1.getDomain();
             for (int val = dom.getInf(); val <= dom.getSup(); val = dom.getNextValue(val)) {
                 if (val % m != inst)
-                    v1.removeVal(val, cIdx1);
+                    v1.removeVal(val, this, false);
             }
         } else {
 
@@ -303,7 +303,7 @@ public class ModuloXYC2 extends AbstractBinIntSConstraint {
     public void reviseV0OnRem(BitSet supports, int valeur) throws ContradictionException {
         if (v0.hasEnumeratedDomain()) {
             if (supports.get(valeur % m))
-                v0.removeVal(valeur % m, cIdx1);
+                v0.removeVal(valeur % m, this, false);
         } else {
             int min = supports.nextClearBit(0);
             int max = min;
@@ -311,8 +311,8 @@ public class ModuloXYC2 extends AbstractBinIntSConstraint {
                 max = j;
             }
 
-            v0.updateInf(min, cIdx0);
-            v0.updateSup(max, cIdx0);
+            v0.updateInf(min, this, false);
+            v0.updateSup(max, this, false);
         }
     }
 
@@ -321,7 +321,7 @@ public class ModuloXYC2 extends AbstractBinIntSConstraint {
         if (v1.hasEnumeratedDomain()) {
             IntDomain dom = v1.getDomain();
             for (int q = dom.getInf() / m; q <= dom.getSup() / m; q++) {
-                v1.removeVal(valeur + q * m, cIdx1);
+                v1.removeVal(valeur + q * m, this, false);
             }
         } else {
             v1.setInf(searchInfV1());

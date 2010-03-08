@@ -265,7 +265,7 @@ public class StoredDirectedMultiGraph {
             if (support.isEmpty())
             {
                 IntDomainVar var = this.constraint.getVar(layer);
-                var.removeVal(value,this.constraint.getConstraintIdx(layer));
+                var.removeVal(value, this.constraint, false);
             }
         }
 

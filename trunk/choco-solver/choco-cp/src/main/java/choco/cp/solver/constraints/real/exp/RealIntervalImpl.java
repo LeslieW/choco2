@@ -24,7 +24,6 @@ package choco.cp.solver.constraints.real.exp;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.real.RealInterval;
 
 /**
@@ -66,10 +65,6 @@ public class RealIntervalImpl implements RealInterval {
   }
 
   public void intersect(RealInterval interval) throws ContradictionException {
-    intersect(interval, VarEvent.NOCAUSE);
-  }
-
-  public void intersect(RealInterval interval, int index) throws ContradictionException {
     if (interval.getInf() > inf) inf = interval.getInf();
     if (interval.getSup() < sup) sup = interval.getSup();
   }

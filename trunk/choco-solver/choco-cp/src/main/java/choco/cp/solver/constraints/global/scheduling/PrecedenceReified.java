@@ -49,8 +49,8 @@ public final class PrecedenceReified extends AbstractPrecedenceConstraint {
 
 	@Override
 	public void propagateP2() throws ContradictionException {
-		vars[2].updateSup(vars[1].getSup() + k1 - 1, cIndices[2]);
-		vars[1].updateInf(vars[2].getInf() - k1 + 1, cIndices[1]);
+		vars[2].updateSup(vars[1].getSup() + k1 - 1, this, false);
+		vars[1].updateInf(vars[2].getInf() - k1 + 1, this, false);
 	}
 
 	@Override
@@ -67,9 +67,9 @@ public final class PrecedenceReified extends AbstractPrecedenceConstraint {
 	public void filterOnP1P2TowardsB() throws ContradictionException {
 		reuseBool = isP1Entailed();
 		if (reuseBool == Boolean.TRUE) {
-			vars[BIDX].instantiate(1, cIndices[BIDX]);
+			vars[BIDX].instantiate(1, this, false);
 		} else if(reuseBool == Boolean.FALSE){
-			vars[BIDX].instantiate(0, cIndices[BIDX]);
+			vars[BIDX].instantiate(0, this, false);
 		}
 	}
 

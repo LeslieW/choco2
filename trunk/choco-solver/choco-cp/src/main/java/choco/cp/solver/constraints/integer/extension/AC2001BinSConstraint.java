@@ -96,7 +96,7 @@ public class AC2001BinSConstraint extends CspBinSConstraint {
         if (found)
             currentSupport0[x - offset0].set(support);
         else {
-            v0.removeVal(x, cIdx0);
+            v0.removeVal(x, this, false);
         }
     }
 
@@ -111,7 +111,7 @@ public class AC2001BinSConstraint extends CspBinSConstraint {
         if (found)
             currentSupport1[y - offset1].set(support);
         else {
-            v1.removeVal(y, cIdx1);
+            v1.removeVal(y, this, false);
         }
     }
 
@@ -132,7 +132,7 @@ public class AC2001BinSConstraint extends CspBinSConstraint {
             }
             itv1.dispose();
             if (!found) {
-                v0.removeVal(val0, cIdx0);
+                v0.removeVal(val0, this, false);
             } else
                 currentSupport0[val0 - offset0].set(support);
 
@@ -154,7 +154,7 @@ public class AC2001BinSConstraint extends CspBinSConstraint {
             }
             itv0.dispose();
             if (!found) {
-                v1.removeVal(val1, cIdx1);
+                v1.removeVal(val1, this, false);
             } else
                 currentSupport1[val1 - offset1].set(support);
             found = false;
@@ -210,7 +210,7 @@ public class AC2001BinSConstraint extends CspBinSConstraint {
             while (itv1.hasNext()) {
                 int val = itv1.next();
                 if (!relation.isConsistent(value, val)) {
-                    v1.removeVal(val, cIdx1);
+                    v1.removeVal(val, this, false);
                 }
             }
             itv1.dispose();
@@ -220,7 +220,7 @@ public class AC2001BinSConstraint extends CspBinSConstraint {
             while (itv0.hasNext()) {
                 int val = itv0.next();
                 if (!relation.isConsistent(val, value)) {
-                    v0.removeVal(val, cIdx0);
+                    v0.removeVal(val, this, false);
                 }
             }
             itv0.dispose();

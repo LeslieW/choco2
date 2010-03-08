@@ -344,23 +344,23 @@ public class LeximinSConstraint extends AbstractLargeIntSConstraint {
 			// Check support for x
 			if ((a = super.vars[i].getInf()) < (b = super.vars[i].getSup())) {
 				if (a < this.alpha.get()) {
-					super.vars[i].instantiate(a, i);
+					super.vars[i].instantiate(a, this, false);
 				}
 				if (a == this.alpha.get() && this.epsilon.get(1)) {
 					if (b >= this.beta.get() && this.gamma.get() > 0) {
 						if (this.epsilon.get(2)) {
 							if (this.delta.get() > 0) {
 								//super.vars[i].updateSup(this.beta.get() - 1, super.cste);
-								super.vars[i].updateSup(this.beta.get(), cIndices[i]);
+								super.vars[i].updateSup(this.beta.get(), this, false);
 							} else {
-								super.vars[i].updateSup(this.beta.get(), cIndices[i]);
+								super.vars[i].updateSup(this.beta.get(), this, false);
 							}
 						} else {
 							//super.vars[i].updateSup(this.beta.get() - 1, super.cste);
-							super.vars[i].updateSup(this.beta.get(), cIndices[i]);
+							super.vars[i].updateSup(this.beta.get(), this, false);
 						}
 					} else {
-						super.vars[i].updateSup(this.beta.get(), cIndices[i]);
+						super.vars[i].updateSup(this.beta.get(), this, false);
 					}
 				}
 			}
@@ -368,12 +368,12 @@ public class LeximinSConstraint extends AbstractLargeIntSConstraint {
 			// Check support for y
 			if ((a = super.vars[n + i].getInf()) < (b = super.vars[n + i].getSup())) {
 				if (b <= this.alpha.get()) {
-					super.vars[n + i].instantiate(b, n+i);
+					super.vars[n + i].instantiate(b, this, false);
 				}
 				if (this.alpha.get() < b &&
 						b < this.beta.get() &&
 						a <= this.alpha.get()) {
-					super.vars[n + i].updateInf(this.alpha.get(), cIndices[n + i]);
+					super.vars[n + i].updateInf(this.alpha.get(), this, false);
 				}
 				if (b == this.beta.get() && a <= this.alpha.get()) {
 					if (this.epsilon.get(1)) {
@@ -381,23 +381,23 @@ public class LeximinSConstraint extends AbstractLargeIntSConstraint {
 								this.epsilon.get(2) &&
 								this.delta.get() > 0) {
 							//super.vars[n + i].updateInf(this.alpha.get() + 1, super.cste);
-							super.vars[n + i].updateInf(this.alpha.get(), cIndices[n + i]);
+							super.vars[n + i].updateInf(this.alpha.get(), this, false);
 						} else {
-							super.vars[n + i].updateInf(this.alpha.get(), cIndices[n + i]);
+							super.vars[n + i].updateInf(this.alpha.get(), this, false);
 						}
 					} else {
-						super.vars[n + i].updateInf(this.alpha.get(), cIndices[n + i]);
+						super.vars[n + i].updateInf(this.alpha.get(), this, false);
 					}
 				}
 				if (b > this.beta.get() && a <= this.alpha.get()) {
 					if (this.epsilon.get(1)) {
 						if (this.gamma.get() > 0) {
 							//super.vars[n + i].updateInf(this.alpha.get() + 1, super.cste);
-							super.vars[n + i].updateInf(this.alpha.get(), cIndices[n + i]);
+							super.vars[n + i].updateInf(this.alpha.get(), this, false);
 						}
 					} else {
 						//super.vars[n + i].updateInf(this.alpha.get() + 1, super.cste);
-						super.vars[n + i].updateInf(this.alpha.get(), cIndices[n + i]);
+						super.vars[n + i].updateInf(this.alpha.get(), this, false);
 					}
 				}
 

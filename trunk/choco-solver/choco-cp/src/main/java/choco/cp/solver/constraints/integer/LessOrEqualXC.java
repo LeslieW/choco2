@@ -76,7 +76,7 @@ public final class LessOrEqualXC extends AbstractUnIntSConstraint {
 	 */
 
 	public void propagate() throws ContradictionException {
-		v0.updateSup(this.cste, this.cIdx0);
+		v0.updateSup(this.cste, this, false);
 		this.setEntailed();
 	}
 

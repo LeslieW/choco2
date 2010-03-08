@@ -68,7 +68,7 @@ public final class NotEqualXY_C extends AbstractBinIntSConstraint {
 	}
 
 	private void removeValV0() throws ContradictionException {
-		if(v0.removeVal(cste - v1.getVal(), this.cIdx0)){
+		if(v0.removeVal(cste - v1.getVal(), this, false)){
             this.setEntailed();
         }else if(!v0.canBeInstantiatedTo(cste - v1.getVal())){
             this.setEntailed();
@@ -76,7 +76,7 @@ public final class NotEqualXY_C extends AbstractBinIntSConstraint {
 	}
 
 	private void removeValV1() throws ContradictionException {
-		if(v1.removeVal(cste - v0.getVal(), this.cIdx1)){
+		if(v1.removeVal(cste - v0.getVal(), this, false)){
             this.setEntailed();
         }else if(!v1.canBeInstantiatedTo(cste - v0.getVal())){
             this.setEntailed();

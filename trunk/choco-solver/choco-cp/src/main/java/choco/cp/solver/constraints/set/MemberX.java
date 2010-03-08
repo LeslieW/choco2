@@ -55,7 +55,7 @@ public class MemberX extends AbstractUnSetSConstraint {
 	}
 
 	public void propagate() throws ContradictionException {
-		v0.addToKernel(cste, cIdx0);
+		v0.addToKernel(cste, this, false);
 	}
 
 	public void awakeOnInst(int varIdx) throws ContradictionException {

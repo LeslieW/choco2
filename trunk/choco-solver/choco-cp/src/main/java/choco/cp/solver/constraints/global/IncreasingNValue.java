@@ -232,7 +232,7 @@ public class IncreasingNValue extends AbstractLargeIntSConstraint {
      * It returns true if the domain of idx is empty after the operation, false otherwise.
      */
     public final void adjustMin(int idx, int val) throws ContradictionException {
-        vars[idx].updateInf(val, cIndices[idx]);
+        vars[idx].updateInf(val, this, false);
     }
 
     /*
@@ -240,7 +240,7 @@ public class IncreasingNValue extends AbstractLargeIntSConstraint {
      * It returns true if the domain of idx is empty after the operation, false otherwise.
      */
     public final void adjustMax(int idx, int val) throws ContradictionException {
-        vars[idx].updateSup(val, cIndices[idx]);
+        vars[idx].updateSup(val, this, false);
     }
 
     /*
@@ -278,7 +278,7 @@ public class IncreasingNValue extends AbstractLargeIntSConstraint {
     // Algorithm 8
     public void propagate() throws ContradictionException {
         if (n == 1) {
-            occ.instantiate(1, cIndices[n]);
+            occ.instantiate(1, this, false);
         }
         for (int i = 1; i < n; i++) {
             adjustMin(i, x[i - 1].getInf());
@@ -316,13 +316,13 @@ public class IncreasingNValue extends AbstractLargeIntSConstraint {
                 int mind = infPrefix.get(i, v) + infSuffix.get(i, v) - 1;
                 int maxd = supPrefix.get(i, v) + supSuffix.get(i, v) - 1;
                 if ((m == Mode.ATMOST) && mind > occ.getSup()) {
-                    x[i].removeVal(v, cIndices[i]);
+                    x[i].removeVal(v, this, false);
                 }
                 if ((m == Mode.ATLEAST) && maxd < occ.getInf()) {
-                    x[i].removeVal(v, cIndices[i]);
+                    x[i].removeVal(v, this, false);
                 }
                 if(m == Mode.BOTH && test(mind,maxd)) {
-                    x[i].removeVal(v, cIndices[i]);
+                    x[i].removeVal(v, this, false);
                 }//*/
                 /*if (test(mind, maxd)) {
                     x[i].removeVal(v, cIndices[i]);

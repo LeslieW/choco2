@@ -28,7 +28,6 @@ import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public class BoundAllDiff extends AbstractLargeIntSConstraint {
@@ -200,7 +199,7 @@ public class BoundAllDiff extends AbstractLargeIntSConstraint {
 
             if (h[x] > x) {
                 int w = pathmax(h, h[x]);
-                maxsorted[i].var.updateInf(bounds[w], this.getConstraintIdx(maxsorted[i].idx));
+                maxsorted[i].var.updateInf(bounds[w], this, false);
                 pathset(h, x, w, w);
             }
 
@@ -236,7 +235,7 @@ public class BoundAllDiff extends AbstractLargeIntSConstraint {
 
             if (h[x] < x) {
                 int w = pathmin(h, h[x]);
-                minsorted[i].var.updateSup(bounds[w] - 1, this.getConstraintIdx(minsorted[i].idx));
+                minsorted[i].var.updateSup(bounds[w] - 1, this, false);
                 pathset(h, x, w, w);
             }
             if (d[z] == bounds[y] - bounds[z]) {
@@ -252,7 +251,7 @@ public class BoundAllDiff extends AbstractLargeIntSConstraint {
             if (vars[i].isInstantiated()) {
                 for (int j = 0; j < vars.length; j++) {
                     if (i != j) {
-                        vars[j].removeVal(vars[i].getVal(), VarEvent.domOverWDegIdx(cIndices[j]));
+                        vars[j].removeVal(vars[i].getVal(), this, true);
                     }
                 }
             }
@@ -280,7 +279,7 @@ public class BoundAllDiff extends AbstractLargeIntSConstraint {
             for (int j = 0; j < vars.length; j++) {
                 if (j != i && vars[j].isInstantiated()) {
                     if (vars[j].getVal() == vars[i].getInf()) {
-						vars[i].updateInf(vars[j].getVal() + 1, VarEvent.domOverWDegIdx(cIndices[i]));
+						vars[i].updateInf(vars[j].getVal() + 1, this, true);
 					}
                 }
             }
@@ -295,7 +294,7 @@ public class BoundAllDiff extends AbstractLargeIntSConstraint {
             for (int j = 0; j < vars.length; j++) {
                 if (j != i && vars[j].isInstantiated()) {
                     if (vars[j].getVal() == vars[i].getSup()) {
-						vars[i].updateSup(vars[j].getVal() - 1, VarEvent.domOverWDegIdx(cIndices[i]));
+						vars[i].updateSup(vars[j].getVal() - 1, this, true);
 					}
                 }
             }
@@ -311,7 +310,7 @@ public class BoundAllDiff extends AbstractLargeIntSConstraint {
             int val = vars[i].getVal();
             for (int j = 0; j < vars.length; j++) {
                 if (j != i) {
-                    vars[j].removeVal(val, VarEvent.domOverWDegIdx(cIndices[j]));
+                    vars[j].removeVal(val, this, true);
                 }
             }
         }

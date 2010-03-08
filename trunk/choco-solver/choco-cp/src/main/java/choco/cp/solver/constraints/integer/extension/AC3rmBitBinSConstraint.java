@@ -105,7 +105,7 @@ public class AC3rmBitBinSConstraint extends CspBinSConstraint {
 				while (itv1.hasNext()) {
 					int y = itv1.next();
 					if (!((CouplesBitSetTable) relation).checkValue(1, y, v0Domain)) {
-						v1.removeVal(y, cIdx1);
+						v1.removeVal(y, this, false);
 					}
 				}
 			} finally {
@@ -123,7 +123,7 @@ public class AC3rmBitBinSConstraint extends CspBinSConstraint {
 				while (itv0.hasNext()) {
 					int x = itv0.next();
 					if (!((CouplesBitSetTable) relation).checkValue(0, x, v1Domain)) {
-						v0.removeVal(x, cIdx0);
+						v0.removeVal(x, this, false);
 					}
 				}
 			} finally {
@@ -150,7 +150,7 @@ public class AC3rmBitBinSConstraint extends CspBinSConstraint {
             while (itv0.hasNext()) {
                 int val0 = itv0.next();
                 if (!((CouplesBitSetTable) relation).checkValue(0, val0, v1Domain)) {
-                    v0.removeVal(val0, cIdx0);
+                    v0.removeVal(val0, this, false);
                 }
             }
         }finally {
@@ -161,7 +161,7 @@ public class AC3rmBitBinSConstraint extends CspBinSConstraint {
             while (itv0.hasNext()) {
                 int val1 = itv0.next();
                 if (!((CouplesBitSetTable) relation).checkValue(1, val1, v0Domain)) {
-                    v1.removeVal(val1, cIdx1);
+                    v1.removeVal(val1, this, false);
                 }
             }
         }finally {
@@ -209,7 +209,7 @@ public class AC3rmBitBinSConstraint extends CspBinSConstraint {
 				while (itv1.hasNext()) {
 					int val = itv1.next();
 					if (!relation.isConsistent(value, val)) {
-						v1.removeVal(val, cIdx1);
+						v1.removeVal(val, this, false);
 					}
 				}
 			} finally {
@@ -222,7 +222,7 @@ public class AC3rmBitBinSConstraint extends CspBinSConstraint {
 				while (itv0.hasNext()) {
 					int val = itv0.next();
 					if (!relation.isConsistent(val, value)) {
-						v0.removeVal(val, cIdx0);
+						v0.removeVal(val, this, false);
 					}
 				}
 			} finally {

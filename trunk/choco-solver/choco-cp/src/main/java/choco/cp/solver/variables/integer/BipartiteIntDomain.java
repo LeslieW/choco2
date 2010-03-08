@@ -29,6 +29,7 @@ import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.PropagationEngine;
 
 import java.util.Arrays;
@@ -222,17 +223,17 @@ public class BipartiteIntDomain extends AbstractIntDomain {
         return x > getInf();
     }
 
-    public boolean removeInterval(int a, int b, int idx) throws ContradictionException {
+    public boolean removeInterval(int a, int b, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
         if (a <= getInf())
-            return updateInf(b + 1, idx);
+            return updateInf(b + 1, cause, forceAwake);
         else if (getSup() <= b)
-            return updateSup(a - 1, idx);
+            return updateSup(a - 1, cause, forceAwake);
         else {
             boolean anyChange = false;
             for (int i = valuesInDomainNumber.get(); i >= 0; i--) {
                 int v = values[i];
                 if (v >= a && v <= b)
-                    anyChange |= removeVal(v, idx);
+                    anyChange |= removeVal(v, cause, forceAwake);
             }
             return anyChange;
         }
@@ -245,17 +246,18 @@ public class BipartiteIntDomain extends AbstractIntDomain {
      * was a real modification on the domain.
      *
      * @param x the value to remove
+     * @param cause
      * @return wether the removal has been done
      * @throws ContradictionException contradiction excpetion
      */
-    protected boolean _removeVal(int x, int idx) throws ContradictionException {
+    protected boolean _removeVal(int x, final SConstraint cause) throws ContradictionException {
         int infv = getInf(), supv = getSup();
         if (infv <= x && x <= supv) {
             boolean b = remove(x);
             if (x == infv) {
                 int possibleninf = x + 1;
                 if (possibleninf > supv) {
-                    propagationEngine.raiseContradiction(idx, variable);
+                    propagationEngine.raiseContradiction(cause);
                 }
                 int min = Integer.MAX_VALUE;
                 for (int i = valuesInDomainNumber.get(); i >= 0; i--) {
@@ -269,7 +271,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
             } else if (x == supv) {
                 int possiblesup = x - 1;
                 if (possiblesup < infv) {
-                    propagationEngine.raiseContradiction(idx, variable);
+                    propagationEngine.raiseContradiction(cause);
                 }
                 int max = Integer.MIN_VALUE;
                 for (int i = valuesInDomainNumber.get(); i >= 0; i--) {

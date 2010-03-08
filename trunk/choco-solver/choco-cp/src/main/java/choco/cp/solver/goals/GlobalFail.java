@@ -24,7 +24,6 @@ package choco.cp.solver.goals;
 
 import choco.cp.solver.search.GoalSearchLoop;
 import choco.kernel.solver.ContradictionException;
-import static choco.kernel.solver.ContradictionException.Type.UNKNOWN;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.goals.Goal;
 import choco.kernel.solver.goals.GoalType;
@@ -46,7 +45,7 @@ public class GlobalFail implements Goal {
   public Goal execute(Solver solver) throws ContradictionException {
     //((GoalSearchSolver)solver.getSearchStrategy()).setGlobalContradiction();
       ((GoalSearchLoop)solver.getSearchStrategy().searchLoop).setGlobalContradiction();
-    solver.getPropagationEngine().raiseContradiction(null, UNKNOWN);
+    solver.getPropagationEngine().raiseContradiction(null);
     return null;
     //throw new ContradictionException(solver);
   }

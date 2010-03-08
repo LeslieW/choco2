@@ -64,7 +64,7 @@ public final class PrecedenceImplied extends AbstractPrecedenceConstraint {
 	@Override
 	public void filterOnP1P2TowardsB() throws ContradictionException {
 		if(isP1Entailed() == Boolean.FALSE){
-			vars[BIDX].instantiate(0, cIndices[BIDX]);
+			vars[BIDX].instantiate(0, this, false);
 		}
 	}
 

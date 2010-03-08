@@ -64,9 +64,9 @@ public class BooleanChanneling extends AbstractBinIntSConstraint {
     public void filterFromBtoX() throws ContradictionException {
     if (v0.isInstantiated()) {
       if (v0.isInstantiatedTo(0)) { // on retire la valeur j de x;
-        v1.removeVal(cste, cIdx1);
+        v1.removeVal(cste, this, false);
       } else { // on instancie x � j
-        v1.instantiate(cste, cIdx1);
+        v1.instantiate(cste, this, false);
       }
     }
   }
@@ -74,10 +74,10 @@ public class BooleanChanneling extends AbstractBinIntSConstraint {
   public void filterFromXtoB() throws ContradictionException {
     if (v1.canBeInstantiatedTo(cste)) {
       if (v1.isInstantiatedTo(cste)) { // on instancie y_ij � 1
-        v0.instantiate(1, cIdx0);
+        v0.instantiate(1, this, false);
       }
     } else {  // on instancie y_ij � 0;
-      v0.instantiate(0, cIdx0);
+      v0.instantiate(0, this, false);
     }
   }
 

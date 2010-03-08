@@ -432,7 +432,7 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
 		int i;
 		for (i = 0; i < nbPosVars; i++) {
 			int newSupi = MathUtils.divFloor(-(mylb), coeffs[i]) + vars[i].getInf();
-			if (vars[i].updateSup(newSupi, cIndices[i])) {
+			if (vars[i].updateSup(newSupi, this, false)) {
 				//				if (LOGGER.isLoggable(Level.FINER)) {
 				//					LOGGER.log(Level.FINER,  "SUP({0}) <= {1}/{2} + {3} = {4}",
 				//							new Object[]{vars[i].toString(), -(mylb), coeffs[i], vars[i].getInf(), newSupi});
@@ -442,7 +442,7 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
 		}
 		for (i = nbPosVars; i < nbVars; i++) {
 			int newInfi = MathUtils.divCeil(mylb, -(coeffs[i])) + vars[i].getSup();
-			if (vars[i].updateInf(newInfi, cIndices[i])) {
+			if (vars[i].updateInf(newInfi, this, false)) {
 				//				if (LOGGER.isLoggable(Level.FINER)) {
 				//					LOGGER.log(Level.FINER, "INF({0}) >= {1}/{2} + {3} = {4}",
 				//							new Object[]{vars[i].toString(), mylb, -(coeffs[i]), vars[i].getSup(), newInfi});
@@ -479,7 +479,7 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
 		int i;
 		for (i = 0; i < nbPosVars; i++) {
 			int newInfi = MathUtils.divCeil(-(myub), coeffs[i]) + vars[i].getSup();
-			if (vars[i].updateInf(newInfi, cIndices[i])) {
+			if (vars[i].updateInf(newInfi, this, false)) {
 //				if (LOGGER.isLoggable(Level.FINER)) {
 //					LOGGER.log(Level.FINEST, "INF({0}) >= {1}/{2} + {3} = {4}",
 //							new Object[]{vars[i].toString(), -(myub), coeffs[i], vars[i].getSup(), newInfi});
@@ -489,7 +489,7 @@ public class IntLinComb extends AbstractLargeIntSConstraint {
 		}
 		for (i = nbPosVars; i < nbVars; i++) {
 			int newSupi = MathUtils.divFloor(myub, -(coeffs[i])) + vars[i].getInf();
-			if (vars[i].updateSup(newSupi, cIndices[i])) {
+			if (vars[i].updateSup(newSupi, this, false)) {
 //				if (LOGGER.isLoggable(Level.FINER)) {
 //					{LOGGER.log(Level.FINER, "SUP({0}) <= {1}/{2} + {3} = {4} ",
 //							new Object[]{vars[i].toString(), myub, -(coeffs[i]), vars[i].getInf(), newSupi});}

@@ -117,8 +117,6 @@ public final class PConstraint {
     private static final String _cumulative = "_cumulative";
     private static final String _exactly = "_exactly";
     private static final String _setDisjoint = "_setDisjoint";
-    private static final String _elementBool = "_elementBool";
-    private static final String _elementInt = "_elementInt";
     private static final String _globalCardinalityLowUp = "_globalCardinalityLowUp";
     private static final String _globalCardinality = "_globalCardinality";
     private static final String _inverseChanneling = "_inverseChanneling";
@@ -477,7 +475,7 @@ public final class PConstraint {
             int value = exps.get(2).intValue();
             c = exactly(n, vars, value);
         }else
-        if(name.contains(_elementBool) || name.contains(_elementInt)){
+        if(name.contains(_element)){
             IntegerVariable index = exps.get(0).intVarValue();
             IntegerVariable[] varArray = exps.get(1).toIntVarArray();
             IntegerVariable val = exps.get(2).intVarValue();

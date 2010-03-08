@@ -120,8 +120,8 @@ public class AmongGAC extends AbstractLargeIntSConstraint {
     private void filter() throws ContradictionException {
         int lb = LB.get();
         int ub = UB.get();
-        vars[nb_vars].updateInf(lb, cIndices[nb_vars]);
-        vars[nb_vars].updateSup(ub, cIndices[nb_vars]);
+        vars[nb_vars].updateInf(lb, this, false);
+        vars[nb_vars].updateSup(ub, this, false);
 
         int min = Math.max(vars[nb_vars].getInf(), lb);
         int max = Math.min(vars[nb_vars].getSup(), ub);
@@ -234,7 +234,7 @@ public class AmongGAC extends AbstractLargeIntSConstraint {
         for(int i = both.nextSetBit(0); i >=0; i = both.nextSetBit(i+1)){
             IntDomainVar v = vars[i];
             for(int value : values){
-                v.removeVal(value, cIndices[i]);
+                v.removeVal(value, this, false);
             }
         }
     }
@@ -252,7 +252,7 @@ public class AmongGAC extends AbstractLargeIntSConstraint {
             while(it.hasNext()){
                 int val = it.next();
                 if(!valuesAsList.contains(val)){
-                    v.removeVal(val, cIndices[i]);
+                    v.removeVal(val, this, false);
                 }
             }
             it.dispose();

@@ -106,15 +106,15 @@ public class MixedEqXY extends AbstractBinRealIntSConstraint{
   }
 
   protected void updateIInf() throws ContradictionException {
-    v1.updateInf((int) Math.ceil(v0.getInf()), cIdx1);
+    v1.updateInf((int) Math.ceil(v0.getInf()), this, false);
   }
 
   protected void updateISup() throws ContradictionException {
-    v1.updateSup((int) Math.floor(v0.getSup()), cIdx1);
+    v1.updateSup((int) Math.floor(v0.getSup()), this, false);
   }
 
   protected void updateReal() throws ContradictionException {
-    v0.intersect(new RealIntervalConstant(v1.getInf(), v1.getSup()), cIdx0);
+    v0.intersect(new RealIntervalConstant(v1.getInf(), v1.getSup()));
   }
 
 }

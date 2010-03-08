@@ -75,39 +75,39 @@ public class MaxXYZ extends AbstractTernIntSConstraint {
 
     public void awakeOnSup(int idx) throws ContradictionException {
         if (idx == 0) {
-            v1.updateSup(v0.getSup(), cIdx1);
-            v2.updateSup(v0.getSup(), cIdx2);
+            v1.updateSup(v0.getSup(), this, false);
+            v2.updateSup(v0.getSup(), this, false);
         } else {
-            v0.updateSup(Math.max(v1.getSup(), v2.getSup()), cIdx0);
+            v0.updateSup(Math.max(v1.getSup(), v2.getSup()), this, false);
         }
     }
 
     public void awakeOnInf(int idx) throws ContradictionException {
         if (idx == 0) {
             if (v1.getInf() > v2.getSup()) {
-                v1.updateInf(v0.getInf(), cIdx1);
+                v1.updateInf(v0.getInf(), this, false);
             }
 
             if (v2.getInf() > v1.getSup()) {
-                v2.updateInf(v0.getInf(), cIdx2);
+                v2.updateInf(v0.getInf(), this, false);
             }
         } else {
-            v0.updateInf(Math.max(v1.getInf(), v2.getInf()), cIdx2);
+            v0.updateInf(Math.max(v1.getInf(), v2.getInf()), this, false);
         }
     }
 
     public void awakeOnRem(int idx, int x) throws ContradictionException {
         if (idx == 0) {
             if (x > v2.getSup()) {
-                v1.removeVal(x, cIdx1);
+                v1.removeVal(x, this, false);
             }
 
             if (x > v1.getSup()) {
-                v2.removeVal(x, cIdx2);
+                v2.removeVal(x, this, false);
             }
         } else {
             if (!v1.canBeInstantiatedTo(x) && !v2.canBeInstantiatedTo(x)) {
-                v0.removeVal(x, cIdx0);
+                v0.removeVal(x, this, false);
             }
         }
     }
@@ -127,8 +127,8 @@ public class MaxXYZ extends AbstractTernIntSConstraint {
 
     public void filter(int idx) throws ContradictionException {
         if (idx == 0) {
-            v0.updateSup(Math.max(v1.getSup(), v2.getSup()), cIdx0);
-            v0.updateInf(Math.max(v1.getInf(), v2.getInf()), cIdx0);
+            v0.updateSup(Math.max(v1.getSup(), v2.getSup()), this, false);
+            v0.updateInf(Math.max(v1.getInf(), v2.getInf()), this, false);
 
             if (v0.hasEnumeratedDomain()) {
                 IntDomain dom0 = v0.getDomain();
@@ -137,7 +137,7 @@ public class MaxXYZ extends AbstractTernIntSConstraint {
                     while (it.hasNext()) {
                         int valeur = it.next();
                         if (!v1.canBeInstantiatedTo(valeur) && !v2.canBeInstantiatedTo(valeur)) {
-                            v0.removeVal(valeur, cIdx0);
+                            v0.removeVal(valeur, this, false);
                         }
                     }
                 }finally {
@@ -145,9 +145,9 @@ public class MaxXYZ extends AbstractTernIntSConstraint {
                 }
             }
         } else if (idx == 1) {
-            v1.updateSup(v0.getSup(), cIdx1);
+            v1.updateSup(v0.getSup(), this, false);
             if (v1.getInf() > v2.getSup()) {
-                v1.updateInf(v0.getInf(), cIdx1);
+                v1.updateInf(v0.getInf(), this, false);
             }
 
             if (v1.hasEnumeratedDomain()) {
@@ -157,7 +157,7 @@ public class MaxXYZ extends AbstractTernIntSConstraint {
                     while (it.hasNext()) {
                         int valeur = it.next();
                         if (!v0.canBeInstantiatedTo(valeur) && (valeur > v2.getSup())) {
-                            v1.removeVal(valeur, cIdx1);
+                            v1.removeVal(valeur, this, false);
                         }
                     }
                 }finally {
@@ -167,9 +167,9 @@ public class MaxXYZ extends AbstractTernIntSConstraint {
 
 
         } else if (idx == 2) {
-            v2.updateSup(v0.getSup(), cIdx2);
+            v2.updateSup(v0.getSup(), this, false);
             if (v2.getInf() > v1.getSup()) {
-                v2.updateInf(v0.getInf(), cIdx2);
+                v2.updateInf(v0.getInf(), this, false);
             }
             if (v2.hasEnumeratedDomain()) {
                 IntDomain dom2 = v2.getDomain();
@@ -178,7 +178,7 @@ public class MaxXYZ extends AbstractTernIntSConstraint {
                     while (it.hasNext()) {
                         int valeur = it.next();
                         if (!v0.canBeInstantiatedTo(valeur) && (valeur > v1.getSup())) {
-                            v2.removeVal(valeur, cIdx2);
+                            v2.removeVal(valeur, this, false);
                         }
                     }
                 }finally {
@@ -192,14 +192,14 @@ public class MaxXYZ extends AbstractTernIntSConstraint {
 
     public void awakeOnInst(int idx, int val) throws ContradictionException {
         if (idx == 0) {
-            v1.updateSup(val, cIdx1);
-            v2.updateSup(val, cIdx2);
-            if (!v1.canBeInstantiatedTo(val)) v2.instantiate(val, cIdx2);
-            if (!v2.canBeInstantiatedTo(val)) v1.instantiate(val, cIdx1);
+            v1.updateSup(val, this, false);
+            v2.updateSup(val, this, false);
+            if (!v1.canBeInstantiatedTo(val)) v2.instantiate(val, this, false);
+            if (!v2.canBeInstantiatedTo(val)) v1.instantiate(val, this, false);
         } else if (idx == 1) {
-            if (val > v2.getSup()) v0.instantiate(val, cIdx0);
+            if (val > v2.getSup()) v0.instantiate(val, this, false);
         } else if (idx == 2) {
-            if (val > v1.getSup()) v0.instantiate(val, cIdx0);
+            if (val > v1.getSup()) v0.instantiate(val, this, false);
         }
     }
 

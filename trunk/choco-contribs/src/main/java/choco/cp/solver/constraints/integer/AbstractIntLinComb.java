@@ -254,10 +254,10 @@ public abstract class AbstractIntLinComb extends AbstractLargeIntSConstraint imp
 		if( mylb > 0) this.fail();
 		else {
 			for (int i = 0; i < nbPosVars; i++) {
-				anyChange |= vars[i].updateSup( getSupPV(i, mylb), cIndices[i]);
+				anyChange |= vars[i].updateSup( getSupPV(i, mylb), this, false);
 			}
 			for (int i = nbPosVars; i < vars.length; i++) {
-				anyChange |= vars[i].updateInf( getInfNV(i, mylb), cIndices[i]);
+				anyChange |= vars[i].updateInf( getInfNV(i, mylb), this, false);
 			}
 		}
 		return anyChange;
@@ -272,10 +272,10 @@ public abstract class AbstractIntLinComb extends AbstractLargeIntSConstraint imp
 		if( myub < 0) this.fail();
 		else {
 			for (int i = 0; i < nbPosVars; i++) {
-				anyChange |= vars[i].updateInf( getInfPV(i, myub), cIndices[i]);
+				anyChange |= vars[i].updateInf( getInfPV(i, myub), this, false);
 			}
 			for (int i = nbPosVars; i < vars.length; i++) {
-				anyChange |= vars[i].updateSup( getSupNV(i, myub), cIndices[i]);
+				anyChange |= vars[i].updateSup( getSupNV(i, myub), this, false);
 			}	
 		}
 		return anyChange;

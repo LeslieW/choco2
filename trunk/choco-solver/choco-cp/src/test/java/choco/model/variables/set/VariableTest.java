@@ -33,7 +33,6 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.set.SetVar;
 import junit.framework.Assert;
 import static org.junit.Assert.assertTrue;
@@ -50,8 +49,8 @@ public class VariableTest {
 		CPSolver s = new CPSolver();
 		SetVar x = s.createBoundSetVar("X", 1, 5);
 		try {
-			x.addToKernel(2, VarEvent.NOCAUSE);
-			x.addToKernel(4, VarEvent.NOCAUSE);
+			x.addToKernel(2, null, true);
+			x.addToKernel(4, null, true);
 		} catch (ContradictionException e) {
 			assertTrue(false);
 		}
@@ -76,7 +75,7 @@ public class VariableTest {
 			bool = !bool;
 			try {
 				if (bool) {
-					set.remFromEnveloppe(x, 0);
+					set.remFromEnveloppe(x, null, false);
 				}
 			} catch (ContradictionException e) {
 

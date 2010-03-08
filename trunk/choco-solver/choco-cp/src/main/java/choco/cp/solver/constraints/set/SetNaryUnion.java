@@ -52,7 +52,7 @@ public class SetNaryUnion extends AbstractLargeSetSConstraint {
      */
     public void awakeOnKer(int varIdx, int x) throws ContradictionException {
         if (varIdx > UNION_SET_INDEX) 
-            unionSet.addToKernel(x, cIndices[UNION_SET_INDEX]);
+            unionSet.addToKernel(x, this, false);
         else //x has been add to the unionSet kernel
             instanciateIfLastOccurence(x);
     }
@@ -63,7 +63,7 @@ public class SetNaryUnion extends AbstractLargeSetSConstraint {
     public void awakeOnEnv(int varIdx, int x) throws ContradictionException {
         if (varIdx == UNION_SET_INDEX) 
             for (int idx = 0; idx < setVars.length; idx++) 
-                setVars[idx].remFromEnveloppe(x, cIndices[idx]);
+                setVars[idx].remFromEnveloppe(x, this, false);
         else 
             decOccurence(x);
     }
@@ -81,12 +81,12 @@ public class SetNaryUnion extends AbstractLargeSetSConstraint {
             DisposableIntIterator it1 = vars[varIdx].getDomain().getKernelIterator();
             while (it1.hasNext()) {
                 int val = it1.next();
-                unionSet.addToKernel(val, cIndices[UNION_SET_INDEX]);
+                unionSet.addToKernel(val, this, false);
             }
             DisposableIntIterator it4 = vars[varIdx].getDomain().getEnveloppeIterator();
             while (it4.hasNext()) {
                 int val = it4.next();
-                if (getNbOccurence(val) == 0) unionSet.remFromEnveloppe(val, cIndices[UNION_SET_INDEX]);
+                if (getNbOccurence(val) == 0) unionSet.remFromEnveloppe(val, this, false);
             }
         }
     }
@@ -96,7 +96,7 @@ public class SetNaryUnion extends AbstractLargeSetSConstraint {
             DisposableIntIterator it = setVars[idx].getDomain().getKernelIterator();
             while (it.hasNext()) {
                 int val = it.next();
-                unionSet.addToKernel(val, cIndices[UNION_SET_INDEX]);
+                unionSet.addToKernel(val, this, false);
             }
         }
         
@@ -109,7 +109,7 @@ public class SetNaryUnion extends AbstractLargeSetSConstraint {
         DisposableIntIterator it4 = unionSet.getDomain().getEnveloppeIterator();
         while (it4.hasNext()) {
             int val = it4.next();
-            if (getNbOccurence(val) == 0) unionSet.remFromEnveloppe(val, cIndices[UNION_SET_INDEX]);
+            if (getNbOccurence(val) == 0) unionSet.remFromEnveloppe(val, this, false);
         }
     }
     
@@ -150,7 +150,7 @@ public class SetNaryUnion extends AbstractLargeSetSConstraint {
             for (int idx = 0; idx < setVars.length; idx++) {
                 if(setVars[idx].isInDomainEnveloppe(x)) {
                     removed ++; 
-                    setVars[idx].addToKernel(x, cIndices[idx]);
+                    setVars[idx].addToKernel(x, this, false);
                     }
             }
             assert (removed == 1);

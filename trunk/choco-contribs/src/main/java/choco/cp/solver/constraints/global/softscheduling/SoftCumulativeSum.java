@@ -90,7 +90,7 @@ public class SoftCumulativeSum extends SoftCumulative {
      	       if(sum_height>wishCapa) {
      	    	  int prev = getCostVar(i).getInf();
      	    	  if(prev<sum_height-wishCapa) {
-     		         fixPoint |= getCostVar(i).updateInf(sum_height-wishCapa,cIndices[nbTask*4+i]);
+     		         fixPoint |= getCostVar(i).updateInf(sum_height-wishCapa, this, false);
      		         profileMinSum.set(profileMinSum.get()+getCostVar(i).getInf()-prev);
      	          }
      	       }
@@ -154,7 +154,7 @@ public class SoftCumulativeSum extends SoftCumulative {
         	if(profileMinSum.get()+maxInc>obj.getSup()) {
         		this.fail();
             } else {
-                obj.updateInf(profileMinSum.get()+maxInc,cIndices[nbTask*4+costVarsLength]);
+                obj.updateInf(profileMinSum.get()+maxInc, this, false);
             }
         }
     }

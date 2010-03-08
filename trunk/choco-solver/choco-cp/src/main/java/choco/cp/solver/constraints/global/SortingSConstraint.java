@@ -24,7 +24,6 @@ package choco.cp.solver.constraints.global;
 
 
 import choco.kernel.solver.ContradictionException;
-import static choco.kernel.solver.ContradictionException.Type.CONSTRAINT;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.integer.IntVar;
@@ -108,13 +107,13 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
 
 		for (i = 1; i < this.n; i++) {
 			if (y[i].getInf() < y[i - 1].getInf()) {
-				y[i].updateInf(y[i - 1].getInf(), cIndices[this.n + i]);
+				y[i].updateInf(y[i - 1].getInf(), this, false);
 			}
 		}
 
 		for (i = this.n - 2; i >= 0; i--) {
 			if (y[i].getSup() > y[i + 1].getSup()) {
-				y[i].updateSup(y[i + 1].getSup(), cIndices[this.n + i]);
+				y[i].updateSup(y[i + 1].getSup(), this, false);
 			}
 		}
 
@@ -148,7 +147,7 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
 
 		for (i = 0; i < this.n; i++) {
 			if (x[this.f[i]].getSup() < y[i].getSup()) {
-				y[i].updateSup(x[this.f[i]].getSup(), cIndices[this.n + i]);
+				y[i].updateSup(x[this.f[i]].getSup(), this, false);
 			}
 		}
 
@@ -184,7 +183,7 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
 
 		for (i = 0; i < this.n; i++) {
 			if (x[this.fPrime[i]].getInf() > y[i].getInf()) {
-				y[i].updateInf(x[this.fPrime[i]].getInf(), cIndices[this.n + i]);
+				y[i].updateInf(x[this.fPrime[i]].getInf(), this, false);
 			}
 		}
 
@@ -227,7 +226,7 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
 				// scan the sequence of the ys of the connected component, until one becomes greater than or equal to x
 				assert (this.sccSequences[i][k] != -1);
 				if (y[this.sccSequences[i][k]].getInf() > x[jprime].getInf()) {
-					x[jprime].updateInf(y[this.sccSequences[i][k]].getInf(), cIndices[jprime]);
+					x[jprime].updateInf(y[this.sccSequences[i][k]].getInf(), this, false);
 				}
 			}
 		}
@@ -251,7 +250,7 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
 				// scan the sequence of the ys of the connected component, until one becomes lower than or equal to x
 				assert (this.sccSequences[i][k] != -1);
 				if (y[this.sccSequences[i][k]].getSup() < x[jprime].getSup()) {
-					x[jprime].updateSup(y[this.sccSequences[i][k]].getSup(), cIndices[jprime]);
+					x[jprime].updateSup(y[this.sccSequences[i][k]].getSup(), this, false);
 				}
 			}
 		}
@@ -260,11 +259,11 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
 
 	private int computeF(int j) throws ContradictionException {
 		if (this.pQueue.isEmpty()) {
-			propagationEngine.raiseContradiction(this, CONSTRAINT);
+			propagationEngine.raiseContradiction(this);
 		}
 		int i = this.pQueue.pop();
 		if (x[i].getSup() < y[j].getInf()) {
-			propagationEngine.raiseContradiction(this, CONSTRAINT);
+			propagationEngine.raiseContradiction(this);
 		}
 
 		return i;
@@ -272,11 +271,11 @@ public class SortingSConstraint extends AbstractLargeIntSConstraint {
 
 	private int computeFPrime(int j) throws ContradictionException {
 		if (this.pQueue.isEmpty()) {
-			propagationEngine.raiseContradiction(this, CONSTRAINT);
+			propagationEngine.raiseContradiction(this);
 		}
 		int i = this.pQueue.pop();
 		if (x[i].getInf() > y[j].getSup()) {
-			propagationEngine.raiseContradiction(this, CONSTRAINT);
+			propagationEngine.raiseContradiction(this);
 		}
 
 		return i;

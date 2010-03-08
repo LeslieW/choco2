@@ -60,8 +60,8 @@ public class MemberXY extends AbstractBinSetIntSConstraint {
 		if (count == 0)
 			this.fail();
 		else if (count == 1) {
-			v0.instantiate(val, cIdx0);
-			v1.addToKernel(val, cIdx1);
+			v0.instantiate(val, this, false);
+			v1.addToKernel(val, this, false);
 		}
 	}
 
@@ -83,13 +83,13 @@ public class MemberXY extends AbstractBinSetIntSConstraint {
 	}
 
 	public void awakeOnEnv(int varIdx, int x) throws ContradictionException {
-		v0.removeVal(x, cIdx0);
+		v0.removeVal(x, this, false);
 		filter();
 	}
 
 	public void awakeOnInst(int varIdx) throws ContradictionException {
 		if (varIdx == 0)
-			v1.addToKernel(v0.getVal(), cIdx1);
+			v1.addToKernel(v0.getVal(), this, false);
 		else
 			filter();
 	}
@@ -101,7 +101,7 @@ public class MemberXY extends AbstractBinSetIntSConstraint {
             while (it.hasNext()) {
                 int val = it.next();
                 if (!v1.isInDomainEnveloppe(val)) {
-                    v0.removeVal(val, cIdx0);
+                    v0.removeVal(val, this, false);
                 }
             }
         }finally {

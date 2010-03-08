@@ -106,25 +106,25 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 	}
 
 	protected final boolean updateBoundInf(int val) throws ContradictionException {
-		return ivars[BOUND_INDEX].updateInf(val, int_cIndices[BOUND_INDEX]);
+		return ivars[BOUND_INDEX].updateInf(val, this, false);
 	}
 
 	protected final boolean updateBoundSup(int val) throws ContradictionException {
-		return ivars[BOUND_INDEX].updateSup(val, int_cIndices[BOUND_INDEX]);
+		return ivars[BOUND_INDEX].updateSup(val, this, false);
 	}
 
 	protected abstract boolean removeFromEnv(int idx) throws ContradictionException;
 
 	protected final boolean removeGreaterFromEnv(int idx, int maxValue) throws ContradictionException {
 		if(ivars[VARS_OFFSET+idx].getInf()>maxValue) {
-			return this.svars[SET_INDEX].remFromEnveloppe(idx, set_cIndices[SET_INDEX]);
+			return this.svars[SET_INDEX].remFromEnveloppe(idx, this, false);
 		}
 		return false;
 	}
 
 	protected final boolean removeLowerFromEnv(int idx, int minValue) throws ContradictionException {
 		if(ivars[VARS_OFFSET+idx].getSup() < minValue ) {
-			return this.svars[SET_INDEX].remFromEnveloppe(idx, set_cIndices[SET_INDEX]);
+			return this.svars[SET_INDEX].remFromEnveloppe(idx, this, false);
 		}
 		return false;
 	}
@@ -162,7 +162,7 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 	protected void filterEmptySet()  throws ContradictionException {
 		if(defaultValueEmptySet != null) {
 			//a default value is assigned to the variable when the set is empty
-			ivars[BOUND_INDEX].instantiate(defaultValueEmptySet.intValue(), int_cIndices[BOUND_INDEX]);
+			ivars[BOUND_INDEX].instantiate(defaultValueEmptySet.intValue(), this, false);
 		}
 		setEntailed();
 	}
@@ -305,9 +305,9 @@ public class MaxOfASet extends AbstractBoundOfASet {
 			}
 			final int idx = this.indexOfMaximumVariable.get();
 			if (idx != -1) {
-				update = svars[SET_INDEX].addToKernel(idx-1, getConstraintIdx(SET_INDEX));
+				update = svars[SET_INDEX].addToKernel(idx-1, this, false);
 				updateBoundInf(ivars[idx].getInf());
-				ivars[idx].updateInf(ivars[BOUND_INDEX].getInf(), int_cIndices[idx]);
+				ivars[idx].updateInf(ivars[BOUND_INDEX].getInf(), this, false);
 			}
 		}
 		return update;
@@ -347,7 +347,7 @@ public class MaxOfASet extends AbstractBoundOfASet {
 		DisposableIntIterator iter= svars[SET_INDEX].getDomain().getKernelIterator();
 		while(iter.hasNext()) {
 			final int i = VARS_OFFSET+iter.next();
-			ivars[i].updateSup(maxValue, int_cIndices[i]);
+			ivars[i].updateSup(maxValue, this, false);
 		}
 		iter.dispose();
 	}

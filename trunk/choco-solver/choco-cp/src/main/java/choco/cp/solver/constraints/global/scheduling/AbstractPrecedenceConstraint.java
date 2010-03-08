@@ -48,16 +48,16 @@ public abstract class AbstractPrecedenceConstraint extends AbstractLargeIntSCons
 	 * propagate vars[idx1] <= vars[idx2]
 	 */
 	protected final void propagate(final int idx1, final int idx2) throws ContradictionException {
-		vars[idx2].updateInf(vars[idx1].getInf(), cIndices[idx2]);
-		vars[idx1].updateSup(vars[idx2].getSup(), cIndices[idx1]);
+		vars[idx2].updateInf(vars[idx1].getInf(), this, false);
+		vars[idx1].updateSup(vars[idx2].getSup(), this, false);
 	}
 
 	/**
 	 * propagate vars[idx1] + k1 <= vars[idx2]
 	 */
 	protected final void propagate(final int idx1, final int k1, final int idx2) throws ContradictionException {
-		vars[idx2].updateInf(vars[idx1].getInf() + k1, cIndices[idx2]);
-		vars[idx1].updateSup(vars[idx2].getSup() - k1, cIndices[idx1]);
+		vars[idx2].updateInf(vars[idx1].getInf() + k1, this, false);
+		vars[idx1].updateSup(vars[idx2].getSup() - k1, this, false);
 	}
 
 
@@ -138,16 +138,16 @@ public abstract class AbstractPrecedenceConstraint extends AbstractLargeIntSCons
 		//		        }
 		reuseBool = isP1Entailed();
 		if (reuseBool == Boolean.TRUE) {
-			vars[BIDX].instantiate(1, cIndices[BIDX]);
+			vars[BIDX].instantiate(1, this, false);
 		} else if(reuseBool == Boolean.FALSE){
-			vars[BIDX].instantiate(0, cIndices[BIDX]);
+			vars[BIDX].instantiate(0, this, false);
 			propagateP2();
 		}else {
 			reuseBool = isP2Entailed();
 			if (reuseBool == Boolean.TRUE) { 
-				vars[BIDX].instantiate(0, cIndices[BIDX]);
+				vars[BIDX].instantiate(0, this, false);
 			} else if(reuseBool == Boolean.FALSE) {
-				vars[BIDX].instantiate(1, cIndices[BIDX]);
+				vars[BIDX].instantiate(1, this, false);
 				propagateP1();
 			}
 		}

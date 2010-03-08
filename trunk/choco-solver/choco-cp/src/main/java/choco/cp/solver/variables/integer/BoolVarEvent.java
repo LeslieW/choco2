@@ -12,7 +12,7 @@ public class BoolVarEvent extends IntVarEvent {
 
     @Override
     protected void freeze() {
-        cause = NOEVENT;
+        cause = null;
         eventType = EMPTYEVENT;
     }
 

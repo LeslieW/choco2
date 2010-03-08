@@ -126,7 +126,7 @@ public class Exactly extends AbstractLargeIntSConstraint {
      * @throws choco.kernel.solver.ContradictionException if contradiction occurs.
      */
     private void removeOnlyValues(IntDomainVar v, int cidx) throws ContradictionException {
-        v.removeVal(value, cidx);
+        v.removeVal(value, this, false);
     }
 
     /**
@@ -136,7 +136,7 @@ public class Exactly extends AbstractLargeIntSConstraint {
      * @throws choco.kernel.solver.ContradictionException if contradiction occurs.
      */
     private void removeButValues(IntDomainVar v, int cidx) throws ContradictionException {
-        v.instantiate(value, cidx);
+        v.instantiate(value, this, false);
     }
 
     /**

@@ -26,10 +26,13 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.Couple;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.AbstractSConstraint;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.propagation.listener.IntPropagator;
 
-public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
+@SuppressWarnings({"unchecked"})
+public class IntVarEvent<C extends AbstractSConstraint & IntPropagator> extends VarEvent<IntDomainVarImpl> {
 
     /**
      * Constants for the <i>eventType</i> bitvector: index of bit for updates to lower bound of IntVars
@@ -106,7 +109,8 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
      */
     public void clear() {
         this.eventType = EMPTYEVENT;
-        cause = NOEVENT;
+//        oldCause = NOEVENT;
+        cause = null;
         modifiedVar.getDomain().clearDeltaDomain();
     }
 
@@ -131,7 +135,8 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
 
     protected void freeze() {
         modifiedVar.getDomain().freezeDeltaDomain();
-        cause = NOEVENT;
+//        oldCause = NOEVENT;
+        cause = null;
         eventType = EMPTYEVENT;
     }
 
@@ -159,7 +164,8 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
         //if(LOGGER.isLoggable(Level.FINER)) {LOGGER.log(Level.FINER, "propagate {0}", this);}
         // first, mark event
         int evtType = eventType;
-        int evtCause = cause;
+//        int evtCause = oldCause;
+        C evtCause = (C)cause;
         freeze();
 
         if ((propagatedEvents & INSTINTbitvector) != 0 && (evtType & INSTINTbitvector) != 0)
@@ -178,12 +184,12 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
     /**
      * Propagates the instantiation event
      */
-    public void propagateInstEvent(int evtCause) throws ContradictionException {
+    public void propagateInstEvent(C evtCause) throws ContradictionException {
         IntDomainVarImpl v = modifiedVar;
-        DisposableIterator<Couple<? extends IntPropagator>> cit = v.getActiveConstraints(INSTINTbitvector, evtCause);
+        DisposableIterator<Couple<C>> cit = v.getActiveConstraints(INSTINTbitvector, evtCause);
         try {
             while (cit.hasNext()) {
-                Couple<? extends IntPropagator> cc = cit.next();
+                Couple<C> cc = cit.next();
                 cc.c.awakeOnInst(cc.i);
             }
         } finally {
@@ -195,12 +201,12 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
     /**
      * Propagates the update to the lower bound
      */
-    public void propagateInfEvent(int evtCause) throws ContradictionException {
+    public void propagateInfEvent(C evtCause) throws ContradictionException {
         IntDomainVarImpl v = modifiedVar;
-        DisposableIterator<Couple<? extends IntPropagator>> cit = v.getActiveConstraints(INCINFbitvector, evtCause);
+        DisposableIterator<Couple<C>> cit = v.getActiveConstraints(INCINFbitvector, evtCause);
         try {
             while (cit.hasNext()) {
-                Couple<? extends IntPropagator> cc = cit.next();
+                Couple<C> cc = cit.next();
                 cc.c.awakeOnInf(cc.i);
             }
         } finally {
@@ -211,12 +217,12 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
     /**
      * Propagates the update to the upper bound
      */
-    public void propagateSupEvent(int evtCause) throws ContradictionException {
+    public void propagateSupEvent(C evtCause) throws ContradictionException {
         IntDomainVarImpl v = modifiedVar;
-        DisposableIterator<Couple<? extends IntPropagator>> cit = v.getActiveConstraints(DECSUPbitvector, evtCause);
+        DisposableIterator<Couple<C>> cit = v.getActiveConstraints(DECSUPbitvector, evtCause);
         try {
             while (cit.hasNext()) {
-                Couple<? extends IntPropagator> cc = cit.next();
+                Couple<C> cc = cit.next();
                 cc.c.awakeOnSup(cc.i);
             }
         } finally {
@@ -227,12 +233,12 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
     /**
      * Propagates a set of value removals
      */
-    public void propagateRemovalsEvent(int evtCause) throws ContradictionException {
+    public void propagateRemovalsEvent(C evtCause) throws ContradictionException {
         IntDomainVarImpl v = modifiedVar;
-        DisposableIterator<Couple<? extends IntPropagator>> cit = v.getActiveConstraints(REMVALbitvector, evtCause);
+        DisposableIterator<Couple<C>> cit = v.getActiveConstraints(REMVALbitvector, evtCause);
         try {
             while (cit.hasNext()) {
-                Couple<? extends IntPropagator> cc = cit.next();
+                Couple<C> cc = cit.next();
                 DisposableIntIterator iter = this.getEventIterator();
                 try {
                     cc.c.awakeOnRemovals(cc.i, iter);
@@ -264,19 +270,24 @@ public class IntVarEvent extends VarEvent<IntDomainVarImpl> {
         }
     }
 
-    public void recordEventTypeAndCause(int basicEvt, int idx) {
+    public void recordEventTypeAndCause(int basicEvt, final SConstraint constraint, final boolean forceAwake) {
         // if no such event was active on the same variable
-        if ((cause == NOEVENT) || (eventType == EMPTYEVENT)) {  // note: these two tests should be equivalent
+//        if ((oldCause == NOEVENT) || (eventType == EMPTYEVENT)) {  // note: these two tests should be equivalent
+        if (eventType == EMPTYEVENT) {
+//            assert((cause == null));
             // the varevent is reduced to basicEvt, and the cause is recorded
             eventType = promoteEvent(basicEvt);
-            cause = idx;
+            if(!forceAwake){
+                cause = constraint;
+            }
+//            cause = constraint;
         } else {
             // otherwise, this basic event is added to all previous updates that are possibly mending on the same variable
             eventType = (eventType | promoteEvent(basicEvt));
             // in case the cause of this update is different from the previous cause, all causes are forgotten
             // (so that the constraints that caused the event will be reawaken)
-            if (cause != idx) {
-                cause = NOCAUSE;
+            if (cause != constraint) {
+                cause = null;
             }
         }
     }

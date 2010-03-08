@@ -76,19 +76,19 @@ public class EqualXYC extends AbstractBinIntSConstraint {
 	}
 
 	private final void updateInfV0() throws ContradictionException {
-		v0.updateInf(v1.getInf() + cste, cIdx0);
+		v0.updateInf(v1.getInf() + cste, this, false);
 	}
 
 	private final void updateInfV1() throws ContradictionException {
-		v1.updateInf(v0.getInf() - cste, cIdx1);
+		v1.updateInf(v0.getInf() - cste, this, false);
 	}
 
 	private final void updateSupV0() throws ContradictionException {
-		v0.updateSup(v1.getSup() + cste, cIdx0);
+		v0.updateSup(v1.getSup() + cste, this, false);
 	}
 
 	private final void updateSupV1() throws ContradictionException {
-		v1.updateSup(v0.getSup() - cste, cIdx1);
+		v1.updateSup(v0.getSup() - cste, this, false);
 	}
 
 
@@ -108,7 +108,7 @@ public class EqualXYC extends AbstractBinIntSConstraint {
 				while (reuseIter.hasNext()) {
 					val = reuseIter.next();
 					if (!(v1.canBeInstantiatedTo(val - cste))) {
-						v0.removeVal(val, cIdx0);
+						v0.removeVal(val, this, false);
 					}
 				}
 			} finally {
@@ -119,7 +119,7 @@ public class EqualXYC extends AbstractBinIntSConstraint {
 				while (reuseIter.hasNext()) {
 					val = reuseIter.next();
 					if (!(v0.canBeInstantiatedTo(val + cste))) {
-						v1.removeVal(val, cIdx1);
+						v1.removeVal(val, this, false);
 					}
 				}
 			}finally{
@@ -143,17 +143,17 @@ public class EqualXYC extends AbstractBinIntSConstraint {
 
 	@Override
 	public final void awakeOnInst(int idx) throws ContradictionException {
-		if (idx == 0) v1.instantiate(v0.getVal() - cste, cIdx1);
-		else v0.instantiate(v1.getVal() + cste, cIdx0);
+		if (idx == 0) v1.instantiate(v0.getVal() - cste, this, false);
+		else v0.instantiate(v1.getVal() + cste, this, false);
 	}
 
 
 	@Override
 	public void awakeOnRem(int idx, int x) throws ContradictionException {
-		if (idx == 0) v1.removeVal(x - cste, cIdx1);
+		if (idx == 0) v1.removeVal(x - cste, this, false);
 		else {
 			assert(idx == 1);
-			v0.removeVal(x + cste, cIdx0);
+			v0.removeVal(x + cste, this, false);
 		}
 	}
 

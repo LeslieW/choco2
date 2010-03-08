@@ -142,8 +142,8 @@ public class EuclideanDivisionXYZ extends AbstractTernIntSConstraint {
 
     private void filterOnX() throws ContradictionException {
         changeX = false;
-        changeX = v0.updateInf(getLowerBoundX(), cIdx0);
-        changeX = changeX || v0.updateSup(getUpperBoundX(), cIdx0);
+        changeX = v0.updateInf(getLowerBoundX(), this, false);
+        changeX = changeX || v0.updateSup(getUpperBoundX(), this, false);
     }
 
     /**
@@ -257,13 +257,13 @@ public class EuclideanDivisionXYZ extends AbstractTernIntSConstraint {
     private void filterOnY() throws ContradictionException {
         changeY = false;
         if(v1.getInf()==0){
-                changeY = v1.updateInf(1, cIdx1);
+                changeY = v1.updateInf(1, this, false);
             }else if(v1.getSup()==0){
-                changeY = v1.updateSup(-1, cIdx1);
+                changeY = v1.updateSup(-1, this, false);
             }
         if(!v0.isInstantiatedTo(0)){
-            changeY = changeY || v1.updateInf(getLowerBoundY(), cIdx1);
-            changeY =  changeY || v1.updateSup(getUpperBoundY(), cIdx1);
+            changeY = changeY || v1.updateInf(getLowerBoundY(), this, false);
+            changeY =  changeY || v1.updateSup(getUpperBoundY(), this, false);
         }
     }
 
@@ -343,10 +343,10 @@ public class EuclideanDivisionXYZ extends AbstractTernIntSConstraint {
     private void filterOnZ() throws ContradictionException {
         changeZ = false;
         if(v0.isInstantiatedTo(0)){
-            changeZ = v2.instantiate(0, cIdx2);
+            changeZ = v2.instantiate(0, this, false);
         }else{
-            changeZ = v2.updateInf(getLowerBoundZ(), cIdx2);
-            changeZ = changeZ || v2.updateSup(getUpperBoundZ(), cIdx2);
+            changeZ = v2.updateInf(getLowerBoundZ(), this, false);
+            changeZ = changeZ || v2.updateSup(getUpperBoundZ(), this, false);
         }
     }
 

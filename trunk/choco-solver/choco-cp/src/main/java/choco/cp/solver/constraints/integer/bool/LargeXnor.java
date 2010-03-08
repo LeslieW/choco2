@@ -70,7 +70,7 @@ public class LargeXnor extends AbstractLargeIntSConstraint {
         int val = vars[idx].getVal();
         for(int i = 0; i < vars.length; i++){
             if(idx!=i){
-                vars[i].instantiate(val, cIndices[i]);
+                vars[i].instantiate(val, this, false);
             }
         }
     }

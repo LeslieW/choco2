@@ -22,8 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular.planner;
 
-import java.util.Set;
-
 import choco.cp.model.managers.IntConstraintManager;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -31,6 +29,8 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -48,15 +48,15 @@ public class SimpleChannelling extends AbstractBinIntSConstraint {
     private void eq() throws ContradictionException {
         int sup = Math.min(v0.getSup(),v1.getSup());
         int inf = Math.max(v0.getInf(),v1.getInf());
-        if (v0.getSup() > sup) v0.updateSup(sup,cIdx0);
-        else if (v1.getSup() > sup) v1.updateSup(sup,cIdx1);
-        if (v0.getInf() < inf) v0.updateInf(inf,cIdx0);
-        else if (v1.getInf() < inf) v1.updateInf(inf,cIdx1);
+        if (v0.getSup() > sup) v0.updateSup(sup, this, false);
+        else if (v1.getSup() > sup) v1.updateSup(sup, this, false);
+        if (v0.getInf() < inf) v0.updateInf(inf, this, false);
+        else if (v1.getInf() < inf) v1.updateInf(inf, this, false);
 
         for (int i = inf+1 ; i < sup ; i++)
         {
-            if (v0.canBeInstantiatedTo(i) && !v1.canBeInstantiatedTo(i)) v0.removeVal(i,cIdx0);
-            else if (v1.canBeInstantiatedTo(i) && !v0.canBeInstantiatedTo(i)) v1.removeVal(i,cIdx1);
+            if (v0.canBeInstantiatedTo(i) && !v1.canBeInstantiatedTo(i)) v0.removeVal(i, this, false);
+            else if (v1.canBeInstantiatedTo(i) && !v0.canBeInstantiatedTo(i)) v1.removeVal(i, this, false);
         }
 
 
@@ -65,13 +65,13 @@ public class SimpleChannelling extends AbstractBinIntSConstraint {
     public void awakeOnRem(int idx, int val) throws ContradictionException {
         if (idx == 0)
         {
-            if (val < 3) v1.removeVal(val,cIdx1);
+            if (val < 3) v1.removeVal(val, this, false);
 
         }
         else
         {
-            if (val < 3) v0.removeVal(val,cIdx0);
-            else v0.updateSup(2,cIdx0);
+            if (val < 3) v0.removeVal(val, this, false);
+            else v0.updateSup(2, this, false);
         }
 
     }
@@ -81,12 +81,12 @@ public class SimpleChannelling extends AbstractBinIntSConstraint {
 
         //this.constAwake(false);
         if (idx == 0) {
-            if (v0.getVal() < 3) v1.instantiate(v0.getVal(),cIdx1);
-            else v1.instantiate(3,cIdx1);
+            if (v0.getVal() < 3) v1.instantiate(v0.getVal(), this, false);
+            else v1.instantiate(3, this, false);
         }
         else
         {
-            if (v1.getVal() < 3) v0.instantiate(v1.getVal(),cIdx0);
+            if (v1.getVal() < 3) v0.instantiate(v1.getVal(), this, false);
         }
 
     }
@@ -94,12 +94,12 @@ public class SimpleChannelling extends AbstractBinIntSConstraint {
     public void awakeOnInf(int idx) throws ContradictionException {
         if (idx == 0)
         {
-            if (v0.getInf() >= 3) v1.instantiate(3,cIdx1);
-            else v1.updateInf(v0.getInf(),cIdx1);
+            if (v0.getInf() >= 3) v1.instantiate(3, this, false);
+            else v1.updateInf(v0.getInf(), this, false);
         }
         else
         {
-            if (v0.getInf() < v1.getInf()) v0.updateInf(v1.getInf(),cIdx0);
+            if (v0.getInf() < v1.getInf()) v0.updateInf(v1.getInf(), this, false);
         }
     }
 
@@ -120,10 +120,10 @@ public class SimpleChannelling extends AbstractBinIntSConstraint {
         if (v0.getSup() < 3)
             eq();
         else if (v0.getInf() >= 3)
-            v1.instantiate(3,cIdx1);
+            v1.instantiate(3, this, false);
         if (v1.getSup() < 3)
             eq();
-        if (v1.getInf() > v0.getInf()) v0.updateInf(v1.getInf(),cIdx0);
+        if (v1.getInf() > v0.getInf()) v0.updateInf(v1.getInf(), this, false);
     }
 
     public void propagate() throws ContradictionException {

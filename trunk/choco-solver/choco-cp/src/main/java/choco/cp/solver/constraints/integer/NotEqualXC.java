@@ -78,7 +78,7 @@ public final class NotEqualXC extends AbstractUnIntSConstraint {
 	 */
 
 	public void propagate() throws ContradictionException {
-		if (v0.removeVal(this.cste, this.cIdx0)){
+		if (v0.removeVal(this.cste, this, false)){
             this.setEntailed();
         }else if(!v0.canBeInstantiatedTo(this.cste)){
             this.setEntailed();

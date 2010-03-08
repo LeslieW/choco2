@@ -49,10 +49,10 @@ public BinXnor(IntDomainVar v1, IntDomainVar v2) {
 
     public void propagate() throws ContradictionException {
 		if (v0.isInstantiated()){
-            v1.instantiate(v0.getVal(), cIdx1);
+            v1.instantiate(v0.getVal(), this, false);
         }
         if (v1.isInstantiated()){
-            v0.instantiate(v1.getVal(), cIdx0);
+            v0.instantiate(v1.getVal(), this, false);
         }
 	}
 
@@ -60,12 +60,12 @@ public BinXnor(IntDomainVar v1, IntDomainVar v2) {
 		int val;
 		if (idx == 0) {
 			val = v0.getVal();
-			if (val == 0) v1.instantiate(0, cIdx1);
-            if (val == 1) v1.instantiate(1, cIdx1);
+			if (val == 0) v1.instantiate(0, this, false);
+            if (val == 1) v1.instantiate(1, this, false);
 		} else {
 			val = v1.getVal();
-			if (val == 0) v0.instantiate(0, cIdx0);
-            if (val == 1) v0.instantiate(1, cIdx0);
+			if (val == 0) v0.instantiate(0, this, false);
+            if (val == 1) v0.instantiate(1, this, false);
 		}
 	}
 

@@ -113,7 +113,7 @@ public class GlobalCardinality extends AbstractBipartiteFlow {
   public void deleteEdgeAndPublish(int i, int j) throws ContradictionException {
     assert(0 <= i && i < nbLeftVertices && 0 <= j && j < nbRightVertices);
     deleteMatch(i, j);
-    vars[i].removeVal(j + minValue, cIndices[i]);
+    vars[i].removeVal(j + minValue, this, false);
   }
 
   /**
@@ -127,7 +127,7 @@ public class GlobalCardinality extends AbstractBipartiteFlow {
   public void setEdgeAndPublish(int i, int j) throws ContradictionException {
     assert(1 <= i && i <= nbLeftVertices && 1 <= j && j <= nbRightVertices);
     setMatch(i, j);
-    vars[i].instantiate(j + minValue, cIndices[i]);
+    vars[i].instantiate(j + minValue, this, false);
   }
 
   // propagation functions: reacting to events
@@ -190,8 +190,8 @@ public class GlobalCardinality extends AbstractBipartiteFlow {
    */
   public void awake() throws ContradictionException {
     for (int i = 0; i < nbLeftVertices; i++) {
-      vars[i].updateInf(minValue, cIndices[i]);
-      vars[i].updateSup(maxValue, cIndices[i]);
+      vars[i].updateInf(minValue, this, false);
+      vars[i].updateSup(maxValue, this, false);
     }
     propagate();
   }

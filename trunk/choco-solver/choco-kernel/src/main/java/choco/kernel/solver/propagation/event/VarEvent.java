@@ -24,6 +24,7 @@ package choco.kernel.solver.propagation.event;
 
 import choco.kernel.common.util.objects.IPrioritizable;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.Var;
 
 /**
@@ -52,7 +53,9 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
   /**
    * Cause of this basic var.
    */
-  protected int cause = NOEVENT;
+
+    protected SConstraint cause = null;
+
 
   /**
    * empty bitvector for the event type.
@@ -81,14 +84,13 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
    */
   protected int propagatedEvents = 0;
 
-  /**
+    /**
    * Constructs a variable event for the specified variable and with the given
    * basic events.
    */
 
   public VarEvent(E var) {
     this.modifiedVar = var;
-    // activeCycle = new StoredPointerCycle(getProblem().getEnvironment());
     // activeConstraints = new IStateBitSet(getProblem().getEnvironment(),0);
   }
 
@@ -128,11 +130,11 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
    * from the domain. Further removals will be treated as a further event.
    */
   protected void freeze() {
-    cause = NOEVENT;
+      cause = null;
   }
 
   protected boolean release() {
-    boolean anyUpdateSinceFreeze = (cause != NOEVENT);
+    boolean anyUpdateSinceFreeze = (cause != null);
     return anyUpdateSinceFreeze;
   }
 
@@ -165,8 +167,8 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
   /**
    * Returns the cause of this basic var.
    */
-  public int getCause() {
-    return cause;
+  public SConstraint getCause(){
+      return cause;
   }
 
   public int getPriority() {
@@ -182,6 +184,7 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
      * @param idx constraint idx
      * @return constraint idx for DomOverWDeg
      */
+    @Deprecated
     public static int domOverWDegIdx(int idx){
         return DOWDCAUSE + idx;
     }
@@ -191,6 +194,7 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
      * @param idx modified constraint idx
      * @return initial constraint idx 
      */
+    @Deprecated
     public static int domOverWDegInitialIdx(int idx){
         return idx - DOWDCAUSE;
     }
@@ -207,19 +211,23 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
     return (eventType != EMPTYEVENT);
   }
 
-  public void recordEventTypeAndCause(int basicEvt, int idx) {
+  public void recordEventTypeAndCause(int basicEvt, final SConstraint constraint, final boolean forceAwake) {
     // if no such event was active on the same variable
-    if ((cause == NOEVENT) || (eventType == EMPTYEVENT)) {  // note: these two tests should be equivalent
+//    if ((oldCause == NOEVENT) || (eventType == EMPTYEVENT)) {  // note: these two tests should be equivalent
+    if (eventType == EMPTYEVENT) {
+        assert((cause == null) || (eventType == EMPTYEVENT));
       // the varevent is reduced to basicEvt, and the cause is recorded
       eventType = (1 << basicEvt);
-      cause = idx;
+      if(!forceAwake){
+          cause = constraint;
+      }
     } else {
       // otherwise, this basic event is added to all previous updates that are possibly mending on the same variable
       eventType = (eventType | (1 << basicEvt));
       // in case the cause of this update is different from the previous cause, all causes are forgotten
       // (so that the constraints that caused the event will be reawaken)
-      if (cause != idx) {
-        cause = NOCAUSE;
+      if (cause != constraint) {
+        cause = null;
       }
     }
   }

@@ -25,6 +25,7 @@ package choco.kernel.solver.propagation;
 
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.propagation.listener.PropagationEngineListener;
 import choco.kernel.solver.propagation.queue.AbstractConstraintEventQueue;
@@ -47,17 +48,18 @@ public interface PropagationEngine {
 	/**
 	 * Raising a contradiction with a cause.
 	 */
-	public void raiseContradiction(Object cause, ContradictionException.Type type) throws ContradictionException;
+	public void raiseContradiction(Object cause) throws ContradictionException;
 
     /**
 	 * Raising a contradiction with a cause and a movement
 	 */
-	public void raiseContradiction(Object cause, ContradictionException.Type type, int move) throws ContradictionException;
+	public void raiseContradiction(Object cause, int move) throws ContradictionException;
 
     /**
 	 * Raising a contradiction with a variable.
 	 */
-    public void raiseContradiction(int cidx, Var variable) throws ContradictionException;
+    @Deprecated
+    public void raiseContradiction(int cidx, Var variable, final SConstraint cause) throws ContradictionException;
 
 	/**
 	 * Retrieving the cause of the last contradiction.
@@ -84,33 +86,33 @@ public interface PropagationEngine {
 	 */
 	public boolean checkCleanState();
 
-	void postUpdateInf(IntDomainVar v, int idx);
+	void postUpdateInf(IntDomainVar v, final SConstraint constraint, final boolean forceAwake);
 
-	void postUpdateSup(IntDomainVar v, int idx);
+	void postUpdateSup(IntDomainVar v, final SConstraint constraint, final boolean forceAwake);
 
-	void postInstInt(IntDomainVar v, int idx);
+	void postInstInt(IntDomainVar v, final SConstraint constraint, final boolean forceAwake);
 
-	void postRemoveVal(IntDomainVar v, int x, int idx);
+	void postRemoveVal(IntDomainVar v, int x, final SConstraint constraint, final boolean forceAwake);
 
-	void postUpdateInf(RealVar v, int idx);
+	void postUpdateInf(RealVar v, final SConstraint constraint, final boolean forceAwake);
 
-	void postUpdateSup(RealVar v, int idx);
+	void postUpdateSup(RealVar v, final SConstraint constraint, final boolean forceAwake);
 
-	void postRemEnv(SetVar v, int idx);
+	void postRemEnv(SetVar v, final SConstraint constraint, final boolean forceAwake);
 
-	void postAddKer(SetVar v, int idx);
+	void postAddKer(SetVar v, final SConstraint constraint, final boolean forceAwake);
 
-	void postInstSet(SetVar v, int idx);
+	void postInstSet(SetVar v, final SConstraint constraint, final boolean forceAwake);
 
 	/**
 	 * Generic method to post events. The caller is reponsible of basic event
 	 * type field: it should be meaningful for the the associate kind of event.
 	 * @param v The modified variable.
-	 * @param idx The index of the constraint which deduced the domain filtering.
-	 * @param basicEvt A integer specifying mdofication kind for the attached
-	 * event.
-	 */
-	void postEvent(Var v, int idx, int basicEvt);
+     * @param basicEvt A integer specifying mdofication kind for the attached
+     * @param constraint
+     * @param forceAwake
+     */
+	void postEvent(Var v, int basicEvt, final SConstraint constraint, final boolean forceAwake);
 
 	boolean postConstAwake(Propagator constraint, boolean init);
 

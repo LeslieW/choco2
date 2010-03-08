@@ -28,7 +28,6 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public class Element extends AbstractBinIntSConstraint {
@@ -86,8 +85,8 @@ public class Element extends AbstractBinIntSConstraint {
             if (maxVal < this.lval[index - cste]) maxVal = this.lval[index - cste];
         }
         iter.dispose();
-        this.v1.updateInf(minVal, this.cIdx1);
-        this.v1.updateSup(maxVal, this.cIdx1);
+        this.v1.updateInf(minVal, this, false);
+        this.v1.updateSup(maxVal, this, false);
 
         // todo : <hcambaza> : why it does not perform AC on the value variable ?
     }
@@ -100,22 +99,22 @@ public class Element extends AbstractBinIntSConstraint {
             this.fail();
         }
 
-        int cause = this.v1.hasEnumeratedDomain() ? this.cIdx0 : VarEvent.domOverWDegIdx(cIdx0);
+        boolean forceAwake = !this.v1.hasEnumeratedDomain();
 
         while ((this.v0.canBeInstantiatedTo(minFeasibleIndex))
                 && !(this.v1.canBeInstantiatedTo(lval[minFeasibleIndex - this.cste])))
             minFeasibleIndex++;
-        this.v0.updateInf(minFeasibleIndex, cause);
+        this.v0.updateInf(minFeasibleIndex, this, forceAwake);
 
         while ((this.v0.canBeInstantiatedTo(maxFeasibleIndex))
                 && !(this.v1.canBeInstantiatedTo(lval[maxFeasibleIndex - this.cste])))
             maxFeasibleIndex--;
-        this.v0.updateSup(maxFeasibleIndex, cause);
+        this.v0.updateSup(maxFeasibleIndex, this, forceAwake);
 
         if (this.v0.hasEnumeratedDomain()) {
             for (int i = minFeasibleIndex + 1; i <= maxFeasibleIndex - 1; i++) {
                 if (this.v0.canBeInstantiatedTo(i) && !(this.v1.canBeInstantiatedTo(this.lval[i - this.cste])))
-                    this.v0.removeVal(i, cause);
+                    this.v0.removeVal(i, this, forceAwake);
             }
         }
     }
@@ -127,7 +126,7 @@ public class Element extends AbstractBinIntSConstraint {
 
     public void awakeOnInst(int i) throws ContradictionException {
         if (i == 0)
-            this.v1.instantiate(this.lval[this.v0.getVal() - this.cste], this.cIdx1);
+            this.v1.instantiate(this.lval[this.v0.getVal() - this.cste], this, false);
 //    else
 //      this.updateIndexFromValue();
     }

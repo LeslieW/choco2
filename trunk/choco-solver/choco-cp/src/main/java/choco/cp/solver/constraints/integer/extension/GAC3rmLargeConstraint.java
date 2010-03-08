@@ -113,7 +113,7 @@ public class GAC3rmLargeConstraint extends CspLargeSConstraint {
                     if (currentSupport != null) {
                         setSupport(currentSupport);
                     } else {
-                        vars[indexVar].removeVal(val, cIndices[indexVar]);
+                        vars[indexVar].removeVal(val, this, false);
                     }
                 }
             }
@@ -128,7 +128,7 @@ public class GAC3rmLargeConstraint extends CspLargeSConstraint {
                     break; //stop at the first consistent lower bound !
                 }
             }
-            vars[indexVar].updateInf(val, cIndices[indexVar]);
+            vars[indexVar].updateInf(val, this, false);
             for (val = vars[indexVar].getSup(); val >= vars[indexVar].getInf(); val--) {
                 currentSupport = seekNextSupport(indexVar, val);
                 if (currentSupport != null) {
@@ -136,7 +136,7 @@ public class GAC3rmLargeConstraint extends CspLargeSConstraint {
                     break; //stop at the first consistent upper bound !
                 }
             }
-            vars[indexVar].updateSup(val, cIndices[indexVar]);
+            vars[indexVar].updateSup(val, this, false);
         }
     }
 
@@ -157,7 +157,7 @@ public class GAC3rmLargeConstraint extends CspLargeSConstraint {
                         if (currentSupport != null) {
                             setSupport(currentSupport);
                         } else {
-                            vars[indexVar].removeVal(val, cIndices[indexVar]);
+                            vars[indexVar].removeVal(val, this, false);
                         }
                     }
                 }
@@ -174,7 +174,7 @@ public class GAC3rmLargeConstraint extends CspLargeSConstraint {
                         break; //stop at the first consistent lower bound !
                     }
                 }
-                vars[indexVar].updateInf(val, cIndices[indexVar]);
+                vars[indexVar].updateInf(val, this, false);
             }
             int[] sup_supports = lastBoundSupport(indexVar, 1);
             if (vars[indexVar].getSup() != sup_supports[indexVar] || !isValid(sup_supports)) {
@@ -185,7 +185,7 @@ public class GAC3rmLargeConstraint extends CspLargeSConstraint {
                         break; //stop at the first consistent upper bound !
                     }
                 }
-                vars[indexVar].updateSup(val, cIndices[indexVar]);
+                vars[indexVar].updateSup(val, this, false);
             }
         }
     }

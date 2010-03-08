@@ -50,18 +50,18 @@ public class BinXor extends AbstractBinIntSConstraint {
 
     public void propagate() throws ContradictionException {
 		if (v0.isInstantiated()){
-            v1.instantiate(Math.abs(v0.getVal()-1), cIdx1);
+            v1.instantiate(Math.abs(v0.getVal()-1), this, false);
         }
         if (v1.isInstantiated()){
-            v0.instantiate(Math.abs(v1.getVal()-1), cIdx0);
+            v0.instantiate(Math.abs(v1.getVal()-1), this, false);
         }
 	}
 
 	public void awakeOnInst(int idx) throws ContradictionException {
 		if (idx == 0) {
-			v1.instantiate(Math.abs(v0.getVal()-1), cIdx1);
+			v1.instantiate(Math.abs(v0.getVal()-1), this, false);
 		} else {
-			v0.instantiate(Math.abs(v1.getVal()-1), cIdx0);
+			v0.instantiate(Math.abs(v1.getVal()-1), this, false);
 		}
 	}
 

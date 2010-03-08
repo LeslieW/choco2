@@ -94,18 +94,18 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		final IEnvironment env = solver.getEnvironment();
 		if(enableHypotheticalDomain) {
 			for (int i = 0; i < nbRegularTasks; i++) {
-				rtasks[i] = new RTask(i);
+				rtasks[i] = new RTask(i, this);
 			}
 			for (int i = nbRegularTasks; i < rtasks.length; i++) {
-				rtasks[i] = new HRTask(i, env);
+				rtasks[i] = new HRTask(i, env, this);
 			}
 		} else {
 			for (int i = 0; i < rtasks.length; i++) {
-				rtasks[i] = new RTask(i);
+				rtasks[i] = new RTask(i, this);
 			}
 		}
 
-		this.makespan = new RMakespan();
+		this.makespan = new RMakespan(this);
 	}
 
 	public void checkHypotheticalDomains()throws ContradictionException{
@@ -295,20 +295,26 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 	private class RMakespan implements IRMakespan {
 
-		@Override
+        final AbstractResourceSConstraint constraint;
+
+        private RMakespan(final AbstractResourceSConstraint constraint) {
+            this.constraint = constraint;
+        }
+
+        @Override
 		public IntDomainVar getMakespan() {
 			return vars[indexUB];
 		}
 
 		@Override
 		public void updateInf(int value) throws ContradictionException {
-			vars[indexUB].updateInf(value, cIndices[indexUB]);
+			vars[indexUB].updateInf(value, this.constraint, false);
 
 		}
 
 		@Override
 		public void updateSup(int value) throws ContradictionException {
-			vars[indexUB].updateSup(value, cIndices[indexUB]);
+			vars[indexUB].updateSup(value, this.constraint, false);
 		}
 
 
@@ -322,9 +328,10 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 	public class RTask extends AbstractRTask {
 
 		private final int eidx, didx, uidx, hidx;		
-
-		public RTask(final int taskidx) {
+        private final AbstractResourceSConstraint constraint;
+		public RTask(final int taskidx, final AbstractResourceSConstraint constraint) {
 			super(taskidx);
+            this.constraint = constraint;
 			eidx = getEndIndex(taskidx);
 			didx = getDurationIndex(taskidx);
 			uidx = getUsageIndex(taskIdx);
@@ -478,14 +485,14 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		@Override
 		public boolean setDuration(final int duration) throws ContradictionException {
 			assert isRegular(); //do not change the domain of optional/eliminated tasks
-			return vars[didx].instantiate(duration, cIndices[didx]);
+			return vars[didx].instantiate(duration, this.constraint, false);
 		}
 
 		@Override
 		public boolean setStartingTime(final int startingTime)
 		throws ContradictionException {
 			assert isRegular(); //do not change the domain of optional/eliminated tasks
-			return vars[taskIdx].instantiate(startingTime, cIndices[taskIdx]);
+			return vars[taskIdx].instantiate(startingTime, this.constraint, false);
 		}
 
 
@@ -493,28 +500,28 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		public boolean setEndingTime(int endingTime)
 		throws ContradictionException {
 			assert isRegular(); //do not change the domain of optional/eliminated tasks
-			return vars[eidx].instantiate(endingTime, cIndices[eidx]);
+			return vars[eidx].instantiate(endingTime, this.constraint, false);
 		}
 
 		@Override
 		public boolean setEndNotIn(int a, int b)
 		throws ContradictionException {
 			assert isRegular(); //do not change the domain of optional/eliminated tasks
-			return vars[eidx].removeInterval(a, b, cIndices[eidx]);
+			return vars[eidx].removeInterval(a, b, this.constraint, false);
 		}
 
 		@Override
 		public boolean setStartNotIn(int min, int max)
 		throws ContradictionException {
 			assert isRegular(); //do not change the domain of optional/eliminated tasks
-			return vars[taskIdx].removeInterval(min, max, cIndices[taskIdx]);
+			return vars[taskIdx].removeInterval(min, max, this.constraint, false);
 		}
 
 
 		@Override
 		public boolean setECT(final int val) throws ContradictionException {
 			assert isRegular(); //do not change the domain of optional/eliminated tasks
-			return vars[eidx].updateInf(val, cIndices[eidx]);
+			return vars[eidx].updateInf(val, this.constraint, false);
 		}
 
 		@Override
@@ -523,31 +530,31 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 				System.out.println("souci");
 			}
 			assert isRegular(); //do not change the domain of optional/eliminated tasks
-			return vars[taskIdx].updateInf(val, cIndices[taskIdx]);
+			return vars[taskIdx].updateInf(val, this.constraint, false);
 		}
 
 		@Override
 		public boolean setLCT(final int val) throws ContradictionException {
 			assert isRegular(); //do not change the domain of optional/eliminated tasks
-			return vars[eidx].updateSup(val, cIndices[eidx]);
+			return vars[eidx].updateSup(val, this.constraint, false);
 		}
 
 		@Override
 		public boolean setLST(final int val) throws ContradictionException {
 			assert isRegular(); //do not change the domain of optional/eliminated tasks
-			return vars[taskIdx].updateSup(val, cIndices[taskIdx]);
+			return vars[taskIdx].updateSup(val, this.constraint, false);
 		}
 
 		@Override
 		public boolean setMaxDuration(final int val) throws ContradictionException {
 			assert isRegular(); //do not change the domain of optional/eliminated tasks
-			return vars[didx].updateSup(val, cIndices[didx]);
+			return vars[didx].updateSup(val, this.constraint, false);
 		}
 
 		@Override
 		public boolean setMinDuration(final int val) throws ContradictionException {
 			assert isRegular(); //do not change the domain of optional/eliminated tasks
-			return vars[didx].updateInf(val, cIndices[didx]);
+			return vars[didx].updateInf(val, this.constraint, false);
 		}
 
 		public final void updateCompulsoryPart() throws ContradictionException {
@@ -557,12 +564,12 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 			boolean fixPoint;
 			do {
 				fixPoint = false;
-				fixPoint |= s.updateInf(e.getInf() - d.getSup(), cIndices[taskIdx]);
-				fixPoint |= s.updateSup(e.getSup() - d.getInf(), cIndices[taskIdx]);
-				fixPoint |= e.updateInf(s.getInf() + d.getInf(), cIndices[eidx]);
-				fixPoint |= e.updateSup(s.getSup() + d.getSup(), cIndices[eidx]);
-				fixPoint |= d.updateInf(e.getInf() - s.getSup(), cIndices[didx]);
-				fixPoint |= d.updateSup(e.getSup() - s.getInf(), cIndices[didx]);
+				fixPoint |= s.updateInf(e.getInf() - d.getSup(), this.constraint, false);
+				fixPoint |= s.updateSup(e.getSup() - d.getInf(), this.constraint, false);
+				fixPoint |= e.updateInf(s.getInf() + d.getInf(), this.constraint, false);
+				fixPoint |= e.updateSup(s.getSup() + d.getSup(), this.constraint, false);
+				fixPoint |= d.updateInf(e.getInf() - s.getSup(), this.constraint, false);
+				fixPoint |= d.updateSup(e.getSup() - s.getInf(), this.constraint, false);
 			}while (fixPoint);
 		}
 
@@ -575,7 +582,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 		@Override
 		public boolean assign() throws ContradictionException {
-			return vars[uidx].instantiate(1, cIndices[uidx]);
+			return vars[uidx].instantiate(1, this.constraint, false);
 		}
 
 		@Override
@@ -596,7 +603,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 		@Override
 		public final boolean remove() throws ContradictionException {
-			return vars[uidx].instantiate(0, cIndices[uidx]);
+			return vars[uidx].instantiate(0, this.constraint, false);
 		}
 
 
@@ -614,12 +621,12 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 		@Override
 		public final boolean updateMaxHeight(final int val) throws ContradictionException {
-			return vars[hidx].updateSup(val, cIndices[hidx]);
+			return vars[hidx].updateSup(val, this.constraint, false);
 		}
 
 		@Override
 		public final boolean updateMinHeight(final int val) throws ContradictionException {
-			return vars[hidx].updateInf(val, cIndices[hidx]);
+			return vars[hidx].updateInf(val, this.constraint, false);
 		}
 
 		@Override
@@ -637,8 +644,8 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 		private final IStateInt estH,lctH;
 
-		public HRTask(int taskidx, IEnvironment env) {
-			super(taskidx);
+		public HRTask(int taskidx, IEnvironment env, final AbstractResourceSConstraint constraint) {
+			super(taskidx, constraint);
 			estH = env.makeInt(getTaskVar().getEST());
 			lctH = env.makeInt(getTaskVar().getLCT());
 		}

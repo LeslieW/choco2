@@ -8,6 +8,7 @@ import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.*;
 import choco.kernel.model.variables.scheduling.ITaskVariable;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.propagation.event.TaskVarEvent;
@@ -21,7 +22,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * @since 23 janv. 2009 version 2.0.3</br>
  * @version 2.0.3</br>
  */
-public final class TaskVar extends AbstractTask implements Var, ITaskVariable<IntDomainVar>, IIndex {
+public final class TaskVar<C extends AbstractSConstraint & TaskPropagator> extends AbstractTask implements Var, ITaskVariable<IntDomainVar>, IIndex {
 
 	protected final IntDomainVar start;
 
@@ -33,7 +34,7 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 	/**
 	 * The list of constraints (listeners) observing the variable.
 	 */
-	protected APartiallyStoredCstrList<SConstraint> constraints;
+	protected APartiallyStoredCstrList<C> constraints;
 
     protected final VarEvent<? extends Var> event;
 
@@ -49,9 +50,9 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 		this.start = start;
 		this.end = end;
 		this.duration = duration;
-		constraints = new PartiallyStoredTaskCstrList(solver.getEnvironment());
+		constraints = new PartiallyStoredTaskCstrList<C>(solver.getEnvironment());
         index = solver.getIndexfactory().getIndex();
-        this.event = new TaskVarEvent(this);
+        this.event = new TaskVarEvent<C>(this);
         this.propagationEngine = solver.getPropagationEngine();
 	}
 
@@ -161,7 +162,7 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 	 * Access the data structure storing constraints involving a given variable.
 	 * @return the backtrackable structure containing the constraints
 	 */
-	public PartiallyStoredVector<SConstraint> getConstraintVector() {
+	public PartiallyStoredVector<C> getConstraintVector() {
 		return constraints.getConstraintVector();
 	}
 
@@ -231,7 +232,7 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
 	}
 
     @SuppressWarnings({"unchecked"})
-    public final DisposableIterator<Couple<? extends TaskPropagator>> getActiveConstraints(int cstrCause){
+    public final DisposableIterator<Couple<C>> getActiveConstraints(C cstrCause){
         return ((PartiallyStoredTaskCstrList)constraints).getActiveConstraint(cstrCause);
     }
     
@@ -243,8 +244,10 @@ public final class TaskVar extends AbstractTask implements Var, ITaskVariable<In
     /**
      * Call awake on TaskVar.
      * @param idx index of the constraint calling #awake().
+     * @param constraint
+     * @param forceAwake
      */
-    public void updateHypotheticalDomain(int idx){
-        propagationEngine.postEvent(this, idx, TaskVarEvent.HYPDOMMOD);
+    public void updateHypotheticalDomain(int idx, final SConstraint constraint, final boolean forceAwake){
+        propagationEngine.postEvent(this, TaskVarEvent.HYPDOMMOD, constraint, forceAwake);
     }
 }

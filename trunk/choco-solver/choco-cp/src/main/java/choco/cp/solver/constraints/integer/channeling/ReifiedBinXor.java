@@ -60,16 +60,16 @@ public class ReifiedBinXor extends AbstractTernIntSConstraint {
         switch (v0.getVal()) {
             case 0:
                 if (v1.isInstantiated()) {
-                    v2.instantiate(v1.getVal(), cIdx2);
+                    v2.instantiate(v1.getVal(), this, false);
                 } else if (v2.isInstantiated()) {
-                    v1.instantiate(v2.getVal(), cIdx1);
+                    v1.instantiate(v2.getVal(), this, false);
                 }
                 break;
             case 1:
                 if (v1.isInstantiated()) {
-                    v2.instantiate(Math.abs(v1.getVal() - 1), cIdx2);
+                    v2.instantiate(Math.abs(v1.getVal() - 1), this, false);
                 } else if (v2.isInstantiated()) {
-                    v1.instantiate(Math.abs(v2.getVal() - 1), cIdx1);
+                    v1.instantiate(Math.abs(v2.getVal() - 1), this, false);
                 }
                 break;
         }
@@ -79,12 +79,12 @@ public class ReifiedBinXor extends AbstractTernIntSConstraint {
         switch (val){
             case 0:
                 if (v.isInstantiated()) {
-                    v0.instantiate(v.getVal(), cIdx0);
+                    v0.instantiate(v.getVal(), this, false);
                 }
                 break;
             case 1:
                 if (v.isInstantiated()) {
-                    v0.instantiate(Math.abs(v.getVal() - 1), cIdx0);
+                    v0.instantiate(Math.abs(v.getVal() - 1), this, false);
                 }
                 break;
         }

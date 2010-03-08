@@ -52,13 +52,13 @@ public class ReifiedBinImplication extends AbstractTernIntSConstraint {
     private boolean updateOnV0(int val) throws ContradictionException {
         boolean mod = false;
         if (val == 0) {
-            mod = mod | v1.instantiate(1, cIdx1);
-            mod |=v2.instantiate(0, cIdx2);
+            mod = mod | v1.instantiate(1, this, false);
+            mod |=v2.instantiate(0, this, false);
         } else {
             if (v1.isInstantiatedTo(0)) {
                 setEntailed();
             } else if (v1.isInstantiatedTo(1)) {
-                mod = mod | v2.instantiate(1, cIdx2);
+                mod = mod | v2.instantiate(1, this, false);
             }
         }
         return mod;
@@ -66,12 +66,12 @@ public class ReifiedBinImplication extends AbstractTernIntSConstraint {
 
     private void updateOnV1(int val) throws ContradictionException {
         if (val == 0) {
-            v0.instantiate(1, cIdx0);
+            v0.instantiate(1, this, false);
         } else {
             if (v0.isInstantiated()) {
-                v2.instantiate(v0.getVal(), cIdx2);
+                v2.instantiate(v0.getVal(), this, false);
             } else if (v2.isInstantiated()) {
-                v0.instantiate(v2.getVal(), cIdx0);
+                v0.instantiate(v2.getVal(), this, false);
             }
         }
     }
@@ -79,12 +79,12 @@ public class ReifiedBinImplication extends AbstractTernIntSConstraint {
     private void updateOnV2(int val) throws ContradictionException {
         if (val == 0) {
             if (v0.isInstantiated()) {
-                v1.instantiate(Math.abs(v0.getVal() - 1), cIdx1);
+                v1.instantiate(Math.abs(v0.getVal() - 1), this, false);
             } else if (v1.isInstantiated()) {
-                v0.instantiate(Math.abs(v1.getVal() - 1), cIdx0);
+                v0.instantiate(Math.abs(v1.getVal() - 1), this, false);
             }
         } else {
-            v0.instantiate(1, cIdx0);
+            v0.instantiate(1, this, false);
             setEntailed();
         }
     }

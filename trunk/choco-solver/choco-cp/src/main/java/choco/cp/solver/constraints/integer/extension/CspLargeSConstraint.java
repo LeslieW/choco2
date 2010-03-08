@@ -85,7 +85,7 @@ public class CspLargeSConstraint extends AbstractLargeIntSConstraint {
                 while (it.hasNext()) {
 					currentTuple[index] = it.next();
 					if (!relation.isConsistent(currentTuple)) {
-						vars[index].removeVal(currentTuple[index], cIndices[index]);
+						vars[index].removeVal(currentTuple[index], this, false);
 					}
 				}
                 }finally {

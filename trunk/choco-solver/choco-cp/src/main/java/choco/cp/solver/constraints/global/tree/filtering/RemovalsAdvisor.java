@@ -203,47 +203,47 @@ public class RemovalsAdvisor {
         IStateBitSet[] trueGraph = struct.getInputGraph().getSure().getGraph();
         if (updateNtree && maxtree < treeParams.getNtree().getSup()) {
             filter = true;
-            treeParams.getNtree().updateSup(maxtree, treeConst.cIndices[0]);
+            treeParams.getNtree().updateSup(maxtree, this.treeConst, false);
         }
         if (updateNtree && mintree > treeParams.getNtree().getInf()) {
             filter = true;
-            treeParams.getNtree().updateInf(mintree, treeConst.cIndices[0]);
+            treeParams.getNtree().updateInf(mintree, this.treeConst, false);
         }
         if (updateNprop && maxprop < treeParams.getNproper().getSup()) {
             filter = true;
-            treeParams.getNproper().updateSup(maxprop, treeConst.cIndices[1]);
+            treeParams.getNproper().updateSup(maxprop, this.treeConst, false);
         }
         if (updateNprop && minprop > treeParams.getNproper().getInf()) {
             filter = true;
-            treeParams.getNproper().updateInf(minprop, treeConst.cIndices[1]);
+            treeParams.getNproper().updateInf(minprop, this.treeConst, false);
         }
         if (updateObjective && maxObjective < treeParams.getObjective().getSup()) {
             filter = true;
-            treeParams.getObjective().updateSup(maxObjective, treeConst.cIndices[2]);
+            treeParams.getObjective().updateSup(maxObjective, this.treeConst, false);
         }
         if (updateObjective && minObjective > treeParams.getObjective().getInf()) {
             filter = true;
-            treeParams.getObjective().updateInf(minObjective, treeConst.cIndices[2]);
+            treeParams.getObjective().updateInf(minObjective, this.treeConst, false);
         }
         for (int i = 0; i < nbNodes; i++) {
             IntDomainVar var_i = nodes[i].getSuccessors();
             if (updateStart) {
                 if (maxStart[i] < nodes[i].getTimeWindow().getSup())
-                    nodes[i].getTimeWindow().updateSup(maxStart[i],treeConst.cIndices[(nbNodes+3)+i]);
+                    nodes[i].getTimeWindow().updateSup(maxStart[i], this.treeConst, false);
                 if (minStart[i] > nodes[i].getTimeWindow().getInf())
-                    nodes[i].getTimeWindow().updateInf(minStart[i],treeConst.cIndices[(nbNodes+3)+i]);
+                    nodes[i].getTimeWindow().updateInf(minStart[i], this.treeConst, false);
             }
             for (int j = graphRem[i].nextSetBit(0); j >= 0; j = graphRem[i].nextSetBit(j + 1)) {
                 if (var_i.canBeInstantiatedTo(j)) {
                     filter = true;
                     if (afficheRemovals)
                         LOGGER.info("1-Removals: suppression effective de l'arc (" + i + "," + j + ")");
-                    var_i.removeVal(j, treeConst.cIndices[i + 3]);
+                    var_i.removeVal(j, this.treeConst, false);
                 }
                 if (var_i.isInstantiatedTo(j) && i != j) {
                     if (afficheRemovals)
                         LOGGER.info("1-Removals: suppression de l'arc (" + i + "," + j + ") qui est instancie => FAIL");
-                    var_i.removeVal(j, treeConst.cIndices[i + 3]);
+                    var_i.removeVal(j, this.treeConst, false);
                     compatible = false;
                 }
             }
@@ -253,14 +253,14 @@ public class RemovalsAdvisor {
                 if (var_j.canBeInstantiatedTo(i) && j != i) {
                     if (afficheRemovals)
                         LOGGER.info("2-Removals: suppression de l'arc (" + j + "," + i + ")");
-                    var_j.removeVal(i, treeConst.cIndices[j + 3]);
+                    var_j.removeVal(i, this.treeConst, false);
                     filter = true;
                 }
                 if (var_j.isInstantiated()) {
                     if (var_j.isInstantiatedTo(i) && i != j) {
                         if (afficheRemovals)
                             LOGGER.info("2-Removals: suppression de l'arc (" + j + "," + i + ") qui est instancie => FAIL");
-                        var_j.removeVal(i, treeConst.cIndices[j + 3]);
+                        var_j.removeVal(i, this.treeConst, false);
                         compatible = false;
                     }
                 }

@@ -76,7 +76,7 @@ public final class GreaterOrEqualXC extends AbstractUnIntSConstraint {
 	 */
 
 	public void propagate() throws ContradictionException {
-		v0.updateInf(this.cste, this.cIdx0);
+		v0.updateInf(this.cste, this, false);
 		this.setEntailed();
 	}
 

@@ -32,7 +32,6 @@ import choco.kernel.common.util.tools.TaskUtils;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.logging.Logger;
@@ -146,7 +145,7 @@ public class DeterministicPert {
 			//then we instantiate the makespan variable and compute slack times
 			IntDomainVar e = solver.getMakespan();
 			LOGGER.info(e.pretty());
-			e.instantiate(e.getInf(), VarEvent.NOCAUSE);
+			e.instantiate(e.getInf(), null, true);
 			solver.propagate();
 			LOGGER.info("\nCRITICAL PATH METHOD");
 			//LOGGER.info(solver.pretty());

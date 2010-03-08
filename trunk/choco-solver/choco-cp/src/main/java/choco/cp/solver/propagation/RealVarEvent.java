@@ -26,13 +26,15 @@ import choco.cp.solver.variables.real.RealVarImpl;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.Couple;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.propagation.listener.RealPropagator;
 
 /**
  * An event for real interval variable modifications.
  */
-public class RealVarEvent extends VarEvent<RealVarImpl> {
+@SuppressWarnings({"unchecked"})
+public class RealVarEvent<C extends AbstractSConstraint & RealPropagator>  extends VarEvent<RealVarImpl> {
     public static final int INCINF = 0;
     public static final int DECSUP = 1;
 
@@ -54,6 +56,7 @@ public class RealVarEvent extends VarEvent<RealVarImpl> {
 
     public void clear() {
         this.eventType = EMPTYEVENT;
+        cause = null;
         modifiedVar.getDomain().clearDeltaDomain();
     }
 
@@ -63,7 +66,7 @@ public class RealVarEvent extends VarEvent<RealVarImpl> {
 
     protected void freeze() {
         modifiedVar.getDomain().freezeDeltaDomain();
-        cause = NOEVENT;
+        cause = null;
         eventType = 0;
     }
 
@@ -76,7 +79,7 @@ public class RealVarEvent extends VarEvent<RealVarImpl> {
         //if(LOGGER.isLoggable(Level.FINER)) LOGGER.log(Level.FINER,"propagate {0}", this);
         // first, mark event
         int evtType = eventType;
-        int evtCause = cause;
+        C evtCause = (C)cause;
         freeze();
 
         if ((propagatedEvents & INFEVENT) != 0 && (evtType & INFEVENT) != 0)
@@ -100,13 +103,13 @@ public class RealVarEvent extends VarEvent<RealVarImpl> {
     /**
      * Propagates the update to the upper bound
      */
-    public void propagateSupEvent(int evtCause) throws ContradictionException {
+    public void propagateSupEvent(C evtCause) throws ContradictionException {
         RealVarImpl v = getModifiedVar();
-        DisposableIterator<Couple<? extends RealPropagator>> cit = v.getActiveConstraints(evtCause);
+        DisposableIterator<Couple<C>> cit = v.getActiveConstraints(evtCause);
 
         try {
             while (cit.hasNext()) {
-                Couple<? extends RealPropagator> cc = cit.next();
+                Couple<C> cc = cit.next();
                 cc.c.awakeOnSup(cc.i);
             }
         } finally {
@@ -117,13 +120,13 @@ public class RealVarEvent extends VarEvent<RealVarImpl> {
     /**
      * Propagates the update to the lower bound
      */
-    public void propagateInfEvent(int evtCause) throws ContradictionException {
+    public void propagateInfEvent(C evtCause) throws ContradictionException {
         RealVarImpl v = getModifiedVar();
-        DisposableIterator<Couple<? extends RealPropagator>> cit = v.getActiveConstraints(evtCause);
+        DisposableIterator<Couple<C>> cit = v.getActiveConstraints(evtCause);
 
         try {
             while (cit.hasNext()) {
-                Couple<? extends RealPropagator> cc = cit.next();
+                Couple<C> cc = cit.next();
                 cc.c.awakeOnInf(cc.i);
             }
         } finally {

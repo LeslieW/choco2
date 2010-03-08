@@ -37,7 +37,6 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.shaker.tools.factory.CPModelFactory;
 import choco.shaker.tools.factory.MetaConstraintFactory;
@@ -49,6 +48,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /*
@@ -349,7 +349,7 @@ public class ConstraintTest {
                     s.propagate();
                     AbstractIntSConstraint sc = cstrs.get(r.nextInt(cstrs.size()));
                     int v = r.nextInt(sc.getNbVars());
-                    generateEvent((IntDomainVar)sc.getVar(v), values[vars.get((IntDomainVar)sc.getVar(v))], r);
+                    generateEvent(sc.getVar(v), values[vars.get(sc.getVar(v))], r);
                     stillInstanciable(vars, values);
                 } catch (ContradictionException e) {
                     Assert.fail("(seed:" + seed + ") unexpected behaviour in propagation...\n"+e.getMessage()+"\n" + s.pretty());
@@ -368,6 +368,8 @@ public class ConstraintTest {
      */
     private void goesToFail(DeterministicIndicedList<IntDomainVar> vars, ArrayList<AbstractIntSConstraint> cstrs,
                          int[] values, Random r) {
+        Level level = ChocoLogging.getEngineLogger().getLevel();
+        ChocoLogging.getEngineLogger().setLevel(Level.OFF);
         int loop = 10;
             while(loop>0) {
                 s.worldPush();
@@ -378,10 +380,11 @@ public class ConstraintTest {
                         s.propagate();
                         AbstractIntSConstraint sc = cstrs.get(r.nextInt(cstrs.size()));
                         int v = r.nextInt(sc.getNbVars());
-                        generateEvent((IntDomainVar)sc.getVar(v), values[vars.get((IntDomainVar)sc.getVar(v))], r);
+                        generateEvent(sc.getVar(v), values[vars.get(sc.getVar(v))], r);
                         stillInstanciable(vars, values);
                         if(fullyInstanciated(vars)){
                             if(s.checkSolution()){
+                                ChocoLogging.getEngineLogger().setLevel(level);
                                     Assert.fail("(seed:" + seed + ") satisfied...\n" + s.pretty());
                             }
                         }
@@ -394,6 +397,7 @@ public class ConstraintTest {
                 loop--;
                 s.worldPop();
             }
+        ChocoLogging.getEngineLogger().setLevel(level);
     }
 
 
@@ -452,7 +456,7 @@ public class ConstraintTest {
         while(itv.hasNext()){
             v = itv.next();
             if(!v.canBeInstantiatedTo(values[vars.get(v)])){
-                s.getPropagationEngine().raiseContradiction("stillInstanciable", ContradictionException.Type.UNKNOWN);
+                s.getPropagationEngine().raiseContradiction("stillInstanciable");
             }
         }
     }
@@ -486,14 +490,14 @@ public class ConstraintTest {
         switch (event) {
             case 0: // INSTANTIATION
                 if(print)LOGGER.info(var.getName()+" = "+value);
-                var.instantiate(value, VarEvent.NOCAUSE);
+                var.instantiate(value, null, true);
                 break;
             case 1: // LOWER BOUND
                 if(value > var.getInf()){
                     v = value - var.getInf();
                     v = value - r.nextInt(v);
                     if(print)LOGGER.info(var.getName()+" >= "+v);
-                    var.updateInf(v, VarEvent.NOCAUSE);
+                    var.updateInf(v, null, true);
                 }
                 break;
             case 2: // UPPER BOUND
@@ -501,7 +505,7 @@ public class ConstraintTest {
                     v = var.getSup() - value;
                     v = value + r.nextInt(v);
                     if(print)LOGGER.info(var.getName()+" <= "+v);
-                    var.updateSup(v, VarEvent.NOCAUSE);
+                    var.updateSup(v, null, true);
                 }
                 break;
             case 3: // REMOVAL
@@ -511,7 +515,7 @@ public class ConstraintTest {
                         v = getRandomValue(var, r);
                     }
                     if(print)LOGGER.info(var.getName()+" != "+v);
-                    var.removeVal(v, VarEvent.NOCAUSE);
+                    var.removeVal(v, null, true);
                 }
                 break;
         }

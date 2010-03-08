@@ -26,6 +26,7 @@ import choco.cp.common.util.iterators.IntDomainIterator;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.delta.IDeltaDomain;
@@ -80,23 +81,23 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 * Returns a boolean indicating whether the call indeed added new information.
 	 *
 	 * @param x   The new upper bound
-	 * @param idx The index of the constraint (among all constraints linked to
-	 *            the variable) responsible for the update
-	 * @return a boolean indicating whether the call indeed added new information.
+	 * @param cause constraint causing the modification
+     * @param forceAwake
+     * @return a boolean indicating whether the call indeed added new information.
 	 * @throws ContradictionException contradiction exception
 	 */
-	public boolean updateSup(int x, int idx) throws ContradictionException {
-		if (_updateSup(x, idx)) {
-			int cause = VarEvent.NOCAUSE;
+	public boolean updateSup(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+		if (_updateSup(x, cause)) {
+            boolean awake = true;
 			int val = getInf();
-			if (getSup() == x) cause = idx;
+			if (getSup() == x) awake = forceAwake;
 			if (val == getSup()) {
 				//instantiate(getSup(), cause);
 				restrict(val);
-				propagationEngine.postInstInt(variable, cause);
+				propagationEngine.postInstInt(variable, cause, awake);
 			}
 			else
-				propagationEngine.postUpdateSup(variable, cause);
+				propagationEngine.postUpdateSup(variable, cause, awake);
 			return true;
 		} else
 			return false;
@@ -108,23 +109,23 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 * Returns a boolean indicating whether the call indeed added new information
 	 *
 	 * @param x   The new lower bound.
-	 * @param idx The index of the constraint (among all constraints linked to
-	 *            the variable) responsible for the update.
-	 * @return a boolean indicating whether the call indeed added new information
+	 * @param cause constraint causing the modification
+     * @param forceAwake
+     * @return a boolean indicating whether the call indeed added new information
 	 * @throws ContradictionException contradiction exception
 	 */
 
-	public boolean updateInf(int x, int idx) throws ContradictionException {
-		if (_updateInf(x, idx)) {
-			int cause = VarEvent.NOCAUSE;
+	public boolean updateInf(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+		if (_updateInf(x, cause)) {
+            boolean awake = true;
 			int val = getSup();      
-			if (getInf() == x) cause = idx;
+			if (getInf() == x) awake = forceAwake;
 			if (val == getInf()) {
 				//        instantiate(getInf(), cause);
 				restrict(val);
-				propagationEngine.postInstInt(variable, cause);
+				propagationEngine.postInstInt(variable, cause, awake);
 			} else
-				propagationEngine.postUpdateInf(variable, cause);
+				propagationEngine.postUpdateInf(variable, cause, awake);
 			// TODO      solver.getChocEngine().postUpdateInf(variable, cause, oldinf);
 			return true;
 		} else
@@ -142,25 +143,26 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 * Returns a boolean indicating whether the call indeed added new information.
 	 *
 	 * @param x   The removed value
-	 * @param idx The index of the constraint (among all constraints linked to the variable) responsible for the update
-	 * @return a boolean indicating whether the call indeed added new information.
+	 * @param cause constraint causing the modification
+     * @param forceAwake
+     * @return a boolean indicating whether the call indeed added new information.
 	 * @throws ContradictionException contradiction exception
 	 */
 
-	public boolean removeVal(int x, int idx) throws ContradictionException {
-		if (_removeVal(x, idx)) {
+	public boolean removeVal(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+		if (_removeVal(x, cause)) {
 			// TODO : to test !!
 			//int promoteCause = variable.getEvent().getCause() == VarEvent.NOEVENT ? idx : VarEvent.NOCAUSE;
 			//int promoteCause = idx;
 			int promoteCause = VarEvent.NOCAUSE;
 			if (getInf() == getSup())
-				propagationEngine.postInstInt(variable, promoteCause);
+				propagationEngine.postInstInt(variable, cause, forceAwake);
 			else if (x < getInf())
-				propagationEngine.postUpdateInf(variable, promoteCause);
+				propagationEngine.postUpdateInf(variable, cause, forceAwake);
 			else if (x > getSup())
-				propagationEngine.postUpdateSup(variable, promoteCause);
+				propagationEngine.postUpdateSup(variable, cause, forceAwake);
 			else
-				propagationEngine.postRemoveVal(variable, x, idx);
+				propagationEngine.postRemoveVal(variable, x, cause, forceAwake);
 			return true;
 		} else
 			return false;
@@ -174,22 +176,22 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 *
 	 * @param a   the first removed value
 	 * @param b   the last removed value
-	 * @param idx the index of the constraint (among all constraints linked to the variable)
-	 *            responsible for the update
-	 * @return a boolean indicating whether the call indeed added new information.
+	 * @param cause constraint causing the modification
+     * @param forceAwake
+     * @return a boolean indicating whether the call indeed added new information.
 	 * @throws ContradictionException contradiction exception
 	 */
 
-	public boolean removeInterval(int a, int b, int idx) throws ContradictionException {
+	public boolean removeInterval(int a, int b, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
 		if (a <= getInf())
-			return updateInf(b + 1, idx);
+			return updateInf(b + 1, cause, forceAwake);
 		else if (getSup() <= b)
-			return updateSup(a - 1, idx);
+			return updateSup(a - 1, cause, forceAwake);
 		else if (variable.hasEnumeratedDomain()) {     // TODO: really ugly .........
 			boolean anyChange = false;
 			for (int v = getNextValue(a - 1); v <= b; v = getNextValue(v)) {
 				//for (int v = a; v <= b; v++) {
-				anyChange |= removeVal(v, idx);
+				anyChange |= removeVal(v, cause, forceAwake);
 			}
 			return anyChange;
 		} else
@@ -201,15 +203,15 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 * Returns a boolean indicating whether the call indeed added new information.
 	 *
 	 * @param x   the new upper bound
-	 * @param idx the index of the constraint (among all constraints linked to the
-	 *            variable) responsible for the update
-	 * @return a boolean indicating whether the call indeed added new information.
+	 * @param cause constraint causing the modification
+     * @param forceAwake
+     * @return a boolean indicating whether the call indeed added new information.
 	 * @throws ContradictionException contradiction exception
 	 */
 
-	public boolean instantiate(int x, int idx) throws ContradictionException {
-		if (_instantiate(x, idx)) {
-			propagationEngine.postInstInt(variable, idx);
+	public boolean instantiate(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+		if (_instantiate(x, cause)) {
+			propagationEngine.postInstInt(variable, cause, forceAwake);
 			return true;
 		} else
 			return false;
@@ -225,22 +227,22 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 * a real modification or not
 	 *
 	 * @param x the new instantiate value
-	 * @param idx constraint idx
-	 * @return wether it is a real modification or not
+	 * @param cause constraint causing the modification
+     * @return wether it is a real modification or not
 	 * @throws ContradictionException contradiction exception
 	 */
 
-	protected boolean _instantiate(int x, int idx) throws ContradictionException {
+	protected boolean _instantiate(int x, final SConstraint cause) throws ContradictionException {
 		if (variable.isInstantiated()) {
 			if (variable.getVal() != x) {
-				propagationEngine.raiseContradiction(idx, this.variable);
+				propagationEngine.raiseContradiction(cause);
 				return true; // Just for compilation !
 			} else return false;
 		} else {
 			if (x < getInf() || x > getSup() || !contains(x)) { // GRT : we need to check bounds
 				// since contains suppose trivial bounds
 				// are containing tested value !!
-				propagationEngine.raiseContradiction(idx, this.variable);
+				propagationEngine.raiseContradiction(cause);
 				return true; // Just for compilation !
 			} else {
 				restrict(x);
@@ -254,16 +256,16 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 * Improving the lower bound.
 	 *
 	 * @param x the new lower bound
-	 * @param idx constraint idx
-	 * @return a boolean indicating wether the update has been done
+	 * @param cause constraint causing the modification
+     * @return a boolean indicating wether the update has been done
 	 * @throws ContradictionException contradiction exception
 	 */
 
 	// note: one could have thrown an OutOfDomainException in case (x > IStateInt.MAXINT)
-	protected boolean _updateInf(int x, int idx) throws ContradictionException {
+	protected boolean _updateInf(int x, final SConstraint cause) throws ContradictionException {
 		if (x > getInf()) {
 			if (x > getSup()) {
-				propagationEngine.raiseContradiction(idx, this.variable);
+				propagationEngine.raiseContradiction(cause);
 				return true; // Just for compilation !
 			} else {
 				updateInf(x);
@@ -279,14 +281,14 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 * Improving the upper bound.
 	 *
 	 * @param x the new upper bound
-	 * @param idx constraint idx
-	 * @return wether the update has been done
+	 * @param cause constraint causing the modification
+     * @return wether the update has been done
 	 * @throws ContradictionException contradiction exception
 	 */
-	protected boolean _updateSup(int x, int idx) throws ContradictionException {
+	protected boolean _updateSup(int x, final SConstraint cause) throws ContradictionException {
 		if (x < getSup()) {
 			if (x < getInf()) {
-				propagationEngine.raiseContradiction(idx, this.variable);
+				propagationEngine.raiseContradiction(cause);
 			} else {
 				updateSup(x);
 			}
@@ -301,22 +303,22 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 * was a real modification on the domain.
 	 *
 	 * @param x the value to remove
-	 * @param idx constraint idx
-	 * @return wether the removal has been done
+	 * @param cause constraint causing the modification
+     * @return wether the removal has been done
 	 * @throws ContradictionException contradiction excpetion
 	 */
-	protected boolean _removeVal(int x, int idx) throws ContradictionException {
+	protected boolean _removeVal(int x, final SConstraint cause) throws ContradictionException {
 		int infv = getInf(), supv = getSup();
 		if (infv <= x && x <= supv) {
 			if (x == infv) {
-				_updateInf(x + 1, idx);
+				_updateInf(x + 1, cause);
 				if (getInf() == supv) {
 					restrict(supv);
 					//_instantiate(supv, idx);
 				}
 				return true;
 			} else if (x == supv) {
-				_updateSup(x - 1, idx);
+				_updateSup(x - 1, cause);
 				if (getSup() == infv) {
 					restrict(infv);
 					//_instantiate(infv, idx);

@@ -422,7 +422,8 @@ public class CPModel implements Model {
 				 */
 				@Override
 				public void remove() {
-					throw new UnsupportedOperationException();
+					it.remove();
+//                    throw new UnsupportedOperationException();
 				}
 			};
 		} else {

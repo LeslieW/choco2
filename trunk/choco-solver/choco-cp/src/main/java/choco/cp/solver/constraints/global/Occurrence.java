@@ -30,7 +30,6 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public class Occurrence extends AbstractLargeIntSConstraint {
@@ -157,14 +156,14 @@ public class Occurrence extends AbstractLargeIntSConstraint {
 
     public void checkNbPossible() throws ContradictionException {
         if (constrainOnInfNumber) {
-            vars[nbListVars].updateSup(nbPossible.get(), cIndices[nbListVars]);
+            vars[nbListVars].updateSup(nbPossible.get(), this, false);
             if (vars[nbListVars].getInf() == nbPossible.get()) {
                 for(int i = 0; i < relevantVar.length; i++){
                 //for (IntDomainVar aRelevantVar : relevantVar) {
                     IntDomainVar aRelevantVar = relevantVar[i];
                     if (aRelevantVar.getDomain().contains(occval) && !aRelevantVar.isInstantiated()) {
                         //nbSure.add(1); // must be dealed by the event listener not here !!
-                        aRelevantVar.instantiate(occval, VarEvent.domOverWDegIdx(cIndices[i]) /*cIndices[i]*/);
+                        aRelevantVar.instantiate(occval,  /*cIndices[i]*/this, true);
                     }
                 }
             }
@@ -173,14 +172,14 @@ public class Occurrence extends AbstractLargeIntSConstraint {
 
     public void checkNbSure() throws ContradictionException {
         if (constrainOnSupNumber) {
-            vars[nbListVars].updateInf(nbSure.get(), cIndices[nbListVars]);
+            vars[nbListVars].updateInf(nbSure.get(), this, false);
             if (vars[nbListVars].getSup() == nbSure.get()) {
                 for(int i = 0; i< relevantVar.length; i++){
 //                for (IntDomainVar aRelevantVar : relevantVar) {
                     IntDomainVar aRelevantVar = relevantVar[i];
                     if (aRelevantVar.getDomain().contains(occval) && !aRelevantVar.isInstantiated()) {
                         //nbPossible.add(-1);
-                        aRelevantVar.removeVal(occval, VarEvent.domOverWDegIdx(cIndices[i]) /*cIndices[i]*/);
+                        aRelevantVar.removeVal(occval,  /*cIndices[i]*/this, true);
                     }
                 }
             }

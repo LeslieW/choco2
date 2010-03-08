@@ -24,10 +24,8 @@ package choco.cp.solver.variables.real;
 
 import choco.kernel.memory.IStateDouble;
 import choco.kernel.solver.ContradictionException;
-import static choco.kernel.solver.ContradictionException.Type.DOMAIN;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.propagation.PropagationEngine;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.real.RealDomain;
 import choco.kernel.solver.variables.real.RealInterval;
 import choco.kernel.solver.variables.real.RealVar;
@@ -89,12 +87,8 @@ public class RealDomainImpl implements RealDomain {
 	}
 
 	public void intersect(RealInterval interval) throws ContradictionException {
-		intersect(interval, VarEvent.NOCAUSE);
-	}
-
-	public void intersect(RealInterval interval, int index) throws ContradictionException {
 		if ((interval.getInf() > this.getSup()) || (interval.getSup() < this.getInf())) {
-			propagationEngine.raiseContradiction(this, DOMAIN);
+			propagationEngine.raiseContradiction(this);
 		}
 
 		double old_width = this.getSup() - this.getInf();
@@ -104,12 +98,12 @@ public class RealDomainImpl implements RealDomain {
 		&& (new_width < old_width * solver.getReduction());
 
 		if (interval.getInf() > this.getInf()) {
-			if (toAwake) propagationEngine.postUpdateInf(variable, index);
+			if (toAwake) propagationEngine.postUpdateInf(variable, null, true);
 			inf.set(interval.getInf());
 		}
 
 		if (interval.getSup() < this.getSup()) {
-			if (toAwake) propagationEngine.postUpdateSup(variable, index);
+			if (toAwake) propagationEngine.postUpdateSup(variable, null, true);
 			sup.set(interval.getSup());
 		}
 	}

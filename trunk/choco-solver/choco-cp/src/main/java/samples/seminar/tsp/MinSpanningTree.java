@@ -157,7 +157,7 @@ public class MinSpanningTree extends AbstractLargeIntSConstraint {
         lowerBound.set(arpm() + dist[n - 1][0].get());
         //LOGGER.info("lb = " + lowerBound.get());
         if (lowerBound.get() > objective.getInf()) {
-            objective.updateInf(lowerBound.get(),cIndices[n]);
+            objective.updateInf(lowerBound.get(), this, false);
         }
         // filtrer de la borne inf vers les variables s[]
         // m�moriser un arpm et pour chaque arc maybe, l'injecter dans l'arpm, mettre � jour l'arpm

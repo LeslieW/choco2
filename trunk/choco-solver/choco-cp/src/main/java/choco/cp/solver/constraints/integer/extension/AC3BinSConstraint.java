@@ -63,7 +63,7 @@ public class AC3BinSConstraint extends CspBinSConstraint {
 				}
 			}
 			itv0.dispose();
-			if (nbs == 0) v1.removeVal(val1, cIdx1);
+			if (nbs == 0) v1.removeVal(val1, this, false);
 			nbs = 0;
 		}
 		itv1.dispose();
@@ -84,7 +84,7 @@ public class AC3BinSConstraint extends CspBinSConstraint {
 				}
 			}
 			itv1.dispose();
-			if (nbs == 0) v0.removeVal(val0, cIdx0);
+			if (nbs == 0) v0.removeVal(val0, this, false);
 			nbs = 0;
 		}
 		itv0.dispose();

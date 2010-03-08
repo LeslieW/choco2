@@ -45,6 +45,7 @@ package choco.kernel.solver.variables.integer;
  **************************************************/
 
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.SConstraint;
 /** History:
  * 2007-12-07 : FR_1873619 CPRU: DomOverDeg+DomOverWDeg
  * */
@@ -300,12 +301,15 @@ public interface IntDomainVar extends IntVar {
 	 * (ie: removing all value strictly below the new lower bound from the domain).
 	 *
 	 * @param x   a lower bound of the domain (the new one, if better than the one currently stored)
-	 * @param idx the index of the constraint that generated the var
-	 * @return a boolean indicating whether this method call added new information or not
+	 * @param cause constraint that modified the {@code x}
+     * @param forceAwake
+     * @return a boolean indicating whether this method call added new information or not
 	 * @throws ContradictionException contradiction exception
 	 */
 
-	public boolean updateInf(int x, int idx) throws ContradictionException;
+	public boolean updateInf(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException;
+    @Deprecated
+    public boolean updateInf(int x, int idx) throws ContradictionException;
 
 
 	/**
@@ -313,23 +317,29 @@ public interface IntDomainVar extends IntVar {
 	 * (ie: removing all value strictly above the new upper bound from the domain).
 	 *
 	 * @param x   an upper bound of the domain (the new one, if better than the one currently stored)
-	 * @param idx the index of the constraint that generated the var
-	 * @return a boolean indicating whether this method call added new information or not
+	 * @param cause
+     * @param forceAwake
+     * @return a boolean indicating whether this method call added new information or not
 	 * @throws ContradictionException contradiction exception
 	 */
 
-	public boolean updateSup(int x, int idx) throws ContradictionException;
+	public boolean updateSup(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException;
+    @Deprecated
+    public boolean updateSup(int x, final int idx) throws ContradictionException;
 
 	/**
 	 * <i>Propagation events</i> updating the domain of a variable (by removing a value)
 	 *
 	 * @param x   the value that is not in the domain
-	 * @param idx the index of the constraint that generated the var
-	 * @return a boolean indicating whether this method call added new information or not
+	 * @param cause
+     * @param forceAwake
+     * @return a boolean indicating whether this method call added new information or not
 	 * @throws choco.kernel.solver.ContradictionException contradiction exception
 	 */
 
-	public boolean removeVal(int x, int idx) throws ContradictionException;
+	public boolean removeVal(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException;
+    @Deprecated
+    public boolean removeVal(int x, final int idx) throws ContradictionException;
 
 	/**
 	 * <i>Propagation events</i> updating the domain of a variable
@@ -337,22 +347,28 @@ public interface IntDomainVar extends IntVar {
 	 *
 	 * @param a   the lower bound of the forbidden interval
 	 * @param b   the upper bound of the forbidden interval
-	 * @param idx the index of the constraint that generated the var
-	 * @return a boolean indicating whether this method call added new information or not
+	 * @param cause
+     * @param forceAwake
+     * @return a boolean indicating whether this method call added new information or not
 	 * @throws ContradictionException contradiction exception
 	 */
 
-	public boolean removeInterval(int a, int b, int idx) throws ContradictionException;
+	public boolean removeInterval(int a, int b, final SConstraint cause, final boolean forceAwake) throws ContradictionException;
+    @Deprecated
+    public boolean removeInterval(int a, int b, final int idx) throws ContradictionException;
 
 	/**
 	 * <i>Propagation events</i> instantiating a variable
 	 * (ie: removing all other values from the domain)
 	 *
 	 * @param x   the value of the variable
-	 * @param idx the index of the constraint that generated the var
-	 * @return a boolean indicating whether this method call added new information or not
+	 * @param cause
+     * @param forceAwake
+     * @return a boolean indicating whether this method call added new information or not
 	 * @throws ContradictionException contradiction exception
 	 */
 
-	public boolean instantiate(int x, int idx) throws ContradictionException;
+	public boolean instantiate(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException;
+    @Deprecated
+    public boolean instantiate(int x, final int idx) throws ContradictionException;
 }
