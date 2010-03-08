@@ -42,7 +42,7 @@ public class QuickIterator<C extends AbstractSConstraint> extends DisposableIter
     static QuickIterator _quickIterator = null;
 
     @SuppressWarnings({"unchecked"})
-    public static <C> QuickIterator getIterator(final PartiallyStoredIntVector event, final int cstrCause,
+    public static <C extends AbstractSConstraint> QuickIterator getIterator(final PartiallyStoredIntVector event, final C cstrCause,
                                          final PartiallyStoredVector<C> elements, final PartiallyStoredIntVector indices) {
         QuickIterator iter = _quickIterator;
         if (iter != null && iter.reusable) {
@@ -55,7 +55,7 @@ public class QuickIterator<C extends AbstractSConstraint> extends DisposableIter
     ////////////////////////////////////////////\ STATIC ///////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    int cstrCause;
+    C cstrCause;
     DisposableIntIterator cit;
     PartiallyStoredIntVector event;
     Couple<C> cc = new Couple<C>();
@@ -63,12 +63,12 @@ public class QuickIterator<C extends AbstractSConstraint> extends DisposableIter
     PartiallyStoredIntVector indices;
 
 
-    private QuickIterator(final int cstrCause, final PartiallyStoredIntVector event,
+    private QuickIterator(final C cstrCause, final PartiallyStoredIntVector event,
                           final PartiallyStoredVector<C> elements, final PartiallyStoredIntVector indices) {
         init(cstrCause, event, elements, indices);
     }
 
-    private void init(int cstrCause, final PartiallyStoredIntVector event,
+    private void init(C cstrCause, final PartiallyStoredIntVector event,
                       final PartiallyStoredVector<C> elements, final PartiallyStoredIntVector indices) {
         super.init();
         this.event = event;
@@ -99,9 +99,10 @@ public class QuickIterator<C extends AbstractSConstraint> extends DisposableIter
     public boolean hasNext() {
         while (cit.hasNext()) {
             int idx = event.get(cit.next());
-            if (idx != cstrCause) {
-                if (elements.get(idx).isActive()) {
-                    cc.init(elements.get(idx), indices.get(idx));
+            final C cstr = elements.get(idx);
+            if (cstr != cstrCause) {
+                if (cstr.isActive()) {
+                    cc.init(cstr, indices.get(idx));
                     return true;
                 }
             }

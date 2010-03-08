@@ -1,7 +1,6 @@
 package choco.cp.solver.constraints.integer.bool.sat;
 
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.propagation.event.VarEvent;
 
 /**
  * A clause is a set of litterals used within the watched literals
@@ -127,12 +126,12 @@ public class WLClause {
             if (voc.boolvars[lits[0]].isInstantiatedTo(0)) {
                propagator.updateDegree(lits);
             }
-            voc.boolvars[lits[0]].instantiate(1, VarEvent.NOCAUSE);//propagator.cIndices[lits[0] - 1]);
+            voc.boolvars[lits[0]].instantiate(1, this.propagator, true);//propagator.cIndices[lits[0] - 1]);
         } else {
             if (voc.boolvars[-lits[0]].isInstantiatedTo(1)) {
                propagator.updateDegree(lits);
             }
-            voc.boolvars[-lits[0]].instantiate(0, VarEvent.NOCAUSE);//propagator.cIndices[-lits[0] - 1]);
+            voc.boolvars[-lits[0]].instantiate(0, this.propagator, true);//propagator.cIndices[-lits[0] - 1]);
         }
     }
 

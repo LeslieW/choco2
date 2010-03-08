@@ -15,7 +15,6 @@ import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.After;
@@ -73,13 +72,13 @@ public class BipartiteIntDomainTest {
             LOGGER.finest("First step passed");
 
             s.getEnvironment().worldPush();
-            yDom.removeVal(2, -1);
+            yDom.removeVal(2, null, true);
             assertEquals(1, yDom.getInf());
             assertEquals(15, yDom.getSup());
             assertEquals(14, yDom.getSize());
             LOGGER.finest("Second step passed");
 
-            yDom.removeVal(1, -1);
+            yDom.removeVal(1, null, true);
             assertEquals(3, yDom.getInf());
             assertEquals(15, yDom.getSup());
             assertEquals(13, yDom.getSize());
@@ -102,10 +101,10 @@ public class BipartiteIntDomainTest {
     public void test2() {
         LOGGER.finer("test2");
         try {
-            yDom.removeVal(10,-1);
-            yDom.removeVal(12,-1);
-            yDom.removeVal(14,-1);
-            yDom.removeVal(13,-1);
+            yDom.removeVal(10, null, false);
+            yDom.removeVal(12, null, false);
+            yDom.removeVal(14, null, false);
+            yDom.removeVal(13, null, false);
             yDom.updateSup(14);
             LOGGER.info("" + yDom.pretty());
             assertEquals(1, yDom.getInf());
@@ -119,7 +118,7 @@ public class BipartiteIntDomainTest {
             assertEquals(3, yDom.getSize());
             LOGGER.finest("Second step passed");
 
-            yDom.removeVal(11, -1);
+            yDom.removeVal(11, null, false);
             assertEquals(8, yDom.getInf());
             assertEquals(9, yDom.getSup());
             assertEquals(2, yDom.getSize());
@@ -179,12 +178,12 @@ public class BipartiteIntDomainTest {
     public void test4() {
         LOGGER.finer("test2");
         try {
-        yDom.removeVal(10,-1);
-        yDom.removeVal(12,-1);
-        yDom.removeVal(14,-1);
-        yDom.removeVal(13,-1);
+        yDom.removeVal(10, null, false);
+        yDom.removeVal(12, null, false);
+        yDom.removeVal(14, null, false);
+        yDom.removeVal(13, null, false);
         yDom.updateSup(14);
-        yDom.instantiate(7, VarEvent.NOCAUSE);
+        yDom.instantiate(7, null, true);
         assertEquals(7, yDom.getInf());
         assertEquals(7, yDom.getSup());
         assertEquals(1, yDom.getSize());
@@ -343,7 +342,7 @@ public class BipartiteIntDomainTest {
         s.worldPush();
         try {
             s.getVar(y).remVal(3);
-            s.getVar(y).instantiate(8, 0);
+            s.getVar(y).instantiate(8, null, false);
         } catch (ContradictionException e) {
             fail();
         }

@@ -145,7 +145,7 @@ public class TaskVariableTest {
         }
 
         public void forceAwake(int idx){
-            vars[idx].updateHypotheticalDomain(cIndices[idx]);
+            vars[idx].updateHypotheticalDomain(cIndices[idx], this, false);
         }
 
         public final int getVal(){

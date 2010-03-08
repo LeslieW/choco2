@@ -27,9 +27,6 @@ import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.extension.IterTuplesTable;
-import choco.kernel.solver.constraints.integer.extension.LargeRelation;
-import choco.kernel.solver.constraints.integer.extension.ConsistencyRelation;
-import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -141,7 +138,7 @@ public class GAC3rmPositiveLargeConstraint extends CspLargeSConstraint {
                 //the residual support is not valid anymore, seek a new one
                 currentIdxSupport = seekNextSupport(indexVar, nva);
                 if (currentIdxSupport == NO_SUPPORT) {
-                    vars[indexVar].removeVal(val, cIndices[indexVar]);
+                    vars[indexVar].removeVal(val, this, false);
                 } else {
                     setSupport(currentIdxSupport);
                 }
@@ -202,7 +199,7 @@ public class GAC3rmPositiveLargeConstraint extends CspLargeSConstraint {
                 int val = itv.next();
                 int nva = val - relation.getRelationOffset(i);
                 if (tab[i][nva].length == 0)
-                    vars[i].removeVal(val, cIndices[i]);
+                    vars[i].removeVal(val, this, false);
                 else setSupport(tab[i][nva][0]);
             }
             }finally {

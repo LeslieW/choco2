@@ -30,7 +30,6 @@ import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.propagation.event.VarEvent;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -134,7 +133,7 @@ public class AbsTest {
         s.read(m);
         try {
             s.propagate();
-            s.getVar(x).updateSup(2,VarEvent.NOCAUSE);
+            s.getVar(x).updateSup(2, null, true);
             s.propagate();
         } catch (ContradictionException e) {
             e.printStackTrace();
@@ -160,7 +159,7 @@ public class AbsTest {
         s.read(m);
         try {
             s.propagate();
-            s.getVar(x).updateInf(7, VarEvent.NOCAUSE);
+            s.getVar(x).updateInf(7, null, true);
             //s.getVar(y).updateSup(2,-1);
             s.propagate();
         } catch (ContradictionException e) {

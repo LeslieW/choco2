@@ -44,6 +44,11 @@ public abstract class INode implements IPretty {
     protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
     /**
+     * To speed up union operation
+     */
+    private static IntDomainVar[] emptyIntArray = new IntDomainVar[0];
+
+    /**
      * reference to branches below this node
      */
     protected INode[] subtrees;
@@ -87,11 +92,15 @@ public abstract class INode implements IPretty {
 //    }
     public IntDomainVar[] getScope(Solver s) {
         try {
-            final IntDomainVar[][] scopes = new IntDomainVar[subtrees.length][];
-            for(int i = 0; i< subtrees.length; i++){
-                scopes[i] = subtrees[i].getScope(s);
+            if(subtrees.length>0){
+                final IntDomainVar[][] scopes = new IntDomainVar[subtrees.length][];
+                for(int i = 0; i< subtrees.length; i++){
+                    scopes[i] = subtrees[i].getScope(s);
+                }
+                return union(scopes);
+            }else{
+                return emptyIntArray;
             }
-            return union(scopes);
         } catch (NullPointerException e) {
             return null;
         }
@@ -150,7 +159,11 @@ public abstract class INode implements IPretty {
                 }
             }
         }
-        return unionset.toArray(new IntDomainVar[unionset.size()]);
+        if(unionset.size()>0){
+            return unionset.toArray(new IntDomainVar[unionset.size()]);
+        }else{
+            return emptyIntArray;
+        }
     }
 
     /**

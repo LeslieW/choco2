@@ -25,6 +25,7 @@ package choco.cp.solver.variables.integer;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -232,13 +233,13 @@ public class ViewIntDomainVarImpl extends IntDomainVarImpl{
    * Returns a boolean indicating whether the call indeed added new information
    *
    * @param x   The new lower bound.
-   * @param idx The index of the constraint (among all constraints linked to
-   *            the variable) responsible for the update.
+   * @param cause
+   * @param forceAwake
    */
 
-  public boolean updateInf(int x, int idx) throws ContradictionException {
+  public boolean updateInf(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
           //logOnInf(x);
-          return domain.updateInf(computeValue(x, false), idx);
+          return domain.updateInf(computeValue(x, false), cause, forceAwake);
   }
 
   /**
@@ -247,13 +248,13 @@ public class ViewIntDomainVarImpl extends IntDomainVarImpl{
    * Returns a boolean indicating whether the call indeed added new information.
    *
    * @param x   The new upper bound
-   * @param idx The index of the constraint (among all constraints linked to
-   *            the variable) responsible for the update
+   * @param cause
+   * @param forceAwake
    */
 
-  public boolean updateSup(int x, int idx) throws ContradictionException {
+  public boolean updateSup(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
           //logOnSup(x);
-          return domain.updateSup(computeValue(x, true), idx);
+          return domain.updateSup(computeValue(x, true), cause, forceAwake);
   }
 
 
@@ -268,12 +269,13 @@ public class ViewIntDomainVarImpl extends IntDomainVarImpl{
    * Returns a boolean indicating whether the call indeed added new information.
    *
    * @param x   The removed value
-   * @param idx The index of the constraint (among all constraints linked to the variable) responsible for the update
+   * @param cause
+   * @param forceAwake
    */
 
-  public boolean removeVal(int x, int idx) throws ContradictionException {
+  public boolean removeVal(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
       //logOnRem(x);
-      return domain.removeVal(computeValue(x, true), idx);
+      return domain.removeVal(computeValue(x, true), cause, forceAwake);
   }
 
   /**
@@ -283,13 +285,13 @@ public class ViewIntDomainVarImpl extends IntDomainVarImpl{
    *
    * @param a   the first removed value
    * @param b   the last removed value
-   * @param idx the index of the constraint (among all constraints linked to the variable)
-   *            responsible for the update
+   * @param cause
+   * @param forceAwake
    */
 
-  public boolean removeInterval(int a, int b, int idx) throws ContradictionException {
+  public boolean removeInterval(int a, int b, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
       //logOnRemInt(a, b);
-	  return domain.removeInterval(computeValue(a, false), computeValue(b, true), idx);
+	  return domain.removeInterval(computeValue(a, false), computeValue(b, true), cause, forceAwake);
   }
 
   /**
@@ -297,13 +299,13 @@ public class ViewIntDomainVarImpl extends IntDomainVarImpl{
    * Returns a boolean indicating whether the call indeed added new information.
    *
    * @param x   the new upper bound
-   * @param idx the index of the constraint (among all constraints linked to the
-   *            variable) responsible for the update
+   * @param cause
+   * @param forceAwake
    */
 
-  public boolean instantiate(int x, int idx) throws ContradictionException {
+  public boolean instantiate(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
      //logOnInst(x);
-      return domain.instantiate(computeValue(x, false), idx);
+      return domain.instantiate(computeValue(x, false), cause, forceAwake);
   }
 
 

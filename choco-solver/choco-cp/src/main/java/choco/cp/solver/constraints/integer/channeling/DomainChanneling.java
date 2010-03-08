@@ -65,8 +65,8 @@ public final class DomainChanneling extends AbstractLargeIntSConstraint {
 	 */
 	@Override
 	public void awake() throws ContradictionException {
-		vars[dsize].updateInf(0, cIndices[dsize]);
-		vars[dsize].updateSup(dsize - 1, cIndices[dsize]);
+		vars[dsize].updateInf(0, this, false);
+		vars[dsize].updateSup(dsize - 1, this, false);
 		super.awake();
 		//Set oldinf & oldsup equals to the current bounds of the assignment var
 		oldinf.set(vars[dsize].getInf());
@@ -106,7 +106,7 @@ public final class DomainChanneling extends AbstractLargeIntSConstraint {
 	}
 
 	private final void clearBoolean(int val) throws ContradictionException {
-		vars[val].instantiate(0, cIndices[val]);
+		vars[val].instantiate(0, this, false);
 	}
 	
 
@@ -145,17 +145,17 @@ public final class DomainChanneling extends AbstractLargeIntSConstraint {
 		if (idx == dsize) {
 			//We instantiate the assignment var
 			//val = index to keep
-			vars[val].instantiate(1, cIndices[val]);
+			vars[val].instantiate(1, this, false);
 			clearBooleanExcept(val);
 		} else {
 			//We instantiate a boolean var
 			if (val == 1) {
 				//We report the instantiation to the associated assignment var
-				vars[dsize].instantiate(idx, cIndices[dsize]);
+				vars[dsize].instantiate(idx, this, false);
 				//Next line should be useless ?
 				clearBooleanExcept(idx);
 			} else {
-				vars[dsize].removeVal(idx, cIndices[dsize]);
+				vars[dsize].removeVal(idx, this, false);
 			}
 		}
 	}

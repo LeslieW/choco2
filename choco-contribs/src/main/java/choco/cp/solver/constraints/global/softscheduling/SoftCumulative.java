@@ -340,15 +340,15 @@ public class SoftCumulative extends AbstractSoftCumulative {
                if(overlaps(height,idx,low,up)) {
                    if (debug) { System.out.println("Start pruning with task " + idx + " between [" + low + "," + up + "]"); }
                    if (debug) { System.out.println("s:" + sum_height + " c:" + contributions[idx] + " h:" + height + " CAPA:" + capaMax); }
-                   fixPoint |= s.removeInterval(low - d.getInf() + 1, up, cIndices[idx * 4]);
-                   fixPoint |= e.removeInterval(low + 1, up + d.getInf(), cIndices[idx * 4 + 1]);
+                   fixPoint |= s.removeInterval(low - d.getInf() + 1, up, this, false);
+                   fixPoint |= e.removeInterval(low + 1, up + d.getInf(), this, false);
                    int maxd = Math.max(Math.max(low - s.getInf(), 0), e.getSup() - up - 1);
-                   fixPoint |= d.updateSup(maxd, cIndices[idx * 4 + 2]);
+                   fixPoint |= d.updateSup(maxd, this, false);
                    if (debug) { System.out.println("En pruning of " + idx); }
                    if (e.getSup() <= up + 1) it.remove();
                }
                if (e.getInf()>low && s.getSup() <= up && d.getInf() > 0) {
-                   fixPoint |= h.updateSup(maxCapaMax(low, up) - (sum_height - contributions[idx]), cIndices[idx * 4 + 3]);
+                   fixPoint |= h.updateSup(maxCapaMax(low, up) - (sum_height - contributions[idx]), this, false);
                }
            }
        }
@@ -360,7 +360,7 @@ public class SoftCumulative extends AbstractSoftCumulative {
         		      this.fail();
         	       }
         	       if(sum_height>wishCapa) {
-        		      fixPoint |= getCostVar(i).updateInf(sum_height-wishCapa,cIndices[nbTask*4+i]);
+        		      fixPoint |= getCostVar(i).updateInf(sum_height-wishCapa, this, false);
         	       }
         	   }
            }

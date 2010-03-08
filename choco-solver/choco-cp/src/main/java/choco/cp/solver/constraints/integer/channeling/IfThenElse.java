@@ -2,7 +2,6 @@ package choco.cp.solver.constraints.integer.channeling;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -20,7 +19,7 @@ public class IfThenElse extends ReifiedIntSConstraint {
             Boolean isEntailed = cons.isEntailed();
             if (isEntailed != null) {
                 if (!isEntailed) {
-                    vars[0].instantiate(0, VarEvent.domOverWDegIdx(cIndices[0]));
+                    vars[0].instantiate(0, this, true);
                 }
             }
     }

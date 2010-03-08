@@ -185,7 +185,7 @@ public class OrderedGcc extends AbstractLargeIntSConstraint {
         for(int i=0; i<this.vars.length; i++) {
             this.vars[i].removeInterval(index+minValue,
 								        vars[i].getSup(),
-								        cIndices[i]);
+                    this, false);
         }
        }
        this.constAwake(false);
@@ -207,7 +207,7 @@ public class OrderedGcc extends AbstractLargeIntSConstraint {
 		if(occMin(this.vars,this.minValue)==minBot) {  // then instantiate all those values with minValue
 			for(int i=0; i<this.vars.length; i++) {
 				if(this.vars[i].getInf()==this.minValue) {
-					this.vars[i].instantiate(this.minValue,cIndices[i]);
+					this.vars[i].instantiate(this.minValue, this, false);
 					nbVus++;
 				}
 			}
@@ -220,7 +220,7 @@ public class OrderedGcc extends AbstractLargeIntSConstraint {
 					if(/*!vars[i].isInstantiated() &&*/ minCovering[i]<pos+this.minValue) {
 						this.vars[i].removeInterval(pos+this.minValue,
                                                     vars[i].getSup(),
-								                    cIndices[i]);
+                                this, false);
 						nbVus++;
 					}
 				}

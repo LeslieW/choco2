@@ -108,7 +108,7 @@ public class AllDifferent extends AbstractBipartiteMatching {
     this.setMatch(i, j);
     for (int i2 = 0; i2 < this.nbLeftVertices; i2++) {
       if (i2 != i) {
-        this.vars[i2].removeVal(j + this.minValue, this.cIndices[i2]);
+        this.vars[i2].removeVal(j + this.minValue, this, false);
       }
     }
   }
@@ -122,7 +122,7 @@ public class AllDifferent extends AbstractBipartiteMatching {
    */
   public void deleteEdgeAndPublish(int i, int j) throws ContradictionException {
     this.deleteMatch(i, j);
-    this.vars[i].removeVal(j + this.minValue, this.cIndices[i]);
+    this.vars[i].removeVal(j + this.minValue, this, false);
   }
 
   // propagation functions: reacting to choco events

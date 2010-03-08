@@ -25,6 +25,7 @@ package choco.cp.solver.variables.set;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.variables.set.SetDomain;
 import choco.kernel.solver.variables.set.SetSubDomain;
@@ -169,41 +170,41 @@ public final class SetDomainImpl implements SetDomain {
   // ============================================
 
   // Si promotion, il faut annuler la cause
-  public boolean remFromEnveloppe(int x, int idx) throws ContradictionException {
-    if (_remFromEnveloppe(x, idx)) {
+  public boolean remFromEnveloppe(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+    if (_remFromEnveloppe(x, cause)) {
       if (isInstantiated())
-        propagationEngine.postInstSet(variable, SetVarEvent.NOCAUSE);
+        propagationEngine.postInstSet(variable, cause, forceAwake);
       else
-        propagationEngine.postRemEnv(variable, idx);
+        propagationEngine.postRemEnv(variable, cause, forceAwake);
       return true;
     }
     return false;
   }
 
   // Si promotion, il faut annuler la cause
-  public boolean addToKernel(int x, int idx) throws ContradictionException {
-    if (_addToKernel(x,idx)) {
+  public boolean addToKernel(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+    if (_addToKernel(x, cause)) {
       if (isInstantiated())
-        propagationEngine.postInstSet(variable, SetVarEvent.NOCAUSE);
+        propagationEngine.postInstSet(variable, cause, forceAwake);
       else
-        propagationEngine.postAddKer(variable, idx);
+        propagationEngine.postAddKer(variable, cause, forceAwake);
       return true;
     }
     return false;
   }
 
-  public boolean instantiate(int[] x, int idx) throws ContradictionException {
-    if (_instantiate(x, idx)) {
-      propagationEngine.postInstSet(variable, idx);
+  public boolean instantiate(int[] x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+    if (_instantiate(x, cause)) {
+      propagationEngine.postInstSet(variable, cause, forceAwake);
       return true;
     } else
       return false;
   }
 
   // Si promotion, il faut annuler la cause
-	protected boolean _remFromEnveloppe(int x, int idx) throws ContradictionException {
+	protected boolean _remFromEnveloppe(int x, final SConstraint cause) throws ContradictionException {
 		if (kernel.contains(x)) {
-			propagationEngine.raiseContradiction(idx, variable);
+			propagationEngine.raiseContradiction(cause);
             return true; // just for compilation
 		} else if (enveloppe.contains(x)) {
 			enveloppe.remove(x);
@@ -213,9 +214,9 @@ public final class SetDomainImpl implements SetDomain {
 	}
 
 	// Si promotion, il faut annuler la cause
-	protected boolean _addToKernel(int x, int idx) throws ContradictionException {
+	protected boolean _addToKernel(int x, final SConstraint cause) throws ContradictionException {
 		if (!enveloppe.contains(x)) {
-		    propagationEngine.raiseContradiction(idx, variable);
+		    propagationEngine.raiseContradiction(cause);
       return true; // just for compilation
 		} else if (!kernel.contains(x)) {
 			kernel.add(x);
@@ -224,16 +225,16 @@ public final class SetDomainImpl implements SetDomain {
 		return false;
 	}
 
-	protected boolean _instantiate(int[] values, int idx) throws ContradictionException {
+	protected boolean _instantiate(int[] values, final SConstraint cause) throws ContradictionException {
 		if (isInstantiated()) {
 			if (!isInstantiatedTo(values)) {
-				propagationEngine.raiseContradiction(idx, variable);
+				propagationEngine.raiseContradiction(cause);
                 return true; // just for compilation
 			} else
 				return true;
 		} else {
 			if (!canBeInstantiatedTo(values)) {
-				propagationEngine.raiseContradiction(idx, variable);
+				propagationEngine.raiseContradiction(cause);
                 return true; // just for compilation
 			} else {
 				for (int i = 0; i < values.length; i++) // TODO: ajouter un restrict(int[] val) dans le BitSetEnumeratedDomain

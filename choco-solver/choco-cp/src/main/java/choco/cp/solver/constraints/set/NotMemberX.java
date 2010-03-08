@@ -51,7 +51,7 @@ public class NotMemberX extends AbstractUnSetSConstraint {
 	}
 
 	public void propagate() throws ContradictionException {
-		v0.remFromEnveloppe(cste, cIdx0);
+		v0.remFromEnveloppe(cste, this, false);
 	}
 
 	public void awakeOnInst(int varIdx) throws ContradictionException {

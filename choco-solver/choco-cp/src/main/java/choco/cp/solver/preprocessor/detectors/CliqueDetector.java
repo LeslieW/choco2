@@ -88,11 +88,32 @@ public class CliqueDetector {
                 addEdge(neq.getVariables()[0],neq.getVariables()[1], neq);
             }
         }
+//        itneq = mod.getConstraintByType(ConstraintType.ALLDIFFERENT);
+//        while(itneq.hasNext()) {
+//            Constraint allDiff = itneq.next();
+//            Variable[] vars = allDiff.getVariables();
+//            if (isRealNaryNeq(vars)) {
+//                for(int i = 0; i < vars.length-1; i++){
+//                    for(int j = i+1; j < vars.length; j++){
+//                        addEdge(allDiff.getVariables()[i],allDiff.getVariables()[j], null);
+//                    }
+//                }
+////                itneq.remove();
+//            }
+//        }
         return diffs.nbEdges > 0;
     }
 
     public boolean isRealBinaryNeq(Variable[] vars) {
         if (vars.length != 2) return false;
+        for (Variable var : vars) {
+            if (var.getVariableType() != VariableType.INTEGER)
+                return false;
+        }
+        return true;
+    }
+
+    public boolean isRealNaryNeq(Variable[] vars) {
         for (Variable var : vars) {
             if (var.getVariableType() != VariableType.INTEGER)
                 return false;

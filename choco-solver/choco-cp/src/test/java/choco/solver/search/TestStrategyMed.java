@@ -5,7 +5,6 @@ package choco.solver.search;
 
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import junit.framework.Assert;
 import static org.junit.Assert.assertEquals;
 import org.junit.Ignore;
@@ -15,7 +14,7 @@ import samples.Examples.MinimumEdgeDeletion;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+@Ignore
 public class TestStrategyMed {
 
 	protected final static Logger LOGGER = ChocoLogging.getTestLogger();

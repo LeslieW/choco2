@@ -124,7 +124,7 @@ public class GAC2001PositiveLargeConstraint extends CspLargeSConstraint {
                 int currentIdxSupport = getSupport(indexVar, val);
                 currentIdxSupport = seekNextSupport(indexVar, nva, currentIdxSupport);
                 if (currentIdxSupport == NO_SUPPORT) {
-                    vars[indexVar].removeVal(val, cIndices[indexVar]);
+                    vars[indexVar].removeVal(val, this, false);
                 } else {
                     setSupport(indexVar, val, currentIdxSupport);
                 }

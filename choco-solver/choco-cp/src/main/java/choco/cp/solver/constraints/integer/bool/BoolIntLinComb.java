@@ -33,7 +33,6 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -264,8 +263,8 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 		boolean fixpoint = true;
 		while (fixpoint) {
 			fixpoint = false;
-			varCste.updateSup(rmemb.getNewSupForObj(), cIndices[nbVars]);
-			varCste.updateInf(rmemb.getNewInfForObj(), cIndices[nbVars]);
+			varCste.updateSup(rmemb.getNewSupForObj(), this, false);
+			varCste.updateInf(rmemb.getNewInfForObj(), this, false);
 			fixpoint |= updateForGEQ();
 			fixpoint |= updateForLEQ();
 		}
@@ -283,7 +282,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 		}
 		while (cpt < nbNegCoef && ub.get() + sCoeffs[cpt] < rmemb.getInfRight()) {
 			IntDomainVarImpl v = (IntDomainVarImpl) vars[cpt];
-			v.instantiate(0, cIndices[cpt]);
+			v.instantiate(0, this, false);
 			change = true;
 			if (op == IntLinComb.EQ) {
 				lb.add(-sCoeffs[cpt]);
@@ -304,7 +303,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 		}
 		while (cpt >= nbNegCoef && ub.get() - sCoeffs[cpt] < rmemb.getInfRight()) {
 			IntDomainVarImpl v = (IntDomainVarImpl) vars[cpt];
-			v.instantiate(1, cIndices[cpt]);
+			v.instantiate(1, this, false);
 			change = true;
 			if (op == IntLinComb.EQ) {
 				lb.add(sCoeffs[cpt]);
@@ -328,7 +327,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 			cpt--;
 		}
 		while (cpt >= nbNegCoef && lb.get() + sCoeffs[cpt] > rmemb.getSupRight()) {
-			vars[cpt].instantiate(0, cIndices[cpt]);
+			vars[cpt].instantiate(0, this, false);
 			change = true;
 			if (op == IntLinComb.EQ) {
 				ub.add(-sCoeffs[cpt]);
@@ -351,7 +350,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 			cpt++;
 		}
 		while (cpt < nbNegCoef && lb.get() - sCoeffs[cpt] > rmemb.getSupRight()) {
-			vars[cpt].instantiate(1, cIndices[cpt]);
+			vars[cpt].instantiate(1, this, false);
 			change = true;
 			if (op == IntLinComb.EQ) {
 				ub.add(sCoeffs[cpt]);
@@ -378,11 +377,11 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 				if (op == IntLinComb.GEQ) {
 					if (sCoeffs[idx] < 0 && i == 1) {
 						ub.add(sCoeffs[idx]);
-						varCste.updateSup(rmemb.getNewSupForObj(), cIndices[nbVars]);
+						varCste.updateSup(rmemb.getNewSupForObj(), this, false);
 						updateForGEQ();
 					} else if (sCoeffs[idx] > 0 && i == 0) {
 						ub.add(-sCoeffs[idx]);
-						varCste.updateSup(rmemb.getNewSupForObj(), cIndices[nbVars]);
+						varCste.updateSup(rmemb.getNewSupForObj(), this, false);
 						updateForGEQ();
 					} else if (idx == maxPosCoeff.get()) {
 						lookForNewMaxPosCoeff();
@@ -392,11 +391,11 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 				} else if (op == IntLinComb.LEQ) {
 					if (sCoeffs[idx] > 0 && i == 1) {
 						lb.add(sCoeffs[idx]);
-						varCste.updateInf(rmemb.getNewInfForObj(), cIndices[nbVars]);
+						varCste.updateInf(rmemb.getNewInfForObj(), this, false);
 						updateForLEQ();
 					} else if (sCoeffs[idx] < 0 && i == 0) {
 						lb.add(-sCoeffs[idx]);
-						varCste.updateInf(rmemb.getNewInfForObj(), cIndices[nbVars]);
+						varCste.updateInf(rmemb.getNewInfForObj(), this, false);
 						updateForLEQ();
 					} else if (idx == maxPosCoeff.get()) {
 						lookForNewMaxPosCoeff();
@@ -481,24 +480,24 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 	public void propagateEQ() throws ContradictionException {
 		for (int i = 0; i < nbNegCoef; i++) {
 			if (ub.get() + sCoeffs[i] < rmemb.getInfRight()) {
-				vars[i].instantiate(0, cIndices[i]);
+				vars[i].instantiate(0, this, false);
 			}
 		}
 		for (int i = nbNegCoef; i < nbVars; i++) {
 			if (ub.get() - sCoeffs[i] < rmemb.getInfRight()) {
-				vars[i].instantiate(1, cIndices[i]);
+				vars[i].instantiate(1, this, false);
 			}
 		}
 
 		for (int i = 0; i < nbNegCoef; i++) {
 			if (lb.get() - sCoeffs[i] > rmemb.getSupRight()) {
-				vars[i].instantiate(1, cIndices[i]);
+				vars[i].instantiate(1, this, false);
 			}
 		}
 
 		for (int i = nbNegCoef; i < nbVars; i++) {
 			if (lb.get() + sCoeffs[i] > rmemb.getSupRight()) {
-				vars[i].instantiate(0, cIndices[i]);
+				vars[i].instantiate(0, this, false);
 			}
 		}
 
@@ -514,7 +513,7 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 	public void propagateGEQ() throws ContradictionException {
 		for (int i = 0; i < nbNegCoef; i++) {
 			if (ub.get() + sCoeffs[i] < rmemb.getInfRight()) {
-				vars[i].instantiate(0, cIndices[i]);
+				vars[i].instantiate(0, this, false);
 			}
 
 			if (vars[i].isInstantiated()) {
@@ -523,21 +522,21 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 		}
 		for (int i = nbNegCoef; i < nbVars; i++) {
 			if (ub.get() - sCoeffs[i] < rmemb.getInfRight()) {
-				vars[i].instantiate(1, cIndices[i]);
+				vars[i].instantiate(1, this, false);
 			}
 
 			if (vars[i].isInstantiated()) {
 				awakeOnInst(i);
 			}
 		}
-		varCste.updateSup(rmemb.getNewSupForObj(), cIndices[nbVars]);
+		varCste.updateSup(rmemb.getNewSupForObj(), this, false);
 		updateForGEQ();
 	}
 
 	public void propagateLEQ() throws ContradictionException {
 		for (int i = 0; i < nbNegCoef; i++) {
 			if (lb.get() - sCoeffs[i] > rmemb.getSupRight()) {
-				vars[i].instantiate(1, VarEvent.domOverWDegIdx(cIndices[i]));
+				vars[i].instantiate(1, this, true);
 			}
 
 			if (vars[i].isInstantiated()) {
@@ -546,13 +545,13 @@ public class BoolIntLinComb extends AbstractLargeIntSConstraint {
 		}
 		for (int i = nbNegCoef; i < nbVars; i++) {
 			if (lb.get() + sCoeffs[i] > rmemb.getSupRight()) {
-				vars[i].instantiate(0, VarEvent.domOverWDegIdx(cIndices[i]));
+				vars[i].instantiate(0, this, true);
 			}
 			if (vars[i].isInstantiated()) {
 				awakeOnInst(i);
 			}
 		}
-		varCste.updateInf(rmemb.getNewInfForObj(), cIndices[nbVars]);
+		varCste.updateInf(rmemb.getNewInfForObj(), this, false);
 		updateForLEQ();
 	}
 

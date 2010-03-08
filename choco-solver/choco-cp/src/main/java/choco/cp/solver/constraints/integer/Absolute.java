@@ -28,7 +28,6 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -74,7 +73,7 @@ public class Absolute extends AbstractBinIntSConstraint {
 	 * executing specific propagation methods
 	 */
 	public void propagate() throws ContradictionException {
-		v0.updateInf(0, cIdx0);
+		v0.updateInf(0, this, false);
 		if (v0.getDomain().isEnumerated()) {
 			IntDomain dom0 = v0.getDomain();
 			DisposableIntIterator it = dom0.getIterator();
@@ -83,7 +82,7 @@ public class Absolute extends AbstractBinIntSConstraint {
                 int valeur = it.next();
         		if (!v1.canBeInstantiatedTo(valeur) &&
 						!v1.canBeInstantiatedTo(-valeur)) {
-					v0.removeVal(valeur, cIdx0);
+					v0.removeVal(valeur, this, false);
 				}
 			}
             }finally {
@@ -101,8 +100,8 @@ public class Absolute extends AbstractBinIntSConstraint {
                 int valeur = it.next();
                 if (!v0.canBeInstantiatedTo(valeur) &&
                         !v0.canBeInstantiatedTo(-valeur)) {
-					v1.removeVal(valeur, cIdx1);
-					v1.removeVal(-valeur, cIdx1);
+					v1.removeVal(valeur, this, false);
+					v1.removeVal(-valeur, this, false);
 				}
 			}
             }finally {
@@ -127,30 +126,30 @@ public class Absolute extends AbstractBinIntSConstraint {
 		if (idx == 0) { // absolute variable lower bound is increased
 //      values from -v0.inf - cste to v0.inf - cste are forbidden for v1
 			if (v1.getInf() >= 0) // v1 >= 0 => v1.inf = v0.inf
-				v1.updateInf(v0.getInf(), cIdx1);
+				v1.updateInf(v0.getInf(), this, false);
 			else if (v1.getSup() <= 0) //v1 <= 0 => v1.sup = - v0.inf
-				v1.updateSup(-v0.getInf(), cIdx1);
+				v1.updateSup(-v0.getInf(), this, false);
 			else if (v1.getInf() > -v0.getInf())
-				v1.updateInf(v0.getInf(), cIdx1);
+				v1.updateInf(v0.getInf(), this, false);
 			else if (v1.getSup() < v0.getInf())
-				v1.updateSup(-v0.getInf(), cIdx1);
+				v1.updateSup(-v0.getInf(), this, false);
 			else if (v1.getDomain().isEnumerated()) {
-				v1.removeInterval(-v0.getInf() + 1, v0.getInf() - 1, cIdx1);
+				v1.removeInterval(-v0.getInf() + 1, v0.getInf() - 1, this, false);
 			}
 		} else { // free variable lower bound is increased
 			if (!v1.getDomain().isEnumerated()
 					&& v1.getInf() > -v0.getInf() /* v0.getInf() > 0 by definition */
 					&& v1.getInf() < v0.getInf() /* v0.getInf() > cste by fefinition */) {
-				v1.updateInf(v0.getInf(), VarEvent.domOverWDegIdx(cIdx1));
+				v1.updateInf(v0.getInf(), this, true);
 			} else if (v1.getInf() >= 0) {
-				v0.updateInf(v1.getInf(), cIdx0);
-				v0.updateSup(v1.getSup(), cIdx0);
+				v0.updateInf(v1.getInf(), this, false);
+				v0.updateSup(v1.getSup(), this, false);
 				detectSymetricalHoles(v1.getInf(), v1.getSup());
 			} else if (v1.getSup() <= 0) {
-				v0.updateSup(-v1.getInf(), cIdx0);
-				v0.updateInf(-v1.getSup(), cIdx0);
+				v0.updateSup(-v1.getInf(), this, false);
+				v0.updateInf(-v1.getSup(), this, false);
 			} else {
-				v0.updateSup(Math.max(-v1.getInf(), v1.getSup()), cIdx0);
+				v0.updateSup(Math.max(-v1.getInf(), v1.getSup()), this, false);
 				detectSymetricalHoles(-v1.getInf(), v1.getSup());
 			}
 		}
@@ -163,8 +162,8 @@ public class Absolute extends AbstractBinIntSConstraint {
 	 */
 	public void awakeOnSup(int idx) throws ContradictionException {
 		if (idx == 0) {
-			v1.updateSup(v0.getSup(), cIdx1);
-			v1.updateInf(-v0.getSup(), cIdx1);
+			v1.updateSup(v0.getSup(), this, false);
+			v1.updateInf(-v0.getSup(), this, false);
 		} else {
 			if (!v1.getDomain().isEnumerated() &&
 					v1.getSup() > -v0.getInf() &&
@@ -172,16 +171,16 @@ public class Absolute extends AbstractBinIntSConstraint {
 				// Y.sup cannot remain in the gap (-(X.inf) .. X.inf)
 				// -> finish to cross this gap before calling back awakeOnSup
 				//    (because the cause is set to -1)
-				v1.updateSup(-v0.getInf(), VarEvent.domOverWDegIdx(cIdx1));
+				v1.updateSup(-v0.getInf(), this, true);
 			} else if (v1.getInf() >= 0) {
-				v0.updateSup(v1.getSup(), cIdx0);
-				v0.updateInf(v1.getInf(), cIdx0);
+				v0.updateSup(v1.getSup(), this, false);
+				v0.updateInf(v1.getInf(), this, false);
 			} else if (v1.getSup() <= 0) {
-				v0.updateInf(-v1.getSup(), cIdx0); // Y < 0 => x.inf = -(y.sup)
-				v0.updateSup(-v1.getInf(), cIdx0); // Y < 0 => x.sup = -(y.inf)
+				v0.updateInf(-v1.getSup(), this, false); // Y < 0 => x.inf = -(y.sup)
+				v0.updateSup(-v1.getInf(), this, false); // Y < 0 => x.sup = -(y.inf)
 				detectSymetricalHoles(-v1.getSup(), -v1.getInf());
 			} else {      // general case: x.sup = max(abs(y.inf),abs(y.sup))
-				v0.updateSup(Math.max(-v1.getInf(), v1.getSup()), cIdx0);
+				v0.updateSup(Math.max(-v1.getInf(), v1.getSup()), this, false);
 				detectSymetricalHoles(v1.getSup(), -v1.getInf());
 			}
 
@@ -200,22 +199,22 @@ public class Absolute extends AbstractBinIntSConstraint {
 		if (idx == 0) {
 			int val = v0.getVal();
 			if (!v1.canBeInstantiatedTo(val))
-				v1.instantiate(-val, cIdx1);
+				v1.instantiate(-val, this, false);
 			else if (!v1.canBeInstantiatedTo(-val))
-				v1.instantiate(val, cIdx1);
+				v1.instantiate(val, this, false);
 			else {
 				if (val >= 0) {
-					v1.updateSup(val, cIdx1);
-					v1.updateInf(-val, cIdx1);
-					v1.removeInterval(-val + 1, val - 1, cIdx1);
+					v1.updateSup(val, this, false);
+					v1.updateInf(-val, this, false);
+					v1.removeInterval(-val + 1, val - 1, this, false);
 				} else {
-					v1.updateInf(val, cIdx1);
-					v1.updateSup(-val, cIdx1);
-					v1.removeInterval(val + 1, -val - 1, cIdx1);
+					v1.updateInf(val, this, false);
+					v1.updateSup(-val, this, false);
+					v1.removeInterval(val + 1, -val - 1, this, false);
 				}
 			}
 		} else {
-			v0.instantiate(Math.abs(v1.getVal()), cIdx0);
+			v0.instantiate(Math.abs(v1.getVal()), this, false);
 		}
 
 	}
@@ -233,12 +232,12 @@ public class Absolute extends AbstractBinIntSConstraint {
 	public void awakeOnRem(int idx, int x) throws ContradictionException {
 		if (idx == 0) {
 			if (x >= 0) {
-				v1.removeVal(x, cIdx1);
-				v1.removeVal(-x, cIdx1);
+				v1.removeVal(x, this, false);
+				v1.removeVal(-x, this, false);
 				updateMinFromHoles();
 			}
 		} else if (!v1.canBeInstantiatedTo(-x)) {
-			v0.removeVal(Math.abs(x), cIdx0);
+			v0.removeVal(Math.abs(x), this, false);
 		}
 	}
 
@@ -254,7 +253,7 @@ public class Absolute extends AbstractBinIntSConstraint {
 			     valeur <= Math.min(sup, v0.getSup()); valeur = dom0.getNextValue(valeur)) {
 				if (!v1.canBeInstantiatedTo(valeur) &&
 						!v1.canBeInstantiatedTo(-valeur)) {
-					v0.removeVal(valeur, cIdx0);
+					v0.removeVal(valeur, this, false);
 				}
 			}
 		}
@@ -272,7 +271,7 @@ public class Absolute extends AbstractBinIntSConstraint {
 				v1.getSup() > 0) {
 			int minPositiveValue = v1.getDomain().getNextValue(-1);
 			int maxNegativeValue = v1.getDomain().getPrevValue(1);
-			v0.updateInf(Math.min(-maxNegativeValue, minPositiveValue), cIdx0);
+			v0.updateInf(Math.min(-maxNegativeValue, minPositiveValue), this, false);
 		}
 	}
 

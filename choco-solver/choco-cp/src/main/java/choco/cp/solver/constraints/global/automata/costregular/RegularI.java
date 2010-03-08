@@ -511,7 +511,7 @@ public class RegularI extends AbstractLargeIntSConstraint
                     DLList l = getQij(i,j);
                     if (l == null || l.isEmpty())
                     {
-                        vars[i].removeVal(j,cIndices[i]);
+                        vars[i].removeVal(j, this, false);
                     }
                 }
             }finally {
@@ -547,7 +547,7 @@ public class RegularI extends AbstractLargeIntSConstraint
                     qij.remove(l);
 
                     if (qij.isEmpty())
-                        vars[i-1].removeVal(j,cIndices[i-1]);
+                        vars[i-1].removeVal(j, this, false);
                     decrementOutdeg(i-1,l);
                 }
             }finally {
@@ -590,7 +590,7 @@ public class RegularI extends AbstractLargeIntSConstraint
                         qij.remove(k);
 
                         if (qij.isEmpty())
-                            vars[i].removeVal(j,cIndices[i]);
+                            vars[i].removeVal(j, this, false);
                         decrementIndeg(i+1,l);
                     }
                 }finally {

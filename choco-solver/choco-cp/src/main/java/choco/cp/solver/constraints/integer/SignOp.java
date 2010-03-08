@@ -70,22 +70,22 @@ public class SignOp extends AbstractBinIntSConstraint {
 
 	public void filterSame(IntDomainVar x1, IntDomainVar x2, int idx2) throws ContradictionException {
         if (x1.getSup() < 0) {
-			x2.updateSup(0,idx2);
+			x2.updateSup(0, this, false);
 			setEntailed();
 		} else if (x1.getInf() > 0) {
-			x2.updateInf(0,idx2);
+			x2.updateInf(0, this, false);
 			setEntailed();
 		}
 	}
 
 	public void filterNotSame(IntDomainVar x1, IntDomainVar x2, int idx1, int idx2) throws ContradictionException {
-        if(x1.getInf()==0)x1.updateInf( 1, idx1);
-        if(x1.getSup()==0)x1.updateSup(-1, idx1);
+        if(x1.getInf()==0)x1.updateInf( 1, this, false);
+        if(x1.getSup()==0)x1.updateSup(-1, this, false);
 		if (x1.getSup() < 0) {
-			x2.updateInf(1,idx2);
+			x2.updateInf(1, this, false);
 			setEntailed();
 		} else if (x1.getInf() > 0) {
-			x2.updateSup(-1,idx2);
+			x2.updateSup(-1, this, false);
 			setEntailed();
 		}
 	}
@@ -107,8 +107,8 @@ public class SignOp extends AbstractBinIntSConstraint {
 	@Override
 	public void propagate() throws ContradictionException {
         if (!same) {
-            v0.removeVal(0,cIdx0);
-            v1.removeVal(0,cIdx1);
+            v0.removeVal(0, this, false);
+            v1.removeVal(0, this, false);
         }
         filter();
 	}

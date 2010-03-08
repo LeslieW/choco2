@@ -23,15 +23,12 @@
 package choco.kernel.memory.structure;
 
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.iterators.CyclicIterator;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.iterators.EmptyIntIterator;
 import choco.kernel.common.util.objects.OpenBitSet;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.IStateLong;
-import choco.kernel.solver.propagation.event.VarEvent;
 
 import java.lang.reflect.Array;
 import java.util.BitSet;
@@ -156,13 +153,15 @@ public class SBitSet implements IStateBitSet{
     }
 
     public DisposableIntIterator getCycleButIterator(int avoidIndex) {
-        int n = this.cardinality();
-        if (avoidIndex != VarEvent.NOCAUSE && this.get(avoidIndex)) n -= 1;
-        if (n > 0) {
-             return new CyclicIterator(this, avoidIndex);
-        } else {
-            return EmptyIntIterator.getEmptyIntIterator();
-        }
+//        int n = this.cardinality();
+//        if (avoidIndex != VarEvent.NOCAUSE && this.get(avoidIndex)) n -= 1;
+//        if (n > 0) {
+//             return new CyclicIterator(this, avoidIndex);
+//        } else {
+//            return EmptyIntIterator.getEmptyIntIterator();
+//        }
+        //TODO : check wether it is still used
+        throw new UnsupportedOperationException();
     }
 
     @SuppressWarnings({"unchecked"})

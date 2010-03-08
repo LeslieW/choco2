@@ -76,14 +76,14 @@ public class AbstractBoolSum extends AbstractLargeIntSConstraint {
 	public final void putAllZero() throws ContradictionException {
 		for (int i = 0; i < vars.length; i++) {
 			if (!vars[i].isInstantiated())
-				vars[i].instantiate(0, cIndices[i]);
+				vars[i].instantiate(0, this, false);
 		}
 	}
 
 	public final void putAllOne() throws ContradictionException {
 		for (int i = 0; i < vars.length; i++) {
 			if (!vars[i].isInstantiated())
-				vars[i].instantiate(1, cIndices[i]);
+				vars[i].instantiate(1, this, false);
 		}
 	}
 

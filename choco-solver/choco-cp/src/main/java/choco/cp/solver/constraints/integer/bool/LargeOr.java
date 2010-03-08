@@ -78,7 +78,7 @@ public class LargeOr extends AbstractLargeIntSConstraint {
         if(toZERO == vars.length){
             this.fail();
         }else if((toZERO == vars.length - 1)){
-            vars[lastIdx].instantiate(1, cIndices[lastIdx]);
+            vars[lastIdx].instantiate(1, this, false);
             setEntailed();
             return;
         }
@@ -110,13 +110,13 @@ public class LargeOr extends AbstractLargeIntSConstraint {
         }else{
             for(int i = 0; i < n; i++){
                 if(!vars[i].isInstantiated()){
-                    vars[i].instantiate(1, cIndices[i]);
+                    vars[i].instantiate(1, this, false);
                     setEntailed();
                     break;
                 }
                 // speed up
                 else if(!vars[(n-1)-i].isInstantiated()){
-                    vars[(n-1)-i].instantiate(1, cIndices[(n-1)-i]);
+                    vars[(n-1)-i].instantiate(1, this, false);
                     setEntailed();
                     break;
                 }

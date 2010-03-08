@@ -135,7 +135,8 @@ public final class PartiallyStoredIntCstrList <C extends AbstractSConstraint> ex
 		return priority.get();
 	}
 
-    public DisposableIterator<Couple<C>> getActiveConstraint(int event, int cstrCause){
+    @SuppressWarnings({"unchecked"})
+    public DisposableIterator<Couple<C>> getActiveConstraint(int event, C cstrCause){
         return QuickIterator.getIterator(events[idxEventTypes[event]],cstrCause, this.elements, this.indices);
     }
 }

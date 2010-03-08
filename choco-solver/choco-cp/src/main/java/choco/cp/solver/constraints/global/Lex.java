@@ -103,13 +103,13 @@ public class Lex extends AbstractLargeIntSConstraint {
 	}
 
 	public void ACleq(int i) throws ContradictionException {
-		x[i].updateSup(y[i].getSup(), cIndices[i]);
-		y[i].updateInf(x[i].getInf(), cIndices[i + n]);
+		x[i].updateSup(y[i].getSup(), this, false);
+		y[i].updateInf(x[i].getInf(), this, false);
 	}
 
 	public void ACless(int i) throws ContradictionException {
-		x[i].updateSup(y[i].getSup() - 1, cIndices[i]);
-		y[i].updateInf(x[i].getInf() + 1, cIndices[i + n]);
+		x[i].updateSup(y[i].getSup() - 1, this, false);
+		y[i].updateInf(x[i].getInf() + 1, this, false);
 	}
 
 	public void updateAlpha(int i) throws ContradictionException {

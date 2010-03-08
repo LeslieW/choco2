@@ -85,9 +85,9 @@ public class MaxOfAList extends AbstractLargeIntSConstraint {
     int idx = this.indexOfMaximumVariable.get();
     if (idx != -1) {
       maxVar.updateInf(vars[idx].getInf(),
-          this.getConstraintIdx(MAX_INDEX));
+              this, false);
       vars[idx].updateInf(maxVar.getInf(),
-          this.getConstraintIdx(idx));
+              this, false);
     }
   }
 
@@ -145,11 +145,11 @@ public class MaxOfAList extends AbstractLargeIntSConstraint {
 public void propagate() throws ContradictionException {
     int nbVars = vars.length;
     IntDomainVar maxVar = vars[MAX_INDEX];
-    maxVar.updateInf(maxInf(), this.getConstraintIdx(MAX_INDEX));
-    maxVar.updateSup(maxSup(), this.getConstraintIdx(MAX_INDEX));
+    maxVar.updateInf(maxInf(), this, false);
+    maxVar.updateSup(maxSup(), this, false);
     int maxValue = maxVar.getSup();
     for (int i = VARS_OFFSET; i < nbVars; i++) {
-      vars[i].updateSup(maxValue, this.getConstraintIdx(i));
+      vars[i].updateSup(maxValue, this, false);
     }
     onlyOneMaxCandidatePropagation();
   }
@@ -163,7 +163,7 @@ public void propagate() throws ContradictionException {
   @Override
 public void awakeOnInf(final int idx) throws ContradictionException {
     if (idx >= VARS_OFFSET) { // Variable in the list
-      vars[MAX_INDEX].updateInf(maxInf(), getConstraintIdx(MAX_INDEX));
+      vars[MAX_INDEX].updateInf(maxInf(), this, false);
     } else { // Maximum variable
       onlyOneMaxCandidatePropagation();
     }
@@ -178,13 +178,13 @@ public void awakeOnInf(final int idx) throws ContradictionException {
   @Override
 public void awakeOnSup(final int idx) throws ContradictionException {
     if (idx >= VARS_OFFSET) { // Variable in the list
-      vars[MAX_INDEX].updateSup(maxSup(), getConstraintIdx(MAX_INDEX));
+      vars[MAX_INDEX].updateSup(maxSup(), this, false);
       onlyOneMaxCandidatePropagation();
     } else { // Maximum variable
       int nbVars = vars.length;
       int maxVal = vars[MAX_INDEX].getSup();
       for (int i = VARS_OFFSET; i < nbVars; i++) {
-        vars[i].updateSup(maxVal, getConstraintIdx(i));
+        vars[i].updateSup(maxVal, this, false);
       }
     }
   }
@@ -199,13 +199,13 @@ public void awakeOnSup(final int idx) throws ContradictionException {
 public void awakeOnInst(final int idx) throws ContradictionException {
     if (idx >= VARS_OFFSET) { // Variable in the list
       IntDomainVar maxVar = vars[MAX_INDEX];
-      maxVar.updateInf(maxInf(), this.getConstraintIdx(MAX_INDEX));
-      maxVar.updateSup(maxSup(), this.getConstraintIdx(MAX_INDEX));
+      maxVar.updateInf(maxInf(), this, false);
+      maxVar.updateSup(maxSup(), this, false);
     } else { // Maximum variable
       int nbVars = vars.length;
       int maxValue = vars[MAX_INDEX].getSup();
       for (int i = VARS_OFFSET; i < nbVars; i++) {
-        vars[i].updateSup(maxValue, this.getConstraintIdx(i));
+        vars[i].updateSup(maxValue, this, false);
       }
       onlyOneMaxCandidatePropagation();
     }

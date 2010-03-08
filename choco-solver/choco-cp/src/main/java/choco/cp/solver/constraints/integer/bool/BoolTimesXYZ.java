@@ -54,35 +54,35 @@ public class BoolTimesXYZ extends AbstractTernIntSConstraint {
 		if (idx == 0) {
 			val = v0.getVal();
 			if (val == 0) {
-				v2.instantiate(0, cIdx2);
+				v2.instantiate(0, this, false);
 			} else {
 				if (v1.isInstantiatedTo(1)) {
-					v2.instantiate(1, cIdx2);
+					v2.instantiate(1, this, false);
 				} else if (v2.isInstantiatedTo(0)) {
-					v1.instantiate(0, cIdx1);
+					v1.instantiate(0, this, false);
 				}
 			}
 		} else if (idx == 1) {
 			val = v1.getVal();
 			if (val == 0) {
-				v2.instantiate(0, cIdx2);
+				v2.instantiate(0, this, false);
 			} else {
 				if (v0.isInstantiatedTo(1)) {
-					v2.instantiate(1, cIdx2);
+					v2.instantiate(1, this, false);
 				} else if (v2.isInstantiatedTo(0)) {
-					v0.instantiate(0, cIdx0);
+					v0.instantiate(0, this, false);
 				}
 			}
 		} else if (idx == 2) {
 			val = v2.getVal();
 			if (val == 1) {
-				v0.instantiate(1, cIdx0);
-				v1.instantiate(1, cIdx1);
+				v0.instantiate(1, this, false);
+				v1.instantiate(1, this, false);
 			} else {
 				if (v0.isInstantiatedTo(1)) {
-					v1.instantiate(0, cIdx1);
+					v1.instantiate(0, this, false);
 				} else if (v1.isInstantiatedTo(1)) {
-					v0.instantiate(0, cIdx0);
+					v0.instantiate(0, this, false);
 				}
 			}
 		}

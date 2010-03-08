@@ -47,13 +47,4 @@ public interface RealInterval extends Domain {
    */
   public void intersect(RealInterval interval) throws ContradictionException;
 
-  /**
-   * Modifies the bounds for intersecting with the specified interval.
-   *
-   * @param interval
-   * @param index    of the constraint responsible to this withdraw
-   * @throws choco.kernel.solver.ContradictionException
-   */
-  public void intersect(RealInterval interval, int index) throws ContradictionException;
-
  }

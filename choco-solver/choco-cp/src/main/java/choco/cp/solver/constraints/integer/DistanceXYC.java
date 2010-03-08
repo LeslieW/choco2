@@ -93,7 +93,7 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
             int value = it.next();
             if (!var2.canBeInstantiatedTo(value - cste) &&
                     !var2.canBeInstantiatedTo(value + cste)) {
-                var1.removeVal(value, idx);
+                var1.removeVal(value, this, false);
             }
         }
         }finally {
@@ -109,11 +109,11 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
             int lbv0 = v1.getSup() - cste;
             int ubv0 = v1.getInf() + cste;
             // remove interval [lbv0, ubv0] from domain of v0
-            v0.removeInterval(lbv0, ubv0, cIdx0);
+            v0.removeInterval(lbv0, ubv0, this, false);
             int lbv1 = v0.getSup() - cste;
             int ubv1 = v0.getInf() + cste;
             // remove interval [lbv1, ubv1] from domain of v1
-            v1.removeInterval(lbv1, ubv1, cIdx1);
+            v1.removeInterval(lbv1, ubv1, this, false);
         }else{
             this.setEntailed();
         }
@@ -127,7 +127,7 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
             int lbv0 = vv0.getSup() - cste;
             int ubv0 = vv0.getInf() + cste;
             // remove interval [lbv0, ubv0] from domain of v0
-            vv1.removeInterval(lbv0, ubv0, idx);
+            vv1.removeInterval(lbv0, ubv0, this, false);
         }else{
             this.setEntailed();
         }
@@ -137,18 +137,18 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
      * In case of a LT
      */
     public void filterLT() throws ContradictionException {
-        v0.updateInf(v1.getInf() - cste + 1, cIdx0);
-        v0.updateSup(v1.getSup() + cste - 1, cIdx0);
-        v1.updateInf(v0.getInf() - cste + 1, cIdx1);
-        v1.updateSup(v0.getSup() + cste - 1, cIdx1);
+        v0.updateInf(v1.getInf() - cste + 1, this, false);
+        v0.updateSup(v1.getSup() + cste - 1, this, false);
+        v1.updateInf(v0.getInf() - cste + 1, this, false);
+        v1.updateSup(v0.getSup() + cste - 1, this, false);
     }
 
     /**
      * In case of a LT, due to a modification on vv0 domain
      */
     public void filterLTonVar(IntDomainVar vv0, IntDomainVar vv1, int idx) throws ContradictionException {
-        vv1.updateInf(vv0.getInf() - cste + 1, idx);
-        vv1.updateSup(vv0.getSup() + cste - 1, idx);
+        vv1.updateInf(vv0.getInf() - cste + 1, this, false);
+        vv1.updateSup(vv0.getSup() + cste - 1, this, false);
     }
 
     /**
@@ -160,11 +160,11 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
             int end = vv0.getInf() + cste;
             for (int val = vv0.getInf(); val <= end; val = dom.getNextValue(val)) {
                 if (!vv0.canBeInstantiatedTo(val - cste) && !vv0.canBeInstantiatedTo(val + cste)) {
-                    vv1.removeVal(val, idx);
+                    vv1.removeVal(val, this, false);
                 }
             }
         } else {
-            vv1.updateInf(vv0.getInf() - cste, idx);
+            vv1.updateInf(vv0.getInf() - cste, this, false);
         }
     }
 
@@ -183,12 +183,12 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
             int val = initval;
             do {
                 if (!vv0.canBeInstantiatedTo(val - cste) && !vv0.canBeInstantiatedTo(val + cste)) {
-                    vv1.removeVal(val, idx);
+                    vv1.removeVal(val, this, false);
                 }
                 val = dom.getNextValue(val);
             } while (val <= vv1.getSup() && val > initval); //todo : pourquoi besoin du deuxieme currentElement ?
         } else {
-            vv1.updateSup(vv0.getSup() + cste, idx);
+            vv1.updateSup(vv0.getSup() + cste, this, false);
         }
     }
 
@@ -197,9 +197,9 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
      */
     public void filterOnInst(IntDomainVar v, int val, int cIdx) throws ContradictionException {
         if (!v.canBeInstantiatedTo(val + cste)) {
-            v.instantiate(val - cste, cIdx);
+            v.instantiate(val - cste, this, false);
         } else if (!v.canBeInstantiatedTo(val - cste)) {
-            v.instantiate(val + cste, cIdx);
+            v.instantiate(val + cste, this, false);
         } else {
             if (v.hasEnumeratedDomain()) {
                 DisposableIntIterator it = v.getDomain().getIterator();
@@ -207,15 +207,15 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
                 for (; it.hasNext();) {
                     int value = it.next();
                     if (value != (val - cste) && value != (val + cste)) {
-                        v.removeVal(value, cIdx);
+                        v.removeVal(value, this, false);
                     }
                 }
                 }finally {
                     it.dispose();
                 }
             } else {
-                v.updateInf(val - cste, cIdx);
-                v.updateSup(val + cste, cIdx);
+                v.updateInf(val - cste, this, false);
+                v.updateSup(val + cste, this, false);
             }
         }
     }
@@ -223,12 +223,12 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
 	public void filterNeq() throws ContradictionException {
         if(cste>=0){
             if (v0.isInstantiated()) {
-                 v1.removeVal(v0.getVal() + cste,cIdx1);
-                 v1.removeVal(v0.getVal() - cste,cIdx1);
+                 v1.removeVal(v0.getVal() + cste, this, false);
+                 v1.removeVal(v0.getVal() - cste, this, false);
              }
              if (v1.isInstantiated()) {
-                 v0.removeVal(v1.getVal() + cste,cIdx0);
-                 v0.removeVal(v1.getVal() - cste,cIdx0);
+                 v0.removeVal(v1.getVal() + cste, this, false);
+                 v0.removeVal(v1.getVal() - cste, this, false);
              }
         }else{
             this.setEntailed();
@@ -263,14 +263,14 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
             if (v0.hasEnumeratedDomain()) {
                 filterFromVarToVar(v0, v1, cIdx0);
             } else {
-                v0.updateInf(v1.getInf() - cste, cIdx0);
-                v0.updateSup(v1.getSup() + cste, cIdx0);
+                v0.updateInf(v1.getInf() - cste, this, false);
+                v0.updateSup(v1.getSup() + cste, this, false);
             }
             if (v1.hasEnumeratedDomain()) {
                 filterFromVarToVar(v1, v0, cIdx1);
             } else {
-                v1.updateInf(v0.getInf() - cste, cIdx0);
-                v1.updateSup(v0.getSup() + cste, cIdx0);
+                v1.updateInf(v0.getInf() - cste, this, false);
+                v1.updateSup(v0.getSup() + cste, this, false);
             }
         } else if (operator == GT) {
             filterGT();
@@ -286,17 +286,17 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
         if (operator == EQ) {
             if (idx == 0) {
                 if (!v0.canBeInstantiatedTo(x + 2 * cste)) {
-					v1.removeVal(x + cste, cIdx1);
+					v1.removeVal(x + cste, this, false);
 				}
                 if (!v0.canBeInstantiatedTo(x - 2 * cste)) {
-					v1.removeVal(x - cste, cIdx1);
+					v1.removeVal(x - cste, this, false);
 				}
             } else {
                 if (!v1.canBeInstantiatedTo(x + 2 * cste)) {
-					v0.removeVal(x + cste, cIdx0);
+					v0.removeVal(x + cste, this, false);
 				}
                 if (!v1.canBeInstantiatedTo(x - 2 * cste)) {
-					v0.removeVal(x - cste, cIdx0);
+					v0.removeVal(x - cste, this, false);
 				}
             }
         } else if (operator == NEQ) {

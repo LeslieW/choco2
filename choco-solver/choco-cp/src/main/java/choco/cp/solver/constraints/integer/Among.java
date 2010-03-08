@@ -60,7 +60,7 @@ public class Among extends AbstractUnIntSConstraint {
         while (iterator.hasNext()) {
             int val = iterator.next();
             if (!values.contains(val)) {
-                v0.removeVal(val, cIdx0);
+                v0.removeVal(val, this, false);
             }
         }
         this.setEntailed();

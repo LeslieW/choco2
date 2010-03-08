@@ -85,9 +85,9 @@ public class MinOfAList extends AbstractLargeIntSConstraint {
     int idx = this.indexOfMinimumVariable.get();
     if (idx != -1) {
       minVar.updateSup(vars[idx].getSup(),
-          this.getConstraintIdx(MIN_INDEX));
+              this, false);
       vars[idx].updateSup(minVar.getSup(),
-          this.getConstraintIdx(idx));
+              this, false);
     }
   }
 
@@ -145,11 +145,11 @@ public class MinOfAList extends AbstractLargeIntSConstraint {
 public void propagate() throws ContradictionException {
     int nbVars = vars.length;
     IntDomainVar minVar = vars[MIN_INDEX];
-    minVar.updateInf(minInf(), this.getConstraintIdx(MIN_INDEX));
-    minVar.updateSup(minSup(), this.getConstraintIdx(MIN_INDEX));
+    minVar.updateInf(minInf(), this, false);
+    minVar.updateSup(minSup(), this, false);
     int minValue = minVar.getInf();
     for (int i = VARS_OFFSET; i < nbVars; i++) {
-      vars[i].updateInf(minValue, this.getConstraintIdx(i));
+      vars[i].updateInf(minValue, this, false);
     }
     onlyOneMaxCandidatePropagation();
   }
@@ -163,13 +163,13 @@ public void propagate() throws ContradictionException {
   @Override
 public void awakeOnInf(final int idx) throws ContradictionException {
     if (idx >= VARS_OFFSET) { // Variable in the list
-      vars[MIN_INDEX].updateInf(minInf(), getConstraintIdx(MIN_INDEX));
+      vars[MIN_INDEX].updateInf(minInf(), this, false);
       onlyOneMaxCandidatePropagation();
     } else { // Minimum variable
       int nbVars = vars.length;
       int minVal = vars[MIN_INDEX].getInf();
       for (int i = VARS_OFFSET; i < nbVars; i++) {
-        vars[i].updateInf(minVal, getConstraintIdx(i));
+        vars[i].updateInf(minVal, this, false);
       }
     }
   }
@@ -183,7 +183,7 @@ public void awakeOnInf(final int idx) throws ContradictionException {
   @Override
 public void awakeOnSup(final int idx) throws ContradictionException {
     if (idx >= VARS_OFFSET) { // Variable in the list
-      vars[MIN_INDEX].updateSup(minSup(), getConstraintIdx(MIN_INDEX));
+      vars[MIN_INDEX].updateSup(minSup(), this, false);
     } else { // Maximum variable
       onlyOneMaxCandidatePropagation();
     }
@@ -199,13 +199,13 @@ public void awakeOnSup(final int idx) throws ContradictionException {
 public void awakeOnInst(final int idx) throws ContradictionException {
     if (idx >= VARS_OFFSET) { // Variable in the list
       IntDomainVar minVar = vars[MIN_INDEX];
-      minVar.updateInf(minInf(), this.getConstraintIdx(MIN_INDEX));
-      minVar.updateSup(minSup(), this.getConstraintIdx(MIN_INDEX));
+      minVar.updateInf(minInf(), this, false);
+      minVar.updateSup(minSup(), this, false);
     } else { // Maximum variable
       int nbVars = vars.length;
       int minValue = vars[MIN_INDEX].getInf();
       for (int i = VARS_OFFSET; i < nbVars; i++) {
-        vars[i].updateInf(minValue, this.getConstraintIdx(i));
+        vars[i].updateInf(minValue, this, false);
       }
       onlyOneMaxCandidatePropagation();
     }

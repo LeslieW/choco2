@@ -29,7 +29,7 @@ import choco.kernel.memory.structure.Couple;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
-import choco.kernel.solver.constraints.real.AbstractRealSConstraint;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.real.RealExp;
 import choco.kernel.solver.propagation.listener.RealPropagator;
 import choco.kernel.solver.variables.AbstractVar;
@@ -43,13 +43,13 @@ import java.util.Set;
 /**
  * An implementation of real variables using RealDomain domains.
  */
-public final class RealVarImpl extends AbstractVar implements RealVar {
+public final class RealVarImpl<C extends AbstractSConstraint & RealPropagator>extends AbstractVar implements RealVar {
   protected RealDomain domain;
 
     private final Solver solver;
 
-  public RealVarImpl(Solver solver, String name, double a, double b, int domaintype) {
-    super(solver, name, new PartiallyStoredRealCstrList<AbstractRealSConstraint>(solver.getEnvironment()));
+  public <C extends AbstractSConstraint & RealPropagator> RealVarImpl(Solver solver, String name, double a, double b, int domaintype) {
+    super(solver, name, new PartiallyStoredRealCstrList<C>(solver.getEnvironment()));
     if (domaintype == RealVar.BOUNDS) {
      this.domain = new RealDomainImpl(this, a, b, solver);
     } else throw new SolverException("Unknown real domain");
@@ -57,7 +57,7 @@ public final class RealVarImpl extends AbstractVar implements RealVar {
       this.solver = solver;
   }
 
-    public final DisposableIterator<Couple<? extends RealPropagator>> getActiveConstraints(int cstrCause){
+    public final DisposableIterator<Couple<C>> getActiveConstraints(C cstrCause){
         //noinspection unchecked
         return ((PartiallyStoredRealCstrList)constraints).getActiveConstraint(cstrCause);
     }
@@ -93,10 +93,6 @@ public String toString() {
 
   public void intersect(RealInterval interval) throws ContradictionException {
     this.domain.intersect(interval);
-  }
-
-  public void intersect(RealInterval interval, int index) throws ContradictionException {
-    this.domain.intersect(interval, index);
   }
 
   public boolean isInstantiated() {

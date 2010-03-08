@@ -66,14 +66,14 @@ public class SetUnion extends AbstractTernSetSConstraint {
     public void awakeOnKer(int varIdx, int x) throws ContradictionException {
         switch (varIdx) {
             case 0:
-                v2.addToKernel(x, cIdx2);
+                v2.addToKernel(x, this, false);
                 break;
             case 1:
-                v2.addToKernel(x, cIdx2);
+                v2.addToKernel(x, this, false);
                 break;
             case 2:
-                if (!v0.isInDomainEnveloppe(x)) v1.addToKernel(x, cIdx1);
-                if (!v1.isInDomainEnveloppe(x)) v0.addToKernel(x, cIdx0);
+                if (!v0.isInDomainEnveloppe(x)) v1.addToKernel(x, this, false);
+                if (!v1.isInDomainEnveloppe(x)) v0.addToKernel(x, this, false);
                 break;
             default:
                 break;
@@ -85,15 +85,15 @@ public class SetUnion extends AbstractTernSetSConstraint {
         switch (varIdx) {
 	        case 0:
 		        if (!v1.isInDomainEnveloppe(x))
-			        v2.remFromEnveloppe(x, cIdx2);
+			        v2.remFromEnveloppe(x, this, false);
 		        break;
 	        case 1:
 		        if (!v0.isInDomainEnveloppe(x))
-			        v2.remFromEnveloppe(x, cIdx2);
+			        v2.remFromEnveloppe(x, this, false);
 		        break;
             case 2:
-                    v0.remFromEnveloppe(x, cIdx0);
-		            v1.remFromEnveloppe(x, cIdx1);
+                    v0.remFromEnveloppe(x, this, false);
+		            v1.remFromEnveloppe(x, this, false);
                 break;
             default:
                 break;
@@ -107,7 +107,7 @@ public class SetUnion extends AbstractTernSetSConstraint {
                 try{
                     while (it1.hasNext()) {
                         int val = it1.next();
-                        v2.addToKernel(val, cIdx2);
+                        v2.addToKernel(val, this, false);
                     }
                 }finally {
                     it1.dispose();
@@ -116,7 +116,7 @@ public class SetUnion extends AbstractTernSetSConstraint {
                 try{
                     while (it1.hasNext()) {
                         int val = it1.next();
-                        if (!v0.isInDomainEnveloppe(val) && !v1.isInDomainEnveloppe(val)) v2.remFromEnveloppe(val, cIdx2);
+                        if (!v0.isInDomainEnveloppe(val) && !v1.isInDomainEnveloppe(val)) v2.remFromEnveloppe(val, this, false);
                     }
                 }finally {
                     it1.dispose();
@@ -127,7 +127,7 @@ public class SetUnion extends AbstractTernSetSConstraint {
                 try{
                     while (it2.hasNext()) {
                         int val = it2.next();
-                        v2.addToKernel(val, cIdx2);
+                        v2.addToKernel(val, this, false);
                     }
                 }finally {
                     it2.dispose();
@@ -137,7 +137,7 @@ public class SetUnion extends AbstractTernSetSConstraint {
                 try{
                     while (it2.hasNext()) {
                         int val = it2.next();
-                        if (!v0.isInDomainEnveloppe(val) && !v1.isInDomainEnveloppe(val)) v2.remFromEnveloppe(val, cIdx2);
+                        if (!v0.isInDomainEnveloppe(val) && !v1.isInDomainEnveloppe(val)) v2.remFromEnveloppe(val, this, false);
                     }
                 }finally {
                     it2.dispose();
@@ -148,8 +148,8 @@ public class SetUnion extends AbstractTernSetSConstraint {
                 try{
                     while (it3.hasNext()) {
                         int val = it3.next();
-                        if (!v0.isInDomainEnveloppe(val)) v1.addToKernel(val, cIdx1);
-                        if (!v1.isInDomainEnveloppe(val)) v0.addToKernel(val, cIdx0);
+                        if (!v0.isInDomainEnveloppe(val)) v1.addToKernel(val, this, false);
+                        if (!v1.isInDomainEnveloppe(val)) v0.addToKernel(val, this, false);
                     }
                 }finally {
                     it3.dispose();
@@ -166,7 +166,7 @@ public class SetUnion extends AbstractTernSetSConstraint {
         try{
             while (it1.hasNext()) {
                 int val = it1.next();
-                v2.addToKernel(val, cIdx2);
+                v2.addToKernel(val, this, false);
             }
         }finally {
             it1.dispose();
@@ -175,7 +175,7 @@ public class SetUnion extends AbstractTernSetSConstraint {
         try{
             while (it1.hasNext()) {
                 int val = it1.next();
-                v2.addToKernel(val, cIdx2);
+                v2.addToKernel(val, this, false);
             }
         }finally {
             it1.dispose();
@@ -185,8 +185,8 @@ public class SetUnion extends AbstractTernSetSConstraint {
         try{
         while (it1.hasNext()) {
             int val = it1.next();
-            if (!v0.isInDomainEnveloppe(val)) v1.addToKernel(val, cIdx1);
-            if (!v1.isInDomainEnveloppe(val)) v0.addToKernel(val, cIdx0);
+            if (!v0.isInDomainEnveloppe(val)) v1.addToKernel(val, this, false);
+            if (!v1.isInDomainEnveloppe(val)) v0.addToKernel(val, this, false);
         }
         }finally {
             it1.dispose();
@@ -197,7 +197,7 @@ public class SetUnion extends AbstractTernSetSConstraint {
             while (it1.hasNext()) {
                 int val = it1.next();
                 if (!v0.isInDomainEnveloppe(val) && !v1.isInDomainEnveloppe(val)) {
-                    v2.remFromEnveloppe(val, cIdx2);
+                    v2.remFromEnveloppe(val, this, false);
                 }
             }
         }finally {

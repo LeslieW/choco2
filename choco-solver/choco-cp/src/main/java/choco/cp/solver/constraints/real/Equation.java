@@ -23,7 +23,6 @@
 package choco.cp.solver.constraints.real;
 
 import choco.kernel.solver.ContradictionException;
-import static choco.kernel.solver.ContradictionException.Type.CONSTRAINT;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.real.AbstractLargeRealSConstraint;
 import choco.kernel.solver.constraints.real.RealExp;
@@ -169,7 +168,7 @@ public class Equation extends AbstractLargeRealSConstraint {
         var.silentlyAssign(unexplored[--idx]);
         depth = depths[idx];
       } else {
-        propagationEngine.raiseContradiction(this, CONSTRAINT);
+        propagationEngine.raiseContradiction(this);
       }
     }
 

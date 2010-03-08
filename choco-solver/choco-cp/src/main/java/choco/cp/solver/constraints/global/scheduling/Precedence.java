@@ -105,7 +105,7 @@ public class Precedence  extends AbstractTaskSConstraint {
 	}
 
 	protected final void setPrecedence(int dir) throws ContradictionException {
-		vars[DIR_IDX].instantiate(dir, cIndices[DIR_IDX]);
+		vars[DIR_IDX].instantiate(dir, this, false);
 	}
 
 	protected final void notifyNetwork(int i, int j) throws ContradictionException {
@@ -116,8 +116,8 @@ public class Precedence  extends AbstractTaskSConstraint {
 		//notify propagation engine
 		final int idxI = getStartIndex(i);
 		final int idxJ = getStartIndex(j);
-		propagationEngine.postUpdateInf(vars[idxI], cIndices[idxI]);
-		propagationEngine.postUpdateSup(vars[idxJ], cIndices[idxJ]);
+		propagationEngine.postUpdateInf(vars[idxI], this, false);
+		propagationEngine.postUpdateSup(vars[idxJ], this, false);
 	}
 
 	protected final void notifyDecision() throws ContradictionException {

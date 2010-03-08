@@ -130,22 +130,22 @@ public class IntVarEventTest  {
     }
     assertEquals(0, pe.getNbPendingEvents());
     x.getDomain().updateInf(1);
-    pe.postUpdateInf(x, 1);
+    pe.postUpdateInf(x, c2, false);
     y.getDomain().updateSup(95);
-    pe.postUpdateSup(y, 1);
+    pe.postUpdateSup(y, c2, false);
     y.getDomain().updateInf(3);
-    pe.postUpdateInf(y, 0); // and not a value above 1, such as 2 !!
+    pe.postUpdateInf(y, c1, false); // and not a value above 1, such as 2 !!
 
     assertEquals(2, pe.getNbPendingEvents());
     evt = pe.getPendingEvent(0);
     assertEquals(evt.getModifiedObject(), x);
     assertEquals(IntVarEvent.INCINFbitvector + IntVarEvent.REMVALbitvector, ((IntVarEvent) evt).getEventType());
-    assertEquals(1, ((IntVarEvent) evt).getCause());
+    assertEquals(c2, ((IntVarEvent) evt).getCause());
 
     evt = pe.getPendingEvent(1);
     assertEquals(evt.getModifiedObject(), y);
     assertEquals(IntVarEvent.BOUNDSbitvector + IntVarEvent.REMVALbitvector, ((IntVarEvent) evt).getEventType());
-    assertEquals(-1, ((IntVarEvent) evt).getCause());
+    assertEquals(null, ((IntVarEvent) evt).getCause());
   }
 
   /**
@@ -174,9 +174,9 @@ public class IntVarEventTest  {
     assertEquals(0, pe.getNbPendingEvents());
 
     y.getDomain().updateSup(90);
-    pe.postUpdateSup(y, 0);
+    pe.postUpdateSup(y, c1, false);
     y.getDomain().updateInf(10);
-    pe.postUpdateInf(y, 1);
+    pe.postUpdateInf(y, c2, false);
     assertEquals(1, pe.getNbPendingEvents());
     evt = pe.getPendingEvent(0);
     assertEquals(evt.getModifiedObject(), y);

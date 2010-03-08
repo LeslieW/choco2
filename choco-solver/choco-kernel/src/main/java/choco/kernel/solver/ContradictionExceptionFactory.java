@@ -7,7 +7,7 @@ package choco.kernel.solver;
 public final class ContradictionExceptionFactory{
 
     private static ContradictionException reuseException =
-            new ContradictionException(null, ContradictionException.Type.UNKNOWN);
+            new ContradictionException(null);
 
     
     private ContradictionExceptionFactory() {

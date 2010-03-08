@@ -23,6 +23,7 @@
 package choco.kernel.solver.variables.set;
 
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -172,11 +173,14 @@ public interface SetVar extends Var {
      * (i.e adding a value)
      *
      * @param x   a value of the enveloppe domain to be added to the kernel
-     * @param idx the index of the constraint that generated the var
+     * @param cause
+     * @param forceAwake
      * @return a boolean indicating whether this method call added new information or not
      */
 
-    public boolean addToKernel(int x, int idx) throws ContradictionException;
+    public boolean addToKernel(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException;
+    @Deprecated
+    public boolean addToKernel(int x, final int idx) throws ContradictionException;
 
 
     /**
@@ -184,19 +188,24 @@ public interface SetVar extends Var {
      * (i.e removing a value)
      *
      * @param x   a value of the enveloppe domain to be removed
-     * @param idx the index of the constraint that generated the var
+     * @param cause
+     * @param forceAwake
      * @return a boolean indicating whether this method call added new information or not
      */
 
-    public boolean remFromEnveloppe(int x, int idx) throws ContradictionException;
+    public boolean remFromEnveloppe(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException;
+    @Deprecated
+    public boolean remFromEnveloppe(int x, final int idx) throws ContradictionException;
 
     /**
      * <i>Propagation events</i> instantiated a set var to a specific set of values
      *
      * @param x   a set of values describing the final instantiated kernel
-     * @param idx the index of the constraint that generated the var
+     * @param cause
+     * @param forceAwake
      * @return a boolean indicating whether this method call added new information or not
      */
-    public boolean instantiate(int[] x, int idx) throws ContradictionException;
-
+    public boolean instantiate(int[] x, final SConstraint cause, final boolean forceAwake) throws ContradictionException;
+    @Deprecated
+    public boolean instantiate(int[] x, final int idx) throws ContradictionException;
 }

@@ -69,7 +69,7 @@ public class LargeXor extends AbstractLargeIntSConstraint {
         int val = Math.abs(vars[idx].getVal()-1);
         for(int i = 0; i < vars.length; i++){
             if(idx!=i){
-                vars[i].instantiate(val, cIndices[i]);
+                vars[i].instantiate(val, this, false);
             }
         }
     }

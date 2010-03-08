@@ -62,25 +62,25 @@ public class SetIntersection extends AbstractTernSetSConstraint {
 
 	public void awakeOnKer(int varIdx, int x) throws ContradictionException {
 		if (varIdx == 0) {
-			if (v1.isInDomainKernel(x)) v2.addToKernel(x, cIdx2);
-			if (!v2.isInDomainEnveloppe(x)) v1.remFromEnveloppe(x, cIdx1);
+			if (v1.isInDomainKernel(x)) v2.addToKernel(x, this, false);
+			if (!v2.isInDomainEnveloppe(x)) v1.remFromEnveloppe(x, this, false);
 		} else if (varIdx == 1) {
-			if (v0.isInDomainKernel(x)) v2.addToKernel(x, cIdx2);
-			if (!v2.isInDomainEnveloppe(x)) v0.remFromEnveloppe(x, cIdx0);
+			if (v0.isInDomainKernel(x)) v2.addToKernel(x, this, false);
+			if (!v2.isInDomainEnveloppe(x)) v0.remFromEnveloppe(x, this, false);
 		} else {
-			if (!v0.isInDomainKernel(x)) v0.addToKernel(x, cIdx0);
-			if (!v1.isInDomainKernel(x)) v1.addToKernel(x, cIdx1);
+			if (!v0.isInDomainKernel(x)) v0.addToKernel(x, this, false);
+			if (!v1.isInDomainKernel(x)) v1.addToKernel(x, this, false);
 		}
 	}
 
 	public void awakeOnEnv(int varIdx, int x) throws ContradictionException {
 		if (varIdx == 0) {
-			v2.remFromEnveloppe(x, cIdx2);
+			v2.remFromEnveloppe(x, this, false);
 		} else if (varIdx == 1) {
-			v2.remFromEnveloppe(x, cIdx2);
+			v2.remFromEnveloppe(x, this, false);
 		} else {
-			if (v0.isInDomainKernel(x)) v1.remFromEnveloppe(x, cIdx1);
-			if (v1.isInDomainKernel(x)) v0.remFromEnveloppe(x, cIdx0);
+			if (v0.isInDomainKernel(x)) v1.remFromEnveloppe(x, this, false);
+			if (v1.isInDomainKernel(x)) v0.remFromEnveloppe(x, this, false);
 		}
 	}
 
@@ -91,8 +91,8 @@ public class SetIntersection extends AbstractTernSetSConstraint {
             try{
                 while (it.hasNext()) {
                     x = it.next();
-                    if (v1.isInDomainKernel(x)) v2.addToKernel(x, cIdx2);
-                    if (!v2.isInDomainEnveloppe(x)) v1.remFromEnveloppe(x, cIdx1);
+                    if (v1.isInDomainKernel(x)) v2.addToKernel(x, this, false);
+                    if (!v2.isInDomainEnveloppe(x)) v1.remFromEnveloppe(x, this, false);
                 }
             }finally {
                 it.dispose();
@@ -101,7 +101,7 @@ public class SetIntersection extends AbstractTernSetSConstraint {
             try{
                 while (it.hasNext()) {
                     x = it.next();
-                    if (!v0.isInDomainKernel(x)) v2.remFromEnveloppe(x, cIdx2);
+                    if (!v0.isInDomainKernel(x)) v2.remFromEnveloppe(x, this, false);
                 }
             }finally {
                 it.dispose();
@@ -111,8 +111,8 @@ public class SetIntersection extends AbstractTernSetSConstraint {
             try{
 			while (it.hasNext()) {
 				x = it.next();
-				if (v0.isInDomainKernel(x)) v2.addToKernel(x, cIdx2);
-				if (!v2.isInDomainEnveloppe(x)) v0.remFromEnveloppe(x, cIdx0);
+				if (v0.isInDomainKernel(x)) v2.addToKernel(x, this, false);
+				if (!v2.isInDomainEnveloppe(x)) v0.remFromEnveloppe(x, this, false);
 			}
             }finally {
                 it.dispose();
@@ -121,7 +121,7 @@ public class SetIntersection extends AbstractTernSetSConstraint {
             try{
 			while (it.hasNext()) {
 				x = it.next();
-				if (!v1.isInDomainKernel(x)) v2.remFromEnveloppe(x, cIdx2);
+				if (!v1.isInDomainKernel(x)) v2.remFromEnveloppe(x, this, false);
 			}
             }finally {
                 it.dispose();
@@ -131,8 +131,8 @@ public class SetIntersection extends AbstractTernSetSConstraint {
             try{
                 while (it.hasNext()) {
                     x = it.next();
-                    if (!v0.isInDomainKernel(x)) v0.addToKernel(x, cIdx0);
-                    if (!v1.isInDomainKernel(x)) v1.addToKernel(x, cIdx1);
+                    if (!v0.isInDomainKernel(x)) v0.addToKernel(x, this, false);
+                    if (!v1.isInDomainKernel(x)) v1.addToKernel(x, this, false);
                 }
             }finally {
                 it.dispose();
@@ -145,8 +145,8 @@ public class SetIntersection extends AbstractTernSetSConstraint {
 		try{
         while (it.hasNext()) {
 			int val = it.next();
-			if (v1.isInDomainKernel(val)) v2.addToKernel(val, cIdx2);
-			if (!v2.isInDomainEnveloppe(val)) v1.remFromEnveloppe(val, cIdx1);
+			if (v1.isInDomainKernel(val)) v2.addToKernel(val, this, false);
+			if (!v2.isInDomainEnveloppe(val)) v1.remFromEnveloppe(val, this, false);
 		}
         }finally {
             it.dispose();
@@ -155,8 +155,8 @@ public class SetIntersection extends AbstractTernSetSConstraint {
         try{
             while (it.hasNext()) {
                 int val = it.next();
-                if (v0.isInDomainKernel(val)) v2.addToKernel(val, cIdx2);
-                if (!v2.isInDomainEnveloppe(val)) v0.remFromEnveloppe(val, cIdx0);
+                if (v0.isInDomainKernel(val)) v2.addToKernel(val, this, false);
+                if (!v2.isInDomainEnveloppe(val)) v0.remFromEnveloppe(val, this, false);
             }
         }finally {
             it.dispose();
@@ -165,8 +165,8 @@ public class SetIntersection extends AbstractTernSetSConstraint {
         try{
             while (it.hasNext()) {
                 int val = it.next();
-                if (!v0.isInDomainKernel(val)) v0.addToKernel(val, cIdx0);
-                if (!v1.isInDomainKernel(val)) v1.addToKernel(val, cIdx1);
+                if (!v0.isInDomainKernel(val)) v0.addToKernel(val, this, false);
+                if (!v1.isInDomainKernel(val)) v1.addToKernel(val, this, false);
             }
         }finally {
             it.dispose();
@@ -177,7 +177,7 @@ public class SetIntersection extends AbstractTernSetSConstraint {
                 int val = it.next();
                 if (!v0.isInDomainEnveloppe(val) ||
                         !v1.isInDomainEnveloppe(val))
-                    v2.remFromEnveloppe(val, cIdx2);
+                    v2.remFromEnveloppe(val, this, false);
 
             }           
         }finally {

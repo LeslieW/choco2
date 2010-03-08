@@ -45,7 +45,7 @@ public final class PartiallyStoredSetCstrList<C extends AbstractSConstraint & Se
 
     private QuickIterator _quickIterator = null;
 
-    public DisposableIterator<Couple<C>> getActiveConstraint(int cstrCause){
+    public DisposableIterator<Couple<C>> getActiveConstraint(C cstrCause){
         QuickIterator iter = _quickIterator;
         if (iter != null && iter.reusable) {
             iter.init(cstrCause);
@@ -57,16 +57,16 @@ public final class PartiallyStoredSetCstrList<C extends AbstractSConstraint & Se
 
     private final class QuickIterator extends DisposableIterator<Couple<C>> {
         boolean reusable;
-        int cstrCause;
+        C cstrCause;
         DisposableIntIterator cit;
         Couple<C> cc  = new Couple<C>();
 
 
-        public QuickIterator(int cstrCause) {
+        public QuickIterator(C cstrCause) {
              init(cstrCause);
         }
 
-        public void init(int cstrCause){
+        public void init(C cstrCause){
             super.init();
             cit = elements.getIndexIterator();
             this.cstrCause = cstrCause;
@@ -93,9 +93,10 @@ public final class PartiallyStoredSetCstrList<C extends AbstractSConstraint & Se
         public boolean hasNext() {
             while (cit.hasNext()) {
                 int idx = cit.next();
-                if (idx != cstrCause) {
-                    if (elements.get(idx).isActive()) {
-                        cc.init(elements.get(idx), indices.get(idx));
+                final C cstr = elements.get(idx);
+                if (cstr != cstrCause) {
+                    if (cstr.isActive()) {
+                        cc.init(cstr, indices.get(idx));
                         return true;
                     }
                 }

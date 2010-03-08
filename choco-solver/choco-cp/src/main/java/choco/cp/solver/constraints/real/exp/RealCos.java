@@ -23,7 +23,6 @@
 package choco.cp.solver.constraints.real.exp;
 
 import choco.kernel.solver.ContradictionException;
-import static choco.kernel.solver.ContradictionException.Type.UNKNOWN;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.real.RealExp;
 import choco.kernel.solver.constraints.real.exp.AbstractRealUnTerm;
@@ -51,7 +50,7 @@ public class RealCos extends AbstractRealUnTerm {
   public void project() throws ContradictionException {
     RealInterval res = RealMath.acos_wrt(this, exp1);
     if (res.getInf() > res.getSup()) {
-      this.solver.getPropagationEngine().raiseContradiction(null, UNKNOWN);
+      this.solver.getPropagationEngine().raiseContradiction(null);
     }
     exp1.intersect(res);
   }

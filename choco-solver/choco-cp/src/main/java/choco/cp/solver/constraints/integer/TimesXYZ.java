@@ -62,7 +62,7 @@ public void awakeOnSup(int idx) throws ContradictionException {
 	} else if (idx == 2) {
       awakeOnZ();
       if (!(v2.canBeInstantiatedTo(0))) {
-        v2.updateSup(getZmax(), cIdx2);
+        v2.updateSup(getZmax(), this, false);
       }
     }
   }
@@ -76,7 +76,7 @@ public void awakeOnInf(int idx) throws ContradictionException {
 	} else if (idx == 2) {
       awakeOnZ();
       if (!(v2.canBeInstantiatedTo(0))) {
-        v2.updateInf(getZmin(), cIdx2);
+        v2.updateInf(getZmin(), this, false);
       }
     }
   }
@@ -103,35 +103,35 @@ public void awakeOnInst(int vIdx) throws ContradictionException {
    */
   protected void awakeOnX() throws ContradictionException {
     if (v0.isInstantiatedTo(0)) {
-      v2.instantiate(0, cIdx2);
+      v2.instantiate(0, this, false);
     }
     if ((v2.isInstantiatedTo(0)) && (!v0.canBeInstantiatedTo(0))) {
-      v1.instantiate(0, cIdx1);
+      v1.instantiate(0, this, false);
     } else if (!v2.canBeInstantiatedTo(0)) {
       updateYandX();
     } else if (!(v2.isInstantiatedTo(0))) {
       shaveOnYandX();
     }
     if (!(v2.isInstantiatedTo(0))) {
-      v2.updateInf(getZmin(), cIdx2);
-      v2.updateSup(getZmax(), cIdx2);
+      v2.updateInf(getZmin(), this, false);
+      v2.updateSup(getZmax(), this, false);
     }
   }
 
   protected void awakeOnY() throws ContradictionException {
     if (v1.isInstantiatedTo(0)) {
-      v2.instantiate(0, cIdx2);
+      v2.instantiate(0, this, false);
     }
     if ((v2.isInstantiatedTo(0)) && (!v1.canBeInstantiatedTo(0))) {
-      v0.instantiate(0, cIdx0);
+      v0.instantiate(0, this, false);
     } else if (!v2.canBeInstantiatedTo(0)) {
       updateXandY();
     } else if (!(v2.isInstantiatedTo(0))) {
       shaveOnXandY();
     }
     if (!(v2.isInstantiatedTo(0))) {
-      v2.updateInf(getZmin(), cIdx2);
-      v2.updateSup(getZmax(), cIdx2);
+      v2.updateInf(getZmin(), this, false);
+      v2.updateSup(getZmax(), this, false);
     }
   }
 
@@ -627,10 +627,10 @@ public void propagate() throws ContradictionException {
    */
   public void propagateZero() throws ContradictionException {
     if (!(v1.canBeInstantiatedTo(0))) {
-      v0.instantiate(0, cIdx0);
+      v0.instantiate(0, this, false);
     }
     if (!(v0.canBeInstantiatedTo(0))) {
-      v1.instantiate(0, cIdx1);
+      v1.instantiate(0, this, false);
     }
   }
 
@@ -638,14 +638,14 @@ public void propagate() throws ContradictionException {
    * Updating X and Y when Z cannot be 0
    */
   protected boolean updateX() throws ContradictionException {
-    boolean infChange = v0.updateInf(getXminIfNonZero(), cIdx0);
-    boolean supChange = v0.updateSup(getXmaxIfNonZero(), cIdx0);
+    boolean infChange = v0.updateInf(getXminIfNonZero(), this, false);
+    boolean supChange = v0.updateSup(getXmaxIfNonZero(), this, false);
     return (infChange || supChange);
   }
 
   protected boolean updateY() throws ContradictionException {
-    boolean infChange = v1.updateInf(getYminIfNonZero(), cIdx1);
-    boolean supChange = v1.updateSup(getYmaxIfNonZero(), cIdx1);
+    boolean infChange = v1.updateInf(getYminIfNonZero(), this, false);
+    boolean supChange = v1.updateSup(getYmaxIfNonZero(), this, false);
     return (infChange || supChange);
   }
 
@@ -672,12 +672,12 @@ public void propagate() throws ContradictionException {
     int xmin = getXminIfNonZero();
     int xmax = getXmaxIfNonZero();
     if ((xmin > v0.getSup()) || (xmax < v0.getInf())) {
-      v2.instantiate(0, cIdx2);
+      v2.instantiate(0, this, false);
       propagateZero();    // make one of X,Y be 0 if the other cannot be
       return false;       //no more shaving need to be performed
     } else {
-      boolean infChange = (!(v1.canBeInstantiatedTo(0)) && v0.updateInf(Math.min(0, xmin), cIdx0));
-      boolean supChange = (!(v1.canBeInstantiatedTo(0)) && v0.updateSup(Math.max(0, xmax), cIdx0));
+      boolean infChange = (!(v1.canBeInstantiatedTo(0)) && v0.updateInf(Math.min(0, xmin), this, false));
+      boolean supChange = (!(v1.canBeInstantiatedTo(0)) && v0.updateSup(Math.max(0, xmax), this, false));
       return (infChange || supChange);
     }
   }
@@ -686,12 +686,12 @@ public void propagate() throws ContradictionException {
     int ymin = getYminIfNonZero();
     int ymax = getYmaxIfNonZero();
     if ((ymin > v1.getSup()) || (ymax < v1.getInf())) {
-      v2.instantiate(0, cIdx2);
+      v2.instantiate(0, this, false);
       propagateZero();    // make one of X,Y be 0 if the other cannot be
       return false;       //no more shaving need to be performed
     } else {
-      boolean infChange = (!(v0.canBeInstantiatedTo(0)) && v1.updateInf(Math.min(0, ymin), cIdx1));
-      boolean supChange = (!(v0.canBeInstantiatedTo(0)) && v1.updateSup(Math.max(0, ymax), cIdx1));
+      boolean infChange = (!(v0.canBeInstantiatedTo(0)) && v1.updateInf(Math.min(0, ymin), this, false));
+      boolean supChange = (!(v0.canBeInstantiatedTo(0)) && v1.updateSup(Math.max(0, ymax), this, false));
       return (infChange || supChange);
     }
   }

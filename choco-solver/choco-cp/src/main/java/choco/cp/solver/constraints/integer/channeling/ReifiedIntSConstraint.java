@@ -26,10 +26,10 @@ import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.branch.Extension;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.propagation.PropagationEngine;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -107,6 +107,19 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
         init();
     }
 
+    /**
+     * Adds a new extension.
+     *
+     * @param extensionNumber should use the number returned by getAbstractSConstraintExtensionNumber
+     */
+    @Override
+    public void addExtension(final int extensionNumber) {
+        super.addExtension(extensionNumber);
+        Extension ext = extensions[extensionNumber];
+        cons.setExtension(ext, extensionNumber);
+        oppositeCons.setExtension(ext, extensionNumber);
+    }
+
     public void init() {
         tupleCons = new int[cons.getNbVars()];
         tupleOCons = new int[oppositeCons.getNbVars()];
@@ -145,9 +158,9 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
         Boolean isEntailed = cons.isEntailed();
         if (isEntailed != null) {
             if (isEntailed) {
-                vars[0].instantiate(1, cIndices[0]);
+                vars[0].instantiate(1, this, false);
             } else {
-                vars[0].instantiate(0, VarEvent.domOverWDegIdx(cIndices[0]));//cIndices[0]);
+                vars[0].instantiate(0, this, true);//cIndices[0]);
             }
         }
     }

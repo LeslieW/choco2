@@ -30,6 +30,7 @@ package choco.kernel.model.variables;
  *
  */
 public enum Operator {
+
   ABS("abs", "operator.abs", 1),
   COS("cos", "operator.cos", 1),
   DISTANCEEQ("distanceEQ"),

@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.branching;
 
-import static choco.kernel.solver.ContradictionException.Type.UNKNOWN;
 import choco.cp.solver.constraints.global.pack.PackSConstraint;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
@@ -65,7 +64,7 @@ public final class PackDynRemovals extends AssignVar {
         }
 	}
 	public final void fail() throws ContradictionException {
-		getManager().solver.getPropagationEngine().raiseContradiction(this, UNKNOWN);
+		getManager().solver.getPropagationEngine().raiseContradiction(this);
 	}
 
 	public void removeEquivalentBins(IntDomainVar bin,int bup) throws ContradictionException {

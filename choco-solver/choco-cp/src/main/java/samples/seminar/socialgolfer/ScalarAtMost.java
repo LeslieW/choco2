@@ -102,9 +102,9 @@ public class ScalarAtMost extends AbstractLargeIntSConstraint {
 
     public void propagateDiff(int i) throws ContradictionException {
         if (vars[i].isInstantiatedTo(1)) {
-            vars[i + n].removeVal(1, cIndices[i + n]);
+            vars[i + n].removeVal(1, this, false);
         } else if (vars[i + n].isInstantiatedTo(1)) {
-            vars[i].removeVal(1, cIndices[i]);
+            vars[i].removeVal(1, this, false);
         }
     }
 
@@ -187,8 +187,8 @@ public class ScalarAtMost extends AbstractLargeIntSConstraint {
 
     public void propagateEq(int i) throws ContradictionException {
          //LOGGER.info(this + " instantiate " + vars[i + n] + " et " + vars[i] + " a 1");
-         vars[i + n].instantiate(1, cIndices[i + n]);
-         vars[i].instantiate(1, cIndices[i]);
+         vars[i + n].instantiate(1, this, false);
+         vars[i].instantiate(1, this, false);
      }
 
 }

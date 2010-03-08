@@ -64,11 +64,11 @@ public final class GreaterOrEqualXYC extends AbstractBinIntSConstraint {
 
     
     private final void updateInfV0() throws ContradictionException {
-    	 v0.updateInf(v1.getInf() + this.cste, this.cIdx0);
+    	 v0.updateInf(v1.getInf() + this.cste, this, false);
     }
     
     private final void updateSupV1() throws ContradictionException {
-    	  v1.updateSup(v0.getSup() - this.cste, this.cIdx1);
+    	  v1.updateSup(v0.getSup() - this.cste, this, false);
     }
     /**
      * The propagation on constraint awake events.

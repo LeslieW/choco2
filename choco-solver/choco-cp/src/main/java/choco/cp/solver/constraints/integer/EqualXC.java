@@ -74,28 +74,28 @@ public final class EqualXC extends AbstractUnIntSConstraint {
 	 */
 
 	public void propagate() throws ContradictionException {
-		v0.instantiate(this.cste, this.cIdx0);
+		v0.instantiate(this.cste, this, false);
 	}
 
 
 	@Override
 	public void awakeOnInf(int idx) throws ContradictionException {
-		v0.instantiate(this.cste, this.cIdx0);
+		v0.instantiate(this.cste, this, false);
 	}
 
 	@Override
 	public void awakeOnSup(int idx) throws ContradictionException {
-		v0.instantiate(this.cste, this.cIdx0);
+		v0.instantiate(this.cste, this, false);
 	}
 
 	@Override
 	public void awakeOnInst(int idx) throws ContradictionException {
-		v0.instantiate(this.cste, this.cIdx0);
+		v0.instantiate(this.cste, this, false);
 	}
 
 	@Override
 	public void awakeOnRem(int idx, int x) throws ContradictionException {
-		v0.instantiate(this.cste, this.cIdx0);
+		v0.instantiate(this.cste, this, false);
 	}
 
 

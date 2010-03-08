@@ -62,7 +62,7 @@ public class ReifiedLargeOr extends AbstractLargeIntSConstraint {
     public void propagate() throws ContradictionException {
         if(vars[0].isInstantiatedTo(0)){
             for(int i = 1 ; i < vars.length; i++){
-                vars[i].instantiate(0, cIndices[i]);
+                vars[i].instantiate(0, this, false);
             }
             setEntailed();
         }else{
@@ -70,7 +70,7 @@ public class ReifiedLargeOr extends AbstractLargeIntSConstraint {
             int lastIdx = 0;
             for(int i = 1; i < vars.length; i++){
                 if(vars[i].isInstantiatedTo(1)){
-                    vars[0].instantiate(1, cIndices[0]);
+                    vars[0].instantiate(1, this, false);
                     setEntailed();
                     return;
                 }else if(vars[i].isInstantiatedTo(0)){
@@ -80,12 +80,12 @@ public class ReifiedLargeOr extends AbstractLargeIntSConstraint {
                 }
             }
             if(toZERO == vars.length-1){
-                vars[0].instantiate(0, cIndices[0]);
+                vars[0].instantiate(0, this, false);
                 setEntailed();
                 return;
             }else if((toZERO == vars.length - 2)
                     && (vars[0].isInstantiatedTo(1))){
-                vars[lastIdx].instantiate(1, cIndices[lastIdx]);
+                vars[lastIdx].instantiate(1, this, false);
                 setEntailed();
                 return;
             }
@@ -102,7 +102,7 @@ public class ReifiedLargeOr extends AbstractLargeIntSConstraint {
                 switch (val){
                     case 0:
                         for(int i = 1 ; i < vars.length; i++){
-                            vars[i].instantiate(0, cIndices[i]);
+                            vars[i].instantiate(0, this, false);
                         }
                         setEntailed();
                         break;
@@ -116,7 +116,7 @@ public class ReifiedLargeOr extends AbstractLargeIntSConstraint {
             default:
                 switch (val){
                     case 1:
-                        vars[0].instantiate(1, cIndices[0]);
+                        vars[0].instantiate(1, this, false);
                         setEntailed();
                         break;
                     case 0:
@@ -136,18 +136,18 @@ public class ReifiedLargeOr extends AbstractLargeIntSConstraint {
         int toZero = toZERO.get();
         int n = vars.length-1;
         if(toZero == n){
-            vars[0].instantiate(0, cIndices[0]);
+            vars[0].instantiate(0, this, false);
             setEntailed();
         }else if(vars[0].isInstantiatedTo(1)){
             for(int i = n; i > 0; i--){
                 if(!vars[i].isInstantiated()){
-                    vars[i].instantiate(1, cIndices[i]);
+                    vars[i].instantiate(1, this, false);
                     setEntailed();
                     break;
                 }
                 // speed up
                 else if(!vars[n+1-i].isInstantiated()){
-                    vars[n+1-i].instantiate(1, cIndices[n+1-i]);
+                    vars[n+1-i].instantiate(1, this, false);
                     setEntailed();
                     break;
                 }

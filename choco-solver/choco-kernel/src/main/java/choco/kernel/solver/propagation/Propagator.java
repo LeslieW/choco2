@@ -25,7 +25,6 @@ package choco.kernel.solver.propagation;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBool;
 import choco.kernel.solver.ContradictionException;
-import static choco.kernel.solver.ContradictionException.Type.CONSTRAINT;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.propagation.event.PropagationEvent;
 import choco.kernel.solver.propagation.queue.EventQueue;
@@ -237,7 +236,7 @@ public abstract class Propagator implements EventListener {
 	 * @throws ContradictionException contradiction exception
 	 */
 	public void fail() throws ContradictionException {
-		propagationEngine.raiseContradiction(this, CONSTRAINT);
+		propagationEngine.raiseContradiction(this);
 	}
 
 }

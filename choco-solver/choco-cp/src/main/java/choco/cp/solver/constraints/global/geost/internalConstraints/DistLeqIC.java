@@ -626,10 +626,10 @@ public class DistLeqIC extends ForbiddenRegion {
                 int oldInf=DVar.getInf();
                 int newInf=EvaluateMinimumDistance(k);
                 if (oldInf>=newInf) return false;
-                DVar.updateInf(newInf,0);
+                DVar.updateInf(newInf, this.stp.g_constraint, false);
                 if (stp.opt.debug) { System.out.println("DistLeqIC:"+this+" updateDistance:["+DVar.getInf()+","+DVar.getSup()+"]"); };
                 if ((DVar.getInf()>DVar.getSup()) || (DVar.getSup()<DVar.getInf())){
-                    stp.propagationEngine.raiseContradiction(null, ContradictionException.Type.UNKNOWN);
+                    stp.propagationEngine.raiseContradiction(null);
                 }
                 return true;
         }

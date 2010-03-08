@@ -88,9 +88,6 @@ public class RealIntervalConstant implements RealConstant {
   public void intersect(RealInterval interval) throws ContradictionException {
   }
 
-  public void intersect(RealInterval interval, int index) throws ContradictionException {
-  }
-
   public void tighten() {
   }
 

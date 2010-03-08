@@ -73,8 +73,7 @@ public class SimpleDTConstraint extends AbstractBinIntSConstraint implements
             return;
         }
 
-        variable.removeInterval(lBound + 1, hBound - 1, position == 0 ? cIdx0
-                : cIdx1);
+        variable.removeInterval(lBound + 1, hBound - 1, this, false);
 
     }
 

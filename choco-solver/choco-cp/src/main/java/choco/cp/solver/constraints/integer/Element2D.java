@@ -110,8 +110,8 @@ public class Element2D extends AbstractTernIntSConstraint {
             v1It = this.v1.getDomain().getIterator();
         }
         v0It.dispose();
-        v2.updateSup(maxVal, this.cIdx2);
-        v2.updateInf(minVal, this.cIdx2);
+        v2.updateSup(maxVal, this, false);
+        v2.updateInf(minVal, this, false);
         // propagate on holes
         if (v2.hasEnumeratedDomain()) {
             v0It = this.v0.getDomain().getIterator();
@@ -128,7 +128,7 @@ public class Element2D extends AbstractTernIntSConstraint {
                 for (; v2It.hasNext(); ) {  // on parcourt la valeur
                     int i = v2It.next();
                     if (!feasValues.get(i + cste))
-                        v2.removeVal(i, this.cIdx2);
+                        v2.removeVal(i, this, false);
                 }
             }finally{
                 v2It.dispose();
@@ -167,7 +167,7 @@ public class Element2D extends AbstractTernIntSConstraint {
             IntDomain v0Dom = this.v0.getDomain();
             for (int i = v0Dom.getNextValue(minFeasibleIndex1 - 1); i <= maxFeasibleIndex1; i = v0Dom.getNextValue(i)) {
                 if (!testValueVarV0(i)) {
-                    this.v0.removeVal(i, thecause1);
+                    this.v0.removeVal(i, this, false);
                 }
             }
         } else {
@@ -179,20 +179,20 @@ public class Element2D extends AbstractTernIntSConstraint {
                 else break;
             }
             v0It.dispose();
-            v0.updateInf(minFeasibleIndex1, thecause1);
+            v0.updateInf(minFeasibleIndex1, this, false);
 
             // Todo : update the prevValue api on BitSetIntDomain to perform a more efficient iteration
             while ((maxFeasibleIndex1 > 0) && v0.canBeInstantiatedTo(maxFeasibleIndex1) &&
                     !testValueVarV0(maxFeasibleIndex1))
                 maxFeasibleIndex1--;
-            v0.updateSup(maxFeasibleIndex1, thecause1);
+            v0.updateSup(maxFeasibleIndex1, this, false);
         }
 
         if (v1.hasEnumeratedDomain()) {
             IntDomain v1Dom = this.v1.getDomain();
             for (int i = v1Dom.getNextValue(minFeasibleIndex2 - 1); i <= maxFeasibleIndex2; i = v1Dom.getNextValue(i)) {
                 if (!testValueVarV1(i)) {
-                    this.v1.removeVal(i, thecause2);
+                    this.v1.removeVal(i, this, false);
                 }
             }
         } else {
@@ -204,22 +204,22 @@ public class Element2D extends AbstractTernIntSConstraint {
                 else break;
             }
             v1It.dispose();
-            v1.updateInf(minFeasibleIndex2, thecause2);
+            v1.updateInf(minFeasibleIndex2, this, false);
 
             // Todo : update the prevValue api on BitSetIntDomain to perform a more efficient iteration
             while ((maxFeasibleIndex2 > 0) && v1.canBeInstantiatedTo(maxFeasibleIndex2) &&
                     !testValueVarV1(maxFeasibleIndex2))
                 maxFeasibleIndex2--;
-            v1.updateSup(maxFeasibleIndex2, thecause2);
+            v1.updateSup(maxFeasibleIndex2, this, false);
         }
 
     }
 
     public void propagate() throws ContradictionException {
-        v0.updateInf(0, cIdx0);
-        v1.updateInf(0, cIdx1);
-        v0.updateSup(dim1 - 1, cIdx0);
-        v1.updateSup(dim2 - 1, cIdx0);
+        v0.updateInf(0, this, false);
+        v1.updateInf(0, this, false);
+        v0.updateSup(dim1 - 1, this, false);
+        v1.updateSup(dim2 - 1, this, false);
         updateIndexFromValue();
         updateValueFromIndex();
     }

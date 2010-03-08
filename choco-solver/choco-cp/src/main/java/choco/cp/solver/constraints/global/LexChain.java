@@ -127,8 +127,8 @@ public class LexChain extends AbstractLargeIntSConstraint {
         while( i< n &&  a[i]==b[i]){
 
 
-            if((x[i].getInf()==a[i] || x[i].updateInf(a[i],cIndices[j*n+i])) &&
-                    (x[i].getSup()==b[i] || x[i].updateSup(b[i],cIndices[j*n+i]))){
+            if((x[i].getInf()==a[i] || x[i].updateInf(a[i], this, false)) &&
+                    (x[i].getSup()==b[i] || x[i].updateSup(b[i], this, false))){
                 i++;
             }else{
                 this.fail();
@@ -138,8 +138,8 @@ public class LexChain extends AbstractLargeIntSConstraint {
 
 
         if(i<n )
-            if ((x[i].getInf()==a[i] || x[i].updateInf(a[i],cIndices[j*n+i])) &&
-                    (x[i].getSup()==b[i] || x[i].updateSup(b[i],cIndices[j*n+i]))){
+            if ((x[i].getInf()==a[i] || x[i].updateInf(a[i], this, false)) &&
+                    (x[i].getSup()==b[i] || x[i].updateSup(b[i], this, false))){
             }else{
                 this.fail();
             }
@@ -152,7 +152,7 @@ public class LexChain extends AbstractLargeIntSConstraint {
         i+=1;
 
         while(i<n && (b[i]+1 <= a[i]-1) && x[i].getInf()==b[i] && x[i].getSup()==a[i]){
-            if(x[i].removeInterval(b[i]+1,a[i]-1,cIndices[j*n+i])){
+            if(x[i].removeInterval(b[i]+1,a[i]-1, this, false)){
                 i++;
             }else{
                 this.fail();
@@ -163,7 +163,7 @@ public class LexChain extends AbstractLargeIntSConstraint {
         if(i<n) {
             if (b[i] + 1 <= a[i] - 1 && x[i].getInf() <= b[i] &&
                     b[i] <= x[i].getSup() && x[i].getSup() >= a[i] && a[i] >= x[i].getInf()) {
-                if (!x[i].removeInterval(b[i] + 1, a[i] - 1, cIndices[j * n + i])) {
+                if (!x[i].removeInterval(b[i] + 1, a[i] - 1, this, false)) {
                     this.fail();
                 }
             }

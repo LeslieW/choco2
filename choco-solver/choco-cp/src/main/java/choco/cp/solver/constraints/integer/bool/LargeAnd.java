@@ -53,7 +53,7 @@ public class LargeAnd extends AbstractLargeIntSConstraint {
 
     public void propagate() throws ContradictionException {
         for(int i = 0; i < vars.length; i++){
-            vars[i].instantiate(1, cIndices[i]);
+            vars[i].instantiate(1, this, false);
         }
     }
 

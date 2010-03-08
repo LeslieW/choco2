@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.set;
 
-import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractLargeSetIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -63,16 +62,16 @@ public final class InverseSet extends AbstractLargeSetIntSConstraint {
 	public void filterFromIndices() throws ContradictionException {
 		int n = getNbSetVars() - 1;
 		for (int j = 0; j < ivars.length; j++) {
-			ivars[j].updateInf(0, int_cIndices[j]);
-			ivars[j].updateSup(n, int_cIndices[j]);
+			ivars[j].updateInf(0, this, false);
+			ivars[j].updateSup(n, this, false);
 		}
 		n= getNbIntVars()-1;
 		for (int i = 0; i < svars.length; i++) {
 			while (svars[i].getEnveloppeInf()< 0) {
-				svars[i].remFromEnveloppe( svars[i].getEnveloppeInf(), set_cIndices[i]);
+				svars[i].remFromEnveloppe( svars[i].getEnveloppeInf(), this, false);
 			}
 			while (svars[i].getEnveloppeSup()> n) {
-				svars[i].remFromEnveloppe( svars[i].getEnveloppeSup(), set_cIndices[i]);
+				svars[i].remFromEnveloppe( svars[i].getEnveloppeSup(), this, false);
 			}
 		}
 	}
@@ -89,7 +88,7 @@ public final class InverseSet extends AbstractLargeSetIntSConstraint {
 	@Override
 	public void awakeOnKer (int i, int j) throws ContradictionException {
 		assert( isSetVarIndex(i));
-		ivars[j].instantiate( i, IntVarEvent.NOCAUSE);
+		ivars[j].instantiate( i, this, true);
 	}
 
 	/**
@@ -98,7 +97,7 @@ public final class InverseSet extends AbstractLargeSetIntSConstraint {
 	@Override
 	public void awakeOnEnv (int i, int j) throws ContradictionException {
 		assert( isSetVarIndex(i));
-		ivars[j].removeVal( i, int_cIndices[j]);
+		ivars[j].removeVal( i, this, false);
 	}
 
 	/**
@@ -107,9 +106,9 @@ public final class InverseSet extends AbstractLargeSetIntSConstraint {
 	private void filterSetVar (int i) throws ContradictionException {
 		for (int j = 0; j < getNbIntVars(); j++) {
 			if (svars[i].isInDomainKernel(j)) {
-				ivars[j].instantiate(i, IntVarEvent.NOCAUSE);
+				ivars[j].instantiate(i, this, true);
 			} else if (!svars[i].isInDomainEnveloppe(j)) {
-				ivars[j].removeVal(i, int_cIndices[j]);
+				ivars[j].removeVal(i, this, false);
 			}
 		}
 	}
@@ -124,12 +123,12 @@ public final class InverseSet extends AbstractLargeSetIntSConstraint {
 		else {
 			final int iv = getIntVarIndex(x);
 			final int s = ivars[iv].getVal();
-			svars[s].addToKernel(iv, set_cIndices[s]);
+			svars[s].addToKernel(iv, this, false);
 			for (int i = 0; i < s; i++) {
-				svars[i].remFromEnveloppe(iv, set_cIndices[i]);
+				svars[i].remFromEnveloppe(iv, this, false);
 			}	
 			for (int i = s + 1; i < svars.length; i++) {
-				svars[i].remFromEnveloppe(iv, set_cIndices[i]);
+				svars[i].remFromEnveloppe(iv, this, false);
 			}
 		}
 	}
@@ -141,7 +140,7 @@ public final class InverseSet extends AbstractLargeSetIntSConstraint {
 	@Override
 	public void awakeOnRem (int x, int v) throws ContradictionException {
 		if (isSetVarIndex(x)) awakeOnEnv(x, v);
-		else svars[v].remFromEnveloppe( getIntVarIndex(x), set_cIndices[v]);
+		else svars[v].remFromEnveloppe( getIntVarIndex(x), this, false);
 	}
 
 	/**
@@ -154,7 +153,7 @@ public final class InverseSet extends AbstractLargeSetIntSConstraint {
 			final int iv = getIntVarIndex(x);
 			for (int i = 0; i < svars.length; i++) {
 				if (!ivars[iv].canBeInstantiatedTo(i)) {
-					svars[i].remFromEnveloppe(iv, set_cIndices[i]);
+					svars[i].remFromEnveloppe(iv, this, false);
 				}
 			}
 		} 

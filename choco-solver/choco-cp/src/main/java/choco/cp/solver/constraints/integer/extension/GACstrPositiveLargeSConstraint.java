@@ -148,7 +148,7 @@ public class GACstrPositiveLargeSConstraint extends CspLargeSConstraint {
                 while (it3.hasNext()) {
                     int val = it3.next();
                     if (!gacValues[vIdx].get(val - offsets[vIdx])) {
-                        v.removeVal(val, cIndices[vIdx]);
+                        v.removeVal(val, this, false);
                     }
                 }
             }finally {

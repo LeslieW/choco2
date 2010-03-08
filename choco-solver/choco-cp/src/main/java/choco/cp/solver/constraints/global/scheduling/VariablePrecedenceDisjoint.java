@@ -46,9 +46,9 @@ public class VariablePrecedenceDisjoint extends AbstractPrecedenceConstraint {
 		boolean b = true;
         while(b) {
             b = false;
-            b |= vars[3].updateInf(vars[1].getInf() + vars[2].getInf(), cIndices[3]);
-            b |= vars[1].updateSup(vars[3].getSup() - vars[2].getInf(), cIndices[1]);
-            b |= vars[2].updateSup(vars[3].getSup() - vars[1].getInf(), cIndices[2]);
+            b |= vars[3].updateInf(vars[1].getInf() + vars[2].getInf(), this, false);
+            b |= vars[1].updateSup(vars[3].getSup() - vars[2].getInf(), this, false);
+            b |= vars[2].updateSup(vars[3].getSup() - vars[1].getInf(), this, false);
         }
     }
 
@@ -58,9 +58,9 @@ public class VariablePrecedenceDisjoint extends AbstractPrecedenceConstraint {
 		boolean b = true;
         while(b) {
             b = false;
-            vars[1].updateInf(vars[3].getInf() + vars[4].getInf(), cIndices[1]);
-            vars[3].updateSup(vars[1].getSup() - vars[4].getInf(), cIndices[3]);
-            vars[4].updateSup(vars[1].getSup() - vars[3].getInf(), cIndices[4]);
+            vars[1].updateInf(vars[3].getInf() + vars[4].getInf(), this, false);
+            vars[3].updateSup(vars[1].getSup() - vars[4].getInf(), this, false);
+            vars[4].updateSup(vars[1].getSup() - vars[3].getInf(), this, false);
         }
     }
 

@@ -73,9 +73,9 @@ public class DistanceXYZ extends AbstractTernIntSConstraint {
 	//update lower bound of v2 if we have v0 != v1
 	public boolean filterFromXYtoLBZ() throws ContradictionException {
 		if (v1.getInf() - v0.getSup() > 0) { // x < y
-			return v2.updateInf(v1.getInf() - v0.getSup() - cste,cIdx2);
+			return v2.updateInf(v1.getInf() - v0.getSup() - cste, this, false);
 		} else if (v0.getInf() - v1.getSup() > 0) { // x > y
-			return v2.updateInf(v0.getInf() - v1.getSup() - cste,cIdx2);
+			return v2.updateInf(v0.getInf() - v1.getSup() - cste, this, false);
 		} else {
 			return false;
 		}
@@ -85,7 +85,7 @@ public class DistanceXYZ extends AbstractTernIntSConstraint {
 	public boolean filterFromXYtoUBZ() throws ContradictionException {
 		int a = Math.abs(v1.getSup() - v0.getInf());
 		int b = Math.abs(v0.getSup() - v1.getInf());
-		return v2.updateSup(Math.max(a,b) - cste,cIdx2);
+		return v2.updateSup(Math.max(a,b) - cste, this, false);
 	}
 
 	//*************************************************************//
@@ -97,9 +97,9 @@ public class DistanceXYZ extends AbstractTernIntSConstraint {
 		int ub = v1.getSup() + v2.getSup() + cste;
 		int lbv0 = v1.getSup() - v2.getInf() - cste + 1;
 		int ubv0 = v1.getInf() + v2.getInf() + cste - 1;
-		return 	v0.updateInf(lb,cIdx0) ||
-				v0.updateSup(ub,cIdx0) ||
-				v0.removeInterval(lbv0, ubv0, cIdx0);
+		return 	v0.updateInf(lb, this, false) ||
+				v0.updateSup(ub, this, false) ||
+				v0.removeInterval(lbv0, ubv0, this, false);
 	}
 
 	public boolean filterEQFromXZToY() throws ContradictionException {
@@ -107,9 +107,9 @@ public class DistanceXYZ extends AbstractTernIntSConstraint {
 		int ub = v0.getSup() + v2.getSup() + cste;
 		int lbv1 = v0.getSup() - v2.getInf() - cste + 1;
 		int ubv1 = v0.getInf() + v2.getInf() + cste - 1;
-		return 	v1.updateInf(lb,cIdx1) ||
-				v1.updateSup(ub,cIdx1) ||
-				v1.removeInterval(lbv1, ubv1, cIdx1);
+		return 	v1.updateInf(lb, this, false) ||
+				v1.updateSup(ub, this, false) ||
+				v1.removeInterval(lbv1, ubv1, this, false);
 	}
 
 	//*************************************************************//
@@ -120,14 +120,14 @@ public class DistanceXYZ extends AbstractTernIntSConstraint {
 	public boolean filterLTFromYZtoX() throws ContradictionException {
 		int lb = v1.getInf() - v2.getSup() - cste + 1;
 		int ub = v1.getSup() + v2.getSup() + cste - 1;
-		return 	v0.updateInf(lb,cIdx0) || v0.updateSup(ub,cIdx0);
+		return 	v0.updateInf(lb, this, false) || v0.updateSup(ub, this, false);
 	}
 
 	// LEQ: update x from the domain of z and y
 	public boolean filterLTFromXZtoY() throws ContradictionException {
 		int lb = v0.getInf() - v2.getSup() - cste + 1;
 		int ub = v0.getSup() + v2.getSup() + cste - 1;
-		return 	v1.updateInf(lb,cIdx1) || v1.updateSup(ub,cIdx1);
+		return 	v1.updateInf(lb, this, false) || v1.updateSup(ub, this, false);
 	}
 
 	//*************************************************************//
@@ -147,7 +147,7 @@ public class DistanceXYZ extends AbstractTernIntSConstraint {
 		int lbv0 = v1.getSup() - v2.getInf() - cste;
 		int ubv0 = v1.getInf() + v2.getInf() + cste;
 		// remove interval [lbv0, ubv0] from domain of v0
-		return v0.removeInterval(lbv0, ubv0, cIdx0);
+		return v0.removeInterval(lbv0, ubv0, this, false);
 	}
 
 	// GEQ: remove interval for y from the domain of x and y
@@ -164,7 +164,7 @@ public class DistanceXYZ extends AbstractTernIntSConstraint {
 		int lbv1 = v0.getSup() - v2.getInf() - cste;
 		int ubv1 = v0.getInf() + v2.getInf() + cste;
 		// remove interval [lbv0, ubv0] from domain of v0
-		return v1.removeInterval(lbv1, ubv1, cIdx1);
+		return v1.removeInterval(lbv1, ubv1, this, false);
 	}
 
 	//*************************************************************//
@@ -218,7 +218,7 @@ public class DistanceXYZ extends AbstractTernIntSConstraint {
 	@Override
 	public void propagate() throws ContradictionException {
 		if (operator <= LT ) {
-            v2.updateInf(-cste,cIdx2);
+            v2.updateInf(-cste, this, false);
         }
 		filterFixPoint();
     }

@@ -271,7 +271,7 @@ public class FastRegular extends AbstractLargeIntSConstraint {
                 StoredIndexedBipartiteSet sup = graph.getSupport(i,j);
                 if (sup == null || sup.isEmpty())
                 {
-                    vars[i].removeVal(j,this.getConstraintIdx(i));
+                    vars[i].removeVal(j, this, false);
                 }
             }
         }

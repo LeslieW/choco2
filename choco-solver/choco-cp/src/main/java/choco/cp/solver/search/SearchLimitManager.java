@@ -1,20 +1,18 @@
 package choco.cp.solver.search;
 
 
-import static choco.kernel.solver.ContradictionException.Type.SEARCH_LIMIT;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.RESTART;
-import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.STOP;
-
-import java.util.logging.Logger;
-
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.AbstractGlobalSearchStrategy;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.RESTART;
+import static choco.kernel.solver.search.AbstractGlobalSearchStrategy.STOP;
 import choco.kernel.solver.search.GlobalSearchLimitManager;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.limit.NoLimit;
 import choco.kernel.solver.search.restart.NoRestartStrategy;
 import choco.kernel.solver.search.restart.UniversalRestartStrategy;
+
+import java.util.logging.Logger;
 
 public class SearchLimitManager implements GlobalSearchLimitManager {
 
@@ -148,7 +146,7 @@ public class SearchLimitManager implements GlobalSearchLimitManager {
 		if( searchLimit.getNb() >= searchLimit.getNbMax()) {
 			//end search
 			searchStrategy.setEncounteredLimit(searchLimit);
-			searchStrategy.solver.getPropagationEngine().raiseContradiction(searchLimit, SEARCH_LIMIT, STOP);
+			searchStrategy.solver.getPropagationEngine().raiseContradiction(searchLimit, STOP);
 		}
 		if( restartStrategyLimit.getNb() >= restartStrategyLimit.getNbMax()) {
 			//update cutoff
@@ -157,7 +155,7 @@ public class SearchLimitManager implements GlobalSearchLimitManager {
 			restartStrategyLimit.setNbMax( restartStrategyLimit.getNb() + restartCutoff);
 			//perform restart
 			//TODO set a flag to indicate if we are recording nogoods
-			searchStrategy.solver.getPropagationEngine().raiseContradiction(searchLimit, SEARCH_LIMIT, RESTART);
+			searchStrategy.solver.getPropagationEngine().raiseContradiction(searchLimit, RESTART);
 		}
 	}
 
@@ -167,7 +165,7 @@ public class SearchLimitManager implements GlobalSearchLimitManager {
 		if( searchLimit.getNb() >= searchLimit.getNbMax()) {
 			//end search
 			searchStrategy.setEncounteredLimit(searchLimit);
-			searchStrategy.solver.getPropagationEngine().raiseContradiction(searchLimit, SEARCH_LIMIT, STOP);
+			searchStrategy.solver.getPropagationEngine().raiseContradiction(searchLimit, STOP);
 		}
 		//do not restart while backtraking.
 		//side effects with nogood recording

@@ -214,7 +214,7 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
                     IntDomainVar v = ivars[i];
                     it = s.getDomain().getKernelIterator();
                     while (it.hasNext()) {
-                        v.removeVal(it.next(), -1);
+                        v.removeVal(it.next(), this, false);
                     }
                     it.dispose();
                 }
@@ -227,7 +227,7 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
                     while (it.hasNext()) {
                         int val = it.next();
                         if (!s.isInDomainEnveloppe(val)) {
-                            v.removeVal(val, -1);
+                            v.removeVal(val, this, false);
                         }
                     }
                     it.dispose();
@@ -245,18 +245,18 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
 
         if (glb0 < n.getInf()) {
             if(min < Integer.MAX_VALUE){
-                n.updateInf(min, cIndices[idxN]);
+                n.updateInf(min, this, false);
             }
         } else {
-            n.updateInf(lb0, cIndices[idxN]);
+            n.updateInf(lb0, this, false);
         }
 
         if (lub0 > n.getSup()) {
             if(max > Integer.MIN_VALUE){
-                n.updateSup(max, cIndices[idxN]);
+                n.updateSup(max, this, false);
             }
         } else {
-            n.updateSup(ub0, cIndices[idxN]);
+            n.updateSup(ub0, this, false);
         }
     }
 
@@ -265,11 +265,11 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
         boolean mod = false;
         for (int e = outKinE.nextSetBit(0); e >= 0; e = outKinE.nextSetBit(e + 1)) {
             if (lb_ub[1][idx] < n.getInf()) {
-                mod |= s.addToKernel(lb_ub[2][idx], cIndices[idxS]);
+                mod |= s.addToKernel(lb_ub[2][idx], this, false);
                 outKinE.set(e, false);
             }
             if (lb_ub[0][idx] > n.getSup()) {
-                mod |= s.remFromEnveloppe(lb_ub[2][idx], cIndices[idxS]);
+                mod |= s.remFromEnveloppe(lb_ub[2][idx], this, false);
                 outKinE.set(e, false);
             }
             idx++;

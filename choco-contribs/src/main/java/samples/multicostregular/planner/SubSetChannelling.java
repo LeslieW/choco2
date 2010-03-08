@@ -22,8 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular.planner;
 
-import java.util.Set;
-
 import choco.cp.model.managers.IntConstraintManager;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
@@ -31,6 +29,8 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.Set;
 
 /**
  * Created by IntelliJ IDEA.
@@ -55,15 +55,15 @@ public class SubSetChannelling extends AbstractLargeIntSConstraint {
         IntDomainVar v1 = vars[idx2];
         int sup = Math.min(v0.getSup(),v1.getSup());
         int inf = Math.max(v0.getInf(),v1.getInf());
-        if (v0.getSup() > sup) v0.updateSup(sup,cIndices[idx1]);
-        else if (v1.getSup() > sup) v1.updateSup(sup,cIndices[idx2]);
-        if (v0.getInf() < inf) v0.updateInf(inf,cIndices[idx1]);
-        else if (v1.getInf() < inf) v1.updateInf(inf,cIndices[idx2]);
+        if (v0.getSup() > sup) v0.updateSup(sup, this, false);
+        else if (v1.getSup() > sup) v1.updateSup(sup, this, false);
+        if (v0.getInf() < inf) v0.updateInf(inf, this, false);
+        else if (v1.getInf() < inf) v1.updateInf(inf, this, false);
 
         for (int i = inf+1 ; i < sup ; i++)
         {
-            if (v0.canBeInstantiatedTo(i) && !v1.canBeInstantiatedTo(i)) v0.removeVal(i,cIndices[idx1]);
-            else if (v1.canBeInstantiatedTo(i) && !v0.canBeInstantiatedTo(i)) v1.removeVal(i,cIndices[idx1]);
+            if (v0.canBeInstantiatedTo(i) && !v1.canBeInstantiatedTo(i)) v0.removeVal(i, this, false);
+            else if (v1.canBeInstantiatedTo(i) && !v0.canBeInstantiatedTo(i)) v1.removeVal(i, this, false);
         }
 
 
@@ -73,13 +73,13 @@ public class SubSetChannelling extends AbstractLargeIntSConstraint {
         if (idx < n)
         {
 
-            if (val < 3) vars[idx+n].removeVal(val,cIndices[idx+n]);
+            if (val < 3) vars[idx+n].removeVal(val, this, false);
 
         }
         else
         {
-            if (val < 3) vars[idx-n].removeVal(val,cIndices[idx-n]);
-            else vars[idx-n].updateSup(2,cIndices[idx-n]);
+            if (val < 3) vars[idx-n].removeVal(val, this, false);
+            else vars[idx-n].updateSup(2, this, false);
         }
 
     }
@@ -89,12 +89,12 @@ public class SubSetChannelling extends AbstractLargeIntSConstraint {
 
         //this.constAwake(false);
         if (idx <n) {
-            if (vars[idx].getVal() < 3) vars[idx+n].instantiate(vars[idx].getVal(),cIndices[idx+n]);
-            else vars[idx+n].instantiate(3,cIndices[idx+n]);
+            if (vars[idx].getVal() < 3) vars[idx+n].instantiate(vars[idx].getVal(), this, false);
+            else vars[idx+n].instantiate(3, this, false);
         }
         else
         {
-            if (vars[idx].getVal() < 3) vars[idx-n].instantiate(vars[idx].getVal(),cIndices[idx-n]);
+            if (vars[idx].getVal() < 3) vars[idx-n].instantiate(vars[idx].getVal(), this, false);
         }
 
     }
@@ -102,12 +102,12 @@ public class SubSetChannelling extends AbstractLargeIntSConstraint {
     public void awakeOnInf(int idx) throws ContradictionException {
         if (idx < n)
         {
-            if (vars[idx].getInf() >= 3) vars[idx+n].instantiate(3,cIndices[idx+n]);
-            else vars[idx+n].updateInf(vars[idx].getInf(),cIndices[idx+n]);
+            if (vars[idx].getInf() >= 3) vars[idx+n].instantiate(3, this, false);
+            else vars[idx+n].updateInf(vars[idx].getInf(), this, false);
         }
         else
         {
-            if (vars[idx-n].getInf() < vars[idx].getInf()) vars[idx-n].updateInf(vars[idx].getInf(),cIndices[idx-n]);
+            if (vars[idx-n].getInf() < vars[idx].getInf()) vars[idx-n].updateInf(vars[idx].getInf(), this, false);
         }
     }
 
@@ -132,10 +132,10 @@ public class SubSetChannelling extends AbstractLargeIntSConstraint {
             if (v0.getSup() < 3)
                 eq(i,i+n);
             else if (v0.getInf() >= 3)
-                v1.instantiate(3,i+n);
+                v1.instantiate(3, this, false);
             if (v1.getSup() < 3)
                 eq(i,i+n);
-            if (v1.getInf() > v0.getInf()) v0.updateInf(v1.getInf(),i);
+            if (v1.getInf() > v0.getInf()) v0.updateInf(v1.getInf(), this, false);
         }
 
     }

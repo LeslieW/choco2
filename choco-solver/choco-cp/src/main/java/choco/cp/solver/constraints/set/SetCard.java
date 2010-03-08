@@ -62,7 +62,7 @@ public class SetCard extends AbstractBinSetIntSConstraint {
 			DisposableIntIterator it = v1.getDomain().getOpenDomainIterator();
             try{
                 while (it.hasNext())
-                    v1.addToKernel(it.next(), cIdx1);
+                    v1.addToKernel(it.next(), this, false);
             }finally {
                 it.dispose();
             }
@@ -76,7 +76,7 @@ public class SetCard extends AbstractBinSetIntSConstraint {
 			DisposableIntIterator it = v1.getDomain().getOpenDomainIterator();
             try{
                 while (it.hasNext())
-                    v1.remFromEnveloppe(it.next(), cIdx1);
+                    v1.remFromEnveloppe(it.next(), this, false);
             }finally {
                 it.dispose();
             }
@@ -94,7 +94,7 @@ public class SetCard extends AbstractBinSetIntSConstraint {
 					DisposableIntIterator it = v1.getDomain().getOpenDomainIterator();
                     try{
                         while (it.hasNext())
-                            v1.addToKernel(it.next(), cIdx1);
+                            v1.addToKernel(it.next(), this, false);
                     }finally{
                         it.dispose();
                     }
@@ -102,7 +102,7 @@ public class SetCard extends AbstractBinSetIntSConstraint {
 					DisposableIntIterator it = v1.getDomain().getOpenDomainIterator();
                     try{
                         while (it.hasNext())
-                            v1.remFromEnveloppe(it.next(), cIdx1);
+                            v1.remFromEnveloppe(it.next(), this, false);
                     }finally {
                         it.dispose();
                     }
@@ -116,7 +116,7 @@ public class SetCard extends AbstractBinSetIntSConstraint {
 					DisposableIntIterator it = v1.getDomain().getOpenDomainIterator();
                     try{
                         while (it.hasNext())
-                            v1.remFromEnveloppe(it.next(), cIdx1);
+                            v1.remFromEnveloppe(it.next(), this, false);
                     }finally {
                         it.dispose();
                     }
@@ -130,7 +130,7 @@ public class SetCard extends AbstractBinSetIntSConstraint {
 					DisposableIntIterator it = v1.getDomain().getOpenDomainIterator();
                     try{
                         while (it.hasNext())
-                            v1.addToKernel(it.next(), cIdx1);
+                            v1.addToKernel(it.next(), this, false);
                     }finally {
                         it.dispose();
                     }
@@ -154,7 +154,7 @@ public class SetCard extends AbstractBinSetIntSConstraint {
 	public void awakeOnkerAdditions(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
 		if (inf) {
 			int kerSize = v1.getKernelDomainSize();
-			v0.updateInf(kerSize, cIdx0);
+			v0.updateInf(kerSize, this, false);
 			reactOnSupAndKerEvents(kerSize);
 		}
 	}
@@ -162,7 +162,7 @@ public class SetCard extends AbstractBinSetIntSConstraint {
 	public void awakeOnEnvRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
 		if (sup) {
 			int envSize = v1.getEnveloppeDomainSize();
-			v0.updateSup(envSize, cIdx0);
+			v0.updateSup(envSize, this, false);
 			reactOnInfAndEnvEvents(envSize);
 		}
 	}
@@ -172,11 +172,11 @@ public class SetCard extends AbstractBinSetIntSConstraint {
 		if (varIdx == 1) {
 			int kerSize = v1.getKernelDomainSize();
 			if (inf && sup)
-				v0.instantiate(kerSize, cIdx0);
+				v0.instantiate(kerSize, this, false);
 			else if (inf)
-				v0.updateInf(kerSize, cIdx0);
+				v0.updateInf(kerSize, this, false);
 			else
-				v0.updateSup(kerSize, cIdx0);
+				v0.updateSup(kerSize, this, false);
 		} else {
 			filter();
 		}
@@ -210,12 +210,12 @@ public class SetCard extends AbstractBinSetIntSConstraint {
 
 	public void awake() throws ContradictionException {
 		if (inf && sup) {
-			v0.updateInf(v1.getKernelDomainSize(), cIdx0);
-			v0.updateSup(v1.getEnveloppeDomainSize(), cIdx0);
+			v0.updateInf(v1.getKernelDomainSize(), this, false);
+			v0.updateSup(v1.getEnveloppeDomainSize(), this, false);
 		} else if (inf) {
-			v0.updateInf(v1.getKernelDomainSize(), cIdx0);
+			v0.updateInf(v1.getKernelDomainSize(), this, false);
 		} else
-			v0.updateSup(v1.getEnveloppeDomainSize(), cIdx0);
+			v0.updateSup(v1.getEnveloppeDomainSize(), this, false);
         propagate();
     }
 

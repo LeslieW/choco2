@@ -26,6 +26,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.Couple;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.propagation.listener.SetPropagator;
 
@@ -36,7 +37,8 @@ import choco.kernel.solver.propagation.listener.SetPropagator;
  * Since : Choco 2.0.0
  *
  */
-public class SetVarEvent extends VarEvent<SetVarImpl> {
+@SuppressWarnings({"unchecked"})
+public class SetVarEvent <C extends AbstractSConstraint & SetPropagator> extends VarEvent<SetVarImpl> {
 
 	/**
 	 * Constants for the <i>eventType</i> bitvector: index of bit for events on SetVars
@@ -71,6 +73,7 @@ public class SetVarEvent extends VarEvent<SetVarImpl> {
 	 */
 	public void clear() {
 		this.eventType = EMPTYEVENT;
+        cause = null;
 		(modifiedVar.getDomain()).getEnveloppeDomain().clearDeltaDomain();
 		(modifiedVar.getDomain()).getKernelDomain().clearDeltaDomain();
 	}
@@ -79,7 +82,7 @@ public class SetVarEvent extends VarEvent<SetVarImpl> {
 	protected void freeze() {
 		(modifiedVar.getDomain()).getEnveloppeDomain().freezeDeltaDomain();
 		(modifiedVar.getDomain()).getKernelDomain().freezeDeltaDomain();
-		cause = NOEVENT;
+		cause = null;
 		eventType = 0;
 	}
 
@@ -113,7 +116,7 @@ public class SetVarEvent extends VarEvent<SetVarImpl> {
 		//if(LOGGER.isLoggable(Level.FINER)) {LOGGER.log(Level.FINER, "propagate {0}", this);}
 		// first, mark event
 		int evtType = eventType;
-		int evtCause = cause;
+		C evtCause = (C)cause;
 		freeze();
 
         if ((propagatedEvents & INSTSETEVENT) != 0 && (evtType & INSTSETEVENT) != 0)
@@ -143,13 +146,13 @@ public class SetVarEvent extends VarEvent<SetVarImpl> {
 	/**
 	 * Propagates the instantiation event
 	 */
-	public void propagateInstEvent(int evtCause) throws ContradictionException {
+	public void propagateInstEvent(C evtCause) throws ContradictionException {
 		SetVarImpl v = getModifiedVar();
-        DisposableIterator<Couple<? extends SetPropagator>> cit = v.getActiveConstraints(evtCause);
+        DisposableIterator<Couple<C>> cit = v.getActiveConstraints(evtCause);
 
         try{
             while(cit.hasNext()){
-                Couple<? extends SetPropagator> cc = cit.next();
+                Couple<C> cc = cit.next();
                 cc.c.awakeOnInst(cc.i);
             }
         }finally{
@@ -160,13 +163,13 @@ public class SetVarEvent extends VarEvent<SetVarImpl> {
 	/**
 	 * Propagates a set of value removals
 	 */
-	public void propagateKernelEvents(int evtCause) throws ContradictionException {
+	public void propagateKernelEvents(C evtCause) throws ContradictionException {
 		SetVarImpl v = getModifiedVar();
-        DisposableIterator<Couple<? extends SetPropagator>> cit = v.getActiveConstraints(evtCause);
+        DisposableIterator<Couple<C>> cit = v.getActiveConstraints(evtCause);
 
         try{
             while(cit.hasNext()){
-                Couple<? extends SetPropagator> cc = cit.next();
+                Couple<C> cc = cit.next();
                 cc.c.awakeOnkerAdditions(cc.i, this.getKerEventIterator());
             }
         }finally{
@@ -177,13 +180,13 @@ public class SetVarEvent extends VarEvent<SetVarImpl> {
 	/**
 	 * Propagates a set of value removals
 	 */
-	public void propagateEnveloppeEvents(int evtCause) throws ContradictionException {
+	public void propagateEnveloppeEvents(C evtCause) throws ContradictionException {
 		SetVarImpl v = getModifiedVar();
-        DisposableIterator<Couple<? extends SetPropagator>> cit = v.getActiveConstraints(evtCause);
+        DisposableIterator<Couple<C>> cit = v.getActiveConstraints(evtCause);
 
         try{
             while(cit.hasNext()){
-                Couple<? extends SetPropagator> cc = cit.next();
+                Couple<C> cc = cit.next();
                 cc.c.awakeOnEnvRemovals(cc.i, this.getEnvEventIterator());
 
             }

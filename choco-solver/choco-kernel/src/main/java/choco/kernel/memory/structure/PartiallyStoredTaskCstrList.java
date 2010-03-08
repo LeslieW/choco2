@@ -121,7 +121,7 @@ public final class PartiallyStoredTaskCstrList<C extends AbstractSConstraint & T
 
     private QuickIterator _quickIterator = null;
 
-    public DisposableIterator<Couple<C>> getActiveConstraint(int cstrCause){
+    public DisposableIterator<Couple<C>> getActiveConstraint(C cstrCause){
         QuickIterator iter = _quickIterator;
         if (iter != null && iter.reusable) {
             iter.init(events, cstrCause);
@@ -134,16 +134,16 @@ public final class PartiallyStoredTaskCstrList<C extends AbstractSConstraint & T
     private final class QuickIterator extends DisposableIterator<Couple<C>> {
         boolean reusable;
         PartiallyStoredIntVector event;
-        int cstrCause;
+        C cstrCause;
         DisposableIntIterator cit;
         Couple<C> cc  = new Couple<C>();
 
 
-        public QuickIterator(PartiallyStoredIntVector event, int cstrCause) {
+        public QuickIterator(PartiallyStoredIntVector event, C cstrCause) {
              init(event, cstrCause);
         }
 
-        public void init(PartiallyStoredIntVector event, int cstrCause){
+        public void init(PartiallyStoredIntVector event, C cstrCause){
             super.init();
             this.event = event;
             cit = event.getIndexIterator();
@@ -171,9 +171,10 @@ public final class PartiallyStoredTaskCstrList<C extends AbstractSConstraint & T
         public boolean hasNext() {
             while (cit.hasNext()) {
                 int idx = event.get(cit.next());
-                if (idx != cstrCause) {
-                    if (elements.get(idx).isActive()) {
-                        cc.init(elements.get(idx), indices.get(idx));
+                final C cstr = elements.get(idx);
+                if (cstr != cstrCause) {
+                    if (cstr.isActive()) {
+                        cc.init(cstr, indices.get(idx));
                         return true;
                     }
                 }

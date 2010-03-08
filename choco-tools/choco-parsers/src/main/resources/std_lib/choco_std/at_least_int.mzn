@@ -3,5 +3,14 @@
 %-----------------------------------------------------------------------------%
 
 predicate at_least_int(int: n, array[int] of var int: x, int: v) =
-    sum(i in index_set(x)) ( bool2int(x[i] == v) ) >= n;
+    global_at_least(n,x,v);
+
+%-----------------------------------------------------------------------------%
+
+% The implementation of the constraint in the choco solver.
+% This should not be called directly, instead the definition above should
+% be used.
+predicate global_at_least(int: n, array[int] of var int: x, int: v);
+
+%-----------------------------------------------------------------------------%
 

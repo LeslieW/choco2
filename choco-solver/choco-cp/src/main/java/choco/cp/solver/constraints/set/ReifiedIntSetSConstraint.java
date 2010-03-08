@@ -25,11 +25,11 @@ package choco.cp.solver.constraints.set;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.branch.Extension;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraintType;
 import choco.kernel.solver.constraints.set.AbstractMixedSetIntSConstraint;
 import choco.kernel.solver.propagation.PropagationEngine;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -111,6 +111,19 @@ public class ReifiedIntSetSConstraint extends AbstractMixedSetIntSConstraint{
         init();
     }
 
+    /**
+     * Adds a new extension.
+     *
+     * @param extensionNumber should use the number returned by getAbstractSConstraintExtensionNumber
+     */
+    @Override
+    public void addExtension(final int extensionNumber) {
+        super.addExtension(extensionNumber);
+        Extension ext = extensions[extensionNumber];
+        cons.setExtension(ext, extensionNumber);
+        oppositeCons.setExtension(ext, extensionNumber);
+    }
+
     public void init() {
         scopeCons = new int[cons.getNbVars()];
         scopeOCons = new int[oppositeCons.getNbVars()];
@@ -147,9 +160,9 @@ public class ReifiedIntSetSConstraint extends AbstractMixedSetIntSConstraint{
         Boolean isEntailed = cons.isEntailed();
         if (isEntailed != null) {
             if (isEntailed) {
-                bool.instantiate(1, cIndices[0]);
+                bool.instantiate(1, this, false);
             } else {
-                bool.instantiate(0, VarEvent.domOverWDegIdx(cIndices[0]));
+                bool.instantiate(0, this, true);
             }
         }
     }

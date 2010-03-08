@@ -41,7 +41,14 @@ public class ConstantLeaf extends INode implements ArithmNode {
 
 	public int cste;
 
-	public ConstantLeaf(int cste) {
+    /**
+     * To avoid useless array creation
+     */
+    private static IntDomainVar[] emptyArrayIS = new IntDomainVar[0];
+
+    private static IntegerVariable[] emptyArrayIM = new IntegerVariable[0];
+
+    public ConstantLeaf(int cste) {
 		super(NodeType.CONSTANTLEAF);
 		this.cste = cste;
 	}
@@ -55,11 +62,11 @@ public class ConstantLeaf extends INode implements ArithmNode {
 	}
 
 	public final IntDomainVar[] getScope(Solver s) {
-		return new IntDomainVar[0];
+		return emptyArrayIS;
 	}
 
 	public IntegerVariable[] getModelScope() {
-		return new IntegerVariable[0];
+		return emptyArrayIM;
 	}
 
 

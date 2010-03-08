@@ -44,7 +44,6 @@ import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.SConstraint;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import gnu.trove.TIntObjectHashMap;
@@ -358,7 +357,7 @@ public class PreProcessCPSolver extends CPSolver {
             while (it.hasNext()) {
                 IntegerVariable[] cl = it.next();
                 if (cl.length > 2) {
-                    m.addConstraint(allDifferent(cl));
+                    m.addConstraint("cp:bc", allDifferent(cl));
                     symb.setMaxClique(cl);
                     it.remove();
                 } else m.addConstraint(Choco.neq(cl[0],cl[1]));
@@ -760,7 +759,7 @@ public class PreProcessCPSolver extends CPSolver {
 						boolean cont = false;
 						worldPush();
 						try {
-							v.instantiate(val, VarEvent.NOCAUSE);
+							v.instantiate(val, null, true);
 							propagate();
 						} catch (ContradictionException e) {
 							cont = true;

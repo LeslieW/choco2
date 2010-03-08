@@ -43,18 +43,18 @@ public class BinOr extends AbstractBinIntSConstraint {
     }    
 
     public void propagate() throws ContradictionException {
-		if (v0.isInstantiatedTo(0)) v1.instantiate(1, cIdx1);
-		if (v1.isInstantiatedTo(0)) v0.instantiate(1, cIdx0);
+		if (v0.isInstantiatedTo(0)) v1.instantiate(1, this, false);
+		if (v1.isInstantiatedTo(0)) v0.instantiate(1, this, false);
 	}
 
 	public void awakeOnInst(int idx) throws ContradictionException {
 		int val;
 		if (idx == 0) {
 			val = v0.getVal();
-			if (val == 0) v1.instantiate(1, cIdx1);
+			if (val == 0) v1.instantiate(1, this, false);
 		} else {
 			val = v1.getVal();
-			if (val == 0) v0.instantiate(1, cIdx0);
+			if (val == 0) v0.instantiate(1, this, false);
 		}
 	}
 

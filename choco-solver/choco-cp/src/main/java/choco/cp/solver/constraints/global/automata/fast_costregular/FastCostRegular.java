@@ -344,8 +344,8 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
         double zinf = this.graph.GNodes.spft.get(this.graph.sourceIndex);
         double zsup = this.graph.GNodes.lpfs.get(this.graph.tinkIndex);
 
-        z.updateInf((int)Math.ceil(zinf),this.getConstraintIdx(vs.length));
-        z.updateSup((int)Math.floor(zsup),this.getConstraintIdx(vs.length));
+        z.updateInf((int)Math.ceil(zinf), this, false);
+        z.updateSup((int)Math.floor(zsup), this, false);
 
         DisposableIntIterator it = this.graph.inGraph.getIterator();
         //for (int id = this.graph.inGraph.nextSetBit(0) ; id >=0 ; id = this.graph.inGraph.nextSetBit(id+1))  {
@@ -548,8 +548,8 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
         double zinf = this.graph.GNodes.spft.get(this.graph.sourceIndex);
         double zsup = this.graph.GNodes.lpfs.get(this.graph.tinkIndex);
 
-        z.updateInf((int)Math.ceil(zinf),this.getConstraintIdx(vs.length));
-        z.updateSup((int)Math.floor(zsup),this.getConstraintIdx(vs.length));
+        z.updateInf((int)Math.ceil(zinf), this, false);
+        z.updateSup((int)Math.floor(zsup), this, false);
 
 
 

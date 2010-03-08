@@ -178,6 +178,18 @@ public class ResolutionTest {
         }
             }
 
+    @Test
+    public void patatTest() {
+        XmlModel xm = new XmlModel();
+        args[1] = args[1] + "/normalized-patat-02-small-2.xml";
+        try {
+            xm.generate(args);
+        } catch (Exception e) {
+            LOGGER.severe(e.toString());
+            Assert.fail();
+        }
+            }
+
 
     //***************************************************************************************
 /**

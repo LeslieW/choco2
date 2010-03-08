@@ -184,7 +184,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 
 	@Override
 	public final boolean pack(int item, int bin) throws ContradictionException {
-		boolean res = svars[bin].addToKernel(item, set_cIndices[bin]);
+		boolean res = svars[bin].addToKernel(item, this, false);
 		if(bins[item].canBeInstantiatedTo(bin)) {
 			final DisposableIntIterator iter = bins[item].getDomain().getIterator();
 			//remove from other env
@@ -192,13 +192,13 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 				while(iter.hasNext()) {
 					final int b= iter.next();
 					if(bin!=b) {
-						res |= svars[b].remFromEnveloppe(item, set_cIndices[b]);
+						res |= svars[b].remFromEnveloppe(item, this, false);
 					}
 				}
 			}finally {
 				iter.dispose();
 			}
-			res |= bins[item].instantiate(bin, getItemCindice(item));
+			res |= bins[item].instantiate(bin, this, false);
 		}else {
 			LOGGER.warning("should not raise a contradiction here.");
 			this.fail();
@@ -208,11 +208,11 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 
 	@Override
 	public final boolean remove(int item, int bin) throws ContradictionException {
-		boolean res = svars[bin].remFromEnveloppe(item, set_cIndices[bin]);
-		res |= bins[item].removeVal(bin, getItemCindice(item));
+		boolean res = svars[bin].remFromEnveloppe(item, this, false);
+		res |= bins[item].removeVal(bin, this, false);
 		if(bins[item].isInstantiated()) {
 			final int b = bins[item].getVal();
-			svars[b].addToKernel(item, set_cIndices[b]);
+			svars[b].addToKernel(item, this, false);
 		}
 		return res;
 	}
@@ -220,7 +220,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 
 	@Override
 	public final boolean updateInfLoad(int bin, int load) throws ContradictionException {
-		return loads[bin].updateInf(load, int_cIndices[bin]);
+		return loads[bin].updateInf(load, this, false);
 
 	}
 
@@ -228,8 +228,8 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 	public final boolean updateNbNonEmpty(int min, int max) throws ContradictionException {
 		boolean res = false;
 		final int idx = ivars.length-1;
-		ivars[idx].updateInf( min, int_cIndices[idx]);
-		if( ivars[idx].updateSup(max, int_cIndices[idx])
+		ivars[idx].updateInf( min, this, false);
+		if( ivars[idx].updateSup(max, this, false)
 				&& flags.contains(SettingType.LAST_BINS_EMPTY)) {
 			for (int b = max; b < getNbBins(); b++) {
 				final DisposableIntIterator iter = svars[b].getDomain().getEnveloppeIterator();
@@ -247,7 +247,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 
 	@Override
 	public final boolean updateSupLoad(int bin, int load) throws ContradictionException {
-		return loads[bin].updateSup(load, int_cIndices[bin]);
+		return loads[bin].updateSup(load, this, false);
 	}
 
 	//****************************************************************//
@@ -263,19 +263,19 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 	}
 
 	protected final void checkBounds(int item) throws ContradictionException {
-		bins[item].updateInf(0, getItemCindice(item));
-		bins[item].updateSup(svars.length-1, getItemCindice(item));
+		bins[item].updateInf(0, this, false);
+		bins[item].updateSup(svars.length-1, this, false);
 	}
 
 	protected final void checkEnveloppes() throws ContradictionException {
 		for (int bin = 0; bin < svars.length; bin++) {
 			int inf;
 			while( (inf = svars[bin].getEnveloppeInf())<0) {
-				svars[bin].remFromEnveloppe(inf,set_cIndices[bin]);
+				svars[bin].remFromEnveloppe(inf, this, false);
 			}
 			int sup;
 			while( (sup = svars[bin].getEnveloppeSup()) > bins.length-1) {
-				svars[bin].remFromEnveloppe(sup,set_cIndices[bin]);
+				svars[bin].remFromEnveloppe(sup, this, false);
 			}
 		}
 	}
@@ -288,12 +288,12 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 			if(bins[item].isInstantiated()) {
 				//the item is packed
 				final int b0 = bins[item].getVal();
-				svars[b0].addToKernel(item,set_cIndices[b0]);
+				svars[b0].addToKernel(item, this, false);
 				for (int b = 0; b < b0; b++) {
-					svars[b].remFromEnveloppe(item,set_cIndices[b]);
+					svars[b].remFromEnveloppe(item, this, false);
 				}
 				for (int b = b0+1; b < svars.length; b++) {
-					svars[b].remFromEnveloppe(item,set_cIndices[b]);
+					svars[b].remFromEnveloppe(item, this, false);
 				}
 			}else {
 				for (int bin = 0; bin < svars.length; bin++) {
@@ -301,15 +301,15 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 						//item could be packed here
 						if(svars[bin].isInDomainKernel(item)) {
 							//item is packed
-							bins[item].instantiate(bin, getItemCindice(item));
+							bins[item].instantiate(bin, this, false);
 						}else if(! bins[item].canBeInstantiatedTo(bin)) {
 							//in fact, channeling fails
-							svars[bin].remFromEnveloppe(item,set_cIndices[bin]);
+							svars[bin].remFromEnveloppe(item, this, false);
 						}
 						//channeling ok enveloppe-domain
 					}else {
 						//otherwise remove from domain
-						bins[item].removeVal(bin, getItemCindice(item));
+						bins[item].removeVal(bin, this, false);
 					}
 				}
 			}
@@ -319,11 +319,11 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 
 	@Override
 	public void awakeOnEnv(int varIdx, int x) throws ContradictionException {
-		bins[x].removeVal(varIdx, getItemCindice(x));
+		bins[x].removeVal(varIdx, this, false);
 		//if the item is packed, update variables
 		if(bins[x].isInstantiated()) {
 			final int b = bins[x].getVal();
-			svars[b].addToKernel(x, set_cIndices[b]);
+			svars[b].addToKernel(x, this, false);
 		}
 		this.constAwake(false);
 	}
@@ -335,7 +335,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 			try{
 				while(iter.hasNext()) {
 					final int b=iter.next();
-					svars[b].remFromEnveloppe(item, set_cIndices[b]);
+					svars[b].remFromEnveloppe(item, this, false);
 				}
 			}finally {
 				iter.dispose();
@@ -390,7 +390,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 		}else if(isItemEvent(varIdx)){
 			final int item=getItemIndex(varIdx);
 			final int b = bins[item].getVal();
-			svars[b].addToKernel(item, set_cIndices[b]);
+			svars[b].addToKernel(item, this, false);
 			checkDeltaDomain(item);
 		}
 		constAwake(false);
@@ -407,7 +407,7 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 	public void awakeOnRem(int varIdx, int val) throws ContradictionException {
 		if(isItemEvent(varIdx)) {
 			//remove from associated enveloppe
-			svars[val].remFromEnveloppe(getItemIndex(varIdx), set_cIndices[val]);
+			svars[val].remFromEnveloppe(getItemIndex(varIdx), this, false);
 		}
 		this.constAwake(false);
 	}

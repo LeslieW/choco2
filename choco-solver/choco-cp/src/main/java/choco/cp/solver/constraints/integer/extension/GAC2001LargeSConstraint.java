@@ -103,7 +103,7 @@ public class GAC2001LargeSConstraint extends CspLargeSConstraint {
                 if (currentSupport != null) {
                     setSupport(indexVar, val, currentSupport);
                 } else {
-                    vars[indexVar].removeVal(val, cIndices[indexVar]);
+                    vars[indexVar].removeVal(val, this, false);
                 }
             }
     }
@@ -120,7 +120,7 @@ public class GAC2001LargeSConstraint extends CspLargeSConstraint {
                 if (currentSupport != null) {
                     setSupport(indexVar, val, currentSupport);
                 } else {
-                    vars[indexVar].removeVal(val, cIndices[indexVar]);
+                    vars[indexVar].removeVal(val, this, false);
                 }
             }
     }

@@ -2,6 +2,7 @@ package choco.cp.solver.variables.integer;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomain;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -162,14 +163,14 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      * Returns a boolean indicating whether the call indeed added new information
      *
      * @param x   The new lower bound.
-     * @param idx The index of the constraint (among all constraints linked to
-     *            the variable) responsible for the update.
+     * @param cause
+     * @param forceAwake
      */
 
-    public boolean updateInf(int x, int idx) throws ContradictionException {
+    public boolean updateInf(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
     	//logOnInf(x);
     	if(x > 0){
-            return booldomain.instantiate(x, idx);
+            return booldomain.instantiate(x, cause, forceAwake);
         }
         return false;
     }
@@ -180,14 +181,14 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      * Returns a boolean indicating whether the call indeed added new information.
      *
      * @param x   The new upper bound
-     * @param idx The index of the constraint (among all constraints linked to
-     *            the variable) responsible for the update
+     * @param cause
+     * @param forceAwake
      */
 
-    public boolean updateSup(int x, int idx) throws ContradictionException {
+    public boolean updateSup(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
     	//logOnSup(x); 
     	if(x < 1){
-            return booldomain.instantiate(x, idx);
+            return booldomain.instantiate(x, cause, forceAwake);
         }
         return false;
     }
@@ -204,15 +205,16 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      * Returns a boolean indicating whether the call indeed added new information.
      *
      * @param x   The removed value
-     * @param idx The index of the constraint (among all constraints linked to the variable) responsible for the update
+     * @param cause
+     * @param forceAwake
      */
 
-    public boolean removeVal(int x, int idx) throws ContradictionException {
+    public boolean removeVal(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
     	//logOnRem(x); 
     	if (x == 0)
-            return booldomain.instantiate(1,idx);
+            return booldomain.instantiate(1, cause, forceAwake);
         else if (x == 1)
-            return booldomain.instantiate(0,idx);
+            return booldomain.instantiate(0, cause, forceAwake);
         return false;
     }
 
@@ -223,13 +225,13 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      *
      * @param a   the first removed value
      * @param b   the last removed value
-     * @param idx the index of the constraint (among all constraints linked to the variable)
-     *            responsible for the update
+     * @param cause
+     * @param forceAwake
      */
 
-    public boolean removeInterval(int a, int b, int idx) throws ContradictionException {
+    public boolean removeInterval(int a, int b, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
     	//logOnRemInt(a, b);
-    	return booldomain.removeInterval(a, b, idx);
+    	return booldomain.removeInterval(a, b, cause, forceAwake);
     }
 
     /**
@@ -237,13 +239,13 @@ public class BooleanVarImpl extends IntDomainVarImpl {
      * Returns a boolean indicating whether the call indeed added new information.
      *
      * @param x   the new upper bound
-     * @param idx the index of the constraint (among all constraints linked to the
-     *            variable) responsible for the update
+     * @param cause
+     * @param forceAwake
      */
 
-    public final boolean instantiate(int x, int idx) throws ContradictionException {
+    public final boolean instantiate(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
     	//logOnInst(x);
-    	return booldomain.instantiate(x, idx);
+    	return booldomain.instantiate(x, cause, forceAwake);
     }
 
 

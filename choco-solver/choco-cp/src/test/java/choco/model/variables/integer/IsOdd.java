@@ -57,7 +57,7 @@ public class IsOdd extends AbstractUnIntSConstraint {
                 while(it.hasNext()){
                     int val = it.next();
                     if(val%2==0){
-                        v0.removeVal(val, cIdx0);
+                        v0.removeVal(val, this, false);
                     }
                 }
             }finally {

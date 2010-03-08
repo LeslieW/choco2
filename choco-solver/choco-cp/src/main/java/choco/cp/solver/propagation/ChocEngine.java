@@ -26,6 +26,7 @@ package choco.cp.solver.propagation;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.cp.solver.variables.set.SetVarEvent;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.AbstractPropagationEngine;
 import choco.kernel.solver.propagation.Propagator;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
@@ -114,37 +115,40 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * Posts an IncInf event
 	 *
 	 * @param v   The variable the bound is modified.
-	 * @param idx The index of the constraint which is responsible of the var.
-	 */
+     * @param constraint
+     * @param forceAwake
+     */
 
-	public final void postUpdateInf(final IntDomainVar v, final int idx) {
-		postEvent(v, idx, IntVarEvent.INCINF);
+	public final void postUpdateInf(final IntDomainVar v, final SConstraint constraint, final boolean forceAwake) {
+		postEvent(v, IntVarEvent.INCINF, constraint, forceAwake);
 	}
 
 	/**
 	 * Posts a DecSup event
 	 *
 	 * @param v   The variable the bound is modified.
-	 * @param idx The index of the constraint which is responsible of the var.
-	 */
+     * @param constraint
+     * @param forceAwake
+     */
 
-	public final void postUpdateSup(final IntDomainVar v, final int idx) {
-		postEvent(v, idx, IntVarEvent.DECSUP);
+	public final void postUpdateSup(final IntDomainVar v, final SConstraint constraint, final boolean forceAwake) {
+		postEvent(v, IntVarEvent.DECSUP, constraint, forceAwake);
 	}
 
 	/**
 	 * Private method for completing the bound var posting.
 	 *
 	 * @param basicEvt The basic event posted.
-	 * @param idx      The index of the constraint which is responsible of the var.
-	 */
+     * @param constraint
+     * @param forceAwake
+     */
 	// idee: - si on est "frozen", devenir en plus "redondant" (ie: double).
 	//       - par ailleurs, noter le changement (garder la vieille valeur de la borne ou
 	//       - devenir enqueued
-	public final void postEvent(final Var v, final int idx, final int basicEvt) {
+	public final void postEvent(final Var v, final int basicEvt, final SConstraint constraint, final boolean forceAwake) {
 		VarEvent<? extends Var> event = v.getEvent();
 		boolean alreadyEnqueued = event.isEnqueued();
-		event.recordEventTypeAndCause(basicEvt, idx);
+		event.recordEventTypeAndCause(basicEvt, constraint, forceAwake);
 		if (!alreadyEnqueued) {
 			varEventQueue[event.getPriority()].pushEvent(event);
 		} else {
@@ -157,11 +161,12 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * Posts an Inst var.
 	 *
 	 * @param v   The variable that is instantiated.
-	 * @param idx The index of the constraint which is responsible of the var.
-	 */
+     * @param constraint
+     * @param forceAwake
+     */
 
-	public final void postInstInt(final IntDomainVar v, final int idx) {
-		postEvent(v, idx, IntVarEvent.INSTINT);
+	public final void postInstInt(final IntDomainVar v, final SConstraint constraint, final boolean forceAwake) {
+		postEvent(v, IntVarEvent.INSTINT, constraint, forceAwake);
 	}
 
 
@@ -169,62 +174,68 @@ public class ChocEngine extends AbstractPropagationEngine {
 	 * Posts an Remove var.
 	 *
 	 * @param v   The variable the value is removed from.
-	 * @param idx The index of the constraint which is responsible of the var.
-	 */
+     * @param constraint
+     * @param forceAwake
+     */
 
-	public final void postRemoveVal(final IntDomainVar v, int x, final int idx) {
-		postEvent(v, idx, IntVarEvent.REMVAL);
+	public final void postRemoveVal(final IntDomainVar v, int x, final SConstraint constraint, final boolean forceAwake) {
+		postEvent(v, IntVarEvent.REMVAL, constraint, forceAwake);
 	}
 
 	/**
 	 * Posts an lower bound event for a real variable.
 	 *
 	 * @param v the real variable
-	 * @param idx indice of the constraint that change the lower bound
-	 */
-	public final void postUpdateInf(final RealVar v, final int idx) {
-		postEvent(v, idx, RealVarEvent.INCINF);
+     * @param constraint
+     * @param forceAwake
+     */
+	public final void postUpdateInf(final RealVar v, final SConstraint constraint, final boolean forceAwake) {
+		postEvent(v, RealVarEvent.INCINF, constraint, forceAwake);
 	}
 
 	/**
 	 * Posts an upper bound event for a real variable
 	 *
 	 * @param v real variable
-	 * @param idx indice of the constraint that change the bound
-	 */
-	public final void postUpdateSup(final RealVar v, final int idx) {
-		postEvent(v, idx, RealVarEvent.DECSUP);
+     * @param constraint
+     * @param forceAwake
+     */
+	public final void postUpdateSup(final RealVar v, final SConstraint constraint, final boolean forceAwake) {
+		postEvent(v, RealVarEvent.DECSUP, constraint, forceAwake);
 	}
 
 	/**
 	 * Posts a removal event on a set variable
 	 *
 	 * @param v   the variable the enveloppe is modified
-	 * @param idx the index of the constraint that causes the event
-	 */
-	public final void postRemEnv(final SetVar v, final int idx) {
-		postEvent(v, idx, SetVarEvent.REMENV);
+     * @param constraint
+     * @param forceAwake
+     */
+	public final void postRemEnv(final SetVar v, final SConstraint constraint, final boolean forceAwake) {
+		postEvent(v, SetVarEvent.REMENV, constraint, forceAwake);
 	}
 
 	/**
 	 * Posts a kernel addition event on a set variable
 	 *
 	 * @param v   the variable the kernel is modified
-	 * @param idx the index of the constraint that causes the event
-	 */
-	public final void postAddKer(final SetVar v, final int idx) {
-		postEvent(v, idx, SetVarEvent.ADDKER);
+     * @param constraint
+     * @param forceAwake
+     */
+	public final void postAddKer(final SetVar v, final SConstraint constraint, final boolean forceAwake) {
+		postEvent(v, SetVarEvent.ADDKER, constraint, forceAwake);
 	}
 
 	/**
 	 * Posts an Inst event on a set var.
 	 *
 	 * @param v   The variable that is instantiated.
-	 * @param idx The index of the constraint which is responsible of the var.
-	 */
+     * @param constraint
+     * @param forceAwake
+     */
 
-	public final void postInstSet(final SetVar v, final int idx) {
-		postEvent(v, idx, SetVarEvent.INSTSET);
+	public final void postInstSet(final SetVar v, final SConstraint constraint, final boolean forceAwake) {
+		postEvent(v, SetVarEvent.INSTSET, constraint, forceAwake);
 	}
 
 	/**

@@ -23,9 +23,9 @@
 package choco.model.variables;
 
 import choco.Choco;
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.StringUtils;
@@ -36,19 +36,16 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import static junit.framework.Assert.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.HashSet;
+import static java.text.MessageFormat.format;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
-
-import static choco.Choco.*;
-import static java.text.MessageFormat.format;
-import static junit.framework.Assert.*;
 
 /**
  * @author Arnaud Malapert
@@ -114,9 +111,9 @@ public class VariablesTest {
 		IntDomainVar var = s.getVar(v);
 		try {
 			assertEquals("Enum Domain size",5, var.getDomainSize());
-			var.updateInf(6, IntVarEvent.NOCAUSE);
+			var.updateInf(6, null, true);
 			assertEquals("Enum Domain size",3, var.getDomainSize());
-			var.updateSup(8, IntVarEvent.NOCAUSE);
+			var.updateSup(8, null, true);
 			assertEquals("Enum Domain size",1, var.getDomainSize());
 			assertTrue("Enum Inst. Domain", var.isInstantiatedTo(7));
 		} catch (ContradictionException e) {

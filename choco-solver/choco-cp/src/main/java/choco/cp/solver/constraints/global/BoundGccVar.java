@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -26,7 +26,6 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -42,7 +41,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public class BoundGccVar extends AbstractLargeIntSConstraint {
 
-    int[] t; // Tree links
+    int[] treelinks; // Tree links
     int[] d; // Diffs between critical capacities
     int[] h; // Hall interval links
     int[] bounds;
@@ -111,7 +110,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
                       int nbCard, IEnvironment environment) {
         int range = nbCard - firstDomainValue + 1;
         this.nbVars = n;
-        t = new int[2 * n + 2];
+        treelinks = new int[2 * n + 2];
         d = new int[2 * n + 2];
         h = new int[2 * n + 2];
         bounds = new int[2 * n + 2];
@@ -263,25 +262,25 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         int i, j, w, x, y, z;
 
         for (i = 1; i <= nbBounds + 1; i++) {
-            t[i] = h[i] = i - 1;
+            treelinks[i] = h[i] = i - 1;
             d[i] = u.sum(bounds[i - 1], bounds[i] - 1);
         }
         for (i = 0; i < nbVars; i++) { // visit intervals in increasing max order
             // get interval bounds
             x = maxsorted[i].minrank;
             y = maxsorted[i].maxrank;
-            j = t[z = pathmax(t, x + 1)];
+            j = treelinks[z = pathmax(treelinks, x + 1)];
             if (--d[z] == 0) {
-                t[z = pathmax(t, t[z] = z + 1)] = j;
+                treelinks[z = pathmax(treelinks, treelinks[z] = z + 1)] = j;
             }
-            pathset(t, x + 1, z, z);
+            pathset(treelinks, x + 1, z, z);
             if (d[z] < u.sum(bounds[y], bounds[z] - 1)) {
                 this.fail();
             }
             if (h[x] > x) {
                 w = pathmax(h, h[x]);
 //                updateInf(maxsorted[i].var, bounds[w], maxsorted[i].idx);
-                maxsorted[i].var.updateInf(bounds[w], VarEvent.domOverWDegIdx(cIndices[maxsorted[i].idx]));
+                maxsorted[i].var.updateInf(bounds[w], this, true);
                 pathset(h, x, w, w);
             }
             if (d[z] == u.sum(bounds[y], bounds[z] - 1)) {
@@ -300,24 +299,24 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         int i, j, w, x, y, z;
 
         for (i = 0; i <= nbBounds; i++) {
-            d[i] = u.sum(bounds[i], bounds[t[i] = h[i] = i + 1] - 1);
+            d[i] = u.sum(bounds[i], bounds[treelinks[i] = h[i] = i + 1] - 1);
         }
         for (i = nbVars; --i >= 0;) { // visit intervals in decreasing min order
             // get interval bounds
             x = minsorted[i].maxrank;
             y = minsorted[i].minrank;
-            j = t[z = pathmin(t, x - 1)];
+            j = treelinks[z = pathmin(treelinks, x - 1)];
             if (--d[z] == 0) {
-                t[z = pathmin(t, t[z] = z - 1)] = j;
+                treelinks[z = pathmin(treelinks, treelinks[z] = z - 1)] = j;
             }
-            pathset(t, x - 1, z, z);
+            pathset(treelinks, x - 1, z, z);
             if (d[z] < u.sum(bounds[z], bounds[y] - 1)) {
                 this.fail();
             }
             if (h[x] < x) {
                 w = pathmin(h, h[x]);
 //                updateSup(minsorted[i].var, bounds[w] - 1, minsorted[i].idx);
-                minsorted[i].var.updateSup(bounds[w] - 1, cIndices[minsorted[i].idx]);
+                minsorted[i].var.updateSup(bounds[w] - 1, this, false);
                 pathset(h, x, w, w);
             }
             if (d[z] == u.sum(bounds[z], bounds[y] - 1)) {
@@ -348,9 +347,9 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
 
         for (i = w = nbBounds + 1; i >= 0; i--) {
             if (d[i] == 0) {
-                t[i] = w;
+                treelinks[i] = w;
             } else {
-                w = t[w] = i;
+                w = treelinks[w] = i;
             }
         }
 
@@ -358,7 +357,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
             // Get interval bounds
             x = maxsorted[i].minrank;
             y = maxsorted[i].maxrank;
-            j = t[z = pathmax(t, x + 1)];
+            j = treelinks[z = pathmax(treelinks, x + 1)];
             if (z != x + 1) {
                 // if bounds[z] - 1 belongs to a stable set,
                 // [bounds[x], bounds[z]) is a sub set of this stable set
@@ -378,7 +377,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
             } else {
                 // Decrease the capacity between the two bounds
                 if (--d[z] == 0) {
-                    t[z = pathmax(t, t[z] = z + 1)] = j;
+                    treelinks[z = pathmax(treelinks, treelinks[z] = z + 1)] = j;
                 }
 
                 // If the lower bound belongs to an unstable or a stable set,
@@ -400,7 +399,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
                     h[y] = j - 1;
                 }
             }
-            pathset(t, x + 1, z, z); // path compression
+            pathset(treelinks, x + 1, z, z); // path compression
         }
 
         // If there is a failure set
@@ -427,7 +426,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
             y = maxsorted[i].maxrank;
             if ((stableInterval[x] <= x) || (y > stableInterval[x])) {
 //                updateInf(maxsorted[i].var, l.skipNonNullElementsRight(bounds[newMin[i]]), maxsorted[i].idx);
-                maxsorted[i].var.updateInf(l.skipNonNullElementsRight(bounds[newMin[i]]), cIndices[maxsorted[i].idx]);
+                maxsorted[i].var.updateInf(l.skipNonNullElementsRight(bounds[newMin[i]]), this, false);
             }
         }
     }
@@ -441,12 +440,12 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         for (i = 0; i <= nbBounds; i++) {
             d[i] = l.sum(bounds[i], bounds[i + 1] - 1);
             if (d[i] == 0) {
-                t[i] = w;
+                treelinks[i] = w;
             } else {
-                w = t[w] = i;
+                w = treelinks[w] = i;
             }
         }
-        t[w] = i;
+        treelinks[w] = i;
         w = 0;
         for (i = 1; i <= nbBounds; i++) {
             if (d[i - 1] == 0) {
@@ -462,16 +461,16 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
             int y = minsorted[i].minrank;
 
             // Solve the lower bound model
-            int z = pathmin(t, x - 1);
-            int j = t[z];
+            int z = pathmin(treelinks, x - 1);
+            int j = treelinks[z];
 
             // If the variable is not in a discovered stable set
             // Possible optimization: Use the array stableInterval to perform this palm
             if (d[z] > l.sum(bounds[z], bounds[y] - 1)) {
                 if (--d[z] == 0) {
-                    t[z] = z - 1;
-                    z = pathmin(t, t[z]);
-                    t[z] = j;
+                    treelinks[z] = z - 1;
+                    z = pathmin(treelinks, treelinks[z]);
+                    treelinks[z] = j;
                 }
                 if (h[x] < x) {
                     w = pathmin(h, h[x]);
@@ -488,7 +487,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
                     h[y] = j + 1;
                 }
             }
-            pathset(t, x - 1, z, z);
+            pathset(treelinks, x - 1, z, z);
         }
         // For all variables that are not subsets of a stable set, shrink the upper bound
         for (i = n - 1; i >= 0; i--) {
@@ -496,7 +495,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
             int y = minsorted[i].maxrank;
             if ((stableInterval[x] <= x) || (y > stableInterval[x])) {
 //                updateSup(minsorted[i].var, l.skipNonNullElementsLeft(bounds[newMin[i]] - 1), minsorted[i].idx);
-                minsorted[i].var.updateSup(l.skipNonNullElementsLeft(bounds[newMin[i]] - 1), cIndices[minsorted[i].idx]);
+                minsorted[i].var.updateSup(l.skipNonNullElementsLeft(bounds[newMin[i]] - 1), this, false);
             }
         }
 
@@ -518,9 +517,9 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
     private void initCard() throws ContradictionException {
         for (int i = 0; i < range ; i++) {
             if(val_maxOcc[i].get() == 0){
-                card[i].instantiate(0, cIndices[i + nbVars]);
+                card[i].instantiate(0, this, false);
             }else{
-                card[i].updateInf(val_minOcc[i].get(), i+nbVars);
+                card[i].updateInf(val_minOcc[i].get(), this, false);
             }
         }
     }
@@ -617,7 +616,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
             nbInf--;
         }
         if (nbInf == getMaxOcc(inf - offset)) {
-            vars[i].updateInf(inf + 1, VarEvent.domOverWDegIdx(cIndices[i]));
+            vars[i].updateInf(inf + 1, this, true);
         }
     }
 
@@ -639,7 +638,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
             nbSup--;
         }
         if (nbSup == getMaxOcc(sup - offset)) {
-            vars[i].updateSup(sup - 1, VarEvent.domOverWDegIdx(cIndices[i]));
+            vars[i].updateSup(sup - 1, this, true);
         }
     }
 
@@ -652,7 +651,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         if (i < nbVars) {
             //update lower bounds of cardinalities
             val_minOcc[val - offset].add(1);
-            card[val - offset].updateInf(val_minOcc[val-offset].get(), cIndices[nbVars + val - offset]);
+            card[val - offset].updateInf(val_minOcc[val-offset].get(), this, false);
             filterBCOnInst(val);
         } else {
             filterBCOnInst(i - nbVars + offset);
@@ -674,7 +673,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         } else if (nbvalsure == getMaxOcc(val - offset)) {
             for (int j = 0; j < nbVars; j++) {
                 if (!vars[j].isInstantiatedTo(val)) {
-                    vars[j].removeVal(val, VarEvent.domOverWDegIdx(cIndices[j]));// cIndices[j]); not idempotent because data structure is maintained in awakeOnX methods
+                    vars[j].removeVal(val, this, true);// cIndices[j]); not idempotent because data structure is maintained in awakeOnX methods
                 }
             }
         }
@@ -687,7 +686,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         } else if (nbpos == getMinOcc(val - offset)) {
             for (int j = 0; j < nbVars; j++) {
                 if (vars[j].canBeInstantiatedTo(val)) {
-                    vars[j].instantiate(val, VarEvent.domOverWDegIdx(cIndices[j]));// cIndices[j]); not idempotent because data structure is maintained in awakeOnX methods
+                    vars[j].instantiate(val, this, true);// cIndices[j]); not idempotent because data structure is maintained in awakeOnX methods
                 }
             }
         }
@@ -703,7 +702,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
     public void awakeOnRem(int idx, int i) throws ContradictionException {
         if (idx < nbVars) {
             val_maxOcc[i - offset].add(-1);
-            card[i - offset].updateSup(val_maxOcc[i - offset].get(), VarEvent.domOverWDegIdx(cIndices[idx]));
+            card[i - offset].updateSup(val_maxOcc[i - offset].get(), this, true);
         }
     }
 
@@ -724,8 +723,8 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
 
             }
             for (int i = 0; i < range; i++) {
-                fixpoint |= card[i].updateSup(nbVars - (lb - card[i].getInf()), cIndices[i + nbVars]);
-                fixpoint |= card[i].updateInf(nbVars - (ub - card[i].getSup()), cIndices[i + nbVars]);
+                fixpoint |= card[i].updateSup(nbVars - (lb - card[i].getInf()), this, false);
+                fixpoint |= card[i].updateInf(nbVars - (ub - card[i].getSup()), this, false);
             }
         }
     }

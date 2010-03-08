@@ -25,7 +25,6 @@ package choco.cp.solver.constraints.set;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.set.AbstractBinSetSConstraint;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.set.SetVar;
 
 
@@ -118,10 +117,10 @@ public class IsNotIncluded extends AbstractBinSetSConstraint {
 		int uniqueOutsider = findUniqueOutsider();
 		if (prune) {
 			if (v0.isInDomainKernel(uniqueOutsider)) {
-				v1.remFromEnveloppe(uniqueOutsider, VarEvent.domOverWDegIdx(cIdx1));
+				v1.remFromEnveloppe(uniqueOutsider, this, true);
 			}
 			if (!v1.isInDomainEnveloppe(uniqueOutsider)) {
-				v0.addToKernel(uniqueOutsider, VarEvent.domOverWDegIdx(cIdx0));
+				v0.addToKernel(uniqueOutsider, this, true);
 			}
 		}
 	}

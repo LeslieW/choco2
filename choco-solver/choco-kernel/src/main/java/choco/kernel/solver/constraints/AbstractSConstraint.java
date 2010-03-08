@@ -139,6 +139,16 @@ public abstract class AbstractSConstraint<V extends Var> extends Propagator impl
         return extensions[extensionNumber];
     }
 
+    public final void setExtension(Extension ext, int extensionNumber){
+        if (extensionNumber > extensions.length) {
+            Extension[] newArray = new Extension[extensions.length * 2];
+            System.arraycopy(extensions, 0, newArray, 0, extensions.length);
+            extensions = newArray;
+        }
+        extensions[extensionNumber] = ext;
+    }
+
+
     /**
      * Indicates if the constraint is entailed, from now on will be always satisfied
      *

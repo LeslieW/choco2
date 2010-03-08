@@ -63,11 +63,11 @@ public final class GreaterOrEqualXY_C extends AbstractBinIntSConstraint {
 
 
 	private final void updateInfV0() throws ContradictionException {
-		v0.updateInf(cste - v1.getSup(), this.cIdx0);
+		v0.updateInf(cste - v1.getSup(), this, false);
 	}
 
 	private final void updateInfV1() throws ContradictionException {
-		v1.updateInf( cste - v0.getSup(), this.cIdx1);
+		v1.updateInf( cste - v0.getSup(), this, false);
 	}
 	/**
 	 * The propagation on constraint awake events.

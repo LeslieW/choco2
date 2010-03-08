@@ -232,10 +232,10 @@ public class DistGeqIC extends ForbiddenRegion {
                 int oldSup = DVar.getSup();
                 int newSup = EvaluateMaximumDistance(k);
                 if (oldSup<=newSup) return false;
-                DVar.updateSup(newSup,0);
+                DVar.updateSup(newSup, this.stp.g_constraint, false);
                 if (stp.opt.debug) { System.out.println("DistGeqIC:"+this+" updateDistance:["+DVar.getInf()+","+DVar.getSup()+"]"); };
                 if ((DVar.getInf()>DVar.getSup()) || (DVar.getSup()<DVar.getInf())){
-                    stp.propagationEngine.raiseContradiction(null, ContradictionException.Type.UNKNOWN);
+                    stp.propagationEngine.raiseContradiction(null);
                 }
                 return true;
         }

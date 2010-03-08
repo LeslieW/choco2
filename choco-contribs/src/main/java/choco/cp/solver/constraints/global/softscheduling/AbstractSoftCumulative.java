@@ -163,12 +163,12 @@ public abstract class AbstractSoftCumulative extends AbstractLargeIntSConstraint
                 IntDomainVar s =  getStart(i);
                 IntDomainVar e =  getEnd(i);
                 IntDomainVar d =  getDuration(i);
-                fixPoint |= s.updateInf(e.getInf() - d.getSup(), cIndices[4 * i]);
-                fixPoint |= s.updateSup(e.getSup() - d.getInf(), cIndices[4 * i]);
-                fixPoint |= e.updateInf(s.getInf() + d.getInf(), cIndices[4 * i + 1]);
-                fixPoint |= e.updateSup(s.getSup() + d.getSup(), cIndices[4 * i + 1]);
-                fixPoint |= d.updateInf(e.getInf() - s.getSup(), cIndices[4 * i + 2]);
-                fixPoint |= d.updateSup(e.getSup() - s.getInf(), cIndices[4 * i + 2]);
+                fixPoint |= s.updateInf(e.getInf() - d.getSup(), this, false);
+                fixPoint |= s.updateSup(e.getSup() - d.getInf(), this, false);
+                fixPoint |= e.updateInf(s.getInf() + d.getInf(), this, false);
+                fixPoint |= e.updateSup(s.getSup() + d.getSup(), this, false);
+                fixPoint |= d.updateInf(e.getInf() - s.getSup(), this, false);
+                fixPoint |= d.updateSup(e.getSup() - s.getInf(), this, false);
             }
         }
     }

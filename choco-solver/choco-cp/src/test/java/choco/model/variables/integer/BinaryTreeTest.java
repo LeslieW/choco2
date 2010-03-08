@@ -206,7 +206,7 @@ public class BinaryTreeTest {
         s.worldPush();
         try {
             s.getVar(y).remVal(3);
-            s.getVar(y).instantiate(8, 0);
+            s.getVar(y).instantiate(8, null, false);
         } catch (ContradictionException e) {
             fail();
         }

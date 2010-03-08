@@ -27,7 +27,6 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBool;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.IRTask;
@@ -70,18 +69,18 @@ public abstract class AbstractCumulativeSConstraint extends AbstractResourceSCon
 	}
 	
 	public final boolean updateMinCapacity(final int val) throws ContradictionException {
-		return vars[indexCapacity].updateInf(val, cIndices[indexCapacity]);
+		return vars[indexCapacity].updateInf(val, this, false);
 	}
 
 	public final boolean updateMaxCapacity(final int val) throws ContradictionException {
-		return vars[indexCapacity].updateSup(val, cIndices[indexCapacity]);
+		return vars[indexCapacity].updateSup(val, this, false);
 	}
 
 	public final boolean updateMinConsumption(final int val) throws ContradictionException {
-		return vars[indexConsumption].updateInf(val, cIndices[indexConsumption]);
+		return vars[indexConsumption].updateInf(val, this, false);
 	}
 	public final boolean updateMaxConsumption(final int val) throws ContradictionException {
-		return vars[indexConsumption].updateSup(val, cIndices[indexConsumption]);
+		return vars[indexConsumption].updateSup(val, this, false);
 	}
 
 

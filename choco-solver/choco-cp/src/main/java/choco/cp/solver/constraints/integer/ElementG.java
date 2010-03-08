@@ -106,7 +106,7 @@ public class ElementG extends AbstractBinIntSConstraint {
   public void awakeOnInst(int i) throws ContradictionException {
     if (i == 0) {
     	if (this.v0.getVal() - 1 < this.lval.length) 
-    		this.v1.instantiate(this.lval[this.v0.getVal()-1], this.cIdx1);
+    		this.v1.instantiate(this.lval[this.v0.getVal()-1], this, false);
     }
     else {
     	int maxVar = this.lastVarSup.get();
@@ -246,7 +246,7 @@ public class ElementG extends AbstractBinIntSConstraint {
 		  int index = iter.next();
 		  // bug "index - 1 > 0" change to "index - 1 >= 0"  [EBo 6/4/8]
 		  if ((index-1 < this.lval.length) && (index - 1 >= 0) && (!this.v1.canBeInstantiatedTo(this.lval[index - 1]))) {
-			  this.v0.removeVal(index,this.cIdx0);
+			  this.v0.removeVal(index, this, false);
 			  v0DomainSize = v0DomainSize - 1;
 		  } 
 	  } 
@@ -264,7 +264,7 @@ public class ElementG extends AbstractBinIntSConstraint {
 				  firstPos[i] = j;
 			  }
 			  if ((occur[i] == 1) && (!this.v0.canBeInstantiatedTo(firstPos[i]))) {
-				  this.v1.removeVal(value[i], this.cIdx1);
+				  this.v1.removeVal(value[i], this, false);
 				  v1DomainSize = v1DomainSize - 1;
 			  } 	  /* sinon, firstPos est mis a une véritable première position de v , cas 1-1-1 */
 		  }
@@ -272,13 +272,13 @@ public class ElementG extends AbstractBinIntSConstraint {
 
 	  /* Elegage des bornes d'Index et enregistrement des premieres valeurs pour LastIndex */
 	  if (this.v0.getInf() < 1) {
-		  this.v0.updateInf(1,this.cIdx0);
+		  this.v0.updateInf(1, this, false);
 		  this.lastIndexInf = environment.makeInt(1);
 	  } else {
 		  this.lastIndexInf = environment.makeInt(this.v0.getInf());
 	  }
 	  if (this.lval.length < this.v0.getSup()) {
-		  this.v0.updateSup(this.lval.length, this.cIdx0);
+		  this.v0.updateSup(this.lval.length, this, false);
 		  this.lastIndexSup = environment.makeInt(this.lval.length);
 	  } else {
 		  this.lastIndexSup = environment.makeInt(this.v0.getSup());
@@ -286,13 +286,13 @@ public class ElementG extends AbstractBinIntSConstraint {
 	  
 	  /* Elegage des bornes de Var et enregistrement des premieres valeurs pour LastVar */
 	  if (offset > this.v1.getInf()) {
-		  this.v1.updateInf(offset, this.cIdx1);
+		  this.v1.updateInf(offset, this, false);
 		  this.lastVarInf = environment.makeInt(offset);
 	  } else {
 		  this.lastVarInf = environment.makeInt(this.v1.getInf());
 	  }
 	  if (this.v1.getSup() > (heigth + offset - 1)) {
-		  this.v1.updateSup(heigth + offset - 1, this.cIdx1);
+		  this.v1.updateSup(heigth + offset - 1, this, false);
 		  this.lastVarSup = environment.makeInt(heigth + offset - 1);
 	  } else {
 		  this.lastVarSup = environment.makeInt(this.v1.getSup());
@@ -302,7 +302,7 @@ public class ElementG extends AbstractBinIntSConstraint {
 	  		v in Var but not in Tableau => remove v from Var */
 	  for (int i=offset;i<heigth+offset-1;i++) { /* on balaie les valeurs restantes de Var */
 		  if (this.v1.canBeInstantiatedTo(i) && (redirect[i - offset] == -1)) {
-			  this.v1.removeVal(i, this.cIdx1);			  
+			  this.v1.removeVal(i, this, false);
 			  v1DomainSize = v1DomainSize - 1;
 		  }
 	  }
@@ -340,7 +340,7 @@ public class ElementG extends AbstractBinIntSConstraint {
 //	      if (j > this.lval.length) {  // Bug EBo 6/4/8 on testait max de lval mais pas max de dom(Index)
 		  if ( (j > this.lval.length) || (j > this.v0.getSup())) {	
 			  if (this.v1.canBeInstantiatedTo(val)) {
-				  this.v1.removeVal(val,this.cIdx1);  		  
+				  this.v1.removeVal(val, this, false);
 				  v1DomainSize = v1DomainSize - 1;
 				  this.domainSize[1].set(v1DomainSize);
 			  }
@@ -362,7 +362,7 @@ public class ElementG extends AbstractBinIntSConstraint {
 //		      if ((index - 1 < this.lval.length) && (index - 1 > 0) && (this.lval[index-1] == v)) {				  
 			  	if ((index - 1 < this.lval.length) && (index - 1 >= 0) && (this.lval[index-1] == v)) {				  
 			  		if (this.v0.canBeInstantiatedTo(index)) {
-			  			this.v0.removeVal(index,this.cIdx0);
+			  			this.v0.removeVal(index, this, false);
 			  			v0DomainSize = v0DomainSize - 1;
 			  			this.domainSize[0].set(v0DomainSize);
 			  		}

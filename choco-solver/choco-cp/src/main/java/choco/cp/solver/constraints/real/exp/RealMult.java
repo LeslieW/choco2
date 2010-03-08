@@ -23,7 +23,6 @@
 package choco.cp.solver.constraints.real.exp;
 
 import choco.kernel.solver.ContradictionException;
-import static choco.kernel.solver.ContradictionException.Type.DOMAIN;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.real.RealExp;
 import choco.kernel.solver.constraints.real.exp.AbstractRealBinTerm;
@@ -51,13 +50,13 @@ public class RealMult extends AbstractRealBinTerm {
   public void project() throws ContradictionException {
     RealInterval res = RealMath.odiv_wrt(this, exp2, exp1);
     if (res.getInf() > res.getSup()) {
-      this.solver.getPropagationEngine().raiseContradiction(this, DOMAIN);
+      this.solver.getPropagationEngine().raiseContradiction(this);
     }
     exp1.intersect(res);
 
     res = RealMath.odiv_wrt(this, exp1, exp2);
     if (res.getInf() > res.getSup()) {
-      this.solver.getPropagationEngine().raiseContradiction(this, DOMAIN);
+      this.solver.getPropagationEngine().raiseContradiction(this);
     }
     exp2.intersect(res);
   }

@@ -52,7 +52,7 @@ public class SetEq extends AbstractBinSetSConstraint {
 		DisposableIntIterator it0 = v0.getDomain().getKernelIterator();
 		try{
             while (it0.hasNext()) {
-                v1.addToKernel(it0.next(), cIdx1);
+                v1.addToKernel(it0.next(), this, false);
             }
         }finally {
             it0.dispose();
@@ -60,7 +60,7 @@ public class SetEq extends AbstractBinSetSConstraint {
 		it0 = v1.getDomain().getKernelIterator();
         try{
             while (it0.hasNext()) {
-                v0.addToKernel(it0.next(), cIdx0);
+                v0.addToKernel(it0.next(), this, false);
             }
         }finally {
             it0.dispose();
@@ -70,7 +70,7 @@ public class SetEq extends AbstractBinSetSConstraint {
             while (it0.hasNext()) {
                 int val = it0.next();
                 if (!v1.isInDomainEnveloppe(val)) {
-                    v0.remFromEnveloppe(val, cIdx0);
+                    v0.remFromEnveloppe(val, this, false);
                 }
             }
         }finally {
@@ -81,7 +81,7 @@ public class SetEq extends AbstractBinSetSConstraint {
             while (it0.hasNext()) {
                 int val = it0.next();
                 if (!v0.isInDomainEnveloppe(val)) {
-                    v1.remFromEnveloppe(val, cIdx1);
+                    v1.remFromEnveloppe(val, this, false);
                 }
             }
         }finally {
@@ -92,18 +92,18 @@ public class SetEq extends AbstractBinSetSConstraint {
 	@Override
 	public void awakeOnKer(int varIdx, int x) throws ContradictionException {
 		if (varIdx == 0) {
-			v1.addToKernel(x, cIdx1);
+			v1.addToKernel(x, this, false);
 		} else {
-			v0.addToKernel(x, cIdx0);
+			v0.addToKernel(x, this, false);
 		}
 	}
 
 	@Override
 	public void awakeOnEnv(int varIdx, int x) throws ContradictionException {
 		if (varIdx == 0) {
-			v1.remFromEnveloppe(x, cIdx1);
+			v1.remFromEnveloppe(x, this, false);
 		} else {
-			v0.remFromEnveloppe(x, cIdx1);
+			v0.remFromEnveloppe(x, this, false);
 		}
 	}
 

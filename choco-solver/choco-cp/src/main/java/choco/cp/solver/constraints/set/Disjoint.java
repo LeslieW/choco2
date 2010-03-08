@@ -52,7 +52,7 @@ public class Disjoint extends AbstractBinSetSConstraint {
 			DisposableIntIterator it1 = v0.getDomain().getKernelIterator();
             try{
                 while (it1.hasNext()) {
-                    v1.remFromEnveloppe(it1.next(), cIdx1);
+                    v1.remFromEnveloppe(it1.next(), this, false);
                 }
             }finally {
                 it1.dispose();
@@ -61,7 +61,7 @@ public class Disjoint extends AbstractBinSetSConstraint {
 			DisposableIntIterator it2 = v1.getDomain().getKernelIterator();
             try{
                 while (it2.hasNext()) {
-                    v0.remFromEnveloppe(it2.next(), cIdx0);
+                    v0.remFromEnveloppe(it2.next(), this, false);
                 }
             }finally {
                 it2.dispose();
@@ -71,9 +71,9 @@ public class Disjoint extends AbstractBinSetSConstraint {
 
 	public void awakeOnKer(int varIdx, int x) throws ContradictionException {
 		if (varIdx == 0) {
-			v1.remFromEnveloppe(x, cIdx1);
+			v1.remFromEnveloppe(x, this, false);
 		} else
-			v0.remFromEnveloppe(x, cIdx0);
+			v0.remFromEnveloppe(x, this, false);
 	}
 
 	public void awakeOnEnvRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {

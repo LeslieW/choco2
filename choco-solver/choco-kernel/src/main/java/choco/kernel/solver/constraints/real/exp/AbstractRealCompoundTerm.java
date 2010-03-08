@@ -25,10 +25,8 @@ package choco.kernel.solver.constraints.real.exp;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateDouble;
 import choco.kernel.solver.ContradictionException;
-import static choco.kernel.solver.ContradictionException.Type.DOMAIN;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.real.RealExp;
-import choco.kernel.solver.propagation.event.VarEvent;
 import choco.kernel.solver.variables.real.RealInterval;
 
 /**
@@ -76,14 +74,10 @@ public abstract class AbstractRealCompoundTerm implements RealExp {
   }
 
   public void intersect(RealInterval interval) throws ContradictionException {
-    intersect(interval, VarEvent.NOCAUSE);
-  }
-
-  public void intersect(RealInterval interval, int index) throws ContradictionException {
     if (interval.getInf() > inf.get()) inf.set(interval.getInf());
     if (interval.getSup() < sup.get()) sup.set(interval.getSup());
     if (inf.get() > sup.get()) {
-      this.solver.getPropagationEngine().raiseContradiction(this, DOMAIN);
+      this.solver.getPropagationEngine().raiseContradiction(this);
     }
   }
 

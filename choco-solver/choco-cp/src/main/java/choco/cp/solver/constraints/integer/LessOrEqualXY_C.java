@@ -64,11 +64,11 @@ public final class LessOrEqualXY_C extends AbstractBinIntSConstraint {
 
 
 	private final void updateSupV0() throws ContradictionException {
-		v0.updateSup(cste - v1.getInf(), this.cIdx0);
+		v0.updateSup(cste - v1.getInf(), this, false);
 	}
 
 	private final void updateSupV1() throws ContradictionException {
-		v1.updateSup( cste - v0.getInf(), this.cIdx1);
+		v1.updateSup( cste - v0.getInf(), this, false);
 	}
 	/**
 	 * The propagation on constraint awake events.
