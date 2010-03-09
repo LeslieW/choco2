@@ -1,9 +1,5 @@
 package choco.model.constraints.integer;
 
-import junit.framework.Assert;
-
-import org.junit.Test;
-
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -11,6 +7,9 @@ import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.ContradictionException;
+import junit.framework.Assert;
+import org.junit.Test;
 
 public class BoolSumTest {
 
@@ -70,5 +69,27 @@ public class BoolSumTest {
 			Assert.assertEquals(sols1[i], sols2[ sols1.length - i-1]);
 		}
 	
+	}
+
+    @Test
+	public void testEq(){
+        final Model m = new CPModel();
+		m.addConstraint(Choco.eq(sum, 1));
+		final CPSolver s =new CPSolver();
+		s.read(m);
+        try{
+            s.getVar(bvars[0]).setVal(0);
+            s.getVar(bvars[2]).setVal(0);
+            s.getVar(bvars[3]).setVal(0);
+            s.propagate();
+        }catch (ContradictionException ignored){
+            Assert.fail();
+        }
+        try{
+            s.getVar(bvars[1]).instantiate(0, null, false);
+            s.getVar(bvars[4]).instantiate(0, null, false);
+            s.propagate();
+            Assert.fail("Wrong solution");
+        }catch (ContradictionException ignored){}
 	}
 }
