@@ -409,7 +409,7 @@ public class TestAlternativeResources {
 
 	@Test
 	public void cosmicTest() {
-		ChocoLogging.setVerbosity(Verbosity.DEFAULT);
+		//ChocoLogging.setVerbosity(Verbosity.DEFAULT);
 		CPModel model = createModelJobARes1();
 		int obj = minimizeMakespan(model);
 		int nbsols = solveAll(model);

@@ -35,7 +35,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 public final class BoolSumStructure {
 
 	protected final IntDomainVar[] vars;
-	
+
 	protected final AbstractSConstraint<?> cstr;
 	/**
 	 * The number of variables instantiated to zero in the sum
@@ -64,7 +64,7 @@ public final class BoolSumStructure {
 		nbo = environment.makeInt(0);
 	}
 
-	
+
 	public final IntDomainVar[] getBoolVars() {
 		return vars;
 	}
@@ -102,7 +102,7 @@ public final class BoolSumStructure {
 		}
 		return true;
 	}
-	
+
 	public final boolean filterGeq() throws ContradictionException {
 		if(bValue == vars.length) {
 			putAllOne();
@@ -110,32 +110,40 @@ public final class BoolSumStructure {
 		}
 		return true;
 	}
-	
+
 	public final void putAllZero() throws ContradictionException {
+		int nbExpectedInst = bGap - nbz.get();
 		for (int i = 0; i < vars.length; i++) {
-			if (!vars[i].isInstantiated())
+			if (!vars[i].isInstantiated()) {
 				vars[i].instantiate(0, cstr, false);
+				nbExpectedInst--;
+			}
 		}
-		cstr.setEntailed();
+		if (nbExpectedInst == 0) cstr.setEntailed();
+		else cstr.fail();
 	}
 
 	public final void putAllOne() throws ContradictionException {
+		int nbExpectedInst = bValue - nbo.get();
 		for (int i = 0; i < vars.length; i++) {
-			if (!vars[i].isInstantiated())
+			if (!vars[i].isInstantiated()) {
 				vars[i].instantiate(1, cstr, false);
+				nbExpectedInst--;
+			}
 		}
-		cstr.setEntailed();
+		if (nbExpectedInst == 0) cstr.setEntailed();
+		else cstr.fail();
 	}
-	
+
 
 	public final void addOne() {
 		nbo.add(1);
 	}
-	
+
 	public final void addZero() {
 		nbz.add(1);
 	}
-	
+
 	public void awakeOnEq() throws ContradictionException {
 		if (nbo.get() > bValue || nbz.get() > bGap) {
 			cstr.fail();
@@ -145,7 +153,7 @@ public final class BoolSumStructure {
 			putAllOne();
 		}
 	}
-	
+
 	public void awakeOnGeq() throws ContradictionException {
 		if (nbo.get() >= bValue) {
 			cstr.setEntailed();
@@ -165,7 +173,7 @@ public final class BoolSumStructure {
 			putAllZero();
 		}
 	}
-	
+
 	public void awakeOnNeq() throws ContradictionException {
 		if (nbo.get() > bValue || nbz.get() > bGap) {
 			cstr.setEntailed();
@@ -214,7 +222,7 @@ public final class BoolSumStructure {
 			return null;
 		}
 	}
-	
+
 	public Boolean isEntailedGeq() {
 		if( computeLbFromScratch() >= bValue) {
 			return Boolean.TRUE;
@@ -224,7 +232,7 @@ public final class BoolSumStructure {
 			return null;
 		}
 	}
-	
+
 	public Boolean isEntailedLeq() {
 		if (computeUbFromScratch() <= bValue) {
 			return Boolean.TRUE;
@@ -234,7 +242,7 @@ public final class BoolSumStructure {
 			return null;
 		}
 	}
-	
+
 	public Boolean isEntailedNeq() {
 		final int lb = computeLbFromScratch();
 		final int ub = computeUbFromScratch();
@@ -246,5 +254,14 @@ public final class BoolSumStructure {
 			return null;
 		}
 	}
+
+
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return super.toString();
+	}
+
+
 
 }
