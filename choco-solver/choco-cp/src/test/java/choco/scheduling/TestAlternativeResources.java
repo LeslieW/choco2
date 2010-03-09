@@ -380,7 +380,9 @@ public class TestAlternativeResources {
 
 		model.addConstraint(disjunctive( new TaskVariable[]{JobA_Resc1, JobB_Resc1, JobC_Resc1}, 
 				new IntegerVariable[] {JobB_Res1, JobC_Res1})) ; 
-		model.addConstraint(disjunctive( new TaskVariable[]{JobB_Resc2, JobC_Resc2}, 
+//		model.addConstraint(disjunctive( new TaskVariable[]{JobB_Resc2, JobC_Resc2}, 
+//				new IntegerVariable[] {JobB_Res2, JobC_Res2})) ;
+		model.addConstraint(disjunctive( new TaskVariable[]{JobB_Resc1, JobC_Resc1}, 
 				new IntegerVariable[] {JobB_Res2, JobC_Res2})) ;
 		return model;
 	}
@@ -407,7 +409,7 @@ public class TestAlternativeResources {
 
 	@Test
 	public void cosmicTest() {
-		//ChocoLogging.setVerbosity(Verbosity.VERBOSE);
+		ChocoLogging.setVerbosity(Verbosity.DEFAULT);
 		CPModel model = createModelJobARes1();
 		int obj = minimizeMakespan(model);
 		int nbsols = solveAll(model);

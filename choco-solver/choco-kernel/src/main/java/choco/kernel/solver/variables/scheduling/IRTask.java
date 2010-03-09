@@ -7,6 +7,8 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 interface IAltRTask {
 
+	IntDomainVar getUsage();
+	
 	boolean isOptional();
 
 	boolean isRegular();

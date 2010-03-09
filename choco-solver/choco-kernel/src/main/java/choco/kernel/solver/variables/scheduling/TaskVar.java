@@ -228,7 +228,6 @@ public final class TaskVar<C extends AbstractSConstraint & TaskPropagator> exten
 	 */
 	public DisposableIterator<SConstraint> getConstraintsIterator() {
 		return constraints.getConstraintsIterator();
-
 	}
 
     @SuppressWarnings({"unchecked"})

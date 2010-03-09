@@ -47,7 +47,7 @@ public abstract class AbstractLargeSetIntSConstraint extends AbstractMixedSetInt
 	public IntDomainVar[] ivars;
 
 
-	public int nbvar;
+	public int nbvars;
 
 	/**
 	 * The index of the constraint among all listeners of its set variable.
@@ -68,7 +68,7 @@ public abstract class AbstractLargeSetIntSConstraint extends AbstractMixedSetInt
 		svars = new SetVar[setvars.length];
 		System.arraycopy(setvars, 0, svars, 0, setvars.length);
 		set_cIndices = new int[setvars.length];
-		nbvar = intvars.length + setvars.length;
+		nbvars = intvars.length + setvars.length;
 	}
 
 	/**
@@ -78,7 +78,7 @@ public abstract class AbstractLargeSetIntSConstraint extends AbstractMixedSetInt
 		if (i >= 0) {
 			if (i < svars.length) {
 				set_cIndices[i] = val;
-			} else if (i < nbvar) {
+			} else if (i < nbvars) {
 				int_cIndices[i - svars.length] = val;
 			} else {
 				throw new SolverException("bug in SetIntConstraintIndex i:" + i + " this: " + this);
@@ -95,7 +95,7 @@ public abstract class AbstractLargeSetIntSConstraint extends AbstractMixedSetInt
 		if (idx >= 0) {
 			if (idx < svars.length) {
 				return set_cIndices[idx];
-			} else if (idx < nbvar) {
+			} else if (idx < nbvars) {
 				return int_cIndices[idx - svars.length];
 			} else {
 				return -1;
@@ -127,7 +127,7 @@ public abstract class AbstractLargeSetIntSConstraint extends AbstractMixedSetInt
 	 * Returns the number of variables.
 	 */
 	public final int getNbVars() {
-		return nbvar;
+		return nbvars;
 	}
 
 	public final int getNbSetVars() {
@@ -161,7 +161,7 @@ public abstract class AbstractLargeSetIntSConstraint extends AbstractMixedSetInt
 		if (i >= 0) {
 			if (i < svars.length) {
 				return svars[i];
-			} else if (i < nbvar) {
+			} else if (i < nbvars) {
 				return ivars[i - svars.length];
 			} else {
 				return null;
@@ -176,7 +176,7 @@ public abstract class AbstractLargeSetIntSConstraint extends AbstractMixedSetInt
 		if (i >= 0) {
 			if (i < svars.length) {
 				svars[i] = (SetVar) v;
-			} else if (i < nbvar) {
+			} else if (i < nbvars) {
 				ivars[i - svars.length] = (IntDomainVar) v;
 			} else {
 				throw new SolverException("BUG in CSP network management: too large index for set/int Var");
