@@ -22,8 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory.structure;
 
+import static choco.kernel.common.Constant.STORED_OFFSET;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import static choco.kernel.memory.structure.PartiallyStoredVector.STORED_OFFSET;
 
 /**
  * User : cprudhom<br/>

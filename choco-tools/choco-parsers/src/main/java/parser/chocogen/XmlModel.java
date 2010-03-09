@@ -293,7 +293,6 @@ public class XmlModel {
 
 		time[3] = System.currentTimeMillis();
 		s.setTimeLimit(timelimit * 1000);
-		s.monitorBackTrackLimit(true);
 
 		if (verb > 1) LOGGER.info(s.pretty());
 

@@ -336,7 +336,7 @@ public class TaillardJobShopProblem {
                 nbAwakes.add(Integer.MAX_VALUE);
                 nodes.add(Integer.MAX_VALUE);
             } else {
-                st.append(s.getOptimumValue());
+                st.append(s.getObjectiveValue());
                 try {
                     nodes.add(s.getNodeCount());
                 } catch (Exception e) {

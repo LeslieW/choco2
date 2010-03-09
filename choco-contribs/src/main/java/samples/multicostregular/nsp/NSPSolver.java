@@ -35,8 +35,6 @@ public class NSPSolver {
 
              //   s.setValIntIterator(new DecreasingDomain());
                 
-                s.monitorBackTrackLimit(true);
-
                 System.out.println("N"+i+" : "+j);
                 //if (s.minimize(s.getVar(mod.globalCost),false))
                 if (s.solve())

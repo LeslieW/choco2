@@ -26,8 +26,14 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.cp.solver.preprocessor.detectors.ExpressionDetector;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.model.constraints.*;
-import choco.kernel.model.variables.*;
+import choco.kernel.model.constraints.ComponentConstraint;
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.ConstraintManager;
+import choco.kernel.model.constraints.MetaConstraint;
+import choco.kernel.model.variables.MultipleVariables;
+import choco.kernel.model.variables.Variable;
+import choco.kernel.model.variables.VariableManager;
+import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -43,8 +49,10 @@ import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -98,6 +106,7 @@ public class CPModelToCPSolver {
 	private final HashSet<TaskVar> taskDecisionVar = new HashSet<TaskVar>();
 	private final HashSet<TaskVar> taskNoDecisionVar = new HashSet<TaskVar>();
 
+    private final List<SConstraint> postponedConstraint = new ArrayList<SConstraint>(8);
 
 	public CPModelToCPSolver(CPSolver cpsolver) {
 		this.cpsolver = cpsolver;
@@ -320,10 +329,17 @@ public class CPModelToCPSolver {
 					decomp = true;
 				}
 				c = readModelConstraint(ic, decomp);
-				cpsolver.post(c);
+				if (ic.getOptions().contains("cp:postponed")) {
+                    postponedConstraint.add(c);
+                }else{
+                    cpsolver.post(c);
+                }
 				cpsolver.mapconstraints.put(ic.getIndex(), c);
 			}
 		}
+        for (SConstraint ppc : postponedConstraint) {
+            cpsolver.post(ppc);
+        }
 		cpsolver.postRedundantTaskConstraints();
 
 	}

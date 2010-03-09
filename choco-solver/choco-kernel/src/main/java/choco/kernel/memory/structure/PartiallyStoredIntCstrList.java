@@ -20,15 +20,12 @@
  *     Copyright (C) F. Laburthe,                 *
  *                   N. Jussien    1999-2009      *
  **************************************************/
-package choco.cp.memory.structure;
+package choco.kernel.memory.structure;
 
-import choco.cp.common.util.iterators.QuickIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
+import choco.kernel.common.util.iterators.QuickIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.structure.APartiallyStoredCstrList;
-import choco.kernel.memory.structure.Couple;
-import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;

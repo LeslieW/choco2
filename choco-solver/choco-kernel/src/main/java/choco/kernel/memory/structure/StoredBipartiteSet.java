@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory.structure;
 
+import static choco.kernel.common.Constant.SET_INITIAL_CAPACITY;
 import choco.kernel.common.util.iterators.ArrayIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IEnvironment;
@@ -40,8 +41,6 @@ import java.util.*;
  */
 public class StoredBipartiteSet<E> extends AbstractList<E> {
 
-    static final int INITIAL_CAPACITY = 8;
-
 	/**
 	 * The list of values
 	 */
@@ -55,7 +54,7 @@ public class StoredBipartiteSet<E> extends AbstractList<E> {
     StoredBipartiteSet(IEnvironment env) {
         super();
         //noinspection unchecked
-        elementData = (E[])new Var[INITIAL_CAPACITY];
+        elementData = (E[])new Var[SET_INITIAL_CAPACITY];
 		this.last = env.makeInt(0);
     }
 

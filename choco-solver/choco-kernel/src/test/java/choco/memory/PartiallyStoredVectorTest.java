@@ -22,11 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.memory;
 
+import static choco.kernel.common.Constant.STORED_OFFSET;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.structure.PartiallyStoredVector;
-import static choco.kernel.memory.structure.PartiallyStoredVector.STORED_OFFSET;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import org.junit.*;
 import static org.junit.Assert.assertEquals;
@@ -133,7 +133,7 @@ public class PartiallyStoredVectorTest {
         for(int j = 0; j < n; j++){
             env.worldPop();
             for(int i= 0; i < b.get(); i++){
-            Assert.assertEquals(A, vector.get(i+STORED_OFFSET));
+            Assert.assertEquals(A, vector.get(i+ STORED_OFFSET));
             }
             for(int i= b.get(); i < c.get(); i++){
                 Assert.assertEquals(B, vector.get(i+STORED_OFFSET));
