@@ -51,7 +51,7 @@ public class PostPonedConstraintTest {
 
         final Model m = new CPModel();
 
-        m.addConstraint(/*"cp:postponed", */c1);
+        m.addConstraint("cp:postponed", c1);
         m.addConstraint(c2);
 
         final Solver s= new CPSolver();
