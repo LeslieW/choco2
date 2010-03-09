@@ -22,12 +22,7 @@
  **************************************************/
 package choco.cp.solver.propagation;
 
-import choco.cp.model.CPModel;
-import choco.cp.solver.CPSolverDis;
-import choco.solver.search.QueensTest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.Ignore;
 
 /*
 * User : charles
@@ -36,9 +31,10 @@ import org.junit.Test;
 * Since : Choco 2.1.0
 * Update : Choco 2.1.0
 */
+@Ignore
 public class DisTest {
 
-    QueensTest qt;
+    /*QueensTest qt;
 
     @Before
     public void b(){
@@ -87,5 +83,5 @@ public class DisTest {
     @Test
     public void test10(){
         qt.queen0(10);
-    }
+    }*/
 }
