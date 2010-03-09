@@ -221,7 +221,6 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 
 
 
-    //<hca> can I remove the final here to extend the searchloop
 	@Override
 	public void upBranch() {
 		try {

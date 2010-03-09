@@ -61,7 +61,7 @@ public class MinOfASet extends AbstractBoundOfASet {
 		final DisposableIntIterator iter= getSetDomain().getOpenDomainIterator();
 		boolean update = false;
 		while(iter.hasNext()) {
-			removeLowerFromEnv(iter.next(), maxValue);
+			update |= removeLowerFromEnv(iter.next(), maxValue);
 		}
         iter.dispose();
 		return update;

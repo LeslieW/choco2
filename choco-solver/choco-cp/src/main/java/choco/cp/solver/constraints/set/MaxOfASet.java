@@ -191,9 +191,11 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 			}
 		} else if (idx == VARS_OFFSET) { // Minimum/Maximum variable
 			awakeOnInstV();
-		}else { //set is instantiated, propagate
-			if(isEmptySet()) filterEmptySet();
-			else this.propagate();
+		}else { 
+			//set is instantiated, propagate
+			propagate();
+//			if(isEmptySet()) filterEmptySet();
+//			else this.propagate();
 		}
 	}
 
@@ -261,7 +263,7 @@ public class MaxOfASet extends AbstractBoundOfASet {
 		final DisposableIntIterator iter= getSetDomain().getOpenDomainIterator();
 		boolean update = false;
 		while(iter.hasNext()) {
-			removeGreaterFromEnv(iter.next(), maxValue);
+			update |= removeGreaterFromEnv(iter.next(), maxValue);
 		}
 		iter.dispose();
 		return update;
