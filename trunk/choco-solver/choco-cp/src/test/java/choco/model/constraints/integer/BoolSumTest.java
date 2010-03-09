@@ -16,9 +16,9 @@ public class BoolSumTest {
 	private final IntegerVariable[] bvars = Choco.makeBooleanVarArray("b", 10);
 
 	private final IntegerExpressionVariable sum = Choco.sum(bvars);
-	
+
 	private final int nbTotSols = 1 << bvars.length;
-	
+
 
 	private int solveWith(Constraint c) {
 		final Model m = new CPModel();
@@ -29,16 +29,16 @@ public class BoolSumTest {
 		s.solveAll();
 		return s.getNbSolutions();
 	}
-	
+
 	private final void testNbSols(int[] sols1, int[] sols2) {
-//		LOGGER.info(nbTotSols);
-//		LOGGER.info(Arrays.toString(sols1));
-//		LOGGER.info(Arrays.toString(sols2));
+		//		LOGGER.info(nbTotSols);
+		//		LOGGER.info(Arrays.toString(sols1));
+		//		LOGGER.info(Arrays.toString(sols2));
 		for (int i = 0; i < sols1.length; i++) {
 			Assert.assertEquals(nbTotSols, sols1[i] + sols2[i]);
 		}
 	}
-	
+
 	@Test
 	public void testEqNeq() {
 		//ChocoLogging.setVerbosity(Verbosity.VERBOSE);
@@ -68,28 +68,26 @@ public class BoolSumTest {
 		for (int i = 0; i < sols1.length; i++) {
 			Assert.assertEquals(sols1[i], sols2[ sols1.length - i-1]);
 		}
-	
+
 	}
 
-    @Test
-	public void testEq(){
-        final Model m = new CPModel();
+	@Test(expected=ContradictionException.class)
+	public void testEq() throws ContradictionException{
+		final Model m = new CPModel();
 		m.addConstraint(Choco.eq(sum, 1));
 		final CPSolver s =new CPSolver();
 		s.read(m);
-        try{
-            s.getVar(bvars[0]).setVal(0);
-            s.getVar(bvars[2]).setVal(0);
-            s.getVar(bvars[3]).setVal(0);
-            s.propagate();
-        }catch (ContradictionException ignored){
-            Assert.fail();
-        }
-        try{
-            s.getVar(bvars[1]).instantiate(0, null, false);
-            s.getVar(bvars[4]).instantiate(0, null, false);
-            s.propagate();
-            Assert.fail("Wrong solution");
-        }catch (ContradictionException ignored){}
+		try{
+			for (int i = 0; i < bvars.length-2; i++) {
+				s.getVar(bvars[i]).setVal(0);
+			}
+			s.propagate();
+		}catch (ContradictionException ignored){
+			Assert.fail();
+		}
+		for (int i = bvars.length-2; i < bvars.length; i++) {
+			s.getVar(bvars[i]).setVal(0);
+		}
+		s.propagate();
 	}
 }
