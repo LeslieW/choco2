@@ -49,7 +49,7 @@ public class DisTest {
     public void a(){
         qt = null;
     }
-
+               
     @Test
     public void test4(){
         qt.queen0(4);
