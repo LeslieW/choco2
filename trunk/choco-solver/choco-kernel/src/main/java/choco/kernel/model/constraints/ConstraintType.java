@@ -99,7 +99,6 @@ public enum ConstraintType {
     REIFIEDOR("reifiedOr", "constraint.reifiedOr", false),
     REIFIEDXNOR("reifiedXnor", "constraint.reifiedXnor", false),
     REIFIEDXOR("reifiedXor", "constraint.reifiedXor", false),
-    USE_RESOURCES("useResources", "constraint.useResources", false),
     SETDISJOINT("setDisjoint", "constraint.setDisjoint", false),
     SETINTER("setInter", "constraint.setInter", false),
     SETUNION("union", "constraint.union", false),
@@ -111,6 +110,7 @@ public enum ConstraintType {
     TIMES("times", "constraint.times", false),
     TREE("tree", "constraint.tree", false),
     TRUE("true", "constraint.true", false),
+   // USE_RESOURCES("useResources", "constraint.useResources", false),
     XNOR("xnor", "constraint.xnor", true),
     XOR("xor", "constraint.xor", true);
 

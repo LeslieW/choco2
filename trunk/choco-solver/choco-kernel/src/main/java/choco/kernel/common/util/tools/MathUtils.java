@@ -80,13 +80,25 @@ public final class MathUtils {
 	public static double roundedLog(double value,double exponent){
 		return Math.round( log(value, exponent) * ROUNDED_LOG_PRECISION) / ROUNDED_LOG_PRECISION;
 	}
-
-	public static int sum(int[] values) {
+	
+	public static int sum(int[] values, int begin, int end) {
 		int s = 0;
-		for (int i = 0; i < values.length; i++) {
+		for (int i = begin; i < end; i++) {
 			s+= values[i];
 		}
 		return s;
+	}
+	
+	public static int sumFrom(int[] values, int begin) {
+		return sum(values, begin, values.length);
+	}
+	
+	public static int sumTo(int[] values, int end) {
+		return sum(values, 0, end);
+	}
+	
+	public static int sum(int[] values) {
+		return sum(values, 0, values.length);
 	}
 
 	public static int sum(int[][] values) {

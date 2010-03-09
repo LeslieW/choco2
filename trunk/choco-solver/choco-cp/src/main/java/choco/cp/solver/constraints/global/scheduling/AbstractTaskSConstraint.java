@@ -30,18 +30,9 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 	 * @param otherVars other integer variables of the constraint
 	 */
 	public AbstractTaskSConstraint(final TaskVar task1, TaskVar task2, final IntDomainVar... otherVars) {
-		this(new TaskVar[]{task1,task2}, otherVars);
+		this(new TaskVar[]{task1,task2}, null);
 	}
 
-	/**
-	 * 
-	 * Create a task constraint.
-	 * @param taskvars the tasks using the resources
-	 * @param otherVars other integer variables of the constraint
-	 */
-	public AbstractTaskSConstraint(final TaskVar[] taskvars, final IntDomainVar... otherVars) {
-		this(taskvars, null, otherVars);
-	}
 	
 	public AbstractTaskSConstraint(final TaskVar[] taskvars, final IntDomainVar[] intvars, final IntDomainVar... otherVars) {
 		super(makeIntVarArray(taskvars, intvars, otherVars));

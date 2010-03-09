@@ -18,40 +18,29 @@ public class LeqBoolSum extends AbstractBoolSum {
 	@Override
 	public void awakeOnInst(int idx) throws ContradictionException {
 		super.awakeOnInst(idx);
-		if (nbz.get() >= gap) {
-			setEntailed();
-		} else if (nbo.get() > bValue) {
-			fail();
-		} else if (nbo.get() == bValue) {
-			putAllZero();
-		}
+		boolSumS.awakeOnLeq();
 	}
 
 	@Override
 	public void propagate() throws ContradictionException {
-		if(bValue == vars.length) putAllOne();
-		else super.propagate();
+		if ( boolSumS.filterLeq() ) {
+			super.propagate();
+		} 
 	}
 
 	@Override
 	public boolean isSatisfied(int[] tuple) {
-		return MathUtils.sum(tuple) <= bValue;
+		return MathUtils.sum(tuple) <= boolSumS.bValue;
 	}
 
 	@Override
 	public Boolean isEntailed() {
-		if (computeUbFromScratch() <= bValue) {
-			return Boolean.TRUE;
-		} else if (computeLbFromScratch() > bValue) {
-			return Boolean.FALSE;
-		} else {
-			return null;
-		}
+		return boolSumS.isEntailedLeq();
 	}
 
 	@Override
 	public AbstractSConstraint opposite(Solver solver) {
-		return new GeqBoolSum(solver.getEnvironment(), Arrays.copyOf(vars, vars.length), bValue + 1);
+		return new GeqBoolSum(solver.getEnvironment(), Arrays.copyOf(vars, vars.length), boolSumS.bValue + 1);
 	}
 
 }

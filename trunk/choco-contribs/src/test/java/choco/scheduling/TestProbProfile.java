@@ -4,6 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,8 +16,11 @@ import org.junit.Test;
 import choco.cp.solver.search.task.ProbabilisticProfile;
 import choco.kernel.common.VizFactory;
 import choco.kernel.solver.constraints.global.scheduling.FakeResource;
+import choco.kernel.solver.constraints.global.scheduling.ICumulativeResource;
 import choco.kernel.solver.constraints.global.scheduling.IResource;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.AbstractTask;
+import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
 
 ///////////////////// REMOVE class (import problem with cp.test) ///////////////////
@@ -257,5 +264,198 @@ public class TestProbProfile {
 }
 
 
+class SimpleTask extends AbstractTask {
+
+	private static int nextID=0;
+
+	private final Point domain;
+
+	private final int duration;
+
+
+    /**
+     *
+     * @param est
+     * @param lst
+     * @param duration
+     */
+	public SimpleTask(int est,int lst, int duration) {
+		super(nextID++, "T"+nextID);
+		this.domain = new Point(est, lst>=est ? lst :est);
+		this.duration = duration>0 ? duration : 0;
+	}
+
+
+	/**
+	 * @see ITask#getECT()
+	 */
+	@Override
+	public int getECT() {
+		return domain.x+duration;
+	}
+
+	/**
+	 * @see ITask#getEST()
+	 */
+	@Override
+	public int getEST() {
+		return domain.x;
+	}
+
+	/**
+	 * @see ITask#getLCT()
+	 */
+	@Override
+	public int getLCT() {
+		return domain.y+duration;
+	}
+
+	/**
+	 * @see ITask#getLST()
+	 */
+	@Override
+	public int getLST() {
+		return domain.y;
+	}
+
+	/**
+	 * @see ITask#getMinDuration()
+	 */
+	@Override
+	public int getMinDuration() {
+		return duration;
+	}
+
+	/**
+	 * @see ITask#hasConstantDuration()
+	 */
+	@Override
+	public boolean hasConstantDuration() {
+		return true;
+	}
+
+	/**
+	 * @see ITask#isScheduled()
+	 */
+	@Override
+	public boolean isScheduled() {
+		return domain.x==domain.y;
+	}
+
+	/**
+	 * @see ITask#getMaxDuration()
+	 */
+	@Override
+	public int getMaxDuration() {
+		return getMinDuration();
+	}
+
+
+}
+
+
+class SimpleResource implements ICumulativeResource<SimpleTask> {
+
+	
+	public final List<SimpleTask> tasksL;
+
+	public int[] heights;
+	
+	public int capacity;
+	
+	
+	public SimpleResource(List<SimpleTask> tasksL, int[] heights, int capacity) {
+		super();
+		this.tasksL = tasksL;
+		this.heights = heights;
+		this.capacity = capacity;
+	}
+
+	public SimpleResource(List<SimpleTask> tasksL) {
+		super();
+		this.tasksL=new ArrayList<SimpleTask>(tasksL);
+		this.capacity = 1;
+		this.heights = new int[tasksL.size()];
+		Arrays.fill(heights, 1);
+	}
+
+	
+	@Override
+	public IRTask getRTask(int idx) {
+		return null;
+	}
+
+	@Override
+	public int getNbTasks() {
+		return tasksL.size();
+	}
+
+	@Override
+	public String getRscName() {
+		return "internal resource (test)";
+	}
+
+	@Override
+	public SimpleTask getTask(int idx) {
+		return tasksL.get(idx);
+	}
+
+	@Override
+	public Iterator<SimpleTask> getTaskIterator() {
+		return tasksL.listIterator();
+	}
+	
+	@Override
+	public List<SimpleTask> asList() {
+		return Collections.unmodifiableList(tasksL);
+	}
+
+	@Override
+	public IntDomainVar getCapacity() {
+		return null;
+	}
+	@Override
+	
+	public int getMaxCapacity() {
+		return capacity;
+	}
+
+	@Override
+	public int getMinCapacity() {
+		return getCapacity().getInf();
+	}
+
+	public IntDomainVar getHeight(int idx) {
+		return null;
+	}
+	
+	
+	@Override
+	public IntDomainVar getConsumption() {
+		return null;
+	}
+
+	@Override
+	public int getMaxConsumption() {
+		return 0;
+	}
+
+	@Override
+	public int getMinConsumption() {
+		return 0;
+	}
+
+	@Override
+	public boolean isInstantiatedHeights() {
+		return true;
+	}
+
+	@Override
+	public boolean hasOnlyPosisiveHeights() {
+		return true;
+	}
+	
+	
+}
 
 

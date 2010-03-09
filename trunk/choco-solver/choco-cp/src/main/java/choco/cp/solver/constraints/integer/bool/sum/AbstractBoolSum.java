@@ -34,26 +34,11 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public class AbstractBoolSum extends AbstractLargeIntSConstraint {
 
-	/**
-	 * The number of variables instantiated to zero in the sum
-	 */
-	protected final IStateInt nbz;
-
-	/**
-	 * The number of variables instantiated to one in the sum
-	 */
-	protected final IStateInt nbo;
-
-	protected final int gap;
-
-	protected final int bValue;
+	protected final BoolSumStructure boolSumS;
 
 	public AbstractBoolSum(IEnvironment environment, IntDomainVar[] vars, int bValue) {
 		super(vars);
-		this.bValue = bValue;
-		this.gap = vars.length - bValue;
-		nbz = environment.makeInt(0);
-		nbo = environment.makeInt(0);
+		this.boolSumS = new BoolSumStructure(environment, this, vars, bValue);
 	}
 
 
@@ -64,8 +49,7 @@ public class AbstractBoolSum extends AbstractLargeIntSConstraint {
 
 	@Override
 	public void propagate() throws ContradictionException {
-		nbz.set(0);
-		nbo.set(0);
+		boolSumS.reset();
 		for (int i = 0; i < vars.length; i++) {
 			if (vars[i].isInstantiated()) {
 				awakeOnInst(i);
@@ -73,54 +57,14 @@ public class AbstractBoolSum extends AbstractLargeIntSConstraint {
 		}
 	}
 
-	public final void putAllZero() throws ContradictionException {
-		for (int i = 0; i < vars.length; i++) {
-			if (!vars[i].isInstantiated())
-				vars[i].instantiate(0, this, false);
-		}
-	}
-
-	public final void putAllOne() throws ContradictionException {
-		for (int i = 0; i < vars.length; i++) {
-			if (!vars[i].isInstantiated())
-				vars[i].instantiate(1, this, false);
-		}
-	}
-
+	
 
 	@Override
 	public void awakeOnInst(int idx) throws ContradictionException {
 		final int val = vars[idx].getVal();
-		if (val == 0) nbz.add(1);
-		else nbo.add(1);
+		if (val == 0) boolSumS.addZero();
+		else boolSumS.addOne();
 	}
-
-	/**
-	 * Computes an upper bound estimate of a linear combination of variables.
-	 *
-	 * @return the new upper bound value
-	 */
-	protected final int computeUbFromScratch() {
-		int s = 0;
-		for (int i = 0; i < vars.length; i++) {
-			s += vars[i].getSup();
-		}
-		return s;
-	}
-
-	/**
-	 * Computes a lower bound estimate of a linear combination of variables.
-	 *
-	 * @return the new lower bound value
-	 */
-	protected final int computeLbFromScratch() {
-		int s = 0;
-		for (int i = 0; i < vars.length; i++) {
-			s += vars[i].getInf();
-		}
-		return s;
-	}
-
 
 
 }

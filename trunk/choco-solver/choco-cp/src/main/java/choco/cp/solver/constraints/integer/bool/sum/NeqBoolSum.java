@@ -18,39 +18,23 @@ public class NeqBoolSum extends AbstractBoolSum {
 	@Override
 	public void awakeOnInst(int idx) throws ContradictionException {
 		super.awakeOnInst(idx);
-		if (nbo.get() > bValue || nbz.get() > gap) {
-			setEntailed();
-		} else if (nbo.get() == bValue) {
-			if(nbz.get() == gap - 1) putAllOne();
-			else if( nbz.get() == gap) fail();
-		} else if (nbz.get() == gap) {
-			if(nbo.get() == bValue - 1) putAllZero();
-			else if( nbo.get() == bValue) fail();
-		}
+		boolSumS.awakeOnNeq();
 	}
 
 
 	@Override
 	public boolean isSatisfied(int[] tuple) {
-		return MathUtils.sum(tuple) != bValue;
+		return MathUtils.sum(tuple) != boolSumS.bValue;
 	}
 
 	@Override
 	public Boolean isEntailed() {
-		final int lb = computeLbFromScratch();
-		final int ub = computeUbFromScratch();
-		if (lb > bValue || ub < bValue) {
-			return Boolean.TRUE;
-		} else if (lb == ub && bValue == lb) {
-			return Boolean.FALSE;
-		} else {
-			return null;
-		}
+		return boolSumS.isEntailedNeq();
 	}
 
 	@Override
 	public AbstractSConstraint opposite(Solver solver) {
-		return new EqBoolSum(solver.getEnvironment(), Arrays.copyOf(vars, vars.length), bValue);
+		return new EqBoolSum(solver.getEnvironment(), Arrays.copyOf(vars, vars.length), boolSumS.bValue);
 	}
 
 }
