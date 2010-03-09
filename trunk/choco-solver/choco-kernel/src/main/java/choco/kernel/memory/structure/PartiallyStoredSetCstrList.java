@@ -20,15 +20,13 @@
  *     Copyright (C) F. Laburthe,                 *
  *                   N. Jussien    1999-2009      *
  **************************************************/
-package choco.cp.memory.structure;
+package choco.kernel.memory.structure;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IEnvironment;
-import choco.kernel.memory.structure.APartiallyStoredCstrList;
-import choco.kernel.memory.structure.Couple;
 import choco.kernel.solver.constraints.AbstractSConstraint;
-import choco.kernel.solver.propagation.listener.RealPropagator;
+import choco.kernel.solver.propagation.listener.SetPropagator;
 
 /*
 * User : charles
@@ -37,9 +35,9 @@ import choco.kernel.solver.propagation.listener.RealPropagator;
 * Since : Choco 2.1.0
 * Update : Choco 2.1.0
 */
-public final class PartiallyStoredRealCstrList<C extends AbstractSConstraint & RealPropagator> extends APartiallyStoredCstrList<C> {
+public final class PartiallyStoredSetCstrList<C extends AbstractSConstraint & SetPropagator> extends APartiallyStoredCstrList<C> {
 
-    public PartiallyStoredRealCstrList(IEnvironment env) {
+    public PartiallyStoredSetCstrList(IEnvironment env) {
         super(env);
     }
 
@@ -56,6 +54,7 @@ public final class PartiallyStoredRealCstrList<C extends AbstractSConstraint & R
     }
 
     private final class QuickIterator extends DisposableIterator<Couple<C>> {
+        boolean reusable;
         C cstrCause;
         DisposableIntIterator cit;
         Couple<C> cc  = new Couple<C>();

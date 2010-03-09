@@ -84,15 +84,6 @@ public interface SConstraint<V extends Var> extends Cloneable,IPretty {
 	AbstractSConstraint opposite(Solver solver);
 
 	/**
-	 * returns a copy of the constraint. This copy is a new object, may be a recursive copy in case
-	 * of composite constraints. The original and the copy share the same variables & plugins
-	 *
-	 * @return a copy of the constraint
-	 */
-	// public Constraint copy();
-	public Object clone() throws CloneNotSupportedException;
-
-	/**
 	 * <i>Network management:</i>
 	 * Storing that among all listeners linked to the i-th variable of c,
 	 * this (the current constraint) is found at index idx.

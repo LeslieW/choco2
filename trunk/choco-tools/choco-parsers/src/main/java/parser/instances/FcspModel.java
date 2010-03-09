@@ -1,6 +1,7 @@
 package parser.instances;
 
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.solver.Solver;
 import parser.absconparseur.tools.UnsupportedConstraintException;
@@ -122,7 +123,7 @@ public final class FcspModel extends AbstractInstanceModel {
 			//				s.launch();
 			//				return s.isFeasible();
 			//			} else return s.solve();
-			s.setLoggingMaxDepth(200);
+			ChocoLogging.setLoggingMaxDepth(200);
             s.launch();
 			return s.isFeasible();
 		} else {

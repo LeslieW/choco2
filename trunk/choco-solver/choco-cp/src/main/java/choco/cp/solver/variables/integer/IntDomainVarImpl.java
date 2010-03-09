@@ -22,10 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.integer;
 
-import choco.cp.memory.structure.PartiallyStoredIntCstrList;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.Couple;
+import choco.kernel.memory.structure.PartiallyStoredIntCstrList;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;

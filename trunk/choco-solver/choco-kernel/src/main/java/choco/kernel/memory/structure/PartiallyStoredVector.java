@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory.structure;
 
+import static choco.kernel.common.Constant.*;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IEnvironment;
@@ -39,22 +40,6 @@ import java.util.Arrays;
  * manner, as if they were in a StoredIntVector
  */
 public class PartiallyStoredVector<E> {
-    /**
-     * Initial capacity of array of static objects
-     */
-    static final int INITIAL_STATIC_CAPACITY = 16;
-
-    /**
-     * Initial capacity of the array of stored objects
-     */
-    static final int INITIAL_STORED_CAPACITY = 16;
-
-    /**
-     * Default offset.
-     * Indicates the maximum size of the array for static objects.
-     */
-    public static final int STORED_OFFSET = 1000000;
-
     /**
      * objects stored statically
      */
@@ -89,7 +74,7 @@ public class PartiallyStoredVector<E> {
     /**
      * Clear datastructures for safe reuses
      */
-    public void clear(IEnvironment env) {
+    public void clear() {
         Arrays.fill(staticObjects, null);
         Arrays.fill(storedObjects, null);
         nStaticObjects = 0;

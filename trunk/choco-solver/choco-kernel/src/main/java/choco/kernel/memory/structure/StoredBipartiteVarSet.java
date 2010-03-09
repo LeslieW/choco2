@@ -23,6 +23,7 @@
 package choco.kernel.memory.structure;
 
 import choco.IPretty;
+import static choco.kernel.common.Constant.SET_INITIAL_CAPACITY;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.memory.IEnvironment;
@@ -60,7 +61,7 @@ public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteS
         super(env);
         this.env = env;
         //noinspection unchecked
-        varsNotInstanciated = (E[])new Var[INITIAL_CAPACITY];
+        varsNotInstanciated = (E[])new Var[SET_INITIAL_CAPACITY];
         size = 0;
     }
 

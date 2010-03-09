@@ -22,10 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.variables.real;
 
-import choco.cp.memory.structure.PartiallyStoredRealCstrList;
 import choco.cp.solver.propagation.RealVarEvent;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.Couple;
+import choco.kernel.memory.structure.PartiallyStoredRealCstrList;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;

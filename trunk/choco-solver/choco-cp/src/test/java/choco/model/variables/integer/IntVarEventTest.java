@@ -35,6 +35,7 @@ import choco.cp.solver.constraints.integer.EqualXYC;
 import choco.cp.solver.propagation.ChocEngine;
 import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.Constant;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.structure.PartiallyStoredVector;
@@ -185,9 +186,9 @@ public class IntVarEventTest  {
     PartiallyStoredVector constraints = y.getConstraintVector();
     DisposableIntIterator cit = constraints.getIndexIterator();
     assertTrue(cit.hasNext());
-    assertEquals(PartiallyStoredVector.STORED_OFFSET + 0, cit.next());
+    assertEquals(Constant.STORED_OFFSET + 0, cit.next());
     assertTrue(cit.hasNext());
-    assertEquals(PartiallyStoredVector.STORED_OFFSET + 1, cit.next());
+    assertEquals(Constant.STORED_OFFSET + 1, cit.next());
     assertFalse(cit.hasNext());
   }
 

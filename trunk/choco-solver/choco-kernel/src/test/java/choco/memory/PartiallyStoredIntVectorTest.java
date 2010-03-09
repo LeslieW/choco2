@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.memory;
 
+import choco.kernel.common.Constant;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
@@ -130,7 +131,7 @@ public class PartiallyStoredIntVectorTest {
         it = vector.getIndexIterator();
         Assert.assertTrue(it.hasNext());
         ind = it.next();
-        Assert.assertEquals(PartiallyStoredIntVector.STORED_OFFSET, ind);
+        Assert.assertEquals(Constant.STORED_OFFSET, ind);
         Assert.assertEquals(5, vector.get(ind));
         Assert.assertFalse(it.hasNext());
 
@@ -142,7 +143,7 @@ public class PartiallyStoredIntVectorTest {
         Assert.assertEquals(4, vector.get(ind));
         Assert.assertTrue(it.hasNext());
         ind = it.next();
-        Assert.assertEquals(PartiallyStoredIntVector.STORED_OFFSET, ind);
+        Assert.assertEquals(Constant.STORED_OFFSET, ind);
         Assert.assertEquals(5, vector.get(ind));
         Assert.assertFalse(it.hasNext());
 

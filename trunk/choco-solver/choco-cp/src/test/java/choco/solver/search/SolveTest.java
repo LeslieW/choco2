@@ -461,7 +461,6 @@ public class SolveTest {
 		}
 		CPSolver s = new CPSolver();
 		s.read(mod);
-		s.monitorBackTrackLimit(true);
 		s.solve();
 		s.printRuntimeStatistics();
         assertEquals(s.getNbSolutions(), 0);

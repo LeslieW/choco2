@@ -26,7 +26,7 @@ import choco.Choco;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.integer.branching.DomOverWDegBranching;
+import choco.cp.solver.search.integer.branching.DomOverWDegBranching2;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
@@ -139,7 +139,7 @@ public class ModelTest {
 		CPSolver s1 = new CPSolver();
 		s1.read(m);
 		//        s1.setVarIntSelector(new DomOverWDeg(s1, s1.getVar(queens)));
-		s1.attachGoal(new DomOverWDegBranching(s1, new IncreasingDomain(), s1.getVar(queens)));
+		s1.attachGoal(new DomOverWDegBranching2(s1, new IncreasingDomain(), s1.getVar(queens)));
 
 		m.addOptions("cp:no_decision", toto);
 		m.addOptions("cp:no_decision", queensdual);
