@@ -28,8 +28,6 @@ import choco.cp.solver.constraints.integer.IntLinComb;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.Test;
@@ -78,7 +76,7 @@ public class LangfordNumberTest {
         int[] dist = {1,2,3,4,5,6,7};
         langfordNumber(ls, 7, dist);
         ls.attachGoal(new AssignVar(new StaticVarOrder(ls, decVars), new IncreasingDomain()));
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+        //SettChocoLogging.setVerbosity(Verbosity.SOLUTION);
         ls.solveAll();
     }
 
