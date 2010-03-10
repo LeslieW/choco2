@@ -108,12 +108,12 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		this.makespan = new RMakespan();
 	}
 
-	public void checkHypotheticalDomains()throws ContradictionException{
-		for(int i = nbRegularTasks; i < rtasks.length; i++){
-			if(rtasks[i].isOptional())
-				rtasks[i].checkConsistency();
-		}
-	}
+//	public void checkHypotheticalDomains()throws ContradictionException{
+//		for(int i = nbRegularTasks; i < rtasks.length; i++){
+//			if(rtasks[i].isOptional())
+//				rtasks[i].checkConsistency();
+//		}
+//	}
 
 	private void checkIntVars() {
 		//TODO
@@ -367,7 +367,8 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		@Override
 		public final boolean updateDuration(int duration) throws ContradictionException {
 			if( setDuration(duration)) {
-				updateCompulsoryPart();
+				if(isRegular())
+					updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -378,7 +379,8 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		@Override
 		public final boolean updateECT(int val) throws ContradictionException {
 			if( setECT(val)) {
-				updateCompulsoryPart();
+				if(isRegular())
+					updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -391,7 +393,8 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		public final boolean updateEndingTime(int endingTime)
 		throws ContradictionException {
 			if( setEndingTime(endingTime)) {
-				updateCompulsoryPart();
+				if(isRegular())
+					updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -403,7 +406,8 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		@Override
 		public final boolean updateEndNotIn(int a, int b) throws ContradictionException {
 			if( setEndNotIn(a, b)) {
-				updateCompulsoryPart();
+				if(isRegular())
+					updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -415,7 +419,8 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		@Override
 		public final boolean updateEST(int val) throws ContradictionException {
 			if( setEST(val)) {
-				updateCompulsoryPart();
+				if(isRegular())
+					updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -427,7 +432,8 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		@Override
 		public final boolean updateLCT(int val) throws ContradictionException {
 			if( setLCT(val)) {
-				updateCompulsoryPart();
+				if(isRegular())
+					updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -437,7 +443,8 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		@Override
 		public final boolean updateLST(int val) throws ContradictionException {
 			if( setLST(val)) {
-				updateCompulsoryPart();
+				if(isRegular())
+					updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -449,7 +456,8 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		@Override
 		public final boolean updateMaxDuration(int val) throws ContradictionException {
 			if( setMaxDuration(val)) {
-				updateCompulsoryPart();
+				if(isRegular())
+					updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -461,7 +469,8 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		@Override
 		public final boolean updateMinDuration(int val) throws ContradictionException {
 			if( setMinDuration(val)) {
-				updateCompulsoryPart();
+				if(isRegular())
+					updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -474,7 +483,8 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		public final boolean updateStartingTime(int startingTime)
 		throws ContradictionException {
 			if( setStartingTime(startingTime)) {
-				updateCompulsoryPart();
+				if(isRegular())
+					updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -486,7 +496,8 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		@Override
 		public final boolean updateStartNotIn(int a, int b) throws ContradictionException {
 			if( setStartNotIn(a, b)) {
-				updateCompulsoryPart();
+				if(isRegular())
+					updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -789,6 +800,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 			return assigned;
 		}
 
+		
 		private boolean setHEST(int val) throws ContradictionException {
 			if( val > getEST() ) {
 				estH.set(val);
@@ -799,7 +811,10 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 		@Override
 		public boolean setEST(int val) throws ContradictionException {
-			if( isOptional()) return setHEST(val);
+			if( isOptional() && setHEST(val)){
+				checkHConsistency();
+				return true ;
+			}
 			else return super.setEST(val);
 		}
 
@@ -924,28 +939,5 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 			else return super.setStartNotIn(min, max);
 		}
 		
-		public boolean updateREST(int minEST)throws ContradictionException{
-			//Applying the third rule
-			if(super.setEST(minEST)){
-				updateCompulsoryPart();
-				return true;
-			}
-			else
-				return false;
-		}
-
-		public boolean updateRLCT(int maxLCT)throws ContradictionException{
-			//Applying the third rule
-			if(super.setLCT(maxLCT)){
-				updateCompulsoryPart();
-				return true;
-			}
-			else
-				return false;
-		}
-
 	}
-
-
-	
 }
