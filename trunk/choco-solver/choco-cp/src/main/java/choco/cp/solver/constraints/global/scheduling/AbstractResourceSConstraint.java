@@ -340,7 +340,8 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 	 */
 	public class RTask extends AbstractRTask {
 
-		private final int eidx, didx, uidx, hidx;		
+		protected final int eidx;
+		final int didx, uidx, hidx;		
 		public RTask(final int taskidx) {
 			super(taskidx);
 			eidx = getEndIndex(taskidx);
@@ -801,10 +802,24 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		}
 
 		
-		private boolean setHEST(int val) throws ContradictionException {
+		private boolean setHEST(int val) throws ContradictionException {			
 			if( val > getEST() ) {
-				estH.set(val);
-				checkHConsistency();
+				if(vars[taskIdx].canBeInstantiatedTo(val)){
+					estH.set(val);
+					checkHConsistency();
+				}else{
+					//get value, if any, after this one, and available in the domain
+					if(val < vars[taskIdx].getSup()){
+						final int newEST = vars[taskIdx].getNextDomainValue(val);
+						assert newEST > val;
+						estH.set(newEST);
+						checkHConsistency();
+					}
+					else{
+						remove();
+						fireRemoval();
+					}
+				}
 				return true;
 			} else return false;
 		}
@@ -835,8 +850,22 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 		private boolean setHECT(int val) throws ContradictionException {
 			if( val > getECT() ) {
-				estH.set(val - getMinDuration());
-				checkHConsistency();
+				if(vars[eidx].canBeInstantiatedTo(val)){
+					estH.set(val - getMinDuration());
+					checkHConsistency();
+				}else{
+					//update value not existing in main domain
+					if(val < vars[eidx].getSup()){
+						final int newECT = vars[eidx].getNextDomainValue(val);
+						assert newECT > val;
+						estH.set(newECT - getMinDuration());
+						checkHConsistency();
+					}
+					else{
+						remove();
+						fireRemoval();
+					}
+				}
 				return true;
 			} else return false;
 		}
@@ -873,8 +902,21 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 		private boolean setHLCT(int val) throws ContradictionException {
 			if( val < getLCT() ) {
-				lctH.set(val);
-				checkHConsistency();
+				if(vars[eidx].canBeInstantiatedTo(val)){
+					lctH.set(val);
+					checkHConsistency();
+				}else{
+					if(val > vars[eidx].getInf()){
+						final int newLCT = vars[eidx].getPrevDomainValue(val);
+						assert newLCT < val;
+						lctH.set(newLCT);
+						checkHConsistency();
+					}
+					else{
+						remove();
+						fireRemoval();
+					}
+				}
 				return true;
 			} else return false;
 		}
@@ -887,8 +929,20 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 		private boolean setHLST(int val) throws ContradictionException {
 			if( val < getLST() ) {
-				lctH.set(val + getMaxDuration());
-				checkHConsistency();
+				if(vars[taskIdx].canBeInstantiatedTo(val)){
+					lctH.set(val + getMaxDuration());
+					checkHConsistency();
+				}else{
+					if(val > vars[taskIdx].getInf()){
+						final int newLST = vars[taskIdx].getPrevDomainValue(val);
+						assert newLST < val;
+						lctH.set(newLST + getMaxDuration());
+						checkHConsistency();
+					}else{
+						remove();
+						fireRemoval();
+					}
+				}
 				return true;
 			} else return false;
 		}
