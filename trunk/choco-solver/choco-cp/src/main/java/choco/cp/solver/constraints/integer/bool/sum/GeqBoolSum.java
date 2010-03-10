@@ -42,5 +42,10 @@ public class GeqBoolSum extends AbstractBoolSum {
 	public AbstractSConstraint opposite(Solver solver) {
 		return new LeqBoolSum(solver.getEnvironment(), Arrays.copyOf(vars, vars.length), boolSumS.bValue-1);
 	}
-
+	
+	@Override
+	public String pretty() {
+		return boolSumS.pretty(">=");
+	}
+	
 }

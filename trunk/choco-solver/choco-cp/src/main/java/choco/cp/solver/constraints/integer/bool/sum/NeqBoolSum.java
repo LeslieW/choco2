@@ -36,5 +36,10 @@ public class NeqBoolSum extends AbstractBoolSum {
 	public AbstractSConstraint opposite(Solver solver) {
 		return new EqBoolSum(solver.getEnvironment(), Arrays.copyOf(vars, vars.length), boolSumS.bValue);
 	}
+	
+	@Override
+	public String pretty() {
+		return boolSumS.pretty("!=");
+	}
 
 }

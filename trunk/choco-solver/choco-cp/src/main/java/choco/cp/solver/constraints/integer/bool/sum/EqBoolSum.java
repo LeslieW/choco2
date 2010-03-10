@@ -43,4 +43,11 @@ public class EqBoolSum extends AbstractBoolSum {
 		return new NeqBoolSum(solver.getEnvironment(), Arrays.copyOf(vars, vars.length), boolSumS.bValue);
 	}
 
+	@Override
+	public String pretty() {
+		return boolSumS.pretty("==");
+	}
+	
+	
+
 }

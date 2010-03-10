@@ -43,4 +43,8 @@ public class LeqBoolSum extends AbstractBoolSum {
 		return new GeqBoolSum(solver.getEnvironment(), Arrays.copyOf(vars, vars.length), boolSumS.bValue + 1);
 	}
 
+	@Override
+	public String pretty() {
+		return boolSumS.pretty("<=");
+	}
 }
