@@ -21,7 +21,10 @@
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
+import junit.framework.Assert;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.variables.integer.IntVarEvent;
+import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -44,10 +47,70 @@ public class AltDisjunctive extends Disjunctive {
 	public void fireTaskRemoval(IRTask rtask) {
 		rules.remove(rtask);
 	}
+	@Override
+	public int getFilteredEventMask(int idx) {
+		return idx < taskIntVarOffset || idx >= taskIntVarOffset + getNbOptionalTasks() ? 
+				EVENT_MASK : IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
+	}
 	
 	@Override
+	public void awakeOnRem(int varIdx, int val) throws ContradictionException {
+		//applying second, and first rule
+		//To enable updating time window over a resource, if value removed from
+		//main domain affects hypothetical domain time window (enables handling domains with gaps).
+		if(varIdx < taskIntVarOffset){
+			if(varIdx < startOffset){
+				//start
+				if(rtasks[varIdx].isOptional() && val == rtasks[varIdx].getHTask().getEST()){
+					//Hypothetical boundary need to be updated
+					if(val < vars[varIdx].getSup()){
+						//Intersection exists, apply rule two
+						final int newEST = vars[varIdx].getNextDomainValue(val);
+						assert newEST > val;
+						rtasks[varIdx].setEST(newEST);
+					}else{
+						//applying rule 1 as no intersection exists.
+						rtasks[varIdx].remove();
+						rtasks[varIdx].fireRemoval();
+					}
+				}
+			}else if(varIdx < endOffset){
+				//end
+				if(rtasks[varIdx - startOffset].isOptional() && val == rtasks[varIdx - startOffset].getHTask().getLCT()){
+					//Hypothetical boundary need to be updated
+					if(val > vars[varIdx].getInf()){
+						final int newLCT = vars[varIdx].getPrevDomainValue(val);
+						assert newLCT < val;
+						rtasks[varIdx - startOffset].setLCT(newLCT);
+					}else{
+						//applying rule 1 as no intersection exists.
+						rtasks[varIdx - startOffset].remove();
+						rtasks[varIdx - startOffset].fireRemoval();
+					}
+				}
+			}
+		}
+		constAwake(false);
+	}
+
+	@Override
+	public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain)
+			throws ContradictionException {
+		 if (deltaDomain != null) {
+	            try {
+	                for (; deltaDomain.hasNext();) {
+	                    int val = deltaDomain.next();
+	                    awakeOnRem(idx, val);
+	                }
+	            } finally {
+	                deltaDomain.dispose();
+	            }
+	        }
+	}
+
+	@Override
 	public void propagate() throws ContradictionException {
-		checkHypotheticalDomains();
+		//checkHypotheticalDomains();
 		super.propagate();
 	}
 }
