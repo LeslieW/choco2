@@ -90,4 +90,29 @@ public class BoolSumTest {
 		}
 		s.propagate();
 	}
+
+    @Test
+	public void testEq2() throws ContradictionException{
+        final Model m = new CPModel();
+            m.addConstraint(Choco.eq(sum, 1));
+            final CPSolver s = new CPSolver();
+            s.read(m);
+            try{
+                for (int i = 0; i < bvars.length-3; i++) {
+                    s.getVar(bvars[i]).setVal(0);
+                }
+                s.propagate();
+            }catch (ContradictionException ignored){
+                Assert.fail();
+            }
+            for (int i = bvars.length-3; i < bvars.length-1; i++) {
+                s.getVar(bvars[i]).setVal(0);
+            }
+            s.getVar(bvars[bvars.length-1]).setVal(1);
+            try{
+                s.propagate();
+            }catch (ContradictionException ignored){
+                Assert.fail("incorrect behaviour");
+            }
+	}
 }
