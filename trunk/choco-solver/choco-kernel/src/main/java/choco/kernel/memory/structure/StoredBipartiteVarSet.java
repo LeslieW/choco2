@@ -92,6 +92,7 @@ public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteS
      * Ensure the capasities of array
      * @param expectedSize expected size
      */
+    @SuppressWarnings({"unchecked"})
     public void ensureCapacity(int expectedSize) {
         if(elementData.length < expectedSize){
             int newSize = elementData.length;
@@ -99,13 +100,13 @@ public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteS
                 newSize *= 2;
             }while(newSize < expectedSize);
 
-            @SuppressWarnings({"unchecked"})
-            E[] newElements = (E[])new Var[newSize];
-            System.arraycopy(elementData, 0, newElements, 0, elementData.length);
-            elementData = newElements;
+            E[] oldElements = elementData;
+            elementData = (E[])new Var[newSize];
+            System.arraycopy(oldElements, 0, elementData, 0, oldElements.length);
 
-            System.arraycopy(varsNotInstanciated, 0, newElements, 0, varsNotInstanciated.length);
-            varsNotInstanciated = newElements;
+            oldElements = varsNotInstanciated;
+            varsNotInstanciated = (E[])new Var[newSize];
+            System.arraycopy(oldElements, 0, varsNotInstanciated, 0, oldElements.length);
         }
     }
 

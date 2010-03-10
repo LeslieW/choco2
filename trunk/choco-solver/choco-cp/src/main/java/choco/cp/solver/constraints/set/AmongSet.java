@@ -385,9 +385,9 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
 
     private void ensureCapacity(int[] arr, int idx) {
         if (idx > arr.length) {
-            int[] newArr = new int[arr.length * 2 / 3 + 1];
-            System.arraycopy(arr, 0, newArr, 0, idx);
-            arr = newArr;
+            int[] newArr = arr;
+            arr = new int[arr.length * 2 / 3 + 1];
+            System.arraycopy(newArr, 0, arr, 0, idx);
         }
     }
 

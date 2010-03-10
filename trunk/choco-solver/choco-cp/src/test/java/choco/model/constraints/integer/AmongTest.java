@@ -139,7 +139,7 @@ public class AmongTest {
             Model m2 = new CPModel();
             IntegerVariable[] bools = new IntegerVariable[values.length];
             for(int j = 0; j< values.length; j++){
-                bools[j] = makeBooleanVar("b"+i);
+                bools[j] = makeBooleanVar("b"+j);
                 m2.addConstraint(reifiedConstraint(bools[j], eq(v, values[j])));
             }
             m2.addConstraint(eq(sum(bools), 1));

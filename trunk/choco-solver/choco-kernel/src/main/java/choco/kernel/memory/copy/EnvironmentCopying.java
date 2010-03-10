@@ -74,9 +74,9 @@ public class EnvironmentCopying extends AbstractEnvironment {
           while (n >= newSize) {
               newSize = (3 * newSize) / 2;
           }
-          RecomputableElement[] newStaticObjects = new RecomputableElement[newSize];
-          System.arraycopy(elements[type], 0, newStaticObjects, 0, elements[type].length);
-          elements[type] = newStaticObjects;
+          RecomputableElement[] oldElements = elements[type];
+          elements[type] = new RecomputableElement[newSize];
+          System.arraycopy(oldElements, 0, elements[type], 0, oldElements.length);
       }
     }
 
