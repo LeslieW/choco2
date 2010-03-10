@@ -112,27 +112,19 @@ public final class BoolSumStructure {
 	}
 
 	public final void putAllZero() throws ContradictionException {
-		int nbExpectedInst = bGap - nbz.get();
 		for (int i = 0; i < vars.length; i++) {
 			if (!vars[i].isInstantiated()) {
 				vars[i].instantiate(0, cstr, false);
-				nbExpectedInst--;
 			}
 		}
-		if (nbExpectedInst == 0) cstr.setEntailed();
-		else cstr.fail();
 	}
 
 	public final void putAllOne() throws ContradictionException {
-		int nbExpectedInst = bValue - nbo.get();
 		for (int i = 0; i < vars.length; i++) {
 			if (!vars[i].isInstantiated()) {
 				vars[i].instantiate(1, cstr, false);
-				nbExpectedInst--;
 			}
 		}
-		if (nbExpectedInst == 0) cstr.setEntailed();
-		else cstr.fail();
 	}
 
 
@@ -256,10 +248,14 @@ public final class BoolSumStructure {
 	}
 
 
-	@Override
-	public String toString() {
-		// TODO Auto-generated method stub
-		return super.toString();
+	public String pretty(String operator) {
+		StringBuilder b = new StringBuilder();
+		for (int i = 0; i < vars.length; i++) {
+			b.append(vars[i]).append(" + ");
+		}
+		b.delete(b.length()-2, b.length());
+		b.append(operator).append(' ').append(bValue);
+		return b.toString();
 	}
 
 

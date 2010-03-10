@@ -159,14 +159,14 @@ public class CumulativeManager extends AbstractResourceManager {
 		final Cumulative cstr = (
 				rdata.getNbOptionalTasks() > 0 ? 
 						new AltCumulative(solver, rdata.getRscName(), tasks, heights, usages, consumption, capacity, uppBound) :
-							new Cumulative(solver, rdata.getRscName(), tasks, heights ,  consumption, capacity, uppBound)
+							new Cumulative(solver, rdata.getRscName(), tasks, heights , consumption, capacity, uppBound)
 		);
 		cstr.getFlags().readCumulativeOptions(options);
 		constraints.addFirst(cstr);
 	}
 
 	protected final void makeConsCapaConstraint(CPSolver s) {
-		if(consumption.getSup()> capacity.getInf()) {
+		if(consumption.getSup() > capacity.getInf()) {
 			constraints.add(s.leq(consumption, capacity));
 		}
 	}
