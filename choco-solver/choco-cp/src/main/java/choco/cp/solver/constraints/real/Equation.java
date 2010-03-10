@@ -49,12 +49,15 @@ public class Equation extends AbstractLargeRealSConstraint {
   protected RealExp[][] subExpsWOX;
   protected int boxConsistencyDepth = 6;
 
-  public Equation(Solver solver, RealVar[] collectedVars, RealExp exp, RealInterval cste) {
+  private final Solver solver;
+
+  public Equation(final Solver solver, RealVar[] collectedVars, RealExp exp, RealInterval cste) {
     super(collectedVars);
     initEquation(exp, cste);
+      this.solver = solver;
   }
 
-  public Equation(Solver solver, RealVar[] collectedVars, RealExp exp) {
+  public Equation(final Solver solver, RealVar[] collectedVars, RealExp exp) {
     this(solver, collectedVars, exp, new RealIntervalConstant(0.0, 0.0));
   }
 
@@ -228,8 +231,21 @@ public class Equation extends AbstractLargeRealSConstraint {
   // ==== Constraint properties ====
 
 public boolean isSatisfied() {
-//    TODO : do a unplugged satisfaction checker
-    return false;
+    boolean ok1 = true;
+    solver.worldPushDuringPropagation();
+    try{
+        solver.propagate();
+    }catch (ContradictionException e){
+        ok1 = false;
+    }
+    solver.worldPopDuringPropagation();
+//    return ok1;
+    boolean ok2 = cste.getInf() <= exp.getInf();
+    ok2 &= exp.getSup() <= cste.getSup();
+//    return ok2;
+    assert(ok1 == ok2);
+    return ok1;
+
   }
 
   public boolean isConsistent() {

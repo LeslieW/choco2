@@ -38,7 +38,7 @@ public class RealMult extends AbstractRealBinTerm {
   }
 
   public String pretty() {
-    return exp1.pretty() + " * " + exp2.pretty();
+    return "("+exp1.pretty() + " * " + exp2.pretty()+")";
   }
 
   public void tighten() {

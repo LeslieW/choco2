@@ -103,13 +103,14 @@ public class DeterministicIndicedList<O extends IIndex>{
     /**
      * Ensure that the array has a correct size
      */
+    @SuppressWarnings({"unchecked"})
     private void ensureCapacity(){
         if(last >= objects.length){
             // treat the case where intial value = 1
             int cindT = objects.length * 3/2+1;
-            O[] objectsT = (O[]) newInstance(clazz, cindT);
-            System.arraycopy(objects, 0, objectsT, 0, last);
-            objects = objectsT;
+            O[] oldObjects = objects;
+            objects = (O[]) newInstance(clazz, cindT);
+            System.arraycopy(oldObjects, 0, objects, 0, last);
         }
     }
 

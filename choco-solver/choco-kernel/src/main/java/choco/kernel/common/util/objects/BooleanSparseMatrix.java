@@ -65,9 +65,9 @@ public class BooleanSparseMatrix implements ISparseMatrix{
 
     private void ensureCapacity(int nsize) {
         if(elements.length<nsize){
-            long[] newElm = new long[nsize * 3/2];
-            System.arraycopy(elements, 0, newElm, 0, elements.length);
-            elements = newElm;
+            long[] oldElements = new long[nsize * 3/2];
+            System.arraycopy(elements, 0, oldElements, 0, elements.length);
+            elements = oldElements;
         }
     }
 
