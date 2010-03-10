@@ -27,8 +27,6 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
@@ -178,7 +176,7 @@ public class Code4Doc3 {
     }
 
     public static void main(String[] args) {
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
+//        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         new Code4Doc3().cincreasingnvalue();
     }
 

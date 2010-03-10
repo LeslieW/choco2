@@ -167,8 +167,6 @@ public class EqTest {
 
     @Test
     public void test41(){
-
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         RealVariable x = new RealVariable("x", -.1, .1);
         RealVariable y = new RealVariable("y", -.1, .1);
         RealVariable z = new RealVariable("z", -.1, .1);
@@ -197,8 +195,6 @@ public class EqTest {
 
     @Test
     public void test42(){
-
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         RealVariable x = new RealVariable("x", 0, .05);
         RealVariable y = new RealVariable("y", -.05, .1);
         RealVariable z = new RealVariable("z", 0, .05);
