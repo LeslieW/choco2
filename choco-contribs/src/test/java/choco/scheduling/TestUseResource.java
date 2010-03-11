@@ -46,7 +46,7 @@ public class TestUseResource {
 
 	private IntegerVariable JobA_Res1 = makeBooleanVar("JobA_Res1");
 	private IntegerVariable JobA_Res2 = makeBooleanVar("JobA_Res2");
-	private IntegerVariable JobA_Res3 = makeBooleanVar("JobA_Res2");
+	private IntegerVariable JobA_Res3 = makeBooleanVar("JobA_Res3");
 	private IntegerVariable JobB_Res1 = makeBooleanVar("JobB_Res1");
 	private IntegerVariable JobB_Res2 = makeBooleanVar("JobB_Res2");
 	private IntegerVariable JobC_Res1 = makeBooleanVar("JobC_Res1");
