@@ -826,10 +826,8 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 		@Override
 		public boolean setEST(int val) throws ContradictionException {
-			if( isOptional() && setHEST(val)){
-				checkHConsistency();
-				return true ;
-			}
+			if( isOptional())
+				return setHEST(val);
 			else return super.setEST(val);
 		}
 

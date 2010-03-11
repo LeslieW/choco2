@@ -1,5 +1,9 @@
 package choco.cp.solver.constraints.global.scheduling;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
 import choco.Choco;
 import choco.cp.solver.constraints.integer.bool.sum.BoolSumStructure;
 import choco.cp.solver.variables.integer.IntVarEvent;
@@ -76,8 +80,19 @@ public abstract class AbstractUseResourcesSConstraint extends AbstractTaskSConst
 	}
 
 	protected final void filterLatestCompletionTime(int k) throws ContradictionException {
-		filterLatestCompletionTime(); //TODO
+		ArrayList <Integer> lctOp = new ArrayList<Integer>();
+		for(IRTask r: rtasks){
+			if(r.isOptional())
+				lctOp.add(r.getHTask().getLCT());
+		}
+		Comparator<Integer> c = Collections.reverseOrder();
+		Collections.sort(lctOp, c);
+		assert k <= lctOp.size();
+		final int kMaxLCT = lctOp.get(k-1);
 
+		if(kMaxLCT < taskvars[TASK_IDX].getLCT()){
+			vars[getEndIndex(TASK_IDX)].updateSup(kMaxLCT, this, false);
+		}
 	}
 
 	private void filterEarliestStartingTime() throws ContradictionException {
@@ -100,7 +115,19 @@ public abstract class AbstractUseResourcesSConstraint extends AbstractTaskSConst
 
 
 	protected void filterEarliestStartingTime(int k) throws ContradictionException {
-		filterEarliestStartingTime(); //TODO
+		ArrayList<Integer> estOp = new ArrayList<Integer>();
+		for(IRTask r: rtasks){
+			if(r.isOptional())
+				estOp.add(r.getHTask().getEST());
+		}
+		//sorting EST in ascending order
+		Collections.sort(estOp);
+		//get k-th minimum
+		assert k <= estOp.size();
+		final int kMinEST = estOp.get(k-1);
+		if(kMinEST > taskvars[TASK_IDX].getEST()){
+			vars[getStartIndex(TASK_IDX)].updateInf(kMinEST, this, false);
+		}
 	}
 
 	@Override
