@@ -32,7 +32,6 @@ import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -264,9 +263,6 @@ public class AllDifferentTest{
         vars[3] = Choco.makeIntVar("v5", 2, 3);
         vars[4] = Choco.makeIntVar("v6", 0, 1);
 
-        int[] low = new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-        int[] upp = new int[]{1,1,1,1,1,1,1,1,1,1,1,1,1,1};
-
         Constraint c = Choco.allDifferent(vars);
         m.addConstraint(
                 c
@@ -282,7 +278,8 @@ public class AllDifferentTest{
         s2.read(m);
 
         try {
-            ((AbstractIntSConstraint)s2.getCstr(c)).awake();
+//            ((AbstractIntSConstraint)s2.getCstr(c)).awake(); <= AWAKE doesn't ACTIVE!!
+            s2.propagate();
             s2.getVar(vars[4]).removeVal(1, null, true);
         } catch (ContradictionException e) {
             Assert.fail();

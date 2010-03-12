@@ -183,8 +183,8 @@ public class BoolLinCombTest {
         int nbSol1 = nbSol;
         int nbNodes1 = nbNodes;
         testLinComb(n, op, true, seed);
-        assertEquals(nbSol1, nbSol);
-        assertEquals(nbNodes1, nbNodes);
+        assertEquals("n:"+n+" seed:"+seed,nbSol1, nbSol);
+        assertEquals("n:"+n+" seed:"+seed,nbNodes1, nbNodes);
     }
 
 	private void testBothSumCombVer(int n, int op, int seed) {
@@ -192,8 +192,8 @@ public class BoolLinCombTest {
 	    int nbSol1 = nbSol;
 	    int nbNodes1 = nbNodes;
 	    testSumComb(n, op, true, seed);
-	    assertEquals(nbSol1, nbSol);
-	    assertEquals(nbNodes1, nbNodes);
+	    assertEquals("n:"+n+" seed:"+seed, nbSol1, nbSol);
+	    assertEquals("n:"+n+" seed:"+seed, nbNodes1, nbNodes);
 	}
 
 
@@ -272,8 +272,7 @@ public class BoolLinCombTest {
 			} else if (op == IntLinComb.EQ) {
 	              s.post(makeIntLinComb(s.getVar(vars),sumcoef,-k,IntLinComb.EQ));
 	          } else if (op == IntLinComb.LEQ) {
-	              ArrayUtils.inverseSign(sumcoef);
-	              s.post(makeIntLinComb(s.getVar(vars),sumcoef,k,IntLinComb.GEQ));
+	              s.post(makeIntLinComb(s.getVar(vars),sumcoef,-k,IntLinComb.LEQ));
 	          }
 	      }
 	      s.setVarIntSelector(new RandomIntVarSelector(s, s.getVar(vars), seed + 3));

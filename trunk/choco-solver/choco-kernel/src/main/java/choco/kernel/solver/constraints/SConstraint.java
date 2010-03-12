@@ -105,4 +105,11 @@ public interface SConstraint<V extends Var> extends Cloneable,IPretty {
 
 	int getConstraintIdx(int idx);
 
+
+    /**
+     * Return the type of constraint, ie the type of variable involved in the constraint
+     * @return
+     */
+    public SConstraintType getConstraintType();
+
 }

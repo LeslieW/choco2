@@ -3,19 +3,15 @@ package samples;
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.integer.IntLinComb2;
-import choco.cp.solver.constraints.integer.IntSum;
 import choco.cp.solver.search.integer.valselector.MaxVal;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.util.comparator.IPermutation;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.common.util.tools.PermutationUtils;
-import choco.kernel.memory.IEnvironment;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import samples.Examples.PatternExample;
 
@@ -122,7 +118,7 @@ public class Transportation extends PatternExample {
 
 	@Override
 	public void buildSolver() {
-		CPSolver solver = new CPSolver2();
+		CPSolver solver = new CPSolver();
 		_s = solver;
 		_s.read(_m);
 		//System.out.println(_s.pretty());
@@ -174,42 +170,5 @@ public class Transportation extends PatternExample {
 			}
 			System.out.println(s+" ms");
 	}
-
-} 
-//37138 ms
-
-class CPSolver2 extends CPSolver {
-
-	public CPSolver2() {
-		super();
-	}
-
-	public CPSolver2(IEnvironment env) {
-		super(env);
-	}
-
-	public final static boolean isIntSum(int[] sortedCoeffs, int nbPositiveCoeffs) {
-		for (int i = 0; i < nbPositiveCoeffs; i++) {
-			if( sortedCoeffs[i] != 1) return false;
-		}
-		for (int i = nbPositiveCoeffs; i < sortedCoeffs.length; i++) {
-			if(sortedCoeffs[i] != -1) return false;
-		}
-		return true;
-	}
-	
-	@Override
-	protected SConstraint createIntLinComb(IntDomainVar[] sortedVars,
-			int[] sortedCoeffs, int nbPositiveCoeffs, int c, int linOperator) {
-		if (isBoolLinComb(sortedVars, sortedCoeffs, linOperator)) {
-			return createBoolLinComb(sortedVars, sortedCoeffs, c, linOperator);
-		} else if ( isIntSum(sortedCoeffs, nbPositiveCoeffs)) {
-			return new IntSum(sortedVars, sortedCoeffs, nbPositiveCoeffs, c);
-		} else {
-			return new IntLinComb2(sortedVars, sortedCoeffs, nbPositiveCoeffs, c);
-		}
-	}
-
-
 
 }

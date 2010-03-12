@@ -36,6 +36,7 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.SConstraintType;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 
+import java.text.MessageFormat;
 import java.util.Set;
 
 /**
@@ -65,13 +66,13 @@ public class ReifiedManager extends MixedConstraintManager {
                     decomp = true;
                 }
                 SConstraint[] ct = ((CPSolver)solver).makeSConstraintAndOpposite(c, decomp);
-                switch (switcher((AbstractSConstraint)ct[0], (AbstractSConstraint)ct[1])) {
+                switch (switcher(ct[0], ct[1])) {
                     case INT:
                         return new ReifiedIntSConstraint(solver.getVar((IntegerVariable)variables[0]), (AbstractIntSConstraint)ct[0], (AbstractIntSConstraint)ct[1]);
                     case OTHER:
                         return new ReifiedIntSetSConstraint(solver.getVar((IntegerVariable)variables[0]), (AbstractSConstraint)ct[0], (AbstractSConstraint)ct[1]);
-                    case REAL:
-                        throw new UnsupportedOperationException("reifiedIntConstraint cannot be used without IntConstraint");
+                    default:
+                        throw new UnsupportedOperationException(MessageFormat.format("{0} or {1} can not be reified", ct[0].pretty(), ct[1].pretty()));
                 }
             }else{
                 Constraint c = constraints[0];
@@ -80,15 +81,15 @@ public class ReifiedManager extends MixedConstraintManager {
                 if (c.getOptions().contains("cp:decomp")) {
                     decomp = true;
                 }
-                AbstractSConstraint ct = (AbstractSConstraint)((CPSolver)solver).makeSConstraint(c, decomp);
-                AbstractSConstraint oppct = (AbstractSConstraint)((CPSolver)solver).makeSConstraint(oppc, decomp);
+                SConstraint ct = ((CPSolver)solver).makeSConstraint(c, decomp);
+                SConstraint oppct = ((CPSolver)solver).makeSConstraint(oppc, decomp);
                 switch (switcher(ct, oppct)) {
                     case INT:
                         return new ReifiedIntSConstraint(solver.getVar((IntegerVariable)variables[0]), (AbstractIntSConstraint)ct, (AbstractIntSConstraint)oppct);
                     case OTHER:
-                        return new ReifiedIntSetSConstraint(solver.getVar((IntegerVariable)variables[0]), ct, oppct);
-                    case REAL:
-                        throw new UnsupportedOperationException("reifiedIntConstraint cannot be used without IntConstraint");
+                        return new ReifiedIntSetSConstraint(solver.getVar((IntegerVariable)variables[0]), (AbstractSConstraint)ct, (AbstractSConstraint)oppct);
+                    default:
+                        throw new UnsupportedOperationException(MessageFormat.format("{0} or {1} can not be reified", ct.pretty(), oppct.pretty()));
                 }
             }
         }
@@ -99,7 +100,7 @@ public class ReifiedManager extends MixedConstraintManager {
         INT, REAL, OTHER
     }
 
-    private static Reif switcher(AbstractSConstraint cons, AbstractSConstraint oppcons){
+    private static Reif switcher(SConstraint cons, SConstraint oppcons){
         SConstraintType c_int = cons.getConstraintType();
         SConstraintType oc_int = oppcons.getConstraintType();
         if(c_int.canBeReified() && oc_int.canBeReified()){

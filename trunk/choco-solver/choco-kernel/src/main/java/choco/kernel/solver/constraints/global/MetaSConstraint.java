@@ -6,6 +6,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.SConstraintType;
 import choco.kernel.solver.constraints.global.scheduling.IResource;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -151,4 +152,14 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 	public Iterator<TaskVar> getTaskIterator() {
 		return IteratorUtils.iterator(tasks);
 	}
+
+    /**
+     * Return the type of constraint, ie the type of variable involved in the constraint
+     *
+     * @return
+     */
+    @Override
+    public SConstraintType getConstraintType() {
+        return SConstraintType.META;
+    }
 }

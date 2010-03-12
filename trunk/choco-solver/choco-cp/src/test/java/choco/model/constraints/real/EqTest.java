@@ -25,8 +25,6 @@ package choco.model.constraints.real;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.real.RealVariable;
@@ -134,8 +132,6 @@ public class EqTest {
 
     @Test
     public void test4(){
-
-        ChocoLogging.setVerbosity(Verbosity.SOLUTION);
         RealVariable x = new RealVariable("x", -.1, .1);
         RealVariable y = new RealVariable("y", -.1, .1);
         RealVariable z = new RealVariable("z", -.1, .1);

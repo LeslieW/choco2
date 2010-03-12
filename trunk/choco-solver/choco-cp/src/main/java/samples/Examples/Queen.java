@@ -36,7 +36,6 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.varselector.MinDomain;
-import choco.kernel.memory.recomputation.EnvironmentRecomputation;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solution;
 
@@ -94,9 +93,6 @@ public class Queen extends PatternExample {
 	public void prettyOut() {
 		LOGGER.info("feasible: " + _s.isFeasible());
 		LOGGER.info("nbSol: " + _s.getNbSolutions());
-		if (_s.getEnvironment() instanceof EnvironmentRecomputation) {
-			LOGGER.info("nbSave: " + ((EnvironmentRecomputation) _s.getEnvironment()).getNbSaves());
-		}
 		// Display
 		// -------
 		StringBuffer ret = new StringBuffer();

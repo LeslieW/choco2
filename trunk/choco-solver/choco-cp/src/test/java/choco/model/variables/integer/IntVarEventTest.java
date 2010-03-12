@@ -117,12 +117,12 @@ public class IntVarEventTest  {
     s.post(c1);
     s.post(c2);
     assertEquals(2, pe.getNbPendingEvents());
-    HashSet expectedSet = new HashSet();
+    HashSet<SConstraint> expectedSet = new HashSet<SConstraint>();
     expectedSet.add(c1);
     expectedSet.add(c2);
-    HashSet tmp = new HashSet();
-    tmp.add(pe.getPendingEvent(0).getModifiedObject());
-    tmp.add(pe.getPendingEvent(1).getModifiedObject());
+    HashSet<SConstraint> tmp = new HashSet<SConstraint>();
+    tmp.add((SConstraint)pe.getPendingEvent(0).getModifiedObject());
+    tmp.add((SConstraint)pe.getPendingEvent(1).getModifiedObject());
     assertEquals(expectedSet, tmp);
     try {
       s.propagate();
@@ -160,12 +160,12 @@ public class IntVarEventTest  {
     s.post(c1);
     s.post(c2);
     assertEquals(2, pe.getNbPendingEvents());
-    HashSet expectedSet = new HashSet();
+    HashSet<SConstraint> expectedSet = new HashSet<SConstraint>();
     expectedSet.add(c1);
     expectedSet.add(c2);
-    HashSet tmp = new HashSet();
-    tmp.add(pe.getPendingEvent(0).getModifiedObject());
-    tmp.add(pe.getPendingEvent(1).getModifiedObject());
+    HashSet<SConstraint> tmp = new HashSet<SConstraint>();
+    tmp.add((SConstraint)pe.getPendingEvent(0).getModifiedObject());
+    tmp.add((SConstraint)pe.getPendingEvent(1).getModifiedObject());
     assertEquals(expectedSet, tmp);
     try {
       s.propagate();
@@ -186,7 +186,7 @@ public class IntVarEventTest  {
     PartiallyStoredVector constraints = y.getConstraintVector();
     DisposableIntIterator cit = constraints.getIndexIterator();
     assertTrue(cit.hasNext());
-    assertEquals(Constant.STORED_OFFSET + 0, cit.next());
+    assertEquals(Constant.STORED_OFFSET, cit.next());
     assertTrue(cit.hasNext());
     assertEquals(Constant.STORED_OFFSET + 1, cit.next());
     assertFalse(cit.hasNext());

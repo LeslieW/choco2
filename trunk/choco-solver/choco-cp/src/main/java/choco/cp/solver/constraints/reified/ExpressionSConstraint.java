@@ -33,6 +33,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.SConstraintType;
 import choco.kernel.solver.constraints.integer.extension.BinRelation;
 import choco.kernel.solver.constraints.integer.extension.TuplesTest;
 import choco.kernel.solver.constraints.reified.BoolNode;
@@ -343,12 +344,8 @@ public class ExpressionSConstraint extends TuplesTest implements SConstraint, Bi
         return expr.pretty();
     }
 
-    protected void setIndexes(IntDomainVar[] vs) {
-        //do nothing, specific handling for expressions
-    }
-
-    public ConstraintType getType() {
-        return ConstraintType.EXPRESSION;
+    public SConstraintType getConstraintType() {
+        return SConstraintType.EXPRESSION;
     }
 
     public void setType(ConstraintType type) {

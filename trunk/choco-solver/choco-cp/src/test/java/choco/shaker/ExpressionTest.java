@@ -466,7 +466,7 @@ public class ExpressionTest {
         checker(true);
     }
 
-    @Test
+    @Test(expected=UnsupportedOperationException.class)
     public void testExpression18() {
         m  = new CPModel();
         IntegerVariable[] v = new IntegerVariable[4];

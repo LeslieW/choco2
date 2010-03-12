@@ -33,14 +33,20 @@ package choco.model.constraints.integer;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.constraints.integer.IntLinComb;
+import choco.cp.solver.constraints.integer.NotEqualXYC;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.After;
+import org.junit.Assert;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class IntLinCombTest {
@@ -388,7 +394,123 @@ public class IntLinCombTest {
         s.solve();
         assertTrue(s.isFeasible());
     }
-    
+
+    @Test
+    public void testXavier1(){
+        int n = 2 ;
+        final CPSolver s1 = new CPSolver();
+        final CPSolver s2 = new CPSolver();
+
+        final IntDomainVar[] lvars1 = new IntDomainVar[n];
+        final IntDomainVar[] lvars2 = new IntDomainVar[n];
+
+        for(int i = 0; i < n; i++){
+            lvars1[i] = s1.createEnumIntVar("v_"+i, 1, 2*n);
+            lvars2[i] = s2.createEnumIntVar("v_"+i, 1, 2*n);
+        }
+//        lvars2[n] = s2.createEnumIntVar("v_"+n, 1, 1);
+        final SConstraint c11 = new IntLinComb(lvars1, new int[]{1,-1}, 1, 0, IntLinComb.GEQ);
+        final SConstraint c12 = new NotEqualXYC(lvars1[0], lvars1[1], 0);
+        s1.post(c11);
+        s1.post(c12);
+
+        final SConstraint c2 = new IntLinComb(lvars2,new int[]{1,-1}, 1, -1, IntLinComb.GEQ);
+        s2.post(c2);
+
+        s1.solveAll();
+        s2.solveAll();
+
+        Assert.assertEquals("not same number of solution", s1.getSolutionCount(), s2.getSolutionCount());
+
+    }
+
+    @Test
+    public void testXavier2(){
+        int n = 2 ;
+        final CPSolver s1 = new CPSolver();
+        final CPSolver s2 = new CPSolver();
+
+        final IntDomainVar[] lvars1 = new IntDomainVar[n];
+        final IntDomainVar[] lvars2 = new IntDomainVar[n];
+
+        for(int i = 0; i < n; i++){
+            lvars1[i] = s1.createEnumIntVar("v_"+i, 1, 2*n);
+            lvars2[i] = s2.createEnumIntVar("v_"+i, 1, 2*n);
+        }
+//        lvars2[n] = s2.createEnumIntVar("v_"+n, 1, 1);
+        final SConstraint c11 = new IntLinComb(lvars1, new int[]{1,-1}, 1, 0, IntLinComb.LEQ);
+        final SConstraint c12 = new NotEqualXYC(lvars1[0], lvars1[1], 0);
+        s1.post(c11);
+        s1.post(c12);
+
+        final SConstraint c2 = new IntLinComb(lvars2,new int[]{1,-1}, 1, 1, IntLinComb.LEQ);
+        s2.post(c2);
+
+        s1.solveAll();
+        s2.solveAll();
+
+        Assert.assertEquals("not same number of solution", s1.getSolutionCount(), s2.getSolutionCount());
+
+    }
+
+    @Test
+    public void testXavier3(){
+        int n = 10;
+        final CPSolver s1 = new CPSolver();
+        final CPSolver s2 = new CPSolver();
+
+        final IntDomainVar[] lvars1 = new IntDomainVar[n];
+        final IntDomainVar[] lvars2 = new IntDomainVar[n];
+
+        int[] coeffs = new int[n];
+        Arrays.fill(coeffs, 1);
+        for(int i = 0; i < n; i++){
+            lvars1[i] = s1.createEnumIntVar("v_"+i, 0, 1);
+            lvars2[i] = s2.createEnumIntVar("v_"+i, 0, 1);
+        }
+//        lvars2[n] = s2.createEnumIntVar("v_"+n, 1, 1);
+        final SConstraint c1 = new IntLinComb(lvars1, coeffs, n, -n/2, IntLinComb.NEQ);
+        s1.post(c1);
+
+        final SConstraint c2 = s2.neq(s2.scalar(lvars2, coeffs), n/2);
+        s2.post(c2);
+
+        s1.solveAll();
+        s2.solveAll();
+
+        Assert.assertEquals("not same number of solution", s1.getSolutionCount(), s2.getSolutionCount());
+
+    }
+
+    @Test
+    public void testXavier4(){
+        int n = 10;
+        final CPSolver s1 = new CPSolver();
+        final CPSolver s2 = new CPSolver();
+
+        final IntDomainVar[] lvars1 = new IntDomainVar[n];
+        final IntDomainVar[] lvars2 = new IntDomainVar[n];
+
+        int[] coeffs = new int[n];
+        Arrays.fill(coeffs, 1);
+        for(int i = 0; i < n; i++){
+            lvars1[i] = s1.createEnumIntVar("v_"+i, 0, 1);
+            lvars2[i] = s2.createEnumIntVar("v_"+i, 0, 1);
+        }
+//        lvars2[n] = s2.createEnumIntVar("v_"+n, 1, 1);
+        final SConstraint c1 = new IntLinComb(lvars1, coeffs, n, -n/2, IntLinComb.EQ);
+        s1.post(c1);
+
+        final SConstraint c2 = s2.eq(s2.scalar(lvars2, coeffs), n/2);
+        s2.post(c2);
+
+        s1.solveAll();
+        s2.solveAll();
+
+        Assert.assertEquals("not same number of solution", s1.getSolutionCount(), s2.getSolutionCount());
+
+    }
+
 }
 
 /*

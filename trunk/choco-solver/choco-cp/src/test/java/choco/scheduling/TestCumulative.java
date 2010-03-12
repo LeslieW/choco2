@@ -22,48 +22,31 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.scheduling;
 
-import static choco.Choco.*;
-import static choco.Choco.constant;
-import static choco.Choco.constantArray;
-import static choco.Choco.cumulative;
-import static choco.Choco.cumulativeMax;
-import static choco.Choco.eq;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.makeIntVarArray;
-import static choco.Choco.makeTaskVar;
-import static choco.Choco.sum;
-import static choco.cp.solver.SettingType.DECOMP;
-import static choco.cp.solver.SettingType.GLOBAL;
-import static choco.cp.solver.SettingType.MIXED;
-import static choco.cp.solver.SettingType.TASK_INTERVAL;
-import static choco.cp.solver.SettingType.TASK_INTERVAL_SLOW;
-import static choco.cp.solver.SettingType.VHM_CEF_ALGO_N2K;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.*;
-
-import java.util.Arrays;
-import java.util.logging.Logger;
-
-import org.junit.Ignore;
-import org.junit.Test;
-
-import samples.Examples.PatternExample;
-import samples.scheduling.CumulativeWebEx;
-
 import choco.Choco;
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
+import static choco.cp.solver.SettingType.*;
 import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.constraints.global.scheduling.Cumulative;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.tools.MathUtils;
+import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import org.junit.Assert;
+import static org.junit.Assert.*;
+import org.junit.Ignore;
+import org.junit.Test;
+import samples.scheduling.CumulativeWebEx;
+
+import java.util.Arrays;
+import java.util.logging.Logger;
 
 
 class CumulProblem extends AbstractTestProblem {
@@ -145,13 +128,13 @@ public class TestCumulative {
 		launchAllRules(cp, NB_TEST, nbSol, nbNodes, true);
 	}
 
-	private final static  void setOption(CumulProblem cp, SettingType opt) {
+	private static  void setOption(CumulProblem cp, SettingType opt) {
 		cp.rsc.getOptions().clear();
 		cp.rsc.addOption(opt.getOptionName());
 	}
 
 	
-	private final static  void solve(CumulProblem cp, final int nbSol, int nbNodes) {
+	private static  void solve(CumulProblem cp, final int nbSol, int nbNodes) {
 		cp.generateSolver();
 		//LOGGER.info(cp.solver.pretty());
 		SchedUtilities.solveRandom(cp.solver, nbSol, nbNodes, cp.rsc.getOptions()+": "+SETTINGS.toSettingsLabels());
@@ -664,4 +647,79 @@ public class TestCumulative {
 		cwe.execute(Boolean.TRUE);
 		assertEquals("Cumulative Website Example",obj, cwe._s.getObjectiveValue());
 	}
+
+    @Test
+    public void testKLS(){
+        // Build model
+		Model model = new CPModel();
+		// Build a solver
+		Solver s = new CPSolver();
+
+		// init DATA
+
+		int maxL = 2401;
+		int maxW = 2431;
+
+		IntegerVariable [] SXs = new IntegerVariable [2];
+		IntegerVariable [] LXs = new IntegerVariable [2];
+		IntegerVariable [] EXs = new IntegerVariable [2];
+
+		IntegerVariable [] SYs = new IntegerVariable [2];
+		IntegerVariable [] LYs = new IntegerVariable [2];
+		IntegerVariable [] EYs = new IntegerVariable [2];
+
+		int[] val = {800, 1200};
+
+		for(int i = 0; i < 2; i++){
+			SXs[i] = Choco.makeIntVar("SX"+i, 1, 1601, "cp: enum");
+			model.addVariable(SXs[i]);
+			LXs[i] = Choco.makeIntVar("LX"+i, val);
+			model.addVariable(LXs[i]);
+			EXs[i] = Choco.makeIntVar("EX"+i, 801, 2401, "cp: enum");
+			model.addVariable(EXs[i]);
+
+			SYs[i] = Choco.makeIntVar("SY"+i, 1, 1631, "cp: enum");
+			model.addVariable(SYs[i]);
+			LYs[i] = Choco.makeIntVar("LY"+i, val);
+			model.addVariable(LYs[i]);
+			EYs[i] = Choco.makeIntVar("EY"+i, 801, 2431, "cp: enum");
+			model.addVariable(EYs[i]);
+		}
+
+		// Cumulative on X axis
+
+		IntegerVariable mw = Choco.makeIntVar("MaxW", 0, maxW);
+
+		Constraint cumX = Choco.cumulative(SXs,          // Starts
+				                                  EXs,          // Ends
+				                                  LXs,          // Widths as durations
+				                                  LYs,          // Heights
+				                                  mw, 	    	// capacity of the constraint
+												  "cp:cumul:ti");
+
+
+		model.addConstraint(cumX);
+
+		// read the model
+    	s.read(model);
+
+		// Cumulative on Y axis
+    	IntegerVariable ml = Choco.makeIntVar("MaxL", 0, maxL);
+
+    	Constraint cumY = Choco.cumulative(SYs,          // Starts
+				                                  EYs,          // Ends
+				                                  LYs,          // Widths as durations
+				                                  LXs,          // Heights
+				                                  ml,
+				                                  "cp:cumul:ti");
+
+    	model.addConstraint(cumY);
+        s.read(model);
+       	try {                                              // Propagate
+    		s.propagate();
+    	} catch (ContradictionException e) {
+			Assert.fail();
+    	}
+        Assert.assertEquals(2431, s.getVar(EYs[1]).getSup());
+    }
 }

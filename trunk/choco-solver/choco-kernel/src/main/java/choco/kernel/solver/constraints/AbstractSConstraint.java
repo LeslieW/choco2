@@ -286,11 +286,7 @@ public abstract class AbstractSConstraint<V extends Var> extends Propagator impl
             }
         }
         return notInst;
-    }
-
-    public abstract SConstraintType getConstraintType();
-
-    
+    }    
 
     @Override
 	public String toString() {
