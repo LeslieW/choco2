@@ -132,4 +132,14 @@ public Formula(Var[] vars, int[] coeffs, int c1, int c2, int c3, int cop) {
     public String pretty() {
     return null;
   }
+
+    /**
+     * Return the type of constraint, ie the type of variable involved in the constraint
+     *
+     * @return
+     */
+    @Override
+    public SConstraintType getConstraintType() {
+        throw new UnsupportedOperationException();
+    }
 }

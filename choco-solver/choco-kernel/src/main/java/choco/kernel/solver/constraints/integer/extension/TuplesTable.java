@@ -23,6 +23,8 @@
 
 package choco.kernel.solver.constraints.integer.extension;
 
+import choco.kernel.solver.SolverException;
+
 import java.util.BitSet;
 
 public class TuplesTable extends ConsistencyRelation implements LargeRelation {
@@ -68,14 +70,10 @@ public class TuplesTable extends ConsistencyRelation implements LargeRelation {
       totalSize *= sizes[i];
     }
 
-    if(totalSize/8 > 50*1024*1024)
-        LOGGER.warning("Tuples requiered over 50Mo of memory...");
-
-
-    if (totalSize < 0)
-      table = new BitSet();
-    else
-      table = new BitSet(totalSize);
+  if(totalSize < 0 || (totalSize/8 > 50*1024*1024)){
+      throw new SolverException("Tuples requiered over 50Mo of memory...");
+  }
+  table = new BitSet(totalSize);
   }
 
   public boolean checkTuple(int[] tuple) {

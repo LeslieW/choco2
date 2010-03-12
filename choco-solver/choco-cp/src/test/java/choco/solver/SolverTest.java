@@ -27,6 +27,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.StringUtils;
+import choco.kernel.memory.MemoryException;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -178,7 +179,7 @@ public class SolverTest {
 
 	}
 
-    @Test
+    @Test(expected = MemoryException.class)
     public void testDeletSetConstraint(){
         SetVar sv = solver.createBoundSetVar("sv", 0, 10);
         IntDomainVar iv = solver.createEnumIntVar("sv", 0, 10);

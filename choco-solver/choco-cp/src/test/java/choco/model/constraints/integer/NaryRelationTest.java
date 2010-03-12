@@ -33,6 +33,7 @@ import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.integer.extension.LargeRelation;
 import choco.kernel.solver.constraints.integer.extension.TuplesTest;
 import org.junit.After;
@@ -775,7 +776,7 @@ public class NaryRelationTest {
         
     }
 
-    @Test
+    @Test(expected = SolverException.class)
     public void test_petersmat(){
         Model m = new CPModel();
         Solver s = new CPSolver();

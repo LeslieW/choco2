@@ -39,14 +39,10 @@ import choco.cp.solver.constraints.global.scheduling.PrecedenceDisjoint;
 import choco.cp.solver.constraints.global.scheduling.PrecedenceVDisjoint;
 import choco.cp.solver.constraints.global.scheduling.PrecedenceVSDisjoint;
 import choco.cp.solver.constraints.integer.*;
-import choco.cp.solver.constraints.integer.bool.BoolIntLinComb;
 import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
-import choco.cp.solver.constraints.integer.bool.sum.EqBoolSum;
-import choco.cp.solver.constraints.integer.bool.sum.GeqBoolSum;
-import choco.cp.solver.constraints.integer.bool.sum.LeqBoolSum;
-import choco.cp.solver.constraints.integer.bool.sum.NeqBoolSum;
 import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
 import choco.cp.solver.constraints.integer.extension.*;
+import choco.cp.solver.constraints.integer.intlincomb.IntLinCombFactory;
 import choco.cp.solver.constraints.real.Equation;
 import choco.cp.solver.constraints.real.MixedEqXY;
 import choco.cp.solver.constraints.real.exp.*;
@@ -81,14 +77,12 @@ import choco.kernel.common.IndexFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.iterators.DisposableIterator;
-import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.common.util.tools.StringUtils;
 import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
 import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
-import choco.kernel.memory.recomputation.EnvironmentRecomputation;
 import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.memory.structure.StoredBipartiteVarSet;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
@@ -404,7 +398,6 @@ public class CPSolver implements Solver {
 	 * Temporary attached goal for the future generated strategy.
 	 */
 	public AbstractIntBranchingStrategy tempGoal;
-
 	/**
 	 * Another way to define search is by using the api similar to ilog on
 	 * search goals.
@@ -444,11 +437,7 @@ public class CPSolver implements Solver {
 		this.environment = env;
 		this.constraints = env.makePartiallyStoredVector();
 		indexfactory = new IndexFactory();
-		if (env instanceof EnvironmentRecomputation) {
-			setRecomputation(true);
-		}
 		this.indexOfLastInitializedStaticConstraint = env.makeInt(PartiallyStoredVector.getFirstStaticIndex() - 1);
-		
 	}
 	 
     protected void clearVarLists() {
@@ -562,8 +551,16 @@ public class CPSolver implements Solver {
 	}
 
 	public void read(Model m) {
-		this.model = (CPModel) m;
-		initReading();
+        if(this.model==null){
+		    this.model = (CPModel) m;
+		    initReading();
+        }else{
+            if(this.model != m){
+                LOGGER.severe("Reading two different models is forbidden!");
+                throw new SolverException("Reading two different models is forbidden!");
+            }
+            LOGGER.warning("Reading a model twice or more is strongly inadvisable!");
+        }
 		mod2sol.readVariables(model);
 		mod2sol.readDecisionVariables();
 		mod2sol.readConstraints(model);
@@ -1246,7 +1243,7 @@ public class CPSolver implements Solver {
 		if (strategy instanceof AbstractOptimize) {
 			return ( (AbstractOptimize) strategy).getObjectiveValue();
 		}
-		return (Number) null;
+		return null;
 	}
 
 	@Override
@@ -1256,7 +1253,8 @@ public class CPSolver implements Solver {
 
 	@Override
 	public boolean existsSolution() {
-		return strategy == null ? false : strategy.existsSolution();
+        if (strategy != null && strategy.existsSolution()) return true;
+        else return false;
 	}
 
 
@@ -1668,7 +1666,8 @@ public class CPSolver implements Solver {
 	 * Checks if a limit has been encountered
 	 */
 	public boolean isEncounteredLimit() {
-		return strategy == null ? false : strategy.isEncounteredLimit();
+        if (strategy != null && strategy.isEncounteredLimit()) return true;
+        else return false;
 	}
 
 	/**
@@ -2343,10 +2342,9 @@ public class CPSolver implements Solver {
 	 */
 	public boolean checkDecisionVariables() {
 		boolean isOk = true;
-        boolean check;
         if (intDecisionVars != null) {
 			for (IntDomainVar intDecisionVar : intDecisionVars) {
-                isOk &= check = intDecisionVar.isInstantiated();
+                isOk &= intDecisionVar.isInstantiated();
 //                if(LOGGER.isLoggable(Level.CONFIG)){
 //                    printFail(intDecisionVar.getName(), check);
 //                }
@@ -2355,7 +2353,7 @@ public class CPSolver implements Solver {
 
 		if (setDecisionVars != null) {
 			for (SetVar setDecisionVar : setDecisionVars) {
-				isOk &= check = setDecisionVar.isInstantiated();
+				isOk &= setDecisionVar.isInstantiated();
 //                if(LOGGER.isLoggable(Level.CONFIG)){
 //                    printFail(setDecisionVar.getName(), check);
 //                }
@@ -2364,7 +2362,7 @@ public class CPSolver implements Solver {
 
 		if (floatDecisionVars != null) {
 			for (RealVar floatDecisionVar : floatDecisionVars) {
-				isOk &= check = floatDecisionVar.isInstantiated();
+				isOk &= floatDecisionVar.isInstantiated();
 //                if(LOGGER.isLoggable(Level.CONFIG)){
 //                    printFail(floatDecisionVar.getName(), check);
 //                }
@@ -2602,23 +2600,6 @@ public class CPSolver implements Solver {
 		}
 	}
 
-    private boolean checkWithPropagate() {
-        if (nogoodStore != null)
-            nogoodStore.setPassive();
-        try {
-            propagate();
-        } catch (ContradictionException e) {
-            // TODO : see how to deal with error
-            LOGGER.severe("BUG in restoring solution !!");
-            return false;
-        }
-        if (nogoodStore != null)
-            nogoodStore.setActive();
-        return true;
-    }
-
-
-
 	// **********************************************************************
 	// LOGGERS MANAGEMENT
 	// **********************************************************************
@@ -2822,11 +2803,11 @@ public class CPSolver implements Solver {
 	// ************************************************************************
 
 
-	private final SConstraint eq(int cste) {
+	private SConstraint eq(int cste) {
 		return cste == 0 ? TRUE : FALSE;
 	}
 
-	private final SConstraint geq(int cste) {
+	private SConstraint geq(int cste) {
 		return cste <= 0 ? TRUE : FALSE;
 	}
 
@@ -2879,7 +2860,7 @@ public class CPSolver implements Solver {
 				final SConstraint cstr = eq( t.getCoefficient(0), t.getIntDVar(0), t.getCoefficient(1), t.getIntDVar(1), cste);
 				if( cstr != null) return cstr;
 			}
-			return makeIntLinComb(t, -cste, IntLinComb.EQ);
+			return IntLinCombFactory.makeIntLinComb(t, -cste, IntLinComb.EQ, this);
 		} else if (x instanceof IntDomainVar) {
 			return new EqualXC((IntDomainVar) x, c);
 		} else if (x == null ) { return eq(c);
@@ -2967,7 +2948,7 @@ public class CPSolver implements Solver {
 				final SConstraint cstr = geq( t.getCoefficient(0), t.getIntDVar(0), t.getCoefficient(1), t.getIntDVar(1), cste);
 				if( cstr != null) return cstr;
 			}
-			return makeIntLinComb(t, -cste, IntLinComb.GEQ);
+			return IntLinCombFactory.makeIntLinComb(t, -cste, IntLinComb.GEQ, this);
 		} else if (x instanceof IntDomainVar) {
 			return new GreaterOrEqualXC((IntDomainVar) x, c);
 		} else if (x == null) {
@@ -3284,7 +3265,7 @@ public class CPSolver implements Solver {
 				final SConstraint cstr = neq(t.getCoefficient(0), t.getIntDVar(0), t.getCoefficient(1), t.getIntDVar(1), cste);
 				if( cstr != null) return cstr;
 			}
-			return makeIntLinComb(t, -cste, IntLinComb.NEQ);
+			return IntLinCombFactory.makeIntLinComb(t, -cste, IntLinComb.NEQ, this);
 		} else if (x instanceof IntVar) {
 			return new NotEqualXC((IntDomainVar) x, c);
 		} else if (x == null) {
@@ -3376,184 +3357,6 @@ public class CPSolver implements Solver {
 					return new PrecedenceVDisjoint(direction, t1, t2);
 				}
 			}
-		}
-	}
-
-	// rewriting utility: remove all null coefficients
-	// TODO: could be improved to remove duplicates (variables that would appear
-	// twice in the linear combination)
-	public int countNonNullCoeffs(int[] lcoeffs) {
-		int nbNonNull = 0;
-		for (int lcoeff : lcoeffs) {
-			if (lcoeff != 0) {
-				nbNonNull++;
-			}
-		}
-		return nbNonNull;
-	}
-
-
-	/**
-	 * does not consider IntTerm.getConstant() anymore.
-	 */
-	protected final SConstraint makeIntLinComb(IntTerm t, int c,
-			int linOperator) {
-		return makeIntLinComb(t.getVariables(), t.getCoefficients(), c, linOperator);
-	}
-
-
-
-	protected SConstraint makeIntLinComb(IntVar[] lvars, int[] lcoeffs, int c,
-			int linOperator) {
-		int nbNonNullCoeffs = countNonNullCoeffs(lcoeffs);
-		if (nbNonNullCoeffs == 0) { // All coefficients of the linear
-			switch (linOperator) {
-			case IntLinComb.EQ: return eq(c);
-			case IntLinComb.GEQ: return geq(c);
-			case IntLinComb.NEQ: return neq(c);
-			default: return FALSE;
-			}
-		} else {
-			int posIdx = 0;
-			int negIidx = nbNonNullCoeffs - 1;
-			int[] sortedCoeffs = new int[nbNonNullCoeffs];
-			IntDomainVar[] sortedVars = new IntDomainVar[nbNonNullCoeffs];
-			// fill it up with the coefficients and variables in the right order
-			for (int i = 0; i < lvars.length; i++) {
-				if (lcoeffs[i] > 0) {
-					//insert positive coeffs at the beginning
-					sortedVars[posIdx] = (IntDomainVar) lvars[i];
-					sortedCoeffs[posIdx] = lcoeffs[i];
-					posIdx++;
-				}else if (lcoeffs[i] < 0) {
-					//insert negative coeffs at the end in reverse order
-					//avoid another loop to insert coeffs in original order.
-					sortedVars[negIidx] = (IntDomainVar) lvars[i];
-					sortedCoeffs[negIidx] = lcoeffs[i];
-					negIidx--;
-				}
-			}
-			return createIntLinComb(sortedVars, sortedCoeffs, posIdx, c,
-					linOperator);
-		}
-	}
-
-	protected SConstraint createIntLinComb(IntDomainVar[] sortedVars,
-			int[] sortedCoeffs, int nbPositiveCoeffs, int c, int linOperator) {
-		//noinspection SuspiciousSystemArraycopy
-		//should be useless because the original array (user) are always copied in the IntTerm !
-		//Furthermore, we sort the array before calling this function and we still copy the variable in the constraint.
-		//IntDomainVar[] tmpVars = new IntDomainVar[sortedVars.length];
-		//System.arraycopy(sortedVars, 0, tmpVars, 0, sortedVars.length);
-		if (isBoolLinComb(sortedVars, sortedCoeffs, linOperator)) {
-			return createBoolLinComb(sortedVars, sortedCoeffs, c, linOperator);
-		} else {
-			return new IntLinComb(sortedVars, sortedCoeffs, nbPositiveCoeffs, c,
-					linOperator);
-		}
-	}
-
-	/**
-	 * Check if the combination is made of a single integer variable and only
-	 * boolean variables
-	 */
-	protected boolean isBoolLinComb(IntDomainVar[] lvars, int[] lcoeffs,
-			int linOperator) {
-		if (linOperator == IntLinComb.NEQ) {
-			return false;
-		}
-		if (lvars.length <= 1) {
-			return false;
-		}
-		int nbEnum = 0;
-		for (IntDomainVar lvar : lvars) {
-			if (!lvar.hasBooleanDomain()) {
-				nbEnum++;
-			}
-			if (nbEnum > 1) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	protected SConstraint createBoolLinComb(IntVar[] vars, int[] lcoeffs,
-			int c, int linOperator) {
-		IntDomainVar[] lvars = new IntDomainVar[vars.length];
-		System.arraycopy(vars, 0, lvars, 0, vars.length);
-		int idxSingleEnum = -1; // index of the enum intvar (the single non
-		// boolean var)
-		int coefSingleEnum = Integer.MIN_VALUE; // coefficient of the enum
-		// intvar
-		for (int i = 0; i < lvars.length; i++) {
-			if (!lvars[i].hasBooleanDomain()) {
-				idxSingleEnum = i;
-				coefSingleEnum = -lcoeffs[i];
-			}
-		}
-		// construct arrays of coefficients and variables
-		int nbVar = (idxSingleEnum == -1) ? lvars.length : lvars.length - 1;
-		IntDomainVar[] vs = new IntDomainVar[nbVar];
-		int[] coefs = new int[nbVar];
-		int cpt = 0;
-		for (int i = 0; i < lvars.length; i++) {
-			if (i != idxSingleEnum) {
-				vs[cpt] = lvars[i];
-				coefs[cpt] = lcoeffs[i];
-				cpt++;
-			}
-		}
-		if (idxSingleEnum == -1) {
-			return createBoolLinComb(vs, coefs, null, Integer.MAX_VALUE, c,
-					linOperator);
-		} else {
-			return createBoolLinComb(vs, coefs, lvars[idxSingleEnum],
-					coefSingleEnum, c, linOperator);
-		}
-	}
-
-	protected SConstraint createBoolLinComb(IntDomainVar[] vs, int[] coefs,
-			IntDomainVar obj, int objcoef, int c, int linOperator) {
-		VariableUtils.quicksort(coefs, vs, 0, coefs.length - 1);
-		if (obj == null) { // is there an enum variable ?
-			boolean isAsum = true;
-			for (int i = 0; i < vs.length && isAsum; i++) {
-				if (coefs[i] != 1) {
-					isAsum = false;
-					break;
-				}
-			}
-			if (isAsum) {
-				switch (linOperator) {
-				case IntLinComb.EQ: return new EqBoolSum(environment, vs, -c);
-				case IntLinComb.NEQ: return new NeqBoolSum(environment, vs, -c);
-				case IntLinComb.LEQ: return new LeqBoolSum(environment, vs, -c);
-				case IntLinComb.GEQ: return new GeqBoolSum(environment, vs, -c);
-				default:
-					throw new SolverException("Unknown operator for BoolSum");
-				}
-				
-			} else {
-				IntDomainVar dummyObj = makeConstantIntVar(-c);
-				return new BoolIntLinComb(environment, vs, coefs, dummyObj, 1, 0,
-						linOperator);
-			}
-		} else {
-			int newLinOp = linOperator;
-			if (objcoef < 0) {
-				if (linOperator != IntLinComb.NEQ) {
-					objcoef = -objcoef;
-					c = -c;
-					VariableUtils.reverse(coefs, vs);
-					ArrayUtils.inverseSign(coefs);
-				}
-				if (linOperator == IntLinComb.GEQ) {
-					newLinOp = IntLinComb.LEQ;
-				} else if (linOperator == IntLinComb.LEQ) {
-					newLinOp = IntLinComb.GEQ;
-				}
-			}
-			return new BoolIntLinComb(environment, vs, coefs, obj, objcoef, c, newLinOp);
 		}
 	}
 
@@ -3975,7 +3778,7 @@ public class CPSolver implements Solver {
 		int[] min = new int[] { x.getInf(), y.getInf() };
 		int[] max = new int[] { x.getSup(), y.getSup() };
 		BinRelation relation = makeBinRelation(min, max, mat, feas,
-				(ac == 322) ? true : false);
+                (ac == 322));
 		return relationPairAC(x, y, relation, ac);
 	}
 
@@ -4005,7 +3808,7 @@ public class CPSolver implements Solver {
 	private SConstraint makePairAC(IntDomainVar v1, IntDomainVar v2,
 			boolean[][] mat, boolean feas, int ac) {
 		BinRelation relation = makeBinRelation(v1, v2, mat, feas,
-				ac == 322 ? true : false);
+                ac == 322);
 		return relationPairAC(v1, v2, relation, ac);
 	}
 

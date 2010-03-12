@@ -1,15 +1,12 @@
 package samples;
 
-import static choco.Choco.eq;
-import static choco.Choco.lt;
-import static choco.Choco.makeIntVarArray;
-import static choco.Choco.sum;
-import samples.Examples.MagicSquare;
-import samples.Examples.PatternExample;
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import samples.Examples.MagicSquare;
+import samples.Examples.PatternExample;
 
 /**
  * A set n distinct numbers taken from the interval [1,n^2] form a magic series if their sum is the nth magic constant M_n=n*(n^2+1)/2
@@ -44,7 +41,7 @@ public class MagicSeries extends PatternExample {
 
 	@Override
 	public void buildSolver() {
-		_s = new CPSolver2();
+		_s = new CPSolver();
 		_s.read(_m);
 
 	}

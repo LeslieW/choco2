@@ -30,7 +30,7 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 	 * @param otherVars other integer variables of the constraint
 	 */
 	public AbstractTaskSConstraint(final TaskVar task1, TaskVar task2, final IntDomainVar... otherVars) {
-		this(new TaskVar[]{task1,task2}, null);
+		this(new TaskVar[]{task1,task2}, otherVars);
 	}
 
 	
@@ -43,7 +43,7 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 	}
 	
 
-	public static final TaskVar[] createTaskVarArray(Solver solver) {
+	public static TaskVar[] createTaskVarArray(Solver solver) {
 		final int n = solver.getNbTaskVars();
 		TaskVar[] tasks = new TaskVar[n];
 		for (int i = 0; i < n; i++) {
@@ -55,7 +55,7 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 		return tasks;
 	}
 
-	public static final IntDomainVar[] makeIntVarArray(final TaskVar[] taskvars, IntDomainVar[] intvars, IntDomainVar[] othervars) {
+	public static IntDomainVar[] makeIntVarArray(final TaskVar[] taskvars, IntDomainVar[] intvars, IntDomainVar[] othervars) {
 		final int n=taskvars.length;
 		final int v1 = 2 * n;
 		final int v2 = 3 * n;

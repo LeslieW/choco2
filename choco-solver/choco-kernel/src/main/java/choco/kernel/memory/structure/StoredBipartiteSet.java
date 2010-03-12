@@ -29,7 +29,10 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.variables.Var;
 
-import java.util.*;
+import java.util.AbstractList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
 
 
 
@@ -96,31 +99,12 @@ public class StoredBipartiteSet<E> extends AbstractList<E> {
 		return elementData[index];
 	}
 
-	public DisposableIterator<E> quickIterator() {
+	@SuppressWarnings({"unchecked"})
+    public DisposableIterator<E> quickIterator() {
 		return ArrayIterator.getIterator(elementData, size());
 		
 	}
-	
-	 private class QuickItr implements Iterator<E> {
-			/**
-			 * Index of element to be returned by subsequent call to next.
-			 */
-			int cursor = 0;
 
-			public boolean hasNext() {
-		            return cursor < size();
-			}
-
-			public E next() {
-		            return elementData[cursor++];
-			}
-			
-
-			public void remove() {
-			    throw new UnsupportedOperationException("cant remove with quick iterator.");
-			}
-	 }
-	 
 	@Override
 	public int size() {
 		return last.get();

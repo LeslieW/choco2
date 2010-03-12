@@ -150,7 +150,7 @@ public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteS
      * @param o element whose presence in this list is to be tested
      * @return <tt>true</tt> if this list contains the specified element
      */
-    public boolean contains(Object o) {
+    public boolean contains(E o) {
 	return indexOf(o) >= 0;
     }
 
@@ -163,7 +163,7 @@ public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteS
      * @param o search object
      * @return index of o
      */
-    public int indexOf(Object o) {
+    public int indexOf(E o) {
 	if (o == null) {
 	    for (int i = 0; i < size; i++)
 		if (elementData[i]==null)

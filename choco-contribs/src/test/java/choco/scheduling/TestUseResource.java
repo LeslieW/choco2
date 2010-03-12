@@ -1,24 +1,18 @@
 package choco.scheduling;
 
-import static choco.Choco.disjunctive;
-import static choco.Choco.makeBooleanVar;
-import static choco.Choco.makeTaskVar;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-
-import org.junit.Test;
-
+import static choco.Choco.*;
 import choco.ChocoContrib;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import org.junit.Test;
 
 
 public class TestUseResource {
@@ -60,7 +54,7 @@ public class TestUseResource {
 
 	@Test
 	public void testUseResource() {
-		ChocoLogging.setVerbosity(Verbosity.SEARCH);
+//		ChocoLogging.setVerbosity(Verbosity.SEARCH);
 		model = new CPModel();
 		rsc1 = disjunctive( new TaskVariable[]{JobA, JobB, JobC}, 
 				new IntegerVariable[] {JobA_Res1, JobB_Res1, JobC_Res1});
@@ -103,7 +97,7 @@ public class TestUseResource {
 	
 	@Test
 	public void testUseResourceLCT() throws ContradictionException {
-		ChocoLogging.setVerbosity(Verbosity.SEARCH);
+//		ChocoLogging.setVerbosity(Verbosity.SEARCH);
 		model = new CPModel();
 		testPropagation(1,
 				disjunctive( new TaskVariable[]{JobE, JobA},new IntegerVariable[] {JobA_Res1}),
