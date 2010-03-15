@@ -142,7 +142,7 @@ public class CumulativeManager extends AbstractResourceManager {
 					uv[i - dcnr] = usages[ dclique.get(i)];
 				}
 				//alternative disj.
-				cstr = new AltDisjunctive("disj-"+rdata.getRscName(), tv, uv, uppBound, solver);
+				cstr = new AltDisjunctive(solver, "disj-"+rdata.getRscName(), tv, uv, uppBound);
 			}else {
 				//disj.
 				cstr = new Disjunctive("disj-"+rdata.getRscName(), tv, uppBound, solver);

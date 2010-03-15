@@ -28,6 +28,7 @@ import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
+//FIXME should not work anymore 
 public class Adapter extends AbstractIntSConstraint implements ISpecializedConstraint {
 
     private static final int[] tuple = new int[2];
@@ -74,25 +75,25 @@ public class Adapter extends AbstractIntSConstraint implements ISpecializedConst
         return sConstraint.toString();
     }
 
-    @Override
-    public int getConstraintIdx(int idx) {
-        return sConstraint.getConstraintIdx(idx);
-    }
-
-    @Override
-    public int getNbVars() {
-        return sConstraint.getNbVars();
-    }
-
-    @Override
-    public void setConstraintIndex(int i, int idx) {
-        sConstraint.setConstraintIndex(i, idx);
-    }
-
-    @Override
-    public void setVar(int i, IntDomainVar v) {
-        sConstraint.setVar(i, v);
-    }
+//    @Override
+//    public int getConstraintIdx(int idx) {
+//        return sConstraint.getConstraintIdx(idx);
+//    }
+//
+//    @Override
+//    public int getNbVars() {
+//        return sConstraint.getNbVars();
+//    }
+//
+//    @Override
+//    public void setConstraintIndex(int i, int idx) {
+//        sConstraint.setConstraintIndex(i, idx);
+//    }
+//
+//    @Override
+//    public void setVar(int i, IntDomainVar v) {
+//        sConstraint.setVar(i, v);
+//    }
 
     @Override
     public String pretty() {
@@ -114,15 +115,15 @@ public class Adapter extends AbstractIntSConstraint implements ISpecializedConst
         return sConstraint.isSatisfied(tuple);
     }
 
-    @Override
-    public IntDomainVar getVar(int i) {
-        return sConstraint.getVar(i);
-    }
-
-    @Override
-    public boolean isCompletelyInstantiated() {
-        return sConstraint.isCompletelyInstantiated();
-    }
+//    @Override
+//    public IntDomainVar getVar(int i) {
+//        return sConstraint.getVar(i);
+//    }
+//
+//    @Override
+//    public boolean isCompletelyInstantiated() {
+//        return sConstraint.isCompletelyInstantiated();
+//    }
 
     @Override
     public boolean isConsistent() {

@@ -1,6 +1,7 @@
 package choco.cp.solver.constraints.global.scheduling;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -9,6 +10,7 @@ import choco.cp.solver.constraints.integer.bool.sum.BoolSumStructure;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.propagation.listener.TaskPropagator;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
@@ -20,7 +22,7 @@ public abstract class AbstractUseResourcesSConstraint extends AbstractTaskSConst
 	protected final BoolSumStructure boolSumS;
 
 	protected static final int BOOL_OFFSET = 3;
-
+	
 	private static final int TASK_IDX = 0;
 
 	public AbstractUseResourcesSConstraint(IEnvironment environment, TaskVar taskvar, int k, IntDomainVar[] usages, IRTask[] rtasks) {
@@ -130,12 +132,16 @@ public abstract class AbstractUseResourcesSConstraint extends AbstractTaskSConst
 		}
 	}
 
+	
 	@Override
 	public void awakeOnInst(int idx) throws ContradictionException {
 		assert idx >= BOOL_OFFSET;
 		final int val = vars[idx].getVal();
-		if (val == 0) boolSumS.addZero();
+		if (val == 0) {
+			boolSumS.addZero();
+			filterHypotheticalDomains();
+		}
 		else boolSumS.addOne();
 	}
-
+	
 }

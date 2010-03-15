@@ -5,8 +5,13 @@ package choco.kernel.solver.variables.scheduling;
 
 import choco.kernel.common.IIndex;
 import choco.kernel.common.util.iterators.DisposableIterator;
-import choco.kernel.memory.structure.*;
+import choco.kernel.memory.structure.APartiallyStoredCstrList;
+import choco.kernel.memory.structure.Couple;
+import choco.kernel.memory.structure.PartiallyStoredIntVector;
+import choco.kernel.memory.structure.PartiallyStoredTaskCstrList;
+import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.model.variables.scheduling.ITaskVariable;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
@@ -239,6 +244,20 @@ public final class TaskVar<C extends AbstractSConstraint & TaskPropagator> exten
 	public boolean isInstantiated() {
 		return  start.isInstantiated() && end.isInstantiated() && duration.isInstantiated();
 	}
+	
+	public final void updateCompulsoryPart(SConstraint cause) throws ContradictionException {
+		boolean fixPoint;
+		do {
+			fixPoint = false;
+			fixPoint |= start.updateInf(end.getInf() - duration.getSup(), cause, false);
+			fixPoint |= start.updateSup(end.getSup() - duration.getInf(), cause, false);
+			fixPoint |= end.updateInf(start.getInf() + duration.getInf(), cause, false);
+			fixPoint |= end.updateSup(start.getSup() + duration.getSup(), cause, false);
+			fixPoint |= duration.updateInf(end.getInf() - start.getSup(), cause, false);
+			fixPoint |= duration.updateSup(end.getSup() - start.getInf(), cause, false);
+		}while (fixPoint);
+	}
+
 
     /**
      * Call awake on TaskVar.

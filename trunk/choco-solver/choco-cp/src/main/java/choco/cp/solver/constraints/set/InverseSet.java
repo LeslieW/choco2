@@ -52,9 +52,6 @@ public final class InverseSet extends AbstractLargeSetIntSConstraint {
 
 
 	
-
-
-
 	/**
 	 * Filtering Rule 0 : i>s.length => x[j]!=i \forall j
 	 * j>x.length => j \not\in s[i] \forall i 

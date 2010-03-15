@@ -37,12 +37,11 @@ import choco.kernel.solver.variables.real.RealVar;
  */
 public abstract class AbstractBinRealIntSConstraint extends AbstractMixedSRealIntSConstraint {
     protected RealVar v0;
-    protected int cIdx0;
+   
     protected IntDomainVar v1;
-    protected int cIdx1;
-
+   
     public AbstractBinRealIntSConstraint(RealVar v0, IntDomainVar v1) {
-        super(new Var[]{});
+        super(new Var[]{v0, v1});
         this.v0 = v0;
         this.v1 = v1;
     }
@@ -75,61 +74,24 @@ public abstract class AbstractBinRealIntSConstraint extends AbstractMixedSRealIn
         return 1;
     }
 
-    public int getNbVars() {
-        return 2;
-    }
+//    public void setVar(int i, Var v) {
+//        if (i == 0) {
+//            if (v instanceof RealVar) {
+//                this.v0 = (RealVar) v;
+//            } else {
+//                throw new SolverException("BUG in CSP network management: wrong type of Var for setVar");
+//            }
+//        } else if (i == 1) {
+//            if (v instanceof IntDomainVar) {
+//                this.v1 = (IntDomainVar) v;
+//            } else {
+//                throw new SolverException("BUG in CSP network management: wrong type of Var for setVar");
+//            }
+//        } else {
+//            throw new SolverException("BUG in CSP network management: too large index for setVar");
+//        }
+//    }
 
-    public Var getVar(int i) {
-        if (i == 0) {
-            return v0;
-        }
-        if (i == 1) {
-            return v1;
-        }
-        return null;
-    }
-
-    public void setVar(int i, Var v) {
-        if (i == 0) {
-            if (v instanceof RealVar) {
-                this.v0 = (RealVar) v;
-            } else {
-                throw new SolverException("BUG in CSP network management: wrong type of Var for setVar");
-            }
-        } else if (i == 1) {
-            if (v instanceof IntDomainVar) {
-                this.v1 = (IntDomainVar) v;
-            } else {
-                throw new SolverException("BUG in CSP network management: wrong type of Var for setVar");
-            }
-        } else {
-            throw new SolverException("BUG in CSP network management: too large index for setVar");
-        }
-    }
-
-    public void setConstraintIndex(int i, int idx) {
-        if (i == 0) {
-            cIdx0 = idx;
-        } else if (i == 1) {
-            cIdx1 = idx;
-        } else {
-            throw new SolverException("bug in setConstraintIndex i:" + i + " this: " + this);
-        }
-    }
-
-    public int getConstraintIdx(int idx) {
-        if (idx == 0) {
-            return cIdx0;
-        }
-        if (idx == 1) {
-            return cIdx1;
-        }
-        return -1;
-    }
-
-    public boolean isCompletelyInstantiated() {
-        return v1.isInstantiated() && v0.isInstantiated();
-    }
 
     public boolean isSatisfied(int[] tuple) {
         throw new UnsupportedOperationException(this + " needs to implement isSatisfied(int[] tuple) to be embedded in reified constraints");

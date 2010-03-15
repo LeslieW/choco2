@@ -45,26 +45,10 @@ public class ConstantSConstraint extends AbstractIntSConstraint{
         return super.clone();
     }
 
-    public int getNbVars() {
-        return 0;
-    }
-
-    public IntDomainVar getVar(int i) {
-        return null;
-    }
-
+ 
     @Override
     public boolean isSatisfied(int[] tuple) {
         return satisfied;
-    }
-
-    public void setVar(int i, IntDomainVar v) {
-        throw new SolverException("BUG in CSP network management: too large index for setVar");
-    }
-
-    @Override
-    public boolean isCompletelyInstantiated() {
-        return true;
     }
 
     @Override
@@ -72,7 +56,8 @@ public class ConstantSConstraint extends AbstractIntSConstraint{
         return satisfied;
     }
 
-    public void propagate() throws ContradictionException {
+    @Override
+	public void propagate() throws ContradictionException {
         if (!satisfied) {
             fail();
         }
@@ -83,13 +68,6 @@ public class ConstantSConstraint extends AbstractIntSConstraint{
         return satisfied;
     }
 
-    public void setConstraintIndex(int i, int idx) {
-        throw new UnsupportedOperationException();
-    }
-
-    public int getConstraintIdx(int idx) {
-        throw new UnsupportedOperationException();
-    }
 
     @Override
     public Boolean isEntailed() {
@@ -100,7 +78,6 @@ public class ConstantSConstraint extends AbstractIntSConstraint{
     public AbstractSConstraint opposite(Solver solver) {
         return new ConstantSConstraint(!satisfied);
     }
-
 
     @Override
     public String pretty() {

@@ -79,6 +79,11 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 		return i < tasks.length ? tasks[i] : vars[i];
 	}
 
+	@Override
+	public final Var getVarQuick(int i) {
+		return getVar(i);
+	}
+
 	public final TaskVar getTask(int i) {
 		return tasks[i];
 	}

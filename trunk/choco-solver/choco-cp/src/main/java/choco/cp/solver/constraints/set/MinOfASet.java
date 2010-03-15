@@ -26,7 +26,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.variables.integer.IntVar;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
 
 /**
@@ -43,7 +43,7 @@ public class MinOfASet extends AbstractBoundOfASet {
 	protected final IStateInt indexOfMinimumVariable;
 
 
-	public MinOfASet(IEnvironment environment, IntVar[] intvars, SetVar setvar, Integer defaultValueEmptySet) {
+	public MinOfASet(IEnvironment environment, IntDomainVar[] intvars, SetVar setvar, Integer defaultValueEmptySet) {
 		super(intvars, setvar, defaultValueEmptySet);
 		indexOfMinimumVariable = environment.makeInt(-1);
 	}

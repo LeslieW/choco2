@@ -22,6 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
 import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.tools.IteratorUtils;
@@ -29,13 +33,14 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.global.scheduling.IResource;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.scheduling.*;
-
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import choco.kernel.solver.variables.scheduling.AbstractRTask;
+import choco.kernel.solver.variables.scheduling.IRMakespan;
+import choco.kernel.solver.variables.scheduling.IRTask;
+import choco.kernel.solver.variables.scheduling.ITask;
+import choco.kernel.solver.variables.scheduling.TaskVar;
 
 
 /**
@@ -52,8 +57,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 	protected final String name;
 
 	protected final BitFlags flags;
-
-	//TODO init
+	
 	private final int nbRegularTasks;
 
 	private final int nbOptionalTasks;
@@ -104,20 +108,10 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 				rtasks[i] = new RTask(i);
 			}
 		}
-
+		
 		this.makespan = new RMakespan();
 	}
 
-//	public void checkHypotheticalDomains()throws ContradictionException{
-//		for(int i = nbRegularTasks; i < rtasks.length; i++){
-//			if(rtasks[i].isOptional())
-//				rtasks[i].checkConsistency();
-//		}
-//	}
-
-	private void checkIntVars() {
-		//TODO
-	}
 	
 	public final int indexOf(TaskVar task) {
 		//FIXME temporary implementation
@@ -348,6 +342,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 			didx = getDurationIndex(taskidx);
 			uidx = getUsageIndex(taskIdx);
 			hidx = getHeightIndex(taskIdx);
+			if( ! (getUsage().getInf() >=0 && getUsage().getSup() <= 1)) throw new SolverException(getUsage().pretty()+" is not a boolean variable."); 
 		}
 
 		@Override
@@ -366,10 +361,9 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		}
 
 		@Override
-		public final boolean updateDuration(int duration) throws ContradictionException {
+		public boolean updateDuration(int duration) throws ContradictionException {
 			if( setDuration(duration)) {
-				if(isRegular())
-					updateCompulsoryPart();
+				updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -378,10 +372,9 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 
 		@Override
-		public final boolean updateECT(int val) throws ContradictionException {
+		public boolean updateECT(int val) throws ContradictionException {
 			if( setECT(val)) {
-				if(isRegular())
-					updateCompulsoryPart();
+				updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -391,11 +384,10 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 
 		@Override
-		public final boolean updateEndingTime(int endingTime)
+		public boolean updateEndingTime(int endingTime)
 		throws ContradictionException {
 			if( setEndingTime(endingTime)) {
-				if(isRegular())
-					updateCompulsoryPart();
+				updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -405,10 +397,9 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 
 		@Override
-		public final boolean updateEndNotIn(int a, int b) throws ContradictionException {
+		public boolean updateEndNotIn(int a, int b) throws ContradictionException {
 			if( setEndNotIn(a, b)) {
-				if(isRegular())
-					updateCompulsoryPart();
+				updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -418,10 +409,9 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 
 		@Override
-		public final boolean updateEST(int val) throws ContradictionException {
+		public boolean updateEST(int val) throws ContradictionException {
 			if( setEST(val)) {
-				if(isRegular())
-					updateCompulsoryPart();
+				updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -431,10 +421,9 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 
 		@Override
-		public final boolean updateLCT(int val) throws ContradictionException {
+		public boolean updateLCT(int val) throws ContradictionException {
 			if( setLCT(val)) {
-				if(isRegular())
-					updateCompulsoryPart();
+				updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -442,10 +431,9 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 
 		@Override
-		public final boolean updateLST(int val) throws ContradictionException {
+		public boolean updateLST(int val) throws ContradictionException {
 			if( setLST(val)) {
-				if(isRegular())
-					updateCompulsoryPart();
+				updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -455,10 +443,9 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 
 		@Override
-		public final boolean updateMaxDuration(int val) throws ContradictionException {
+		public boolean updateMaxDuration(int val) throws ContradictionException {
 			if( setMaxDuration(val)) {
-				if(isRegular())
-					updateCompulsoryPart();
+				updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -468,10 +455,9 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 
 		@Override
-		public final boolean updateMinDuration(int val) throws ContradictionException {
+		public boolean updateMinDuration(int val) throws ContradictionException {
 			if( setMinDuration(val)) {
-				if(isRegular())
-					updateCompulsoryPart();
+				updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -481,11 +467,10 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 
 		@Override
-		public final boolean updateStartingTime(int startingTime)
+		public boolean updateStartingTime(int startingTime)
 		throws ContradictionException {
 			if( setStartingTime(startingTime)) {
-				if(isRegular())
-					updateCompulsoryPart();
+				updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -495,10 +480,9 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 
 		@Override
-		public final boolean updateStartNotIn(int a, int b) throws ContradictionException {
+		public boolean updateStartNotIn(int a, int b) throws ContradictionException {
 			if( setStartNotIn(a, b)) {
-				if(isRegular())
-					updateCompulsoryPart();
+				updateCompulsoryPart();
 				return true;
 			}
 			return false;
@@ -581,19 +565,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		}
 
 		public final void updateCompulsoryPart() throws ContradictionException {
-			final IntDomainVar s = vars[taskIdx];
-			final IntDomainVar e = vars[eidx];
-			final IntDomainVar d = vars[didx];
-			boolean fixPoint;
-			do {
-				fixPoint = false;
-				fixPoint |= s.updateInf(e.getInf() - d.getSup(), AbstractResourceSConstraint.this, false);
-				fixPoint |= s.updateSup(e.getSup() - d.getInf(), AbstractResourceSConstraint.this, false);
-				fixPoint |= e.updateInf(s.getInf() + d.getInf(), AbstractResourceSConstraint.this, false);
-				fixPoint |= e.updateSup(s.getSup() + d.getSup(), AbstractResourceSConstraint.this, false);
-				fixPoint |= d.updateInf(e.getInf() - s.getSup(), AbstractResourceSConstraint.this, false);
-				fixPoint |= d.updateSup(e.getSup() - s.getInf(), AbstractResourceSConstraint.this, false);
-			}while (fixPoint);
+			taskvars[taskIdx].updateCompulsoryPart(AbstractResourceSConstraint.this);
 		}
 
 
@@ -602,10 +574,8 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 			AbstractResourceSConstraint.this.fail();
 		}
 
-		
-
 		@Override
-		public IntDomainVar getUsage() {
+		public final IntDomainVar getUsage() {
 			return vars[uidx];
 		}
 
@@ -677,6 +647,11 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 			super(taskidx);
 			estH = env.makeInt(getTaskVar().getEST());
 			lctH = env.makeInt(getTaskVar().getLCT());
+		}
+		
+		
+		public void fireHypotheticalDomain() {
+			 getTaskVar().updateHypotheticalDomain(-1, null, false);
 		}
 
 		@Override
@@ -770,12 +745,11 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		}
 
 		//IRTask interface : update/set operations according to the status of the task (regular, optional, eliminated).
-		public boolean checkHypotheticalConsistency() {
+		public final boolean checkHypotheticalConsistency() {
 			return getLCT() - getEST() >= getMinDuration();
 		}
 
-
-		private void checkHConsistency() throws ContradictionException {
+		protected void checkHConsistency() throws ContradictionException {
 			if( ! checkHypotheticalConsistency() ) {
 				remove();
 				fireRemoval();
@@ -785,10 +759,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		@Override
 		public void checkConsistency() throws ContradictionException {
 			super.checkConsistency();
-			if(isOptional() && !checkHypotheticalConsistency()) {
-				remove();
-				fireRemoval();
-			}
+			if(isOptional()) checkHConsistency();
 		}
 
 
@@ -797,16 +768,17 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 			final boolean assigned = super.assign();
 			super.setEST(estH.get());
 			super.setLCT(lctH.get());
-			updateCompulsoryPart();
+			getTaskVar().updateCompulsoryPart(AbstractResourceSConstraint.this);
 			return assigned;
 		}
 
 		
-		private boolean setHEST(int val) throws ContradictionException {			
+		protected boolean setHEST(int val) throws ContradictionException {			
 			if( val > getEST() ) {
 				if(vars[taskIdx].canBeInstantiatedTo(val)){
 					estH.set(val);
 					checkHConsistency();
+					fireHypotheticalDomain();
 				}else{
 					//get value, if any, after this one, and available in the domain
 					if(val < vars[taskIdx].getSup()){
@@ -814,6 +786,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 						assert newEST > val;
 						estH.set(newEST);
 						checkHConsistency();
+						fireHypotheticalDomain();
 					}
 					else{
 						remove();
@@ -825,13 +798,12 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		}
 
 		@Override
-		public boolean setEST(int val) throws ContradictionException {
-			if( isOptional())
-				return setHEST(val);
+		public final boolean setEST(int val) throws ContradictionException {
+			if( isOptional()) return setHEST(val);
 			else return super.setEST(val);
 		}
 
-		private boolean setHDuration(int duration) throws ContradictionException {
+		protected boolean setHDuration(int duration) throws ContradictionException {
 			//did not find updates for estH,lctH
 			if ( getLCT() - getEST() >= duration ) {
 				//hypothetical duration is not consistent
@@ -840,17 +812,19 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 			}
 			return false;
 		}
+		
 		@Override
-		public boolean setDuration(int duration) throws ContradictionException {
+		public final boolean setDuration(int duration) throws ContradictionException {
 			if( isOptional()) return setHDuration(duration);
 			else return super.setDuration(duration);
 		}
 
-		private boolean setHECT(int val) throws ContradictionException {
+		protected boolean setHECT(int val) throws ContradictionException {
 			if( val > getECT() ) {
 				if(vars[eidx].canBeInstantiatedTo(val)){
 					estH.set(val - getMinDuration());
 					checkHConsistency();
+					fireHypotheticalDomain();
 				}else{
 					//update value not existing in main domain
 					if(val < vars[eidx].getSup()){
@@ -858,6 +832,7 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 						assert newECT > val;
 						estH.set(newECT - getMinDuration());
 						checkHConsistency();
+						fireHypotheticalDomain();
 					}
 					else{
 						remove();
@@ -869,46 +844,48 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		}
 
 		@Override
-		public boolean setECT(int val) throws ContradictionException {
+		public final boolean setECT(int val) throws ContradictionException {
 			if( isOptional()) return setHECT(val);
 			else return super.setECT(val);
 		}
 
 
-		public boolean setHEndingTime(int endingTime) throws ContradictionException {
+		public final boolean setHEndingTime(int endingTime) throws ContradictionException {
 			return setHLCT(endingTime) || setHECT(endingTime);
 		}
 
 		@Override
-		public boolean setEndingTime(int endingTime)
+		public final boolean setEndingTime(int endingTime)
 		throws ContradictionException {
 			if( isOptional()) return setHEndingTime(endingTime);
 			else return super.setEndingTime(endingTime);
 		}
 
-		public boolean setHEndNotIn(int a, int b) throws ContradictionException {
+		public final boolean setHEndNotIn(int a, int b) throws ContradictionException {
 			if( a <= getECT()) return setHECT(b);
 			else if(b >= getLCT()) return setHLCT(a);
 			else return false;
 		}
 
 		@Override
-		public boolean setEndNotIn(int a, int b) throws ContradictionException {
+		public final boolean setEndNotIn(int a, int b) throws ContradictionException {
 			if( isOptional()) return setHEndNotIn(a, b);
 			else return super.setEndNotIn(a, b);
 		}
 
-		private boolean setHLCT(int val) throws ContradictionException {
+		protected boolean setHLCT(int val) throws ContradictionException {
 			if( val < getLCT() ) {
 				if(vars[eidx].canBeInstantiatedTo(val)){
 					lctH.set(val);
 					checkHConsistency();
+					fireHypotheticalDomain();
 				}else{
 					if(val > vars[eidx].getInf()){
 						final int newLCT = vars[eidx].getPrevDomainValue(val);
 						assert newLCT < val;
 						lctH.set(newLCT);
 						checkHConsistency();
+						fireHypotheticalDomain();
 					}
 					else{
 						remove();
@@ -920,22 +897,24 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		}
 
 		@Override
-		public boolean setLCT(int val) throws ContradictionException {
+		public final boolean setLCT(int val) throws ContradictionException {
 			if( isOptional()) return setHLCT(val);
 			else return super.setLCT(val);
 		}
 
-		private boolean setHLST(int val) throws ContradictionException {
+		protected boolean setHLST(int val) throws ContradictionException {
 			if( val < getLST() ) {
 				if(vars[taskIdx].canBeInstantiatedTo(val)){
 					lctH.set(val + getMaxDuration());
 					checkHConsistency();
+					fireHypotheticalDomain();
 				}else{
 					if(val > vars[taskIdx].getInf()){
 						final int newLST = vars[taskIdx].getPrevDomainValue(val);
 						assert newLST < val;
 						lctH.set(newLST + getMaxDuration());
 						checkHConsistency();
+						fireHypotheticalDomain();
 					}else{
 						remove();
 						fireRemoval();
@@ -946,50 +925,126 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		}
 
 		@Override
-		public boolean setLST(int val) throws ContradictionException {
+		public final boolean setLST(int val) throws ContradictionException {
 			if( isOptional()) return setHLST(val);
 			else return super.setLST(val);
 		}
 
 
 		@Override
-		public boolean setMaxDuration(int val) throws ContradictionException {
+		public final boolean setMaxDuration(int val) throws ContradictionException {
 			if ( isRegular() ) return super.setMaxDuration(val);
 			else return false;
 		}
 
 
 		@Override
-		public boolean setMinDuration(int val) throws ContradictionException {
+		public final boolean setMinDuration(int val) throws ContradictionException {
 			if( isOptional()) return setHDuration(val);
 			else return super.setMinDuration(val);
 		}
 
 
-		private boolean setHStartingTime(int startingTime) throws ContradictionException {
+		protected boolean setHStartingTime(int startingTime) throws ContradictionException {
 			return setHEST(startingTime) || setHLST(startingTime);
 		}
 
 
 		@Override
-		public boolean setStartingTime(int startingTime)
+		public final boolean setStartingTime(int startingTime)
 		throws ContradictionException {
 			if( isOptional()) return setHStartingTime(startingTime); 
 			else return super.setStartingTime(startingTime);
 		}
 
-		private boolean setHStartNotIn(int min, int max) throws ContradictionException {
+		protected boolean setHStartNotIn(int min, int max) throws ContradictionException {
 			if( min <= getEST()) return setHEST(max);
 			else if(max >= getLST()) return setHLST(min);
 			else return false;
 		}
 
 		@Override
-		public boolean setStartNotIn(int min, int max)
+		public final boolean setStartNotIn(int min, int max)
 		throws ContradictionException {
 			if( isOptional()) return setHStartNotIn(min, max);
 			else return super.setStartNotIn(min, max);
 		}
+
+		@Override
+		public boolean updateDuration(int duration)
+				throws ContradictionException {
+				if(isOptional()) return super.updateDuration(duration);
+				else return setHDuration(duration);
+		}
+
+		@Override
+		public boolean updateECT(int val) throws ContradictionException {
+			if(isOptional()) return super.updateECT(val);
+			else return setECT(val);
+		}
+
+		@Override
+		public boolean updateEndingTime(int endingTime)
+				throws ContradictionException {
+			if(isOptional()) return super.updateEndingTime(endingTime);
+			else return setHEndingTime(endingTime);
+		}
+
+		@Override
+		public boolean updateEndNotIn(int a, int b)
+				throws ContradictionException {
+			if(isOptional()) return super.updateEndNotIn(a, b);
+			else return setEndNotIn(a, b);
+		}
+
+		@Override
+		public boolean updateEST(int val) throws ContradictionException {
+			if(isOptional()) return super.updateEST(val);
+			else return setHEST(val);
+		}
+
+		@Override
+		public boolean updateLCT(int val) throws ContradictionException {
+			if(isOptional()) return super.updateLCT(val);
+			else return setHLCT(val);
+		}
+
+		@Override
+		public boolean updateLST(int val) throws ContradictionException {
+			if(isOptional()) return super.updateLST(val);
+			else return setHLST(val);
+		}
+
+		@Override
+		public boolean updateMaxDuration(int val) throws ContradictionException {
+			if(isRegular()) return super.updateMaxDuration(val);
+			else return false;
+		}
+
+		@Override
+		public boolean updateMinDuration(int val) throws ContradictionException {
+			if(isOptional()) return super.updateMinDuration(val);
+			else return setHDuration(val);
+		}
+
+		@Override
+		public boolean updateStartingTime(int startingTime)
+				throws ContradictionException {
+			if(isOptional()) return super.updateStartingTime(startingTime);
+			else return setHStartingTime(startingTime);
+		}
+
+		@Override
+		public boolean updateStartNotIn(int a, int b)
+				throws ContradictionException {
+			if(isOptional()) return super.updateStartNotIn(a, b);
+			else return setHStartNotIn(a, b);
+		}
+		
 		
 	}
+	
+	
+	
+	
 }

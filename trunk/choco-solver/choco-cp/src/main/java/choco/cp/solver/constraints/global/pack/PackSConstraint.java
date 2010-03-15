@@ -138,10 +138,6 @@ public class PackSConstraint extends AbstractLargeSetIntSConstraint implements I
 		return varIdx- 2*getNbBins() - getNbItems();
 	}
 
-	protected final int getItemCindice(final int item) {
-		return int_cIndices[loads.length+sizes.length+item];
-	}
-
 
 	public final IntDomainVar[] getBins() {
 		return bins;

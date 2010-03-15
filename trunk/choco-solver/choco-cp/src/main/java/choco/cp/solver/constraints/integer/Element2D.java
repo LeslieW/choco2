@@ -160,8 +160,8 @@ public class Element2D extends AbstractTernIntSConstraint {
         int minFeasibleIndex1 = v0.getInf(), minFeasibleIndex2 = v1.getInf();
         int maxFeasibleIndex1 = v0.getSup(), maxFeasibleIndex2 = v1.getSup();
         int thecause1 = -1, thecause2 = -1;
-        if (v2.hasEnumeratedDomain()) thecause1 = cIdx0;
-        if (v2.hasEnumeratedDomain()) thecause2 = cIdx1;
+        if (v2.hasEnumeratedDomain()) thecause1 = getConstraintIdx(0);
+        if (v2.hasEnumeratedDomain()) thecause2 = getConstraintIdx(1);
 
         if (v0.hasEnumeratedDomain()) {
             IntDomain v0Dom = this.v0.getDomain();

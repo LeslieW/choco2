@@ -40,8 +40,8 @@ public class SchedulerConfiguration {
 
 
 	private int origin = 0;
-
-	protected boolean forceMakespan;
+	
+	protected boolean forceMakespan = false;
 	
 	protected int horizon = Choco.MAX_UPPER_BOUND;
 	/**
@@ -66,17 +66,11 @@ public class SchedulerConfiguration {
 	protected boolean incrementalPert = true;
 
 	/**
-	 * Decide if redundant constraints are automatically to the model to reason
-	 * on task consistency, i.e start + duration = end.
+	 * Decide if consistency constraints are always added or only if necessary: start + duration = end.
 	 */
 	protected boolean redundantReasonningsOnTasks = false;
-
-	/**
-	 * Decide if filtering algorithms of alternative resource use hypothetical domains.
-	 */
-	protected boolean useHypotheticalDomain = true;
-
-
+	
+	
 	public SchedulerConfiguration() {
 		super();
 	}
@@ -184,16 +178,6 @@ public class SchedulerConfiguration {
 			boolean redundantReasonningsOnTasks) {
 		this.redundantReasonningsOnTasks = redundantReasonningsOnTasks;
 	}
-
-
-	public final boolean isUsingHypotheticalDomain() {
-		return useHypotheticalDomain;
-	}
-	
-	public final void setHypotheticalDomain(boolean usage) {
-		this.useHypotheticalDomain = usage;
-	}
-
 
 
 }

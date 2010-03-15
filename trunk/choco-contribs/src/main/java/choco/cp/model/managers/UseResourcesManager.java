@@ -1,15 +1,14 @@
 package choco.cp.model.managers;
 
-import gnu.trove.TIntArrayList;
-
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.scheduling.AbstractResourceSConstraint;
+import choco.cp.solver.constraints.global.scheduling.AbstractUseResourcesSConstraint;
+import choco.cp.solver.constraints.global.scheduling.TempTaskConstraintWrapper;
 import choco.cp.solver.constraints.global.scheduling.UseResourcesEq;
 import choco.cp.solver.constraints.global.scheduling.UseResourcesGeq;
 import choco.kernel.model.constraints.Constraint;
@@ -48,7 +47,7 @@ public class UseResourcesManager extends ConstraintManager<Variable> {
 							final boolean equal = (Boolean) params[2];
 							for (int i = 0; i < resources.length; i++) {
 								final SConstraint c = solver.getCstr(resources[i]);
-								if (c instanceof AbstractResourceSConstraint) {
+								if ( c != null && c instanceof AbstractResourceSConstraint) {
 									final AbstractResourceSConstraint rsc = (AbstractResourceSConstraint) c;
 									final int idx = rsc.indexOf(task);
 									if( idx >= 0) {
@@ -72,9 +71,11 @@ public class UseResourcesManager extends ConstraintManager<Variable> {
 									rtasks[idx] = rt;
 									uvars[idx] = rt.getUsage();
 								}
-								return equal ? 
+								AbstractUseResourcesSConstraint cstr = equal ? 
 										new UseResourcesEq(solver.getEnvironment(), task, k, uvars, rtasks) :
-											new UseResourcesGeq(solver.getEnvironment(), task, k, uvars, rtasks) ;
+											new UseResourcesGeq(solver.getEnvironment(), task, k, uvars, rtasks);
+								solver.post( new TempTaskConstraintWrapper(task,cstr));	
+								return cstr;
 							}
 						}
 					}

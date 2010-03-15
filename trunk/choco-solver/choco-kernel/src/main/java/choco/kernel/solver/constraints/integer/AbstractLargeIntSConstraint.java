@@ -40,13 +40,4 @@ public abstract class AbstractLargeIntSConstraint extends AbstractIntSConstraint
         super(priority, vars);
     }
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        AbstractLargeIntSConstraint newc = (AbstractLargeIntSConstraint) super.clone();
-        newc.vars = new IntDomainVar[this.vars.length];
-        System.arraycopy(this.vars, 0, newc.vars, 0, this.vars.length);
-        cIndices = new int[this.cIndices.length];
-        System.arraycopy(this.cIndices, 0, newc.cIndices, 0, this.cIndices.length);
-        return newc;
-    }
 }
