@@ -148,8 +148,13 @@ public class ExpressionSConstraint extends TuplesTest implements SConstraint, Bi
     public Var getVar(int i) {
         return vars[i];
     }
+    
+    @Override
+	public Var getVarQuick(int i) {
+    	return vars[i];
+	}
 
-    public void setVar(int i, Var v) {
+	public void setVar(int i, Var v) {
         vars[i] = (IntDomainVar) v;
     }
 

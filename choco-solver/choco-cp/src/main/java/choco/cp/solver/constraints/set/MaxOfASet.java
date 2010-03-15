@@ -31,6 +31,7 @@ import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.set.AbstractLargeSetIntSConstraint;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.integer.IntVar;
 import choco.kernel.solver.variables.set.SetDomain;
 import choco.kernel.solver.variables.set.SetVar;
@@ -63,7 +64,7 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 
 	protected final Integer defaultValueEmptySet;
 
-	public AbstractBoundOfASet(IntVar[] intvars, SetVar setvar, Integer defaultValueEmptySet) {
+	public AbstractBoundOfASet(IntDomainVar[] intvars, SetVar setvar, Integer defaultValueEmptySet) {
 		super(intvars, new SetVar[]{setvar});
 		this.defaultValueEmptySet = defaultValueEmptySet;
 		if(setvar.getEnveloppeInf()<0 || setvar.getEnveloppeSup()>intvars.length-2) {
@@ -245,7 +246,7 @@ public class MaxOfASet extends AbstractBoundOfASet {
 	protected final IStateInt indexOfMaximumVariable;
 
 
-	public MaxOfASet(IEnvironment environment, IntVar[] intvars, SetVar setvar, Integer defaultValueEmptySet) {
+	public MaxOfASet(IEnvironment environment, IntDomainVar[] intvars, SetVar setvar, Integer defaultValueEmptySet) {
 		super(intvars, setvar, defaultValueEmptySet);
 		indexOfMaximumVariable = environment.makeInt(-1);
 	}

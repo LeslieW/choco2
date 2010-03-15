@@ -21,6 +21,7 @@ public final class TaskUtils {
 		return t.getECT() > t.getLST();
 	}
 	
+	
 	public static int getMinConsumption(IRTask t) {
 		final int h = t.getMinHeight();
 		final int d = h>0 ? t.getTaskVar().getMinDuration() : t.getTaskVar().getMaxDuration();

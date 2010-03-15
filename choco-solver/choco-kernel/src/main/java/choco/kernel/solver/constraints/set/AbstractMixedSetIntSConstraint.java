@@ -149,15 +149,6 @@ public abstract class AbstractMixedSetIntSConstraint extends AbstractSConstraint
 		}
 	}
 
-	public boolean isCompletelyInstantiated() {
-		int n = getNbVars();
-		for (int i = 0; i < n; i++) {
-			if (!(getVar(i).isInstantiated())) {
-				return false;
-			}
-		}
-		return true;
-	}
 
 	public boolean isSatisfied(int[] tuple) {
 		throw new UnsupportedOperationException(this + " needs to implement isSatisfied(int[] tuple) to be embedded in reified constraints");

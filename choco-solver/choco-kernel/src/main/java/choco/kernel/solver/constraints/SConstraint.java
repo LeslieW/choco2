@@ -58,6 +58,16 @@ public interface SConstraint<V extends Var> extends Cloneable,IPretty {
 
 	/**
 	 * <i>Network management:</i>
+	 * Accessing the ith variable of a constraint.
+	 *
+	 * @param i index of the variable in the constraint
+     * @return the i^th variable involved in the constraint
+	 */
+
+	V getVarQuick(int i);
+	
+	/**
+	 * <i>Network management:</i>
 	 * Setting (or overwriting)  the ith variable of a constraint.
 	 *
 	 * @param i index of the variable in the constraint
@@ -81,7 +91,7 @@ public interface SConstraint<V extends Var> extends Cloneable,IPretty {
 	 * @param solver the current solver
      * @return a new constraint (modelling the opposite condition)  @param solver
 	 */
-	AbstractSConstraint opposite(Solver solver);
+	AbstractSConstraint<V> opposite(Solver solver);
 
 	/**
 	 * <i>Network management:</i>

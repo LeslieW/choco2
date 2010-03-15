@@ -7,15 +7,16 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
+import choco.kernel.solver.propagation.listener.TaskPropagator;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
-public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstraint {
+public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstraint implements TaskPropagator {
 
 	protected static final int EVENT_MASK = IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
 
 	protected final TaskVar[] taskvars;
-
+	
 	//TODO should be private
 	protected final int startOffset;
 
@@ -80,9 +81,6 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 		return taskIntVarOffset;
 	}
 
-	protected final TaskVar intVarIndexToTask(final int vidx) {
-		return vidx < taskIntVarOffset ? getTask(vidx % getNbTasks()) : null; 
-	}
 
 	protected final int getStartIndex(final int tidx) {
 		return tidx;
@@ -144,4 +142,12 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 		return new String(b);
 	}
 
+
+	@Override
+	public void awakeOnHypDomMod(int varIdx) throws ContradictionException {
+		//throw new SolverException("not filtering on hypothetical domain on resources");
+		
+	}
+	
+	
 }

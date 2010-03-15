@@ -86,7 +86,7 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
      * Initial propagation in case of EQ and enumerated domains
      * @throws ContradictionException
      */
-    public void filterFromVarToVar(IntDomainVar var1, IntDomainVar var2, int idx) throws ContradictionException {
+    public void filterFromVarToVar(IntDomainVar var1, IntDomainVar var2) throws ContradictionException {
         DisposableIntIterator it = var1.getDomain().getIterator();
         try{
         for (; it.hasNext();) {
@@ -122,7 +122,7 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
     /**
      * In case of a GT, due to a modification on vv0 domain
      */
-    public void filterGTonVar(IntDomainVar vv0, IntDomainVar vv1, int idx) throws ContradictionException {
+    public void filterGTonVar(IntDomainVar vv0, IntDomainVar vv1) throws ContradictionException {
         if(cste>=0){
             int lbv0 = vv0.getSup() - cste;
             int ubv0 = vv0.getInf() + cste;
@@ -146,7 +146,7 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
     /**
      * In case of a LT, due to a modification on vv0 domain
      */
-    public void filterLTonVar(IntDomainVar vv0, IntDomainVar vv1, int idx) throws ContradictionException {
+    public void filterLTonVar(IntDomainVar vv0, IntDomainVar vv1) throws ContradictionException {
         vv1.updateInf(vv0.getInf() - cste + 1, this, false);
         vv1.updateSup(vv0.getSup() + cste - 1, this, false);
     }
@@ -154,7 +154,7 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
     /**
      * In case of a EQ, due to a modification of the lower bound of vv0
      */
-     public void filterOnInf(IntDomainVar vv0, IntDomainVar vv1, int idx) throws ContradictionException {
+     public void filterOnInf(IntDomainVar vv0, IntDomainVar vv1) throws ContradictionException {
         if (vv1.hasEnumeratedDomain()) {
             IntDomain dom = vv1.getDomain();
             int end = vv0.getInf() + cste;
@@ -171,7 +171,7 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
     /**
      * In case of a EQ, due to a modification of the upper bound of vv0
      */
-    public void filterOnSup(IntDomainVar vv0, IntDomainVar vv1, int idx) throws ContradictionException {
+    public void filterOnSup(IntDomainVar vv0, IntDomainVar vv1) throws ContradictionException {
         if (vv1.hasEnumeratedDomain()) {
             IntDomain dom = vv1.getDomain();
             int initval;
@@ -195,7 +195,7 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
     /**
      * In case of a EQ, due to the instantion to one variable to val
      */
-    public void filterOnInst(IntDomainVar v, int val, int cIdx) throws ContradictionException {
+    public void filterOnInst(IntDomainVar v, int val) throws ContradictionException {
         if (!v.canBeInstantiatedTo(val + cste)) {
             v.instantiate(val - cste, this, false);
         } else if (!v.canBeInstantiatedTo(val - cste)) {
@@ -261,13 +261,13 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
 	public void propagate() throws ContradictionException {
         if (operator == EQ) {
             if (v0.hasEnumeratedDomain()) {
-                filterFromVarToVar(v0, v1, cIdx0);
+                filterFromVarToVar(v0, v1);
             } else {
                 v0.updateInf(v1.getInf() - cste, this, false);
                 v0.updateSup(v1.getSup() + cste, this, false);
             }
             if (v1.hasEnumeratedDomain()) {
-                filterFromVarToVar(v1, v0, cIdx1);
+                filterFromVarToVar(v1, v0);
             } else {
                 v1.updateInf(v0.getInf() - cste, this, false);
                 v1.updateSup(v0.getSup() + cste, this, false);
@@ -313,21 +313,21 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
 	public void awakeOnSup(int idx) throws ContradictionException {
         if (operator == EQ) {
             if (idx == 0) {
-                filterOnSup(v0, v1, cIdx1);
+                filterOnSup(v0, v1);
             } else {
-                filterOnSup(v1, v0, cIdx0);
+                filterOnSup(v1, v0);
             }
         } else if (operator == GT) {
             if (idx == 0) {
-                filterGTonVar(v0,v1,cIdx1);
+                filterGTonVar(v0,v1);
             } else {
-                filterGTonVar(v1,v0,cIdx0);
+                filterGTonVar(v1,v0);
             }
         } else if (operator == LT) {
             if (idx == 0) {
-                filterLTonVar(v0,v1,cIdx1);
+                filterLTonVar(v0,v1);
             } else {
-                filterLTonVar(v1,v0,cIdx0);
+                filterLTonVar(v1,v0);
             }
         } else {
 	        filterNeq();
@@ -338,21 +338,21 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
 	public void awakeOnInf(int idx) throws ContradictionException {
         if (operator == EQ) {
             if (idx == 0) {
-                filterOnInf(v0, v1, cIdx1);
+                filterOnInf(v0, v1);
             } else {
-                filterOnInf(v1, v0, cIdx0);
+                filterOnInf(v1, v0);
             }
         } else if (operator == GT) {
             if (idx == 0) {
-                filterGTonVar(v0,v1,cIdx1);
+                filterGTonVar(v0,v1);
             } else {
-                filterGTonVar(v1,v0,cIdx0);
+                filterGTonVar(v1,v0);
             }
         } else if (operator == LT) {
             if (idx == 0) {
-                filterLTonVar(v0,v1,cIdx1);
+                filterLTonVar(v0,v1);
             } else {
-                filterLTonVar(v1,v0,cIdx0);
+                filterLTonVar(v1,v0);
             }
         } else {
 	        filterNeq();
@@ -364,21 +364,21 @@ public class DistanceXYC extends AbstractBinIntSConstraint {
 	public void awakeOnInst(int idx) throws ContradictionException {
         if (operator == EQ) {
             if (idx == 0) {
-                filterOnInst(v1, v0.getVal(), cIdx1);
+                filterOnInst(v1, v0.getVal());
             } else {
-                filterOnInst(v0, v1.getVal(), cIdx0);
+                filterOnInst(v0, v1.getVal());
             }
         } else if (operator == GT) {
             if (idx == 0) {
-                filterGTonVar(v0,v1,cIdx1);
+                filterGTonVar(v0,v1);
             } else {
-                filterGTonVar(v1,v0,cIdx0);
+                filterGTonVar(v1,v0);
             }
         } else if (operator == LT) {
             if (idx == 0) {
-                filterLTonVar(v0,v1,cIdx1);
+                filterLTonVar(v0,v1);
             } else {
-                filterLTonVar(v1,v0,cIdx0);
+                filterLTonVar(v1,v0);
             }
         } else {
 	        filterNeq();

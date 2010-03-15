@@ -33,7 +33,7 @@ public abstract class AbstractIntVarSelector extends AbstractSearchHeuristic imp
    * a specific array of IntVars from which the object seeks the one with smallest domain
    */
   protected IntDomainVar[] vars;
-
+  
   /**
    * the IVarSelector can be asked to return a variable
    *

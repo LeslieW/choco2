@@ -168,6 +168,13 @@ public class Choco{
 	public static IntegerVariable makeIntVar(String name, String... options) {
 		return makeIntVar(name, MIN_LOWER_BOUND, MAX_UPPER_BOUND, options);
 	}
+	
+
+	private static int[] makeValues(int[] valuesArray) {
+		final int[] values = ArrayUtils.getNonRedundantSortedValues(valuesArray);
+		checkIntVarBounds(values[0], values[values.length-1]);
+		return values;
+	}
 
 	private static IntegerVariable unsafeMakeIntVar(String name, int[] nonRedundantSortedvalues, String... options) {
 		IntegerVariable v = new IntegerVariable(name, nonRedundantSortedvalues);
@@ -209,11 +216,6 @@ public class Choco{
 		return unsafeMakeIntVar(name, values, options);
 	}
 	
-	private static int[] makeValues(int[] valuesArray) {
-		final int[] values = ArrayUtils.getNonRedundantSortedValues(valuesArray);
-		checkIntVarBounds(values[0], values[values.length-1]);
-		return values;
-	}
 	
 	
 
@@ -407,7 +409,7 @@ public class Choco{
 		final int[] values = makeValues(valuesArray); 
 		final IntegerVariable[] vars = new IntegerVariable[dim];
 		for (int i = 0; i < vars.length; i++) {
-			vars[i] = unsafeMakeIntVar(name+"_"+i, values, options);
+			vars[i] = unsafeMakeIntVar(name+"_"+i, Arrays.copyOf(values, values.length), options);
 		}
 		return vars;
 	}
@@ -516,7 +518,7 @@ public class Choco{
 		IntegerVariable[][] vars = new IntegerVariable[dim1][dim2];
 		for (int i = 0; i < vars.length; i++) {
 			for (int j = 0; j < vars[i].length; j++) {
-				vars[i][j] = unsafeMakeIntVar(name + "_" + i+"_"+j, values, options);
+				vars[i][j] = unsafeMakeIntVar(name + "_" + i+"_"+j, Arrays.copyOf(values, values.length), options);
 			}
 			
 		}
