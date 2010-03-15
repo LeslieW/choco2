@@ -973,45 +973,45 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 		@Override
 		public boolean updateDuration(int duration)
 				throws ContradictionException {
-				if(isOptional()) return super.updateDuration(duration);
+				if(isRegular()) return super.updateDuration(duration);
 				else return setHDuration(duration);
 		}
 
 		@Override
 		public boolean updateECT(int val) throws ContradictionException {
-			if(isOptional()) return super.updateECT(val);
-			else return setECT(val);
+			if(isRegular()) return super.updateECT(val);
+			else return setHECT(val);
 		}
 
 		@Override
 		public boolean updateEndingTime(int endingTime)
 				throws ContradictionException {
-			if(isOptional()) return super.updateEndingTime(endingTime);
+			if(isRegular()) return super.updateEndingTime(endingTime);
 			else return setHEndingTime(endingTime);
 		}
 
 		@Override
 		public boolean updateEndNotIn(int a, int b)
 				throws ContradictionException {
-			if(isOptional()) return super.updateEndNotIn(a, b);
-			else return setEndNotIn(a, b);
+			if(isRegular()) return super.updateEndNotIn(a, b);
+			else return setHEndNotIn(a, b);
 		}
 
 		@Override
 		public boolean updateEST(int val) throws ContradictionException {
-			if(isOptional()) return super.updateEST(val);
+			if(isRegular()) return super.updateEST(val);
 			else return setHEST(val);
 		}
 
 		@Override
 		public boolean updateLCT(int val) throws ContradictionException {
-			if(isOptional()) return super.updateLCT(val);
+			if(isRegular()) return super.updateLCT(val);
 			else return setHLCT(val);
 		}
 
 		@Override
 		public boolean updateLST(int val) throws ContradictionException {
-			if(isOptional()) return super.updateLST(val);
+			if(isRegular()) return super.updateLST(val);
 			else return setHLST(val);
 		}
 
@@ -1023,21 +1023,21 @@ public abstract class AbstractResourceSConstraint extends AbstractTaskSConstrain
 
 		@Override
 		public boolean updateMinDuration(int val) throws ContradictionException {
-			if(isOptional()) return super.updateMinDuration(val);
+			if(isRegular()) return super.updateMinDuration(val);
 			else return setHDuration(val);
 		}
 
 		@Override
 		public boolean updateStartingTime(int startingTime)
 				throws ContradictionException {
-			if(isOptional()) return super.updateStartingTime(startingTime);
+			if(isRegular()) return super.updateStartingTime(startingTime);
 			else return setHStartingTime(startingTime);
 		}
 
 		@Override
 		public boolean updateStartNotIn(int a, int b)
 				throws ContradictionException {
-			if(isOptional()) return super.updateStartNotIn(a, b);
+			if(isRegular()) return super.updateStartNotIn(a, b);
 			else return setHStartNotIn(a, b);
 		}
 		

@@ -33,6 +33,11 @@ public class TempTaskConstraintWrapper extends AbstractSConstraint<TaskVar> impl
 	public boolean isSatisfied() {
 		return constraint.isSatisfied();
 	}
+	
+	@Override
+	public Boolean isEntailed() {
+		return constraint.isEntailed();
+	}
 
 	@Override
 	public void awakeOnHypDomMod(int varIdx) throws ContradictionException {
