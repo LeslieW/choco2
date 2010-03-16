@@ -10,6 +10,7 @@ import choco.cp.solver.constraints.integer.bool.sum.BoolSumStructure;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.constraints.global.scheduling.AbstractTaskSConstraint;
 import choco.kernel.solver.propagation.listener.TaskPropagator;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.IRTask;

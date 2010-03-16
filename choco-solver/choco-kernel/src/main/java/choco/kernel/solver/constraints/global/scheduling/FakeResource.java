@@ -1,12 +1,13 @@
 package choco.kernel.solver.constraints.global.scheduling;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
-
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
 
 public class FakeResource<E extends ITask> implements IResource<E> {
 
@@ -20,7 +21,7 @@ public class FakeResource<E extends ITask> implements IResource<E> {
 	}
 	
 	@Override
-	public List<E> asList() {
+	public List<E> asTaskList() {
 		return Arrays.asList(tasks);
 	}
 
@@ -38,6 +39,13 @@ public class FakeResource<E extends ITask> implements IResource<E> {
 	public IRTask getRTask(int idx) {
 		return null;
 	}
+	
+	
+
+	@Override
+	public List<IRTask> asRTaskList() {
+		return Collections.<IRTask>emptyList();
+	}
 
 	@Override
 	public E getTask(int idx) {
@@ -47,6 +55,16 @@ public class FakeResource<E extends ITask> implements IResource<E> {
 	@Override
 	public Iterator<E> getTaskIterator() {
 		return IteratorUtils.iterator(tasks);
+	}
+
+	@Override
+	public int getNbOptionalTasks() {
+		return 0;
+	}
+
+	@Override
+	public int getNbRegularTasks() {
+		return getNbTasks();
 	}
 
 	

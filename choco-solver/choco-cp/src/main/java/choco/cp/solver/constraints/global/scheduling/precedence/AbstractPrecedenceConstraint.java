@@ -1,4 +1,4 @@
-package choco.cp.solver.constraints.global.scheduling;
+package choco.cp.solver.constraints.global.scheduling.precedence;
 
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;

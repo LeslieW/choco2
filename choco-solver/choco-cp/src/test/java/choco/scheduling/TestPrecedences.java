@@ -48,7 +48,7 @@ import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.configure.SchedulerConfiguration;
-import choco.cp.solver.constraints.global.scheduling.VariablePrecedenceDisjoint;
+import choco.cp.solver.constraints.global.scheduling.precedence.VariablePrecedenceDisjoint;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.constraints.Constraint;

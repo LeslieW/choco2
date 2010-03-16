@@ -34,15 +34,9 @@ import java.util.List;
  * @author Arnaud Malapert</br> 
  * @since 23 janv. 2009 version 2.0.1</br>
  * @version 2.0.3</br>
- * @param <E>
  */
-public interface IResource<T extends ITask> {
-
-	/**
-	 * get the name of the ressource
-	 */
-	String getRscName();
-
+public interface IResource<T extends ITask> extends IResourceData {
+	
 	/**
 	 * get the task with the given index
 	 * @param idx index of the task
@@ -62,6 +56,11 @@ public interface IResource<T extends ITask> {
 	/**
 	 * A view of the resource as an immutable list.
 	 */
-	List<T> asList();
+	List<T> asTaskList();
+
+	/**
+	 * A view of the resource as an immutable list.
+	 */
+	List<IRTask> asRTaskList();
 
 }

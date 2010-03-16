@@ -52,7 +52,7 @@ public final class RscData implements IResourceData {
 	}
 
 	@Override
-	public int getNbRequiredTasks() {
+	public int getNbRegularTasks() {
 		return nbReq;
 	}
 

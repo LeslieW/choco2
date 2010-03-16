@@ -20,7 +20,7 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.constraints.global.scheduling;
+package choco.cp.solver.constraints.global.scheduling.cumulative;
 
 import static choco.cp.solver.SettingType.*;
 import choco.kernel.solver.ContradictionException;

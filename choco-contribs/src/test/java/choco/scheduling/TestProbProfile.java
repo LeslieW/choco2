@@ -406,7 +406,7 @@ class SimpleResource implements ICumulativeResource<SimpleTask> {
 	}
 	
 	@Override
-	public List<SimpleTask> asList() {
+	public List<SimpleTask> asTaskList() {
 		return Collections.unmodifiableList(tasksL);
 	}
 
@@ -453,6 +453,21 @@ class SimpleResource implements ICumulativeResource<SimpleTask> {
 	@Override
 	public boolean hasOnlyPosisiveHeights() {
 		return true;
+	}
+
+	@Override
+	public int getNbOptionalTasks() {
+		return 0;
+	}
+
+	@Override
+	public int getNbRegularTasks() {
+		return getNbTasks();
+	}
+
+	@Override
+	public List<IRTask> asRTaskList() {
+		return Collections.<IRTask>emptyList();
 	}
 	
 	

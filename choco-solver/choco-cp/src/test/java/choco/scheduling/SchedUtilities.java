@@ -384,6 +384,12 @@ class SimpleResource implements ICumulativeResource<SimpleTask> {
 		return null;
 	}
 
+
+	@Override
+	public List<IRTask> asRTaskList() {
+		return Collections.<IRTask>emptyList();
+	}
+
 	@Override
 	public int getNbTasks() {
 		return tasksL.size();
@@ -405,7 +411,7 @@ class SimpleResource implements ICumulativeResource<SimpleTask> {
 	}
 	
 	@Override
-	public List<SimpleTask> asList() {
+	public List<SimpleTask> asTaskList() {
 		return Collections.unmodifiableList(tasksL);
 	}
 
@@ -454,5 +460,14 @@ class SimpleResource implements ICumulativeResource<SimpleTask> {
 		return true;
 	}
 	
-	
+	@Override
+	public int getNbOptionalTasks() {
+		return 0;
+	}
+
+	@Override
+	public int getNbRegularTasks() {
+		return getNbTasks();
+	}
+
 }

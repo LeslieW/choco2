@@ -20,9 +20,10 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.constraints.global.scheduling;
+package choco.cp.solver.constraints.global.scheduling.precedence.network;
 
 
+import choco.cp.solver.constraints.global.scheduling.AbstractResourceSConstraint;
 import choco.kernel.common.opres.graph.DagDTC;
 import choco.kernel.common.opres.graph.GraphDTC;
 import choco.kernel.memory.IEnvironment;

@@ -1,7 +1,9 @@
 package choco.kernel.common.util.tools;
 
+import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
+import choco.kernel.solver.variables.scheduling.TaskVar;
 
 public final class TaskUtils {
 
@@ -32,5 +34,21 @@ public final class TaskUtils {
 		final int h = t.getMaxHeight();
 		final int d = h>0 ? t.getTaskVar().getMaxDuration() : t.getTaskVar().getMinDuration();
 		return h*d;
+	}
+	
+	public static boolean isRegular(IntDomainVar usage) {
+		return usage.isInstantiatedTo(IRTask.REGULAR);
+	}
+	
+	public static boolean isOptional(IntDomainVar usage) {
+		return !usage.isInstantiated();
+	}
+	
+	public static boolean isEliminated(IntDomainVar usage) {
+		return usage.isInstantiatedTo(IRTask.ELIMINATED);
+	}
+	
+	public static boolean hasEnumeratedDomain(TaskVar task) {
+		return task.start().hasEnumeratedDomain() || task.end().hasEnumeratedDomain();
 	}
 }

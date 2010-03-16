@@ -20,7 +20,7 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.constraints.global.scheduling;
+package choco.cp.solver.constraints.global.scheduling.cumulative;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,7 +29,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-import choco.cp.solver.constraints.global.scheduling.AbstractResourceSConstraint.RTask;
 import choco.kernel.common.util.tools.TaskUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.scheduling.IRTask;

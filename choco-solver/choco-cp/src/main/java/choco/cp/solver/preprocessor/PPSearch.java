@@ -26,7 +26,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.BoundAllDiff;
 import choco.cp.solver.constraints.global.matching.AllDifferent;
-import choco.cp.solver.constraints.global.scheduling.Cumulative;
+import choco.cp.solver.constraints.global.scheduling.cumulative.Cumulative;
 import choco.cp.solver.constraints.integer.DistanceXYC;
 import choco.cp.solver.constraints.integer.DistanceXYZ;
 import choco.cp.solver.constraints.integer.IntLinComb;

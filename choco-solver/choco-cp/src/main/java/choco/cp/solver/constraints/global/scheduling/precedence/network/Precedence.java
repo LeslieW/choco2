@@ -20,12 +20,15 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.constraints.global.scheduling;
+package choco.cp.solver.constraints.global.scheduling.precedence.network;
 
 
+import choco.cp.solver.constraints.global.scheduling.AbstractResourceSConstraint;
+import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
+import choco.kernel.solver.constraints.global.scheduling.AbstractTaskSConstraint;
 import choco.kernel.solver.constraints.global.scheduling.IPrecedenceNetwork;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
@@ -54,6 +57,12 @@ public class Precedence  extends AbstractTaskSConstraint {
 	protected Precedence(final IPrecedenceNetwork network, final TaskVar task1, final TaskVar task2, final IntDomainVar... otherVars){
 		super(task1,task2, otherVars);
 		this.network = network;
+	}
+
+	@Override
+	public int getFilteredEventMask(int idx) {
+		if( idx < taskIntVarOffset) return AbstractResourceSConstraint.TASK_MASK;
+		else return IntVarEvent.INSTINTbitvector;
 	}
 
 	protected final int opposite(int val) {

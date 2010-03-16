@@ -7,6 +7,9 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 interface IAltRTask {
 
+	public final static int ELIMINATED=0;	
+	public final static int REGULAR=1;
+	
 	IntDomainVar getUsage();
 	
 	boolean isOptional();
@@ -55,7 +58,7 @@ interface ICumulRTask extends IEnergyRTask {
  * @version 2.1.1</br>
  */
 public interface IRTask extends ICumulRTask,IAltRTask, IPretty {
-
+	
 	int getTaskIndex();
 
 	TaskVar getTaskVar();

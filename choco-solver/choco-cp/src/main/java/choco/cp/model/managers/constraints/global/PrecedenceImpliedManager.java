@@ -23,7 +23,7 @@
 package choco.cp.model.managers.constraints.global;
 
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.scheduling.PrecedenceImplied;
+import choco.cp.solver.constraints.global.scheduling.precedence.PrecedenceImplied;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
