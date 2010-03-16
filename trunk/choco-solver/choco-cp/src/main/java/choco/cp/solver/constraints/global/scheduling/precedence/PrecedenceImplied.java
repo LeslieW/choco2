@@ -20,71 +20,68 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.constraints.global.scheduling;
+package choco.cp.solver.constraints.global.scheduling.precedence;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.scheduling.TaskVar;
+
 
 /**
- * if b is true then t1 ends before t2, otherwise t2 ends before t1.
- * same as {@link PrecedenceDisjoint} when at least one tasks has a variable duration.
- * b = 1 <=> e1 <= s2
- * b = 0 <=> e2 <= s1
- */ 
-public final class PrecedenceVDisjoint extends AbstractPrecedenceConstraint {
+ * @author Arnaud Malapert</br> 
+ * @since 28 août 2009 version 2.1.1</br>
+ * @version 2.1.1</br>
+ */
+public final class PrecedenceImplied extends AbstractPrecedenceConstraint {
 
-	public PrecedenceVDisjoint(IntDomainVar b, 
-			IntDomainVar s1, IntDomainVar e1,
-			IntDomainVar s2, IntDomainVar e2
-	) {
-		super(new IntDomainVar[]{b,s1,s2,e1,e2});
+
+	/**
+	 * b = 1 => x1 + k1 <= x2
+	 */
+	public PrecedenceImplied(IntDomainVar x1, int k1, IntDomainVar x2, IntDomainVar b) {
+		super( new IntDomainVar[]{b, x1, x2});
+		this.k1 = k1;
 	}
 	
-	public PrecedenceVDisjoint(IntDomainVar b, TaskVar t1, TaskVar t2) {
-		this(b, t1.start(), t1.end(), t2.start(), t2.end());
-		setTasks(t1, t2);
+
+	@Override
+	public void propagateP1() throws ContradictionException {
+		propagate(1, k1, 2);
 	}
-	
-	
+
+	@Override
+	public void propagateP2() throws ContradictionException {}
+
 	@Override
 	public Boolean isP1Entailed() {
-		return isEntailed(3,2);
+		return isEntailed(1, k1, 2);
 	}
 
 	@Override
 	public Boolean isP2Entailed() {
-		return isEntailed(4,1);
+		return null;
 	}
 
 	@Override
-	public void propagateP1() throws ContradictionException {
-		propagate(3, 2);
-
+	public void filterOnP1P2TowardsB() throws ContradictionException {
+		if(isP1Entailed() == Boolean.FALSE){
+			vars[BIDX].instantiate(0, this, false);
+		}
 	}
-
-	@Override
-	public void propagateP2() throws ContradictionException {
-		propagate(4, 1);
-	}
-
 
 	@Override
 	public boolean isSatisfied() {
-		return vars[BIDX].isInstantiatedTo(1) ? isSatisfied(3, 2) : isSatisfied(4, 1);
+		return vars[BIDX].isInstantiatedTo(1) ? isSatisfied(1, k1, 2) : true;
 	}
 
-
+	
 	@Override
 	public boolean isSatisfied(int[] tuple) {
-		return tuple[BIDX] == 1 ? ( tuple[3] <= tuple[2] ) : ( tuple[4] <= tuple[1] );
+		return tuple[BIDX] == 1 ?tuple[1] + k1 <= tuple[2] : true;
 	}
 
 	@Override
 	public String pretty() {
-		return pretty( "Precedence Disjoint", pretty(3, 2), pretty(4, 1) );
+		return pretty( "Precedence Implied", pretty(1, k1, 2), "TRUE");
 	}
-	
-	
-	
+
 }

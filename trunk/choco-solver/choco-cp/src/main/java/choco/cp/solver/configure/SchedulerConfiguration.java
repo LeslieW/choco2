@@ -24,8 +24,8 @@ package choco.cp.solver.configure;
 
 import choco.Choco;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.scheduling.IncrementalPertSConstraint;
-import choco.cp.solver.constraints.global.scheduling.PertSConstraint;
+import choco.cp.solver.constraints.global.scheduling.precedence.network.IncrementalPertSConstraint;
+import choco.cp.solver.constraints.global.scheduling.precedence.network.PertSConstraint;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.global.scheduling.IPrecedenceNetwork;

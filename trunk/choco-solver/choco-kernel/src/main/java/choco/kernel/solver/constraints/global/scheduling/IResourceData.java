@@ -8,6 +8,6 @@ public interface IResourceData {
 	
 	int getNbOptionalTasks();
 	
-	int getNbRequiredTasks();
+	int getNbRegularTasks();
 	
 }

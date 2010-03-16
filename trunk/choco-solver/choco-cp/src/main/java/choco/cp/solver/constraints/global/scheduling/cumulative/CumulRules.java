@@ -20,7 +20,7 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.constraints.global.scheduling;
+package choco.cp.solver.constraints.global.scheduling.cumulative;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -102,8 +102,8 @@ public class CumulRules implements ICumulRules {
 	public CumulRules(final AbstractCumulativeSConstraint rsc) {
 		super();
 		this.rsc = rsc;
-		tasksLY= new ArrayList<IRTask>(Arrays.asList(rsc.rtasks));
-		tasksLX= new LinkedList<IRTask>(Arrays.asList(rsc.rtasks));
+		tasksLY= new ArrayList<IRTask>(rsc.asRTaskList());
+		tasksLX= new LinkedList<IRTask>(rsc.asRTaskList());
 		taskheights = new Consumption[rsc.getNbTasks()];
 	}
 

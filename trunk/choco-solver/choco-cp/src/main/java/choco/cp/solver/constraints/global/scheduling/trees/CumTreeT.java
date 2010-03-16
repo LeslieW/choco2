@@ -42,7 +42,7 @@ public final class CumTreeT<T extends ITask> extends AbstractThetaTree {
 	protected final ICumulativeResource<T> rsc;
 	
 	public CumTreeT(ICumulativeResource<T> rsc) {
-		super(rsc.asList());
+		super(rsc.asTaskList());
 		this.rsc = rsc;
 	}
 

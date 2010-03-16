@@ -20,7 +20,8 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.constraints.global.scheduling;
+package choco.cp.solver.constraints.global.scheduling.disjunctive;
+import choco.cp.solver.constraints.global.scheduling.AbstractResourceSConstraint;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
@@ -49,7 +50,7 @@ public class AltDisjunctive extends Disjunctive {
 	@Override
 	public int getFilteredEventMask(int idx) {
 		return idx < taskIntVarOffset || idx >= taskIntVarOffset + getNbOptionalTasks() ? 
-				EVENT_MASK : IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
+				AbstractResourceSConstraint.TASK_MASK : IntVarEvent.INSTINTbitvector + IntVarEvent.REMVALbitvector;
 	}
 	
 	@Override

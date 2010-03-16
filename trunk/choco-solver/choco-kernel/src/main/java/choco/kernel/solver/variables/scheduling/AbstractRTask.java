@@ -2,13 +2,21 @@ package choco.kernel.solver.variables.scheduling;
 
 import choco.kernel.common.util.tools.TaskUtils;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public abstract class AbstractRTask implements IRTask {
 
-	protected int value;
-
+		
 	public final int taskIdx;
 
+	public TaskVar taskvar;
+	
+	public IntDomainVar usage;
+	
+	public IntDomainVar height;
+	
+	protected int value;
+	
 	public AbstractRTask(int taskIdx) {
 		super();
 		this.taskIdx = taskIdx;

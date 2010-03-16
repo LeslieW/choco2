@@ -29,7 +29,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
 import static choco.cp.solver.SettingType.*;
 import choco.cp.solver.constraints.BitFlags;
-import choco.cp.solver.constraints.global.scheduling.Cumulative;
+import choco.cp.solver.constraints.global.scheduling.cumulative.Cumulative;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.model.Model;

@@ -14,6 +14,7 @@ import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -133,7 +134,7 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 	}
 
 	@Override
-	public List<TaskVar> asList() {
+	public List<TaskVar> asTaskList() {
 		return Arrays.asList(tasks);
 	}
 
@@ -153,6 +154,12 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 		return null;
 	}
 
+
+	@Override
+	public List<IRTask> asRTaskList() {
+		return Collections.<IRTask>emptyList();
+	}
+
 	@Override
 	public Iterator<TaskVar> getTaskIterator() {
 		return IteratorUtils.iterator(tasks);
@@ -167,4 +174,16 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
     public SConstraintType getConstraintType() {
         return SConstraintType.META;
     }
+
+	@Override
+	public int getNbOptionalTasks() {
+		return 0;
+	}
+
+	@Override
+	public int getNbRegularTasks() {
+		return getNbTasks();
+	}
+    
+    
 }

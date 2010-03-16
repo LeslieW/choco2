@@ -24,9 +24,9 @@ package choco.cp.model.managers.constraints.global;
 
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
-import choco.cp.solver.constraints.global.scheduling.AltDisjunctive;
-import choco.cp.solver.constraints.global.scheduling.Disjunctive;
-import choco.cp.solver.constraints.global.scheduling.ForbiddenIntervals;
+import choco.cp.solver.constraints.global.scheduling.disjunctive.AltDisjunctive;
+import choco.cp.solver.constraints.global.scheduling.disjunctive.Disjunctive;
+import choco.cp.solver.constraints.global.scheduling.disjunctive.ForbiddenIntervals;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.global.scheduling.RscData;
@@ -79,7 +79,7 @@ public class DisjunctiveManager extends AbstractResourceManager {
 	}
 	
 	protected void makeDecompositionDisjunctive(CPSolver s, RscData rdata) {
-		final int n = rdata.getNbRequiredTasks();
+		final int n = rdata.getNbRegularTasks();
 		for (int i = 0; i < n; i++) {
 			for (int j = i+1; j < n; j++) {
 				constraints.add( s.preceding(null, tasks[i], 0, tasks[j], 0));

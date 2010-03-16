@@ -1,4 +1,4 @@
-package choco.cp.solver.constraints.global.scheduling;
+package choco.cp.solver.constraints.global.scheduling.cumulative;
 
 import java.util.Arrays;
 

@@ -1,6 +1,5 @@
-package choco.cp.solver.constraints.global.scheduling;
+package choco.kernel.solver.constraints.global.scheduling;
 
-import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.ContradictionException;
@@ -13,17 +12,14 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
 
 public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstraint implements TaskPropagator {
 
-	protected static final int EVENT_MASK = IntVarEvent.INSTINTbitvector + IntVarEvent.BOUNDSbitvector;
-
 	protected final TaskVar[] taskvars;
 	
-	//TODO should be private
 	protected final int startOffset;
 
 	protected final int endOffset;
 
-	public final int taskIntVarOffset;
-
+	protected final int taskIntVarOffset;
+	
 	/**
 	 * 
 	 * Create a task constraint.
@@ -44,7 +40,7 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 	}
 	
 
-	public static TaskVar[] createTaskVarArray(Solver solver) {
+	public final static TaskVar[] createTaskVarArray(Solver solver) {
 		final int n = solver.getNbTaskVars();
 		TaskVar[] tasks = new TaskVar[n];
 		for (int i = 0; i < n; i++) {
@@ -56,7 +52,7 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 		return tasks;
 	}
 
-	public static IntDomainVar[] makeIntVarArray(final TaskVar[] taskvars, IntDomainVar[] intvars, IntDomainVar[] othervars) {
+	public final static IntDomainVar[] makeIntVarArray(final TaskVar[] taskvars, IntDomainVar[] intvars, IntDomainVar[] othervars) {
 		final int n=taskvars.length;
 		final int v1 = 2 * n;
 		final int v2 = 3 * n;
@@ -81,7 +77,6 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 		return taskIntVarOffset;
 	}
 
-
 	protected final int getStartIndex(final int tidx) {
 		return tidx;
 	}
@@ -92,11 +87,6 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 
 	protected final int getDurationIndex(final int tidx) {
 		return endOffset+ tidx;
-	}
-
-	@Override
-	public int getFilteredEventMask(final int idx) {
-		return EVENT_MASK;
 	}
 
 	@Override
@@ -128,18 +118,20 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 		return taskvars[idx];
 	}
 
-	@Override
-	public String pretty() {
+	protected final String pretty(String name) {
 		StringBuilder b = new StringBuilder();
-		b.append("impl ");
-		b.append(this.getClass().getSimpleName());
-		b.append(" tasks");
+		b.append(name).append("( ");
 		b.append(StringUtils.pretty(taskvars));
 		if( vars.length > taskIntVarOffset) {
-			b.append("\nintvars");
+			b.append(", ");
 			b.append(StringUtils.pretty(vars, taskIntVarOffset, vars.length));
 		}
+		b.append(" )");
 		return new String(b);
+	}
+	@Override
+	public String pretty() {
+		return pretty(this.getClass().getSimpleName());
 	}
 
 

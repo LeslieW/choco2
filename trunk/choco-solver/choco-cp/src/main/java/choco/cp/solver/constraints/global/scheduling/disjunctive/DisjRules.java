@@ -20,7 +20,7 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.constraints.global.scheduling;
+package choco.cp.solver.constraints.global.scheduling.disjunctive;
 
 import choco.cp.solver.constraints.global.scheduling.trees.AltDisjTreeTL;
 import choco.cp.solver.constraints.global.scheduling.trees.DisjTreeT;

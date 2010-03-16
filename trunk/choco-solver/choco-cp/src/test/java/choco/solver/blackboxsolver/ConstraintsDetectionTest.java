@@ -28,7 +28,7 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.BoundAllDiff;
 import choco.cp.solver.constraints.global.matching.AllDifferent;
-import choco.cp.solver.constraints.global.scheduling.Disjunctive;
+import choco.cp.solver.constraints.global.scheduling.disjunctive.Disjunctive;
 import choco.cp.solver.constraints.integer.*;
 import choco.cp.solver.constraints.integer.bool.BoolIntLinComb;
 import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;

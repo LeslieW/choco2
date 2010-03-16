@@ -23,10 +23,10 @@
 package choco.cp.model.managers.constraints.global;
 
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.global.scheduling.AltCumulative;
-import choco.cp.solver.constraints.global.scheduling.AltDisjunctive;
-import choco.cp.solver.constraints.global.scheduling.Cumulative;
-import choco.cp.solver.constraints.global.scheduling.Disjunctive;
+import choco.cp.solver.constraints.global.scheduling.cumulative.AltCumulative;
+import choco.cp.solver.constraints.global.scheduling.cumulative.Cumulative;
+import choco.cp.solver.constraints.global.scheduling.disjunctive.AltDisjunctive;
+import choco.cp.solver.constraints.global.scheduling.disjunctive.Disjunctive;
 import static choco.kernel.common.util.tools.VariableUtils.getIntVar;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -99,7 +99,7 @@ public class CumulativeManager extends AbstractResourceManager {
 				}
 			}
 			dcnr = dclique.size();
-			final int nreq = rdata.getNbRequiredTasks();
+			final int nreq = rdata.getNbRegularTasks();
 			dclique.forEachDescending( new TIntProcedure() {
 
 				@Override
