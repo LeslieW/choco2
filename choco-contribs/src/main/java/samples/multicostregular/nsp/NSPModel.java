@@ -191,10 +191,10 @@ public class NSPModel extends CPModel {
         for (int i = 0 ; i < 17 ; i++)
         {
             auto.addState();
-            auto.setAcceptingState(i);
+            auto.setFinal(i);
             auto.addTransition(i,0,R);
         }
-        auto.setStartingState(0);
+        auto.setInitialState(0);
 
         // i -> i (i= D, E, N) // 5*3 transitions
         int k = 1;

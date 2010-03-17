@@ -1,5 +1,6 @@
 package choco.model.constraints.global;
 
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
@@ -8,13 +9,11 @@ import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import org.junit.After;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.logging.Logger;
-
-import static choco.Choco.*;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by IntelliJ IDEA.
@@ -50,9 +49,9 @@ public class CostRegularTest {
         FiniteAutomaton auto = new FiniteAutomaton();
         int start = auto.addState();
         int end = auto.addState();
-        auto.setStartingState(start);
-        auto.setAcceptingState(start);
-        auto.setAcceptingState(end);
+        auto.setInitialState(start);
+        auto.setFinal(start);
+        auto.setFinal(end);
 
         auto.addTransition(start,start, 0,1);
         auto.addTransition(start,end,2);
@@ -79,8 +78,7 @@ public class CostRegularTest {
     }
 
     @Test
-    public void isCorrect()
-    {
+    public void isCorrect()  {
 
         IntegerVariable[] vars = makeIntVarArray("x",12,0,2,"cp:enum");
         IntegerVariable z = makeIntVar("z",10,10,"cp:bound");
@@ -89,9 +87,9 @@ public class CostRegularTest {
         FiniteAutomaton auto = new FiniteAutomaton();
         int start = auto.addState();
         int end = auto.addState();
-        auto.setStartingState(start);
-        auto.setAcceptingState(start);
-        auto.setAcceptingState(end);
+        auto.setInitialState(start);
+        auto.setFinal(start);
+        auto.setFinal(end);
 
         auto.addTransition(start,start, 0,1);
         auto.addTransition(start,end,2);
@@ -133,9 +131,9 @@ public class CostRegularTest {
         Automaton auto = new Automaton();
         int start = auto.addState();
         int end = auto.addState();
-        auto.setStartingState(start);
-        auto.setAcceptingState(start);
-        auto.setAcceptingState(end);
+        auto.setInitialState(start);
+        auto.setFinal(start);
+        auto.setFinal(end);
 
         auto.addTransition(start,start,new int[]{0,1});
         auto.addTransition(start,end,2);
@@ -173,9 +171,9 @@ public class CostRegularTest {
         FiniteAutomaton auto = new FiniteAutomaton();
         int start = auto.addState();
         int end = auto.addState();
-        auto.setStartingState(start);
-        auto.setAcceptingState(start);
-        auto.setAcceptingState(end);
+        auto.setInitialState(start);
+        auto.setFinal(start);
+        auto.setFinal(end);
 
         auto.addTransition(start,start, 0,1);
         auto.addTransition(start,end,2);

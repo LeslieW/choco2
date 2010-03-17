@@ -75,7 +75,7 @@ public class LayeredGraph {
             this.Q.add(null);
         this.layers = new ArrayList<Node[]>();
 
-        this.source=  new Node(env,0,pi.getStartingState());
+        this.source=  new Node(env,0,pi.getInitialState());
         this.tink = new Node(env,vars.length+1,Integer.MAX_VALUE);
     }
 
@@ -108,7 +108,13 @@ public class LayeredGraph {
                 for(Node n : lay[i].values())
                 {
                     int k = n.state;
-                    int succ = pi.delta(k,j);
+                    int succ = 0;
+                    try {
+                        succ = pi.delta(k,j);
+                    } catch (FiniteAutomaton.NonDeterministicOperationException e) {
+                        System.err.println("You must use a deterministic automaton with this constraint");
+                        throw new RuntimeException();
+                    }
                     if (succ >= 0)
                     {
                         Node next = lay[i+1].get(succ);
@@ -157,7 +163,7 @@ public class LayeredGraph {
         HashSet<Integer> toRem = new HashSet<Integer>();
         for (Node rem : lay[vars.length].values())
         {
-            if (!pi.isAccepting(rem.state))
+            if (!pi.isFinal(rem.state))
             {
                 toRem.add(rem.state);
             }
@@ -203,7 +209,13 @@ public class LayeredGraph {
             {
                 for (int j = vars[i].getInf() ; j <= vars[i].getSup() ; j = vars[i].getNextDomainValue(j))
                 {
-                    int fol = pi.delta(n.state,j);
+                    int fol = 0;
+                    try {
+                        fol = pi.delta(n.state,j);
+                    } catch (FiniteAutomaton.NonDeterministicOperationException e) {
+                        System.err.println("You must use a deterministic automaton with this constraint");
+                        throw new RuntimeException();
+                    }
                     if (fol >= 0)
                     {
                         Node t = lay[i+1].get(fol);

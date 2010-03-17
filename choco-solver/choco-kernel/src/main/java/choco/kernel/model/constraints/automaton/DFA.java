@@ -167,7 +167,7 @@ public class DFA {
 			}
 
             for (dk.brics.automaton.Transition t : s.getTransitions()) {
-                for (int i = t.getMin(); i <= t.getMax(); i++) {
+                for (char i = t.getMin(); i <= t.getMax(); i++) {
                     if (!ct.containsKey(t.getDest())) {
 						ct.put(t.getDest(), nbStates++);
 					}

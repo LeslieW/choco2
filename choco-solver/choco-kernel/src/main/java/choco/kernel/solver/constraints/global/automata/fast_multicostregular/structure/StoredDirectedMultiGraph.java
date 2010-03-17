@@ -105,7 +105,7 @@ public class StoredDirectedMultiGraph {
 
 
     public StoredDirectedMultiGraph(IEnvironment environment, AbstractIntSConstraint constraint, DirectedMultigraph<Node, Arc> graph, int[][] layers, int[] starts, int[] offsets, int supportLength,int[][][][] costs)
-    {
+    {      
         this.nbR = costs[0][0].length;
         this.constraint = constraint;
         this.starts = starts;

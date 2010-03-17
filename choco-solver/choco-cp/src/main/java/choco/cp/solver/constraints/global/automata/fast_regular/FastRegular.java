@@ -44,7 +44,7 @@ public class FastRegular extends AbstractLargeIntSConstraint {
 
     /**
      * Construct a new explained regular constraint
-     * @param environment
+     * @param environment env
      * @param vars Variables that must form a word accepted by auto
      * @param auto An automaton forming a regular languauge
      */
@@ -100,7 +100,8 @@ public class FastRegular extends AbstractLargeIntSConstraint {
 
         //forward pass, construct all paths described by the automaton for word of length nbVars.
 
-        layer.get(0).add(auto.getStartingState());
+        layer.get(0).add(auto.getInitialState());
+        TIntHashSet nexts = new TIntHashSet();
 
         for (i = 0 ; i < n ; i++)
         {
@@ -112,12 +113,17 @@ public class FastRegular extends AbstractLargeIntSConstraint {
                 while(layerIter.hasNext())
                 {
                     k = layerIter.next();
-                    int succ = auto.delta(k,j);
-                    if (succ >= 0)
+                    nexts.clear();
+
+                    auto.delta(k,j,nexts);
+                    for (TIntIterator it = nexts.iterator() ;it.hasNext();)
                     {
+                        int succ = it.next();
                         layer.get(i+1).add(succ);
                         //incrQ(i,j,);
-
+                    }
+                    if (!nexts.isEmpty())
+                    {
                         int idx = starts[i]+j-offsets[i];
                         if (tmpQ[idx] == null)
                             tmpQ[idx] =  new TIntHashSet();
@@ -137,7 +143,7 @@ public class FastRegular extends AbstractLargeIntSConstraint {
         while (layerIter.hasNext())
         {
             k = layerIter.next();
-            if (!auto.isAccepting(k))
+            if (!auto.isFinal(k))
             {
                 layerIter.remove();
             }
@@ -166,39 +172,42 @@ public class FastRegular extends AbstractLargeIntSConstraint {
                     while (qijIter.hasNext())
                     {
                         k = qijIter.next();
-                        int qn = auto.delta(k,j);
-                        if (layer.get(i+1).contains(qn))
+                        nexts.clear();
+                        auto.delta(k,j,nexts);
+                        boolean added = false;
+                        for (TIntIterator it = nexts.iterator() ; it.hasNext() ;)
                         {
-                            Node a = in[i*auto.size()+k];
-                            if (a == null)
+                            int qn = it.next();
+                            if (layer.get(i+1).contains(qn))
                             {
-                                a = new Node(k,i,nid++);
-                                in[i*auto.size()+k] = a;
-                                graph.addVertex(a);
+
+                                added = true;
+                                Node a = in[i*auto.size()+k];
+                                if (a == null)
+                                {
+                                    a = new Node(k,i,nid++);
+                                    in[i*auto.size()+k] = a;
+                                    graph.addVertex(a);
+                                }
+
+                                Node b = in[(i+1)*auto.size()+qn];
+                                if (b == null)
+                                {
+                                    b = new Node(qn,i+1,nid++);
+                                    in[(i+1)*auto.size()+qn] = b;
+                                    graph.addVertex(b);
+                                }
+
+
+                                Arc arc = new Arc(a,b,j,aid++);
+                                graph.addEdge(a,b,arc);
+                                tmp.get(idx).add(arc);
+
+                                mark.set(k);
                             }
-
-
-
-                            Node b = in[(i+1)*auto.size()+qn];
-                            if (b == null)
-                            {
-                                b = new Node(qn,i+1,nid++);
-                                in[(i+1)*auto.size()+qn] = b;
-                                graph.addVertex(b);
-                            }
-
-
-                            Arc arc = new Arc(a,b,j,aid++);
-                            graph.addEdge(a,b,arc);
-                            tmp.get(idx).add(arc);
-
-                            // addToOutarc(k,qn,j,i);
-                            //  addToInarc(k,qn,j,i+1);
-                            mark.set(k);
                         }
-                        else
+                        if (!added)
                             qijIter.remove();
-                        //  decrQ(i,j);
                     }
                 }
             }
