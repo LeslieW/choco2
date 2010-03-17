@@ -43,7 +43,6 @@ import gnu.trove.TObjectIntHashMap;
 import org.jgrapht.graph.DirectedMultigraph;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashSet;
 
@@ -302,7 +301,8 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
 
         //forward pass, construct all paths described by the automaton for word of length nbVars.
 
-        layer.get(0).add(pi.getStartingState());
+        layer.get(0).add(pi.getInitialState());
+        TIntHashSet nexts = new TIntHashSet();
 
         for (i = 0 ; i < n ; i++)
         {
@@ -314,18 +314,21 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
                 while(layerIter.hasNext())
                 {
                     k = layerIter.next();
-                    int succ = pi.delta(k,j);
-                    if (succ >= 0)
+                    nexts.clear();
+                    pi.delta(k,j,nexts);
+                    TIntIterator it = nexts.iterator();
+                    for (;it.hasNext();)
                     {
+                        int succ = it.next();
                         layer.get(i+1).add(succ);
-                        //incrQ(i,j,);
-
+                    }
+                    if(!nexts.isEmpty())
+                    {
                         int idx = starts[i]+j-offsets[i];
                         if (tmpQ[idx] == null)
                             tmpQ[idx] =  new TIntHashSet();
 
                         tmpQ[idx].add(k);
-
 
                     }
                 }
@@ -339,7 +342,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         while (layerIter.hasNext())
         {
             k = layerIter.next();
-            if (!pi.isAccepting(k))
+            if (!pi.isFinal(k))
             {
                 layerIter.remove();
             }
@@ -370,39 +373,44 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
                     while (qijIter.hasNext())
                     {
                         k = qijIter.next();
-                        int qn = pi.delta(k,j);
-                        if (layer.get(i+1).contains(qn))
+                        nexts.clear();
+                        pi.delta(k,j,nexts);
+                        if (nexts.size() > 1)
+                            System.err.println("STOP");
+                        boolean added = false;
+                        for (TIntIterator it = nexts.iterator();it.hasNext();)
                         {
-                            Node a = in[i*pi.size()+k];
-                            if (a == null)
+                            int qn = it.next();
+
+                            if (layer.get(i+1).contains(qn))
                             {
-                                a = new Node(k,i,nid++);
-                                in[i*pi.size()+k] = a;
-                                graph.addVertex(a);
+                                added = true;
+                                Node a = in[i*pi.size()+k];
+                                if (a == null)
+                                {
+                                    a = new Node(k,i,nid++);
+                                    in[i*pi.size()+k] = a;
+                                    graph.addVertex(a);
+                                }
+
+                                Node b = in[(i+1)*pi.size()+qn];
+                                if (b == null)
+                                {
+                                    b = new Node(qn,i+1,nid++);
+                                    in[(i+1)*pi.size()+qn] = b;
+                                    graph.addVertex(b);
+                                }
+
+
+                                Arc arc = new Arc(a,b,j,aid++);
+                                graph.addEdge(a,b,arc);
+                                tmp.get(idx).add(arc);
+
+                                mark.set(k);
                             }
-
-
-
-                            Node b = in[(i+1)*pi.size()+qn];
-                            if (b == null)
-                            {
-                                b = new Node(qn,i+1,nid++);
-                                in[(i+1)*pi.size()+qn] = b;
-                                graph.addVertex(b);
-                            }
-
-
-                            Arc arc = new Arc(a,b,j,aid++);
-                            graph.addEdge(a,b,arc);
-                            tmp.get(idx).add(arc);
-
-                            // addToOutarc(k,qn,j,i);
-                            //  addToInarc(k,qn,j,i+1);
-                            mark.set(k);
                         }
-                        else
+                        if (!added)
                             qijIter.remove();
-                        //  decrQ(i,j);
                     }
                 }
             }
@@ -470,7 +478,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         int nbNSig = 0;
         int nbNSig2 = 0;
         double bestVal = Double.POSITIVE_INFINITY;
-        Arrays.fill(uUb,0.0);
+        // Arrays.fill(uUb,0.0);
         do {
             coeff = 0.0;
             for (int i = 0 ; i < nbR ; i++)
@@ -564,7 +572,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         double bestVal = Double.NEGATIVE_INFINITY;
         int nbNSig = 0;
         int nbNSig2 = 0;
-        Arrays.fill(uLb,0.0);
+        //  Arrays.fill(uLb,0.0);
         do
         {
             coeff = 0.0;
@@ -647,7 +655,8 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
      */
     protected void prefilter() throws ContradictionException {
         FastPathFinder p = this.graph.getPathFinder();
-        for (int i = 0 ; i <nbR+1 ; i++)
+        p.computeShortestAndLongestPath(toRemove,z);
+      /*  for (int i = 0 ; i <nbR+1 ; i++)
         {
             int bsup = z[i].getSup();
             int binf = z[i].getInf();
@@ -655,7 +664,7 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
             p.computeShortestAndLongestPath(toRemove,binf,bsup,null,false,false,i);
             z[i].updateInf((int)Math.ceil(p.getShortestPathValue()), this, false);
             z[i].updateSup((int)Math.floor(p.getLongestPathValue()), this, false);
-        }
+        }                         */
         this.delayedGraphUpdate();
     }
 
@@ -735,17 +744,29 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         for (int k = 0 ; k < costs[0][0].length ; k++)
         {
             int cost = 0;
-            int init = this.pi.getStartingState();
+            TIntHashSet init = new TIntHashSet();
+            init.add(this.pi.getInitialState());
             for (int i = 0 ; i < vs.length ; i++)
             {
-                cost+= costs[i][word[i]][k][init];
-                init = this.pi.delta(init,word[i]);
+                TIntHashSet next = new TIntHashSet();
+                for(TIntIterator it = init.iterator() ; it.hasNext();)
+                {
+                    int source = it.next();
+                    cost+= costs[i][word[i]][k][source];
+                    this.pi.delta(source,word[i],next);
+                    if (next.size() > 1)
+                        System.err.println("STOP");
+                }
+                init = next;
 
             }
             if (k == 0)
             {
                 if (cost != z[0].getVal())
                 {
+                    for (int i : word)
+                        System.err.print(i+" ");
+                    System.err.println("");
                     System.err.println("cost: "+cost+" != z:"+z[0].getVal());
                     return false;
                 }
@@ -928,6 +949,8 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
         this.computeSharpBounds();
         if (toRemove.size() > 0)
             System.out.println("PB");
+
+
         assert(check());
         assert(isGraphConsistent());
     }

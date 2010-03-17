@@ -1,7 +1,5 @@
 package choco.cp.solver.constraints.global.automata.fast_costregular;
 
-import choco.cp.solver.CPSolver;
-import choco.cp.solver.variables.integer.IntDomainVarImpl;
 import choco.cp.solver.variables.integer.IntVarEvent;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
@@ -176,8 +174,9 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
 
         //forward pass, construct all paths described by the automaton for word of length nbVars.
 
-        layer.get(0).add(pi.getStartingState());
+        layer.get(0).add(pi.getInitialState());
 
+        TIntHashSet succ = new TIntHashSet();
         for (i = 0 ; i < n ; i++)
         {
             varIter = vs[i].getDomain().getIterator();
@@ -188,10 +187,13 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
                 while(layerIter.hasNext())
                 {
                     k = layerIter.next();
-                    int succ = pi.delta(k,j);
-                    if (succ >= 0)
+                    succ.clear();
+                    pi.delta(k,j,succ);
+                    if (!succ.isEmpty())
                     {
-                        layer.get(i+1).add(succ);
+                        TIntIterator it = succ.iterator();
+                        for (;it.hasNext();)
+                            layer.get(i+1).add(it.next());
                         //incrQ(i,j,);
 
                         int idx = starts[i]+j-offsets[i];
@@ -213,7 +215,7 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
         while (layerIter.hasNext())
         {
             k = layerIter.next();
-            if (!pi.isAccepting(k))
+            if (!pi.isFinal(k))
             {
                 layerIter.remove();
             }
@@ -244,37 +246,45 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
                     while (qijIter.hasNext())
                     {
                         k = qijIter.next();
-                        int qn = pi.delta(k,j);
-                        if (layer.get(i+1).contains(qn))
+                        succ.clear();
+                        pi.delta(k,j,succ);
+                        TIntIterator it = succ.iterator();
+                        boolean added = false;
+                        for(;it.hasNext();)
                         {
-                            Node a = in[i*pi.size()+k];
-                            if (a == null)
+                            int qn = it.next();
+                            if (layer.get(i+1).contains(qn))
                             {
-                                a = new Node(k,i,nid++);
-                                in[i*pi.size()+k] = a;
-                                graph.addVertex(a);
+                                added = true;
+                                Node a = in[i*pi.size()+k];
+                                if (a == null)
+                                {
+                                    a = new Node(k,i,nid++);
+                                    in[i*pi.size()+k] = a;
+                                    graph.addVertex(a);
+                                }
+
+
+
+                                Node b = in[(i+1)*pi.size()+qn];
+                                if (b == null)
+                                {
+                                    b = new Node(qn,i+1,nid++);
+                                    in[(i+1)*pi.size()+qn] = b;
+                                    graph.addVertex(b);
+                                }
+
+
+                                Arc arc = new Arc(a,b,j,aid++,costs[i][j][a.state]);
+                                graph.addEdge(a,b,arc);
+                                tmp.get(idx).add(arc);
+
+                                // addToOutarc(k,qn,j,i);
+                                //  addToInarc(k,qn,j,i+1);
+                                mark.set(k);
                             }
-
-
-
-                            Node b = in[(i+1)*pi.size()+qn];
-                            if (b == null)
-                            {
-                                b = new Node(qn,i+1,nid++);
-                                in[(i+1)*pi.size()+qn] = b;
-                                graph.addVertex(b);
-                            }
-
-
-                            Arc arc = new Arc(a,b,j,aid++,costs[i][j][a.state]);
-                            graph.addEdge(a,b,arc);
-                            tmp.get(idx).add(arc);
-
-                            // addToOutarc(k,qn,j,i);
-                            //  addToInarc(k,qn,j,i+1);
-                            mark.set(k);
                         }
-                        else
+                        if (!added)
                             qijIter.remove();
                         //  decrQ(i,j);
                     }
@@ -587,43 +597,6 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
         }
         int intCost = tuple[tuple.length-1];
         return cost == intCost;
-
-    }
-
-    public static void main(String[] args) throws ContradictionException {
-        CPSolver s = new CPSolver();
-        int n = 10;
-        IntDomainVar[] v = new IntDomainVar[n+1];
-        for (int i = 0 ; i < n ; i++)
-        {
-            v[i] = new IntDomainVarImpl(s,"x_"+i,IntDomainVar.BITSET,0,2);
-        }
-        v[n] = new IntDomainVarImpl(s,"z",IntDomainVar.BOUNDS,0,0);
-
-        FiniteAutomaton auto = new FiniteAutomaton();
-        int start = auto.addState();
-        int end = auto.addState();
-        auto.setStartingState(start);
-        auto.setAcceptingState(start);
-        auto.setAcceptingState(end);
-
-        auto.addTransition(start,start, 0,1);
-        auto.addTransition(start,end,2);
-
-        auto.addTransition(end,start,2);
-        auto.addTransition(end,start, 0,1);
-
-        int[][][] costs = new int[n][3][2];
-        for (int i = 0 ; i < costs.length ; i++)
-        {
-            costs[i][0][1] = 1;
-            costs[i][1][1] = 1;
-        }
-
-        long t1 = System.currentTimeMillis();
-        FastCostRegular cr = new FastCostRegular(v,auto,costs, s.getEnvironment());
-        System.out.println("TEMPS CREATION FCR : "+(System.currentTimeMillis()-t1)+"ms");
-        cr.awake();
 
     }
 }

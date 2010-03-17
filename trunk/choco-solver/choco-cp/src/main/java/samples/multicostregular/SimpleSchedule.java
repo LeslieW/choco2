@@ -22,13 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular;
 
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import static choco.Choco.*;
 
 /**
  * This class present a simple scheduling problem defined in multicost-regular documentation.
@@ -138,14 +137,14 @@ public class SimpleSchedule extends CPModel
     {
         this.auto = new FiniteAutomaton();
         int idx = this.auto.addState();
-        this.auto.setStartingState(idx);
-        this.auto.setAcceptingState(idx);
+        this.auto.setInitialState(idx);
+        this.auto.setFinal(idx);
         idx = this.auto.addState();
-        this.auto.addTransition(this.auto.getStartingState(),idx,DAY);
+        this.auto.addTransition(this.auto.getInitialState(),idx,DAY);
         int next = this.auto.addState();
         this.auto.addTransition(idx,next,new int[]{DAY,NIGHT});
-        this.auto.addTransition(next,auto.getStartingState(),REST);
-        auto.addTransition(auto.getStartingState(),next,NIGHT);
+        this.auto.addTransition(next,auto.getInitialState(),REST);
+        auto.addTransition(auto.getInitialState(),next,NIGHT);
 
     }
 

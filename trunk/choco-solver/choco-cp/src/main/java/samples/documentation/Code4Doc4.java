@@ -22,6 +22,7 @@
  **************************************************/
 package samples.documentation;
 
+import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.Model;
@@ -30,8 +31,6 @@ import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
-
-import static choco.Choco.*;
 
 /*
 * User : charles
@@ -191,8 +190,8 @@ public class Code4Doc4 {
         FiniteAutomaton auto = new FiniteAutomaton();
         // state 0: starting and accepting state
         int start = auto.addState();
-        auto.setStartingState(start);
-        auto.setAcceptingState(start);
+        auto.setInitialState(start);
+        auto.setFinal(start);
         // state 1 and a transition (0,DAY,1)
         int first = auto.addState();
         auto.addTransition(start, first, DAY);

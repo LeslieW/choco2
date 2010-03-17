@@ -73,10 +73,10 @@ public class InstanceMaker {
     {
         FiniteAutomaton auto = new FiniteAutomaton();
         int start = auto.addState();
-        auto.setStartingState(start);
+        auto.setInitialState(start);
         auto.addTransition(start,start,O);
         int end = auto.addState();
-        auto.setAcceptingState(end);
+        auto.setFinal(end);
         auto.addTransition(end,end,O);
         int poz = auto.addState();
         int slunch = auto.addState();
@@ -89,7 +89,7 @@ public class InstanceMaker {
             int tmpB = auto.addState();
             auto.addState();auto.addState();
             int tmpE = auto.addState();
-            auto.setAcceptingState(tmpE);
+            auto.setFinal(tmpE);
             makeActivityTransitions(auto,tmpB,tmpE,i);
             auto.addTransition(start,tmpB,i);
             auto.addTransition(tmpE,tmpE,i);
@@ -133,10 +133,10 @@ public class InstanceMaker {
         {
             auto.addState();
         }
-        auto.setStartingState(0);
-        auto.setAcceptingState(11);
-        auto.setAcceptingState(13);
-        auto.setAcceptingState(14);
+        auto.setInitialState(0);
+        auto.setFinal(11);
+        auto.setFinal(13);
+        auto.setFinal(14);
 
         // transition from 0;
         auto.addTransition(0,0,O);

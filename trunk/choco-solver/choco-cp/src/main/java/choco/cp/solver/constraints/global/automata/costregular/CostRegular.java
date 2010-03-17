@@ -281,17 +281,22 @@ public class CostRegular extends AbstractLargeIntSConstraint
 
     protected int delta(int i, int j, int k)
     {
-        return this.automaton.delta(k,j);
+        try {
+            return this.automaton.delta(k,j);
+        } catch (FiniteAutomaton.NonDeterministicOperationException e) {
+            LOGGER.severe("Please use determinitic finite automaton with this constraint");
+            throw new RuntimeException("Please use determinitic finite automaton with this constraint");
+        }
     }
 
     protected boolean isAccepting(int idx)
     {
-        return this.automaton.isAccepting(idx);
+        return this.automaton.isFinal(idx);
     }
 
     protected int getStart()
     {
-        return this.automaton.getStartingState();
+        return this.automaton.getInitialState();
     }
 
 

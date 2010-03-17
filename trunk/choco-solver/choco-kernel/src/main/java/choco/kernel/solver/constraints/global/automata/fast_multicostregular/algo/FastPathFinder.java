@@ -28,6 +28,7 @@ import choco.kernel.memory.IStateIntVector;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.global.automata.fast_multicostregular.structure.StoredDirectedMultiGraph;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.Arrays;
 
@@ -56,6 +57,11 @@ public class FastPathFinder {
         this.nbLayer= graph.layers.length-1;
         this.nbR =  this.graph.nbR-1;
         this.tmpU = new double[nbR];
+        spfs = new double[graph.GNodes.spfs.length][graph.nbR];
+    spft = new double[graph.GNodes.spfs.length][graph.nbR];
+    lpfs = new double[graph.GNodes.spfs.length][graph.nbR];
+    lpft = new double[graph.GNodes.spfs.length][graph.nbR];
+
 
     }
 
@@ -454,6 +460,143 @@ public class FastPathFinder {
         }
 
 
+    }
+
+    double[][] spfs;// = new double[graph.GNodes.spfs.length][graph.nbR+1];
+    double[][] spft;// = new double[graph.GNodes.spfs.length][graph.nbR+1];
+    double[][] lpfs;// = new double[graph.GNodes.spfs.length][graph.nbR+1];
+    double[][] lpft;// = new double[graph.GNodes.spfs.length][graph.nbR+1];
+    public void computeShortestAndLongestPath(IStateIntVector removed, IntDomainVar[] z) throws ContradictionException {
+
+        int nbr = z.length;
+
+
+
+        for (int i  = 0 ;i < spfs.length ; i++)
+        {
+            Arrays.fill(spfs[i],Double.POSITIVE_INFINITY);
+            Arrays.fill(spft[i],Double.POSITIVE_INFINITY);
+            Arrays.fill(lpfs[i],Double.NEGATIVE_INFINITY);
+            Arrays.fill(lpft[i],Double.NEGATIVE_INFINITY);
+
+        }
+        for (int i = 0 ; i < nbr ; i++){
+            spfs[graph.sourceIndex][i] = 0.0;
+            spft[graph.tinIndex][i] = 0.0;
+            lpfs[graph.sourceIndex][i] = 0.0;
+            lpft[graph.tinIndex][i] = 0.0;
+
+        }
+        boolean update;
+
+        for (int i = 0 ; i < nbLayer ; i++)
+        {
+            update = false;
+            DisposableIntIterator origIter = graph.layers[i].getIterator();
+            while (origIter.hasNext()) {
+                int orig = origIter.next();
+                StoredIndexedBipartiteSet bs = graph.GNodes.outArcs[orig];
+                assert(!bs.isEmpty());
+                DisposableIntIterator out = bs.getIterator();
+                while (out.hasNext())
+                {
+                    int e = out.next();
+                    if (!graph.isInStack(e))
+                    {
+                        int next = graph.GArcs.dests[e];//.getDestination();
+                        double[] cost= graph.GArcs.originalCost[e];
+//                        double[] newCost = addArray(spfs[orig],cost);//cost[i][graph.GArcs.values[e]];
+                        for (int d = 0 ; d < nbr ; d++)
+                        {
+                            if (spfs[next][d] > cost[d]+spfs[orig][d])
+                            {
+                                spfs[next][d] = cost[d]+spfs[orig][d];
+                                update = true;
+                            }
+                            if (lpfs[next][d] < lpfs[orig][d]+ cost[d])
+                            {
+                                lpfs[next][d] = lpfs[orig][d]+ cost[d];
+                                update =true;
+                            }
+                        }
+                    }
+                }
+                out.dispose();
+
+            }
+            origIter.dispose();
+            if (!update) this.graph.constraint.fail();
+        }
+        for (int i = nbLayer ; i > 0 ; i--)
+        {
+            update = false;
+            DisposableIntIterator destIter = graph.layers[i].getIterator();
+            while(destIter.hasNext()){
+                int dest = destIter.next();
+                StoredIndexedBipartiteSet bs = graph.GNodes.inArcs[dest];
+                assert(!bs.isEmpty());
+                DisposableIntIterator in = bs.getIterator();//getInEdgeIterator(n);
+                while (in.hasNext())
+                {
+                    int e = in.next();
+                    if (!graph.isInStack(e))
+                    {
+                        int next = graph.GArcs.origs[e];//e.getOrigin()  ;
+                        double[] cost= graph.GArcs.originalCost[e];
+
+                        for (int d = 0 ; d < nbr ; d++)
+                        {
+                            if (spft[dest][d]+cost[d] + spfs[next][d] - z[d].getSup() >= Constants.MCR_DECIMAL_PREC)
+                            {
+                                graph.getInStack().set(e);
+                                removed.add(e);
+                                break;
+                            }
+                            else if (spft[next][d] > spft[dest][d]+cost[d])
+                            {
+                                spft[next][d] = spft[dest][d]+cost[d];
+                                update = true;
+                            }
+
+                            if (lpft[dest][d] + cost[d] + lpfs[next][d] - z[d].getInf() <= -Constants.MCR_DECIMAL_PREC)
+                            {
+                                graph.setInStack(e);
+                                removed.add(e);
+                                break;
+                            }
+                            else if (lpft[next][d] < lpft[dest][d]+cost[d])
+                            {
+                                lpft[next][d] = lpft[dest][d]+cost[d];
+                                update = true;
+                            }
+
+                        }
+
+                    }
+                }
+                in.dispose();
+
+            }
+            destIter.dispose();
+            if (!update) this.graph.constraint.fail();
+        }
+        for (int i = 0  ;i < nbr ;i++)
+        {
+            z[i].updateInf((int)Math.ceil(spft[graph.sourceIndex][i]),this.graph.constraint,false);
+            z[i].updateSup((int)Math.floor(lpft[graph.sourceIndex][i]),this.graph.constraint,false);
+
+        }
+
+
+    }
+
+    private static double[] addArray(double[] spf, double[] cost) {
+        double[] out = new double[spf.length];
+        for (int i = 0 ; i < out.length ; i++)
+        {
+            out[i] = spf[i] + cost[i];
+        }
+        return out;
     }
 
 
