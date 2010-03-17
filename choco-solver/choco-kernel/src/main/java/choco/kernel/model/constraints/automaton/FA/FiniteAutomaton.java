@@ -578,6 +578,26 @@ public class FiniteAutomaton {
         return alphabet;
     }
 
+    List<int[]> getTransitions()
+    {
+        List<int[]> transitions = new ArrayList<int[]>();
+        for (int i = 0 ; i < states.size() ; i++)
+        {
+            State s = states.get(i);
+            for (Transition t : s.getTransitions())
+            {
+                int dest = stateToIndex.get(t.getDest());
+                for (char c = t.getMin() ; c <= t.getMax()  ; c++)
+                {
+                  int symbol = getIntFromChar(c);
+                  transitions.add(new int[]{i,dest,symbol});
+                }
+            }
+        }
+        return transitions;
+    }
+
+
 
     public static class StateNotInAutomatonException extends Exception
     {
