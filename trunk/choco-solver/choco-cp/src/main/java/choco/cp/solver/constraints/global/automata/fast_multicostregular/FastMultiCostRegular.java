@@ -490,7 +490,6 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
 
             modif =false;
 
-            slp.resetNodeLongestPathValues();
             slp.computeLongestPath(toRemove,z[0].getInf()-coeff,uUb,true,true,0);
 
             lp = slp.getLongestPathValue();
@@ -584,7 +583,6 @@ public class FastMultiCostRegular extends AbstractLargeIntSConstraint
 
             modif = false;
 
-            slp.resetNodeShortestPathValues();
             slp.computeShortestPath(toRemove,z[0].getSup()+coeff,uLb,true,false,0);
 
 
