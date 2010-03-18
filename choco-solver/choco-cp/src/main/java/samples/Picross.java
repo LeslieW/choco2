@@ -23,8 +23,6 @@
 package samples;
 
 
-import static choco.Choco.makeIntVar;
-import static choco.Choco.regular;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.constraints.Constraint;
@@ -36,6 +34,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
+import static choco.Choco.makeIntVar;
+import static choco.Choco.regular;
 
 /**
  * Created by IntelliJ IDEA.
@@ -209,13 +210,15 @@ public class Picross extends CPModel {
      */
     private class Drawing extends JPanel {
 
-        public Drawing() {
+        Solver solver;
+        public Drawing(Solver s) {
+            this.solver = s;
             this.setSize(new Dimension(X,Y));
             this.setEnabled(true);
         }
 
 
-        public void paintComponent(Graphics g, Solver solver) {
+        public void paintComponent(Graphics g) {
             super.paintComponent(g);
             int szX = 600/X;
             int szY = 600/Y ;
@@ -242,7 +245,7 @@ public class Picross extends CPModel {
     /**
      * Draw the solution in a new Frame
      */
-    public void showSolution()  {
+    public void showSolution(Solver s)  {
         JFrame frame = new JFrame();
         frame.setTitle("NonoGram");
         frame.setSize(600, 600+Y);
@@ -252,7 +255,7 @@ public class Picross extends CPModel {
             }
         });
         Container contentPane = frame.getContentPane();
-        contentPane.add(new Drawing());
+        contentPane.add(new Drawing(s));
 
         frame.setVisible(true);
     }
@@ -318,11 +321,12 @@ public class Picross extends CPModel {
                 );
 
         s.solve();
+        System.out.println(s.isFeasible());
 
 
         LOGGER.info(""+p);
 
-        p.showSolution();
+        p.showSolution(s);
 
 
 

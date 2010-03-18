@@ -86,7 +86,31 @@ public class FiniteAutomaton {
 
     public FiniteAutomaton(FiniteAutomaton other)
     {
-        this(other.representedBy,other.alphabet);
+        perfectCopy(other);
+    }
+
+    private void perfectCopy(FiniteAutomaton other) {
+        this.representedBy = new Automaton();
+        this.states = new ArrayList<State>();
+        this.stateToIndex = new TObjectIntHashMap<State>();
+        this.alphabet = new TIntHashSet();
+        this.nbStates = other.nbStates;
+        for (int i = 0 ; i < other.nbStates ; i++)
+        {
+            State s = new State();
+            this.states.add(s);
+            this.stateToIndex.put(s,i);
+            if (other.isFinal(i))
+                s.setAccept(true);
+            if (other.getInitialState() == i)
+                this.representedBy.setInitialState(s);
+        }
+        List<int[]> transitions = other.getTransitions();
+        for (int[] t : transitions)
+        {
+            this.addTransition(t[0],t[1],t[2]);
+        }
+
     }
 
     private FiniteAutomaton(Automaton a,TIntHashSet alphabet)
@@ -537,7 +561,7 @@ public class FiniteAutomaton {
         StringBuilder b = new StringBuilder("digraph Automaton {\n");
         b.append("  rankdir = LR;\n");
         Set<State> states = this.representedBy.getStates();
-       // setStateNumbers(states);
+        // setStateNumbers(states);
         for (State s : states) {
             int idx = stateToIndex.get(s);
             b.append("  ").append(idx);
@@ -557,28 +581,28 @@ public class FiniteAutomaton {
         return b.append("}\n").toString();
     }
 
-     private void appendDot(Transition t,StringBuilder b) {
+    private void appendDot(Transition t,StringBuilder b) {
         int destIdx = stateToIndex.get(t.getDest());
 
-		b.append(" -> ").append(destIdx).append(" [label=\"");
+        b.append(" -> ").append(destIdx).append(" [label=\"");
         b.append("{");
         b.append(getIntFromChar(t.getMin()));
-		if (t.getMin() != t.getMax()) {
+        if (t.getMin() != t.getMax()) {
             for (char c = (char)(t.getMin()+1) ; c <= t.getMax() ; c++)
             {
                 b.append(",");
                 b.append(getIntFromChar(c));
             }
-		}
+        }
         b.append("}");
-		b.append("\"]\n");
-	}
+        b.append("\"]\n");
+    }
 
     public TIntHashSet getAlphabet() {
         return alphabet;
     }
 
-    List<int[]> getTransitions()
+    public List<int[]> getTransitions()
     {
         List<int[]> transitions = new ArrayList<int[]>();
         for (int i = 0 ; i < states.size() ; i++)
@@ -589,9 +613,25 @@ public class FiniteAutomaton {
                 int dest = stateToIndex.get(t.getDest());
                 for (char c = t.getMin() ; c <= t.getMax()  ; c++)
                 {
-                  int symbol = getIntFromChar(c);
-                  transitions.add(new int[]{i,dest,symbol});
+                    int symbol = getIntFromChar(c);
+                    transitions.add(new int[]{i,dest,symbol});
                 }
+            }
+        }
+        return transitions;
+    }
+
+
+    public List<int[]> getTransitions(int state)
+    {
+        List<int[]> transitions = new ArrayList<int[]>();
+        for (Transition t : states.get(state).getTransitions())
+        {
+            int dest = stateToIndex.get(t.getDest());
+            for (char c = t.getMin() ; c <= t.getMax()  ; c++)
+            {
+                int symbol = getIntFromChar(c);
+                transitions.add(new int[]{state,dest,symbol});
             }
         }
         return transitions;
