@@ -47,12 +47,12 @@ public class FiniteAutomaton {
 
 
 
-    private Automaton representedBy;
+    protected Automaton representedBy;
 
-    TObjectIntHashMap<State> stateToIndex;
-    ArrayList<State>  states;
-    TIntHashSet alphabet;
-    int nbStates = 0;
+    protected TObjectIntHashMap<State> stateToIndex;
+    protected ArrayList<State>  states;
+    protected TIntHashSet alphabet;
+    protected int nbStates;
 
 
 
