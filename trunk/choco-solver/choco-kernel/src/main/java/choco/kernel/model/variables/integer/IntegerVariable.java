@@ -23,16 +23,9 @@
 package choco.kernel.model.variables.integer;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.model.IConstraintList;
-import choco.kernel.model.Model;
-import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.Operator;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableType;
-
-import java.util.ArrayList;
-import java.util.Iterator;
 
 /*
  * Created by IntelliJ IDEA.

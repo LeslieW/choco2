@@ -45,7 +45,6 @@ public class IncreasingNValue extends AbstractLargeIntSConstraint {
      */
     IntDomainVar[] x;
     int n;
-    int offset;
 
     /*
      * occurence variable on the number of stretches

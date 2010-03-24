@@ -1,16 +1,16 @@
 package choco.cp.solver.constraints.integer.bool.sat;
 
-import java.util.NoSuchElementException;
-import java.util.Random;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Random;
 
 /**
  *
  **/
 public class Vec<T> {
 
-    private static final long serialVersionUID = 1L;
+//    private static final long serialVersionUID = 1L;
 
     private static final int RANDOM_SEED = 91648253;
 
@@ -216,43 +216,6 @@ public class Vec<T> {
         myarray[i] = myarray[--nbelem];
         myarray[nbelem] = null;
         return ith;
-    }
-
-    /**
-     * Ces op?rations devraient se faire en temps constant. Ce n'est pas le
-     * cas ici.
-     *
-     * @param copy
-     */
-    public void copyTo(Vec<T> copy) {
-        Vec<T> ncopy = (Vec<T>) copy;
-        int nsize = nbelem + ncopy.nbelem;
-        copy.ensure(nsize);
-        for (int i = 0; i < nbelem; i++) {
-            ncopy.myarray[i + ncopy.nbelem] = myarray[i];
-        }
-        ncopy.nbelem = nsize;
-    }
-
-    /**
-     * @param dest
-     */
-    public <E> void copyTo(E[] dest) {
-        assert dest.length >= nbelem;
-        System.arraycopy(myarray, 0, dest, 0, nbelem);
-    }
-
-    /*
-     * Copie un vecteur dans un autre (en vidant le premier), en temps constant.
-     */
-    public void moveTo(Vec<T> dest) {
-        copyTo(dest);
-        clear();
-    }
-
-    public void moveTo(int dest, int source) {
-        myarray[dest] = myarray[source];
-        myarray[source] = null;
     }
 
     private int nbelem;

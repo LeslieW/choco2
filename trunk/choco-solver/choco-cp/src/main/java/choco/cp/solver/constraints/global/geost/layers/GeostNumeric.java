@@ -245,10 +245,6 @@ public class GeostNumeric {
         ObjCstrName.get(o).put(ectr,name);
     }
 
-    private Vector<String> getListStringCstr(Obj o) {
-        return objCstrs.get(o);        
-    }
-
     private String strCstr(Obj o, ExternalConstraint ectr) {
                 StringBuilder r=new StringBuilder();
                 if (ectr instanceof DistLeq) {
@@ -320,7 +316,7 @@ public class GeostNumeric {
         System.out.println("volume:"+String.format("%f",volume));
 
         isThick=1.0;
-        double inverse_k=(double) 1.0/((double)k);
+        double inverse_k= 1.0 /((double)k);
         if (inverse_k<=0) {
             System.out.println("choco.cp.solver.constraints.global.geost.layers.GeostNumeric:computeIsThick:unable to compute isThick because of 1/k:"+inverse_k);
             System.exit(-1);

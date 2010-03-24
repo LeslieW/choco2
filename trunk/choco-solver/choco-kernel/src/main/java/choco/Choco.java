@@ -59,13 +59,12 @@ import choco.kernel.solver.constraints.integer.extension.*;
 import gnu.trove.TIntArrayList;
 import org.jgrapht.graph.DirectedMultigraph;
 
+import static java.lang.System.arraycopy;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static java.lang.System.arraycopy;
 
 /**
  * Created by IntelliJ IDEA.
@@ -1884,7 +1883,7 @@ public class Choco{
 		tmp[0] = min;
 		arraycopy(vars, 0, tmp, 1, vars.length);
 		tmp[tmp.length - 1] = svar;
-		return new ComponentConstraint(ConstraintType.MIN, new Object[]{Boolean.valueOf(true), defaultValueEmptySet}, tmp);
+		return new ComponentConstraint(ConstraintType.MIN, new Object[]{true, defaultValueEmptySet}, tmp);
 	}
 	/**
 	 * Ensures the variable "min" to represent the minimum value
@@ -1929,7 +1928,7 @@ public class Choco{
 		tmp[0] = max;
 		arraycopy(vars, 0, tmp, 1, vars.length);
 		tmp[tmp.length - 1] = svar;
-		return new ComponentConstraint(ConstraintType.MAX, new Object[]{Boolean.valueOf(false), defaultValueEmptySet}, tmp);
+		return new ComponentConstraint(ConstraintType.MAX, new Object[]{false, defaultValueEmptySet}, tmp);
 	}
 	
 	/**
@@ -1982,7 +1981,7 @@ public class Choco{
 	 * @param min Variable to represent the minimum among vars
 	 * @return Constraint
 	 */
-	public final static Constraint min(IntegerVariable x, int y, IntegerVariable min) {
+	public static Constraint min(IntegerVariable x, int y, IntegerVariable min) {
 		return min(x, constant(y), min);
 	}
 
@@ -2008,7 +2007,7 @@ public class Choco{
 	 * @param max Variable to represent the maximum among vars
 	 * @return Constraint
 	 */
-	public static final Constraint max(int x, IntegerVariable y, IntegerVariable max) {
+	public static Constraint max(int x, IntegerVariable y, IntegerVariable max) {
 		return max(constant(x), y, max);
 	}
 
@@ -2021,7 +2020,7 @@ public class Choco{
 	 * @param max Variable to represent the maximum among vars
 	 * @return Constraint
 	 */
-	public static final Constraint max(IntegerVariable x, int y, IntegerVariable max) {
+	public static Constraint max(IntegerVariable x, int y, IntegerVariable max) {
 		return max(x, constant(y), max);
 	}
 

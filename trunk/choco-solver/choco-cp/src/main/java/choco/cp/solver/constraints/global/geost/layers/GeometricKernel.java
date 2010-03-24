@@ -17,7 +17,9 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import static java.text.MessageFormat.format;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
 
@@ -125,7 +127,7 @@ public class GeometricKernel {
 			}
             get_fr_ptr_a=0;                                
             result.clear();
-			result.add(0, new Boolean(false));
+			result.add(0, false);
 			result.add(1, new Region(cst.getDIM(), -1));
 			return result;
 		} else
@@ -138,18 +140,18 @@ public class GeometricKernel {
                 v = intermediateLayer.IsFeasible(ACTRS.elementAt(i), false, d, k, o, c, jump);
                 stp.opt.timeIsFeasible += (System.nanoTime() / 1000000) - tmpTime;
                 
-				if (((Boolean) v.elementAt(0)).booleanValue() == false)
+				if (!((Boolean) v.elementAt(0)))
 				{
                     get_fr_ptr_b=i;
                     result.clear();
-					result.add(0, new Boolean(true));
+					result.add(0, true);
 					result.add(1, v.elementAt(1));
 					return result;
 				}
 			}
             get_fr_ptr_b=0;
             result.clear();
-			result.add(0, new Boolean(false));
+			result.add(0, false);
 			result.add(1, new Region(cst.getDIM(), -1));
 			return result;
 		}
@@ -178,7 +180,7 @@ public class GeometricKernel {
         }
 
         if (stp.opt.debug) System.out.println("FilterCtrs:");
-        boolean nonFix = true;
+        boolean nonFix = false;
         //?????
         //Ensure that all internal constraint containing a variable
         //update those variables based on the new domain of the objects.
@@ -519,7 +521,7 @@ public class GeometricKernel {
         //System.out.println("c:"+c+",n:"+n+",o:"+o+",d:"+d+",k:"+k);
             c = (Point) adjUp.elementAt(0);
 			n = (Point) adjUp.elementAt(1);
-			b = ((Boolean) adjUp.elementAt(2)).booleanValue();   
+			b = (Boolean) adjUp.elementAt(2);
 
 //            if (stp.opt.delta.get(ddeltadelt)==null) stp.opt.delta.put(d,new HashMap<Integer,Integer>());
 //            HashMap<Integer,Integer> curDelta= stp.opt.delta.get(d);
@@ -531,7 +533,7 @@ public class GeometricKernel {
 			forbidRegion = GetFR(d, k, o, c, n, ACTRS, true);
         //System.out.println("GetFR(d:"+d+",k:"+k+",o:"+o+",c:"+c+",n:"+c+",ACTRS:,true -> "+forbidRegion);
         //System.out.println("F");
-			infeasible = ((Boolean) forbidRegion.elementAt(0)).booleanValue();
+			infeasible = (Boolean) forbidRegion.elementAt(0);
 			f = (Region) forbidRegion.elementAt(1);
             
             if (stp.opt.serial!=null) {
@@ -590,7 +592,7 @@ public class GeometricKernel {
 				result.clear();
 				result.add(0, c);
 				result.add(1, n);
-				result.add(2, new Boolean(true));
+				result.add(2, true);
 				return result;
 			} else
 				c.setCoord(jPrime, o.getCoord(jPrime).getInf());
@@ -599,7 +601,7 @@ public class GeometricKernel {
 		result.clear();
 		result.add(0, c);
 		result.add(1, n);
-		result.add(2, new Boolean(false));
+		result.add(2, false);
 		return result;
 	}
 
@@ -630,7 +632,7 @@ public class GeometricKernel {
 
 
 		Vector forbidRegion = GetFR(d, k, o, c, n, ACTRS, false);
-		boolean infeasible = ((Boolean) forbidRegion.elementAt(0)).booleanValue();
+		boolean infeasible = (Boolean) forbidRegion.elementAt(0);
 		Region f = (Region) forbidRegion.elementAt(1);
 		while (b && infeasible)
 		{
@@ -644,7 +646,7 @@ public class GeometricKernel {
 			Vector adjDown = AdjustDown(c, n, o, d, k);// update the position of c to check
 			c = (Point) adjDown.elementAt(0);
 			n = (Point) adjDown.elementAt(1);
-			b = ((Boolean) adjDown.elementAt(2)).booleanValue();
+			b = (Boolean) adjDown.elementAt(2);
 
 //            if (stp.opt.delta.get(d)==null) stp.opt.delta.put(d,new HashMap<Integer,Integer>());
 //            HashMap<Integer,Integer> curDelta= stp.opt.delta.get(d);
@@ -654,7 +656,7 @@ public class GeometricKernel {
 
 
 			forbidRegion = GetFR(d, k, o, c, n, ACTRS, false);
-			infeasible = ((Boolean) forbidRegion.elementAt(0)).booleanValue();
+			infeasible = (Boolean) forbidRegion.elementAt(0);
 			f = (Region) forbidRegion.elementAt(1);
 		}
 
@@ -684,7 +686,7 @@ public class GeometricKernel {
 				result.clear();
 				result.add(0, c);
 				result.add(1, n);
-				result.add(2, new Boolean(true));
+				result.add(2, true);
 				return result;
 			} else
 				c.setCoord(jPrime, o.getCoord(jPrime).getSup());
@@ -693,7 +695,7 @@ public class GeometricKernel {
 		result.clear();
 		result.add(0, c);
 		result.add(1, n);
-		result.add(2, new Boolean(false));
+		result.add(2, false);
 		return result;
 	}
 
@@ -1017,7 +1019,7 @@ public class GeometricKernel {
         long tmpTimeGetFr = (System.nanoTime() / 1000000);
         Vector forbidRegion = GetFR(Math.abs(ctrlV[1]) -2, k, o, c,n, ictrs,true);
         stp.opt.timeGetFR += ((System.nanoTime()/1000000) - tmpTimeGetFr);
-        boolean infeasible = ((Boolean) forbidRegion.elementAt(0)).booleanValue();
+        boolean infeasible = (Boolean) forbidRegion.elementAt(0);
 		Region f = (Region) forbidRegion.elementAt(1);
         if (printit) System.out.println("getFR region:"+f.toString());
 		while (infeasible)
@@ -1089,7 +1091,7 @@ public class GeometricKernel {
             forbidRegion = GetFR(Math.abs(ctrlV[1]) - 2, k, o, c, n, ictrs, true);
             stp.opt.timeGetFR += ((System.nanoTime()/1000000) - tmpTimeGetFr);
 
-            infeasible = ((Boolean) forbidRegion.elementAt(0)).booleanValue();
+            infeasible = (Boolean) forbidRegion.elementAt(0);
 			f = (Region) forbidRegion.elementAt(1);
             if (printit) System.out.println("region:"+f.toString());
             
@@ -1251,7 +1253,7 @@ public class GeometricKernel {
         if (trace) System.out.println();
         
         int maxVolume=0;
-        Vector maxVolumeList=new Vector();
+        List<Region> maxVolumeList = new ArrayList<Region>();
         for (ForbiddenRegion fr : list) {
             Region B,f=null;
             Vector r = fr.isFeasible(increase,d,k,o,c,n);
@@ -1259,7 +1261,8 @@ public class GeometricKernel {
             if (trace) System.out.print("\\item IsFeasible$(ictr,increase="+increase+",d="+d+",k="+k+",o=o3"+",c="+c+",n="+n+")$ ");
             f=(Region) r.get(1);
             if (trace) System.out.println("returns $f="+f+"$ ");
-            if (trace) System.out.print("\\item ProportionalFBox$(ictr,d="+d+",k="+k+",o=o3"+",c="+c+",n="+n+",increase="+increase+",prop="+prop+")$ ");
+            if (trace)
+                System.out.printf("\\item ProportionalFBox$(ictr,d=%d,k=%d,o=o3,c=%s,n=%s,increase=%s,prop=%s)$ ", d, k, c, n, increase, prop);
             if (f.volume()>(maxVolume*1.20)) {maxVolumeList.clear(); maxVolume=f.volume(); maxVolumeList.add(f);} else {if ((f.volume()<=(maxVolume*1.20)) && (f.volume()>=(maxVolume*0.80))) {maxVolumeList.add(f);} }
 
             //if (list.size()>1) {
@@ -1290,9 +1293,9 @@ public class GeometricKernel {
         list=null;
         
         //choose the one with the best lex
-        if (maxVolumeList.size()>0) candidate=(Region)maxVolumeList.elementAt(0); else candidate=null;
+        if (maxVolumeList.size()>0) candidate=(Region)maxVolumeList.get(0); else candidate=null;
         for (int i=1; i<maxVolumeList.size(); i++) {
-            candidate=lexMore(candidate,(Region)maxVolumeList.elementAt(i),d,k,increase);
+            candidate=lexMore(candidate,(Region)maxVolumeList.get(i),d,k,increase);
         }
 
         Vector result = new Vector();
@@ -1417,7 +1420,7 @@ public class GeometricKernel {
         //System.out.println(" returns $[infeasible="+forbidRegion.get(0)+",f="+forbidRegion.get(1)+"]$ ");
 
 
-        boolean infeasible = ((Boolean) forbidRegion.elementAt(0)).booleanValue();
+        boolean infeasible = (Boolean) forbidRegion.elementAt(0);
         Region f = (Region) forbidRegion.elementAt(1);
         if (processing) {
 
@@ -1585,7 +1588,7 @@ public class GeometricKernel {
             System.out.print("}"); System.out.println(); stp.opt.phase++;
             }
 
-            infeasible = ((Boolean) forbidRegion.elementAt(0)).booleanValue();
+            infeasible = (Boolean) forbidRegion.elementAt(0);
             f = (Region) forbidRegion.elementAt(1);
             forbidRegion=null;
             if (stp.opt.serial!=null) {
@@ -1637,7 +1640,7 @@ public class GeometricKernel {
         }
 
         Vector forbidRegion = GetBestFR(d, k, o, c, n, ACTRS, false, mode,stp.opt.prop);
-        boolean infeasible = ((Boolean) forbidRegion.elementAt(0)).booleanValue();
+        boolean infeasible = (Boolean) forbidRegion.elementAt(0);
         Region f = (Region) forbidRegion.elementAt(1);
         while (b && infeasible)
         {
@@ -2662,19 +2665,19 @@ public class GeometricKernel {
                 p = SlidePt(Pra,d_dicho_ext,h_up.getCoord(d_dicho_ext));
                 upOk = ( ictr_pradiag.insideForbidden(p) && ictr_pradiag.insideForbidden(h_up)
                         && CheckBoxTriangle(p,Pdiag,up,h_up,ictr_pradiag,ictr_pdiag));
-                upstr = new String("FindBoxTriangleDicho2.2:up:CheckBoxTriangle("+p+","+Pdiag+","+up+","+h_up+","+ictr_pradiag+","+ictr_pdiag+","+d_dicho_int+","+increase);
+                upstr = String.format("FindBoxTriangleDicho2.2:up:CheckBoxTriangle(%s,%s,%s,%s,%s,%s,%d,%s", p, Pdiag, up, h_up, ictr_pradiag, ictr_pdiag, d_dicho_int, increase);
 
                 h_low = Extend(low,d_dicho_ext,k,n,ictr_pdiag,increase);
                 p = SlidePt(Pra,d_dicho_ext,h_low.getCoord(d_dicho_ext));
                 lowOk = ( ictr_pradiag.insideForbidden(p) && ictr_pradiag.insideForbidden(h_low)
                         && CheckBoxTriangle(p,Pdiag,low,h_low,ictr_pradiag,ictr_pdiag));
-                lowstr = new String("FindBoxTriangleDicho2.2:low:CheckBoxTriangle("+p+","+Pdiag+","+low+","+h_low+","+ictr_pradiag+","+ictr_pdiag+","+d_dicho_int+","+increase);
+                lowstr = String.format("FindBoxTriangleDicho2.2:low:CheckBoxTriangle(%s,%s,%s,%s,%s,%s,%d,%s", p, Pdiag, low, h_low, ictr_pradiag, ictr_pdiag, d_dicho_int, increase);
 
                 h_mid = Extend(mid,d_dicho_ext,k,n,ictr_pdiag,increase);
                 p = SlidePt(Pra,d_dicho_ext,h_mid.getCoord(d_dicho_ext));
                 midOk = ( ictr_pradiag.insideForbidden(p) && ictr_pradiag.insideForbidden(h_mid)
                         && CheckBoxTriangle(p,Pdiag,mid,h_mid,ictr_pradiag,ictr_pdiag));
-                midstr = new String("FindBoxTriangleDicho2.2:mid:CheckBoxTriangle("+p+","+Pdiag+","+mid+","+h_mid+","+ictr_pradiag+","+ictr_pdiag+","+d_dicho_int+","+increase);
+                midstr = String.format("FindBoxTriangleDicho2.2:mid:CheckBoxTriangle(%s,%s,%s,%s,%s,%s,%d,%s", p, Pdiag, mid, h_mid, ictr_pradiag, ictr_pdiag, d_dicho_int, increase);
 
             }
             
@@ -2707,7 +2710,7 @@ public class GeometricKernel {
 
             Region result=BuildBox(k,Pdiag,best_found);
             result.setType("diagonal");
-            result.father=new String("FindBoxTriangleDicho2");
+            result.father= "FindBoxTriangleDicho2";
             result.info=laststr;
             result.case_a_or_c=case_a_or_c;
             if (stp.opt.debug) System.out.println("/*debug*/FindBoxTriangleDicho2() returns "+result);
@@ -2784,7 +2787,9 @@ public class GeometricKernel {
                     if (check_box.getMaximumBoundary(d_dicho_int)>=box.getMaximumBoundary(d_dicho_int)) {
                         box.setMinimumBoundary(d_dicho_ext,P.getCoord(d_dicho_ext));
                     }
-                    else box=null;
+                    else{
+                        box=null;
+                    }
                 }
             }
             else {
@@ -2795,7 +2800,9 @@ public class GeometricKernel {
                     if (check_box.getMinimumBoundary(d_dicho_int)<=box.getMinimumBoundary(d_dicho_int)) {
                         box.setMaximumBoundary(d_dicho_ext,P.getCoord(d_dicho_ext));
                     }
-                    else box=null;
+                    else{
+                        box=null;
+                    }
                 }
             }
         }
@@ -2895,7 +2902,12 @@ public class GeometricKernel {
                                 }
 
                             Region dbox = new Region(box); //dbox: box containing the diagonal.
-                            if (increase) dbox.setMinimumBoundary(dbox.dicho_ext,mid); else dbox.setMaximumBoundary(dbox.dicho_ext,mid);
+                            if (increase){
+                                dbox.setMinimumBoundary(dbox.dicho_ext,mid);
+                            }
+                            else {
+                                dbox.setMaximumBoundary(dbox.dicho_ext,mid);
+                            }
 
                             //d1=[p1,p2] left to right diagonal
                             Point p1 = new Point(2); Point p2 = new Point(2);
@@ -3574,9 +3586,9 @@ public class GeometricKernel {
         if (stp.opt.processing) {
         //if (temp) return;
         String function="";
-        if (temp) function=new String("fr_temp"); else function=new String("fr");
+        if (temp) function= "fr_temp"; else function=new String("fr");
         if (chosen_box!=null) {
-            if (chosen_box.getType().equals("diagonal+rect")==false) {
+            if (!chosen_box.getType().equals("diagonal+rect")) {
                     System.out.println("\n/*Processing*/"+function+"("+chosen_box.getMinimumBoundary(0)+","+chosen_box.getMaximumBoundary(0)+","+chosen_box.getMinimumBoundary(1)+","+chosen_box.getMaximumBoundary(1)+",\""+chosen_box.getType()+"\",\"\",0);");
             }
             else {

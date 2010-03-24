@@ -425,7 +425,7 @@ public class MaxTest {
 		IntegerVariable[] vars = constantArray(new int[]{1,2,3});
         IntegerVariable min = makeIntVar("min", 0, 3);
         SetVariable svar = makeSetVar("sv", 0, 2);
-        m.addConstraint(max(svar, vars, min, Integer.valueOf(0)));
+        m.addConstraint(max(svar, vars, min, 0));
         s.read(m);
         s.solveAll();
         assertEquals("nb-sols", 8, s.getNbSolutions());        

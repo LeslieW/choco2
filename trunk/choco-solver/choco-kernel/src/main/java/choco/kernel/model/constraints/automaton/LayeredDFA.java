@@ -60,7 +60,7 @@ public class LayeredDFA {
     protected int nbState = 0;
 
     // Store nodes of each layer
-    protected ArrayList[] levelStates;
+    protected ArrayList<State>[] levelStates;
 
     // Number of layer
     protected int nbLevel;
@@ -73,6 +73,7 @@ public class LayeredDFA {
      * @param domSize : same size for all domains
      * @param nblevel : number of layers
      */
+    @SuppressWarnings({"unchecked"})
     public LayeredDFA(int domSize, int nblevel) {
         this.domSizes = new int[nblevel];
         for (int i = 0; i < nblevel - 1; i++)
@@ -83,7 +84,7 @@ public class LayeredDFA {
         this.levelStates = new ArrayList[nblevel];
 
         for (int i = 0; i < levelStates.length; i++) {
-            levelStates[i] = new ArrayList();
+            levelStates[i] = new ArrayList<State>();
         }
         automatAll();
     }
@@ -95,6 +96,7 @@ public class LayeredDFA {
      * @param domSizes : size of each layers
      * @param nblevel  : number of layers
      */
+    @SuppressWarnings({"unchecked"})
     public LayeredDFA(int[] domSizes, int nblevel) {
         this.domSizes = new int[nblevel];
         System.arraycopy(domSizes, 0, this.domSizes, 0, domSizes.length);
@@ -104,7 +106,7 @@ public class LayeredDFA {
         this.levelStates = new ArrayList[nblevel];
 
         for (int i = 0; i < levelStates.length; i++) {
-            levelStates[i] = new ArrayList();
+            levelStates[i] = new ArrayList<State>();
         }
         automatAll();
     }
@@ -127,7 +129,7 @@ public class LayeredDFA {
     // Build an empty automaton
     public void clearAutomate() {
         for (int i = 0; i < levelStates.length; i++) {
-            levelStates[i] = new ArrayList();
+            levelStates[i] = new ArrayList<State>();
         }
         nbState = 0;
         State currentState = makeState(this, 0);
@@ -138,7 +140,7 @@ public class LayeredDFA {
 
     public void buildAnEmptyAutomaton() {
         for (int i = 0; i < levelStates.length; i++) {
-            levelStates[i] = new ArrayList();
+            levelStates[i] = new ArrayList<State>();
         }
         nbState = 0;
         setInitState(null);
@@ -173,7 +175,7 @@ public class LayeredDFA {
         int tot = 0;
         for (int i = 0; i < nbLevel; i++) {
             for (int j = 0; j < this.levelStates[i].size(); j++) {
-                tot += ((State) this.levelStates[i].get(j)).transitions.getSize();
+                tot += this.levelStates[i].get(j).transitions.getSize();
             }
         }
 
@@ -253,20 +255,19 @@ public class LayeredDFA {
 
     // Add a state on layer level
     public State addState(int level) {
-        State st = makeState(this, level);
-        return st;
+        return makeState(this, level);
     }
 
 
     // Remove State st
     public void removeState(State st) {
-        ArrayList currentAList = levelStates[st.getLevel()];
+        ArrayList<State> currentAList = levelStates[st.getLevel()];
         int idxLevel = st.getIdxLevel();
         st.setIdxLevel(-1);
         if (idxLevel == (currentAList.size() - 1)) {
             currentAList.remove(idxLevel);
         } else {
-            State lastL = (State) currentAList.get(currentAList.size() - 1);
+            State lastL = currentAList.get(currentAList.size() - 1);
             lastL.setIdxLevel(idxLevel);
             currentAList.set(idxLevel, lastL);
             currentAList.remove(currentAList.size() - 1);
@@ -280,9 +281,10 @@ public class LayeredDFA {
     }
 
     // Load automaton from fileName
+    @SuppressWarnings({"unchecked"})
     public void loadDotty(String fileName) {
         try {
-            Hashtable builtStates = new Hashtable();
+            Hashtable<Integer,State> builtStates = new Hashtable<Integer, State>();
             BufferedReader inst = new BufferedReader(new FileReader(new File(fileName)));
             Pattern p = Pattern.compile("\\D+");
             String[] nodeInfo;
@@ -296,7 +298,7 @@ public class LayeredDFA {
                 this.domSizes[i] = Integer.parseInt(p.split(inst.readLine())[1]);
             this.levelStates = new ArrayList[nbLevel];
             for (int i = 0; i < levelStates.length; i++) {
-                levelStates[i] = new ArrayList();
+                levelStates[i] = new ArrayList<State>();
             }
 
             nodeInfo = p.split(inst.readLine());
@@ -306,8 +308,8 @@ public class LayeredDFA {
             setInitState(firstState);
 
             while (nodeInfo.length != 0) {
-                State currentState = (State) builtStates.get(Integer.parseInt(nodeInfo[1]));
-                State newState = (State) builtStates.get(Integer.parseInt(nodeInfo[2]));
+                State currentState = builtStates.get(Integer.parseInt(nodeInfo[1]));
+                State newState = builtStates.get(Integer.parseInt(nodeInfo[2]));
                 if (newState == null) {
                     newState = makeState(this, currentState.getLevel() + 1);
                     builtStates.put(Integer.parseInt(nodeInfo[2]), newState);
@@ -342,7 +344,7 @@ public class LayeredDFA {
             }
             for (int i = 0; i < nbLevel; i++) {
                 for (int j = 0; j < this.levelStates[i].size(); j++) {
-                    ((State) this.levelStates[i].get(j)).toDotty(bw);
+                    this.levelStates[i].get(j).toDotty(bw);
                 }
             }
 
@@ -358,17 +360,16 @@ public class LayeredDFA {
 
     // Copy a state
     public State cloneState(State origin) {
-        State st = makeState(origin);
-        return st;
+        return makeState(origin);
     }
 
     // Clone state: build a node with the same outgoing transitions
-    public State cloneState(State prev, State origin, Hashtable clonedStates, ArrayList newStates) {
+    public State cloneState(State origin, Hashtable<State, State> clonedStates, ArrayList<State> newStates) {
         //State st = makeState(origin);
         if (origin.getLevel() == 0) return this.getInitState();
         if (origin.getLevel() == (nbLevel - 1)) return this.getLastState();
         //if ((origin.hashPred.size() == 1) && (((BitSet) origin.hashPred.get(prev)).cardinality()) == 1) return origin;
-        State st = (State) clonedStates.get(origin);
+        State st = clonedStates.get(origin);
         if (st != null) return st;
         st = makeState(origin);
         newStates.add(st);
@@ -398,16 +399,16 @@ public class LayeredDFA {
 	    removeOffset(ctuple);
         State newState;
         State currentState = initState;
-        Hashtable clonedStates = new Hashtable();
+        Hashtable<State, State> clonedStates = new Hashtable<State, State>();
 
-        ArrayList newStates = new ArrayList();
+        ArrayList<State> newStates = new ArrayList<State>();
         newStates.add(initState);
         int size = ctuple.length;
 
         for (int i = 0; i < size; i++) {
             int currentAlpha = ctuple[i];
             if (currentState.hasNext(currentAlpha)) {
-                newState = cloneState(currentState, currentState.getNext(currentAlpha), clonedStates, newStates);
+                newState = cloneState(currentState.getNext(currentAlpha), clonedStates, newStates);
             } else {
                 if (i == size - 1) {
                     newState = getLastState();
@@ -453,20 +454,20 @@ public class LayeredDFA {
     public void substract(BitSet[] gnogood) {
         State nextState;
         State currentState;
-        Hashtable clonedStates = new Hashtable();
+        Hashtable<State, State> clonedStates = new Hashtable<State,State>();
 
-        ArrayList newStates = new ArrayList();
+        ArrayList<State> newStates = new ArrayList<State>();
         newStates.add(initState);
 
         for (int j = 0; j < newStates.size(); j++) {
-            currentState = (State) newStates.get(j);
+            currentState = newStates.get(j);
             int i = currentState.getLevel();
             if (i >= gnogood.length) break;
             BitSet currentAlpha = gnogood[i];
 
             for (int alpha = currentAlpha.nextSetBit(0); alpha >= 0; alpha = currentAlpha.nextSetBit(alpha + 1)) {
                 if (currentState.hasNext(alpha)) {
-                    nextState = cloneState(currentState, currentState.getNext(alpha), clonedStates, newStates);
+                    nextState = cloneState(currentState.getNext(alpha), clonedStates, newStates);
 
                     if (i == gnogood.length - 1) {
                         currentState.removeNext(alpha);
@@ -478,7 +479,7 @@ public class LayeredDFA {
 
         }
         //     removeUnreachablesNodes();
-        removeNonTerminalsNodes(newStates);
+        removeNonTerminalsNodes();
         //   this.toDotty();
         minimize(newStates);
 
@@ -519,7 +520,7 @@ public class LayeredDFA {
 
 
     // Remove nodes which don't permit to reach the final node
-    public void removeNonTerminalsNodes(ArrayList newStates) {
+    public void removeNonTerminalsNodes() {
         for (int i = (nbLevel - 2); i > -1; i--) {
             ArrayList currentAL = this.levelStates[i];
             for (int j = (currentAL.size() - 1); j > -1; j--) {
@@ -533,16 +534,16 @@ public class LayeredDFA {
     }
 
     // Minimize equivalents states
-    public void minimize(ArrayList newStates) {
-        State st = (State) newStates.get(0);
+    public void minimize(ArrayList<State> newStates) {
+        State st = newStates.get(0);
 
         for (int i = (newStates.size() - 1); i > -1; i--) {
-            st = (State) newStates.get(i);
+            st = newStates.get(i);
             if (st.getIdxLevel() != -1) {
                 int currentLvl = st.getLevel();
 
                 for (int j = (this.levelStates[currentLvl].size() - 1); j > -1; j--) {
-                    State st2 = ((State) this.levelStates[currentLvl].get(j));
+                    State st2 = this.levelStates[currentLvl].get(j);
                     if ((!st.equals(st2)) && (st.equalState(st2))) {
                         mergeStates(st2, st);
                         break;

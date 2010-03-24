@@ -153,7 +153,7 @@ public class IntermediateLayer {
 					{
 						p.setCoord(jPrime, t[jPrime] + l[jPrime]);
 						result.clear();
-						result.add(0,new Boolean(true));
+						result.add(0, true);
 						result.add(1, p);
 						return result;
 					}
@@ -163,7 +163,7 @@ public class IntermediateLayer {
 						{
 							p.setCoord(jPrime, t[jPrime] - 1);
 							result.clear();
-							result.add(0,new Boolean(true));
+							result.add(0, true);
 							result.add(1, p);
 							return result;
 						}
@@ -171,14 +171,14 @@ public class IntermediateLayer {
 				}
 			}
 			result.clear();
-			result.add(0, new Boolean(false));
+			result.add(0, false);
 			result.add(1, p);
 			return result;
 		}
 		else
 		{
 			result.clear();
-			result.add(0, new Boolean(true));
+			result.add(0, true);
 			result.add(1, p);
 			return result;
 		}
@@ -199,7 +199,7 @@ public class IntermediateLayer {
 			if((o.getCoord(j).getSup() < t[j]) || (o.getCoord(j).getInf() > t[j] + l[j] - 1))
 			{
 				result.clear();
-				result.add(0, new Boolean(false));
+				result.add(0, false);
 				result.add(1, p);
 				return result;
 			}
@@ -209,7 +209,7 @@ public class IntermediateLayer {
 				p.setCoord(j, Math.max(t[j] + l[j] - 1, o.getCoord(j).getSup()));
 		}
 		result.clear();
-		result.add(0, new Boolean(true));
+		result.add(0, true);
 		result.add(1, p);
 		return result;
 	}
@@ -264,7 +264,7 @@ public class IntermediateLayer {
 		}
 		feasible = !(before || after);
 		result.clear();
-		result.add(0, new Boolean(feasible));
+		result.add(0, feasible);
 		result.add(1, f);
 		return result;
 	}
@@ -284,7 +284,7 @@ public class IntermediateLayer {
 			if((c.getCoord(j) < t[j]) || (c.getCoord(j) > t[j] + l[j] - 1))
 			{
 				result.clear();                                                                         
-				result.add(0, new Boolean(true));
+				result.add(0, true);
 				result.add(1, f);
 				return result;
 			}
@@ -301,7 +301,7 @@ public class IntermediateLayer {
 			}
 		}
 		result.clear();
-		result.add(0, new Boolean(false));
+		result.add(0, false);
 		result.add(1, f);
 		return result;
 	}

@@ -22,16 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.variables.real;
 
-import java.util.Iterator;
-
-import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.model.IConstraintList;
-import choco.kernel.model.Model;
-import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.Operator;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableType;
-import choco.kernel.model.variables.set.SetVariable;
 
 /*
  * Created by IntelliJ IDEA.

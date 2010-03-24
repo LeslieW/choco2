@@ -49,9 +49,6 @@ public class Identity implements IPermutation {
 			throw new ArrayIndexOutOfBoundsException("the two arguments should have the same length.");
 		}else {
 			System.arraycopy(source, 0, dest, 0, source.length);
-			for (int i = 0; i < source.length; i++) {
-				dest[i]=source[i];
-			}
 		}
 	}
 	

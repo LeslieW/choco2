@@ -32,7 +32,6 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.set.AbstractLargeSetIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.integer.IntVar;
 import choco.kernel.solver.variables.set.SetDomain;
 import choco.kernel.solver.variables.set.SetVar;
 
@@ -163,7 +162,7 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
 	protected void filterEmptySet()  throws ContradictionException {
 		if(defaultValueEmptySet != null) {
 			//a default value is assigned to the variable when the set is empty
-			ivars[BOUND_INDEX].instantiate(defaultValueEmptySet.intValue(), this, false);
+			ivars[BOUND_INDEX].instantiate(defaultValueEmptySet, this, false);
 		}
 		setEntailed();
 	}
