@@ -345,10 +345,10 @@ public class ClauseStore extends AbstractLargeIntSConstraint {
 
     public void propagateUnitClause() throws ContradictionException {
         for (IntDomainVar v : instToOne) {
-            v.instantiate(1, this, true);
+            v.instantiate(1, null, true);
         }
         for (IntDomainVar v : instToZero) {
-            v.instantiate(0, this, true);
+            v.instantiate(0, null, true);
         }
     }
 
