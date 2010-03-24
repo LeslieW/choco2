@@ -102,7 +102,6 @@ public class IntList {
 
 	protected static class IntListIterator extends DisposableIntIterator {
 		int currentIdx = 0;
-		int maxSize;
 
         IntList list;
 

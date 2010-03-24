@@ -81,10 +81,10 @@ public class Equation extends AbstractLargeRealSConstraint {
     subExpsWOX = new RealExp[vars.length][];
 
     // Collect the subexpressions
-    List collectedSubExp = new ArrayList();
+    List<RealExp> collectedSubExp = new ArrayList<RealExp>();
     exp.subExps(collectedSubExp);
     subExps = new RealExp[collectedSubExp.size()];
-    subExps = (RealExp[]) collectedSubExp.toArray(subExps);
+    subExps = collectedSubExp.toArray(subExps);
   }
 
   public void addBoxedVar(RealVar var) {
@@ -92,24 +92,23 @@ public class Equation extends AbstractLargeRealSConstraint {
       LOGGER.log(Level.SEVERE, "Cannot box more variables than variables involved in the constraint !!");
       return;
     }
-    List wx = new ArrayList();
-    List wox = new ArrayList();
+    List<RealExp> wx = new ArrayList<RealExp>();
+    List<RealExp> wox = new ArrayList<RealExp>();
     this.exp.isolate(var, wx, wox);
     if (wx.size() == 0) {
       LOGGER.log(Level.SEVERE, "Cannot box variables not involved in the constraint !!");
       return;
     }
     boxedVars[nbBoxedVars] = var;
-    subExpsWX[nbBoxedVars] = (RealExp[]) wx.toArray(new RealExp[0]);
-    subExpsWOX[nbBoxedVars] = (RealExp[]) wox.toArray(new RealExp[0]);
+    subExpsWX[nbBoxedVars] = wx.toArray(new RealExp[wx.size()]);
+    subExpsWOX[nbBoxedVars] = wox.toArray(new RealExp[wox.size()]);
     nbBoxedVars++;
   }
 
   public void boxAllVars() {
-    for (int i = 0; i < vars.length; i++) {
-      RealVar var = vars[i];
-      this.addBoxedVar(var);
-    }
+      for (RealVar var : vars) {
+          this.addBoxedVar(var);
+      }
   }
 
   // ==== Propag ====
@@ -132,10 +131,7 @@ public class Equation extends AbstractLargeRealSConstraint {
     } catch (ContradictionException e) {
       contradiction = true;
     }
-    if (contradiction)
-      return false;
-    else
-      return (this.exp.getInf() <= this.cste.getSup() && this.exp.getSup() >= this.cste.getInf());
+      return !contradiction && (this.exp.getInf() <= this.cste.getSup() && this.exp.getSup() >= this.cste.getInf());
   }
 
   protected void bc(RealVar var, RealExp[] wx, RealExp[] wox) throws ContradictionException {

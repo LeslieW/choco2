@@ -46,9 +46,7 @@ package choco.kernel.memory.trailing;
 
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBinaryTree;
-import choco.kernel.memory.trailing.trail.StoredBinaryTreeTrail;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -69,7 +67,6 @@ public final class StoredBinaryTree implements IStateBinaryTree {
 
     EnvironmentTrailing env;
     Node root;
-    int lastSavedWorld;
     boolean addLeft = true;
     boolean remLeft = true;
 
@@ -77,10 +74,7 @@ public final class StoredBinaryTree implements IStateBinaryTree {
     public StoredBinaryTree(EnvironmentTrailing env, int a, int b)
     {
         this.env = env;
-        this.lastSavedWorld = 0;
         this.add(a,b);
-
-
     }
 
 

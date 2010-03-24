@@ -140,10 +140,8 @@ public class MaxCliques {
 	}
 	
 	private int[][] storeCliques(boolean[] K) {
-		int[][] updated = new int[cliques.length+1][]; 
-		for(int i=0; i<updated.length-1; i++) {
-			updated[i] = cliques[i]; 
-		}
+		int[][] updated = new int[cliques.length+1][];
+        System.arraycopy(cliques, 0, updated, 0, updated.length - 1);
 		int size = 0;
 		for(int i=0; i<K.length; i++) {
 			if(K[i]) {

@@ -54,7 +54,6 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
     private final SetVar s;
     private final IntDomainVar n;
     private final int idxS;
-    private final int idxN;
 
     int[] bothK = new int[10];
     int kIdx = 0;
@@ -92,7 +91,6 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
         s = (SetVar) vars[nb_vars];
         idxS = nb_vars;
         n = (IntDomainVar) vars[nb_vars + 1];
-        idxN = nb_vars + 1;
         this.environment = environment;
     }
 
@@ -461,20 +459,5 @@ public final class AmongSet extends AbstractMixedSetIntSConstraint {
         sb.append("],").append(s.pretty()).append(",");
         sb.append(n.pretty()).append(")");
         return sb.toString();
-    }
-
-    private class VarIdx {
-        IntDomainVar var;
-        int idx;
-
-        private void clear() {
-            this.var = null;
-            this.idx = -1;
-        }
-
-        private void set(IntDomainVar v, int idx) {
-            this.var = v;
-            this.idx = idx;
-        }
     }
 }

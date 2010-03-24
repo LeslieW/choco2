@@ -1,14 +1,7 @@
 package choco.kernel.common.util.tools;
 
 import java.io.Serializable;
-import java.util.AbstractList;
-import java.util.AbstractSet;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.RandomAccess;
-import java.util.Set;
+import java.util.*;
 
 /**
  * At the contrary of collections in the class {@link Collections}, these collections do not throw any access exception
@@ -116,7 +109,7 @@ public final class CollectionUtils {
      * @see #EMPTY_LIST
      * @since 1.5
      */
-    public static final <T> List<T> emptyList() {
+    public static <T> List<T> emptyList() {
 	return (List<T>) EMPTY_LIST;
     }
 

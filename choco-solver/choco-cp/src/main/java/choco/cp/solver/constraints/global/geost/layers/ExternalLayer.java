@@ -121,17 +121,14 @@ public class ExternalLayer {
     private Frame InitFrameExternalConstraintForCompatible(Compatible ectr, int[] oIDs)
 	{
 		// Should be changed for Compatible Frame
-		NonOverlappingFrame f = new NonOverlappingFrame();
-
-		return f;
+        return new NonOverlappingFrame();
 	}
 
 	private Frame InitFrameExternalConstraintForIncluded(Included ectr,	int[] oIDs)
 	{
 		// Should be changed for Included Frame
-		NonOverlappingFrame f = new NonOverlappingFrame();
 
-		return f;
+        return new NonOverlappingFrame();
 	}
 
 	private Frame InitFrameExternalConstraintForNonOverlapping(NonOverlapping ectr, int[] oIDs)
@@ -185,8 +182,7 @@ public class ExternalLayer {
 							print = false;
 						}
 						pointer[j]=0;
-						continue;
-					}
+                    }
 					else
 					{
 						pointer[j]+=1;
@@ -226,15 +222,14 @@ public class ExternalLayer {
      /*No ploymorphism for now*/
      int s1=stp.getObject(ectr.o1).getShapeId().getVal();
      int s2=stp.getObject(ectr.o2).getShapeId().getVal();
-     ForbiddenRegionFrame f = new ForbiddenRegionFrame(ectr.q,ectr.D,s1,s2,ectr.o1, ectr.o2);
-//     for (int i = 0; i < oIDs.length; i++)
+     //     for (int i = 0; i < oIDs.length; i++)
 //     {
 //         Obj o = stp.getObject(oIDs[i]);
 //         Vector<Region> regions = new Vector<Region>();
 //         f.addForbidRegions(o.getObjectId(), regions);
 //     }
 
-     return f;
+     return new ForbiddenRegionFrame(ectr.q,ectr.D,s1,s2,ectr.o1, ectr.o2);
  }
 
     private Frame InitFrameExternalConstraintForDistLinear(DistLinear ectr, int[] oIDs)
@@ -262,24 +257,21 @@ public class ExternalLayer {
     private Frame InitFrameExternalConstraintForNonOverlappingCircle(NonOverlappingCircle ectr, int[] oIDs)
     {
         // Should be changed for Visible Frame
-        NonOverlappingFrame f = new NonOverlappingFrame();
 
-        return f;
+        return new NonOverlappingFrame();
     }
 
 
 	private Vector<InternalConstraint> GenInternalCtrsForCompatible(Compatible ectr, Obj o)
 	{
-		Vector<InternalConstraint> ictrs = new Vector<InternalConstraint>();
 
-		return ictrs;
+        return new Vector<InternalConstraint>();
 	}
 
 	private Vector<InternalConstraint> GenInternalCtrsForIncluded(Included ectr, Obj o)
 	{
-		Vector<InternalConstraint> ictrs = new Vector<InternalConstraint>();
 
-		return ictrs;
+        return new Vector<InternalConstraint>();
 	}
 
     public Pair<Outbox,Boolean> mergeAdjacent(Outbox new_ob, Outbox last_ob) {
@@ -292,7 +284,7 @@ public class ExternalLayer {
         if (dim!=-1) new_ob.merge(last_ob, dim); //merge the two objects
 //        if (dim!=-1) System.out.println("after merge:"+new_ob);
 
-        return new Pair(new_ob, new Boolean(dim!=-1));
+        return new Pair(new_ob, dim != -1);
 
     }
 
@@ -304,12 +296,12 @@ public class ExternalLayer {
 		// Since non_overlapping constraint then we will generate outbox constraints
 		Vector<InternalConstraint> ictrs = new Vector<InternalConstraint>();
 		Vector<ShiftedBox> sb = stp.getShape(o.getShapeId().getInf());
-		Iterator itr;
+		Iterator<Integer> itr;
 		itr = ectr.getFrame().getRelForbidRegions().keySet().iterator();
         boolean printit=false;
 		while (itr.hasNext())
 		{
-			int i = ((Integer) itr.next()).intValue();
+			int i = itr.next();
 			if (!(o.getObjectId() == i))
 			{
 				for (int k = 0; k < sb.size(); k++) {
@@ -393,9 +385,8 @@ public class ExternalLayer {
 
 	private Vector<InternalConstraint> GenInternalCtrsForVisible(Visible ectr, Obj o)
 	{
-		Vector<InternalConstraint> ictrs = new Vector<InternalConstraint>();
 
-		return ictrs;
+        return new Vector<InternalConstraint>();
 	}
 
     private Vector<InternalConstraint> GenInternalCtrsForDistGeq(DistGeq ectr, Obj o)

@@ -55,11 +55,8 @@ public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteS
 
     private int size;
 
-    IEnvironment env;
-
     public StoredBipartiteVarSet(IEnvironment env) {
         super(env);
-        this.env = env;
         //noinspection unchecked
         varsNotInstanciated = (E[])new Var[SET_INITIAL_CAPACITY];
         size = 0;

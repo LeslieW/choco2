@@ -46,7 +46,7 @@ public class Frame implements Externalizable {
 	 */
 	public Vector<Region> getRelForbidRegions(int oid)
 	{
-		return this.RelForbidRegions.get(new Integer(oid));
+		return this.RelForbidRegions.get(oid);
 	}
 	
 	/**
@@ -63,6 +63,7 @@ public class Frame implements Externalizable {
 
     }
 
+    @SuppressWarnings({"unchecked"})
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         //To change body of implemented methods use File | Settings | File Templates.
         RelForbidRegions=(Hashtable<Integer, Vector<Region>>) in.readObject();        

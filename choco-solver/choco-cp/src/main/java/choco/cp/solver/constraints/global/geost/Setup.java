@@ -78,12 +78,12 @@ public class Setup {
 
 	public void insertShape(int sid, Vector<ShiftedBox> shiftedBoxes)
 	{
-		shapes.put(new Integer(sid), shiftedBoxes);
+		shapes.put(sid, shiftedBoxes);
 	}
 
 	public void insertObject(int oid, Obj o)
 	{
-		objects.put(new Integer(oid), o);
+		objects.put(oid, o);
 	}
 
 
@@ -200,7 +200,7 @@ public class Setup {
 		{
 			Vector<ShiftedBox> v = new Vector<ShiftedBox>();;
 			v.add(sb);
-			shapes.put(new Integer(sb.getShapeId()), v);
+			shapes.put(sb.getShapeId(), v);
 		}
 	}
 
@@ -209,7 +209,7 @@ public class Setup {
 		if (objects.containsKey(new Integer(o.getObjectId()))) {
 			LOGGER.info("Trying to add an already existing object. In addObject in Setup");
 		} else {
-			objects.put(new Integer(o.getObjectId()), o);
+			objects.put(o.getObjectId(), o);
 		}
 	}
 
@@ -237,11 +237,11 @@ public class Setup {
 	 */
 	public void print()
 	{
-		Iterator itr;
+		Iterator<Integer> itr;
 		itr = objects.keySet().iterator();
 		while(itr.hasNext())
 		{
-			int id = ((Integer)itr.next()).intValue();
+			int id = itr.next();
 			Obj o = objects.get(new Integer(id));
 			LOGGER.info("object id: " + id);
 			LOGGER.info("    shape id: " + o.getShapeId().getInf());
@@ -253,7 +253,7 @@ public class Setup {
 		itr = shapes.keySet().iterator();
 		while(itr.hasNext())
 		{
-			int sid = ((Integer)itr.next()).intValue();
+			int sid = itr.next();
 			Vector<ShiftedBox> sb = shapes.get(new Integer(sid));
 			LOGGER.info("shape id: " + sid);
 			for(int i = 0; i < sb.size(); i++)
@@ -281,11 +281,11 @@ public class Setup {
 	    try {
 	        BufferedWriter out = new BufferedWriter(new FileWriter(path));
 
-			Iterator itr;
+			Iterator<Integer> itr;
 			itr = objects.keySet().iterator();
 			while(itr.hasNext())
 			{
-				int id = ((Integer)itr.next()).intValue();
+				int id = itr.next();
 				Obj o = objects.get(new Integer(id));
 				out.write("object id: " + id + '\n');
 				out.write("    shape id: " + o.getShapeId().getInf() + '\n');
@@ -297,7 +297,7 @@ public class Setup {
 			itr = shapes.keySet().iterator();
 			while(itr.hasNext())
 			{
-				int sid = ((Integer)itr.next()).intValue();
+				int sid = itr.next();
 				Vector<ShiftedBox> sb = shapes.get(new Integer(sid));
 				out.write("shape id: " + sid + '\n');
 				for(int i = 0; i < sb.size(); i++)
@@ -315,7 +315,7 @@ public class Setup {
 				}
 			}
 			out.close();
-	    } catch (IOException e) {
+	    } catch (IOException ignored) {
 	    }
 
 
@@ -332,12 +332,12 @@ public class Setup {
 	    try {
 	        BufferedWriter out = new BufferedWriter(new FileWriter(path));
 
-			Iterator itr;
+			Iterator<Integer> itr;
 			itr = objects.keySet().iterator();
 			out.write("Objects" + '\n');
 			while(itr.hasNext())
 			{
-				int id = ((Integer)itr.next()).intValue();
+				int id = itr.next();
 				Obj o = objects.get(new Integer(id));
 				out.write(id + " ");
 				out.write(o.getShapeId().getInf() + " " + o.getShapeId().getSup() + " ");
@@ -352,7 +352,7 @@ public class Setup {
 			out.write("Shapes" + '\n');
 			while(itr.hasNext())
 			{
-				int sid = ((Integer)itr.next()).intValue();
+				int sid = itr.next();
 				out.write(sid + "" + '\n');
 			}
 
@@ -362,7 +362,7 @@ public class Setup {
 			out.write("ShiftedBoxes" + '\n');
 			while(itr.hasNext())
 			{
-				int sid = ((Integer)itr.next()).intValue();
+				int sid = itr.next();
 				Vector<ShiftedBox> sb = shapes.get(new Integer(sid));
 
 				for(int i = 0; i < sb.size(); i++)
@@ -379,7 +379,7 @@ public class Setup {
 				}
 			}
 			out.close();
-	    } catch (IOException e) {
+	    } catch (IOException ignored) {
 	    }
 
 

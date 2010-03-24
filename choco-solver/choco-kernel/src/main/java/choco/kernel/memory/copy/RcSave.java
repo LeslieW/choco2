@@ -34,7 +34,6 @@ import gnu.trove.TIntObjectHashMap;
 public final class RcSave implements RecomputableElement {
 
     public RecomputableElement[][] currentElement;
-    private EnvironmentCopying environment;
     private int lastSavedWorldIndex;
 
 
@@ -59,7 +58,6 @@ public final class RcSave implements RecomputableElement {
 
 
     public RcSave(EnvironmentCopying env) {
-        environment = env;
         lastSavedWorldIndex = env.getWorldIndex();
 
         saveInt.clear();
