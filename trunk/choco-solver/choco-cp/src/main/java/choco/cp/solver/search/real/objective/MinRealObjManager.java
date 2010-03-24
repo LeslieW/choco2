@@ -38,7 +38,7 @@ public final class MinRealObjManager extends RealObjectiveManager {
 		return objective.getInf();
 	}
 
-	private final void setBoundInterval() {
+	private void setBoundInterval() {
 		boundInterval = new RealIntervalConstant(Double.NEGATIVE_INFINITY, targetBound);
 	}
 
@@ -59,7 +59,7 @@ public final class MinRealObjManager extends RealObjectiveManager {
 
 	@Override
 	public void setTargetBound() {
-		targetBound = RealMath.prevFloat(objective.getSup());
+		targetBound = RealMath.prevFloat(objective.getInf());
 		setBoundInterval();
 		
 	}
