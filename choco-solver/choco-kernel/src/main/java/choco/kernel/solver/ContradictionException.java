@@ -46,6 +46,18 @@ public class ContradictionException extends Exception {
 	private Object contradictionCause;
     private int contradictionMove;
 
+    /**
+     * Builder of contradiction.
+     * BEWARE: user should understand the way a contradiction is used in CHOCO.
+     * There is only one contradiction per propagation engine (and per solver).
+     * If another objects are created, it could lead to a loss of performance!
+     *
+     * @return a new ContradictionException
+     */
+    public static ContradictionException build(){
+        return new ContradictionException();
+    }
+
 
     /**
 	 * Constructs a new contradiction with the specified cause.
@@ -53,9 +65,9 @@ public class ContradictionException extends Exception {
 	 * @param contradictionCause the the last object variable responsible
 	 *              for the failure of propagation
      */
-	protected ContradictionException(Object contradictionCause) {
+	private ContradictionException() {
 		super();
-		this.contradictionCause = contradictionCause;
+		this.contradictionCause = null;
 		this.contradictionMove = AbstractGlobalSearchStrategy.UP_BRANCH;
     }
 

@@ -23,7 +23,6 @@
 package choco.kernel.solver.propagation;
 
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.ContradictionExceptionFactory;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.listener.PropagationEngineListener;
@@ -49,7 +48,7 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
 	/**
 	 * Storing the last contradiction (reusable).
 	 */
-	protected final ContradictionException reuseException  = ContradictionExceptionFactory.getSingloton();
+	protected final ContradictionException reuseException;
 	
 
 	public final Solver getSolver(){
@@ -64,6 +63,7 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
 
 	public AbstractPropagationEngine(Solver solver) {
 		this.solver = solver;
+        reuseException = ContradictionException.build();
 	}
 
 	/**
