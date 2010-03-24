@@ -38,7 +38,7 @@ public final class MaxRealObjManager extends RealObjectiveManager {
 		return objective.getSup();
 	}
 
-	private final void setBoundInterval() {
+	private void setBoundInterval() {
 		boundInterval = new RealIntervalConstant(targetBound, Double.POSITIVE_INFINITY);
 	}
 
@@ -59,7 +59,7 @@ public final class MaxRealObjManager extends RealObjectiveManager {
 
 	@Override
 	public void setTargetBound() {
-		targetBound = RealMath.nextFloat(objective.getInf());
+		targetBound = RealMath.nextFloat(objective.getSup());
 		setBoundInterval();
 		
 	}
