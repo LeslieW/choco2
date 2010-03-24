@@ -29,6 +29,7 @@
 
     <menu name="Get CHOCO">
       <item name="Download" href="choco-download.html"/>
+      <item name="Build" href="choco-build.html"/>
       <item name="License" href="license.html"/>
     </menu>
 
