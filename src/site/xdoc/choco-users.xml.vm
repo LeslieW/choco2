@@ -31,6 +31,9 @@
                 <a href="http://www.mines.inpl-nancy.fr/" target="_blank">
                     <img src="images/logos/emnancy.jpeg"/>
                 </a>
+                <a href="http://www.ensm-douai.fr/" target="_blank">
+                    <img src="images/logos/emdouai.jpeg"/>
+                </a>
                 <a href="http://www.enac.fr/" target="_blank">
                     <img src="images/logos/enac.jpeg"/>
                 </a>
@@ -79,6 +82,9 @@
             <div style="vertical-align: bottom; text-align: center;">
                 <a href="http://www.univ-orleans.fr/" target="_blank">
                     <img src="images/logos/polytechnique.jpeg"/>
+                </a>
+                <a href="www.tugraz.at/" target="_blank">
+                    <img src="images/logos/TU_Graz.png"/>
                 </a>
             </div>
         </section>
