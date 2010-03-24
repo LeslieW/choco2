@@ -145,7 +145,7 @@ public final class IntLinCombFactory {
             if (!lvar.hasBooleanDomain()) {
                 nbEnum++;
             }
-            if (nbEnum > 0) {
+            if (nbEnum > 1) {
                 return false;
             }
         }

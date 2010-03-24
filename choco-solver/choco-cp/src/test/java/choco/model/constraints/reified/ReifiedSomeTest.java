@@ -28,6 +28,7 @@ import choco.cp.model.CPModel;
 import choco.cp.model.managers.operators.SqrtManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
+import choco.cp.solver.constraints.integer.bool.BoolIntLinComb;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
@@ -1793,5 +1794,52 @@ public class ReifiedSomeTest {
         Assert.assertTrue("time!!", t < 6000);
     }
 
+    @Test
+    public void test_stoklin3(){
+        int NV = 12;
+
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+
+        IntegerVariable[] vars = Choco.makeIntVarArray("v", NV, 0, 1);
+        IntegerVariable result = Choco.makeIntVar("result", 0, 978750);
+        int[] coeff = new int[NV];
+        Arrays.fill(coeff, 150);
+        Constraint scal = eq(scalar(coeff, vars), result);
+
+        m.addConstraint(scal);
+
+        s.read(m);
+
+        SConstraint sscal = s.getCstr(scal);
+        Assert.assertTrue(BoolIntLinComb.class.isInstance(sscal));
+
+    }
+
+    @Test
+    public void test_stoklin4(){
+        int NV = 12;
+
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+
+        IntegerVariable[] vars = new IntegerVariable[NV];
+        vars[0] = Choco.makeIntVar("v", 0, 9999);
+        for(int i = 1; i< NV; i++){
+            vars[i] = Choco.makeIntVar("v", 0, 1);
+        }
+        IntegerVariable result = Choco.makeIntVar("result", 0, 1);
+        int[] coeff = new int[NV];
+        Arrays.fill(coeff, 150);
+        Constraint scal = eq(scalar(coeff, vars), result);
+
+        m.addConstraint(scal);
+
+        s.read(m);
+
+        SConstraint sscal = s.getCstr(scal);
+        Assert.assertTrue(BoolIntLinComb.class.isInstance(sscal));
+
+    }
 
 }
