@@ -24,6 +24,7 @@ package choco.model.constraints.global;
 
 import choco.Choco;
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
@@ -138,7 +139,7 @@ public class RegularTest {
             CPSolver s = new CPSolver();
             IntegerVariable[] bvars = makeIntVarArray("b", 10, 0, 1);
             IntegerVariable charge = makeIntVar("charge", 0, 4000);
-            m.addVariable("cp:enum", charge);
+            m.addVariable(CPOptions.V_ENUM, charge);
             m.addVariables(bvars);
 
             //remove some forbidden tuples (here, the tuples define a not_all_equal constraint)
@@ -661,7 +662,7 @@ public class RegularTest {
             int n = 10;
             IntegerVariable[] bvars = makeIntVarArray("b", n, 0, 1);
             IntegerVariable charge = makeIntVar("charge", 0, 4000);
-            m.addVariable("cp:enum", charge);
+            m.addVariable(CPOptions.V_ENUM, charge);
             m.addVariables(bvars);
             s.read(m);
             int[] coefs = new int[n];
@@ -746,7 +747,7 @@ public class RegularTest {
             int n = 10;
             IntegerVariable[] bvars = makeIntVarArray("b", n, 0, 10);
             int charge = 10;
-            m.addVariables("cp:enum", bvars);
+            m.addVariables(CPOptions.V_ENUM, bvars);
             s.read(m);
             int[] coefs = new int[n];
             Random rand = new Random(seed);
@@ -778,7 +779,7 @@ public class RegularTest {
             int n = 10;
             IntegerVariable[] bvars = makeIntVarArray("b", n, new int[]{0, 3, 5, 6, 7});
             int charge = 10;
-            m.addVariables("cp:enum", bvars);
+            m.addVariables(CPOptions.V_ENUM, bvars);
             int[] coefs = new int[n];
             Random rand = new Random(seed);
             for (int i = 0; i < coefs.length; i++) {
@@ -860,7 +861,7 @@ public class RegularTest {
 
         Model m = new CPModel();
         int n = 6;
-        IntegerVariable[] vars = Choco.makeIntVarArray("v", n, 1, 5, "cp:bound");
+        IntegerVariable[] vars = Choco.makeIntVarArray("v", n, 1, 5, CPOptions.V_BOUND);
 
 
         String regexp = "(1|2)(3*)(2|4|5)";

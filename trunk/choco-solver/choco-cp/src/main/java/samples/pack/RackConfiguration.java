@@ -24,6 +24,7 @@
 package samples.pack;
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -86,7 +87,7 @@ public class RackConfiguration {
 		cardTypeMap = new ArrayList<IntegerVariable[]>();
 		int offset =0;
 		for (int i = 0; i < data.nbCardTypes; i++) {
-			IntegerVariable[] tmp = makeIntVarArray("cardRack_"+i, data.cardDemand[i], 0,data.nbRacks-1,"cp:enum");
+			IntegerVariable[] tmp = makeIntVarArray("cardRack_"+i, data.cardDemand[i], 0,data.nbRacks-1, CPOptions.V_ENUM);
 			IntegerVariable[] tmps = new IntegerVariable[data.cardDemand[i]];
 			Arrays.fill(tmps, constant(data.cardPower[i]));
 			System.arraycopy(tmp, 0, cardRacks, offset, data.cardDemand[i]);
@@ -99,8 +100,8 @@ public class RackConfiguration {
 			maxPower = Math.max(maxPower, data.rackPower[i]);
 		}
 		plugged = makeSetVarArray("plugged", data.nbRacks, 0, data.nbCards-1);
-		loads = makeIntVarArray("rackType", data.nbRacks, 0,maxPower,"cp:enum");
-		rackTypes = makeIntVarArray("rackType", data.nbRacks, 0,data.nbRackModels-1,"cp:enum");
+		loads = makeIntVarArray("rackType", data.nbRacks, 0,maxPower,CPOptions.V_ENUM);
+		rackTypes = makeIntVarArray("rackType", data.nbRacks, 0,data.nbRackModels-1,CPOptions.V_ENUM);
 		rackCosts = makeIntVarArray("rackCost", data.nbRacks,data.rackPrice);
 		rackMaxLoad = makeIntVarArray("rackMaxLoad", data.nbRacks, data.rackPower);
 		rackMaxConnector = makeIntVarArray("rackMaxConnector", data.nbRacks, data.rackConnector);

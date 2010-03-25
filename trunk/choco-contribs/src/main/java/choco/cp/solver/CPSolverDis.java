@@ -40,6 +40,6 @@ public class CPSolverDis extends CPSolver{
         for(int i = 0; i < 3; i++){
             qs[i] = new BlockingVarEventQueue();
         }
-        this.propagationEngine.setVarEventQueues(qs);
+        this.getPropagationEngine().setVarEventQueues(qs);
     }
 }

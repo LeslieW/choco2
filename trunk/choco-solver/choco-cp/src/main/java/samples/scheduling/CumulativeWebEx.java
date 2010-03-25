@@ -22,26 +22,17 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.scheduling;
 
-import static choco.Choco.boolChanneling;
-import static choco.Choco.constant;
-import static choco.Choco.constantArray;
-import static choco.Choco.cumulativeMax;
-import static choco.Choco.eq;
-import static choco.Choco.makeBooleanVarArray;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.makeTaskVarArray;
-import static choco.Choco.minus;
-import static choco.Choco.sum;
-
-import java.util.Arrays;
-import java.util.logging.Level;
-
-import samples.Examples.PatternExample;
+import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
+import samples.Examples.PatternExample;
+
+import java.util.Arrays;
+import java.util.logging.Level;
 
 
 public class CumulativeWebEx extends PatternExample {
@@ -58,9 +49,9 @@ public class CumulativeWebEx extends PatternExample {
 	protected IntegerVariable[] usages, heights;
 	
 	//the fake tasks to establish the profile capacity of the ressource are the NF firsts.
-	protected final static TaskVariable[] TASKS = makeTaskVarArray("t", 0, 6, DURATIONS_DATA, "cp:bound");
+	protected final static TaskVariable[] TASKS = makeTaskVarArray("t", 0, 6, DURATIONS_DATA, CPOptions.V_BOUND);
 
-	protected final static IntegerVariable OBJ = makeIntVar("obj", 0, NT, "cp:bound", "cp:objective");
+	protected final static IntegerVariable OBJ = makeIntVar("obj", 0, NT, CPOptions.V_BOUND, CPOptions.V_OBJECTIVE);
 
 	protected boolean useAlternativeResource;
 	

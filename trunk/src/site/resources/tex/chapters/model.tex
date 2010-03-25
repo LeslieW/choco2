@@ -75,14 +75,14 @@ Note that these operators are not considered as constraints: they do not return 
 
 Once all the variables of the problem has been declared, it is possible to specify which variables are decision variables or non-decision variables. It can be done when adding the variables to the Model, by setting the option to \texttt{cp:decision} or \texttt{cp:no\_decision}.
 \begin{lstlisting}
-  IntegerVariable toto = Choco.makeIntVar("toto", 1, 2, "cp:decision"); // decision variable
-  IntegerVariable titi = Choco.makeIntVar("titi", 1, 2, "cp:no_decision"); // non-decision
+  IntegerVariable toto = Choco.makeIntVar("toto", 1, 2, CPOptions.V_DECISION); // decision variable
+  IntegerVariable titi = Choco.makeIntVar("titi", 1, 2, CPOptions.V_NO_DECISION); // non-decision
 \end{lstlisting}
 Each of these options can also be set within a single instruction for a group of variables, as follows: 
 \begin{lstlisting}
 	IntegerVariable toto = Choco.makeIntVar("toto", 1, 2);
 	IntegerVariable titi = Choco.makeIntVar("titi", 1, 2);
-	model.addVariable("cp:decision",toto, titi);
+	model.addVariable(CPOptions.V_DECISION,toto, titi);
 \end{lstlisting}
 These options are useful when:
 \begin{itemize}
@@ -93,18 +93,18 @@ These options are useful when:
 A \texttt{default} search strategy will be created on the decision variables. 
 \begin{note}
   \begin{itemize}
-  \item The declaration of a user-defined \hyperlink{solver:searchstrategy}{search strategy} will erase setting \texttt{cp:decision}.
+  \item The declaration of a user-defined \hyperlink{solver:searchstrategy}{search strategy} will erase setting \texttt{CPOptions.V_DECISION}.
   \item The declaration of a \hyperlink{solver:searchstrategy}{search strategy} will erase setting \texttt{cp:no\_decision}.
   \end{itemize}
 \end{note}
   \todo{more precise: user-defined/pre-defined, variable and/or value heuristics ?}
 
 \subsection{Objective variable}\label{model:objectivevariable}\hypertarget{model:objectivevariable}{}
-You can define an objective variable directly within the model, by using option \texttt{cp:objective}:
+You can define an objective variable directly within the model, by using option \texttt{CPOptions.V_OBJECTIVE}:
 \begin{lstlisting}
 	Model m = new CPModel();
 	Solver s = new CPSolver();
-	IntegerVariable x = makeIntVar("x", 1, 1000, "cp:objective");
+	IntegerVariable x = makeIntVar("x", 1, 1000, CPOptions.V_OBJECTIVE);
 	IntegerVariable y = makeIntVar("y", 20, 50);
 	m.addConstraint(eq(x, mult(y, 20)));
 	s.read(m);
@@ -120,36 +120,36 @@ Note that optimization problems can be declared without defining an objective va
 	Model m = new CPModel();
 	
 	// Bounded integer variables
-	IntegerVariable biv = makeIntVar("biv", 1, 10000, "cp:bound");
-	IntegerVariable[][] biVars = makeIntVarArray("biVars", 20, 30, 1, 99999, "cp:bound");
+	IntegerVariable biv = makeIntVar("biv", 1, 10000, CPOptions.V_BOUND);
+	IntegerVariable[][] biVars = makeIntVarArray("biVars", 20, 30, 1, 99999, CPOptions.V_BOUND);
 	m.addVariable(biv);
 	for(int i = 0; i < biVars.length; i++){
 	  m.addVariable(biVars[i]);
 	}
 	
 	// Enumerated integer variables
-	IntegerVariable eiv = makeIntVar("eiv", 1, 100, "cp:enum");
-	IntegerVariable[] eiVars = makeIntVarArray("eiVars", 10, 1, 50, "cp:enum");
+	IntegerVariable eiv = makeIntVar("eiv", 1, 100, CPOptions.V_ENUM);
+	IntegerVariable[] eiVars = makeIntVarArray("eiVars", 10, 1, 50, CPOptions.V_ENUM);
 	int[] values1 = new int[]{1,3,5,7,14,16,18,24,46,78, 99};
-	IntegerVariable eiv2 = makeIntVar("eiv2", values,"cp:enum");
+	IntegerVariable eiv2 = makeIntVar("eiv2", values,CPOptions.V_ENUM);
 	m.addVariable(eiv, eiv2);
 	m.addVariable(eiVars);
 	
 	// Linked list integer variables
-	IntegeVariable lliv = makeIntVar("lliv", 1, 10, "cp:link");
+	IntegeVariable lliv = makeIntVar("lliv", 1, 10, CPOptions.V_LINK);
 	int[] values2 = new int[]{1,3,5,7,14,16,18,24,46,78, 99};
-	IntegeVariable lliv2 = makeIntVar("lliv2", values2, "cp:link");
+	IntegeVariable lliv2 = makeIntVar("lliv2", values2, CPOptions.V_LINK);
 	m.addVariable(lliv, lliv2);
 	
 	IntegerExpressionVariable iev = plus(lliv, 1);
 	m.addVariable(iev);
 	
 	// Bounded set variable
-	SetVariable bsv = makeSetVar("bsv", 1, 24, "cp:enum");
-	SetVariable bsv2 = makeSetVar("bsv2", 1, 36, "cp:bound");
+	SetVariable bsv = makeSetVar("bsv", 1, 24, CPOptions.V_ENUM);
+	SetVariable bsv2 = makeSetVar("bsv2", 1, 36, CPOptions.V_BOUND);
 	
 	// Enumerated set variable
-	SetVariable esv = makeSetVar("bsv", 1, 240,"cp:enum");
+	SetVariable esv = makeSetVar("bsv", 1, 240,CPOptions.V_ENUM);
 	
 	m.addVariable(bsv, bs2, esv);
 	
@@ -383,12 +383,12 @@ Once the default representation is chosen, one can also make exception for a par
 For example, the following code tells the solver to decompose e1 and not e2 :
 \begin{lstlisting}
 	model.setDefaultExpressionDecomposition(false);
-	IntegerVariable x = makeIntVar("x", 1, 3, "cp:bound");
-	IntegerVariable y = makeIntVar("y", 1, 3, "cp:bound");
-	IntegerVariable z = makeIntVar("z", 1, 3, "cp:bound");
+	IntegerVariable x = makeIntVar("x", 1, 3, CPOptions.V_BOUND);
+	IntegerVariable y = makeIntVar("y", 1, 3, CPOptions.V_BOUND);
+	IntegerVariable z = makeIntVar("z", 1, 3, CPOptions.V_BOUND);
 
 	Constraint e1 = or(lt(x, y), lt(y, x));
-	model.addConstraint("cp:decomp", e1);
+	model.addConstraint(CPOptions.E_DECOMP, e1);
 	
 	Constraint e2 = or(lt(y, z), lt(z, y));
 	model.addConstraint(e2);

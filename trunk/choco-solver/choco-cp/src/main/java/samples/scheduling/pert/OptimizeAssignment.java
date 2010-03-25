@@ -24,6 +24,7 @@ package samples.scheduling.pert;
 
 import choco.Choco;
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -82,13 +83,13 @@ public class OptimizeAssignment extends DeterministicPert {
 		this.nbAlternatives=durations[0].length;
 		this.durations=durations;
 		this.costs=costs;
-		this.assignments = makeIntVarArray("assignment", NB_TASKS, 0, nbAlternatives-1,"cp:no_decision");
+		this.assignments = makeIntVarArray("assignment", NB_TASKS, 0, nbAlternatives-1,CPOptions.V_NO_DECISION);
 		this.vcosts=new IntegerVariable[NB_TASKS];
 		for (int i = 0; i < NB_TASKS; i++) {
 			//costs are the only decision variable
-			tasks[i].start().addOption("cp:no_decision");
-			tasks[i].end().addOption("cp:no_decision");
-			tasks[i].duration().addOption("cp:no_decision");
+			tasks[i].start().addOption(CPOptions.V_NO_DECISION);
+			tasks[i].end().addOption(CPOptions.V_NO_DECISION);
+			tasks[i].duration().addOption(CPOptions.V_NO_DECISION);
 			this.vcosts[i]= makeIntVar("cost-"+tasks[i].getName(), costs[i]);
 			model.addConstraints(
 					nth(assignments[i], durations[i], tasks[i].duration()),
@@ -96,8 +97,8 @@ public class OptimizeAssignment extends DeterministicPert {
 			);
 		}
 		//objective
-		objective=makeIntVar("objective", 0, NB_TASKS*1000, "cp:bound","cp:objective"); //max cost should be lower than 1000
-		model.addConstraint(eq(objective,plus(sum(vcosts),mult(costPerDay,Choco.makeIntVar("makespan", 0, Integer.MAX_VALUE, "cp:bound","cp:makespan")))));
+		objective=makeIntVar("objective", 0, NB_TASKS*1000, CPOptions.V_BOUND,CPOptions.V_OBJECTIVE); //max cost should be lower than 1000
+		model.addConstraint(eq(objective,plus(sum(vcosts),mult(costPerDay,Choco.makeIntVar("makespan", 0, Integer.MAX_VALUE, CPOptions.V_BOUND,CPOptions.V_MAKESPAN)))));
         model.addConstraint(c);
 	}
 
@@ -175,7 +176,7 @@ public class OptimizeAssignment extends DeterministicPert {
 			solver.read(model);
 			this.solver.post( solver.eq(solver.getMakespan(), h));
 			solver.minimize(false);
-			LOGGER.info(solver.getMakespanValue()+" "+solver.getOptimumValue());
+			LOGGER.info(solver.getMakespanValue()+" "+solver.getObjectiveValue());
 		}
 	}
 

@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular.asap;
 
+import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
@@ -41,8 +43,6 @@ import samples.multicostregular.asap.parser.ASAPParser;
 import java.awt.*;
 import java.io.BufferedWriter;
 import java.util.*;
-
-import static choco.Choco.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -95,7 +95,7 @@ public class ASAPCPModel extends CPModel {
     {
         int[] dom =  alpha.toArray();
 
-        shifts = makeIntVarArray("x",nbEmployees,nbDays,dom,"cp:enum");
+        shifts = makeIntVarArray("x",nbEmployees,nbDays,dom,CPOptions.V_ENUM);
 
 
     }
@@ -133,7 +133,7 @@ public class ASAPCPModel extends CPModel {
             if (maxSPW < 7 || minSPW > 0)
             {
                 for (int i = 0 ; i < nbWeek ; i++)
-                    vs.add(makeIntVar("z"+vs.size(),minSPW,maxSPW,"cp:bound"));
+                    vs.add(makeIntVar("z"+vs.size(),minSPW,maxSPW, CPOptions.V_BOUND));
             }
             for (Integer anAlpha1 : alpha) {
                 int tmp = c.getMaxShiftType(handler.getShift(handler.inverseMap.get(anAlpha1)));
@@ -141,26 +141,26 @@ public class ASAPCPModel extends CPModel {
 
                 if (tmp != Integer.MAX_VALUE || tmp2 > 0) {
                     if (tmp == Integer.MAX_VALUE) tmp /= 1000;
-                    vs.add(makeIntVar("z" + vs.size(), tmp2, tmp, "cp:bound"));
+                    vs.add(makeIntVar("z" + vs.size(), tmp2, tmp, CPOptions.V_BOUND));
                 }
 
             }
             if (c.getMaxNumAssignment() != -1)
-                vs.add(makeIntVar("z"+(nbWeek+alpha.length),c.getMinShiftsPerWeek()*nbWeek,c.getMaxNumAssignment(),"cp:bound"));
+                vs.add(makeIntVar("z"+(nbWeek+alpha.length),c.getMinShiftsPerWeek()*nbWeek,c.getMaxNumAssignment(),CPOptions.V_BOUND));
 
             if (c.getMaxWorkingWeekEnds() >= 0 || c.getMinWorkingWeekEnds() >0)
             {
-                vs.add(makeIntVar("z"+vs.size(),c.getMinWorkingWeekEnds(),c.getMaxWorkingWeekEnds(),"cp:bound"));
+                vs.add(makeIntVar("z"+vs.size(),c.getMinWorkingWeekEnds(),c.getMaxWorkingWeekEnds(),CPOptions.V_BOUND));
             }
 
             if (c.getMaxDaysOff() > -1 || c.getMinDaysOff() > 0)
             {
                 if (c.getMaxDaysOff() == -1) c.setMaxDaysOff(nbDays);
-                vs.add(makeIntVar("z"+vs.size(),c.getMinDaysOff(),c.getMaxDaysOff(),"cp:bound"));
+                vs.add(makeIntVar("z"+vs.size(),c.getMinDaysOff(),c.getMaxDaysOff(),CPOptions.V_BOUND));
             }
             if (c.getMaxWeekEndDays() > -1  || c.getMinWeekEndDays() > 0)
             {
-                vs.add(makeIntVar("z"+vs.size(),c.getMinWeekEndDays(),c.getMaxWeekEndDays(),"cp:bound"));
+                vs.add(makeIntVar("z"+vs.size(),c.getMinWeekEndDays(),c.getMaxWeekEndDays(),CPOptions.V_BOUND));
             }
 
 
@@ -173,7 +173,7 @@ public class ASAPCPModel extends CPModel {
             map.get(c).add(v);
             IntegerVariable[] z = vs.toArray(new IntegerVariable[vs.size()]);
             FiniteAutomaton a = rules.get(c);
-            //  IntegerVariable z = makeIntVar("z",0,1000000,"cp:bound");
+            //  IntegerVariable z = makeIntVar("z",0,1000000,CPOptions.V_BOUND);
             this.addVariables(z);
             this.addVariables(v);
             int csts[][][] = new int[nbDays][FiniteAutomaton.max(this.alpha)+1][vs.size()];
@@ -312,7 +312,7 @@ public class ASAPCPModel extends CPModel {
                         for (int idx :idxs)
                         {
                             IntegerVariable[] subset = makeSubSet(emp,v[idx]);
-                            this.addConstraint(occurrenceMin(handler.map.get(sh.getID()),makeIntVar("occ",min,Integer.MAX_VALUE/100,"cp:bound"),subset));
+                            this.addConstraint(occurrenceMin(handler.map.get(sh.getID()),makeIntVar("occ",min,Integer.MAX_VALUE/100,CPOptions.V_BOUND),subset));
                         }
                     }
                     if (max != null)
@@ -320,7 +320,7 @@ public class ASAPCPModel extends CPModel {
                         for (int idx :idxs)
                         {
                             IntegerVariable[] subset = makeSubSet(emp,v[idx]);
-                            this.addConstraint(occurrenceMax(handler.map.get(sh.getID()),makeIntVar("occ",0,max,"cp:bound"),subset));
+                            this.addConstraint(occurrenceMax(handler.map.get(sh.getID()),makeIntVar("occ",0,max,CPOptions.V_BOUND),subset));
                         }
                     }
                     if (pre != null)
@@ -339,7 +339,7 @@ public class ASAPCPModel extends CPModel {
                 IntegerVariable[] col = v[idx];
                 this.lowb[idx] = lowb;
                 this.uppb[idx] = uppb;
-                this.addConstraint(globalCardinality("cp:ac",col,0,9,lowb,uppb));
+                this.addConstraint(globalCardinality(CPOptions.C_GCC_AC,col,0,9,lowb,uppb));
             }
 
         }

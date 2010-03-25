@@ -1,20 +1,20 @@
 package choco.model.constraints.global;
 
+import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static choco.Choco.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Created by IntelliJ IDEA.
@@ -52,13 +52,13 @@ public class CostKnapSackTest {
             profits[i] = r.nextInt(n);
         }
 
-        IntegerVariable[] vars = makeIntVarArray("x",n,0,1,"cp:enum");
+        IntegerVariable[] vars = makeIntVarArray("x",n,0,1,CPOptions.V_ENUM);
         int a = r.nextInt(n/5);
         int b = r.nextInt(n/5);
         int min = Math.min(a,b);
         int max = Math.max(a,b);
-        IntegerVariable poid = makeIntVar("gain",min,max,"cp:enum");
-        IntegerVariable profit = makeIntVar("profit",0,Integer.MAX_VALUE/1000,"cp:bound");
+        IntegerVariable poid = makeIntVar("gain",min,max,CPOptions.V_ENUM);
+        IntegerVariable profit = makeIntVar("profit",0,Integer.MAX_VALUE/1000, CPOptions.V_BOUND);
 
         m.addConstraint(knapsackProblem(vars,poid,profit,poids,profits));
 

@@ -24,6 +24,7 @@ package choco.shaker;
 
 import choco.Choco;
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
@@ -121,10 +122,10 @@ public class ExpressionTest {
     public void testExpression1() {
         m  = new CPModel();
         IntegerVariable[] vars = new IntegerVariable[4];
-        vars[0] = Choco.makeIntVar("v1", -2,3, "cp:enum");
-        vars[1] = Choco.makeIntVar("v2", 3,13, "cp:enum");
-        vars[2] = Choco.makeIntVar("v3", -5,-1, "cp:enum");
-        vars[3] = Choco.makeIntVar("v4", 4,8, "cp:enum");
+        vars[0] = Choco.makeIntVar("v1", -2,3, CPOptions.V_ENUM);
+        vars[1] = Choco.makeIntVar("v2", 3,13, CPOptions.V_ENUM);
+        vars[2] = Choco.makeIntVar("v3", -5,-1, CPOptions.V_ENUM);
+        vars[3] = Choco.makeIntVar("v4", 4,8, CPOptions.V_ENUM);
 
         m.addConstraint(
                 leq(
@@ -444,11 +445,11 @@ public class ExpressionTest {
     public void testExpression17() {
         m  = new CPModel();
         IntegerVariable[] v = new IntegerVariable[5];
-        v[0] = Choco.makeIntVar("v1", 1,1, "cp:btree", "cp:decision");
-        v[1] = Choco.makeIntVar("v2", 0,2, "cp:btree", "cp:decision");
-        v[2] = Choco.makeIntVar("v3", 0,1,"cp:decision");
-        v[3] = Choco.makeIntVar("v4", -5,4, "cp:btree", "cp:decision");
-        v[4] = Choco.makeIntVar("v5", -3,5, "cp:btree", "cp:decision");
+        v[0] = Choco.makeIntVar("v1", 1,1, CPOptions.V_BTREE, CPOptions.V_DECISION);
+        v[1] = Choco.makeIntVar("v2", 0,2, CPOptions.V_BTREE, CPOptions.V_DECISION);
+        v[2] = Choco.makeIntVar("v3", 0,1,CPOptions.V_DECISION);
+        v[3] = Choco.makeIntVar("v4", -5,4, CPOptions.V_BTREE, CPOptions.V_DECISION);
+        v[4] = Choco.makeIntVar("v5", -3,5, CPOptions.V_BTREE, CPOptions.V_DECISION);
 
         m.addConstraint(
                         neq(
@@ -470,10 +471,10 @@ public class ExpressionTest {
     public void testExpression18() {
         m  = new CPModel();
         IntegerVariable[] v = new IntegerVariable[4];
-        v[0] = Choco.makeIntVar("v_1", 1,6, "cp:link");
-        v[1] = Choco.makeIntVar("v_2", -5,3, "cp:blist");
-        v[2] = Choco.makeIntVar("v_3", -3,6, "cp:btree");
-        v[3] = Choco.makeIntVar("v_4", 3,9, "cp:link");
+        v[0] = Choco.makeIntVar("v_1", 1,6, CPOptions.V_LINK);
+        v[1] = Choco.makeIntVar("v_2", -5,3, CPOptions.V_BLIST);
+        v[2] = Choco.makeIntVar("v_3", -3,6, CPOptions.V_BTREE);
+        v[3] = Choco.makeIntVar("v_4", 3,9, CPOptions.V_LINK);
         IntegerVariable zero = constant(0);
 
         m.addConstraint(
@@ -523,11 +524,11 @@ public class ExpressionTest {
          */
         m  = new CPModel();
         IntegerVariable[] v = new IntegerVariable[5];
-        v[0] = Choco.makeIntVar("v1", 1,7, "cp:btree");
+        v[0] = Choco.makeIntVar("v1", 1,7, CPOptions.V_BTREE);
         v[1] = Choco.makeIntVar("v2", 0,3);
         v[2] = Choco.makeIntVar("v3", 0,1);
         v[3] = Choco.makeIntVar("v4", -3,6);
-        v[4] = Choco.makeIntVar("v5", -5,4, "cp:btree");
+        v[4] = Choco.makeIntVar("v5", -5,4, CPOptions.V_BTREE);
 
         m.addConstraint(
                 neq(
@@ -571,10 +572,10 @@ public class ExpressionTest {
          */
         m  = new CPModel();
         IntegerVariable[] v = new IntegerVariable[4];
-        v[0] = Choco.makeIntVar("v1", 7,8, "cp:enum");
-        v[1] = Choco.makeIntVar("v2", -3,2, "cp:enum");
+        v[0] = Choco.makeIntVar("v1", 7,8, CPOptions.V_ENUM);
+        v[1] = Choco.makeIntVar("v2", -3,2, CPOptions.V_ENUM);
         v[2] = Choco.makeIntVar("v3", 0,1);
-        v[3] = Choco.makeIntVar("v4", 2,2, "cp:enum");
+        v[3] = Choco.makeIntVar("v4", 2,2, CPOptions.V_ENUM);
 
         m.addConstraint(
                 ifThenElse(
@@ -591,9 +592,9 @@ public class ExpressionTest {
         m  = new CPModel();
         IntegerVariable[] v = new IntegerVariable[5];
         v[0] = Choco.makeBooleanVar("v1");
-        v[1] = Choco.makeIntVar("v2", -2,1, "cp:blist");
-        v[2] = Choco.makeIntVar("v3", 3,9, "cp:blist");
-        v[3] = Choco.makeIntVar("v4", -2,6, "cp:blist");
+        v[1] = Choco.makeIntVar("v2", -2,1, CPOptions.V_BLIST);
+        v[2] = Choco.makeIntVar("v3", 3,9, CPOptions.V_BLIST);
+        v[3] = Choco.makeIntVar("v4", -2,6, CPOptions.V_BLIST);
         v[4] = Choco.makeBooleanVar("v5");
 
         m.addConstraint(
@@ -640,11 +641,11 @@ public class ExpressionTest {
         m  = new CPModel();
         seed = 1104;
         IntegerVariable[] v = new IntegerVariable[5];
-        v[0] = Choco.makeIntVar("v1", 1, 7, "cp:btree");
-        v[1] = Choco.makeIntVar("v2", 0, 3, "cp:enum");
+        v[0] = Choco.makeIntVar("v1", 1, 7, CPOptions.V_BTREE);
+        v[1] = Choco.makeIntVar("v2", 0, 3, CPOptions.V_ENUM);
         v[2] = Choco.makeBooleanVar("b3");
-        v[3] = Choco.makeIntVar("v4", -3, 6, "cp:blist");
-        v[4] = Choco.makeIntVar("v1", -5, 4, "cp:btree");
+        v[3] = Choco.makeIntVar("v4", -3, 6, CPOptions.V_BLIST);
+        v[4] = Choco.makeIntVar("v1", -5, 4, CPOptions.V_BTREE);
 
         m.addConstraint(
                 neq(

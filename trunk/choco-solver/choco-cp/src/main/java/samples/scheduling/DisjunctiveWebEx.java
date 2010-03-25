@@ -22,24 +22,17 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.scheduling;
 
-import static choco.Choco.boolChanneling;
-import static choco.Choco.constantArray;
-import static choco.Choco.disjunctive;
-import static choco.Choco.eq;
-import static choco.Choco.makeBooleanVarArray;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.makeTaskVar;
-import static choco.Choco.sum;
-
-import java.util.Arrays;
-import java.util.logging.Level;
-
-import samples.Examples.PatternExample;
+import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
+import samples.Examples.PatternExample;
+
+import java.util.Arrays;
+import java.util.logging.Level;
 
 
 public class DisjunctiveWebEx extends PatternExample {
@@ -57,7 +50,7 @@ public class DisjunctiveWebEx extends PatternExample {
 	
 	protected TaskVariable[] tasks;
 	
-	protected final static IntegerVariable OBJ = makeIntVar("obj", 0, N, "cp:bound", "cp:objective");
+	protected final static IntegerVariable OBJ = makeIntVar("obj", 0, N, CPOptions.V_BOUND, CPOptions.V_OBJECTIVE);
 
 	protected boolean useAlternativeResource;
 	

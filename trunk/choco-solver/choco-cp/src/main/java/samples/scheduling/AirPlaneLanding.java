@@ -24,6 +24,7 @@ package samples.scheduling;
 
 import choco.Choco;
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -122,16 +123,16 @@ public class AirPlaneLanding {
 		//create resource
 		model.addConstraint( Choco.disjunctive("landingStrip", planes));
 		//create Tardiness
-		tardiness = makeIntVarArray("tardiness", planes.length, 0, horizon,"cp:bound","cp:no_decision");
+		tardiness = makeIntVarArray("tardiness", planes.length, 0, horizon, CPOptions.V_BOUND,CPOptions.V_NO_DECISION);
 		//create objective
 		for (int i = 0; i < planes.length; i++) {
 			// tardiness[i] = start[i] - arrival[i]
 			model.addConstraint(eq(tardiness[i], minus(planes[i].start(),arrivalTimes[i])));
 			//arrival time constraint
 			model.addConstraint(geq(planes[i].start(),arrivalTimes[i]));
-			planes[i].end().addOption("cp:no_decision");
+			planes[i].end().addOption(CPOptions.V_NO_DECISION);
 		}
-		objective = makeIntVar("objective",0, planes.length*horizon,"cp:bound","cp:objective","cp:no_decision");
+		objective = makeIntVar("objective",0, planes.length*horizon,CPOptions.V_BOUND,CPOptions.V_OBJECTIVE,CPOptions.V_NO_DECISION);
 		model.addConstraint(eq(objective,scalar(numberOfPassengers, tardiness)));
 		//model.addConstraint(Scheduling.pert());
 			

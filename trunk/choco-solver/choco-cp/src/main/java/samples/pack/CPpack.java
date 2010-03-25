@@ -23,6 +23,7 @@
 package samples.pack;
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
@@ -147,7 +148,7 @@ public class CPpack {
 
 	protected void setObjective() {
 		IntegerVariable o = modeler.nbNonEmpty;
-		o.addOption("cp:objective");
+		o.addOption(CPOptions.V_OBJECTIVE);
 		model.addConstraints(
 				geq(o,ilb),
 				leq(o,iub-1)

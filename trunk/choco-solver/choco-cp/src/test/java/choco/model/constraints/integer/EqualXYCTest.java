@@ -24,6 +24,7 @@
 package choco.model.constraints.integer;
 
 import static choco.Choco.makeIntVar;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.EqualXYC;
@@ -59,7 +60,7 @@ public class EqualXYCTest{
     x = makeIntVar("X", 1, 5);
     y = makeIntVar("Y", 1, 5);
     z = makeIntVar("Z", 1, 5);
-        m.addVariables("cp:bound", x, y, z);
+        m.addVariables(CPOptions.V_BOUND, x, y, z);
     m.addVariables(x, y, z);
     s.read(m);
     c1 = new EqualXYC(s.getVar(x), s.getVar(y), 2);

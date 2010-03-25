@@ -23,6 +23,7 @@
 package choco.solver.search.set;
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.set.MinDomSet;
@@ -227,11 +228,11 @@ public class SearchTest {
 		SetVariable object = makeSetVar("object", 1, 6);
 		SetVariable a = makeSetVar("a", 1, 6);
 		SetVariable b = makeSetVar("b", 1, 6);
-		m.addVariables("cp:boundCard", object, a, b);
+		m.addVariables(CPOptions.V_BOUND, object, a, b);
 
 		// Fix tthe IntVar to value 1.
 		IntegerVariable object1 = makeIntVar("object1", 1, 1);
-		m.addVariable("cp:bound", object1);
+		m.addVariable(CPOptions.V_BOUND, object1);
 
 		// Make constraints on the sets
 		// setInter(s1, s2, s1) <=> s1 \subseteq s2
@@ -287,11 +288,11 @@ public class SearchTest {
 		SetVariable a = makeSetVar("a", 1, 7);
 		SetVariable b = makeSetVar("b", 1, 7);
 		SetVariable c = makeSetVar("c", 1, 7);
-		m.addVariables("cp:boundCard", object, a, b, c);
+		m.addVariables(CPOptions.V_BOUND, object, a, b, c);
 
 		// Fix tthe IntVar to value 1.
 		IntegerVariable object1 = makeIntVar("object1", 1, 1);
-		m.addVariable("cp:bound", object1);
+		m.addVariable(CPOptions.V_BOUND, object1);
 
 		// a \subseteq object
 		m.addConstraint(isIncluded(a, object));

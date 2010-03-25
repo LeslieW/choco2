@@ -1,12 +1,13 @@
 package choco;
 
-import trace.OADymPPACTracer;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import org.junit.Test;
+import trace.OADymPPACTracer;
 
 public class TraceTest {
 
@@ -39,8 +40,8 @@ public class TraceTest {
 		OADymPPACTracer.init();
 
         Model m = new CPModel();
-        IntegerVariable v = Choco.makeIntVar("v", 1,10, "cp:enum");
-        IntegerVariable w = Choco.makeIntVar("w", 1,10, "cp:bound");
+        IntegerVariable v = Choco.makeIntVar("v", 1,10, CPOptions.V_ENUM);
+        IntegerVariable w = Choco.makeIntVar("w", 1,10, CPOptions.V_BOUND);
         m.addConstraint(Choco.lt(v, w));
         Solver s = new CPSolver();
         s.read(m);

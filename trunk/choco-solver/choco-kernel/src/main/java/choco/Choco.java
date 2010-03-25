@@ -116,21 +116,21 @@ public class Choco{
 	 *                Options of CPModel must be prefix with "cp:".
 	 *                For IntegerVariable, available options are :
 	 *                <ul>
-	 *                <i> cp:enum to force Solver to create enumerated variables (default options if options is empty)</i>
-	 *                <i> cp:bound to force Solver to create bounded variables</i>
-	 *                <i> cp:btree to force Solver to create binary tree variables</i>
-	 *                <i> cp:blist to force Solver to create bipartite list variables</i>
-	 *                <i> cp:link to force Solver to create linked list variables</i>
+	 *                <li><b> cp:enum</b> to force Solver to create enumerated variables (default options if options is empty)</li>
+	 *                <li><b> cp:bound</b> to force Solver to create bounded variables</li>
+	 *                <li><b> cp:btree</b> to force Solver to create binary tree variables</li>
+	 *                <li><b> cp:blist</b> to force Solver to create bipartite list variables</li>
+	 *                <li><b> cp:link</b> to force Solver to create linked list variables</li>
 	 *                </ul>
 	 *                <p/>
 	 *                Options for decisionnal/undecisionnal variables
 	 *                <ul>
-	 *                <i>cp:decision to force variable to be a decisional one</i>
-	 *                <i>cp:no_decision to force variable to be removed from the pool of decisionnal variables</i>
+	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
+	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
 	 *                <ul>
-	 *                <i>cp:objective to define the variable to optimize
+	 *                <li><b>cp:objective</b> to define the variable to optimize</li>
 	 *                </ul>
 	 */
 	public static IntegerVariable makeIntVar(String name, int lowB, int uppB, String... options) {
@@ -156,12 +156,12 @@ public class Choco{
 	 *                For IntegerVariable, available options are :
 	 *                Options for decisionnal/undecisionnal variables
 	 *                <ul>
-	 *                <i>cp:decision to force variable to be a decisional one</i>
-	 *                <i>cp:no_decision to force variable to be removed from the pool of decisionnal variables</i>
+	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
+	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
 	 *                <ul>
-	 *                <i>cp:objective to define the variable to optimize
+	 *                <li><b>cp:objective</b> to define the variable to optimize</li>
 	 *                </ul>
 	 */
 	public static IntegerVariable makeIntVar(String name, String... options) {
@@ -192,21 +192,21 @@ public class Choco{
 	 *                Options of CPModel must be prefix with "cp:".
 	 *                For IntegerVariable, available options are :
 	 *                <ul>
-	 *                <i> cp:enum to force Solver to create enumerated variables (default options if options is empty)</i>
-	 *                <i> cp:bound to force Solver to create bounded variables</i>
-	 *                <i> cp:btree to force Solver to create binary tree variables</i>
-	 *                <i> cp:blist to force Solver to create bipartite list variables</i>
-	 *                <i> cp:link to force Solver to create linked list variables</i>
+	 *                <li><b> cp:enum</b> to force Solver to create enumerated variables (default options if options is empty)</li>
+	 *                <li><b> cp:bound </b> to force Solver to create bounded variables</li>
+	 *                <li><b> cp:btree</b> to force Solver to create binary tree variables</li>
+	 *                <li><b> cp:blist</b> to force Solver to create bipartite list variables</li>
+	 *                <li><b> cp:link</b> to force Solver to create linked list variables</li>
 	 *                </ul>
 	 *                <p/>
 	 *                Options for decisionnal/undecisionnal variables
 	 *                <ul>
-	 *                <i>cp:decision to force variable to be a decisional one</i>
-	 *                <i>cp:no_decision to force variable to be removed from the pool of decisionnal variables</i>
+	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
+	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
 	 *                <ul>
-	 *                <i>cp:objective to define the variable to optimize
+	 *                <li><b>cp:objective</b> to define the variable to optimize</li>
 	 *                </ul>
 	 */
 	public static IntegerVariable makeIntVar(String name, TIntArrayList valuesList, String... options) {
@@ -230,21 +230,21 @@ public class Choco{
 	 *                Options of CPModel must be prefix with "cp:".
 	 *                For IntegerVariable, available options are :
 	 *                <ul>
-	 *                <i> cp:enum to force Solver to create enumerated variables (default options if options is empty)</i>
-	 *                <i> cp:bound to force Solver to create bounded variables</i>
-	 *                <i> cp:btree to force Solver to create binary tree variables</i>
-	 *                <i> cp:blist to force Solver to create bipartite list variables</i>
-	 *                <i> cp:link to force Solver to create linked list variables</i>
+	 *                <li><b> cp:enum</b> to force Solver to create enumerated variables (default options if options is empty)</li>
+	 *                <li><b> cp:bound</b> to force Solver to create bounded variables</li>
+	 *                <li><b> cp:btree</b> to force Solver to create binary tree variables</li>
+	 *                <li><b> cp:blist</b> to force Solver to create bipartite list variables</li>
+	 *                <li><b> cp:link</b> to force Solver to create linked list variables</li>
 	 *                </ul>
 	 *                <p/>
 	 *                Options for decisionnal/undecisionnal variables
 	 *                <ul>
-	 *                <i>cp:decision to force variable to be a decisional one</i>
-	 *                <i>cp:no_decision to force variable to be removed from the pool of decisionnal variables</i>
+	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
+	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
 	 *                <ul>
-	 *                <i>cp:objective to define the variable to optimize
+	 *                <li><b>cp:objective</b> to define the variable to optimize</li>
 	 *                </ul>
 	 */
 	public static IntegerVariable makeIntVar(String name, int[] valuesArray, String... options) {
@@ -264,12 +264,12 @@ public class Choco{
 	 *                For IntegerVariable, available options are :
 	 *                Options for decisionnal/undecisionnal variables
 	 *                <ul>
-	 *                <i>cp:decision to force variable to be a decisional one</i>
-	 *                <i>cp:no_decision to force variable to be removed from the pool of decisionnal variables</i>
+	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
+	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
 	 *                <ul>
-	 *                <i>cp:objective to define the variable to optimize
+	 *                <li><b>cp:objective</b> to define the variable to optimize</li>
 	 *                </ul>
 	 */
 	public static IntegerVariable makeBooleanVar(String name, String... options) {
@@ -293,12 +293,12 @@ public class Choco{
 	 *                For IntegerVariable, available options are :
 	 *                Options for decisionnal/undecisionnal variables
 	 *                <ul>
-	 *                <i>cp:decision to force variable to be a decisional one</i>
-	 *                <i>cp:no_decision to force variable to be removed from the pool of decisionnal variables</i>
+	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
+	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
 	 *                <ul>
-	 *                <i>cp:objective to define the variable to optimize
+	 *                <li><b>cp:objective</b> to define the variable to optimize</li>
 	 *                </ul>
 	 */
 	public static IntegerVariable[] makeBooleanVarArray(String name, int dim, String... options) {
@@ -322,21 +322,21 @@ public class Choco{
 	 *                Options of CPModel must be prefix with "cp:".
 	 *                For IntegerVariable, available options are :
 	 *                <ul>
-	 *                <i> cp:enum to force Solver to create enumerated variables (default options if options is empty)</i>
-	 *                <i> cp:bound to force Solver to create bounded variables</i>
-	 *                <i> cp:btree to force Solver to create binary tree variables</i>
-	 *                <i> cp:blist to force Solver to create bipartite list variables</i>
-	 *                <i> cp:link to force Solver to create linked list variables</i>
+	 *                <li><b> cp:enum</b> to force Solver to create enumerated variables (default options if options is empty)</li>
+	 *                <li><b> cp:bound</b> to force Solver to create bounded variables</li>
+	 *                <li><b> cp:btree</b> to force Solver to create binary tree variables</li>
+	 *                <li><b> cp:blist</b> to force Solver to create bipartite list variables</li>
+	 *                <li><b> cp:link</b> to force Solver to create linked list variables</li>
 	 *                </ul>
 	 *                <p/>
 	 *                Options for decisionnal/undecisionnal variables
 	 *                <ul>
-	 *                <i>cp:decision to force variable to be a decisional one</i>
-	 *                <i>cp:no_decision to force variable to be removed from the pool of decisionnal variables</i>
+	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
+	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
 	 *                <ul>
-	 *                <i>cp:objective to define the variable to optimize
+	 *                <li><b>cp:objective</b> to define the variable to optimize</li>
 	 *                </ul>
 	 */
 	public static IntegerVariable[] makeIntVarArray(String name, int dim, int lowB, int uppB, String... options) {
@@ -362,12 +362,12 @@ public class Choco{
 	 *                For IntegerVariable, available options are :
 	 *                Options for decisionnal/undecisionnal variables
 	 *                <ul>
-	 *                <i>cp:decision to force variable to be a decisional one</i>
-	 *                <i>cp:no_decision to force variable to be removed from the pool of decisionnal variables</i>
+	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
+	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
 	 *                <ul>
-	 *                <i>cp:objective to define the variable to optimize
+	 *                <li><b>cp:objective</b> to define the variable to optimize</li>
 	 *                </ul>
 	 */
 	public static IntegerVariable[] makeIntVarArray(String name, int dim, String... options) {
@@ -387,21 +387,21 @@ public class Choco{
 	 *                Options of CPModel must be prefix with "cp:".
 	 *                For IntegerVariable, available options are :
 	 *                <ul>
-	 *                <i> cp:enum to force Solver to create enumerated variables (default options if options is empty)</i>
-	 *                <i> cp:bound to force Solver to create bounded variables</i>
-	 *                <i> cp:btree to force Solver to create binary tree variables</i>
-	 *                <i> cp:blist to force Solver to create bipartite list variables</i>
-	 *                <i> cp:link to force Solver to create linked list variables</i>
+	 *                <li><b> cp:enum</b> to force Solver to create enumerated variables (default options if options is empty)</li>
+	 *                <li><b> cp:bound</b> to force Solver to create bounded variables</li>
+	 *                <li><b> cp:btree</b> to force Solver to create binary tree variables</li>
+	 *                <li><b> cp:blist</b> to force Solver to create bipartite list variables</li>
+	 *                <li><b> cp:link</b> to force Solver to create linked list variables</li>
 	 *                </ul>
 	 *                <p/>
 	 *                Options for decisionnal/undecisionnal variables
 	 *                <ul>
-	 *                <i>cp:decision to force variable to be a decisional one</i>
-	 *                <i>cp:no_decision to force variable to be removed from the pool of decisionnal variables</i>
+	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
+	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
 	 *                <ul>
-	 *                <i>cp:objective to define the variable to optimize
+	 *                <li><b>cp:objective</b> to define the variable to optimize</li>
 	 *                </ul>
 	 */
 	public static IntegerVariable[] makeIntVarArray(String name, int dim, int[] valuesArray, String... options) {
@@ -428,21 +428,21 @@ public class Choco{
 	 *                Options of CPModel must be prefix with "cp:".
 	 *                For IntegerVariable, available options are :
 	 *                <ul>
-	 *                <i> cp:enum to force Solver to create enumerated variables (default options if options is empty)</i>
-	 *                <i> cp:bound to force Solver to create bounded variables</i>
-	 *                <i> cp:btree to force Solver to create binary tree variables</i>
-	 *                <i> cp:blist to force Solver to create bipartite list variables</i>
-	 *                <i> cp:link to force Solver to create linked list variables</i>
+	 *                <li><b> cp:enum</b> to force Solver to create enumerated variables (default options if options is empty)</li>
+	 *                <li><b> cp:bound</b> to force Solver to create bounded variables</li>
+	 *                <li><b> cp:btree</b> to force Solver to create binary tree variables</li>
+	 *                <li><b> cp:blist</b> to force Solver to create bipartite list variables</li>
+	 *                <li><b> cp:link</b> to force Solver to create linked list variables</li>
 	 *                </ul>
 	 *                <p/>
 	 *                Options for decisionnal/undecisionnal variables
 	 *                <ul>
-	 *                <i>cp:decision to force variable to be a decisional one</i>
-	 *                <i>cp:no_decision to force variable to be removed from the pool of decisionnal variables</i>
+	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
+	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
 	 *                <ul>
-	 *                <i>cp:objective to define the variable to optimize
+	 *                <li><b>cp:objective</b> to define the variable to optimize</li>
 	 *                </ul>
 	 */
 	public static IntegerVariable[][] makeIntVarArray(String name, int dim1, int dim2, int lowB, int uppB, String... options) {
@@ -469,12 +469,12 @@ public class Choco{
 	 *                For IntegerVariable, available options are :
 	 *                Options for decisionnal/undecisionnal variables
 	 *                <ul>
-	 *                <i>cp:decision to force variable to be a decisional one</i>
-	 *                <i>cp:no_decision to force variable to be removed from the pool of decisionnal variables</i>
+	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
+	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
 	 *                <ul>
-	 *                <i>cp:objective to define the variable to optimize
+	 *                <li><b>cp:objective</b> to define the variable to optimize</li>
 	 *                </ul>
 	 */
 	public static IntegerVariable[][] makeIntVarArray(String name, int dim1, int dim2, String... options) {
@@ -495,21 +495,21 @@ public class Choco{
 	 *                Options of CPModel must be prefix with "cp:".
 	 *                For IntegerVariable, available options are :
 	 *                <ul>
-	 *                <i> cp:enum to force Solver to create enumerated variables (default options if options is empty)</i>
-	 *                <i> cp:bound to force Solver to create bounded variables</i>
-	 *                <i> cp:btree to force Solver to create binary tree variables</i>
-	 *                <i> cp:blist to force Solver to create bipartite list variables</i>
-	 *                <i> cp:link to force Solver to create linked list variables</i>
+	 *                <li><b> cp:enum</b> to force Solver to create enumerated variables (default options if options is empty)</li>
+	 *                <li><b> cp:bound</b> to force Solver to create bounded variables</li>
+	 *                <li><b> cp:btree</b> to force Solver to create binary tree variables</li>
+	 *                <li><b> cp:blist</b> to force Solver to create bipartite list variables</li>
+	 *                <li><b> cp:link</b> to force Solver to create linked list variables</li>
 	 *                </ul>
 	 *                <p/>
 	 *                Options for decisionnal/undecisionnal variables
 	 *                <ul>
-	 *                <i>cp:decision to force variable to be a decisional one</i>
-	 *                <i>cp:no_decision to force variable to be removed from the pool of decisionnal variables</i>
+	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
+	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
 	 *                <ul>
-	 *                <i>cp:objective to define the variable to optimize
+	 *                <li><b>cp:objective</b> to define the variable to optimize</li>
 	 *                </ul>
 	 */
 	public static IntegerVariable[][] makeIntVarArray(String name, int dim1, int dim2, int[] valuesArray, String... options) {
@@ -538,18 +538,18 @@ public class Choco{
 	 *                Options of CPModel must be prefix with "cp:".
 	 *                For SetVariable, available options are :
 	 *                <ul>
-	 *                <i> cp:enum to force Solver to create set variables with enumerated caridinality (default options if options is empty)</i>
-	 *                <i> cp:bound to force Solver to create set variables with bounded cardinality</i>
+	 *                <li><b> cp:enum</b> to force Solver to create set variables with enumerated caridinality (default options if options is empty)</li>
+	 *                <li><b> cp:bound </b>to force Solver to create set variables with bounded cardinality</li>
 	 *                </ul>
 	 *                <p/>
 	 *                Options for decisionnal/undecisionnal variables
 	 *                <ul>
-	 *                <i>cp:decision to force variable to be a decisional one</i>
-	 *                <i>cp:no_decision to force variable to be removed from the pool of decisionnal variables</i>
+	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
+	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
 	 *                <ul>
-	 *                <i>cp:objective to define the variable to optimize
+	 *                <li><b>cp:objective</b> to define the variable to optimize</li>
 	 *                </ul>
 	 */
 	public static SetVariable makeSetVar(String name, int lowB, int uppB, String... options) {
@@ -574,18 +574,18 @@ public class Choco{
 	 *                Options of CPModel must be prefix with "cp:".
 	 *                For SetVariable, available options are :
 	 *                <ul>
-	 *                <i> cp:enum to force Solver to create set variables with enumerated caridinality (default options if options is empty)</i>
-	 *                <i> cp:bound to force Solver to create set variables with bounded cardinality</i>
+	 *                <li><b> cp:enum</b> to force Solver to create set variables with enumerated caridinality (default options if options is empty)</li>
+	 *                <li><b> cp:bound</b> to force Solver to create set variables with bounded cardinality</li>
 	 *                </ul>
 	 *                <p/>
 	 *                Options for decisionnal/undecisionnal variables
 	 *                <ul>
-	 *                <i>cp:decision to force variable to be a decisional one</i>
-	 *                <i>cp:no_decision to force variable to be removed from the pool of decisionnal variables</i>
+	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
+	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
 	 *                <ul>
-	 *                <i>cp:objective to define the variable to optimize
+	 *                <li><b>cp:objective</b> to define the variable to optimize</li>
 	 *                </ul>
 	 */
 	public static SetVariable makeSetVar(String name, int[] valuesArray, String... options) {
@@ -616,18 +616,18 @@ public class Choco{
 	 *                Options of CPModel must be prefix with "cp:".
 	 *                For SetVariable, available options are :
 	 *                <ul>
-	 *                <i> cp:enum to force Solver to create set variables with enumerated caridinality (default options if options is empty)</i>
-	 *                <i> cp:bound to force Solver to create set variables with bounded cardinality</i>
+	 *                <li><b> cp:enum</b> to force Solver to create set variables with enumerated caridinality (default options if options is empty)</li>
+	 *                <li><b> cp:bound</b> to force Solver to create set variables with bounded cardinality</li>
 	 *                </ul>
 	 *                <p/>
 	 *                Options for decisionnal/undecisionnal variables
 	 *                <ul>
-	 *                <i>cp:decision to force variable to be a decisional one</i>
-	 *                <i>cp:no_decision to force variable to be removed from the pool of decisionnal variables</i>
+	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
+	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
 	 *                <ul>
-	 *                <i>cp:objective to define the variable to optimize
+	 *                <li><b>cp:objective</b> to define the variable to optimize</li>
 	 *                </ul>
 	 */
 	public static SetVariable[] makeSetVarArray(String name, int dim, int lowB, int uppB, String... options) {
@@ -652,12 +652,12 @@ public class Choco{
 	 *                For RealVariable, available options are :
 	 *                Options for decisionnal/undecisionnal variables
 	 *                <ul>
-	 *                <i>cp:decision to force variable to be a decisional one</i>
-	 *                <i>cp:no_decision to force variable to be removed from the pool of decisionnal variables</i>
+	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
+	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
 	 *                <ul>
-	 *                <i>cp:objective to define the variable to optimize
+	 *                <li><b>cp:objective</b> to define the variable to optimize</li>
 	 *                </ul>
 	 */
 	public static RealVariable makeRealVar(String name, double lowB, double uppB, String... options) {
@@ -1865,7 +1865,7 @@ public class Choco{
 	 * @param min Variable to represent the maximum among the sublist
 	 * @return Constraint
 	 */
-	public final static Constraint min(SetVariable svar,IntegerVariable[] vars, IntegerVariable min) {
+	public static Constraint min(SetVariable svar,IntegerVariable[] vars, IntegerVariable min) {
 		return min(svar, vars, min, null);
 	}
 	
@@ -1910,7 +1910,7 @@ public class Choco{
 	 * @param max Variable to represent the maximum among the sublist
 	 * @return Constraint
 	 */
-	public static final Constraint max(SetVariable svar,IntegerVariable[] vars, IntegerVariable max) {
+	public static Constraint max(SetVariable svar,IntegerVariable[] vars, IntegerVariable max) {
 		return max(svar, vars, max, null);
 	}
 	
@@ -2258,12 +2258,12 @@ public class Choco{
 	 * v1 != v2, v1 != v3, v2 != v3 ... For each (i,j), v_i != v_j
 	 * The options can contain the folowing options :
 	 * <ul>
-	 * <li> cp:ac for Regin implementation
-	 * <li> cp:bc for bound all different using the propagator of
+	 * <li><b> cp:ac for Regin implementation
+	 * <li><b> cp:bc for bound all different using the propagator of
 	 * A. Lopez-Ortiz, C.-G. Quimper, J. Tromp, and P. van Beek.
 	 * A fast and simple algorithm for bounds consistency of the alldifferent
 	 * constraint. IJCAI-2003.
-	 * <li> cp:clique for propagating the clique of differences
+	 * <li><b> cp:clique for propagating the clique of differences
 	 * </ul>
 	 * @param options options of the constraint
 	 * @param vars list of variables
@@ -2343,8 +2343,8 @@ public class Choco{
 	 * <p/>
 	 * Available options are:
 	 * <ul>
-	 * <i>cp:ac for Regin impelmentation</i>
-	 * <i>cp:bc for bound consistency</i>
+	 * <li><b>cp:ac for Regin impelmentation</li>
+	 * <li><b>cp:bc for bound consistency</li>
 	 * </ul>
 	 * @param options options of the constraint
 	 * @param vars list of variables
@@ -2382,8 +2382,8 @@ public class Choco{
 	 * <p/>
 	 * Available options are:
 	 * <ul>
-	 * <i>cp:ac for Regin impelmentation</i>
-	 * <i>cp:bc for bound consistency</i>
+	 * <li><b>cp:ac for Regin impelmentation</li>
+	 * <li><b>cp:bc for bound consistency</li>
 	 * </ul>
 	 * @param vars list of variables
 	 * @param low array of lower occurence
@@ -2417,8 +2417,8 @@ public class Choco{
 	 * <p/>
 	 * Available options are:
 	 * <ul>
-	 * <i>cp:ac for Regin impelmentation</i>
-	 * <i>cp:bc for bound consistency</i>
+	 * <li><b>cp:ac</b> for Regin impelmentation</li>
+	 * <li><b>cp:bc</b> for bound consistency</li>
 	 * </ul>
 	 * @param options options of the constraint
 	 * @param vars list of variables
@@ -2516,9 +2516,9 @@ public class Choco{
      * In addition, NVAL is the number of distinct values taken by the variables of the collection VARIABLES.
      * @param option  Available options are:
 	 * <ul>
-	 * <i>cp:atleast</i>: filter on lower bound only<br/>
-     * <i>cp:atmost</i>:  filter on upper bound only<br/>
-     * <i>cp:both</i>: (default value) filter on lower bound and upper bound<br/>
+	 * <li><b>cp:atleast</b>: filter on lower bound only</li>
+     * <li><b>cp:atmost</b>:  filter on upper bound only</li>
+     * <li><b>cp:both</b>: (default value) filter on lower bound and upper bound</li>
      * </ul>
      * @param nval number of distinct values
      * @param vars collection of variables
@@ -2820,8 +2820,8 @@ public class Choco{
 	/**
 	 * 
 	 * <ul>
-	 * <li> direction = 1 => v1 + dur1 <= v2 (T1 << T2);
-	 * <li> direction = 0 => v2 + dur2 <= v1 (T2 << T1);
+	 * <li><b> direction = 1 => v1 + dur1 <= v2 (T1 << T2);
+	 * <li><b> direction = 0 => v2 + dur2 <= v1 (T2 << T1);
 	 * </ul>  
 	 */
 	public static Constraint precedenceDisjoint(IntegerVariable v1, int dur1, IntegerVariable v2, int dur2, IntegerVariable bool) {
@@ -2853,8 +2853,8 @@ public class Choco{
 	/**
 	 * precedence disjoint with setup times:
 	 * <ul>
-	 * <li> direction = 1 => t1.end() + forwardSetup <= t2.start() (T1 << T2);
-	 * <li> direction = 0 => t2.end() + backwardSetup <= t1.start() (T2 << T1);
+	 * <li><b> direction = 1 => t1.end() + forwardSetup <= t2.start() (T1 << T2);
+	 * <li><b> direction = 0 => t2.end() + backwardSetup <= t1.start() (T2 << T1);
 	 * </ul>  
 	 * @param t1 a task
 	 * @param t2 the other task
@@ -2885,8 +2885,8 @@ public class Choco{
 	/**
 	 * represents a reidied precedence: 
 	 * <ul>
-	 * <li> b = 1 => x1 + k1 <= x2
-	 * <li> b = 0 => x1 + k1 > x2
+	 * <li><b> b = 1 => x1 + k1 <= x2
+	 * <li><b> b = 0 => x1 + k1 > x2
 	 * </ul>  
 	 * @param x1 the first integer variable.
 	 * @param k1 the duration of the precedence.
@@ -2901,8 +2901,8 @@ public class Choco{
 	/**
 	 * represents a reidied precedence with setup times between a pair of tasks: 
 	 * <ul>
-	 * <li> b = 1 => e1 + k1 <= s2
-	 * <li> b = 0 => e1 + k1 > s2
+	 * <li><b> b = 1 => e1 + k1 <= s2
+	 * <li><b> b = 0 => e1 + k1 > s2
 	 * </ul>  
 	 */
 	public static Constraint precedenceReified(TaskVariable t1, int k1, TaskVariable t2, IntegerVariable b) {
@@ -2912,8 +2912,8 @@ public class Choco{
 	/**
 	 * represents an implied precedence: 
 	 * <ul>
-	 * <li> b = 1 => x1 + k1 <= x2
-	 * <li> b = 0 => TRUE
+	 * <li><b> b = 1 => x1 + k1 <= x2
+	 * <li><b> b = 0 => TRUE
 	 * </ul>  
 	 */
 	public static Constraint precedenceImplied(IntegerVariable x1, int k1, IntegerVariable x2, IntegerVariable b) {
@@ -2923,8 +2923,8 @@ public class Choco{
 	/**
 	 * represents a reidied precedence with setup times between a pair of tasks: 
 	 * <ul>
-	 * <li> b = 1 => e1 + k1 <= s2
-	 * <li> b = 0 => TRUE;
+	 * <li><b> b = 1 => e1 + k1 <= s2
+	 * <li><b> b = 0 => TRUE;
 	 * </ul>  
 	 */
 	public static Constraint precedenceImplied(TaskVariable t1, int k1, TaskVariable t2, IntegerVariable b) {

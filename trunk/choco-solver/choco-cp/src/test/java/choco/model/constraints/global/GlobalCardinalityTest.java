@@ -24,6 +24,7 @@ package choco.model.constraints.global;
 
 import choco.Choco;
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.matching.GlobalCardinality;
@@ -98,9 +99,9 @@ public class GlobalCardinalityTest {
 		IntegerVariable v4 = makeIntVar("v4", 2, 3);
 		IntegerVariable v5 = makeIntVar("v5", 1, 4);
 		IntegerVariable v6 = makeIntVar("v6", 3, 4);
-        pb.addVariables("cp:bound", v1, v2, v3, v4, v5, v6);
+        pb.addVariables(CPOptions.V_BOUND, v1, v2, v3, v4, v5, v6);
 
-        pb.addConstraint("cp:bc", globalCardinality(new IntegerVariable[]{v1, v2, v3, v4, v5, v6},
+        pb.addConstraint(CPOptions.C_GCC_BC, globalCardinality(new IntegerVariable[]{v1, v2, v3, v4, v5, v6},
 				new int[]{1, 1, 1, 2},
 				new int[]{3, 3, 3, 3}, 1));
 		CPSolver s = new CPSolver();
@@ -126,9 +127,9 @@ public class GlobalCardinalityTest {
 		IntegerVariable v4 = makeIntVar("v4", 2, 3);
 		IntegerVariable v5 = makeIntVar("v5", 2, 4);
 		IntegerVariable v6 = makeIntVar("v6", 3, 4);
-        pb.addVariables("cp:bound", v1, v2, v3, v4, v5, v6);
+        pb.addVariables(CPOptions.V_BOUND, v1, v2, v3, v4, v5, v6);
 
-        pb.addConstraint("cp:bc", globalCardinality(new IntegerVariable[]{v1, v2, v3, v4, v5, v6},
+        pb.addConstraint(CPOptions.C_GCC_BC, globalCardinality(new IntegerVariable[]{v1, v2, v3, v4, v5, v6},
 				new int[]{3, 1, 1, 1},
 				new int[]{3, 5, 5, 5},1));
 		CPSolver s = new CPSolver();
@@ -153,9 +154,9 @@ public class GlobalCardinalityTest {
 		IntegerVariable v4 = makeIntVar("v4", 1, 3);
 		IntegerVariable v5 = makeIntVar("v5", 1, 3);
 		IntegerVariable v6 = makeIntVar("v6", 1, 3);
-        pb.addVariables("cp:bound", v1, v2, v3, v4, v5, v6);
+        pb.addVariables(CPOptions.V_BOUND, v1, v2, v3, v4, v5, v6);
 
-        pb.addConstraint("cp:bc", globalCardinality(new IntegerVariable[]{v1, v2, v3, v4, v5, v6},
+        pb.addConstraint(CPOptions.C_GCC_BC, globalCardinality(new IntegerVariable[]{v1, v2, v3, v4, v5, v6},
 				new int[]{1, 1, 1, 3},
 				new int[]{5, 5, 5, 5},1));
 		CPSolver s = new CPSolver();
@@ -179,9 +180,9 @@ public class GlobalCardinalityTest {
         IntegerVariable v4 = makeIntVar("v4", 1, 4);
 		IntegerVariable v5 = makeIntVar("v5", 1, 4);
 		IntegerVariable v6 = makeIntVar("v6", 1, 4);
-        pb.addVariables("cp:enum", v1, v2, v3, v4, v5, v6);
+        pb.addVariables(CPOptions.V_ENUM, v1, v2, v3, v4, v5, v6);
 
-		pb.addConstraint("cp:bc", globalCardinality(new IntegerVariable[]{v1, v2, v3, v4, v5, v6},
+		pb.addConstraint(CPOptions.C_GCC_BC, globalCardinality(new IntegerVariable[]{v1, v2, v3, v4, v5, v6},
 				new int[]{1, 3, 1, 1},
 				new int[]{5, 3, 5, 5},1));
 		CPSolver s = new CPSolver();
@@ -206,7 +207,7 @@ public class GlobalCardinalityTest {
 		IntegerVariable v1 = makeIntVar("v1", 1, 4);
 		IntegerVariable v2 = makeIntVar("v2", 1, 4);
 		IntegerVariable v3 = makeIntVar("v3", 1, 4);
-        pb.addVariables("cp:bound", v1, v2, v3);
+        pb.addVariables(CPOptions.V_BOUND, v1, v2, v3);
         IntegerVariable v4 = makeIntVar("v4", 1, 3);
 		IntegerVariable v5 = makeIntVar("v5", 1, 3);
 		IntegerVariable v6 = makeIntVar("v6", 1, 3);
@@ -214,7 +215,7 @@ public class GlobalCardinalityTest {
       Constraint c = globalCardinality(new IntegerVariable[]{v1, v2, v3, v4, v5, v6},
 				new int[]{1, 3, 1, 1},
 				new int[]{5, 3, 5, 5},1);
-        pb.addConstraint("cp:bc",c);
+        pb.addConstraint(CPOptions.C_GCC_BC,c);
 		CPSolver s = new CPSolver();
 		s.read(pb);
 		try {
@@ -238,7 +239,7 @@ public class GlobalCardinalityTest {
 		}
 		int[] LB2 = {0, 1, 1, 0, 3};
 		int[] UB2 = {0, 1, 1, 0, 3};
-		pb.addConstraint("cp:bc", globalCardinality(vars, LB2, UB2,1));
+		pb.addConstraint(CPOptions.C_GCC_BC, globalCardinality(vars, LB2, UB2,1));
 		//pb.addConstraint(pb.globalCardinality(vars,1,n,LB2,UB2));
 		CPSolver s = new CPSolver();
 		s.read(pb);
@@ -270,7 +271,7 @@ public class GlobalCardinalityTest {
 		}
 		int[] LB2 = {0, 0, 2};
 		int[] UB2 = {2, 2, 3};
-		pb.addConstraint("cp:bc", globalCardinality(vars, LB2, UB2,1));
+		pb.addConstraint(CPOptions.C_GCC_BC, globalCardinality(vars, LB2, UB2,1));
 		//pb.addConstraint(pb.globalCardinality(vars,1,3,LB2,UB2));
 		CPSolver s = new CPSolver();
 		s.read(pb);
@@ -304,7 +305,7 @@ public class GlobalCardinalityTest {
 		int[] UB = {5, 2, 2, 9, 10, 9, 5, 1, 5, 5};
 		LOGGER.info("premiere gcc :");
 		if (bound) {
-			pb.addConstraint("cp:bc", globalCardinality(vars, LB, UB, 1));
+			pb.addConstraint(CPOptions.C_GCC_BC, globalCardinality(vars, LB, UB, 1));
 		} else {
 			pb.addConstraint(globalCardinality(vars, LB, UB, 0));
 		}
@@ -313,7 +314,7 @@ public class GlobalCardinalityTest {
 		int[] UB2 = {10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
 		LOGGER.info("deuxieme gcc :");
 		if (bound) {
-			pb.addConstraint("cp:bc",globalCardinality(vars, LB2, UB2,1));
+			pb.addConstraint(CPOptions.C_GCC_BC,globalCardinality(vars, LB2, UB2,1));
 		} else {
 			pb.addConstraint(globalCardinality(vars, LB2, UB2,1));
 		}
@@ -407,8 +408,8 @@ public class GlobalCardinalityTest {
 				up[x] = 1;
 			}
 			if (bound) {
-				myPb.addConstraint("cp:bc", globalCardinality(row, low, up,1));
-				myPb.addConstraint("cp:bc", globalCardinality(col, low, up,1));
+				myPb.addConstraint(CPOptions.C_GCC_BC, globalCardinality(row, low, up,1));
+				myPb.addConstraint(CPOptions.C_GCC_BC, globalCardinality(col, low, up,1));
 			} else {
 				myPb.addConstraint(globalCardinality(row, low, up,1));
 				myPb.addConstraint(globalCardinality(col, low, up,1));
@@ -523,7 +524,7 @@ public class GlobalCardinalityTest {
             if (!bound) {
                 pb.addConstraint(gcc);
 			} else {
-				pb.addConstraint("cp:bc", gcc);
+				pb.addConstraint(CPOptions.C_GCC_BC, gcc);
 			}
 			s.read(pb);
 			LOGGER.info(StringUtils.pretty(s.getVar(vars)));
@@ -675,14 +676,14 @@ public class GlobalCardinalityTest {
 		do {
 			CPModel pb2 = new CPModel();
 			IntegerVariable[] vs = makeIntVarArray("c", n, 1, n);
-            pb2.addVariables("cp:bound", vs);
+            pb2.addVariables(CPOptions.V_BOUND, vs);
             int[] min = new int[n];
 			int[] max = new int[n];
 			for (int i = 0; i < max.length; i++) {
 				min[i] = s.getVar(card[i]).getVal();
 				max[i] = s.getVar(card[i]).getVal();
 			}
-			pb2.addConstraint("cp:bc", globalCardinality(vs, min, max,1));
+			pb2.addConstraint(CPOptions.C_GCC_BC, globalCardinality(vs, min, max,1));
 			CPSolver s2 = new CPSolver();
 			s2.read(pb2);
 			s2.solveAll();
@@ -727,8 +728,8 @@ public class GlobalCardinalityTest {
 			CPModel pb = new CPModel();
 			IntegerVariable[] vs = makeIntVarArray("v", n, 1, n);
 			IntegerVariable[] card = makeIntVarArray("c", n, 0, n);
-            pb.addVariables("cp:bound", vs);
-            pb.addVariables("cp:bound", card);
+            pb.addVariables(CPOptions.V_BOUND, vs);
+            pb.addVariables(CPOptions.V_BOUND, card);
             //pb.addConstraint(pb.eq(pb.sum(card), n));
 			pb.addConstraint(globalCardinality(vs, card,1));
 			CPSolver s = new CPSolver();
@@ -749,7 +750,7 @@ public class GlobalCardinalityTest {
 			CPModel pb = new CPModel();
 			IntegerVariable[] vs = makeIntVarArray("v", n, 1, n);
 			IntegerVariable[] card = makeIntVarArray("c", n, 0, n);
-            pb.addVariables("cp:bound", card);
+            pb.addVariables(CPOptions.V_BOUND, card);
             //pb.addConstraint(pb.eq(pb.sum(card), n));
 			pb.addConstraint(globalCardinality(vs, card,1));
 			CPSolver s = new CPSolver();
@@ -770,7 +771,7 @@ public class GlobalCardinalityTest {
 			CPModel pb = new CPModel();
 			IntegerVariable[] vs = makeIntVarArray("v", n, 4, n);
 			IntegerVariable[] card = makeIntVarArray("c", n - 4 + 1, 1, 2);
-            pb.addVariables("cp:bound", card);
+            pb.addVariables(CPOptions.V_BOUND, card);
             //pb.addConstraint(pb.eq(pb.sum(card), n));
 			pb.addConstraint(globalCardinality(vs, card,4));
 			//pb.addConstraint(new GlobalCardinalityVar(vs, 4, n, card));
@@ -812,7 +813,7 @@ public class GlobalCardinalityTest {
 		int i, j;
 		int nbColors = n - 1;
 		IntegerVariable[] vars = makeIntVarArray("vars", size, 0, nbColors - 1);
-        pb.addVariables("cp:enum",vars);
+        pb.addVariables(CPOptions.V_ENUM,vars);
 		IntegerVariable[][] cliques = new IntegerVariable[n][n - 1];
 		for (i = 0; i < n; i++) {
 			for (j = 0; j < n - 1; j++) {
@@ -822,7 +823,7 @@ public class GlobalCardinalityTest {
 			}
 			//Constraint constraintAllDiff = boundAllDifferent(true, cliques[i]);
       Constraint constraintAllDiff = allDifferent(cliques[i]);
-      pb.addConstraint("cp:bc", constraintAllDiff);
+      pb.addConstraint(CPOptions.C_GCC_BC, constraintAllDiff);
 		}
 
 		// Redundant Constraint: every color is used at least n/2 times
@@ -840,7 +841,7 @@ public class GlobalCardinalityTest {
 				//up[l] = nbColors - 1;
 				up[l] = 16;
 			}
-			pb.addConstraint("cp:bc", globalCardinality(vars, low, up, 0));
+			pb.addConstraint(CPOptions.C_GCC_BC, globalCardinality(vars, low, up, 0));
 		}
 
 		CPSolver s = new CPSolver();
@@ -956,7 +957,7 @@ public class GlobalCardinalityTest {
 
 
         // Each activity has a min and max request manager
-        m.addConstraint(globalCardinality("cp:ac", guys, low, upp, 0));
+        m.addConstraint(globalCardinality(CPOptions.C_GCC_AC, guys, low, upp, 0));
 
 
         Solver s = new CPSolver();
@@ -982,7 +983,7 @@ public class GlobalCardinalityTest {
         int[] upp = new int[]{0, 2};
         IntegerVariable[] var = makeIntVarArray("v", 1, 0, 1);
         try{
-            m.addConstraint(globalCardinality("cp:ac", var, low, upp, 0));
+            m.addConstraint(globalCardinality(CPOptions.C_GCC_AC, var, low, upp, 0));
             Assert.fail("Not enough minimum values");
         }catch (ModelException e){
             //nothing to do
@@ -996,7 +997,7 @@ public class GlobalCardinalityTest {
         int[] upp = new int[]{0, 2};
         IntegerVariable[] var = makeIntVarArray("v", 1, 0, 1);
         try{
-            m.addConstraint(globalCardinality("cp:ac", var, low, upp, 0));
+            m.addConstraint(globalCardinality(CPOptions.C_GCC_AC, var, low, upp, 0));
             Assert.fail("Not enough minimum values");
         }catch (ModelException e){
             //nothing to do

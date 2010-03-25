@@ -24,6 +24,7 @@ package choco.cp.solver.preprocessor;
 
 import choco.Choco;
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
@@ -357,7 +358,7 @@ public class PreProcessCPSolver extends CPSolver {
             while (it.hasNext()) {
                 IntegerVariable[] cl = it.next();
                 if (cl.length > 2) {
-                    m.addConstraint("cp:bc", allDifferent(cl));
+                    m.addConstraint(CPOptions.C_ALLDIFFERENT_BC, allDifferent(cl));
                     symb.setMaxClique(cl);
                     it.remove();
                 } else m.addConstraint(Choco.neq(cl[0],cl[1]));
@@ -637,33 +638,30 @@ public class PreProcessCPSolver extends CPSolver {
                 }
             }
             HashSet<String> tOptions = new HashSet<String>();
-            if(v.getOptions().contains("cp:decision")
-                    || options.contains("cp:decision")){
-                tOptions.add("cp:decision");
+            if(v.getOptions().contains(CPOptions.V_DECISION)
+                    || options.contains(CPOptions.V_DECISION)){
+                tOptions.add(CPOptions.V_DECISION);
             }
-            if(v.getOptions().contains("cp:objective")
-                    || options.contains("cp:objective")){
-                tOptions.add("cp:objective");
+            if(v.getOptions().contains(CPOptions.V_OBJECTIVE)
+                    || options.contains(CPOptions.V_OBJECTIVE)){
+                tOptions.add(CPOptions.V_OBJECTIVE);
             }
             // Type copy
-            if(v.getOptions().contains("cp:binary")
-                    || options.contains("cp:binary")){
-                tOptions.add("cp:binary");
-            }else if(v.getOptions().contains("cp:btree")
-                    || options.contains("cp:btree")){
-                tOptions.add("cp:btree");
-            }else if(v.getOptions().contains("cp:enum")
-                    || options.contains("cp:enum")){
-                tOptions.add("cp:enum");
-            }else if(v.getOptions().contains("cp:blist")
-                    || options.contains("cp:blist")){
-                tOptions.add("cp:blist");
-            }else if(v.getOptions().contains("cp:link")
-                    || options.contains("cp:link")){
-                tOptions.add("cp:link");
-            }else if(v.getOptions().contains("cp:bound")
-                    || options.contains("cp:bound")){
-                tOptions.add("cp:bound");
+            if(v.getOptions().contains(CPOptions.V_BTREE)
+                    || options.contains(CPOptions.V_BTREE)){
+                tOptions.add(CPOptions.V_BTREE);
+            }else if(v.getOptions().contains(CPOptions.V_ENUM)
+                    || options.contains(CPOptions.V_ENUM)){
+                tOptions.add(CPOptions.V_ENUM);
+            }else if(v.getOptions().contains(CPOptions.V_BLIST)
+                    || options.contains(CPOptions.V_BLIST)){
+                tOptions.add(CPOptions.V_BLIST);
+            }else if(v.getOptions().contains(CPOptions.V_LINK)
+                    || options.contains(CPOptions.V_LINK)){
+                tOptions.add(CPOptions.V_LINK);
+            }else if(v.getOptions().contains(CPOptions.V_BOUND)
+                    || options.contains(CPOptions.V_BOUND)){
+                tOptions.add(CPOptions.V_BOUND);
             }
             this.options = tOptions;
             return true;
@@ -702,14 +700,15 @@ public class PreProcessCPSolver extends CPSolver {
                 end = d.end();
             }
             HashSet<String> tOptions = new HashSet<String>();
-            if(d.getOptions().contains("cp:decision")
-                    || options.contains("cp:decision")){
-                tOptions.add("cp:decision");
+            if(d.getOptions().contains(CPOptions.V_DECISION)
+                    || options.contains(CPOptions.V_DECISION)){
+                tOptions.add(CPOptions.V_DECISION);
             }
-            if(d.getOptions().contains("cp:objective")
-                    || options.contains("cp:objective")){
-                tOptions.add("cp:objective");
+            if(d.getOptions().contains(CPOptions.V_OBJECTIVE)
+                    || options.contains(CPOptions.V_OBJECTIVE)){
+                tOptions.add(CPOptions.V_OBJECTIVE);
             }
+            this.options = tOptions;
         }
     }
 

@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular.planner;
 
+import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.automata.costregular.CostRegular;
@@ -39,8 +41,6 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import static choco.Choco.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -115,7 +115,7 @@ public class PlanModel {
         modelType = "MULTI-COST-REGULAR";
 
 
-        z = makeIntVar("z",0,Integer.MAX_VALUE/100,"cp:bound");
+        z = makeIntVar("z",0,Integer.MAX_VALUE/100, CPOptions.V_BOUND);
 
         IntegerVariable[] costs = new IntegerVariable[4];
         costs[0] = z;
@@ -127,13 +127,13 @@ bSup[0] = 4; bSup[1] = 2;bSup[2] = 84;
 for (int i = 3 ; i < nbAct+3 ; i++)
   bSup[i] = 32;    */
 
-        costs[1] = makeIntVar("r1",0,4,"cp:bound");
-        costs[2] = makeIntVar("r2",1,2,"cp:bound");
-        costs[3] = makeIntVar("r3",12,32,"cp:bound");
+        costs[1] = makeIntVar("r1",0,4,CPOptions.V_BOUND);
+        costs[2] = makeIntVar("r2",1,2,CPOptions.V_BOUND);
+        costs[3] = makeIntVar("r3",12,32,CPOptions.V_BOUND);
 
         /* for (int i = 4 ; i < nbAct+4 ; i++)
       {
-          costs[i] = makeIntVar("r"+i,0,32,"cp:bound");
+          costs[i] = makeIntVar("r"+i,0,32,CPOptions.V_BOUND);
       }  */
 
         int[][][] csts = new int[96][nbAct+3][+3+1];
@@ -208,7 +208,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
         m = new CPModel();
         shifts = makeIntVarArray("t",96,0,2+nbAct);
 
-        z = makeIntVar("z",0,Integer.MAX_VALUE/100,"cp:bound");
+        z = makeIntVar("z",0,Integer.MAX_VALUE/100,CPOptions.V_BOUND);
 
         m.addVariables(shifts);
         m.addVariable(z);
@@ -221,19 +221,19 @@ for (int i = 3 ; i < nbAct+3 ; i++)
         //if (i < 44 || i > 56) m.addConstraint(neq(shifts[i],InstanceMaker.L));
 
         m.addConstraint(main);
-        /* m.addConstraint(occurrence(0,makeIntVar("tmp",0,4,"cp:bound"),shifts));
-        m.addConstraint(occurrence(1,makeIntVar("tmp",1,2,"cp:bound"),shifts));
-        m.addConstraint(occurrence(2,makeIntVar("tmp",64,84,"cp:bound"),shifts));*/
+        /* m.addConstraint(occurrence(0,makeIntVar("tmp",0,4,CPOptions.V_BOUND),shifts));
+        m.addConstraint(occurrence(1,makeIntVar("tmp",1,2,CPOptions.V_BOUND),shifts));
+        m.addConstraint(occurrence(2,makeIntVar("tmp",64,84,CPOptions.V_BOUND),shifts));*/
 
 
-        // m.addConstraint(globalCardinality("cp:ac",shifts,0,2+nbAct,bInf,bSup));
+        // m.addConstraint(globalCardinality(CPOptions.C_GCC_AC,shifts,0,2+nbAct,bInf,bSup));
 
-        count = makeIntVarArray("count",shifts.length,0,3,"cp:enum");
+        count = makeIntVarArray("count",shifts.length,0,3,CPOptions.V_ENUM);
        // for (int i = 0 ; i < count.length; i++)
           //  m.addConstraint(new ComponentConstraint(SimpleChannelling.SimpleManager.class,null,new IntegerVariable[]{shifts[i],count[i]}));
         m.addConstraint(new ComponentConstraint(SubSetChannelling.SubSetManager.class,null, ArrayUtils.append(shifts,count)));
 
-        m.addConstraint(globalCardinality("cp:ac",count,0,3,bInf,bSup));
+        m.addConstraint(globalCardinality(CPOptions.C_GCC_AC,count,0,3,bInf,bSup));
 
 
         //IntegerVariable red = makeIntVar("red",12,32);
@@ -258,17 +258,17 @@ for (int i = 3 ; i < nbAct+3 ; i++)
         m = new CPModel();
 
         shifts = makeIntVarArray("t",96,0,2+nbAct);
-        IntegerVariable[] res = makeIntVarArray("res",96,0,Integer.MAX_VALUE/100,"cp:bound");
+        IntegerVariable[] res = makeIntVarArray("res",96,0,Integer.MAX_VALUE/100,CPOptions.V_BOUND);
 
         int[][] tmp = imaker.getRandomCostMatrix(96,nbAct+3,seed);
 
-        z = makeIntVar("z",0,Integer.MAX_VALUE/100,"cp:bound");
+        z = makeIntVar("z",0,Integer.MAX_VALUE/100,CPOptions.V_BOUND);
         m.addVariable(z);
         m.addVariables(res);
 
         m.addVariables(shifts);
 
-        m.addConstraint(globalCardinality("cp:ac",shifts,0,2+nbAct,bInf,bSup));
+        m.addConstraint(globalCardinality(CPOptions.C_GCC_AC,shifts,0,2+nbAct,bInf,bSup));
         // m.addConstraint(regular(dfa,shifts));
         //Thou shalt respect the automaton
         int[][] csts = new int[shifts.length][nbAct+3];
@@ -523,7 +523,7 @@ for (int i = 3 ; i < nbAct+3 ; i++)
 
 
         m.addVariables(vs);
-        m.addConstraint(globalCardinality("cp:ac",vs,1,3,low,up));
+        m.addConstraint(globalCardinality(CPOptions.C_GCC_AC,vs,1,3,low,up));
 
         Solver s = new CPSolver();
         s.read(m);

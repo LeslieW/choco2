@@ -243,7 +243,7 @@ becomes
 	// Declaration of variables
 	IntegerVariable v1 = makeIntVar("v1", 1, 10);
 	IntegerVariable v2 = makeIntVar("v1", 1, 10);
-	m.addVariable("cp:enum", v1, v2);
+	m.addVariable(CPOptions.V_ENUM, v1, v2);
 \end{lstlisting}
 
 \begin{itemize}
@@ -349,7 +349,7 @@ We obtain the following code:
 	// Declaration of variables
 	IntegerVariable v1 = makeIntVar("v1", 1, 10);
 	IntegerVariable v2 = makeIntVar("v2", 1, 10);
-	m.addVariable("cp:enum",v1, v2);
+	m.addVariable(CPOptions.V_ENUM,v1, v2);
 	
 	// Declaration of constraints
 	Constraint c1 = neq(v1,v2);

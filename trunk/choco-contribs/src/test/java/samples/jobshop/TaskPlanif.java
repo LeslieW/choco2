@@ -24,14 +24,12 @@ package samples.jobshop;
 
 import choco.Choco;
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
@@ -127,15 +125,15 @@ public class TaskPlanif {
         IntegerVariable[] dureeTache = makeIntVarArray("dureeTache", NBTACHES, 0, NBPERIODES);
         IntegerVariable[] finTache = makeIntVarArray("finTache", NBTACHES, 0, NBPERIODES);
 
-        TaskVariable[] tasks = makeTaskVarArray("t", debutTache, finTache, dureeTache, "cp:decision");
+        TaskVariable[] tasks = makeTaskVarArray("t", debutTache, finTache, dureeTache, CPOptions.V_DECISION);
 
         IntegerVariable[] FinMinTachePeriodeCourante =
                 makeIntVarArray("FinMinTachePeriodeCourante", NBTACHES, 0, NBPERIODES);
-        m.addVariables("cp:no_decision", FinMinTachePeriodeCourante);
+        m.addVariables(CPOptions.V_NO_DECISION, FinMinTachePeriodeCourante);
 
 //        IntegerVariable[] DureeEffectiveTachePeriodeCourante =
 //                Choco.makeIntVarArray("DureeEffectiveTachePeriodeCourante", NBTACHES, 0, NBPERIODES);
-//        m.addVariables("cp:no_decision", DureeEffectiveTachePeriodeCourante);
+//        m.addVariables(CPOptions.V_NO_DECISION, DureeEffectiveTachePeriodeCourante);
 
         for (iTache = 0; iTache < NBTACHES; iTache++) {
 
@@ -168,7 +166,7 @@ public class TaskPlanif {
             }
         }
 
-        IntegerVariable objectiveMission = makeIntVar("objectiveMission", 0, NBPERIODES, "cp:bound"); // OK;
+        IntegerVariable objectiveMission = makeIntVar("objectiveMission", 0, NBPERIODES, CPOptions.V_BOUND); // OK;
 
         IntegerExpressionVariable objectiveMissionExpression;
 
@@ -198,9 +196,9 @@ public class TaskPlanif {
         }
 
         // to force decomposition on that constraint
-        m.addConstraint(/*"cp:decomp", */eq(objectiveMissionExpression, objectiveMission));
+        m.addConstraint(/*"CPOptions.E_DECOMP", */eq(objectiveMissionExpression, objectiveMission));
 
-        m.addVariables("cp:objective", objectiveMission);
+        m.addVariables(CPOptions.V_OBJECTIVE, objectiveMission);
 
        // 5- read the model and solve it
         s.read(m);

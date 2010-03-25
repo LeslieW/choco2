@@ -23,6 +23,9 @@
 package samples.fastregular;
 
 
+import static choco.Choco.makeIntVarArray;
+import static choco.Choco.regular;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.tools.StringUtils;
@@ -35,9 +38,6 @@ import gnu.trove.TIntHashSet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-
-import static choco.Choco.makeIntVarArray;
-import static choco.Choco.regular;
 /**
  * Created by IntelliJ IDEA.
  * User: julien
@@ -86,7 +86,7 @@ public class MinimumRegularSet {
         }
 
         model = new CPModel();
-        vs = makeIntVarArray("x",nbVars,domains,"cp:enum");
+        vs = makeIntVarArray("x",nbVars,domains, CPOptions.V_ENUM);
         solver = new CPSolver();
 
         this.alpha = new TIntHashSet(domains);
@@ -241,7 +241,7 @@ public class MinimumRegularSet {
         CPSolver s = new CPSolver();
 
 
-        IntegerVariable[] vs = makeIntVarArray("x",n,0,2,"cp:enum");
+        IntegerVariable[] vs = makeIntVarArray("x",n,0,2,CPOptions.V_ENUM);
 
         m.addConstraint(regular(a,vs));
 

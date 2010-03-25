@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
+import choco.cp.CPOptions;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.*;
@@ -78,13 +79,13 @@ public class ElementManager extends IntConstraintManager{
                     }
                 }
                 if(areConstants){
-                    if(options.contains("cp:G")){
+                    if(options.contains(CPOptions.C_NTH_G)){
                         return new ElementG(index, values, val, solver.getEnvironment());
                     }
                     return new Element(index, values, val, offset);
                 }else{
                     if (index.hasEnumeratedDomain()) {
-                        if(options.contains("cp:G")){
+                        if(options.contains(CPOptions.C_NTH_G)){
                             return new ElementVG(solver.getVar((IntegerVariable[])variables), offset, solver.getEnvironment());
                         }
                         return new ElementV(solver.getVar((IntegerVariable[])variables), offset, solver.getEnvironment());
@@ -137,7 +138,7 @@ public class ElementManager extends IntConstraintManager{
                     for(int i = 0; i < variables.length-2; i++){
                         values[i] = ((IntegerConstantVariable)variables[i]).getValue();
                     }
-                    if(options.contains("cp:G")){
+                    if(options.contains(CPOptions.C_NTH_G)){
                         solver.post(new ElementG(Y, values, val, solver.getEnvironment()));
                     }else{
                         solver.post(new Element(Y, values, val, offset));
@@ -146,7 +147,7 @@ public class ElementManager extends IntConstraintManager{
                     if (Y.hasEnumeratedDomain()) {
                         IntDomainVar[] tvars = solver.getVar((IntegerVariable[])variables);
                         tvars[variables.length-2] = Y;
-                        if(options.contains("cp:G")){
+                        if(options.contains(CPOptions.C_NTH_G)){
                             solver.post(new ElementVG(tvars, offset, solver.getEnvironment()));
                         }else{
                             solver.post(new ElementV(tvars, offset, solver.getEnvironment()));

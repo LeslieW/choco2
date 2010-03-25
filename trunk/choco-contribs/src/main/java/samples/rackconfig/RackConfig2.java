@@ -22,18 +22,16 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.rackconfig;
 
+import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.integer.varselector.DomOverDynDeg;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.model.variables.set.SetVariable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import static choco.Choco.*;
 /**
  * Created by IntelliJ IDEA.
  * User: julien
@@ -116,7 +114,7 @@ public class RackConfig2 extends CPModel {
 
 
 
-        cost  = makeIntVar("cost",0,Integer.MAX_VALUE/1000,"cp:bound");
+        cost  = makeIntVar("cost",0,Integer.MAX_VALUE/1000, CPOptions.V_BOUND);
 
         ArrayList<IntegerExpressionVariable> ie = new ArrayList<IntegerExpressionVariable>();
         for (int i = 0 ; i < inst.getNbRackModels() ; i++)

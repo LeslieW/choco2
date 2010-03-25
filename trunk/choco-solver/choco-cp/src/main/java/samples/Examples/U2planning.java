@@ -23,6 +23,7 @@
 package samples.Examples;
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -107,11 +108,11 @@ public class U2planning extends PatternExample{
     public void buildModel() {
         _m = new CPModel();
 		int nbStates = (nbSteps + 1);
-		IntegerVariable[][] move = makeIntVarArray("move", nbSteps, nbPersons, 0, 1,"cp:no_decision");
-		IntegerVariable[][] position = makeIntVarArray("position", nbStates, nbPersons, 0, 1,"cp:no_decision");
+		IntegerVariable[][] move = makeIntVarArray("move", nbSteps, nbPersons, 0, 1, CPOptions.V_NO_DECISION);
+		IntegerVariable[][] position = makeIntVarArray("position", nbStates, nbPersons, 0, 1,CPOptions.V_NO_DECISION);
 		IntegerVariable[][] outward = makeIntVarArray("outward", nbSteps, nbPersons, 0, 1);
 		IntegerVariable[][] backward = makeIntVarArray("backward", nbSteps, nbPersons, 0, 1);
-		IntegerVariable[] duration = makeIntVarArray("duration", nbSteps, 1, maxDurationU2,"cp:no_decision");
+		IntegerVariable[] duration = makeIntVarArray("duration", nbSteps, 1, maxDurationU2,CPOptions.V_NO_DECISION);
 
 		for (int u = 0; u < nbPersons; u++) {
 			//  Starting and ending positions. 0 is before the bridge, 1 is after crossing.

@@ -24,6 +24,7 @@ package choco.model.constraints.reified;
 
 import choco.Choco;
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.model.managers.operators.SqrtManager;
 import choco.cp.solver.CPSolver;
@@ -201,7 +202,7 @@ public class ReifiedSomeTest {
     public void test7() {
         LOGGER.info("ReifiedSomeTest.test7");
         i1 = makeIntVar("i1", 1, 3);
-        m.addVariable("cp:bound", i1);
+        m.addVariable(CPOptions.V_BOUND, i1);
         r2 = makeRealVar("r2", 1, 3);
         //m.addConstraint(implies(geq(i1, 2), leq(r2, 2)));
         s.read(m);
@@ -215,7 +216,7 @@ public class ReifiedSomeTest {
     public void test8() {
         LOGGER.info("ReifiedSomeTest.test8");
         i1 = makeIntVar("i1", 1, 3);
-        m.addVariable("cp:bound", i1);
+        m.addVariable(CPOptions.V_BOUND, i1);
         s2 = makeSetVar("s2", 1, 3);
         //m.addConstraint(implies(geq(i1, 2), member(s2, 1)));
         s.read(m);
@@ -359,12 +360,12 @@ public class ReifiedSomeTest {
     public void testBugMaurice1a() {
         int tMax = 10;
         IntegerVariable S = makeIntVar("S", 0, tMax);
-        m.addVariable("cp:bound", S);
+        m.addVariable(CPOptions.V_BOUND, S);
         int p = 4;
         IntegerVariable[] y = new IntegerVariable[11];
         for (int t = 0; t <= tMax; t++) {
             y[t] = makeIntVar("y_" + t, 0, 1);
-            m.addVariable("cp:bound", y[t]);
+            m.addVariable(CPOptions.V_BOUND, y[t]);
             Constraint cst;
             cst = implies(eq((y[t]), (1)),
                     and(geq((t), (S)),
@@ -399,12 +400,12 @@ public class ReifiedSomeTest {
     public void testBugMaurice1aDecomp() {
         int tMax = 10;
         IntegerVariable S = makeIntVar("S", 0, tMax);
-        m.addVariable("cp:bound", S);
+        m.addVariable(CPOptions.V_BOUND, S);
         int p = 4;
         IntegerVariable[] y = new IntegerVariable[11];
         for (int t = 0; t <= tMax; t++) {
             y[t] = makeIntVar("y_" + t, 0, 1);
-            m.addVariable("cp:bound", y[t]);
+            m.addVariable(CPOptions.V_BOUND, y[t]);
             Constraint cst;
             cst = implies(eq((y[t]), (1)),
                     and(geq((t), (S)),
@@ -440,12 +441,12 @@ public class ReifiedSomeTest {
     public void testBugMaurice1b() {
         int tMax = 10;
         IntegerVariable S = makeIntVar("S", 0, tMax);
-        m.addVariable("cp:bound", S);
+        m.addVariable(CPOptions.V_BOUND, S);
         int p = 4;
         IntegerVariable[] y = new IntegerVariable[11];
         for (int t = 0; t <= tMax; t++) {
             y[t] = makeIntVar("y_" + t, 0, 1);
-            m.addVariable("cp:bound", y[t]);
+            m.addVariable(CPOptions.V_BOUND, y[t]);
             Constraint cst;
             cst = implies(eq((y[t]), (1)),
                     and(geq((t), (S)),
@@ -479,12 +480,12 @@ public class ReifiedSomeTest {
     public void testBugMaurice1bDecomp() {
         int tMax = 10;
         IntegerVariable S = makeIntVar("S", 0, tMax);
-        m.addVariable("cp:bound", S);
+        m.addVariable(CPOptions.V_BOUND, S);
         int p = 4;
         IntegerVariable[] y = new IntegerVariable[11];
         for (int t = 0; t <= tMax; t++) {
             y[t] = makeIntVar("y_" + t, 0, 1);
-            m.addVariable("cp:bound", y[t]);
+            m.addVariable(CPOptions.V_BOUND, y[t]);
             Constraint cst;
             cst = implies(eq((y[t]), (1)),
                     and(geq((t), (S)),
@@ -519,12 +520,12 @@ public class ReifiedSomeTest {
     public void testBugMaurice1c() {
         int tMax = 10;
         IntegerVariable S = makeIntVar("S", 0, tMax);
-        m.addVariable("cp:bound", S);
+        m.addVariable(CPOptions.V_BOUND, S);
         int p = 4;
         IntegerVariable[] y = new IntegerVariable[11];
         for (int t = 0; t <= tMax; t++) {
             y[t] = makeIntVar("y_" + t, 0, 1);
-            m.addVariable("cp:bound", y[t]);
+            m.addVariable(CPOptions.V_BOUND, y[t]);
             Constraint cst;
             cst = ifOnlyIf(eq((y[t]), (1)),
                     and(geq((t), (S)),
@@ -555,12 +556,12 @@ public class ReifiedSomeTest {
     public void testBugMaurice1cDecomp() {
         int tMax = 10;
         IntegerVariable S = makeIntVar("S", 0, tMax);
-        m.addVariable("cp:bound", S);
+        m.addVariable(CPOptions.V_BOUND, S);
         int p = 4;
         IntegerVariable[] y = new IntegerVariable[11];
         for (int t = 0; t <= tMax; t++) {
             y[t] = makeIntVar("y_" + t, 0, 1);
-            m.addVariable("cp:bound", y[t]);
+            m.addVariable(CPOptions.V_BOUND, y[t]);
             Constraint cst;
             cst = ifOnlyIf(eq((y[t]), (1)),
                     and(geq((t), (S)),
@@ -918,9 +919,9 @@ public class ReifiedSomeTest {
 //            CPModel m = new CPModel();
 //            CPSolver s = new CPSolver();
 //            m.setDefaultExpressionDecomposition(true);
-//            IntegerVariable v0 = makeIntVar("v0", 1, 4, "cp:bound");
-//            IntegerVariable v1 = makeIntVar("v1", 5, 7, "cp:bound");
-//            IntegerVariable v2 = makeIntVar("v2", -100, 100, "cp:bound");
+//            IntegerVariable v0 = makeIntVar("v0", 1, 4, CPOptions.V_BOUND);
+//            IntegerVariable v1 = makeIntVar("v1", 5, 7, CPOptions.V_BOUND);
+//            IntegerVariable v2 = makeIntVar("v2", -100, 100, CPOptions.V_BOUND);
 //            m.addConstraint(not(distanceEQ(v0, v1, v2, 0)));
 //            s.read(m);
 //            s.solveAll();
@@ -1122,8 +1123,8 @@ public class ReifiedSomeTest {
 
             IntegerVariable[] svars = new IntegerVariable[n];
             for (int i = 0; i < n; i++) {
-                IntegerVariable sv = makeIntVar("..", 0, numStates, "cp:enum");
-                model.addVariable("cp:decision", sv);
+                IntegerVariable sv = makeIntVar("..", 0, numStates, CPOptions.V_ENUM);
+                model.addVariable(CPOptions.V_DECISION, sv);
                 svars[i] = sv;
             }
 
@@ -1133,8 +1134,8 @@ public class ReifiedSomeTest {
             // create transition variables
             IntegerVariable[] lvars = new IntegerVariable[n - 1];
             for (int i = 0; i < n - 1; i++) {
-                IntegerVariable lv = makeIntVar("..", 0, numLabels, "cp:enum");
-                model.addVariable("cp:decision", lv);
+                IntegerVariable lv = makeIntVar("..", 0, numLabels, CPOptions.V_ENUM);
+                model.addVariable(CPOptions.V_DECISION, lv);
                 lvars[i] = lv;
             }
 
@@ -1190,8 +1191,8 @@ public class ReifiedSomeTest {
 
             IntegerVariable[] svars = new IntegerVariable[n];
             for (int i = 0; i < n; i++) {
-                IntegerVariable sv = makeIntVar("..", 0, numStates, "cp:enum");
-                model.addVariable("cp:decision", sv);
+                IntegerVariable sv = makeIntVar("..", 0, numStates, CPOptions.V_ENUM);
+                model.addVariable(CPOptions.V_DECISION, sv);
                 svars[i] = sv;
             }
 
@@ -1223,7 +1224,7 @@ public class ReifiedSomeTest {
 
             IntegerVariable[] svars = new IntegerVariable[n];
             for (int i = 0; i < n; i++) {
-                IntegerVariable sv = makeIntVar("..", 0, numStates, "cp:enum");
+                IntegerVariable sv = makeIntVar("..", 0, numStates, CPOptions.V_ENUM);
                 model.addVariable(sv);
                 svars[i] = sv;
             }

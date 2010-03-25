@@ -25,6 +25,7 @@ package choco.model.variables.integer;
 import choco.Choco;
 import static choco.Choco.allDifferent;
 import static choco.Choco.makeIntVarArray;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.IntervalIntDomain;
@@ -47,7 +48,7 @@ public class VariableDetectionTest {
     public void testAutoDetectionBoundVar() {
         Model m = new CPModel();
         IntegerVariable[] intvs = makeIntVarArray("v", 10, 0, 10);
-        m.addConstraint(allDifferent("cp:bc", intvs));
+        m.addConstraint(allDifferent(CPOptions.C_ALLDIFFERENT_BC, intvs));
         CPSolver s = new CPSolver();
         s.read(m);
         for (int i = 0; i < intvs.length; i++) {

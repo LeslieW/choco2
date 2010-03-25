@@ -23,6 +23,7 @@
 package choco.solver.branch;
 
 import choco.Choco;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.MinVal;
@@ -83,11 +84,11 @@ public class StrategyTest {
     public void badSelectors(){
         Model m = new CPModel();
         Solver s = new CPSolver();
-        IntegerVariable v1 = Choco.makeIntVar("v1", 0, 2, "cp:enum");
+        IntegerVariable v1 = Choco.makeIntVar("v1", 0, 2, CPOptions.V_ENUM);
         IntegerVariable v2 = Choco.makeIntVar("v2", 0, 3);
         m.addConstraint(Choco.leq(v1, v2));
         s.read(m);
-        s.setVarIntSelector(new IncorrectVarSelector(s.getVar(new IntegerVariable[]{v1, v2})));
+        s.setVarIntSelector(new IncorrectVarSelector(s.getVar(v1, v2)));
         s.setValIntSelector(new MinVal());
         try{
             s.solve();

@@ -31,6 +31,7 @@
 package choco.model.constraints.integer;
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.IntLinComb;
@@ -69,7 +70,7 @@ public class IntLinCombTest {
         x7 = makeIntVar("X7", 0, 10);
         y1 = makeIntVar("Y1", 0, 10);
         y2 = makeIntVar("Y2", 0, 50);
-        m.addVariables("cp:bound", x1, x2, x3, x4, x5, x6, x7, y1, y2);
+        m.addVariables(CPOptions.V_BOUND, x1, x2, x3, x4, x5, x6, x7, y1, y2);
         //m.addVariable(x1, x2, x3, x4, x5, x6, x7, y1, y2);
         s.read(m);
     }
@@ -152,9 +153,9 @@ public class IntLinCombTest {
     public void test3() {
         LOGGER.finer("test3");
         try {
-        	m.addConstraint("cp:decomp", eq(scalar(new int[]{1, 3, 5, -1}, new IntegerVariable[]{x1, x2, x3, y1}), 23));
-            m.addConstraint("cp:decomp", eq(scalar(new int[]{2, 10, 1, -1}, new IntegerVariable[]{x1, x2, x3, y2}), 14));
-            m.addConstraint("cp:decomp", eq(scalar(new int[]{7, -1}, new IntegerVariable[]{y1, y2}), 0));
+        	m.addConstraint(CPOptions.E_DECOMP, eq(scalar(new int[]{1, 3, 5, -1}, new IntegerVariable[]{x1, x2, x3, y1}), 23));
+            m.addConstraint(CPOptions.E_DECOMP, eq(scalar(new int[]{2, 10, 1, -1}, new IntegerVariable[]{x1, x2, x3, y2}), 14));
+            m.addConstraint(CPOptions.E_DECOMP, eq(scalar(new int[]{7, -1}, new IntegerVariable[]{y1, y2}), 0));
             s.read(m);
             s.getVar(x1).setInf(1);
             s.getVar(x2).setInf(1);
@@ -231,16 +232,16 @@ public class IntLinCombTest {
     @Test
     public void test4() {
         try {
-            m.addConstraint("cp:decomp", eq(scalar(new int[]{98527, 34588, 5872, 59422, 65159, -30704, -29649}, new IntegerVariable[]{x1, x2, x3, x5, x7, x4, x6}), 1547604));
-            m.addConstraint("cp:decomp", eq(scalar(new int[]{98957, 83634, 69966, 62038, 37164, 85413, -93989}, new IntegerVariable[]{x2, x3, x4, x5, x6, x7, x1}), 1823553));
-            m.addConstraint("cp:decomp", eq(scalar(new int[]{10949, 77761, 67052, -80197, -61944, -92964, -44550}, new IntegerVariable[]{x1, x2, x5, x3, x4, x6, x7}), -900032));
-            m.addConstraint("cp:decomp", eq(scalar(new int[]{73947, 84391, 81310, -96253, -44247, -70582, -33054}, new IntegerVariable[]{x1, x3, x5, x2, x4, x6, x7}), 1164380));
-            m.addConstraint("cp:decomp", eq(scalar(new int[]{13057, 42253, 77527, 96552, -60152, -21103, -97932}, new IntegerVariable[]{x3, x4, x5, x7, x1, x2, x6}), 1185471));
-            m.addConstraint("cp:decomp", eq(scalar(new int[]{66920, 55679, -64234, -65337, -45581, -67707, -98038}, new IntegerVariable[]{x1, x4, x2, x3, x5, x6, x7}), -1394152));
-            m.addConstraint("cp:decomp", eq(scalar(new int[]{68550, 27886, 31716, 73597, 38835, -88963, -76391}, new IntegerVariable[]{x1, x2, x3, x4, x7, x5, x6}), 279091));
-            m.addConstraint("cp:decomp", eq(scalar(new int[]{76132, 71860, 22770, 68211, 78587, -48224, -82817}, new IntegerVariable[]{x2, x3, x4, x5, x6, x1, x7}), 480923));
-            m.addConstraint("cp:decomp", eq(scalar(new int[]{94198, 87234, 37498, -71583, -25728, -25495, -70023}, new IntegerVariable[]{x2, x3, x4, x1, x5, x6, x7}), -519878));
-            m.addConstraint("cp:decomp", eq(scalar(new int[]{78693, 38592, 38478, -94129, -43188, -82528, -69025}, new IntegerVariable[]{x1, x5, x6, x2, x3, x4, x7}), -361921));
+            m.addConstraint(CPOptions.E_DECOMP, eq(scalar(new int[]{98527, 34588, 5872, 59422, 65159, -30704, -29649}, new IntegerVariable[]{x1, x2, x3, x5, x7, x4, x6}), 1547604));
+            m.addConstraint(CPOptions.E_DECOMP, eq(scalar(new int[]{98957, 83634, 69966, 62038, 37164, 85413, -93989}, new IntegerVariable[]{x2, x3, x4, x5, x6, x7, x1}), 1823553));
+            m.addConstraint(CPOptions.E_DECOMP, eq(scalar(new int[]{10949, 77761, 67052, -80197, -61944, -92964, -44550}, new IntegerVariable[]{x1, x2, x5, x3, x4, x6, x7}), -900032));
+            m.addConstraint(CPOptions.E_DECOMP, eq(scalar(new int[]{73947, 84391, 81310, -96253, -44247, -70582, -33054}, new IntegerVariable[]{x1, x3, x5, x2, x4, x6, x7}), 1164380));
+            m.addConstraint(CPOptions.E_DECOMP, eq(scalar(new int[]{13057, 42253, 77527, 96552, -60152, -21103, -97932}, new IntegerVariable[]{x3, x4, x5, x7, x1, x2, x6}), 1185471));
+            m.addConstraint(CPOptions.E_DECOMP, eq(scalar(new int[]{66920, 55679, -64234, -65337, -45581, -67707, -98038}, new IntegerVariable[]{x1, x4, x2, x3, x5, x6, x7}), -1394152));
+            m.addConstraint(CPOptions.E_DECOMP, eq(scalar(new int[]{68550, 27886, 31716, 73597, 38835, -88963, -76391}, new IntegerVariable[]{x1, x2, x3, x4, x7, x5, x6}), 279091));
+            m.addConstraint(CPOptions.E_DECOMP, eq(scalar(new int[]{76132, 71860, 22770, 68211, 78587, -48224, -82817}, new IntegerVariable[]{x2, x3, x4, x5, x6, x1, x7}), 480923));
+            m.addConstraint(CPOptions.E_DECOMP, eq(scalar(new int[]{94198, 87234, 37498, -71583, -25728, -25495, -70023}, new IntegerVariable[]{x2, x3, x4, x1, x5, x6, x7}), -519878));
+            m.addConstraint(CPOptions.E_DECOMP, eq(scalar(new int[]{78693, 38592, 38478, -94129, -43188, -82528, -69025}, new IntegerVariable[]{x1, x5, x6, x2, x3, x4, x7}), -361921));
             // pb.getPropagationEngine().getLogger().setVerbosity(choco.model.ILogger.DEBUG);
             s.read(m);
             s.propagate();

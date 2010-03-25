@@ -23,6 +23,7 @@
 package choco.model.constraints.reified;
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -64,7 +65,7 @@ public class NegationTest {
         m = new CPModel();
         s = new CPSolver();
         x = makeIntVar("X", 1, 10);
-        m.addVariable("cp:bound", x);
+        m.addVariable(CPOptions.V_BOUND, x);
     }
 
     @Test

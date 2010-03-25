@@ -23,6 +23,7 @@
 package choco.model.constraints.reified;
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -70,7 +71,7 @@ public class BinaryConjunctionTest {
     public void testBound(){
         LOGGER.info("BinaryConjunctionTest.testEnum");
         x = makeIntVar("X", 1, 10);
-        m.addVariable("cp:bound", x);
+        m.addVariable(CPOptions.V_BOUND, x);
         test();
     }
 
@@ -85,7 +86,7 @@ public class BinaryConjunctionTest {
     public void testBoundDecomp(){
         LOGGER.info("BinaryConjunctionTest.testEnum");
         x = makeIntVar("X", 1, 10);
-         m.addVariable("cp:bound", x);
+         m.addVariable(CPOptions.V_BOUND, x);
          m.setDefaultExpressionDecomposition(true);
         test();
     }

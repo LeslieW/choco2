@@ -24,6 +24,7 @@ package choco.visu;
 
 import choco.Choco;
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.preprocessor.PreProcessCPSolver;
@@ -530,7 +531,7 @@ public class ExamplesTest {
         int n = 8;
         IntegerVariable[] queens = new IntegerVariable[n];
         for (int i = 0; i < n; i++) {
-            queens[i] = makeIntVar("Q" + (i+1), 1, n,"cp:enum");
+            queens[i] = makeIntVar("Q" + (i+1), 1, n,CPOptions.V_ENUM);
         }
 
         for (int i = 0; i < n; i++) {
@@ -597,7 +598,7 @@ public class ExamplesTest {
         IntegerVariable obj3 = makeIntVar("obj3", 0, 10);
         IntegerVariable c = makeIntVar("power", 0, 40);
         IntegerVariable capa = makeIntVar("capa", 0, 34);
-        m.addVariable("cp:bound", c);
+        m.addVariable(CPOptions.V_BOUND, c);
 
         int[] volumes = new int[]{7, 5, 3};
         int[] energy = new int[]{6, 4, 2};

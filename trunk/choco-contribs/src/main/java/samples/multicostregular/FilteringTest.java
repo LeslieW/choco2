@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular;
 
+import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
@@ -37,8 +39,6 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
-
-import static choco.Choco.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -121,7 +121,7 @@ public class FilteringTest {
             Model m = new CPModel();
             Solver s = new CPSolver();
 
-            IntegerVariable[] vars = makeIntVarArray("v",n,0,d,"cp:enum");
+            IntegerVariable[] vars = makeIntVarArray("v",n,0,d,CPOptions.V_ENUM);
             m.addVariables(vars);
             int[] val = new int[d+1];
             for (int i  = 0 ; i <= d ; i++) val[i] =i;
@@ -131,7 +131,7 @@ public class FilteringTest {
 
             IntegerVariable[] z = new IntegerVariable[r];
             for (int i  = 0 ; i < r ;i++)
-                z[i] = makeIntVar("z_"+i,0,rand.nextInt(max*n),"cp:bound");
+                z[i] = makeIntVar("z_"+i,0,rand.nextInt(max*n), CPOptions.V_BOUND);
             m.addVariables(z);
 
             Constraint c = multiCostRegular(vars,z,a,csts);
@@ -323,7 +323,7 @@ public class FilteringTest {
                 Model m = new CPModel();
                 Solver s = new CPSolver();
 
-                IntegerVariable[] vars = makeIntVarArray("v",n,0,d,"cp:enum");
+                IntegerVariable[] vars = makeIntVarArray("v",n,0,d,CPOptions.V_ENUM);
                 m.addVariables(vars);
                 int[] val = new int[d+1];
                 for (int i  = 0 ; i <= d ; i++) val[i] =i;
@@ -334,7 +334,7 @@ public class FilteringTest {
                 int[][][] csts = generateRandomCosts(n,d,r,max,rand);
                 IntegerVariable[] z = new IntegerVariable[r];
                 for (int i  = 0 ; i < r ;i++)
-                    z[i] = makeIntVar("z_"+i,0,max*n/4+rand.nextInt(max*n/2),"cp:bound");
+                    z[i] = makeIntVar("z_"+i,0,max*n/4+rand.nextInt(max*n/2),CPOptions.V_BOUND);
 
                // if (order == 0 || order == 5)
                     print(order,csts,z);

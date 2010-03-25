@@ -23,6 +23,7 @@
 package choco.scheduling;
 
 import choco.Choco;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -83,9 +84,9 @@ public class TestTask {
 	@Test
 	public void testTaskVariable() {
 		CPModel m = new CPModel();
-		choco.kernel.model.variables.scheduling.TaskVariable t1 = Choco.makeTaskVar("T1", 20, 5, "cp:bound");
-		choco.kernel.model.variables.scheduling.TaskVariable t2 = Choco.makeTaskVar("T2", 20, 8, "cp:bound", "cp:no_decision");
-		choco.kernel.model.variables.scheduling.TaskVariable t3 = Choco.makeTaskVar("T3", 25, 8, "cp:enum");
+		choco.kernel.model.variables.scheduling.TaskVariable t1 = Choco.makeTaskVar("T1", 20, 5, CPOptions.V_BOUND);
+		choco.kernel.model.variables.scheduling.TaskVariable t2 = Choco.makeTaskVar("T2", 20, 8, CPOptions.V_BOUND, CPOptions.V_NO_DECISION);
+		choco.kernel.model.variables.scheduling.TaskVariable t3 = Choco.makeTaskVar("T3", 25, 8, CPOptions.V_ENUM);
 		m.addVariables(t1,t2, t3);
 		CPSolver solver =new CPSolver();
 		solver.read(m);

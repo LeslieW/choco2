@@ -23,6 +23,7 @@
 package choco.model.constraints.integer;
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.IntLinComb;
@@ -208,7 +209,7 @@ public class BoolLinCombTest {
             vars[i] = makeIntVar("v" + i, 0, 1);
         }
         vars[n] = makeIntVar("b", -n - 1, n + 1);
-        m.addVariables("cp:bound",vars);
+        m.addVariables(CPOptions.V_BOUND,vars);
         m.addVariables(vars);
 
         int[] randCoefs = getRandomPackingPb(n + 1, 100, seed + 1);
@@ -216,11 +217,11 @@ public class BoolLinCombTest {
         int k = rand.nextInt(2 * n + 5) - n - 5;
         if (optimized) {
             if (op == IntLinComb.GEQ) {
-				m.addConstraint("cp:decomp", geq(scalar(vars, randCoefs), k));
+				m.addConstraint(CPOptions.E_DECOMP, geq(scalar(vars, randCoefs), k));
 			} else if (op == IntLinComb.EQ) {
-                m.addConstraint("cp:decomp", eq(scalar(vars, randCoefs), k));
+                m.addConstraint(CPOptions.E_DECOMP, eq(scalar(vars, randCoefs), k));
             } else if (op == IntLinComb.LEQ) {
-                m.addConstraint("cp:decomp", leq(scalar(vars, randCoefs), k));
+                m.addConstraint(CPOptions.E_DECOMP, leq(scalar(vars, randCoefs), k));
             }
           s.read(m);
         } else {
@@ -254,11 +255,11 @@ public class BoolLinCombTest {
 	      int k = rand.nextInt(n);
 	      if (optimized) {
 	          if (op == IntLinComb.GEQ) {
-				m.addConstraint("cp:decomp", geq(sum(vars), k));
+				m.addConstraint(CPOptions.E_DECOMP, geq(sum(vars), k));
 			} else if (op == IntLinComb.EQ) {
-	              m.addConstraint("cp:decomp", eq(sum(vars), k));
+	              m.addConstraint(CPOptions.E_DECOMP, eq(sum(vars), k));
 	          } else if (op == IntLinComb.LEQ) {
-	              m.addConstraint("cp:decomp", leq(sum(vars), k));
+	              m.addConstraint(CPOptions.E_DECOMP, leq(sum(vars), k));
 	          }
           s.read(m);
         } else {

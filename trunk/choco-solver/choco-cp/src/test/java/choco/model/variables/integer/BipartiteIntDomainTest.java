@@ -2,6 +2,7 @@ package choco.model.variables.integer;
 
 import choco.Choco;
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
@@ -45,8 +46,8 @@ public class BipartiteIntDomainTest {
     public void setUp() {
         LOGGER.fine("BitSetIntDomain Testing...");
         m = new CPModel();
-        x = makeIntVar("X", 1, 100,"cp:blist");
-        y = makeIntVar("Y", 1, 15, "cp:blist");
+        x = makeIntVar("X", 1, 100, CPOptions.V_BLIST);
+        y = makeIntVar("Y", 1, 15, CPOptions.V_BLIST);
         m.addVariables(x, y);
         s = new CPSolver();
         s.read(m);
@@ -221,7 +222,7 @@ public class BipartiteIntDomainTest {
     @Test
     public void test5(){
         y = Choco.makeIntVar("Y", 0, 12);
-        m.addVariable("cp:blist", y);
+        m.addVariable(CPOptions.V_BLIST, y);
         m.addVariable(y);
         s = new CPSolver();
         s.read(m);
@@ -316,7 +317,7 @@ public class BipartiteIntDomainTest {
     @Test
     public void test8(){
         y = Choco.makeIntVar("Y", 1, 8);
-        m.addVariable("cp:blist", y);
+        m.addVariable(CPOptions.V_BLIST, y);
         m.addVariables(x, y);
         s = new CPSolver();
         s.read(m);
@@ -370,7 +371,7 @@ public class BipartiteIntDomainTest {
             // create variables
             IntegerVariable[] queens = new IntegerVariable[n];
             for (int i = 0; i < n; i++) {
-                queens[i] = makeIntVar("Q" + i, 1, n, "cp:blist");//blist");
+                queens[i] = makeIntVar("Q" + i, 1, n, CPOptions.V_BLIST);//blist");
             }
             // diagonal constraints
             for (int i = 0; i < n; i++) {
@@ -401,9 +402,9 @@ public class BipartiteIntDomainTest {
         for (int seed = 0; seed < 10; seed++) {
             CPModel m = new CPModel();
             CPSolver s = new CPSolver();
-            IntegerVariable v1 = makeIntVar("v1", 1, 2,"cp:blist");
-            IntegerVariable v2 = makeIntVar("v2", new int[]{0, 3},"cp:blist");
-            IntegerVariable v3 = makeIntVar("v3", new int[]{0, 3},"cp:blist");
+            IntegerVariable v1 = makeIntVar("v1", 1, 2,CPOptions.V_BLIST);
+            IntegerVariable v2 = makeIntVar("v2", new int[]{0, 3},CPOptions.V_BLIST);
+            IntegerVariable v3 = makeIntVar("v3", new int[]{0, 3},CPOptions.V_BLIST);
 
             //remove some forbidden tuples (here, the tuples define a not_all_equal constraint)
             List<int[]> tuples = new LinkedList<int[]>();
@@ -428,8 +429,8 @@ public class BipartiteIntDomainTest {
         for (int i = 0; i <= 10; i++) {
             LOGGER.info("seed " + i);
             CPModel m = new CPModel();
-            IntegerVariable x = makeIntVar("x", 1, 5, "cp:blist");
-            IntegerVariable y = makeIntVar("y", -5, 5, "cp:blist");
+            IntegerVariable x = makeIntVar("x", 1, 5, CPOptions.V_BLIST);
+            IntegerVariable y = makeIntVar("y", -5, 5, CPOptions.V_BLIST);
             m.addConstraint(abs(x,y));
             CPSolver s = new CPSolver();
             s.read(m);
@@ -453,13 +454,13 @@ public class BipartiteIntDomainTest {
             m.setDefaultExpressionDecomposition(true);
             CPSolver s = new CPSolver();
             IntegerVariable[] vars = new IntegerVariable[26];
-            vars[0] = makeIntVar("v0", 31, 31);//,"cp:blist");
-            vars[1] = makeIntVar("v1", 60, 60);//,"cp:blist");
+            vars[0] = makeIntVar("v0", 31, 31);//,CPOptions.V_BLIST);
+            vars[1] = makeIntVar("v1", 60, 60);//,CPOptions.V_BLIST);
 
             for (int i = 2; i < 26; i = i + 3) {
-                vars[i] = makeIntVar("vA" + i, 0, 60,"cp:blist");
-                vars[i + 1] = makeIntVar("vB" + i, 0, 31,"cp:blist");
-                vars[i + 2] = makeIntVar("vC" + i, 0, 1,"cp:blist");
+                vars[i] = makeIntVar("vA" + i, 0, 60,CPOptions.V_BLIST);
+                vars[i + 1] = makeIntVar("vB" + i, 0, 31,CPOptions.V_BLIST);
+                vars[i + 2] = makeIntVar("vC" + i, 0, 1,CPOptions.V_BLIST);
             }
 
             // Predicat 1
@@ -515,8 +516,8 @@ public class BipartiteIntDomainTest {
     @Test
     public void testPretty(){
         Model m = new CPModel();
-        IntegerVariable v = Choco.makeIntVar("v", 1, 20, "cp:blist");
-        IntegerVariable w = Choco.makeIntVar("w", 1, 10, "cp:blist");
+        IntegerVariable v = Choco.makeIntVar("v", 1, 20, CPOptions.V_BLIST);
+        IntegerVariable w = Choco.makeIntVar("w", 1, 10, CPOptions.V_BLIST);
         m.addVariables(v, w);
         Solver s = new CPSolver();
         s.read(m);

@@ -23,12 +23,12 @@
 package choco.solver.search;
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
 import choco.cp.solver.search.integer.valselector.MaxVal;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -70,7 +70,7 @@ public class QueensTest {
     }
 
     private IntegerVariable createVar(String name, int min, int max) {
-        if (LINKED) return makeIntVar(name, min, max, "cp:link");
+        if (LINKED) return makeIntVar(name, min, max, CPOptions.V_LINK);
         return makeIntVar(name, min, max);
     }
 

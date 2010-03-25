@@ -24,6 +24,7 @@ package choco.model.constraints.integer;
 
 import choco.Choco;
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -138,9 +139,9 @@ public class ChannelingTest {
 	public void test5() {
 		int n = 5;
 		IntegerVariable[] bv = Choco.makeBooleanVarArray("b", n);
-		m.addConstraint( Choco.domainConstraint(Choco.makeIntVar("v", 0, n, "cp:enum"), bv));
+		m.addConstraint( Choco.domainConstraint(Choco.makeIntVar("v", 0, n, CPOptions.V_ENUM), bv));
 		CPModel m1 = new CPModel();
-		IntegerVariable iv = Choco.makeIntVar("v", 0, n-1, "cp:enum");
+		IntegerVariable iv = Choco.makeIntVar("v", 0, n-1, CPOptions.V_ENUM);
 		for (int i = 0; i < n; i++) {
 			m1.addConstraint( Choco.boolChanneling(bv[i], iv, i));
 		}

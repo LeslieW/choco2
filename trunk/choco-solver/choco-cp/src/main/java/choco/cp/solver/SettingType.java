@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver;
 
+import choco.cp.CPOptions;
 
 
 public enum SettingType {
@@ -108,7 +109,7 @@ public enum SettingType {
 
 	//////////////////////// ////////////////////////
 
-	DECOMP("Decomposition Of Global Constraint","DGC","cp:decomp"),
+	DECOMP("Decomposition Of Global Constraint","DGC", CPOptions.E_DECOMP),
 	
 	GLOBAL("Global Constraint Only","GCO","cp:global"),
 	

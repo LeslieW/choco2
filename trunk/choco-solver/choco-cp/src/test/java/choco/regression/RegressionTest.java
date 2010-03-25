@@ -24,6 +24,7 @@
 package choco.regression;
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -124,7 +125,7 @@ public class RegressionTest {
     Solver s = new CPSolver();
     IntegerVariable x = makeIntVar("X", 1, 5);
     IntegerVariable y = makeIntVar("Y", 1, 5);
-        m.addVariables("cp:bound", x, y);
+        m.addVariables(CPOptions.V_BOUND, x, y);
     Constraint c1 = eq(x, 1);
     Constraint c2 = eq(x, y);
     m.addConstraints(c1,c2);
@@ -160,7 +161,7 @@ public class RegressionTest {
 
     @Test
     public void testCleanState() {
-        String[] type = new String[]{"cp:enum", "cp:bound", "cp:btree", "cp:link"};
+        String[] type = new String[]{CPOptions.V_ENUM, CPOptions.V_BOUND, CPOptions.V_BTREE, CPOptions.V_LINK};
 
         for (String aType : type) {
 

@@ -23,6 +23,7 @@
 package samples.documentation;
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.Model;
@@ -94,7 +95,7 @@ public class Code4Doc4 {
         IntegerVariable x = makeIntVar("x", 1, 5);
         IntegerVariable y = makeIntVar("y", 1, 5);
         IntegerVariable z = makeIntVar("z", 1, 5);
-        m.addVariables("cp:bound", x, y, z);
+        m.addVariables(CPOptions.V_BOUND, x, y, z);
         m.addConstraint(max(y, z, x));
         s.read(m);
         s.solve();
@@ -135,7 +136,7 @@ public class Code4Doc4 {
         IntegerVariable x = makeIntVar("x", 1, 5);
         IntegerVariable y = makeIntVar("y", 1, 5);
         IntegerVariable z = makeIntVar("z", 1, 5);
-        m.addVariables("cp:bound", x, y, z);
+        m.addVariables(CPOptions.V_BOUND, x, y, z);
         m.addConstraint(min(y, z, x));
         s.read(m);
         s.solve();
@@ -179,13 +180,13 @@ public class Code4Doc4 {
         int nAct = 3; // 3 activities: DAY, NIGHT, REST
         int nRes = 4; // 4 resources: cost (0), #DAY (1), #NIGHT (2), #WORK (3)
         //2- Create the schedule variables: the activity processed at each time slot
-        IntegerVariable[] sequence = makeIntVarArray("x", nTime, 0, nAct - 1, "cp:enum");
+        IntegerVariable[] sequence = makeIntVarArray("x", nTime, 0, nAct - 1, CPOptions.V_ENUM);
         // - create the cost variables (one for each resource)
         IntegerVariable[] bounds = new IntegerVariable[4];
-        bounds[0] = makeIntVar("z_0", 30, 80, "cp:bound"); // 30 <= cost <= 80
-        bounds[1] = makeIntVar("day", 0, 7, "cp:bound"); // 0 <= #DAY <= 7
-        bounds[2] = makeIntVar("night", 3, 7, "cp:bound"); // 3 <= #NIGHT <= 7
-        bounds[3] = makeIntVar("work", 7, 9, "cp:bound"); // 7 <= #WORK <= 9
+        bounds[0] = makeIntVar("z_0", 30, 80, CPOptions.V_BOUND); // 30 <= cost <= 80
+        bounds[1] = makeIntVar("day", 0, 7, CPOptions.V_BOUND); // 0 <= #DAY <= 7
+        bounds[2] = makeIntVar("night", 3, 7, CPOptions.V_BOUND); // 3 <= #NIGHT <= 7
+        bounds[3] = makeIntVar("work", 7, 9, CPOptions.V_BOUND); // 7 <= #WORK <= 9
         //3- Create the automaton
         FiniteAutomaton auto = new FiniteAutomaton();
         // state 0: starting and accepting state
@@ -197,7 +198,7 @@ public class Code4Doc4 {
         auto.addTransition(start, first, DAY);
         // state 2 and transitions (1,DAY,2), (1,NIGHT,2), (2,REST,0), (0,NIGHT,2)
         int second = auto.addState();
-        auto.addTransition(first, second, new int[]{DAY, NIGHT});
+        auto.addTransition(first, second, DAY, NIGHT);
         auto.addTransition(second, start, REST);
         auto.addTransition(start, second, NIGHT);
         //4- Declare the assignment/transition costs:

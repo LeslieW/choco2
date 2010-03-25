@@ -24,6 +24,7 @@ package choco.shaker;
 
 import choco.Choco;
 import static choco.Choco.distanceEQ;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -133,8 +134,8 @@ public class ConstraintTest {
         IntegerVariable[] vars = new IntegerVariable[4];
         vars[0] = Choco.makeBooleanVar("b1");
         vars[1] = Choco.makeBooleanVar("b2");
-        vars[2] = Choco.makeIntVar("v3", 4,6, "cp:enum");
-        vars[3] = Choco.makeIntVar("v4", 9,9, "cp:enum");
+        vars[2] = Choco.makeIntVar("v3", 4,6, CPOptions.V_ENUM);
+        vars[3] = Choco.makeIntVar("v4", 9,9, CPOptions.V_ENUM);
 
         m.addConstraint(Choco.reifiedConstraint(vars[0], distanceEQ(vars[1], vars[2], vars[3], -2)));
 
@@ -180,7 +181,7 @@ public class ConstraintTest {
         IntegerVariable[] vars = new IntegerVariable[5];
         vars[0] = Choco.makeBooleanVar("b1");
         vars[1] = Choco.makeIntVar("v2", 3,3);
-        vars[2] = Choco.makeIntVar("v3", -1,1, "cp:blist");
+        vars[2] = Choco.makeIntVar("v3", -1,1, CPOptions.V_BLIST);
         vars[3] = Choco.makeBooleanVar("b4");
         vars[4] = Choco.makeBooleanVar("b5");
 
@@ -208,7 +209,7 @@ public class ConstraintTest {
         int low[] = new int[]{0,0,2,0,0,0,3,0,0,0};
         int up[] = new int[]{5,5,5,5,5,5,5,5,5,5};
 
-        m.addConstraint(Choco.globalCardinality("cp:bc",vars, low, up, -4));
+        m.addConstraint(Choco.globalCardinality(CPOptions.C_GCC_BC,vars, low, up, -4));
 
         checker(new Random(14106));
     }
@@ -226,7 +227,7 @@ public class ConstraintTest {
         int low[] = new int[]{2,0,0,0,0,1,2};
         int up[] = new int[]{5,4,0,0,0,1,5};
 
-        m.addConstraint(Choco.globalCardinality("cp:bc",vars, low, up, -3));
+        m.addConstraint(Choco.globalCardinality(CPOptions.C_GCC_BC,vars, low, up, -3));
 
         checker(new Random(0));
     }

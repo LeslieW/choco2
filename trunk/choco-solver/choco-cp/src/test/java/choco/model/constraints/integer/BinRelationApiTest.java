@@ -23,6 +23,7 @@
 package choco.model.constraints.integer;
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -110,7 +111,7 @@ public class BinRelationApiTest {
 	public void test1FeasAc4() {
 		v1 = makeIntVar("v1", 1, 4);
 		v2 = makeIntVar("v2", 1, 4);
-		m.addConstraint(feasPairAC("cp:ac3", v1, v2, matrice2));
+		m.addConstraint(feasPairAC(CPOptions.C_EXT_AC3, v1, v2, matrice2));
 		s.read(m);
 		s.solveAll();
 		assertEquals(5, s.getNbSolutions());
@@ -120,7 +121,7 @@ public class BinRelationApiTest {
 	public void test23FeasAc32() {
 		v1 = makeIntVar("v1", 1, 4);
 		v2 = makeIntVar("v2", 1, 4);
-		m.addConstraint(feasPairAC("cp:ac32",v1, v2, couples2));
+		m.addConstraint(feasPairAC(CPOptions.C_EXT_AC32,v1, v2, couples2));
 		s.read(m);
 		s.solveAll();
 		assertEquals(5, s.getNbSolutions());
@@ -131,7 +132,7 @@ public class BinRelationApiTest {
 	public void test23FeasAc322() {
 		v1 = makeIntVar("v1", 1, 4);
 		v2 = makeIntVar("v2", 1, 4);
-		m.addConstraint(feasPairAC("cp:ac322",v1, v2, couples2));
+		m.addConstraint(feasPairAC(CPOptions.C_EXT_AC322,v1, v2, couples2));
 		s.read(m);
 		s.solveAll();
 		assertEquals(5, s.getNbSolutions());
@@ -141,7 +142,7 @@ public class BinRelationApiTest {
 	public void test23FeasFC() {
 		v1 = makeIntVar("v1", 1, 4);
 		v2 = makeIntVar("v2", 1, 4);
-		m.addConstraint(feasPairAC("cp:fc",v1, v2, couples2));
+		m.addConstraint(feasPairAC(CPOptions.C_EXT_FC,v1, v2, couples2));
 		s.read(m);
 		s.solveAll();
 		assertEquals(5, s.getNbSolutions());
@@ -151,7 +152,7 @@ public class BinRelationApiTest {
 	public void test2FeasAc4() {
 		v1 = makeIntVar("v1", 1, 4);
 		v2 = makeIntVar("v2", 1, 4);
-		m.addConstraint(feasPairAC("cp:ac32",v1, v2, couples2));
+		m.addConstraint(feasPairAC(CPOptions.C_EXT_AC32,v1, v2, couples2));
 		s.read(m);
 		s.solveAll();
 		assertEquals(5, s.getNbSolutions());
@@ -176,7 +177,7 @@ public class BinRelationApiTest {
 	public void test1InFeasAc4() {
 		v1 = makeIntVar("v1", 1, 4);
 		v2 = makeIntVar("v2", 1, 4);
-		m.addConstraint(infeasPairAC("cp:ac32",v1, v2, matrice2));
+		m.addConstraint(infeasPairAC(CPOptions.C_EXT_AC32,v1, v2, matrice2));
 		s.read(m);
 		s.solveAll();
 		assertEquals((16 - 5), s.getNbSolutions());
@@ -186,7 +187,7 @@ public class BinRelationApiTest {
 	public void test2InFeasAc4() {
 		v1 = makeIntVar("v1", 1, 4);
 		v2 = makeIntVar("v2", 1, 4);
-		m.addConstraint(infeasPairAC("cp:ac32",v1, v2, couples2));
+		m.addConstraint(infeasPairAC(CPOptions.C_EXT_AC32,v1, v2, couples2));
 		s.read(m);
 		s.solveAll();
 		assertEquals((16 - 5), s.getNbSolutions());
@@ -196,7 +197,7 @@ public class BinRelationApiTest {
 	public void test2InFeasFC() {
 		v1 = makeIntVar("v1", 1, 4);
 		v2 = makeIntVar("v2", 1, 4);
-		m.addConstraint(infeasPairAC("cp:fc",v1, v2, couples2));
+		m.addConstraint(infeasPairAC(CPOptions.C_EXT_FC,v1, v2, couples2));
 		s.read(m);
 		s.solveAll();
 		assertEquals((16 - 5), s.getNbSolutions());
@@ -206,7 +207,7 @@ public class BinRelationApiTest {
 	public void test1FeasAc3() {
 		v1 = makeIntVar("v1", 1, 4);
 		v2 = makeIntVar("v2", 1, 4);
-		m.addConstraint(feasPairAC("cp:ac3",v1, v2, matrice2));
+		m.addConstraint(feasPairAC(CPOptions.C_EXT_AC3,v1, v2, matrice2));
 		s.read(m);
 		s.solveAll();
 		assertEquals(5, s.getNbSolutions());
@@ -216,7 +217,7 @@ public class BinRelationApiTest {
 	public void test1FeasAc2001() {
 		v1 = makeIntVar("v1", 1, 4);
 		v2 = makeIntVar("v2", 1, 4);
-		m.addConstraint(feasPairAC("cp:ac2001",v1, v2, matrice2));
+		m.addConstraint(feasPairAC(CPOptions.C_EXT_AC2001,v1, v2, matrice2));
 		s.read(m);
 		s.solve();
 		LOGGER.info("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
@@ -233,7 +234,7 @@ public class BinRelationApiTest {
 		ArrayList<int[]> feasTuple = new ArrayList<int[]>();
 		feasTuple.add(new int[]{1, 1}); // x*y = 1
 		feasTuple.add(new int[]{4, 2}); // x*y = 1
-		Constraint c = feasPairAC("cp:ac2001",v1, v2, feasTuple);
+		Constraint c = feasPairAC(CPOptions.C_EXT_AC2001,v1, v2, feasTuple);
 		LOGGER.info("c = " + c.pretty());
 		m.addConstraint(c);
 		s.read(m);
@@ -253,7 +254,7 @@ public class BinRelationApiTest {
 	public void test1FeasAc32() {
 		v1 = makeIntVar("v1", 1, 4);
 		v2 = makeIntVar("v2", 1, 4);
-		m.addConstraint(feasPairAC("cp:ac32",v1, v2, matrice2));
+		m.addConstraint(feasPairAC(CPOptions.C_EXT_AC32,v1, v2, matrice2));
 		s.read(m);
 		s.solve();
 		LOGGER.info("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
@@ -267,7 +268,7 @@ public class BinRelationApiTest {
 	public void test1FeasAc322() {
 		v1 = makeIntVar("v1", 1, 4);
 		v2 = makeIntVar("v2", 1, 4);
-		m.addConstraint(feasPairAC("cp:ac322",v1, v2, matrice2));
+		m.addConstraint(feasPairAC(CPOptions.C_EXT_AC322,v1, v2, matrice2));
 		s.read(m);
 		s.solve();
 		LOGGER.info("v1 : " + s.getVar(v1).getVal() + " v2: " + s.getVar(v2).getVal());
@@ -281,7 +282,7 @@ public class BinRelationApiTest {
 	public void test1InFeasAc3() {
 		v1 = makeIntVar("v1", 1, 4);
 		v2 = makeIntVar("v2", 1, 4);
-		m.addConstraint(infeasPairAC("cp:ac3",v1, v2, matrice2));
+		m.addConstraint(infeasPairAC(CPOptions.C_EXT_AC3,v1, v2, matrice2));
 		s.read(m);
 		s.solveAll();
 		assertEquals((16 - 5), s.getNbSolutions());
@@ -292,8 +293,8 @@ public class BinRelationApiTest {
 		v1 = makeIntVar("v1", 1, 4);
 		v2 = makeIntVar("v2", 1, 4);
 		v3 = makeIntVar("v3", 3, 6);
-		m.addConstraint(feasPairAC("cp:ac322",v1, v2, matrice1));
-		m.addConstraint(feasPairAC("cp:ac322",v2, v3, matrice2));
+		m.addConstraint(feasPairAC(CPOptions.C_EXT_AC322,v1, v2, matrice1));
+		m.addConstraint(feasPairAC(CPOptions.C_EXT_AC322,v2, v3, matrice2));
 		s.read(m);
 		s.solveAll();
 		assertEquals(10, s.getNbSolutions());
@@ -304,8 +305,8 @@ public class BinRelationApiTest {
 		v1 = makeIntVar("v1", 1, 4);
 		v2 = makeIntVar("v2", 1, 4);
 		v3 = makeIntVar("v3", 3, 6);
-		m.addConstraint(feasPairAC("cp:fc",v1, v2, matrice1));
-		m.addConstraint(feasPairAC("cp:fc",v2, v3, matrice2));
+		m.addConstraint(feasPairAC(CPOptions.C_EXT_FC,v1, v2, matrice1));
+		m.addConstraint(feasPairAC(CPOptions.C_EXT_FC,v2, v3, matrice2));
 		s.read(m);
 		s.solveAll();
 		assertEquals(10, s.getNbSolutions());
@@ -316,8 +317,8 @@ public class BinRelationApiTest {
 		v1 = makeIntVar("v1", 1, 4);
 		v2 = makeIntVar("v2", 1, 4);
 		v3 = makeIntVar("v3", 3, 6);
-		m.addConstraint(feasPairAC("cp:ac2001",v1, v2, matrice1));
-		m.addConstraint(feasPairAC("cp:ac2001",v2, v3, matrice2));
+		m.addConstraint(feasPairAC(CPOptions.C_EXT_AC2001,v1, v2, matrice1));
+		m.addConstraint(feasPairAC(CPOptions.C_EXT_AC2001,v2, v3, matrice2));
 		s.read(m);
 		s.solveAll();
 		assertEquals(10, s.getNbSolutions());
@@ -328,8 +329,8 @@ public class BinRelationApiTest {
 		v1 = makeIntVar("v1", 1, 4);
 		v2 = makeIntVar("v2", 1, 4);
 		v3 = makeIntVar("v3", 3, 6);
-		m.addConstraint(feasPairAC("cp:ac32",v1, v2, matrice1));
-		m.addConstraint(feasPairAC("cp:ac32",v2, v3, matrice2));
+		m.addConstraint(feasPairAC(CPOptions.C_EXT_AC32,v1, v2, matrice1));
+		m.addConstraint(feasPairAC(CPOptions.C_EXT_AC32,v2, v3, matrice2));
 		s.read(m);
 		s.solveAll();
 		assertEquals(10, s.getNbSolutions());
@@ -340,8 +341,8 @@ public class BinRelationApiTest {
 		v1 = makeIntVar("v1", 1, 4);
 		v2 = makeIntVar("v2", 1, 4);
 		v3 = makeIntVar("v3", 3, 6);
-		m.addConstraint(relationPairAC("cp:ac32",v1, v2, new MyEquality()));
-		m.addConstraint(relationPairAC("cp:ac32",v2, v3, new MyEquality()));
+		m.addConstraint(relationPairAC(CPOptions.C_EXT_AC32,v1, v2, new MyEquality()));
+		m.addConstraint(relationPairAC(CPOptions.C_EXT_AC32,v2, v3, new MyEquality()));
 		s.read(m);
 		s.solveAll();
 		assertEquals(2, s.getNbSolutions());
@@ -352,8 +353,8 @@ public class BinRelationApiTest {
 		v1 = makeIntVar("v1", 1, 4);
 		v2 = makeIntVar("v2", 1, 4);
 		v3 = makeIntVar("v3", 5, 8);
-		m.addConstraint(relationPairAC("cp:ac32",v1, v2, new MyInequality()));
-		m.addConstraint(relationPairAC("cp:ac32",v2, v3, new MyInequality()));
+		m.addConstraint(relationPairAC(CPOptions.C_EXT_AC32,v1, v2, new MyInequality()));
+		m.addConstraint(relationPairAC(CPOptions.C_EXT_AC32,v2, v3, new MyInequality()));
 		s.read(m);
 		s.solveAll();
 		assertEquals(48, s.getNbSolutions());
@@ -364,8 +365,8 @@ public class BinRelationApiTest {
 		v1 = makeIntVar("v1", 1, 4);
 		v2 = makeIntVar("v2", 1, 4);
 		v3 = makeIntVar("v3", 5, 8);
-		m.addConstraint(relationPairAC("cp:ac32",v1, v2, (BinRelation) (new MyEquality()).getOpposite()));
-		m.addConstraint(relationPairAC("cp:ac32",v2, v3, (BinRelation) (new MyEquality()).getOpposite()));
+		m.addConstraint(relationPairAC(CPOptions.C_EXT_AC32,v1, v2, (BinRelation) (new MyEquality()).getOpposite()));
+		m.addConstraint(relationPairAC(CPOptions.C_EXT_AC32,v2, v3, (BinRelation) (new MyEquality()).getOpposite()));
 		s.read(m);
 		s.solveAll();
 		assertEquals(48, s.getNbSolutions());

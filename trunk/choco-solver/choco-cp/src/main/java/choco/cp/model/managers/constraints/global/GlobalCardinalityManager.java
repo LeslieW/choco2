@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.global;
 
+import choco.cp.CPOptions;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.BoundGcc;
@@ -65,10 +66,10 @@ public class GlobalCardinalityManager extends IntConstraintManager {
                     int[] low = (int[])params[3];
                     int[] up = (int[])params[4];
                     IntDomainVar[] vars = solver.getVar(variables);
-                    if(options.contains("cp:ac")){
+                    if(options.contains(CPOptions.C_GCC_AC)){
                         return new GlobalCardinality(vars, min, max, low, up, solver.getEnvironment());
                     }
-                    if(options.contains("cp:bc")){
+                    if(options.contains(CPOptions.C_GCC_BC)){
                         return new BoundGcc(vars, min, max, low, up, solver.getEnvironment());
                     }
                     if(vars[0].hasEnumeratedDomain()){
@@ -81,10 +82,10 @@ public class GlobalCardinalityManager extends IntConstraintManager {
                     int[] low = (int[])params[1];
                     int[] up = (int[])params[2];
                     IntDomainVar[] vars = solver.getVar(variables);
-                    if(options.contains("cp:ac")){
+                    if(options.contains(CPOptions.C_GCC_AC)){
                         return new GlobalCardinality(vars, 1, low.length, low, up, solver.getEnvironment());
                     }
-                    if(options.contains("cp:bc")){
+                    if(options.contains(CPOptions.C_GCC_BC)){
                         return new BoundGcc(vars, 1, low.length, low, up, solver.getEnvironment());
                     }
                     if ((vars[0]).hasEnumeratedDomain()) {
@@ -110,7 +111,7 @@ public class GlobalCardinalityManager extends IntConstraintManager {
     }
 
     public int[] getFavoriteDomains(Set<String> options) {
-        if (options.contains("cp:bc")) {
+        if (options.contains(CPOptions.C_GCC_BC)) {
             return getBCFavoriteIntDomains();
         } else {
             return getACFavoriteIntDomains();
