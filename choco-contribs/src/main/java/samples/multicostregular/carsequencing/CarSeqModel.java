@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular.carsequencing;
 
+import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
@@ -31,8 +33,6 @@ import samples.multicostregular.carsequencing.parser.CarSeqInstance;
 import samples.multicostregular.carsequencing.parser.GraphGenerator;
 
 import java.util.ArrayList;
-
-import static choco.Choco.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -78,8 +78,8 @@ public class CarSeqModel extends CPModel {
             z[i] = makeIntVar("nb",nb,nb);
         }
 
-        this.addVariables("cp:enum",vs);
-        this.addVariables("cp:bound",z);
+        this.addVariables(CPOptions.V_ENUM,vs);
+        this.addVariables(CPOptions.V_BOUND,z);
 
 
 

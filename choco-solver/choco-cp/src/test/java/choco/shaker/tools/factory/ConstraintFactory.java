@@ -23,6 +23,7 @@
 package choco.shaker.tools.factory;
 
 import choco.Choco;
+import choco.cp.CPOptions;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 
@@ -119,11 +120,11 @@ public class ConstraintFactory {
     public Constraint make(C c, Random r) {
         switch (c) {
             case ALLDIFFERENT:
-                return Choco.allDifferent( "cp:ac", of.make(7, r));
+                return Choco.allDifferent( CPOptions.C_ALLDIFFERENT_AC, of.make(7, r));
             case BALLDIFFERENT:
-                return Choco.allDifferent( "cp:bc", of.make(7, r));
+                return Choco.allDifferent( CPOptions.C_ALLDIFFERENT_BC, of.make(7, r));
             case BGCC_1:
-                return makeGcc1(r, "cp:bc");
+                return makeGcc1(r, CPOptions.C_GCC_BC);
             case DISTANCE_EQ_1:
                 return Choco.distanceEQ(vf.make(r), vf.make(r), r.nextInt(vf.dsize)-vf.dsize/2);
             case DISTANCE_EQ_2:
@@ -149,7 +150,7 @@ public class ConstraintFactory {
             case FALSE:
                 return Choco.FALSE;
             case GCC:
-                return makeGcc1(r, "cp:ac");
+                return makeGcc1(r, CPOptions.C_GCC_AC);
             case GEQ:
                 return Choco.geq(of.make(r), of.make(r));
             case GT:

@@ -23,6 +23,7 @@
 package choco.model.constraints.global;
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
@@ -74,7 +75,7 @@ public class ReifiedIntConstraintTest {
 			IntegerVariable b = makeIntVar("b", 0, 1);
 			IntegerVariable y = makeIntVar("y", 1, 10);
 			IntegerVariable z = makeIntVar("z", 1, 10);
-            m.addVariables("cp:bound", b, y, z);
+            m.addVariables(CPOptions.V_BOUND, b, y, z);
 
             //m.addVariable(b, y, z);
 			s.read(m);
@@ -97,7 +98,7 @@ public class ReifiedIntConstraintTest {
 			IntegerVariable b = makeIntVar("b", 0, 1);
 			IntegerVariable y = makeIntVar("y", 1, 10);
 			IntegerVariable z = makeIntVar("z", 1, 10);
-            m.addVariables("cp:bound", b, y, z);
+            m.addVariables(CPOptions.V_BOUND, b, y, z);
 
             m.addVariables(b, y, z);
 			s.read(m);

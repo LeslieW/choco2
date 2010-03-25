@@ -22,10 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.variables;
 
-import java.util.BitSet;
-import java.util.Iterator;
-
 import choco.Choco;
+import choco.cp.CPOptions;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.leaves.ConstantLeaf;
 import choco.cp.solver.constraints.reified.leaves.VariableLeaf;
@@ -42,6 +40,9 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.INode;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.BitSet;
+import java.util.Iterator;
 
 /**
  * Created by IntelliJ IDEA.
@@ -87,15 +88,15 @@ public class IntegerVariableManager implements VariableManager<IntegerVariable> 
             if (var.getValues() == null) {
                 if (var.getLowB() != var.getUppB()) {
                     int type; // default type
-                    if (var.getOptions().contains("cp:enum")) {
+                    if (var.getOptions().contains(CPOptions.V_ENUM)) {
                         type = IntDomainVar.BITSET;
-                    } else if (var.getOptions().contains("cp:bound")) {
+                    } else if (var.getOptions().contains(CPOptions.V_BOUND)) {
                         type = IntDomainVar.BOUNDS;
-                    } else if (var.getOptions().contains("cp:link")) {
+                    } else if (var.getOptions().contains(CPOptions.V_LINK)) {
                         type = IntDomainVar.LINKEDLIST;
-                    } else if (var.getOptions().contains("cp:btree")) {
+                    } else if (var.getOptions().contains(CPOptions.V_BTREE)) {
                         type = IntDomainVar.BINARYTREE;
-                    } else if (var.getOptions().contains("cp:blist")) {
+                    } else if (var.getOptions().contains(CPOptions.V_BLIST)) {
                         type = IntDomainVar.BIPARTITELIST;
                     } else{
                         type = getIntelligentDomain(solver.getModel(),var);
@@ -106,11 +107,11 @@ public class IntegerVariableManager implements VariableManager<IntegerVariable> 
                 int[] values = var.getValues();
                 if(values.length>1) {
                     int type = IntDomainVar.BITSET; // default type
-                    if (var.getOptions().contains("cp:link")) {
+                    if (var.getOptions().contains(CPOptions.V_LINK)) {
                         type = IntDomainVar.LINKEDLIST;
-                    } else if (var.getOptions().contains("cp:btree")) {
+                    } else if (var.getOptions().contains(CPOptions.V_BTREE)) {
                         type = IntDomainVar.BINARYTREE;
-                    } else if (var.getOptions().contains("cp:blist")) {
+                    } else if (var.getOptions().contains(CPOptions.V_BLIST)) {
                         type = IntDomainVar.BIPARTITELIST;
                     }
                     v = new IntDomainVarImpl(solver, var.getName(), type, values);

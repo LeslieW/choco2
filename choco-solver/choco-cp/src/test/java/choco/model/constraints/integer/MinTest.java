@@ -22,32 +22,26 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.integer;
 
-import static choco.Choco.eq;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.makeIntVarArray;
-import static choco.Choco.makeSetVar;
-import static choco.Choco.min;
-import static choco.model.constraints.integer.MaxTest.testAll;
-import static java.text.MessageFormat.format;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.logging.Logger;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import choco.Choco;
+import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
+import static choco.model.constraints.integer.MaxTest.testAll;
+import org.junit.After;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
+
+import static java.text.MessageFormat.format;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -107,7 +101,7 @@ public class MinTest{
             IntegerVariable x = makeIntVar("x", 1, 5);
             IntegerVariable y = makeIntVar("y", 1, 5);
             IntegerVariable z = makeIntVar("z", 1, 5);
-            m.addVariables("cp:bound", x, y, z);
+            m.addVariables(CPOptions.V_BOUND, x, y, z);
             IntegerVariable w = makeIntVar("w", 1, 5);
             m.addConstraint(min(new IntegerVariable[]{x, y, z},w));
             s.setVarIntSelector(new RandomIntVarSelector(s, i));

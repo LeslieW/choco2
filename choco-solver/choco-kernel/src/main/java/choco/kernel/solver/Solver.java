@@ -542,9 +542,6 @@ public interface Solver extends IMeasures, IPretty {
 
 	public void setFeasible(Boolean b);
 
-	public Boolean getFeasible();
-
-
 	/**
 	 * returning the index of the current worl
      * @return current world index

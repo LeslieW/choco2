@@ -22,38 +22,26 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.scheduling;
 
-import static choco.Choco.constant;
-import static choco.Choco.endsBeforeBegin;
-import static choco.Choco.makeBooleanVar;
-import static choco.Choco.makeIntVar;
-import static choco.Choco.makeTaskVar;
-import static choco.Choco.makeTaskVarArray;
-import static choco.Choco.precedenceDisjoint;
-import static choco.Choco.precedenceImplied;
-import static choco.Choco.precedenceReified;
-import static choco.Choco.startsAfterEnd;
-import static choco.Choco.startsBeforeBegin;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.junit.Ignore;
-import org.junit.Test;
-
-import samples.scheduling.pert.DeterministicPert;
 import choco.Choco;
+import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.configure.SchedulerConfiguration;
 import choco.cp.solver.constraints.global.scheduling.precedence.VariablePrecedenceDisjoint;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import org.junit.Ignore;
+import org.junit.Test;
+import samples.scheduling.pert.DeterministicPert;
+
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 
@@ -101,7 +89,7 @@ public class TestPrecedences {
 	@Test
 	public void testProjectDates() {
 		m=new CPModel();
-		m.addVariable(makeTaskVar("alone",20, 5, "cp:bound"));
+		m.addVariable(makeTaskVar("alone",20, 5, CPOptions.V_BOUND));
 		solve(16,"project ");
 		s = new CPSolver();
 		s.setHorizon(15);
@@ -136,7 +124,7 @@ public class TestPrecedences {
 		int k1 = 5, k2 = 5;
 		IntegerVariable x = makeIntVar("x", 1, 10);
 		IntegerVariable y = makeIntVar("y", 1, 10);
-		m.addVariables("cp:bound", x, y);
+		m.addVariables(CPOptions.V_BOUND, x, y);
 		IntegerVariable z = makeIntVar("z", 0, 1);
 
 		m.addConstraint(precedenceDisjoint(x,k1,y,k2,z));
@@ -150,7 +138,7 @@ public class TestPrecedences {
 		int k1 = 5;
 		IntegerVariable x = makeIntVar("x", 1, 10);
 		IntegerVariable y = makeIntVar("y", 1, 10);
-		m.addVariables("cp:bound", x, y);
+		m.addVariables(CPOptions.V_BOUND, x, y);
 		IntegerVariable z = makeIntVar("z", 0, 1);
 
 		m.addConstraint(precedenceReified(x,k1,y,z));
@@ -165,7 +153,7 @@ public class TestPrecedences {
 		IntegerVariable x = makeIntVar("x", 1, 10);
 		IntegerVariable y = makeIntVar("y", 1, 10);
 		IntegerVariable z = makeIntVar("z", 0, 1);
-		//m.addVariables("cp:bound", x, y, z);
+		//m.addVariables(CPOptions.V_BOUND, x, y, z);
 
 		//m.addConstraint(leq( plus(x, k1), y));
 		m.addConstraint(precedenceImplied(x,k1,y,z));
@@ -182,7 +170,7 @@ public class TestPrecedences {
 		IntegerVariable x = makeIntVar("x", 1, 10);
 		IntegerVariable y = makeIntVar("y", 1, 10);
 		IntegerVariable z = makeIntVar("z", 0, 1);
-		m.addVariables("cp:bound", x, y, k1, k2, z);
+		m.addVariables(CPOptions.V_BOUND, x, y, k1, k2, z);
 		//m.addConstraint( Choco.pre)
 		//          m.addConstraints(Choco.implies(Choco.eq(z,1),Choco.leq(Choco.plus(x,k1),y)));
 		//          m.addConstraints(Choco.implies(Choco.eq(z,0),Choco.leq(Choco.plus(y,k2),x)));

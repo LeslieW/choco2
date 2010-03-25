@@ -32,6 +32,7 @@
 package choco.model.constraints.integer;
 
 import static choco.Choco.makeIntVar;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.variables.integer.AbstractIntDomain;
@@ -64,7 +65,7 @@ public class BitSetIntDomainTest {
         logger.fine("BitSetIntDomain Testing...");
         m = new CPModel();
         x = makeIntVar("X", 1, 100);
-        m.addVariable("cp:bound", x);
+        m.addVariable(CPOptions.V_BOUND, x);
         y = makeIntVar("Y", 1, 15);
         m.addVariables(x, y);
         s = new CPSolver();

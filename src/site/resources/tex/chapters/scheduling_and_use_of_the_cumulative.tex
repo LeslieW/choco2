@@ -42,8 +42,8 @@ Moreover, we add a boolean variable per task to specify if the task is assigned 
 
 \begin{lstlisting}
   IntegerVariable capa = constant(7);
-  IntegerVariable[] starts = makeIntVarArray("start", n, 0, 5, "cp:bound");
-  IntegerVariable[] ends = makeIntVarArray("end", n, 0, 6, "cp:bound");
+  IntegerVariable[] starts = makeIntVarArray("start", n, 0, 5, CPOptions.V_BOUND);
+  IntegerVariable[] ends = makeIntVarArray("end", n, 0, 6, CPOptions.V_BOUND);
   
   IntegerVariable[] duration = new IntegerVariable[n];
   IntegerVariable[] height = new IntegerVariable[n];
@@ -53,7 +53,7 @@ Moreover, we add a boolean variable per task to specify if the task is assigned 
   }
   
   IntegerVariable[] bool = makeIntVarArray("taskIn?", n, 0, 1);
-  IntegerVariable obj = makeIntVar("obj", 0, n, "cp:bound", "cp:objective");
+  IntegerVariable obj = makeIntVar("obj", 0, n, CPOptions.V_BOUND, CPOptions.V_OBJECTIVE);
 \end{lstlisting}
 
 We then add the constraints to the model. Three constraints are needed. First, the cumulative ensures that the resource consumption is respected at any time. Then we need to make sure that if a task is assigned to the cumulative, its height can not be null which is done by the use of boolean channeling constraints. Those constraints ensure that :

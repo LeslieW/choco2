@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.variables;
 
+import choco.cp.CPOptions;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.set.SetCard;
 import choco.cp.solver.variables.set.SetVarImpl;
@@ -59,19 +60,17 @@ public class SetVariableManager implements VariableManager<SetVariable> {
                     s = new SetVarImpl(solver, var.getName(), var.getValues(), card, SetVar.BOUNDSET_CONSTANT);
             }else
             if (var.getValues() == null) {
-                if(var.getOptions().contains("cp:boundCard")){
+                if(var.getOptions().contains(CPOptions.V_BOUND)){
                     s = new SetVarImpl(solver, var.getName(), var.getLowB(), var.getUppB(), card, SetVar.BOUNDSET_BOUNDCARD);
                 }else
-                //if(options.contains("cp:enumCard")){
                 {
                     s = new SetVarImpl(solver, var.getName(), var.getLowB(), var.getUppB(), card, SetVar.BOUNDSET_ENUMCARD);
                 }
             }else{
                 int[] values = var.getValues();
-                if(var.getOptions().contains("cp:boundCard")){
+                if(var.getOptions().contains(CPOptions.V_BOUND)){
                     s = new SetVarImpl(solver, var.getName(), values, card, SetVar.BOUNDSET_BOUNDCARD);
                 }else
-                //if(options.contains("cp:enumCard")){
                 {
                     s = new SetVarImpl(solver, var.getName(), values, card, SetVar.BOUNDSET_ENUMCARD);
                 }

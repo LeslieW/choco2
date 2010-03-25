@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.strong.xmlmodel;
 
+import choco.cp.CPOptions;
 import choco.cp.solver.constraints.strong.StrongConsistencyManager;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.ComponentConstraint;
@@ -53,7 +54,7 @@ public class ChocoFactoryRPC extends ChocoFactory {
 		final Collection<Constraint> maxRPCConstraints = new ArrayList<Constraint>();
 
 		Map<String, PConstraint> pcstr = parser.getMapOfConstraints();
-		String options = (forceExp ? "cp:decomp" : "");
+		String options = (forceExp ? CPOptions.E_DECOMP : "");
 		for (PConstraint pc : pcstr.values()) {
 			for (Constraint c : makeModelConstraint(pc)) {
 				if (nbVariables(c) == 2) {

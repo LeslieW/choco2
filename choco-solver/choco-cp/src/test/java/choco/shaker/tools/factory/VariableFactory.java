@@ -23,6 +23,7 @@
 package choco.shaker.tools.factory;
 
 import choco.Choco;
+import choco.cp.CPOptions;
 import choco.kernel.model.variables.integer.IntegerVariable;
 
 import java.util.ArrayList;
@@ -144,27 +145,27 @@ public class VariableFactory {
             case ENUMVAR:
                 upp = r.nextInt(dsize);
                 low = upp - r.nextInt(dsize);
-                var = Choco.makeIntVar("v_"+id, low, upp, "cp:enum");
+                var = Choco.makeIntVar("v_"+id, low, upp, CPOptions.V_ENUM);
                 break;
             case BOUNDVAR:
                 upp = r.nextInt(dsize);
                 low = upp - r.nextInt(dsize);
-                var = Choco.makeIntVar("v_"+id, low, upp, "cp:bound");
+                var = Choco.makeIntVar("v_"+id, low, upp, CPOptions.V_BOUND);
                 break;
             case BTREEVAR:
                 upp = r.nextInt(dsize);
                 low = upp - r.nextInt(dsize);
-                var = Choco.makeIntVar("v_"+id, low, upp, "cp:btree");
+                var = Choco.makeIntVar("v_"+id, low, upp, CPOptions.V_BTREE);
                 break;
             case BLISTVAR:
                 upp = r.nextInt(dsize);
                 low = upp - r.nextInt(dsize);
-                var = Choco.makeIntVar("v_"+id, low, upp, "cp:blist");
+                var = Choco.makeIntVar("v_"+id, low, upp, CPOptions.V_BLIST);
                 break;
             case LINKVAR:
                 upp = r.nextInt(dsize);
                 low = upp - r.nextInt(dsize);
-                var = Choco.makeIntVar("v_"+id, low, upp, "cp:link");
+                var = Choco.makeIntVar("v_"+id, low, upp, CPOptions.V_LINK);
                 break;
             case UNBOUNDED:
                 var = Choco.makeIntVar("v_"+id);

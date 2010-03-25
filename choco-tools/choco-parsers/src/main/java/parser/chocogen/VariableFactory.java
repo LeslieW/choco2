@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package parser.chocogen;
 
+import static choco.Choco.makeIntVar;
+import choco.cp.CPOptions;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import parser.absconparseur.components.PConstraint;
@@ -30,8 +32,6 @@ import parser.absconparseur.components.PVariable;
 import parser.absconparseur.tools.InstanceParser;
 
 import java.util.Iterator;
-
-import static choco.Choco.makeIntVar;
 
 /*
  * User:    hcambaza
@@ -73,17 +73,17 @@ public class VariableFactory extends ObjectFactory {
 			var = makeIntVar(pvar.getName(), pvar.getDomain().getValues());
             //the second condition is for very sparse variables !
             if (isVarOnlyInvolvedInExtConstraint(pvar) || 20 * span > 100 * nbvalues) {
-                m.addVariable("cp:blist", var);
+                m.addVariable(CPOptions.V_BLIST, var);
             } else {
-                m.addVariable("cp:enum", var);
+                m.addVariable(CPOptions.V_ENUM, var);
             }
         } else {
 			if (isVarOnlyInvolvedInExtConstraint(pvar)) {
 				var = makeIntVar(pvar.getName(), pvar.getDomain().getMinValue(), pvar.getDomain().getMaxValue());					
-                m.addVariable("cp:blist", var);
+                m.addVariable(CPOptions.V_BLIST, var);
             } else {
 				var = makeIntVar(pvar.getName(), pvar.getDomain().getMinValue(), pvar.getDomain().getMaxValue());
-                m.addVariable("cp:bound", var);
+                m.addVariable(CPOptions.V_BOUND, var);
             }
 		}
 		return var;

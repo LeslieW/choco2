@@ -22,6 +22,7 @@
  **************************************************/
 package choco.cp.model.managers.constraints.global;
 
+import choco.cp.CPOptions;
 import choco.cp.model.managers.MixedConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.bool.sat.ClauseStore;
@@ -50,7 +51,7 @@ public class ClausesManager extends MixedConstraintManager {
             IntDomainVar[] vs = new IntDomainVar[vars.length];
             solver._to(vars, vs);
             ClauseStore cs =  new ClauseStore(vs, solver.getEnvironment());
-            if (options.contains("cp:entail")) {
+            if (options.contains(CPOptions.C_CLAUSES_ENTAIL)) {
                 cs.setEfficientEntailmentTest();
             }
             Constraint[] constraints = (Constraint[])((Object[])parameters)[1];

@@ -31,6 +31,7 @@
 package choco.solver.search;
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
@@ -75,7 +76,7 @@ public class SolveTest {
 		s = new CPSolver();
 		x = makeIntVar("X", 0, 5);
 		y = makeIntVar("Y", 0, 1);
-		m.addVariables("cp:bound",x, y);
+		m.addVariables(CPOptions.V_BOUND,x, y);
 	}
 
 	@After
@@ -286,7 +287,7 @@ public class SolveTest {
 		int n = 10;
 		IntegerVariable[] bvars = makeIntVarArray("b", n, 0, 1);
 		IntegerVariable charge = makeIntVar("charge", 20000, 100000);
-		m.addVariable("cp:bound", charge);
+		m.addVariable(CPOptions.V_BOUND, charge);
 		int[] coefs = new int[n];
 		Random rand = new Random(100);
 		int[] coef = new int[]{2000, 4000};
@@ -295,7 +296,7 @@ public class SolveTest {
 		}
 		//m.addConstraint(m.eq(m.scalar(,)));
 		Constraint knapsack = geq(scalar(coefs, bvars), charge);
-		m.addConstraint("cp:decomp", knapsack);
+		m.addConstraint(CPOptions.E_DECOMP, knapsack);
 		s.read(m);
 		s.worldPush();
 		int initWorld = s.getWorldIndex();
@@ -376,7 +377,7 @@ public class SolveTest {
 		obj2 = makeIntVar("obj2", 0, 7);
 		obj3 = makeIntVar("obj3", 0, 10);
 		c = makeIntVar("cost", 1, 100);
-		m.addVariable("cp:bound", c);
+		m.addVariable(CPOptions.V_BOUND, c);
 
 		int capacity = 34;
 
@@ -472,8 +473,8 @@ public class SolveTest {
         Model m = new CPModel();
         int n = 6;
         //2- declaration of variables
-        IntegerVariable[] vars = makeIntVarArray("v", n, 0, 5,"cp:enum");
-        IntegerVariable obj = makeIntVar("obj",0,100,"cp:bound");
+        IntegerVariable[] vars = makeIntVarArray("v", n, 0, 5,CPOptions.V_ENUM);
+        IntegerVariable obj = makeIntVar("obj",0,100,CPOptions.V_BOUND);
 
         //3- add the constraint
         String regexp = "(1|2)(3*)(1|4|5)";
@@ -527,7 +528,7 @@ public class SolveTest {
         IntegerVariable V18 = makeIntVar("V18", 1, 20);
         IntegerVariable V19 = makeIntVar("V19", 1, 20);
         IntegerVariable[] vars = new IntegerVariable[]{V0, V1, V2, V3, V4, V5, V6, V7, V8, V9, V10, V11, V12, V13, V14, V15, V16, V17, V18, V19};
-        m.addVariables("cp:decision",vars);
+        m.addVariables(CPOptions.V_DECISION,vars);
 
         m.addConstraint(and(neq(V14,V19),neq(abs(minus(V14,V19)),5)));
         m.addConstraint(and(neq(V3,V11), neq(abs(minus(V3,V11)),8)));

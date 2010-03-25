@@ -23,13 +23,13 @@ Such domain are memory consuming. In order to minimize the memory use and to hav
 \subsubsection{options:}
 	\begin{itemize}
 		\item \emph{no option} : no particular choice on decision or objective.
-		\item \texttt{cp:decision} : to force variable to be a decisional one
+		\item \texttt{CPOptions.V_DECISION} : to force variable to be a decisional one
 		\item \texttt{cp:no\_decision} : to force variable to be removed from the pool of decisionnal variables
-		\item \texttt{cp:objective} : to define the variable to be the one to optimize
+		\item \texttt{CPOptions.V_OBJECTIVE} : to define the variable to be the one to optimize
 	\end{itemize}
 
 \subsubsection{Example:}
 \begin{lstlisting}
 	RealVariable rvar1 = makeRealVar("rvar0", -10.0, 10.0);
-	RealVariable rvar2 = makeRealVar("rvar2", 0.0, 100.0,"cp:decision", "cp:objective");
+	RealVariable rvar2 = makeRealVar("rvar2", 0.0, 100.0,CPOptions.V_DECISION, CPOptions.V_OBJECTIVE);
 \end{lstlisting} 

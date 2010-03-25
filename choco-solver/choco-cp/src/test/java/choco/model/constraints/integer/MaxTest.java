@@ -23,6 +23,7 @@
 package choco.model.constraints.integer;
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
@@ -103,7 +104,7 @@ public class MaxTest {
 			IntegerVariable x = makeIntVar("x", 1, 5);
 			IntegerVariable y = makeIntVar("y", 1, 5);
 			IntegerVariable z = makeIntVar("z", 1, 5);
-			m.addVariables("cp:bound", x, y, z);
+			m.addVariables(CPOptions.V_BOUND, x, y, z);
 			IntegerVariable w = makeIntVar("z", 1, 5);
 			m.addConstraint(max(new IntegerVariable[]{x, y, z},w));
 			s.setVarIntSelector(new RandomIntVarSelector(s, i));
@@ -128,7 +129,7 @@ public class MaxTest {
 			IntegerVariable x = makeIntVar("x", 1, 5);
 			IntegerVariable y = makeIntVar("y", 1, 5);
 			IntegerVariable z = makeIntVar("z", 1, 5);
-			m.addVariables("cp:bound", x, y, z);
+			m.addVariables(CPOptions.V_BOUND, x, y, z);
 			m.addConstraint(max(y, z, x));
 			s.setVarIntSelector(new RandomIntVarSelector(s, i));
 			s.setValIntSelector(new RandomIntValSelector(i + 1));
@@ -153,15 +154,15 @@ public class MaxTest {
 			s= new CPSolver();
 			IntegerVariable x = makeIntVar("x", 1, 5);
 			if (rand.nextBoolean()) {
-				m.addVariable("cp:bound", x);
+				m.addVariable(CPOptions.V_BOUND, x);
 			}
 			IntegerVariable y = makeIntVar("y", 1, 5);
 			if (rand.nextBoolean()) {
-				m.addVariable("cp:bound", y);
+				m.addVariable(CPOptions.V_BOUND, y);
 			}
 			IntegerVariable z = makeIntVar("z", 1, 5);
 			if (rand.nextBoolean()) {
-				m.addVariable("cp:bound", z);
+				m.addVariable(CPOptions.V_BOUND, z);
 			}
 
 			m.addConstraint(max(new IntegerVariable[]{y, z}, x));
@@ -362,7 +363,7 @@ public class MaxTest {
 		CPModel m = new CPModel();
 		SetVariable set  = makeSetVar("set", 0, nbVars-1);
 		IntegerVariable[] vars = makeIntVarArray("v",nbVars,1, domSize);
-		if(bounded) {m.addVariables("cp:bound", vars);}
+		if(bounded) {m.addVariables(CPOptions.V_BOUND, vars);}
 		IntegerVariable w = makeIntVar("bound", 1, domSize);
 		IntegerVariable c  = makeIntVar("card", 0, nbVars+1);
 		Constraint ccard = eq(c, 0);

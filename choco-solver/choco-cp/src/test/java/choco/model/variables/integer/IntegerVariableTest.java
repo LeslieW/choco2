@@ -24,6 +24,7 @@ package choco.model.variables.integer;
 
 import choco.Choco;
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.varselector.MinDomain;
@@ -159,16 +160,16 @@ public class IntegerVariableTest {
         IntegerVariable iv = makeIntVar(name, bi, bs);
         switch (type) {
             case 0:
-                m.addVariable("cp:bound", iv);
+                m.addVariable(CPOptions.V_BOUND, iv);
                 break;
             case 1:
-                m.addVariable("cp:enum", iv);
+                m.addVariable(CPOptions.V_ENUM, iv);
                 break;
             case 2:
-                m.addVariable("cp:btree", iv);
+                m.addVariable(CPOptions.V_BTREE, iv);
                 break;
             case 3:
-                m.addVariable("cp:link", iv);
+                m.addVariable(CPOptions.V_LINK, iv);
                 break;
             default:
                 break;
@@ -232,7 +233,7 @@ public class IntegerVariableTest {
     public static void pbBoundAllDifferent(int type, IntegerVariable... vars){
         Model m = new CPModel();
         Constraint c  = allDifferent(vars);
-        m.addConstraint("cp:clique", c);
+        m.addConstraint(CPOptions.C_ALLDIFFERENT_CLIQUE, c);
 
         Solver s = new CPSolver();
         s.read(m);

@@ -1,18 +1,6 @@
 package samples.random;
 
-import static java.lang.System.out;
-import static java.text.MessageFormat.format;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.strong.DomOverDDegRPC;
@@ -27,6 +15,10 @@ import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+
+import static java.lang.System.out;
+import static java.text.MessageFormat.format;
+import java.util.*;
 
 public class RandomProblemLauncher {
 
@@ -193,7 +185,7 @@ public class RandomProblemLauncher {
                 case MaxRPCLight:
                     for (Constraint c : constraints) {
                         c.getOptions().clear();
-                        c.addOption("cp:ac3");
+                        c.addOption(CPOptions.C_EXT_AC3);
                     }
                     final Constraint cc = new ComponentConstraintWithSubConstraints(
                             StrongConsistencyManager.class, problem
@@ -208,7 +200,7 @@ public class RandomProblemLauncher {
                 default:
                     for (Constraint c : constraints) {
                         c.getOptions().clear();
-                        c.addOption("cp:ac32");
+                        c.addOption(CPOptions.C_EXT_AC32);
                         m.addConstraint(c);
                     }
                 }

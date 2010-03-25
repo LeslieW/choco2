@@ -163,28 +163,25 @@ public class CPSolver implements Solver {
 	 */
 	public static final SConstraint FALSE = new ConstantSConstraint(false);
 
-	protected final IndexFactory indexfactory;
+	private final IndexFactory indexfactory;
 	/**
 	 * Allows to know if the model is feasible (null if it was not solved).
 	 */
-	public Boolean feasible = null;
-	/**
-	 * True if the model was solved.
-	 */
-	protected boolean solved = false;
-	/**
+	private Boolean feasible = null;
+
+    /**
 	 * The environment managing the backtrackable data.
 	 */
-	protected IEnvironment environment;
+	private IEnvironment environment;
 	/**
 	 * The propagation engine to propagate during solving.
 	 */
-	protected AbstractPropagationEngine propagationEngine;
+	private AbstractPropagationEngine propagationEngine;
 	/**
 	 * The EventQueue copies for worldPush/Pop during propation
 	 */
-	protected VarEventQueue[] veqCopy = null;
-	protected AbstractConstraintEventQueue[] ceqCopy = null;
+	private VarEventQueue[] veqCopy = null;
+	private AbstractConstraintEventQueue[] ceqCopy = null;
 
 	/**
 	 * A constant denoting a null integer term. This is useful to make the API
@@ -199,19 +196,19 @@ public class CPSolver implements Solver {
 	 * The value of the parameter indicates the maximum recomputation gap, i.e. the maximum number of decisions between two storages.
 	 * If the parameter is lower than or equal to 1, the trailing storage mechanism is used (default).
 	 */
-	protected int recomputationGap = 1;
+	private int recomputationGap = 1;
 
 	/**
 	 * Decide if redundant constraints are automatically to the model to reason
 	 * on cardinalities on sets as well as kernel and enveloppe
 	 */
-	public boolean cardinalityReasonningsOnSETS = true;
+	private boolean cardinalityReasonningsOnSETS = true;
 
 	/**
 	 * an index useful for re-propagating cuts (static constraints) upon
 	 * backtracking
 	 */
-	public IStateInt indexOfLastInitializedStaticConstraint;
+	private IStateInt indexOfLastInitializedStaticConstraint;
 
 	/**
 	 * The (optimization or decision) model to which the entity belongs.
@@ -222,49 +219,49 @@ public class CPSolver implements Solver {
 	/**
 	 * All the constraints of the model.
 	 */
-	protected final PartiallyStoredVector<Propagator> constraints;
+	private final PartiallyStoredVector<Propagator> constraints;
 
 	/**
 	 * All the search intVars in the model.
 	 */
-	protected final StoredBipartiteVarSet<IntDomainVar> intVars;
+	final StoredBipartiteVarSet<IntDomainVar> intVars;
 	/**
 	 * All the set intVars in the model.
 	 */
-	protected final StoredBipartiteVarSet<SetVar> setVars;
+	final StoredBipartiteVarSet<SetVar> setVars;
 	/**
 	 * All the float vars in the model.
 	 */
-	protected final StoredBipartiteVarSet<RealVar> floatVars;
+	final StoredBipartiteVarSet<RealVar> floatVars;
 
-	protected final StoredBipartiteVarSet<TaskVar> taskVars;
+	final StoredBipartiteVarSet<TaskVar> taskVars;
 	/**
 	 * All the decision integer Vars in the model.
 	 */
-	protected final ArrayList<IntDomainVar> intDecisionVars;
+	final List<IntDomainVar> intDecisionVars;
 	/**
 	 * All the decision set Vars in the model.
 	 */
-	protected final ArrayList<SetVar> setDecisionVars;
+	final List<SetVar> setDecisionVars;
 	/**
 	 * All the decision float vars in the model.
 	 */
-	protected final ArrayList<RealVar> floatDecisionVars;
+	final List<RealVar> floatDecisionVars;
 
 	/**
 	 * All the decision task vars in the model.
 	 */
-	protected final ArrayList<TaskVar> taskDecisionVars;
+	final List<TaskVar> taskDecisionVars;
 
 	/**
 	 * All the integer constant variables in the model.
 	 */
-	protected final HashMap<Integer, IntDomainVar> intconstantVars;
+	private final HashMap<Integer, IntDomainVar> intconstantVars;
 
 	/**
 	 * All the real constant variables in the model.
 	 */
-	protected final HashMap<Double, RealIntervalConstant> realconstantVars;
+	private final HashMap<Double, RealIntervalConstant> realconstantVars;
 
 	protected final TLongObjectHashMap<Var> mapvariables;
 
@@ -273,11 +270,11 @@ public class CPSolver implements Solver {
 	/**
 	 * Precision of the search for a real model.
 	 */
-	protected double precision = 1.0e-6;
+	private double precision = 1.0e-6;
 	/**
 	 * Minimal width reduction between two propagations.
 	 */
-	protected double reduction = 0.99;
+	private double reduction = 0.99;
 
 	/**
 	 * The variable modelling the objective function
@@ -321,7 +318,7 @@ public class CPSolver implements Solver {
 	 * you can easily provide set your own policy with @{link {@link AbstractSearchStrategy#setSolutionPool(ISolutionPool)}.
 	 */
 	@Override
-	public void setSolutionPoolCapacity(int capacity) {
+	public final void setSolutionPoolCapacity(int capacity) {
 		this.solutionPoolCapacity = capacity;
 	}
 
@@ -406,11 +403,11 @@ public class CPSolver implements Solver {
 
 	int eventQueueType = EventQueueFactory.BASIC;
 
-	public AbstractGlobalSearchStrategy getSearchStrategy() {
+	public final AbstractGlobalSearchStrategy getSearchStrategy() {
 		return strategy;
 	}
 
-	public void resetSearchStrategy() {
+	public final void resetSearchStrategy() {
 		strategy = null;
 	}
 
@@ -440,7 +437,7 @@ public class CPSolver implements Solver {
 		this.indexOfLastInitializedStaticConstraint = env.makeInt(PartiallyStoredVector.getFirstStaticIndex() - 1);
 	}
 	 
-    protected void clearVarLists() {
+    protected final void clearVarLists() {
     	mapvariables.clear();
 		mapconstraints.clear();
 		intVars.clear();
@@ -458,7 +455,7 @@ public class CPSolver implements Solver {
      * Removes all of the elements from this solver (optional operation).
      * The solver will be 'empty' after this call returns.
      */
-    public void clear() {
+    public final void clear() {
     	mod2sol.clear();
 		clearVarLists();
 		this.propagationEngine = new ChocEngine(this);
@@ -474,7 +471,7 @@ public class CPSolver implements Solver {
 	 *
 	 * @param visu the external visualizer
 	 */
-	public void visualize(IVisu visu) {
+	public final void visualize(IVisu visu) {
 		// Change the var event queue to an observable one
 		this.eventQueueType = EventQueueFactory.OBSERVABLE;
 		this.propagationEngine.setVarEventQueues(this.eventQueueType);
@@ -484,15 +481,15 @@ public class CPSolver implements Solver {
 		visu.setVisible(true);
 	}
 
-	public IndexFactory getIndexfactory() {
+	public final IndexFactory getIndexfactory() {
 		return indexfactory;
 	}
 
-	public boolean contains(Variable v) {
+	public final boolean contains(Variable v) {
 		return mapvariables.containsKey(v.getIndex());
 	}
 
-	public String getSummary() {
+	public final String getSummary() {
 		StringBuilder buffer = new StringBuilder();
 		buffer.append("Pb[");
 		buffer.append(getNbIntVars() + getNbRealVars() + getNbSetVars())
@@ -506,7 +503,7 @@ public class CPSolver implements Solver {
 		return new String(buffer);
 	}
 
-	public String pretty() {
+	public final String pretty() {
 		StringBuffer buf = new StringBuffer(getSummary());
 		buf.append('\n');
 		buf.append(this.varsToString());
@@ -514,7 +511,7 @@ public class CPSolver implements Solver {
 		return new String(buf);
 	}
 
-	public String varsToString() {
+	public final String varsToString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("==== VARIABLES ====\n");
 		for (int i = 0; i < getNbIntVars(); i++) {
@@ -537,7 +534,7 @@ public class CPSolver implements Solver {
 		return new String(buf);
 	}
 
-	public String constraintsToString() {
+	public final String constraintsToString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("==== CONSTRAINTS ====\n");
 		DisposableIterator it = constraints.getIterator();
@@ -569,30 +566,30 @@ public class CPSolver implements Solver {
 	/**
 	 * Prepare Solver to read the model
 	 */
-	protected void initReading(){
+	protected final void initReading(){
 		//0- create data structure for boolean variable
 		this.getEnvironment().createSharedBipartiteSet(model.getNbBoolVar());
 
 	}
 
 
-	public SConstraint makeSConstraint(Constraint mc) {
+	public final SConstraint makeSConstraint(Constraint mc) {
 		return mod2sol.makeSConstraint(mc);
 	}
 
-	public SConstraint makeSConstraint(Constraint mc, boolean b) {
+	public final SConstraint makeSConstraint(Constraint mc, boolean b) {
 		return mod2sol.makeSConstraint(mc, b);
 	}
 
-	public SConstraint[] makeSConstraintAndOpposite(Constraint mc) {
+	public final SConstraint[] makeSConstraintAndOpposite(Constraint mc) {
 		return mod2sol.makeSConstraintAndOpposite(mc);
 	}
 
-	public SConstraint[] makeSConstraintAndOpposite(Constraint mc, boolean b) {
+	public final SConstraint[] makeSConstraintAndOpposite(Constraint mc, boolean b) {
 		return mod2sol.makeSConstraintAndOpposite(mc, b);
 	}
 
-	public void addConstraint(Constraint... tabic) {
+	public final void addConstraint(Constraint... tabic) {
 		Constraint ic;
 		for (Constraint aTabic : tabic) {
 			ic = aTabic;
@@ -614,11 +611,11 @@ public class CPSolver implements Solver {
 	 * Retrieves the model of the entity
 	 */
 
-	public Model getModel() {
+	public final Model getModel() {
 		return model;
 	}
 
-	public void setModel(Model model) {
+	public final void setModel(Model model) {
 		this.model = (CPModel) model;
 	}
 
@@ -626,7 +623,7 @@ public class CPSolver implements Solver {
 	 * Set the precision of the search for a real model.
 	 */
 	@Override
-	public void setPrecision(double precision) {
+	public final void setPrecision(double precision) {
 		this.precision = precision;
 	}
 
@@ -634,7 +631,7 @@ public class CPSolver implements Solver {
 	 * Get the precision of the search for a real model.
 	 */
 	@Override
-	public double getPrecision() {
+	public final double getPrecision() {
 		return precision;
 	}
 
@@ -642,7 +639,7 @@ public class CPSolver implements Solver {
 	 * Set the minimal width reduction between two propagations.
 	 */
 	@Override
-	public void setReduction(double reduction) {
+	public final void setReduction(double reduction) {
 		this.reduction = reduction;
 	}
 
@@ -650,7 +647,7 @@ public class CPSolver implements Solver {
 	 * Get the minimal width reduction between two propagations.
 	 */
 	@Override
-	public double getReduction() {
+	public final double getReduction() {
 		return reduction;
 	}
 
@@ -673,15 +670,11 @@ public class CPSolver implements Solver {
 		return eventQueueType;
 	}
 
-	public void setFeasible(Boolean b) {
+	public final void setFeasible(Boolean b) {
 		this.feasible = b;
 	}
 
-	public Boolean getFeasible() {
-		return feasible;
-	}
-
-	public String solutionToString() {
+	public final String solutionToString() {
 		StringBuffer buf = new StringBuffer();
 		for (int i = 0; i < getNbIntVars(); i++) {
 			final IntVar v = getIntVar(i);
@@ -708,15 +701,15 @@ public class CPSolver implements Solver {
 		return new String(buf);
 	}
 
-	public void setRandomSelectors(long seed) {
+	public final void setRandomSelectors(long seed) {
 		this.setRandomSelectors(new Random(seed));
 	}
 
-	public void setRandomSelectors() {
+	public final void setRandomSelectors() {
 		this.setRandomSelectors(new Random());
 	}
 
-	public void setRandomSelectors(Random manager) {
+	public final void setRandomSelectors(Random manager) {
 		if (intDecisionVars == null || intDecisionVars.isEmpty()) {
 			this.setVarIntSelector(new RandomIntVarSelector(this, manager
 					.nextLong()));
@@ -756,7 +749,7 @@ public class CPSolver implements Solver {
 	 * <li>does it use recomputation?</li>
 	 * </ul>
 	 */
-	public void generateSearchStrategy() {
+	public final void generateSearchStrategy() {
 		if (!(tempGoal != null && tempGoal instanceof ImpactBasedBranching)
 				|| strategy == null) { // <hca> really ugly to remove once
 			// impact ok
@@ -817,7 +810,7 @@ public class CPSolver implements Solver {
 		}
 	}
 
-	protected void generateLimitManager() {
+	protected final void generateLimitManager() {
 		final SearchLimitManager limitManager = new SearchLimitManager(strategy);
 		limitManager.setSearchLimit(limitConfig.makeSearchLimit(strategy)); //controlling the search
 		limitManager.setRestartLimit(limitConfig.makeRestartLimit(strategy)); //controlling the restart
@@ -829,7 +822,7 @@ public class CPSolver implements Solver {
 		strategy.setLimitManager(limitManager);
 	}
 
-	protected void generateSearchLoop() {
+	protected final void generateSearchLoop() {
 		final IKickRestart kickRestart = ( 
 				restartConfig.isRecordNogoodFromRestart() ? 
 						new NogoodKickRestart(strategy) : 
@@ -861,7 +854,7 @@ public class CPSolver implements Solver {
 		strategy.setSearchLoop(searchLoop);
 	}
 
-	public AbstractIntBranchingStrategy generateRealGoal() {
+	public final AbstractIntBranchingStrategy generateRealGoal() {
 		// default strategy choice for real
 		if (varRealSelector == null) {
 			//			if (floatDecisionVars.isEmpty()) {
@@ -879,7 +872,7 @@ public class CPSolver implements Solver {
 						valRealSelector);
 	}
 
-	public AbstractIntBranchingStrategy generateSetGoal() {
+	public final AbstractIntBranchingStrategy generateSetGoal() {
 		// default strategy choice for set
 		if (varSetSelector == null) {
 			if (setDecisionVars.isEmpty()) {
@@ -896,7 +889,7 @@ public class CPSolver implements Solver {
 		return new AssignSetVar(varSetSelector, valSetSelector);
 	}
 
-	public AbstractIntBranchingStrategy generateIntGoal() {
+	public final AbstractIntBranchingStrategy generateIntGoal() {
 		// default strategy choice for integer
 		if (valIntIterator == null && valIntSelector == null) {
 			valIntIterator = new IncreasingDomain();
@@ -916,7 +909,7 @@ public class CPSolver implements Solver {
 	}
 
 	// default strategy
-	protected void generateGoal() {
+	protected final void generateGoal() {
 		boolean first = true;
 		if (getNbSetVars() > 0) {
 			attachGoal(generateSetGoal());
@@ -1027,7 +1020,7 @@ public class CPSolver implements Solver {
 	 * @param branching
 	 *            the branching strategy
 	 */
-	public void attachGoal(AbstractIntBranchingStrategy branching) {
+	public final void attachGoal(AbstractIntBranchingStrategy branching) {
 		if (strategy == null) {
 			tempGoal = branching;
 		} else {
@@ -1053,7 +1046,7 @@ public class CPSolver implements Solver {
 	 *            the next branching strategy Branching strategies are run in
 	 *            the order given by the adding.
 	 */
-	public void addGoal(AbstractIntBranchingStrategy branching) {
+	public final void addGoal(AbstractIntBranchingStrategy branching) {
 		AbstractIntBranchingStrategy br;
 		if (strategy == null) {
 			br = tempGoal;
@@ -1075,7 +1068,7 @@ public class CPSolver implements Solver {
 	 * @param ilogGoal
 	 *            to take into account in the search strategy
 	 */
-	public void setIlogGoal(Goal ilogGoal) {
+	public final void setIlogGoal(Goal ilogGoal) {
 		this.ilogGoal = ilogGoal;
 	}
 
@@ -1083,7 +1076,7 @@ public class CPSolver implements Solver {
 	 * commands the strategy to start.
 	 * Use {@link ChocoLogging#flushLogs()} to flush search logs. 
 	 */
-	public void launch() {
+	public final void launch() {
 		// strategy.run();
 		strategy.incrementalRun();
 	}
@@ -1094,7 +1087,7 @@ public class CPSolver implements Solver {
 	 * @return the number of solutions to the model that were encountered during
 	 *         the search
 	 */
-	public int getNbSolutions() {
+	public final int getNbSolutions() {
 		return strategy.getSolutionCount();
 	}
 
@@ -1137,7 +1130,7 @@ public class CPSolver implements Solver {
 	 * @param b
 	 *            indicates wether the search stategy monitor the fail limit
 	 */
-	public void monitorFailLimit(boolean b) {
+	public final void monitorFailLimit(boolean b) {
 		if(b) failMeasure.safeAdd();
 		else failMeasure.safeDelete();
 	}
@@ -1146,7 +1139,7 @@ public class CPSolver implements Solver {
 	 * Sets the time limit i.e. the maximal time before stopping the search
 	 * algorithm
 	 */
-	public void setTimeLimit(int timeLimit) {
+	public final void setTimeLimit(int timeLimit) {
 		limitConfig.setSearchLimit(Limit.TIME, timeLimit);
 	}
 
@@ -1155,7 +1148,7 @@ public class CPSolver implements Solver {
 	 * Sets the node limit i.e. the maximal number of nodes explored by the
 	 * search algorithm
 	 */
-	public void setNodeLimit(int nodeLimit) {
+	public final void setNodeLimit(int nodeLimit) {
 		limitConfig.setSearchLimit(Limit.NODE, nodeLimit);
 	}
 
@@ -1163,7 +1156,7 @@ public class CPSolver implements Solver {
 	 * Sets the backtrack limit i.e. the maximal number of backtracks explored
 	 * by the search algorithm
 	 */
-	public void setBackTrackLimit(int backTrackLimit) {
+	public final void setBackTrackLimit(int backTrackLimit) {
 		limitConfig.setSearchLimit(Limit.BACKTRACK, backTrackLimit);
 	}
 
@@ -1171,7 +1164,7 @@ public class CPSolver implements Solver {
 	 * Sets the fail limit i.e. the maximal number of fail explored by the
 	 * search algorithm
 	 */
-	public void setFailLimit(int failLimit) {
+	public final void setFailLimit(int failLimit) {
 		limitConfig.setSearchLimit(Limit.FAIL, failLimit);
 	}
 
@@ -1179,7 +1172,7 @@ public class CPSolver implements Solver {
 	 * Sets the restart limit i.e. the maximal number of restart performed during the search algorithm.
 	 * The limit does not stop the search only the restart process.
 	 */
-	public void setRestartLimit(int restartLimit) {
+	public final void setRestartLimit(int restartLimit) {
 		limitConfig.setRestartLimit(Limit.RESTART, restartLimit);
 	}
 
@@ -1195,7 +1188,7 @@ public class CPSolver implements Solver {
 	 *
 	 * @return time count
 	 */
-	public int getTimeCount() {
+	public final int getTimeCount() {
 		return strategy == null ? 0 : strategy.getTimeCount();
 	}
 
@@ -1205,7 +1198,7 @@ public class CPSolver implements Solver {
 	 *
 	 * @return node count
 	 */
-	public int getNodeCount() {
+	public final int getNodeCount() {
 		return strategy == null ? 0 : strategy.getNodeCount();
 	}
 
@@ -1214,7 +1207,7 @@ public class CPSolver implements Solver {
 	 *
 	 * @return strategy == null ? 0 : backtrack count
 	 */
-	public int getBackTrackCount() {
+	public final int getBackTrackCount() {
 		return strategy == null ? 0 : strategy.getBackTrackCount();
 	}
 
@@ -1223,23 +1216,23 @@ public class CPSolver implements Solver {
 	 *
 	 * @return fail count
 	 */
-	public int getFailCount() {
+	public final int getFailCount() {
 		return strategy == null ? 0 : strategy.getFailCount();
 	}
 
 
 	@Override
-	public int getRestartCount() {
+	public final int getRestartCount() {
 		return strategy == null ? 0 : strategy.getRestartCount();
 	}
 
 	@Override
-	public int getSolutionCount() {
+	public final int getSolutionCount() {
 		return strategy == null ? 0 : strategy.getSolutionCount();
 	}
 
 	@Override
-	public Number getObjectiveValue() {
+	public final Number getObjectiveValue() {
 		if (strategy instanceof AbstractOptimize) {
 			return ( (AbstractOptimize) strategy).getObjectiveValue();
 		}
@@ -1247,12 +1240,12 @@ public class CPSolver implements Solver {
 	}
 
 	@Override
-	public boolean isObjectiveOptimal() {
+	public final boolean isObjectiveOptimal() {
 		return existsSolution() &&  !firstSolution && !isEncounteredLimit();
 	}
 
 	@Override
-	public boolean existsSolution() {
+	public final boolean existsSolution() {
         if (strategy != null && strategy.existsSolution()) return true;
         else return false;
 	}
@@ -1262,14 +1255,14 @@ public class CPSolver implements Solver {
 	/**
 	 * @return true if only the first solution must be found
 	 */
-	public boolean getFirstSolution() {
+	public final boolean getFirstSolution() {
 		return firstSolution;
 	}
 
 	/**
 	 * Sets wether only the first solution must be found
 	 */
-	public void setFirstSolution(boolean firstSolution) {
+	public final void setFirstSolution(boolean firstSolution) {
 		this.firstSolution = firstSolution;
 	}
 
@@ -1280,7 +1273,7 @@ public class CPSolver implements Solver {
 	 * @see choco.cp.solver.CPSolver#addGoal(choco.kernel.solver.branch.AbstractIntBranchingStrategy)
 	 * @see choco.cp.solver.CPSolver#attachGoal(choco.kernel.solver.branch.AbstractIntBranchingStrategy)
 	 */
-	public void setVarIntSelector(VarSelector varSelector) {
+	public final void setVarIntSelector(VarSelector varSelector) {
 		// To remove properly the listener from the Propagation engine
 		if(this.varIntSelector!=null && this.varIntSelector instanceof PropagationEngineListener){
 			((PropagationEngineListener)this.varIntSelector).safeDelete();
@@ -1305,7 +1298,7 @@ public class CPSolver implements Solver {
 	 * @see choco.cp.solver.CPSolver#addGoal(choco.kernel.solver.branch.AbstractIntBranchingStrategy)
 	 * @see choco.cp.solver.CPSolver#attachGoal(choco.kernel.solver.branch.AbstractIntBranchingStrategy)
 	 */
-	public void setVarRealSelector(RealVarSelector realVarSelector) {
+	public final void setVarRealSelector(RealVarSelector realVarSelector) {
 		this.varRealSelector = realVarSelector;
 		floatDecisionVars.addAll(floatVars.toList());
 	}
@@ -1316,7 +1309,7 @@ public class CPSolver implements Solver {
 	 * @see choco.cp.solver.CPSolver#addGoal(choco.kernel.solver.branch.AbstractIntBranchingStrategy)
 	 * @see choco.cp.solver.CPSolver#attachGoal(choco.kernel.solver.branch.AbstractIntBranchingStrategy)
 	 */
-	public void setVarSetSelector(SetVarSelector setVarSelector) {
+	public final void setVarSetSelector(SetVarSelector setVarSelector) {
 		this.varSetSelector = setVarSelector;
 		SetVar[] vars = ((AbstractSetVarSelector) setVarSelector).getVars();
 		if (vars != null) {
@@ -1334,47 +1327,47 @@ public class CPSolver implements Solver {
 	/**
 	 * Sets the integer value iterator the search should use
 	 */
-	public void setValIntIterator(ValIterator valIterator) {
+	public final void setValIntIterator(ValIterator valIterator) {
 		this.valIntIterator = valIterator;
 	}
 
 	/**
 	 * Sets the real value iterator the search should use
 	 */
-	public void setValRealIterator(RealValIterator realValIterator) {
+	public final void setValRealIterator(RealValIterator realValIterator) {
 		this.valRealIterator = realValIterator;
 	}
 
 	/**
 	 * Sets the integer value iterator the search should use
 	 */
-	public void setValSetIterator(ValIterator valIterator) {
+	public final void setValSetIterator(ValIterator valIterator) {
 		this.valSetIterator = valIterator;
 	}
 
 	/**
 	 * Sets the integer value selector the search should use
 	 */
-	public void setValIntSelector(ValSelector valSelector) {
+	public final void setValIntSelector(ValSelector valSelector) {
 		this.valIntSelector = valSelector;
 	}
 
 	/**
 	 * Sets the integer value selector the search should use
 	 */
-	public void setValRealSelector(ValSelector valSelector) {
+	public final void setValRealSelector(ValSelector valSelector) {
 		this.valRealSelector = valSelector;
 	}
 
 	/**
 	 * Sets the integer value selector the search should use
 	 */
-	public void setValSetSelector(SetValSelector setValIntSelector) {
+	public final void setValSetSelector(SetValSelector setValIntSelector) {
 		this.valSetSelector = setValIntSelector;
 	}
 
 
-	public void cancelRestartConfiguration() {
+	public final void cancelRestartConfiguration() {
 		limitConfig.setRestartStrategyLimitType(null); //set default;
 		restartConfig.cancelRestarts();
 	}
@@ -1392,7 +1385,7 @@ public class CPSolver implements Solver {
 	 * @param base
 	 *            : the initial number of fails limiting the first search
 	 */
-	public void setGeometricRestart(int base) {
+	public final void setGeometricRestart(int base) {
 		restartConfig.setGeometricalRestartPolicy(base, 1.2);
 	}
 	/**
@@ -1411,7 +1404,7 @@ public class CPSolver implements Solver {
 	 *            : the limit in number of fails grows at each restart by grow *
 	 *            base;
 	 */
-	public void setGeometricRestart(int base, double grow) {
+	public final void setGeometricRestart(int base, double grow) {
 		restartConfig.setGeometricalRestartPolicy(base, grow);
 	}
 
@@ -1434,7 +1427,7 @@ public class CPSolver implements Solver {
 	 * @param restartLimit
 	 *            the maximum number of restarts
 	 */
-	public void setGeometricRestart(int base, double grow, int restartLimit) {
+	public final void setGeometricRestart(int base, double grow, int restartLimit) {
 		restartConfig.setGeometricalRestartPolicy(base, grow);
 		limitConfig.setRestartLimit(Limit.RESTART, restartLimit);
 	}
@@ -1462,7 +1455,7 @@ public class CPSolver implements Solver {
 	 * @param restartLimit
 	 *            the maximum number of restarts
 	 */
-	public void setLubyRestart(int base, int grow, int restartLimit) {
+	public final void setLubyRestart(int base, int grow, int restartLimit) {
 		restartConfig.setLubyRestartPolicy(base, grow);
 		limitConfig.setRestartLimit(Limit.RESTART, restartLimit);
 	}
@@ -1487,7 +1480,7 @@ public class CPSolver implements Solver {
 	 * @param grow
 	 *            : the geometrical factor for Luby restart strategy
 	 */
-	public void setLubyRestart(int base, int grow) {
+	public final void setLubyRestart(int base, int grow) {
 		restartConfig.setLubyRestartPolicy(base, grow);
 	}
 
@@ -1496,7 +1489,7 @@ public class CPSolver implements Solver {
 	 *
 	 * @param base scale factor
 	 */
-	public void setLubyRestart(int base) {
+	public final void setLubyRestart(int base) {
 		restartConfig.setLubyRestartPolicy(base, 2);
 	}
 
@@ -1514,7 +1507,7 @@ public class CPSolver implements Solver {
 	 *
 	 * @param restart indicates wether to restart or not
 	 */
-	public void setRestart(boolean restart) {
+	public final void setRestart(boolean restart) {
 		restartConfig.setRestartAfterEachSolution(restart);
 	}
 
@@ -1530,7 +1523,7 @@ public class CPSolver implements Solver {
 	 *
 	 * @param doMaximize indicates wether the strategy is maximizing or not (minimizing)
 	 */
-	public void setDoMaximize(boolean doMaximize) {
+	public final void setDoMaximize(boolean doMaximize) {
 		this.doMaximize = doMaximize;
 	}
 
@@ -1544,17 +1537,17 @@ public class CPSolver implements Solver {
 	}
 
 	@Override
-	public Var getObjective() {
+	public final Var getObjective() {
 		return objective;
 	}
 
 	@Override
-	public boolean isOptimizationSolver() {
+	public final boolean isOptimizationSolver() {
 		return objective != null && ( strategy == null || strategy instanceof AbstractOptimize);
 	}
 
 	@Deprecated
-	public Number getOptimumValue() {
+	public final Number getOptimumValue() {
 		//		if (strategy instanceof AbstractOptimize) {
 		//			return ((AbstractOptimize) strategy).getBestObjectiveValue();
 		//		} else if (strategy instanceof AbstractRealOptimize) {
@@ -1648,7 +1641,7 @@ public class CPSolver implements Solver {
 		postMakespanConstraint();
 	}
 
-	protected void postRedundantTaskConstraint(TaskVar t) {
+	protected final void postRedundantTaskConstraint(TaskVar t) {
 		// we must enforce the task consistency
 		if (t.duration().isInstantiatedTo(0)) {
 			// nil duration
@@ -1665,7 +1658,7 @@ public class CPSolver implements Solver {
 	/**
 	 * Checks if a limit has been encountered
 	 */
-	public boolean isEncounteredLimit() {
+	public final boolean isEncounteredLimit() {
         if (strategy != null && strategy.isEncounteredLimit()) return true;
         else return false;
 	}
@@ -1673,7 +1666,7 @@ public class CPSolver implements Solver {
 	/**
 	 * If a limit has been encounteres, return the involved limit
 	 */
-	public AbstractGlobalSearchLimit getEncounteredLimit() {
+	public final AbstractGlobalSearchLimit getEncounteredLimit() {
 		return strategy == null ? null : strategy.getEncounteredLimit();
 	}
 
@@ -1681,11 +1674,11 @@ public class CPSolver implements Solver {
 	 * Returns the propagation engine associated to the model
 	 */
 
-	public PropagationEngine getPropagationEngine() {
+	public final PropagationEngine getPropagationEngine() {
 		return propagationEngine;
 	}
 
-	protected <E> List<E> getDecisionList(List<E> decisions, List<E> all) {
+	protected final <E> List<E> getDecisionList(List<E> decisions, List<E> all) {
 		return Collections.unmodifiableList(decisions.isEmpty() ? all
 				: decisions);
 	}
@@ -1789,11 +1782,11 @@ public class CPSolver implements Solver {
 		return intconstantVars.size() + realconstantVars.size();
 	}
 
-	public int getIntVarIndex(IntVar c) {
+	public final int getIntVarIndex(IntVar c) {
 		return intVars.indexOf(c);
 	}
 
-	public int getIntVarIndex(IntDomainVar c) {
+	public final int getIntVarIndex(IntDomainVar c) {
 		return intVars.indexOf(c);
 	}
 
@@ -1870,12 +1863,12 @@ public class CPSolver implements Solver {
 	}
 
 	@Override
-	public int getNbTaskVars() {
+	public final int getNbTaskVars() {
 		return taskVars.size();
 	}
 
 	@Override
-	public TaskVar getTaskVar(int i) {
+	public final TaskVar getTaskVar(int i) {
 		return taskVars.get(i);
 	}
 
@@ -1905,15 +1898,15 @@ public class CPSolver implements Solver {
 		return (AbstractIntSConstraint) constraints.get(i);
 	}
 	
-	public DisposableIterator<IntDomainVar> getIntVarIterator() {
+	public final DisposableIterator<IntDomainVar> getIntVarIterator() {
 		return intVars.quickIterator();
 	}
 	
-	public DisposableIterator<SetVar> getSetVarIterator() {
+	public final DisposableIterator<SetVar> getSetVarIterator() {
 		return setVars.quickIterator();
 	}
 
-	public DisposableIterator<RealVar> getRealVarIterator() {
+	public final DisposableIterator<RealVar> getRealVarIterator() {
 		return floatVars.quickIterator();
 	}
 
@@ -1921,11 +1914,11 @@ public class CPSolver implements Solver {
      * @deprecated
      */
     @Deprecated
-    public DisposableIterator<SConstraint> getIntConstraintIterator() {
+    public final DisposableIterator<SConstraint> getIntConstraintIterator() {
         return constraints.getIterator();
     }
 
-	public DisposableIterator<SConstraint> getConstraintIterator() {
+	public final DisposableIterator<SConstraint> getConstraintIterator() {
 		return constraints.getIterator();
 	}
 
@@ -1955,7 +1948,7 @@ public class CPSolver implements Solver {
 	 * Checks if all the variables are instantiated.
 	 * @return indicates wether every integer variables are instantiated
 	 */
-	public boolean isCompletelyInstantiated() {
+	public final boolean isCompletelyInstantiated() {
 		int n = getNbIntVars();
 		for (int i = 0; i < n; i++) {
 			if (!(getIntVar(i).isInstantiated())) {
@@ -1971,7 +1964,7 @@ public class CPSolver implements Solver {
 	 * composition of constraint by boolean connectors, only the root constraint
 	 * may be removed
 	 */
-	public void eraseConstraint(SConstraint c) {
+	public final void eraseConstraint(SConstraint c) {
 		constraints.remove(c);
 		((AbstractSConstraint) c).setPassive();
 		for (int i = 0; i < c.getNbVars(); i++) {
@@ -1990,7 +1983,7 @@ public class CPSolver implements Solver {
 	 *            the constraint to add
 	 */
 
-	public void post(SConstraint cc) {
+	public final void post(SConstraint cc) {
 		if (cc instanceof Propagator) {
 			if ((!cc.equals(TRUE) || !constraints.contains(TRUE))
 					&& (!cc.equals(FALSE) || !constraints.contains(FALSE))) {
@@ -2023,7 +2016,7 @@ public class CPSolver implements Solver {
 		}
 	}
 
-	public void post(SConstraint... ccs) {
+	public final void post(SConstraint... ccs) {
 		for (SConstraint cc : ccs) {
 			post(cc);
 		}
@@ -2036,7 +2029,7 @@ public class CPSolver implements Solver {
 	 *
 	 * @param exp expressions constraint
 	 */
-	protected void decisionOnExpression(ExpressionSConstraint exp) {
+	protected final void decisionOnExpression(ExpressionSConstraint exp) {
 		Boolean decomp = exp.isDecomposeExp();
 		if (decomp != null) {
 			if (decomp && exp.checkDecompositionIsPossible()) {
@@ -2064,7 +2057,7 @@ public class CPSolver implements Solver {
 	 *
 	 * @param p constraint
 	 */
-	public void postRedundantSetConstraints(SConstraint p) {
+	public final void postRedundantSetConstraints(SConstraint p) {
 		if (cardinalityReasonningsOnSETS && p instanceof SetPropagator
 				&& p.getNbVars() > 1) {
 
@@ -2111,7 +2104,7 @@ public class CPSolver implements Solver {
 	 *            the constraint to add
 	 */
 
-	public void postCut(SConstraint cc) {
+	public final void postCut(SConstraint cc) {
 		if (cc instanceof Propagator) {
 			if ((!cc.equals(TRUE) || !constraints.contains(TRUE))
 					&& (!cc.equals(FALSE) || !constraints.contains(FALSE))) {
@@ -2147,7 +2140,7 @@ public class CPSolver implements Solver {
 	 * @param neglit : a table of Boolean variables standing for the negative
 	 *        literals
 	 */
-	public void addNogood(IntDomainVar[] poslit, IntDomainVar[] neglit) {
+	public final void addNogood(IntDomainVar[] poslit, IntDomainVar[] neglit) {
 		if (nogoodStore == null) {
 			nogoodStore = new ClauseStore(getBooleanVariables(), environment);
 			postCut(nogoodStore);
@@ -2159,7 +2152,7 @@ public class CPSolver implements Solver {
 	}
 
 
-	public void initNogoodBase() {
+	public final void initNogoodBase() {
 		if (nogoodStore != null) {
 			nogoodStore.setActiveSilently();
 			nogoodStore.constAwake(false);
@@ -2169,7 +2162,7 @@ public class CPSolver implements Solver {
 	/**
 	 * @return the number of boolean variables
 	 */
-	public int getNbBooleanVars() {
+	public final int getNbBooleanVars() {
 		int cpt = 0;
 		for (int i = 0; i < getNbIntVars(); i++) {
 			final IntDomainVar v = (IntDomainVar) getIntVar(i);
@@ -2181,7 +2174,7 @@ public class CPSolver implements Solver {
 	/**
 	 * @return the boolean variables of the problem
 	 */
-	public IntDomainVar[] getBooleanVariables() {
+	public final IntDomainVar[] getBooleanVariables() {
 		ArrayList<IntDomainVar> bvs = new ArrayList<IntDomainVar>();
 		for (int i = 0; i < getNbIntVars(); i++) {
 			IntDomainVar v = (IntDomainVar) getIntVar(i);

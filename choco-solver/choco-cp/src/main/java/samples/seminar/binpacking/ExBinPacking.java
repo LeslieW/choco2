@@ -24,6 +24,7 @@ package samples.seminar.binpacking;
 
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
@@ -104,7 +105,7 @@ public class ExBinPacking {
             for (int j = 0; j < nbBin; j++) {
                 sumBin[j] = makeIntVar("sumBin " + j + "_" + j, 0, capaBin);
             }
-            m.addVariables("cp:bound",sumBin);
+            m.addVariables(CPOptions.V_BOUND,sumBin);
             for (int j = 0; j < nbBin; j++) {
                 IntegerVariable[] col = new IntegerVariable[n];
                 for (int i = 0; i < n; i++) {

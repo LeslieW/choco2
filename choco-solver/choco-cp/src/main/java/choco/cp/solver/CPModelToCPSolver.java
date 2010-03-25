@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver;
 
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
 import choco.cp.solver.preprocessor.detectors.ExpressionDetector;
@@ -56,28 +57,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * ***********************************************
- * _       _                            *
- * |  °(..)  |                           *
- * |_  J||L _|        ChocoSolver.net    *
- * *
- * Choco is a java library for constraint     *
- * satisfaction problems (CSP), constraint    *
- * programming (CP) and explanation-based     *
- * constraint solving (e-CP). It is built     *
- * on a event-based propagation mechanism     *
- * with backtrackable structures.             *
- * *
- * Choco is an open-source software,          *
- * distributed under a BSD licence            *
- * and hosted by sourceforge.net              *
- * *
- * + website : http://choco.emn.fr            *
- * + support : choco@emn.fr                   *
- * *
- * Copyright (C) F. Laburthe,                 *
- * N. Jussien    1999-2008      *
- * *************************************************
  * User:    charles
  * Date: 31 mars 2008
  * <p/>
@@ -248,15 +227,15 @@ public class CPModelToCPSolver {
      * @param var the solver variable
 	 */
 	private void checkOptions(Variable v,Var var) {
-		if (v.getOptions().contains("cp:decision")) {
+		if (v.getOptions().contains(CPOptions.V_DECISION)) {
 			checkDecision(var, true);
-		}else if (v.getOptions().contains("cp:no_decision")) {
+		}else if (v.getOptions().contains(CPOptions.V_NO_DECISION)) {
 			checkDecision(var, false);
 		}
-		if(v.getOptions().contains("cp:objective")){
+		if(v.getOptions().contains(CPOptions.V_OBJECTIVE)){
 			cpsolver.setObjective(var);
 		}
-		if(v.getOptions().contains("cp:makespan")){
+		if(v.getOptions().contains(CPOptions.V_MAKESPAN)){
 			cpsolver.getSchedulerConfiguration().setMakespan( (IntDomainVar) var);
 		}
 	}
@@ -325,11 +304,11 @@ public class CPModelToCPSolver {
 		while (it.hasNext()) {
 			ic = it.next();
 			if (!cpsolver.mapconstraints.containsKey(ic.getIndex())) {
-				if (ic.getOptions().contains("cp:decomp")) {
+				if (ic.getOptions().contains(CPOptions.E_DECOMP)) {
 					decomp = true;
 				}
 				c = readModelConstraint(ic, decomp);
-				if (ic.getOptions().contains("cp:postponed")) {
+				if (ic.getOptions().contains(CPOptions.C_POST_PONED)) {
                     postponedConstraint.add(c);
                 }else{
                     cpsolver.post(c);
@@ -452,7 +431,7 @@ public class CPModelToCPSolver {
 		c.setScope(cpsolver);
         if (ic.getOptions().contains("cp:ac")) {
             c.setLevelAc(0);
-        } else if (ic.getOptions().contains("cp:fc")) {
+        } else if (ic.getOptions().contains(CPOptions.C_EXT_FC)) {
             c.setLevelAc(1);
         }
         //important step to deal properly with linear equation

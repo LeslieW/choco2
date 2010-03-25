@@ -23,6 +23,7 @@
 package choco.solver.search;
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -30,21 +31,11 @@ import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import org.junit.After;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.logging.Logger;
-// **************************************************
-// *                   J-CHOCO                      *
-// *   Copyright (C) F. Laburthe, 1999-2003         *
-// **************************************************
-// *  an open-source Constraint Programming Kernel  *
-// *     for Research and Education                 *
-// **************************************************
-
-import junit.framework.Assert;
 
 public class OptimizeTest {
 	private final static Logger LOGGER = ChocoLogging.getTestLogger();
@@ -58,7 +49,7 @@ public class OptimizeTest {
         m = new CPModel();
         s = new CPSolver();
         obj = makeIntVar("objectif", -10, 1000);
-        m.addVariable("cp:bound", obj);
+        m.addVariable(CPOptions.V_BOUND, obj);
         v1 = makeIntVar("v1", 1, 10);
         v2 = makeIntVar("v2", -3, 10);
         v3 = makeIntVar("v3", 1, 10);

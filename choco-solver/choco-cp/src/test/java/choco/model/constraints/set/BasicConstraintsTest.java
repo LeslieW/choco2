@@ -23,6 +23,7 @@
 package choco.model.constraints.set;
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.set.*;
@@ -228,7 +229,7 @@ public class BasicConstraintsTest {
     public void simpleTests(){
         x = makeSetVar("x", 1, 2);
         iv = makeIntVar("iv", 1, 1);
-        m.addVariable("cp:bound", iv);
+        m.addVariable(CPOptions.V_BOUND, iv);
         m.addConstraint(eqCard(x, iv));
         s.read(m);
         s.solve();

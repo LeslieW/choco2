@@ -25,6 +25,7 @@ package choco.model.constraints.integer;
 import choco.Choco;
 import static choco.Choco.constant;
 import static choco.Choco.makeIntVar;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.model.managers.constraints.global.ElementManager;
 import choco.cp.solver.CPSolver;
@@ -78,7 +79,7 @@ public class ElementGTest {
 		vars[vars.length-2] = index;
 		vars[vars.length-1] = val;
 		Constraint c =new ComponentConstraint(ElementManager.class, offset, vars);
-        c.addOption("cp:G");
+        c.addOption(CPOptions.C_NTH_G);
         return c;
 	}
 
@@ -89,7 +90,7 @@ public class ElementGTest {
     private static Constraint element(IntegerVariable index, IntegerVariable[] varArray, IntegerVariable val, int offset) {
 		IntegerVariable[] vars = ArrayUtils.append(varArray, new IntegerVariable[]{index, val});
 		Constraint c = new ComponentConstraint(ElementManager.class, offset, vars);
-        c.addOption("cp:G");
+        c.addOption(CPOptions.C_NTH_G);
         return c;
 	}
 

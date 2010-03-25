@@ -24,6 +24,7 @@ package samples.scheduling.pert;
 
 import choco.Choco;
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.VizFactory;
@@ -79,16 +80,16 @@ public class DeterministicPert {
 		this.horizon = horizon;
 		this.durations=durations;
 		/* CREATE THE ACTIVITIES. */
-		masonry=makeTaskVar("masonry", horizon, durations[0], "cp:bound");
-		carpentry= makeTaskVar("carpentry", horizon, durations[1], "cp:bound");
-		plumbing= makeTaskVar("plumbing", horizon, durations[2], "cp:bound");
-		ceiling= makeTaskVar("ceiling", horizon,  durations[3], "cp:bound");
-		roofing= makeTaskVar("roofing", horizon, durations[4], "cp:bound");
-		painting= makeTaskVar("painting", horizon, durations[5], "cp:bound");
-		windows= makeTaskVar("windows", horizon,  durations[6], "cp:bound");
-		facade= makeTaskVar("facade", horizon,  durations[7], "cp:bound");
-		garden= makeTaskVar("garden", horizon,  durations[8], "cp:bound");
-		moving= makeTaskVar("moving", horizon,  durations[9], "cp:bound");
+		masonry=makeTaskVar("masonry", horizon, durations[0], CPOptions.V_BOUND);
+		carpentry= makeTaskVar("carpentry", horizon, durations[1], CPOptions.V_BOUND);
+		plumbing= makeTaskVar("plumbing", horizon, durations[2], CPOptions.V_BOUND);
+		ceiling= makeTaskVar("ceiling", horizon,  durations[3], CPOptions.V_BOUND);
+		roofing= makeTaskVar("roofing", horizon, durations[4], CPOptions.V_BOUND);
+		painting= makeTaskVar("painting", horizon, durations[5], CPOptions.V_BOUND);
+		windows= makeTaskVar("windows", horizon,  durations[6], CPOptions.V_BOUND);
+		facade= makeTaskVar("facade", horizon,  durations[7], CPOptions.V_BOUND);
+		garden= makeTaskVar("garden", horizon,  durations[8], CPOptions.V_BOUND);
+		moving= makeTaskVar("moving", horizon,  durations[9], CPOptions.V_BOUND);
 		tasks = new TaskVariable[]{masonry, carpentry, plumbing, ceiling, roofing,painting, windows, facade, garden, moving};
 		addTemporalConstraints();
 	}

@@ -24,10 +24,10 @@ package choco.model.constraints.global;
 
 import choco.Choco;
 import static choco.Choco.makeIntVar;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -78,7 +78,7 @@ public class GACIncreasingNValueTest {
             vars = new IntegerVariable[nbVars + 1];
             System.arraycopy(gen.getVars(), 0, vars, 1, gen.getVars().length);
             vars[0] = gen.getOcc();
-            m.addConstraint("cp:both", Choco.increasing_nvalue(gen.getOcc(), gen.getVars()));
+            m.addConstraint(CPOptions.C_INCREASING_NVALUE_BOTH, Choco.increasing_nvalue(gen.getOcc(), gen.getVars()));
         }
 
         public Model generateSpecificModel(int idx, int val) {
@@ -91,10 +91,10 @@ public class GACIncreasingNValueTest {
             System.arraycopy(gen.getVars(), 0, mvars, 1, gen.getVars().length);
             mvars[0] = gen.getOcc();
             // generation du cas specifique
-            mvars[idx] = Choco.makeIntVar(mvars[idx].getName(), val, val, "cp:enum");
+            mvars[idx] = Choco.makeIntVar(mvars[idx].getName(), val, val, CPOptions.V_ENUM);
             IntegerVariable[] vvars = new IntegerVariable[nbVars];
             System.arraycopy(mvars, 1, vvars, 0, vvars.length);
-            mm.addConstraint("cp:both", Choco.increasing_nvalue(mvars[0], vvars));
+            mm.addConstraint(CPOptions.C_INCREASING_NVALUE_BOTH, Choco.increasing_nvalue(mvars[0], vvars));
             return mm;
         }
 
@@ -227,7 +227,7 @@ public class GACIncreasingNValueTest {
             }
             int minOcc = 1 + rand.nextInt(valOcc);
             int maxOcc = valOcc + rand.nextInt((n - valOcc < 1) ? 1 : (n - valOcc));
-            occ = buildOccDomain(rand, "occ", minOcc, maxOcc);//makeIntVar("occ", minOcc, maxOcc, "cp:enum");
+            occ = buildOccDomain(rand, "occ", minOcc, maxOcc);//makeIntVar("occ", minOcc, maxOcc, CPOptions.V_ENUM);
         }
 
         private IntegerVariable buildOccDomain(Random rand, String s, int minVal, int maxVal) {
@@ -253,7 +253,7 @@ public class GACIncreasingNValueTest {
                 if (debug) System.out.print(i + ", ");
             }
             if (debug) LOGGER.info("");
-            return makeIntVar(s, res, "cp:enum");
+            return makeIntVar(s, res, CPOptions.V_ENUM);
         }
 
         private IntegerVariable buildVarDomain(Random rand, int idV, String s) {
@@ -283,7 +283,7 @@ public class GACIncreasingNValueTest {
                 if (debug) System.out.print(i + ", ");
             }
             if (debug) LOGGER.info("");
-            return makeIntVar(s, res, "cp:enum");
+            return makeIntVar(s, res, CPOptions.V_ENUM);
         }
 
         public IntegerVariable getOcc() {

@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints.expressions;
 
+import choco.cp.CPOptions;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.leaves.bool.*;
@@ -60,7 +61,7 @@ public class NotManager extends IntConstraintManager {
             if(constraints.length == 1){
                 Constraint c = constraints[0];
                 boolean decomp = false;
-                if (c.getOptions().contains("cp:decomp")) {
+                if (c.getOptions().contains(CPOptions.E_DECOMP)) {
                     decomp = true;
                 }
                 SConstraint[] ct = ((CPSolver)solver).makeSConstraintAndOpposite(c, decomp);

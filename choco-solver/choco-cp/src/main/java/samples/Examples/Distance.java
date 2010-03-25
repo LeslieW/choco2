@@ -23,6 +23,7 @@
 package samples.Examples;
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.tools.StringUtils;
@@ -53,9 +54,9 @@ public class Distance extends PatternExample{
     @Override
     public void buildModel() {
         _m =new CPModel();
-        x = makeIntVarArray("x", 2, -4, 3, "cp:bound");
-		y = makeIntVarArray("y", 2, 2, 10, "cp:bound");
-		d = makeIntVar("dist", 0, 20, "cp:bound");
+        x = makeIntVarArray("x", 2, -4, 3, CPOptions.V_BOUND);
+		y = makeIntVarArray("y", 2, 2, 10, CPOptions.V_BOUND);
+		d = makeIntVar("dist", 0, 20, CPOptions.V_BOUND);
 		a  = power2( minus(x[0], x[1]) );
 		b = power2(minus(y[0], y[1]));
 		ub = power2(d);

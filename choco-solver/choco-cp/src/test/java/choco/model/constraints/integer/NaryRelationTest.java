@@ -24,6 +24,7 @@ package choco.model.constraints.integer;
 
 import choco.Choco;
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
@@ -103,7 +104,7 @@ public class NaryRelationTest {
 		IntegerVariable x = makeIntVar("x", 1, 5);
 		IntegerVariable y = makeIntVar("y", 1, 5);
 		IntegerVariable z = makeIntVar("z", 1, 5);
-		m.addConstraint(relationTupleAC("cp:ac2001",new IntegerVariable[]{x, y, z}, new NotAllEqual()));
+		m.addConstraint(relationTupleAC(CPOptions.C_EXT_AC2001,new IntegerVariable[]{x, y, z}, new NotAllEqual()));
 		s.read(m);
 		s.solveAll();
 		assertEquals(120, s.getNbSolutions());
@@ -219,8 +220,8 @@ public class NaryRelationTest {
 		allowedTuples.add(new int[]{5, 5, 5});
 		LargeRelation lrela = s.makeLargeRelation(new int[]{0, 1, 0}, new int[]{6, 6, 5}, allowedTuples, true);
 
-		m.addConstraint(relationTupleAC("cp:ac2001",new IntegerVariable[]{x, y, z}, lrela));
-		m.addConstraint(relationTupleAC("cp:ac2001",new IntegerVariable[]{x, w, y}, lrela));
+		m.addConstraint(relationTupleAC(CPOptions.C_EXT_AC2001,new IntegerVariable[]{x, y, z}, lrela));
+		m.addConstraint(relationTupleAC(CPOptions.C_EXT_AC2001,new IntegerVariable[]{x, w, y}, lrela));
 
 		s.read(m);
 		s.solveAll();
@@ -242,8 +243,8 @@ public class NaryRelationTest {
         allowedTuples.add(new int[]{5, 5, 5});
         LargeRelation lrela = s.makeLargeRelation(new int[]{0, 1, 0}, new int[]{6, 6, 5}, allowedTuples, true, 2);
 
-        m.addConstraint(relationTupleAC("cp:ac2008",new IntegerVariable[]{x, y, z}, lrela));
-        m.addConstraint(relationTupleAC("cp:ac2008",new IntegerVariable[]{x, w, y}, lrela));
+        m.addConstraint(relationTupleAC(CPOptions.C_EXT_AC2008,new IntegerVariable[]{x, y, z}, lrela));
+        m.addConstraint(relationTupleAC(CPOptions.C_EXT_AC2008,new IntegerVariable[]{x, w, y}, lrela));
 
         s.read(m);
         s.solveAll();
@@ -326,7 +327,7 @@ public class NaryRelationTest {
 		ArrayList<int[]> feasTuple = new ArrayList<int[]>();
 		feasTuple.add(new int[]{1, 1}); // x*y = 1
 		feasTuple.add(new int[]{2, 4}); // x*y = 1
-		m.addConstraint(feasTupleAC("cp:ac2001",feasTuple, v1, v2));
+		m.addConstraint(feasTupleAC(CPOptions.C_EXT_AC2001,feasTuple, v1, v2));
 		s.read(m);
 		s.solve();
 		do {
@@ -343,7 +344,7 @@ public class NaryRelationTest {
 		ArrayList<int[]> feasTuple = new ArrayList<int[]>();
 		feasTuple.add(new int[]{1, 1}); // x*y = 1
 		feasTuple.add(new int[]{2, 4}); // x*y = 1
-		m.addConstraint(feasTupleAC("cp:ac2008",feasTuple, v1, v2));
+		m.addConstraint(feasTupleAC(CPOptions.C_EXT_AC2008,feasTuple, v1, v2));
 		s.read(m);
 		s.solve();
 		do {
@@ -487,7 +488,7 @@ public class NaryRelationTest {
 		for (int n = 0; n < v.length; n++) {
 			v[n] = makeIntVar("V" + n, 0, N);
 		}
-        m.addVariables("cp:bound", v);
+        m.addVariables(CPOptions.V_BOUND, v);
         m.addConstraint(regular(v, tuples));
 		s.read(m);
 		Boolean b = s.solve();
@@ -727,8 +728,8 @@ public class NaryRelationTest {
      public void testBoundGAC() {
         CPModel m = new CPModel();
         m.setDefaultExpressionDecomposition(true);
-        IntegerVariable x = makeIntVar("x", 0, 2, "cp:bound");
-        IntegerVariable y = makeIntVar("y", 0, 2, "cp:bound");
+        IntegerVariable x = makeIntVar("x", 0, 2, CPOptions.V_BOUND);
+        IntegerVariable y = makeIntVar("y", 0, 2, CPOptions.V_BOUND);
         m.addConstraint(ifThenElse(gt(x, 0), eq(y, 0), Choco.TRUE));
 
         CPSolver s = new CPSolver();

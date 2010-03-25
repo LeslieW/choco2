@@ -21,12 +21,12 @@
 %	\item \textbf{return type} : \texttt{SetVariable} \emph{or} \texttt{SetVariable[]}
 \subsubsection{options:}
 	\begin{itemize}
-		\item \emph{no option} : equivalent to option \texttt{cp:enum}
-		\item \texttt{cp:enum} : to force Solver to create \texttt{SetVariable} with enumerated domain for the caridinality variable. It is a domain in which holes can be created by the solver. It should be used when set variable cardinality domain is discrete, quite small and constraints performing reasonings on holes in the cardinality are present in the model. Implemeted by two \texttt{BitSets} for upper and lower bounds and an enumerated \texttt{IntegerVariable} for the cardinality.
-		\item \texttt{cp:bound} : to force Solver to create \texttt{SetVariable} with bounded cardinality. It is a domain where only bound propagation can be done (no holes). It is very well suited when constraints performing only Bound Consistency are added on the corresponding variables. It must be used when large domains are needed. Implemented by two integers.
-		\item \texttt{cp:decision} : to force variable to be a decisional one
+		\item \emph{no option} : equivalent to option \texttt{CPOptions.V_ENUM}
+		\item \texttt{CPOptions.V_ENUM} : to force Solver to create \texttt{SetVariable} with enumerated domain for the caridinality variable. It is a domain in which holes can be created by the solver. It should be used when set variable cardinality domain is discrete, quite small and constraints performing reasonings on holes in the cardinality are present in the model. Implemeted by two \texttt{BitSets} for upper and lower bounds and an enumerated \texttt{IntegerVariable} for the cardinality.
+		\item \texttt{CPOptions.V_BOUND} : to force Solver to create \texttt{SetVariable} with bounded cardinality. It is a domain where only bound propagation can be done (no holes). It is very well suited when constraints performing only Bound Consistency are added on the corresponding variables. It must be used when large domains are needed. Implemented by two integers.
+		\item \texttt{CPOptions.V_DECISION} : to force variable to be a decisional one
 		\item \texttt{cp:no\_decision} : to force variable to be removed from the pool of decisionnal variables
-		\item \texttt{cp:objective} : to define the variable to be the one to optimize
+		\item \texttt{CPOptions.V_OBJECTIVE} : to define the variable to be the one to optimize
 	\end{itemize}
 
 The variable representing the cardinality can be accessed and constrained using method \texttt{getCard()} that returns an \hyperlink{integervariable}{\tt IntegerVariable} object.
@@ -34,7 +34,7 @@ The variable representing the cardinality can be accessed and constrained using 
 \subsubsection{Example:}
 \begin{lstlisting}
   SetVariable svar1 = makeSetVar("svar1", -10, 10);
-  setVariable svar2 = makeSetVar("svar2", 0, 10000, "cp:bound", "cp:no_decision");
+  setVariable svar2 = makeSetVar("svar2", 0, 10000, CPOptions.V_BOUND, CPOptions.V_NO_DECISION);
 \end{lstlisting} 
 
 Set variables are illustrated on the \hyperlink{model:example2:ternarysteinerchoco}{ternary Steiner problem}. 

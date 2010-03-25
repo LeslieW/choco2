@@ -23,6 +23,7 @@
 package choco.solver.search;
 
 import choco.Choco;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.DomOverWDegBranching;
@@ -54,7 +55,7 @@ public class ImpactTest {
         Model m = new CPModel();
         Solver s = new CPSolver();
         IntegerVariable[] vs1 = Choco.makeIntVarArray("v1", 10, 2, 10);
-        m.addVariables("cp:enum", vs1);
+        m.addVariables(CPOptions.V_ENUM, vs1);
 
         m.addVariables(vs1);
         for (int i = 0; i < vs1.length; i++) {
@@ -104,12 +105,12 @@ public class ImpactTest {
         Model m = new CPModel();
         m.setDefaultExpressionDecomposition(true);
         IntegerVariable[] vars = Choco.makeIntVarArray("C", n * n, 1, n * n);
-        m.addVariables("cp:enum", vars);
+        m.addVariables(CPOptions.V_ENUM, vars);
 
         IntegerVariable sum = Choco.makeIntVar("sum", 1, n * n * (n * n + 1) / 2);
-        m.addVariable("cp:bc", sum);
+        m.addVariable(sum);
 
-        m.addConstraint("cp:bc", Choco.allDifferent(vars));
+        m.addConstraint(CPOptions.C_ALLDIFFERENT_BC, Choco.allDifferent(vars));
         for (int i = 0; i < n; i++) {
             IntegerVariable[] col = new IntegerVariable[n];
             IntegerVariable[] row = new IntegerVariable[n];
@@ -160,12 +161,12 @@ public class ImpactTest {
         Model m = new CPModel();
         m.setDefaultExpressionDecomposition(true);
         IntegerVariable[] vars = Choco.makeIntVarArray("C", n * n, 1, n * n);
-        m.addVariables("cp:enum", vars);
+        m.addVariables(CPOptions.V_ENUM, vars);
 
         IntegerVariable sum = Choco.makeIntVar("sum", 1, n * n * (n * n + 1) / 2);
-        m.addVariable("cp:bc", sum);
+        m.addVariable(sum);
 
-        m.addConstraint("cp:bc", Choco.allDifferent(vars));
+        m.addConstraint(CPOptions.C_ALLDIFFERENT_BC, Choco.allDifferent(vars));
         for (int i = 0; i < n; i++) {
             IntegerVariable[] col = new IntegerVariable[n];
             IntegerVariable[] row = new IntegerVariable[n];
@@ -209,12 +210,12 @@ public class ImpactTest {
         Model m = new CPModel();
         m.setDefaultExpressionDecomposition(true);
         IntegerVariable[] vars = Choco.makeIntVarArray("C", n * n, 1, n * n);
-        m.addVariables("cp:enum", vars);
+        m.addVariables(CPOptions.V_ENUM, vars);
 
         IntegerVariable sum = Choco.makeIntVar("sum", 1, n * n * (n * n + 1) / 2);
-        m.addVariable("cp:clique", sum);
+        m.addVariable(CPOptions.C_ALLDIFFERENT_CLIQUE, sum);
 
-        m.addConstraint("cp:bc", Choco.allDifferent(vars));
+        m.addConstraint(CPOptions.C_ALLDIFFERENT_BC, Choco.allDifferent(vars));
         for (int i = 0; i < n; i++) {
             IntegerVariable[] col = new IntegerVariable[n];
             IntegerVariable[] row = new IntegerVariable[n];

@@ -23,6 +23,7 @@
 package choco.cp.solver.constraints.global.geost.util;
 
 import choco.Choco;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
@@ -32,7 +33,6 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 
 import java.util.Random;
 import java.util.Vector;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class RandomProblemGenerator {
@@ -104,7 +104,7 @@ public class RandomProblemGenerator {
 				int min = rnd.nextInt(max);
 				coords[j] = Choco.makeIntVar("x" + j, min, max);
             }
-            m.addVariables("cp:bound", coords);
+            m.addVariables(CPOptions.V_BOUND, coords);
             IntegerVariable start = Choco.makeIntVar("start", 1, 1);
 			IntegerVariable duration = Choco.makeIntVar("duration", 1, 1);
 			IntegerVariable end = Choco.makeIntVar("end", 1, 1);

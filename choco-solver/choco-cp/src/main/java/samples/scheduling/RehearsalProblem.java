@@ -1,6 +1,7 @@
 package samples.scheduling;
 
 import choco.Choco;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -89,8 +90,8 @@ public class RehearsalProblem extends PatternExample {
 	@Override
 	public void buildModel() {
 		_m = new CPModel();
-		totalWaitingTime = Choco.makeIntVar("totalWaitingTime", 0, totalDuration * nbPlayers -cumulatedDuration, "cp:bound","cp:objective");
-		musicPieces = Choco.makeTaskVarArray("piece", 0, totalDuration, durations, "cp:bound");
+		totalWaitingTime = Choco.makeIntVar("totalWaitingTime", 0, totalDuration * nbPlayers -cumulatedDuration, CPOptions.V_BOUND,CPOptions.V_OBJECTIVE);
+		musicPieces = Choco.makeTaskVarArray("piece", 0, totalDuration, durations, CPOptions.V_BOUND);
 		arrivals = Choco.makeIntVarArray("arrival", nbPlayers, 0, totalDuration);
 		departures = Choco.makeIntVarArray("departure", nbPlayers, 0, totalDuration);
 		IntegerExpressionVariable expr = Choco.constant(-cumulatedDuration);
@@ -120,7 +121,7 @@ public class RehearsalProblem extends PatternExample {
 			_m.addConstraint(Choco.disjunctive(musicPieces));
 		}else {
 			//define all possible precedence between tasks
-			_m.addConstraints( Choco.precedenceDisjoint(musicPieces, isPrecOnlyDecision ? "cp:decision" :""));
+			_m.addConstraints( Choco.precedenceDisjoint(musicPieces, isPrecOnlyDecision ? CPOptions.V_DECISION :""));
 		}
 	}
 

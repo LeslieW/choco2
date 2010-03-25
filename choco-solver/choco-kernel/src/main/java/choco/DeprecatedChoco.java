@@ -265,7 +265,7 @@ public class DeprecatedChoco extends Choco{
     public static SetVariable[] makeSetVarArray(String name,int n,int binf,int bsup) {
 		SetVariable[] vars=new SetVariable[n];
 		for (int i = 0; i < vars.length; i++) {
-			vars[i]=makeSetVar(name+"-"+i, binf, bsup, "cp:enumCard");
+			vars[i]=makeSetVar(name+"-"+i, binf, bsup, "cp:enum");
 		}
 		return vars;
 	}
@@ -273,23 +273,23 @@ public class DeprecatedChoco extends Choco{
 
     @Deprecated
     public static SetVariable makeBoundSetVar(String name, int binf, int bsup) {
-		return makeSetVar(name,binf, bsup, "cp:boundCard");
+		return makeSetVar(name,binf, bsup, "cp:bound");
 	}
 
     @Deprecated
     public static SetVariable[] makeBoundSetVarArray(String name,int n,int binf, int bsup) {
-		return makeSetVarArray(name, n, binf, bsup, "cp:boundCard");
+		return makeSetVarArray(name, n, binf, bsup, "cp:bound");
 	}
 
 
     @Deprecated
     public static SetVariable makeEnumSetVar(String name, int binf, int bsup) {
-		return makeSetVar(name,binf, bsup,"cp:enumCard");
+		return makeSetVar(name,binf, bsup,"cp:enum");
 	}
 
     @Deprecated
     public static SetVariable[] makeEnumSetVarArray(String name,int n,int binf, int bsup) {
-		return makeSetVarArray(name, n, binf, bsup,"cp:enumCard");
+		return makeSetVarArray(name, n, binf, bsup,"cp:enum");
 	}
 
     /**

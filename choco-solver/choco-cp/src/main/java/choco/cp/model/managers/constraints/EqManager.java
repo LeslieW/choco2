@@ -1,4 +1,4 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
  *         |  °(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
@@ -59,7 +59,16 @@ import java.util.Set;
  * User:    charles
  * Date:    22 août 2008
  */
-public class EqManager extends MixedConstraintManager {
+public final class EqManager extends MixedConstraintManager {
+
+    private static final int INTINT = 11;
+    private static final int INTSET = 12;
+    private static final int INTREAL = 13;
+    private static final int SETINT = 21;
+    private static final int SETSET = 22;
+    private static final int REALINT = 31;
+    private static final int REALREAL = 33;
+
 
     /**
      * Build a constraint for the given solver and "model variables"
@@ -70,7 +79,7 @@ public class EqManager extends MixedConstraintManager {
      * @param options
      * @return
      */
-    public SConstraint makeConstraint(Solver solver, Variable[] variables, Object parameters, Set<String> options) {
+    public SConstraint makeConstraint(final Solver solver, final Variable[] variables, final Object parameters, final Set<String> options) {
         if (solver instanceof CPSolver) {
             if (parameters instanceof ConstraintType) {
                 ConstraintType type = (ConstraintType) parameters;
@@ -81,20 +90,20 @@ public class EqManager extends MixedConstraintManager {
                 switch(type){
                     case EQ:
                         switch (ty) {
-                            case 11:
+                            case INTINT:
                                 return createIntEq(cpsolver, (IntegerVariable) v1, (IntegerVariable) v2);
-                            case 22:
+                            case SETSET:
                                 return new SetEq(cpsolver.getVar((SetVariable) v1), cpsolver.getVar((SetVariable) v2));
-                            case 33:
+                            case REALREAL:
                                 return createRealEq(cpsolver, (RealExpressionVariable) v1, (RealExpressionVariable) v2);
-                            case 13:
+                            case INTREAL:
                                 return new MixedEqXY(cpsolver.getVar((RealVariable) v2), cpsolver.getVar((IntegerVariable) v1));
-                            case 31:
+                            case REALINT:
                                 return new MixedEqXY(cpsolver.getVar((RealVariable) v1), cpsolver.getVar((IntegerVariable) v2));
-                            case 21:
+                            case SETINT:
                                 return createIntEq(cpsolver, ((SetVariable) v1).getCard(), (IntegerVariable) v2);
 //                            return new SetCard(solver.getVar((SetVariable)v1), solver.getVar((IntegerVariable)v2), true, true);
-                            case 12:
+                            case INTSET:
                                 return createIntEq(cpsolver, (IntegerVariable) v1, ((SetVariable) v2).getCard());
 //                            return new SetCard(solver.getVar((SetVariable)v2), solver.getVar((IntegerVariable)v1), true, true);
                             default:
@@ -102,61 +111,61 @@ public class EqManager extends MixedConstraintManager {
                         }
                     case NEQ:
                         switch (ty) {
-                            case 11:
+                            case INTINT:
                                 return createIntNeq(cpsolver, (IntegerVariable) v1, (IntegerVariable) v2);
-                            case 22:
+                            case SETSET:
                                 return new SetNotEq(cpsolver.getVar((SetVariable) v1), cpsolver.getVar((SetVariable) v2));
-                            case 12:
+                            case INTSET:
                                 return createIntNeq(cpsolver, (IntegerVariable) v1, ((SetVariable) v2).getCard());
-                            case 21:
+                            case SETINT:
                                 return createIntNeq(cpsolver, ((SetVariable) v1).getCard(), (IntegerVariable) v2);
                             default:
                                 return null;
                         }
                     case GEQ:
                         switch (ty) {
-                            case 11:
+                            case INTINT:
                                 return createIntGeq(cpsolver, (IntegerVariable) v1, (IntegerVariable) v2);
-                            case 21:
+                            case SETINT:
                                 return createIntGeq(cpsolver, ((SetVariable) v1).getCard(), (IntegerVariable) v2);
-                            case 12:
+                            case INTSET:
                                 return createIntGeq(cpsolver, (IntegerVariable) v1, ((SetVariable) v2).getCard());
-                            case 33:
+                            case REALREAL:
                                 return createRealLeq(cpsolver, (RealExpressionVariable) v2, (RealExpressionVariable) v1);
                             default:
                                 return null;
                         }
                     case GT:
                         switch (ty) {
-                            case 11:
+                            case INTINT:
                                 return createIntGt(cpsolver, (IntegerVariable) v1, (IntegerVariable) v2);
-                            case 21:
+                            case SETINT:
                                 return createIntGt(cpsolver, ((SetVariable) v1).getCard(), (IntegerVariable) v2);
-                            case 12:
+                            case INTSET:
                                 return createIntGt(cpsolver, (IntegerVariable) v1, ((SetVariable) v2).getCard());
                             default:
                                 return null;
                         }
                     case LEQ:
                         switch (ty) {
-                            case 11:
+                            case INTINT:
                                 return createIntLeq(cpsolver, (IntegerVariable) v1, (IntegerVariable) v2);
-                            case 21:
+                            case SETINT:
                                 return createIntLeq(cpsolver, ((SetVariable) v1).getCard(), (IntegerVariable) v2);
-                            case 12:
+                            case INTSET:
                                 return createIntLeq(cpsolver, (IntegerVariable) v1, ((SetVariable) v2).getCard());
-                            case 33:
+                            case REALREAL:
                                 return createRealLeq(cpsolver, (RealExpressionVariable) v1, (RealExpressionVariable) v2);
                             default:
                                 return null;
                         }
                     case LT:
                         switch (ty) {
-                            case 11:
+                            case INTINT:
                                 return createIntLt(cpsolver, (IntegerVariable) v1, (IntegerVariable) v2);
-                            case 21:
+                            case SETINT:
                                 return createIntLt(cpsolver, ((SetVariable) v1).getCard(), (IntegerVariable) v2);
-                            case 12:
+                            case INTSET:
                                 return createIntLt(cpsolver, (IntegerVariable) v1, ((SetVariable) v2).getCard());
                             default:
                                 return null;
@@ -180,7 +189,7 @@ public class EqManager extends MixedConstraintManager {
      * @return array of 2 SConstraint object, the constraint and its opposite
      */
     @Override
-    public SConstraint[] makeConstraintAndOpposite(Solver solver, Variable[] variables, Object parameters, Set<String> options) {
+    public SConstraint[] makeConstraintAndOpposite(final Solver solver, final Variable[] variables, final Object parameters, final Set<String> options) {
         SConstraint c = this.makeConstraint(solver, variables, parameters, options);
         SConstraint opp = c.opposite(solver);
         return new SConstraint[]{c, opp};
@@ -195,7 +204,7 @@ public class EqManager extends MixedConstraintManager {
      * @return
      */
     @Override
-    public INode makeNode(Solver solver, Constraint[] cstrs, Variable[] vars) {
+    public INode makeNode(final Solver solver, final Constraint[] cstrs, final Variable[] vars) {
         ComponentConstraint cc = (ComponentConstraint) cstrs[0];
         if (cc.getParameters() instanceof ConstraintType) {
             ConstraintType type = (ConstraintType) cc.getParameters();
@@ -226,7 +235,7 @@ public class EqManager extends MixedConstraintManager {
     //###                                    Integer equalities                                                      ###
     //##################################################################################################################
 
-    SConstraint createIntEq(CPSolver s, IntegerVariable v1, IntegerVariable v2) {
+    SConstraint createIntEq(final CPSolver s, final IntegerVariable v1, final IntegerVariable v2) {
         VariableType tv1 = v1.getVariableType();
         VariableType tv2 = v2.getVariableType();
         int c;
@@ -255,7 +264,7 @@ public class EqManager extends MixedConstraintManager {
     //###                                       Real equalities                                                      ###
     //##################################################################################################################
 
-    SConstraint createRealEq(CPSolver s, RealExpressionVariable v1, RealExpressionVariable v2) {
+    SConstraint createRealEq(final CPSolver s, final RealExpressionVariable v1, final RealExpressionVariable v2) {
         VariableType tv1 = v1.getVariableType();
         VariableType tv2 = v2.getVariableType();
         RealExp t1;
@@ -311,7 +320,7 @@ public class EqManager extends MixedConstraintManager {
     //###                                    Integer inequalities                                                    ###
     //##################################################################################################################
 
-    SConstraint createIntNeq(CPSolver s, IntegerVariable v1, IntegerVariable v2) {
+    SConstraint createIntNeq(final CPSolver s, final IntegerVariable v1, final IntegerVariable v2) {
         VariableType tv1 = v1.getVariableType();
         VariableType tv2 = v2.getVariableType();
         int c;
@@ -341,7 +350,7 @@ public class EqManager extends MixedConstraintManager {
     //###                                    Integer GEQ                                                             ###
     //##################################################################################################################
 
-    SConstraint createIntGeq(CPSolver s, IntegerVariable v1, IntegerVariable v2) {
+    SConstraint createIntGeq(final CPSolver s, final IntegerVariable v1, final IntegerVariable v2) {
         VariableType tv1 = v1.getVariableType();
         VariableType tv2 = v2.getVariableType();
         int c;
@@ -370,7 +379,7 @@ public class EqManager extends MixedConstraintManager {
     //###                                    Integer GT                                                             ###
     //##################################################################################################################
 
-    SConstraint createIntGt(CPSolver s, IntegerVariable v1, IntegerVariable v2) {
+    SConstraint createIntGt(final CPSolver s, final IntegerVariable v1, final IntegerVariable v2) {
         VariableType tv1 = v1.getVariableType();
         VariableType tv2 = v2.getVariableType();
         int c;
@@ -398,7 +407,7 @@ public class EqManager extends MixedConstraintManager {
     //##################################################################################################################
     //###                                    Integer LEQ                                                             ###
     //##################################################################################################################
-    SConstraint createIntLeq(CPSolver s, IntegerVariable v1, IntegerVariable v2) {
+    SConstraint createIntLeq(final CPSolver s, final IntegerVariable v1, final IntegerVariable v2) {
         VariableType tv1 = v1.getVariableType();
         VariableType tv2 = v2.getVariableType();
         int c;
@@ -427,19 +436,19 @@ public class EqManager extends MixedConstraintManager {
     //###                                       Real LEQ                                                             ###
     //##################################################################################################################
 
-    SConstraint createRealLeq(CPSolver s, RealExpressionVariable v1, RealExpressionVariable v2) {
+    SConstraint createRealLeq(final CPSolver s, final RealExpressionVariable v1, final RealExpressionVariable v2) {
         VariableType tv1 = v1.getVariableType();
         VariableType tv2 = v2.getVariableType();
         RealExp t1;
         RealExp t2;
         RealIntervalConstant cst;
-        Double POS = Double.POSITIVE_INFINITY;
-        Double NEG = Double.NEGATIVE_INFINITY;
-        RealIntervalConstant INF = new RealIntervalConstant(NEG,0.0);
+        Double dPOS = Double.POSITIVE_INFINITY;
+        Double dNEG = Double.NEGATIVE_INFINITY;
+        RealIntervalConstant dINF = new RealIntervalConstant(dNEG,0.0);
 
         switch (tv1) {
             case CONSTANT_DOUBLE:
-                cst = new RealIntervalConstant(v1.getLowB(),POS);
+                cst = new RealIntervalConstant(v1.getLowB(),dPOS);
                 switch (tv2) {
                     case CONSTANT_DOUBLE:
                         return new ConstantSConstraint(v1.getUppB() <= v2.getUppB());
@@ -454,27 +463,27 @@ public class EqManager extends MixedConstraintManager {
                 t1 = (RealVar)s.getVar(v1);
                 switch (tv2) {
                     case CONSTANT_DOUBLE:
-                        cst = new RealIntervalConstant(NEG, v2.getLowB());
+                        cst = new RealIntervalConstant(dNEG, v2.getLowB());
                         return s.makeEquation(t1, cst);
                     case REAL:
                         t2 = (RealVar)s.getVar(v2);
-                        return s.makeEquation(new RealMinus(s, t1, t2), INF);
+                        return s.makeEquation(new RealMinus(s, t1, t2), dINF);
                     case REAL_EXPRESSION:
                         t2 = ((RealConstraintManager)v2.getConstraintManager()).makeRealExpression(s, v2.getVariables());
-                        return s.makeEquation(new RealMinus(s, t1, t2), INF);
+                        return s.makeEquation(new RealMinus(s, t1, t2), dINF);
                 }
             case REAL_EXPRESSION:
                 t1 = ((RealConstraintManager)v1.getConstraintManager()).makeRealExpression(s, v1.getVariables());
                 switch (tv2) {
                     case CONSTANT_DOUBLE:
-                        cst = new RealIntervalConstant(NEG, v2.getLowB());
+                        cst = new RealIntervalConstant(dNEG, v2.getLowB());
                         return s.makeEquation(t1, cst);
                     case REAL:
                         t2 = (RealExp)s.getVar(v2);
-                        return s.makeEquation(new RealMinus(s, t1, t2), INF);
+                        return s.makeEquation(new RealMinus(s, t1, t2), dINF);
                     case REAL_EXPRESSION:
                         t2 = ((RealConstraintManager)v2.getConstraintManager()).makeRealExpression(s, v2.getVariables());
-                        return s.makeEquation(new RealMinus(s, t1, t2), INF);
+                        return s.makeEquation(new RealMinus(s, t1, t2), dINF);
                 }
 
         }
@@ -485,7 +494,7 @@ public class EqManager extends MixedConstraintManager {
     //###                                    Integer LT                                                             ###
     //##################################################################################################################
 
-    SConstraint createIntLt(CPSolver s, IntegerVariable v1, IntegerVariable v2) {
+    SConstraint createIntLt(final CPSolver s, final IntegerVariable v1, final IntegerVariable v2) {
         VariableType tv1 = v1.getVariableType();
         VariableType tv2 = v2.getVariableType();
         switch (tv1) {
@@ -495,13 +504,13 @@ public class EqManager extends MixedConstraintManager {
                     case CONSTANT_INTEGER:
                         return new ConstantSConstraint(c1 < ((IntegerConstantVariable) v2).getValue());
                     case INTEGER:
-                        return new GreaterOrEqualXC(s.getVar(v2), c1+1);
+                        return new GreaterOrEqualXC(s.getVar(v2), c1 + 1);
                 }
             case INTEGER:
                 switch (tv2) {
                     case CONSTANT_INTEGER:
                         int c2 = ((IntegerConstantVariable) v2).getValue();
-                        return new LessOrEqualXC(s.getVar(v1), c2-1);
+                        return new LessOrEqualXC(s.getVar(v1), c2 - 1);
                     case INTEGER:
                         return new GreaterOrEqualXYC(s.getVar(v2), s.getVar(v1), 1);
                 }

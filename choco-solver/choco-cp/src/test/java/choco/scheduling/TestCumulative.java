@@ -24,6 +24,7 @@ package choco.scheduling;
 
 import choco.Choco;
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
@@ -671,18 +672,18 @@ public class TestCumulative {
 		int[] val = {800, 1200};
 
 		for(int i = 0; i < 2; i++){
-			SXs[i] = Choco.makeIntVar("SX"+i, 1, 1601, "cp: enum");
+			SXs[i] = Choco.makeIntVar("SX"+i, 1, 1601, CPOptions.V_ENUM);
 			model.addVariable(SXs[i]);
 			LXs[i] = Choco.makeIntVar("LX"+i, val);
 			model.addVariable(LXs[i]);
-			EXs[i] = Choco.makeIntVar("EX"+i, 801, 2401, "cp: enum");
+			EXs[i] = Choco.makeIntVar("EX"+i, 801, 2401, CPOptions.V_ENUM);
 			model.addVariable(EXs[i]);
 
-			SYs[i] = Choco.makeIntVar("SY"+i, 1, 1631, "cp: enum");
+			SYs[i] = Choco.makeIntVar("SY"+i, 1, 1631, CPOptions.V_ENUM);
 			model.addVariable(SYs[i]);
 			LYs[i] = Choco.makeIntVar("LY"+i, val);
 			model.addVariable(LYs[i]);
-			EYs[i] = Choco.makeIntVar("EY"+i, 801, 2431, "cp: enum");
+			EYs[i] = Choco.makeIntVar("EY"+i, 801, 2431, CPOptions.V_ENUM);
 			model.addVariable(EYs[i]);
 		}
 

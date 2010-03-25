@@ -23,6 +23,7 @@
 package samples.multicostregular;
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
@@ -83,12 +84,12 @@ public class SimpleSchedule extends CPModel
      */
     private void makeVariables()
     {
-        this.sequence = makeIntVarArray("x",14,0,2,"cp:enum");
+        this.sequence = makeIntVarArray("x",14,0,2,CPOptions.V_ENUM);
         this.bounds =  new IntegerVariable[4];
-        this.bounds[0] = makeIntVar("z_0",30,80,"cp:bound");
-        this.bounds[1] = makeIntVar("day",0,7,"cp:bound");
-        this.bounds[2] = makeIntVar("night",3,7,"cp:bound");
-        this.bounds[3] = makeIntVar("rest",7,9,"cp:bound");
+        this.bounds[0] = makeIntVar("z_0",30,80, CPOptions.V_BOUND);
+        this.bounds[1] = makeIntVar("day",0,7,CPOptions.V_BOUND);
+        this.bounds[2] = makeIntVar("night",3,7,CPOptions.V_BOUND);
+        this.bounds[3] = makeIntVar("rest",7,9,CPOptions.V_BOUND);
 
     }
 
@@ -142,7 +143,7 @@ public class SimpleSchedule extends CPModel
         idx = this.auto.addState();
         this.auto.addTransition(this.auto.getInitialState(),idx,DAY);
         int next = this.auto.addState();
-        this.auto.addTransition(idx,next,new int[]{DAY,NIGHT});
+        this.auto.addTransition(idx,next, DAY,NIGHT);
         this.auto.addTransition(next,auto.getInitialState(),REST);
         auto.addTransition(auto.getInitialState(),next,NIGHT);
 

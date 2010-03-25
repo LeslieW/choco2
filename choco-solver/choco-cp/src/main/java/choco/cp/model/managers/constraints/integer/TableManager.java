@@ -24,6 +24,7 @@ package choco.cp.model.managers.constraints.integer;
 
 import choco.Choco;
 import static choco.Choco.makeLargeRelation;
+import choco.cp.CPOptions;
 import choco.cp.model.managers.IntConstraintManager;
 import choco.cp.solver.constraints.integer.extension.*;
 import choco.cp.solver.variables.integer.BitSetIntDomain;
@@ -62,7 +63,7 @@ public class TableManager extends IntConstraintManager {
         System.arraycopy(vars,0,vars2,0,vars.length);
         IntDomainVar[] vs = solver.getVar(vars2);
         if (vs.length == 2
-                && !options.contains("cp:ac2008") 
+                && !options.contains(CPOptions.C_EXT_AC2008)
                 && !(ps[1] instanceof LargeRelation)) { //ac binaire
             return buildBinaryTable(vs, parameters, options, solver.getEnvironment());
         } else { //ac naire
@@ -89,15 +90,15 @@ public class TableManager extends IntConstraintManager {
     }
 
     public SConstraint buildBinaryTable(IntDomainVar v1, IntDomainVar v2, BinRelation binR, Set<String> options, IEnvironment environment) {
-        if (options.contains("cp:fc")) {
+        if (options.contains(CPOptions.C_EXT_FC)) {
             return new FCBinSConstraint(v1,v2,binR);
-        } else if (options.contains("cp:ac3")) {
+        } else if (options.contains(CPOptions.C_EXT_AC3)) {
             return new AC3BinSConstraint(v1, v2, binR);
-        } else if (options.contains("cp:ac32")) {
+        } else if (options.contains(CPOptions.C_EXT_AC32)) {
             return new AC3rmBinSConstraint(v1, v2, binR);
-        } else if (options.contains("cp:ac322")) {
+        } else if (options.contains(CPOptions.C_EXT_AC322)) {
             return new AC3rmBitBinSConstraint(v1, v2, (CouplesBitSetTable) binR);
-        } else if (options.contains("cp:ac2001")) {
+        } else if (options.contains(CPOptions.C_EXT_AC2001)) {
             return new AC2001BinSConstraint(v1, v2, binR, environment);
         } else { //default choice
             if (binR instanceof CouplesBitSetTable && (v1.getDomain() instanceof BitSetIntDomain) && (v2.getDomain() instanceof BitSetIntDomain)) {
@@ -112,9 +113,9 @@ public class TableManager extends IntConstraintManager {
         int[] min = new int[]{x.getInf(), y.getInf()};
         int[] max = new int[]{x.getSup(), y.getSup()};
         if (mat instanceof List)
-            return Choco.makeBinRelation(min, max, (List<int[]>) mat, feas, options.contains("cp:ac322"));
+            return Choco.makeBinRelation(min, max, (List<int[]>) mat, feas, options.contains(CPOptions.C_EXT_AC322));
         else if (mat instanceof boolean[][])
-            return Choco.makeBinRelation(min, max, (boolean[][]) mat, feas, options.contains("cp:ac322"));
+            return Choco.makeBinRelation(min, max, (boolean[][]) mat, feas, options.contains(CPOptions.C_EXT_AC322));
         else throw new ModelException("a relation should be given a List<int[]> or boolean[][]");
     }
 
@@ -134,23 +135,23 @@ public class TableManager extends IntConstraintManager {
     }
 
     public SConstraint buildNaryTable(IntDomainVar[] vs, LargeRelation rela, Set<String> options, IEnvironment environment) {
-        if (options.contains("cp:fc")) {
+        if (options.contains(CPOptions.C_EXT_FC)) {
             return new CspLargeSConstraint(vs, rela);
         } else {
             if (rela instanceof IterLargeRelation) {
-                if (options.contains("cp:ac32")) {
+                if (options.contains(CPOptions.C_EXT_AC32)) {
                     return new GAC3rmPositiveLargeConstraint(vs, (IterTuplesTable) rela);
-                } else if (options.contains("cp:ac2001")) {
+                } else if (options.contains(CPOptions.C_EXT_AC2001)) {
                     return new GAC2001PositiveLargeConstraint(environment, vs, (IterTuplesTable) rela);
                 } else {
                     return new GAC3rmPositiveLargeConstraint(vs, (IterTuplesTable) rela);
                 }
             } else {
-                if (options.contains("cp:ac32")) {
+                if (options.contains(CPOptions.C_EXT_AC32)) {
                     return new GAC3rmLargeConstraint(vs, rela);
-                } else if (options.contains("cp:ac2001")) {
+                } else if (options.contains(CPOptions.C_EXT_AC2001)) {
                     return new GAC2001LargeSConstraint(vs, rela, environment);
-                } else if (options.contains("cp:ac2008") && rela instanceof TuplesList) {
+                } else if (options.contains(CPOptions.C_EXT_AC2008) && rela instanceof TuplesList) {
                     return new GACstrPositiveLargeSConstraint(vs, rela, environment);
                 } else {
                     return new GAC3rmLargeConstraint(vs, rela); 
@@ -175,9 +176,9 @@ public class TableManager extends IntConstraintManager {
             min[i] = vs[i].getInf();
             max[i] = vs[i].getSup();
         }
-        if (options.contains("cp:ac2008")) {
+        if (options.contains(CPOptions.C_EXT_AC2008)) {
             return makeLargeRelation(min, max, tuples, feas, 2);
-        } else if (options.contains("cp:fc")) {
+        } else if (options.contains(CPOptions.C_EXT_FC)) {
             return makeLargeRelation(min, max, tuples, feas, 1);
         } else {
             return makeLargeRelation(min, max, tuples, feas);            
@@ -190,7 +191,7 @@ public class TableManager extends IntConstraintManager {
 
 
     public int[] getFavoriteDomains(Set<String> options) {
-        if (options.contains("cp:ac322")) {
+        if (options.contains(CPOptions.C_EXT_AC322)) {
             return new int[]{IntDomainVar.BITSET};
         } else {
             return new int[]{

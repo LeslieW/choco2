@@ -24,6 +24,7 @@ package choco.model.constraints.integer;
 
 import static choco.Choco.lt;
 import static choco.Choco.makeIntVar;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -65,7 +66,7 @@ public class LessThanXCTest {
         s = new CPSolver();
         x = makeIntVar("X", 1, 5);
         y = makeIntVar("Y", 1, 5);
-        m.addVariables("cp:bound", x, y);
+        m.addVariables(CPOptions.V_BOUND, x, y);
         c1 = lt(x, 2);
         c2 = lt(y, 3);
     }

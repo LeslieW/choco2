@@ -23,6 +23,7 @@
 package samples.seminar.tsp;
 
 import static choco.Choco.*;
+import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
@@ -59,7 +60,7 @@ public class CycleMain {
         this.model = new CPModel();
         this.solver = new CPSolver();
         this.objective = makeIntVar("cost", 0, maxValue);
-        this.model.addVariable("cp:bound", this.objective);
+        this.model.addVariable(CPOptions.V_BOUND, this.objective);
     }
 
     public static void main(String[] args) {
@@ -160,7 +161,7 @@ public class CycleMain {
             Constraint[] elements = new Constraint[n];
             for (int i = 0; i < n; i++) {
                 c[i] = makeIntVar("cost_" + i, 0, Integer.MAX_VALUE);
-                model.addVariable("cp:bound", c[i]);
+                model.addVariable(CPOptions.V_BOUND, c[i]);
                 elements[i] = choco.Choco.nth(s[i], matrix[i], c[i]);
             }
             model.addConstraints(elements);
