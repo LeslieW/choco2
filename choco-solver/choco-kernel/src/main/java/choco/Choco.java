@@ -2764,7 +2764,18 @@ public class Choco{
 	
 		
 	
-	
+	public static Constraint forbiddenInterval(TaskVariable[] tasks) {
+		return forbiddenInterval(null, tasks);
+	}
+
+	/**
+	 * This redundant constraints applies additional search tree reduction 
+	 * based on Time intervals are in which no operation can start or end in an optimal solution. 
+	 * The tasks must all belong to one disjunctive resource and have fixed durations.
+	 */
+	public static Constraint forbiddenInterval(String name, TaskVariable[] tasks) {
+		return new ComponentConstraint(ConstraintType.FORBIDDEN_INTERVALS, name, tasks);
+	}
 	
 
 

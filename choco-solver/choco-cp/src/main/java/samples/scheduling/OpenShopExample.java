@@ -22,11 +22,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.scheduling;
 
+import java.util.Comparator;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import choco.Choco;
 import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.SettingType;
 import choco.cp.solver.search.task.SetTimes;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.comparator.TaskComparators;
@@ -34,11 +38,6 @@ import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.variables.scheduling.ITask;
-
-import java.util.Comparator;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Arnaud Malapert
@@ -92,9 +91,9 @@ public class OpenShopExample {
 		tasks = Choco.makeTaskVarArray("T", 0, MAX_DURATION*n, durations, CPOptions.V_BOUND);
 		//RESOURCES
 		for (int i = 0; i < n; i++) {
-			machines[i] = Choco.disjunctive(tasks[i],SettingType.FORBIDDEN_INTERVALS.getOptionName());
+			machines[i] = Choco.disjunctive(tasks[i]);
 			TaskVariable[] job = ArrayUtils.getColumn(tasks, i);
-			jobs[i] = Choco.disjunctive(job, SettingType.FORBIDDEN_INTERVALS.getOptionName());
+			jobs[i] = Choco.disjunctive(job);
 		}
 		model.addConstraints(jobs);
 		model.addConstraints(machines);

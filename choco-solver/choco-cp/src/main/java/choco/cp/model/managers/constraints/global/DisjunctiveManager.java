@@ -48,7 +48,6 @@ public final class DisjunctiveManager extends AbstractResourceManager {
 			LOGGER.log(Level.INFO, "no decomposition available: use {0} instead",  SettingType.MIXED);
 			makeMixedConstraint(solver, variables, rdata, options);
 		}else {
-			makeForbiddenIntervalConstraint(rdata, options, solver);
 			makeDecompositionDisjunctive(solver, rdata);
 		}
 	}
@@ -56,7 +55,6 @@ public final class DisjunctiveManager extends AbstractResourceManager {
 	@Override
 	protected void makeGlobalConstraint(CPSolver solver,
 			Variable[] variables, RscData rdata, Set<String> options) {
-		makeForbiddenIntervalConstraint(rdata, options, solver);
 		makeDisjunctive(solver, rdata, options);
 	}
 
@@ -87,14 +85,6 @@ public final class DisjunctiveManager extends AbstractResourceManager {
 		}
 	}
 	
-	protected void makeForbiddenIntervalConstraint(RscData rdata, Set<String> options, Solver solver) {
-		if( options.contains(SettingType.FORBIDDEN_INTERVALS.getOptionName()) ) {
-			if ( rdata.getNbOptionalTasks() > 0 ) {
-				LOGGER.log(Level.WARNING, "no Forbidden intervals with alternative resources {0}", rdata);
-			} 
-			constraints.add(new ForbiddenIntervals(solver, "ForbInt-"+rdata.getRscName(), tasks, uppBound));
-		}
-	}
 //
 //	@Override
 //	public SConstraint makeConstraint(Solver solver, Variable[] variables,
