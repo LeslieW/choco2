@@ -57,7 +57,6 @@ public final class ConstraintLeaf extends INode implements BoolNode {
 	public ConstraintLeaf(SConstraint c, SConstraint oppositec) {
         super(NodeType.CONSTRAINTLEAF);
 	    this.c = (AbstractIntSConstraint) c;
-        this.c = (AbstractIntSConstraint) c;
 	    idxtuple = new int[c.getNbVars()];
 	    tup = new int[c.getNbVars()];
         this.oppositec = (AbstractIntSConstraint) oppositec;

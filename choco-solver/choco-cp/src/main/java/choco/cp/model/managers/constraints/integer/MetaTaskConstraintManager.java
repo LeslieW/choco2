@@ -30,13 +30,11 @@ public final class MetaTaskConstraintManager extends MixedConstraintManager {
 		  if (solver instanceof CPSolver) {
 			  if (parameters instanceof Constraint) {
 				final Constraint ic = (Constraint) parameters;
-				if(ic != null) {
-					boolean decomp = false;
-					if (ic.getOptions().contains(CPOptions.E_DECOMP)) {
-						decomp = true;
-					}
-					return ( (CPSolver) solver).makeSConstraint(ic, decomp);
-				}
+                boolean decomp = false;
+                if (ic.getOptions().contains(CPOptions.E_DECOMP)) {
+                    decomp = true;
+                }
+                return ( (CPSolver) solver).makeSConstraint(ic, decomp);
 			}
 		  }
 		  throw new ModelException("Could not found a constraint manager in " + this.getClass() + " !");
