@@ -33,7 +33,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /**
  * GAC2001 in allowed tuples
  */
-public class GAC2001PositiveLargeConstraint extends CspLargeSConstraint {
+public final class GAC2001PositiveLargeConstraint extends CspLargeSConstraint {
 
     /**
      * supports[i][j stores the index of the tuple that currently support

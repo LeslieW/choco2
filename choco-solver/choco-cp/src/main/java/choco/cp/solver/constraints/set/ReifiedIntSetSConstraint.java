@@ -44,7 +44,7 @@ import java.util.HashSet;
  * cons and oppositeCons do not need to be really the constraint and its
  * opposite, it can be two different constraints as well
  */
-public class ReifiedIntSetSConstraint extends AbstractMixedSetIntSConstraint{
+public final class ReifiedIntSetSConstraint extends AbstractMixedSetIntSConstraint{
 
     protected AbstractSConstraint cons;
     protected AbstractSConstraint oppositeCons;

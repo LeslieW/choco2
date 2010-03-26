@@ -94,7 +94,7 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 //		return newc;
 //	}
 
-	protected void init(IEnvironment environment, int nbLeft, int nbRight) {
+	protected final void init(IEnvironment environment, int nbLeft, int nbRight) {
 		//this.nbLeftVertices = this.vars.length;
 		this.nbLeftVertices = nbLeft;
 		//this.nbRightVertices = this.maxValue - this.minValue + 1;
@@ -132,10 +132,10 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	 * @param i the left vertex
 	 * @return the set of right vertices that can be matched to i
 	 */
-	public int[] mayMatch(int i) {
-		int[] ret = new int[((IntDomainVar) this.getVar(i)).getDomain().getSize()];
+	public final int[] mayMatch(int i) {
+		int[] ret = new int[this.getVar(i).getDomain().getSize()];
 		int offset = 0;
-		DisposableIntIterator iterator = ((IntDomainVar) this.getVar(i)).getDomain().getIterator();
+		DisposableIntIterator iterator = this.getVar(i).getDomain().getIterator();
 		for (; iterator.hasNext();) {
 			int j = iterator.next();
 			ret[offset++] = j - this.minValue;
@@ -152,11 +152,11 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	 * @param j the right vertex
 	 * @return the set of left vertices that can be matched to j
 	 */
-	public int[] mayInverseMatch(int j) {
+	public final int[] mayInverseMatch(int j) {
 		int[] ret = new int[this.nbLeftVertices];
 		int nb = 0;
 		for (int i = 0; i < this.nbLeftVertices; i++) {
-			if (((IntDomainVar) this.getVar(i)).canBeInstantiatedTo(j + this.minValue)) {
+			if (this.getVar(i).canBeInstantiatedTo(j + this.minValue)) {
 				ret[nb++] = i;
 			}
 		}
@@ -169,7 +169,7 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	 * @param i left vextex index
 	 * @return accessing the right vertex matched to i
 	 */
-	public int match(int i) {
+	public final int match(int i) {
 		return this.refMatch.get(i);
 	}
 
@@ -177,7 +177,7 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	 * @param i a left vertex
 	 * @return whether the flow from i to the sink may be increased
 	 */
-	public boolean mayGrowFlowToSink(int i) {
+	public final boolean mayGrowFlowToSink(int i) {
 		return this.match(i) == -1;
 	}
 
@@ -188,7 +188,7 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	 * (meaning whether that the additional flow is able to arrive to j, we don't care yet
 	 * whether it will be able to leave i)
 	 */
-	public boolean mayGrowFlowBetween(int j, int i) {
+	public final boolean mayGrowFlowBetween(int j, int i) {
 		return this.match(i) != j;
 	}
 
@@ -197,7 +197,7 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	 * @param i a left vertex
 	 * @return whether the flow from j to i may be decreased
 	 */
-	public boolean mayDiminishFlowBetween(int j, int i) {
+	public final boolean mayDiminishFlowBetween(int j, int i) {
 		return this.match(i) == j;
 	}
 
@@ -301,12 +301,16 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 		this.queue.init();
 		for (int j = 0; j < this.nbRightVertices; j++) {
 			// enqueue vertives of V2 whose lower bounds haven't been reached
-			if (this.mustGrowFlowFromSource(j)) this.queue.push(j + n);
+			if (this.mustGrowFlowFromSource(j)){
+                this.queue.push(j + n);
+            }
 		}
 		if (this.queue.getSize() == 0) {
 			for (int j = 0; j < this.nbRightVertices; j++) {
 				// otherwise enqueue vertives of V2 whose upper bounds haven't been reached
-				if (this.mayGrowFlowFromSource(j)) this.queue.push(j + n);
+				if (this.mayGrowFlowFromSource(j)){
+                    this.queue.push(j + n);
+                }
 			}
 		}
 		while (this.queue.getSize() > 0) {
@@ -330,7 +334,9 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 						}
 					}
 				}
-				if (shouldBreak) break;
+				if (shouldBreak){
+                    break;
+                }
 			} else {
 				// assert (! this.mayGrowFlowToSink(x))
 				int y = this.match(x);
@@ -355,17 +361,18 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	 */
 	public void augment(int x) {
 		int y = this.left2rightArc[x];
+        int xx = x;
 		while (!this.mayGrowFlowFromSource(y)) {
 			//if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Add {0}.{1}", new Object[]{x,y});
 			this.putRefMatch(x, y);
-			x = this.right2leftArc[y];
+			xx = this.right2leftArc[y];
 			//if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Rem {0}.{1}", new Object[]{x,y});
-			assert(this.match(x) == y);
-			y = this.left2rightArc[x];
+			assert(this.match(xx) == y);
+			y = this.left2rightArc[xx];
 			assert(y >= 0);
 		}
 		//if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Add {0}.{1}", new Object[]{x,y});
-		this.putRefMatch(x, y);
+		this.putRefMatch(xx, y);
 		this.increaseMatchingSize(y);
 	}
 
@@ -374,7 +381,7 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	 *
 	 * @throws ContradictionException
 	 */
-	public void augmentFlow() throws ContradictionException {
+	public final void augmentFlow() throws ContradictionException {
 		int eopath = this.findAlternatingPath();
 		int n1 = this.nbLeftVertices;
 
@@ -411,14 +418,15 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	/**
 	 * initialize the graph data structure storing the SCC decomposition
 	 */
-	public void initSCCGraph() {
+	public final void initSCCGraph() {
 		// erase the component partial order graph
 		int nbc = this.getNbComponents();
 		for (int i = 0; i < nbc; i++) {
-			for (int j = 0; j < nbc; j++)
+			for (int j = 0; j < nbc; j++){
 				if (i != j) {
 					this.componentOrder[i][j] = false;
 				}
+            }
 		}
 		// erase the component graph
 		for (int i = 0; i < this.nbVertices; i++) {
@@ -430,11 +438,11 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	/**
 	 * adds a new vertex to the component graph (= a component = a set of s. connected vertices in the original graph)
 	 */
-	public void addComponentVertex() {
+	public final void addComponentVertex() {
 		this.currentComponent++;
 	}
 
-	public int getNbComponents() {
+	public final int getNbComponents() {
 		return currentComponent + 1;
 	}
 
@@ -445,7 +453,7 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	 * @param compi
 	 * @param compj
 	 */
-	public void addComponentEdge(int compi, int compj) {
+	public final void addComponentEdge(int compi, int compj) {
 		if (!this.componentOrder[compi][compj]) {
 			this.componentOrder[compi][compj] = true;
 			for (int compj2 = 0; compj2 < compj; compj2++) {
@@ -460,7 +468,7 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	 * seen[i] = false <=> color[i] = white (in book)
 	 * = true               % {gray, black}
 	 */
-	public void firstPassDFS() {
+	public final void firstPassDFS() {
 		for (int i = 0; i < this.nbVertices; i++) {
 			this.finishDate[i] = 0;
 			this.seen[i] = false;
@@ -476,7 +484,7 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	 *
 	 * @param i
 	 */
-	public void firstDFSearch(int i) {
+	public final void firstDFSearch(int i) {
 		if (!this.seen[i]) {
 			this.time++;
 			this.seen[i] = true;
@@ -506,7 +514,7 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 		}
 	}
 
-	public void secondPassDFS() {
+	public final void secondPassDFS() {
 		this.initSCCGraph();
 		while (true) { // Pas genial :(
 			int maxf = 0;
@@ -520,8 +528,9 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 			if (maxf > 0) {
 				this.addComponentVertex();
 				this.secondDFSearch(rootOfComp);
-			} else
+			} else{
 				return;
+            }
 		}
 	}
 
@@ -530,7 +539,7 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	 *
 	 * @param i
 	 */
-	public void secondDFSearch(int i) {
+	public final void secondDFSearch(int i) {
 		int compi = this.component[i];
 		int curComp = this.currentComponent;
 		if (compi == -1) {
@@ -553,8 +562,9 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 						this.secondDFSearch(j);
 					}
 				}
-				if (this.mayGrowFlowFromSource(i - this.nbLeftVertices))
+				if (this.mayGrowFlowFromSource(i - this.nbLeftVertices)){
 					this.secondDFSearch(this.source);
+                }
 			} else {                          // (i = sc.source)
 				for (int j = 0; j < this.nbRightVertices; j++) {
 					if (this.mayDiminishFlowFromSource(j)) {
@@ -586,9 +596,6 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 		}
 
 		refreshSCC();
-
-		int nkept = 0, ndiscard = 0;
-
 		////////////////////////////////DEBUG ONLY ///////////////////////////
 		//Logging statements really decrease performance
 		// TODO : voir pour rendre plus efficace les explications !!
@@ -620,17 +627,14 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 				int j = jj[k];
 				if (this.match(i) != j) {
 					if (this.component[i] != this.component[j + this.nbLeftVertices]) {
-						ndiscard++;
 						this.deleteEdgeAndPublish(i, j);
-					} else {
-						nkept++;
 					}
 				}
 			}
 		}
 	}
 
-	public void refreshSCC() {
+	public final void refreshSCC() {
 		this.firstPassDFS();
 		this.secondPassDFS();
 		////////////////////////////////DEBUG ONLY ///////////////////////////
@@ -651,7 +655,7 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 		this.removeUselessEdges();
 	}
 
-	public void prettyPrintForDebug() {
+	public final void prettyPrintForDebug() {
 		if(LOGGER.isLoggable(Level.INFO)) {
 			for(int i = 0; i < nbLeftVertices; i++) {
 				LOGGER.info(MessageFormat.format("{0}: {1}[{2}]", vars[i].pretty(), refMatch.get(i), component[i]));
@@ -668,7 +672,7 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	//   QUEUE OF REACHED VERTICES WHEN FINDING AN AUGMENTING PATH
 	// ==============================================================
 
-	protected class IntQueue {
+	protected static final class IntQueue {
 		/**
 		 * Maximum size of the queue.
 		 */

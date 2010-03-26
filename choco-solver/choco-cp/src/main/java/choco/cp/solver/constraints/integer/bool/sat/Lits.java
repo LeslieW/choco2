@@ -1,14 +1,14 @@
 package choco.cp.solver.constraints.integer.bool.sat;
 
-import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.cp.solver.variables.integer.BooleanVarImpl;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
  * A literal is a boolean variable or its negation
  * This structure stores the lists of watched literals to ensure
  * propagation of clauses
  */
-public class Lits {
+public final class Lits {
 
     //number of boolean variables
     protected int nblits;

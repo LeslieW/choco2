@@ -22,17 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.scheduling.cumulative;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-
 import choco.kernel.common.util.tools.TaskUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+
+import java.util.*;
 
 
 /**
@@ -103,7 +98,7 @@ public class CumulSweep implements ICumulSweep {
 
 	}
 
-	private final boolean overlapForSure(TaskVar t, int low, int up) {
+	private boolean overlapForSure(TaskVar t, int low, int up) {
 		return t .getECT() > low && t.getLST() <= up && t.getMinDuration() > 0;
 	}
 
@@ -217,7 +212,7 @@ public class CumulSweep implements ICumulSweep {
 				|| capaSumHeight - capaContributions[idx] > rsc.getMaxCapacity() ) { //needed to not exceed capacity
 			rtask.assign();
 			final TaskVar t = rtask.getTaskVar();
-			modified |= rtask.setEST(up - t.getMaxDuration() + 1);
+			modified = rtask.setEST(up - t.getMaxDuration() + 1);
 			//modified |= t.start().updateInf(up - t.getMaxDuration() + 1, rsc.getCIndiceStart(idx));
 			modified |= rtask.setLST(low);
 			//modified |= t.start().updateSup(low, rsc.getCIndiceStart(idx));
@@ -264,7 +259,7 @@ public class CumulSweep implements ICumulSweep {
 		final TaskVar t = rtask.getTaskVar();
 		if( rtask.isRegular() && overlapForSure(t, low, up)) {
 			final int idx = rtask.getTaskIndex();
-			modified |= rtask.updateMaxHeight(rsc.getMaxCapacity()- (capaSumHeight - capaContributions[idx]));
+			modified = rtask.updateMaxHeight(rsc.getMaxCapacity()- (capaSumHeight - capaContributions[idx]));
 			modified |= rtask.updateMinHeight(rsc.getMinConsumption() - (consSumHeight - consContributions[idx]));
 		}
 		return modified;
@@ -289,7 +284,7 @@ public class CumulSweep implements ICumulSweep {
 	/**
 	 * A Class to preallocate the events needed per tasks
 	 */
-	protected class EventTaskStructure {
+	protected static class EventTaskStructure {
 		//CHECK Events
 		protected final Event checkEvtS;
 		protected final Event checkEvtE;

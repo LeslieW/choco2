@@ -5,7 +5,7 @@ import choco.kernel.solver.ContradictionException;
 /**
  * A specific class for binary clauses
  */
-public class BinaryWLClause extends WLClause {
+public final class BinaryWLClause extends WLClause {
 
     public BinaryWLClause(int[] ps, Lits voc) {
         super(ps, voc);

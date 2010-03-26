@@ -20,7 +20,7 @@ import java.util.Set;
  * Time: 5:54:26 PM
  */
 
-public class FastCostRegularManager extends IntConstraintManager {
+public final class FastCostRegularManager extends IntConstraintManager {
 
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
 

@@ -44,7 +44,7 @@ import choco.kernel.solver.variables.set.SetVar;
  * Date: 8 août 2008
  * Time: 13:26:41
  */
-public class SetVariableManager implements VariableManager<SetVariable> {
+public final class SetVariableManager implements VariableManager<SetVariable> {
 
     /**
      * Build a set variable for the given solver

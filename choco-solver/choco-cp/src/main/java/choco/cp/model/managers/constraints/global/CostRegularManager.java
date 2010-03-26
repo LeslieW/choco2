@@ -39,7 +39,7 @@ import java.util.Set;
 * Since : Choco 2.0.1
 * Update : Choco 2.0.1
 */
-public class CostRegularManager extends IntConstraintManager {
+public final class CostRegularManager extends IntConstraintManager {
 
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
 

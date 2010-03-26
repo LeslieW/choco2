@@ -29,7 +29,7 @@ import choco.kernel.solver.constraints.real.exp.AbstractRealUnTerm;
 import choco.kernel.solver.variables.real.RealInterval;
 import choco.kernel.solver.variables.real.RealMath;
 
-public class RealIntegerPower extends AbstractRealUnTerm {
+public final class RealIntegerPower extends AbstractRealUnTerm {
   protected int power;
 
   public RealIntegerPower(Solver solver, RealExp exp1, int power) {

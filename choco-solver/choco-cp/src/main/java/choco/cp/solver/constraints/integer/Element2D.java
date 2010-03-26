@@ -38,7 +38,7 @@ import java.util.BitSet;
  * Date: 16-Jan-2007
  * Time: 18:54:33
  */
-public class Element2D extends AbstractTernIntSConstraint {
+public final class Element2D extends AbstractTernIntSConstraint {
 
     protected int[][] lvals;
     protected int dim1;

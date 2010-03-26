@@ -35,7 +35,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /**
  * Implements a constraint X + Y == C, with X and Y two variables and C a constant.
  */
-public class EqualXY_C extends AbstractBinIntSConstraint {
+public final class EqualXY_C extends AbstractBinIntSConstraint {
 
 	/**
 	 * The search constant of the constraint

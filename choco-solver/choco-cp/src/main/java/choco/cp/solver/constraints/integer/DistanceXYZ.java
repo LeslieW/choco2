@@ -34,7 +34,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * where operator can be =, <=, >= and x1, x2, x3 are variables
  * Warning: only achieves BoundConsistency for the moment !
  **/
-public class DistanceXYZ extends AbstractTernIntSConstraint {
+public final class DistanceXYZ extends AbstractTernIntSConstraint {
 
 	protected int operator;
 

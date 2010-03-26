@@ -61,7 +61,7 @@ interface Heapable {
      * @return true if this key is greater than the other key
      * @param other the key to compare this key to.
      */
-    public boolean greaterThan(Object other);
+    boolean greaterThan(Object other);
 
     /**
      * Determines if this key is less than the other key.
@@ -74,7 +74,7 @@ interface Heapable {
      * @return true if this key is less than the other key
      * @param other the key to compare this key to.
      */
-    public boolean lessThan(Object other);
+    boolean lessThan(Object other);
 
     /**
      * Determines if this key is equal to the other key.
@@ -87,5 +87,5 @@ interface Heapable {
      * @return true if this key is equal to the other key
      * @param other the key to compare this key to.
      */
-    public boolean equalTo(Object other);
+    boolean equalTo(Object other);
 }

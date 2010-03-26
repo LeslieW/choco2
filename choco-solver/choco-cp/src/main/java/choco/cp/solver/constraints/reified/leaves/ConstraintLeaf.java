@@ -39,7 +39,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Since : Choco 2.0.0
  *
  */
-public class ConstraintLeaf extends INode implements BoolNode {
+public final class ConstraintLeaf extends INode implements BoolNode {
 
     protected AbstractIntSConstraint c;
 	protected AbstractIntSConstraint oppositec;

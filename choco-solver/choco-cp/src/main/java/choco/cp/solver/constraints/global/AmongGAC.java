@@ -48,7 +48,7 @@ import gnu.trove.TIntArrayList;
  * Among, common and disjoint Constraints
  * CP-2005
  */
-public class AmongGAC extends AbstractLargeIntSConstraint {
+public final class AmongGAC extends AbstractLargeIntSConstraint {
 
 
     private final TIntArrayList valuesAsList;

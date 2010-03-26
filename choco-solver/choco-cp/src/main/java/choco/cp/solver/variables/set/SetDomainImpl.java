@@ -41,13 +41,9 @@ import java.util.Arrays;
  */
 public final class SetDomainImpl implements SetDomain {
 
-  protected final PropagationEngine propagationEngine;
+  private final PropagationEngine propagationEngine;
 
-  protected SetVar variable;
-  /**
-   * the initial size of the domain (never increases)
-   */
-  private int capacity;
+  private SetVar variable;
 
   private BitSetEnumeratedDomain kernel;
 
@@ -59,7 +55,6 @@ public final class SetDomainImpl implements SetDomain {
 
   public SetDomainImpl(SetVar v, int a, int b, IEnvironment environment, PropagationEngine propagationEngine) {
     variable = v;
-    capacity = b - a + 1;           // number of entries
     kernel = new BitSetEnumeratedDomain(v, a, b, false, environment);
     enveloppe = new BitSetEnumeratedDomain(v, a, b, true, environment);
     this.propagationEngine = propagationEngine;
@@ -67,7 +62,6 @@ public final class SetDomainImpl implements SetDomain {
 
   public SetDomainImpl(SetVar v, int[] sortedValues, IEnvironment environment, PropagationEngine propagationEngine) {
     variable = v;
-    capacity = sortedValues.length;           // number of entries
     kernel = new BitSetEnumeratedDomain(v, sortedValues, false, environment);
     enveloppe = new BitSetEnumeratedDomain(v, sortedValues, true, environment);
       this.propagationEngine = propagationEngine;
@@ -83,7 +77,6 @@ public final class SetDomainImpl implements SetDomain {
      */
   public SetDomainImpl(SetVar v, int[] sortedValues, boolean constant, IEnvironment environment, PropagationEngine propagationEngine) {
       variable = v;
-      capacity = sortedValues.length;           // number of entries
       if (sortedValues.length > 0) {
           kernel = new BitSetEnumeratedDomain(v, sortedValues, constant, environment);
           enveloppe = new BitSetEnumeratedDomain(v, sortedValues, true, environment);
@@ -115,24 +108,34 @@ public final class SetDomainImpl implements SetDomain {
   public boolean isInstantiatedTo(int[] setVal) {
     if (setVal.length == kernel.getSize() && setVal.length == enveloppe.getSize()) {
       for (int i = 0; i < setVal.length; i++) {
-        if (!kernel.contains(setVal[i])) return false;
+        if (!kernel.contains(setVal[i])){
+            return false;
+        }
       }
       return true;
-    } else
+    } else{
       return false;
+    }
   }
 
   //TODO : a bitset instead of a int[] ?
   public boolean canBeInstantiatedTo(int[] setVal) {
     if (kernel.getSize() <= setVal.length && enveloppe.getSize() >= setVal.length) {
       Arrays.sort(setVal);   // TODO : can we suppose that the table is sorted ?
-      for (int i = 0; i < setVal.length; i++)
-        if (!enveloppe.contains(setVal[i])) return false;
-      for (int i = kernel.getFirstVal(); i >= 0; i = kernel.getNextValue(i))
-        if (Arrays.binarySearch(setVal, i) < 0) return false;
+      for (int i = 0; i < setVal.length; i++){
+        if (!enveloppe.contains(setVal[i])){
+            return false;
+        }
+      }
+      for (int i = kernel.getFirstVal(); i >= 0; i = kernel.getNextValue(i)){
+        if (Arrays.binarySearch(setVal, i) < 0){
+            return false;
+        }
+      }
       return true;
-    } else
+    } else{
       return false;
+    }
 
   }
 
@@ -143,7 +146,9 @@ public final class SetDomainImpl implements SetDomain {
     while (it.hasNext()) {
       int val = it.next();
       count += 1;
-      if (count > 1) buf.append(",");
+      if (count > 1){
+          buf.append(",");
+      }
       buf.append(val);
     }
     it.dispose();
@@ -153,7 +158,9 @@ public final class SetDomainImpl implements SetDomain {
     while (it.hasNext()) {
       int val = it.next();
       count += 1;
-      if (count > 1) buf.append(",");
+      if (count > 1) {
+          buf.append(",");
+      }
       buf.append(val);
     }
     it.dispose();
@@ -172,10 +179,12 @@ public final class SetDomainImpl implements SetDomain {
   // Si promotion, il faut annuler la cause
   public boolean remFromEnveloppe(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
     if (_remFromEnveloppe(x, cause)) {
-      if (isInstantiated())
+      if (isInstantiated()){
         propagationEngine.postInstSet(variable, cause, forceAwake);
-      else
+      }
+      else{
         propagationEngine.postRemEnv(variable, cause, forceAwake);
+      }
       return true;
     }
     return false;
@@ -184,10 +193,12 @@ public final class SetDomainImpl implements SetDomain {
   // Si promotion, il faut annuler la cause
   public boolean addToKernel(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
     if (_addToKernel(x, cause)) {
-      if (isInstantiated())
+      if (isInstantiated()){
         propagationEngine.postInstSet(variable, cause, forceAwake);
-      else
+      }
+      else{
         propagationEngine.postAddKer(variable, cause, forceAwake);
+      }
       return true;
     }
     return false;
@@ -197,8 +208,9 @@ public final class SetDomainImpl implements SetDomain {
     if (_instantiate(x, cause)) {
       propagationEngine.postInstSet(variable, cause, forceAwake);
       return true;
-    } else
+    } else{
       return false;
+    }
   }
 
   // Si promotion, il faut annuler la cause
@@ -230,17 +242,22 @@ public final class SetDomainImpl implements SetDomain {
 			if (!isInstantiatedTo(values)) {
 				propagationEngine.raiseContradiction(cause);
                 return true; // just for compilation
-			} else
+			} else{
 				return true;
+            }
 		} else {
 			if (!canBeInstantiatedTo(values)) {
 				propagationEngine.raiseContradiction(cause);
                 return true; // just for compilation
 			} else {
-				for (int i = 0; i < values.length; i++) // TODO: ajouter un restrict(int[] val) dans le BitSetEnumeratedDomain
+				for (int i = 0; i < values.length; i++){ // TODO: ajouter un restrict(int[] val) dans le BitSetEnumeratedDomain
 					kernel.add(values[i]);
-				for (int i = enveloppe.getFirstVal(); i >= 0; i = enveloppe.getNextValue(i))
-					if (!kernel.contains(i)) enveloppe.remove(i);
+                }
+				for (int i = enveloppe.getFirstVal(); i >= 0; i = enveloppe.getNextValue(i)){
+					if (!kernel.contains(i)){
+                        enveloppe.remove(i);
+                    }
+                }
 				return true;
 			}
 		}
@@ -250,7 +267,7 @@ public final class SetDomainImpl implements SetDomain {
   // Iterators on kernel and enveloppe.
   // ============================================
 
-    protected SetDomainIterator _cachedKernelIterator = null;
+    private SetDomainIterator _cachedKernelIterator = null;
 
     public DisposableIntIterator getKernelIterator() {
       SetDomainIterator iter = _cachedKernelIterator;
@@ -262,7 +279,7 @@ public final class SetDomainImpl implements SetDomain {
       return _cachedKernelIterator;
   }
 
-    protected SetDomainIterator _cachedEnveloppeIterator = null;
+    private SetDomainIterator _cachedEnveloppeIterator = null;
 
     public DisposableIntIterator getEnveloppeIterator() {
       SetDomainIterator iter = _cachedEnveloppeIterator;
@@ -274,9 +291,9 @@ public final class SetDomainImpl implements SetDomain {
       return _cachedEnveloppeIterator;
   }
 
-  protected static class SetDomainIterator extends DisposableIntIterator {
-    protected BitSetEnumeratedDomain domain;
-    protected int currentValue = Integer.MIN_VALUE;
+  protected static final class SetDomainIterator extends DisposableIntIterator {
+    private BitSetEnumeratedDomain domain;
+    private int currentValue = Integer.MIN_VALUE;
 
     private SetDomainIterator(BitSetEnumeratedDomain dom) {
       init(dom);
@@ -289,8 +306,7 @@ public final class SetDomainImpl implements SetDomain {
       }
 
     public boolean hasNext() {
-      if (domain.getSize() == 0) return false;  // Le kernel peut �tre vide lui !
-      return (Integer.MIN_VALUE == currentValue) ? true : (currentValue < domain.getLastVal());
+        return domain.getSize() != 0 && ((Integer.MIN_VALUE == currentValue) || (currentValue < domain.getLastVal()));
     }
 
     public int next() {
@@ -307,7 +323,7 @@ public final class SetDomainImpl implements SetDomain {
     }
   }
 
-  protected SetOpenDomainIterator _cachedIterator = null;
+  private SetOpenDomainIterator _cachedIterator = null;
 
   public DisposableIntIterator getOpenDomainIterator() {
       SetOpenDomainIterator iter = _cachedIterator;
@@ -320,11 +336,11 @@ public final class SetDomainImpl implements SetDomain {
 //      return new SetOpenDomainIterator(this.enveloppe, this.kernel);
   }
 
-  protected static class SetOpenDomainIterator extends DisposableIntIterator {
-    protected BitSetEnumeratedDomain envdomain;
-    protected BitSetEnumeratedDomain kerdomain;
-    protected int currentValue = Integer.MIN_VALUE;
-    protected int nbValueToBeIterated = Integer.MAX_VALUE;
+  protected static final class SetOpenDomainIterator extends DisposableIntIterator {
+    private BitSetEnumeratedDomain envdomain;
+    private BitSetEnumeratedDomain kerdomain;
+    private int currentValue = Integer.MIN_VALUE;
+    private int nbValueToBeIterated = Integer.MAX_VALUE;
 
     private SetOpenDomainIterator(BitSetEnumeratedDomain dom1, BitSetEnumeratedDomain dom2) {
       init(dom1, dom2);
@@ -344,11 +360,12 @@ public final class SetDomainImpl implements SetDomain {
 
     public int next() {
       int i = (currentValue == Integer.MIN_VALUE) ? envdomain.getFirstVal() : envdomain.getNextValue(currentValue);
-      for (; i >= 0; i = envdomain.getNextValue(i))
+      for (; i >= 0; i = envdomain.getNextValue(i)){
         if (!kerdomain.contains(i)) {
           currentValue = i;
           break;
         }
+      }
       nbValueToBeIterated -= 1;
       return currentValue;
     }

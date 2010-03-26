@@ -32,7 +32,7 @@ import choco.kernel.solver.variables.real.RealMath;
 /**
  * Expression evaluatiing the cos of its only one sub-expression.
  */
-public class RealSin extends AbstractRealUnTerm {
+public final class RealSin extends AbstractRealUnTerm {
   public RealSin(Solver solver, RealExp exp1) {
     super(solver, exp1);
   }

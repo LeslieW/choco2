@@ -38,7 +38,7 @@ import java.util.logging.Level;
  * @author Arnaud Malapert
  *
  */
-public class DisjunctiveManager extends AbstractResourceManager {
+public final class DisjunctiveManager extends AbstractResourceManager {
 
 
 	@Override

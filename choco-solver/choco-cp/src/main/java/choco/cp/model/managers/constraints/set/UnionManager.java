@@ -39,7 +39,7 @@ import java.util.Set;
  * Date: 11 août 2008
  * Time: 13:03:38
  */
-public class UnionManager extends SetConstraintManager {
+public final class UnionManager extends SetConstraintManager {
 
     /**
      * Build a constraint for the given solver and "model variables"

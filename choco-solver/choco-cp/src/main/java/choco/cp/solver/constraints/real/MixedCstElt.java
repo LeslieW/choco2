@@ -37,7 +37,7 @@ import choco.kernel.solver.variables.real.RealVar;
  * <p/>
  * a1... an sequence is supposed to be ordered (a1&lt;a2&lt;... an)
  */
-public class MixedCstElt extends AbstractBinRealIntSConstraint{
+public final class MixedCstElt extends AbstractBinRealIntSConstraint{
   protected double[] values;
 
   public MixedCstElt(RealVar v0, IntDomainVar v1, double[] values) {

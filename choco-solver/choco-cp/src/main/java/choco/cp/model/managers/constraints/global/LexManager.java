@@ -41,7 +41,7 @@ import java.util.Set;
  * Date: 11 août 2008
  * Time: 10:11:23
  */
-public class LexManager extends IntConstraintManager {
+public final class LexManager extends IntConstraintManager {
 
     public static final int NONE = 0;
     public static final int EQ = 1;

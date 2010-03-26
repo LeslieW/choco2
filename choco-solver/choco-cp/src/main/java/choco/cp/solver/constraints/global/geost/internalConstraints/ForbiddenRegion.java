@@ -5,7 +5,8 @@ import choco.cp.solver.constraints.global.geost.geometricPrim.Obj;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Point;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Region;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -32,10 +33,10 @@ public abstract class ForbiddenRegion extends InternalConstraint {
 
     /* sweep.tex r108 Chapter 7 - Algorithm 149 'isFeasible'
      * false if p notin F, otherwise computes the forbidden box f */
-    public Vector isFeasible(boolean min, int dim, int k, Obj o, Point p, Point jump) {
+    public List isFeasible(boolean min, int dim, int k, Obj o, Point p, Point jump) {
         //System.out.println("-- ENTERING ForbiddenRegion.isFeasible;p:"+p+";jump:"+jump);
         Region f = new Region(k, o.getObjectId());
-        Vector<Object> result = new Vector<Object>();
+        List<Object> result = new ArrayList<Object>();
         if (!insideForbidden(p)) { /*line 1*/
             //System.out.println("Not Inside forbidden");
             result.add(0,true);
@@ -77,12 +78,12 @@ public abstract class ForbiddenRegion extends InternalConstraint {
 
     /* sweep.tex r108 Chapter 7 - Algorithm 150 'InsideForbidden'
      * returns true if p belongs to the forbidden region F and false otherwise */
-    abstract public boolean insideForbidden(Point p);
+    public abstract boolean insideForbidden(Point p);
 
     /* sweep.tex r108 Chapter 7 - Algorithm 'MaximizeSizeOfFBox'
      * computes the largest extended f d/e box remains included in F if min=true
      * computes the smallest extended f d/e box remains included in F if min=false */
-    abstract public int maximizeSizeOfFBox(boolean min, int d, int k, Region f);
+    public abstract int maximizeSizeOfFBox(boolean min, int d, int k, Region f);
 
     
 }

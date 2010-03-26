@@ -51,7 +51,7 @@ import java.util.logging.Level;
  * data structure </b> is available in the <code> structure.inputStructure </code> package.</p>
  * 
  */
-public class TreeSConstraint extends AbstractLargeIntSConstraint {
+public final class TreeSConstraint extends AbstractLargeIntSConstraint {
 
     /**
      * boolean for debug and show a trace of the execution

@@ -46,7 +46,7 @@ import java.util.logging.Level;
  * User: Hadrien
  * Enforce the sequence of variable vs to be a word recognized by DFA auto
  */
-public class Regular extends AbstractLargeIntSConstraint {
+public final class Regular extends AbstractLargeIntSConstraint {
 
 
     public final static boolean INCREMENTAL = true;

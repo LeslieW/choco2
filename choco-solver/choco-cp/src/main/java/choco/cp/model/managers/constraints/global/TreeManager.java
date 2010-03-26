@@ -40,7 +40,7 @@ import java.util.Set;
  * User:    charles
  * Date:    26 août 2008
  */
-public class TreeManager extends IntConstraintManager {
+public final class TreeManager extends IntConstraintManager {
 
     /**
      * Build a constraint for the given solver and "model variables"

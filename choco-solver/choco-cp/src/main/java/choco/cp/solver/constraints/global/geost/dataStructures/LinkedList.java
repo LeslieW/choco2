@@ -1,6 +1,5 @@
 package choco.cp.solver.constraints.global.geost.dataStructures;
 
-import java.util.Enumeration;
 import java.util.NoSuchElementException;
 
 public class LinkedList {
@@ -81,13 +80,5 @@ public class LinkedList {
       }
     }
     throw new NoSuchElementException("no such object found");
-  }
-
- /*
-  * Returns an enumeration of the elements. Use the Enumeration methods on
-  * the returned object to fetch the elements sequentially.
-  */
-  public final synchronized Enumeration elements() {
-    return new ListEnumerator(this);
   }
 }

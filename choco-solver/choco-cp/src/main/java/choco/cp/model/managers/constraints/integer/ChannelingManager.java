@@ -54,7 +54,7 @@ import java.util.Set;
 /**
  * A manager to build new all channeling constraints
  */
-public class ChannelingManager extends IntConstraintManager {
+public final class ChannelingManager extends IntConstraintManager {
 
 
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {

@@ -86,7 +86,7 @@ public class HeuristicTest {
     
     if (domWdeg == 3) {
             ( (CPSolver) s).setGeometricRestart(14, 1.5);
-            ( (CPSolver) s).limitConfig.setRestartStrategyLimitType(Limit.NODE);
+            ( (CPSolver) s).getLimitConfig().setRestartStrategyLimitType(Limit.NODE);
 //            
 //    		s.getSearchStrategy().setSearchLoop(new SearchLoopWithRestart(s.getSearchStrategy(),
 //          new RestartStrategy() {

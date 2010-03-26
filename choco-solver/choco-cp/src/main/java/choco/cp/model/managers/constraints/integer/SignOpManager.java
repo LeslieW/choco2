@@ -52,7 +52,7 @@ import java.util.Set;
 /**
  * A manager to build new signop constraint
  */
-public class SignOpManager extends MixedConstraintManager {
+public final class SignOpManager extends MixedConstraintManager {
   public SConstraint makeConstraint(Solver solver, Variable[] vars, Object parameters, Set<String> options) {
     if (solver instanceof CPSolver) {
         return new SignOp(

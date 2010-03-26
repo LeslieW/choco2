@@ -37,7 +37,7 @@ import choco.kernel.solver.variables.set.SetVar;
 /**
  * Ensure that a value will not belong to a setVar
  */
-public class NotMemberX extends AbstractUnSetSConstraint {
+public final class NotMemberX extends AbstractUnSetSConstraint {
 
 	protected int cste;
 

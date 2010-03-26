@@ -6,21 +6,27 @@ import choco.cp.solver.constraints.global.geost.geometricPrim.Obj;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Point;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Region;
 import choco.cp.solver.constraints.global.geost.internalConstraints.*;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.solver.SolverException;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
 
 /**
  * This is the intermediate layer class. It implements the functionality that permits access to infeasible sets of points according to  
  * some Internal Constraint ictr
  */
-public class IntermediateLayer {
+public final class IntermediateLayer {
+
+    private static final Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	/**
 	 * Creates an IntermediateLayer instance. Actually this class just provides functionality so
 	 * we could have just made all the functions in it static but we prefer to do it this way for later changes if needed.
 	 */
-	public IntermediateLayer(){};
+	public IntermediateLayer(){}
 
 
 	/**
@@ -31,21 +37,21 @@ public class IntermediateLayer {
 	 * @param o The object in question
 	 * @return A vector of 2 elements. The first is a Boolean object indicating the fact of whether a point was found and the second is a Point object
 	 */
-	public Vector LexInFeasible(InternalConstraint ictr, boolean minLex, int d, int k, Obj o)
+	public List lexInFeasible(InternalConstraint ictr, boolean minLex, int d, int k, Obj o)
 	{
-		Vector result = new Vector();
+		List result = new ArrayList();
 		switch (ictr.getIctrID())
 		{
 			case Constants.INBOX:
-				result = LexInFeasibleForInbox((Inbox)ictr, minLex, d, k, o);
+				result = lexInFeasibleForInbox((Inbox)ictr, minLex, d, k, o);
 				break;
 			case Constants.OUTBOX:
-				result = LexInFeasibleForOutbox((Outbox)ictr, minLex, d, k, o);
+				result = lexInFeasibleForOutbox((Outbox)ictr, minLex, k, o);
 				break;
 			case Constants.AVOID_HOLES:
-				result = LexInFeasibleForAvoidHoles((AvoidHoles)ictr, minLex, d, k, o);
+				result = lexInFeasibleForAvoidHoles();
 				break;
-			default: System.err.println("A call to LexFeasible with incorrect ictrID parameter");
+			default: LOGGER.severe("A call to LexFeasible with incorrect ictrID parameter");
 		}
 		return result;
 	}
@@ -61,19 +67,19 @@ public class IntermediateLayer {
 	 * feasible or not and the second is a Region object indicating a forbidden region
 	 * if the point is not feasible
 	 */
-	public Vector IsFeasible(InternalConstraint ictr, boolean min, int d, int k, Obj o, Point c, Point jump)
+	public List isFeasible(InternalConstraint ictr, boolean min, int d, int k, Obj o, Point c, Point jump)
 	{
-		Vector result = new Vector();
+		List result = new ArrayList();
 		switch (ictr.getIctrID())
 		{
 			case Constants.INBOX:
-				result = IsFeasibleForInbox((Inbox)ictr, min, d, k, o, c);
+				result = isFeasibleForInbox((Inbox)ictr, min, d, k, o, c);
 				break;
 			case Constants.OUTBOX:
-				result = IsFeasibleForOutbox((Outbox)ictr, min, d, k, o, c);
+				result = isFeasibleForOutbox((Outbox)ictr, min, k, o, c);
 				break;
 			case Constants.AVOID_HOLES:
-				result = IsFeasibleForAvoidHoles((AvoidHoles)ictr, min, d, k, o, c);
+				result = isFeasibleForAvoidHoles();
 				break;
             case Constants.DIST_LEQ_FR:
                 //System.out.println("DIST_LEQ_FR.isFeasible");
@@ -87,8 +93,8 @@ public class IntermediateLayer {
                 //System.out.println("DIST_LINEAR_FR.isFeasible");
                 result = ((DistLinearIC)ictr).isFeasible(min, d, k, o, c, jump);
                 break;
-			default: System.err.println("A call to IsFeasible with incorrect ictrID parameter");
-                System.exit(-1);
+			default:
+                throw new SolverException("A call to IsFeasible with incorrect ictrID parameter");
 		}
 		return result;
 	}
@@ -111,19 +117,19 @@ public class IntermediateLayer {
 				result = CardInfeasibleForOutbox((Outbox)ictr, k, o);
 				break;
 			case Constants.AVOID_HOLES:
-				result = CardInfeasibleForAvoidHoles((AvoidHoles)ictr, k, o);
+				result = cardInfeasibleForAvoidHoles();
 				break;
-			default: System.err.println("A call to CardInfeasible with incorrect ictr parameter");
+			default: LOGGER.severe("A call to CardInfeasible with incorrect ictr parameter");
 		}
 		return result;
 	}
 
 
-	private Vector LexInFeasibleForInbox(Inbox ictr, boolean minLex, int d, int k, Obj o)
+	private List lexInFeasibleForInbox(Inbox ictr, boolean minLex, int d, int k, Obj o)
 	{
 
 		//RETURNS a vector of 2 elements. The first is a Boolean object and the second is a Point object
-		Vector<Object> result = new Vector<Object>();
+		List<Object> result = new ArrayList<Object>();
 
 		int[] t = new int[ictr.getT().length];
 		t = ictr.getT();
@@ -184,10 +190,10 @@ public class IntermediateLayer {
 		}
 	}
 
-	private Vector LexInFeasibleForOutbox(Outbox ictr, boolean minLex, int d, int k, Obj o)
+	private List lexInFeasibleForOutbox(Outbox ictr, boolean minLex, int k, Obj o)
 	{
 		//RETURNS a vector of 2 elements. The first is a Boolean object and the second is a Point object
-		Vector<Object> result = new Vector<Object>();
+		List<Object> result = new ArrayList<Object>();
 		int[] t = new int[ictr.getT().length];
 		t = ictr.getT();
 		int[] l = new int[ictr.getL().length];
@@ -214,19 +220,18 @@ public class IntermediateLayer {
 		return result;
 	}
 
-	private Vector LexInFeasibleForAvoidHoles(AvoidHoles ictr, boolean minLex, int d, int k, Obj o)
+	private List lexInFeasibleForAvoidHoles()
 	{
 		//RETURNS a vector of 2 elements. The first is a Boolean object and the second is a Point object
-		Vector result = new Vector();
 
-		return result;
+        return new ArrayList();
 	}
 
 
-	private Vector IsFeasibleForInbox(Inbox ictr, boolean min, int d, int k, Obj o, Point c)
+	private List isFeasibleForInbox(Inbox ictr, boolean min, int d, int k, Obj o, Point c)
 	{
 		//RETURNS a vector of 2 elements. The first is a Boolean object and the second is a Region object
-		Vector<Object> result = new Vector<Object>();
+		List<Object> result = new ArrayList<Object>();
 		int[] t = new int[ictr.getT().length];
 		t = ictr.getT();
 		int[] l = new int[ictr.getL().length];
@@ -250,7 +255,7 @@ public class IntermediateLayer {
 				}
 				else
 				{
-					f.setMaximumBoundary(jPrime, o.getCoord(jPrime).getSup());;
+					f.setMaximumBoundary(jPrime, o.getCoord(jPrime).getSup());
 					if(c.getCoord(jPrime) > t[jPrime] + l[jPrime] - 1)
 						after = true;
 				}
@@ -269,10 +274,10 @@ public class IntermediateLayer {
 		return result;
 	}
 
-	private Vector IsFeasibleForOutbox(Outbox ictr, boolean min, int d, int k, Obj o, Point c)
+	private List isFeasibleForOutbox(Outbox ictr, boolean min, int k, Obj o, Point c)
 	{
 		//RETURNS a vector of 2 elements. The first is a Boolean object and the second is a Region object
-		Vector<Object> result = new Vector<Object>();
+		List<Object> result = new ArrayList<Object>();
 		int[] t = new int[ictr.getT().length];
 		t = ictr.getT();
 		int[] l = new int[ictr.getL().length];
@@ -307,12 +312,10 @@ public class IntermediateLayer {
 	}
 
 
-	private Vector IsFeasibleForAvoidHoles(AvoidHoles ictr, boolean min, int d, int k, Obj o, Point c)
+	private List isFeasibleForAvoidHoles()
 	{
 		//RETURNS a vector of 2 elements. The first is a Boolean object and the second is a Region object
-		Vector<Object> result = new Vector<Object>();
-
-		return result;
+        return new ArrayList<Object>();
 	}
 
 
@@ -326,12 +329,14 @@ public class IntermediateLayer {
 		int[] l = new int[ictr.getL().length];
 		l = ictr.getL();
 
-		for(int j = 0; j < k; j++)
+		for(int j = 0; j < k; j++){
 			n = n * (o.getCoord(j).getSup() - o.getCoord(j).getInf() + 1);
+        }
 
 		int m = 1;
-		for(int j = 0; j < k; j++)
+		for(int j = 0; j < k; j++){
 			m = m * Math.max(0, ((Math.min(o.getCoord(j).getSup(), t[j] + l[j] - 1) - Math.max(o.getCoord(j).getInf(), t[j])) + 1));
+        }
 
 		return n - m;
 	}
@@ -345,18 +350,18 @@ public class IntermediateLayer {
 		int[] l = new int[ictr.getL().length];
 		l = ictr.getL();
 
-		for(int j = 0; j < k; j++)
+		for(int j = 0; j < k; j++){
 			n = n * ((Math.min(o.getCoord(j).getSup(), t[j] + l[j] -1) - Math.max(o.getCoord(j).getInf(), t[j])) + 1);
+        }
 
 		return n;
 	}
 
-	private int CardInfeasibleForAvoidHoles(AvoidHoles ictr, int k, Obj o)
+	private int cardInfeasibleForAvoidHoles()
 	{
 		//RETURNS an interger indicating the number of infeasible points for the origin of the object o
-		int result = 0;
 
-		return result;
+        return 0;
 	}
 
 

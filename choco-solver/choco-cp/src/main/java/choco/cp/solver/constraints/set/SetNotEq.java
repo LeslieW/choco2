@@ -30,7 +30,7 @@ import choco.kernel.solver.variables.set.SetVar;
 /**
  * A constraint to state that two set vars can not be equal
  */
-public class SetNotEq extends AbstractBinSetSConstraint {
+public final class SetNotEq extends AbstractBinSetSConstraint {
 
 	/**
 	 * create a constraint to state sv1 is not equal to sv2

@@ -16,7 +16,7 @@ import java.util.Set;
  * Date: Nov 20, 2009
  * Time: 3:05:34 PM
  */
-public class FastRegularManager extends IntConstraintManager {
+public final class FastRegularManager extends IntConstraintManager {
      public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
             if (parameters instanceof FiniteAutomaton)
             {

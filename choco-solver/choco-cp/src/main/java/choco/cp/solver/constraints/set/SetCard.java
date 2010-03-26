@@ -36,7 +36,7 @@ import choco.kernel.solver.variables.set.SetVar;
 // *     for Research and Education                 *
 // **************************************************
 
-public class SetCard extends AbstractBinSetIntSConstraint {
+public final class SetCard extends AbstractBinSetIntSConstraint {
 
 	// operator pour la contrainte de cardinalit� :
 	// inf & !sup -> card(set) <= int

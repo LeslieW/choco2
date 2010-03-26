@@ -50,7 +50,7 @@ import java.util.Set;
  * Date: 9 août 2008
  * Time: 16:25:12
  */
-public class ElementManager extends IntConstraintManager{
+public final class ElementManager extends IntConstraintManager{
 
     /**
      * Build a constraint for the given solver and "model variables"
@@ -121,15 +121,15 @@ public class ElementManager extends IntConstraintManager{
         if(solver instanceof CPSolver){
             if(parameters instanceof Integer){
                 int offset = (Integer)parameters;
-                IntDomainVar Y;
-                final IntDomainVar X = solver.getVar(variables[variables.length-2]);
+                IntDomainVar y;
+                final IntDomainVar x = solver.getVar(variables[variables.length-2]);
                 // Introduces a intermediary variable
-                if(X.hasBooleanDomain()){
-                    Y = solver.createBooleanVar("Y_opp");
-                }else if(X.hasEnumeratedDomain()){
-                    Y = solver.createEnumIntVar("Y_opp", X.getInf(), X.getSup());
+                if(x.hasBooleanDomain()){
+                    y = solver.createBooleanVar("Y_opp");
+                }else if(x.hasEnumeratedDomain()){
+                    y = solver.createEnumIntVar("Y_opp", x.getInf(), x.getSup());
                 }else{
-                    Y = solver.createBoundIntVar("Y_opp", X.getInf(), X.getSup());
+                    y = solver.createBoundIntVar("Y_opp", x.getInf(), x.getSup());
                 }
 
                 IntDomainVar val = solver.getVar(variables[variables.length-1]);
@@ -139,53 +139,53 @@ public class ElementManager extends IntConstraintManager{
                         values[i] = ((IntegerConstantVariable)variables[i]).getValue();
                     }
                     if(options.contains(CPOptions.C_NTH_G)){
-                        solver.post(new ElementG(Y, values, val, solver.getEnvironment()));
+                        solver.post(new ElementG(y, values, val, solver.getEnvironment()));
                     }else{
-                        solver.post(new Element(Y, values, val, offset));
+                        solver.post(new Element(y, values, val, offset));
                     }
                 }else{
-                    if (Y.hasEnumeratedDomain()) {
+                    if (y.hasEnumeratedDomain()) {
                         IntDomainVar[] tvars = solver.getVar((IntegerVariable[])variables);
-                        tvars[variables.length-2] = Y;
+                        tvars[variables.length-2] = y;
                         if(options.contains(CPOptions.C_NTH_G)){
                             solver.post(new ElementVG(tvars, offset, solver.getEnvironment()));
                         }else{
                             solver.post(new ElementV(tvars, offset, solver.getEnvironment()));
                         }
                     }else{
-                        throw new SolverException(X.getName()+" has not an enumerated domain");
+                        throw new SolverException(x.getName()+" has not an enumerated domain");
                     }
                 }
-                cs[0] = solver.eq(Y, X);
-                cs[1] = solver.neq(Y, X);
+                cs[0] = solver.eq(y, x);
+                cs[1] = solver.neq(y, x);
             }else if(parameters instanceof int[][]){
-                IntDomainVar Y1, Y2;
+                IntDomainVar y1, y2;
                 int[][] varArray = (int[][])parameters;
-                final IntDomainVar X1 = solver.getVar(variables[0]);
-                final IntDomainVar X2 = solver.getVar(variables[1]);
-                if(X1.hasBooleanDomain()){
-                    Y1 = solver.createBooleanVar("Y1_opp");
-                }else if(X1.hasEnumeratedDomain()){
-                    Y1 = solver.createEnumIntVar("Y1_opp", X1.getInf(), X1.getSup());
+                final IntDomainVar x1 = solver.getVar(variables[0]);
+                final IntDomainVar x2 = solver.getVar(variables[1]);
+                if(x1.hasBooleanDomain()){
+                    y1 = solver.createBooleanVar("Y1_opp");
+                }else if(x1.hasEnumeratedDomain()){
+                    y1 = solver.createEnumIntVar("Y1_opp", x1.getInf(), x1.getSup());
                 }else{
-                    Y1 = solver.createBoundIntVar("Y1_opp", X1.getInf(), X1.getSup());
+                    y1 = solver.createBoundIntVar("Y1_opp", x1.getInf(), x1.getSup());
                 }
-                if(X2.hasBooleanDomain()){
-                    Y2 = solver.createBooleanVar("Y2_opp");
-                }else if(X2.hasEnumeratedDomain()){
-                    Y2 = solver.createEnumIntVar("Y2_opp", X2.getInf(), X2.getSup());
+                if(x2.hasBooleanDomain()){
+                    y2 = solver.createBooleanVar("Y2_opp");
+                }else if(x2.hasEnumeratedDomain()){
+                    y2 = solver.createEnumIntVar("Y2_opp", x2.getInf(), x2.getSup());
                 }else{
-                    Y2 = solver.createBoundIntVar("Y2_opp", X2.getInf(), X2.getSup());
+                    y2 = solver.createBoundIntVar("Y2_opp", x2.getInf(), x2.getSup());
                 }
 
                 IntDomainVar val = solver.getVar(variables[2]);
-                solver.post(new Element2D(Y1, Y2, val, varArray));
+                solver.post(new Element2D(y1, y2, val, varArray));
                 cs[0] = new ExpressionSConstraint(
-                        new AndNode(new EqNode(new INode[]{new VariableLeaf(Y1), new VariableLeaf(X1)}),
-                                new EqNode(new INode[]{new VariableLeaf(Y2), new VariableLeaf(X2)})));
+                        new AndNode(new EqNode(new INode[]{new VariableLeaf(y1), new VariableLeaf(x1)}),
+                                new EqNode(new INode[]{new VariableLeaf(y2), new VariableLeaf(x2)})));
                 cs[1] = new ExpressionSConstraint(
-                        new OrNode(new NeqNode(new INode[]{new VariableLeaf(Y1), new VariableLeaf(X1)}),
-                                new NeqNode(new INode[]{new VariableLeaf(Y2), new VariableLeaf(X2)})));
+                        new OrNode(new NeqNode(new INode[]{new VariableLeaf(y1), new VariableLeaf(x1)}),
+                                new NeqNode(new INode[]{new VariableLeaf(y2), new VariableLeaf(x2)})));
             }
             return cs;
         }

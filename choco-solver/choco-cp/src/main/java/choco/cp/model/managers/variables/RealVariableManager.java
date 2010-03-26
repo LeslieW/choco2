@@ -42,7 +42,7 @@ import choco.kernel.solver.variables.real.RealVar;
  * Date: 8 août 2008
  * Time: 13:36:45
  */
-public class RealVariableManager implements VariableManager<RealVariable> {
+public final class RealVariableManager implements VariableManager<RealVariable> {
 
     /**
      * Build a real variable for the given solver

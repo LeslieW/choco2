@@ -14,7 +14,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  *
  * A binary constraint for simple forward checking
  */
-public class FCBinSConstraint extends CspBinSConstraint {
+public final class FCBinSConstraint extends CspBinSConstraint {
 
     public FCBinSConstraint(IntDomainVar x0, IntDomainVar x1, BinRelation rela) {//int[][] consistencyMatrice) {
 		super(x0, x1, rela);

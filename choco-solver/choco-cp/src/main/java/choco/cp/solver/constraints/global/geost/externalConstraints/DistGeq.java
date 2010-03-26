@@ -11,7 +11,7 @@ import java.io.Serializable;
  * Time: 16:29:15
  * To change this template use File | Settings | File Templates.
  */
-public class DistGeq extends ExternalConstraint implements Serializable {
+public final class DistGeq extends ExternalConstraint implements Serializable {
 
     public int D;
     public int o1;

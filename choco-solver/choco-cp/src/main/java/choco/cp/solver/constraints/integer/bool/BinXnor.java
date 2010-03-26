@@ -36,7 +36,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 *
 * b0 XNOR b1
 */
-public class BinXnor extends AbstractBinIntSConstraint{
+public final class BinXnor extends AbstractBinIntSConstraint{
 
 public BinXnor(IntDomainVar v1, IntDomainVar v2) {
 		super(v1, v2);

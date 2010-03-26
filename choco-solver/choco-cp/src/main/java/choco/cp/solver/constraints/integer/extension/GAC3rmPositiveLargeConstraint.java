@@ -32,7 +32,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /**
  * GAC3rm (GAC3 with residual supports)
  */
-public class GAC3rmPositiveLargeConstraint extends CspLargeSConstraint {
+public final class GAC3rmPositiveLargeConstraint extends CspLargeSConstraint {
 
     /**
      * supports[i][j stores the index of the tuple that currently support

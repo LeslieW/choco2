@@ -37,7 +37,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Since : Choco 2.0.0
  *
  */
-public class MinNode extends INode implements ArithmNode {
+public final class MinNode extends INode implements ArithmNode {
 
 	public MinNode(INode[] subt) {
 		super(subt, NodeType.MIN);

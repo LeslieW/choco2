@@ -21,17 +21,17 @@ import java.util.logging.Logger;
  * Also it contains functions that the user and the constraint use to access the shapes, objects as well as the external constraints in the Geost.
  */
 
-public class Setup {
+public final class Setup {
 
-    public final static Logger LOGGER = ChocoLogging.getEngineLogger();
+    private static final Logger LOGGER = ChocoLogging.getEngineLogger();
 
-	Constants cst;
+	private final Constants cst;
 
     public GeostOptions opt = new GeostOptions();
 
     public final PropagationEngine propagationEngine;
 
-    public Geost_Constraint g_constraint;
+    public final Geost_Constraint g_constraint;
 
     /**
 	 * Creates a Setup instance for a given Constants class
@@ -50,33 +50,33 @@ public class Setup {
 	 * A hashtable where the key is a shape_id. And for every shape_id there is a pointer to the set of shifted_boxes that belong to this shape.
 	 * This hashtable contains all the shapes (and their shifted boxes) of all the objects in the geost constraint.
 	 */
-	public Hashtable<Integer, Vector<ShiftedBox>> shapes = new Hashtable<Integer, Vector<ShiftedBox>>();
+	public final Hashtable<Integer, List<ShiftedBox>> shapes = new Hashtable<Integer, List<ShiftedBox>>();
 	/**
 	 * A hashtable where the key is an object_id. And for every object_id there is a pointer to the actual object.
 	 * This hashtable contains all the objects that goest needs to place.
 	 */
-	public Hashtable<Integer, Obj> objects = new Hashtable<Integer, Obj>();
+	public final Hashtable<Integer, Obj> objects = new Hashtable<Integer, Obj>();
 	/**
 	 * A Vector containing ExternalConstraint objects. This vector constains all the external constraints that geost needs to deal with.
 	 */
-	public Vector<ExternalConstraint> constraints = new Vector<ExternalConstraint>();
+	private final List<ExternalConstraint> constraints = new ArrayList<ExternalConstraint>();
 	/**
 	 * A heap data structure containting elements in ascending order (lexicographically).
 	 * This is not used anymore.
 	 * It was used inside that pruneMin function and we used to store in it the internal constraints.
 	 * This way we coulld extract the active internal constraints at a specific position
 	 */
-	transient public HeapAscending  ictrMinHeap = new HeapAscending();
+	private final transient HeapAscending  ictrMinHeap = new HeapAscending();
 	/**
 	 * A heap data structure containting elements in descending order (lexicographically).
 	 * This is not used anymore.
 	 * It was used inside that pruneMax function and we used to store in it the internal constraints.
 	 * This way we coulld extract the active internal constraints at a specific position
 	 */
-	transient public HeapDescending ictrMaxHeap = new HeapDescending();
+	private final transient HeapDescending ictrMaxHeap = new HeapDescending();
 
 
-	public void insertShape(int sid, Vector<ShiftedBox> shiftedBoxes)
+	public void insertShape(int sid, List<ShiftedBox> shiftedBoxes)
 	{
 		shapes.put(sid, shiftedBoxes);
 	}
@@ -87,14 +87,14 @@ public class Setup {
 	}
 
 
-	public Vector<ShiftedBox> getShape(int sid)
+	public List<ShiftedBox> getShape(int sid)
 	{
-		return shapes.get(new Integer(sid));
+		return shapes.get(sid);
 	}
 
 	public Obj getObject(int oid)
 	{
-		return objects.get(new Integer(oid));
+		return objects.get(oid);
 	}
 
 	public int getNbOfObjects()
@@ -151,35 +151,35 @@ public class Setup {
   	/**
 	 * Given a Vector of Objects and a Vector of shiftedBoxes and a Vector of ExternalConstraints it sets up the problem for the geost constraint.
 	 */
-	public void SetupTheProblem(Vector<Obj> objects, Vector<ShiftedBox> shiftedBoxes, Vector<ExternalConstraint> ectr)
+	public void SetupTheProblem(List<Obj> objects, List<ShiftedBox> shiftedBoxes, List<ExternalConstraint> ectr)
 	{
 		for(int i = 0; i < objects.size(); i++)
 		{
-			addObject(objects.elementAt(i));
+			addObject(objects.get(i));
 		}
 
 		for(int i = 0; i < shiftedBoxes.size(); i++)
 		{
-			addShiftedBox(shiftedBoxes.elementAt(i));
+			addShiftedBox(shiftedBoxes.get(i));
 		}
 
 		for(int i = 0; i < ectr.size(); i++)
 		{
-			addConstraint(ectr.elementAt(i));
-			for(int j = 0; j < ectr.elementAt(i).getObjectIds().length; j++)
+			addConstraint(ectr.get(i));
+			for(int j = 0; j < ectr.get(i).getObjectIds().length; j++)
 			{
-				getObject(ectr.elementAt(i).getObjectIds()[j]).addRelatedExternalConstraint(ectr.elementAt(i));
+				getObject(ectr.get(i).getObjectIds()[j]).addRelatedExternalConstraint(ectr.get(i));
 			}                                                           
 		}
 
 	}
 
-  	public void addConstraint(ExternalConstraint ectr)
+  	void addConstraint(ExternalConstraint ectr)
 	{
 		constraints.add(ectr);
 	}
 
-	public Vector<ExternalConstraint> getConstraints()
+	public List<ExternalConstraint> getConstraints()
 	{
 		return constraints;
 	}
@@ -192,21 +192,21 @@ public class Setup {
 		return ictrMaxHeap;
 	}
 
-	public void addShiftedBox(ShiftedBox sb)
+	void addShiftedBox(ShiftedBox sb)
 	{
-		if (shapes.containsKey(new Integer(sb.getShapeId()))) {
-			shapes.get(new Integer(sb.getShapeId())).add(sb);
+		if (shapes.containsKey(sb.getShapeId())) {
+			shapes.get(sb.getShapeId()).add(sb);
 		} else
 		{
-			Vector<ShiftedBox> v = new Vector<ShiftedBox>();;
+			List<ShiftedBox> v = new ArrayList<ShiftedBox>();
 			v.add(sb);
 			shapes.put(sb.getShapeId(), v);
 		}
 	}
 
-	public void addObject(Obj o)
+	void addObject(Obj o)
 	{
-		if (objects.containsKey(new Integer(o.getObjectId()))) {
+		if (objects.containsKey(o.getObjectId())) {
 			LOGGER.info("Trying to add an already existing object. In addObject in Setup");
 		} else {
 			objects.put(o.getObjectId(), o);
@@ -242,7 +242,7 @@ public class Setup {
 		while(itr.hasNext())
 		{
 			int id = itr.next();
-			Obj o = objects.get(new Integer(id));
+			Obj o = objects.get(id);
 			LOGGER.info("object id: " + id);
 			LOGGER.info("    shape id: " + o.getShapeId().getInf());
 			for (int i = 0; i < cst.getDIM(); i++) {
@@ -254,7 +254,7 @@ public class Setup {
 		while(itr.hasNext())
 		{
 			int sid = itr.next();
-			Vector<ShiftedBox> sb = shapes.get(new Integer(sid));
+			List<ShiftedBox> sb = shapes.get(sid);
 			LOGGER.info("shape id: " + sid);
 			for(int i = 0; i < sb.size(); i++)
 			{
@@ -262,8 +262,8 @@ public class Setup {
 				StringBuilder size = new StringBuilder();
 				for (int j = 0; j < cst.getDIM(); j++)
 				{
-                    offset.append(sb.elementAt(i).getOffset(j)).append("  ");
-                    size.append(sb.elementAt(i).getSize(j)).append("  ");
+                    offset.append(sb.get(i).getOffset(j)).append("  ");
+                    size.append(sb.get(i).getSize(j)).append("  ");
 				}
 				LOGGER.info("    sb" + i + ": ");
 				LOGGER.info("       Offset: " +  offset.toString());
@@ -286,7 +286,7 @@ public class Setup {
 			while(itr.hasNext())
 			{
 				int id = itr.next();
-				Obj o = objects.get(new Integer(id));
+				Obj o = objects.get(id);
 				out.write("object id: " + id + '\n');
 				out.write("    shape id: " + o.getShapeId().getInf() + '\n');
 				for (int i = 0; i < cst.getDIM(); i++) {
@@ -298,7 +298,7 @@ public class Setup {
 			while(itr.hasNext())
 			{
 				int sid = itr.next();
-				Vector<ShiftedBox> sb = shapes.get(new Integer(sid));
+				List<ShiftedBox> sb = shapes.get(sid);
 				out.write("shape id: " + sid + '\n');
 				for(int i = 0; i < sb.size(); i++)
 				{
@@ -306,8 +306,8 @@ public class Setup {
 					StringBuilder size = new StringBuilder();
 					for (int j = 0; j < cst.getDIM(); j++)
 					{
-                        offset.append(sb.elementAt(i).getOffset(j)).append("  ");
-                        size.append(sb.elementAt(i).getSize(j)).append("  ");
+                        offset.append(sb.get(i).getOffset(j)).append("  ");
+                        size.append(sb.get(i).getSize(j)).append("  ");
 					}
 					out.write("    sb" + i + ": " + '\n');
 					out.write("       Offset: " +  offset.toString() + '\n');
@@ -338,7 +338,7 @@ public class Setup {
 			while(itr.hasNext())
 			{
 				int id = itr.next();
-				Obj o = objects.get(new Integer(id));
+				Obj o = objects.get(id);
 				out.write(id + " ");
 				out.write(o.getShapeId().getInf() + " " + o.getShapeId().getSup() + " ");
 				for (int i = 0; i < cst.getDIM(); i++) {
@@ -363,7 +363,7 @@ public class Setup {
 			while(itr.hasNext())
 			{
 				int sid = itr.next();
-				Vector<ShiftedBox> sb = shapes.get(new Integer(sid));
+				List<ShiftedBox> sb = shapes.get(sid);
 
 				for(int i = 0; i < sb.size(); i++)
 				{
@@ -371,8 +371,8 @@ public class Setup {
 					StringBuilder size = new StringBuilder();
 					for (int j = 0; j < cst.getDIM(); j++)
 					{
-                        offset.append(sb.elementAt(i).getOffset(j)).append(" ");
-                        size.append(sb.elementAt(i).getSize(j)).append(" ");
+                        offset.append(sb.get(i).getOffset(j)).append(" ");
+                        size.append(sb.get(i).getSize(j)).append(" ");
 					}
 					out.write(sid + " ");
 					out.write(offset.toString() +  size.toString() + '\n');

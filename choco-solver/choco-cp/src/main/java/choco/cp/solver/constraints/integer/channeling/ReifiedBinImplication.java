@@ -35,7 +35,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 * Since : Choco 2.1.1
 * Update : Choco 2.1.1
 */
-public class ReifiedBinImplication extends AbstractTernIntSConstraint {
+public final class ReifiedBinImplication extends AbstractTernIntSConstraint {
 
     /**
      * A constraint to ensure :

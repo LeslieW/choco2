@@ -42,7 +42,7 @@ import java.util.List;
  * Date: 08-Jan-2007
  * Time: 09:13:13
  */
-public class AtMostNValue extends AbstractLargeIntSConstraint {
+public final class AtMostNValue extends AbstractLargeIntSConstraint {
 
 	// temporary data structure
 	// The set of instantiated values

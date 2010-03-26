@@ -49,7 +49,7 @@ import java.util.List;
  * during INST + INF + SUP + REM.
  * So not sure it will be that interesting.
  */
-public class Exactly extends AbstractLargeIntSConstraint {
+public final class Exactly extends AbstractLargeIntSConstraint {
 
 
     private final int value;

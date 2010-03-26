@@ -7,8 +7,8 @@ import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * A class that all Frames should extend. It contains info and functionality common to all frames.
@@ -18,17 +18,17 @@ public class Frame implements Externalizable {
 	/**
 	 * Integer for the object id and the vector is the relative Forbidden Regions of every shifted box of the shapes of the object
 	 */
-	private Hashtable<Integer, Vector<Region>> RelForbidRegions;
+	private HashMap<Integer, List<Region>> RelForbidRegions;
 	
 	public Frame()
 	{
-		RelForbidRegions = new Hashtable<Integer,  Vector<Region>>();
+		RelForbidRegions = new HashMap<Integer, List<Region>>();
 	}
 
 	/**
 	 * Gets the Relative forbidden regions of this frame. It return a hash table where the key is an Integer object representing the shape id and the value a vector of Region object.
 	 */
-	public Hashtable<Integer,  Vector<Region>> getRelForbidRegions()
+	public final HashMap<Integer, List<Region>> getRelForbidRegions()
 	{
 		return RelForbidRegions;
 	}
@@ -36,7 +36,7 @@ public class Frame implements Externalizable {
 	/**
 	 * Adds a given shape id and a Vector of regions to the Frame.
 	 */
-	public void addForbidRegions(int oid, Vector<Region> regions)
+	public final void addForbidRegions(int oid, List<Region> regions)
 	{
 		this.RelForbidRegions.put(oid, regions);
 	}
@@ -44,7 +44,7 @@ public class Frame implements Externalizable {
 	/**
 	 * Gets the Relative forbidden regions of a certain shape id. It returns Vector of Region object.
 	 */
-	public Vector<Region> getRelForbidRegions(int oid)
+	public final List<Region> getRelForbidRegions(int oid)
 	{
 		return this.RelForbidRegions.get(oid);
 	}
@@ -52,20 +52,20 @@ public class Frame implements Externalizable {
 	/**
 	 * Returns the size of the frame.
 	 */
-	public int size()
+	public final int size()
 	{
 		return RelForbidRegions.size();
 	}
 
 
-    public void writeExternal(ObjectOutput out) throws IOException {
+    public final void writeExternal(ObjectOutput out) throws IOException {
         out.writeObject(RelForbidRegions);
 
     }
 
     @SuppressWarnings({"unchecked"})
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+    public final void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
         //To change body of implemented methods use File | Settings | File Templates.
-        RelForbidRegions=(Hashtable<Integer, Vector<Region>>) in.readObject();        
+        RelForbidRegions=(HashMap<Integer, List<Region>>) in.readObject();        
     }
 }

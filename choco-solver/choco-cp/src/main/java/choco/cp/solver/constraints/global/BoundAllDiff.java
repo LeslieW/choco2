@@ -30,7 +30,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public class BoundAllDiff extends AbstractLargeIntSConstraint {
+public final class BoundAllDiff extends AbstractLargeIntSConstraint {
     public static boolean PROPAGATE_ON_INSTANTIATIONS = true;
     public boolean PROPAGATE_ON_BOUNDS = true;
 
@@ -321,7 +321,7 @@ public class BoundAllDiff extends AbstractLargeIntSConstraint {
     }
 
   @Override
-public Boolean isEntailed() {
+    public Boolean isEntailed() {
         throw new UnsupportedOperationException("isEntailed not yet implemented on package choco.kernel.solver.constraints.global.BoundAlldiff");
     }
 

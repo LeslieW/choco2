@@ -39,7 +39,7 @@ import java.util.Set;
 * Since : Choco 2.1.1
 * Update : Choco 2.1.1
 */
-public class ReifiedOrManager extends IntConstraintManager {
+public final class ReifiedOrManager extends IntConstraintManager {
 
     /**
      * Build a constraint for the given solver and "model variables"

@@ -34,8 +34,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,10 +44,11 @@ import java.util.logging.Logger;
  * to a wrl file in the Virtual Reality Modeling Language (VRML). This file can later be visualized using the VRMLviewer tool.
  * The ouput file is written in a folder specified in the VRML_OUTPUT_FOLDER variable in the global.Constants class.
  */
-public class VRMLwriter {
+public final class VRMLwriter {
 
+    private  VRMLwriter() {}
 
-    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
+    protected static final Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	public static final String VRML_OUTPUT_FOLDER = "";
 
@@ -66,7 +67,6 @@ public class VRMLwriter {
 	        LOGGER.log(Level.INFO, "writing the VRML to : {0}",  str);
 			Iterator itr;
 			itr = s.objects.keySet().iterator();
-			int ObjectIterationNb = 0;
 			
 			int kdim= 0;
 			if (c.getDIM() == 2)
@@ -82,7 +82,6 @@ public class VRMLwriter {
 			{
 				while(itr.hasNext())
 				{
-					ObjectIterationNb++;
 					int id = (Integer) itr.next();
 					//Obj o = s.objects.get(new Integer(id));
 					Obj o = s.getObject(id);
@@ -99,7 +98,7 @@ public class VRMLwriter {
 					
 					out.write("Transform { translation " + temp.toString() + '\n' );
 					out.write("children [ " + '\n');
-					Vector<ShiftedBox> sb = s.shapes.get(Integer.valueOf(o.getShapeId().getInf()));
+					List<ShiftedBox> sb = s.shapes.get(Integer.valueOf(o.getShapeId().getInf()));
 					
 					Random rnd = new Random();
 					float fDiff1 = rnd.nextFloat();
@@ -126,12 +125,12 @@ public class VRMLwriter {
 						temp.setLength(0);
 						for (int j = 0; j < c.getDIM(); j++)
 						{
-							float k = (sb.elementAt(i).getOffset(j) + (sb.elementAt(i).getSize(j) / 2.0f));
+							double k = (sb.get(i).getOffset(j) + (sb.get(i).getSize(j) / 2.0f));
                             temp.append("").append(k).append(" ");
 						}
 					
 //						the translation (on the z-axis) for the text label on the box
-						sizeOnZOfFirstShiftedBoxOfObject = sb.elementAt(0).getSize(c.getDIM() - 1);
+						sizeOnZOfFirstShiftedBoxOfObject = sb.get(0).getSize(c.getDIM() - 1);
 						
 						if (kdim == 2)
 							temp.append(" 0.0 ");
@@ -141,7 +140,7 @@ public class VRMLwriter {
 						temp.setLength(0);
 						for (int j = 0; j < c.getDIM(); j++)
 						{
-							int k = sb.elementAt(i).getSize(j);
+							int k = sb.get(i).getSize(j);
                             temp.append("").append(k).append(" ");
 						}
 						

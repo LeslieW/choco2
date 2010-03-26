@@ -33,7 +33,7 @@ import choco.kernel.solver.constraints.reified.NodeType;
  * Since : Choco 2.0.0
  *
  */
-public class PowNode extends INode implements ArithmNode {
+public final class PowNode extends INode implements ArithmNode {
 
 	public PowNode(INode[] subt) {
 		super(subt, NodeType.POW);

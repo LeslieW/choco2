@@ -237,7 +237,7 @@ abstract class AbstractBoundOfASet extends AbstractLargeSetIntSConstraint {
  * @since 8 déc. 2008 version 2.0.1</br>
  * @version 2.0.1</br>
  */
-public class MaxOfASet extends AbstractBoundOfASet {
+public final class MaxOfASet extends AbstractBoundOfASet {
 
 	/**
 	 * Index of the maximum variable.

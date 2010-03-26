@@ -211,7 +211,7 @@ public class Code4Doc5 {
     }
 
     //totex ccoupletest
-    public class MyEquality extends CouplesTest {
+    public static class MyEquality extends CouplesTest {
         
         public boolean checkCouple(int x, int y) {
             return x == y;
@@ -235,7 +235,7 @@ public class Code4Doc5 {
     }
 
     //totex cnotallequal
-    public class NotAllEqual extends TuplesTest {
+    public static class NotAllEqual extends TuplesTest {
 
 		public boolean checkTuple(int[] tuple) {
 			for (int i = 1; i < tuple.length; i++) {

@@ -41,7 +41,7 @@ import choco.kernel.solver.variables.set.SetVar;
  * Env(v1) disjoint Ker(v2)
  * Env(v2) disjoint Ker(v1)
  */
-public class Disjoint extends AbstractBinSetSConstraint {
+public final class Disjoint extends AbstractBinSetSConstraint {
 
 	public Disjoint(SetVar sv1, SetVar sv2) {
         super(sv1, sv2);

@@ -38,7 +38,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Allows to sort lexical chain with strict lexicographic ordering or not.
  */
 
-public class LexChain extends AbstractLargeIntSConstraint {
+public final class LexChain extends AbstractLargeIntSConstraint {
 
 
     /**

@@ -42,7 +42,7 @@ import java.util.Set;
  * Date: 11 août 2008
  * Time: 12:56:32
  */
-public class AbsoluteManager extends IntConstraintManager {
+public final class AbsoluteManager extends IntConstraintManager {
 
     /**
      * Build a constraint for the given solver and "model variables"

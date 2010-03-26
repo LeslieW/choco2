@@ -87,7 +87,7 @@ public class U2planning extends PatternExample{
 
 	protected Person bono, edge, adam, larry, flashlight;
 	protected Person[] persons;
-	private static int[] timeTravel;
+//	private static int[] timeTravel;
 
 
     @Override
@@ -101,7 +101,7 @@ public class U2planning extends PatternExample{
         larry = new Person("larry", 10);
         flashlight = new Person("flashlight", 0);
         persons = new Person[]{larry, adam, edge, bono, flashlight};
-        timeTravel = new int[]{larry.rate, adam.rate, edge.rate, bono.rate, flashlight.rate};
+//        timeTravel = new int[]{larry.rate, adam.rate, edge.rate, bono.rate, flashlight.rate};
     }
 
     @Override

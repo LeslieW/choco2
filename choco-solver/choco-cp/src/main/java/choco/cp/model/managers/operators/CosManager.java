@@ -39,7 +39,7 @@ import java.util.Set;
 /* User:    charles
  * Date:    20 août 2008
  */
-public class CosManager extends RealConstraintManager{
+public final class CosManager extends RealConstraintManager{
 
     /**
      * Build a constraint for the given solver and "model variables"

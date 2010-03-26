@@ -35,7 +35,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 * Since : Choco 2.1.1
 * Update : Choco 2.1.1
 */
-public class LargeXor extends AbstractLargeIntSConstraint {
+public final class LargeXor extends AbstractLargeIntSConstraint {
 
     /**
      * A constraint to ensure :

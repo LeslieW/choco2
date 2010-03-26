@@ -38,7 +38,7 @@ import java.util.Set;
  * Date : 29 janv. 2010
  * Since : Choco 2.1.1
  */
-public class IncreasingNValueManager extends IntConstraintManager {
+public final class IncreasingNValueManager extends IntConstraintManager {
 
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] integerVariables, Object parameters, Set<String> options) {
         IntDomainVar[] vars = new IntDomainVar[integerVariables.length-1];

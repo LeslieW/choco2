@@ -14,7 +14,7 @@ import choco.kernel.solver.variables.set.SetVar;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class SetNaryUnion extends AbstractLargeSetSConstraint {
+public final class SetNaryUnion extends AbstractLargeSetSConstraint {
 
     protected SetVar[] setVars;
     protected SetVar unionSet;

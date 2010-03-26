@@ -14,12 +14,12 @@ public class InternalConstraint implements Serializable {
 		this.ictrID = id;
 	}
 	
-	public int getIctrID()
+	public final int getIctrID()
 	{
 		return this.ictrID;
 	}
 
-	public void setIctrID(int id)
+	public final void setIctrID(int id)
 	{
 		this.ictrID=id;
 	}

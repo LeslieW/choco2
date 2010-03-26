@@ -43,7 +43,7 @@ import java.util.Set;
  * User:    charles
  * Date:    21 août 2008
  */
-public class AndManager extends IntConstraintManager {
+public final class AndManager extends IntConstraintManager {
 
     /**
      * Build a constraint for the given solver and "model variables"

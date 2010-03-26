@@ -42,7 +42,7 @@ import java.util.Set;
  * Date: 8 août 2008
  * Time: 20:08:04
  */
-public class PackManager extends MixedConstraintManager {
+public final class PackManager extends MixedConstraintManager {
 
 	/**
 	 * Build a constraint for the given solver and "model variables"

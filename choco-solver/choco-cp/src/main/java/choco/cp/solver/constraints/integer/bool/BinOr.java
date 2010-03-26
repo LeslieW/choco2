@@ -31,7 +31,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * maintaint v1 Or v2 where v1 and v2 are boolean variables
  * i.e variables of domain {0,1}
  */
-public class BinOr extends AbstractBinIntSConstraint {
+public final class BinOr extends AbstractBinIntSConstraint {
 
 	public BinOr(IntDomainVar v1, IntDomainVar v2) {
 		super(v1, v2);

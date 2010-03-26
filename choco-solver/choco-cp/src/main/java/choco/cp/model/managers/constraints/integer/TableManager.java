@@ -46,7 +46,7 @@ import java.util.Set;
  * Since : Choco 2.0.0
  *
  */
-public class TableManager extends IntConstraintManager {
+public final class TableManager extends IntConstraintManager {
 
     /**
      * @param solver

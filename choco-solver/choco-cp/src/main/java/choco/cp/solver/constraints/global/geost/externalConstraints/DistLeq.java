@@ -15,7 +15,7 @@ import java.io.ObjectOutput;
  * Time: 16:29:15
  * To change this template use File | Settings | File Templates.
  */
-public class DistLeq extends ExternalConstraint implements Externalizable {
+public final class DistLeq extends ExternalConstraint implements Externalizable {
 
     public int id;
     public int D;
@@ -24,7 +24,7 @@ public class DistLeq extends ExternalConstraint implements Externalizable {
     public int q;
     public IntDomainVar DVar = null;
 
-	public DistLeq(){};
+	public DistLeq(){}
 
 	public DistLeq(int ectrID, int[] dimensions, int[] objectIdentifiers, int D_, int q_)
 	{
@@ -56,9 +56,13 @@ public class DistLeq extends ExternalConstraint implements Externalizable {
         out.writeObject(super.ectrID);
 
         out.writeObject(super.dim.length);
-        for (int i=0; i<super.dim.length; i++) out.writeObject(super.dim[i]);
+        for (int i=0; i<super.dim.length; i++){
+            out.writeObject(super.dim[i]);
+        }
         out.writeObject(super.objectIds.length);
-        for (int i=0; i<super.objectIds.length; i++) out.writeObject(super.objectIds[i]);
+        for (int i=0; i<super.objectIds.length; i++){
+            out.writeObject(super.objectIds[i]);
+        }
         out.writeObject(super.frame);
 
     }
@@ -72,10 +76,14 @@ public class DistLeq extends ExternalConstraint implements Externalizable {
         super.ectrID=(Integer) in.readObject();
         int n=(Integer) in.readObject();
         super.dim=new int[n];
-        for (int i=0; i<n; i++) super.dim[i]=(Integer) in.readObject();
+        for (int i=0; i<n; i++){
+            super.dim[i]=(Integer) in.readObject();
+        }
         n=(Integer) in.readObject();
         super.objectIds=new int[n];
-        for (int i=0; i<n; i++) super.objectIds[i]=(Integer) in.readObject();
+        for (int i=0; i<n; i++){
+            super.objectIds[i]=(Integer) in.readObject();
+        }
         super.frame=(Frame) in.readObject();
     }
 

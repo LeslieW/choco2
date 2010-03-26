@@ -42,7 +42,7 @@ import java.util.logging.Level;
  * @version 1.0
  */
 
-public class SortingSConstraint extends AbstractLargeIntSConstraint {
+public final class SortingSConstraint extends AbstractLargeIntSConstraint {
 
 	private int n;
 	// These fields are the temporary structures used by the algorithms.

@@ -4,7 +4,7 @@ import choco.cp.solver.constraints.global.geost.geometricPrim.Point;
 import choco.cp.solver.constraints.global.geost.internalConstraints.InternalConstraint;
 
 
-public class HeapKey implements Heapable {
+public final class HeapKey implements Heapable {
 
 	private Point p;
 	private int d; //the internal dimension

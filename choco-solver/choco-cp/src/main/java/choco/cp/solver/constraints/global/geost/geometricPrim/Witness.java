@@ -5,7 +5,7 @@ import choco.kernel.memory.trailing.StoredInt;
 import static java.lang.System.arraycopy;
 
 
-public class Witness {
+public final class Witness {
 	
 	private StoredInt[] coords;
 	private int dim;
@@ -14,23 +14,18 @@ public class Witness {
 	{	//creates a point at the origin of the coordinate base.
 		this.dim = dim;
 		coords =  new StoredInt[this.dim];
-		for (int i = 0; i < this.dim; i++)
+		for (int i = 0; i < this.dim; i++){
 			this.coords[i].set(0);
-	}
-	
-	public Witness(StoredInt coordinates[])
-	{
-		//creates a point from an array of integers.
-		coords =  new StoredInt[this.dim];
-		this.setCoords(coordinates);
+        }
 	}
 	
 	public Witness(Witness w)
 	{
 		//creates a point from another point.
 		coords =  new StoredInt[this.dim];
-		for(int i = 0; i < w.getCoords().length; i++)
+		for(int i = 0; i < w.getCoords().length; i++){
 			this.coords[i].set(w.getCoord(i));
+        }
 	}
 	
 	public StoredInt[] getCoords()

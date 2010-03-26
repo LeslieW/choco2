@@ -8,7 +8,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * A constraint to state :
  * if (bool = 1) cons else othercons
  */
-public class IfThenElse extends ReifiedIntSConstraint {
+public final class IfThenElse extends ReifiedIntSConstraint {
 
      public IfThenElse(IntDomainVar bool, AbstractIntSConstraint cons, AbstractIntSConstraint othercons) {
         super(bool, cons, othercons);

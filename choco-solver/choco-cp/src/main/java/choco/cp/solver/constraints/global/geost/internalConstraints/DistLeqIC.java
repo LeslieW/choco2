@@ -4,11 +4,14 @@ import choco.cp.solver.constraints.global.geost.Constants;
 import choco.cp.solver.constraints.global.geost.Setup;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Point;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Region;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.logging.Logger;
 
 //import com.sun.xml.internal.xsom.impl.scd.Iterators;
 
@@ -19,9 +22,10 @@ import java.util.HashMap;
  * Time: 10:11:25
  * To change this template use File | Settings | File Templates.
  */
-public class DistLeqIC extends ForbiddenRegion {
+public final class DistLeqIC extends ForbiddenRegion {
+    private static final Logger LOGGER = ChocoLogging.getEngineLogger();
 
-    public int q,D,s1,s2,o1,o2;
+    public int q, D, s1, s2, o1, o2;
     public Setup stp;
     public IntDomainVar DVar = null; //DVar is the distance variable
 
@@ -29,162 +33,196 @@ public class DistLeqIC extends ForbiddenRegion {
     public DistLeqIC(Setup stp_, int q_, int D_, int s1_, int s2_, int o1_, int o2_) {
         this.setIctrID(Constants.DIST_LEQ_FR);
 
-        stp=stp_;q=q_;D=D_;s1=s1_;s2=s2_;o1=o1_;o2=o2_;
-        if (q!=2) {System.out.println("DistLeqIC:Only norm 2 is supported for now."); System.exit(-1); }
+        stp = stp_;
+        q = q_;
+        D = D_;
+        s1 = s1_;
+        s2 = s2_;
+        o1 = o1_;
+        o2 = o2_;
+        if (q != 2) {
+            throw new SolverException("DistLeqIC:Only norm 2 is supported for now.");
+        }
     }
 
     public DistLeqIC(Setup stp_, int q_, int D_, int s1_, int s2_, int o1_, int o2_, IntDomainVar DVar_) {
         this.setIctrID(Constants.DIST_LEQ_FR);
 
-        stp=stp_;q=q_;D=D_;s1=s1_;s2=s2_;o1=o1_;o2=o2_;
-        if (q!=2) {System.out.println("DistLeqIC:Only norm 2 is supported for now."); System.exit(-1); }
-        DVar=DVar_; 
+        stp = stp_;
+        q = q_;
+        D = D_;
+        s1 = s1_;
+        s2 = s2_;
+        o1 = o1_;
+        o2 = o2_;
+        if (q != 2) {
+            throw new SolverException("DistLeqIC:Only norm 2 is supported for now.");
+        }
+        DVar = DVar_;
     }
 
 
     /* sweep.tex r108 Chapter 7 - Algorithm 156 'InsideForbidden'
      * returns true if p belongs to the forbidden region F and false otherwise */
     public boolean insideForbidden(Point p) {
-             boolean save_stp_debug=stp.opt.debug;
-        stp.opt.debug=false;
-            if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden("+p+")");
+        boolean save_stp_debug = stp.opt.debug;
+        stp.opt.debug = false;
+        if (stp.opt.debug) LOGGER.info("/*debug*/segInsideForbidden(" + p + ")");
 
-            if (DVar!=null) D=DVar.getSup();
-//           System.out.println("segInsideForbidden("+p+") call");
-//           System.out.println("o1:"+stp.getObject(o1));
-//           System.out.println("o2:"+stp.getObject(o2));
-        
-           int k = p.getCoords().length;
-           Point m = new Point(k);
-           for (int i=0; i<k; i++) { /*line 1*/
-               int p_i = p.getCoord(i);
-               int s1_t_i = stp.getShape(s1).elementAt(0).getOffset(i); //suppose there is only one shifted box
-               int s2_t_i = stp.getShape(s2).elementAt(0).getOffset(i); //suppose there is only one shifted box
-               int o2_x_i_lb = stp.getObject(o2).getCoord(i).getInf();
-               int o2_x_i_ub = stp.getObject(o2).getCoord(i).getSup();
-               int s1_l_i = stp.getShape(s1).elementAt(0).getSize(i); //suppose there is only one shifted box
-               int s2_l_i = stp.getShape(s2).elementAt(0).getSize(i); //suppose there is only one shifted box
-               int m1 = Math.max(p_i+s1_t_i,o2_x_i_lb+s2_t_i); /*line 3:m1<-...*/ //+ gd debut
-               int m2 = Math.min(p_i+s1_t_i+s1_l_i,o2_x_i_ub+s2_t_i+s2_l_i); /*line 4:m2<-...*/ //+ petite fin
-               //System.out.println("p_i+s1_t_i:"+(p_i+s1_t_i)+",o2_x_i_lb+s2_t_i:"+(o2_x_i_lb+s2_t_i));
-               //System.out.println("p_i+s1_t_i+s1_l_i:"+(p_i+s1_t_i+s1_l_i)+",o2_x_i_ub+s2_t_i+s2_l_i:"+(o2_x_i_ub+s2_t_i+s2_l_i));
-               m.setCoord(i,Math.max(0,m1-m2)); /*line 5:m[i]<-...*/
-           }
+        if (DVar != null) D = DVar.getSup();
+//           LOGGER.info("segInsideForbidden("+p+") call");
+//           LOGGER.info("o1:"+stp.getObject(o1));
+//           LOGGER.info("o2:"+stp.getObject(o2));
 
-            if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden(): "+m+" norm(m,q)="+norm(m,q)+">D="+D);
-            if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden() returns "+(norm(m,q)>D));
-             stp.opt.debug=save_stp_debug;
-            return (norm(m,q)>D); /*line 7-11*/
+        int k = p.getCoords().length;
+        Point m = new Point(k);
+        for (int i = 0; i < k; i++) { /*line 1*/
+            int p_i = p.getCoord(i);
+            int s1_t_i = stp.getShape(s1).get(0).getOffset(i); //suppose there is only one shifted box
+            int s2_t_i = stp.getShape(s2).get(0).getOffset(i); //suppose there is only one shifted box
+            int o2_x_i_lb = stp.getObject(o2).getCoord(i).getInf();
+            int o2_x_i_ub = stp.getObject(o2).getCoord(i).getSup();
+            int s1_l_i = stp.getShape(s1).get(0).getSize(i); //suppose there is only one shifted box
+            int s2_l_i = stp.getShape(s2).get(0).getSize(i); //suppose there is only one shifted box
+            int m1 = Math.max(p_i + s1_t_i, o2_x_i_lb + s2_t_i); /*line 3:m1<-...*/ //+ gd debut
+            int m2 = Math.min(p_i + s1_t_i + s1_l_i, o2_x_i_ub + s2_t_i + s2_l_i); /*line 4:m2<-...*/ //+ petite fin
+            m.setCoord(i, Math.max(0, m1 - m2)); /*line 5:m[i]<-...*/
+        }
+
+        if (stp.opt.debug) LOGGER.info("/*debug*/segInsideForbidden(): " + m + " norm(m,q)=" + norm(m) + ">D=" + D);
+        if (stp.opt.debug) LOGGER.info("/*debug*/segInsideForbidden() returns " + (norm(m) > D));
+        stp.opt.debug = save_stp_debug;
+        return (norm(m) > D); /*line 7-11*/
     }
 
     //Algorithm 157 p.249 sweep.pdf r108
     public int maximizeSizeOfFBox(boolean min, int d, int k, Region f) {
 
         //Preconfition : c is inside the forbidden Region
-        //if (f.isPoint()) if (!segInsideForbidden(f.point())) {System.out.println("Error precondition in DistLeqIC"); System.exit(-1);};
+        //if (f.isPoint()) if (!segInsideForbidden(f.point())) {LOGGER.info("Error precondition in DistLeqIC"); };
         if (stp.opt.debug) {
-            if (!insideForbidden(f.pointMin())) {System.out.println("Error precondition pointMin in DistLeqIC"); System.exit(-1);};
-            if (!insideForbidden(f.pointMax())) {System.out.println("Error precondition pointMax in DistLeqIC"); System.exit(-1);};
+            if (!insideForbidden(f.pointMin())) {
+                throw new SolverException("Error precondition pointMin in DistLeqIC");
+            }
+            if (!insideForbidden(f.pointMax())) {
+                throw new SolverException("Error precondition pointMax in DistLeqIC");
+            }
         }
-            if (DVar!=null) D=DVar.getSup();
-        //System.out.println("ENTERING maximizeSizeOfFBox");
+        if (DVar != null) D = DVar.getSup();
+        //LOGGER.info("ENTERING maximizeSizeOfFBox");
         Point m = new Point(k);
-//        System.out.println("compute m k:"+k);
+//        LOGGER.info("compute m k:"+k);
 
-        for (int i=0; i<k; i++) { /*line 1*/
+        for (int i = 0; i < k; i++) { /*line 1*/
             int f_min_i = f.getMinimumBoundary(i);
             int f_max_i = f.getMaximumBoundary(i);
-            int s1_t_i = stp.getShape(s1).elementAt(0).getOffset(i); //suppose there is only one shifted box
-            int s2_t_i = stp.getShape(s2).elementAt(0).getOffset(i); //suppose there is only one shifted box
+            int s1_t_i = stp.getShape(s1).get(0).getOffset(i); //suppose there is only one shifted box
+            int s2_t_i = stp.getShape(s2).get(0).getOffset(i); //suppose there is only one shifted box
             int o2_x_i_lb = stp.getObject(o2).getCoord(i).getInf();
             int o2_x_i_ub = stp.getObject(o2).getCoord(i).getSup();
-            int s1_l_i = stp.getShape(s1).elementAt(0).getSize(i); //suppose there is only one shifted box
-            int s2_l_i = stp.getShape(s2).elementAt(0).getSize(i); //suppose there is only one shifted box
-            int m1 = Math.max(f_min_i+s1_t_i,o2_x_i_lb+s2_t_i); /*line 3:m1<-...*/
-            int m2 = Math.min(f_max_i+s1_t_i+s1_l_i,o2_x_i_ub+s2_t_i+s2_l_i); /*line 4:m2<-...*/
+            int s1_l_i = stp.getShape(s1).get(0).getSize(i); //suppose there is only one shifted box
+            int s2_l_i = stp.getShape(s2).get(0).getSize(i); //suppose there is only one shifted box
+            int m1 = Math.max(f_min_i + s1_t_i, o2_x_i_lb + s2_t_i); /*line 3:m1<-...*/
+            int m2 = Math.min(f_max_i + s1_t_i + s1_l_i, o2_x_i_ub + s2_t_i + s2_l_i); /*line 4:m2<-...*/
 
-//            System.out.println("s1:"+s1+";s2:"+s2+";s1_l_i:"+s1_l_i+";s2_l_i:"+s2_l_i+";m1:"+m1+";m2:"+m2);
+//            LOGGER.info("s1:"+s1+";s2:"+s2+";s1_l_i:"+s1_l_i+";s2_l_i:"+s2_l_i+";m1:"+m1+";m2:"+m2);
 
-            m.setCoord(i,Math.max(0,m1-m2)); /*line 5:m[i]<-...*/
+            m.setCoord(i, Math.max(0, m1 - m2)); /*line 5:m[i]<-...*/
         }
-//        System.out.println("end compute m:"+m);
+//        LOGGER.info("end compute m:"+m);
 
 
         int f_min_d = f.getMinimumBoundary(d);
         int f_max_d = f.getMaximumBoundary(d);
-        int s1_t_d = stp.getShape(s1).elementAt(0).getOffset(d); //suppose there is only one shifted box
-        int s2_t_d = stp.getShape(s2).elementAt(0).getOffset(d); //suppose there is only one shifted box
+        int s1_t_d = stp.getShape(s1).get(0).getOffset(d); //suppose there is only one shifted box
+        int s2_t_d = stp.getShape(s2).get(0).getOffset(d); //suppose there is only one shifted box
         int o2_x_d_lb = stp.getObject(o2).getCoord(d).getInf();
         int o2_x_d_ub = stp.getObject(o2).getCoord(d).getSup();
-        int s1_l_d = stp.getShape(s1).elementAt(0).getSize(d); //suppose there is only one shifted box
-        int s2_l_d = stp.getShape(s2).elementAt(0).getSize(d); //suppose there is only one shifted box
-        
+        int s1_l_d = stp.getShape(s1).get(0).getSize(d); //suppose there is only one shifted box
+        int s2_l_d = stp.getShape(s2).get(0).getSize(d); //suppose there is only one shifted box
+
         int plus_infinity = stp.getObject(o1).getCoord(d).getSup();
         int minus_infinity = stp.getObject(o1).getCoord(d).getInf();
-        double q_sum = q_sum(m,d);
-        double norm = sqrt(q_sum,q);
-        checkSqrt(q_sum,norm);
-        double term = sqrt(Math.pow(D,q) - q_sum,q);
-        if (term>=0) checkSqrt(Math.pow(D,q) - q_sum,term); //otherwise norm>D.
+        double q_sum = q_sum(m, d);
+        double norm = sqrt(q_sum);
+        checkSqrt(q_sum, norm);
+        double term = sqrt(Math.pow(D, q) - q_sum);
+        if (term >= 0) checkSqrt(Math.pow(D, q) - q_sum, term); //otherwise norm>D.
 
         //int term_down = (int) Math.floor(term);
         //int term_up=term_down;
         //if (((double)term_down) != term) term_up++;
 
-        //System.out.println("f:"+f+";m:"+m+";o2_x_d_lb:"+o2_x_d_lb+";o2_x_d_ub:"+o2_x_d_ub+";d:"+d+";D:"+D+";q_sum:"+q_sum+";norm:"+norm+";term:"+term+";norm>D:"+(norm>D)+";plus_inf:"+plus_infinity+";minus_inf:"+minus_infinity);
+        //LOGGER.info("f:"+f+";m:"+m+";o2_x_d_lb:"+o2_x_d_lb+";o2_x_d_ub:"+o2_x_d_ub+";d:"+d+";D:"+D+";q_sum:"+q_sum+";norm:"+norm+";term:"+term+";norm>D:"+(norm>D)+";plus_inf:"+plus_infinity+";minus_inf:"+minus_infinity);
 
         if (min) { /*line 8*/
-            if ((norm>D) || (f_min_d+s1_t_d>=o2_x_d_lb+s2_t_d-s1_l_d)) /*line 9*/ {
-                int result=plus_infinity;
-                if (stp.opt.debug) {if (result<f_min_d) {System.out.println("Error1 in DistLeqIC"); System.exit(-1);};}
+            if ((norm > D) || (f_min_d + s1_t_d >= o2_x_d_lb + s2_t_d - s1_l_d)) /*line 9*/ {
+                int result = plus_infinity;
+                if (stp.opt.debug) {
+                    if (result < f_min_d) {
+                        throw new SolverException("Error1 in DistLeqIC");
+                    }
+                }
                 return plus_infinity; /*line 10:return +infinity*/
-            }
-            else    {
-                int result=((int) Math.ceil(o2_x_d_lb+s1_t_d-s1_l_d-term)) - 1 - s1_t_d; /*line 12*/
-                if (stp.opt.debug) {if (result<f_min_d) {System.out.println("Error2 in DistLeqIC"); System.exit(-1);};}
-                return ((int) Math.ceil(o2_x_d_lb+s1_t_d-s1_l_d-term)) - 1 - s1_t_d; /*line 12*/
+            } else {
+                int result = ((int) Math.ceil(o2_x_d_lb + s1_t_d - s1_l_d - term)) - 1 - s1_t_d; /*line 12*/
+                if (stp.opt.debug) {
+                    if (result < f_min_d) {
+                        throw new SolverException("Error2 in DistLeqIC");
+                    }
+                }
+                return ((int) Math.ceil(o2_x_d_lb + s1_t_d - s1_l_d - term)) - 1 - s1_t_d; /*line 12*/
             }
         }
-        
-        if ((norm>D) || (f_max_d+s1_t_d<=o2_x_d_ub+s2_t_d-s1_l_d)) /*line 15*/
+
+        if ((norm > D) || (f_max_d + s1_t_d <= o2_x_d_ub + s2_t_d - s1_l_d)) /*line 15*/
             return minus_infinity; /*line 16:return -infinity*/
         else
-            return ((int) Math.floor(o2_x_d_ub+s2_t_d+s2_l_d+term)) + 1 - s1_t_d; /*line 18*/
-     }
+            return ((int) Math.floor(o2_x_d_ub + s2_t_d + s2_l_d + term)) + 1 - s1_t_d; /*line 18*/
+    }
 
     private double q_sum(Point m, int d) {
-        int k=m.getCoords().length;
-        double sum=0;
-        for (int i=k-1; i>=0; i--) {
-            if (i!=d) {
-                double r=1;
-                for (int j=0; j<q; j++) {
-                    r*=Math.abs(m.getCoord(i));
-                    if (r==Double.POSITIVE_INFINITY){System.out.println("DestLeqIC:q_sum():r:double limit reached"); System.exit(-1);}
+        int k = m.getCoords().length;
+        double sum = 0;
+        for (int i = k - 1; i >= 0; i--) {
+            if (i != d) {
+                double r = 1;
+                for (int j = 0; j < q; j++) {
+                    r *= Math.abs(m.getCoord(i));
+                    if (r == Double.POSITIVE_INFINITY) {
+                        throw new SolverException("DestLeqIC:q_sum():r:double limit reached");
+                    }
                 }
 
-                sum+=r;
-                if (sum==Double.POSITIVE_INFINITY) {System.out.println("DestLeqIC:q_sum():sum:double limit reached"); System.exit(-1);}
-                
+                sum += r;
+                if (sum == Double.POSITIVE_INFINITY) {
+                    throw new SolverException("DestLeqIC:q_sum():sum:double limit reached");
+                }
+
             }
         }
-        
+
         return (double) sum;
 
     }
 
     private double q_sum(double[] m, int d) {
-        int k=m.length;
+        int k = m.length;
 
-        double sum=0;
-        for (int i=k-1; i>=0; i--) {
-            if (i!=d) {
-                double r=1;
-                for (int j=0; j<q; j++) {r*=Math.abs(m[i]);
-                    if (r==Double.POSITIVE_INFINITY){System.out.println("DestLeqIC:q_sum():r:double limit reached"); System.exit(-1);}
+        double sum = 0;
+        for (int i = k - 1; i >= 0; i--) {
+            if (i != d) {
+                double r = 1;
+                for (int j = 0; j < q; j++) {
+                    r *= Math.abs(m[i]);
+                    if (r == Double.POSITIVE_INFINITY) {
+                        throw new SolverException("DestLeqIC:q_sum():r:double limit reached");
+                    }
                 }
-                sum+=r;
-                if (sum==Double.POSITIVE_INFINITY) {System.out.println("DestLeqIC:q_sum():sum:double limit reached"); System.exit(-1);}
+                sum += r;
+                if (sum == Double.POSITIVE_INFINITY) {
+                    throw new SolverException("DestLeqIC:q_sum():sum:double limit reached");
+                }
 
             }
         }
@@ -193,21 +231,17 @@ public class DistLeqIC extends ForbiddenRegion {
 
     }
 
-    private double q_sum(Point m) {
-        return q_sum(m,-1);
-    }
-
-    private double sqrt(double sum, int q) {
+    private double sqrt(double sum) {
         return Math.sqrt(sum);
     }
 
-    private double norm(Point m,int q) {
-        return sqrt(q_sum(m,-1),q);
+    private double norm(Point m) {
+        return sqrt(q_sum(m, -1));
 
     }
 
-    private double norm(double[] m,int q) {
-        return sqrt(q_sum(m,-1),q);
+    private double norm(double[] m) {
+        return sqrt(q_sum(m, -1));
 
     }
 
@@ -216,138 +250,154 @@ public class DistLeqIC extends ForbiddenRegion {
         //First check if the value to be square rooted is an integer
         double ivalue = Math.floor(value);
         if (ivalue != value) {
-            System.out.println("DistLeqIC.checkSqrt(): sqrt value is not an integer");
-            System.exit(-1);
+            throw new SolverException("DistLeqIC.checkSqrt(): sqrt value is not an integer");
+
         }
 
         long lb = (int) Math.floor(result);
         long ub = (int) Math.ceil(result);
-        
-        if (lb*lb>ivalue){
-            System.out.println("DistLeqIC.checkSqrt(): lb is wrong:value:"+value+" result:"+result+" lb:"+lb+" ivalue="+ivalue);
-            System.exit(-1);
+
+        if (lb * lb > ivalue) {
+            throw new SolverException("DistLeqIC.checkSqrt(): lb is wrong:value:" + value + " result:" + result + " lb:" + lb + " ivalue=" + ivalue);
+
         }
-        if (ub*ub<ivalue){
-            System.out.println("DistLeqIC.checkSqrt(): ub is wrong:value:"+value+" result:"+result+" ub:"+ub+" ub*ub:"+(ub*ub));
-            System.exit(-1);
+        if (ub * ub < ivalue) {
+            throw new SolverException("DistLeqIC.checkSqrt(): ub is wrong:value:" + value + " result:" + result + " ub:" + ub + " ub*ub:" + (ub * ub));
+
         }
     }
 
     private double[] PiecesOfLin(Point c0, Point c1) {
         int k = c0.getCoords().length;
-        double[] result = new double[3*k];
-        result[0]=0.0; result[1]=1.0;
+        double[] result = new double[3 * k];
+        result[0] = 0.0;
+        result[1] = 1.0;
         int realSize = 2;
-        for (int i=0; i<k; i++) {
+        for (int i = 0; i < k; i++) {
             double c0_i = (double) c0.getCoord(i);
             double c1_i = (double) c1.getCoord(i);
             double o2_x_i_lb = (double) stp.getObject(o2).getCoord(i).getInf();
             double o2_x_i_ub = (double) stp.getObject(o2).getCoord(i).getSup();
-            double s2_l_i = (double) stp.getShape(s2).elementAt(0).getSize(i); //suppose there is only one shifted box
-            double den =(c1_i-c0_i);
+            double s2_l_i = (double) stp.getShape(s2).get(0).getSize(i); //suppose there is only one shifted box
+            double den = (c1_i - c0_i);
             double tmp;
-            double epsilon=0.000000001;  //E-9
-            if (den!=0.0) tmp = ((o2_x_i_lb-c0_i)/(den)); else tmp=2.0;
-            boolean condition1=(-tmp<=epsilon);
-            boolean condition2=(tmp-1.0<=epsilon);
+            double epsilon = 0.000000001;  //E-9
+            if (den != 0.0) tmp = ((o2_x_i_lb - c0_i) / (den));
+            else tmp = 2.0;
+            boolean condition1 = (-tmp <= epsilon);
+            boolean condition2 = (tmp - 1.0 <= epsilon);
             if ((condition1) && (condition2)) {
-                result[realSize++]=tmp;
+                result[realSize++] = tmp;
             }
-            if (den!=0.0) tmp = ((o2_x_i_ub+s2_l_i-c0_i)/(den)); else tmp=2.0;
-            condition1=(-tmp<=epsilon);
-            condition2=(tmp-1.0<=epsilon);
-            if ((condition1) && (condition2)) {                
-                result[realSize++]=tmp;
+            if (den != 0.0) tmp = ((o2_x_i_ub + s2_l_i - c0_i) / (den));
+            else tmp = 2.0;
+            condition1 = (-tmp <= epsilon);
+            condition2 = (tmp - 1.0 <= epsilon);
+            if ((condition1) && (condition2)) {
+                result[realSize++] = tmp;
             }
         }
 
         //sort and clip
-        int n=realSize;
+        int n = realSize;
 
-        
+
         //uniques: because int the pseudo-code, an union is considered
-        HashMap<Double,Boolean> inIt = new HashMap<Double,Boolean>();
-        for (int i=0; i<n; i++)
-            if (inIt.get(result[i])==null)
-                inIt.put(result[i],true);
-        int i=0;
-        for (Double d : inIt.keySet()) { result[i]=d; i++; }
+        HashMap<Double, Boolean> inIt = new HashMap<Double, Boolean>();
+        for (int i = 0; i < n; i++){
+            if (inIt.get(result[i]) == null){
+                inIt.put(result[i], true);
+            }
+        }
+        int i = 0;
+        for (Double d : inIt.keySet()) {
+            result[i] = d;
+            i++;
+        }
 
         //sort
-        Arrays.sort(result,0,inIt.size());//second argument is exclusive//"Returns the number of key-value mappings in this map."
+        Arrays.sort(result, 0, inIt.size());//second argument is exclusive//"Returns the number of key-value mappings in this map."
 
         double[] result2 = new double[inIt.size()];
-        for (i=0; i<inIt.size(); i++) result2[i]=result[i];
+        for (i = 0; i < inIt.size(); i++){
+            result2[i] = result[i];
+        }
 
         return result2;
     }
 
     private double cOf(int i, double beta, Point c0, Point c1) {
         //return (((1.0-beta)*c0.getCoord(i))+(beta*c1.getCoord(i)));
-        return mult((1.0-beta),c0.getCoord(i))+mult(beta,c1.getCoord(i));
+        return mult((1.0 - beta), c0.getCoord(i)) + mult(beta, c1.getCoord(i));
     }
 
     public boolean insideForbidden_withDoubles(Point c0, Point c1) {
-        double[] beta=PiecesOfLin(c0,c1);
-        if (DVar!=null) D=DVar.getSup();
+        double[] beta = PiecesOfLin(c0, c1);
+        if (DVar != null) D = DVar.getSup();
 
         int n = beta.length;
         int k = c0.getCoords().length;
         //Pe parce que les a et b sont approximŽs?
         //la conversion vers int est faite trop tot, notamment ds cOf?
 
-        for (int j=0; j<n-1; j++) {   //for a given beta,
-        Point a = new Point(k);
-        Point b = new Point(k);            
-            for (int i=0; i<k; i++) { //compute a and b
+        for (int j = 0; j < n - 1; j++) {   //for a given beta,
+            Point a = new Point(k);
+            Point b = new Point(k);
+            for (int i = 0; i < k; i++) { //compute a and b
                 int c0_i = c0.getCoord(i);
                 int c1_i = c1.getCoord(i);
                 int o2_x_i_lb = stp.getObject(o2).getCoord(i).getInf();
                 int o2_x_i_ub = stp.getObject(o2).getCoord(i).getSup();
-                int s2_l_i = stp.getShape(s2).elementAt(0).getSize(i); //suppose there is only one shifted box
+                int s2_l_i = stp.getShape(s2).get(0).getSize(i); //suppose there is only one shifted box
 
 
-                double c_beta_j = cOf(i,beta[j],c0,c1);
-                double c_beta_j_plus_1 = cOf(i,beta[j+1],c0,c1);
-                if (Math.max(c_beta_j,c_beta_j_plus_1)<o2_x_i_lb) {
-                    a.setCoord(i,c0_i-c1_i);
-                    b.setCoord(i,o2_x_i_lb-c0_i);
-                }
-                else {
-                    if (Math.min(c_beta_j,c_beta_j_plus_1)>o2_x_i_ub-s2_l_i) {
-                        a.setCoord(i,c1_i-c0_i);
-                        b.setCoord(i,c0_i-o2_x_i_ub-s2_l_i);
-                    }
-                    else {
-                        a.setCoord(i,0);
-                        b.setCoord(i,0);
+                double c_beta_j = cOf(i, beta[j], c0, c1);
+                double c_beta_j_plus_1 = cOf(i, beta[j + 1], c0, c1);
+                if (Math.max(c_beta_j, c_beta_j_plus_1) < o2_x_i_lb) {
+                    a.setCoord(i, c0_i - c1_i);
+                    b.setCoord(i, o2_x_i_lb - c0_i);
+                } else {
+                    if (Math.min(c_beta_j, c_beta_j_plus_1) > o2_x_i_ub - s2_l_i) {
+                        a.setCoord(i, c1_i - c0_i);
+                        b.setCoord(i, c0_i - o2_x_i_ub - s2_l_i);
+                    } else {
+                        a.setCoord(i, 0);
+                        b.setCoord(i, 0);
                     }
                 }
             } //end of the 'for i'; a and b are computed
-            double num = 0; for (int i=0; i<k; i++) num+=(mult(((double)a.getCoord(i)),((double)b.getCoord(i))));
-            double den = 0; for (int i=0; i<k; i++) den+=(mult(((double)a.getCoord(i)),((double)a.getCoord(i))));
+            double num = 0;
+            for (int i = 0; i < k; i++){
+                num += (mult(((double) a.getCoord(i)), ((double) b.getCoord(i))));
+            }
+            double den = 0;
+            for (int i = 0; i < k; i++){
+                den += (mult(((double) a.getCoord(i)), ((double) a.getCoord(i))));
+            }
             double beta_star;
-            double beta_j=beta[j];
-            double beta_j_plus_1=beta[j+1];
-            if (den!=0.0) {
-                beta_star = -(num/den);
-            }
-            else {
-                beta_star=beta_j-1.0;
+            double beta_j = beta[j];
+            double beta_j_plus_1 = beta[j + 1];
+            if (den != 0.0) {
+                beta_star = -(num / den);
+            } else {
+                beta_star = beta_j - 1.0;
             }
 
 
-            if ((beta_star>=beta_j) && (beta_star<=beta_j_plus_1)) {
+            if ((beta_star >= beta_j) && (beta_star <= beta_j_plus_1)) {
                 double[] V_beta_star = new double[k];
-                for (int i=0; i<k; i++) V_beta_star[i]= (mult(((double)a.getCoord(i)),beta_star)+b.getCoord(i));
-                if (norm(V_beta_star,2)<=D) {
+                for (int i = 0; i < k; i++){
+                    V_beta_star[i] = (mult(((double) a.getCoord(i)), beta_star) + b.getCoord(i));
+                }
+                if (norm(V_beta_star) <= D) {
                     return false;
                 }
-            }
-            else {
+            } else {
                 double[] V_beta_j_plus_1 = new double[k];
-                for (int i=0; i<k; i++) V_beta_j_plus_1[i]=mult(((double)a.getCoord(i)),beta_j_plus_1)+b.getCoord(i);
-                if (norm(V_beta_j_plus_1,2)<=D) {
+                for (int i = 0; i < k; i++){
+                    V_beta_j_plus_1[i] = mult(((double) a.getCoord(i)), beta_j_plus_1) + b.getCoord(i);
+                }
+                if (norm(V_beta_j_plus_1) <= D) {
                     return false;
                 }
             }
@@ -357,43 +407,41 @@ public class DistLeqIC extends ForbiddenRegion {
     }
 
     public double[] vOf(double alpha, Point c0, Point c1, double beta_j, double beta_j_plus_1) {
-        int k=c0.getCoords().length;
+        int k = c0.getCoords().length;
         double[] result = new double[k];
-        for (int i=0; i<k; i++)  {
+        for (int i = 0; i < k; i++) {
             int c0_i = c0.getCoord(i);
             int c1_i = c1.getCoord(i);
             int o2_x_i_lb = stp.getObject(o2).getCoord(i).getInf();
             int o2_x_i_ub = stp.getObject(o2).getCoord(i).getSup();
-            int s2_l_i = stp.getShape(s2).elementAt(0).getSize(i); //suppose there is only one shifted box
-            double epsilon=0.000000001;  //E-9
+            int s2_l_i = stp.getShape(s2).get(0).getSize(i); //suppose there is only one shifted box
+            double epsilon = 0.000000001;  //E-9
 
-            double c_beta_j = cOf(i,beta_j,c0,c1);
-            double c_beta_j_plus_1 = cOf(i,beta_j_plus_1,c0,c1);
-            double toCompare=Math.max(c_beta_j,c_beta_j_plus_1);
-            boolean condition=(toCompare-((double)o2_x_i_lb) <= epsilon);
-            //System.out.println("vOf():condition max: toCompare:"+toCompare+" <= o2_x_i_lb:"+((double)o2_x_i_lb)+"="+condition);
+            double c_beta_j = cOf(i, beta_j, c0, c1);
+            double c_beta_j_plus_1 = cOf(i, beta_j_plus_1, c0, c1);
+            double toCompare = Math.max(c_beta_j, c_beta_j_plus_1);
+            boolean condition = (toCompare - ((double) o2_x_i_lb) <= epsilon);
+            //LOGGER.info("vOf():condition max: toCompare:"+toCompare+" <= o2_x_i_lb:"+((double)o2_x_i_lb)+"="+condition);
             if (condition) {      //Here ????
-                double a=o2_x_i_lb;
-                double b=-c0_i;
-                double c=c1_i-c0_i;
-                double r=a+b-(alpha*c);
-                result[i]=r;
-            }
-            else {
-                toCompare=Math.min(c_beta_j,c_beta_j_plus_1);
-                condition= (((double)o2_x_i_ub)-((double)s2_l_i)) - toCompare <= epsilon ;//toCompare>=o2_x_i_ub-s2_l_i
-                //System.out.println("vOf():condition min: toCompare:"+toCompare+" >= o2_x_i_ub:"+(((double)o2_x_i_ub)-((double)s2_l_i))+"="+condition);
+                double a = o2_x_i_lb;
+                double b = -c0_i;
+                double c = c1_i - c0_i;
+                double r = a + b - (alpha * c);
+                result[i] = r;
+            } else {
+                toCompare = Math.min(c_beta_j, c_beta_j_plus_1);
+                condition = (((double) o2_x_i_ub) - ((double) s2_l_i)) - toCompare <= epsilon;//toCompare>=o2_x_i_ub-s2_l_i
+                //LOGGER.info("vOf():condition min: toCompare:"+toCompare+" >= o2_x_i_ub:"+(((double)o2_x_i_ub)-((double)s2_l_i))+"="+condition);
                 if (condition) { //Here ????
 
-                    double a=c0_i;
-                    double b=(c1_i-c0_i);
-                    double c=-o2_x_i_ub-s2_l_i;
-                    double r=a+(alpha*b)+c;
-                    result[i]=r;
+                    double a = c0_i;
+                    double b = (c1_i - c0_i);
+                    double c = -o2_x_i_ub - s2_l_i;
+                    double r = a + (alpha * b) + c;
+                    result[i] = r;
 
-                }
-                else {
-                    result[i]=0.0;
+                } else {
+                    result[i] = 0.0;
                 }
             }
 
@@ -404,19 +452,25 @@ public class DistLeqIC extends ForbiddenRegion {
 
 
     public boolean segInsideForbidden(Point c0, Point c1) {
-         if (stp.opt.debug) System.out.println("/*debug*/segInsideForbiden(c0="+c0+",c1="+c1+")");
-        if (DVar!=null) D=DVar.getSup();
+        if (stp.opt.debug) LOGGER.info("/*debug*/segInsideForbiden(c0=" + c0 + ",c1=" + c1 + ")");
+        if (DVar != null) D = DVar.getSup();
 
-         if ((!insideForbidden(c0)) || (!insideForbidden(c1))) {
-             if (stp.opt.debug) System.out.println("/*debug*/segInsideForbiden returns "+false);
-             return false;
-         }
-        
+        if ((!insideForbidden(c0)) || (!insideForbidden(c1))) {
+            if (stp.opt.debug) LOGGER.info("/*debug*/segInsideForbiden returns " + false);
+            return false;
+        }
+
         //Does the order of c0, c1 matter?
-        double[] beta=PiecesOfLin(c0,c1);
-        if (stp.opt.debug) System.out.print("/*debug*/segInsideForbiden: beta["+beta.length+"]=[");
-        if (stp.opt.debug) { for (int ind=0; ind<beta.length;ind++) { System.out.print(beta[ind]+" ");  }; }
-        if (stp.opt.debug) { System.out.println("]"); }
+        double[] beta = PiecesOfLin(c0, c1);
+        if (stp.opt.debug) LOGGER.info("/*debug*/segInsideForbiden: beta[" + beta.length + "]=[");
+        if (stp.opt.debug) {
+            for (int ind = 0; ind < beta.length; ind++) {
+                LOGGER.info(beta[ind] + " ");
+            }
+        }
+        if (stp.opt.debug) {
+            LOGGER.info("]");
+        }
 
 //        double[] beta2=PiecesOfLin(c1,c0);
 //        double[] beta = new double[beta1.length+beta2.length-2];
@@ -427,10 +481,10 @@ public class DistLeqIC extends ForbiddenRegion {
 //        for (Double d:tmp.keySet()) {beta[ind]=d;ind++;}
 //        Arrays.sort(beta,0,beta.length);
 
-        double epsilon=0.000000001;  //E-9
-        //System.out.println("InsideForibidden("+c0+","+c1+")");
-        //for (int ind=0; ind<beta.length;ind++) System.out.print(beta[ind]+" ");
-        //System.out.println();
+        double epsilon = 0.000000001;  //E-9
+        //LOGGER.info("InsideForibidden("+c0+","+c1+")");
+        //for (int ind=0; ind<beta.length;ind++) LOGGER.info(beta[ind]+" ");
+        //LOGGER.info();
 
         int n = beta.length;
         int k = c0.getCoords().length;
@@ -438,96 +492,106 @@ public class DistLeqIC extends ForbiddenRegion {
         //la conversion vers int est faite trop tot, notamment ds cOf?
         Point a = new Point(k);
         Point b = new Point(k);
-        for (int j=0; j<n-1; j++) {   //for a given beta,
-            //System.out.println("b_j:"+beta[j]+" b_{j+1}:"+beta[j+1]);
+        for (int j = 0; j < n - 1; j++) {   //for a given beta,
+            //LOGGER.info("b_j:"+beta[j]+" b_{j+1}:"+beta[j+1]);
 
-            for (int i=0; i<k; i++) { //compute a and b
+            for (int i = 0; i < k; i++) { //compute a and b
                 int c0_i = c0.getCoord(i);
                 int c1_i = c1.getCoord(i);
                 int o2_x_i_lb = stp.getObject(o2).getCoord(i).getInf();
                 int o2_x_i_ub = stp.getObject(o2).getCoord(i).getSup();
-                int s2_l_i = stp.getShape(s2).elementAt(0).getSize(i); //suppose there is only one shifted box
+                int s2_l_i = stp.getShape(s2).get(0).getSize(i); //suppose there is only one shifted box
 
 
-                double c_beta_j = cOf(i,beta[j],c0,c1);
-                double c_beta_j_plus_1 = cOf(i,beta[j+1],c0,c1);
-                //System.out.println("c_beta_j:"+c_beta_j+" c_beta_j_plus_1:"+c_beta_j_plus_1);
+                double c_beta_j = cOf(i, beta[j], c0, c1);
+                double c_beta_j_plus_1 = cOf(i, beta[j + 1], c0, c1);
+                //LOGGER.info("c_beta_j:"+c_beta_j+" c_beta_j_plus_1:"+c_beta_j_plus_1);
 
 //                if (Math.max(c_beta_j,c_beta_j_plus_1)<=o2_x_i_lb) {      //Here ????
-                double toCompare=Math.max(c_beta_j,c_beta_j_plus_1);
-                boolean condition=(toCompare-((double)o2_x_i_lb) <= epsilon);
-                //System.out.println("condition max: toCompare:"+toCompare+" <= o2_x_i_lb:"+((double)o2_x_i_lb)+"="+condition);
+                double toCompare = Math.max(c_beta_j, c_beta_j_plus_1);
+                boolean condition = (toCompare - ((double) o2_x_i_lb) <= epsilon);
+                //LOGGER.info("condition max: toCompare:"+toCompare+" <= o2_x_i_lb:"+((double)o2_x_i_lb)+"="+condition);
                 if (condition) {      //Here ????
-                    //System.out.println("a["+i+"]<-"+"c0_i:"+c0_i+"-c1_i:"+c1_i+"="+(c0_i-c1_i));
-                    a.setCoord(i,c0_i-c1_i);
-                    //System.out.println("b["+i+"]<-"+"o2_x_i_lb:"+o2_x_i_lb+"-c0_i:"+c0_i+"="+(o2_x_i_lb-c0_i));
-                    b.setCoord(i,o2_x_i_lb-c0_i);
-                }                               
-                else {
-                    toCompare=Math.min(c_beta_j,c_beta_j_plus_1);
-                    condition= (((double)o2_x_i_ub)-((double)s2_l_i)) - toCompare <= epsilon ;//toCompare>=o2_x_i_ub-s2_l_i
-                //System.out.println("condition min: toCompare:"+toCompare+" >= o2_x_i_ub:"+(((double)o2_x_i_ub)-((double)s2_l_i))+"="+condition);
+                    //LOGGER.info("a["+i+"]<-"+"c0_i:"+c0_i+"-c1_i:"+c1_i+"="+(c0_i-c1_i));
+                    a.setCoord(i, c0_i - c1_i);
+                    //LOGGER.info("b["+i+"]<-"+"o2_x_i_lb:"+o2_x_i_lb+"-c0_i:"+c0_i+"="+(o2_x_i_lb-c0_i));
+                    b.setCoord(i, o2_x_i_lb - c0_i);
+                } else {
+                    toCompare = Math.min(c_beta_j, c_beta_j_plus_1);
+                    condition = (((double) o2_x_i_ub) - ((double) s2_l_i)) - toCompare <= epsilon;//toCompare>=o2_x_i_ub-s2_l_i
+                    //LOGGER.info("condition min: toCompare:"+toCompare+" >= o2_x_i_ub:"+(((double)o2_x_i_ub)-((double)s2_l_i))+"="+condition);
                     if (condition) { //Here ????
-                        a.setCoord(i,c1_i-c0_i);
-                    //System.out.println("a["+i+"]<-"+"c1_i:"+c1_i+"-c0_i:"+c0_i+"="+(c1_i-c0_i));
-                        b.setCoord(i,c0_i-o2_x_i_ub-s2_l_i);
-                        //System.out.println("b["+i+"]<-"+"c0_i:"+c0_i+"-o2_x_i_ub:"+o2_x_i_ub+"="+b.getCoord(i));
+                        a.setCoord(i, c1_i - c0_i);
+                        //LOGGER.info("a["+i+"]<-"+"c1_i:"+c1_i+"-c0_i:"+c0_i+"="+(c1_i-c0_i));
+                        b.setCoord(i, c0_i - o2_x_i_ub - s2_l_i);
+                        //LOGGER.info("b["+i+"]<-"+"c0_i:"+c0_i+"-o2_x_i_ub:"+o2_x_i_ub+"="+b.getCoord(i));
 
-                    }
-                    else {
-                        a.setCoord(i,0);
-                        b.setCoord(i,0);
+                    } else {
+                        a.setCoord(i, 0);
+                        b.setCoord(i, 0);
                     }
                 }
             } //end of the 'for i'; a and b are computed
-            if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden(): a="+a+" b="+b);
-            int num = 0; for (int i=0; i<k; i++) num+=a.getCoord(i)*b.getCoord(i);
-            int den = 0; for (int i=0; i<k; i++) den+=a.getCoord(i)*a.getCoord(i);
+            if (stp.opt.debug) LOGGER.info("/*debug*/segInsideForbidden(): a=" + a + " b=" + b);
+            int num = 0;
+            for (int i = 0; i < k; i++){
+                num += a.getCoord(i) * b.getCoord(i);
+            }
+            int den = 0;
+            for (int i = 0; i < k; i++){
+                den += a.getCoord(i) * a.getCoord(i);
+            }
             double beta_star;
-            double beta_j=beta[j];
-            double beta_j_plus_1=beta[j+1];
-            if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden(): num="+num+", den="+den+", beta_j="+beta_j+", beta_j_plus_1="+beta_j_plus_1);
+            double beta_j = beta[j];
+            double beta_j_plus_1 = beta[j + 1];
+            if (stp.opt.debug)
+                LOGGER.info("/*debug*/segInsideForbidden(): num=" + num + ", den=" + den + ", beta_j=" + beta_j + ", beta_j_plus_1=" + beta_j_plus_1);
 
-            if (den!=0) {
-                beta_star = -(((double)num)/((double)den));
+            if (den != 0) {
+                beta_star = -(((double) num) / ((double) den));
+            } else {
+                beta_star = beta_j_plus_1 + 1.0;
             }
-            else {
-                beta_star=beta_j_plus_1+1.0;
-            }
-            if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden(): beta_star="+beta_star);
+            if (stp.opt.debug) LOGGER.info("/*debug*/segInsideForbidden(): beta_star=" + beta_star);
 
-            //System.out.println("beta_star:"+beta_star);
-            //System.out.println("b_j:"+beta[j]+" b_{j+1}:"+beta[j+1]);
+            //LOGGER.info("beta_star:"+beta_star);
+            //LOGGER.info("b_j:"+beta[j]+" b_{j+1}:"+beta[j+1]);
 
-            
+
 //            if ((beta_star>=beta_j) && (beta_star<=beta_j_plus_1)) {
-            if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden(): beta_star:"+beta_star+" >= beta_j:"+beta_j+":"+(beta_j-beta_star<=epsilon));
-            if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden(): beta_star:"+beta_star+" <= beta_j_plus_1:"+beta_j_plus_1+":"+(beta_star-beta_j_plus_1<=epsilon));
+            if (stp.opt.debug)
+                LOGGER.info("/*debug*/segInsideForbidden(): beta_star:" + beta_star + " >= beta_j:" + beta_j + ":" + (beta_j - beta_star <= epsilon));
+            if (stp.opt.debug)
+                LOGGER.info("/*debug*/segInsideForbidden(): beta_star:" + beta_star + " <= beta_j_plus_1:" + beta_j_plus_1 + ":" + (beta_star - beta_j_plus_1 <= epsilon));
 
-            if ((beta_j-beta_star<=epsilon) && (beta_star-beta_j_plus_1<=epsilon)) {
-                double[] V_beta_star = vOf(beta_star,c0,c1,beta_j,beta_j_plus_1);
+            if ((beta_j - beta_star <= epsilon) && (beta_star - beta_j_plus_1 <= epsilon)) {
+                double[] V_beta_star = vOf(beta_star, c0, c1, beta_j, beta_j_plus_1);
                 //for (int i=0; i<k; i++) V_beta_star.setCoord(i,((int) (mult(((double)a.getCoord(i)),beta_star)+b.getCoord(i))));
-                if (stp.opt.debug) System.out.print("/*debug*/segInsideForbidden(): norm(V_beta_star:[");
-                if (stp.opt.debug) { for (int ind=0; ind<V_beta_star.length;ind++) { System.out.print(V_beta_star[ind]+" ");  }; }
-                if (stp.opt.debug) System.out.println("],2)="+norm(V_beta_star,2)+"<=D:"+D);
+                if (stp.opt.debug) LOGGER.info("/*debug*/segInsideForbidden(): norm(V_beta_star:[");
+                if (stp.opt.debug) {
+                    for (int ind = 0; ind < V_beta_star.length; ind++) {
+                        LOGGER.info(V_beta_star[ind] + " ");
+                    }
+                }
+                if (stp.opt.debug) LOGGER.info("],2)=" + norm(V_beta_star) + "<=D:" + D);
 
-                if (norm(V_beta_star,2)<=D) {
-                    if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden() returns false");
+                if (norm(V_beta_star) <= D) {
+                    if (stp.opt.debug) LOGGER.info("/*debug*/segInsideForbidden() returns false");
                     return false;
                 }
-            }
-            else {
-                double[] V_beta_j_plus_1 = vOf(beta_j_plus_1,c0,c1,beta_j,beta_j_plus_1);
+            } else {
+                double[] V_beta_j_plus_1 = vOf(beta_j_plus_1, c0, c1, beta_j, beta_j_plus_1);
                 //for (int i=0; i<k; i++) V_beta_j_plus_1.setCoord(i,((int) (mult(((double)a.getCoord(i)),beta_j_plus_1)+b.getCoord(i))));
-                if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden(): beta_j_plus_1:"+beta_j_plus_1+";norm(V_beta_j_plus_1:["+V_beta_j_plus_1[0]+","+V_beta_j_plus_1[1]+"],2)="+norm(V_beta_j_plus_1,2)+"<=D:"+D);
+                if (stp.opt.debug)
+                    LOGGER.info("/*debug*/segInsideForbidden(): beta_j_plus_1:" + beta_j_plus_1 + ";norm(V_beta_j_plus_1:[" + V_beta_j_plus_1[0] + "," + V_beta_j_plus_1[1] + "],2)=" + norm(V_beta_j_plus_1) + "<=D:" + D);
 
-                if (norm(V_beta_j_plus_1,2)<=D) {
-                    if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden() returns false");
+                if (norm(V_beta_j_plus_1) <= D) {
+                    if (stp.opt.debug) LOGGER.info("/*debug*/segInsideForbidden() returns false");
                     return false;
                 }
             }
         }
-        if (stp.opt.debug) System.out.println("/*debug*/segInsideForbidden() returns true");
+        if (stp.opt.debug) LOGGER.info("/*debug*/segInsideForbidden() returns true");
 
         return true;
     }
@@ -535,14 +599,14 @@ public class DistLeqIC extends ForbiddenRegion {
 //    boolean BetaMax(Point c0 , Point c1 , int[] betaj_ , int[] betaj_plus_1_ , int integer_, int i) {
 //        int k=c0.getCoords().length;
 //        //First copy to bigintegers the input
-//        Vector<BigInteger> betaj = new Vector<BigInteger>();
+//        List<BigInteger> betaj = new ArrayList<BigInteger>();
 //        for (int j=0; j<k; j++) betaj.add(new BigInteger(""+betaj_[j]));
-//        Vector<BigInteger> betaj_plus_1 = new Vector<BigInteger>();
+//        List<BigInteger> betaj_plus_1 = new ArrayList<BigInteger>();
 //        for (int j=0; j<k; j++) betaj_plus_1.add(new BigInteger(""+betaj_plus_1_[j]));
 //
 //        //1: b1 ? ?j [0]; b2 ? ?j [1]; b3 ? ?j +1 [0]; b4 ? ?j +1 [1];
-//        BigInteger b1=betaj.elementAt(0); BigInteger b2=betaj.elementAt(1);
-//        BigInteger b3=betaj_plus_1.elementAt(0); BigInteger b4=betaj_plus_1.elementAt(1);
+//        BigInteger b1=betaj.get(0); BigInteger b2=betaj.get(1);
+//        BigInteger b3=betaj_plus_1.get(0); BigInteger b4=betaj_plus_1.get(1);
 //        //3: sameSign ? ((b2 ³ 0) ? (b4 ³ 0)) ? ((b2 < 0) ? (b4 < 0))
 //        boolean sameSign = ((b2.compareTo(BigInteger.ZERO)>=0) && (b4.compareTo(BigInteger.ZERO)>=0))
 //                || ((b2.compareTo(BigInteger.ZERO)<0) && (b4.compareTo(BigInteger.ZERO)<0));
@@ -582,37 +646,35 @@ public class DistLeqIC extends ForbiddenRegion {
 
 
     double mult(double a, double b) {
-        if (!(Math.abs(a) <= (Double.MAX_VALUE/Math.abs(b))))
-        {
-            System.out.println("DistLeqIC:mult():Double.MAX_VALUE overflow"); System.exit(-1);
+        if (!(Math.abs(a) <= (Double.MAX_VALUE / Math.abs(b)))) {
+            throw new SolverException("DistLeqIC:mult():Double.MAX_VALUE overflow");
         }
-            return a*b;
+        return a * b;
     }
 
     public String toString() {
-           StringBuilder r=new StringBuilder();
-        if (DVar==null){
+        StringBuilder r = new StringBuilder();
+        if (DVar == null) {
             r.append("LeqIC(D=").append(D).append(",q=").append(q).append(",o1=")
                     .append(o1).append(",o2=").append(o2).append(")");
-        }
-        else {
+        } else {
             r.append("LeqIC(D=[").append(DVar.getInf()).append(",").append(DVar.getSup())
                     .append("],q=").append(q).append(",o1=").append(o1).append(",o2=").append(o2).append(")");
         }
 
-            return r.toString();
+        return r.toString();
     }
 
     public int EvaluateMinimumDistance(int k) {
         double dist = 0.0;
-        for (int d=0; d<k; d++) {
-            int o1_inf=stp.getObject(o1).getCoord(d).getInf();
-            int o2_inf=stp.getObject(o2).getCoord(d).getInf();
-            int o1_sup=stp.getObject(o1).getCoord(d).getSup();
-            int o2_sup=stp.getObject(o2).getCoord(d).getSup();
+        for (int d = 0; d < k; d++) {
+            int o1_inf = stp.getObject(o1).getCoord(d).getInf();
+            int o2_inf = stp.getObject(o2).getCoord(d).getInf();
+            int o1_sup = stp.getObject(o1).getCoord(d).getSup();
+            int o2_sup = stp.getObject(o2).getCoord(d).getSup();
 
-            double max=Math.max(0,Math.max( o1_inf,o2_inf)-Math.min(o1_sup,o2_sup));
-            dist+=max*max;
+            double max = Math.max(0, Math.max(o1_inf, o2_inf) - Math.min(o1_sup, o2_sup));
+            dist += max * max;
         }
 
         return (int) Math.ceil(Math.sqrt(dist));
@@ -620,25 +682,30 @@ public class DistLeqIC extends ForbiddenRegion {
     }
 
 
-
     public boolean updateDistance(int k) throws ContradictionException {
-        if (DVar!=null) {
-                int oldInf=DVar.getInf();
-                int newInf=EvaluateMinimumDistance(k);
-                if (oldInf>=newInf) return false;
-                DVar.updateInf(newInf, this.stp.g_constraint, false);
-                if (stp.opt.debug) { System.out.println("DistLeqIC:"+this+" updateDistance:["+DVar.getInf()+","+DVar.getSup()+"]"); };
-                if ((DVar.getInf()>DVar.getSup()) || (DVar.getSup()<DVar.getInf())){
-                    stp.propagationEngine.raiseContradiction(null);
-                }
-                return true;
+        if (DVar != null) {
+            int oldInf = DVar.getInf();
+            int newInf = EvaluateMinimumDistance(k);
+            if (oldInf >= newInf) return false;
+            DVar.updateInf(newInf, this.stp.g_constraint, false);
+            if (stp.opt.debug) {
+                LOGGER.info("DistLeqIC:" + this + " updateDistance:[" + DVar.getInf() + "," + DVar.getSup() + "]");
+            }
+            if ((DVar.getInf() > DVar.getSup()) || (DVar.getSup() < DVar.getInf())) {
+                stp.propagationEngine.raiseContradiction(null);
+            }
+            return true;
         }
         return false;
     }
 
-    public boolean hasDistanceVar() { return (DVar!=null); }
+    public boolean hasDistanceVar() {
+        return (DVar != null);
+    }
 
-    public IntDomainVar getDistanceVar() { return DVar; }
+    public IntDomainVar getDistanceVar() {
+        return DVar;
+    }
 
 
 }

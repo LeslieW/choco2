@@ -41,7 +41,7 @@ import static java.lang.Math.min;
  * Since : Choco 2.0.0
  *
  */
-public class DistNeqNode extends AbstractBoolNode {
+public final class DistNeqNode extends AbstractBoolNode {
 
 
 	public DistNeqNode(INode[] subt) {

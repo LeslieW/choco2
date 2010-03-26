@@ -35,7 +35,7 @@ import choco.kernel.solver.constraints.reified.NodeType;
  * Since : Choco 2.0.0
  *
  */
-public class TrueNode extends AbstractBoolNode implements BoolNode {
+public final class TrueNode extends AbstractBoolNode implements BoolNode {
     public TrueNode() {
         super(null, NodeType.TRUE);
     }

@@ -35,7 +35,7 @@ import choco.kernel.solver.variables.Var;
 /* User:    charles
  * Date:    21 août 2008
  */
-public class TaskVariableManager implements VariableManager<TaskVariable> {
+public final class TaskVariableManager implements VariableManager<TaskVariable> {
 
 
     /**

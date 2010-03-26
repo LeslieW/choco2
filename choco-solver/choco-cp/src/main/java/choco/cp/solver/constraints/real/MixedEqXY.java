@@ -29,7 +29,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.real.RealIntervalConstant;
 import choco.kernel.solver.variables.real.RealVar;
 
-public class MixedEqXY extends AbstractBinRealIntSConstraint{
+public final class MixedEqXY extends AbstractBinRealIntSConstraint{
 
   public MixedEqXY(RealVar v0, IntDomainVar v1) {
     super(v0, v1);

@@ -39,7 +39,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * 0 is considered to have both signs
  *
  */
-public class SignOp extends AbstractBinIntSConstraint {
+public final class SignOp extends AbstractBinIntSConstraint {
 
 	/**
 	 * enforce the two variables to take the same sign

@@ -31,7 +31,7 @@ import choco.kernel.solver.variables.set.SetVar;
 /**
  * Specify a constraint to state x included y
  */
-public class IsIncluded extends AbstractBinSetSConstraint {
+public final class IsIncluded extends AbstractBinSetSConstraint {
 
 	/**
 	 * create a constraint to state sv1 isIncluded sv2

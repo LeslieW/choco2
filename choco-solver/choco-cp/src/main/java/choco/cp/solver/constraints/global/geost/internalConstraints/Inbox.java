@@ -6,7 +6,7 @@ import choco.cp.solver.constraints.global.geost.Constants;
  * A class that represent the Inbox internal constraint. If this constraint is applied to an object, it forces the origin of the object to be inside 
  * its box defined by an offset and a size in each dimension
  */
-public class Inbox extends InternalConstraint {
+public final class Inbox extends InternalConstraint {
 	
 	private int[] t;
 	private int[] l;

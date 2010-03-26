@@ -35,7 +35,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * y_ij = 1 si x_i = j
  * y_ij = 0 sinon
  */
-public class BooleanChanneling extends AbstractBinIntSConstraint {
+public final class BooleanChanneling extends AbstractBinIntSConstraint {
 
   protected int cste;
 

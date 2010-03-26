@@ -49,7 +49,7 @@ import java.util.Set;
 /**
  * A manager to build new all distance constraints
  */
-public class DistanceManager extends IntConstraintManager {
+public final class DistanceManager extends IntConstraintManager {
 
     private static final int NEQ = 3;
 

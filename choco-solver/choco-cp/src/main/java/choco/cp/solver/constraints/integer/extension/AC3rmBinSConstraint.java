@@ -39,7 +39,7 @@ import java.util.Arrays;
 /**
  * The AC3rm algorithm. When a support is lost, we first check is the last one
  */
-public class AC3rmBinSConstraint extends CspBinSConstraint {
+public final class AC3rmBinSConstraint extends CspBinSConstraint {
 
 	protected int[] currentSupport0;
 	protected int[] currentSupport1;

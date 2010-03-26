@@ -36,7 +36,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 *
 * b0 XOR b1
 */
-public class BinXor extends AbstractBinIntSConstraint {
+public final class BinXor extends AbstractBinIntSConstraint {
 
     public BinXor(IntDomainVar b0, IntDomainVar b1) {
         super(b0, b1);

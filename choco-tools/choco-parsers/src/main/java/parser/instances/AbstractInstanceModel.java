@@ -34,9 +34,9 @@ import choco.kernel.solver.search.measure.IMeasures;
 import db.DbManager;
 import db.DbTables;
 import parser.absconparseur.tools.UnsupportedConstraintException;
+import static parser.instances.ResolutionStatus.*;
 import parser.instances.checker.IStatusChecker;
 import parser.instances.checker.SCheckFactory;
-import static parser.instances.ResolutionStatus.*;
 
 import java.io.File;
 import java.sql.Timestamp;
@@ -416,7 +416,7 @@ public abstract class AbstractInstanceModel {
 			}
 			//nogood
 			if (solver instanceof CPSolver) {
-				final ClauseStore ngs = ( (CPSolver) solver).nogoodStore;
+				final ClauseStore ngs = ( (CPSolver) solver).getNogoodStore();
 				if( ngs != null) logMsg.storeDiagnostic("NBNOGOODS", ngs.getNbClause());
 			}
 		}

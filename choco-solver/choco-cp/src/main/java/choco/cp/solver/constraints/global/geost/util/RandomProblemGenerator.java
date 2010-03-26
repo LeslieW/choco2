@@ -31,15 +31,16 @@ import choco.kernel.model.variables.geost.GeostObject;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.model.variables.integer.IntegerVariable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
-import java.util.Vector;
 import java.util.logging.Logger;
 
-public class RandomProblemGenerator {
-	protected final static Logger LOGGER  = ChocoLogging.getEngineLogger();
+public final class RandomProblemGenerator {
+	protected static final Logger LOGGER  = ChocoLogging.getEngineLogger();
 
-	private Vector<GeostObject> objects;
-	private Vector<ShiftedBox> sBoxes;
+	private List<GeostObject> objects;
+	private List<ShiftedBox> sBoxes;
 	private Model m;
 	private int nbOfObjects; 
 	private int nbOfShapes;
@@ -48,8 +49,8 @@ public class RandomProblemGenerator {
 	private int dim;
 	public RandomProblemGenerator(int k, int nbOfObjects, int nbOfShapes, int nbOfShiftedBoxes, int maxLength)
 	{
-		objects = new Vector<GeostObject>();
-		sBoxes  = new Vector<ShiftedBox>();
+		objects = new ArrayList<GeostObject>();
+		sBoxes  = new ArrayList<ShiftedBox>();
 		m = new CPModel();
 		this.nbOfObjects = nbOfObjects;
 		this.nbOfShapes = nbOfShapes;
@@ -77,7 +78,7 @@ public class RandomProblemGenerator {
 		int[] maxDomain = new int [dim]; //maximum value of o.x in each dimension
 		
 		//first generate the shape IDs
-		Vector<Integer> shapeIDS = new Vector<Integer>();
+		List<Integer> shapeIDS = new ArrayList<Integer>();
 		for(int i = 0; i < nbOfShapes; i++)
 		{
 			shapeIDS.add(i, i);
@@ -88,8 +89,8 @@ public class RandomProblemGenerator {
 		{
 			//create the shape id randomly from the list of shape ids
 			int index = rnd.nextInt(shapeIDS.size());
-			int sid = shapeIDS.elementAt(index);
-			shapeIDS.removeElementAt(index);
+			int sid = shapeIDS.get(index);
+			shapeIDS.remove(index);
 			
 			
 			IntegerVariable shapeId = Choco.makeIntVar("sid", sid, sid);
@@ -98,8 +99,9 @@ public class RandomProblemGenerator {
 			{
 				
 				int max = rnd.nextInt(maxLength);
-				while (max == 0)
+				while (max == 0){
 					max = rnd.nextInt(maxLength);
+                }
 				
 				int min = rnd.nextInt(max);
 				coords[j] = Choco.makeIntVar("x" + j, min, max);
@@ -117,8 +119,8 @@ public class RandomProblemGenerator {
 			int max = 0;
 			for(int j = 0; j < objects.size(); j++)
 			{
-				if(max < objects.elementAt(j).getCoordinates()[i].getUppB())
-					max = objects.elementAt(j).getCoordinates()[i].getUppB();
+				if(max < objects.get(j).getCoordinates()[i].getUppB())
+					max = objects.get(j).getCoordinates()[i].getUppB();
 			}
 			
 			maxDomain[i] = max;
@@ -140,8 +142,9 @@ public class RandomProblemGenerator {
 					t[k] = 0; //for the time being all the shappes have no offset from the origin so the offset of this box should be 0 so that 
 					          //any other box we add is above or to the right. this way we know that the origin of the shape is the bottom left corner
 					s[k] = rnd.nextInt(maxLength);
-					while(s[k] == 0)
+					while(s[k] == 0){
 						s[k] = rnd.nextInt(maxLength); //All boxes has a minimum size of in every dimension
+                    }
 				}
 				sBoxes.add(new ShiftedBox(j,t,s));
 			}
@@ -157,12 +160,12 @@ public class RandomProblemGenerator {
 			{
 				//pick a shape
 				int index = rnd.nextInt(shapeIDS.size());
-				int sid = shapeIDS.elementAt(index);
+				int sid = shapeIDS.get(index);
 								
 				//get an already created shifted box for that shape
 				for (int i = 0; i < sBoxes.size(); i++)
 				{
-					if(sBoxes.elementAt(i).getShapeId() == sid)
+					if(sBoxes.get(i).getShapeId() == sid)
 					{
 						index = i;
 						break;
@@ -173,23 +176,24 @@ public class RandomProblemGenerator {
 				int[] s = new int[dim];
 				for(int k = 0; k < dim; k++)
 				{
-					t[k] = rnd.nextInt(sBoxes.elementAt(index).getSize(k)); //so that it stays touching the other box
+					t[k] = rnd.nextInt(sBoxes.get(index).getSize(k)); //so that it stays touching the other box
 					s[k] = rnd.nextInt(maxLength);
-					while(s[k] == 0)
+					while(s[k] == 0){
 						s[k] = rnd.nextInt(maxLength);//All boxes has a minimum size of in every dimension
+                    }
 				}
-				sBoxes.add(new ShiftedBox(sBoxes.elementAt(index).getShapeId(),t,s));
+				sBoxes.add(new ShiftedBox(sBoxes.get(index).getShapeId(),t,s));
 				
 				remainingSBtoCreate--;
 			}	
 	}
 
 
-	public Vector<GeostObject> getObjects() {
+	public List<GeostObject> getObjects() {
 		return objects;
 	}
 
-	public Vector<ShiftedBox> getSBoxes() {
+	public List<ShiftedBox> getSBoxes() {
 		return sBoxes;
 	}
 

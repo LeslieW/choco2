@@ -39,7 +39,7 @@ import java.util.Set;
  * Date : 23 févr. 2010
  * Since : Choco 2.1.1
  */
-public class AmongSetManager extends MixedConstraintManager{
+public final class AmongSetManager extends MixedConstraintManager{
     /**
      * Build a constraint for the given solver and "model variables"
      *

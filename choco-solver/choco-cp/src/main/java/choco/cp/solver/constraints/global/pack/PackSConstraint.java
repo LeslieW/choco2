@@ -51,7 +51,7 @@ import java.util.Arrays;
  * @since 5 déc. 2008 version 2.0.1</br>
  * @version 2.1.0</br>
  */
-public class PackSConstraint extends AbstractLargeSetIntSConstraint implements IPackSConstraint {
+public final class PackSConstraint extends AbstractLargeSetIntSConstraint implements IPackSConstraint {
 
 
 	public final PackFiltering filtering;

@@ -9,7 +9,7 @@ import java.io.ObjectOutput;
  * This class represents a k dimensional Region (where k is specified as a global constant in the global.Constants class).
  * Also each region should attached to an object therefore the Object id  should be specified in the constructor
  */
-public class Region implements Externalizable {
+public final class Region implements Externalizable {
 	
 	private int oid;   //object id
 	private int min[]; //boundary minimum for each dimension
@@ -76,8 +76,8 @@ public class Region implements Externalizable {
         this.mid=toCopy.mid;
         this.dicho_ext = toCopy.dicho_ext;
         this.dicho_int = toCopy.dicho_int;
-        this.info = new String(toCopy.info);
-        this.father = new String(toCopy.father);
+        this.info = toCopy.info;
+        this.father = toCopy.father;
         this.case_a_or_c=toCopy.case_a_or_c;
 
         this.setType(toCopy.getType());
@@ -160,14 +160,14 @@ public class Region implements Externalizable {
 //            res += min[i] +" ";
 //        for (int i=0; i<dim; i++)
 //            res += max[i] +" ";
-        for (int i=0; i<dim; i++)
-            if (i!=dim-1)
+        for (int i=0; i<dim; i++){
+            if (i!=dim-1){
                 res.append("[").append(min[i]).append(",").append(max[i]).append("],");
-            else
+            }else{
                 res.append("[").append(min[i]).append(",").append(max[i]).append("]");
-
-
-            res.append(")");
+            }
+        }
+        res.append(")");
         return res.toString();
 
     }
@@ -185,9 +185,13 @@ public class Region implements Externalizable {
         //To change body of implemented methods use File | Settings | File Templates.
         out.writeObject(oid);   //object id
         out.writeObject(min.length);
-        for (int i=0; i<min.length; i++) out.writeObject(min[i]);
+        for (int i=0; i<min.length; i++){
+            out.writeObject(min[i]);
+        }
         out.writeObject(max.length);
-        for (int i=0; i<max.length; i++) out.writeObject(max[i]);
+        for (int i=0; i<max.length; i++){
+            out.writeObject(max[i]);
+        }
         out.writeObject(dim);
 
     }
@@ -197,15 +201,23 @@ public class Region implements Externalizable {
         oid=(Integer) in.readObject();
         int n=(Integer) in.readObject();
         min=new int[n];
-        for (int i=0; i<n; i++) min[i]=(Integer) in.readObject();
+        for (int i=0; i<n; i++){
+            min[i]=(Integer) in.readObject();
+        }
         n=(Integer) in.readObject();
         max=new int[n];
-        for (int i=0; i<n; i++) max[i]=(Integer) in.readObject();
+        for (int i=0; i<n; i++){
+            max[i]=(Integer) in.readObject();
+        }
         dim=(Integer) in.readObject();        
     }
 
     public boolean isPoint() {
-        for (int i=0; i<dim; i++) if (min[i]!=max[i]) return false;
+        for (int i=0; i<dim; i++){
+            if (min[i]!=max[i]){
+                return false;
+            }
+        }
         return true;
     }
 

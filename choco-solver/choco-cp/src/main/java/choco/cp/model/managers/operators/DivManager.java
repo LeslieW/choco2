@@ -34,7 +34,7 @@ import choco.kernel.solver.constraints.reified.INode;
 /* User:    charles
  * Date:    20 août 2008
  */
-public class DivManager implements ExpressionManager {
+public final class DivManager implements ExpressionManager {
 
     /**
      * Make a solver expression variable from a model expression variable

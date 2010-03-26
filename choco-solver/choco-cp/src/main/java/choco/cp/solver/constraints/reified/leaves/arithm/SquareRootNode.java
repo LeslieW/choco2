@@ -54,7 +54,7 @@ import choco.kernel.solver.constraints.reified.NodeType;
  *
  * A node for integer square root, but too much roundy...
  */
-public class SquareRootNode extends INode implements ArithmNode {
+public final class SquareRootNode extends INode implements ArithmNode {
 
     public SquareRootNode(INode[] subt) {
 		super(subt, NodeType.SQUARE);

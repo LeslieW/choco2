@@ -46,7 +46,7 @@ import choco.kernel.solver.variables.set.SetVar;
  * Env(v2)  disjoint Ker(v1) inter Complement(Env(v3))
  * Env(v1)  disjoint Ker(v2) inter Complement(Env(v3))
  */
-public class SetIntersection extends AbstractTernSetSConstraint {
+public final class SetIntersection extends AbstractTernSetSConstraint {
 
 	/**
 	 * @param sv3 the intersection set

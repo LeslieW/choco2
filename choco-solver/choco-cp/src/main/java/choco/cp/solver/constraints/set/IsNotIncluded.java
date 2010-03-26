@@ -35,7 +35,7 @@ import choco.kernel.solver.variables.set.SetVar;
  * Since : Choco 2.0.0
  *
  */
-public class IsNotIncluded extends AbstractBinSetSConstraint {
+public final class IsNotIncluded extends AbstractBinSetSConstraint {
 
 	/**
 	 * create a constraint to state sv1 isIncluded sv2

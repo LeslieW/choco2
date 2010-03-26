@@ -35,7 +35,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * variables x <_lex y with x = <x_0, ..., x_n>, and y = <y_0, ..., y_n>.
  * ref : Global Constraints for Lexicographic Orderings (Frisch and al)
  */
-public class Lex extends AbstractLargeIntSConstraint {
+public final class Lex extends AbstractLargeIntSConstraint {
 
 	public int n;            // size of both vectors
 	public IStateInt alpha;  // size of both vectors

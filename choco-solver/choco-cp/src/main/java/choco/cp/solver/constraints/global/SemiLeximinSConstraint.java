@@ -38,7 +38,7 @@ import java.util.logging.Level;
  * @author <a href="mailto:sylvain.bouveret@cert.fr">Sylvain Bouveret</a>
  * @version 1.0
  */
-public class SemiLeximinSConstraint extends AbstractLargeIntSConstraint {
+public final class SemiLeximinSConstraint extends AbstractLargeIntSConstraint {
 
     private IStateInt alpha, beta;
     private IStateInt gamma, delta;

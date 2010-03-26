@@ -36,7 +36,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * no explicit variables are used for the right vertex set
  * the right vertex set is the interval (minValue .. maxValue)
  */
-public class AllDifferent extends AbstractBipartiteMatching {
+public final class AllDifferent extends AbstractBipartiteMatching {
 
   /**
    * API entry point: creating an ice alldifferent constraint (before posting it)

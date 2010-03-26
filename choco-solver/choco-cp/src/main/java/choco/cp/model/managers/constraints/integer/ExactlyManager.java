@@ -10,7 +10,7 @@ import choco.kernel.solver.constraints.SConstraint;
 
 import java.util.Set;
 
-public class ExactlyManager extends IntConstraintManager {
+public final class ExactlyManager extends IntConstraintManager {
 
         /**
          * Build a constraint for the given solver and "model variables"

@@ -32,7 +32,7 @@ import choco.kernel.solver.variables.real.RealMath;
 /**
  * An expression modelling a multiplication.
  */
-public class RealMult extends AbstractRealBinTerm {
+public final class RealMult extends AbstractRealBinTerm {
   public RealMult(Solver solver, RealExp exp1, RealExp exp2) {
     super(solver, exp1, exp2);
   }

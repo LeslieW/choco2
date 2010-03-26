@@ -32,7 +32,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /**
  * Implements a constraint X = max(Y_0, Y_1...Y_n).
  */
-public class MaxOfAList extends AbstractLargeIntSConstraint {
+public final class MaxOfAList extends AbstractLargeIntSConstraint {
   /**
    * Index of the maximum variable.
    */

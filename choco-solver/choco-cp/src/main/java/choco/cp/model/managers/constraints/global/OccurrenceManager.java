@@ -49,7 +49,7 @@ import java.util.Set;
 /**
  * A manager to build new all occurence constraints
  */
-public class OccurrenceManager extends IntConstraintManager {
+public final class OccurrenceManager extends IntConstraintManager {
 
     private static final int NOR = 0;
     private static final int MIN = -1;

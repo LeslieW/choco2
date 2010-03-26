@@ -40,8 +40,8 @@
 
 package choco.cp.solver.constraints.global.geost.dataStructures;
 
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
-import java.util.Vector;
 
 /**
  * An implementation of a priority queue according to Cormen,
@@ -49,8 +49,8 @@ import java.util.Vector;
  *
  * @version 1.0 2/23/96
  * @author <A HREF="http://www.radwin.org/michael/">Michael J. Radwin</A> */
-public
-class HeapAscending extends Vector implements HeapImpl {
+public final class HeapAscending extends ArrayList<choco.cp.solver.constraints.global.geost.dataStructures.Heapable>
+        implements HeapImpl {
     /**
 	 *
 	 */
@@ -64,10 +64,10 @@ class HeapAscending extends Vector implements HeapImpl {
     public HeapAscending(Heapable anArray[])
     {
 	super(anArray.length);
-	setSize(anArray.length);
+	ensureCapacity(anArray.length);
 
 	for (int i = 0; i < anArray.length; i++) {
-		setElementAt(anArray[i], i);
+		set(i, anArray[i]);
 	}
 
 	for (int i = (int)Math.floor(size() / 2) - 1; i >= 0; i--) {
@@ -115,9 +115,9 @@ class HeapAscending extends Vector implements HeapImpl {
      */
     protected synchronized void exchange(int i, int j)
     {
-	Object temp = elementAt(j);
-	setElementAt(elementAt(i), j);
-	setElementAt(temp, i);
+	Heapable temp = get(j);
+	set(j, get(i));
+	set(i, temp);
     }
 
     /**
@@ -131,14 +131,14 @@ class HeapAscending extends Vector implements HeapImpl {
 	int smallest;
 
 	if (l < size() &&
-	    ((Heapable)elementAt(l)).lessThan(elementAt(i))) {
+	    get(l).lessThan(get(i))) {
 		smallest = l;
 	} else {
 		smallest = i;
 	}
 
 	if (r < size() &&
-	    ((Heapable)elementAt(r)).lessThan(elementAt(smallest))) {
+	    get(r).lessThan(get(smallest))) {
 		smallest = r;
 	}
 
@@ -158,14 +158,14 @@ class HeapAscending extends Vector implements HeapImpl {
 		throw new NoSuchElementException();
 	}
 
-	Object min = elementAt(0);
+	    Object min = get(0);
 
-	// move the last key to the top, decrease size, and downheap
-	setElementAt(lastElement(), 0);
-	removeElementAt(size() - 1);
-	heapify(0);
+	    // move the last key to the top, decrease size, and downheap
+        set(0, get(size()-1));
+	    remove(size() - 1);
+	    heapify(0);
 
-	return (Heapable)min;
+	    return (Heapable)min;
     }
 
     /**
@@ -177,7 +177,7 @@ class HeapAscending extends Vector implements HeapImpl {
 		throw new NoSuchElementException();
 	}
 
-	Object min = elementAt(0);
+	Object min = get(0);
 
 	return (Heapable)min;
     }
@@ -198,15 +198,20 @@ class HeapAscending extends Vector implements HeapImpl {
     public synchronized void insert(Heapable key)
     {
 	int i = size();
-	setSize(size() + 1);
+	ensureCapacity(size() + 1);
 
 	// upheap if necessary
-	while (i > 0 && ((Heapable)elementAt(parent(i))).greaterThan(key)) {
-	    setElementAt(elementAt(parent(i)), i);
+	while (i > 0 && get(parent(i)).greaterThan(key)) {
+	    set(i, get(parent(i)));
 	    i = parent(i);
 	}
 
-	setElementAt(key, i);
+	set(i, key);
+    }
+
+    @Override
+    public void removeAllElements() {
+        clear();
     }
 
     /**
@@ -221,7 +226,7 @@ class HeapAscending extends Vector implements HeapImpl {
 //	    return;
 //	}
 //
-//	tg.DrawInternal(elementAt(i).toString(), "blue");
+//	tg.DrawInternal(get(i).toString(), "blue");
 //	preorder(left(i), tg);
 //	preorder(right(i), tg);
 //    }

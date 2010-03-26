@@ -32,8 +32,10 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,7 +43,7 @@ import java.util.logging.Logger;
  * This class parses a text file that describes the problem to be solved. While parsing it creates the choco problem, the objects, shapes and shifted boxes and stores them locally to this class. 
  * Then to create the environment that the constraint uses all we need to do is call global.Setup.createEnvironment(parser) and give it this object as an argument.
  */
-public class InputParser {
+public final class InputParser {
 
     protected static final Logger LOGGER = ChocoLogging.getEngineLogger();
 
@@ -59,9 +61,9 @@ public class InputParser {
     }
 
 
-    Vector<GeostObject> obj;
-	Vector<Shape> sh;
-	Vector<ShiftedBox> sb;
+    List<GeostObject> obj;
+	List<Shape> sh;
+	List<ShiftedBox> sb;
     String path;
 	int dim;
     GeostProblem gp;
@@ -73,36 +75,36 @@ public class InputParser {
 	{
 		this.path = path;
 		this.dim = dim;
-		obj = new Vector<GeostObject>();
-		sh  = new Vector<Shape>();
-		sb  = new Vector<ShiftedBox>();
+		obj = new ArrayList<GeostObject>();
+		sh  = new ArrayList<Shape>();
+		sb  = new ArrayList<ShiftedBox>();
 	}
 
     public InputParser(GeostProblem gp, int dim){
 		this.dim = dim;
         this.gp = gp;
-        obj = new Vector<GeostObject>();
-		sh  = new Vector<Shape>();
-		sb  = new Vector<ShiftedBox>();
+        obj = new ArrayList<GeostObject>();
+		sh  = new ArrayList<Shape>();
+		sb  = new ArrayList<ShiftedBox>();
     }
 
 
-    public Vector<GeostObject> getObjects()
+    public List<GeostObject> getObjects()
 	{
 		return this.obj;
 	}
 	
-	public Vector<Shape> getShapes()
+	public List<Shape> getShapes()
 	{
 		return this.sh;
 	}
 
-	public Vector<ShiftedBox> getShiftedBoxes()
+	public List<ShiftedBox> getShiftedBoxes()
 	{
 		return this.sb;
 	}
 
-    public boolean parse() throws Exception{
+    public boolean parse() throws IOException {
         if(path!=null){
             return this.parseFile();
         }else if(gp!=null){
@@ -116,8 +118,7 @@ public class InputParser {
 	 * from the local variable path. The value of path is given to the constructor as parameter.
 	 * @return The function returns false if there was an error during the parsing otherwise it returns true.
 	 */
-	public boolean parseFile() throws Exception
-	{
+	public boolean parseFile() throws IOException {
 
 		BufferedReader bin = null;
 		try{
@@ -128,7 +129,7 @@ public class InputParser {
 		catch(Exception e)
 		{
 			LOGGER.log(Level.SEVERE, "Unable to open data file: {0}\n{1}", new Object[]{this.path, e});
-			e.printStackTrace();	
+			e.printStackTrace();
 			return false;
 		}
 
@@ -302,7 +303,7 @@ public class InputParser {
 			int index = -1;
 			for (int j = 0; j < sh.size(); j++)
 			{
-				if(sh.elementAt(j).getShapeId() == sb.elementAt(i).getShapeId()) 
+				if(sh.get(j).getShapeId() == sb.get(i).getShapeId()) 
 					{
 						index = j;
 						break;
@@ -310,12 +311,12 @@ public class InputParser {
 		
 			}
 			if (index != -1)
-				sh.elementAt(index).addShiftedBox(sb.elementAt(i));
+				sh.get(index).addShiftedBox(sb.get(i));
 		}
 		
 //		//Calculate the origin domain sizes
 //		for (int i = 0; i < obj.size(); i++)
-//			obj.elementAt(i).setOriginDomainSize(obj.elementAt(i).calculateOriginDomainSize());
+//			obj.get(i).setOriginDomainSize(obj.get(i).calculateOriginDomainSize());
 		return true;
 	}
 
@@ -323,7 +324,7 @@ public class InputParser {
 	 * This is the essential function of this class it. It is the function that executes the parsing. Lists to be parsed are read.
 	 * @return The function returns false if there was an error during the parsing otherwise it returns true.
 	 */
-	public boolean parseGP() throws Exception
+	public boolean parseGP()
 	{
 
 		// Objects:
@@ -372,7 +373,7 @@ public class InputParser {
 			int index = -1;
 			for (int j = 0; j < sh.size(); j++)
 			{
-				if(sh.elementAt(j).getShapeId() == sb.elementAt(i).getShapeId())
+				if(sh.get(j).getShapeId() == sb.get(i).getShapeId())
 					{
 						index = j;
 						break;
@@ -380,7 +381,7 @@ public class InputParser {
 
 			}
 			if (index != -1)
-				sh.elementAt(index).addShiftedBox(sb.elementAt(i));
+				sh.get(index).addShiftedBox(sb.get(i));
 		}
 		return true;
 	}

@@ -3,21 +3,24 @@ package choco.cp.solver.constraints.global.geost.geometricPrim;
 import choco.cp.solver.constraints.global.geost.externalConstraints.ExternalConstraint;
 import choco.cp.solver.constraints.global.geost.internalConstraints.InternalConstraint;
 import choco.cp.solver.constraints.global.geost.internalConstraints.Outbox;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
-import java.util.Vector;
-
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
 
 /**
  * This class represent an Object of our placement problem.
  */
-public class Obj implements Externalizable {
+public final class Obj implements Externalizable {
+
+    private static final Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	private int oid;          //Object id
 	private IntDomainVar sid; // the shape id that corresponds to this object
@@ -25,12 +28,12 @@ public class Obj implements Externalizable {
 	private IntDomainVar start;
 	private IntDomainVar duration;
 	private IntDomainVar end;
-	private Vector<ExternalConstraint> relatedExternalConstraints;
-	private Vector<InternalConstraint> relatedInternalConstraints;
+	private List<ExternalConstraint> relatedExternalConstraints;
+	private List<InternalConstraint> relatedInternalConstraints;
 	private int dim;
     private int radius;
 
-    public Obj(){};
+    public Obj(){}
  
 
     /**
@@ -52,8 +55,8 @@ public class Obj implements Externalizable {
 		this.start = startTime;
 		this.duration = durationTime;
 		this.end = endTime;
-		this.relatedExternalConstraints = new Vector<ExternalConstraint>();
-		this.relatedInternalConstraints = new Vector<InternalConstraint>();
+		this.relatedExternalConstraints = new ArrayList<ExternalConstraint>();
+		this.relatedInternalConstraints = new ArrayList<InternalConstraint>();
         this.radius=-1;
 	}
 
@@ -66,8 +69,8 @@ public class Obj implements Externalizable {
         this.start = startTime;
         this.duration = durationTime;
         this.end = endTime;
-        this.relatedExternalConstraints = new Vector<ExternalConstraint>();
-        this.relatedInternalConstraints = new Vector<InternalConstraint>();
+        this.relatedExternalConstraints = new ArrayList<ExternalConstraint>();
+        this.relatedInternalConstraints = new ArrayList<InternalConstraint>();
         this.radius=radius;
     }
 
@@ -79,8 +82,8 @@ public class Obj implements Externalizable {
 	{
 		this.dim = dim;
 		this.coords = new IntDomainVar[this.dim];
-		this.relatedExternalConstraints = new Vector<ExternalConstraint>();
-		this.relatedInternalConstraints = new Vector<InternalConstraint>();
+		this.relatedExternalConstraints = new ArrayList<ExternalConstraint>();
+		this.relatedInternalConstraints = new ArrayList<InternalConstraint>();
 	}
 
 	/**
@@ -174,14 +177,14 @@ public class Obj implements Externalizable {
 	/**
 	 * Gets all Related External Constraints to this object.
 	 */
-	public Vector<ExternalConstraint> getRelatedExternalConstraints() {
+	public List<ExternalConstraint> getRelatedExternalConstraints() {
 		return relatedExternalConstraints;
 	}
 
 	/**
 	 * Gets all Related Internal Constraints to this object.
 	 */
-	public Vector<InternalConstraint> getRelatedInternalConstraints() {
+	public List<InternalConstraint> getRelatedInternalConstraints() {
 		return relatedInternalConstraints;
 	}
 
@@ -189,14 +192,14 @@ public class Obj implements Externalizable {
 	/**
 	 * Sets all Related External Constraints to this object.
 	 */
-	public void setRelatedExternalConstraints(Vector<ExternalConstraint> relatedExtConstraints) {
+	public void setRelatedExternalConstraints(List<ExternalConstraint> relatedExtConstraints) {
 		this.relatedExternalConstraints = relatedExtConstraints;
 	}
 
 	/**
 	 * Sets all Related Internal Constraints to this object.
 	 */
-	public void setRelatedInternalConstraints(Vector<InternalConstraint> relatedIntConstraints) {
+	public void setRelatedInternalConstraints(List<InternalConstraint> relatedIntConstraints) {
 		this.relatedInternalConstraints = relatedIntConstraints;
 	}
 
@@ -241,10 +244,11 @@ public class Obj implements Externalizable {
     
     public boolean coordInstantiated() {
 
-        for (int i = 0; i < this.coords.length; i++)
-            if (!this.getCoord(i).isInstantiated())
+        for (int i = 0; i < this.coords.length; i++){
+            if (!this.getCoord(i).isInstantiated()){
             return false;
-
+            }
+        }
         return true;
         
     }
@@ -280,11 +284,10 @@ public class Obj implements Externalizable {
 		for (int i = 0; i < this.coords.length; i++)
 		{
             if (!this.getCoord(i).isInstantiated())
-                System.out.print(this.getCoord(i).getInf() +" " + this.getCoord(i).getSup() +",");
+                LOGGER.info(this.getCoord(i).getInf() +" " + this.getCoord(i).getSup() +",");
             else
-                System.out.print(this.getCoord(i).getInf() +" ");
+                LOGGER.info(this.getCoord(i).getInf() +" ");
         }
-        System.out.println();
     }
 
     public String toString() {
@@ -372,8 +375,8 @@ public class Obj implements Externalizable {
 //        start = (IntDomainVar) new IntDomainVarImplFake((Integer) in.readObject(), (Integer) in.readObject());
 //        duration = (IntDomainVar) new IntDomainVarImplFake((Integer) in.readObject(), (Integer) in.readObject());
 //        end = (IntDomainVar) new IntDomainVarImplFake((Integer) in.readObject(), (Integer) in.readObject());
-//        relatedExternalConstraints = (Vector<ExternalConstraint>) in.readObject();
-//        relatedInternalConstraints = (Vector<InternalConstraint>) in.readObject();
+//        relatedExternalConstraints = (List<ExternalConstraint>) in.readObject();
+//        relatedInternalConstraints = (List<InternalConstraint>) in.readObject();
 //        dim = (Integer) in.readObject();
 //        radius = (Integer) in.readObject();        
 

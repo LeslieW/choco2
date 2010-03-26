@@ -40,7 +40,7 @@ import java.util.Set;
  * Date: Mar 23, 2009
  * Time: 4:43:36 PM
  */
-public class MultiCostRegularManager extends IntConstraintManager
+public final class MultiCostRegularManager extends IntConstraintManager
 {
 
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options)

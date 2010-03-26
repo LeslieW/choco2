@@ -37,7 +37,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Since : Choco 2.0.0
  *
  */
-public class LargeOr extends AbstractLargeIntSConstraint {
+public final class LargeOr extends AbstractLargeIntSConstraint {
 
 
     /**

@@ -33,7 +33,7 @@ import choco.kernel.solver.constraints.integer.extension.ConsistencyRelation;
 import choco.kernel.solver.constraints.integer.extension.CspBinSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public class AC3BinSConstraint extends CspBinSConstraint {
+public final class AC3BinSConstraint extends CspBinSConstraint {
 
 	public AC3BinSConstraint(IntDomainVar x0, IntDomainVar x1, BinRelation rela) {//int[][] consistencyMatrice) {
 		super(x0, x1, rela);
