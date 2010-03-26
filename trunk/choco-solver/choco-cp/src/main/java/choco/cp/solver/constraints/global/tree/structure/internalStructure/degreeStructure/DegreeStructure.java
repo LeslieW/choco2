@@ -115,7 +115,6 @@ public class DegreeStructure {
 			indexVars[i] = i;
 		}
         this.gccVars = new BitSet[nbVertices];
-        nbLeftVertices = 0;
         nbLeftVertices = nbVertices;
         for (int i = 0; i < nbVertices; i++) {
             // +1 comes from the modeling of state "potential loop" in the network

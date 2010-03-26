@@ -58,7 +58,7 @@ public class BellmanWithLists extends AbstractSubsetSumSolver {
 
 	@Override
 	public void setCapacity(Long capacity) {
-		if(this.capacity!=capacity) {
+		if(!capacity.equals(this.capacity)) {
 			setX=new int[Long.valueOf(capacity).intValue()+1];
 			Arrays.fill(setX, NONE);
 		}

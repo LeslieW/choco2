@@ -93,12 +93,8 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
         if(cidx>=0){
             reuseException.set(variable.getConstraintVector().get(cidx)
             );
-        }else if (cidx == -1){
+        }else{
             reuseException.set(variable);
-        }
-        else{
-            reuseException.set(variable
-            );
         }
         for(PropagationEngineListener listener : propagationEngineListeners) {
             listener.contradictionOccured(reuseException);

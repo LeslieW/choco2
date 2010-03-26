@@ -360,11 +360,11 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	 * @param x
 	 */
 	public void augment(int x) {
-		int y = this.left2rightArc[x];
         int xx = x;
+		int y = this.left2rightArc[xx];
 		while (!this.mayGrowFlowFromSource(y)) {
 			//if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Add {0}.{1}", new Object[]{x,y});
-			this.putRefMatch(x, y);
+			this.putRefMatch(xx, y);
 			xx = this.right2leftArc[y];
 			//if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Rem {0}.{1}", new Object[]{x,y});
 			assert(this.match(xx) == y);
@@ -672,7 +672,7 @@ public abstract class AbstractBipartiteGraph extends AbstractLargeIntSConstraint
 	//   QUEUE OF REACHED VERTICES WHEN FINDING AN AUGMENTING PATH
 	// ==============================================================
 
-	protected static final class IntQueue {
+	protected static class IntQueue {
 		/**
 		 * Maximum size of the queue.
 		 */

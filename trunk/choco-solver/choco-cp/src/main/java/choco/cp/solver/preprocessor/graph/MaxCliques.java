@@ -82,10 +82,8 @@ public class MaxCliques {
 			return BronKerbosh(updatedGammaK,K,updatedGammaK);
 		} else {
 			cliques = storeCliques(K);
-			
-			if (cliques.length > 2000) {
-				return false;
-			} else return true;
+
+            return cliques.length <= 2000;
 		}
 	}
 	
@@ -198,12 +196,13 @@ public class MaxCliques {
 			m = n*(n+1)/2; 
 		}
 	    Random r = new Random(seed);
+        int nbNode = g.nbNode;
 	    for(int i=0; i<m; i++) {
-	    	int v1 = Math.abs(r.nextInt())%g.nbNode;
-	    	int v2 = Math.abs(r.nextInt())%g.nbNode;
+	    	int v1 = Math.abs(r.nextInt())%nbNode;
+	    	int v2 = Math.abs(r.nextInt())%nbNode;
 	    	while(v1==v2 || g.isIn(v1,v2)) { // no loop 
-	    		v1 = Math.abs(r.nextInt())%g.nbNode;
-	    		v2 = Math.abs(r.nextInt())%g.nbNode;
+	    		v1 = Math.abs(r.nextInt())%nbNode;
+	    		v2 = Math.abs(r.nextInt())%nbNode;
 	    	}
 	    	g.addEdge(v1,v2);
 	    }	
