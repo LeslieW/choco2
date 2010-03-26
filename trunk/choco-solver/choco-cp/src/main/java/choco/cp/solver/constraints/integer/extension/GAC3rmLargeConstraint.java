@@ -42,7 +42,7 @@ import java.util.Arrays;
  * Since : Choco 2.0.0
  *
  */
-public class GAC3rmLargeConstraint extends CspLargeSConstraint {
+public final class GAC3rmLargeConstraint extends CspLargeSConstraint {
 
     // Last valid supports Last(x_i, val) = supports( (blocks(i) + val) * size )
 

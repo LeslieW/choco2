@@ -51,7 +51,7 @@ import java.util.List;
  * A constraint to deal with complex expression of variables involving a wide
  * range of operators
  */
-public class ExpressionSConstraint extends TuplesTest implements SConstraint, BinRelation {
+public final class ExpressionSConstraint extends TuplesTest implements SConstraint, BinRelation {
 
     /**
      * The scope of the predicat

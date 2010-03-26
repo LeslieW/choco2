@@ -52,7 +52,7 @@ import java.util.Set;
 /**
  * A manager to build new all different constraints (and more... soon)
  */
-public class GlobalCardinalityManager extends IntConstraintManager {
+public final class GlobalCardinalityManager extends IntConstraintManager {
 
 
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {

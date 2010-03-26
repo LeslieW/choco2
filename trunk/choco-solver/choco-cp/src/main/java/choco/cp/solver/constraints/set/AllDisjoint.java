@@ -12,7 +12,7 @@ import choco.kernel.solver.variables.set.SetVar;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AllDisjoint extends AbstractLargeSetSConstraint {
+public final class AllDisjoint extends AbstractLargeSetSConstraint {
 
     public AllDisjoint(SetVar[] setvars) {
         super(setvars);

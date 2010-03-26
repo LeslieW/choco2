@@ -1,10 +1,16 @@
 package choco.cp.solver.constraints.global.geost.layers.continuousSolver;
 
-public class        Quimper {
+import choco.kernel.common.logging.ChocoLogging;
+
+import java.util.logging.Logger;
+
+public final class        Quimper {
+
+    private static final Logger LOGGER = ChocoLogging.getEngineLogger();
 
     static {
 	String jlp=System.getProperty("java.library.path");
-	System.out.println("jlp:"+jlp);
+	LOGGER.info("jlp:"+jlp);
 	System.loadLibrary("quimper");
     }
 
@@ -13,8 +19,9 @@ public class        Quimper {
 	load(filename);
     }
 
-    public void finalize() {
-	release();
+    protected void finalize() throws Throwable {
+        super.finalize();
+	    release();
     }
 
     public native void contract(String ctc);
@@ -42,4 +49,4 @@ public class        Quimper {
     private native void release();
 
 
-};
+}

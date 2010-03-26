@@ -38,7 +38,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Since : Choco 2.0.0
  *
  */
-public class SameSignNode extends AbstractBoolNode implements BoolNode {
+public final class SameSignNode extends AbstractBoolNode implements BoolNode {
 
 
 	public SameSignNode(INode[] subt) {

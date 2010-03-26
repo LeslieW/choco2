@@ -37,7 +37,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Since : Choco 2.0.0
  *
  */
-public class MaxNode extends INode implements ArithmNode {
+public final class MaxNode extends INode implements ArithmNode {
 
 	public MaxNode(INode[] subt) {
 		super(subt, NodeType.MAX);

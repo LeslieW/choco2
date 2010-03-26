@@ -30,7 +30,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Simple implementation of global cardinality constraint with occurrence constrained by
  * variables and not only integer bounds.
  */
-public class GlobalCardinalityVar extends GlobalCardinality {
+public final class GlobalCardinalityVar extends GlobalCardinality {
   //protected StoredIntVector minOccurence;
   //protected StoredIntVector maxOccurence;
 

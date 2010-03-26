@@ -38,7 +38,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * GAC 2001 in valid tuples (do not support bound variables)
  */
 
-public class GAC2001LargeSConstraint extends CspLargeSConstraint {
+public final class GAC2001LargeSConstraint extends CspLargeSConstraint {
 
     // Last valid supports Last(x_i, val) = supports( (blocks(i) + val) * size )
 

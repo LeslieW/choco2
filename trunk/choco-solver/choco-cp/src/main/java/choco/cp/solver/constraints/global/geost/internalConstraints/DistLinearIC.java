@@ -5,10 +5,13 @@ import choco.cp.solver.constraints.global.geost.Setup;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Obj;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Point;
 import choco.cp.solver.constraints.global.geost.geometricPrim.Region;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.variables.geost.ShiftedBox;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,7 +20,9 @@ import java.util.Vector;
  * Time: 10:11:25
  * To change this template use File | Settings | File Templates.
  */
-public class DistLinearIC extends ForbiddenRegion {
+public final class DistLinearIC extends ForbiddenRegion {
+
+    private static final Logger LOGGER = ChocoLogging.getEngineLogger();
 
     public int o1;
     public int[] a;
@@ -33,27 +38,27 @@ public class DistLinearIC extends ForbiddenRegion {
 
     /* sweep.tex r108 Chapter 7 page 277 - Algorithm 177 'isFeasible'
      * false if p notin F, otherwise computes the forbidden box f */
-    public Vector isFeasible(boolean min, int dim, int k, Obj o, Point p, Point jump) {
-        System.out.println("-- ENTERING DistLinearIC.isFeasible;p:"+p+";jump:"+jump);
+    public List isFeasible(boolean min, int dim, int k, Obj o, Point p, Point jump) {
+        LOGGER.info("-- ENTERING DistLinearIC.isFeasible;p:"+p+";jump:"+jump);
 
         D=compute_D(k); /*line 1*/
         if (D<0)D=0;
 
         Region f = new Region(k, o.getObjectId());
-        Vector<Object> result = new Vector<Object>();
+        List<Object> result = new ArrayList<Object>();
 
         if (!insideForbidden(p)) { /*line 1*/
-            System.out.println("Not Inside forbidden");
+            LOGGER.info("Not Inside forbidden");
             result.add(0,true);
             result.add(1,p);
             return result; /*line 2:return (true,p)*/
         }
 
-        System.out.println("Inside forbidden");
+        LOGGER.info("Inside forbidden");
         for (int i=0; i<k; i++)
         { int v=p.getCoord(i); f.setMinimumBoundary(i,v); f.setMaximumBoundary(i,v);  }  /*line 5:f.min<-f.max<-p*/
 
-        System.out.println("min:"+min);
+        LOGGER.info("min:"+min);
         int[] m =new int[k];
         int sum=0; /*line 6*/
         for (int i=0; i<k; i++) { /*line 7*/
@@ -63,12 +68,12 @@ public class DistLinearIC extends ForbiddenRegion {
                 m[i]=a[i]*f.getMaximumBoundary(i); /*line 11*/ 
             sum+=m[i]; /*line 13*/
         }
-        System.out.println("m1:"+m[0]+";m2:"+m[1]);
+        LOGGER.info("m1:"+m[0]+";m2:"+m[1]);
         
         if (min) { /*line 6:if min then*/
             for (int j=k-1; j>=0; j--) { /*line 16:for j<-k-1 downto 0 do*/
                 int j_prime=(j+dim)%k;   /*line 17:j'<-(j+dim) mod k*/
-                System.out.println("j_prime:"+j_prime);
+                LOGGER.info("j_prime:"+j_prime);
                 if (a[j_prime]>=0) /*line 18*/
                     f.setMaximumBoundary(j_prime,stp.getObject(o1).getCoord(j_prime).getSup()); /*line 19*/
                 else {
@@ -76,7 +81,7 @@ public class DistLinearIC extends ForbiddenRegion {
                     double inf =(double)a[j_prime];
                     int term=(int) Math.ceil(sup/inf);
 
-                    System.out.println("D:"+D+";sum:"+sum+";m:"+m[j_prime]+";a:"+a[j_prime]+";term:"+term);
+                    LOGGER.info("D:"+D+";sum:"+sum+";m:"+m[j_prime]+";a:"+a[j_prime]+";term:"+term);
                     f.setMaximumBoundary(j_prime,Math.min(jump.getCoord(j_prime)-1,term-1)); /*line 21*/
                     m[j_prime]=a[j_prime]*f.getMaximumBoundary(j_prime); /*line 22*/
                 }
@@ -85,14 +90,14 @@ public class DistLinearIC extends ForbiddenRegion {
         else {
             for (int j=k-1; j>=0; j--) { /*line 26:for j<-k-1 downto 0 do*/
                 int j_prime=(j+dim)%k;   /*line 27:j'<-(j+dim) mod k*/
-                System.out.println("j_prime:"+j_prime);
+                LOGGER.info("j_prime:"+j_prime);
                 if (a[j_prime]<=0)
                     f.setMinimumBoundary(j_prime,stp.getObject(o1).getCoord(j_prime).getInf());
                 else {
                     double sup = (double)(D-(sum-m[j_prime]));
                     double inf =(double)a[j_prime];
                     int term=(int) Math.floor(sup/inf);
-                    System.out.println("D:"+D+";sum:"+sum+";m:"+m[j_prime]+";a:"+a[j_prime]+";term:"+term);
+                    LOGGER.info("D:"+D+";sum:"+sum+";m:"+m[j_prime]+";a:"+a[j_prime]+";term:"+term);
                     f.setMinimumBoundary(j_prime,Math.max(jump.getCoord(j_prime)+1,term+1)); /*line 31*/
                     m[j_prime]=a[j_prime]*f.getMinimumBoundary(j_prime); /*line 32*/
                 }
@@ -100,10 +105,10 @@ public class DistLinearIC extends ForbiddenRegion {
             }
         }
 
-        System.out.println("RETURNING forbidden box:"+f);
+        LOGGER.info("RETURNING forbidden box:"+f);
         result.add(0,false);
         result.add(1,f);
-        System.out.println("-- EXITING ForbiddenRegion.isFeasible");
+        LOGGER.info("-- EXITING ForbiddenRegion.isFeasible");
         return result; /*line 19:return (false,f)*/
     }
 
@@ -142,16 +147,18 @@ public class DistLinearIC extends ForbiddenRegion {
     /* sweep.tex r108 Chapter 7 - Algorithm 174 'InsideForbidden'
      * returns true if p belongs to the forbidden region F and false otherwise */
     public boolean insideForbidden(Point p) {
-//           System.out.println("-- ENTERING DistLinear.segInsideForbidden");
-//           System.out.println("DistLinear.segInsideForbidden("+p+") call");
-//           System.out.println("o1:"+stp.getObject(o1));
-//           System.out.println("-- EXITING DistLinear.segInsideForbidden : "+a+" "+p+"product(a,p):"+product(a,p)+":"+(product(a,p)>D));
+//           LOGGER.info("-- ENTERING DistLinear.segInsideForbidden");
+//           LOGGER.info("DistLinear.segInsideForbidden("+p+") call");
+//           LOGGER.info("o1:"+stp.getObject(o1));
+//           LOGGER.info("-- EXITING DistLinear.segInsideForbidden : "+a+" "+p+"product(a,p):"+product(a,p)+":"+(product(a,p)>D));
            return (product(a,p) > D);
     }
 
     public int product(int[] v,Point p) {
         int result=0;
-        for (int i=0; i<v.length; i++) result+=v[i]*p.getCoord(i);
+        for (int i=0; i<v.length; i++){
+            result+=v[i]*p.getCoord(i);
+        }
         return result;
     }
 
@@ -187,7 +194,11 @@ public class DistLinearIC extends ForbiddenRegion {
                 //12:return ...
                 D=b;
                 int r=0;
-                for (int j=0; j<k; j++) if (k!=d) r+=m[j];
+                for (int j=0; j<k; j++){
+                    if (k!=d){
+                        r+=m[j];
+                    }
+                }
                 double num=(double) (D-r);
                 double den=(double) a[d];
                 return ((int) Math.ceil(num/den))-1;
@@ -204,7 +215,11 @@ public class DistLinearIC extends ForbiddenRegion {
                 //18: return ...
                 D=b;
                 int r=0;
-                for (int j=0; j<k; j++) if (k!=d) r+=m[j];
+                for (int j=0; j<k; j++){
+                    if (k!=d){
+                        r+=m[j];
+                    }
+                }
 
                 double num=(double) (D-r);
                 double den=(double) a[d];

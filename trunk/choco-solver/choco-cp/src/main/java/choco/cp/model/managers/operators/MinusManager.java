@@ -41,7 +41,7 @@ import java.util.Set;
 /* User:    charles
  * Date:    20 août 2008
  */
-public class MinusManager extends RealConstraintManager implements ExpressionManager {
+public final class MinusManager extends RealConstraintManager implements ExpressionManager {
 
     /**
      * Build a constraint for the given solver and "model variables"

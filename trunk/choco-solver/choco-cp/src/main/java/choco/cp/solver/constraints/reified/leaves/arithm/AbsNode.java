@@ -38,7 +38,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Since : Choco 2.0.0
  *
  */
-public class AbsNode extends INode implements ArithmNode {
+public final class AbsNode extends INode implements ArithmNode {
 
 	public AbsNode(INode[] subt) {
 		super(subt, NodeType.ABS);

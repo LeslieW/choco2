@@ -38,7 +38,7 @@ import java.util.logging.Level;
 /**
  * A basic constraint using HC4 algorithm for filtering values with respect to a mathematical equation.
  */
-public class Equation extends AbstractLargeRealSConstraint {
+public final class Equation extends AbstractLargeRealSConstraint {
   protected RealInterval cste;
   protected RealExp exp;
   protected RealExp[] subExps;

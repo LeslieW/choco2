@@ -35,7 +35,7 @@ import choco.kernel.solver.constraints.reified.INode;
  * User:    charles
  * Date:    20 août 2008
  */
-public class MaxManager implements ExpressionManager {
+public final class MaxManager implements ExpressionManager {
 
     /**
      * Build arithm node from a IntegerExpressionVariable

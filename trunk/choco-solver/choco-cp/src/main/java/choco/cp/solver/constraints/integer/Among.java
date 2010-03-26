@@ -37,7 +37,7 @@ import gnu.trove.TIntArrayList;
  * Date : 22 févr. 2010
  * Since : Choco 2.1.1
  */
-public class Among extends AbstractUnIntSConstraint {
+public final class Among extends AbstractUnIntSConstraint {
 
 
     final TIntArrayList values;

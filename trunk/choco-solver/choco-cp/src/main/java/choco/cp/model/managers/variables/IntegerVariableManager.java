@@ -50,7 +50,7 @@ import java.util.Iterator;
  * Date: 8 août 2008
  * Time: 10:14:01
  */
-public class IntegerVariableManager implements VariableManager<IntegerVariable> {
+public final class IntegerVariableManager implements VariableManager<IntegerVariable> {
 
 
 	protected  IntDomainVar makeConstant(CPSolver solver,IntegerVariable iv) {

@@ -66,7 +66,7 @@ import java.util.HashSet;
  * The propagation is based on a Lagrangian Relaxation approach of the underlying
  * Resource constrained  shortest/longest path problems
  */
-public class FastMultiCostRegular extends AbstractLargeIntSConstraint
+public final class FastMultiCostRegular extends AbstractLargeIntSConstraint
 {
 
 

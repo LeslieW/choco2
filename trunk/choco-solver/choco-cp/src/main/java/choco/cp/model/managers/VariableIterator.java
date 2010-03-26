@@ -22,17 +22,17 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers;
 
-import java.util.Iterator;
-
 import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.model.variables.ComponentVariable;
 import choco.kernel.model.variables.Variable;
+
+import java.util.Iterator;
 
 /**
  * @author Arnaud Malapert
  *
  */
-public class VariableIterator implements Iterator<Variable> {
+public final class VariableIterator implements Iterator<Variable> {
 
 	public final Variable[] variables;
 
@@ -48,7 +48,7 @@ public class VariableIterator implements Iterator<Variable> {
 
 	protected Iterator<Variable> getIterator(Variable v) {
 		if (v instanceof ComponentVariable) {
-			return ( (ComponentVariable) v).getVariableIterator();
+			return v.getVariableIterator();
 		} else {
 			return IteratorUtils.iterator(v);
 		}

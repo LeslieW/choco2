@@ -10,7 +10,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date: Mar 18, 2010
  * Time: 9:22:14 AM
  */
-public class FCostRegularValSelector extends AbstractSearchHeuristic implements ValSelector {
+public final class FCostRegularValSelector extends AbstractSearchHeuristic implements ValSelector {
 
     boolean max;
     FastCostRegular cr;

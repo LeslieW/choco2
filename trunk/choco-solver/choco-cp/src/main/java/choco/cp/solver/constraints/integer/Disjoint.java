@@ -35,7 +35,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date : 22 févr. 2010
  * Since : Choco 2.1.1
  */
-public class Disjoint extends AbstractUnIntSConstraint {
+public final class Disjoint extends AbstractUnIntSConstraint {
 
 
     final int[] values;

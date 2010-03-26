@@ -49,6 +49,10 @@ import java.util.Arrays;
  */
 public class DeprecatedChoco extends Choco{
 
+    private DeprecatedChoco() {
+        super();
+    }
+
 
     @Deprecated
     public static IntegerVariable makeIntVar(String name, VariableType type, int binf, int bsup) {

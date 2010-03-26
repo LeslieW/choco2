@@ -13,7 +13,7 @@ public class ExternalConstraint {
 	protected int[] dim;
 	protected int[] objectIds;
 	protected Frame frame;
-    public static int maxId=0;
+    protected static int maxId=0;
 
 
 
@@ -33,28 +33,28 @@ public class ExternalConstraint {
 	/**
 	 * Gets the list of dimensions that an external constraint is active for.
 	 */
-	public int[] getDim() {
+	public final int[] getDim() {
 		return dim;
 	}
 
 	/**
 	 * Gets the external constraint ID
 	 */
-	public int getEctrID() {
+	public final int getEctrID() {
 		return ectrID;
 	}
 
 	/**
 	 * Gets the list of object IDs that this external constraint affects.
 	 */
-	public int[] getObjectIds() {
+	public final int[] getObjectIds() {
 		return objectIds;
 	}
 
 	/**
 	 * Sets the list of dimensions that an external constraint is active for.
 	 */
-	public void setDim(int[] dim) {
+	public final void setDim(int[] dim) {
 		this.dim = dim;
 	}
 
@@ -65,21 +65,21 @@ public class ExternalConstraint {
 	/**
 	 * Sets the list of object IDs that this external constraint affects.
 	 */
-	public void setObjectIds(int[] objectIds) {
+	public final void setObjectIds(int[] objectIds) {
 		this.objectIds = objectIds;
 	}
 	
 	/**
 	 * Gets the frame related to an external constraint
 	 */
-	public Frame getFrame() {
+	public final Frame getFrame() {
 		return frame;
 	}
 
 	/**
 	 * Sets the frame related to an external constraint
 	 */
-	public void setFrame(Frame frame) {
+	public final void setFrame(Frame frame) {
 		this.frame = frame;
 	}
 

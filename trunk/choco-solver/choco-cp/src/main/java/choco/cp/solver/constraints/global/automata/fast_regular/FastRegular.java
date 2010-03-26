@@ -31,13 +31,6 @@ import java.util.HashSet;
 public class FastRegular extends AbstractLargeIntSConstraint {
 
 
-    /**
-     * Reference to the automaton representing the accepted language
-     */
-    FiniteAutomaton auto;
-
-
-
     StoredDirectedMultiGraph graph;
 
 
@@ -50,8 +43,6 @@ public class FastRegular extends AbstractLargeIntSConstraint {
      */
     public FastRegular(IEnvironment environment, IntDomainVar[] vars, FiniteAutomaton auto) {
         super(vars);
-        this.auto = auto;
-
 
         int aid = 0;
         int nid = 0;

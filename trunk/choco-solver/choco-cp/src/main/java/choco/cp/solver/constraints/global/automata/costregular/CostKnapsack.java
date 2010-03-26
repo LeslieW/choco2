@@ -34,11 +34,10 @@ import java.util.ArrayList;
  * Date: Jan 31, 2008
  * Time: 3:09:00 PM
  */
-public class CostKnapsack extends CostRegular
+public final class CostKnapsack extends CostRegular
 {
 
     IntDomainVar bVar;
-    IntDomainVar cVar;
     int[] cost;
     int[] gain;
 

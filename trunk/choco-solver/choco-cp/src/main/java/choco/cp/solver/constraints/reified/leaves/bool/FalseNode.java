@@ -34,7 +34,7 @@ import choco.kernel.solver.constraints.reified.NodeType;
  * Since : Choco 2.0.0
  *
  */
-public class FalseNode  extends AbstractBoolNode {
+public final class FalseNode  extends AbstractBoolNode {
 
     public FalseNode() {
         super(null, NodeType.FALSE);

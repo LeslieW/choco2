@@ -39,7 +39,7 @@ import choco.kernel.solver.variables.set.SetVar;
 /**
  * Ensure that an int variable belongs to a set variable
  */
-public class MemberXY extends AbstractBinSetIntSConstraint {
+public final class MemberXY extends AbstractBinSetIntSConstraint {
 
 
 	public MemberXY(SetVar set, IntDomainVar iv) {

@@ -38,7 +38,7 @@ import java.util.Set;
  * Date: 11 août 2008
  * Time: 15:26:22
  */
-public class AtMostNValueManager extends IntConstraintManager {
+public final class AtMostNValueManager extends IntConstraintManager {
 
     /**
      * Build a constraint for the given solver and "model variables"

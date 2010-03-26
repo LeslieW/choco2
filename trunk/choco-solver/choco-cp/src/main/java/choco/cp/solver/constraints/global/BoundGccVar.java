@@ -41,32 +41,29 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public class BoundGccVar extends AbstractLargeIntSConstraint {
 
-    int[] treelinks; // Tree links
-    int[] d; // Diffs between critical capacities
-    int[] h; // Hall interval links
-    int[] bounds;
+    private int[] treelinks; // Tree links
+    private int[] d; // Diffs between critical capacities
+    private int[] h; // Hall interval links
+    private int[] bounds;
 
-    int[] stableInterval;
-    int[] potentialStableSets;
-    int[] newMin;
+    private int[] stableInterval;
+    private int[] potentialStableSets;
+    private int[] newMin;
 
     int offset = 0;
 
-    int nbBounds;
+    private int nbBounds;
     int nbVars;  //number of variables (without the cardinalities variables)
-    IntDomainVar[] card;
+    private IntDomainVar[] card;
 
-    Interval[] intervals;
     Interval[] minsorted;
     Interval[] maxsorted;
 
     PartialSum l;
     PartialSum u;
 
-    boolean infBoundModified = true;
-    boolean supBoundModified = true;
-
-    int firstValue, range;
+    private int firstValue;
+    int range;
 
     //desynchornized copy of domains to make sure we properly counting
     //the number of variables that still have value i in their domain
@@ -105,7 +102,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         build(vars.length, firstCardValue, lastCardValue, environment);
     }
 
-    public void build(int n,
+    public final void build(int n,
                       int firstDomainValue,
                       int nbCard, IEnvironment environment) {
         int range = nbCard - firstDomainValue + 1;
@@ -118,7 +115,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         potentialStableSets = new int[2 * n + 2];
         newMin = new int[n];
 
-        intervals = new Interval[n];
+        final Interval[] intervals = new Interval[n];
         minsorted = new Interval[n];
         maxsorted = new Interval[n];
         for (int i = 0; i < nbVars; i++) {
@@ -156,7 +153,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
 //    }
 
     //factorize this code with the boundalldiff
-    protected void sortmin() {
+    protected final void sortmin() {
         boolean sorted = false;
         int current = nbVars - 1;
         while (!sorted) {
@@ -174,7 +171,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
     }
 
     //factorize this code with the boundalldiff
-    protected void sortmax() {
+    protected final void sortmax() {
         boolean sorted = false;
         int current = 0;
         while (!sorted) {
@@ -191,7 +188,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         }
     }
 
-    protected void sortIt() {
+    protected final void sortIt() {
         this.sortmin();
         this.sortmax();
 
@@ -227,7 +224,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         bounds[nb + 1] = u.lastValue + 1; //change here compared to the boundalldiff
     }
 
-    protected void pathset(int[] tab, int start, int end, int to) {
+    protected final void pathset(int[] tab, int start, int end, int to) {
         int next = start;
         int prev = next;
 
@@ -238,14 +235,14 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         }
     }
 
-    protected int pathmin(int[] tab, int i) {
+    protected final int pathmin(int[] tab, int i) {
         while (tab[i] < i) {
             i = tab[i];
         }
         return i;
     }
 
-    protected int pathmax(int[] tab, int i) {
+    protected final int pathmax(int[] tab, int i) {
         while (tab[i] > i) {
             i = tab[i];
         }
@@ -258,7 +255,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
      * @throws choco.kernel.solver.ContradictionException
      *
      */
-    protected void filterLowerMax() throws ContradictionException {
+    protected final void filterLowerMax() throws ContradictionException {
         int i, j, w, x, y, z;
 
         for (i = 1; i <= nbBounds + 1; i++) {
@@ -295,7 +292,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
      *
      * @throws ContradictionException
      */
-    protected void filterUpperMax() throws ContradictionException {
+    protected final void filterUpperMax() throws ContradictionException {
         int i, j, w, x, y, z;
 
         for (i = 0; i <= nbBounds; i++) {
@@ -330,7 +327,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
       * Shrink the lower bounds for the min occurrences model.
       * called as: filterLowerMin(t, d, h, stableInterval, potentialStableSets, newMin);
       */
-    public void filterLowerMin() throws ContradictionException {
+    public final void filterLowerMin() throws ContradictionException {
         int i, j, w, x, y, z, v;
 
         for (w = i = nbBounds + 1; i > 0; i--) {
@@ -435,7 +432,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
     * Shrink the upper bounds for the min occurrences model.
     * called as: filterUpperMin(t, d, h, stableInterval, newMin);
     */
-    public void filterUpperMin() throws ContradictionException {
+    public final void filterUpperMin() throws ContradictionException {
         int i, w = 0, n = nbVars;
         for (i = 0; i <= nbBounds; i++) {
             d[i] = l.sum(bounds[i], bounds[i + 1] - 1);
@@ -501,7 +498,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
 
     }
 
-    public void initBackDataStruct() throws ContradictionException {
+    public final void initBackDataStruct() throws ContradictionException {
         for (int i = 0; i < range; i++) {
             for (int j = 0; j < nbVars; j++) {
                 if (vars[j].canBeInstantiatedTo(i + offset)) {
@@ -555,7 +552,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         return false;
     }
 
-    public void dynamicInitOfPartialSum() {
+    public final void dynamicInitOfPartialSum() {
         int[] minOccurrences = new int[range];//todo: maintain an accurate range
         int[] maxOccurrences = new int[range];
 
@@ -609,7 +606,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
     }
 
     //in case of bound variables, the bound has to be checked
-    public void filterBCOnInf(int i) throws ContradictionException {
+    public final void filterBCOnInf(int i) throws ContradictionException {
         int inf = vars[i].getInf();
         int nbInf = val_minOcc[inf-offset].get();
         if (vars[i].isInstantiatedTo(inf)) {
@@ -631,7 +628,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
     }
 
     //in case of bound variables, the bound has to be checked
-    public void filterBCOnSup(int i) throws ContradictionException {
+    public final void filterBCOnSup(int i) throws ContradictionException {
         int sup = vars[i].getSup();
         int nbSup = val_minOcc[sup-offset].get();
         if (vars[i].isInstantiatedTo(sup)) {
@@ -666,7 +663,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
      * @param val
      * @throws ContradictionException
      */
-    public void filterBCOnInst(int val) throws ContradictionException {
+    public final void filterBCOnInst(int val) throws ContradictionException {
         int nbvalsure = val_minOcc[val - offset].get();
         if (nbvalsure > getMaxOcc(val - offset)) {
             this.fail();
@@ -679,7 +676,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
         }
     }
 
-    public void filterBCOnRem(int val) throws ContradictionException {
+    public final void filterBCOnRem(int val) throws ContradictionException {
         int nbpos = val_maxOcc[val- offset].get();
         if (nbpos < getMinOcc(val - offset)) {
             this.fail();
@@ -711,7 +708,7 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
      *
      * @throws ContradictionException
      */
-    public void propagateSumCard() throws ContradictionException {
+    public final void propagateSumCard() throws ContradictionException {
         boolean fixpoint = true;
         while (fixpoint) {
             fixpoint = false;
@@ -782,10 +779,10 @@ public class BoundGccVar extends AbstractLargeIntSConstraint {
      * the filterLower{Min,Max} and filterUpper{Min,Max} functions.
      * Two elements before and after the element list will be added with a weight of 1
      */
-    protected static class PartialSum {
-        int[] sum;
-        int[] ds;
-        int firstValue, lastValue;
+    protected static final class PartialSum {
+        private int[] sum;
+        private int[] ds;
+        private int firstValue, lastValue;
 
         public PartialSum(int firstValue, int count, int[] elt) {
             this.sum = new int[count + 5];

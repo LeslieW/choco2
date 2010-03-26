@@ -31,7 +31,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * A simple Product constraint between boolean variables :
  * x * y = z
  */
-public class BoolTimesXYZ extends AbstractTernIntSConstraint {
+public final class BoolTimesXYZ extends AbstractTernIntSConstraint {
 
 	/**
 	 * A simple Product constraint between boolean variables :

@@ -53,7 +53,7 @@ import java.util.logging.Level;
  * @version 1.0
  */
 
-public class LeximinSConstraint extends AbstractLargeIntSConstraint {
+public final class LeximinSConstraint extends AbstractLargeIntSConstraint {
 
 	private IStateInt alpha, beta;
 	private IStateInt gamma, delta;

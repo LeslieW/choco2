@@ -37,7 +37,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /**
  * A class implementing the constraint A[I] == X, with I and X being IntVars and A an array of IntVars
  */
-public class ElementV extends AbstractLargeIntSConstraint {
+public final class ElementV extends AbstractLargeIntSConstraint {
   protected IStateBool valueUpdateNeeded;
   protected IStateBool indexUpdateNeeded;
     private int offset;

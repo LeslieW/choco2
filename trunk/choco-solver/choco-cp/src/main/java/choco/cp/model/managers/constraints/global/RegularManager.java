@@ -52,7 +52,7 @@ import java.util.Set;
 /**
  * A manager to build new regular constraint
  */
-public class RegularManager extends IntConstraintManager {
+public final class RegularManager extends IntConstraintManager {
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] vars, Object parameters, Set<String> options) {
         if (solver instanceof CPSolver) {
             IntDomainVar[] variables = solver.getVar((IntegerVariable[]) vars);

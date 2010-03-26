@@ -36,31 +36,31 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
     /**
    * empty bitvector for the event type.
    */
-  public final static int NOEVENT = -2;
+  public static final int NOEVENT = -2;
 
   /**
    * Semantic of the cause of an event: -1 means that the event is active without
    * any precise cause. (Equivalent of 0 in Claire version)
    */
-  public final static int NOCAUSE = -1;
+  public static final int NOCAUSE = -1;
 
   /**
    * Semantic of the cause of an event: -1 means that the event is active without
    * any precise cause. (Equivalent of 0 in Claire version)
    */
-  public final static int DOWDCAUSE = Integer.MIN_VALUE;
+  public static final int DOWDCAUSE = Integer.MIN_VALUE;
 
   /**
    * Cause of this basic var.
    */
 
-    protected SConstraint cause = null;
+  protected SConstraint cause = null;
 
 
   /**
    * empty bitvector for the event type.
    */
-  public final static int EMPTYEVENT = 0;
+  public static final int EMPTYEVENT = 0;
 
   /**
    * The touched variable.
@@ -101,11 +101,11 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
    }
    */
 
-  public void addPropagatedEvents(int bitsmask) {
+  public final void addPropagatedEvents(int bitsmask) {
     propagatedEvents |= bitsmask;
   }
 
-  public int getPropagatedEvents() {
+  public final int getPropagatedEvents() {
     return propagatedEvents;
   }
 
@@ -113,7 +113,7 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
    * Returns the touched variable.
    */
 
-  public E getModifiedVar() {
+  public final E getModifiedVar() {
     return modifiedVar;
   }
 
@@ -121,7 +121,7 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
    * Returns the touched variable.
    */
 
-  public Object getModifiedObject() {
+  public final Object getModifiedObject() {
     return modifiedVar;
   }
 
@@ -134,8 +134,7 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
   }
 
   protected boolean release() {
-    boolean anyUpdateSinceFreeze = (cause != null);
-    return anyUpdateSinceFreeze;
+      return (cause != null);
   }
 
   /**
@@ -158,7 +157,7 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
    */
 
 
-  public boolean isActive(int idx) {
+  public final boolean isActive(int idx) {
 //    return activeCycle.isInCycle(idx);
 //      return activeConstraints.get(idx);
     return true; // TODO FIXME
@@ -167,7 +166,7 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
   /**
    * Returns the cause of this basic var.
    */
-  public SConstraint getCause(){
+  public final SConstraint getCause(){
       return cause;
   }
 
@@ -175,7 +174,7 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
     return 0;
   }
 
-    public int getEventType() {
+    public final int getEventType() {
         return eventType;
     }
 
@@ -207,7 +206,7 @@ public abstract class VarEvent <E extends Var> implements PropagationEvent, IPri
    *         (returns false if the event is either absent from the queue or is the current event,
    *         just popped from the queue and being propagated)
    */
-  public boolean isEnqueued() {
+  public final boolean isEnqueued() {
     return (eventType != EMPTYEVENT);
   }
 

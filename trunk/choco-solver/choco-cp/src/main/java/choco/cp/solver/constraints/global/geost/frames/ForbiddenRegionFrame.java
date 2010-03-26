@@ -7,7 +7,7 @@ package choco.cp.solver.constraints.global.geost.frames;
  * Time: 10:41:36
  * To change this template use File | Settings | File Templates.
  */
-public class ForbiddenRegionFrame extends Frame {
+public final class ForbiddenRegionFrame extends Frame {
     public int q,D,s1,s2,o1,o2;
 
     public ForbiddenRegionFrame(int q_, int D_, int s1_, int s2_,int o1_, int o2_) {

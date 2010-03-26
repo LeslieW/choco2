@@ -32,7 +32,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /**
  * Implements a constraint X = min(Y_0, Y_1...Y_n).
  */
-public class MinOfAList extends AbstractLargeIntSConstraint {
+public final class MinOfAList extends AbstractLargeIntSConstraint {
   /**
    * Index of the minimum variable.
    */

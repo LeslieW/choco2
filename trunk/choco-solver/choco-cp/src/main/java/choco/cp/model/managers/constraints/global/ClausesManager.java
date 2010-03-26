@@ -44,7 +44,7 @@ import java.util.Set;
 * Since : Choco 2.0.1
 * Update : Choco 2.0.1
 */
-public class ClausesManager extends MixedConstraintManager {
+public final class ClausesManager extends MixedConstraintManager {
 
     public SConstraint makeConstraint(Solver solver, Variable[] vars, Object parameters, Set<String> options) {
         if (solver instanceof CPSolver) {

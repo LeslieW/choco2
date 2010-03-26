@@ -8,7 +8,7 @@ import java.util.Random;
 /**
  *
  **/
-public class Vec<T> {
+public final class Vec<T> {
 
 //    private static final long serialVersionUID = 1L;
 

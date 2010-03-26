@@ -22,10 +22,9 @@ import java.util.HashSet;
  * Date: Feb 8, 2010
  * Time: 6:55:03 PM
  */
-public class FastCostKnapSack extends FastCostRegular{
+public final class FastCostKnapSack extends FastCostRegular{
 
     IntDomainVar bVar;
-    IntDomainVar cVar;
     int[] cost;
     int[] gain;
 
@@ -44,7 +43,6 @@ private static IntDomainVar[] merge(IntDomainVar[] vars, IntDomainVar bound, Int
     {
         super(merge(vars,bVar,cVar), (FiniteAutomaton) null,null, environment);
         this.bVar = bVar;
-        this.cVar = cVar;
         this.cost = cost;
         this.gain = gain;
     }

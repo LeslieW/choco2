@@ -26,14 +26,13 @@ import choco.cp.solver.CPSolver;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ExpressionManager;
 import choco.kernel.model.variables.Variable;
-import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.reified.INode;
 
 /* User:    charles
  * Date:    21 août 2008
  */
-public class IntegerExpressionManager implements ExpressionManager {
+public final class IntegerExpressionManager implements ExpressionManager {
 
 
     /**

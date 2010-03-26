@@ -60,9 +60,7 @@ import gnu.trove.TIntArrayList;
 import org.jgrapht.graph.DirectedMultigraph;
 
 import static java.lang.System.arraycopy;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -77,7 +75,9 @@ import java.util.logging.Logger;
  */
 public class Choco{
 
-	protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
+    Choco() {}
+
+    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
 	public final static int MIN_LOWER_BOUND  = Integer.MIN_VALUE / 100;
 
@@ -2931,49 +2931,28 @@ public class Choco{
 		return new ComponentConstraint(ConstraintType.PRECEDENCE_IMPLIED, Boolean.TRUE, new Variable[]{t1, constant(k1), t2, ZERO, b});
 	}
 
-
-	public static Constraint geost(int dim, Vector<GeostObject> objects, Vector<ShiftedBox> shiftedBoxes, Vector<IExternalConstraint> eCtrs) {
+    @SuppressWarnings({"deprecation"})
+    @Deprecated
+    public static Constraint geost(int dim, Vector<GeostObject> objects, Vector<ShiftedBox> shiftedBoxes, Vector<IExternalConstraint> eCtrs) {
 		return geost(dim, objects, shiftedBoxes, eCtrs, null);
 	}
 
-	public static Constraint geost(int dim, Vector<GeostObject> objects, Vector<ShiftedBox> shiftedBoxes, Vector<IExternalConstraint> eCtrs, Vector<int[]> ctrlVs) {
+    @SuppressWarnings({"deprecation"})
+    @Deprecated
+    public static Constraint geost(int dim, Vector<GeostObject> objects, Vector<ShiftedBox> shiftedBoxes, Vector<IExternalConstraint> eCtrs, Vector<int[]> ctrlVs) {
 		return geost(dim, objects, shiftedBoxes, eCtrs, ctrlVs, null);
-
-		//		int originOfObjects = objects.size() * dim; //Number of domain variables to represent the origin of all objects
-		//		int otherVariables = objects.size() * 4; //each object has 4 other variables: shapeId, start, duration; end
-		//		//vars will be stored as follows: object 1 coords(so k coordinates), sid, start, duration, end,
-		//		//                                object 2 coords(so k coordinates), sid, start, duration, end and so on ........
-		//		//To retrieve the index of a certain variable, the formula is (nb of the object in question = objId assuming objIds are consecutive and start from 0) * (k + 4) + number of the variable wanted
-		//		//the number of the variable wanted is decided as follows: 0 ... k-1 (the coords), k (the sid), k+1 (start), k+2 (duration), k+3 (end)
-		//		IntegerVariable[] vars = new IntegerVariable[originOfObjects + otherVariables];
-		//        for(int i = 0; i < objects.size(); i++)
-		//		{
-		//			for (int j = 0; j < dim; j++)
-		//			{
-		//				vars[(i * (dim + 4)) + j] = objects.elementAt(i).getCoordinates()[j];
-		//			}
-		//			vars[(i * (dim + 4)) + dim] = objects.elementAt(i).getShapeId();
-		//			vars[(i * (dim + 4)) + dim + 1] = objects.elementAt(i).getStartTime();
-		//			vars[(i * (dim + 4)) + dim + 2] = objects.elementAt(i).getDurationTime();
-		//			vars[(i * (dim + 4)) + dim + 3] = objects.elementAt(i).getEndTime();
-		//		}
-		//
-		//		return new ComponentConstraint(ConstraintType.GEOST, new Object[]{dim, shiftedBoxes, eCtrs, objects, ctrlVs}, vars);
-		//		//return new GeostConstraint(dim, objects, shiftedBoxes, eCtrs, ctrlVs);
 	}
 
-	//    public static Constraint geost(int dim, Vector<GeostObject> objects, Vector<ShiftedBox> shiftedBoxes, Vector<IExternalConstraint> eCtrs, boolean memo, HashMap<Pair<Integer,Integer>, Boolean> included, Long a, Long b) {
-	//        return geost(dim, objects, shiftedBoxes, eCtrs, null,memo,included,a,b,false);
-	//    }
-
-	public static Constraint geost(int dim, Vector<GeostObject> objects, Vector<ShiftedBox> shiftedBoxes, Vector<IExternalConstraint> eCtrs, Vector<int[]> ctrlVs, GeostOptions opt) {
+    @Deprecated
+	public static Constraint geost(int dim, Vector<GeostObject> objects, Vector<ShiftedBox> shiftedBoxes,
+                                   Vector<IExternalConstraint> eCtrs, Vector<int[]> ctrlVs, GeostOptions opt) {
 		int originOfObjects = objects.size() * dim; //Number of domain variables to represent the origin of all objects
 		int otherVariables = objects.size() * 4; //each object has 4 other variables: shapeId, start, duration; end
 
 		/*Collect distance variales due to ditance constraints*/
-		Vector<Integer> distVars = new Vector<Integer>();
+		List<Integer> distVars = new ArrayList<Integer>(eCtrs.size());
 		for (int i=0; i< eCtrs.size(); i++) {
-			IExternalConstraint ectr=eCtrs.elementAt(i);
+			IExternalConstraint ectr=eCtrs.get(i);
 			if ((ectr instanceof DistLeqModel) && (((DistLeqModel) ectr).hasDistanceVar()))
 				distVars.add(i);
 			if ((ectr instanceof DistGeqModel) && (((DistGeqModel) ectr).hasDistanceVar()))
@@ -2992,25 +2971,87 @@ public class Choco{
 		{
 			for (int j = 0; j < dim; j++)
 			{
-				vars[(i * (dim + 4)) + j] = objects.elementAt(i).getCoordinates()[j];
+				vars[(i * (dim + 4)) + j] = objects.get(i).getCoordinates()[j];
 			}
-			vars[(i * (dim + 4)) + dim] = objects.elementAt(i).getShapeId();
-			vars[(i * (dim + 4)) + dim + 1] = objects.elementAt(i).getStartTime();
-			vars[(i * (dim + 4)) + dim + 2] = objects.elementAt(i).getDurationTime();
-			vars[(i * (dim + 4)) + dim + 3] = objects.elementAt(i).getEndTime();
+			vars[(i * (dim + 4)) + dim] = objects.get(i).getShapeId();
+			vars[(i * (dim + 4)) + dim + 1] = objects.get(i).getStartTime();
+			vars[(i * (dim + 4)) + dim + 2] = objects.get(i).getDurationTime();
+			vars[(i * (dim + 4)) + dim + 3] = objects.get(i).getEndTime();
 		}
 
 		int ind=0;
 		for (int i : distVars) {
-			IExternalConstraint ectr=eCtrs.elementAt(i);
+			IExternalConstraint ectr=eCtrs.get(i);
 			if (ectr instanceof DistLeqModel) {
 				vars[originOfObjects + otherVariables  +ind] = (( DistLeqModel) ectr).getDistanceVar();
-				System.out.println("Adding "+((DistLeqModel) ectr).modelDVar+" for "+ ectr);
 			}
 			if (ectr instanceof DistGeqModel) {
 				vars[originOfObjects + otherVariables  +ind] = (( DistGeqModel) ectr).getDistanceVar();
-				System.out.println("Adding "+((DistGeqModel) ectr).modelDVar+" for "+ ectr);
 			}
+
+			ind++;
+		}
+
+        List nObjects = Collections.list(objects.elements());
+        List nShiftedBoxes = Collections.list(shiftedBoxes.elements());
+        List nECtrs = Collections.list(eCtrs.elements());
+        List nCtrlVs = Collections.list(ctrlVs.elements());
+
+		return new ComponentConstraint(ConstraintType.GEOST, new Object[]{dim, nShiftedBoxes, nECtrs, nObjects, nCtrlVs, opt}, vars);
+	}
+
+	public static Constraint geost(int dim, List<GeostObject> objects, List<ShiftedBox> shiftedBoxes, List<IExternalConstraint> eCtrs) {
+		return geost(dim, objects, shiftedBoxes, eCtrs, null);
+	}
+
+	public static Constraint geost(int dim, List<GeostObject> objects, List<ShiftedBox> shiftedBoxes, List<IExternalConstraint> eCtrs, List<int[]> ctrlVs) {
+		return geost(dim, objects, shiftedBoxes, eCtrs, ctrlVs, null);
+	}
+
+
+	public static Constraint geost(int dim, List<GeostObject> objects, List<ShiftedBox> shiftedBoxes, List<IExternalConstraint> eCtrs, List<int[]> ctrlVs, GeostOptions opt) {
+		int originOfObjects = objects.size() * dim; //Number of domain variables to represent the origin of all objects
+		int otherVariables = objects.size() * 4; //each object has 4 other variables: shapeId, start, duration; end
+
+		/*Collect distance variales due to ditance constraints*/
+		List<Integer> distVars = new ArrayList<Integer>(eCtrs.size());
+		for (int i=0; i< eCtrs.size(); i++) {
+			IExternalConstraint ectr=eCtrs.get(i);
+			if ((ectr instanceof DistLeqModel) && (((DistLeqModel) ectr).hasDistanceVar()))
+				distVars.add(i);
+			if ((ectr instanceof DistGeqModel) && (((DistGeqModel) ectr).hasDistanceVar()))
+				distVars.add(i);
+		}
+
+
+		//vars will be stored as follows: object 1 coords(so k coordinates), sid, start, duration, end,
+		//                                object 2 coords(so k coordinates), sid, start, duration, end and so on ........
+		//To retrieve the index of a certain variable, the formula is (nb of the object in question = objId assuming objIds are consecutive and start from 0) * (k + 4) + number of the variable wanted
+		//the number of the variable wanted is decided as follows: 0 ... k-1 (the coords), k (the sid), k+1 (start), k+2 (duration), k+3 (end)
+		/*IntegerVariable model variable*/
+		IntegerVariable[] vars = new IntegerVariable[originOfObjects + otherVariables + distVars.size()];
+
+		for(int i = 0; i < objects.size(); i++)
+		{
+			for (int j = 0; j < dim; j++)
+			{
+				vars[(i * (dim + 4)) + j] = objects.get(i).getCoordinates()[j];
+			}
+			vars[(i * (dim + 4)) + dim] = objects.get(i).getShapeId();
+			vars[(i * (dim + 4)) + dim + 1] = objects.get(i).getStartTime();
+			vars[(i * (dim + 4)) + dim + 2] = objects.get(i).getDurationTime();
+			vars[(i * (dim + 4)) + dim + 3] = objects.get(i).getEndTime();
+		}
+
+		int ind=0;
+		for (int i : distVars) {
+			IExternalConstraint ectr=eCtrs.get(i);
+			if (ectr instanceof DistLeqModel) {
+				vars[originOfObjects + otherVariables  +ind] = (( DistLeqModel) ectr).getDistanceVar();
+			}
+			if (ectr instanceof DistGeqModel) {
+				vars[originOfObjects + otherVariables  +ind] = (( DistGeqModel) ectr).getDistanceVar();
+            }
 
 			ind++;
 		}

@@ -42,7 +42,7 @@ import java.util.Set;
  * User:    charles
  * Date:    21 août 2008
  */
-public class XnorManager extends IntConstraintManager {
+public final class XnorManager extends IntConstraintManager {
 
     /**
      * Build a constraint for the given solver and "model variables"

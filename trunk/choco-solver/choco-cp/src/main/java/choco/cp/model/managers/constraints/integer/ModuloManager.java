@@ -43,7 +43,7 @@ import java.util.Set;
  * Since : Choco 2.0.0
  *
  */
-public class ModuloManager extends IntConstraintManager {
+public final class ModuloManager extends IntConstraintManager {
 
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] vars, Object parameters, Set<String> options) {
         if (solver instanceof CPSolver) {

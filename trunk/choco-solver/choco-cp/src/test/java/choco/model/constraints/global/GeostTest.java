@@ -47,7 +47,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.MessageFormat;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 
@@ -80,7 +81,7 @@ public class GeostTest {
             Model m = new CPModel();
 
             //Create Objects
-            Vector<GeostObject> obj2 = new Vector<GeostObject>();
+            List<GeostObject> obj2 = new ArrayList<GeostObject>();
 
             for (int i = 0; i < nbOfObj; i++) {
                 IntegerVariable shapeId = Choco.makeIntVar("sid", i, i);
@@ -95,7 +96,7 @@ public class GeostTest {
             }
 
             //create shiftedboxes and add them to corresponding shapes
-            Vector<ShiftedBox> sb2 = new Vector<ShiftedBox>();
+            List<ShiftedBox> sb2 = new ArrayList<ShiftedBox>();
             int h = 0;
             while (h < nbOfObj) {
 
@@ -108,7 +109,7 @@ public class GeostTest {
             }
 
             //Create the external constraints vecotr
-            Vector<IExternalConstraint> ectr2 = new Vector<IExternalConstraint>();
+            List<IExternalConstraint> ectr2 = new ArrayList<IExternalConstraint>();
             //create the list od dimensions for the external constraint
             int[] ectrDim2 = new int[this.dim];
             for (int d = 0; d < 3; d++)
@@ -117,7 +118,7 @@ public class GeostTest {
             //create the list of object ids for the external constraint
             int[] objOfEctr2 = new int[nbOfObj];
             for (int d = 0; d < nbOfObj; d++) {
-                objOfEctr2[d] = obj2.elementAt(d).getObjectId();
+                objOfEctr2[d] = obj2.get(d).getObjectId();
             }
 
             //create the external constraint of type non overlapping
@@ -153,14 +154,14 @@ public class GeostTest {
 
             Model m = rp.getModel();
 
-            Vector<IExternalConstraint> ectr = new Vector<IExternalConstraint>();
+            List<IExternalConstraint> ectr = new ArrayList<IExternalConstraint>();
             int[] ectrDim = new int[this.dim];
             for (int i = 0; i < this.dim; i++)
                 ectrDim[i] = i;
 
             int[] objOfEctr = new int[rp.getObjects().size()];
             for (int i = 0; i < rp.getObjects().size(); i++) {
-                objOfEctr[i] = rp.getObjects().elementAt(i).getObjectId();
+                objOfEctr[i] = rp.getObjects().get(i).getObjectId();
             }
 
             NonOverlappingModel n = new NonOverlappingModel(Constants.NON_OVERLAPPING, ectrDim, objOfEctr);
@@ -214,7 +215,7 @@ public class GeostTest {
             Model m = new CPModel();
 
             // create a vector to hold in it all the external constraints we want to add to geost
-            Vector<IExternalConstraint> ectr = new Vector<IExternalConstraint>();
+            List<IExternalConstraint> ectr = new ArrayList<IExternalConstraint>();
 
             // ////////////Create the needed external constraints//////////////
 
@@ -226,7 +227,7 @@ public class GeostTest {
             // Create an array of object ids representing all the objects that the external constraint will be applied to
             int[] objOfEctr = new int[parser.getObjects().size()];
             for (int i = 0; i < parser.getObjects().size(); i++) {
-                objOfEctr[i] = parser.getObjects().elementAt(i).getObjectId();
+                objOfEctr[i] = parser.getObjects().get(i).getObjectId();
             }
 
             // Create the external constraint, in our case it is the NonOverlappingModel
@@ -250,12 +251,12 @@ public class GeostTest {
 
             for (int i = 0; i < parser.getObjects().size(); i++) {
                 for (int j = 0; j < dim; j++) {
-                    vars[(i * (dim + 4)) + j] = parser.getObjects().elementAt(i).getCoordinates()[j];
+                    vars[(i * (dim + 4)) + j] = parser.getObjects().get(i).getCoordinates()[j];
                 }
-                vars[(i * (dim + 4)) + dim] = parser.getObjects().elementAt(i).getShapeId();
-                vars[(i * (dim + 4)) + dim + 1] = parser.getObjects().elementAt(i).getStartTime();
-                vars[(i * (dim + 4)) + dim + 2] = parser.getObjects().elementAt(i).getDurationTime();
-                vars[(i * (dim + 4)) + dim + 3] = parser.getObjects().elementAt(i).getEndTime();
+                vars[(i * (dim + 4)) + dim] = parser.getObjects().get(i).getShapeId();
+                vars[(i * (dim + 4)) + dim + 1] = parser.getObjects().get(i).getStartTime();
+                vars[(i * (dim + 4)) + dim + 2] = parser.getObjects().get(i).getDurationTime();
+                vars[(i * (dim + 4)) + dim + 3] = parser.getObjects().get(i).getEndTime();
             }
 
 
@@ -292,7 +293,7 @@ public class GeostTest {
         Model m = new CPModel();
 
         //Create Objects
-        Vector<GeostObject> obj2 = new Vector<GeostObject>();
+        List<GeostObject> obj2 = new ArrayList<GeostObject>();
 
         for (int i = 0; i < nbOfObj; i++) {
             IntegerVariable shapeId = Choco.makeIntVar("sid", 0, 0);
@@ -307,13 +308,13 @@ public class GeostTest {
         }
         for (int i = 0; i < obj2.size(); i++) {
             for (int d = 0; d < this.dim; d++) {
-                LOGGER.info("" + obj2.elementAt(i).getCoordinates()[d].getLowB() + "    " + obj2.elementAt(i).getCoordinates()[d].getUppB());
+                LOGGER.info("" + obj2.get(i).getCoordinates()[d].getLowB() + "    " + obj2.get(i).getCoordinates()[d].getUppB());
             }
 
         }
 
         //create shiftedboxes and add them to corresponding shapes
-        Vector<ShiftedBox> sb2 = new Vector<ShiftedBox>();
+        List<ShiftedBox> sb2 = new ArrayList<ShiftedBox>();
 
         int[] l = {lengths[0], heights[0], widths[0]};
         int[] t = {0, 0, 0};
@@ -322,7 +323,7 @@ public class GeostTest {
         sb2.add(new ShiftedBox(0, t, l));
 
 
-        Vector<IExternalConstraint> ectr2 = new Vector<IExternalConstraint>();
+        List<IExternalConstraint> ectr2 = new ArrayList<IExternalConstraint>();
         int[] ectrDim2 = new int[this.dim];
         for (int d = 0; d < 3; d++)
             ectrDim2[d] = d;
@@ -330,7 +331,7 @@ public class GeostTest {
 
         int[] objOfEctr2 = new int[nbOfObj];
         for (int d = 0; d < nbOfObj; d++) {
-            objOfEctr2[d] = obj2.elementAt(d).getObjectId();
+            objOfEctr2[d] = obj2.get(d).getObjectId();
         }
 
         NonOverlappingModel n2 = new NonOverlappingModel(Constants.NON_OVERLAPPING, ectrDim2, objOfEctr2);
@@ -394,7 +395,7 @@ public class GeostTest {
         Model m = new CPModel();
 
         //Create Objects
-        Vector<GeostObject> obj = new Vector<GeostObject>();
+        List<GeostObject> obj = new ArrayList<GeostObject>();
 
         for (int i = 0; i < nbOfObj; i++) {
             IntegerVariable shapeId = Choco.makeIntVar("sid", i, i);
@@ -411,7 +412,7 @@ public class GeostTest {
         }
 
         //create shiftedboxes and add them to corresponding shapes
-        Vector<ShiftedBox> sb = new Vector<ShiftedBox>();
+        List<ShiftedBox> sb = new ArrayList<ShiftedBox>();
         for (int i = 0; i < shBoxes.length; i++) {
             int[] offset = {shBoxes[i][1], shBoxes[i][2]};
             int[] sizes = {shBoxes[i][3], shBoxes[i][4]};
@@ -419,7 +420,7 @@ public class GeostTest {
         }
 
         //Create the external constraints vecotr
-        Vector<IExternalConstraint> ectr = new Vector<IExternalConstraint>();
+        List<IExternalConstraint> ectr = new ArrayList<IExternalConstraint>();
         //create the list of dimensions for the external constraint
         int[] ectrDim = new int[dim];
         for (int d = 0; d < dim; d++)
@@ -428,7 +429,7 @@ public class GeostTest {
         //create the list of object ids for the external constraint
         int[] objOfEctr = new int[nbOfObj];
         for (int d = 0; d < nbOfObj; d++) {
-            objOfEctr[d] = obj.elementAt(d).getObjectId();
+            objOfEctr[d] = obj.get(d).getObjectId();
         }
 
 //		create the external constraint of type non overlapping
@@ -437,7 +438,7 @@ public class GeostTest {
         ectr.add(n);
 
         //create the list of controlling vectors
-        Vector<int[]> ctrlVs = new Vector<int[]>();
+        List<int[]> ctrlVs = new ArrayList<int[]>();
         ctrlVs.add(v0);
         //ctrlVs.add(v1);
         //ctrlVs.add(v2);
@@ -459,7 +460,7 @@ public class GeostTest {
         s.solve();
 
         for (int i = 0; i < obj.size(); i++) {
-            GeostObject o = obj.elementAt(i);
+            GeostObject o = obj.get(i);
             StringBuffer st = new StringBuffer();
             st.append(MessageFormat.format("Object {0}: ", o.getObjectId()));
             for (int j = 0; j < dim; j++)
@@ -487,7 +488,7 @@ public class GeostTest {
 		Model m = new CPModel();
 
 		// Create Objects
-		Vector<GeostObject> objects = new Vector<GeostObject>();
+		List<GeostObject> objects = new ArrayList<GeostObject>();
 
 		for (int i = 0; i < nbOfObj; i++) {
 			IntegerVariable shapeId = Choco.makeIntVar("sid_" +i,  domShapes[i][0], domShapes[i][1]);
@@ -507,8 +508,8 @@ public class GeostTest {
 		}
 
 		// create shiftedboxes and add them to corresponding shapes
-		Vector<ShiftedBox> sb =
-		    new Vector<ShiftedBox>();
+		List<ShiftedBox> sb =
+		    new ArrayList<ShiftedBox>();
 
 		for (int i = 0; i < shBoxes.length; i++) {
 			int[] offset = { shBoxes[i][1], shBoxes[i][2] };
@@ -517,7 +518,7 @@ public class GeostTest {
 		}
 
 		// Create the external constraints vecotr
-		Vector<IExternalConstraint> ectr = new Vector<IExternalConstraint>();
+		List<IExternalConstraint> ectr = new ArrayList<IExternalConstraint>();
 
 		// create the list of dimensions for the external constraint
 		int[] ectrDim = new int[dim];
@@ -527,7 +528,7 @@ public class GeostTest {
 		// create the list of object ids for the external constraint
 		int[] objOfEctr = new int[nbOfObj];
 		for (int d = 0; d < nbOfObj; d++) {
-			objOfEctr[d] = objects.elementAt(d).getObjectId();
+			objOfEctr[d] = objects.get(d).getObjectId();
 		}
 
 		// create the external constraint of non overlapping type

@@ -32,7 +32,7 @@ import choco.kernel.solver.variables.real.RealMath;
 /**
  * An expression modelling a substraction.
  */
-public class RealMinus extends AbstractRealBinTerm {
+public final class RealMinus extends AbstractRealBinTerm {
   public RealMinus(Solver solver, RealExp exp1, RealExp exp2) {
     super(solver, exp1, exp2);
   }

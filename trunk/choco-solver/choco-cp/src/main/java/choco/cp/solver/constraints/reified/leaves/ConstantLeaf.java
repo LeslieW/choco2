@@ -37,7 +37,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Since : Choco 2.0.0
  *
  */
-public class ConstantLeaf extends INode implements ArithmNode {
+public final class ConstantLeaf extends INode implements ArithmNode {
 
 	public int cste;
 

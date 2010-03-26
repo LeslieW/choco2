@@ -45,7 +45,7 @@ import static java.lang.Math.*;
  * y = x/z + r/z
  *
  */
-public class EuclideanDivisionXYZ extends AbstractTernIntSConstraint {
+public final class EuclideanDivisionXYZ extends AbstractTernIntSConstraint {
 
     private boolean changeX, changeY, changeZ = false;
 

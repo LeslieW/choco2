@@ -38,7 +38,7 @@ import java.util.BitSet;
  * Time: 16:58:01
  * To change this template use File | Settings | File Templates.
  */
-public class ModuloXYC2 extends AbstractBinIntSConstraint {
+public final class ModuloXYC2 extends AbstractBinIntSConstraint {
     /**
      * The search constant of the constraint
      */

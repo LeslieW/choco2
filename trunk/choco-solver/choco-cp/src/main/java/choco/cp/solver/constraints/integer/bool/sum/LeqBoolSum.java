@@ -1,7 +1,5 @@
 package choco.cp.solver.constraints.integer.bool.sum;
 
-import java.util.Arrays;
-
 import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.solver.ContradictionException;
@@ -9,7 +7,9 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public class LeqBoolSum extends AbstractBoolSum {
+import java.util.Arrays;
+
+public final class LeqBoolSum extends AbstractBoolSum {
 
 	public LeqBoolSum(IEnvironment environment, IntDomainVar[] vars, int bValue) {
 		super(environment, vars, bValue);

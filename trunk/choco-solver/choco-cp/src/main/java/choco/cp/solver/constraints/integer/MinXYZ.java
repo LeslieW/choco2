@@ -36,7 +36,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Since : Choco 2.0.0
  *
  */
-public class MinXYZ extends AbstractTernIntSConstraint {
+public final class MinXYZ extends AbstractTernIntSConstraint {
     public MinXYZ(IntDomainVar x, IntDomainVar y, IntDomainVar min) {
         super(min, x, y);
     }

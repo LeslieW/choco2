@@ -39,27 +39,27 @@ import java.util.Random;
  *
  * A choco domain class represented by a binary tree of int interval
  */
-public class IntervalBTreeDomain extends AbstractIntDomain {
+public final class IntervalBTreeDomain extends AbstractIntDomain {
 
     /**
      * static instance of Random to get random number
      */
-    protected static Random random = new Random(System.currentTimeMillis());
+    private static Random random = new Random(System.currentTimeMillis());
 
     /**
      * The binary tree representing the domain
      */
-    public IStateBinaryTree btree;
+    private IStateBinaryTree btree;
 
     /**
      * Backtrackable int to avoid recalculating the number of value in the domain
      */
-    IStateInt size;
+    private IStateInt size;
 
     /**
      * the initial size of the domain (never increases)
      */
-    protected int capacity;
+    private int capacity;
 
     /**
      * Construct a new domain represented by a Binary Tree of Interval
@@ -113,8 +113,7 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
      * @return the lower bound of the domain
      */
     public int getInf() {
-        IStateBinaryTree.Node  n = btree.getFirstNode();
-        return n.inf;
+        return btree.getFirstNode().inf;
     }
 
     /**
@@ -122,8 +121,7 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
      * @return the greater bound of the domain
      */
     public int getSup() {
-        IStateBinaryTree.Node  n = btree.getLastNode();
-        return n.sup;
+        return btree.getLastNode().sup;
     }
 
     /**
@@ -197,8 +195,9 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
         {
             btree.remove(current.leftNode);
         }
-        while (current.rightNode != null)
+        while (current.rightNode != null){
             btree.remove(current.rightNode);
+        }
         btree.getRoot().setInf(x);
         btree.getRoot().setSup(x);
         this.size.set(1);
@@ -219,12 +218,15 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
      */
     public int getNextValue(int x) {
         IStateBinaryTree.Node n = btree.nextNode(x);
-        if (n == null)
+        if (n == null){
             return Integer.MAX_VALUE;
-        else if (n.contains(x+1))
+        }
+        else if (n.contains(x+1)){
             return x+1;
-        else
+        }
+        else{
             return n.getInf();
+        }
     }
 
     /**
@@ -234,12 +236,15 @@ public class IntervalBTreeDomain extends AbstractIntDomain {
      */
     public int getPrevValue(int x) {
         IStateBinaryTree.Node n =btree.prevNode(x);
-        if (n == null)
+        if (n == null){
             return Integer.MIN_VALUE;
-        else if (n.contains(x-1))
+        }
+        else if (n.contains(x-1)){
             return x-1;
-        else
+        }
+        else{
             return n.getSup();
+        }
 
     }
 

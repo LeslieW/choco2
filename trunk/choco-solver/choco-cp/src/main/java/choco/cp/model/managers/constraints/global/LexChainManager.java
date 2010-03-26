@@ -46,7 +46,7 @@ import java.util.Set;
 /**
  * A manager to build new LexChain constraint
  */
-public class LexChainManager extends IntConstraintManager {
+public final class LexChainManager extends IntConstraintManager {
 
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         if(solver instanceof CPSolver){

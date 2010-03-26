@@ -20,9 +20,9 @@ import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
 
-public class Geost_Constraint extends AbstractLargeIntSConstraint {
+public final class Geost_Constraint extends AbstractLargeIntSConstraint {
 
 	int[] oIDs;
 	Constants cst;
@@ -33,7 +33,7 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
     protected Solver s;
     private int greedyMode = 0;
     boolean increment = false;
-    Vector<int[]> ctrlVs ;
+    List<int[]> ctrlVs ;
 
 	/**
 	 * Creates a geost constraint with the given parameters.
@@ -46,7 +46,7 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
      * @param solver
      */
 
-	public Geost_Constraint(IntDomainVar[] vars, int k, Vector<Obj> objects, Vector<ShiftedBox> shiftedBoxes, Vector<ExternalConstraint> ectr, Vector<int[]> ctrlVs, boolean memo_active, HashMap<Pair<Integer, Integer>, Boolean> included,
+	public Geost_Constraint(IntDomainVar[] vars, int k, List<Obj> objects, List<ShiftedBox> shiftedBoxes, List<ExternalConstraint> ectr, List<int[]> ctrlVs, boolean memo_active, HashMap<Pair<Integer, Integer>, Boolean> included,
                             boolean increment_, Solver solver)
 	{
 
@@ -66,7 +66,7 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 		//this should be changed and be provided globally to the system
 		oIDs = new int[stp.getNbOfObjects()];
 		for(int i = 0; i< stp.getNbOfObjects(); i++)
-			oIDs[i] = objects.elementAt(i).getObjectId();
+			oIDs[i] = objects.get(i).getObjectId();
 
 
         this.s = solver;
@@ -90,7 +90,7 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
      * @param solver
      */
 
-	public Geost_Constraint(IntDomainVar[] vars, int k, Vector<Obj> objects, Vector<ShiftedBox> shiftedBoxes, Vector<ExternalConstraint> ectr, boolean memo, HashMap<Pair<Integer, Integer>, Boolean> included, Solver solver)
+	public Geost_Constraint(IntDomainVar[] vars, int k, List<Obj> objects, List<ShiftedBox> shiftedBoxes, List<ExternalConstraint> ectr, boolean memo, HashMap<Pair<Integer, Integer>, Boolean> included, Solver solver)
 	{
         super(vars);
 
@@ -107,7 +107,7 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 		//this should be changed and be provided globally to the system
 		oIDs = new int[stp.getNbOfObjects()];
 		for(int i = 0; i< stp.getNbOfObjects(); i++)
-			oIDs[i] = objects.elementAt(i).getObjectId();
+			oIDs[i] = objects.get(i).getObjectId();
 
 
         this.s = solver;
@@ -134,12 +134,12 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 
         if (!increment) {
             long tmpTimeFixAllObj = System.nanoTime() / 1000000;
-            result=geometricKernel.FixAllObjs(cst.getDIM(), oIDs, stp.getConstraints(), this.ctrlVs);            
+            result=geometricKernel.fixAllObjs(cst.getDIM(), oIDs, stp.getConstraints(), this.ctrlVs);
             stp.opt.timeFixAllObj += ((System.nanoTime() / 1000000) - tmpTimeFixAllObj);
         }
         else {
             long tmpTimeFixAllObj = System.nanoTime() / 1000000;
-            result=geometricKernel.FixAllObjs_incr(cst.getDIM(), oIDs, stp.getConstraints(), this.ctrlVs);
+            result=geometricKernel.fixAllObjs_incr(cst.getDIM(), oIDs, stp.getConstraints(), this.ctrlVs);
             stp.opt.timeFixAllObj += ((System.nanoTime() / 1000000) - tmpTimeFixAllObj);
         }
         if (!result){
@@ -179,7 +179,7 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
 
 	private void filterWithoutGreedyMode() throws ContradictionException{
         if (stp.opt.debug) LOGGER.info("Geost_Constraint:filterWithoutGreedyMode()");
-        if(!geometricKernel.FilterCtrs(cst.getDIM(), oIDs, stp.getConstraints()))
+        if(!geometricKernel.filterCtrs(cst.getDIM(), oIDs, stp.getConstraints()))
 			this.fail();
 	}
 
@@ -187,7 +187,7 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
         boolean b = false;
         s.worldPushDuringPropagation();
         try {
-            b = geometricKernel.FilterCtrs(cst.getDIM(), oIDs,
+            b = geometricKernel.filterCtrs(cst.getDIM(), oIDs,
                                     stp.getConstraints());
         } catch (ContradictionException e) {
             b = false;
@@ -264,23 +264,23 @@ public class Geost_Constraint extends AbstractLargeIntSConstraint {
         return externalLayer;
     }
 
-    public Vector<InternalConstraint> getForbiddenRegions(Obj o) {
+    public List<InternalConstraint> getForbiddenRegions(Obj o) {
 
         //Should be set up only once during a single fixpoint
-        Vector<ExternalConstraint> ectrs  = stp.getConstraints();
+        List<ExternalConstraint> ectrs  = stp.getConstraints();
         for (int i = 0; i < ectrs.size(); i++)
 		{
-			ectrs.elementAt(i).setFrame(externalLayer.InitFrameExternalConstraint(ectrs.elementAt(i), oIDs));
+			ectrs.get(i).setFrame(externalLayer.InitFrameExternalConstraint(ectrs.get(i), oIDs));
 		}
         
         //TODO: Holes should be generated here
 
         for (int i = 0; i < o.getRelatedExternalConstraints().size(); i++)
         {
-            Vector<InternalConstraint> v = externalLayer.GenInternalCtrs(o.getRelatedExternalConstraints().elementAt(i), o);
+            List<InternalConstraint> v = externalLayer.genInternalCtrs(o.getRelatedExternalConstraints().get(i), o);
             for (int j = 0; j < v.size(); j++)
             {
-                o.addRelatedInternalConstraint(v.elementAt(j));
+                o.addRelatedInternalConstraint(v.get(j));
             }
         }
 

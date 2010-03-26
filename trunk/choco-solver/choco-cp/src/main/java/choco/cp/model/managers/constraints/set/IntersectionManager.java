@@ -38,7 +38,7 @@ import java.util.Set;
  * Date: 11 août 2008
  * Time: 13:05:47
  */
-public class IntersectionManager extends SetConstraintManager {
+public final class IntersectionManager extends SetConstraintManager {
 
     /**
      * Build a constraint for the given solver and "model variables"

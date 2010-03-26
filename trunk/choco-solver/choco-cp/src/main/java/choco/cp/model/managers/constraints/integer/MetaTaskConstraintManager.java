@@ -19,7 +19,7 @@ import java.util.Set;
  * @since 28 janv. 2009 version 2.0.3</br>
  * @version 2.0.3</br>
  */
-public class MetaTaskConstraintManager extends MixedConstraintManager {
+public final class MetaTaskConstraintManager extends MixedConstraintManager {
 
 	/**
 	 * @see choco.kernel.model.constraints.ConstraintManager#makeConstraint(choco.kernel.solver.Solver, choco.kernel.model.variables.Variable[], java.lang.Object, Set)

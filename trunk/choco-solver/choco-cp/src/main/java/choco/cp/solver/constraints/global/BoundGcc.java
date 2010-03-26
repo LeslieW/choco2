@@ -32,10 +32,10 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * C.-G. Quimper, P. van Beek, A. Lopez-Ortiz, A. Golynski, and S.B. Sadjad.
  * An efficient bounds consistency algorithm for the global cardinality constraint. CP-2003.
  */
-public class BoundGcc extends BoundGccVar {
+public final class BoundGcc extends BoundGccVar {
 
-	protected int[] maxOccurrences;
-	protected int[] minOccurrences;
+	private int[] maxOccurrences;
+	private int[] minOccurrences;
 
 	/**
 	 * Bound Global cardinality : Given an array of variables vars, min the minimal value over all variables,

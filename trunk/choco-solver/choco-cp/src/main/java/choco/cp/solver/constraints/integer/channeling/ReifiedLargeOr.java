@@ -35,7 +35,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * b = x1 Or x2 ... Or xn
  * where b, and x1,... xn are boolean variables (of domain {0,1})
  */
-public class ReifiedLargeOr extends AbstractLargeIntSConstraint {
+public final class ReifiedLargeOr extends AbstractLargeIntSConstraint {
 
     /**
      * Nb literals set to 0 (false).

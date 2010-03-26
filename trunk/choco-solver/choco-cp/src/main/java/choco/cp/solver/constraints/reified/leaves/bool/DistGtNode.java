@@ -37,7 +37,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Since : Choco 2.0.0
  *
  */
-public class DistGtNode extends AbstractBoolNode {
+public final class DistGtNode extends AbstractBoolNode {
 
 
 	public DistGtNode(INode[] subt) {

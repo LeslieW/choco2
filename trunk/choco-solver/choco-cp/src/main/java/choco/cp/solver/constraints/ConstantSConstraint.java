@@ -25,13 +25,12 @@ package choco.cp.solver.constraints;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.propagation.event.ConstraintEvent;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public class ConstantSConstraint extends AbstractIntSConstraint{
+public final class ConstantSConstraint extends AbstractIntSConstraint{
     private boolean satisfied;
 
     public ConstantSConstraint(boolean value) {

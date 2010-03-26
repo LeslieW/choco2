@@ -10,7 +10,7 @@ import choco.kernel.solver.constraints.SConstraint;
 
 import java.util.Set;
 
-public class InverseSetManager extends MixedConstraintManager {
+public final class InverseSetManager extends MixedConstraintManager {
 
 	@Override
 	public SConstraint makeConstraint(Solver solver, Variable[] variables,

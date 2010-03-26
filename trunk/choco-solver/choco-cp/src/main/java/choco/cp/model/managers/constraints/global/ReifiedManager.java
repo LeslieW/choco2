@@ -46,7 +46,7 @@ import java.util.Set;
  * Date: 11 août 2008
  * Time: 11:39:38
  */
-public class ReifiedManager extends MixedConstraintManager {
+public final class ReifiedManager extends MixedConstraintManager {
 
     /**
      * Build a constraint for the given solver and "model variables"

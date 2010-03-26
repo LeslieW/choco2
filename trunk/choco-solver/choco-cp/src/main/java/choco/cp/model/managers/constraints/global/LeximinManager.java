@@ -47,7 +47,7 @@ import java.util.Set;
 /**
  * A manager to build new Leximin constraint
  */
-public class LeximinManager extends IntConstraintManager {
+public final class LeximinManager extends IntConstraintManager {
   public SConstraint makeConstraint(Solver solver, IntegerVariable[] vars, Object parameters, Set<String> options) {
     if (solver instanceof CPSolver) {
       if (parameters != null) {

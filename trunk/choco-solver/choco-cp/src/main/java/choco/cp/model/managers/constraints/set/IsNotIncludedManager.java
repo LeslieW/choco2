@@ -46,7 +46,7 @@ import java.util.Set;
 /**
  * A manager to build new IsNotIncluded constraint
  */
-public class IsNotIncludedManager extends SetConstraintManager {
+public final class IsNotIncludedManager extends SetConstraintManager {
   public SConstraint makeConstraint(Solver solver, SetVariable[] vars, Object parameters, Set<String> options) {
     if (solver instanceof CPSolver) {
       return new IsNotIncluded(solver.getVar(vars[0]), solver.getVar(vars[1]));

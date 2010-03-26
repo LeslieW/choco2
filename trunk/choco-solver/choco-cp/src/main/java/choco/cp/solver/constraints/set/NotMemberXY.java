@@ -39,7 +39,7 @@ import choco.kernel.solver.variables.set.SetVar;
 /**
  * Ensure that an int variable does not belong to a set variable
  */
-public class NotMemberXY extends AbstractBinSetIntSConstraint {
+public final class NotMemberXY extends AbstractBinSetIntSConstraint {
 
 	public NotMemberXY(SetVar set, IntDomainVar iv) {
 		super(iv, set);

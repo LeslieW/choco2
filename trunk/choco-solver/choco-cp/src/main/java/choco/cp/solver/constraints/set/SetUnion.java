@@ -46,7 +46,7 @@ import choco.kernel.solver.variables.set.SetVar;
  * Env(v2)  disjoint Ker(v1) inter Complement(Env(v3))
  * Env(v1)  disjoint Ker(v2) inter Complement(Env(v3))
  */
-public class SetUnion extends AbstractTernSetSConstraint {
+public final class SetUnion extends AbstractTernSetSConstraint {
 
     /**
      * Enforce sv3 to be the union of sv1 and sv2

@@ -40,7 +40,7 @@ import static java.lang.Math.*;
  * Since : Choco 2.0.0
  *
  */
-public class DistNode extends INode implements ArithmNode {
+public final class DistNode extends INode implements ArithmNode {
 
 	public DistNode(INode[] subt) {
 		super(subt, NodeType.DIST);

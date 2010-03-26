@@ -24,10 +24,6 @@ package choco.cp.solver.constraints.global.pack;
 
 import static choco.cp.solver.SettingType.ADDITIONAL_RULES;
 import static choco.cp.solver.SettingType.FILL_BIN;
-
-import java.awt.Point;
-import java.util.ListIterator;
-
 import choco.cp.solver.constraints.BitFlags;
 import choco.kernel.common.opres.nosum.INoSumCell;
 import choco.kernel.common.opres.nosum.NoSumList;
@@ -35,6 +31,9 @@ import choco.kernel.memory.IStateIntVector;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.awt.*;
+import java.util.ListIterator;
 
 
 /**
@@ -61,7 +60,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * @since 2.0.0
  * @version 2.0.1
  */
-public class PackFiltering {
+public final class PackFiltering {
 
 	public final IPackSConstraint cstr;
 
@@ -102,7 +101,7 @@ public class PackFiltering {
 	 * Compute the total size and check that sizes are constant.
 	 *
 	 */
-	private final long computeTotalSize() {
+	private long computeTotalSize() {
 		long l=0;
 		int last=Integer.MAX_VALUE;
 		for (int i = 0; i < sizes.length; i++) {
@@ -343,7 +342,7 @@ public class PackFiltering {
 
 
 
-	final class SumDataStruct {
+	static final class SumDataStruct {
 
 		/** variables to sum */
 		protected final IntDomainVar[] vars;

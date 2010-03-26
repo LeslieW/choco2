@@ -40,7 +40,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Since : Choco 2.0.0
  *
  */
-public class AC3rmBitBinSConstraint extends CspBinSConstraint {
+public final class AC3rmBitBinSConstraint extends CspBinSConstraint {
 
 	protected int offset0;
 	protected int offset1;

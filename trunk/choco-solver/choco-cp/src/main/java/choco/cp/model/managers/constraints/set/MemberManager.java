@@ -41,7 +41,7 @@ import java.util.Set;
  * Date: 11 août 2008
  * Time: 13:09:59
  */
-public class MemberManager extends MixedConstraintManager {
+public final class MemberManager extends MixedConstraintManager {
 
     /**
      * Build a constraint for the given solver and "model variables"

@@ -46,7 +46,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * User: Hadrien
  * Date: 29 oct. 2006
  */
-public class BoolIntLinComb extends AbstractLargeIntSConstraint {
+public final class BoolIntLinComb extends AbstractLargeIntSConstraint {
 
 	/**
 	 * Field representing the type of linear constraint

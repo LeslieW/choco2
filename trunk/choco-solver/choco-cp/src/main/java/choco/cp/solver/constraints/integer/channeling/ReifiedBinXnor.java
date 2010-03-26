@@ -33,7 +33,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * b = x1 xnor x2 ... Or xn
  * where b, and x1,... xn are boolean variables (of domain {0,1})
  */
-public class ReifiedBinXnor extends AbstractTernIntSConstraint {
+public final class ReifiedBinXnor extends AbstractTernIntSConstraint {
 
      /**
      * A constraint to ensure :

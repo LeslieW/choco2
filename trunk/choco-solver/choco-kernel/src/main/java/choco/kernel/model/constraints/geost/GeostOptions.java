@@ -5,7 +5,7 @@ import choco.kernel.common.util.objects.Pair;
 import java.io.FileOutputStream;
 import java.io.ObjectOutput;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -37,7 +37,7 @@ public class GeostOptions {
     public static long deltaOne=0;
     public static long deltaZero=0;
     public static HashMap<Integer, HashMap<Integer,Integer>> delta= new HashMap<Integer, HashMap<Integer,Integer>>();
-    public static HashMap<Integer,HashMap<Integer, Vector<Integer>>> succDelta= new HashMap<Integer, HashMap<Integer,Vector<Integer>>>();
+    public static HashMap<Integer,HashMap<Integer, List<Integer>>> succDelta= new HashMap<Integer, HashMap<Integer, List<Integer>>>();
 
     public static ObjectOutput serial=null;
     public static FileOutputStream fileSerial=null;

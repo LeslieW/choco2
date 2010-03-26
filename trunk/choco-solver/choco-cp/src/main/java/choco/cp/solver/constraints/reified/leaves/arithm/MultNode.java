@@ -36,7 +36,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date: 23 avr. 2008
  * Time: 15:30:18
  */
-public class MultNode extends INode implements ArithmNode {
+public final class MultNode extends INode implements ArithmNode {
 
     public MultNode(INode[] subt) {
         super(subt, NodeType.MULT);

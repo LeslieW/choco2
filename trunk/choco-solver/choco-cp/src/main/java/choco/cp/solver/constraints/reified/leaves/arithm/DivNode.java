@@ -33,7 +33,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /**
  *  Integer division
  **/
-public class DivNode extends INode implements ArithmNode {
+public final class DivNode extends INode implements ArithmNode {
 
 	public DivNode(INode[] subt) {
 		super(subt, NodeType.DIV);

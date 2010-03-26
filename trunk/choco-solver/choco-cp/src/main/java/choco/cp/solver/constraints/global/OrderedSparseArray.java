@@ -31,7 +31,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date : 29 janv. 2010
  * Since : Choco 2.1.1
  */
-public class OrderedSparseArray {
+public final class OrderedSparseArray {
 
     int[][] values;
     int[] nbVals;

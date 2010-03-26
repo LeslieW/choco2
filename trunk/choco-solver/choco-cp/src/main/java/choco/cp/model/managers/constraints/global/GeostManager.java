@@ -14,8 +14,9 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,7 +24,7 @@ import java.util.Vector;
  * Date: 8 août 2008
  * Time: 19:38:51
  */
-public class GeostManager extends IntConstraintManager {
+public final class GeostManager extends IntConstraintManager {
 
     /**
      * Build a constraint for the given solver and "model variables"
@@ -39,17 +40,17 @@ public class GeostManager extends IntConstraintManager {
             if(parameters instanceof Object[]){
                 Object[] params = (Object[])parameters;
                 int dim = (Integer)params[0];
-                Vector<ShiftedBox> shiftedBoxes = (Vector<ShiftedBox>)params[1];
-                Vector<IExternalConstraint> ectr = (Vector<IExternalConstraint>)params[2];
-                Vector<GeostObject> vgo = (Vector<GeostObject>)params[3];
-                Vector<int[]> ctrlVs = (Vector<int[]>)params[4];
+                List<ShiftedBox> shiftedBoxes = (List<ShiftedBox>)params[1];
+                List<IExternalConstraint> ectr = (List<IExternalConstraint>)params[2];
+                List<GeostObject> vgo = (List<GeostObject>)params[3];
+                List<int[]> ctrlVs = (List<int[]>)params[4];
                 GeostOptions opt = (GeostOptions) params[5];
                 if (opt==null) { opt=new GeostOptions(); }
 
                 //Transformation of Geost Objects (model) to interval geost object (constraint)
-                Vector<Obj> vo = new Vector<Obj>(vgo.size());
+                List<Obj> vo = new ArrayList<Obj>(vgo.size());
                 for (int i = 0; i < vgo.size(); i++) {
-                    GeostObject g = vgo.elementAt(i);
+                    GeostObject g = vgo.get(i);
                     vo.add(i, new Obj(g.getDim(),
                             g.getObjectId(),
                             solver.getVar(g.getShapeId()),
@@ -61,7 +62,7 @@ public class GeostManager extends IntConstraintManager {
                             );
                 }
 
-                Vector<ExternalConstraint> ectrs = new Vector<ExternalConstraint>();
+                List<ExternalConstraint> ectrs = new ArrayList<ExternalConstraint>();
 
                 for (IExternalConstraint iectr : ectr) {
                     

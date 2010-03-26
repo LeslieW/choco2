@@ -33,7 +33,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 * Since : Choco 2.1.1
 * Update : Choco 2.1.1
 */
-public class BinAnd extends AbstractBinIntSConstraint {
+public final class BinAnd extends AbstractBinIntSConstraint {
 
     public BinAnd(IntDomainVar v1, IntDomainVar v2) {
         super(v1, v2);

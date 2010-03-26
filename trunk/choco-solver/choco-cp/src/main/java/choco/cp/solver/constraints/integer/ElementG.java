@@ -32,7 +32,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractBinIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public class ElementG extends AbstractBinIntSConstraint {
+public final class ElementG extends AbstractBinIntSConstraint {
   int[] lval;
   protected IStateInt lastIndexInf,lastIndexSup,lastVarInf,lastVarSup;  
   protected IStateInt[] domainSize;

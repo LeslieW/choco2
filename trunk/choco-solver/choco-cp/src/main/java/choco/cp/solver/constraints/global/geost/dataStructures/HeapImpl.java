@@ -53,10 +53,10 @@ import java.util.NoSuchElementException;
  */
 public
 interface HeapImpl {
-    public Heapable remove() throws NoSuchElementException;
-    public void insert(Heapable key);
-   // public void preorder(int i, TreeGraphics tg);
-    public boolean isEmpty();
-    public int size();
-    public void removeAllElements();
+    Heapable remove() throws NoSuchElementException;
+    void insert(Heapable key);
+   // void preorder(int i, TreeGraphics tg);
+    boolean isEmpty();
+    int size();
+    void removeAllElements();
 }

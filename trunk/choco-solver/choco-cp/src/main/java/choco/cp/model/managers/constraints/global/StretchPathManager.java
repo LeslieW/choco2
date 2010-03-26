@@ -50,7 +50,7 @@ import java.util.*;
 /**
  * A manager to build new all stretchpath constraints
  */
-public class StretchPathManager extends IntConstraintManager {
+public final class StretchPathManager extends IntConstraintManager {
 
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         if (solver instanceof CPSolver) {
@@ -76,7 +76,7 @@ public class StretchPathManager extends IntConstraintManager {
                 }
 
                 int nbStates = 1;
-                Hashtable<Integer, Integer> tab = new Hashtable<Integer, Integer>();
+                Map<Integer, Integer> tab = new HashMap<Integer, Integer>();
                 List<Transition> t = new LinkedList<Transition>();
                 List<Integer> fs = new LinkedList<Integer>();
                 fs.add(0);

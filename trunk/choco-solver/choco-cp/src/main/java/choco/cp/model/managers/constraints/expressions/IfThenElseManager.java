@@ -38,7 +38,7 @@ import choco.kernel.solver.constraints.reified.INode;
  * User:    charles
  * Date:    21 août 2008
  */
-public class IfThenElseManager implements ExpressionManager {
+public final class IfThenElseManager implements ExpressionManager {
 
     /**
      * Build arithm node from a IntegerExpressionVariable

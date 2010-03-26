@@ -55,8 +55,7 @@ import java.util.NoSuchElementException;
 
 // * The heap is visualized with a call to TreeGraphics.
 // * @see TreeGraphics
-public
-class Heap {
+public  final class Heap {
     HeapImpl theHeap;
 
     /**

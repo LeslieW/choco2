@@ -32,7 +32,7 @@ import choco.kernel.solver.variables.real.RealMath;
 /**
  * An expression modelling a real addition.
  */
-public class RealPlus extends AbstractRealBinTerm {
+public final class RealPlus extends AbstractRealBinTerm {
   /**
    * Builds an addition expression for real constraint modelling.
    * @param solver is the current model

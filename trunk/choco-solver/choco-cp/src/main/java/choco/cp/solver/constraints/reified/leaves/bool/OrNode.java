@@ -41,7 +41,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Since : Choco 2.0.0
  *
  */
-public class OrNode extends AbstractBoolNode implements BoolNode {
+public final class OrNode extends AbstractBoolNode implements BoolNode {
 
     public OrNode(INode... subt) {
         super(subt, NodeType.OR);

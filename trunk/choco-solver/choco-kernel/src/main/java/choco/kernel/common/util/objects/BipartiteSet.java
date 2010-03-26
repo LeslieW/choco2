@@ -27,6 +27,7 @@ import gnu.trove.TObjectIntHashMap;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,32 +38,32 @@ import java.util.logging.Logger;
  * de contrainte : les elements de gauche sont a propages, les autres
  * ne doivent pas etre propages.
  */
-public class BipartiteSet<E> {
+public final class BipartiteSet<E> {
   /**
    * Reference to an object for logging trace statements related to util (using the java.util.logging package)
    */
 
-  protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
+  private static final Logger LOGGER = ChocoLogging.getEngineLogger();
 
   /**
    * Contains all the objects in the two parts of the set.
    */
 
-  ArrayList<E> objects;
+  private List<E> objects;
 
 
   /**
    * The number of elements in the left part of the set.
    */
 
-  int nbLeft = 0;
+  private int nbLeft = 0;
 
 
   /**
    * Maps the element objects to the corresponding index.
    */
 
-  TObjectIntHashMap<E> indices;
+  private TObjectIntHashMap<E> indices;
   //HashMap<E,Integer> indices = new HashMap<E,Integer>();
 
 
@@ -108,12 +109,12 @@ public class BipartiteSet<E> {
   public void moveLeft(E object) {
     Integer idx = this.indices.get(object);
     if (idx == null) {
-      if (LOGGER.isLoggable(Level.SEVERE))
+      if (LOGGER.isLoggable(Level.SEVERE)){
         LOGGER.logp(Level.SEVERE, "BipartiteSet", "moveLeft", "bipartite set does not contain " + object);
+      }
     } else {
-      int index = idx.intValue();
-      if (index >= this.nbLeft) {
-        swap(index, this.nbLeft++);
+        if (idx >= this.nbLeft) {
+        swap(idx, this.nbLeft++);
       }
     }
   }
@@ -126,12 +127,12 @@ public class BipartiteSet<E> {
   public void moveRight(E object) {
     Integer idx = this.indices.get(object);
     if (idx == null) {
-      if (LOGGER.isLoggable(Level.SEVERE))
+      if (LOGGER.isLoggable(Level.SEVERE)){
         LOGGER.logp(Level.SEVERE, "BipartiteSet", "moveRight", "bipartite set does not contain " + object);
+      }
     } else {
-      int index = idx.intValue();
-      if (index < this.nbLeft) {
-        swap(index, --this.nbLeft);
+        if (idx < this.nbLeft) {
+        swap(idx, --this.nbLeft);
       }
     }
   }
@@ -162,8 +163,9 @@ public class BipartiteSet<E> {
   public void addRight(E object) {
 //    if (this.indices.get(object) != null) {
    if (this.indices.containsKey(object)) {
-      if (LOGGER.isLoggable(Level.SEVERE))
+      if (LOGGER.isLoggable(Level.SEVERE)){
         LOGGER.logp(Level.SEVERE, "BipartiteSet", "addRight", object + "already in the set bipartite set ");
+      }
     } else {
       objects.add(object);
       indices.put(object, objects.size() - 1);
@@ -188,12 +190,12 @@ public class BipartiteSet<E> {
   public boolean isLeft(E object) {
     Integer idx = indices.get(object);
     if (idx == null) {
-      if (LOGGER.isLoggable(Level.SEVERE))
+      if (LOGGER.isLoggable(Level.SEVERE)){
         LOGGER.logp(Level.SEVERE, "BipartiteSet", "isLeft", "bipartite set does not contain " + object);
+      }
       return false;
     } else {
-      int index = idx.intValue();
-      return (index < this.nbLeft);
+        return (idx < this.nbLeft);
     }
   }
 
@@ -244,10 +246,10 @@ public class BipartiteSet<E> {
     // Autant eviter d'appeler la fonction de hachage pour popper le
     // dernier evenement !
     if (this.nbLeft > 0) {
-      E ret = this.objects.get(--this.nbLeft);
-      return ret;
-    } else
+        return this.objects.get(--this.nbLeft);
+    } else{
       return null;
+    }
   }
 
 
@@ -260,8 +262,8 @@ public class BipartiteSet<E> {
     return new LeftItr();
   }
 
-  private class LeftItr implements Iterator<E> {
-    int cursor = 0;
+  private final class LeftItr implements Iterator<E> {
+    private int cursor = 0;
 
     public boolean hasNext() {
       return cursor != nbLeft;
@@ -285,8 +287,8 @@ public class BipartiteSet<E> {
     return new RightItr();
   }
 
-  private class RightItr implements Iterator<E> {
-    int cursor = nbLeft;
+  private final class RightItr implements Iterator<E> {
+    private int cursor = nbLeft;
 
     public boolean hasNext() {
       return cursor != objects.size();

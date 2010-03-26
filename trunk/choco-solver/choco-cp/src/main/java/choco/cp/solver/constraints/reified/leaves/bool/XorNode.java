@@ -39,7 +39,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Since : Choco 2.0.0
  *
  */
-public class XorNode extends AbstractBoolNode implements BoolNode {
+public final class XorNode extends AbstractBoolNode implements BoolNode {
 
     public XorNode(INode... subt) {
         super(subt, NodeType.XOR);

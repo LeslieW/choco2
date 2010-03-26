@@ -7,7 +7,7 @@ import choco.cp.solver.constraints.global.geost.Constants;
  * applied to an object, it forces the origin of the object to be outside its
  * box defined by an offset and a size in each dimension
  */
-public class Outbox extends InternalConstraint {
+public final class Outbox extends InternalConstraint {
 
 	private int[] t;
 	private int[] l;
@@ -51,9 +51,12 @@ public class Outbox extends InternalConstraint {
 
     public String toString() {
         StringBuilder res = new StringBuilder();
-        for (int aT : t) res.append("[").append(aT).append("],");
-        for (int i=0; i<t.length; i++)
+        for (int aT : t){
+            res.append("[").append(aT).append("],");
+        }
+        for (int i=0; i<t.length; i++){
             res.append("[").append(l[i]).append("],");
+        }
 
         return res.toString();
     }

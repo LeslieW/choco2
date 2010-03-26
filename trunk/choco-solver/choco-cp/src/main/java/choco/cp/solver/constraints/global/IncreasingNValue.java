@@ -34,7 +34,7 @@ import gnu.trove.TIntHashSet;
  * Date : 29 janv. 2010
  * Since : Choco 2.1.1
  */
-public class IncreasingNValue extends AbstractLargeIntSConstraint {
+public final class IncreasingNValue extends AbstractLargeIntSConstraint {
 
     public enum Mode {
         ATMOST, ATLEAST, BOTH

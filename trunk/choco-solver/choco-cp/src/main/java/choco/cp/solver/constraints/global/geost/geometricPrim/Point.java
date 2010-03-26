@@ -1,22 +1,26 @@
 package choco.cp.solver.constraints.global.geost.geometricPrim;
 
+import choco.kernel.common.logging.ChocoLogging;
+
 import java.io.Serializable;
 import static java.lang.System.arraycopy;
+import java.util.logging.Logger;
 
 /**
  * This class represent a k dimensional Point.
  */
-public class Point implements Serializable {
+public final class Point implements Serializable {
 	
+    private static final Logger LOGGER = ChocoLogging.getEngineLogger();
 	//this class serves as Point object. The dimension of the point is d Dimensional.
 	
 	private int coords[];
 	private int dim;
 
     public void print() {
-		for (int i = 0; i < this.dim; i++)
-			System.out.print(this.coords[i]+ " ");
-        System.out.println();
+		for (int i = 0; i < this.dim; i++){
+			LOGGER.info(this.coords[i]+ " ");
+        }
     }
 
     /**
@@ -27,8 +31,9 @@ public class Point implements Serializable {
 	{
 		this.dim = dim;
 		coords =  new int[this.dim];
-		for (int i = 0; i < this.dim; i++)
+		for (int i = 0; i < this.dim; i++){
 			this.coords[i] = 0;
+        }
 	}
 	
 	/**
@@ -55,8 +60,9 @@ public class Point implements Serializable {
 		//creates a point from another point.
         this.dim=p.getCoords().length;
 		coords =  new int[this.dim];
-		for(int i = 0; i < p.getCoords().length; i++)
+		for(int i = 0; i < p.getCoords().length; i++){
 			this.coords[i] = p.getCoord(i);
+        }
 	}
 
 
@@ -176,12 +182,13 @@ public class Point implements Serializable {
     public String toString() {
         StringBuilder res = new StringBuilder();
         res.append("(");
-        for (int i=0; i<dim; i++)
-            if (i!=dim-1)
-                res.append(coords[i]+",");
-            else
-                res.append(coords[i]+")");
-
+        for (int i=0; i<dim; i++){
+            if (i!=dim-1){
+                res.append(coords[i]).append(",");
+            }else{
+                res.append(coords[i]).append(")");
+            }
+        }
         return res.toString();
     }
 	

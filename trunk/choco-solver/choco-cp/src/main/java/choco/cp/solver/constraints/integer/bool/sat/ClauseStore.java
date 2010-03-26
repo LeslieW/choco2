@@ -17,7 +17,7 @@ import java.util.logging.Level;
 /**
  * A global constraint to store and propagate all clauses
  */
-public class ClauseStore extends AbstractLargeIntSConstraint {
+public final class ClauseStore extends AbstractLargeIntSConstraint {
 
 
     public static boolean nonincprop = false;

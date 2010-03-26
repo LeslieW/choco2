@@ -11,7 +11,7 @@ import choco.kernel.solver.constraints.SConstraint;
 
 import java.util.Set;
 
-public class AmongManager extends IntConstraintManager {
+public final class AmongManager extends IntConstraintManager {
 
         /**
          * Build a constraint for the given solver and "model variables"

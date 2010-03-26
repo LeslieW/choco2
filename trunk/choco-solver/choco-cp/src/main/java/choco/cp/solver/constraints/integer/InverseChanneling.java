@@ -29,7 +29,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public class InverseChanneling extends AbstractLargeIntSConstraint {
+public final class InverseChanneling extends AbstractLargeIntSConstraint {
 
   protected int n;
 

@@ -10,27 +10,26 @@ import java.io.Serializable;
  * 
  *
  */
-public class Constants implements Serializable {
+public final class Constants implements Serializable {
 	
 	public Constants(){}
 
 	//Just for tests
 	public int nbOfUpdates = 0;
-	public int problemNb = 0;
-	
-	
-	//GLOBAL SETTING CONSTANTS
+
+
+    //GLOBAL SETTING CONSTANTS
 	/**
 	 * DIM id a constants indicating the dimension of the space we are working in globally
 	 */
-	public int DIM = 2;
+	private int DIM = 2;
 	//public static final String INPUT_FILE_PATH = "/Users/ridasadek/Documents/workspace/geost/input.txt";
 	//public static final String INPUT_FILE_PATH = "/Users/ridasadek/Documents/workspace/geost/PerfectSquareProb1.txt";
-	public String INPUT_FILE_PATH = "/Users/ridasadek/Documents/workspace/geost/randomInputGenProb.txt";
+    private String INPUT_FILE_PATH = "/Users/ridasadek/Documents/workspace/geost/randomInputGenProb.txt";
 	//public static final String OUTPUT_FILE_PATH = "/Users/ridasadek/Documents/workspace/geost/output.txt";
-	public String VRML_OUTPUT_FOLDER = "/Users/ridasadek/Documents/workspace/geost/VRMLfiles/";
-	public String OUTPUT_OF_RANDOM_GEN_PROB_TO_BE_USED_AS_INPUT = "/Users/ridasadek/Documents/workspace/geost/randomInputGenProb.txt";
-	public String OUTPUT_OF_RANDOM_GEN_PROB_TO_BE_READ_BY_HUMANS = "/Users/ridasadek/Documents/workspace/geost/randomHumanGenProb.txt";
+    private String VRML_OUTPUT_FOLDER = "/Users/ridasadek/Documents/workspace/geost/VRMLfiles/";
+	private String OUTPUT_OF_RANDOM_GEN_PROB_TO_BE_USED_AS_INPUT = "/Users/ridasadek/Documents/workspace/geost/randomInputGenProb.txt";
+	private String OUTPUT_OF_RANDOM_GEN_PROB_TO_BE_READ_BY_HUMANS = "/Users/ridasadek/Documents/workspace/geost/randomHumanGenProb.txt";
 	
 	//0: all solutions
 	//1: first solution
@@ -38,7 +37,7 @@ public class Constants implements Serializable {
 	 * RUN_MODE is a constant that indicates Whether we want to search for all solutions or a first solution.
 	 * value 0 is for all solutions, value 1 is for one solution.
 	 */
-	public  int RUN_MODE = 0; 
+    private int RUN_MODE = 0;
 	
 	//INTERNAL CONSTRAINTS CONTANTS REPRESENTING THE ICTR ID
 	/**

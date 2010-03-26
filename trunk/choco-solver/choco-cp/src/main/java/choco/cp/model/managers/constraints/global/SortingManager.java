@@ -38,7 +38,7 @@ import java.util.Set;
  * Date: 11 août 2008
  * Time: 10:34:02
  */
-public class SortingManager extends IntConstraintManager {
+public final class SortingManager extends IntConstraintManager {
 
     /**
      * Build a constraint for the given solver and "model variables"

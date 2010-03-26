@@ -1,5 +1,7 @@
 package choco.cp.solver.constraints.global.geost.frames;
 
+import java.util.Arrays;
+
 /**
  * Created by IntelliJ IDEA.
  * User: szampelli
@@ -7,7 +9,7 @@ package choco.cp.solver.constraints.global.geost.frames;
  * Time: 10:41:36
  * To change this template use File | Settings | File Templates.
  */
-public class DistLinearFrame extends Frame {
+public final class DistLinearFrame extends Frame {
     public int[] a;
     public int o1,b;
 
@@ -18,7 +20,7 @@ public class DistLinearFrame extends Frame {
     }
 
     public String toString() {
-        return "a:"+a+";o1:"+o1+";b:"+b;
+        return "a:"+ Arrays.toString(a) +";o1:"+o1+";b:"+b;
     }
 
 }

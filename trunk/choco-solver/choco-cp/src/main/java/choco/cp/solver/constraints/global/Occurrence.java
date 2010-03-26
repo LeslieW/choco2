@@ -32,7 +32,7 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public class Occurrence extends AbstractLargeIntSConstraint {
+public final class Occurrence extends AbstractLargeIntSConstraint {
     /**
      * Store the number of variables which can still take the occurence value
      */

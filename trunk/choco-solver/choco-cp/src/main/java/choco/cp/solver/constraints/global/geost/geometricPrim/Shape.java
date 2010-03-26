@@ -2,34 +2,35 @@ package choco.cp.solver.constraints.global.geost.geometricPrim;
 
 import choco.kernel.model.variables.geost.ShiftedBox;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the class that represents a Shape. Each shape has a shape Id and a set of shifted boxes.
  */
-public class Shape {
+public final class Shape {
 	
 	private int shapeId;
 	
-	private Vector<ShiftedBox> sb;
+	private List<ShiftedBox> sb;
 	
 	public Shape()
 	{
-		this.sb = new Vector<ShiftedBox>();
+		this.sb = new ArrayList<ShiftedBox>();
 		
 	}
 	
 	public Shape(int id)
 	{
 		this.shapeId = id;
-		this.sb = new Vector<ShiftedBox>();
+		this.sb = new ArrayList<ShiftedBox>();
 	}
 
-	public Vector<ShiftedBox> getShiftedBoxes() {
+	public List<ShiftedBox> getShiftedBoxes() {
 		return this.sb;
 	}
 
-	public void setShiftedBoxes(Vector<ShiftedBox> sb) {
+	public void setShiftedBoxes(List<ShiftedBox> sb) {
 		this.sb = sb;
 	}
 
@@ -40,17 +41,17 @@ public class Shape {
 	
 	public ShiftedBox getShiftedBox(int index)
 	{
-		return this.sb.elementAt(index);
+		return this.sb.get(index);
 	}
 	
 	public void removeShiftedBox(int index)
 	{
-		this.sb.removeElementAt(index);
+		this.sb.remove(index);
 	}
 	
 	public void removeShiftedBox(ShiftedBox sb)
 	{
-		this.sb.removeElement(sb);
+		this.sb.remove(sb);
 		
 	}
 	public int getShapeId() {

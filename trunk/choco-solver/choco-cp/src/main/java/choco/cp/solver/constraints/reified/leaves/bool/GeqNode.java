@@ -37,7 +37,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Since : Choco 2.0.0
  *
  */
-public class GeqNode extends AbstractBoolNode implements BoolNode {
+public final class GeqNode extends AbstractBoolNode implements BoolNode {
 
 
   public GeqNode(INode[] subt) {

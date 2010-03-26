@@ -124,7 +124,7 @@ public class GoalSearchSolver extends AbstractGlobalSearchStrategy {
     currentGoalStack.add(g);
   }
 
-  int lastRealMove = DOWN_BRANCH;
+//  int lastRealMove = DOWN_BRANCH;
 
   public Boolean nextSolution() {
     int previousNbSolutions = getSolutionCount();

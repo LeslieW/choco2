@@ -36,7 +36,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Since : Choco 2.0.0
  *
  */
-public class NegNode extends INode implements ArithmNode {
+public final class NegNode extends INode implements ArithmNode {
 
 	public NegNode(INode[] subt) {
 		super(subt, NodeType.NEG);

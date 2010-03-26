@@ -32,7 +32,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /**
  * a constraint modelling X * Y = Z
  */
-public class TimesXYZ extends AbstractTernIntSConstraint {
+public final class TimesXYZ extends AbstractTernIntSConstraint {
 
   public TimesXYZ(IntDomainVar x, IntDomainVar y, IntDomainVar z) {
     super(x, y, z);

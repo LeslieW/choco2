@@ -39,7 +39,7 @@ import java.util.List;
 /**
  * GAC maintained by STR
  */
-public class GACstrPositiveLargeSConstraint extends CspLargeSConstraint {
+public final class GACstrPositiveLargeSConstraint extends CspLargeSConstraint {
 
     protected TuplesList relation;
 

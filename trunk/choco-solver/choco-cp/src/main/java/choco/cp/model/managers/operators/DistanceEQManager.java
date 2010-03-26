@@ -35,7 +35,7 @@ import choco.kernel.solver.constraints.reified.INode;
  * User:    charles
  * Date:    22 août 2008
  */
-public class DistanceEQManager implements ExpressionManager {
+public final class DistanceEQManager implements ExpressionManager {
 
     /**
      * Make a solver expression variable from a model expression variable

@@ -34,7 +34,7 @@ import choco.kernel.solver.variables.set.SetVar;
  * @since 8 déc. 2008 version 2.0.1</br>
  * @version 2.0.1</br>
  */
-public class MinOfASet extends AbstractBoundOfASet {
+public final class MinOfASet extends AbstractBoundOfASet {
 
 
 	/**

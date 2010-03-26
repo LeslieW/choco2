@@ -22,8 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.model.managers.constraints;
 
-import java.util.Set;
-
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.leaves.bool.FalseNode;
 import choco.cp.solver.constraints.reified.leaves.bool.TrueNode;
@@ -35,13 +33,15 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.reified.INode;
 
+import java.util.Set;
+
 /**
  * Created by IntelliJ IDEA.
  * User: charles
  * Date: 11 août 2008
  * Time: 13:00:17
  */
-public class BooleanManager extends ConstraintManager<Variable> {
+public final class BooleanManager extends ConstraintManager<Variable> {
 
     /**
      * Build a constraint for the given solver and "model variables"

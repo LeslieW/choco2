@@ -35,7 +35,7 @@ import choco.kernel.solver.variables.set.SetVar;
  * Since : Choco 2.0.0
  *
  */
-public class SetEq extends AbstractBinSetSConstraint {
+public final class SetEq extends AbstractBinSetSConstraint {
 
 	/**
 	 * create a constraint to state sv1 is not equal to sv2

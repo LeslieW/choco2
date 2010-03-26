@@ -41,7 +41,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Since : Choco 2.0.0
  *
  */
-public class IfThenElseNode extends AbstractBoolNode implements ArithmNode, BoolNode {
+public final class IfThenElseNode extends AbstractBoolNode implements ArithmNode, BoolNode {
 
 	public IfThenElseNode(INode[] subt) {
 		super(subt, NodeType.IFTHENELSE);

@@ -47,7 +47,7 @@ import java.util.Set;
  * @since 23 janv. 2009 version 2.0.3</br>
  * @version 2.0.1</br>
  */
-public class CumulativeManager extends AbstractResourceManager {
+public final class CumulativeManager extends AbstractResourceManager {
 
 	protected IntDomainVar capacity, consumption;
 

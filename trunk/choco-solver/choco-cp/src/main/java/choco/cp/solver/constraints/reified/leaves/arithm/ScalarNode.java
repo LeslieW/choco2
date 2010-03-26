@@ -38,7 +38,7 @@ import java.util.Arrays;
  * Since : Choco 2.0.0
  *
  */
-public class ScalarNode extends INode implements ArithmNode {
+public final class ScalarNode extends INode implements ArithmNode {
     protected int[] coeffs;
 
     public ScalarNode(INode[] subt) {

@@ -54,7 +54,7 @@ import java.util.Set;
 /**
  * A manager to build new euclidean division constraint
  */
-public class EuclideanDivisionManager extends IntConstraintManager {
+public final class EuclideanDivisionManager extends IntConstraintManager {
 
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {
         if(solver instanceof CPSolver){

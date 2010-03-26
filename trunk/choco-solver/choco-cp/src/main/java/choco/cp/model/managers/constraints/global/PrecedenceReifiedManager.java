@@ -28,7 +28,7 @@ import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
-public class PrecedenceReifiedManager extends AbstractPrecedenceManager {
+public final class PrecedenceReifiedManager extends AbstractPrecedenceManager {
 
 
 

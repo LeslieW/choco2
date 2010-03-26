@@ -35,7 +35,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * The absolute constraint X = |Y| is a binary constraint
  * with X = v0 and Y = v1
  */
-public class Absolute extends AbstractBinIntSConstraint {
+public final class Absolute extends AbstractBinIntSConstraint {
 
 	/**
 	 * Constructs the constraint with the specified variables.

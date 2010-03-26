@@ -37,7 +37,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Implements a constraint Sigma (ai Xi) <=/>=/= C,
  * with Xi variables, ai and C constants.
  */
-public class IntLinComb extends AbstractLargeIntSConstraint {
+public final class IntLinComb extends AbstractLargeIntSConstraint {
     /**
      * Constant, to be assigned to <code>op</code>,
      * representing linear equalities.

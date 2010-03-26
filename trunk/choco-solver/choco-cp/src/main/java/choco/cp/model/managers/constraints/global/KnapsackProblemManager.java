@@ -15,7 +15,7 @@ import java.util.Set;
  * Time: 12:34:19 PM
  */
 
-public class KnapsackProblemManager extends IntConstraintManager {
+public final class KnapsackProblemManager extends IntConstraintManager {
 
 
     public SConstraint makeConstraint(Solver solver, IntegerVariable[] variables, Object parameters, Set<String> options) {

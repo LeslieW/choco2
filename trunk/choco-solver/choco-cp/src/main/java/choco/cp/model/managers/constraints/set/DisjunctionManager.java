@@ -39,7 +39,7 @@ import java.util.Set;
  * Date: 11 août 2008
  * Time: 13:09:07
  */
-public class DisjunctionManager extends SetConstraintManager{
+public final class DisjunctionManager extends SetConstraintManager{
 
     /**
      * Build a constraint for the given solver and "model variables"
