@@ -28,7 +28,7 @@ package choco.kernel.common.util.iterators;
  */
 public abstract class DisposableIntIterator implements IntIterator {
 
-    public boolean reusable;
+    private boolean reusable;
 
     public void init() {
         reusable = false;
@@ -47,7 +47,7 @@ public abstract class DisposableIntIterator implements IntIterator {
         throw new UnsupportedOperationException();
     }
 
-    public DisposableIntIterator copy(){
-        throw new UnsupportedOperationException();
+    public boolean isReusable() {
+        return reusable;
     }
 }

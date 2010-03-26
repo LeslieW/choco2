@@ -37,7 +37,7 @@ public class IntArrayIterator extends DisposableIntIterator{
     @SuppressWarnings({"unchecked"})
     public static IntArrayIterator getIterator(final int[] elements, final int size) {
         IntArrayIterator iter = _quickIterator;
-        if (iter != null && iter.reusable) {
+        if (iter != null && iter.isReusable()) {
             iter.init(elements, size);
             return iter;
         }

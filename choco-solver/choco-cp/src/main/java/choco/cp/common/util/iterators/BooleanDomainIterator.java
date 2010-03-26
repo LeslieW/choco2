@@ -39,7 +39,7 @@ public class BooleanDomainIterator extends DisposableIntIterator {
 
     public static DisposableIntIterator getIterator(BooleanDomain domain) {
         BooleanDomainIterator iter = _cachedIterator;
-        if (iter != null && iter.reusable) {
+        if (iter != null && iter.isReusable()) {
             iter.init(domain);
             return iter;
         }

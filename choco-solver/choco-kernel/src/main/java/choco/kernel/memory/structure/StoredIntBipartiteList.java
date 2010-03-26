@@ -110,7 +110,7 @@ public class StoredIntBipartiteList implements IStateIntVector {
 
     public DisposableIntIterator getIterator() {
       BipartiteListIterator iter = (BipartiteListIterator) _cachedIterator;
-      if (iter != null && iter.reusable) {
+      if (iter != null && iter.isReusable()) {
         iter.init();
         return iter;
       }

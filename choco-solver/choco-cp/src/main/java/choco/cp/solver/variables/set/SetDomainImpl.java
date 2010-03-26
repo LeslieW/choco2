@@ -271,7 +271,7 @@ public final class SetDomainImpl implements SetDomain {
 
     public DisposableIntIterator getKernelIterator() {
       SetDomainIterator iter = _cachedKernelIterator;
-      if (iter != null && iter.reusable) {
+      if (iter != null && iter.isReusable()) {
           iter.init(this.kernel);
           return iter;
       }
@@ -283,7 +283,7 @@ public final class SetDomainImpl implements SetDomain {
 
     public DisposableIntIterator getEnveloppeIterator() {
       SetDomainIterator iter = _cachedEnveloppeIterator;
-      if (iter != null && iter.reusable) {
+      if (iter != null && iter.isReusable()) {
           iter.init(this.enveloppe);
           return iter;
       }
@@ -327,7 +327,7 @@ public final class SetDomainImpl implements SetDomain {
 
   public DisposableIntIterator getOpenDomainIterator() {
       SetOpenDomainIterator iter = _cachedIterator;
-      if (iter != null && iter.reusable) {
+      if (iter != null && iter.isReusable()) {
           iter.init(this.enveloppe, this.kernel);
           return iter;
       }

@@ -55,7 +55,7 @@ public class IteratorUtils {
 	}
 
 	public static <E> Iterator<E> iterator(final E elem) {
-		return new SingleElementIterator<E>(elem);
+		return SingleElementIterator.getIterator(elem);
 	}
 
 	public static <E> Iterator<E> iterator(final E[] array) {

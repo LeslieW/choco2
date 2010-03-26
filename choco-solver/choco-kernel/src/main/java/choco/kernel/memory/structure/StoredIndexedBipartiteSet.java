@@ -248,7 +248,7 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
 
     public DisposableIntIterator getIterator() {
         BipartiteSetIterator iter = (BipartiteSetIterator) _cachedIterator;
-        if (iter != null && iter.reusable) {
+        if (iter != null && iter.isReusable()) {
             iter.init();
             return iter;
         }
@@ -258,7 +258,7 @@ public class StoredIndexedBipartiteSet implements IStateIntVector {
 
     public BipartiteSetIterator getObjectIterator() {
         BipartiteSetIterator iter = (BipartiteSetIterator) _cachedIterator;
-        if (iter != null && iter.reusable) {
+        if (iter != null && iter.isReusable()) {
             iter.init();
             return iter;
         }

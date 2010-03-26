@@ -128,7 +128,7 @@ public class BipartiteDeltaDomain implements IDeltaDomain {
     @Override
     public DisposableIntIterator iterator() {
         DeltaBipartiteIterator iter = (DeltaBipartiteIterator) _cachedDeltaIntDomainIterator;
-        if (iter != null && iter.reusable) {
+        if (iter != null && iter.isReusable()) {
             iter.init();
             return iter;
         }

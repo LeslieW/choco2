@@ -20,8 +20,10 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2010      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.common.util.iterators;
+package choco.kernel.memory.structure.iterators;
 
+import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.Couple;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
@@ -33,47 +35,65 @@ import choco.kernel.solver.constraints.AbstractSConstraint;
  * Date : 1 mars 2010<br/>
  * Since : Choco 2.1.1<br/>
  */
-public class QuickIterator<C extends AbstractSConstraint> extends DisposableIterator<Couple<C>> {
+public final class PSCLEIterator<C extends AbstractSConstraint> extends DisposableIterator<Couple<C>> {
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////// STATIC ///////////////////////////////////////////////////////////////
-    static QuickIterator _quickIterator = null;
+
+    /**
+     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
+     * than the moment that getInstance() is called.
+     * Thus, this solution is thread-safe without requiring special language constructs.
+     * see http://en.wikipedia.org/wiki/Singleton_pattern
+     */
+    private static final class Holder {
+        private Holder() {}
+
+        private static PSCLEIterator instance = PSCLEIterator.build();
+
+        private static void set(final PSCLEIterator iterator){
+            instance = iterator;
+        }
+    }
+
+    private C cstrCause;
+
+    private DisposableIntIterator cit;
+
+    private PartiallyStoredIntVector event;
+
+    private PartiallyStoredVector<C> elements;
+
+    private PartiallyStoredIntVector indices;
+
+    private final Couple<C> cc = new Couple<C>();
+
+    private PSCLEIterator() {}
+
+    private static PSCLEIterator build(){
+        return new PSCLEIterator();
+    }
 
     @SuppressWarnings({"unchecked"})
-    public static <C extends AbstractSConstraint> QuickIterator getIterator(final PartiallyStoredIntVector event, final C cstrCause,
-                                         final PartiallyStoredVector<C> elements, final PartiallyStoredIntVector indices) {
-        QuickIterator iter = _quickIterator;
-        if (iter != null && iter.reusable) {
-            iter.init(cstrCause, event, elements, indices);
-            return iter;
+    public synchronized static <C extends AbstractSConstraint> PSCLEIterator getIterator(
+            final PartiallyStoredIntVector event, final C cstrCause,
+            final PartiallyStoredVector<C> elements,
+            final PartiallyStoredIntVector indices
+    ) {
+        PSCLEIterator it = Holder.instance;
+        if (!it.isReusable()) {
+            it = build();
         }
-        _quickIterator = new QuickIterator(cstrCause, event, elements, indices);
-        return _quickIterator;
-    }
-    ////////////////////////////////////////////\ STATIC ///////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    C cstrCause;
-    DisposableIntIterator cit;
-    PartiallyStoredIntVector event;
-    Couple<C> cc = new Couple<C>();
-    PartiallyStoredVector<C> elements;
-    PartiallyStoredIntVector indices;
-
-
-    private QuickIterator(final C cstrCause, final PartiallyStoredIntVector event,
-                          final PartiallyStoredVector<C> elements, final PartiallyStoredIntVector indices) {
-        init(cstrCause, event, elements, indices);
+        it.init(cstrCause, event, elements, indices);
+        return it;
     }
 
-    private void init(C cstrCause, final PartiallyStoredIntVector event,
-                      final PartiallyStoredVector<C> elements, final PartiallyStoredIntVector indices) {
+    private void init(final C aCause, final PartiallyStoredIntVector anEvent,
+                      final PartiallyStoredVector<C> someElements, final PartiallyStoredIntVector someIndices) {
         super.init();
-        this.event = event;
-        cit = this.event.getIndexIterator();
-        this.cstrCause = cstrCause;
-        this.elements = elements;
-        this.indices = indices;
+        this.event = anEvent;
+        this.cit = this.event.getIndexIterator();
+        this.cstrCause = aCause;
+        this.elements = someElements;
+        this.indices = someIndices;
     }
 
     /**
@@ -84,6 +104,7 @@ public class QuickIterator<C extends AbstractSConstraint> extends DisposableIter
     public void dispose() {
         super.dispose();
         cit.dispose();
+        Holder.set(this);
     }
 
     /**
@@ -96,13 +117,11 @@ public class QuickIterator<C extends AbstractSConstraint> extends DisposableIter
     @Override
     public boolean hasNext() {
         while (cit.hasNext()) {
-            int idx = event.get(cit.next());
+            final int idx = event.get(cit.next());
             final C cstr = elements.get(idx);
-            if (cstr != cstrCause) {
-                if (cstr.isActive()) {
-                    cc.init(cstr, indices.get(idx));
-                    return true;
-                }
+            if (cstr != cstrCause && cstr.isActive()) {
+                cc.init(cstr, indices.get(idx));
+                return true;
             }
         }
         return false;

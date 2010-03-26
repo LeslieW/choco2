@@ -504,7 +504,7 @@ public final class StoredBinaryTree implements IStateBinaryTree {
     public DisposableIntIterator getIterator()
     {
         TreeIterator iter = _cachedIterator;
-        if (iter != null && iter.reusable) {
+        if (iter != null && iter.isReusable()) {
             iter.init();
             return iter;
         }

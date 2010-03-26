@@ -154,7 +154,7 @@ public class PartiallyStoredIntVector {
 
     public DisposableIntIterator getIndexIterator() {
         IndexIterator iter = (IndexIterator) _cachedIndexIterator;
-        if (iter != null && iter.reusable) {
+        if (iter != null && iter.isReusable()) {
             iter.init(this);
             return iter;
         }

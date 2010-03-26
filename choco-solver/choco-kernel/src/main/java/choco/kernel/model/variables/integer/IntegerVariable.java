@@ -113,7 +113,7 @@ public class IntegerVariable extends IntegerExpressionVariable {
 
 	public DisposableIntIterator getDomainIterator() {
 		IntDomainIterator iter = _cachedIterator;
-		if (iter != null && iter.reusable) {
+		if (iter != null && iter.isReusable()) {
 			iter.init();
 			return iter;
 		}

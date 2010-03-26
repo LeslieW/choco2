@@ -41,7 +41,7 @@ public class OneValueIterator extends DisposableIntIterator {
     }
 
     public static OneValueIterator getOneValueIterator(int value) {
-        if (_cachedOnevalueiterator != null && _cachedOnevalueiterator.reusable) {
+        if (_cachedOnevalueiterator != null && _cachedOnevalueiterator.isReusable()) {
             _cachedOnevalueiterator.init(value);
             return _cachedOnevalueiterator;
         }

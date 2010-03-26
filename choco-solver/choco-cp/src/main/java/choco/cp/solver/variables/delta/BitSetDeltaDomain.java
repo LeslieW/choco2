@@ -115,7 +115,7 @@ public class BitSetDeltaDomain implements IDeltaDomain {
     @Override
     public DisposableIntIterator iterator() {
         BitSetIntDeltaDomainIterator iter = _deltaIterator;
-        if (iter != null && iter.reusable) {
+        if (iter != null && iter.isReusable()) {
             iter.init();
             return iter;
         }
