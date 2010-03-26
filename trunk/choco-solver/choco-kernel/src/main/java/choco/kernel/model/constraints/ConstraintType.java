@@ -54,6 +54,7 @@ public enum ConstraintType {
     FALSE("false", "constraint.false", false),
     FASTCOSTREGULAR("fastcostregular", "constraint.fastcostregular", false),
     FASTREGULAR("fastregular", "constraint.fastregular", false),
+    FORBIDDEN_INTERVALS("forbidden intervals", "constraint.forbiddenIntervals", false),
     GEOST("geost", "constraint.geost", false),
     GEQ("geq", "constraint.geq", true),
     GLOBALCARDINALITY("globalCardinaly", "constraint.globalCardinaly", false),

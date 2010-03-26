@@ -95,10 +95,6 @@ public enum SettingType {
 	 */
 	SINGLE_RULE_FILTERING("A single filtering rule (Debug only)", "srF","cp:unary:srf"),
 
-	/**
-	 * use Gueret-Prins forbidden intervals techniques.
-	 */
-	FORBIDDEN_INTERVALS("Forbidden intervals","FI","cp:unary:fi"),
 
 	//////////////////////// PRECEDENCE ////////////////////////
 
