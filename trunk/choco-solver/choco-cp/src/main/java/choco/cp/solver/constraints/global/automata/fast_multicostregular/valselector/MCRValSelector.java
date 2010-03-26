@@ -1,6 +1,6 @@
 package choco.cp.solver.constraints.global.automata.fast_multicostregular.valselector;/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
- *         |  ¡(..)  |                           *
+ *         |  ï¿½(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -35,7 +35,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date: Nov 17, 2008
  * Time: 6:03:16 PM
  */
-public class MCRValSelector extends AbstractSearchHeuristic implements ValSelector {
+public class MCRValSelector implements ValSelector {
     FastMultiCostRegular[] cons;
     boolean max;
 

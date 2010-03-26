@@ -36,12 +36,9 @@ import choco.kernel.solver.variables.set.SetVar;
 // *     for Research and Education                 *
 // **************************************************
 
-public class MinEnv extends AbstractSearchHeuristic implements SetValSelector {
+public class MinEnv implements SetValSelector {
 
-  public MinEnv(Solver solver) {
-    this.solver = solver;
-  }
-
+	
   public int getBestVal(SetVar v) {
     int val = Integer.MIN_VALUE;
     DisposableIntIterator it = v.getDomain().getEnveloppeIterator();

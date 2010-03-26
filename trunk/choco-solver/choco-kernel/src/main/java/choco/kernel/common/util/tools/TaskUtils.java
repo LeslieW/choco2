@@ -16,38 +16,42 @@ public final class TaskUtils {
 	}
 
 	public static double getCentroid(final ITask t) {
-		return ( (double) (t.getECT()+ t.getLST()) )/2;
+		return ( (double) getCentroidMultByTwo(t) )/2;
+	}
+	
+	public static int getCentroidMultByTwo(final ITask t) {
+		return t.getECT()+ t.getLST();
 	}
 
 	public static boolean hasCompulsoryPart(final ITask t) {
 		return t.getECT() > t.getLST();
 	}
-	
-	
+
+
 	public static int getMinConsumption(IRTask t) {
 		final int h = t.getMinHeight();
 		final int d = h>0 ? t.getTaskVar().getMinDuration() : t.getTaskVar().getMaxDuration();
 		return h*d;
 	}
-	
+
 	public static int getMaxConsumption(IRTask t) {
 		final int h = t.getMaxHeight();
 		final int d = h>0 ? t.getTaskVar().getMaxDuration() : t.getTaskVar().getMinDuration();
 		return h*d;
 	}
-	
+
 	public static boolean isRegular(IntDomainVar usage) {
 		return usage.isInstantiatedTo(IRTask.REGULAR);
 	}
-	
+
 	public static boolean isOptional(IntDomainVar usage) {
 		return !usage.isInstantiated();
 	}
-	
+
 	public static boolean isEliminated(IntDomainVar usage) {
 		return usage.isInstantiatedTo(IRTask.ELIMINATED);
 	}
-	
+
 	public static boolean hasEnumeratedDomain(TaskVar task) {
 		return task.start().hasEnumeratedDomain() || task.end().hasEnumeratedDomain();
 	}

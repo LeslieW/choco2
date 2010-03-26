@@ -10,7 +10,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date: Dec 9, 2008
  * Time: 12:57:27 AM
  */
-public class NSPValSelector extends AbstractSearchHeuristic implements ValSelector {
+public class NSPValSelector implements ValSelector {
 
     NSPStruct struct;
     NSPVarSelector varselec;

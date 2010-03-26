@@ -38,7 +38,7 @@ import samples.multicostregular.carsequencing.parser.CarSeqInstance;
  * Date: Jan 28, 2009
  * Time: 7:06:58 PM
  */
-public class MostOptionValHeur extends AbstractSearchHeuristic implements ValSelector {
+public class MostOptionValHeur implements ValSelector {
 
 
     Integer[] order;
@@ -85,8 +85,7 @@ public class MostOptionValHeur extends AbstractSearchHeuristic implements ValSel
                 return anOrder;
             }
         }
-
-        System.err.println("pas normal d'etre la most car val heur");
+        assert false;
         return x.getInf();
     }
 }

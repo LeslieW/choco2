@@ -1,6 +1,5 @@
 package choco.cp.solver.constraints.global.automata.fast_costregular;
 
-import choco.kernel.solver.search.AbstractSearchHeuristic;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -10,7 +9,8 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date: Mar 18, 2010
  * Time: 9:22:14 AM
  */
-public final class FCostRegularValSelector extends AbstractSearchHeuristic implements ValSelector {
+
+public class FCostRegularValSelector implements ValSelector {
 
     boolean max;
     FastCostRegular cr;

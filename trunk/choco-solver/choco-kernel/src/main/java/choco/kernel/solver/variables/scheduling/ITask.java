@@ -23,6 +23,7 @@
 package choco.kernel.solver.variables.scheduling;
 
 import choco.IPretty;
+import choco.kernel.common.IDotty;
 
 
 
@@ -34,7 +35,7 @@ import choco.IPretty;
  *
  * @author Arnaud Malapert
  */
-public interface ITask extends IPretty {
+public interface ITask extends IDotty, IPretty {
 
 
 	/**

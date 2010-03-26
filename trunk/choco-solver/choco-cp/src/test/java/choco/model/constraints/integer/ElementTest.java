@@ -272,9 +272,9 @@ public class ElementTest {
 			Constraint c = nth(index1, index2, values, var);
 			LOGGER.info("posted constraint = " + c.pretty());
 			m.addConstraint(c);
+			s.read(m);
 			s.setVarIntSelector(new RandomIntVarSelector(s, i));
 			s.setValIntSelector(new RandomIntValSelector(i + 1));
-			s.read(m);
 			s.solveAll();
 			assertEquals(s.getNbSolutions(), 20);
 		}
@@ -295,9 +295,9 @@ public class ElementTest {
 			IntegerVariable index2 = makeIntVar("index2", -3, 2);
 			IntegerVariable var = makeIntVar("value", -20, 20);
 			m.addConstraint(nth(index1, index2, values, var));
+			s.read(m);
 			s.setVarIntSelector(new RandomIntVarSelector(s, i));
 			s.setValIntSelector(new RandomIntValSelector(i + 1));
-			s.read(m);
 			s.solveAll();
 			assertEquals(s.getNbSolutions(), 9);
 		}
@@ -314,9 +314,9 @@ public class ElementTest {
 			IntegerVariable I = makeIntVar("index", -5, 12);
 			IntegerVariable V = makeIntVar("V", -3, 20);
 			m.addConstraint(nth(option,I, new IntegerVariable[]{X, Y, Z}, V));
+			s.read(m);
 			s.setVarIntSelector(new RandomIntVarSelector(s, i));
 			s.setValIntSelector(new RandomIntValSelector(i + 1));
-			s.read(m);
 			s.solveAll();
 			int nbSol = s.getNbSolutions();
 			//LOGGER.info("nbsol " + nbSol);
@@ -335,9 +335,9 @@ public class ElementTest {
 			IntegerVariable I = makeIntVar("index", -5, 12);
 			IntegerVariable V = makeIntVar("V", -3, 20);
 			m.addConstraint(nth(option,I, new IntegerVariable[]{X, V, Z}, V));
+			s.read(m);
 			s.setVarIntSelector(new RandomIntVarSelector(s, i));
 			s.setValIntSelector(new RandomIntValSelector(i + 1));
-			s.read(m);
 			s.solveAll();
 			int nbSol = s.getNbSolutions();
 			//LOGGER.info("nbsol " + nbSol);
@@ -355,9 +355,9 @@ public class ElementTest {
 			IntegerVariable I = makeIntVar("index", -5, 12);
 			IntegerVariable V = makeIntVar("V", -3, 20);
 			m.addConstraint(nth(option,I, new IntegerVariable[]{X, I, Z}, V));
+			s.read(m);
 			s.setVarIntSelector(new RandomIntVarSelector(s, i));
 			s.setValIntSelector(new RandomIntValSelector(i + 1));
-			s.read(m);
 			s.solveAll();
 			int nbSol = s.getNbSolutions();
 			//LOGGER.info("nbsol " + nbSol);

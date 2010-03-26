@@ -22,10 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.task;
 
+import choco.kernel.common.IDotty;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.ITask;
 
-public interface IPrecedenceStore {
+public interface IPrecedenceStore extends IDotty {
 
 	StoredPrecedence getStoredPrecedence(ITask t1, ITask t2);
 	

@@ -22,11 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.valselector;
 
-import choco.kernel.solver.search.AbstractSearchHeuristic;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public class MinVal extends AbstractSearchHeuristic implements ValSelector {
+public class MinVal implements ValSelector {
   /**
    * selecting the lowest value in the domain
    *

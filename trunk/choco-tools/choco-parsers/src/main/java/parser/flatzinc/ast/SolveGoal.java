@@ -298,7 +298,7 @@ public class SolveGoal {
         SetVarSelector varSelector;
         switch (index(exp.value, varchoiceannos)){
             case 0:
-                varSelector = new StaticSetVarOrder(scope);
+                varSelector = new StaticSetVarOrder(solver, scope);
                 break;
             case 1:
                 varSelector = new MinDomSet(solver, scope);
@@ -326,7 +326,7 @@ public class SolveGoal {
         SetValSelector vals;
         switch (index(exp1.value, assignmentannos)){
             case 0:
-                vals = new MinEnv(solver);
+                vals = new MinEnv();
                 break;
             case 1:
                 //TODO: implements MaxEnv

@@ -31,25 +31,25 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public class MostConstrained extends IntHeuristicIntVarSelector {
 
-  /**
-   * Builds the heuristic for the given model.
-   * @param solver the solved solver
-   */
-  public MostConstrained(final Solver solver) {
-    super(solver);
-  }
+	/**
+	 * Builds the heuristic for the given model.
+	 * @param solver the solved solver
+	 */
+	public MostConstrained(final Solver solver) {
+		super(solver);
+	}
 
-  /**
-   * Builds the heuristic for the given model.
-   * @param solver the solved model
-   * @param vs a list of variables instead of all prolem integer variables
-   */
-  public MostConstrained(final Solver solver, final IntDomainVar[] vs) {
-    super(solver);
-    vars = vs;
-  }
+	/**
+	 * Builds the heuristic for the given model.
+	 * @param solver the solved model
+	 * @param vs a list of variables instead of all prolem integer variables
+	 */
+	public MostConstrained(final Solver solver, final IntDomainVar[] vs) {
+		super(solver, vs);
+	}
 
-   public int getHeuristic(IntDomainVar v) {
-    return -v.getNbConstraints();
-  }
+	@Override
+	public int getHeuristic(IntDomainVar v) {
+		return -v.getNbConstraints();
+	}
 }

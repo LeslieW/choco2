@@ -289,14 +289,7 @@ public final class VariableUtils {
 	//*******************  TaskVar  ********************************//
 	//***************************************************************//
    
-    public static TaskVar[] getTaskVars(Solver solver) {
-    	final int n = solver.getNbTaskVars();
-    	final TaskVar[] vars = new TaskVar[n];
-    	for (int i = 0; i < n; i++) {
-			vars[i] = solver.getTaskVar(i);
-		}
-        return vars;
-    }
+  
     
     public static IntDomainVar[] getStartVars(TaskVar... tasks) {
         final IntDomainVar[] vars = new IntDomainVar[tasks.length];
@@ -348,4 +341,35 @@ public final class VariableUtils {
         }
         return vars;
     }
+
+    //*****************************************************************//
+	//*******************  Branching Utils ***************************//
+	//***************************************************************//
+    //FIXME temporary implementation: decision vars should be given by the solver !
+	public static IntDomainVar[] getIntVars(Solver solver) {
+		final int n = solver.getNbIntVars();
+		IntDomainVar[] vars = new IntDomainVar[n];
+		for (int i = 0; i < n; i++) {
+			vars[i] = (IntDomainVar) solver.getIntVar(i);
+		}
+		return vars;
+	}
+
+	public static SetVar[] getSetVars(Solver solver) {
+		final int n = solver.getNbSetVars();
+		SetVar[] vars = new SetVar[n];
+		for (int i = 0; i < n; i++) {
+			vars[i] = solver.getSetVar(i);
+		}
+		return vars;
+	}
+
+	public static TaskVar[] getTaskVars(Solver solver) {
+		final int n = solver.getNbTaskVars();
+		TaskVar[] vars = new TaskVar[n];
+		for (int i = 0; i < n; i++) {
+			vars[i] = solver.getTaskVar(i);
+		}
+		return vars;
+	}
 }

@@ -56,8 +56,7 @@ public class DomOverWDegRPC extends DoubleHeuristicIntVarSelector implements
     }
 
     public DomOverWDegRPC(Solver solver, IntDomainVar[] vs) {
-        super(solver);
-        vars = vs;
+        super(solver, vs);
         DisposableIterator<SConstraint> iter = solver.getConstraintIterator();
         for (; iter
                 .hasNext();) {

@@ -22,11 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.valselector;
 
-import choco.kernel.solver.search.AbstractSearchHeuristic;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public class MidVal extends AbstractSearchHeuristic implements ValSelector {
+public class MidVal implements ValSelector {
     /**
      * selecting a value in the middle of the domain
      *

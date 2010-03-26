@@ -64,9 +64,7 @@ public class ModelTest {
 
 		IntegerVariable[] queens = new IntegerVariable[n];
 		IntegerVariable[] queensdual = new IntegerVariable[n];
-		IntegerVariable toto = Choco.makeIntVar("toto", 1, 2);
-		m.addVariable(toto);
-
+		
 		for (int i = 0; i < n; i++) {
 			queens[i] = makeIntVar("Q" + i, 1, n);
 			queensdual[i] = makeIntVar("QD" + i, 1, n);
@@ -111,9 +109,7 @@ public class ModelTest {
 
 		IntegerVariable[] queens = new IntegerVariable[n];
 		IntegerVariable[] queensdual = new IntegerVariable[n];
-		IntegerVariable toto = Choco.makeIntVar("toto", 1, 2);
-		m.addVariable(toto);
-
+		
 		for (int i = 0; i < n; i++) {
 			queens[i] = makeIntVar("Q" + i, 1, n);
 			queensdual[i] = makeIntVar("QD" + i, 1, n);
@@ -142,7 +138,6 @@ public class ModelTest {
 		//        s1.setVarIntSelector(new DomOverWDeg(s1, s1.getVar(queens)));
 		s1.attachGoal(new DomOverWDegBranching2(s1, new IncreasingDomain(), s1.getVar(queens)));
 
-		m.addOptions(CPOptions.V_NO_DECISION, toto);
 		m.addOptions(CPOptions.V_NO_DECISION, queensdual);
 		Solver s2 = new CPSolver();
 		s2.read(m);

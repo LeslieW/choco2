@@ -117,6 +117,11 @@ public class HTask implements ITask {
 	public String toString() {
 		return getName()+"["+getEST()+", "+getLCT()+"]";
 	}
+
+	@Override
+	public String toDotty() {
+		return StringUtils.toDotty(this, null, true);
+	}
 	
 	
 

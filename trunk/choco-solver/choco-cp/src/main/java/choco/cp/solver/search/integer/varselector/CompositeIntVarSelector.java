@@ -24,11 +24,12 @@ package choco.cp.solver.search.integer.varselector;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.ConstraintSelector;
+import choco.kernel.solver.branch.IntBranching;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
-import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.search.integer.HeuristicIntVarSelector;
+import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -36,7 +37,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * a first heuristic is appled for selecting a constraint.
  * from that constraint a second heuristic is applied for selecting the variable
  */
-public class CompositeIntVarSelector extends AbstractIntVarSelector implements VarSelector {
+public final class CompositeIntVarSelector implements VarSelector {
     protected ConstraintSelector cs;
     protected HeuristicIntVarSelector cvs;
 
@@ -58,4 +59,16 @@ public class CompositeIntVarSelector extends AbstractIntVarSelector implements V
     public HeuristicIntVarSelector getCvs() {
         return cvs;
     }
+
+	@Override
+	public IntBranching getBranching() {
+		return null;
+	}
+
+	@Override
+	public Var selectVar() throws ContradictionException {
+		return selectIntVar();
+	}
+    
+    
 }

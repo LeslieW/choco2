@@ -43,4 +43,8 @@ public enum SConstraintType {
     public boolean canBeReified() {
         return reified;
     }
+    
+    public boolean isTypeOf(SConstraint c) {
+    	return equals(c.getConstraintType());
+    }
 }

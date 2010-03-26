@@ -22,6 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.task;
 
+import java.util.Iterator;
+import java.util.List;
+
+import choco.cp.solver.constraints.global.scheduling.precedence.IPrecedence;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.solver.ContradictionException;
@@ -31,9 +35,6 @@ import choco.kernel.solver.search.integer.IntVarValPair;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.search.integer.VarValPairSelector;
 import choco.kernel.solver.variables.scheduling.ITask;
-
-import java.util.Iterator;
-import java.util.List;
 
 
 
@@ -115,11 +116,11 @@ public class ProfileSelector implements VarValPairSelector {
 				}
 			}
 			if(st1 != null) {
-				StoredPrecedence prec = precStore.getStoredPrecedence(st1, st2);
+				IPrecedence prec = precStore.getStoredPrecedence(st1, st2);
 				if(precSelector == null) {
-					return new IntVarValPair(prec.direction, valSelector.getBestVal(prec.getDirection()));
+					return new IntVarValPair(prec.getBoolVar(), valSelector.getBestVal(prec.getBoolVar()));
 				}else {
-					return new IntVarValPair(prec.direction, precSelector.getBestVal(prec));
+					return new IntVarValPair(prec.getBoolVar(), precSelector.getBestVal(prec));
 				}
 			}
 		}

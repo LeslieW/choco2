@@ -13,6 +13,7 @@ import choco.kernel.memory.structure.PartiallyStoredVector;
 import choco.kernel.model.variables.scheduling.ITaskVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.branch.Extension;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.PropagationEngine;
@@ -268,4 +269,12 @@ public final class TaskVar<C extends AbstractSConstraint & TaskPropagator> exten
     public void updateHypotheticalDomain(int idx, final SConstraint constraint, final boolean forceAwake){
         propagationEngine.postEvent(this, TaskVarEvent.HYPDOMMOD, constraint, forceAwake);
     }
+
+
+	@Override
+	public Extension getExtension(int extensionNumber) {
+		return null;
+	}
+    
+    
 }

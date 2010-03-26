@@ -133,7 +133,6 @@ public class ImpactTest {
         ibb.getImpactStrategy().initImpacts(1000000);
 
         s.setTimeLimit(65000);
-        s.monitorBackTrackLimit(true);
         s.setGeometricRestart(14, 1.5d);
         s.generateSearchStrategy();
 

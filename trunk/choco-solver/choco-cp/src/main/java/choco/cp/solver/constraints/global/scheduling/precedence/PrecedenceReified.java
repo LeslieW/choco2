@@ -32,7 +32,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  *<li> b = 0 <=> x1 + k1 > x2
  *</ul>
  */
-public final class PrecedenceReified extends AbstractPrecedenceConstraint {
+public final class PrecedenceReified extends AbstractPrecedenceSConstraint {
 
 	/**
 	 */

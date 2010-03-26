@@ -26,7 +26,10 @@ import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.search.AbstractSearchHeuristic;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
+import choco.kernel.solver.search.integer.IntVarSelector;
+import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -36,14 +39,15 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date: Mar 12, 2009
  * Time: 2:46:42 PM
  */
-public class ASAPVarSelector extends AbstractIntVarSelector {
+public class ASAPVarSelector extends AbstractSearchHeuristic implements IntVarSelector {
 
     IntDomainVar[][] vars;
     AbstractIntVarSelector[] varselec;
 
     public ASAPVarSelector(IntDomainVar[][] vars, Solver solver)
     {
-        this.vars=  vars;
+    	super(solver);
+    	this.vars=  vars;
         this.varselec = new AbstractIntVarSelector[vars.length];
         for (int i = 0; i < this.varselec.length ;i++)
         {
@@ -53,7 +57,7 @@ public class ASAPVarSelector extends AbstractIntVarSelector {
     }
     public ASAPVarSelector(Solver s,IntegerVariable[][] vars)
     {
-
+    	super(s);
         this.vars = new IntDomainVar[vars.length][];
         for (int i = 0 ; i < vars.length ; i++)
         {
@@ -91,10 +95,13 @@ public class ASAPVarSelector extends AbstractIntVarSelector {
                 num = nb;
             }
         }
-
-
         return varselec[idx].selectIntVar();
     }
 
+
+	@Override
+	public final Var selectVar() throws ContradictionException {
+		return selectIntVar();
+	}
 
 }

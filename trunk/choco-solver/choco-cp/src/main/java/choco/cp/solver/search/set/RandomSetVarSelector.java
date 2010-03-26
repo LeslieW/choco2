@@ -40,7 +40,7 @@ public class RandomSetVarSelector extends AbstractSetVarSelector implements SetV
    * @param solver the associated model
    */
   public RandomSetVarSelector(Solver solver) {
-    this.solver = solver;
+    super(solver);
     this.random = new Random();
   }
 
@@ -52,8 +52,7 @@ public class RandomSetVarSelector extends AbstractSetVarSelector implements SetV
      * @param seed specified seed
      */
   public RandomSetVarSelector(Solver solver, SetVar[] vs, long seed) {
-    this.solver = solver;
-    vars = vs;
+   super(solver, vs);
     this.random = new Random(seed);
   }
 
@@ -64,7 +63,7 @@ public class RandomSetVarSelector extends AbstractSetVarSelector implements SetV
    * @param seed the specified seed
    */
   public RandomSetVarSelector(Solver solver, long seed) {
-    this.solver = solver;
+    super(solver);
     this.random = new Random(seed);
   }
 

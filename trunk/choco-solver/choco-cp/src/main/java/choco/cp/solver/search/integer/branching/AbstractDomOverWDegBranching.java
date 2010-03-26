@@ -1,5 +1,12 @@
 package choco.cp.solver.search.integer.branching;
 
+import gnu.trove.TIntArrayList;
+
+import java.util.Iterator;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
@@ -14,12 +21,6 @@ import choco.kernel.solver.propagation.listener.PropagationEngineListener;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.TIntArrayList;
-
-import java.util.Iterator;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public abstract class AbstractDomOverWDegBranching extends
 AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomBreakTies {
@@ -122,19 +123,6 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 	}
 
 
-	public static int computeWeightedDegreeFromScratch(Var v) {
-		int weight = 0;
-		final DisposableIntIterator iter= v.getIndexVector().getIndexIterator();
-		while (iter.hasNext()) {
-			final int idx = iter.next();
-			AbstractSConstraint cstr = (AbstractSConstraint) v.getConstraint(idx);
-			if (SConstraintType.INTEGER.equals(cstr.getConstraintType()) && cstr.getNbVarNotInst() > 1) {
-				weight+= getConstraintExtension(cstr).get() + cstr.getFineDegree(v.getVarIndex(idx));
-			}
-		}
-		iter.dispose();
-		return weight;
-	}
 	//*****************************************************************//
 	//*******************  Extension managment ***********************//
 	//***************************************************************//
@@ -161,11 +149,11 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 		}
 	}
 
-	protected static Extension getConstraintExtension(AbstractSConstraint c) {
+	public static Extension getConstraintExtension(AbstractSConstraint c) {
 		return 	c.getExtension(ABSTRACTCONTRAINT_EXTENSION);
 	}
 
-	protected static Extension getVarExtension(AbstractVar v) {
+	public static Extension getVarExtension(Var v) {
 		return 	v.getExtension(ABSTRACTVAR_EXTENSION);
 	}
 
@@ -179,28 +167,30 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 		addConstraintExtension(c);
 	}
 
-
+	public final static int computeWeightedDegreeFromScratch(Var var) {
+		int weight = 0;
+		final DisposableIntIterator iter= var.getIndexVector().getIndexIterator();
+		while (iter.hasNext()) {
+			final int idx = iter.next();
+			final AbstractSConstraint c = (AbstractSConstraint) var.getConstraint(idx);
+			if ( SConstraintType.INTEGER.equals(c.getConstraintType())  && c.getNbVarNotInst() > 1) {
+				weight+= getConstraintExtension(c).get() + c.getFineDegree(var.getVarIndex(idx));
+			}
+		}
+		iter.dispose();
+		return weight;
+	}
 	@Override
 	public void initBranching() {
 		for (int i = 0; i < solver.getNbIntVars(); i++) {
 			// Pour etre sur, on verifie toutes les contraintes... au cas ou une d'entre elle serait deja instantiee !!
-			IntDomainVar v = (IntDomainVar) solver.getIntVar(i);
-			int weight = 0;
-			final DisposableIntIterator iter= v.getIndexVector().getIndexIterator();
-			while (iter.hasNext()) {
-				final int idx = iter.next();
-				reuseCstr = (AbstractSConstraint) v.getConstraint(idx);
-				if (reuseCstr.getNbVarNotInst() > 1) {
-					weight+= getConstraintExtension(reuseCstr).get() + reuseCstr.getFineDegree(v.getVarIndex(idx));
-				}
-			}
-			iter.dispose();
-			getVarExtension((AbstractVar) v).set(weight);
+			final Var v = solver.getIntVar(i);
+			getVarExtension(v).set(computeWeightedDegreeFromScratch(v));
 		}
 		//logWeights(ChocoLogging.getChocoLogger(), Level.INFO);
 	}
 
-	protected final void updateVarWeights(AbstractVar currentVar, boolean assign) {
+	protected final void updateVarWeights(Var currentVar, boolean assign) {
 		for (Iterator<SConstraint> iter = currentVar.getConstraintsIterator(); iter.hasNext();) {
 			reuseCstr = (AbstractSConstraint) iter.next();
 			if (SConstraintType.INTEGER.equals(reuseCstr.getConstraintType()) &&
@@ -217,7 +207,7 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 		}
 	}
 
-	protected final void addFailure(Object cause) {
+	protected final void addFailure(SConstraint cause) {
 		reuseCstr = (AbstractSConstraint) cause;
         // <= maxConstraintArity ? due to ClauseStore
 		if(SConstraintType.INTEGER.equals(reuseCstr.getConstraintType()) && reuseCstr.getNbVars() <= maxConstraintArity) {

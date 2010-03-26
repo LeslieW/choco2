@@ -68,7 +68,7 @@ public class StrategyTest {
 
     class IncorrectVarSelector extends AbstractIntVarSelector{
         IncorrectVarSelector(IntDomainVar[] vars) {
-            this.vars = vars;
+            super(null, vars);
         }
 
         public IntDomainVar selectIntVar() throws ContradictionException {

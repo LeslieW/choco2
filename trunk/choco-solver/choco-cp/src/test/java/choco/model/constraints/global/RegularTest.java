@@ -555,10 +555,9 @@ public class RegularTest {
         genereLeftTuples(tuplesAllDiff, n);
         m.addConstraint(regular(reines, tuplesAllDiff, min, max));
 
-
+        s.read(m);
         s.setValIntSelector(new RandomIntValSelector(120));
         s.setVarIntSelector(new RandomIntVarSelector(s, 112));
-        s.read(m);
         s.solveAll();
 
         int nbsolution = s.getNbSolutions();
@@ -788,10 +787,9 @@ public class RegularTest {
 
             Constraint knapsack = Choco.equation(bvars, coefs, charge);
             m.addConstraint(knapsack);
+            s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
             s.setValIntSelector(new RandomIntValSelector(seed));
-
-            s.read(m);
             s.solveAll();
             st.append(MessageFormat.format("{0},", s.getNbSolutions()));
             assertEquals(nbsol2[seed], s.getNbSolutions());

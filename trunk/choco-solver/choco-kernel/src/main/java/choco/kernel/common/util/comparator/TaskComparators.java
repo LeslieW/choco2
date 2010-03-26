@@ -106,6 +106,10 @@ public final class TaskComparators {
 	public static Comparator<ITask> makeMinDurationCmp() {
 		return MinDurationCmp.SINGLETON;
 	}
+	
+	public static Comparator<ITask> makeRMinDurationCmp() {
+		return MinDurationCmp.RSINGLETON;
+	}
 
 	//*****************************************************************//
 	//*******************  RTasks  ********************************//
@@ -125,7 +129,7 @@ public final class TaskComparators {
 	private final static Comparator<IRTask> REV_RT_LST = java.util.Collections.reverseOrder(RT_LST);
 
 	private final static Comparator<IRTask> REV_RT_LCT = java.util.Collections.reverseOrder(RT_LCT);
-
+	
 	/**
 	 * Compare according to the latest completion times of a pair of tasks.
 	 * @return LCT comparator

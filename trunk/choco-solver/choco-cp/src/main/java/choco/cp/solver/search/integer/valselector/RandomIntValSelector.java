@@ -29,35 +29,43 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import java.util.Random;
 
 public class RandomIntValSelector implements ValSelector {
-  protected Random random;
+	protected Random random;
 
-  /**
-   * Default constructor for a random value selector for banching.
-   */
-  public RandomIntValSelector() {
-    random = new Random();
-  }
+	/**
+	 * Default constructor for a random value selector for banching.
+	 */
+	public RandomIntValSelector() {
+		random = new Random();
+	}
 
-  /**
-   * Constructs a random value selector for branching with a specified seed.
-   */
-  public RandomIntValSelector(long seed) {
-    random = new Random(seed);
-  }
+	/**
+	 * Constructs a random value selector for branching with a specified seed.
+	 */
+	public RandomIntValSelector(long seed) {
+		random = new Random(seed);
+	}
+	
+	private int nextBound(final IntDomainVar x) {
+		return random.nextBoolean()? x.getInf():x.getSup();
+	}
 
-  public int getBestVal(IntDomainVar x) {
-    if (x.hasEnumeratedDomain()) {
-        if (x.isInstantiated()) return x.getVal();
-        int val = (random.nextInt(x.getDomainSize()));
-        DisposableIntIterator iterator = x.getDomain().getIterator();
-        for (int i = 0; i < val; i++) {
-            iterator.next();
-        }
-        int res = iterator.next();
-        iterator.dispose();
-        return res;
-    } else {
-        return random.nextBoolean()?x.getInf():x.getSup();
-    }
-  }
+	public int getBestVal(IntDomainVar x) {
+		if (x.hasEnumeratedDomain()) {
+			if (x.isInstantiated()) return x.getVal();
+			else if( x.hasBooleanDomain() ) return nextBound(x);
+			else {
+				final int val = (random.nextInt(x.getDomainSize()));
+
+				DisposableIntIterator iterator = x.getDomain().getIterator();
+				for (int i = 0; i < val; i++) {
+					iterator.next();
+				}
+				int res = iterator.next();
+				iterator.dispose();
+				return res;
+			}
+		} else {
+			return nextBound(x);
+		}
+	}
 }

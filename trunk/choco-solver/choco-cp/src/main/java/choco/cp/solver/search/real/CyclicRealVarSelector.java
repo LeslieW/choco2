@@ -36,7 +36,7 @@ public class CyclicRealVarSelector extends AbstractRealVarSelector implements Re
   //protected double precision = 1.e-6;
 
   public CyclicRealVarSelector(Solver solver) {
-    this.solver = solver;
+    super(solver);
     current = -1;
   }
 

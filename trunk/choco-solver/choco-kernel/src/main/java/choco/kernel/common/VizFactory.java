@@ -35,7 +35,7 @@ import java.util.logging.Logger;
 
 public final class VizFactory {
 
-    protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
+	protected final static Logger LOGGER = ChocoLogging.getMainLogger();
 
 	/**
 	 * empty constructor
@@ -53,10 +53,11 @@ public final class VizFactory {
 	}
 
 	public static File toDotty(final IDotty... sources) {
-		return toDotty(createTempFile("dotty", ".dot"),sources);
+		final File f = createTempFile("dotty", ".dot");
+		return toDotty(f,sources) ? f : null;
 	}
 
-	public static File toDotty(File f,final IDotty... sources) {
+	public static boolean toDotty(File f,final IDotty... sources) {
 		if(sources!=null && sources.length>0) {
 			try {
 				final FileWriter fw=new FileWriter(f);
@@ -67,15 +68,14 @@ public final class VizFactory {
 				}
 				fw.write("\n}");
 				fw.close();
-				LOGGER.log(Level.INFO,"creation {0} [ok]", f);
+				LOGGER.log(Level.CONFIG, "dotty...[dotExport:{0}][OK]",f);
+				return true;
 			} catch (IOException e) {
-				e.printStackTrace();
+				
 			}
-			return f;
-		}else {
-			LOGGER.warning("no object to draw");
-			return null;
 		}
+		LOGGER.log(Level.CONFIG, "dotty...[dotExport:{0}][FAIL]",f);
+		return false;
 	}
 
 
@@ -99,16 +99,16 @@ public final class VizFactory {
 	}
 	/**
 	 * gnuplot should be in the PATH variable
-     * @param curve
-     */
+	 * @param curve
+	 */
 	public static void displayGnuplot(final String curve) {
 		displayGnuplot(createTempFile("gnuplot", ".gpl"));
 	}
 
 	/**
 	 * gnuplot should be in the PATH variable
-     * @param curve
-     */
+	 * @param curve
+	 */
 	public static void displayGnuplot(final File curve) {
 		final File script=createFile("gnuplot",".gpl","plot \'"+curve.getAbsolutePath()+"\' with lines");
 		execGnuplot(script);
@@ -122,9 +122,9 @@ public final class VizFactory {
 	//********* Utils *******************************************//
 	//****************************************************************//
 
-	
 
-	
+
+
 
 	public static File createTempFile(final String name, final String suffix) {
 		File f=null;

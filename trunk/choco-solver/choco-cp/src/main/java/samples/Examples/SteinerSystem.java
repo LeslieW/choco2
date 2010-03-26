@@ -98,7 +98,7 @@ public class SteinerSystem extends PatternExample{
 	public void solve() {
 		_s.setFirstSolution(true);
 		_s.generateSearchStrategy();
-		_s.addGoal(new AssignSetVar(new MinDomSet(_s, _s.getVar(vars)), new MinEnv(_s)));
+		_s.addGoal(new AssignSetVar(new MinDomSet(_s, _s.getVar(vars)), new MinEnv()));
 		_s.launch();
 	}
 

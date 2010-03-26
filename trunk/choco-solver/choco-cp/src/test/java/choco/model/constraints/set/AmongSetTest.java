@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
- *         |  °(..)  |                           *
+ *         |  ï¿½(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -52,7 +52,7 @@ import java.util.logging.Logger;
 /**
  * User : cprudhom
  * Mail : cprudhom(a)emn.fr
- * Date : 23 févr. 2010
+ * Date : 23 fï¿½vr. 2010
  * Since : Choco 2.1.1
  */
 public class AmongSetTest {
@@ -117,8 +117,8 @@ public class AmongSetTest {
         if (sta_tic) {
             s.setVarIntSelector(new StaticVarOrder(s, s.getVar(_variables)));
             s.setValIntIterator(new IncreasingDomain());
-            s.setVarSetSelector(new StaticSetVarOrder(s.getVar(_svariable)));
-            s.setValSetSelector(new MinEnv(s));
+            s.setVarSetSelector(new StaticSetVarOrder(s, s.getVar(_svariable)));
+            s.setValSetSelector(new MinEnv());
         } else {
             s.setVarIntSelector(new RandomIntVarSelector(s, seed));
             s.setValIntSelector(new RandomIntValSelector(seed));

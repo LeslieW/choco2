@@ -6,8 +6,12 @@ import choco.kernel.memory.IStateInt;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.branch.IntBranching;
+import choco.kernel.solver.search.AbstractSearchHeuristic;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
+import choco.kernel.solver.search.integer.IntVarSelector;
 import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -16,7 +20,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date: 5 janv. 2010
  * Time: 13:39:56
  */
-public class CoverVarValSelector extends AbstractIntVarSelector implements ValSelector {
+public class CoverVarValSelector extends AbstractSearchHeuristic implements IntVarSelector, ValSelector {
 
 
     AbstractIntVarSelector other;
@@ -30,7 +34,8 @@ public class CoverVarValSelector extends AbstractIntVarSelector implements ValSe
 
     public CoverVarValSelector(IntDomainVar[][] vars, int[][] lowb, Solver solver)
     {
-        this.vars = vars;
+        super(solver);
+    	this.vars = vars;
         this.lowb = lowb;
         this.other = new StaticVarOrder(solver, ArrayUtils.flatten(vars));
 
@@ -39,7 +44,8 @@ public class CoverVarValSelector extends AbstractIntVarSelector implements ValSe
     }
     public CoverVarValSelector(Solver s, IntegerVariable[][] mvars, int[][] lowb)
        {
-           IntegerVariable[][] tmp = ArrayUtils.transpose(mvars);
+    	super(s);
+    	IntegerVariable[][] tmp = ArrayUtils.transpose(mvars);
            this.vars = new IntDomainVar[tmp.length][];
            for (int i = 0 ; i < this.vars.length ; i++)
                this.vars[i] = s.getVar(tmp[i]);
@@ -111,4 +117,9 @@ public class CoverVarValSelector extends AbstractIntVarSelector implements ValSe
             return x.getSup();
 
     }
+    
+	@Override
+	public final Var selectVar() throws ContradictionException {
+		return selectIntVar();
+	}
 }

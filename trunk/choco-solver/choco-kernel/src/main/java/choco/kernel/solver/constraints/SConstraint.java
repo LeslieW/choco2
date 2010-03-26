@@ -25,6 +25,7 @@ package choco.kernel.solver.constraints;
 import choco.IPretty;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.branch.Extension;
 import choco.kernel.solver.variables.Var;
 
 import java.util.logging.Logger;
@@ -121,5 +122,13 @@ public interface SConstraint<V extends Var> extends Cloneable,IPretty {
      * @return
      */
     public SConstraintType getConstraintType();
+    
+	/**
+	 * Returns the queried extension
+	 *
+	 * @param extensionNumber should use the number returned by getAbstractSConstraintExtensionNumber
+	 * @return the queried extension
+	 */
+    public Extension getExtension(int extensionNumber);
 
 }

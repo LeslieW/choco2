@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.automata.costregular;
 
-import choco.kernel.solver.search.AbstractSearchHeuristic;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -33,7 +32,8 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Since : Choco 2.0.0
  *
  */
-public final class CostRegularValSelector extends AbstractSearchHeuristic implements ValSelector {
+
+public class CostRegularValSelector implements ValSelector {
 
     boolean max;
     CostRegular cr;
