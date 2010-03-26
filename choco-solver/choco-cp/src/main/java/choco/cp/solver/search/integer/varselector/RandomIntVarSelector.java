@@ -22,64 +22,52 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.varselector;
 
-import choco.cp.solver.variables.integer.IntDomainVarImpl;
+import java.util.ArrayList;
+import java.util.Random;
+
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.search.integer.IntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.integer.IntVar;
-
-import java.util.ArrayList;
-import java.util.Random;
 
 public class RandomIntVarSelector extends AbstractIntVarSelector implements IntVarSelector {
-  protected ArrayList<IntVar> list = new ArrayList<IntVar>();
-  protected Random random;
 
-  /**
-   * Creates a new random-based integer domain variable selector
-   */
-  public RandomIntVarSelector(Solver solver) {
-    this.solver = solver;
-    this.random = new Random();
-  }
+	private ArrayList<IntDomainVar> reuseList = new ArrayList<IntDomainVar>();
+	protected final Random random;
+
+	/**
+	 * Creates a new random-based integer domain variable selector
+	 */
+	public RandomIntVarSelector(Solver solver) {
+		super(solver);
+		this.random = new Random();
+	}
+
+	/**
+	 * Creates a new random-based integer domain variable selector with the specified seed
+	 * (to make the experiment determinist)
+	 */
+	public RandomIntVarSelector(Solver solver, long seed) {
+		super(solver);
+		this.random = new Random(seed);
+	}
+
+	public RandomIntVarSelector(Solver solver, IntDomainVar[] vs, long seed) {
+		super(solver, vs);
+		this.random = new Random(seed);
+	}
 
 
-  public RandomIntVarSelector(Solver solver, IntDomainVar[] vs, long seed) {
-    this.solver = solver;
-    vars = vs;
-    this.random = new Random(seed);
-  }
-
-  /**
-   * Creates a new random-based integer domain variable selector with the specified seed
-   * (to make the experiment determinist)
-   */
-  public RandomIntVarSelector(Solver solver, long seed) {
-    this.solver = solver;
-    this.random = new Random(seed);
-  }
-
-
-  public IntDomainVar selectIntVar() {
-    // list supposed cleared !
-    if (vars == null) {
-      for (int i = 0; i < solver.getNbIntVars(); i++) {
-        IntVar v = solver.getIntVar(i);
-        if (!v.isInstantiated()) {
-          list.add(v);
-        }
-      }
-    } else {
-        for (IntDomainVar v : vars) {
-            if (!v.isInstantiated()) {
-                list.add(v);
-            }
-        }
-    }
-    IntDomainVarImpl ret = null;
-    if (list.size() > 0) ret = (IntDomainVarImpl) list.get(random.nextInt(list.size()));
-    list.clear();
-    return ret;
-  }
+	public IntDomainVar selectIntVar() {
+		reuseList.clear();
+		for (IntDomainVar v : vars) {
+			if (!v.isInstantiated()) {
+				reuseList.add(v);
+			}
+		}
+		final int n = reuseList.size();
+		if (n > 1) reuseList.get(random.nextInt(reuseList.size()));
+		if (n < 1) return null;
+		else return reuseList.get(0);
+	}
 }

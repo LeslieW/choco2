@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
- *         |  °(..)  |                           *
+ *         |  ï¿½(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -22,11 +22,9 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.rackconfig;
 
-import choco.kernel.common.util.tools.ArrayUtils;
-import choco.kernel.solver.search.AbstractSearchHeuristic;
+import gnu.trove.TIntArrayList;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import gnu.trove.TIntArrayList;
 
 /**
  * Created by IntelliJ IDEA.
@@ -35,7 +33,7 @@ import gnu.trove.TIntArrayList;
  * Date: Nov 25, 2009
  * Time: 12:32:31 AM
  */
-public class RackValSelector extends AbstractSearchHeuristic implements ValSelector {
+public class RackValSelector implements ValSelector {
 
     int[] ordered;
 

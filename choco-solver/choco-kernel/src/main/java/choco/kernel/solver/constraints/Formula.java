@@ -23,6 +23,7 @@
 package choco.kernel.solver.constraints;
 
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.branch.Extension;
 import choco.kernel.solver.variables.Var;
 
 /**
@@ -145,5 +146,10 @@ public class Formula implements SConstraint {
 	@Override
 	public SConstraintType getConstraintType() {
 		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public Extension getExtension(int extensionNumber) {
+		return null;
 	}
 }

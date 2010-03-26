@@ -30,22 +30,41 @@ import choco.kernel.solver.branch.IntBranching;
  * An abstract class for all heuristics (variable, value, branching heuristics) related to search
  */
 public abstract class AbstractSearchHeuristic {
-  /**
-   * the branching object owning the variable heuristic
-   */
-  protected AbstractIntBranchingStrategy branching;
+	/**
+	 * the branching object owning the variable heuristic
+	 */
+	protected AbstractIntBranchingStrategy branching;
 
-  /**
-   * the model to which the heuristic is related
-   */
-  protected Solver solver;
+	/**
+	 * the model to which the heuristic is related
+	 */
+	protected final Solver solver;
 
-  /**
-   * each IVarSelector is associated to a branching strategy
-   *
-   * @return the associated branching strategy
-   */
-  public IntBranching getBranching() {
-    return branching;
-  }
+	
+	public AbstractSearchHeuristic(Solver solver) {
+		super();
+		this.solver = solver;
+	}
+
+
+
+
+
+	public final Solver getSolver() {
+		return solver;
+	}
+
+
+	public final void setBranching(AbstractIntBranchingStrategy branching) {
+		this.branching = branching;
+	}
+
+	/**
+	 * each IVarSelector is associated to a branching strategy
+	 *
+	 * @return the associated branching strategy
+	 */
+	public final IntBranching getBranching() {
+		return branching;
+	}
 }

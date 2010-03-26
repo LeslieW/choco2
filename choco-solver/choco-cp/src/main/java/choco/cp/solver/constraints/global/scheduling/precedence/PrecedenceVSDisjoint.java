@@ -30,7 +30,7 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
  * b = 1 <=> e1 + k1 <= s2
  * b = 0 <=> e2 + k2 <= s1
  */ 
-public final class PrecedenceVSDisjoint extends AbstractPrecedenceConstraint {
+public final class PrecedenceVSDisjoint extends AbstractPrecedenceSConstraint {
 
 	public PrecedenceVSDisjoint(IntDomainVar b, 
 			IntDomainVar s1, IntDomainVar e1, int k1,

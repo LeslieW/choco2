@@ -142,7 +142,7 @@ public class BasicConstraintsTest {
         LOGGER.finest("domains OK after first propagate");
         s.setFirstSolution(false);
         s.generateSearchStrategy();
-        s.addGoal(new AssignSetVar(new MinDomSet(s), new MinEnv(s)));
+        s.addGoal(new AssignSetVar(new MinDomSet(s), new MinEnv()));
         s.launch();
 
         assertEquals(12, s.getNbSolutions());
@@ -181,7 +181,7 @@ public class BasicConstraintsTest {
         LOGGER.finest("domains OK after first propagate");
         s.setFirstSolution(false);
         s.generateSearchStrategy();
-        s.addGoal(new AssignSetVar(new MinDomSet(s), new MinEnv(s)));
+        s.addGoal(new AssignSetVar(new MinDomSet(s), new MinEnv()));
         s.launch();
 
         assertEquals(8, s.getNbSolutions());

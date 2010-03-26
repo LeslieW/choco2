@@ -29,6 +29,7 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -107,15 +108,11 @@ public class MaxTest {
 			m.addVariables(CPOptions.V_BOUND, x, y, z);
 			IntegerVariable w = makeIntVar("z", 1, 5);
 			m.addConstraint(max(new IntegerVariable[]{x, y, z},w));
+			s.read(m);
 			s.setVarIntSelector(new RandomIntVarSelector(s, i));
 			s.setValIntSelector(new RandomIntValSelector(i + 1));
-			s.read(m);
-			s.solve();
-			do {
-				//LOGGER.info("" + x.getVal() + "=max(" + y.getVal() + "," +
-				//�    z.getVal()+")");
-			} while (s.nextSolution() == Boolean.TRUE);
-			LOGGER.info("" + s.getSearchStrategy().getNodeCount());
+			s.solveAll();
+			assertTrue(s.isFeasible());
 			assertEquals(125, s.getNbSolutions());
 			//LOGGER.info("Nb solution : " + s.getNbSolutions());
 		}
@@ -131,9 +128,9 @@ public class MaxTest {
 			IntegerVariable z = makeIntVar("z", 1, 5);
 			m.addVariables(CPOptions.V_BOUND, x, y, z);
 			m.addConstraint(max(y, z, x));
+			s.read(m);
 			s.setVarIntSelector(new RandomIntVarSelector(s, i));
 			s.setValIntSelector(new RandomIntValSelector(i + 1));
-			s.read(m);
 			s.solve();
 			do {
 				//LOGGER.info("" + x.getVal() + "=max(" + y.getVal() + "," +
@@ -166,9 +163,9 @@ public class MaxTest {
 			}
 
 			m.addConstraint(max(new IntegerVariable[]{y, z}, x));
+			s.read(m);
 			s.setVarIntSelector(new RandomIntVarSelector(s, i));
 			s.setValIntSelector(new RandomIntValSelector(i + 1));
-			s.read(m);
 			s.solve();
 			do {
 				/*LOGGER.info("" + x.getVal() + "=max(" + y.getVal() + "," +

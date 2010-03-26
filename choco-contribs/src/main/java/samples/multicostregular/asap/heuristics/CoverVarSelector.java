@@ -5,8 +5,12 @@ import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.branch.IntBranching;
+import choco.kernel.solver.search.AbstractSearchHeuristic;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
+import choco.kernel.solver.search.integer.IntVarSelector;
 import choco.kernel.solver.search.integer.ValSelector;
+import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
@@ -15,7 +19,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Date: 5 janv. 2010
  * Time: 13:39:56
  */
-public class CoverVarSelector extends AbstractIntVarSelector implements ValSelector {
+public class CoverVarSelector extends AbstractSearchHeuristic implements IntVarSelector, ValSelector {
 
 
     AbstractIntVarSelector other;
@@ -29,7 +33,8 @@ public class CoverVarSelector extends AbstractIntVarSelector implements ValSelec
 
     public CoverVarSelector(IntDomainVar[][] vars, int[][] lowb, Solver solver)
     {
-        this.vars = vars;
+        super(solver);
+    	this.vars = vars;
         this.lowb = lowb;
         this.other = new StaticVarOrder(solver, ArrayUtils.flatten(vars));
 
@@ -63,6 +68,11 @@ public class CoverVarSelector extends AbstractIntVarSelector implements ValSelec
         return null;
     }
 
+	@Override
+	public final Var selectVar() throws ContradictionException {
+		return selectIntVar();
+	}
+    
     @Override
     public IntDomainVar selectIntVar() throws ContradictionException {
         int tmp = 0;

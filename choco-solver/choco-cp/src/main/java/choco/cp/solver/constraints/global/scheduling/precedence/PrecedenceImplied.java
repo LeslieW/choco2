@@ -31,7 +31,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * @since 28 août 2009 version 2.1.1</br>
  * @version 2.1.1</br>
  */
-public final class PrecedenceImplied extends AbstractPrecedenceConstraint {
+public final class PrecedenceImplied extends AbstractPrecedenceSConstraint {
 
 
 	/**

@@ -22,15 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular.asap.heuristics;
 
-import choco.kernel.solver.search.AbstractSearchHeuristic;
+import java.util.Arrays;
+import java.util.HashMap;
+
+import samples.multicostregular.asap.hci.abstraction.ASAPDataHandler;
+import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.Solver;
-import choco.kernel.model.variables.integer.IntegerVariable;
-import samples.multicostregular.asap.hci.abstraction.ASAPDataHandler;
-
-import java.util.HashMap;
-import java.util.Arrays;
 
 /**
  * Created by IntelliJ IDEA.
@@ -39,7 +38,7 @@ import java.util.Arrays;
  * Date: Mar 12, 2009
  * Time: 3:18:49 PM
  */
-public class ASAPValSelector extends AbstractSearchHeuristic implements ValSelector {
+public class ASAPValSelector implements ValSelector {
 
 
     HashMap<IntDomainVar,IntDomainVar[]> map = new HashMap<IntDomainVar,IntDomainVar[]>();

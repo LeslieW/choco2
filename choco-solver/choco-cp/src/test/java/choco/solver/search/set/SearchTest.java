@@ -102,7 +102,7 @@ public class SearchTest {
 		}
 		s.read(m);
 		s.setVarSetSelector(new MinDomSet(s, s.getVar(vars)));
-		s.setValSetSelector(new MinEnv(s));
+		s.setValSetSelector(new MinEnv());
 		s.solve();
 		LOGGER.log(Level.INFO, "NbSolution {0}", s.getNbSolutions());
 		for (int i = 0; i < n; i++) {
@@ -136,7 +136,7 @@ public class SearchTest {
 		assertTrue(s.getVar(x).isInDomainKernel(5));
 		assertTrue(!s.getVar(x).isInDomainKernel(2));
 		s.setVarSetSelector(new MinDomSet(s));
-		s.setValSetSelector(new MinEnv(s));
+		s.setValSetSelector(new MinEnv());
 		s.solveAll();
 
 		assertEquals(4, s.getNbSolutions());

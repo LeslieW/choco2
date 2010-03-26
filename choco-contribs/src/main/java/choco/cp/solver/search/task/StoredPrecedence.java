@@ -1,19 +1,23 @@
 package choco.cp.solver.search.task;
 
+import choco.cp.solver.constraints.global.scheduling.precedence.IPrecedence;
 import choco.kernel.common.util.tools.TaskUtils;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.ITask;
+import choco.kernel.solver.variables.scheduling.TaskVar;
+
+
 
 /**
  * @author Arnaud Malapert</br> 
  * @since 18 juin 2009 version 2.1.0</br>
  * @version 2.1.0</br>
  */
-public final class StoredPrecedence {
+public final class StoredPrecedence implements IPrecedence {
 
-	public final ITask t1;
+	private final ITask t1;
 
-	public final ITask t2;
+	private final ITask t2;
 
 	public final IntDomainVar direction;
 
@@ -24,15 +28,15 @@ public final class StoredPrecedence {
 		this.direction = direction;
 	}
 
-	public final ITask getLeftTask() {
-		return t1;
+	public final TaskVar getOrigin() {
+		return (TaskVar) t1;
 	}
 
-	public final ITask getRightTask() {
-		return t2;
+	public final TaskVar getDestination() {
+		return (TaskVar) t2;
 	}
 
-	public final IntDomainVar getDirection() {
+	public final IntDomainVar getBoolVar() {
 		return direction;
 	}
 	

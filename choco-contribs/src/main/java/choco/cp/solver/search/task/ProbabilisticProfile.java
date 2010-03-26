@@ -199,7 +199,7 @@ public final class ProbabilisticProfile  {
 				max.coordinate=e.coordinate;
 				max.involved.clear();
 				max.involved.or(involved);
-			}
+			} 
 		}
 	}
 	/**

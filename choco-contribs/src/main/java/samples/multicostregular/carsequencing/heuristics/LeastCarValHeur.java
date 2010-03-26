@@ -38,7 +38,7 @@ import samples.multicostregular.carsequencing.parser.CarSeqInstance;
  * Date: Jan 28, 2009
  * Time: 6:48:21 PM
  */
-public class LeastCarValHeur extends AbstractSearchHeuristic implements ValSelector {
+public class LeastCarValHeur implements ValSelector {
 
 
     Integer[] order;

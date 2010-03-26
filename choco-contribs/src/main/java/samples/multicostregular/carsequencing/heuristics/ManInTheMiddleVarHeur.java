@@ -23,6 +23,7 @@
 package samples.multicostregular.carsequencing.heuristics;
 
 import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -40,14 +41,11 @@ public class ManInTheMiddleVarHeur extends AbstractIntVarSelector {
     boolean l;
 
 
-    public ManInTheMiddleVarHeur(IntDomainVar[] vars)
+    public ManInTheMiddleVarHeur(Solver solver, IntDomainVar[] vars)
     {
+    	super(solver, vars);
         this.l = true;
-        this.vars = vars;
         center =   this.vars.length/2;
-
-
-
     }
 
 

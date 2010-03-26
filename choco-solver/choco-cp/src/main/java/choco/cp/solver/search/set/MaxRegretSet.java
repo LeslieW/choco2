@@ -36,16 +36,16 @@ import choco.kernel.solver.variables.set.SetVar;
 
 public class MaxRegretSet extends AbstractSetVarSelector {
 
-    public MaxRegretSet(Solver solver, SetVar[] decisionvs) {
-        vars = decisionvs;
-        this.solver = solver;
+   
+    public MaxRegretSet(Solver solver, SetVar[] vars) {
+		super(solver, vars);
     }
 
-    public MaxRegretSet(Solver solver) {
-        this.solver = solver;
-    }
+	public MaxRegretSet(Solver solver) {
+		super(solver);
+	}
 
-    @Override
+	@Override
     public int getHeuristic(SetVar v) {
         int val = v.getEnveloppeInf();
         val -= v.getDomain().getEnveloppeDomain().getNextValue(val);

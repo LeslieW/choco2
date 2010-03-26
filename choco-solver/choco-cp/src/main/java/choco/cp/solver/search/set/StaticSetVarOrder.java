@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.set;
 
+import choco.kernel.memory.IStateInt;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.set.AbstractSetVarSelector;
 import choco.kernel.solver.variables.set.SetVar;
 
@@ -35,22 +37,29 @@ import choco.kernel.solver.variables.set.SetVar;
 
 public class StaticSetVarOrder extends AbstractSetVarSelector {
 
-  public StaticSetVarOrder(SetVar[] vars) {
-    this.vars = vars;
-  }
+	private final IStateInt last;
 
-    @Override
-  public SetVar selectSetVar() {
-    for (int i = 0; i < vars.length; i++) {
-      if (!vars[i].isInstantiated()) {
-        return vars[i];
-      }
-    }
-    return null;
-  }
+	public StaticSetVarOrder(Solver solver, SetVar[] vars) {
+		super(solver, vars);
+		this.last = solver.getEnvironment().makeInt(0);
+	}
 
-    @Override
-    public int getHeuristic(SetVar v) {
-        return 0;
-    }
+	@Override
+	public SetVar selectSetVar() {
+		//<hca> it starts at last.get() and not last.get() +1 to be
+	    //robust to restart search loop
+	    for (int i = last.get(); i < vars.length; i++) {
+	      if (!vars[i].isInstantiated()) {
+	          last.set(i);
+	          return vars[i];
+
+	      }
+	    }
+	    return null;
+	}
+
+	@Override
+	public int getHeuristic(SetVar v) {
+		return 0;
+	}
 }

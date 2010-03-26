@@ -539,9 +539,9 @@ public class NaryRelationTest {
 			}
 		}
 		// Resolution
+		s.read(m);
 		s.setValIntSelector(new RandomIntValSelector(110));
 		s.setVarIntSelector(new RandomIntVarSelector(s, 110));
-		s.read(m);
 		s.solveAll();
 		assertEquals(40, s.getNbSolutions());
 	}
@@ -579,9 +579,8 @@ public class NaryRelationTest {
 			}
 		}
 		// Resolution
-		s.setValIntSelector(new RandomIntValSelector(110));
-		s.setVarIntSelector(new RandomIntVarSelector(s, 110));
 		s.read(m);
+		s.setRandomSelectors(110);
 		s.solveAll();
 		assertEquals(40, s.getNbSolutions());
 	}
@@ -706,10 +705,9 @@ public class NaryRelationTest {
 			}
 
 			m.addConstraint(feasTupleAC("cp:ac" + ac,tables4(), reines));
-
+			s.read(m);
 			s.setValIntSelector(new RandomIntValSelector(seed + 120));
 			s.setVarIntSelector(new RandomIntVarSelector(s, seed + 3));
-			s.read(m);
 			LOGGER.info("Choco Solutions");
 			if (s.solve() == Boolean.TRUE) {
 				do {

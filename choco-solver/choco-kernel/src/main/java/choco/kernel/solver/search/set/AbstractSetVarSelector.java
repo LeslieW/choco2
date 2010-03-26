@@ -22,8 +22,11 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.search.set;
 
+import choco.kernel.common.util.tools.VariableUtils;
+import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.AbstractSearchHeuristic;
 import choco.kernel.solver.variables.AbstractVar;
+import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.set.SetVar;
 
 // **************************************************
@@ -36,64 +39,62 @@ import choco.kernel.solver.variables.set.SetVar;
 
 public abstract class AbstractSetVarSelector extends AbstractSearchHeuristic implements SetVarSelector {
 
-    /**
-     * a specific array of SetVars from which the object seeks the one with smallest domain
-     */
-    protected SetVar[] vars;
+	/**
+	 * a specific array of SetVars from which the object seeks the one with smallest domain
+	 */
+	protected final SetVar[] vars;
 
-    public AbstractVar selectVar() {
-        return (AbstractVar) selectSetVar();
-    }
 
-    /**
-     * Get decision vars
-     *
-     * @return decision vars
-     */
-    public SetVar[] getVars() {
-        return vars;
-    }
+	public AbstractSetVarSelector(Solver solver) {
+		this(solver, VariableUtils.getSetVars(solver));
+	}
 
-    /**
-     * Set decision vars
-     *
-     * @return decision vars
-     */
-    public void setVars(SetVar[] vars) {
-        this.vars = vars;
-    }
 
-    public abstract int getHeuristic(SetVar v);
+	public AbstractSetVarSelector(Solver solver, SetVar[] vars) {
+		super(solver);
+		this.vars = vars;
+	}
 
-    public SetVar selectSetVar() {
-        int min = Integer.MAX_VALUE;
-        SetVar v0 = null;
-        if (null != vars) {
-            int n = vars.length;
-            for (int i = 0; i < n; i++) {
-                SetVar v = vars[i];
-                if (!v.isInstantiated()) {
-                    int domSize = getHeuristic(v);
-                    if (domSize < min) {
-                        min = domSize;
-                        v0 = v;
-                    }
-                }
-            }
-        } else {
-            int n = solver.getNbSetVars();
-            for (int i = 0; i < n; i++) {
-                SetVar v = solver.getSetVar(i);
-                if (!v.isInstantiated()) {
-                    int domSize = getHeuristic(v);
-                    if (domSize < min) {
-                        min = domSize;
-                        v0 = v;
-                    }
-                }
-            }
-        }
-        return v0;
-    }
+	public final Var selectVar() {
+		return selectSetVar();
+	}
+
+	/**
+	 * Get decision vars
+	 *
+	 * @return decision vars
+	 */
+	public SetVar[] getVars() {
+		return vars;
+	}
+
+	/**
+	 * Set decision vars
+	 *
+	 * @return decision vars
+	 */
+	@Deprecated
+	public void setVars(SetVar[] vars) {
+		throw new UnsupportedOperationException("setVars is final");
+	}
+
+	public abstract int getHeuristic(SetVar v);
+
+	public SetVar selectSetVar() {
+		int min = Integer.MAX_VALUE;
+		SetVar v0 = null;
+		final int n = vars.length;
+		for (int i = 0; i < n; i++) {
+			SetVar v = vars[i];
+			if (!v.isInstantiated()) {
+				int domSize = getHeuristic(v);
+				if (domSize < min) {
+					min = domSize;
+					v0 = v;
+				}
+			}
+		}
+		return v0;
+	}
 
 }

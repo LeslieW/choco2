@@ -22,11 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.valselector;
 
-import choco.kernel.solver.search.AbstractSearchHeuristic;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public class MaxVal extends AbstractSearchHeuristic implements ValSelector {
+public class MaxVal implements ValSelector {
   /**
    * selecting the highest value in the domain
    *

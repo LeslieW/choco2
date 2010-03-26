@@ -79,9 +79,9 @@ public class MinTest{
             IntegerVariable z = makeIntVar("z", 1, 5);
             IntegerVariable w = makeIntVar("w", 1, 5);
             m.addConstraint(min(new IntegerVariable[]{x, y, z},w));
+            s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, i));
             s.setValIntSelector(new RandomIntValSelector(i + 1));
-            s.read(m);
             s.solve();
             do {
                 /*LOGGER.info("" + x.getVal() + "=max(" + y.getVal() + "," +
@@ -104,9 +104,9 @@ public class MinTest{
             m.addVariables(CPOptions.V_BOUND, x, y, z);
             IntegerVariable w = makeIntVar("w", 1, 5);
             m.addConstraint(min(new IntegerVariable[]{x, y, z},w));
+            s.read(m);
             s.setVarIntSelector(new RandomIntVarSelector(s, i));
             s.setValIntSelector(new RandomIntValSelector(i + 1));
-            s.read(m);
             s.solve();
             do {
                 //LOGGER.info("" + x.getVal() + "=max(" + y.getVal() + "," +

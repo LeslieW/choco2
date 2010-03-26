@@ -5,6 +5,7 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.variables.AbstractVar;
+import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public class DomOverWDegBinBranching2 extends AbstractDomOverWDegBranching {
@@ -25,6 +26,7 @@ public class DomOverWDegBinBranching2 extends AbstractDomOverWDegBranching {
 
 
 	public void setFirstBranch(final IntBranchingDecision decision) {
+		assert decision.getBranchIndex() == 0;
 		decision.setBranchingValue(valSelector.getBestVal(decision.getBranchingIntVar()));
 	}
 
@@ -42,10 +44,10 @@ public class DomOverWDegBinBranching2 extends AbstractDomOverWDegBranching {
 	@Override
 	public void goDownBranch(final IntBranchingDecision decision) throws ContradictionException {
 		if (decision.getBranchIndex() == 0) {
-			updateVarWeights( (AbstractVar) decision.getBranchingObject(), true);
+			updateVarWeights( (Var) decision.getBranchingObject(), true);
 			decision.setIntVal();
 		} else {
-			updateVarWeights( (AbstractVar) decision.getBranchingObject(), false);
+			updateVarWeights( (Var) decision.getBranchingObject(), false);
 			decision.remIntVal();
 		}
 	}
@@ -70,7 +72,6 @@ public class DomOverWDegBinBranching2 extends AbstractDomOverWDegBranching {
 	@Override
 	public void setNextBranch(IntBranchingDecision decision) {
 		//nothing to do
-		
 	}
 
 	

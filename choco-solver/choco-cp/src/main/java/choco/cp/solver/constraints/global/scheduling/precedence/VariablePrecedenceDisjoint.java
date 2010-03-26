@@ -31,7 +31,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * b0 = 1 <=> x0 + d0 <= x1
  * b0 = 0 <=> x1 + d1 <= x0
  * */
-public class VariablePrecedenceDisjoint extends AbstractPrecedenceConstraint {
+public class VariablePrecedenceDisjoint extends AbstractPrecedenceSConstraint {
 
 		
     public VariablePrecedenceDisjoint(IntDomainVar b, IntDomainVar s0, IntDomainVar d0,

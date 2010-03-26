@@ -1,6 +1,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
- *         |  °(..)  |                           *
+ *         |  ï¿½(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -18,5 +18,5 @@
  *    + support : choco@emn.fr                   *
  *                                               *
  *    Copyright (C) F. Laburthe,                 *
- *                  N. Jussien    1999-2009      *
+ *                  N. Jussien    1999-2010      *
  * * * * * * * * * * * * * * * * * * * * * * * * *

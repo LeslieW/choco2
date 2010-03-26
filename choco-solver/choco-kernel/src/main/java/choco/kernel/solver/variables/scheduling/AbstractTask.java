@@ -1,9 +1,8 @@
 package choco.kernel.solver.variables.scheduling;
 
-import choco.kernel.common.IDotty;
 import choco.kernel.common.util.tools.StringUtils;
 
-public abstract class AbstractTask implements ITask, IDotty {
+public abstract class AbstractTask implements ITask {
 
 	protected final int id;
 

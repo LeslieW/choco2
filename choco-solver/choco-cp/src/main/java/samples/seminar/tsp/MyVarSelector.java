@@ -37,14 +37,14 @@ public class MyVarSelector extends AbstractIntVarSelector {
     protected int dest;
 
     public MyVarSelector(IntDomainVar objective, IntDomainVar[] vars, int src, int dest) {
-        this.objective = objective;
-        this.vars = vars;
-        this.src = src;
+        super(null, vars);
+    	this.objective = objective;
+    	this.src = src;
         this.dest = dest;
     }
 
     public MyVarSelector(IntDomainVar[] vars, int src, int dest) {
-        this.vars = vars;
+    	super(null, vars);
         this.src = src;
         this.dest = dest;
         this.objective = null;

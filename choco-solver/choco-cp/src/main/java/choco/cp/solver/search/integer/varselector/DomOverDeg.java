@@ -37,8 +37,7 @@ public final class DomOverDeg extends DoubleHeuristicIntVarSelector {
   }
 
   public DomOverDeg(Solver solver, IntDomainVar[] vs) {
-    super(solver);
-    vars = vs;
+    super(solver, vs);
   }
 
   public double getHeuristic(IntDomainVar v) {

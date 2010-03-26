@@ -1,6 +1,11 @@
 package samples.multicostregular.nsp;
 
+import choco.kernel.solver.ContradictionException;
+import choco.kernel.solver.branch.IntBranching;
+import choco.kernel.solver.search.AbstractSearchHeuristic;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
+import choco.kernel.solver.search.integer.IntVarSelector;
+import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.ArrayList;
@@ -14,7 +19,7 @@ import java.util.HashMap;
  * Date: Dec 9, 2008
  * Time: 12:41:53 AM
  */
-public class NSPVarSelector extends AbstractIntVarSelector {
+public class NSPVarSelector implements IntVarSelector {
     NSPStruct struct;
     ArrayList<IntDomainVar> queue;
     HashMap<IntDomainVar,int[]> map ;
@@ -101,7 +106,6 @@ public class NSPVarSelector extends AbstractIntVarSelector {
     }
 
     public IntDomainVar selectIntVar()  {
-
         Collections.sort(queue,vc);
         for (IntDomainVar v : queue)
         {
@@ -157,4 +161,15 @@ public class NSPVarSelector extends AbstractIntVarSelector {
         else return tmp;*/
 
     }
+    
+	@Override
+	public final IntBranching getBranching() {
+		return null;
+	}
+
+	@Override
+	public final Var selectVar() throws ContradictionException {
+		return selectIntVar();
+	}
+    
 }

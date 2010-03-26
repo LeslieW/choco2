@@ -32,8 +32,7 @@ public final class MaxRegret extends IntHeuristicIntVarSelector {
   }
 
   public MaxRegret(Solver solver, IntDomainVar[] vs) {
-    super(solver);
-    vars = vs;
+    super(solver, vs);
   }
 
     /**

@@ -58,6 +58,7 @@ public class RandomizedTaskSelector extends TaskSelector {
 					n=2;
 				}else if(cmp == 0) {
 					//random breaking tie
+					//FIXME In fact, it is really bad to compute several random value
 					final double p = 1/n;
 					if(rnd.nextDouble()< p) {
 						selected = current;

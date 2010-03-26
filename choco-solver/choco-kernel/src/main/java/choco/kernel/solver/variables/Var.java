@@ -23,16 +23,17 @@
 
 package choco.kernel.solver.variables;
 
+import java.util.logging.Logger;
+
 import choco.IPretty;
 import choco.kernel.common.IIndex;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.PartiallyStoredIntVector;
 import choco.kernel.memory.structure.PartiallyStoredVector;
+import choco.kernel.solver.branch.Extension;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.propagation.event.VarEvent;
-
-import java.util.logging.Logger;
 
 
 /** History:
@@ -49,7 +50,7 @@ public interface Var extends IPretty, IIndex {
 	 */
 	public final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
-
+	public String getName();
 	/**
 	 * Returns the number of listeners involving the variable.
 	 * @return the numbers of listeners involving the variable
@@ -130,5 +131,5 @@ public interface Var extends IPretty, IIndex {
 	public DisposableIterator<SConstraint> getConstraintsIterator();
 
 
-	public String getName();
+	Extension getExtension(int extensionNumber);
 }

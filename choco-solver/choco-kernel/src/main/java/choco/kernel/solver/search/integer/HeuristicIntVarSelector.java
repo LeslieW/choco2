@@ -34,57 +34,48 @@ import java.util.List;
  * A class the selects the variables which minimizes a heuristic
  *  (such classes support ties)
  */
-public abstract class HeuristicIntVarSelector extends AbstractIntVarSelector {
-  public HeuristicIntVarSelector(Solver solver) {
-    this.solver = solver;
-  }
-  /**
-   * @param vars the set of vars among which the variable is returned
-   * @return the first variable minimizing a given heuristic
-   */
-  public abstract IntDomainVar getMinVar(List<IntDomainVar> vars) throws ContradictionException;
+public abstract class HeuristicIntVarSelector extends AbstractIntVarSelector implements TiedIntVarSelector {
 
-  /**
-   * @param vars the set of vars among which the variable is returned
-   * @return the first variable minimizing a given heuristic
-   */
-  public abstract IntDomainVar getMinVar(IntDomainVar[] vars) throws ContradictionException;
+	public HeuristicIntVarSelector(Solver solver) {
+		super(solver);
+	}
+		
+	public HeuristicIntVarSelector(Solver solver, IntDomainVar[] vars) {
+		super(solver, vars);
+	}
+	/**
+	 * @param vars the set of vars among which the variable is returned
+	 * @return the first variable minimizing a given heuristic
+	 */
+	public abstract IntDomainVar getMinVar(List<IntDomainVar> vars);
 
-  /**
-    * @param s the model
-    * @return the first variable minimizing a given heuristic among all variables of the model
-    */
-  public abstract IntDomainVar getMinVar(Solver s) throws ContradictionException;
+	/**
+	 * @param vars the set of vars among which the variable is returned
+	 * @return the first variable minimizing a given heuristic
+	 */
+	public abstract IntDomainVar getMinVar(IntDomainVar[] vars);
 
+	
+	public IntDomainVar selectIntVar() {
+		return getMinVar(vars);
+	}
 
-  public IntDomainVar selectIntVar() throws ContradictionException {
-    if (null != vars)
-      return getMinVar(vars);
-    else
-      return getMinVar(solver);
-  }
+	public IntDomainVar getMinVar(AbstractIntSConstraint c) {
+		IntDomainVar[] vars = new IntDomainVar[c.getNbVars()];
+		for(int i = 0; i < c.getNbVars(); i++) {
+			vars[i] = c.getVar(i);
+		}
+		return getMinVar(vars);
+	}
 
-  public IntDomainVar getMinVar(AbstractIntSConstraint c) throws ContradictionException {
-    IntDomainVar[] vars = new IntDomainVar[c.getNbVars()];
-    for(int i = 0; i < c.getNbVars(); i++) {
-      vars[i] = c.getVar(i);
-    }
-    return getMinVar(vars);
-  }
+	public abstract List<IntDomainVar> getAllMinVars(IntDomainVar[] vars);
 
-  public abstract List<IntDomainVar> getAllMinVars(Solver s) throws ContradictionException;
-
-  public abstract List<IntDomainVar> getAllMinVars(IntDomainVar[] vars) throws ContradictionException;
-
-  public abstract List<IntDomainVar> getAllMinVars(AbstractIntSConstraint c) throws ContradictionException;
+	public abstract List<IntDomainVar> getAllMinVars(AbstractIntSConstraint c);
 
 
 
-  public List<IntDomainVar> selectTiedIntVars() throws ContradictionException {
-      if (null != vars)
-          return getAllMinVars(vars);
-      else
-          return getAllMinVars(solver);
-  }
+	public List<IntDomainVar> selectTiedIntVars() {
+		return getAllMinVars(vars);
+	}
 
 }

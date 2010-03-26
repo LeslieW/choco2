@@ -7,7 +7,8 @@ import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 
-public abstract class AbstractPrecedenceConstraint extends AbstractLargeIntSConstraint {
+public abstract class AbstractPrecedenceSConstraint extends AbstractLargeIntSConstraint 
+implements IPrecedence {
 
 	protected final static int BIDX = 0;
 
@@ -15,7 +16,7 @@ public abstract class AbstractPrecedenceConstraint extends AbstractLargeIntSCons
 
 	protected int k1, k2;
 
-	public AbstractPrecedenceConstraint(IntDomainVar[] vars) {
+	public AbstractPrecedenceSConstraint(IntDomainVar[] vars) {
 		super(vars);
 	}
 
@@ -32,15 +33,15 @@ public abstract class AbstractPrecedenceConstraint extends AbstractLargeIntSCons
 	//TODO record tasks in the constraint list ? 
 	//In this case, change the postRedundantTaskConstraint
 
-	public final TaskVar getTask1() {
+	public final TaskVar getOrigin() {
 		return task1;
 	}
 
-	public final TaskVar getTask2() {
+	public final TaskVar getDestination() {
 		return task2;
 	}
 
-	public final IntDomainVar getBooleanVar() {
+	public final IntDomainVar getBoolVar() {
 		return vars[BIDX];
 	}
 

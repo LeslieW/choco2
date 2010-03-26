@@ -22,10 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.task;
 
+import choco.cp.solver.constraints.global.scheduling.precedence.IPrecedence;
+
 
 
 public interface PrecValSelector {
 
-	int getBestVal(StoredPrecedence precedence);
+	int getBestVal(IPrecedence precedence);
 
 }

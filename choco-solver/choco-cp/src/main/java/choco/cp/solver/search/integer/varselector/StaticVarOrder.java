@@ -35,8 +35,8 @@ public class StaticVarOrder extends AbstractIntVarSelector {
   private final IStateInt last;
 
   public StaticVarOrder(Solver solver, IntDomainVar[] vars) {
-    this.last = solver.getEnvironment().makeInt(0);
-    this.vars = vars;
+	 super(solver, vars);
+	  this.last = solver.getEnvironment().makeInt(0);
   }
 
   public IntDomainVar selectIntVar() {

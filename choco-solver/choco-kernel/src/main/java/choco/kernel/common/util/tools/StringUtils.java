@@ -347,4 +347,19 @@ public class StringUtils {
 		b.append(" ];");
 		return new String(b);
 	}
+
+
+	private static String getDotBase(ITask t1, ITask t2) {
+		return t1.getID()+" -> "+t2.getID();
+	}
+
+
+	public static String getDotArc(ITask t1, ITask t2) {
+		return getDotBase(t1, t2)+";";
+	}
+
+
+	public static String getDotEdge(ITask t1, ITask t2) {
+		return getDotBase(t1, t2) + "[arrowhead=none, style=dotted];";
+	}
 }

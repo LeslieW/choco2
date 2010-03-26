@@ -27,17 +27,17 @@ import choco.kernel.solver.search.integer.IntHeuristicIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public final class MaxDomain extends IntHeuristicIntVarSelector {
-  public MaxDomain(Solver solver) {
-    super(solver);
-  }
+	public MaxDomain(Solver solver) {
+		super(solver);
+	}
 
-  public MaxDomain(Solver solver, IntDomainVar[] vs) {
-    super(solver);
-    vars = vs;
-  }
+	public MaxDomain(Solver solver, IntDomainVar[] vs) {
+		super(solver, vs);
+	}
 
-  public int getHeuristic(IntDomainVar v) {
-    return -v.getDomainSize();
-  }
+	@Override
+	public int getHeuristic(IntDomainVar v) {
+		return -v.getDomainSize();
+	}
 
 }

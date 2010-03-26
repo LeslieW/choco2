@@ -29,12 +29,12 @@ import choco.kernel.solver.variables.scheduling.TaskVar;
 
 /**
  *
- * Let b be a boolean variables; x0, x1 be two integer variables and k1, k2 two integers.
- * This constraint enforce x0 before x1 if b is true or x1 before x0 if b is false.
- * b0 = 1 <=> x0 + k1 <= x1
- * b0 = 0 <=> x1 + k2 <= x0
+ * Let b be a boolean variables; x1, x2 be two integer variables and k1, k2 two integers.
+ * This constraint enforce x1 before x2 if b is true or x2 before x1 if b is false.
+ * b = 1 <=> x1 + k1 <= x2
+ * b = 0 <=> x2 + k2 <= x1
  **/
-public final class PrecedenceDisjoint extends AbstractPrecedenceConstraint {
+public final class PrecedenceDisjoint extends AbstractPrecedenceSConstraint {
 
 	/**
 	 * b = 1 <=> x1 + k1 <= x2

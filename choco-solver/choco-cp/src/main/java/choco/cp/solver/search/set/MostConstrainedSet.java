@@ -37,12 +37,11 @@ import choco.kernel.solver.variables.set.SetVar;
 public class MostConstrainedSet extends AbstractSetVarSelector {
 
     public MostConstrainedSet(Solver solver, SetVar[] decisionvs) {
-        vars = decisionvs;
-        this.solver = solver;
+        super(solver, decisionvs);
     }
 
     public MostConstrainedSet(Solver solver) {
-        this.solver = solver;
+    	 super(solver);
     }
 
     @Override

@@ -31,6 +31,7 @@ import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
+import choco.kernel.solver.branch.Extension;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.SConstraintType;
@@ -394,4 +395,11 @@ public final class ExpressionSConstraint extends TuplesTest implements SConstrai
         System.arraycopy(tab, 0, tab2, 0, tab.length);
         return tab2;
     }
+
+	@Override
+	public Extension getExtension(int extensionNumber) {
+		return null;
+	}
+    
+    
 }

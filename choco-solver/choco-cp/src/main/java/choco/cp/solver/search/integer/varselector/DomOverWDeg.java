@@ -56,8 +56,7 @@ public class DomOverWDeg extends DoubleHeuristicIntVarSelector implements Propag
 	}
 
 	public DomOverWDeg(Solver solver, IntDomainVar[] vs) {
-		super(solver);
-		vars = vs;
+		super(solver, vs);
         DisposableIterator<SConstraint> iter = solver.getConstraintIterator();
 		for (; iter.hasNext();) {
 			AbstractSConstraint c = (AbstractSConstraint) iter.next();

@@ -73,7 +73,6 @@ public class DomOverWDegBranching2 extends AbstractDomOverWDegBranching {
 		decision.setBranchingValue( 
 				valIterator.getNextVal(decision.getBranchingIntVar(), decision.getBranchingValue()) 
 		);
-
 	}
 }
 

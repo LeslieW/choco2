@@ -248,11 +248,11 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 			}else {
 				LOGGER.log(Level.INFO, "- Search stopped ?\n{1}", runtimeStatistics()); 
 			}
-			
+
 		}
 	}
-	
-		
+
+
 	public Boolean nextSolution() {
 		//precondition for calling the search loop is that a limit has not been attempted
 		//useful when solution are recorded from outside the OPEN_NODE case (hand-made)
@@ -270,27 +270,26 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		sol.recordSearchMeasures(this);
 	}
 
-	
+
 	/**
 	 * called when a solution is encountered: printing and, if needed, storing the solution
 	 */
 	@Override
 	public void recordSolution() {
 		//Check wether every decisions variables have been instantiated
-		//if(solver.checkDecisionVariables()){
-			assert(solver.checkSolution());
-			super.recordSolution();
-			if (LOGGER.isLoggable(Level.FINE)) {
-				LOGGER.log(Level.FINE, "- Solution #{0} found. {1}.",
-						new Object[]{getSolutionCount(),partialRuntimeStatistics(true)}
-				);	
-				if (LOGGER.isLoggable(Level.FINER)) {
-					LOGGER.log(Level.FINER,"  {0}", solver.solutionToString());
-				}
+		assert(solver.checkSolution());
+		super.recordSolution();
+		if (LOGGER.isLoggable(Level.FINE)) {
+			LOGGER.log(Level.FINE, "- Solution #{0} found. {1}.",
+					new Object[]{getSolutionCount(),partialRuntimeStatistics(true)}
+			);	
+			if (LOGGER.isLoggable(Level.FINER)) {
+				LOGGER.log(Level.FINER,"  {0}", solver.solutionToString());
 			}
-//		}else{
-//			throw new SolverException("Bug in solution :one or more decisions variables is not instantiated");
-//		}
+		}
+		//		}else{
+		//			throw new SolverException("Bug in solution :one or more decisions variables is not instantiated");
+		//		}
 	}
 
 
@@ -378,17 +377,17 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	//    }*/
 	//	}
 
-	
-	
+
+
 
 	public String runtimeStatistics() {
 		return "  Solutions: "+getSolutionCount() + "\n"+prettyOnePerLine(this);
 	}
-	
+
 	public String partialRuntimeStatistics(boolean logOnSolution) {
 		return logOnSolution ? 
 				getSolutionCount()+" Solutions, "+pretty(this) :
-			pretty(this);
+					pretty(this);
 	}
 
 
@@ -401,7 +400,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		return limitManager.getTimeCount();
 	}
 
-	
+
 
 	/**
 	 * @return the number of nodes of the tree search (including the root node where
@@ -420,7 +419,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		return searchLoop.getBacktrackCount();
 	}
 
-	
+
 	@Override
 	public int getRestartCount() {
 		return searchLoop.getRestartCount();

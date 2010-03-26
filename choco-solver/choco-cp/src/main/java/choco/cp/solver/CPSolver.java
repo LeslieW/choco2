@@ -888,7 +888,7 @@ public class CPSolver implements Solver {
 			}
 		}
 		if (valSetSelector == null && valSetIterator == null) {
-			valSetSelector = new MinEnv(this);
+			valSetSelector = new MinEnv();
 		}
 		return new AssignSetVar(varSetSelector, valSetSelector);
 	}
@@ -1292,7 +1292,7 @@ public class CPSolver implements Solver {
 		if (vars != null) {
 			intDecisionVars.clear();
 			intDecisionVars.addAll(Arrays.asList(vars));
-		} else if(!intDecisionVars.isEmpty()){
+		} else if(! intDecisionVars.isEmpty()){
 			vars = new IntDomainVar[intDecisionVars.size()];
 			intDecisionVars.toArray(vars);
 			((AbstractIntVarSelector) varSelector).setVars(vars);
@@ -3407,7 +3407,7 @@ public class CPSolver implements Solver {
 			//forward precedence
 			return preceding(t1, k1, t2);
 		}else if(direction.isInstantiatedTo(0)) {
-			//bakcward precedence
+			//backward precedence
 			return preceding(t2, k2, t1);
 		}else {
 			//disjunction

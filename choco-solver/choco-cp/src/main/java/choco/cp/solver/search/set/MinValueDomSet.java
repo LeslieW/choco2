@@ -36,16 +36,16 @@ import choco.kernel.solver.variables.set.SetVar;
 
 public class MinValueDomSet extends AbstractSetVarSelector {
 
-    public MinValueDomSet(Solver solver, SetVar[] decisionvs) {
-        vars = decisionvs;
-        this.solver = solver;
-    }
+	
+    public MinValueDomSet(Solver solver, SetVar[] vars) {
+		super(solver, vars);
+	}
 
-    public MinValueDomSet(Solver solver) {
-        this.solver = solver;
-    }
+	public MinValueDomSet(Solver solver) {
+		super(solver);
+	}
 
-    @Override
+	@Override
     public int getHeuristic(SetVar v) {
         return v.getEnveloppeInf();
     }

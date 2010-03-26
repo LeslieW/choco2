@@ -42,10 +42,10 @@ public final class DomOverDynDeg extends DoubleHeuristicIntVarSelector {
 	}
 
 	public DomOverDynDeg(Solver solver, IntDomainVar[] vs) {
-		super(solver);
-		vars = vs;
+		super(solver, vs);
 	}
 
+	@Override
 	public double getHeuristic(IntDomainVar v) {
 		int dsize = v.getDomainSize();
 		int deg = getDynDeg(v);
@@ -57,15 +57,15 @@ public final class DomOverDynDeg extends DoubleHeuristicIntVarSelector {
 
 	public int getDynDeg(IntDomainVar v) {
 		int ddeg = 0;
-        int idx = 0;
-        DisposableIntIterator it = v.getIndexVector().getIndexIterator();
+		int idx = 0;
+		DisposableIntIterator it = v.getIndexVector().getIndexIterator();
 		while (it.hasNext()) {
-            idx = it.next();
-            AbstractSConstraint ct = (AbstractSConstraint) v.getConstraint(idx);
-            if (ct.getNbVarNotInst() > 1) {
-                ddeg+= ct.getFineDegree(v.getVarIndex(idx));
+			idx = it.next();
+			AbstractSConstraint ct = (AbstractSConstraint) v.getConstraint(idx);
+			if ( ct.getNbVarNotInst() > 1) {
+				ddeg+= ct.getFineDegree(v.getVarIndex(idx));
 			}
-        }
+		}
 		return ddeg;
 	}
 

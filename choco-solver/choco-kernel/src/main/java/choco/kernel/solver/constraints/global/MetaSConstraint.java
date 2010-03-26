@@ -4,6 +4,7 @@ import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
+import choco.kernel.solver.branch.Extension;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.SConstraintType;
@@ -185,5 +186,9 @@ public class MetaSConstraint implements SConstraint, IResource<TaskVar> {
 		return getNbTasks();
 	}
     
+	@Override
+	public Extension getExtension(int extensionNumber) {
+		return null;
+	}
     
 }

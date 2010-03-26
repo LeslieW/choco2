@@ -36,16 +36,17 @@ import choco.kernel.solver.variables.set.SetVar;
 
 public class MaxDomSet extends AbstractSetVarSelector {
 
-    public MaxDomSet(Solver solver, SetVar[] decisionvs) {
-        vars = decisionvs;
-        this.solver = solver;
+ 
+
+    public MaxDomSet(Solver solver, SetVar[] vars) {
+		super(solver, vars);
     }
 
-    public MaxDomSet(Solver solver) {
-        this.solver = solver;
-    }
+	public MaxDomSet(Solver solver) {
+		super(solver);
+	}
 
-    @Override
+	@Override
     public int getHeuristic(SetVar v) {
         return -(v.getEnveloppeDomainSize() - v.getKernelDomainSize());
     }
