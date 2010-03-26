@@ -27,11 +27,12 @@ import static choco.kernel.common.Constant.SET_INITIAL_CAPACITY;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.structure.iterators.SBVSIterator1;
+import choco.kernel.memory.structure.iterators.SBVSIterator2;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.Var;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 /*
@@ -112,7 +113,7 @@ public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteS
      * @param index index of the object to remove
      * @return the removed object
      */
-	private E swap(int index) {
+    public E swap(int index) {
 		RangeCheck(index);
 		final int idx = last.get()-1;
 		//should swap the element to remove with the last element
@@ -198,113 +199,22 @@ public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteS
         throw new SolverException("Not yet implemented");
     }
 
-    protected QuickIterator _cachedQuickIterator = null;
     /**
      * Iterator over non instanciated variables
      * BEWARE: initial order is not preserved
      * @return iterator
      */
+    @SuppressWarnings({"unchecked"})
     public final DisposableIterator<E> getNotInstanciatedVariableIterator(){
-        @SuppressWarnings({"unchecked"})
-        QuickIterator iter = _cachedQuickIterator;
-        if (iter != null && iter.reusable) {
-            iter.init();
-            return iter;
-        }
-        _cachedQuickIterator = new QuickIterator();
-        return _cachedQuickIterator;
+        return SBVSIterator1.getIterator(this, varsNotInstanciated, last.get());    
     }
-
-    protected DualIterator _cachedDualterator = null;
     /**
      * Iterator over instanciated variables
      * BEWARE: initial order is not preserved
      * @return iterator
      */
-    public final Iterator<E> getInstanciatedVariableIterator(){
-        @SuppressWarnings({"unchecked"})
-        DualIterator iter = _cachedDualterator;
-        if (iter != null && iter.reusable) {
-            iter.init();
-            return iter;
-        }
-        _cachedDualterator = new DualIterator();
-        return _cachedDualterator;
-    }
-
-
-
-    private class QuickIterator extends DisposableIterator<E> {
-        int i = -1;
-
-        @Override
-        public void init() {
-            super.init();
-            i = -1;
-        }
-
-		/**
-         * Returns <tt>true</tt> if the iteration has more elements. (In other
-         * words, returns <tt>true</tt> if <tt>next</tt> would return an element
-         * rather than throwing an exception.)
-         *
-         * @return <tt>true</tt> if the iterator has more elements.
-         */
-        @Override
-        public boolean hasNext() {
-            i++;
-            while(i < last.get() && varsNotInstanciated[i].isInstantiated()){
-                swap(i);
-            }
-            return i < last.get();
-        }
-
-        /**
-         * Returns the next element in the iteration.
-         *
-         * @return the next element in the iteration.
-         * @throws java.util.NoSuchElementException
-         *          iteration has no more elements.
-         */
-        @Override
-        public E next() {
-            return varsNotInstanciated[i];
-        }
-    }
-
-    private class DualIterator extends DisposableIterator<E> {
-        int i = -1;
-
-        @Override
-        public void init() {
-            super.init();
-            i = -1;
-        }
-
-        /**
-         * Returns <tt>true</tt> if the iteration has more elements. (In other
-         * words, returns <tt>true</tt> if <tt>next</tt> would return an element
-         * rather than throwing an exception.)
-         *
-         * @return <tt>true</tt> if the iterator has more elements.
-         */
-        @Override
-        public boolean hasNext() {
-            i ++ ;
-            while(i < size && !varsNotInstanciated[i].isInstantiated())i++;
-            return i < size;
-        }
-
-        /**
-         * Returns the next element in the iteration.
-         *
-         * @return the next element in the iteration.
-         * @throws java.util.NoSuchElementException
-         *          iteration has no more elements.
-         */
-        @Override
-        public E next() {
-            return varsNotInstanciated[i];
-        }
+    @SuppressWarnings({"unchecked"})
+    public final DisposableIterator<E> getInstanciatedVariableIterator(){
+        return SBVSIterator2.getIterator(varsNotInstanciated, size);
     }
 }

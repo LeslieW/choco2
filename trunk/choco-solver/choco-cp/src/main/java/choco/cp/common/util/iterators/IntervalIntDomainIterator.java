@@ -39,7 +39,7 @@ public class IntervalIntDomainIterator extends DisposableIntIterator {
 
     public static DisposableIntIterator getIterator(IntervalIntDomain domain) {
         IntervalIntDomainIterator iter = _iterator;
-        if (iter != null && iter.reusable) {
+        if (iter != null && iter.isReusable()) {
             iter.init(domain);
             return iter;
         }

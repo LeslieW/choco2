@@ -148,7 +148,7 @@ public class IntervalDeltaDomain implements IDeltaDomain {
      */
     public DisposableIntIterator iterator() {
           IntervalIntDomainDeltaIterator iter = (IntervalIntDomainDeltaIterator) _deltaIterator;
-        if (iter != null && iter.reusable) {
+        if (iter != null && iter.isReusable()) {
             iter.init();
             return iter;
         }

@@ -39,7 +39,7 @@ public class BitSetIntDomainIterator extends DisposableIntIterator {
 
     public static DisposableIntIterator getIterator(int inf, int offset, IStateBitSet contents) {
         BitSetIntDomainIterator iter = _cachedIterator;
-        if (iter != null && iter.reusable) {
+        if (iter != null && iter.isReusable()) {
             iter.init(inf, offset, contents);
             return iter;
         }

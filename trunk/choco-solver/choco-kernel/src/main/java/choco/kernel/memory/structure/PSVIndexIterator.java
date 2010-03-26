@@ -38,7 +38,7 @@ public class PSVIndexIterator extends DisposableIntIterator {
     private static PSVIndexIterator _cachedPSVIndexIterator;
 
     public static DisposableIntIterator getIndexIterator(PartiallyStoredVector vector) {
-        if (_cachedPSVIndexIterator != null && _cachedPSVIndexIterator.reusable) {
+        if (_cachedPSVIndexIterator != null && _cachedPSVIndexIterator.isReusable()) {
             _cachedPSVIndexIterator.init(vector);
             return _cachedPSVIndexIterator;
         } else {

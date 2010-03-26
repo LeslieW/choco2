@@ -38,7 +38,7 @@ public class BipartiteIntDomainIterator extends DisposableIntIterator {
 
     public static DisposableIntIterator getIterator(int firstIdx, int[] values) {
         BipartiteIntDomainIterator iter = _cachedIterator;
-        if (iter != null && iter.reusable) {
+        if (iter != null && iter.isReusable()) {
             iter.init(firstIdx, values);
             return iter;
         }

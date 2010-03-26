@@ -152,7 +152,7 @@ public class ChainDeltaDomain implements IDeltaDomain {
     @Override
     public DisposableIntIterator iterator() {
         DeltaIntDomainIterator iter = _cachedDeltaIntDomainIterator;
-        if (iter != null && iter.reusable) {
+        if (iter != null && iter.isReusable()) {
             iter.init();
             return iter;
         }

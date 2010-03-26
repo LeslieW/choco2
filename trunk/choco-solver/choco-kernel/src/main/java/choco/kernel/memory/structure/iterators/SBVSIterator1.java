@@ -20,17 +20,19 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2010      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.common.util.iterators;
+package choco.kernel.memory.structure.iterators;
 
-import java.util.NoSuchElementException;
+import choco.kernel.common.util.iterators.DisposableIterator;
+import choco.kernel.memory.structure.StoredBipartiteVarSet;
+import choco.kernel.solver.variables.Var;
 
 /**
- * User : cprudhom
- * Mail : cprudhom(a)emn.fr
- * Date : 28 janv. 2010
- * Since : Choco 2.1.1
+ * User : cprudhom<br/>
+ * Mail : cprudhom(a)emn.fr<br/>
+ * Date : 26 mars 2010<br/>
+ * Since : Choco 2.1.1<br/>
  */
-public final class EmptyIterator<E> extends DisposableIterator<E> {
+public final class SBVSIterator1<E extends Var> extends DisposableIterator<E> {
 
     /**
      * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
@@ -39,25 +41,47 @@ public final class EmptyIterator<E> extends DisposableIterator<E> {
      * see http://en.wikipedia.org/wiki/Singleton_pattern
      */
     private static final class Holder {
-        private Holder() {}
+        private Holder() {
+        }
 
-        private static EmptyIterator instance = EmptyIterator.build();
+        private static SBVSIterator1 instance = SBVSIterator1.build();
+
+        private static void set(final SBVSIterator1 iterator) {
+            instance = iterator;
+        }
+    }
+
+    private int i = -1;
+    private StoredBipartiteVarSet storedBipartiteVarSet;
+    private E[] elements;
+    private int last;
+
+    private SBVSIterator1() {}
+
+    private static SBVSIterator1 build(){
+        return new SBVSIterator1();
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <E> EmptyIterator getIterator() {
-        EmptyIterator<E> it = Holder.instance;
+    public synchronized static <E extends Var> SBVSIterator1 getIterator(final StoredBipartiteVarSet aStoredBipartiteVarSet,
+                                                final E[] someElements, final int last) {
+        SBVSIterator1 it = Holder.instance;
         if (!it.isReusable()) {
             it = build();
         }
-        it.init();
+        it.init(aStoredBipartiteVarSet, someElements, last);
         return it;
     }
 
-    private EmptyIterator() {}
-
-    private static EmptyIterator build(){
-        return new EmptyIterator();
+    /**
+     * Freeze the iterator, cannot be reused.
+     */
+    public void init(final StoredBipartiteVarSet aStoredBipartiteVarSet, final E[] someElements, final int aLast) {
+        super.init();
+        this.storedBipartiteVarSet = aStoredBipartiteVarSet;
+        this.elements = someElements;
+        this.last = aLast;
+        i = -1;
     }
 
     /**
@@ -69,7 +93,11 @@ public final class EmptyIterator<E> extends DisposableIterator<E> {
      */
     @Override
     public boolean hasNext() {
-        return false;
+        i++;
+        while (i < last && elements[i].isInstantiated()) {
+            storedBipartiteVarSet.swap(i);
+        }
+        return i < last;
     }
 
     /**
@@ -81,6 +109,17 @@ public final class EmptyIterator<E> extends DisposableIterator<E> {
      */
     @Override
     public E next() {
-        throw new NoSuchElementException();
+        return elements[i];
+    }
+
+
+    /**
+     * This method allows to declare that the iterator is not used anymoure. It
+     * can be reused by another object.
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        Holder.set(this);
     }
 }

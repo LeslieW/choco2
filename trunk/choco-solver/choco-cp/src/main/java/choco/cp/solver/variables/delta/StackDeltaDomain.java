@@ -131,7 +131,7 @@ public class StackDeltaDomain implements IDeltaDomain {
     @Override
     public DisposableIntIterator iterator() {
         StackDeltaDomainIterator iter = (StackDeltaDomainIterator) _cachedDeltaIntDomainIterator;
-        if (iter != null && iter.reusable) {
+        if (iter != null && iter.isReusable()) {
             iter.init();
             return iter;
         }

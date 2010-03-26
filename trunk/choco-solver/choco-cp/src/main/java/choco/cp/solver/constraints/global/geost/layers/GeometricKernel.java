@@ -2079,7 +2079,6 @@ public final class GeometricKernel {
                 return box1;
             }
         }
-//        if ((box1==null) && (box2==null)) return null;
         int won1 = 0;
         int won2 = 0;
 

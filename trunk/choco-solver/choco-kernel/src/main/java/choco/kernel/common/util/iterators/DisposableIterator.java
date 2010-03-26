@@ -33,14 +33,17 @@ import java.util.Iterator;
 */
 public abstract class DisposableIterator<E> implements Iterator<E> {
 
-    public boolean reusable;
+    private boolean reusable = true;
 
+    /**
+     * Freeze the iterator, cannot be reused.
+     */
     public void init() {
         reusable = false;
     }
 
     /**
-     * This method allows to declare that the iterator is not usefull anymoure. It
+     * This method allows to declare that the iterator is not used anymoure. It
      * can be reused by another object.
      */
     public void dispose() {
@@ -64,5 +67,13 @@ public abstract class DisposableIterator<E> implements Iterator<E> {
     @Override
     public void remove() {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Retrieve wether the iterator is free for reuse.
+     * @return true if the iterator is free for use, false otherwise.
+     */
+    public final boolean isReusable() {
+        return reusable;
     }
 }

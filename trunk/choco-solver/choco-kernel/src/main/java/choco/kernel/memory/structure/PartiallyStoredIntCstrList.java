@@ -23,9 +23,9 @@
 package choco.kernel.memory.structure;
 
 import choco.kernel.common.util.iterators.DisposableIterator;
-import choco.kernel.common.util.iterators.QuickIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
+import choco.kernel.memory.structure.iterators.PSCLEIterator;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
@@ -134,6 +134,6 @@ public final class PartiallyStoredIntCstrList <C extends AbstractSConstraint> ex
 
     @SuppressWarnings({"unchecked"})
     public DisposableIterator<Couple<C>> getActiveConstraint(int event, C cstrCause){
-        return QuickIterator.getIterator(events[idxEventTypes[event]],cstrCause, this.elements, this.indices);
+        return PSCLEIterator.getIterator(events[idxEventTypes[event]],cstrCause, this.elements, this.indices);
     }
 }

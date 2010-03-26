@@ -39,7 +39,7 @@ public class IntDomainIterator extends DisposableIntIterator {
 
     public static DisposableIntIterator getIterator(AbstractIntDomain dom) {
         IntDomainIterator iter = _cachedIterator;
-        if (iter != null && iter.reusable) {
+        if (iter != null && iter.isReusable()) {
             iter.init(dom);
             return iter;
         }

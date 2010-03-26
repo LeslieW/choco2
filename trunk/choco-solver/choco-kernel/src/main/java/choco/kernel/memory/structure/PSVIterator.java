@@ -5,43 +5,60 @@ import choco.kernel.common.util.iterators.DisposableIterator;
 
 import java.util.NoSuchElementException;
 
-public class PSVIterator<E> extends DisposableIterator<E> {
+public final class PSVIterator<E> extends DisposableIterator<E> {
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////// STATIC ///////////////////////////////////////////////////////////////
-    private static PSVIterator _cachedPSVIterator;
+    /**
+     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
+     * than the moment that getInstance() is called.
+     * Thus, this solution is thread-safe without requiring special language constructs.
+     * see http://en.wikipedia.org/wiki/Singleton_pattern
+     */
+    private static final class Holder {
+        private Holder() {}
+
+        private static PSVIterator instance = PSVIterator.build();
+
+        private static void set(final PSVIterator iterator) {
+            instance = iterator;
+        }
+    }
 
     @SuppressWarnings({"unchecked"})
-    public static DisposableIterator getIterator(PartiallyStoredVector vector) {
-        if (_cachedPSVIterator != null && _cachedPSVIterator.reusable) {
-            _cachedPSVIterator.init(vector);
-            return _cachedPSVIterator;
-        } else {
-            _cachedPSVIterator = new PSVIterator(vector);
-            return _cachedPSVIterator;
+    public static <E> DisposableIterator getIterator(final PartiallyStoredVector vector) {
+        PSVIterator<E> it = Holder.instance;
+        if (!it.isReusable()) {
+            it = build();
         }
+        it.init(vector);
+        return it;
 
     }
-    ////////////////////////////////////////////\ STATIC ///////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    int idx;
-    PartiallyStoredVector<E> vector;
+    private int idx;
 
-    private PSVIterator(PartiallyStoredVector<E> vector) {
-        init(vector);
+    private PartiallyStoredVector<E> vector;
+
+    private PSVIterator() {}
+
+    private static PSVIterator build() {
+        return new PSVIterator();
     }
 
-    public void init(PartiallyStoredVector<E> vector) {
+    /**
+     * Freeze the iterator, cannot be reused.
+     */
+    public void init(final PartiallyStoredVector<E> aVector) {
         super.init();
-        this.vector = vector;
+        this.vector = aVector;
         idx = -1;
     }
 
     public boolean hasNext() {
         if (idx < STORED_OFFSET) {
             return idx + 1 < vector.nStaticObjects || vector.nStoredObjects.get() > 0;
-        } else return idx + 1 < STORED_OFFSET + vector.nStoredObjects.get();
+        } else {
+            return idx + 1 < STORED_OFFSET + vector.nStoredObjects.get();
+        }
     }
 
     public E next() {
@@ -58,10 +75,19 @@ public class PSVIterator<E> extends DisposableIterator<E> {
             }
         } else if (idx + 1 < STORED_OFFSET + vector.nStoredObjects.get()) {
             idx++;
-
         } else {
             throw new NoSuchElementException();
         }
         return vector.get(idx);
+    }
+
+    /**
+     * This method allows to declare that the iterator is not used anymoure. It
+     * can be reused by another object.
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        Holder.set(this);
     }
 }

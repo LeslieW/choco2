@@ -148,7 +148,7 @@ public class BooleanDeltaDomain implements IDeltaDomain{
 
     public DisposableIntIterator iterator() {
         DeltaBoolDomainIterator iter = (DeltaBoolDomainIterator) _cachedDeltaIntDomainIterator;
-        if (iter != null && iter.reusable) {
+        if (iter != null && iter.isReusable()) {
             iter.init();
             return iter;
         }

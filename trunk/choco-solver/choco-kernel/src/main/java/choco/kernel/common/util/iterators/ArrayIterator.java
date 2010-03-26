@@ -22,37 +22,55 @@
  **************************************************/
 package choco.kernel.common.util.iterators;
 
-public class ArrayIterator<E> extends DisposableIterator<E> {
+public final class ArrayIterator<E> extends DisposableIterator<E> {
 
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////// STATIC ///////////////////////////////////////////////////////////////
-    static ArrayIterator _quickIterator = null;
+    /**
+     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
+     * than the moment that getInstance() is called.
+     * Thus, this solution is thread-safe without requiring special language constructs.
+     * see http://en.wikipedia.org/wiki/Singleton_pattern
+     */
+    private static final class Holder {
+        private Holder() {
+        }
+
+        private static ArrayIterator instance = ArrayIterator.build();
+
+        private static void set(final ArrayIterator iterator) {
+            instance = iterator;
+        }
+    }
+
+    private E[] elements;
+
+    private int size;
+
+    private int cursor;
+
+    private ArrayIterator() {
+    }
+
+    private static ArrayIterator build() {
+        return new ArrayIterator();
+    }
 
     @SuppressWarnings({"unchecked"})
-    public static <E> ArrayIterator getIterator(final E[] elements, final int size) {
-        ArrayIterator iter = _quickIterator;
-        if (iter != null && iter.reusable) {
-            iter.init(elements, size);
-            return iter;
+    public synchronized static <E> ArrayIterator getIterator(final E[] elements, final int size) {
+        ArrayIterator<E> it = Holder.instance;
+        if (!it.isReusable()) {
+            it = build();
         }
-        _quickIterator = new ArrayIterator(elements, size);
-        return _quickIterator;
-    }
-    ////////////////////////////////////////////\ STATIC ///////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    E[] elements;
-    int size = 0;
-    int cursor = 0;
-
-    private ArrayIterator(final E[] elements, final int size) {
-        init(elements, size);
+        it.init(elements, size);
+        return it;
     }
 
-    private void init(final E[] elements, final int size) {
+    /**
+     * Freeze the iterator, cannot be reused.
+     */
+    private void init(final E[] someElements, final int aSize) {
         super.init();
-        this.elements = elements;
-        this.size = size;
+        this.elements = someElements;
+        this.size = aSize;
         cursor = 0;
     }
 
@@ -78,5 +96,15 @@ public class ArrayIterator<E> extends DisposableIterator<E> {
     @Override
     public E next() {
         return elements[cursor++];
+    }
+
+    /**
+     * This method allows to declare that the iterator is not used anymoure. It
+     * can be reused by another object.
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        Holder.set(this);
     }
 }
