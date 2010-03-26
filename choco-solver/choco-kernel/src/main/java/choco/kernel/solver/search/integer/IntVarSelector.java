@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.search.integer;
 
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -35,5 +34,5 @@ public interface IntVarSelector extends VarSelector {
    *
    * @return a non instantiated search variable
    */
-  public IntDomainVar selectIntVar() throws ContradictionException;
+  public IntDomainVar selectIntVar();
 }

@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.multicostregular.carsequencing.heuristics;
 
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -49,7 +48,7 @@ public class ManInTheMiddleVarHeur extends AbstractIntVarSelector {
     }
 
 
-    public IntDomainVar selectIntVar() throws ContradictionException
+    public IntDomainVar selectIntVar()
     {
         IntDomainVar out = null;
 

@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.branch;
 
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.variables.Var;
 
 /**
@@ -42,5 +41,5 @@ public interface VarSelector {
    *
    * @return a variable on whose domain an alternative can be set (such as a non instantiated search variable)
    */
-  public Var selectVar() throws ContradictionException;
+  public Var selectVar();
 }

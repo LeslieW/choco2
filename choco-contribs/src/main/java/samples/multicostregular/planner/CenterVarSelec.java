@@ -23,7 +23,6 @@
 package samples.multicostregular.planner;
 
 import choco.kernel.memory.IStateInt;
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -58,7 +57,7 @@ public class CenterVarSelec extends AbstractIntVarSelector {
     }
 
 
-    public IntDomainVar selectIntVar() throws ContradictionException
+    public IntDomainVar selectIntVar()
     {
         IntDomainVar out = null;
 

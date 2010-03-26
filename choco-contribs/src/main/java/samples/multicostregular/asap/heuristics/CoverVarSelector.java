@@ -3,7 +3,6 @@ package samples.multicostregular.asap.heuristics;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.IStateInt;
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.IntBranching;
 import choco.kernel.solver.search.AbstractSearchHeuristic;
@@ -69,12 +68,12 @@ public class CoverVarSelector extends AbstractSearchHeuristic implements IntVarS
     }
 
 	@Override
-	public final Var selectVar() throws ContradictionException {
+	public final Var selectVar() {
 		return selectIntVar();
 	}
     
     @Override
-    public IntDomainVar selectIntVar() throws ContradictionException {
+    public IntDomainVar selectIntVar() {
         int tmp = 0;
         while (lastCol.get() < vars.length && (tmp = scanCol(lastCol.get())) == Integer.MAX_VALUE)
         {
