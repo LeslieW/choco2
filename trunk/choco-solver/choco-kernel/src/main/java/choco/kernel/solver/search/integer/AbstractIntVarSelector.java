@@ -23,7 +23,6 @@
 package choco.kernel.solver.search.integer;
 
 import choco.kernel.common.util.tools.VariableUtils;
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.AbstractSearchHeuristic;
 import choco.kernel.solver.variables.Var;
@@ -51,7 +50,7 @@ public abstract class AbstractIntVarSelector extends AbstractSearchHeuristic imp
 	 *
 	 * @return a variable on whose domain an alternative can be set (such as a non instantiated search variable)
 	 */
-	public final Var selectVar() throws ContradictionException {
+	public final Var selectVar() {
 		return  selectIntVar();
 	}
 

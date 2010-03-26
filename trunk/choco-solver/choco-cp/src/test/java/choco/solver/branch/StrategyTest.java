@@ -29,7 +29,6 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
@@ -71,7 +70,7 @@ public class StrategyTest {
             super(null, vars);
         }
 
-        public IntDomainVar selectIntVar() throws ContradictionException {
+        public IntDomainVar selectIntVar() {
             if(!vars[0].isInstantiated()){
                 return vars[0];
             }

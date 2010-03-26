@@ -24,7 +24,6 @@ package samples.multicostregular.asap.heuristics;
 
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.AbstractSearchHeuristic;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
@@ -82,7 +81,7 @@ public class ASAPVarSelector extends AbstractSearchHeuristic implements IntVarSe
 
     }
 
-    public IntDomainVar selectIntVar() throws ContradictionException {
+    public IntDomainVar selectIntVar() {
         int idx =0;
         int num = -1;
         int n = vars[0].length;
@@ -100,7 +99,7 @@ public class ASAPVarSelector extends AbstractSearchHeuristic implements IntVarSe
 
 
 	@Override
-	public final Var selectVar() throws ContradictionException {
+	public final Var selectVar() {
 		return selectIntVar();
 	}
 

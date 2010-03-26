@@ -4,7 +4,6 @@ import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.IntBranching;
 import choco.kernel.solver.search.AbstractSearchHeuristic;
@@ -85,7 +84,7 @@ public class CoverVarValSelector extends AbstractSearchHeuristic implements IntV
     }
 
     @Override
-    public IntDomainVar selectIntVar() throws ContradictionException {
+    public IntDomainVar selectIntVar() {
         int tmp = 0;
         while (lastCol.get() < vars.length && (tmp = scanCol(lastCol.get())) == Integer.MAX_VALUE)
         {
@@ -119,7 +118,7 @@ public class CoverVarValSelector extends AbstractSearchHeuristic implements IntV
     }
     
 	@Override
-	public final Var selectVar() throws ContradictionException {
+	public final Var selectVar() {
 		return selectIntVar();
 	}
 }

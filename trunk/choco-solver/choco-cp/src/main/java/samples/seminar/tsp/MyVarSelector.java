@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.seminar.tsp;
 
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
@@ -50,7 +49,7 @@ public class MyVarSelector extends AbstractIntVarSelector {
         this.objective = null;
     }
 
-    public IntDomainVar selectIntVar() throws ContradictionException {
+    public IntDomainVar selectIntVar() {
         int next = dfs();
         if (next == dest && vars[dest].isInstantiated()) {
             if (objective == null) return null;

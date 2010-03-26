@@ -22,7 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.varselector;
 
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.ConstraintSelector;
 import choco.kernel.solver.branch.IntBranching;
 import choco.kernel.solver.branch.VarSelector;
@@ -46,8 +45,8 @@ public final class CompositeIntVarSelector implements VarSelector {
         this.cvs = cvs;
     }
 
-    public IntDomainVar selectIntVar() throws ContradictionException {
-        SConstraint c = cs.getConstraint();
+    public IntDomainVar selectIntVar() {
+        SConstraint<?> c = cs.getConstraint();
         if (c == null) return null;
         else return cvs.getMinVar((AbstractIntSConstraint) c);
     }
@@ -66,7 +65,7 @@ public final class CompositeIntVarSelector implements VarSelector {
 	}
 
 	@Override
-	public Var selectVar() throws ContradictionException {
+	public Var selectVar() {
 		return selectIntVar();
 	}
     

@@ -24,7 +24,6 @@ package choco.cp.solver.search.integer.varselector;
 
 import java.util.List;
 
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.IntBranching;
 import choco.kernel.solver.search.integer.HeuristicIntVarSelector;
 import choco.kernel.solver.search.integer.IntVarSelector;
@@ -48,7 +47,7 @@ public final class LexIntVarSelector implements IntVarSelector {
 		this.h2 = h2;
 	}
 
-	public IntDomainVar selectIntVar() throws ContradictionException {
+	public IntDomainVar selectIntVar() {
 		List<IntDomainVar> ties = h1.selectTiedIntVars();
 		switch (ties.size()) {
 		case 0: return null;
@@ -63,7 +62,7 @@ public final class LexIntVarSelector implements IntVarSelector {
 	}
 
 	@Override
-	public Var selectVar() throws ContradictionException {
+	public Var selectVar() {
 		return selectIntVar();
 	}
 

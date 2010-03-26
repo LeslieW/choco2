@@ -1,6 +1,5 @@
 package samples.multicostregular.nsp;
 
-import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.branch.IntBranching;
 import choco.kernel.solver.search.AbstractSearchHeuristic;
 import choco.kernel.solver.search.integer.AbstractIntVarSelector;
@@ -168,7 +167,7 @@ public class NSPVarSelector implements IntVarSelector {
 	}
 
 	@Override
-	public final Var selectVar() throws ContradictionException {
+	public final Var selectVar() {
 		return selectIntVar();
 	}
     
