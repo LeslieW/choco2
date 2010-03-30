@@ -26,6 +26,7 @@ import static choco.Choco.*;
 import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.preprocessor.PreProcessCPSolver;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
@@ -33,6 +34,7 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.ContradictionException;
+import junit.framework.Assert;
 import org.junit.After;
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -41,7 +43,7 @@ import org.junit.Test;
 import java.util.logging.Logger;
 
 public class TimesXYZTest {
-	protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+	private final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	private CPModel m;
 	private CPSolver s;
@@ -100,7 +102,7 @@ public class TimesXYZTest {
 			do {
 				//        /LOGGER.info("" + s.getVar(x).getVal() + "*" + s.getVar(y).getVal() + "=" + s.getVar(z).getVal());
 			} while (s.nextSolution() == Boolean.TRUE);
-			LOGGER.info("Nb solution : " + s.getNbSolutions());
+			LOGGER.info(String.format("Nb solution : %d", s.getNbSolutions()));
 			assertEquals( s.getNbSolutions(), 6);
 		}
 	}
@@ -118,7 +120,7 @@ public class TimesXYZTest {
 			s.read(m);
 			//      m.addConstraint(times(x, y, z));
 			//      s.setVarIntSelector(new RandomIntVarSelector(s, i));
-			s.setVarIntSelector(new StaticVarOrder(s, s.getVar(new IntegerVariable[]{x,y,z})));
+			s.setVarIntSelector(new StaticVarOrder(s, s.getVar(x,y,z)));
 			s.setValIntSelector(new RandomIntValSelector(i + 10));
 			s.solveAll();
 			//      do {
@@ -228,5 +230,22 @@ public class TimesXYZTest {
 			}
 		}
 	}
+
+    @Test
+	public void testPDAV() {
+        m = new CPModel();
+        s = new PreProcessCPSolver();
+
+        final IntegerVariable x = makeIntVar("x", -10, 10);
+        final IntegerVariable z = makeIntVar("z", -20, 20);
+        m.addVariables(CPOptions.V_BOUND, x, z);
+
+        m.addConstraint(eq(z, mult(x, x)));
+        try{
+            s.read(m);
+        }catch (IndexOutOfBoundsException e){
+            Assert.fail();
+        }
+    }
 
 }

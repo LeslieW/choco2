@@ -32,8 +32,7 @@ import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.HashSet;
+import gnu.trove.THashSet;
 
 /**
  * A constraint that allows to reify another constraint into a boolean value.
@@ -45,27 +44,27 @@ import java.util.HashSet;
  */
 public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
 
-    protected AbstractIntSConstraint cons;
-    protected AbstractIntSConstraint oppositeCons;
+    AbstractIntSConstraint cons;
+    AbstractIntSConstraint oppositeCons;
 
     //scopeCons[i] = j means that the i-th variable of cons is the j-th in reifiedIntConstraint
     protected int[] scopeCons;
     //scopeOCons[i] = j means that the i-th variable of oppositeCons is the j-th in reifiedIntConstraint
     protected int[] scopeOCons;
 
-    public static IntDomainVar[] makeTableVar(IntDomainVar bool, AbstractIntSConstraint cons, AbstractIntSConstraint oppcons) {
-        HashSet<IntDomainVar> consV = new HashSet<IntDomainVar>();
+    private static IntDomainVar[] makeTableVar(final IntDomainVar bool, final AbstractIntSConstraint cons, final AbstractIntSConstraint oppcons) {
+        final THashSet<IntDomainVar> consV = new THashSet<IntDomainVar>();
         for (int i = 0; i < cons.getNbVars(); i++)
             consV.add(cons.getVar(i));
         for (int i = 0; i < oppcons.getNbVars(); i++)
             consV.add(oppcons.getVar(i));
         consV.add(bool);
-        IntDomainVar[] vars = new IntDomainVar[consV.size()];
+        final IntDomainVar[] vars = new IntDomainVar[consV.size()];
         consV.remove(bool);
         vars[0] = bool;
         int i = 1;
-        for (Object aConsV : consV) {
-            IntDomainVar intDomainVar = (IntDomainVar) aConsV;
+        for (final Object aConsV : consV) {
+            final IntDomainVar intDomainVar = (IntDomainVar) aConsV;
             vars[i] = intDomainVar;
             i++;
         }
@@ -82,7 +81,7 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
      * @param cons the reified constraint
      * @param solver
      */
-    public ReifiedIntSConstraint(IntDomainVar bool, AbstractIntSConstraint cons, Solver solver) {
+    public ReifiedIntSConstraint(final IntDomainVar bool, final AbstractIntSConstraint cons, final Solver solver) {
         super(makeTableVar(bool, cons, (AbstractIntSConstraint) cons.opposite(solver)));
         this.cons = cons;
         this.oppositeCons = (AbstractIntSConstraint) cons.opposite(solver);
@@ -100,7 +99,7 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
      * @param cons the reified constraint
      * @param oppositeCons the opposite reified constraint
      */
-    public ReifiedIntSConstraint(IntDomainVar bool, AbstractIntSConstraint cons, AbstractIntSConstraint oppositeCons) {
+    public ReifiedIntSConstraint(final IntDomainVar bool, final AbstractIntSConstraint cons, final AbstractIntSConstraint oppositeCons) {
         super(makeTableVar(bool, cons, oppositeCons));
         this.cons = cons;
         this.oppositeCons = oppositeCons;
@@ -115,18 +114,18 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
     @Override
     public void addExtension(final int extensionNumber) {
         super.addExtension(extensionNumber);
-        Extension ext = extensions[extensionNumber];
+        final Extension ext = extensions[extensionNumber];
         cons.setExtension(ext, extensionNumber);
         oppositeCons.setExtension(ext, extensionNumber);
     }
 
-    public void init() {
+    void init() {
         tupleCons = new int[cons.getNbVars()];
         tupleOCons = new int[oppositeCons.getNbVars()];
         scopeCons = new int[cons.getNbVars()];
         scopeOCons = new int[oppositeCons.getNbVars()];
         for (int i = 0; i < cons.getNbVars(); i++) {
-            IntDomainVar v = cons.getVar(i);
+            final IntDomainVar v = cons.getVar(i);
             for (int j = 0; j < vars.length; j++) {
                 if (v.equals(vars[j])) {
                     scopeCons[i] = j;
@@ -135,7 +134,7 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
             }
         }
         for (int i = 0; i < oppositeCons.getNbVars(); i++) {
-            IntDomainVar v = oppositeCons.getVar(i);
+            final IntDomainVar v = oppositeCons.getVar(i);
             for (int j = 0; j < vars.length; j++) {
                 if (v.equals(vars[j])) {
                     scopeOCons[i] = j;
@@ -146,7 +145,7 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
     }
 
     //assume that the boolean is known
-    public void filterReifiedConstraintFromBool() throws ContradictionException {
+    void filterReifiedConstraintFromBool() throws ContradictionException {
         if (vars[0].isInstantiatedTo(1)) {
             cons.awake();//propagate();
         } else {
@@ -155,7 +154,7 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
     }
 
     public void filterReifiedConstraintFromCons() throws ContradictionException {
-        Boolean isEntailed = cons.isEntailed();
+        final Boolean isEntailed = cons.isEntailed();
         if (isEntailed != null) {
             if (isEntailed) {
                 vars[0].instantiate(1, this, false);
@@ -167,7 +166,7 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
 
 
     @Override
-    public int getFilteredEventMask(int idx) {
+    public int getFilteredEventMask(final int idx) {
         if (vars[idx].hasEnumeratedDomain()) {
             return IntVarEvent.REMVALbitvector;
         } else {
@@ -175,7 +174,7 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
         }
     }
 
-    public void filter() throws ContradictionException {
+    void filter() throws ContradictionException {
         if (vars[0].isInstantiated()) {
             filterReifiedConstraintFromBool();
         } else {
@@ -184,27 +183,27 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
     }
 
 
-    public void awakeOnInf(int idx) throws ContradictionException {
+    public void awakeOnInf(final int idx) throws ContradictionException {
         filter();
     }
 
-    public void awakeOnSup(int idx) throws ContradictionException {
+    public void awakeOnSup(final int idx) throws ContradictionException {
         filter();
     }
 
-    public void awakeOnInst(int idx) throws ContradictionException {
+    public void awakeOnInst(final int idx) throws ContradictionException {
         filter();
     }
 
-    public void awakeOnRem(int idx, int x) throws ContradictionException {
+    public void awakeOnRem(final int idx, final int x) throws ContradictionException {
         filter();
     }
 
-    public void awakeOnRemovals(int idx, DisposableIntIterator deltaDomain) throws ContradictionException {
+    public void awakeOnRemovals(final int idx, final DisposableIntIterator deltaDomain) throws ContradictionException {
         filter();
     }
 
-    public void awakeOnBounds(int varIndex) throws ContradictionException {
+    public void awakeOnBounds(final int varIndex) throws ContradictionException {
         filter();
     }
 
@@ -216,26 +215,26 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
         filter();
     }
 
-    public void addListener(AbstractIntSConstraint thecons) {
+    void addListener(final AbstractIntSConstraint thecons) {
         if (thecons instanceof ReifiedIntSConstraint) {
-            ReifiedIntSConstraint rcons = (ReifiedIntSConstraint) thecons;
+            final ReifiedIntSConstraint rcons = (ReifiedIntSConstraint) thecons;
             addListener(rcons.cons);
             addListener(rcons.oppositeCons);
         }
-        int n = thecons.getNbVars();
+        final int n = thecons.getNbVars();
         for (int i = 0; i < n; i++) {
             thecons.setConstraintIndex(i, getIndex((AbstractVar) thecons.getVar(i)));
         }
     }
 
-    public int getIndex(AbstractVar v) {
+    int getIndex(final AbstractVar v) {
         for (int i = 0; i < vars.length; i++) {
             if (vars[i] == v) return cIndices[i];
         }
         return -1; //should never go there !
     }
 
-    public void addListener(boolean dynamicAddition) {
+    public void addListener(final boolean dynamicAddition) {
         super.addListener(dynamicAddition);
         addListener(cons);
         addListener(oppositeCons);
@@ -248,22 +247,22 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
      * @param propEng the current propagation engine
      */
     @Override
-    public void setPropagationEngine(PropagationEngine propEng) {
+    public void setPropagationEngine(final PropagationEngine propEng) {
         super.setPropagationEngine(propEng);
         cons.setPropagationEngine(propEng);
         oppositeCons.setPropagationEngine(propEng);
     }
 
     public String pretty() {
-        StringBuffer sb = new StringBuffer("(");
+        final StringBuilder sb = new StringBuilder("(");
         sb.append(" 1");
         sb.append("<=>").append(cons.pretty());
         if (oppositeCons != null) {
             sb.append(" -- 0");
             sb.append("<=>").append(oppositeCons.pretty());
         }
-        sb.append(")");
-        sb.append("~").append(vars[0].pretty());
+        sb.append(')');
+        sb.append('~').append(vars[0].pretty());
         return sb.toString();
     }
 
@@ -279,8 +278,8 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
      * @param tuple value for each variable
      * @return true if the tuple satisfies the constraint
      */
-    public boolean isSatisfied(int[] tuple) {
-        int val = tuple[0];
+    public boolean isSatisfied(final int[] tuple) {
+        final int val = tuple[0];
         for (int i = 0; i < tupleCons.length; i++) {
             tupleCons[i] = tuple[scopeCons[i]];
         }
@@ -290,8 +289,7 @@ public class ReifiedIntSConstraint extends AbstractLargeIntSConstraint {
             for (int i = 0; i < tupleOCons.length; i++) {
                 tupleOCons[i] = tuple[scopeOCons[i]];
             }
-            return !cons.isSatisfied(tupleCons)
-            && oppositeCons.isSatisfied(tupleOCons);
+            return oppositeCons.isSatisfied(tupleOCons);
         }
     }
 }

@@ -22,10 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.constraints;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Properties;
-
 import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.ModelException;
@@ -35,6 +31,10 @@ import choco.kernel.model.variables.VariableType;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import gnu.trove.THashSet;
+
+import java.util.Iterator;
+import java.util.Properties;
 
 
 /**
@@ -42,23 +42,23 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  */
 public abstract class AbstractConstraint extends ModelObject implements Constraint, Comparable {
 
-	protected ConstraintType type;
+	private ConstraintType type;
 	
 	//null by default until it has been loaded
 	protected String manager;
 
-	public AbstractConstraint(final ConstraintType type, Variable[] variables) {
+	public AbstractConstraint(final ConstraintType type, final Variable[] variables) {
 		super(variables, true);
 		this.type = type;
 	}
 
-	public AbstractConstraint(final String consMan, Variable[] variables) {
+	public AbstractConstraint(final String consMan, final Variable[] variables) {
 		this(ConstraintType.NONE, variables);
 		this.manager = consMan;
 	}
 
 
-	protected void variablesPrettyPrint(final StringBuilder buffer) {
+	void variablesPrettyPrint(final StringBuilder buffer) {
 		buffer.append(StringUtils.pretty(this.getVariableIterator()));
 	}
 
@@ -94,16 +94,16 @@ public abstract class AbstractConstraint extends ModelObject implements Constrai
 	 * @return scope of integervariable of the constraint
 	 */
 	public IntegerVariable[] getIntVariableScope() {
-		Iterator<Variable> itvs = getVariableIterator();
-		HashSet<IntegerVariable> vs = new HashSet<IntegerVariable>();
+		final Iterator<Variable> itvs = getVariableIterator();
+		final THashSet<IntegerVariable> vs = new THashSet<IntegerVariable>();
 		while (itvs.hasNext()) {
-			Variable v1 = itvs.next();
+			final Variable v1 = itvs.next();
 			if (v1.getVariableType() == VariableType.INTEGER &&
 					!vs.contains(v1)) {
 				vs.add((IntegerVariable) v1);
 			} else if (v1.getVariableType().equals(VariableType.INTEGER_EXPRESSION)) {
-				HashSet<Variable> tmp = extractEveryvariables((IntegerExpressionVariable) v1);
-				for (Variable aTmp : tmp) {
+				final THashSet<Variable> tmp = extractEveryvariables((IntegerExpressionVariable) v1);
+				for (final Variable aTmp : tmp) {
 					if (aTmp.getVariableType() == VariableType.INTEGER &&
 							!vs.contains(aTmp)) {
 						vs.add((IntegerVariable) aTmp);
@@ -111,9 +111,9 @@ public abstract class AbstractConstraint extends ModelObject implements Constrai
 				}
 			}
 		}
-		IntegerVariable[] vars = new IntegerVariable[vs.size()];
+		final IntegerVariable[] vars = new IntegerVariable[vs.size()];
 		int cpt = 0;
-		for (IntegerVariable v : vs) {
+		for (final IntegerVariable v : vs) {
 			vars[cpt++] = v;
 
 		}
@@ -125,14 +125,14 @@ public abstract class AbstractConstraint extends ModelObject implements Constrai
 	 * @param iev integer expression variable
 	 * @return set of variable
 	 */
-	private HashSet<Variable> extractEveryvariables(IntegerExpressionVariable iev){
-		HashSet<Variable> vs = new HashSet<Variable>();
+	private static THashSet<Variable> extractEveryvariables(final IntegerExpressionVariable iev){
+		final THashSet<Variable> vs = new THashSet<Variable>();
 		if(iev.getVariableType().equals(VariableType.INTEGER)){
 			if(!vs.contains(iev))vs.add(iev);
 		}
 		else if(iev.getVariableType().equals(VariableType.INTEGER_EXPRESSION)){
-			Variable[] tmp = iev.extractVariables();
-			Iterator<Variable> it = IteratorUtils.iterator(tmp);
+			final Variable[] tmp = iev.extractVariables();
+			final Iterator<Variable> it = IteratorUtils.iterator(tmp);
 			while(it.hasNext()){
 				vs.addAll(extractEveryvariables((IntegerExpressionVariable)it.next()));
 			}
@@ -168,7 +168,7 @@ public abstract class AbstractConstraint extends ModelObject implements Constrai
 	}
 
 
-	public void findManager(Properties propertiesFile) {
+	public void findManager(final Properties propertiesFile) {
 		if(manager==null){
 			if(type.property == null)throw new ModelException("Empty property, can not read it!");
 			manager = propertiesFile.getProperty(type.property);
@@ -214,7 +214,7 @@ public abstract class AbstractConstraint extends ModelObject implements Constrai
 	 *                            from being compared to this object.
 	 */
 	@Override
-	public int compareTo(Object o) {
+	public int compareTo(final Object o) {
 		if(this.equals(o)){
 			return 0;
 		}else{

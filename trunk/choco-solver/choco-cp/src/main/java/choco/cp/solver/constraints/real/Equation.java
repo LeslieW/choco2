@@ -39,30 +39,30 @@ import java.util.logging.Level;
  * A basic constraint using HC4 algorithm for filtering values with respect to a mathematical equation.
  */
 public final class Equation extends AbstractLargeRealSConstraint {
-  protected RealInterval cste;
-  protected RealExp exp;
-  protected RealExp[] subExps;
+  private RealInterval cste;
+  private RealExp exp;
+  private RealExp[] subExps;
 
-  protected int nbBoxedVars = 0;
-  protected RealVar[] boxedVars;
-  protected RealExp[][] subExpsWX;
-  protected RealExp[][] subExpsWOX;
-  protected int boxConsistencyDepth = 6;
+  private int nbBoxedVars = 0;
+  private RealVar[] boxedVars;
+  private RealExp[][] subExpsWX;
+  private RealExp[][] subExpsWOX;
+  private static final int boxConsistencyDepth = 6;
 
   private final Solver solver;
 
-  public Equation(final Solver solver, RealVar[] collectedVars, RealExp exp, RealInterval cste) {
+  public Equation(final Solver solver, final RealVar[] collectedVars, final RealExp exp, final RealInterval cste) {
     super(collectedVars);
     initEquation(exp, cste);
       this.solver = solver;
   }
 
-  public Equation(final Solver solver, RealVar[] collectedVars, RealExp exp) {
+  public Equation(final Solver solver, final RealVar[] collectedVars, final RealExp exp) {
     this(solver, collectedVars, exp, new RealIntervalConstant(0.0, 0.0));
   }
 
   public String pretty() {
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
     sb.append("Equation ").append(exp.pretty()).append(" = ").append(cste.pretty());
     return sb.toString();
   }
@@ -73,7 +73,7 @@ public final class Equation extends AbstractLargeRealSConstraint {
 //    return newc;
 //  }
 
-  public void initEquation(RealExp exp, RealInterval cste) {
+  void initEquation(final RealExp exp, final RealInterval cste) {
     this.cste = cste;
     this.exp = exp;
     boxedVars = new RealVar[vars.length];
@@ -81,21 +81,21 @@ public final class Equation extends AbstractLargeRealSConstraint {
     subExpsWOX = new RealExp[vars.length][];
 
     // Collect the subexpressions
-    List<RealExp> collectedSubExp = new ArrayList<RealExp>();
+    final List<RealExp> collectedSubExp = new ArrayList<RealExp>();
     exp.subExps(collectedSubExp);
     subExps = new RealExp[collectedSubExp.size()];
     subExps = collectedSubExp.toArray(subExps);
   }
 
-  public void addBoxedVar(RealVar var) {
+  public void addBoxedVar(final RealVar var) {
     if (nbBoxedVars == boxedVars.length) {
       LOGGER.log(Level.SEVERE, "Cannot box more variables than variables involved in the constraint !!");
       return;
     }
-    List<RealExp> wx = new ArrayList<RealExp>();
-    List<RealExp> wox = new ArrayList<RealExp>();
+    final List<RealExp> wx = new ArrayList<RealExp>();
+    final List<RealExp> wox = new ArrayList<RealExp>();
     this.exp.isolate(var, wx, wox);
-    if (wx.size() == 0) {
+    if (wx.isEmpty()) {
       LOGGER.log(Level.SEVERE, "Cannot box variables not involved in the constraint !!");
       return;
     }
@@ -106,7 +106,7 @@ public final class Equation extends AbstractLargeRealSConstraint {
   }
 
   public void boxAllVars() {
-      for (RealVar var : vars) {
+      for (final RealVar var : vars) {
           this.addBoxedVar(var);
       }
   }
@@ -124,7 +124,7 @@ public final class Equation extends AbstractLargeRealSConstraint {
     }
   }
 
-  private boolean not_inconsistent(RealExp[] wx) {
+  private boolean not_inconsistent(final RealExp[] wx) {
     boolean contradiction = false;
     try {
       tighten(wx);
@@ -134,7 +134,7 @@ public final class Equation extends AbstractLargeRealSConstraint {
       return !contradiction && (this.exp.getInf() <= this.cste.getSup() && this.exp.getSup() >= this.cste.getInf());
   }
 
-  protected void bc(RealVar var, RealExp[] wx, RealExp[] wox) throws ContradictionException {
+  void bc(final RealVar var, final RealExp[] wx, final RealExp[] wox) throws ContradictionException {
     RealInterval[] unexplored = new RealInterval[this.boxConsistencyDepth * 2];
     int[] depths = new int[this.boxConsistencyDepth * 2];
     int depth = 0;
@@ -142,7 +142,7 @@ public final class Equation extends AbstractLargeRealSConstraint {
     boolean fin = false;
 
     double leftB = 0, rightB = 0;
-    RealInterval oldValue = new RealIntervalConstant(var);
+    final RealInterval oldValue = new RealIntervalConstant(var);
 
     tighten(wox);
 
@@ -154,8 +154,8 @@ public final class Equation extends AbstractLargeRealSConstraint {
           rightB = var.getSup(); // Valeur provisoire
           fin = true;
         } else {
-          RealInterval left = RealMath.firstHalf(var);
-          RealInterval right = RealMath.secondHalf(var);
+          final RealInterval left = RealMath.firstHalf(var);
+          final RealInterval right = RealMath.secondHalf(var);
 
           var.silentlyAssign(left);
           depth++;
@@ -173,11 +173,11 @@ public final class Equation extends AbstractLargeRealSConstraint {
 
     // Reversing not explored intervals (in order to avoid to check already checked parts of the search space.
 
-    RealInterval[] tmp1 = new RealInterval[this.boxConsistencyDepth * 2];
-    int[] tmp2 = new int[this.boxConsistencyDepth * 2];
+    final RealInterval[] tmp1 = new RealInterval[this.boxConsistencyDepth * 2];
+    final int[] tmp2 = new int[this.boxConsistencyDepth * 2];
 
     for (int i = 0; i < idx; i++) {
-      int j = idx - i - 1;
+      final int j = idx - i - 1;
       tmp1[i] = unexplored[j];
       tmp2[i] = depths[j];
     }
@@ -197,8 +197,8 @@ public final class Equation extends AbstractLargeRealSConstraint {
             rightB = var.getSup();
             fin = true;
           } else {
-            RealInterval left = RealMath.firstHalf(var);
-            RealInterval right = RealMath.secondHalf(var);
+            final RealInterval left = RealMath.firstHalf(var);
+            final RealInterval right = RealMath.secondHalf(var);
 
             var.silentlyAssign(right);
             depth++;
@@ -235,13 +235,7 @@ public boolean isSatisfied() {
         ok1 = false;
     }
     solver.worldPopDuringPropagation();
-//    return ok1;
-    boolean ok2 = cste.getInf() <= exp.getInf();
-    ok2 &= exp.getSup() <= cste.getSup();
-//    return ok2;
-    assert(ok1 == ok2);
     return ok1;
-
   }
 
   public boolean isConsistent() {
@@ -249,16 +243,16 @@ public boolean isSatisfied() {
   }
 
 
-  public void tighten(RealExp[] exps) throws ContradictionException {
+  void tighten(final RealExp[] exps) throws ContradictionException {
     for (int i = 0; i < exps.length; i++) {
-      RealExp exp = exps[i];
+      final RealExp exp = exps[i];
       exp.tighten();
       if (exp.getInf() > exp.getSup())
         this.fail();
     }
   }
 
-  public void proj() throws ContradictionException {
+  void proj() throws ContradictionException {
     subExps[subExps.length - 1].intersect(cste);
     int i = subExps.length - 1;
     while (i > 0) {
