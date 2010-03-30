@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
- *         |  °(..)  |                           *
+ *         |   (..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -20,18 +20,18 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2010      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.common.util.iterators;
+package choco.kernel.memory.structure.iterators;
 
-import choco.cp.solver.variables.integer.AbstractIntDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.IStateInt;
 
 /**
  * User : cprudhom<br/>
  * Mail : cprudhom(a)emn.fr<br/>
- * Date : 1 mars 2010<br/>
+ * Date : 29 mars 2010br/>
  * Since : Choco 2.1.1<br/>
  */
-public class IntDomainIterator extends DisposableIntIterator {
+public final class BipartiteListIterator extends DisposableIntIterator {
 
     /**
      * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
@@ -43,46 +43,47 @@ public class IntDomainIterator extends DisposableIntIterator {
         private Holder() {
         }
 
-        private static IntDomainIterator instance = IntDomainIterator.build();
+        private static BipartiteListIterator instance = BipartiteListIterator.build();
 
-        private static void set(final IntDomainIterator iterator) {
+        private static void set(final BipartiteListIterator iterator) {
             instance = iterator;
         }
     }
 
-    private AbstractIntDomain domain;
-    private int nextValue;
-    private int supBound = -1;
+    private int[] list;
 
-    private IntDomainIterator() {
+    private IStateInt last;
+
+    private int nlast;
+
+    private int idx;
+
+    private BipartiteListIterator() {
     }
 
-    private static IntDomainIterator build() {
-        return new IntDomainIterator();
+    private static BipartiteListIterator build() {
+        return new BipartiteListIterator();
     }
 
     @SuppressWarnings({"unchecked"})
-    public synchronized static IntDomainIterator getIterator(final AbstractIntDomain aDomain) {
-        IntDomainIterator it = Holder.instance;
+    public static synchronized BipartiteListIterator getIterator(final int[] aList, final IStateInt aLast) {
+        BipartiteListIterator it = Holder.instance;
         if (!it.isReusable()) {
             it = build();
         }
-        it.init(aDomain);
+        it.init(aList, aLast);
         return it;
     }
 
     /**
      * Freeze the iterator, cannot be reused.
      */
-    public void init(final AbstractIntDomain dom) {
+    public void init(final int[] aList, final IStateInt aLast) {
         super.init();
-        domain = dom;
-        if (domain.getSize() >= 1) {
-            nextValue = domain.getInf();
-        } else {
-            throw new UnsupportedOperationException();
-        }
-        supBound = domain.getSup();
+        this.list = aList;
+        this.last = aLast;
+        this.nlast = aLast.get();
+        idx = 0;
     }
 
     /**
@@ -94,9 +95,7 @@ public class IntDomainIterator extends DisposableIntIterator {
      */
     @Override
     public boolean hasNext() {
-        return /*(Integer.MIN_VALUE == currentValue) ||*/ (nextValue <= supBound);
-        // if currentValue equals MIN_VALUE it will be less than the upper bound => only one test is needed ! Moreover
-        // MIN_VALUE is a special case, should not be tested if useless !
+        return idx <= nlast;
     }
 
     /**
@@ -108,11 +107,32 @@ public class IntDomainIterator extends DisposableIntIterator {
      */
     @Override
     public int next() {
-        final int v = nextValue;
-        nextValue = domain.getNextValue(nextValue);
-        return v;
+        return list[idx++];
     }
 
+    /**
+     * Removes from the underlying collection the last element returned by the
+     * iterator (optional operation).  This method can be called only once per
+     * call to <tt>next</tt>.  The behavior of an iterator is unspecified if
+     * the underlying collection is modified while the iteration is in
+     * progress in any way other than by calling this method.
+     *
+     * @throws UnsupportedOperationException if the <tt>remove</tt>
+     *                                       operation is not supported by this Iterator.
+     * @throws IllegalStateException         if the <tt>next</tt> method has not
+     *                                       yet been called, or the <tt>remove</tt> method has already
+     *                                       been called after the last call to the <tt>next</tt>
+     *                                       method.
+     */
+    @Override
+    public void remove() {
+        idx--;
+        final int temp = list[nlast];
+        list[nlast] = list[idx];
+        list[idx] = temp;
+        last.add(-1);
+        nlast--;
+    }
 
     /**
      * This method allows to declare that the iterator is not used anymoure. It
@@ -123,5 +143,4 @@ public class IntDomainIterator extends DisposableIntIterator {
         super.dispose();
         Holder.set(this);
     }
-
 }

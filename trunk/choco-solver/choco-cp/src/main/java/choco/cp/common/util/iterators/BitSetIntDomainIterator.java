@@ -31,47 +31,91 @@ import choco.kernel.memory.IStateBitSet;
  * Date : 1 mars 2010<br/>
  * Since : Choco 2.1.1<br/>
  */
-public class BitSetIntDomainIterator extends DisposableIntIterator {
+public final class BitSetIntDomainIterator extends DisposableIntIterator {
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////// STATIC ///////////////////////////////////////////////////////////////
-    static BitSetIntDomainIterator _cachedIterator;
-
-    public static DisposableIntIterator getIterator(int inf, int offset, IStateBitSet contents) {
-        BitSetIntDomainIterator iter = _cachedIterator;
-        if (iter != null && iter.isReusable()) {
-            iter.init(inf, offset, contents);
-            return iter;
+    /**
+     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
+     * than the moment that getInstance() is called.
+     * Thus, this solution is thread-safe without requiring special language constructs.
+     * see http://en.wikipedia.org/wiki/Singleton_pattern
+     */
+    private static final class Holder {
+        private Holder() {
         }
-        _cachedIterator = new BitSetIntDomainIterator(inf, offset, contents);
-        return _cachedIterator;
-    }
-    ////////////////////////////////////////////\ STATIC ///////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    protected int nextValue;
-    protected int offset;
-    protected IStateBitSet contents;
+        private static BitSetIntDomainIterator instance = BitSetIntDomainIterator.build();
 
-    private BitSetIntDomainIterator(int inf, int offset, IStateBitSet contents) {
-        init(inf, offset, contents);
+        private static void set(final BitSetIntDomainIterator iterator) {
+            instance = iterator;
+        }
     }
 
-    public void init(int inf, int offset, IStateBitSet contents) {
+    private int nextValue;
+    private int offset;
+    private IStateBitSet contents;
+
+    private BitSetIntDomainIterator() {
+    }
+
+    private static BitSetIntDomainIterator build() {
+        return new BitSetIntDomainIterator();
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public synchronized static BitSetIntDomainIterator getIterator(final int theOffset,
+                                                                   final IStateBitSet theContents) {
+        BitSetIntDomainIterator it = Holder.instance;
+        if (!it.isReusable()) {
+            it = build();
+        }
+        it.init(theOffset, theContents);
+        return it;
+    }
+
+    /**
+     * Freeze the iterator, cannot be reused.
+     */
+    public void init(final int theOffset, final IStateBitSet theContents) {
         super.init();
-        this.contents = contents;
-        this.offset = offset;
-        nextValue = inf - offset;
+        this.contents = theContents;
+        this.offset = theOffset;
+        nextValue = theContents.nextSetBit(0);
     }
 
+    /**
+     * Returns <tt>true</tt> if the iteration has more elements. (In other
+     * words, returns <tt>true</tt> if <tt>next</tt> would return an element
+     * rather than throwing an exception.)
+     *
+     * @return <tt>true</tt> if the iterator has more elements.
+     */
+    @Override
     public boolean hasNext() {
         return nextValue >= 0;
     }
 
+    /**
+     * Returns the next element in the iteration.
+     *
+     * @return the next element in the iteration.
+     * @throws java.util.NoSuchElementException
+     *          iteration has no more elements.
+     */
+    @Override
     public int next() {
-        int v = nextValue;
+        final int v = nextValue;
         nextValue = contents.nextSetBit(nextValue + 1);
         return v + offset;
     }
 
+
+    /**
+     * This method allows to declare that the iterator is not used anymoure. It
+     * can be reused by another object.
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        Holder.set(this);
+    }
 }

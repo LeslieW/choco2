@@ -63,14 +63,14 @@ public final class IncreasingNValue extends AbstractLargeIntSConstraint {
 
     Mode m;
 
-    public static IntDomainVar[] concat(IntDomainVar occ, IntDomainVar[] vars) {
-        IntDomainVar[] mesVars = new IntDomainVar[vars.length + 1];
+    public static IntDomainVar[] concat(final IntDomainVar occ, final IntDomainVar[] vars) {
+        final IntDomainVar[] mesVars = new IntDomainVar[vars.length + 1];
         System.arraycopy(vars, 0, mesVars, 0, vars.length);
         mesVars[vars.length] = occ;
         return mesVars;
     }
 
-    public IncreasingNValue(IntDomainVar occ, IntDomainVar[] x, Mode m) {
+    public IncreasingNValue(final IntDomainVar occ, final IntDomainVar[] x, final Mode m) {
         super(concat(occ, x));
         this.x = x;
         this.n = x.length;
@@ -87,7 +87,7 @@ public final class IncreasingNValue extends AbstractLargeIntSConstraint {
         this.maxP = new OrderedSparseArray(n, true);
     }
 
-    public final int getPrev(IntDomainVar v, int val) {
+    public static int getPrev(final IntDomainVar v, final int val) {
         if (val > v.getInf()) {
             return v.getPrevDomainValue(val);
         } else {
@@ -95,7 +95,7 @@ public final class IncreasingNValue extends AbstractLargeIntSConstraint {
         }
     }
 
-    public final int getNext(IntDomainVar v, int val) {
+    public static int getNext(final IntDomainVar v, final int val) {
         if (val < v.getSup()) {
             return v.getNextDomainValue(val);
         } else {
@@ -230,7 +230,7 @@ public final class IncreasingNValue extends AbstractLargeIntSConstraint {
      * It adjusts the minimum of domain of variable idx to value val.
      * It returns true if the domain of idx is empty after the operation, false otherwise.
      */
-    public final void adjustMin(int idx, int val) throws ContradictionException {
+    public final void adjustMin(final int idx, final int val) throws ContradictionException {
         vars[idx].updateInf(val, this, false);
     }
 
@@ -238,39 +238,41 @@ public final class IncreasingNValue extends AbstractLargeIntSConstraint {
      * It adjusts the maximum of domain of variable idx to value val. I
      * It returns true if the domain of idx is empty after the operation, false otherwise.
      */
-    public final void adjustMax(int idx, int val) throws ContradictionException {
+    public final void adjustMax(final int idx, final int val) throws ContradictionException {
         vars[idx].updateSup(val, this, false);
     }
 
     /*
      * It returns the minimum value of infSuffix[k][].
      */
-    public final int minInfSuffix(int k) {
+    public final int minInfSuffix(final int k) {
         int min = Integer.MAX_VALUE;
-        DisposableIntIterator it = x[k].getDomain().getIterator();
+        final DisposableIntIterator it = x[k].getDomain().getIterator();
         while (it.hasNext()) {
-            int v = it.next();
-            int w = infSuffix.get(k, v);
+            final int v = it.next();
+            final int w = infSuffix.get(k, v);
             if (min > w) {
                 min = w;
             }
         }
+        it.dispose();
         return min;
     }
 
     /*
      * It returns the maximum value of supSuffix[k][].
      */
-    public final int maxSupSuffix(int k) {
+    public final int maxSupSuffix(final int k) {
         int max = Integer.MIN_VALUE;
-        DisposableIntIterator it = x[k].getDomain().getIterator();
+        final DisposableIntIterator it = x[k].getDomain().getIterator();
         while (it.hasNext()) {
-            int v = it.next();
-            int w = supSuffix.get(k, v);
+            final int v = it.next();
+            final int w = supSuffix.get(k, v);
             if (max < w) {
                 max = w;
             }
         }
+        it.dispose();
         return max;
     }
 
@@ -312,8 +314,8 @@ public final class IncreasingNValue extends AbstractLargeIntSConstraint {
             int v = x[i].getInf();
             int w;
             do {
-                int mind = infPrefix.get(i, v) + infSuffix.get(i, v) - 1;
-                int maxd = supPrefix.get(i, v) + supSuffix.get(i, v) - 1;
+                final int mind = infPrefix.get(i, v) + infSuffix.get(i, v) - 1;
+                final int maxd = supPrefix.get(i, v) + supSuffix.get(i, v) - 1;
                 if ((m == Mode.ATMOST) && mind > occ.getSup()) {
                     x[i].removeVal(v, this, false);
                 }
@@ -337,7 +339,7 @@ public final class IncreasingNValue extends AbstractLargeIntSConstraint {
         }
     }
 
-    public final boolean test(int min, int max) {
+    public final boolean test(final int min, final int max) {
         int i = min;
         while (i <= max && !occ.canBeInstantiatedTo(i)) {
             i++;
@@ -346,11 +348,11 @@ public final class IncreasingNValue extends AbstractLargeIntSConstraint {
     }
 
     public String printer() {
-        String s = "";
-        for (IntDomainVar v : x) {
-            s += v.pretty() + "\n";
+        final StringBuilder s = new StringBuilder();
+        for (final IntDomainVar v : x) {
+            s.append(v.pretty()).append('\n');
         }
-        return s;
+        return s.toString();
     }
 
     /**
@@ -362,7 +364,7 @@ public final class IncreasingNValue extends AbstractLargeIntSConstraint {
     @Override
     public boolean isSatisfied() {
         if(isCompletelyInstantiated()){
-            TIntHashSet values = new TIntHashSet();
+            final TIntHashSet values = new TIntHashSet();
             values.add(vars[0].getVal());
             for(int i = 1; i< n; i++){
                 if(vars[i-1].getVal()>vars[i].getVal()){
@@ -384,8 +386,8 @@ public final class IncreasingNValue extends AbstractLargeIntSConstraint {
      * @return
      */
     @Override
-    public boolean isSatisfied(int[] tuple) {
-        TIntHashSet values = new TIntHashSet();
+    public boolean isSatisfied(final int[] tuple) {
+        final TIntHashSet values = new TIntHashSet();
         values.add(tuple[0]);
         for(int i = 1; i< n; i++){
             if(tuple[i-1]>tuple[i]){

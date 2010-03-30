@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
- *         |  °(..)  |                           *
+ *         |   (..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -20,18 +20,19 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2010      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.common.util.iterators;
+package choco.kernel.memory.structure.iterators;
 
-import choco.cp.solver.variables.integer.AbstractIntDomain;
+import static choco.kernel.common.Constant.STORED_OFFSET;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.memory.IStateInt;
 
 /**
  * User : cprudhom<br/>
  * Mail : cprudhom(a)emn.fr<br/>
- * Date : 1 mars 2010<br/>
+ * Date : 29 mars 2010br/>
  * Since : Choco 2.1.1<br/>
  */
-public class IntDomainIterator extends DisposableIntIterator {
+public final class PSVIndexIterator<E> extends DisposableIntIterator {
 
     /**
      * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
@@ -43,46 +44,48 @@ public class IntDomainIterator extends DisposableIntIterator {
         private Holder() {
         }
 
-        private static IntDomainIterator instance = IntDomainIterator.build();
+        private static PSVIndexIterator instance = PSVIndexIterator.build();
 
-        private static void set(final IntDomainIterator iterator) {
+        private static void set(final PSVIndexIterator iterator) {
             instance = iterator;
         }
     }
 
-    private AbstractIntDomain domain;
-    private int nextValue;
-    private int supBound = -1;
+    private int nStaticObjects;
 
-    private IntDomainIterator() {
+    private int nStoredObjects;
+
+    private E[] staticObjects;
+
+    private int idx;
+
+    private PSVIndexIterator() {
     }
 
-    private static IntDomainIterator build() {
-        return new IntDomainIterator();
+    private static PSVIndexIterator build() {
+        return new PSVIndexIterator();
     }
 
     @SuppressWarnings({"unchecked"})
-    public synchronized static IntDomainIterator getIterator(final AbstractIntDomain aDomain) {
-        IntDomainIterator it = Holder.instance;
+    public static synchronized <E> PSVIndexIterator getIterator(final int theNStaticObjects, final E[] theStaticObjects,
+                                                            final IStateInt theNStoredObjects) {
+        PSVIndexIterator it = Holder.instance;
         if (!it.isReusable()) {
             it = build();
         }
-        it.init(aDomain);
+        it.init(theNStaticObjects, theStaticObjects, theNStoredObjects);
         return it;
     }
 
     /**
      * Freeze the iterator, cannot be reused.
      */
-    public void init(final AbstractIntDomain dom) {
+    public void init(final int theNStaticObjects, final E[] theStaticObjects, final IStateInt theNStoredObjects) {
         super.init();
-        domain = dom;
-        if (domain.getSize() >= 1) {
-            nextValue = domain.getInf();
-        } else {
-            throw new UnsupportedOperationException();
-        }
-        supBound = domain.getSup();
+        idx = -1;
+        this.nStaticObjects = theNStaticObjects;
+        this.staticObjects = theStaticObjects;
+        this.nStoredObjects = theNStoredObjects.get();
     }
 
     /**
@@ -94,9 +97,9 @@ public class IntDomainIterator extends DisposableIntIterator {
      */
     @Override
     public boolean hasNext() {
-        return /*(Integer.MIN_VALUE == currentValue) ||*/ (nextValue <= supBound);
-        // if currentValue equals MIN_VALUE it will be less than the upper bound => only one test is needed ! Moreover
-        // MIN_VALUE is a special case, should not be tested if useless !
+        if (idx < STORED_OFFSET) {
+            return idx + 1 < nStaticObjects || nStoredObjects > 0;
+        } else return idx + 1 < STORED_OFFSET + nStoredObjects;
     }
 
     /**
@@ -108,9 +111,23 @@ public class IntDomainIterator extends DisposableIntIterator {
      */
     @Override
     public int next() {
-        final int v = nextValue;
-        nextValue = domain.getNextValue(nextValue);
-        return v;
+        if (idx < STORED_OFFSET) {
+            if (idx + 1 < nStaticObjects) {
+                idx++;
+                while (staticObjects[idx] == null && idx < nStaticObjects) {
+                    idx++;
+                }
+            } else if (nStoredObjects > 0) {
+                idx = STORED_OFFSET;
+            } else {
+                throw new java.util.NoSuchElementException();
+            }
+        } else if (idx + 1 < STORED_OFFSET + nStoredObjects) {
+            idx++;
+        } else {
+            throw new java.util.NoSuchElementException();
+        }
+        return idx;
     }
 
 
@@ -123,5 +140,4 @@ public class IntDomainIterator extends DisposableIntIterator {
         super.dispose();
         Holder.set(this);
     }
-
 }

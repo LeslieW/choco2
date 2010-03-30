@@ -26,6 +26,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.IStateIntVector;
+import choco.kernel.memory.structure.iterators.BipartiteListIterator;
 import choco.kernel.solver.SolverException;
 
 /**
@@ -37,25 +38,20 @@ import choco.kernel.solver.SolverException;
  * the index of the first element.
  * IT DOES NOT PRESERVE THE ORDER OF THE LIST
  */
-public class StoredIntBipartiteList implements IStateIntVector {
+public final class StoredIntBipartiteList implements IStateIntVector {
 
     /**
      * The list of values
      */
-    protected int[] list;
+    private final int[] list;
 
     /**
      * The first element of the list
      */
-    protected IStateInt last;
+    private final IStateInt last;
 
 
-    /**
-     * An iterator to be reused
-     */
-    protected DisposableIntIterator _cachedIterator;
-
-    public StoredIntBipartiteList(IEnvironment environment, int[] values) {
+    public StoredIntBipartiteList(final IEnvironment environment, final int[] values) {
         this.list = values;
         this.last = environment.makeInt(values.length - 1);
     }
@@ -73,7 +69,7 @@ public class StoredIntBipartiteList implements IStateIntVector {
         throw new UnsupportedOperationException("adding element is not permitted in this structure (the list is only meant to decrease during search)");
     }
 
-    public void remove(int i) {
+    public void remove(final int i) {
         throw new UnsupportedOperationException("removing element is not permitted in this structure (the list is only meant to decrease during search)");
     }
 
@@ -86,15 +82,17 @@ public class StoredIntBipartiteList implements IStateIntVector {
     }
 
     @Override
-    public int quickGet(int index) {
+    public int quickGet(final int index) {
         return list[index];
     }
 
     @Override
-    public boolean contain(int val) {
-        int llast = last.get();
+    public boolean contain(final int val) {
+        final int llast = last.get();
         for (int i = 0; i< llast; i++){
-            if(val == list[i])return true;
+            if(val == list[i]){
+                return true;
+            }
         }
         return false;
     }
@@ -104,59 +102,19 @@ public class StoredIntBipartiteList implements IStateIntVector {
     }
 
     @Override
-    public int quickSet(int index, int val) {
+    public int quickSet(final int index, final int val) {
         return set(index,val);
     }
 
     public DisposableIntIterator getIterator() {
-      BipartiteListIterator iter = (BipartiteListIterator) _cachedIterator;
-      if (iter != null && iter.isReusable()) {
-        iter.init();
-        return iter;
-      }
-      _cachedIterator = new BipartiteListIterator(this);
-      return _cachedIterator;
+        return BipartiteListIterator.getIterator(list, last); 
     }
 
     public String pretty() {
-        StringBuilder s = new StringBuilder("[");
+        final StringBuilder s = new StringBuilder("[");
         for (int i = 0; i <= last.get(); i++) {
             s.append(list[i]).append(i == last.get() ? "" : ",");
         }
-        return s.append("]").toString();
-    }
-
-
-    protected static class BipartiteListIterator extends DisposableIntIterator {
-        
-    	private final StoredIntBipartiteList siblist;
-
-        int idx;
-
-        public BipartiteListIterator(StoredIntBipartiteList list) {
-            this.siblist = list;
-           init();
-        }
-
-        public void init() {
-            super.init();
-            idx = 0;
-        }
-
-        public boolean hasNext() {
-            return idx <= siblist.last.get();
-        }
-
-        public int next() {
-            return siblist.list[idx++];
-        }
-
-        public void remove() {
-            idx--;
-            int temp = siblist.list[siblist.last.get()];
-            siblist.list[siblist.last.get()] = siblist.list[idx];
-            siblist.list[idx] = temp;
-            siblist.last.add(-1);
-        }
+        return s.append(']').toString();
     }
 }

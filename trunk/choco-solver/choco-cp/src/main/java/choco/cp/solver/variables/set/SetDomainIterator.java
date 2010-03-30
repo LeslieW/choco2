@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
- *         |  °(..)  |                           *
+ *         |   (..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -20,18 +20,17 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2010      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.common.util.iterators;
+package choco.cp.solver.variables.set;
 
-import choco.cp.solver.variables.integer.AbstractIntDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
 /**
  * User : cprudhom<br/>
  * Mail : cprudhom(a)emn.fr<br/>
- * Date : 1 mars 2010<br/>
+ * Date : 29 mars 2010br/>
  * Since : Choco 2.1.1<br/>
  */
-public class IntDomainIterator extends DisposableIntIterator {
+public final class SetDomainIterator extends DisposableIntIterator {
 
     /**
      * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
@@ -43,27 +42,27 @@ public class IntDomainIterator extends DisposableIntIterator {
         private Holder() {
         }
 
-        private static IntDomainIterator instance = IntDomainIterator.build();
+        private static SetDomainIterator instance = SetDomainIterator.build();
 
-        private static void set(final IntDomainIterator iterator) {
+        private static void set(final SetDomainIterator iterator) {
             instance = iterator;
         }
     }
 
-    private AbstractIntDomain domain;
-    private int nextValue;
-    private int supBound = -1;
+    private int currentValue;
 
-    private IntDomainIterator() {
+    private BitSetEnumeratedDomain domain;
+
+    private SetDomainIterator() {
     }
 
-    private static IntDomainIterator build() {
-        return new IntDomainIterator();
+    private static SetDomainIterator build() {
+        return new SetDomainIterator();
     }
 
     @SuppressWarnings({"unchecked"})
-    public synchronized static IntDomainIterator getIterator(final AbstractIntDomain aDomain) {
-        IntDomainIterator it = Holder.instance;
+    public static synchronized SetDomainIterator getIterator(final BitSetEnumeratedDomain aDomain) {
+        SetDomainIterator it = Holder.instance;
         if (!it.isReusable()) {
             it = build();
         }
@@ -74,15 +73,10 @@ public class IntDomainIterator extends DisposableIntIterator {
     /**
      * Freeze the iterator, cannot be reused.
      */
-    public void init(final AbstractIntDomain dom) {
+    public void init(final BitSetEnumeratedDomain aDomain) {
         super.init();
-        domain = dom;
-        if (domain.getSize() >= 1) {
-            nextValue = domain.getInf();
-        } else {
-            throw new UnsupportedOperationException();
-        }
-        supBound = domain.getSup();
+        domain = aDomain;
+        currentValue = Integer.MIN_VALUE;
     }
 
     /**
@@ -94,9 +88,7 @@ public class IntDomainIterator extends DisposableIntIterator {
      */
     @Override
     public boolean hasNext() {
-        return /*(Integer.MIN_VALUE == currentValue) ||*/ (nextValue <= supBound);
-        // if currentValue equals MIN_VALUE it will be less than the upper bound => only one test is needed ! Moreover
-        // MIN_VALUE is a special case, should not be tested if useless !
+        return domain.getSize() != 0 && ((Integer.MIN_VALUE == currentValue) || (currentValue < domain.getLastVal()));
     }
 
     /**
@@ -108,9 +100,8 @@ public class IntDomainIterator extends DisposableIntIterator {
      */
     @Override
     public int next() {
-        final int v = nextValue;
-        nextValue = domain.getNextValue(nextValue);
-        return v;
+        currentValue = (Integer.MIN_VALUE == currentValue) ? domain.getFirstVal() : domain.getNextValue(currentValue);
+      return currentValue;
     }
 
 
@@ -123,5 +114,4 @@ public class IntDomainIterator extends DisposableIntIterator {
         super.dispose();
         Holder.set(this);
     }
-
 }

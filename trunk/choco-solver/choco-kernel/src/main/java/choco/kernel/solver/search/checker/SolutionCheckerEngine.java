@@ -1,11 +1,11 @@
 package choco.kernel.solver.search.checker;
 
-import java.util.logging.Level;
-
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.integer.AbstractIntSConstraint;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+
+import java.util.logging.Level;
 
 
 
@@ -35,7 +35,7 @@ public class SolutionCheckerEngine extends AbstractSolutionCheckerEngine {
      * Enable consistency for constraints checking.
      * @param enableConsistency true if constraint consistency must be check
      */
-	public final void setEnableConsistency(boolean enableConsistency) {
+	public final void setEnableConsistency(final boolean enableConsistency) {
 		this.enableConsistency = enableConsistency;
 	}
 
@@ -71,7 +71,7 @@ public class SolutionCheckerEngine extends AbstractSolutionCheckerEngine {
      * @param c constraint to check
      * @throws SolutionCheckerException if {@code c} is not satisfied
      */
-	public void checkConstraint(SConstraint c) throws SolutionCheckerException {
+	public void checkConstraint(final SConstraint c) throws SolutionCheckerException {
 		if( ! isSatisfied(c)) {
 			throw new SolutionCheckerException("FAILURE "+reuseLabel+": "+c.pretty());
 		}
@@ -83,7 +83,7 @@ public class SolutionCheckerEngine extends AbstractSolutionCheckerEngine {
      * @param c contraint to check
      * @return false if the constraint is not satisfied.
      */
-	public boolean inspectConstraint(SConstraint c) {
+	public boolean inspectConstraint(final SConstraint c) {
 		if( isSatisfied(c)) {
 			if(LOGGER.isLoggable(Level.CONFIG)) {
 				LOGGER.log(Level.CONFIG, "  {0}: {1}", new Object[]{reuseLabel, c.pretty()});
@@ -100,7 +100,7 @@ public class SolutionCheckerEngine extends AbstractSolutionCheckerEngine {
      * @param c constraint to check.
      * @return false if the {@code c} is not satisfied.
      */
-	protected boolean isSatisfied(SConstraint c) {
+	protected boolean isSatisfied(final SConstraint c) {
 		boolean isOk;
 		if(c instanceof AbstractIntSConstraint){
 			try{
@@ -124,13 +124,13 @@ public class SolutionCheckerEngine extends AbstractSolutionCheckerEngine {
      * @return false if the {@code c} is satisfied
      * @throws UnsupportedOperationException if {@code ic} doesn't allow consistency checking.
      */
-	protected boolean isSatisfied(AbstractIntSConstraint ic)throws UnsupportedOperationException  {
-		int[] tuple = new int[ic.getNbVars()];
-		int[] tupleL = new int[ic.getNbVars()];
-		int[] tupleU = new int[ic.getNbVars()];
+	protected boolean isSatisfied(final AbstractIntSConstraint ic)throws UnsupportedOperationException  {
+		final int[] tuple = new int[ic.getNbVars()];
+		final int[] tupleL = new int[ic.getNbVars()];
+		final int[] tupleU = new int[ic.getNbVars()];
 		boolean fullInstantiated = true;
 		for(int i = 0; i < ic.getNbVars(); i++){
-			IntDomainVar v = (IntDomainVar)ic.getVar(i);
+			final IntDomainVar v = ic.getVar(i);
 			if(v.isInstantiated()){
 				tuple[i] = v.getVal();
 				tupleL[i] = tuple[i];

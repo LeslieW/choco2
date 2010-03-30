@@ -26,6 +26,7 @@ import static choco.kernel.common.Constant.*;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
+import choco.kernel.memory.structure.iterators.PSIVIterator;
 
 
 /**
@@ -36,186 +37,102 @@ import choco.kernel.memory.IStateInt;
  * And integers with large indices (1000000 ... ) are "stored" in a backtrackable
  * manner, as if they were in a StoredIntVector
  */
-public class PartiallyStoredIntVector {
+public final class PartiallyStoredIntVector {
 
-  protected int[] staticInts;
-  protected int[] storedInts;
+    private int[] staticInts;
+    private int[] storedInts;
 
-  protected int nStaticInts;
-  protected IStateInt nStoredInts;
+    private int nStaticInts;
+    private final IStateInt nStoredInts;
 
-  public PartiallyStoredIntVector(IEnvironment env) {
-    staticInts = new int[INITIAL_STATIC_CAPACITY];
-    storedInts = new int[INITIAL_STORED_CAPACITY];
-    nStaticInts = 0;
-    nStoredInts = env.makeInt(0);
-  }
-
-  public int staticAdd(int o) {
-    ensureStaticCapacity(nStaticInts + 1);
-    staticInts[nStaticInts++] = o;
-    return nStaticInts - 1;
-  }
-
-  public void ensureStaticCapacity(int n) {
-      if (n > staticInts.length) {
-          int newSize = staticInts.length;
-          while (n >= newSize) {
-              newSize = (3 * newSize) / 2;
-          }
-          int[] newStaticObjects = new int[newSize];
-          System.arraycopy(staticInts, 0, newStaticObjects, 0, staticInts.length);
-          this.staticInts = newStaticObjects;
-      }
-  }
-
-  public int add(int o) {
-    ensureStoredCapacity(nStoredInts.get() + 1);
-    storedInts[nStoredInts.get()] = o;
-    nStoredInts.add(1);
-    return STORED_OFFSET + nStoredInts.get() - 1;
-  }
-
-  public void remove(int o) {
-    staticInts[o] = staticInts[nStaticInts];
-    staticInts[nStaticInts] = 0;
-    nStaticInts--;
-  }
-
-  public void ensureStoredCapacity(int n) {
-      if (n > storedInts.length) {
-          int newSize = storedInts.length;
-          while (n >= newSize) {
-              newSize = (3 * newSize) / 2;
-          }
-          int[] newStoredObjects = new int[newSize];
-          System.arraycopy(storedInts, 0, newStoredObjects, 0, storedInts.length);
-          this.storedInts = newStoredObjects;
-      }
-  }
-
-  public int get(int index) {
-    if (index < STORED_OFFSET) {
-      return staticInts[index];
-    } else {
-      return storedInts[index - STORED_OFFSET];
+    public PartiallyStoredIntVector(final IEnvironment env) {
+        staticInts = new int[INITIAL_STATIC_CAPACITY];
+        storedInts = new int[INITIAL_STORED_CAPACITY];
+        nStaticInts = 0;
+        nStoredInts = env.makeInt(0);
     }
-  }
 
-  public boolean isEmpty() {
-    return ((nStaticInts == 0) && (nStoredInts.get() == 0));
-  }
+    public int staticAdd(final int o) {
+        ensureStaticCapacity(nStaticInts + 1);
+        staticInts[nStaticInts++] = o;
+        return nStaticInts - 1;
+    }
 
-  public int size() {
-    return (nStaticInts + nStoredInts.get());
-  }
+    public void ensureStaticCapacity(final int n) {
+        if (n > staticInts.length) {
+            int newSize = staticInts.length;
+            while (n >= newSize) {
+                newSize = (3 * newSize) / 2;
+            }
+            final int[] newStaticObjects = new int[newSize];
+            System.arraycopy(staticInts, 0, newStaticObjects, 0, staticInts.length);
+            this.staticInts = newStaticObjects;
+        }
+    }
 
-//  public IntIterator getIndexIterator() {
-//    return new IntIterator() {
-//      int idx = -1;
-//
-//      public boolean hasNext() {
-//        if (idx < STORED_OFFSET) {
-//          if (idx + 1 < nStaticInts)
-//            return true;
-//          else if (nStoredInts.get() > 0)
-//            return true;
-//          else
-//            return false;
-//        } else if (idx + 1 < STORED_OFFSET + nStoredInts.get())
-//          return true;
-//        else
-//          return false;
-//      }
-//
-//      public int next() {
-//        if (idx < STORED_OFFSET) {
-//          if (idx + 1 < nStaticInts)
-//            idx++;
-//          else if (nStoredInts.get() > 0)
-//            idx = STORED_OFFSET;
-//          else
-//            throw new java.util.NoSuchElementException();
-//        } else if (idx + 1 < STORED_OFFSET + nStoredInts.get())
-//          idx++;
-//        else
-//          throw new java.util.NoSuchElementException();
-//        return idx;
-//      }
-//
-//      public void remove() {
-//        throw new UnsupportedOperationException();
-//      }
-//    };
-//  }
-//
+    public int add(final int o) {
+        ensureStoredCapacity(nStoredInts.get() + 1);
+        storedInts[nStoredInts.get()] = o;
+        nStoredInts.add(1);
+        return STORED_OFFSET + nStoredInts.get() - 1;
+    }
 
-    protected static DisposableIntIterator _cachedIndexIterator = null;
+    public void remove(final int o) {
+        staticInts[o] = staticInts[nStaticInts];
+        staticInts[nStaticInts] = 0;
+        nStaticInts--;
+    }
+
+    public void ensureStoredCapacity(final int n) {
+        if (n > storedInts.length) {
+            int newSize = storedInts.length;
+            while (n >= newSize) {
+                newSize = (newSize*3) / 2 + 1;
+            }
+            final int[] newStoredObjects = new int[newSize];
+            System.arraycopy(storedInts, 0, newStoredObjects, 0, storedInts.length);
+            this.storedInts = newStoredObjects;
+        }
+    }
+
+    public int get(final int index) {
+        if (index < STORED_OFFSET) {
+            return staticInts[index];
+        } else {
+            return storedInts[index - STORED_OFFSET];
+        }
+    }
+
+    public boolean isEmpty() {
+        return ((nStaticInts == 0) && (nStoredInts.get() == 0));
+    }
+
+    public int size() {
+        return (nStaticInts + nStoredInts.get());
+    }
 
     public DisposableIntIterator getIndexIterator() {
-        IndexIterator iter = (IndexIterator) _cachedIndexIterator;
-        if (iter != null && iter.isReusable()) {
-            iter.init(this);
-            return iter;
-        }
-        _cachedIndexIterator = new IndexIterator(this);
-        return _cachedIndexIterator;
+        return PSIVIterator.getIterator(nStaticInts, nStoredInts);
     }
 
+    public static boolean isStaticIndex(final int idx) {
+        return idx < STORED_OFFSET;
+    }
 
-    protected static class IndexIterator extends DisposableIntIterator {
-        PartiallyStoredIntVector vector;
-        int idx = -1;
-        boolean stats;
-        boolean storeds;
-
-        public IndexIterator(PartiallyStoredIntVector vector) {
-            init(vector);
+    public static int getSmallIndex(final int idx) {
+        if (idx < STORED_OFFSET){
+            return idx;
+        }else{
+            return idx - STORED_OFFSET;
         }
+    }
 
-        public void init(PartiallyStoredIntVector vector) {
-            super.init();
-            this.vector = vector;
-            idx = -1;
-            stats = (vector.nStaticInts> 0);
-            storeds = (vector.nStoredInts.get() > 0);
+    public static int getGlobalIndex(final int idx, final boolean isStatic) {
+        if (isStatic){
+            return idx;
+        }else{
+            return idx + STORED_OFFSET;
         }
-
-      public boolean hasNext() {
-          if(idx == -1){
-              return stats || storeds;
-          }else{
-              return ((stats && idx < vector.nStaticInts-1)
-                      || (idx == vector.nStaticInts-1 && storeds)
-                  ||( storeds && STORED_OFFSET <= idx && idx < STORED_OFFSET + vector.nStoredInts.get()-1));
-          }
-      }
-
-      public int next() {
-          idx++;
-          if(idx==vector.nStaticInts){
-              idx = STORED_OFFSET;
-          }
-          return idx;
-      }
-  }
-
-  public static boolean isStaticIndex(int idx) {
-    return idx < STORED_OFFSET;
-  }
-
-  public static int getSmallIndex(int idx) {
-    if (idx < STORED_OFFSET)
-      return idx;
-    else
-      return idx - STORED_OFFSET;
-  }
-
-  public static int getGlobalIndex(int idx, boolean isStatic) {
-    if (isStatic)
-      return idx;
-    else
-      return idx + STORED_OFFSET;
-  }
+    }
 
 }

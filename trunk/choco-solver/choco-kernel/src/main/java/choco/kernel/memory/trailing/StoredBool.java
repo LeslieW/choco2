@@ -23,7 +23,6 @@
 package choco.kernel.memory.trailing;
 
 import choco.kernel.memory.IStateBool;
-import choco.kernel.memory.trailing.trail.StoredBoolTrail;
 
 
 /**
@@ -43,7 +42,7 @@ public final class StoredBool extends AbstractStoredObject implements IStateBool
    * use the IEnvironment factory
    */
 
-  public StoredBool(EnvironmentTrailing env, boolean b) {
+  public StoredBool(final EnvironmentTrailing env, final boolean b) {
 	  super(env);
 	  currentValue = b;
   }

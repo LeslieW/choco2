@@ -65,22 +65,22 @@ public final class StoredBinaryTree implements IStateBinaryTree {
 
 
 
-    EnvironmentTrailing env;
-    Node root;
-    boolean addLeft = true;
-    boolean remLeft = true;
+    private final EnvironmentTrailing env;
+    private Node root;
+    private boolean addLeft = true;
+    private boolean remLeft = true;
 
 
-    public StoredBinaryTree(EnvironmentTrailing env, int a, int b)
+    public StoredBinaryTree(final EnvironmentTrailing anEnvironment, final int a, final int b)
     {
-        this.env = env;
+        this.env = anEnvironment;
         this.add(a,b);
     }
 
 
     public int getSize() {
         int out = 0;
-        DisposableIntIterator it = this.getIterator();
+        final DisposableIntIterator it = this.getIterator();
         while (it.hasNext())
         {
             it.next();
@@ -90,42 +90,46 @@ public final class StoredBinaryTree implements IStateBinaryTree {
         return out;
     }
 
-    public Node find (int value)
+    public Node find (final int value)
     {
         Node current = this.root;
         while (current != null)
         {
-            if (current.contains(value))
+            if (current.contains(value)){
                 return current;
-            if (value < current.inf)
+            }
+            if (value < current.inf){
                 current = current.leftNode;
-            else
+            }else{
                 current = current.rightNode;
+            }
         }
         return current;
     }
 
 
 
-    public Node nextNode(int value)
+    public Node nextNode(final int value)
     {
         Node current = this.root;
         while (current != null)
         {
-            if (current.contains(value+1))
+            if (current.contains(value+1)){
                 return current;
-            else if (value+1 < current.inf)
+            }else if (value+1 < current.inf)
             {
-                Node n = current.leftNode;
-                if (n == null)
+                final Node n = current.leftNode;
+                if (n == null){
                     return current;
+                }
                 current = n;
             }
             else
             {
-                Node n = current.rightNode;
-                if (n == null)
+                final Node n = current.rightNode;
+                if (n == null){
                     return this.nextNode(current);
+                }
                 current = n;
 
 
@@ -135,25 +139,27 @@ public final class StoredBinaryTree implements IStateBinaryTree {
         }
         return null;
     }
-    public Node prevNode(int value)
+    public Node prevNode(final int value)
     {
         Node current = this.root;
         while (current != null)
         {
-            if (current.contains(value-1))
+            if (current.contains(value-1)){
                 return current;
-            else if (value-1 < current.inf)
+            }else if (value-1 < current.inf)
             {
-                Node n = current.leftNode;
-                if (n == null)
+                final Node n = current.leftNode;
+                if (n == null){
                     return this.prevNode(current);
+                }
                 current = n;
             }
             else
             {
-                Node n = current.rightNode;
-                if (n == null)
+                final Node n = current.rightNode;
+                if (n == null){
                     return current;
+                }
                 current = n;
 
 
@@ -166,18 +172,18 @@ public final class StoredBinaryTree implements IStateBinaryTree {
 
 
 
-    public void add(Node n)
+    public void add(final Node n)
     {
         add(n,true);
     }
 
-    public void remove(Node n)
+    public void remove(final Node n)
     {
         remove(n,true);
     }
 
 
-    public void remove(Node n, boolean save)
+    public void remove(final Node n, final boolean save)
     {
         if (save)
         {
@@ -187,52 +193,57 @@ public final class StoredBinaryTree implements IStateBinaryTree {
 
         if (n.leftNode == null && n.rightNode == null)
         {
-            if (n.father == null)
+            if (n.father == null){
                 this.root = null;
-            else if (n.father.leftNode == n)
+            }else if (n.father.leftNode == n){
                 n.father.leftNode = null;
-            else
+            }else{
                 n.father.rightNode = null;
+            }
         }
         else if (n.leftNode == null)
         {
             n.rightNode.father = n.father;
-            if (n.father == null)
+            if (n.father == null){
                 this.root = n.rightNode;
-            else if (n.father.leftNode == n)
+            }else if (n.father.leftNode == n){
                 n.father.leftNode = n.rightNode;
-            else
+            }else{
                 n.father.rightNode = n.rightNode;
+            }
         }
         else if (n.rightNode == null)
         {
             n.leftNode.father = n.father;
-            if (n.father == null)
+            if (n.father == null){
                 this.root = n.leftNode;
-            else if (n.father.leftNode == n)
+            }else if (n.father.leftNode == n){
                 n.father.leftNode = n.leftNode;
-            else
+            }else {
                 n.father.rightNode = n.leftNode;
+            }
 
         }
         else
         {
             Node current;
-            Node curSon;
-            Node curFat;
+            final Node curSon;
+            final Node curFat;
             if (remLeft)
             {
                 current = n.leftNode;
-                while (current.rightNode != null)
+                while (current.rightNode != null){
                     current = current.rightNode;
+                }
                 curSon = current.leftNode;
                 curFat  = current.father;
             }
             else
             {
                 current = n.rightNode;
-                while (current.leftNode != null)
+                while (current.leftNode != null){
                     current = current.leftNode;
+                }
                 curSon = current.rightNode;
                 curFat = current.father;
             }
@@ -250,8 +261,9 @@ public final class StoredBinaryTree implements IStateBinaryTree {
                 else {
                     curFat.leftNode = curSon;
                 }
-                if (curSon != null)
+                if (curSon != null){
                     curSon.father = curFat;
+                }
             }
             else
             {
@@ -272,9 +284,9 @@ public final class StoredBinaryTree implements IStateBinaryTree {
 
 
             current.father = n.father;
-            if (current.father == null)
+            if (current.father == null){
                 this.root = current;
-            else if (current.father.leftNode == n)
+            }else if (current.father.leftNode == n)
             {
                 current.father.leftNode = current;
             }
@@ -283,17 +295,17 @@ public final class StoredBinaryTree implements IStateBinaryTree {
                 current.father.rightNode = current;
             }
 
-            remLeft = !remLeft;
+            remLeft ^= true;
 
         }
     }
 
-    public void add(int a, int b) {
+    public void add(final int a, final int b) {
         this.add(new Node(this,a,b),false);
     }
 
 
-    public void add(Node n, boolean save)
+    public void add(final Node n, final boolean save)
     {
         if (save)
         {
@@ -315,8 +327,9 @@ public final class StoredBinaryTree implements IStateBinaryTree {
                     n.father = current;
                     done = true;
                 }
-                else
+                else{
                     current = current.leftNode;
+                }
 
             }
             else if (current.inf < n.inf)
@@ -327,7 +340,9 @@ public final class StoredBinaryTree implements IStateBinaryTree {
                     n.father = current;
                     done = true;
                 }
-                else current = current.rightNode;
+                else {
+                    current = current.rightNode;
+                }
             }
             else          {
                 LOGGER.severe("GROS PB");
@@ -340,48 +355,50 @@ public final class StoredBinaryTree implements IStateBinaryTree {
         return this.root;
     }
 
-    public Node prevNode(Node n)
+    public Node prevNode(final Node n)
     {
         Node cur = n;
         if (cur.leftNode != null) {
             cur = cur.leftNode;
-            while (cur.rightNode != null)
+            while (cur.rightNode != null){
                 cur = cur.rightNode;
+            }
             return cur;
         }
-        else if (cur.father == null)
+        else if (cur.father == null){
             return null;
-        else if (cur.father.rightNode == cur)
+        }else if (cur.father.rightNode == cur){
             return cur.father;
-        else
+        }else
         {
-            while (cur.father != null && cur.father.leftNode == cur)
+            while (cur.father != null && cur.father.leftNode == cur){
                 cur = cur.father;
-
+            }
             return cur.father ;
 
         }
 
     }
 
-    public Node nextNode(Node n)
+    public Node nextNode(final Node n)
     {
         Node cur = n;
         if (cur.rightNode != null) {
             cur = cur.rightNode;
-            while (cur.leftNode != null)
+            while (cur.leftNode != null){
                 cur = cur.leftNode;
+            }
             return cur;
         }
-        else if (cur.father == null)
+        else if (cur.father == null){
             return null;
-        else if (cur.father.leftNode == cur)
+        }else if (cur.father.leftNode == cur){
             return cur.father;
-        else
+        }else
         {
-            while (cur.father != null && cur.father.rightNode == cur)
+            while (cur.father != null && cur.father.rightNode == cur){
                 cur = cur.father;
-
+            }
             return cur.father ;
 
         }
@@ -389,14 +406,14 @@ public final class StoredBinaryTree implements IStateBinaryTree {
     }
 
 
-    public boolean remove(int value)
+    public boolean remove(final int value)
     {
-        Node container = this.find(value);
+        final Node container = this.find(value);
 
-        if (container == null)
+        if (container == null){
             return false;
 
-        else if (container.getSize() == 1)
+        }else if (container.getSize() == 1)
         {
             this.remove(container,true);
         }
@@ -411,7 +428,7 @@ public final class StoredBinaryTree implements IStateBinaryTree {
         }
         else
         {
-            Node n2;
+            final Node n2;
             if (addLeft)
             {
                 n2 = new Node(this,value+1,container.sup);
@@ -423,7 +440,7 @@ public final class StoredBinaryTree implements IStateBinaryTree {
                 container.setInf(value+1);
             }
             this.add(n2);
-            addLeft = !addLeft;
+            addLeft ^= true;
         }
         return true;
     }
@@ -437,24 +454,28 @@ public final class StoredBinaryTree implements IStateBinaryTree {
     public Node getFirstNode()
     {
         Node current = this.root;
-        if (current == null)
+        if (current == null){
             return null;
-        while (current.leftNode != null)
+        }
+        while (current.leftNode != null){
             current = current.leftNode;
+        }
         return current;
     }
 
     public Node getLastNode()
     {
         Node current = this.root;
-        if (current == null)
+        if (current == null){
             return null;
-        while (current.rightNode != null)
+        }
+        while (current.rightNode != null){
             current = current.rightNode;
+        }
         return current;
     }
 
-    private void rem(int value)
+    private void rem(final int value)
     {
         remove(value);
     }
@@ -477,7 +498,7 @@ public final class StoredBinaryTree implements IStateBinaryTree {
 
     public List<Node> toList()
     {
-        ArrayList<Node> out = new ArrayList<Node>();
+        final ArrayList<Node> out = new ArrayList<Node>();
         Node current = this.getFirstNode();
         while (current != null)
         {
@@ -489,21 +510,23 @@ public final class StoredBinaryTree implements IStateBinaryTree {
 
     public String toListString()
     {
-        StringBuffer buf = new StringBuffer("[");
-        List<Node> tmp = this.toList();
-        for (Node iv : tmp)
-            buf.append(iv.toString()).append(" ");
-        if (!tmp.isEmpty())
+        final StringBuilder buf = new StringBuilder("[");
+        final List<Node> tmp = this.toList();
+        for (final Node iv : tmp){
+            buf.append(iv.toString()).append(' ');
+        }
+        if (!tmp.isEmpty()){
             buf.deleteCharAt(buf.length()-1);
-        buf.append("]");
+        }
+        buf.append(']');
         return buf.toString();
     }
 
-    protected TreeIterator _cachedIterator = null;
+    private TreeIterator _cachedIterator = null;
 
-    public DisposableIntIterator getIterator()
+    public synchronized DisposableIntIterator getIterator()
     {
-        TreeIterator iter = _cachedIterator;
+        final TreeIterator iter = _cachedIterator;
         if (iter != null && iter.isReusable()) {
             iter.init();
             return iter;
@@ -512,17 +535,17 @@ public final class StoredBinaryTree implements IStateBinaryTree {
         return _cachedIterator;
     }
 
-    public static class TreeIterator extends DisposableIntIterator
+    private static final class TreeIterator extends DisposableIntIterator
     {
-        StoredBinaryTree tree;
-        int currentValue;
-        Node currentNode;
-        Node lastNode;
+        private final StoredBinaryTree tree;
+        private int currentValue;
+        private Node currentNode;
+        private Node lastNode;
 
-        public TreeIterator(StoredBinaryTree tree)
+        public TreeIterator(final StoredBinaryTree aTree)
         {
-            this.tree = tree;
-            init();
+            this.tree = aTree;
+            this.init();
         }
 
         @Override
@@ -565,7 +588,7 @@ public final class StoredBinaryTree implements IStateBinaryTree {
 
     public String toDotty()
     {
-        StringBuilder s = new StringBuilder("digraph binary_tree_domain {\n");
+        final StringBuilder s = new StringBuilder("digraph binary_tree_domain {\n");
         s.append(this.toDotty(this.root));
         s.append("\n}");
         return s.toString();
@@ -573,17 +596,17 @@ public final class StoredBinaryTree implements IStateBinaryTree {
 
 
 
-    public String toDotty(Node n)
+    public String toDotty(final Node n)
     {
-        StringBuilder s = new StringBuilder();
+        final StringBuilder s = new StringBuilder();
         if (n.leftNode != null)
         {
-            s.append("\"").append(n).append("\" -> \"").append(n.leftNode).append("\";\n");
+            s.append('\"').append(n).append("\" -> \"").append(n.leftNode).append("\";\n");
             s.append(this.toDotty(n.leftNode));
         }
         if (n.rightNode != null)
         {
-            s.append("\"").append(n).append("\" -> \"").append(n.rightNode).append("\";\n");
+            s.append('\"').append(n).append("\" -> \"").append(n.rightNode).append("\";\n");
             s.append(this.toDotty(n.rightNode));
         }
 
@@ -592,12 +615,12 @@ public final class StoredBinaryTree implements IStateBinaryTree {
 
     }
 
-    public static void print(IStateBinaryTree b)
+    public static void print(final IStateBinaryTree b)
     {
 
-        String f = "bui.dot";
+        final String f = "bui.dot";
         try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(f)));
+            final BufferedWriter bw = new BufferedWriter(new FileWriter(new File(f)));
             bw.write(b.toDotty());
             bw.flush();
             bw.close();

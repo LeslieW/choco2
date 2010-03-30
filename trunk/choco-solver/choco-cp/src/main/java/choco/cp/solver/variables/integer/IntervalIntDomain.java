@@ -35,7 +35,7 @@ import choco.kernel.solver.propagation.PropagationEngine;
 import java.util.Random;
 
 public class IntervalIntDomain extends AbstractIntDomain {
-    private static int eventBitMask = IntVarEvent.BOUNDSbitvector + IntVarEvent.REMVALbitvector;
+    private static final int eventBitMask = IntVarEvent.BOUNDSbitvector + IntVarEvent.REMVALbitvector;
     /**
      * A random generator for random value from the domain
      */
@@ -54,7 +54,7 @@ public class IntervalIntDomain extends AbstractIntDomain {
 
     protected final IStateInt sup;
 
-    public IntervalIntDomain(IntDomainVarImpl v, int a, int b, IEnvironment environment, PropagationEngine propagationEngine) {
+    public IntervalIntDomain(final IntDomainVarImpl v, final int a, final int b, final IEnvironment environment, final PropagationEngine propagationEngine) {
         super(propagationEngine);
         variable = v;
         inf = environment.makeInt(a);
@@ -63,11 +63,11 @@ public class IntervalIntDomain extends AbstractIntDomain {
 
     }
 
-    public boolean contains(int x) {
+    public boolean contains(final int x) {
         return ((x >= getInf()) && (x <= getSup()));
     }
 
-    public int getNextValue(int x) {
+    public int getNextValue(final int x) {
         if (x < getInf()) {
             return getInf();
         } else if (x < getSup()) {
@@ -77,7 +77,7 @@ public class IntervalIntDomain extends AbstractIntDomain {
         }
     }
 
-    public int getPrevValue(int x) {
+    public int getPrevValue(final int x) {
         if (x > getSup()) {
             return getSup();
         } else if (x > getInf()) {
@@ -88,8 +88,8 @@ public class IntervalIntDomain extends AbstractIntDomain {
     }
 
     public int getRandomValue() {
-        int inf = getInf();
-        int rand = random.nextInt(this.getSize());
+        final int inf = getInf();
+        final int rand = random.nextInt(this.getSize());
         return inf + rand;
     }
 
@@ -97,22 +97,22 @@ public class IntervalIntDomain extends AbstractIntDomain {
         return getSup() - getInf() + 1;
     }
 
-    public boolean hasNextValue(int x) {
+    public boolean hasNextValue(final int x) {
         return (x < getSup());
     }
 
-    public boolean hasPrevValue(int x) {
+    public boolean hasPrevValue(final int x) {
         return (x > getInf());
     }
 
     protected DisposableIntIterator _iterator = null;
 
     public DisposableIntIterator getIterator(){
-        if(getSize() == 1) return OneValueIterator.getOneValueIterator(getInf());
+        if(getSize() == 1) return OneValueIterator.getIterator(getInf());
         return IntervalIntDomainIterator.getIterator(this);
       }
 
-    public boolean remove(int x) {
+    public boolean remove(final int x) {
         return false;
     }
 
@@ -124,7 +124,7 @@ public class IntervalIntDomain extends AbstractIntDomain {
         return inf.get();
     }
 
-    public void restrict(int x) {
+    public void restrict(final int x) {
       if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
         deltaDom.remove(x);
       }
@@ -132,7 +132,7 @@ public class IntervalIntDomain extends AbstractIntDomain {
         sup.set(x);
     }
 
-    public int updateInf(int x) {
+    public int updateInf(final int x) {
       if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
         deltaDom.remove(x);
       }
@@ -140,7 +140,7 @@ public class IntervalIntDomain extends AbstractIntDomain {
         return x;
     }
 
-    public int updateSup(int x) {
+    public int updateSup(final int x) {
       if ((variable.getEvent().getPropagatedEvents() & eventBitMask) != 0) {
         deltaDom.remove(x);
       }
@@ -148,8 +148,9 @@ public class IntervalIntDomain extends AbstractIntDomain {
         return x;
     }
 
-    protected boolean _removeVal(int x, final SConstraint cause) throws ContradictionException {
-        int infv = getInf(), supv = getSup();
+    protected boolean _removeVal(final int x, final SConstraint cause) throws ContradictionException {
+        final int infv = getInf();
+        final int supv = getSup();
         if (x == infv) {
             _updateInf(x + 1, cause);
             if (getInf() == supv) _instantiate(supv, cause);
@@ -172,8 +173,8 @@ public class IntervalIntDomain extends AbstractIntDomain {
     }
 
     public String pretty() {
-        StringBuffer ret = new StringBuffer();
-        ret.append("[").append(this.getInf()).append(" .. ").append(this.getSup()).append("]");
+        final StringBuilder ret = new StringBuilder();
+        ret.append('[').append(this.getInf()).append(" .. ").append(this.getSup()).append(']');
         ret.append(deltaDom.pretty());
         return ret.toString();
     }

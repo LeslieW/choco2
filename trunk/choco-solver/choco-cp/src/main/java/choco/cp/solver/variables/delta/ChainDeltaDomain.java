@@ -34,6 +34,7 @@ import java.util.Arrays;
 * Since : Choco 2.1.1
 * Update : Choco 2.1.1
 */
+@Deprecated
 public class ChainDeltaDomain implements IDeltaDomain {
 
     /**
@@ -43,7 +44,7 @@ public class ChainDeltaDomain implements IDeltaDomain {
      * (each element points to the index of the enxt element)
      * -1 for the last element
      */
-    private int[] chain;
+    private final int[] chain;
 
     /**
      * start of the chain for the values waiting to be propagated
@@ -59,7 +60,7 @@ public class ChainDeltaDomain implements IDeltaDomain {
 
     private final int offset;
 
-    public ChainDeltaDomain(int size, int offset) {
+    public ChainDeltaDomain(final int size, final int offset) {
         LOGGER.warning("BEWARE this DELTA DOMAIN is full of bugs !!");
         chain = new int[size];
         firstIndexToBePropagated = -1;
@@ -93,7 +94,7 @@ public class ChainDeltaDomain implements IDeltaDomain {
      * @param value removed
      */
     @Override
-    public void remove(int value) {
+    public void remove(final int value) {
         if (value == firstIndexToBePropagated)
             LOGGER.severe("RemoveIndex BIZARRE !!!!!!!!!!!!");
         chain[value-offset] = firstIndexToBePropagated;
@@ -151,7 +152,7 @@ public class ChainDeltaDomain implements IDeltaDomain {
      */
     @Override
     public DisposableIntIterator iterator() {
-        DeltaIntDomainIterator iter = _cachedDeltaIntDomainIterator;
+        final DeltaIntDomainIterator iter = _cachedDeltaIntDomainIterator;
         if (iter != null && iter.isReusable()) {
             iter.init();
             return iter;

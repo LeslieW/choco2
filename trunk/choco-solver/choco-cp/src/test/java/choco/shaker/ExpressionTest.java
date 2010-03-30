@@ -121,7 +121,7 @@ public class ExpressionTest {
     @Test
     public void testExpression1() {
         m  = new CPModel();
-        IntegerVariable[] vars = new IntegerVariable[4];
+        final IntegerVariable[] vars = new IntegerVariable[4];
         vars[0] = Choco.makeIntVar("v1", -2,3, CPOptions.V_ENUM);
         vars[1] = Choco.makeIntVar("v2", 3,13, CPOptions.V_ENUM);
         vars[2] = Choco.makeIntVar("v3", -5,-1, CPOptions.V_ENUM);
@@ -140,7 +140,7 @@ public class ExpressionTest {
     @Test
     public void testExpression2() {
         m  = new CPModel();
-        IntegerVariable[] vars = new IntegerVariable[4];
+        final IntegerVariable[] vars = new IntegerVariable[4];
         vars[0] = Choco.makeIntVar("v1", 6,7);
         vars[1] = Choco.makeIntVar("v2", 7,8);
 
@@ -158,7 +158,7 @@ public class ExpressionTest {
     @Test
     public void testExpression3() {
         m  = new CPModel();
-        IntegerVariable[] vars = new IntegerVariable[3];
+        final IntegerVariable[] vars = new IntegerVariable[3];
         vars[0] = Choco.makeBooleanVar("v1");
         vars[1] = Choco.makeIntVar("v2", -6,2);
         vars[2] = Choco.makeIntVar("v3", 0,4);
@@ -176,7 +176,7 @@ public class ExpressionTest {
     @Test
     public void testExpression4() {
         m  = new CPModel();
-        IntegerVariable[] vars = new IntegerVariable[2];
+        final IntegerVariable[] vars = new IntegerVariable[2];
         vars[0] = Choco.makeBooleanVar("v1");
         vars[1] = Choco.makeIntVar("v2", 3,7);
 
@@ -194,7 +194,7 @@ public class ExpressionTest {
     @Test
     public void testExpression5() {
         m  = new CPModel();
-        IntegerVariable[] vars = new IntegerVariable[3];
+        final IntegerVariable[] vars = new IntegerVariable[3];
         vars[0] = Choco.makeIntVar("v1", 1,3);
         vars[1] = Choco.makeIntVar("v2", 2,2);
         vars[2] = Choco.makeIntVar("v3", 1,2);
@@ -214,7 +214,7 @@ public class ExpressionTest {
     @Test
     public void testExpression6() {
         m  = new CPModel();
-        IntegerVariable[] vars = new IntegerVariable[3];
+        final IntegerVariable[] vars = new IntegerVariable[3];
         vars[0] = Choco.makeIntVar("v1", 0,2);
         vars[1] = Choco.makeBooleanVar("v2");
 
@@ -231,7 +231,7 @@ public class ExpressionTest {
     @Test
     public void testExpression7() {
         m  = new CPModel();
-        IntegerVariable[] v = new IntegerVariable[4];
+        final IntegerVariable[] v = new IntegerVariable[4];
         v[0] = Choco.makeIntVar("v1", 6,9);
         v[1] = Choco.makeIntVar("v2", 3,8);
         v[2] = Choco.makeIntVar("v3", 8,9);
@@ -263,7 +263,7 @@ public class ExpressionTest {
     @Test
     public void testExpression8() {
         m  = new CPModel();
-        IntegerVariable[] vars = new IntegerVariable[5];
+        final IntegerVariable[] vars = new IntegerVariable[5];
         vars[0] = Choco.makeIntVar("v1", -4,2);
         vars[1] = Choco.makeBooleanVar("v2");
         vars[2] = Choco.makeIntVar("v3", -2,0);
@@ -283,7 +283,7 @@ public class ExpressionTest {
     @Test
     public void testExpression9() {
         m  = new CPModel();
-        IntegerVariable[] v = new IntegerVariable[2];
+        final IntegerVariable[] v = new IntegerVariable[2];
         v[0] = Choco.makeBooleanVar("v1");
         v[1] = Choco.makeIntVar("v2", -8,0);
 
@@ -301,7 +301,7 @@ public class ExpressionTest {
     @Test
     public void testExpression10() {
         m  = new CPModel();
-        IntegerVariable[] v = new IntegerVariable[5];
+        final IntegerVariable[] v = new IntegerVariable[5];
         v[0] = Choco.makeBooleanVar("v1");
         v[1] = Choco.makeIntVar("v2", 2,4);
         v[2] = Choco.makeIntVar("v2", 1,1);
@@ -324,7 +324,7 @@ public class ExpressionTest {
     @Test
     public void testExpression11() {
         m  = new CPModel();
-        IntegerVariable[] v = new IntegerVariable[5];
+        final IntegerVariable[] v = new IntegerVariable[5];
         v[0] = Choco.makeIntVar("v1", -4,3);
         v[1] = Choco.makeIntVar("v2", 2,5);
         v[2] = Choco.makeIntVar("v3", 4,7);
@@ -349,7 +349,7 @@ public class ExpressionTest {
     @Test
     public void testExpression12() {
         m  = new CPModel();
-        IntegerVariable[] v = new IntegerVariable[4];
+        final IntegerVariable[] v = new IntegerVariable[4];
         v[0] = Choco.makeIntVar("v1", 0, 6);
         v[1] = Choco.makeIntVar("v2", 7, 7);
         v[2] = Choco.makeIntVar("v3", 2, 6);
@@ -369,7 +369,7 @@ public class ExpressionTest {
     @Test
     public void testExpression13() {
         m  = new CPModel();
-        IntegerVariable[] v = new IntegerVariable[4];
+        final IntegerVariable[] v = new IntegerVariable[4];
         v[0] = Choco.makeIntVar("v1", 0, 1);
         v[1] = Choco.makeIntVar("v2", 0, 1);
         v[2] = Choco.makeIntVar("v3", 0, 1);
@@ -399,7 +399,7 @@ public class ExpressionTest {
     @Test
     public void testExpression14() {
         m  = new CPModel();
-        IntegerVariable[] v = new IntegerVariable[3];
+        final IntegerVariable[] v = new IntegerVariable[3];
         v[0] = Choco.makeIntVar("v1", -2,3);
         v[1] = Choco.makeIntVar("v2", 0,1);
         v[2] = Choco.makeIntVar("v2", 0,10);
@@ -416,7 +416,7 @@ public class ExpressionTest {
     @Test(expected=UnsupportedOperationException.class)
     public void testExpression15() {
         m  = new CPModel();
-        IntegerVariable[] v = new IntegerVariable[3];
+        final IntegerVariable[] v = new IntegerVariable[3];
         v[0] = Choco.makeIntVar("v1", -2,3);
 
         m.addConstraint(
@@ -431,7 +431,7 @@ public class ExpressionTest {
     @Test(expected=UnsupportedOperationException.class)
     public void testExpression16() {
         m  = new CPModel();
-        IntegerVariable[] v = new IntegerVariable[3];
+        final IntegerVariable[] v = new IntegerVariable[3];
         v[0] = Choco.makeIntVar("v1", -2,3);
         v[1] = Choco.makeIntVar("v2", -2,3);
         v[2] = Choco.makeIntVar("v3", -2,3);
@@ -444,7 +444,7 @@ public class ExpressionTest {
     @Test
     public void testExpression17() {
         m  = new CPModel();
-        IntegerVariable[] v = new IntegerVariable[5];
+        final IntegerVariable[] v = new IntegerVariable[5];
         v[0] = Choco.makeIntVar("v1", 1,1, CPOptions.V_BTREE, CPOptions.V_DECISION);
         v[1] = Choco.makeIntVar("v2", 0,2, CPOptions.V_BTREE, CPOptions.V_DECISION);
         v[2] = Choco.makeIntVar("v3", 0,1,CPOptions.V_DECISION);
@@ -470,12 +470,12 @@ public class ExpressionTest {
     @Test(expected=UnsupportedOperationException.class)
     public void testExpression18() {
         m  = new CPModel();
-        IntegerVariable[] v = new IntegerVariable[4];
+        final IntegerVariable[] v = new IntegerVariable[4];
         v[0] = Choco.makeIntVar("v_1", 1,6, CPOptions.V_LINK);
         v[1] = Choco.makeIntVar("v_2", -5,3, CPOptions.V_BLIST);
         v[2] = Choco.makeIntVar("v_3", -3,6, CPOptions.V_BTREE);
         v[3] = Choco.makeIntVar("v_4", 3,9, CPOptions.V_LINK);
-        IntegerVariable zero = constant(0);
+        final IntegerVariable zero = constant(0);
 
         m.addConstraint(
                 not(
@@ -493,12 +493,12 @@ public class ExpressionTest {
         );
         LOGGER.info(m.pretty());
         for(int i = 0; i < m.getNbIntVars(); i++){
-            LOGGER.info(""+m.getIntVar(i).getOptions());
+            LOGGER.info(String.format("%s", m.getIntVar(i).getOptions()));
         }
         checker();
 
-        Random r = new Random(5140);
-        CPModelFactory mf = new CPModelFactory();
+        final Random r = new Random(5140);
+        final CPModelFactory mf = new CPModelFactory();
 
         mf.limits(5);
         mf.depth(3);
@@ -512,7 +512,7 @@ public class ExpressionTest {
         m = mf.model(r);
         LOGGER.info(m.pretty());
         for(int i = 0; i < m.getNbIntVars(); i++){
-            LOGGER.info(""+m.getIntVar(i).getOptions());
+            LOGGER.info(String.format("%s", m.getIntVar(i).getOptions()));
         }
         checker();
     }
@@ -523,7 +523,7 @@ public class ExpressionTest {
          * test 2 seed 1104
          */
         m  = new CPModel();
-        IntegerVariable[] v = new IntegerVariable[5];
+        final IntegerVariable[] v = new IntegerVariable[5];
         v[0] = Choco.makeIntVar("v1", 1,7, CPOptions.V_BTREE);
         v[1] = Choco.makeIntVar("v2", 0,3);
         v[2] = Choco.makeIntVar("v3", 0,1);
@@ -548,7 +548,7 @@ public class ExpressionTest {
     @Test
     public void testExpression20() {
         m  = new CPModel();
-        IntegerVariable[] v = new IntegerVariable[5];
+        final IntegerVariable[] v = new IntegerVariable[5];
         v[0] = Choco.makeIntVar("v1", -1,3);
         v[1] = Choco.makeIntVar("v2", 2,3);
         v[2] = Choco.makeIntVar("v3", 0,1);
@@ -556,11 +556,27 @@ public class ExpressionTest {
         v[4] = Choco.makeIntVar("v5", 0,1);
 
         m.addConstraint(
-                ifThenElse(
-                        eq(v[0], v[1]),
-                        reifiedConstraint(v[2], eq(v[3], v[4]), geq(v[0], v[2])),
-                        leq(v[0], v[4])
-                )
+//                ifThenElse(
+//                        eq(v[0], v[1]),
+                        reifiedConstraint(v[2], eq(v[3], v[4]), geq(v[0], v[2]))//,
+//                        leq(v[0], v[4])
+//                )
+        );
+        checker(true);
+    }
+
+    @Test
+    public void testExpression20bis() {
+        m  = new CPModel();
+        final IntegerVariable[] v = new IntegerVariable[5];
+        v[0] = Choco.makeIntVar("v1", -1,3);
+        v[1] = Choco.makeIntVar("v2", 2,3);
+        v[2] = Choco.makeIntVar("v3", 0,1);
+        v[3] = Choco.makeIntVar("v4", 1,1);
+        v[4] = Choco.makeIntVar("v5", 0,1);
+
+        m.addConstraint(
+                reifiedConstraint(v[2], eq(v[3], v[4]), eq(v[3], v[4]))//,
         );
         checker(true);
     }
@@ -571,7 +587,7 @@ public class ExpressionTest {
          * test 3 seed 275
          */
         m  = new CPModel();
-        IntegerVariable[] v = new IntegerVariable[4];
+        final IntegerVariable[] v = new IntegerVariable[4];
         v[0] = Choco.makeIntVar("v1", 7,8, CPOptions.V_ENUM);
         v[1] = Choco.makeIntVar("v2", -3,2, CPOptions.V_ENUM);
         v[2] = Choco.makeIntVar("v3", 0,1);
@@ -590,7 +606,7 @@ public class ExpressionTest {
     @Test
     public void testExpression22() {
         m  = new CPModel();
-        IntegerVariable[] v = new IntegerVariable[5];
+        final IntegerVariable[] v = new IntegerVariable[5];
         v[0] = Choco.makeBooleanVar("v1");
         v[1] = Choco.makeIntVar("v2", -2,1, CPOptions.V_BLIST);
         v[2] = Choco.makeIntVar("v3", 3,9, CPOptions.V_BLIST);
@@ -610,7 +626,7 @@ public class ExpressionTest {
     @Test
     public void testExpression23() {
         m  = new CPModel();
-        IntegerVariable[] v = new IntegerVariable[5];
+        final IntegerVariable[] v = new IntegerVariable[5];
         v[0] = Choco.makeIntVar("v1", 0, 7);
         v[1] = Choco.makeBooleanVar("b2");
 
@@ -640,7 +656,7 @@ public class ExpressionTest {
     public void testExpression24() {
         m  = new CPModel();
         seed = 1104;
-        IntegerVariable[] v = new IntegerVariable[5];
+        final IntegerVariable[] v = new IntegerVariable[5];
         v[0] = Choco.makeIntVar("v1", 1, 7, CPOptions.V_BTREE);
         v[1] = Choco.makeIntVar("v2", 0, 3, CPOptions.V_ENUM);
         v[2] = Choco.makeBooleanVar("b3");
@@ -672,7 +688,7 @@ public class ExpressionTest {
     @Test
     public void testExpression25() {
         m  = new CPModel();
-        IntegerVariable[] v = new IntegerVariable[5];
+        final IntegerVariable[] v = new IntegerVariable[5];
         v[0] = Choco.makeIntVar("v1", -9, 0);
         v[1] = Choco.makeIntVar("v2", 0, 3);
         v[2] = Choco.makeIntVar("v3", -1, 5);
@@ -705,9 +721,9 @@ public class ExpressionTest {
         checker();
     }
 
-    private void buildModel(int seed, int bounds, int dsize, int depth, boolean includesOp, boolean includesMC){
-        Random r = new Random(seed);
-        CPModelFactory mf = new CPModelFactory();
+    private void buildModel(final int seed, final int bounds, final int dsize, final int depth, final boolean includesOp, final boolean includesMC){
+        final Random r = new Random(seed);
+        final CPModelFactory mf = new CPModelFactory();
 
         mf.limits(bounds);
         mf.depth(depth);
@@ -723,7 +739,7 @@ public class ExpressionTest {
     }
 
 
-    private void mainTest(int seed, int bounds, int dsize, int depth, boolean includesOp, boolean includesMC){
+    private void mainTest(final int seed, final int bounds, final int dsize, final int depth, final boolean includesOp, final boolean includesMC){
         buildModel(seed, bounds, dsize, depth, includesOp, includesMC);
         checker();
     }
@@ -732,9 +748,9 @@ public class ExpressionTest {
         checker(false);
     }
 
-    private void checker(boolean print) {
-        Solver decomposedSolver = new CPSolver();
-        Solver undecomposedSolver = new CPSolver();
+    private void checker(final boolean print) {
+        final Solver decomposedSolver = new CPSolver();
+        final Solver undecomposedSolver = new CPSolver();
         StringBuffer st;
         m.setDefaultExpressionDecomposition(true);
         decomposedSolver.read(m);
@@ -754,10 +770,10 @@ public class ExpressionTest {
                 Assert.assertEquals("decomposedSolver.isSatisfied()",Boolean.TRUE, decomposedSolver.checkSolution());
                 if(print){
                     st = new StringBuffer();
-                    Iterator<IntegerVariable> it = m.getIntVarIterator();
+                    final Iterator<IntegerVariable> it = m.getIntVarIterator();
                     while(it.hasNext()){
-                        IntVar v = decomposedSolver.getVar(it.next());
-                        st.append(v.getName()).append(":").append(v.getVal()).append(" ");
+                        final IntVar v = decomposedSolver.getVar(it.next());
+                        st.append(v.getName()).append(':').append(v.getVal()).append(' ');
                     }
                     LOGGER.info(st.toString());
                 }
@@ -774,10 +790,10 @@ public class ExpressionTest {
                 if(print){
                     Assert.assertEquals("undecomposedSolver.isSatisfied()",Boolean.TRUE, undecomposedSolver.checkSolution());
                     st = new StringBuffer();
-                    Iterator<IntegerVariable> it = m.getIntVarIterator();
+                    final Iterator<IntegerVariable> it = m.getIntVarIterator();
                     while(it.hasNext()){
-                        IntVar v = undecomposedSolver.getVar(it.next());
-                        st.append(v.getName()).append(":").append(v.getVal()).append(" ");
+                        final IntVar v = undecomposedSolver.getVar(it.next());
+                        st.append(v.getName()).append(':').append(v.getVal()).append(' ');
                     }
                     LOGGER.info(st.toString());
                     }

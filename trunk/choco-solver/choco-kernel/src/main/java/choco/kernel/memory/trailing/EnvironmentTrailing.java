@@ -46,7 +46,7 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 	 * The maximum numbers of updates that a
 	 * {@link ITrailStorage} can handle.
 	 */
-    private static final int maxHist = 5000;
+    private static final int MaxHist = 5000;
 
     //Contains all the {@link ITrailStorage} trails for
 	// storing different kinds of data.
@@ -72,14 +72,14 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 	 */
 
 	public EnvironmentTrailing() {
-        boolTrail = new StoredBoolTrail(this, maxHist, maxWorld);
-		intTrail = new StoredIntTrail(this, maxHist, maxWorld);
-		vectorTrail = new StoredVectorTrail(this, maxHist, maxWorld);
-		intVectorTrail = new StoredIntVectorTrail(this, maxHist, maxWorld);
-		doubleVectorTrail = new StoredDoubleVectorTrail(this,maxHist, maxWorld);
-		doubleTrail = new StoredDoubleTrail(this, maxHist, maxWorld);
-		longTrail = new StoredLongTrail(this, maxHist, maxWorld);
-		btreeTrail = new StoredBinaryTreeTrail(this, maxHist, maxWorld);
+        boolTrail = new StoredBoolTrail(this, MaxHist, maxWorld);
+		intTrail = new StoredIntTrail(this, MaxHist, maxWorld);
+		vectorTrail = new StoredVectorTrail(this, MaxHist, maxWorld);
+		intVectorTrail = new StoredIntVectorTrail(this, MaxHist, maxWorld);
+		doubleVectorTrail = new StoredDoubleVectorTrail(this, MaxHist, maxWorld);
+		doubleTrail = new StoredDoubleTrail(this, MaxHist, maxWorld);
+		longTrail = new StoredLongTrail(this, MaxHist, maxWorld);
+		btreeTrail = new StoredBinaryTreeTrail(this, MaxHist, maxWorld);
 		trails = new ITrailStorage[]{
 				boolTrail,intTrail,vectorTrail, intVectorTrail,
 				doubleVectorTrail, doubleTrail,longTrail,btreeTrail
@@ -141,18 +141,18 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 	}
 
 	@Override
-	public IStateInt makeInt(int initialValue) {
+	public IStateInt makeInt(final int initialValue) {
 		return new StoredInt(this, initialValue);
 	}
 
 	@Override
-	public IStateInt makeIntProcedure(IStateIntProcedure procedure,
-			int initialValue) {
+	public IStateInt makeIntProcedure(final IStateIntProcedure procedure,
+			final int initialValue) {
 		return new StoredIntProcedure(this, procedure, initialValue);
 	}
 
 	@Override
-	public IStateBool makeBool(boolean initialValue) {
+	public IStateBool makeBool(final boolean initialValue) {
 		return new StoredBool(this, initialValue);
 	}
 
@@ -162,12 +162,12 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 	}
 
 	@Override
-	public IStateIntVector makeIntVector(int size, int initialValue) {
+	public IStateIntVector makeIntVector(final int size, final int initialValue) {
 		return new StoredIntVector(this, size, initialValue);
 	}
 
 	@Override
-	public IStateIntVector makeIntVector(int[] entries) {
+	public IStateIntVector makeIntVector(final int[] entries) {
 		return new StoredIntVector(this, entries);
 	}
 
@@ -177,12 +177,12 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
     }
 
     @Override
-    public IStateDoubleVector makeDoubleVector(int size, double initialValue) {
+    public IStateDoubleVector makeDoubleVector(final int size, final double initialValue) {
         return new StoredDoubleVector(this, size, initialValue);
     }
 
     @Override
-    public IStateDoubleVector makeDoubleVector(double[] entries) {
+    public IStateDoubleVector makeDoubleVector(final double[] entries) {
         return new StoredDoubleVector(this, entries);
     }
 
@@ -202,12 +202,12 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 	}
 
 	@Override
-	public IStateDouble makeFloat(double initialValue) {
+	public IStateDouble makeFloat(final double initialValue) {
 		return new StoredDouble(this, initialValue);
 	}
 
 	@Override
-	public IStateBinaryTree makeBinaryTree(int inf, int sup) {
+	public IStateBinaryTree makeBinaryTree(final int inf, final int sup) {
 		return new StoredBinaryTree(this, inf, sup);
 	}
 
@@ -217,18 +217,18 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 	}
 
 	@Override
-	public IStateLong makeLong(int init) {
+	public IStateLong makeLong(final int init) {
 		return new StoredLong(this,init);
 	}
 
 	@Override
-	public IStateObject makeObject(Object obj) {
+	public IStateObject makeObject(final Object obj) {
 		throw (new UnsupportedOperationException());
 	}
 
 	public int getTrailSize() {
 		int s = 0;
-		for (ITrailStorage trail : trails) {
+		for (final ITrailStorage trail : trails) {
 			s += trail.getSize();
 		}
 		return s;
@@ -265,8 +265,8 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 		return btreeTrail.getSize();
 	}
 
-	private void resizeWorldCapacity(int newWorldCapacity) {
-		for (ITrailStorage trail : trails) {
+	private void resizeWorldCapacity(final int newWorldCapacity) {
+		for (final ITrailStorage trail : trails) {
 			trail.resizeWorldCapacity(newWorldCapacity);
 		}
 		maxWorld = newWorldCapacity;
@@ -276,7 +276,7 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 	 * Reacts when a StoredInt is modified: push the former value & timestamp
 	 * on the stacks.
 	 */
-	public void savePreviousState(StoredInt v, int oldValue, int oldStamp) {
+	public void savePreviousState(final StoredInt v, final int oldValue, final int oldStamp) {
 		intTrail.savePreviousState(v, oldValue, oldStamp);
 	}
 
@@ -284,7 +284,7 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 	 * Reacts when a StoredDouble is modified: push the former value & timestamp
 	 * on the stacks.
 	 */
-	public void savePreviousState(StoredDouble v, double oldValue, int oldStamp) {
+	public void savePreviousState(final StoredDouble v, final double oldValue, final int oldStamp) {
 		doubleTrail.savePreviousState(v, oldValue, oldStamp);
 	}
 
@@ -292,7 +292,7 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 	 * Reacts when a StoredDouble is modified: push the former value & timestamp
 	 * on the stacks.
 	 */
-	public void savePreviousState(StoredLong v, long oldValue, int oldStamp) {
+	public void savePreviousState(final StoredLong v, final long oldValue, final int oldStamp) {
 		longTrail.savePreviousState(v, oldValue, oldStamp);
 	}
 
@@ -300,28 +300,28 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 	 * Reacts when a StoredBool is modified: push the former value & timestamp
 	 * on the stacks.
 	 */
-	public void savePreviousState(StoredBool v, boolean oldValue, int oldStamp) {
+	public void savePreviousState(final StoredBool v, final boolean oldValue, final int oldStamp) {
 		boolTrail.savePreviousState(v, oldValue, oldStamp);
 	}
 	/**
 	 * Reacts when a StoredVector is modified: push the former value & timestamp
 	 * on the stacks.
 	 */
-	public void savePreviousState(StoredIntVector v,int index,int oldValue,int oldStamp) {
+	public void savePreviousState(final StoredIntVector v, final int index, final int oldValue, final int oldStamp) {
 		intVectorTrail.savePreviousState(v, index, oldValue, oldStamp);
 	}
 
-	public <E> void savePreviousState(StoredVector<E> v,int index,E oldValue,int oldStamp) {
+	public <E> void savePreviousState(final StoredVector<E> v, final int index, final E oldValue, final int oldStamp) {
 		vectorTrail.savePreviousState(v, index, oldValue, oldStamp);
 	}
 
-	public <E> void savePreviousState(IStateBinaryTree v,Node n,int op) {
+	public <E> void savePreviousState(final IStateBinaryTree v, final Node n, final int op) {
 		btreeTrail.stack(v, n,op);
 	}
 
 
-	public void savePreviousState(StoredDoubleVector v,
-			int index, double oldValue, int oldStamp) {
+	public void savePreviousState(final StoredDoubleVector v,
+			final int index, final double oldValue, final int oldStamp) {
 		doubleVectorTrail.savePreviousState(v, index, oldValue, oldStamp);
 		
 	}

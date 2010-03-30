@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
- *         |  °(..)  |                           *
+ *         |   (..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -20,18 +20,19 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2010      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.common.util.iterators;
+package choco.cp.solver.variables.delta.iterators;
 
-import choco.cp.solver.variables.integer.AbstractIntDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+
+import java.util.BitSet;
 
 /**
  * User : cprudhom<br/>
  * Mail : cprudhom(a)emn.fr<br/>
- * Date : 1 mars 2010<br/>
+ * Date : 29 mars 2010br/>
  * Since : Choco 2.1.1<br/>
  */
-public class IntDomainIterator extends DisposableIntIterator {
+public class BitSetIterator extends DisposableIntIterator {
 
     /**
      * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
@@ -43,46 +44,43 @@ public class IntDomainIterator extends DisposableIntIterator {
         private Holder() {
         }
 
-        private static IntDomainIterator instance = IntDomainIterator.build();
+        private static BitSetIterator instance = BitSetIterator.build();
 
-        private static void set(final IntDomainIterator iterator) {
+        private static void set(final BitSetIterator iterator) {
             instance = iterator;
         }
     }
 
-    private AbstractIntDomain domain;
     private int nextValue;
-    private int supBound = -1;
+    private int offset;
+    private BitSet contents;
 
-    private IntDomainIterator() {
+    private BitSetIterator() {
     }
 
-    private static IntDomainIterator build() {
-        return new IntDomainIterator();
+    private static BitSetIterator build() {
+        return new BitSetIterator();
     }
 
     @SuppressWarnings({"unchecked"})
-    public synchronized static IntDomainIterator getIterator(final AbstractIntDomain aDomain) {
-        IntDomainIterator it = Holder.instance;
+    public synchronized static BitSetIterator getIterator(final int theOffset,
+                                                                   final BitSet theContents) {
+        BitSetIterator it = Holder.instance;
         if (!it.isReusable()) {
             it = build();
         }
-        it.init(aDomain);
+        it.init(theOffset, theContents);
         return it;
     }
 
     /**
      * Freeze the iterator, cannot be reused.
      */
-    public void init(final AbstractIntDomain dom) {
+    public void init(final int theOffset, final BitSet theContents) {
         super.init();
-        domain = dom;
-        if (domain.getSize() >= 1) {
-            nextValue = domain.getInf();
-        } else {
-            throw new UnsupportedOperationException();
-        }
-        supBound = domain.getSup();
+        this.contents = theContents;
+        this.offset = theOffset;
+        nextValue = theContents.nextSetBit(0);
     }
 
     /**
@@ -94,9 +92,7 @@ public class IntDomainIterator extends DisposableIntIterator {
      */
     @Override
     public boolean hasNext() {
-        return /*(Integer.MIN_VALUE == currentValue) ||*/ (nextValue <= supBound);
-        // if currentValue equals MIN_VALUE it will be less than the upper bound => only one test is needed ! Moreover
-        // MIN_VALUE is a special case, should not be tested if useless !
+        return nextValue >= 0;
     }
 
     /**
@@ -109,8 +105,8 @@ public class IntDomainIterator extends DisposableIntIterator {
     @Override
     public int next() {
         final int v = nextValue;
-        nextValue = domain.getNextValue(nextValue);
-        return v;
+        nextValue = contents.nextSetBit(nextValue + 1);
+        return v + offset;
     }
 
 
@@ -123,5 +119,4 @@ public class IntDomainIterator extends DisposableIntIterator {
         super.dispose();
         Holder.set(this);
     }
-
 }

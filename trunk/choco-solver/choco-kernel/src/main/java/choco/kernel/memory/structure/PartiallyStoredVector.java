@@ -28,6 +28,8 @@ import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.MemoryException;
+import choco.kernel.memory.structure.iterators.PSVIndexIterator;
+import choco.kernel.memory.structure.iterators.PSVIterator;
 
 import java.util.Arrays;
 
@@ -39,32 +41,33 @@ import java.util.Arrays;
  * And objects with large indices (1000000 ... ) are "stored" in a backtrackable
  * manner, as if they were in a StoredIntVector
  */
-public class PartiallyStoredVector<E> {
+public final class PartiallyStoredVector<E> {
     /**
      * objects stored statically
      */
-    E[] staticObjects;
+    private E[] staticObjects;
     /**
      * objects stored dynamically
      */
-    E[] storedObjects;
+    private E[] storedObjects;
 
     /**
      * Number of static objects
      */
-    int nStaticObjects;
+    private int nStaticObjects;
 
     /**
      * number of stored objects
      */
-    IStateInt nStoredObjects;
+    private final IStateInt nStoredObjects;
 
     /**
      * Constructor
      *
      * @param env environment where the data structure should be created
      */
-    public PartiallyStoredVector(IEnvironment env) {
+    @SuppressWarnings({"unchecked"})
+    public PartiallyStoredVector(final IEnvironment env) {
         staticObjects = (E[]) new Object[INITIAL_STATIC_CAPACITY];
         storedObjects = (E[]) new Object[INITIAL_STORED_CAPACITY];
         nStaticObjects = 0;
@@ -89,7 +92,7 @@ public class PartiallyStoredVector<E> {
      * @param o the object to look for
      * @return true if it is contained
      */
-    public boolean contains(Object o) {
+    public boolean contains(final Object o) {
         for (int i = 0; i < nStaticObjects; i++) {
             if (staticObjects[i].equals(o)) {
                 return true;
@@ -109,7 +112,7 @@ public class PartiallyStoredVector<E> {
      * @param o the object to add
      * @return the indice of this object in the structure
      */
-    public int staticAdd(E o) {
+    public int staticAdd(final E o) {
         ensureStaticCapacity(nStaticObjects + 1);
         staticObjects[nStaticObjects++] = o;
         return nStaticObjects - 1;
@@ -122,11 +125,9 @@ public class PartiallyStoredVector<E> {
      * @param o   object to insert
      * @return the indice of the last object in the array of static objects
      */
-    public int staticInsert(int ind, E o) {
+    public int staticInsert(final int ind, final E o) {
         ensureStaticCapacity(nStaticObjects++);
-        for (int i = nStaticObjects; i > ind; i--) {
-            staticObjects[i] = staticObjects[i - 1];
-        }
+        System.arraycopy(staticObjects, ind, staticObjects, ind+1, nStaticObjects-ind);
         staticObjects[ind] = o;
         return nStaticObjects - 1;
     }
@@ -136,7 +137,7 @@ public class PartiallyStoredVector<E> {
      *
      * @param idx
      */
-    protected void staticRemove(int idx) {
+    void staticRemove(final int idx) {
         staticObjects[idx] = null;
         if (idx == nStaticObjects - 1) {
             while (staticObjects[nStaticObjects] == null && nStaticObjects > 0) {
@@ -157,9 +158,9 @@ public class PartiallyStoredVector<E> {
      * @throws choco.kernel.memory.MemoryException
      *          when trying to remove unknown object or stored object
      */
-    public int remove(Object o) {
+    public int remove(final Object o) {
         for (int i = 0; i < nStaticObjects; i++) {
-            Object staticObject = staticObjects[i];
+            final Object staticObject = staticObjects[i];
             if (staticObject == o) {
                 staticRemove(i);
                 return i;
@@ -173,13 +174,14 @@ public class PartiallyStoredVector<E> {
      *
      * @param n the expected size
      */
-    public void ensureStaticCapacity(int n) {
+    @SuppressWarnings({"unchecked"})
+    void ensureStaticCapacity(final int n) {
         if (n >= staticObjects.length) {
             int newSize = staticObjects.length;
             while (n >= newSize) {
                 newSize = (3 * newSize) / 2;
             }
-            Object[] newStaticObjects = new Object[newSize];
+            final Object[] newStaticObjects = new Object[newSize];
             System.arraycopy(staticObjects, 0, newStaticObjects, 0, staticObjects.length);
             this.staticObjects = (E[]) newStaticObjects;
         }
@@ -191,7 +193,7 @@ public class PartiallyStoredVector<E> {
      * @param o the object to add
      * @return indice of the object in the structure
      */
-    public int add(E o) {
+    public int add(final E o) {
         ensureStoredCapacity(nStoredObjects.get() + 1);
         storedObjects[nStoredObjects.get()] = o;
         nStoredObjects.add(1);
@@ -205,11 +207,13 @@ public class PartiallyStoredVector<E> {
      * @param o   object to insert
      * @return the size of stored structure
      */
-    public int insert(int ind, E o) {
+    public int insert(final int ind, final E o) {
         ensureStoredCapacity(nStoredObjects.get() + 1);
-        for (int i = nStoredObjects.get() + 1; i > ind; i--) {
-            storedObjects[i] = storedObjects[i - 1];
-        }
+        System.arraycopy(storedObjects, ind, storedObjects, ind+1, nStoredObjects.get()-ind);
+//
+//        for (int i = nStoredObjects.get() + 1; i > ind; i--) {
+//            storedObjects[i] = storedObjects[i - 1];
+//        }
         storedObjects[ind] = o;
         nStoredObjects.add(1);
         return STORED_OFFSET + nStoredObjects.get() - 1;
@@ -220,13 +224,14 @@ public class PartiallyStoredVector<E> {
      *
      * @param n the expected size
      */
-    public void ensureStoredCapacity(int n) {
+    @SuppressWarnings({"unchecked"})
+    void ensureStoredCapacity(final int n) {
         if (n >= storedObjects.length) {
             int newSize = storedObjects.length;
             while (n >= newSize) {
                 newSize = (3 * newSize) / 2;
             }
-            Object[] newStoredObjects = new Object[newSize];
+            final Object[] newStoredObjects = new Object[newSize];
             System.arraycopy(storedObjects, 0, newStoredObjects, 0, storedObjects.length);
             this.storedObjects = (E[]) newStoredObjects;
         }
@@ -238,7 +243,7 @@ public class PartiallyStoredVector<E> {
      * @param index the indice of the required object
      * @return the 'index'th object
      */
-    public E get(int index) {
+    public E get(final int index) {
         if (index < STORED_OFFSET) {
             return staticObjects[index];
         } else {
@@ -265,11 +270,11 @@ public class PartiallyStoredVector<E> {
     }
 
     public DisposableIntIterator getIndexIterator(){
-        return PSVIndexIterator.getIndexIterator(this);
+        return PSVIndexIterator.getIterator(nStaticObjects, staticObjects, nStoredObjects);
     }
 
     public DisposableIterator getIterator(){
-        return PSVIterator.getIterator(this);
+        return PSVIterator.getIterator(nStaticObjects, staticObjects, nStoredObjects, storedObjects);
     }
 
     /**
@@ -278,7 +283,7 @@ public class PartiallyStoredVector<E> {
      * @param idx
      * @return
      */
-    public static boolean isStaticIndex(int idx) {
+    public static boolean isStaticIndex(final int idx) {
         return idx < STORED_OFFSET;
     }
 
@@ -288,7 +293,7 @@ public class PartiallyStoredVector<E> {
      * @param idx
      * @return
      */
-    public static int getSmallIndex(int idx) {
+    public static int getSmallIndex(final int idx) {
         if (idx < STORED_OFFSET) {
             return idx;
         } else {
@@ -296,7 +301,7 @@ public class PartiallyStoredVector<E> {
         }
     }
 
-    public static int getGlobalIndex(int idx, boolean isStatic) {
+    public static int getGlobalIndex(final int idx, final boolean isStatic) {
         if (isStatic) {
             return idx;
         } else {

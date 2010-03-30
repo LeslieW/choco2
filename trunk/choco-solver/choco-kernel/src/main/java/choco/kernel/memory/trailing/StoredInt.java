@@ -37,7 +37,7 @@ public class StoredInt extends AbstractStoredObject implements IStateInt {
 	 * Note: this constructor should not be used directly: one should instead
 	 * use the IEnvironment factory
 	 */
-    public StoredInt(EnvironmentTrailing env, int i) {
+    public StoredInt(final EnvironmentTrailing env, final int i) {
 		super(env);
 		currentValue = i;
     }

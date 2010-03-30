@@ -29,6 +29,7 @@ import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.structure.IndexedObject;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
+import choco.kernel.memory.structure.iterators.BipartiteSetIterator;
 import choco.kernel.model.constraints.automaton.DFA;
 import choco.kernel.model.constraints.automaton.LightLayeredDFA;
 import choco.kernel.model.constraints.automaton.LightState;
@@ -39,7 +40,6 @@ import choco.kernel.solver.constraints.integer.AbstractLargeIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 import java.util.*;
-import java.util.logging.Level;
 
 /**
  * Created by IntelliJ IDEA.
@@ -50,7 +50,6 @@ public final class Regular extends AbstractLargeIntSConstraint {
 
 
     public final static boolean INCREMENTAL = true;
-    public final static boolean DEBUG = false;
 
     // the list of states acting as support of assignment V_i = j
     protected StoredIndexedBipartiteSet[] Qij;
@@ -70,7 +69,7 @@ public final class Regular extends AbstractLargeIntSConstraint {
 
     private int nbVars;
 
-    public Regular(DFA auto, IntDomainVar[] vs, int[] lbs, int[] dsize, IEnvironment environment) {
+    public Regular(final DFA auto, final IntDomainVar[] vs, final int[] lbs, final int[] dsize, final IEnvironment environment) {
         super(vs);
         init(auto.lightGraph, lbs, dsize, environment);
     }
@@ -82,10 +81,10 @@ public final class Regular extends AbstractLargeIntSConstraint {
      * @param vs
      * @param environment
      */
-    public Regular(DFA auto, IntDomainVar[] vs, IEnvironment environment) {
+    public Regular(final DFA auto, final IntDomainVar[] vs, final IEnvironment environment) {
         super(vs);
-        int[] offset = new int[vars.length];
-        int[] sizes = new int[vars.length];
+        final int[] offset = new int[vars.length];
+        final int[] sizes = new int[vars.length];
         for (int i = 0; i < vars.length; i++) {
             offset[i] = vars[i].getInf();
             sizes[i] = vars[i].getSup() - vars[i].getInf() + 1;
@@ -93,7 +92,7 @@ public final class Regular extends AbstractLargeIntSConstraint {
         init(auto.lightGraph, offset, sizes, environment);
     }
 
-    public void init(LightLayeredDFA auto, int[] lbs, int[] dsize, IEnvironment environment) {
+    public void init(final LightLayeredDFA auto, final int[] lbs, final int[] dsize, final IEnvironment environment) {
         autom = auto;
         nbVars = vars.length;
         start = new int[vars.length];
@@ -107,7 +106,7 @@ public final class Regular extends AbstractLargeIntSConstraint {
             if (i > 0) start[i] = start[i - 1] + sizes[i - 1];
         }
         Qij = new StoredIndexedBipartiteSet[start[nbVars - 1] + sizes[nbVars - 1]];
-        ArrayList[] qijvalues = new ArrayList[Qij.length];
+        final ArrayList[] qijvalues = new ArrayList[Qij.length];
         for (int i = 0; i < qijvalues.length; i++) {
             qijvalues[i] = new ArrayList<IndexedObject>();
         }
@@ -119,7 +118,7 @@ public final class Regular extends AbstractLargeIntSConstraint {
 
     //<hca> this is initialized regarding the current domains and thus
     // can not be used as a cut...
-    public void initQij(ArrayList[] qijvalues) {
+    public void initQij(final ArrayList[] qijvalues) {
         mark = new BitSet(nbNode);
         Ni = new ArrayList[nbVars + 1]; // le dernier niveau
         for (int i = 0; i < nbVars + 1; i++) {
@@ -127,13 +126,13 @@ public final class Regular extends AbstractLargeIntSConstraint {
         }
         Ni[0].add(autom.getInitState());
         for (int i = 0; i < Ni.length - 1; i++) {
-            for (LightState st : Ni[i]) {
-                DisposableIntIterator domIt = vars[i].getDomain().getIterator();
+            for (final LightState st : Ni[i]) {
+                final DisposableIntIterator domIt = vars[i].getDomain().getIterator();
                 for (; domIt.hasNext();) {
-                    int val = domIt.next();
+                    final int val = domIt.next();
                     if (st.hasDelta(val - autom.getOffset(i))) {
                         qijvalues[start[i] + val - offset[i]].add(st);
-                        LightState nst = st.delta(val - autom.getOffset(i));
+                        final LightState nst = st.delta(val - autom.getOffset(i));
                         if (!mark.get(nst.getIdx())) { // st is a candidate for support
                             Ni[i + 1].add(nst);
                             mark.set(nst.getIdx());
@@ -145,12 +144,12 @@ public final class Regular extends AbstractLargeIntSConstraint {
         }
     }
 
-    public int getFilteredEventMask(int idx) {
+    public int getFilteredEventMask(final int idx) {
         return IntVarEvent.REMVALbitvector;
         // return 0x0B;
     }
 
-    public StoredIndexedBipartiteSet getQij(int var, int val) {
+    public StoredIndexedBipartiteSet getQij(final int var, final int val) {
         return Qij[start[var] + val - offset[var]];
     }
 
@@ -198,14 +197,14 @@ public final class Regular extends AbstractLargeIntSConstraint {
         }
     }
 
-    public void forwardOnLevel(int i) {
-        for (LightState st : Ni[i]) {
-            DisposableIntIterator domIt = vars[i].getDomain().getIterator();
+    public void forwardOnLevel(final int i) {
+        for (final LightState st : Ni[i]) {
+            final DisposableIntIterator domIt = vars[i].getDomain().getIterator();
             for (; domIt.hasNext();) {
-                int val = domIt.next();
+                final int val = domIt.next();
                 if (st.hasDelta(val - autom.getOffset(i))) {
                     qijvalues[start[i] + val - offset[i]].add(st);                    
-                    LightState nst = st.delta(val - autom.getOffset(i));
+                    final LightState nst = st.delta(val - autom.getOffset(i));
                     if (!mark.get(nst.getIdx())) { // st is a candidate for support                       
                         Ni[i + 1].add(nst);
                         mark.set(nst.getIdx());
@@ -224,22 +223,22 @@ public final class Regular extends AbstractLargeIntSConstraint {
             backward2OnLevel(i);
             backwardOnLevel(i);
             for (Iterator it = Ni[i].iterator(); it.hasNext();) {
-                LightState st = (LightState) it.next();
+                final LightState st = (LightState) it.next();
                 if (!mark.get(st.getIdx()))
                     it.remove();
             }
         }
     }
 
-    public void backwardOnLevel(int i) {
-        DisposableIntIterator domIt = vars[i].getDomain().getIterator();
+    public void backwardOnLevel(final int i) {
+        final DisposableIntIterator domIt = vars[i].getDomain().getIterator();
         for (; domIt.hasNext();) {
-            int val = domIt.next();
-            StoredIndexedBipartiteSet qij = getQij(i, val);
-            StoredIndexedBipartiteSet.BipartiteSetIterator it = qij.getObjectIterator();
+            final int val = domIt.next();
+            final StoredIndexedBipartiteSet qij = getQij(i, val);
+            final BipartiteSetIterator it = qij.getObjectIterator();
             while(it.hasNext()) {
-                LightState st = (LightState) it.nextObject();
-                LightState nst = st.delta(val - autom.getOffset(i));
+                final LightState st = (LightState) it.nextObject();
+                final LightState nst = st.delta(val - autom.getOffset(i));
                 if (nst != null && mark.get(nst.getIdx())) { //isMark(ctIdx)) {     // st confirmed as a support
                     mark.set(st.getIdx()); //st.mark(ctIdx);
                     sdata.incrementOutdeg(st);
@@ -253,14 +252,14 @@ public final class Regular extends AbstractLargeIntSConstraint {
         domIt.dispose();
     }
 
-    public void backward2OnLevel(int i) {
-        DisposableIntIterator domIt = vars[i].getDomain().getIterator();
+    public void backward2OnLevel(final int i) {
+        final DisposableIntIterator domIt = vars[i].getDomain().getIterator();
         for (; domIt.hasNext();) {
-            int val = domIt.next();
-            StoredIndexedBipartiteSet qij = getQij(i, val);
-            StoredIndexedBipartiteSet.BipartiteSetIterator it = qij.getObjectIterator();
+            final int val = domIt.next();
+            final StoredIndexedBipartiteSet qij = getQij(i, val);
+            final BipartiteSetIterator it = qij.getObjectIterator();
             while(it.hasNext()) {
-                LightState st = (LightState) it.nextObject();
+                final LightState st = (LightState) it.nextObject();
                 if (!qijvalues[start[i] + val - offset[i]].contains(st)) { //isMark(ctIdx)) {     // st confirmed as a support
                     it.remove();
                 }
@@ -279,10 +278,10 @@ public final class Regular extends AbstractLargeIntSConstraint {
      */
     public void cleanUp() throws ContradictionException {
         for (int i = 0; i < nbVars; i++) {
-            int fin = i == (nbVars - 1) ? Qij.length : start[i + 1];
+            final int fin = i == (nbVars - 1) ? Qij.length : start[i + 1];
             for (int j = start[i]; j < fin; j++) {
                 if (Qij[j].isEmpty()) {
-                    int val = j - start[i];
+                    final int val = j - start[i];
                     if (vars[i].canBeInstantiatedTo(val + offset[i])) {// why Qij is empty ?
                         prune(i, val + offset[i]);
                     }
@@ -315,9 +314,7 @@ public final class Regular extends AbstractLargeIntSConstraint {
      * @param val
      * @throws ContradictionException
      */
-    public void prune(int i, int val) throws ContradictionException {
-        if (DEBUG && vars[i].canBeInstantiatedTo(val))
-            LOGGER.log(Level.INFO, "remove {0} from {1}", new Object[]{val, vars[i]});
+    public void prune(final int i, final int val) throws ContradictionException {
         vars[i].removeVal(val, this, false);
     }
 
@@ -331,11 +328,11 @@ public final class Regular extends AbstractLargeIntSConstraint {
      *
      * @throws ContradictionException
      */
-    public void propagateRemoval(int i, int j) throws ContradictionException {
-        StoredIndexedBipartiteSet qij = getQij(i, j);
+    public void propagateRemoval(final int i, final int j) throws ContradictionException {
+        final StoredIndexedBipartiteSet qij = getQij(i, j);
         for (int k = 0; k < qij.size(); k++) {
-            LightState st = (LightState) qij.getObject(k);
-            LightState nst = st.delta(j - autom.getOffset(i));
+            final LightState st = (LightState) qij.getObject(k);
+            final LightState nst = st.delta(j - autom.getOffset(i));
             decrement_outdeg(st, i);
             decrement_indeg(nst, i + 1);
         }
@@ -345,25 +342,25 @@ public final class Regular extends AbstractLargeIntSConstraint {
     /**
      * Decrement the out-degree of state st located on the i-th layer
      */
-    public void decrement_outdeg(LightState st, int i) throws ContradictionException {
+    public void decrement_outdeg(final LightState st, final int i) throws ContradictionException {
         sdata.decrementOutdeg(st);
         if (sdata.getOutdeg(st) == 0) {
             propagateNullOutDeg(st, i);
         }
     }
 
-    public void propagateNullOutDeg(LightState st, int i) throws ContradictionException {
-        Enumeration pred = st.getEnumerationPred();
+    public void propagateNullOutDeg(final LightState st, final int i) throws ContradictionException {
+        final Enumeration pred = st.getEnumerationPred();
         while (pred.hasMoreElements()) {
-            LightState.Arcs ap = (LightState.Arcs) pred.nextElement();
-            LightState pst = ap.getSt();
-            IntEnumeration valpred = ap.getEnumerationPred();
+            final LightState.Arcs ap = (LightState.Arcs) pred.nextElement();
+            final LightState pst = ap.getSt();
+            final IntEnumeration valpred = ap.getEnumerationPred();
             if (sdata.isAccurate(pst)) {
                 while (valpred.hasMoreElements()) {
-                    int val = valpred.nextElement();
-                    int realval = val + autom.getOffset(i - 1);
+                    final int val = valpred.nextElement();
+                    final int realval = val + autom.getOffset(i - 1);
                     if (vars[i - 1].canBeInstantiatedTo(realval)) {
-                        StoredIndexedBipartiteSet supports = getQij(i - 1, realval);
+                        final StoredIndexedBipartiteSet supports = getQij(i - 1, realval);
                         supports.remove(pst);
                         if (supports.isEmpty()) {
                             prune(i - 1, realval);
@@ -378,21 +375,21 @@ public final class Regular extends AbstractLargeIntSConstraint {
     /**
      * Decrement the in-degree of state st located on the i-th layer
      */
-    public void decrement_indeg(LightState st, int i) throws ContradictionException {
+    public void decrement_indeg(final LightState st, final int i) throws ContradictionException {
         sdata.decrementIndeg(st);
         if (sdata.getIndeg(st) == 0) {
             propagateNullInDeg(st, i);
         }
     }
 
-    public void propagateNullInDeg(LightState st, int i) throws ContradictionException {
-        Enumeration succ = st.getEnumerationSucc();
+    public void propagateNullInDeg(final LightState st, final int i) throws ContradictionException {
+        final Enumeration succ = st.getEnumerationSucc();
         while (succ.hasMoreElements()) {
-            int val = (Integer) succ.nextElement();
-            int realval = val + autom.getOffset(i);
-            LightState nst = st.delta(val);
+            final int val = (Integer) succ.nextElement();
+            final int realval = val + autom.getOffset(i);
+            final LightState nst = st.delta(val);
             if (vars[i].canBeInstantiatedTo(realval)) {
-                StoredIndexedBipartiteSet supports = getQij(i, realval);
+                final StoredIndexedBipartiteSet supports = getQij(i, realval);
                 supports.remove(st);
                 if (supports.isEmpty()) {
                     prune(i, realval);
@@ -403,8 +400,7 @@ public final class Regular extends AbstractLargeIntSConstraint {
     }
 
 
-    public void awakeOnRem(int idx, int x) throws ContradictionException {
-        if (DEBUG) LOGGER.log(Level.INFO, "----------------On recoit {0} != {1}", new Object[]{vars[idx], x});
+    public void awakeOnRem(final int idx, final int x) throws ContradictionException {
         if (INCREMENTAL) {// && domaincopy[idx].get(x - offset[idx])) {
 
             propagateRemoval(idx, x);
@@ -422,7 +418,7 @@ public final class Regular extends AbstractLargeIntSConstraint {
     }
 
 
-    public boolean isSatisfied(int[] tuple) {
+    public boolean isSatisfied(final int[] tuple) {
         LightState tmp = autom.getInitState();
         for (int i = 0; i < tuple.length; i++) {
             tmp = tmp.delta(tuple[i] - autom.getOffset(i));
@@ -433,11 +429,11 @@ public final class Regular extends AbstractLargeIntSConstraint {
     }
 
     public String pretty() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append("Regular({");
         for (int i = 0; i < vars.length; i++) {
             if (i > 0) sb.append(", ");
-            IntDomainVar var = vars[i];
+            final IntDomainVar var = vars[i];
             sb.append(var.pretty());
         }
         sb.append("})");
@@ -446,9 +442,9 @@ public final class Regular extends AbstractLargeIntSConstraint {
 
 
     public String toString() {
-        StringBuilder autstring = new StringBuilder("auto : ");
+        final StringBuilder autstring = new StringBuilder("auto : ");
         for (int i = 0; i < vars.length; i++) {
-            autstring.append(vars[i] + " ");
+            autstring.append(vars[i]).append(' ');
         }
         return autstring.toString();
     }
@@ -474,11 +470,11 @@ public final class Regular extends AbstractLargeIntSConstraint {
 
         protected int fstate;
 
-        public PropagationData(AbstractSConstraint ct, IEnvironment environment) {
+        public PropagationData(final AbstractSConstraint ct, final IEnvironment environment) {
             initDegree(autom.getAutomateSize(), ct, environment);
         }
 
-        public void initDegree(int nbNode, AbstractSConstraint ct, IEnvironment environment) {
+        public void initDegree(final int nbNode, final AbstractSConstraint ct, final IEnvironment environment) {
             indeg = new IStateInt[nbNode];
             outdeg = new IStateInt[nbNode];
             fstate = nbNode - 1;
@@ -488,48 +484,48 @@ public final class Regular extends AbstractLargeIntSConstraint {
             }
         }
 
-        public void resetPropagationData(int nbNode) {
+        public void resetPropagationData(final int nbNode) {
             for (int node = 0; node < nbNode; node++) {
                 indeg[node].set(0);
                 outdeg[node].set(0);
             }
         }
 
-        public boolean isAccurate(LightState st) {
+        public boolean isAccurate(final LightState st) {
             if (st.getIdx() == 0) return outdeg[st.getIdx()].get() > 0;
             if (st.getIdx() == fstate) return indeg[st.getIdx()].get() > 0;
             return (indeg[st.getIdx()].get() > 0) && (outdeg[st.getIdx()].get() > 0);
         }
 
-        public int getIndeg(LightState st) {
+        public int getIndeg(final LightState st) {
             return indeg[st.getIdx()].get();
         }
 
-        public void setIndeg(IStateInt indeg, LightState st) {
+        public void setIndeg(final IStateInt indeg, final LightState st) {
             this.indeg[st.getIdx()] = indeg;
         }
 
-        public int getOutdeg(LightState st) {
+        public int getOutdeg(final LightState st) {
             return outdeg[st.getIdx()].get();
         }
 
-        public void setOutdeg(IStateInt outdeg, LightState st) {
+        public void setOutdeg(final IStateInt outdeg, final LightState st) {
             this.outdeg[st.getIdx()] = outdeg;
         }
 
-        public void incrementIndeg(LightState st) {
+        public void incrementIndeg(final LightState st) {
             indeg[st.getIdx()].add(1);
         }
 
-        public void decrementIndeg(LightState st) {
+        public void decrementIndeg(final LightState st) {
             indeg[st.getIdx()].add(-1);
         }
 
-        public void incrementOutdeg(LightState st) {
+        public void incrementOutdeg(final LightState st) {
             outdeg[st.getIdx()].add(1);
         }
 
-        public void decrementOutdeg(LightState st) {
+        public void decrementOutdeg(final LightState st) {
             outdeg[st.getIdx()].add(-1);
         }
     }

@@ -29,7 +29,6 @@ import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.constraints.global.scheduling.AbstractResourceSConstraint;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.util.objects.IntList;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
@@ -41,6 +40,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.AbstractTask;
 import choco.kernel.solver.variables.scheduling.IRTask;
 import choco.kernel.solver.variables.scheduling.ITask;
+import gnu.trove.TIntArrayList;
 import static org.junit.Assert.*;
 
 import java.awt.*;
@@ -57,9 +57,9 @@ import java.util.logging.Logger;
  */
 public final class SchedUtilities {
 
-	public final static Logger LOGGER = ChocoLogging.getTestLogger();
+	private final static Logger LOGGER = ChocoLogging.getTestLogger();
 	
-	public final static Random RANDOM=new Random();
+	final static Random RANDOM=new Random();
 	
 	public static final int CHECK_NODES = -1;
 	
@@ -69,67 +69,67 @@ public final class SchedUtilities {
     private SchedUtilities(){}
 
 
-    public static void message(Object header,Object label, Solver solver) {
+    public static void message(final Object header, final Object label, final Solver solver) {
 		if(LOGGER.isLoggable(Level.INFO)) {
 		LOGGER.log(Level.INFO,"{0}\t{1}: {2} solutions\n{3}", new Object[]{header, label,solver.getNbSolutions(), solver.runtimeStatistics()});
 		}
 	}
 
-	private static String jmsg(String op,String label) {
+	private static String jmsg(final String op, final String label) {
 		return op+" ("+label+") : ";
 	}
 
 
-	public static void compare(int nbsol,int nbNodes,String label ,Solver... solvers) {
-		IntList bests = new IntList(solvers.length);
+	public static void compare(final int nbsol, final int nbNodes, final String label , final Solver... solvers) {
+		final TIntArrayList bests = new TIntArrayList(solvers.length);
 		int bestTime = Integer.MAX_VALUE;
 		for (int i = 0; i < solvers.length; i++) {
 			final Solver s=solvers[i];
 			//System.out.println(s.pretty());
 			s.solveAll();
-			final String str = label +" index "+i;
+			final String str = String.format("%s index %d", label, i);
 			message(str,"",s);
 			if( s.getTimeCount()< bestTime) {
-				bests.reInit();
+				bests.clear();
 				bests.add(i);
 				bestTime = s.getTimeCount();
 			}else if(s.getTimeCount() == bestTime) {
 				bests.add(i);
 			}
 			if(nbsol > 0) {
-				assertEquals("check-cmp NbSols "+str,nbsol,s.getSolutionCount());
+				assertEquals(String.format("check-cmp NbSols %s", str),nbsol,s.getSolutionCount());
 				assertTrue("isFeasible", s.isFeasible());
 			}else if(nbsol>=0) {
-				assertEquals("check-cmp NbSols "+str,nbsol,s.getSolutionCount());
+				assertEquals(String.format("check-cmp NbSols %s", str),nbsol,s.getSolutionCount());
 				assertFalse("isFeasible", s.isFeasible());
 				
 			}else if(i>0){
-				assertEquals("check-cmp NbSols "+str,solvers[i-1].getSolutionCount(),s.getSolutionCount());
+				assertEquals(String.format("check-cmp NbSols %s", str),solvers[i-1].getSolutionCount(),s.getSolutionCount());
 			}
 			if(nbNodes>=0) {
-				assertEquals("check-cmp NbNodes "+str,nbNodes,s.getNodeCount());
+				assertEquals(String.format("check-cmp NbNodes %s", str),nbNodes,s.getNodeCount());
 			}else if(nbNodes == CHECK_NODES && i>0){
-				assertEquals("check-cmp NbNodes "+str,solvers[i-1].getNodeCount(),s.getNodeCount());
+				assertEquals(String.format("check-cmp NbNodes %s", str),solvers[i-1].getNodeCount(),s.getNodeCount());
 			}
 		}
 		LOGGER.log(Level.INFO,"Best solver: index {0} in {1}ms", new Object[]{bests,bestTime});
 	}
 
-	public static void solveRandom(CPSolver solver,int nbsol,int nbNodes, String label) {
+	public static void solveRandom(final CPSolver solver, final int nbsol, final int nbNodes, final String label) {
 		solveRandom(solver, nbsol, nbNodes, null, label);
 	}
 	
-	public static void solveRandom(CPSolver solver,int nbsol,int nbNodes, Integer seed, String label) {
+	public static void solveRandom(final CPSolver solver, final int nbsol, final int nbNodes, final Integer seed, final String label) {
 		//solver.setLoggingMaxDepth(10000);
 		if(seed == null) solver.setRandomSelectors();
 		else solver.setRandomSelectors(seed.longValue());
-		Boolean r=solver.solveAll();
+		final Boolean r=solver.solveAll();
 		message(label, "solve (random) : ", solver);
 		checkRandom(solver, r, nbsol, nbNodes, label);
 		
 	}
 
-	public static void checkRandom(Solver solver,Boolean r,int nbsol,int nbNodes,String label) {
+	public static void checkRandom(final Solver solver, final Boolean r, final int nbsol, final int nbNodes, final String label) {
 		if(nbsol==0) {
 			assertEquals(jmsg("unsat",label),Boolean.FALSE,r);
 		}else {
@@ -142,10 +142,10 @@ public final class SchedUtilities {
 	}
 
 
-	public static IntegerVariable[] makeIntvarArray(String name, int[] min, int[] max) {
-		IntegerVariable[] vars=new IntegerVariable[min.length];
+	public static IntegerVariable[] makeIntvarArray(final String name, final int[] min, final int[] max) {
+		final IntegerVariable[] vars=new IntegerVariable[min.length];
 		for (int i = 0; i < vars.length; i++) {
-			vars[i]=Choco.makeIntVar(name+"-"+i, min[i],max[i], CPOptions.V_BOUND);
+			vars[i]=Choco.makeIntVar(String.format("%s-%d", name, i), min[i],max[i], CPOptions.V_BOUND);
 		}
 		return vars;
 	}
@@ -156,7 +156,7 @@ public final class SchedUtilities {
 
 abstract class AbstractTestProblem {
 
-    protected final static Logger LOGGER = ChocoLogging.getTestLogger();
+    private final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	public CPModel model;
 
@@ -178,18 +178,18 @@ abstract class AbstractTestProblem {
 		super();
 	}
 
-	public AbstractTestProblem(IntegerVariable[] starts, IntegerVariable[] durations) {
+	public AbstractTestProblem(final IntegerVariable[] starts, final IntegerVariable[] durations) {
 		super();
 		this.starts = starts;
 		this.durations = durations;
 	}
 
-	public AbstractTestProblem(IntegerVariable[] durations) {
+	public AbstractTestProblem(final IntegerVariable[] durations) {
 		super();
 		this.durations = durations;
 	}
 
-	public final void setFlags(BitFlags flags) {
+	public final void setFlags(final BitFlags flags) {
 		final SConstraint cstr = solver.getCstr(this.rsc);
 		BitFlags dest = null;
 		if (cstr instanceof AbstractResourceSConstraint) {
@@ -212,7 +212,7 @@ abstract class AbstractTestProblem {
 	public void initializeModel() {
 		model = new CPModel();
 		initializeTasks();
-		Constraint[] cstr = generateConstraints();
+		final Constraint[] cstr = generateConstraints();
 		if(cstr!=null) {
 			rsc = cstr[0];
 			model.addConstraints(cstr);
@@ -227,16 +227,17 @@ abstract class AbstractTestProblem {
 		else {
 			tasks=new TaskVariable[durations.length];
 			for (int i = 0; i < tasks.length; i++) {
-				tasks[i]= Choco.makeTaskVar("T_"+i, starts[i], Choco.makeIntVar("end-"+i, 0, horizon, CPOptions.V_BOUND), durations[i]);
+				tasks[i]= Choco.makeTaskVar(String.format("T_%d", i), starts[i],
+                        Choco.makeIntVar(String.format("end-%d", i), 0, horizon, CPOptions.V_BOUND), durations[i]);
 			}
 		}
 	}
 
-	public void setHorizon(int horizon) {
+	public void setHorizon(final int horizon) {
 		this.horizon = horizon;
 	}
 
-	protected void horizonConstraints(IntegerVariable[] starts, IntegerVariable[] durations) {
+	protected void horizonConstraints(final IntegerVariable[] starts, final IntegerVariable[] durations) {
 		if (horizon > 0) {
 			for (int i = 0; i < starts.length; i++) {
 				model.addConstraint(Choco.geq(horizon, Choco.plus(starts[i], durations[i])));
@@ -244,9 +245,9 @@ abstract class AbstractTestProblem {
 		}
 	}
 
-	public IntegerVariable[] generateRandomDurations(int n) {
-		IntegerVariable[] durations = new IntegerVariable[n];
-		int gap = horizon / n;
+	public IntegerVariable[] generateRandomDurations(final int n) {
+		final IntegerVariable[] durations = new IntegerVariable[n];
+		final int gap = horizon / n;
 		int max = gap + horizon % n;
 		for (int i = 0; i < n - 1; i++) {
 			final int v = SchedUtilities.RANDOM.nextInt(max) + 1;
@@ -257,7 +258,7 @@ abstract class AbstractTestProblem {
 		return durations;
 	}
 
-	public void setRandomProblem(int size) {
+	public void setRandomProblem(final int size) {
 		starts = null;
 		durations = generateRandomDurations(size);
 	}
@@ -266,7 +267,7 @@ abstract class AbstractTestProblem {
 
 class SimpleTask extends AbstractTask {
 
-	private static int nextID=0;
+	private static int nextID;
 
 	private final Point domain;
 
@@ -279,7 +280,7 @@ class SimpleTask extends AbstractTask {
      * @param lst
      * @param duration
      */
-	public SimpleTask(int est,int lst, int duration) {
+	public SimpleTask(final int est, final int lst, final int duration) {
 		super(nextID++, "T"+nextID);
 		this.domain = new Point(est, lst>=est ? lst :est);
 		this.duration = duration>0 ? duration : 0;
@@ -347,7 +348,7 @@ class SimpleTask extends AbstractTask {
 	 */
 	@Override
 	public int getMaxDuration() {
-		return getMinDuration();
+		return duration;
 	}
 
 
@@ -364,14 +365,14 @@ class SimpleResource implements ICumulativeResource<SimpleTask> {
 	public int capacity;
 	
 	
-	public SimpleResource(List<SimpleTask> tasksL, int[] heights, int capacity) {
+	public SimpleResource(final List<SimpleTask> tasksL, final int[] heights, final int capacity) {
 		super();
 		this.tasksL = tasksL;
 		this.heights = heights;
 		this.capacity = capacity;
 	}
 
-	public SimpleResource(List<SimpleTask> tasksL) {
+	public SimpleResource(final List<SimpleTask> tasksL) {
 		super();
 		this.tasksL=new ArrayList<SimpleTask>(tasksL);
 		this.capacity = 1;
@@ -381,14 +382,14 @@ class SimpleResource implements ICumulativeResource<SimpleTask> {
 
 	
 	@Override
-	public IRTask getRTask(int idx) {
+	public IRTask getRTask(final int idx) {
 		return null;
 	}
 
 
 	@Override
 	public List<IRTask> asRTaskList() {
-		return Collections.<IRTask>emptyList();
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -402,7 +403,7 @@ class SimpleResource implements ICumulativeResource<SimpleTask> {
 	}
 
 	@Override
-	public SimpleTask getTask(int idx) {
+	public SimpleTask getTask(final int idx) {
 		return tasksL.get(idx);
 	}
 
@@ -431,7 +432,7 @@ class SimpleResource implements ICumulativeResource<SimpleTask> {
 		return getCapacity().getInf();
 	}
 
-	public IntDomainVar getHeight(int idx) {
+	public IntDomainVar getHeight(final int idx) {
 		return null;
 	}
 	

@@ -23,6 +23,7 @@
 package choco.cp.solver.variables.delta;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.IntArrayIterator;
 import choco.kernel.solver.variables.delta.IDeltaDomain;
 import gnu.trove.TIntArrayList;
 
@@ -42,7 +43,7 @@ public class StackDeltaDomain implements IDeltaDomain {
      * (each element points to the index of the enxt element)
      * -1 for the last element
      */
-    private TIntArrayList list;
+    private final TIntArrayList list;
 
     boolean freeze;
     private int from;
@@ -81,7 +82,7 @@ public class StackDeltaDomain implements IDeltaDomain {
      * @param value removed
      */
     @Override
-    public void remove(int value) {
+    public void remove(final int value) {
         list.add(value);
     }
 
@@ -130,37 +131,7 @@ public class StackDeltaDomain implements IDeltaDomain {
      */
     @Override
     public DisposableIntIterator iterator() {
-        StackDeltaDomainIterator iter = (StackDeltaDomainIterator) _cachedDeltaIntDomainIterator;
-        if (iter != null && iter.isReusable()) {
-            iter.init();
-            return iter;
-        }
-        _cachedDeltaIntDomainIterator = new StackDeltaDomainIterator();
-        return _cachedDeltaIntDomainIterator;
-    }
-
-    private DisposableIntIterator _cachedDeltaIntDomainIterator = null;
-
-    private class StackDeltaDomainIterator extends DisposableIntIterator {
-
-        int idx;
-
-        private StackDeltaDomainIterator() {
-            init();
-        }
-
-        @Override
-        public void init() {
-            idx = from;
-        }
-
-        public boolean hasNext() {
-            return idx < to;
-        }
-
-        public int next() {
-            return list.get(idx++);
-        }
+        return IntArrayIterator.getIterator(list.toNativeArray(), from, to);
     }
 
     /**

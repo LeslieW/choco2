@@ -62,7 +62,7 @@ public abstract class AbstractIntDomain implements IntDomain {
 
     IDeltaDomain deltaDom;
 
-    protected AbstractIntDomain(PropagationEngine propagationEngine) {
+    protected AbstractIntDomain(final PropagationEngine propagationEngine) {
         this.propagationEngine = propagationEngine;
     }
 
@@ -71,7 +71,7 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 */
 
 	public DisposableIntIterator getIterator() {
-        if(getSize() == 1) return OneValueIterator.getOneValueIterator(getInf());
+        if(getSize() == 1) return OneValueIterator.getIterator(getInf());
         return IntDomainIterator.getIterator(this);
 	}
 
@@ -86,10 +86,10 @@ public abstract class AbstractIntDomain implements IntDomain {
      * @return a boolean indicating whether the call indeed added new information.
 	 * @throws ContradictionException contradiction exception
 	 */
-	public boolean updateSup(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+	public boolean updateSup(final int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
 		if (_updateSup(x, cause)) {
             boolean awake = true;
-			int val = getInf();
+			final int val = getInf();
 			if (getSup() == x) awake = forceAwake;
 			if (val == getSup()) {
 				//instantiate(getSup(), cause);
@@ -115,10 +115,10 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 * @throws ContradictionException contradiction exception
 	 */
 
-	public boolean updateInf(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+	public boolean updateInf(final int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
 		if (_updateInf(x, cause)) {
             boolean awake = true;
-			int val = getSup();      
+			final int val = getSup();
 			if (getInf() == x) awake = forceAwake;
 			if (val == getInf()) {
 				//        instantiate(getInf(), cause);
@@ -149,12 +149,12 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 * @throws ContradictionException contradiction exception
 	 */
 
-	public boolean removeVal(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+	public boolean removeVal(final int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
 		if (_removeVal(x, cause)) {
 			// TODO : to test !!
 			//int promoteCause = variable.getEvent().getCause() == VarEvent.NOEVENT ? idx : VarEvent.NOCAUSE;
 			//int promoteCause = idx;
-			int promoteCause = VarEvent.NOCAUSE;
+			final int promoteCause = VarEvent.NOCAUSE;
 			if (getInf() == getSup())
 				propagationEngine.postInstInt(variable, cause, forceAwake);
 			else if (x < getInf())
@@ -182,7 +182,7 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 * @throws ContradictionException contradiction exception
 	 */
 
-	public boolean removeInterval(int a, int b, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+	public boolean removeInterval(final int a, final int b, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
 		if (a <= getInf())
 			return updateInf(b + 1, cause, forceAwake);
 		else if (getSup() <= b)
@@ -209,7 +209,7 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 * @throws ContradictionException contradiction exception
 	 */
 
-	public boolean instantiate(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+	public boolean instantiate(final int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
 		if (_instantiate(x, cause)) {
 			propagationEngine.postInstInt(variable, cause, forceAwake);
 			return true;
@@ -232,7 +232,7 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 * @throws ContradictionException contradiction exception
 	 */
 
-	protected boolean _instantiate(int x, final SConstraint cause) throws ContradictionException {
+	protected boolean _instantiate(final int x, final SConstraint cause) throws ContradictionException {
 		if (variable.isInstantiated()) {
 			if (variable.getVal() != x) {
 				propagationEngine.raiseContradiction(cause);
@@ -262,7 +262,7 @@ public abstract class AbstractIntDomain implements IntDomain {
 	 */
 
 	// note: one could have thrown an OutOfDomainException in case (x > IStateInt.MAXINT)
-	protected boolean _updateInf(int x, final SConstraint cause) throws ContradictionException {
+	protected boolean _updateInf(final int x, final SConstraint cause) throws ContradictionException {
 		if (x > getInf()) {
 			if (x > getSup()) {
 				propagationEngine.raiseContradiction(cause);
@@ -285,7 +285,7 @@ public abstract class AbstractIntDomain implements IntDomain {
      * @return wether the update has been done
 	 * @throws ContradictionException contradiction exception
 	 */
-	protected boolean _updateSup(int x, final SConstraint cause) throws ContradictionException {
+	protected boolean _updateSup(final int x, final SConstraint cause) throws ContradictionException {
 		if (x < getSup()) {
 			if (x < getInf()) {
 				propagationEngine.raiseContradiction(cause);
@@ -307,9 +307,10 @@ public abstract class AbstractIntDomain implements IntDomain {
      * @return wether the removal has been done
 	 * @throws ContradictionException contradiction excpetion
 	 */
-	protected boolean _removeVal(int x, final SConstraint cause) throws ContradictionException {
-		int infv = getInf(), supv = getSup();
-		if (infv <= x && x <= supv) {
+	protected boolean _removeVal(final int x, final SConstraint cause) throws ContradictionException {
+		final int infv = getInf();
+        final int supv = getSup();
+        if (infv <= x && x <= supv) {
 			if (x == infv) {
 				_updateInf(x + 1, cause);
 				if (getInf() == supv) {

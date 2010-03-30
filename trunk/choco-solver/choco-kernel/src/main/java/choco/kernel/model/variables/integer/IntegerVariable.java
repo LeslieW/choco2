@@ -26,6 +26,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.IConstraintList;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.VariableType;
+import choco.kernel.model.variables.integer.iterators.IVIterator;
 
 /*
  * Created by IntelliJ IDEA.
@@ -38,8 +39,8 @@ public class IntegerVariable extends IntegerExpressionVariable {
 
 	protected int[] values;
 		
-	protected IntegerVariable(VariableType variableType, int[] parameters,
-			boolean enableOption, IConstraintList constraints) {
+	protected IntegerVariable(final VariableType variableType, final int[] parameters,
+			final boolean enableOption, final IConstraintList constraints) {
 		super(variableType, parameters, enableOption, constraints);
 		if(parameters.length>0) {
 			this.lowB = parameters[0];
@@ -49,24 +50,24 @@ public class IntegerVariable extends IntegerExpressionVariable {
 	}
 
 	
-	public IntegerVariable(String name, int binf, int bsup) {
+	public IntegerVariable(final String name, final int binf, final int bsup) {
 		//noinspection NullArgumentToVariableArgMethod
 		this(VariableType.INTEGER, new int[]{binf, bsup}, true, new ConstraintsDataStructure());
 		this.setName(name);
 	}
 
-	public IntegerVariable(String name, int[] values) {
+	public IntegerVariable(final String name, final int[] theValues) {
 		//noinspection NullArgumentToVariableArgMethod
-		this(VariableType.INTEGER, values, true, new ConstraintsDataStructure());
-		this.values = values;
+		this(VariableType.INTEGER, theValues, true, new ConstraintsDataStructure());
+		this.values = theValues;
 		this.setName(name);
 	}
 
-	public int[] getValues() {
+	public final int[] getValues() {
 		return values;
 	}
 
-	public int getDomainSize() {
+	public final int getDomainSize() {
 		if (values != null) {
 			return values.length;
 		} else {
@@ -74,9 +75,9 @@ public class IntegerVariable extends IntegerExpressionVariable {
 		}
 	}
 
-	public boolean canBeEqualTo(int v) {
+	public final boolean canBeEqualTo(final int v) {
 		if (values != null) {
-			for (int value : values) {
+			for (final int value : values) {
 				if (value == v) {
 					return true;
 				}
@@ -104,54 +105,11 @@ public class IntegerVariable extends IntegerExpressionVariable {
 	 */
 	@Override
 	public String pretty() {
-		return name+" ["+getLowB()+", "+getUppB()+"]";
+		return name+" ["+getLowB()+", "+getUppB()+ ']';
 	}
 
-	
-
-	protected IntDomainIterator _cachedIterator = null;
-
-	public DisposableIntIterator getDomainIterator() {
-		IntDomainIterator iter = _cachedIterator;
-		if (iter != null && iter.isReusable()) {
-			iter.init();
-			return iter;
-		}
-		_cachedIterator = new IntDomainIterator(this);
-		return _cachedIterator;
-	}
-
-
-	protected static class IntDomainIterator extends DisposableIntIterator {
-		public int idx;
-		public int currentVal;
-		public IntegerVariable v;
-
-		public IntDomainIterator(IntegerVariable v) {
-			this.v = v;
-			init();
-		}
-
-		@Override
-		public void init() {
-			super.init();
-			idx = 0;
-			currentVal = v.getLowB();
-		}
-
-		public boolean hasNext() {
-			if (v.getValues() == null) {
-				return currentVal <= v.getUppB();
-			} else {
-				return idx < v.getValues().length;
-			}
-		}
-
-		public int next() {
-			if (v.getValues() == null)
-				return currentVal++;
-			else return v.getValues()[idx++];
-		}
+	public final DisposableIntIterator getDomainIterator() {
+		return IVIterator.getIterator(lowB, uppB, values);
 	}
 
 	/**
@@ -171,10 +129,10 @@ public class IntegerVariable extends IntegerExpressionVariable {
 	 //        return new IntegerVariable[]{IntegerVariable.this};
 	 //    }
 
-	 public void removeVal(int remvalue){
+	 public final void removeVal(final int remvalue){
 		 if(this.canBeEqualTo(remvalue)){
-			 int size;
-			 int[] vals;
+			 final int size;
+			 final int[] vals;
 			 if(values == null){
 				 size = this.getUppB() - this.getLowB();
 				 vals = new int[size];
@@ -190,7 +148,7 @@ public class IntegerVariable extends IntegerExpressionVariable {
 				 size = values.length-1;
 				 vals = new int[size];
 				 int idx = 0;
-				 for (int value : values) {
+				 for (final int value : values) {
 					 if (value != remvalue) {
 						 vals[idx++] = value;
 					 }
@@ -207,9 +165,9 @@ public class IntegerVariable extends IntegerExpressionVariable {
 	  * Return the enumerated values of a domain
 	  * @return the enumerated values of a domain
 	  */
-	 public int[] enumVal(){
+	 public final int[] enumVal(){
 		 if(values == null){
-			 int[] val = new int[getUppB()-getLowB()+1];
+			 final int[] val = new int[getUppB()-getLowB()+1];
 			 for(int o = 0; o < val.length; o++){
 				 val[o] = getLowB()+o;
 			 }

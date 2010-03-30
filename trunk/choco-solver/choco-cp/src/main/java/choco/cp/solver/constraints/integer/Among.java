@@ -42,7 +42,7 @@ public final class Among extends AbstractUnIntSConstraint {
 
     final TIntArrayList values;
 
-    public Among(IntDomainVar v0, int[] values) {
+    public Among(final IntDomainVar v0, final int[] values) {
         super(v0);
         this.values = new TIntArrayList(values);
     }
@@ -56,14 +56,18 @@ public final class Among extends AbstractUnIntSConstraint {
      */
     @Override
     public void propagate() throws ContradictionException {
-        DisposableIntIterator iterator = v0.getDomain().getIterator();
-        while (iterator.hasNext()) {
-            int val = iterator.next();
-            if (!values.contains(val)) {
-                v0.removeVal(val, this, false);
+        final DisposableIntIterator iterator = v0.getDomain().getIterator();
+        try{
+            while (iterator.hasNext()) {
+                final int val = iterator.next();
+                if (!values.contains(val)) {
+                    v0.removeVal(val, this, false);
+                }
             }
+            this.setEntailed();
+        }finally {
+            iterator.dispose();
         }
-        this.setEntailed();
     }
 
 
@@ -73,13 +77,13 @@ public final class Among extends AbstractUnIntSConstraint {
      * @return the opposite constraint  @param solver
      */
     @Override
-    public AbstractSConstraint opposite(Solver solver) {
+    public AbstractSConstraint opposite(final Solver solver) {
         return new Disjoint(v0, values.toNativeArray());
     }
 
     @Override
     public String pretty() {
-        StringBuffer sb = new StringBuffer("AMONG(");
+        final StringBuilder sb = new StringBuilder("AMONG(");
         sb.append(v0.pretty()).append(",{");
         StringUtils.pretty(values.toNativeArray());
         sb.append("})");
@@ -95,7 +99,7 @@ public final class Among extends AbstractUnIntSConstraint {
      * @return
      */
     @Override
-    public boolean isSatisfied(int[] tuple) {
+    public boolean isSatisfied(final int[] tuple) {
         return values.contains(tuple[0]);
     }
 
@@ -107,13 +111,17 @@ public final class Among extends AbstractUnIntSConstraint {
      */
     @Override
     public boolean isSatisfied() {
-        DisposableIntIterator it = v0.getDomain().getIterator();
+        final DisposableIntIterator it = v0.getDomain().getIterator();
+        try{
         while (it.hasNext()) {
             if (!values.contains(it.next())) {
                 return false;
             }
         }
         return true;
+        }finally {
+            it.dispose();
+        }
     }
 
     /**
@@ -123,10 +131,10 @@ public final class Among extends AbstractUnIntSConstraint {
      */
     @Override
     public Boolean isEntailed() {
-        DisposableIntIterator it = v0.getDomain().getIterator();
+        final DisposableIntIterator it = v0.getDomain().getIterator();
         int nb = 0;
         while (it.hasNext()) {
-            int val = it.next();
+            final int val = it.next();
             if (values.contains(val)) {
                 nb++;
             }

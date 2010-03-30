@@ -43,11 +43,11 @@ public final class OrderedSparseArray {
     int n;
     boolean type; // true si minS maxS ou minP maxP otherwise false
 
-    public OrderedSparseArray(int n) {
+    public OrderedSparseArray(final int n) {
         this(n, false);
     }
 
-    public OrderedSparseArray(int n, boolean type) {
+    public OrderedSparseArray(final int n, final boolean type) {
         this.n = n;
         this.type = type;
         this.values = new int[n][];
@@ -59,16 +59,17 @@ public final class OrderedSparseArray {
         this.previous = new int[n];
     }
 
-    public void allocate(IntDomainVar[] vars, int def) {
+    public void allocate(final IntDomainVar[] vars, final int def) {
         for (int i = 0; i < n; i++) {
             values[i] = new int[vars[i].getDomainSize()];
             nbVals[i] = vars[i].getDomainSize();
-            DisposableIntIterator it = vars[i].getDomain().getIterator();
+            final DisposableIntIterator it = vars[i].getDomain().getIterator();
             int j = 0;
             while (it.hasNext()) {
                 values[i][j] = it.next();
                 j++;
             }
+            it.dispose();
             infos[i] = new int[vars[i].getDomainSize()];
             for (j = 0; j < nbVals[i]; j++) {
                 infos[i][j] = def;
@@ -77,7 +78,7 @@ public final class OrderedSparseArray {
         }
     }
 
-    public void scanInit(int i, boolean dir) {
+    public void scanInit(final int i, final boolean dir) {
         dirs[i] = dir;
         previous[i] = defaults[i];
         if (dir) {
@@ -87,7 +88,7 @@ public final class OrderedSparseArray {
         }
     }
 
-    public int get(int i, int v) {
+    public int get(final int i, final int v) {
         if (dirs[i]) {
             while (indices[i] == -1 || (indices[i] <= nbVals[i] - 1 && v > values[i][indices[i]])) {
                 if (type && indices[i] >= 0) {
@@ -116,7 +117,7 @@ public final class OrderedSparseArray {
         }
     }
 
-    public void set(int i, int v, int info) {
+    public void set(final int i, final int v, final int info) {
         if (dirs[i]) {
             //assert(!(indices[i] >= 0 && values[i][indices[i]] > v));
             if (indices[i] == -1 || values[i][indices[i]] < v) {
@@ -142,15 +143,16 @@ public final class OrderedSparseArray {
         previous[i] = info;
     }
 
-    public String printer(String name) {
-        String s = "";
-        s+= "name" + " | " + "coords" + " | " + "value" + " | " + "info" + "\n";
+    public String printer(final String name) {
+        final StringBuilder s = new StringBuilder();
+        s.append("name | coords | value | info\n");
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < values[i].length; j++) {
-                s += name + " | [" + i + "][" + j + "] |   " + values[i][j] + "   | " + infos[i][j] + "\n";
+                s.append(name).append(" | [").append(i).append("][").append(j).append("] |   ")
+                        .append(values[i][j]).append("   | ").append(infos[i][j]).append('\n');
             }
         }
-        return s;
+        return s.toString();
     }
 
 }
