@@ -94,7 +94,6 @@ public class CPOptions {
      * Scope: {@link choco.kernel.model.variables.integer.IntegerVariable},
      * {@link choco.kernel.model.variables.set.SetVariable}
      * and {@link choco.kernel.model.variables.real.RealVariable}.<br/>
-     * @deprecated
      */
     public static final String V_NO_DECISION = "cp:no_decision";
 
