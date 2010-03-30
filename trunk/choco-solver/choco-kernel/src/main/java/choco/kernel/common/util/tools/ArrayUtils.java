@@ -36,8 +36,10 @@ import java.util.*;
  * Update : Choco 2.1.0
  */
 public final class ArrayUtils {
-    private final static TLongHashSet HASHSET = new TLongHashSet();
-    private final static ArrayList<Object> LIST = new ArrayList<Object>();
+
+    private static DLongHashSet HASHSET = new DLongHashSet();
+
+    private static DArrayList LIST = new DArrayList();
 
 
     private ArrayUtils() {
@@ -280,38 +282,50 @@ public final class ArrayUtils {
 
     @SuppressWarnings({"unchecked"})
     public static <V extends IIndex> V[] getNonRedundantObjects(V[] all) {
-        HASHSET.clear();
-        LIST.clear();
-        for (V v : all) {
-            if (!HASHSET.contains(v.getIndex())) {
-                LIST.add(v);
-                HASHSET.add(v.getIndex());
+        DLongHashSet hashSet = getHashSet();
+        DArrayList list = getArrayList();
+        try {
+            for (V v : all) {
+                if (!hashSet.get().contains(v.getIndex())) {
+                    list.get().add(v);
+                    hashSet.get().add(v.getIndex());
+                }
             }
+            if (list.get().size() != all.length) {
+                V[] a = (V[]) java.lang.reflect.Array.newInstance((Class<? extends V[]>) all.getClass().getComponentType(), list.get().size());
+                list.get().toArray(a);
+                return a;
+            }
+            return all;
+        } finally {
+            hashSet.dispose();
+            list.dispose();
         }
-        if (LIST.size() != all.length) {
-            V[] a = (V[]) java.lang.reflect.Array.newInstance((Class<? extends V[]>)all.getClass().getComponentType(), LIST.size());
-            LIST.toArray(a);
-            return a;
-        }
-        return all;
     }
 
     @SuppressWarnings({"unchecked"})
     public static <V extends IIndex> V[] getNonRedundantObjects(Class classe, V[] all) {
-        HASHSET.clear();
-        LIST.clear();
-        for (V v : all) {
-            if (!HASHSET.contains(v.getIndex())) {
-                LIST.add(v);
-                HASHSET.add(v.getIndex());
+        DLongHashSet hashSet = getHashSet();
+        DArrayList list = getArrayList();
+        try{
+            hashSet.get().clear();
+            list.get().clear();
+            for (V v : all) {
+                if (!hashSet.get().contains(v.getIndex())) {
+                    list.get().add(v);
+                    hashSet.get().add(v.getIndex());
+                }
             }
+            if (list.get().size() != all.length) {
+                V[] a = (V[]) java.lang.reflect.Array.newInstance(classe, list.get().size());
+                list.get().toArray(a);
+                return a;
+            }
+            return all;
+        }finally {
+            hashSet.dispose();
+
         }
-        if (LIST.size() != all.length) {
-            V[] a = (V[]) java.lang.reflect.Array.newInstance(classe, LIST.size());
-            LIST.toArray(a);
-            return a;
-        }
-        return all;
     }
 
     @SuppressWarnings("unchecked")
@@ -324,6 +338,66 @@ public final class ArrayUtils {
             tmpl.toArray(tmpa);
             Arrays.sort(tmpa);
             return tmpa;
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    private synchronized static DLongHashSet getHashSet(){
+        if(!HASHSET.isReusable()){
+            HASHSET = new DLongHashSet();
+        }
+        HASHSET.init();
+        return HASHSET;
+
+    }
+
+    private synchronized static DArrayList getArrayList(){
+        if(!LIST.isReusable()){
+            LIST = new DArrayList();
+        }
+        LIST.init();
+        return LIST;
+
+    }
+
+    private static class DLongHashSet extends DisposableObject<TLongHashSet>{
+        private final TLongHashSet hashset;
+
+        private DLongHashSet() {
+            super();
+            hashset = new TLongHashSet();
+        }
+
+        @Override
+        public void init() {
+            super.init();
+            hashset.clear();
+        }
+
+        public TLongHashSet get() {
+            return hashset;
+        }
+    }
+
+    private static class DArrayList extends DisposableObject<ArrayList<Object>>{
+        private final ArrayList<Object> arrayList;
+
+        private DArrayList() {
+            super();
+            arrayList = new ArrayList<Object>();
+        }
+
+        @Override
+        public void init() {
+            super.init();
+            arrayList.clear();
+        }
+
+        public ArrayList<Object> get() {
+            return arrayList;
         }
     }
 }
