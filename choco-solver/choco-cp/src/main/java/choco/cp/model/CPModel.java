@@ -50,8 +50,7 @@ import gnu.trove.TIntIterator;
 import gnu.trove.TLongHashSet;
 import gnu.trove.TLongObjectIterator;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -77,38 +76,38 @@ public class CPModel implements Model {
 	/**
 	 * All the constraint of the model
 	 */
-	protected DeterministicIndicedList<Constraint> constraints;
+	protected final DeterministicIndicedList<Constraint> constraints;
 
 	/**
 	 * All the search intVars in the model.
 	 */
-	protected DeterministicIndicedList<IntegerVariable> intVars;
+	protected final DeterministicIndicedList<IntegerVariable> intVars;
 
 	protected int nbBoolVar;
 	/**
 	 * All the set intVars in the model.
 	 */
-	protected DeterministicIndicedList<SetVariable> setVars;
+	protected final DeterministicIndicedList<SetVariable> setVars;
 	/**
 	 * All the float vars in the model.
 	 */
-	protected DeterministicIndicedList<RealVariable> floatVars;
+	protected final DeterministicIndicedList<RealVariable> floatVars;
 
 	/**
 	 * All the constant vars in the model
 	 */
-	protected DeterministicIndicedList<Variable> constantVars;
+	protected final DeterministicIndicedList<Variable> constantVars;
 	/**
 	 * All the search intVars in the model.
 	 */
-	protected DeterministicIndicedList<IntegerExpressionVariable> expVars;
+	protected final DeterministicIndicedList<IntegerExpressionVariable> expVars;
 
-	protected DeterministicIndicedList<MultipleVariables> storedMultipleVariables;
+	protected final DeterministicIndicedList<MultipleVariables> storedMultipleVariables;
 
 	/**
 	 * Map that gives for type of contraints, a list of contraints of that type
 	 */
-	private EnumMap<ConstraintType, TIntHashSet> constraintsByType;
+	private final EnumMap<ConstraintType, TIntHashSet> constraintsByType;
 
 	/**
 	 * Maximization / Minimization model
@@ -146,7 +145,7 @@ public class CPModel implements Model {
 	 * @param nbExpVars estimated number of expression variables
 	 * @param nbMultVars estimated number of multiples variables
 	 */
-	public CPModel(int nbCstrs, int nbIntVars, int nbSetVars, int nbRealVars, int nbCsts, int nbExpVars, int nbMultVars){
+	public CPModel(final int nbCstrs, final int nbIntVars, final int nbSetVars, final int nbRealVars, final int nbCsts, final int nbExpVars, final int nbMultVars){
 		intVars = new DeterministicIndicedList<IntegerVariable>(IntegerVariable.class, nbIntVars);
 		setVars = new DeterministicIndicedList<SetVariable>(SetVariable.class, nbSetVars);
 		floatVars = new DeterministicIndicedList<RealVariable>(RealVariable.class, nbRealVars);
@@ -158,7 +157,7 @@ public class CPModel implements Model {
 		constraintsByType = new EnumMap<ConstraintType, TIntHashSet>(ConstraintType.class);
 		properties = new Properties();
 		try {
-			InputStream is = getClass().getResourceAsStream( "/application.properties" );
+			final InputStream is = getClass().getResourceAsStream( "/application.properties" );
 			properties.load(is);
 		} catch (IOException e) {
 			LOGGER.severe("Could not open application.properties");
@@ -166,14 +165,14 @@ public class CPModel implements Model {
 	}
 
 	public String pretty() {
-		StringBuffer buf = new StringBuffer("Pb[" + getNbTotVars() + " vars, "+getNbStoredMultipleVars() + " multiple vars, " + getNbConstraints() + " cons]\n");
+		final StringBuffer buf = new StringBuffer("Pb[" + getNbTotVars() + " vars, "+getNbStoredMultipleVars() + " multiple vars, " + getNbConstraints() + " cons]\n");
 		buf.append(this.varsToString());
 		buf.append(this.constraintsToString());
 		return new String(buf);
 	}
 
 	public String varsToString() {
-		StringBuffer buf = new StringBuffer("==== VARIABLES ====\n");
+		final StringBuffer buf = new StringBuffer("==== VARIABLES ====\n");
 		buf.append(StringUtils.prettyOnePerLine(intVars.iterator()));
 		buf.append(StringUtils.prettyOnePerLine(floatVars.iterator()));
 		buf.append(StringUtils.prettyOnePerLine(setVars.iterator()));
@@ -186,14 +185,14 @@ public class CPModel implements Model {
 	}
 
 	public String constraintsToString() {
-		StringBuffer buf = new StringBuffer("==== CONSTRAINTS ====\n");
+		final StringBuffer buf = new StringBuffer("==== CONSTRAINTS ====\n");
 		buf.append(StringUtils.prettyOnePerLine(constraints.iterator()));
 		return new String(buf);
 	}
 
 
 	public String solutionToString() {
-		StringBuffer buf = new StringBuffer();
+		final StringBuffer buf = new StringBuffer();
 		buf.append(StringUtils.prettyOnePerLine(intVars.iterator()));
 		buf.append(StringUtils.prettyOnePerLine(floatVars.iterator()));
 		buf.append(StringUtils.prettyOnePerLine(setVars.iterator()));
@@ -203,12 +202,12 @@ public class CPModel implements Model {
 
 
 	@Deprecated
-	public int getIntVarIndex(IntDomainVar c) {
+	public int getIntVarIndex(final IntDomainVar c) {
 		throw new ModelException("CPModel: ?");
 	}
 
 	@Deprecated
-	public int getIntVarIndex(IntVar c) {
+	public int getIntVarIndex(final IntVar c) {
 		throw new ModelException("CPModel: ?");
 	}
 
@@ -216,7 +215,7 @@ public class CPModel implements Model {
 		return precision;
 	}
 
-	public void setPrecision(double precision) {
+	public void setPrecision(final double precision) {
 		this.precision = precision;
 	}
 
@@ -224,7 +223,7 @@ public class CPModel implements Model {
 		return reduction;
 	}
 
-	public void setReduction(double reduction) {
+	public void setReduction(final double reduction) {
 		this.reduction = reduction;
 	}
 
@@ -232,7 +231,7 @@ public class CPModel implements Model {
 		return defDecExp;
 	}
 
-	public void setDefaultExpressionDecomposition(Boolean defDecExp) {
+	public void setDefaultExpressionDecomposition(final Boolean defDecExp) {
 		this.defDecExp = defDecExp;
 	}
 
@@ -244,7 +243,7 @@ public class CPModel implements Model {
 	 * @param i index of the variable in the model
 	 */
 
-	public final IntegerVariable getIntVar(int i) {
+	public final IntegerVariable getIntVar(final int i) {
 		return intVars.get(i);
 	}
 
@@ -263,7 +262,7 @@ public class CPModel implements Model {
 	 * @param i index of the variable
 	 * @return the i-th real variable
 	 */
-	public final RealVariable getRealVar(int i) {
+	public final RealVariable getRealVar(final int i) {
 		return floatVars.get(i);
 	}
 
@@ -280,7 +279,7 @@ public class CPModel implements Model {
 	 * @param i index of the variable
 	 * @return the i-th real variable
 	 */
-	public final SetVariable getSetVar(int i) {
+	public final SetVariable getSetVar(final int i) {
 		return setVars.get(i);
 	}
 
@@ -307,7 +306,7 @@ public class CPModel implements Model {
 	 * @param i index of the variable
 	 * @return the i-th real variable
 	 */
-	public IntegerConstantVariable getConstantVar(int i) {
+	public IntegerConstantVariable getConstantVar(final int i) {
 		return (IntegerConstantVariable) constantVars.get(i);
 	}
 
@@ -326,7 +325,7 @@ public class CPModel implements Model {
 
 
 	@Override
-	public MultipleVariables getStoredMultipleVar(int i) {
+	public MultipleVariables getStoredMultipleVar(final int i) {
 		return storedMultipleVariables.get(i);
 	}
 
@@ -347,7 +346,7 @@ public class CPModel implements Model {
 	 *
 	 * @param i index of the constraint in the model
 	 */
-	public final Constraint getConstraint(int i) {
+	public final Constraint getConstraint(final int i) {
 		//        return (Constraint)constraints.getValues()[i];
 		return constraints.get(i);
 	}
@@ -377,11 +376,11 @@ public class CPModel implements Model {
 	}
 
 
-	public Iterator<Constraint> getConstraintByType(ConstraintType t) {
+	public Iterator<Constraint> getConstraintByType(final ConstraintType t) {
 		final TIntHashSet hs = constraintsByType.get(t);
 		if (hs != null) {
 			return new Iterator<Constraint>(){
-				TIntIterator it = hs.iterator();
+				final TIntIterator it = hs.iterator();
 				/**
 				 * Returns <tt>true</tt> if the iteration has more elements. (In other
 				 * words, returns <tt>true</tt> if <tt>next</tt> would return an element
@@ -431,8 +430,8 @@ public class CPModel implements Model {
 		return new EmptyIterator();
 	}
 
-	public int getNbConstraintByType(ConstraintType t) {
-		TIntHashSet hs = constraintsByType.get(t);
+	public int getNbConstraintByType(final ConstraintType t) {
+		final TIntHashSet hs = constraintsByType.get(t);
 		if (hs != null) {
 			return hs.size();
 		} else {
@@ -449,12 +448,12 @@ public class CPModel implements Model {
 	//		}
 	//	}
 
-	private Set<String> reuseOptions = new HashSet<String>(3);
+	private final Set<String> reuseOptions = new HashSet<String>(3);
 
-	public void addOptions(String options, IOptions... element) {
-		Iterator<String> iter = StringUtils.getOptionIterator(options);
+	public void addOptions(final String options, final IOptions... element) {
+		final Iterator<String> iter = StringUtils.getOptionIterator(options);
 		while(iter.hasNext()) {
-			for (IOptions anElement : element) {
+			for (final IOptions anElement : element) {
 				anElement.addOption(iter.next());
 			}
 		}
@@ -469,7 +468,7 @@ public class CPModel implements Model {
 	 *             But User can define its own one.
 	 *             See CPModel.addVariable(String options, Variable... tabv) for more details.
 	 */
-	public void addVariable(Variable v) {
+	public void addVariable(final Variable v) {
 		this.addVariables(NO_OPTIONS, v);
 	}
 
@@ -483,7 +482,7 @@ public class CPModel implements Model {
 	 *             See CPModel.addVariable(String options, Variable... tabv) for more details.
 	 * @param v       one or more variables
 	 */
-	public void addVariable(String options, Variable v) {
+	public void addVariable(final String options, final Variable v) {
 		this.addVariables(options, v);
 	}
 
@@ -495,7 +494,7 @@ public class CPModel implements Model {
 	 * @deprecated
 	 */
 	@Deprecated
-	public void addVariable(Variable... v) {
+	public void addVariable(final Variable... v) {
 		this.addVariables(NO_OPTIONS, v);
 	}
 
@@ -508,7 +507,7 @@ public class CPModel implements Model {
 	 * @deprecated
 	 */
 	@Deprecated
-	public void addVariable(String options, Variable... v) {
+	public void addVariable(final String options, final Variable... v) {
 		this.addVariables(options, v);
 	}
 
@@ -521,7 +520,7 @@ public class CPModel implements Model {
 	 *             But User can define its own one.
 	 *             See CPModel.addVariable(String options, Variable... tabv) for more details.
 	 */
-	public void addVariables(Variable... tabv) {
+	public void addVariables(final Variable... tabv) {
 		this.addVariables(NO_OPTIONS, tabv);
 	}
 
@@ -558,9 +557,9 @@ public class CPModel implements Model {
 	 *                <li>{@link choco.cp.CPOptions.V_OBJECTIVE} to define the variable to optimize</li>
 	 *                </ul>
 	 */
-	public void addVariables(String options, Variable... tabv) {
+	public void addVariables(final String options, final Variable... tabv) {
 		addOptions(options, tabv);
-		for (Variable v : tabv) {
+		for (final Variable v : tabv) {
 			v.findManager(properties);
 			switch (v.getVariableType()) {
 			case INTEGER:
@@ -598,7 +597,7 @@ public class CPModel implements Model {
 				addVariable(options, ((SetVariable) v).getCard());
 				break;
 			case INTEGER_EXPRESSION: {
-				IntegerExpressionVariable iev = (IntegerExpressionVariable) v;
+				final IntegerExpressionVariable iev = (IntegerExpressionVariable) v;
 				final Iterator<Variable> it = iev.getVariableIterator();
 				while (it.hasNext()) {
 					this.addVariable(it.next());
@@ -606,7 +605,7 @@ public class CPModel implements Model {
 				break;
 			}
 			case SET_EXPRESSION: {
-				SetExpressionVariable sev = (SetExpressionVariable) v;
+				final SetExpressionVariable sev = (SetExpressionVariable) v;
 				final Iterator<Variable> it = sev.getVariableIterator();
 				while (it.hasNext()) {
 					this.addVariable(it.next());
@@ -614,7 +613,7 @@ public class CPModel implements Model {
 				break;
 			}
 			case REAL_EXPRESSION: {
-				RealExpressionVariable rev = (RealExpressionVariable) v;
+				final RealExpressionVariable rev = (RealExpressionVariable) v;
 				final Iterator<Variable> it = rev.getVariableIterator();
 				while (it.hasNext()) {
 					this.addVariable(it.next());
@@ -622,7 +621,7 @@ public class CPModel implements Model {
 				break;
 			}
 			case MULTIPLE_VARIABLES: {
-				MultipleVariables mv = (MultipleVariables) v;
+				final MultipleVariables mv = (MultipleVariables) v;
 				final Iterator<Variable> it = mv.getVariableIterator();
 				while (it.hasNext()) {
 					this.addVariable(it.next());
@@ -648,11 +647,11 @@ public class CPModel implements Model {
 	}
 
 	@Deprecated
-	protected <E extends Variable> void removeVariable(E v, DeterministicIndicedList<E> vars) {
+	protected <E extends Variable> void removeVariable(final E v, final DeterministicIndicedList<E> vars) {
 		vars.remove(v);
-		Iterator<Constraint> it = v.getConstraintIterator(this);
+		final Iterator<Constraint> it = v.getConstraintIterator(this);
 		while (it.hasNext()) {
-			Constraint c = it.next();
+			final Constraint c = it.next();
 			it.remove();
 			this.removeConstraint(c);
 		}
@@ -660,20 +659,20 @@ public class CPModel implements Model {
 
 
 
-	protected <E extends Variable> void remVariable(E v) {
-		Iterator<Variable> it;
+	protected <E extends Variable> void remVariable(final E v) {
+		final Iterator<Variable> it;
 		switch (v.getVariableType()) {
 		case INTEGER:
-			IntegerVariable vi = (IntegerVariable)v;
+			final IntegerVariable vi = (IntegerVariable)v;
 			intVars.remove(vi);
 			break;
 		case SET:
-			SetVariable sv  = (SetVariable)v;
+			final SetVariable sv  = (SetVariable)v;
 			intVars.remove(sv.getCard());
 			setVars.remove(sv);
 			break;
 		case REAL:
-			RealVariable rv = (RealVariable)v;
+			final RealVariable rv = (RealVariable)v;
 			floatVars.remove(rv);
 			break;
 		case CONSTANT_INTEGER:
@@ -682,28 +681,28 @@ public class CPModel implements Model {
 			// a constant cannot be removed from a model
 			return;
 		case INTEGER_EXPRESSION:
-			IntegerExpressionVariable iev = (IntegerExpressionVariable) v;
+			final IntegerExpressionVariable iev = (IntegerExpressionVariable) v;
 			it = iev.getVariableIterator();
 			while (it.hasNext()) {
 				this.removeVariable(it.next());
 			}
 			break;
 		case SET_EXPRESSION:
-			SetExpressionVariable sev = (SetExpressionVariable) v;
+			final SetExpressionVariable sev = (SetExpressionVariable) v;
 			it = sev.getVariableIterator();
 			while (it.hasNext()) {
 				this.removeVariable(it.next());
 			}
 			break;
 		case REAL_EXPRESSION:
-			RealExpressionVariable rev = (RealExpressionVariable) v;
+			final RealExpressionVariable rev = (RealExpressionVariable) v;
 			it = rev.getVariableIterator();
 			while (it.hasNext()) {
 				this.removeVariable(it.next());
 			}
 			break;
 		case MULTIPLE_VARIABLES:
-			MultipleVariables mv = (MultipleVariables) v;
+			final MultipleVariables mv = (MultipleVariables) v;
 			it = mv.getVariableIterator();
 			while (it.hasNext()) {
 				this.removeVariable(it.next());
@@ -714,24 +713,24 @@ public class CPModel implements Model {
 		}
 	}
 
-	public void remove(Object ob) {
+	public void remove(final Object ob) {
 		Constraint c;
 		Variable v;
 		// Liste des contraintes à supprimer
-		TLongHashSet conSet = new TLongHashSet();
+		final TLongHashSet conSet = new TLongHashSet();
 		// Liste des variables à supprimer
-		TLongHashSet varSet  = new TLongHashSet();
+		final TLongHashSet varSet  = new TLongHashSet();
 
 		// Liste des contraintes à supprimer
-		Queue<Constraint> conQueue  = new ArrayDeque<Constraint>();
+		final Queue<Constraint> conQueue  = new ArrayDeque<Constraint>();
 		// Liste des variables à supprimer
-		Queue<Variable> varQueue  = new ArrayDeque<Variable>();
+		final Queue<Variable> varQueue  = new ArrayDeque<Variable>();
 
 		if(ob instanceof Constraint){
 			c = (Constraint)ob;
 			conQueue.add(c);
-			Constraint clast = constraints.getLast();
-			int id = constraints.remove(c);
+			final Constraint clast = constraints.getLast();
+			final int id = constraints.remove(c);
 			TIntHashSet hs = constraintsByType.get(c.getConstraintType());
 			hs.remove(id);
 			if(id!=-1 && clast!=null && c.getIndex()!= clast.getIndex()){
@@ -767,8 +766,8 @@ public class CPModel implements Model {
 					c = itc.next();
 					if(!conSet.contains(c.getIndex())){
 						conQueue.add(c);
-						Constraint clast = constraints.getLast();
-						int id = constraints.remove(c);
+						final Constraint clast = constraints.getLast();
+						final int id = constraints.remove(c);
 						TIntHashSet hs = constraintsByType.get(c.getConstraintType());
 						hs.remove(id);
 						if(id!=-1 && clast!=null && c.getIndex()!= clast.getIndex()){
@@ -783,7 +782,7 @@ public class CPModel implements Model {
 		}
 	}
 
-	public void removeConstraint(Constraint c){
+	public void removeConstraint(final Constraint c){
 		this.remove(c);
 	}
 
@@ -796,8 +795,8 @@ public class CPModel implements Model {
 	 * @deprecated
 	 */
 	@Deprecated
-	public void removeVariable(Variable... v) {
-		for (Variable aV : v) {
+	public void removeVariable(final Variable... v) {
+		for (final Variable aV : v) {
 			this.remove(aV);
 		}
 	}
@@ -808,7 +807,7 @@ public class CPModel implements Model {
 	 *
 	 * @param v the variable to remove
 	 */
-	public void removeVariable(Variable v) {
+	public void removeVariable(final Variable v) {
 		this.remove(v);
 	}
 
@@ -818,8 +817,8 @@ public class CPModel implements Model {
 	 *
 	 * @param v variables to remove
 	 */
-	public void removeVariables(Variable... v) {
-		for (Variable aV : v) {
+	public void removeVariables(final Variable... v) {
+		for (final Variable aV : v) {
 			this.remove(aV);
 		}
 	}
@@ -830,12 +829,12 @@ public class CPModel implements Model {
 	 * @param t type of constraint
 	 * @param c the constraint to add
 	 */
-	private void updateConstraintByType(ConstraintType t, Constraint c) {
+	private void updateConstraintByType(final ConstraintType t, final Constraint c) {
 		TIntHashSet hs = constraintsByType.get(t);
 		if (hs == null) {
 			hs = new TIntHashSet();
 		}
-		int id = constraints.get(c);
+		final int id = constraints.get(c);
 		if(!hs.contains(id)){
 			hs.add(id);
 		}
@@ -851,7 +850,7 @@ public class CPModel implements Model {
 	 * @deprecated
 	 */
 	@Deprecated
-	public void addConstraint(Constraint... c) {
+	public void addConstraint(final Constraint... c) {
 		this.addConstraints(NO_OPTIONS, c);
 	}
 	/**
@@ -864,7 +863,7 @@ public class CPModel implements Model {
 	 * @deprecated
 	 */
 	@Deprecated
-	public void addConstraint(String options, Constraint... c) {
+	public void addConstraint(final String options, final Constraint... c) {
 		this.addConstraints(options, c);
 	}
 
@@ -874,7 +873,7 @@ public class CPModel implements Model {
 	 *
 	 * @param c one constraint
 	 */
-	public void addConstraint(Constraint c) {
+	public void addConstraint(final Constraint c) {
 		this.addConstraints(NO_OPTIONS, c);
 	}
 
@@ -884,7 +883,7 @@ public class CPModel implements Model {
 	 *
 	 * @param c one or more constraint
 	 */
-	public void addConstraints(Constraint... c) {
+	public void addConstraints(final Constraint... c) {
 		this.addConstraints(NO_OPTIONS, c);
 	}
 
@@ -895,7 +894,7 @@ public class CPModel implements Model {
 	 * @param options defines options of the constraint
 	 * @param c       one constraint
 	 */
-	public void addConstraint(String options, Constraint c) {
+	public void addConstraint(final String options, final Constraint c) {
 		this.addConstraints(options, c);
 	}
 
@@ -912,9 +911,9 @@ public class CPModel implements Model {
 	 *                <i>cp:decomp to force decomposition on particular expression constraint</i>
 	 *                </ul>
 	 */
-	public void addConstraints(String options, Constraint... tabc) {
+	public void addConstraints(final String options, final Constraint... tabc) {
 		addOptions(options, tabc);
-		for (Constraint c: tabc) {
+		for (final Constraint c: tabc) {
 			c.addOptions(reuseOptions);
 			c.findManager(properties);
 			switch (c.getConstraintType()) {
@@ -930,7 +929,7 @@ public class CPModel implements Model {
 			updateConstraintByType(c.getConstraintType(), c);
 			final Iterator<Variable> it = c.getVariableIterator();
 			while (it.hasNext()) {
-				Variable v = it.next();
+				final Variable v = it.next();
 				if (v == null) {
 					LOGGER.severe("Adding null variable in the model !");
 				}
@@ -947,7 +946,7 @@ public class CPModel implements Model {
 	 * Data structure to deal with clauses
 	 * @param clause clause to add
 	 */
-	private void storeClauses(ComponentConstraint clause){
+	private void storeClauses(final ComponentConstraint clause){
 		if(clausesStore==null){
 			clausesStore = new ComponentConstraintWithSubConstraints(ConstraintType.CLAUSES, clause.getVariables(), null, clause);
 			clausesStore.addOptions(clause.getOptions());
@@ -998,9 +997,9 @@ public class CPModel implements Model {
 		}
 	}
 	static class TroveIterator implements Iterator<Constraint>{
-		private TLongObjectIterator<Constraint> iterator;
+		private final TLongObjectIterator<Constraint> iterator;
 
-		TroveIterator(TLongObjectIterator<Constraint> tit) {
+		TroveIterator(final TLongObjectIterator<Constraint> tit) {
 			this.iterator = tit;
 		}
 
@@ -1022,7 +1021,58 @@ public class CPModel implements Model {
 	}
 
 
-	public boolean contains(Constraint c){
+	public boolean contains(final Constraint c){
 		return constraints.contains(c);
 	}
+
+    /**
+     * Kicks off the serialization mechanism and flatten the {@code model} into the given {@code file}.
+     * @param model to flatten
+     * @param file scope file
+     * @throws IOException if an I/O exception occurs.
+     */
+    public static void writeInFile(final CPModel model, final File file) throws IOException {
+        FileOutputStream fos = null;
+        ObjectOutputStream out = null;
+        fos = new FileOutputStream(file);
+        out = new ObjectOutputStream(fos);
+        out.writeObject(model);
+        out.close();
+    }
+
+    /**
+     * Kicks off the serialization mechanism and flatten the {@code model} into a file
+     * in the default temporary-file directory.
+     * @param model to flatten
+     * @param file scope file
+     * @throws IOException if an I/O exception occurs.
+     */
+    public static File writeInFile(final CPModel model) throws IOException {
+        final File file = File.createTempFile("CPMODEL_", ".ser");
+        FileOutputStream fos = null;
+        ObjectOutputStream out = null;
+        fos = new FileOutputStream(file);
+        out = new ObjectOutputStream(fos);
+        out.writeObject(model);
+        out.close();
+        return file;
+    }
+
+
+    /**
+     * Restore flatten {@link CPModel} from the given {@code file}.
+     * @param file input file
+     * @return a {@link CPModel}
+     * @throws IOException if an I/O exception occurs.
+     * @throws ClassNotFoundException if wrong flattened object.
+     */
+    public static CPModel readFromFile(final File file) throws IOException, ClassNotFoundException {
+        FileInputStream fis = null;
+        ObjectInputStream in = null;
+        fis = new FileInputStream(file);
+        in = new ObjectInputStream(fis);
+        final CPModel model = (CPModel)in.readObject();
+        in.close();
+        return model;
+    }
 }
