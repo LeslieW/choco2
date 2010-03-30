@@ -23,7 +23,6 @@
 package choco.kernel.model.variables.integer;
 
 import choco.kernel.model.variables.VariableType;
-import choco.kernel.solver.SolverException;
 
 /*
  * Created by IntelliJ IDEA.
@@ -32,9 +31,9 @@ import choco.kernel.solver.SolverException;
  * Since : Choco 2.0.0
  *
  */
-public final class IntegerConstantVariable extends IntegerVariable implements Comparable {
+public final class IntegerConstantVariable extends IntegerVariable{
 
-	public IntegerConstantVariable(int value) {
+	public IntegerConstantVariable(final int value) {
         super(VariableType.CONSTANT_INTEGER, new int[]{value},false, NO_CONSTRAINTS_DS);
         setName(Integer.toString(value));
         this.values = new int[]{value};
@@ -45,23 +44,19 @@ public final class IntegerConstantVariable extends IntegerVariable implements Co
     }
 
 	@Override
-	public void setLowB(int lowB) {
+	public void setLowB(final int lowB) {
 		throwConstantException();
 	}
 
 	@Override
-	public void setUppB(int uppB) {
+	public void setUppB(final int uppB) {
 		throwConstantException();
 	}
 
 
 	@Override
-	public boolean equals(Object o) {
-        if(o instanceof IntegerConstantVariable){
-            return getValue() == ((IntegerConstantVariable) o).getValue();
-        }else{
-            return false;
-        }
+	public boolean equals(final Object o) {
+        return o instanceof IntegerConstantVariable && getValue() == ((IntegerConstantVariable) o).getValue();
     }
 
     /**
@@ -76,12 +71,10 @@ public final class IntegerConstantVariable extends IntegerVariable implements Co
     
     
 	@Override
-	public int compareTo(Object o) {
+	public int compareTo(final Object o) {
         if(o instanceof IntegerConstantVariable){
-		    IntegerConstantVariable c = (IntegerConstantVariable)o;
+		    final IntegerConstantVariable c = (IntegerConstantVariable)o;
             return getValue() - c.getValue();
         }else return super.compareTo(o);
 	}
-
-
 }

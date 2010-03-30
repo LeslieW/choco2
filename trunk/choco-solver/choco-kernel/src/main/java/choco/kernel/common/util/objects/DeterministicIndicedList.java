@@ -27,6 +27,7 @@ import choco.kernel.common.util.iterators.ArrayIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import gnu.trove.TLongIntHashMap;
 
+import java.io.Serializable;
 import static java.lang.reflect.Array.newInstance;
 import java.util.Arrays;
 
@@ -43,14 +44,14 @@ import java.util.Arrays;
 *
 * It allows deterministic iteration.
 */
-public class DeterministicIndicedList<O extends IIndex>{
+public class DeterministicIndicedList<O extends IIndex> implements Serializable{
 
-    protected Class clazz;
+    private final Class clazz;
 
     /**
      * Speed hash set of constraint indices
      */
-    protected TLongIntHashMap indices;
+    private final TLongIntHashMap indices;
 
     /**
      * All the object
@@ -60,14 +61,14 @@ public class DeterministicIndicedList<O extends IIndex>{
     /**
      * indice of the last object
      */
-    protected int last;
+    private int last;
 
     /**
      * Constructor
      * @param clazz the super Class of include object
      * @param initialSize initial size of the structure
      */
-    public DeterministicIndicedList(Class clazz, int initialSize) {
+    public DeterministicIndicedList(final Class clazz, final int initialSize) {
         this.clazz = clazz;
         indices = new TLongIntHashMap(initialSize);
         objects = (O[]) newInstance(clazz, initialSize);
@@ -78,7 +79,7 @@ public class DeterministicIndicedList<O extends IIndex>{
      * Constructor
      * @param clazz the super Class of include object
      */
-    public DeterministicIndicedList(Class clazz) {
+    public DeterministicIndicedList(final Class clazz) {
         this(clazz, 32);
     }
 
@@ -92,7 +93,7 @@ public class DeterministicIndicedList<O extends IIndex>{
      * Add object to the structure
      * @param object
      */
-    public void add(O object){
+    public void add(final O object){
         if(!indices.containsKey(object.getIndex())){
             ensureCapacity();
             objects[last] = object;
@@ -107,8 +108,8 @@ public class DeterministicIndicedList<O extends IIndex>{
     private void ensureCapacity(){
         if(last >= objects.length){
             // treat the case where intial value = 1
-            int cindT = objects.length * 3/2+1;
-            O[] oldObjects = objects;
+            final int cindT = objects.length * 3/2+1;
+            final O[] oldObjects = objects;
             objects = (O[]) newInstance(clazz, cindT);
             System.arraycopy(oldObjects, 0, objects, 0, last);
         }
@@ -120,9 +121,9 @@ public class DeterministicIndicedList<O extends IIndex>{
      * We just swap the last object and the removed object 
      * @param object to remove
      */
-    public int remove(O object){
+    public int remove(final O object){
         if(indices.containsKey(object.getIndex())){
-            int ind = indices.get(object.getIndex());
+            final int ind = indices.get(object.getIndex());
             indices.remove(object.getIndex());
             if(last > 0 && ind < last-1){
                 objects[ind] = objects[last-1];
@@ -139,7 +140,7 @@ public class DeterministicIndicedList<O extends IIndex>{
      * @param object
      * @return
      */
-    public boolean contains(O object){
+    public boolean contains(final O object){
         return indices.containsKey(object.getIndex());
     }
 
@@ -156,7 +157,7 @@ public class DeterministicIndicedList<O extends IIndex>{
      * @param i position of the object
      * @return the ith object
      */
-    public O get(int i){
+    public O get(final int i){
         return objects[i];
     }
 
@@ -165,7 +166,7 @@ public class DeterministicIndicedList<O extends IIndex>{
      * @param object required
      * @return its position
      */
-    public int get(O object){
+    public int get(final O object){
         return indices.get(object.getIndex());
     }
 

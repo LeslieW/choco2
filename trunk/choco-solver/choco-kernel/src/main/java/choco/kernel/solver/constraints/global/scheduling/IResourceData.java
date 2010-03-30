@@ -1,6 +1,8 @@
 package choco.kernel.solver.constraints.global.scheduling;
 
-public interface IResourceData {
+import java.io.Serializable;
+
+public interface IResourceData extends Serializable{
 
 	String getRscName();
 	

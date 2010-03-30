@@ -1,15 +1,15 @@
 package choco.kernel.model;
 
-import java.util.Iterator;
-
-import choco.IPretty;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
 
-public class VariableArray implements IVariableArray {
+import java.io.Serializable;
+import java.util.Iterator;
+
+public class VariableArray implements IVariableArray, Serializable {
 	
 	protected final static Constraint[] NO_CONSTRAINTS = {};
 	
@@ -21,7 +21,7 @@ public class VariableArray implements IVariableArray {
 		super();
 	}
 	
-	public VariableArray(Variable[] variables) {
+	public VariableArray(final Variable[] variables) {
 		super();
 		this.variables = variables;
 	}
@@ -32,7 +32,7 @@ public class VariableArray implements IVariableArray {
 	}
 
 	@Override
-	public final Variable getVariable(int i) {
+	public final Variable getVariable(final int i) {
 		return variables[i];
 	}
 
@@ -46,12 +46,12 @@ public class VariableArray implements IVariableArray {
 		return variables;
 	}
 
-	protected final void setVariables(Variable variable) {
+	protected final void setVariables(final Variable variable) {
 		this.variables = new Variable[]{variable};
 		extractedVariables = null;
 	}
 	
-	protected final void setVariables(Variable[] variables) {
+	protected final void setVariables(final Variable[] variables) {
 		this.variables = variables;
 		extractedVariables = null;
 	}
@@ -77,28 +77,28 @@ public class VariableArray implements IVariableArray {
 		}
 
 		@Override
-		public void _addConstraint(Constraint c) {
-			for(Variable v : variables){
+		public void _addConstraint(final Constraint c) {
+			for(final Variable v : variables){
 				v._addConstraint(c);
 			}
 		}
 
 		@Override
-		public void _removeConstraint(Constraint c) {
-			for(Variable v : variables){
+		public void _removeConstraint(final Constraint c) {
+			for(final Variable v : variables){
 				v._removeConstraint(c);
 			}			
 		}
 
 		@Override
 		public void removeConstraints() {
-			for(Variable v : variables){
+			for(final Variable v : variables){
 				v.removeConstraints();
 			}
 		}
 
 		@Override
-		public Constraint getConstraint(int i) {
+		public Constraint getConstraint(final int i) {
 			return null;
 
 		}
@@ -148,9 +148,9 @@ public class VariableArray implements IVariableArray {
 		}
 
 		@Override
-		public int getNbConstraint(Model m) {
+		public int getNbConstraint(final Model m) {
 			int sum = 0;
-			for(Variable v : variables){
+			for(final Variable v : variables){
 				sum += v.getNbConstraint(m);
 			}	
 			return sum;

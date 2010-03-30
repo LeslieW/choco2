@@ -1,10 +1,11 @@
 package choco.kernel.model;
 
-import java.util.Iterator;
-
 import choco.kernel.model.constraints.Constraint;
 
-public interface IConstraintList {
+import java.io.Serializable;
+import java.util.Iterator;
+
+public interface IConstraintList extends Serializable{
 	
 	public void _addConstraint(Constraint c);
 

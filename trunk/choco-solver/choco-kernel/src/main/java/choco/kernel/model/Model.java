@@ -22,8 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model;
 
-import java.util.Iterator;
-
 import choco.IPretty;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
@@ -36,7 +34,10 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.integer.IntVar;
 
-public interface Model extends IPretty {
+import java.io.Serializable;
+import java.util.Iterator;
+
+public interface Model extends IPretty, Serializable {
 
     /**
      * Retrieves the index of an IntDomainVar
