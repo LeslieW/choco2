@@ -1,12 +1,5 @@
 package choco.cp.solver.search.integer.branching;
 
-import gnu.trove.TIntArrayList;
-
-import java.util.Iterator;
-import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
@@ -21,6 +14,12 @@ import choco.kernel.solver.propagation.listener.PropagationEngineListener;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import gnu.trove.TIntArrayList;
+
+import java.util.Iterator;
+import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class AbstractDomOverWDegBranching extends
 AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomBreakTies {
@@ -44,9 +43,9 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 
 		private int currentWeight = -1;
 
-		public void setIndex(int idx) {
+		public void setIndex(final int idx) {
 			currentIndex = idx;
-			currentWeight = getVarExtension((AbstractVar) vars[idx]).get();
+			currentWeight = getVarExtension(vars[idx]).get();
 			currentSize = getDomMesure(idx);
 		}
 
@@ -60,8 +59,8 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 			return currentIndex == -1; 
 		}
 
-		public final int compare(int idx) {
-			return (getVarExtension( (AbstractVar) vars[idx]).get() * currentSize) - (currentWeight * getDomMesure(idx));
+		public final int compare(final int idx) {
+			return (getVarExtension(vars[idx]).get() * currentSize) - (currentWeight * getDomMesure(idx));
 		}
 
 	}
@@ -82,7 +81,7 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 
 	private final DomWDegStruct dwdegStruct = new DomWDegStruct();
 
-	public AbstractDomOverWDegBranching(Solver solver, IntDomainVar[] _vars) {
+	public AbstractDomOverWDegBranching(final Solver solver, final IntDomainVar[] _vars) {
 		super();
 		this.solver = solver;
 		this.vars = _vars;
@@ -95,8 +94,8 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 		solver.getPropagationEngine().removePropagationEngineListener(this);
 	}
 
-	protected static IntDomainVar[] buildVars(Solver s) {
-		IntDomainVar[] vars = new IntDomainVar[s.getNbIntVars()];
+	protected static IntDomainVar[] buildVars(final Solver s) {
+		final IntDomainVar[] vars = new IntDomainVar[s.getNbIntVars()];
 		for (int i = 0; i < vars.length; i++) {
 			vars[i] = (IntDomainVar) s.getIntVar(i);
 		}
@@ -110,7 +109,7 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 	}
 
 	@Override
-	public void setRandomBreakTies(long seed) {
+	public void setRandomBreakTies(final long seed) {
 		randomBreakTies = new Random(seed);
 	}
 
@@ -118,7 +117,7 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 		return maxConstraintArity;
 	}
 
-	public final void setMaxConstraintArity(int maxConstraintArity) {
+	public final void setMaxConstraintArity(final int maxConstraintArity) {
 		this.maxConstraintArity = maxConstraintArity;
 	}
 
@@ -127,16 +126,16 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 	//*******************  Extension managment ***********************//
 	//***************************************************************//
 
-	protected static void addConstraintExtension(SConstraint c) {
+	protected static void addConstraintExtension(final SConstraint c) {
 		( (AbstractSConstraint) c).addExtension(ABSTRACTCONTRAINT_EXTENSION);
 	}
 
-	protected static void addVariableExtension(Var v) {
+	protected static void addVariableExtension(final Var v) {
 		( (AbstractVar) v).addExtension(ABSTRACTVAR_EXTENSION);
 	}
 
-	protected static void initExtensions(Solver s) {
-		DisposableIterator<SConstraint> iter = s.getConstraintIterator();
+	protected static void initExtensions(final Solver s) {
+		final DisposableIterator<SConstraint> iter = s.getConstraintIterator();
         for (; iter.hasNext();) {
 			addConstraintExtension(iter.next());
 		}
@@ -149,11 +148,11 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 		}
 	}
 
-	public static Extension getConstraintExtension(AbstractSConstraint c) {
+	public static Extension getConstraintExtension(final AbstractSConstraint c) {
 		return 	c.getExtension(ABSTRACTCONTRAINT_EXTENSION);
 	}
 
-	public static Extension getVarExtension(Var v) {
+	public static Extension getVarExtension(final Var v) {
 		return 	v.getExtension(ABSTRACTVAR_EXTENSION);
 	}
 
@@ -163,11 +162,11 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 	//***************************************************************//
 
 	@Override
-	public void initConstraintForBranching(SConstraint c) {
+	public void initConstraintForBranching(final SConstraint c) {
 		addConstraintExtension(c);
 	}
 
-	public final static int computeWeightedDegreeFromScratch(Var var) {
+	public static int computeWeightedDegreeFromScratch(final Var var) {
 		int weight = 0;
 		final DisposableIntIterator iter= var.getIndexVector().getIndexIterator();
 		while (iter.hasNext()) {
@@ -190,15 +189,15 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 		//logWeights(ChocoLogging.getChocoLogger(), Level.INFO);
 	}
 
-	protected final void updateVarWeights(Var currentVar, boolean assign) {
+	protected final void updateVarWeights(final Var currentVar, final boolean assign) {
 		for (Iterator<SConstraint> iter = currentVar.getConstraintsIterator(); iter.hasNext();) {
 			reuseCstr = (AbstractSConstraint) iter.next();
 			if (SConstraintType.INTEGER.equals(reuseCstr.getConstraintType()) &&
 					reuseCstr.getNbVarNotInst() == 2) {
-				int delta = assign ? -getConstraintExtension(reuseCstr).get() : getConstraintExtension(reuseCstr).get();
+				final int delta = assign ? -getConstraintExtension(reuseCstr).get() : getConstraintExtension(reuseCstr).get();
 				//System.out.println("branching "+reuseCstr.pretty()+" "+getConstraintExtension(reuseCstr).getNbFailure());
 				for (int k = 0; k < reuseCstr.getNbVars(); k++) {
-					AbstractVar var = (AbstractVar) reuseCstr.getVar(k);
+					final AbstractVar var = (AbstractVar) reuseCstr.getVar(k);
 					if (var != currentVar && !var.isInstantiated()) {
 						getVarExtension(var).add(delta);
 					}
@@ -207,7 +206,7 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 		}
 	}
 
-	protected final void addFailure(SConstraint cause) {
+	protected final void addFailure(final SConstraint cause) {
 		reuseCstr = (AbstractSConstraint) cause;
         // <= maxConstraintArity ? due to ClauseStore
 		if(SConstraintType.INTEGER.equals(reuseCstr.getConstraintType()) && reuseCstr.getNbVars() <= maxConstraintArity) {
@@ -221,12 +220,12 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 			//System.out.println("contradiction "+reuseCstr.pretty()+" "+getConstraintExtension(reuseCstr).getNbFailure());
 			for (int k = 0; k < reuseCstr.getNbVars(); k++) {
 				//FIXME add FineDegree too and check number of non instantiated variables ?
-				getVarExtension( (AbstractVar) reuseCstr.getVar(k)).add(1);
+				getVarExtension(reuseCstr.getVar(k)).add(1);
 			}
 		}
 	}
 
-	public void contradictionOccured(ContradictionException e) {
+	public void contradictionOccured(final ContradictionException e) {
 		if (e.getDomOverDegContradictionCause() != null) {
 			addFailure(e.getDomOverDegContradictionCause());
 		}
@@ -240,7 +239,7 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 	 * measure of the domain size  of the i-th variable (by default the domain size)
 	 * @param i the index of the variable 
 	 */
-	protected int getDomMesure(int i) {
+	protected int getDomMesure(final int i) {
 		return  vars[i].getDomainSize();
 	}
 
@@ -291,26 +290,26 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 	//*******************  Weights and failures Display **************//
 	//***************************************************************//
 
-	protected final void appendConstraint(StringBuilder b, SConstraint c) {
+	protected static void appendConstraint(final StringBuilder b, final SConstraint c) {
 		final AbstractSConstraint cstr = (AbstractSConstraint) c;
 		b.append("w=").append(getConstraintExtension(cstr).get());
-		b.append("\t").append(cstr.pretty());
+		b.append('\t').append(cstr.pretty());
 		b.append('\n');
 	}
 
-	protected final void appendVariable(StringBuilder b, Var v) {
+	protected static void appendVariable(final StringBuilder b, final Var v) {
 		final AbstractVar var = (AbstractVar) v;
 		b.append("w=").append(getVarExtension(var).get());
-		b.append("\t").append(var.pretty());
+		b.append('\t').append(var.pretty());
 		b.append('\n');
 	}
 
-	public final void logWeights(Logger logger, Level level) {
+	public final void logWeights(final Logger logger, final Level level) {
 		if(logger.isLoggable(level)) {
 			final StringBuilder b = new StringBuilder();
 			b.append("===> Display DomWDeg weights\n");
 			b.append("\n###\tConstraints\t###\n");
-            DisposableIterator<SConstraint> iter = solver.getConstraintIterator();
+            final DisposableIterator<SConstraint> iter = solver.getConstraintIterator();
 			for (; iter.hasNext();) {
 				appendConstraint(b, iter.next());
 			}

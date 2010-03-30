@@ -39,7 +39,7 @@ public final class ElementG extends AbstractBinIntSConstraint {
   private final IEnvironment environment;
 
 
-  public ElementG(IntDomainVar index, int[] values, IntDomainVar var, IEnvironment environment) {
+  public ElementG(final IntDomainVar index, final int[] values, final IntDomainVar var, final IEnvironment environment) {
 	    super(index, var);
         this.environment = environment;
 	    this.lval = values;
@@ -55,20 +55,20 @@ public final class ElementG extends AbstractBinIntSConstraint {
   }
 
   public String pretty() {
-	    return (this.v1.toString() + " = nth(" + this.v0.toString() + ", " +  StringUtils.pretty(this.lval) + ")");
+	    return (this.v1.toString() + " = nth(" + this.v0.toString() + ", " +  StringUtils.pretty(this.lval) + ')');
   }
 
   /* we never know from what value we come .. so we store it in lastIndex or lastVar to propagate exactly the right removed values 
      because we are in a pure removeValue environnement */
-   public void awakeOnInf(int i) throws ContradictionException {
+   public void awakeOnInf(final int i) throws ContradictionException {
     if (i == 0) {
-    	int minIndex = this.v0.getInf();
+    	final int minIndex = this.v0.getInf();
     	for (int index=this.lastIndexInf.get();index<minIndex;index++) {
     		this.updateValueFromIndex(index);
     	}
     	this.lastIndexInf.set(minIndex);
     } else {
-    	int minVar = this.v1.getInf();
+    	final int minVar = this.v1.getInf();
     	for (int index=this.lastVarInf.get();index<minVar;index++) {
     	      this.updateIndexFromValue(index);
     	}
@@ -77,7 +77,7 @@ public final class ElementG extends AbstractBinIntSConstraint {
   }
 
    /* same idea than for awakeOnInf */
-  public void awakeOnSup(int i) throws ContradictionException {
+  public void awakeOnSup(final int i) throws ContradictionException {
     if (i == 0) {
     	int maxIndex = this.lastIndexSup.get();
     	//[EBo] bug on LastIndexSup=lval.length = maxIndexVal + 1 !
@@ -89,7 +89,7 @@ public final class ElementG extends AbstractBinIntSConstraint {
     	}
     	this.lastIndexSup.set(this.v0.getSup());
     } else {
-    	int maxVar = this.lastVarSup.get();
+    	final int maxVar = this.lastVarSup.get();
     	for (int index=this.v1.getSup()+1;index<=maxVar;index++) {
     	      this.updateIndexFromValue(index);
     	}
@@ -97,19 +97,19 @@ public final class ElementG extends AbstractBinIntSConstraint {
     }
   }
 
-  public void awakeOnBounds(int varIdx) throws ContradictionException {
+  public void awakeOnBounds(final int varIdx) throws ContradictionException {
       //Change if necessary
      awakeOnInf(varIdx);
      awakeOnSup(varIdx);
  }
 
-  public void awakeOnInst(int i) throws ContradictionException {
+  public void awakeOnInst(final int i) throws ContradictionException {
     if (i == 0) {
     	if (this.v0.getVal() - 1 < this.lval.length) 
     		this.v1.instantiate(this.lval[this.v0.getVal()-1], this, false);
     }
     else {
-    	int maxVar = this.lastVarSup.get();
+    	final int maxVar = this.lastVarSup.get();
     	for (int index=this.v1.getVal();index<maxVar;index++) {
     	      this.updateIndexFromValue(index+1); 
     	}    	
@@ -121,10 +121,10 @@ public final class ElementG extends AbstractBinIntSConstraint {
     }
   }
 
-  public void awakeOnRemovals(int varIdx, DisposableIntIterator deltaDomain) throws ContradictionException {
+  public void awakeOnRemovals(final int varIdx, final DisposableIntIterator deltaDomain) throws ContradictionException {
   }
 
-  public void awakeOnRem(int i, int x) throws ContradictionException {
+  public void awakeOnRem(final int i, final int x) throws ContradictionException {
     if (i == 0)
       this.updateValueFromIndex(x);
     else
@@ -134,22 +134,25 @@ public final class ElementG extends AbstractBinIntSConstraint {
   public Boolean isEntailed() {
     if (this.v1.isInstantiated()) {
       boolean b = true;
-      for (DisposableIntIterator iter = this.v0.getDomain().getIterator(); iter.hasNext();) {
-        int val = iter.next();
+        final DisposableIntIterator iter = this.v0.getDomain().getIterator();
+        for (; iter.hasNext();) {
+        final int val = iter.next();
         b &= (val) >= 0;
         b &= (val) < this.lval.length;
         b &= this.lval[val] == this.v1.getVal();
       }
+        iter.dispose();
       if (b) return Boolean.TRUE;
     } else {
       boolean b = false;
-      DisposableIntIterator iter = this.v0.getDomain().getIterator();
+      final DisposableIntIterator iter = this.v0.getDomain().getIterator();
       while (iter.hasNext() && !b) {
-        int val = iter.next();
+        final int val = iter.next();
         b = (val) >= 0;
         b &= (val) < this.lval.length;
         b &= this.v1.canBeInstantiatedTo(this.lval[val]);
       }
+        iter.dispose();
       if (b) return null;
     }
     return Boolean.FALSE;
@@ -193,10 +196,10 @@ public final class ElementG extends AbstractBinIntSConstraint {
 	 Tableau, le cas 1-1-0 est impossible et le cas 1-1-1 ne conduit à aucune mise à jour)
 */
   public void awake() throws ContradictionException {
-	  int[] value;
-	  int[] occur;
-	  int[] firstPos;
-	  int[] redirect;
+	  final int[] value;
+	  final int[] occur;
+	  final int[] firstPos;
+	  final int[] redirect;
 	  
 	  int v0DomainSize, v1DomainSize;
 	  
@@ -242,14 +245,19 @@ public final class ElementG extends AbstractBinIntSConstraint {
 
 	  /* Update Index via Var = cas 0-1-1 : 
 		v in Tableau, i in Index but v not in Var => remove I from Index */
-	  for (DisposableIntIterator iter = this.v0.getDomain().getIterator(); iter.hasNext();) {
-		  int index = iter.next();
-		  // bug "index - 1 > 0" change to "index - 1 >= 0"  [EBo 6/4/8]
-		  if ((index-1 < this.lval.length) && (index - 1 >= 0) && (!this.v1.canBeInstantiatedTo(this.lval[index - 1]))) {
-			  this.v0.removeVal(index, this, false);
-			  v0DomainSize = v0DomainSize - 1;
-		  } 
-	  } 
+	  final DisposableIntIterator iter = this.v0.getDomain().getIterator();
+      try{
+          for (; iter.hasNext();) {
+              final int index = iter.next();
+              // bug "index - 1 > 0" change to "index - 1 >= 0"  [EBo 6/4/8]
+              if ((index-1 < this.lval.length) && (index - 1 >= 0) && (!this.v1.canBeInstantiatedTo(this.lval[index - 1]))) {
+                  this.v0.removeVal(index, this, false);
+                  v0DomainSize = v0DomainSize - 1;
+              }
+          }
+      }finally {
+          iter.dispose();
+      }
 
 	  /* update Var via Index = cas 1-0-1 :
 		v in Tableau, i not in Index => remove v from Var si occur = 1 sinon update FirstPos */	  
@@ -314,9 +322,10 @@ public final class ElementG extends AbstractBinIntSConstraint {
   
   /* update the Var variable when i was remove from Index */
   /* first catch the potential value "val" to remove and then search if Tableau[i] was the only occurence of val ... then remove */	  
-  protected void updateValueFromIndex(int i) throws ContradictionException {
-	  int v0DomainSize,v1DomainSize;
-	  v0DomainSize = this.v0.getDomainSize();
+  protected void updateValueFromIndex(final int i) throws ContradictionException {
+	  final int v0DomainSize;
+      int v1DomainSize;
+      v0DomainSize = this.v0.getDomainSize();
 	  v1DomainSize = this.v1.getDomainSize();
 	  if ((v0DomainSize == this.domainSize[0].get())) {
 		  // already test in a previous awake !
@@ -350,15 +359,18 @@ public final class ElementG extends AbstractBinIntSConstraint {
 	  
   /* update Index from the value v removed from Var */	  
   /* remove all the index where v was the value un Tableau */	  
-  protected void updateIndexFromValue(int v) throws ContradictionException {		  
-	  int v0DomainSize,v1DomainSize;
-	  v0DomainSize = this.v0.getDomainSize();
+  protected void updateIndexFromValue(final int v) throws ContradictionException {
+	  int v0DomainSize;
+      final int v1DomainSize;
+      v0DomainSize = this.v0.getDomainSize();
 	  v1DomainSize = this.v1.getDomainSize();
 	  if ((v1DomainSize == this.domainSize[1].get())) {
 		  // already test in a previous awake !
 	  } else {
-		  for (DisposableIntIterator iter = this.v0.getDomain().getIterator(); iter.hasNext();) {
-			  int index = iter.next();			  
+          final DisposableIntIterator iter = this.v0.getDomain().getIterator();
+		  try{
+          for (; iter.hasNext();) {
+			  final int index = iter.next();
 //		      if ((index - 1 < this.lval.length) && (index - 1 > 0) && (this.lval[index-1] == v)) {				  
 			  	if ((index - 1 < this.lval.length) && (index - 1 >= 0) && (this.lval[index-1] == v)) {				  
 			  		if (this.v0.canBeInstantiatedTo(index)) {
@@ -368,6 +380,9 @@ public final class ElementG extends AbstractBinIntSConstraint {
 			  		}
 			  	} 		  	  
 		  }
+          }finally {
+              iter.dispose();
+          }
 	  }
   }
 }

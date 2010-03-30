@@ -23,6 +23,7 @@
 package choco.kernel.memory.structure.iterators;
 
 import choco.kernel.common.util.iterators.DisposableIterator;
+import choco.kernel.memory.IStateInt;
 import choco.kernel.memory.structure.StoredBipartiteVarSet;
 import choco.kernel.solver.variables.Var;
 
@@ -54,7 +55,8 @@ public final class SBVSIterator1<E extends Var> extends DisposableIterator<E> {
     private int i = -1;
     private StoredBipartiteVarSet storedBipartiteVarSet;
     private E[] elements;
-    private int last;
+    private IStateInt last;
+    private int nlast;
 
     private SBVSIterator1() {}
 
@@ -64,7 +66,7 @@ public final class SBVSIterator1<E extends Var> extends DisposableIterator<E> {
 
     @SuppressWarnings({"unchecked"})
     public synchronized static <E extends Var> SBVSIterator1 getIterator(final StoredBipartiteVarSet aStoredBipartiteVarSet,
-                                                final E[] someElements, final int last) {
+                                                final E[] someElements, final IStateInt last) {
         SBVSIterator1 it = Holder.instance;
         if (!it.isReusable()) {
             it = build();
@@ -76,11 +78,12 @@ public final class SBVSIterator1<E extends Var> extends DisposableIterator<E> {
     /**
      * Freeze the iterator, cannot be reused.
      */
-    public void init(final StoredBipartiteVarSet aStoredBipartiteVarSet, final E[] someElements, final int aLast) {
+    public void init(final StoredBipartiteVarSet aStoredBipartiteVarSet, final E[] someElements, final IStateInt aLast) {
         super.init();
         this.storedBipartiteVarSet = aStoredBipartiteVarSet;
         this.elements = someElements;
         this.last = aLast;
+        this.nlast = aLast.get();
         i = -1;
     }
 
@@ -94,10 +97,11 @@ public final class SBVSIterator1<E extends Var> extends DisposableIterator<E> {
     @Override
     public boolean hasNext() {
         i++;
-        while (i < last && elements[i].isInstantiated()) {
+        while (i < nlast && elements[i].isInstantiated()) {
             storedBipartiteVarSet.swap(i);
+            nlast = last.get();
         }
-        return i < last;
+        return i < nlast;
     }
 
     /**

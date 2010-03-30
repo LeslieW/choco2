@@ -56,7 +56,7 @@ public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteS
 
     private int size;
 
-    public StoredBipartiteVarSet(IEnvironment env) {
+    public StoredBipartiteVarSet(final IEnvironment env) {
         super(env);
         //noinspection unchecked
         varsNotInstanciated = (E[])new Var[SET_INITIAL_CAPACITY];
@@ -78,7 +78,7 @@ public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteS
      * @return the index of the variable in the variable
      */
     @Override
-    public boolean add(E e){
+    public boolean add(final E e){
         ensureCapacity(size +1);
         elementData[size] = e;
         varsNotInstanciated[size++] = e;
@@ -91,7 +91,7 @@ public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteS
      * @param expectedSize expected size
      */
     @SuppressWarnings({"unchecked"})
-    public void ensureCapacity(int expectedSize) {
+    public void ensureCapacity(final int expectedSize) {
         if(elementData.length < expectedSize){
             int newSize = elementData.length;
             do{
@@ -113,7 +113,7 @@ public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteS
      * @param index index of the object to remove
      * @return the removed object
      */
-    public E swap(int index) {
+    public E swap(final int index) {
 		RangeCheck(index);
 		final int idx = last.get()-1;
 		//should swap the element to remove with the last element
@@ -125,7 +125,7 @@ public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteS
 	}
 
     public List<E> toList(){
-        @SuppressWarnings({"unchecked"})
+        @SuppressWarnings({"unchecked"}) final
         E[] t = (E[])new Var[size];
         System.arraycopy(elementData, 0, t , 0, size);
         return Arrays.asList(t);
@@ -133,7 +133,7 @@ public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteS
 
     @Override
     public E[] toArray(){
-        @SuppressWarnings({"unchecked"})
+        @SuppressWarnings({"unchecked"}) final
         E[] t = (E[])new Var[size];
         System.arraycopy(elementData, 0, t , 0, size);
         return t;
@@ -148,7 +148,7 @@ public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteS
      * @param o element whose presence in this list is to be tested
      * @return <tt>true</tt> if this list contains the specified element
      */
-    public boolean contains(E o) {
+    public boolean contains(final E o) {
 	return indexOf(o) >= 0;
     }
 
@@ -161,7 +161,7 @@ public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteS
      * @param o search object
      * @return index of o
      */
-    public int indexOf(E o) {
+    public int indexOf(final E o) {
 	if (o == null) {
 	    for (int i = 0; i < size; i++)
 		if (elementData[i]==null)
@@ -195,7 +195,7 @@ public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteS
      * @see java.util.AbstractList#remove(int)
      */
     @Override
-    public E remove(int index) {
+    public E remove(final int index) {
         throw new SolverException("Not yet implemented");
     }
 
@@ -206,7 +206,7 @@ public final class StoredBipartiteVarSet<E extends Var> extends StoredBipartiteS
      */
     @SuppressWarnings({"unchecked"})
     public final DisposableIterator<E> getNotInstanciatedVariableIterator(){
-        return SBVSIterator1.getIterator(this, varsNotInstanciated, last.get());    
+        return SBVSIterator1.getIterator(this, varsNotInstanciated, last);    
     }
     /**
      * Iterator over instanciated variables

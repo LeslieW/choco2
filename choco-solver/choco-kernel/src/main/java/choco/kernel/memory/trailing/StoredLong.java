@@ -23,7 +23,6 @@
 package choco.kernel.memory.trailing;
 
 import choco.kernel.memory.IStateLong;
-import choco.kernel.memory.trailing.trail.StoredLongTrail;
 
 public final class StoredLong extends AbstractStoredObject implements IStateLong {
 
@@ -37,7 +36,7 @@ public final class StoredLong extends AbstractStoredObject implements IStateLong
 	 * use the IEnvironment factory
 	 */
 
-	public StoredLong(EnvironmentTrailing env) {
+	public StoredLong(final EnvironmentTrailing env) {
 		this(env, 0);
 	}
 
@@ -48,7 +47,7 @@ public final class StoredLong extends AbstractStoredObject implements IStateLong
 	 * use the IEnvironment factory
 	 */
 
-	public StoredLong(EnvironmentTrailing env, long d) {
+	public StoredLong(final EnvironmentTrailing env, final long d) {
 		super(env);
 		currentValue = d;
 	}

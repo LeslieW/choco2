@@ -28,38 +28,61 @@ package choco.kernel.common.util.iterators;
  * Date : 1 mars 2010<br/>
  * Since : Choco 2.1.1<br/>
  */
-public class IntArrayIterator extends DisposableIntIterator{
+public final class IntArrayIterator extends DisposableIntIterator{
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////// STATIC ///////////////////////////////////////////////////////////////
-    static IntArrayIterator _quickIterator = null;
-
-    @SuppressWarnings({"unchecked"})
-    public static IntArrayIterator getIterator(final int[] elements, final int size) {
-        IntArrayIterator iter = _quickIterator;
-        if (iter != null && iter.isReusable()) {
-            iter.init(elements, size);
-            return iter;
+    /**
+     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
+     * than the moment that getInstance() is called.
+     * Thus, this solution is thread-safe without requiring special language constructs.
+     * see http://en.wikipedia.org/wiki/Singleton_pattern
+     */
+    private static final class Holder {
+        private Holder() {
         }
-        _quickIterator = new IntArrayIterator(elements, size);
-        return _quickIterator;
-    }
-    ////////////////////////////////////////////\ STATIC ///////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    int[] elements;
-    int size = 0;
-    int cursor = 0;
+        private static IntArrayIterator instance = IntArrayIterator.build();
 
-    private IntArrayIterator(final int[] elements, final int size) {
-        init(elements, size);
+        private static void set(final IntArrayIterator iterator) {
+            instance = iterator;
+        }
     }
 
-    private void init(final int[] elements, final int size) {
+    private int[] elements;
+    private int endIdx;
+    private int curentIdx;
+
+    private IntArrayIterator() {
+    }
+
+    private static IntArrayIterator build() {
+        return new IntArrayIterator();
+    }
+
+    /**
+     * Get iterator over {@code someElements} starting from {@code from} to {@code to} (included).
+     * @param someElements array of int
+     * @param from starting index
+     * @param to ending index (excluded)
+     * @return Disposable iterator
+     */
+    @SuppressWarnings({"unchecked"})
+    public static synchronized IntArrayIterator getIterator(final int[] someElements, final int from, final int to) {
+        IntArrayIterator it = Holder.instance;
+        if (!it.isReusable()) {
+            it = build();
+        }
+        it.init(someElements, from, to);
+        return it;
+    }
+
+    /**
+     * Freeze the iterator, cannot be reused.
+     */
+    public void init(final int[] someElements, final int from, final int to) {
         super.init();
-        this.elements = elements;
-        this.size = size;
-        cursor = 0;
+        this.elements = someElements;
+        this.endIdx = to;
+        curentIdx = from;
     }
 
     /**
@@ -67,11 +90,11 @@ public class IntArrayIterator extends DisposableIntIterator{
      * words, returns <tt>true</tt> if <tt>next</tt> would return an element
      * rather than throwing an exception.)
      *
-     * @return <tt>true</tt> if the getIterator has more elements.
+     * @return <tt>true</tt> if the iterator has more elements.
      */
     @Override
     public boolean hasNext() {
-        return cursor < size;
+        return curentIdx < endIdx;
     }
 
     /**
@@ -83,6 +106,17 @@ public class IntArrayIterator extends DisposableIntIterator{
      */
     @Override
     public int next() {
-        return elements[cursor++];
+        return elements[curentIdx++];
+    }
+
+
+    /**
+     * This method allows to declare that the iterator is not used anymoure. It
+     * can be reused by another object.
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        Holder.set(this);
     }
 }

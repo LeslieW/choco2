@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
- *         |  °(..)  |                           *
+ *         |   (..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -20,18 +20,17 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2010      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.common.util.iterators;
+package choco.kernel.model.variables.integer.iterators;
 
-import choco.cp.solver.variables.integer.AbstractIntDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 
 /**
  * User : cprudhom<br/>
  * Mail : cprudhom(a)emn.fr<br/>
- * Date : 1 mars 2010<br/>
+ * Date : 29 mars 2010br/>
  * Since : Choco 2.1.1<br/>
  */
-public class IntDomainIterator extends DisposableIntIterator {
+public final class IVIterator extends DisposableIntIterator {
 
     /**
      * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
@@ -43,46 +42,46 @@ public class IntDomainIterator extends DisposableIntIterator {
         private Holder() {
         }
 
-        private static IntDomainIterator instance = IntDomainIterator.build();
+        private static IVIterator instance = IVIterator.build();
 
-        private static void set(final IntDomainIterator iterator) {
+        private static void set(final IVIterator iterator) {
             instance = iterator;
         }
     }
 
-    private AbstractIntDomain domain;
-    private int nextValue;
-    private int supBound = -1;
+    private int upp;
+    private int value;
+    private int[] values;
 
-    private IntDomainIterator() {
+    private IVIterator() {
     }
 
-    private static IntDomainIterator build() {
-        return new IntDomainIterator();
+    private static IVIterator build() {
+        return new IVIterator();
     }
 
     @SuppressWarnings({"unchecked"})
-    public synchronized static IntDomainIterator getIterator(final AbstractIntDomain aDomain) {
-        IntDomainIterator it = Holder.instance;
+    public static synchronized IVIterator getIterator(final int theLow, final int theUpp, final int[] theValues) {
+        IVIterator it = Holder.instance;
         if (!it.isReusable()) {
             it = build();
         }
-        it.init(aDomain);
+        it.init(theLow, theUpp, theValues);
         return it;
     }
 
     /**
      * Freeze the iterator, cannot be reused.
      */
-    public void init(final AbstractIntDomain dom) {
+    public void init(final int theLow, final int theUpp, final int[] theValues) {
         super.init();
-        domain = dom;
-        if (domain.getSize() >= 1) {
-            nextValue = domain.getInf();
-        } else {
-            throw new UnsupportedOperationException();
+        this.upp = theUpp;
+        this.values = theValues;
+        if(values != null){
+            value = 0;
+        }else{
+            value = theLow;
         }
-        supBound = domain.getSup();
     }
 
     /**
@@ -94,9 +93,11 @@ public class IntDomainIterator extends DisposableIntIterator {
      */
     @Override
     public boolean hasNext() {
-        return /*(Integer.MIN_VALUE == currentValue) ||*/ (nextValue <= supBound);
-        // if currentValue equals MIN_VALUE it will be less than the upper bound => only one test is needed ! Moreover
-        // MIN_VALUE is a special case, should not be tested if useless !
+        if (values == null) {
+            return value <= upp;
+        } else {
+            return value < values.length;
+        }
     }
 
     /**
@@ -108,9 +109,11 @@ public class IntDomainIterator extends DisposableIntIterator {
      */
     @Override
     public int next() {
-        final int v = nextValue;
-        nextValue = domain.getNextValue(nextValue);
-        return v;
+        if (values == null){
+            return value++;
+        }else{
+            return values[value++];
+        }
     }
 
 
@@ -123,5 +126,4 @@ public class IntDomainIterator extends DisposableIntIterator {
         super.dispose();
         Holder.set(this);
     }
-
 }

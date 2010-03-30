@@ -22,6 +22,7 @@
 **************************************************/
 package choco.cp.solver.variables.delta;
 
+import choco.cp.solver.variables.delta.iterators.IntervalIntIterator;
 import choco.cp.solver.variables.integer.AbstractIntDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.variables.delta.IDeltaDomain;
@@ -33,7 +34,7 @@ import choco.kernel.solver.variables.delta.IDeltaDomain;
 * Since : Choco 2.1.1
 * Update : Choco 2.1.1
 */
-public class IntervalDeltaDomain implements IDeltaDomain {
+public final class IntervalDeltaDomain implements IDeltaDomain {
 
     /**
      * The last value since the last coherent state
@@ -57,9 +58,9 @@ public class IntervalDeltaDomain implements IDeltaDomain {
     private int currentSupPropagated;
 
 
-    private AbstractIntDomain domain;
+    private final AbstractIntDomain domain;
 
-    public IntervalDeltaDomain(AbstractIntDomain domain, int lastInfPropagated, int lastSupPropagated) {
+    public IntervalDeltaDomain(final AbstractIntDomain domain, final int lastInfPropagated, final int lastSupPropagated) {
         this.domain = domain;
         this.lastInfPropagated = lastInfPropagated;
         this.lastSupPropagated = lastSupPropagated;
@@ -82,7 +83,7 @@ public class IntervalDeltaDomain implements IDeltaDomain {
      * @param value removed
      */
     @Override
-    public void remove(int value) {
+    public void remove(final int value) {
         if(lastInfPropagated == Integer.MIN_VALUE){
             this.lastInfPropagated = domain.getInf();
             this.lastSupPropagated = domain.getSup();
@@ -119,7 +120,7 @@ public class IntervalDeltaDomain implements IDeltaDomain {
      */
     @Override
     public boolean release() {
-        boolean noNewUpdate = ((domain.getInf() == currentInfPropagated) && (domain.getSup() == currentSupPropagated));
+        final boolean noNewUpdate = ((domain.getInf() == currentInfPropagated) && (domain.getSup() == currentSupPropagated));
       if (noNewUpdate) {
         lastInfPropagated = Integer.MIN_VALUE;
         lastSupPropagated = Integer.MAX_VALUE;
@@ -147,49 +148,13 @@ public class IntervalDeltaDomain implements IDeltaDomain {
      * @return delta iterator
      */
     public DisposableIntIterator iterator() {
-          IntervalIntDomainDeltaIterator iter = (IntervalIntDomainDeltaIterator) _deltaIterator;
-        if (iter != null && iter.isReusable()) {
-            iter.init();
-            return iter;
-        }
-        _deltaIterator = new IntervalIntDomainDeltaIterator();
-        return _deltaIterator;
+        return IntervalIntIterator.getIterator(currentInfPropagated, currentSupPropagated, 
+                lastInfPropagated, lastSupPropagated);
       }
-
-    private DisposableIntIterator _deltaIterator = null;
-
-    private class IntervalIntDomainDeltaIterator extends DisposableIntIterator {
-
-        int x;
-
-        public IntervalIntDomainDeltaIterator() {
-            init();
-        }
-
-        public void init() {
-            super.init();
-            x = lastInfPropagated - 1;
-        }
-
-
-        public boolean hasNext() {
-            if (x + 1 == currentInfPropagated) return currentSupPropagated < lastSupPropagated;
-            if (x > currentSupPropagated) return x < lastSupPropagated;
-            return (x + 1 < currentInfPropagated);
-        }
-
-        public int next() {
-            x++;
-            if (x == currentInfPropagated) {
-                x = currentSupPropagated + 1;
-            }
-            return x;
-        }
-    }
 
     @Override
     public IDeltaDomain copy() {
-        IntervalDeltaDomain delta = new IntervalDeltaDomain(this.domain, this.lastInfPropagated, this.lastSupPropagated);
+        final IntervalDeltaDomain delta = new IntervalDeltaDomain(this.domain, this.lastInfPropagated, this.lastSupPropagated);
         delta.currentInfPropagated = this.currentInfPropagated;
         delta.currentSupPropagated = this.currentSupPropagated;
         return delta;

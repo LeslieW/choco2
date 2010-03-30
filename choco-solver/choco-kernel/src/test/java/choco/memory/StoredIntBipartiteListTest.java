@@ -27,6 +27,7 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.memory.structure.IndexedObject;
 import choco.kernel.memory.structure.StoredIndexedBipartiteSet;
 import choco.kernel.memory.structure.StoredIntBipartiteList;
+import choco.kernel.memory.structure.iterators.BipartiteSetIterator;
 import choco.kernel.memory.trailing.EnvironmentTrailing;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
@@ -63,7 +64,7 @@ public class StoredIntBipartiteListTest {
     @Test
     public void test1() {
         assertEquals(12, iVectA.size());
-        LOGGER.info("" + iVectA.pretty());
+        LOGGER.info(iVectA.pretty());
         env.worldPush();
         DisposableIntIterator it = iVectA.getIterator();
         int cpt = 6;
@@ -75,7 +76,7 @@ public class StoredIntBipartiteListTest {
             }
         }
         it.dispose();
-        LOGGER.info("" + iVectA.pretty());
+        LOGGER.info(iVectA.pretty());
         assertEquals(11, iVectA.size());
         assertEquals(15, iVectA.get(10));
         env.worldPush();
@@ -87,10 +88,10 @@ public class StoredIntBipartiteListTest {
             cpt--;
         }
         it.dispose();
-        LOGGER.info("" + iVectA.pretty());
+        LOGGER.info(iVectA.pretty());
         assertEquals(5, iVectA.size());
         env.worldPop();
-        LOGGER.info("" + iVectA.pretty());
+        LOGGER.info(iVectA.pretty());
         assertEquals(11, iVectA.size());
         env.worldPop();
         assertEquals(12, iVectA.size());
@@ -107,11 +108,11 @@ public class StoredIntBipartiteListTest {
 
     }
 
-    public class StupidInt implements IndexedObject {
+    public static class StupidInt implements IndexedObject {
         public int index;
         public int value;
 
-        public StupidInt(int value, int id) {
+        public StupidInt(final int value, final int id) {
             this.index = id;
             this.value = value;
         }
@@ -124,8 +125,8 @@ public class StoredIntBipartiteListTest {
     @Test
     public void test2() {
 
-        StoredIndexedBipartiteSet iVectB;
-        IndexedObject[] stint = new StupidInt[12];
+        final StoredIndexedBipartiteSet iVectB;
+        final IndexedObject[] stint = new StupidInt[12];
         stint[0] = new StupidInt(10, 0);
         stint[1] = new StupidInt(100, 1);
         stint[2] = new StupidInt(103, 2);
@@ -142,9 +143,9 @@ public class StoredIntBipartiteListTest {
         iVectB = (StoredIndexedBipartiteSet) env.makeBipartiteSet(stint);
 
         assertEquals(12, iVectB.size());
-        LOGGER.info("" + iVectB.pretty());
+        LOGGER.info(iVectB.pretty());
         env.worldPush();
-        StoredIndexedBipartiteSet.BipartiteSetIterator it = iVectB.getObjectIterator();
+        BipartiteSetIterator it = iVectB.getObjectIterator();
         int cpt = 6;
         while (it.hasNext() && cpt > 0) {
             it.nextObject();
@@ -154,17 +155,17 @@ public class StoredIntBipartiteListTest {
             }
         }
         it.dispose();
-        LOGGER.info("" + iVectB.pretty());
+        LOGGER.info(iVectB.pretty());
         assertEquals(11, iVectB.size());
         env.worldPush();
         iVectB.remove(stint[9]);
-        LOGGER.info("" + iVectB.pretty());
+        LOGGER.info(iVectB.pretty());
         assertEquals(10, iVectB.size());
         env.worldPop();
-        LOGGER.info("" + iVectB.pretty());
+        LOGGER.info(iVectB.pretty());
         assertEquals(11, iVectB.size());
         iVectB.remove(stint[9]);
-        LOGGER.info("" + iVectB.pretty());
+        LOGGER.info(iVectB.pretty());
         it = iVectB.getObjectIterator();
         cpt = 2;
         while (it.hasNext() && cpt > 0) {
@@ -173,12 +174,12 @@ public class StoredIntBipartiteListTest {
             cpt--;
         }
         it.dispose();
-        LOGGER.info("" + iVectB.pretty());
+        LOGGER.info(iVectB.pretty());
         iVectB.remove(stint[11]);
-        LOGGER.info("" + iVectB.pretty());
+        LOGGER.info(iVectB.pretty());
         assertEquals(7, iVectB.size());
         env.worldPop();
-        LOGGER.info("" + iVectB.pretty());
+        LOGGER.info(iVectB.pretty());
         assertEquals(12, iVectB.size());
     }
 }

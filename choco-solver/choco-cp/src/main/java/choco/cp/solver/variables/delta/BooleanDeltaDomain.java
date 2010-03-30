@@ -22,8 +22,9 @@
 **************************************************/
 package choco.cp.solver.variables.delta;
 
-import choco.cp.solver.variables.integer.BooleanDomain;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.EmptyIntIterator;
+import choco.kernel.common.util.iterators.OneValueIterator;
 import choco.kernel.solver.variables.delta.IDeltaDomain;
 
 /*
@@ -33,38 +34,12 @@ import choco.kernel.solver.variables.delta.IDeltaDomain;
 * Since : Choco 2.1.1
 * Update : Choco 2.1.1
 */
-public class BooleanDeltaDomain implements IDeltaDomain{
+public final class BooleanDeltaDomain implements IDeltaDomain{
 
-    /**
-     * The last value since the last coherent state
-     */
-    private int lastInfPropagated;
-    /**
-     * The last value since the last coherent state
-     */
-    private int lastSupPropagated;
+    private int valueToPropagate;
 
-    /**
-     * for the delta domain: current value of the inf (domain lower bound) when the bound started beeing propagated
-     * (just to check that it does not change during the propagation phase)
-     */
-    private int currentInfPropagated;
-
-    /**
-     * for the delta domain: current value of the sup (domain upper bound) when the bound started beeing propagated
-     * (just to check that it does not change during the propagation phase)
-     */
-    private int currentSupPropagated;
-
-
-    BooleanDomain domain;
-
-    public BooleanDeltaDomain(BooleanDomain domain, int lastInfPropagated, int lastSupPropagated) {
-        this.domain = domain;
-        this.lastInfPropagated = lastInfPropagated;
-        this.lastSupPropagated = lastSupPropagated;
-        this.currentInfPropagated = Integer.MIN_VALUE;
-        this.currentSupPropagated = Integer.MAX_VALUE;
+    public BooleanDeltaDomain() {
+        valueToPropagate = Integer.MIN_VALUE;
     }
 
     /**
@@ -73,8 +48,7 @@ public class BooleanDeltaDomain implements IDeltaDomain{
      */
     @Override
     public void freeze() {
-        currentInfPropagated = domain.getInf();
-        currentSupPropagated = domain.getSup();
+        //useless
     }
 
     /**
@@ -82,11 +56,8 @@ public class BooleanDeltaDomain implements IDeltaDomain{
      * @param value removed
      */
     @Override
-    public void remove(int value) {
-        if(lastInfPropagated == Integer.MIN_VALUE){
-            this.lastInfPropagated = domain.getInf();
-            this.lastSupPropagated = domain.getSup();
-        }
+    public void remove(final int value) {
+        valueToPropagate = value;
     }
 
     /**
@@ -94,10 +65,7 @@ public class BooleanDeltaDomain implements IDeltaDomain{
      */
     @Override
     public void clear() {
-        lastInfPropagated = Integer.MIN_VALUE;
-        lastSupPropagated = Integer.MAX_VALUE;
-        currentInfPropagated = Integer.MIN_VALUE;
-        currentSupPropagated = Integer.MAX_VALUE;
+        valueToPropagate = Integer.MIN_VALUE;
     }
 
     /**
@@ -107,7 +75,8 @@ public class BooleanDeltaDomain implements IDeltaDomain{
      */
     @Override
     public boolean isReleased() {
-        return currentInfPropagated == Integer.MIN_VALUE && currentSupPropagated == Integer.MAX_VALUE;
+        // useless
+        return true;
     }
 
     /**
@@ -119,17 +88,8 @@ public class BooleanDeltaDomain implements IDeltaDomain{
      */
     @Override
     public boolean release() {
-        boolean noNewUpdate = ((domain.getInf() == currentInfPropagated) && (domain.getSup() == currentSupPropagated));
-      if (noNewUpdate) {
-        lastInfPropagated = Integer.MIN_VALUE;
-        lastSupPropagated = Integer.MAX_VALUE;
-      } else {
-        lastInfPropagated = currentInfPropagated;
-        lastSupPropagated = currentSupPropagated;
-      }
-      currentInfPropagated = Integer.MIN_VALUE;
-      currentSupPropagated = Integer.MAX_VALUE;
-      return noNewUpdate;
+        valueToPropagate = Integer.MIN_VALUE;
+        return true;
     }
 
     /**
@@ -139,58 +99,22 @@ public class BooleanDeltaDomain implements IDeltaDomain{
      */
     @Override
     public String pretty() {
-        return lastInfPropagated + "->" + lastSupPropagated;
+        return String.valueOf(valueToPropagate);
     }
 
-
-
-    protected DisposableIntIterator _cachedDeltaIntDomainIterator = null;
 
     public DisposableIntIterator iterator() {
-        DeltaBoolDomainIterator iter = (DeltaBoolDomainIterator) _cachedDeltaIntDomainIterator;
-        if (iter != null && iter.isReusable()) {
-            iter.init();
-            return iter;
+        if(valueToPropagate == Integer.MIN_VALUE){
+            return EmptyIntIterator.getIterator();
         }
-        _cachedDeltaIntDomainIterator = new DeltaBoolDomainIterator(domain);
-        return _cachedDeltaIntDomainIterator;
+        return OneValueIterator.getIterator(valueToPropagate);
     }
 
-    protected static class DeltaBoolDomainIterator extends DisposableIntIterator {
-        protected BooleanDomain domain;
-        protected int val = -1;
-
-        private DeltaBoolDomainIterator(BooleanDomain dom) {
-            domain = dom;
-            init();
-        }
-
-        public void init() {
-            super.init();
-            val = domain.getValueIfInst();
-            if (val == 1) val = 0;
-            else if (val == 0) val = 1;
-        }
-
-        public boolean hasNext() {
-            return val < 2;
-        }
-
-        public int next() {
-            int temp = val;
-            val = 2;
-//            if (isInstantiated())
-//                val = 2;
-//            else val++;
-            return temp;
-        }
-    }
 
     @Override
     public IDeltaDomain copy() {
-        BooleanDeltaDomain delta = new BooleanDeltaDomain(this.domain, this.lastInfPropagated, this.lastSupPropagated);
-        delta.currentInfPropagated = this.currentInfPropagated;
-        delta.currentSupPropagated = this.currentSupPropagated;
+        final BooleanDeltaDomain delta = new BooleanDeltaDomain();
+        delta.valueToPropagate = valueToPropagate;
         return delta;
 
     }

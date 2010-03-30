@@ -88,7 +88,7 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
      * @param propagationEngine
      */
 
-    public BitSetIntDomain(IntDomainVarImpl v, int a, int b, IEnvironment environment, PropagationEngine propagationEngine) {
+    public BitSetIntDomain(final IntDomainVarImpl v, final int a, final int b, final IEnvironment environment, final PropagationEngine propagationEngine) {
         super(propagationEngine);
         variable = v;
         capacity = b - a + 1;           // number of entries
@@ -101,17 +101,17 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
         sup = environment.makeInt(b);
     }
 
-    public BitSetIntDomain(IntDomainVarImpl v, int[] sortedValues, IEnvironment environment, PropagationEngine propagationEngine) {
+    public BitSetIntDomain(final IntDomainVarImpl v, final int[] sortedValues, final IEnvironment environment, final PropagationEngine propagationEngine) {
         super(propagationEngine);
-        int a = sortedValues[0];
-        int b = sortedValues[sortedValues.length - 1];
+        final int a = sortedValues[0];
+        final int b = sortedValues[sortedValues.length - 1];
         variable = v;
         capacity = b - a + 1;           // number of entries
         this.offset = a;
         size = environment.makeInt(sortedValues.length);
         contents = environment.makeBitSet(capacity);
         // TODO : could be improved...
-        for (int sortedValue : sortedValues) {
+        for (final int sortedValue : sortedValues) {
             contents.set(sortedValue - a);
         }
         deltaDom = new BitSetDeltaDomain(capacity, offset);
@@ -146,8 +146,8 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
      * @param x New bound value.
      */
 
-    public int updateInf(int x) {
-        int newi = x - offset;  // index of the new lower bound
+    public int updateInf(final int x) {
+        final int newi = x - offset;  // index of the new lower bound
         for (int i = inf.get() - offset; i < newi; i = contents.nextSetBit(i + 1)) {
             assert(contents.get(i));
             //LOGGER.severe("Bug in BitSetIntDomain.updateInf ?");
@@ -163,8 +163,8 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
      * @param x New bound value.
      */
 
-    public int updateSup(int x) {
-        int newi = x - offset;  // index of the new lower bound
+    public int updateSup(final int x) {
+        final int newi = x - offset;  // index of the new lower bound
         for (int i = sup.get() - offset; i > newi; i = contents.prevSetBit(i - 1)) {
                 assert(contents.get(i));
                 //LOGGER.severe("Bug in BitSetIntDomain.updateSup ?");
@@ -187,8 +187,8 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
     /**
      * Removes a value.
      */
-    public boolean remove(int x) {
-        int i = x - offset;
+    public boolean remove(final int x) {
+        final int i = x - offset;
         if (contents.get(i)) {
             removeIndex(i);
             return true;
@@ -197,7 +197,7 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
         }
     }
 
-    private void removeIndex(int i) {
+    private void removeIndex(final int i) {
         //assert(i != firstIndexToBePropagated);
         //LOGGER.severe("Bug in BitSetIntDomain.removeIndex ?");
         contents.clear(i);
@@ -211,8 +211,8 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
      * Removes all the value but the specified one.
      */
 
-    public void restrict(int x) {
-        int xi = x - offset;
+    public void restrict(final int x) {
+        final int xi = x - offset;
       // IF NEED REMOVALS
         for (int i = contents.nextSetBit(0); i >= 0; i = contents.nextSetBit(i + 1)) {
             if (i != xi) {
@@ -237,8 +237,8 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
     }
 
   public DisposableIntIterator getIterator() {
-      if(getSize() == 1) return OneValueIterator.getOneValueIterator(getInf());
-      return BitSetIntDomainIterator.getIterator(inf.get(), offset, contents);
+      if(getSize() == 1) return OneValueIterator.getIterator(getInf());
+      return BitSetIntDomainIterator.getIterator(offset, contents);
   }
 
     /**
@@ -246,9 +246,9 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
      */
 
     public final int getNextValue(final int x) {
-        int i = x - offset;
+        final int i = x - offset;
         if (i < 0 || x < inf.get()) return getInf();
-        int bit = contents.nextSetBit(i + 1);
+        final int bit = contents.nextSetBit(i + 1);
         if (bit < 0) return Integer.MAX_VALUE;
         else return bit + offset;
     }
@@ -258,8 +258,8 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
      * Returns the value preceding <code>x</code>
      */
 
-    public int getPrevValue(int x) {
-        int i = x - offset;
+    public int getPrevValue(final int x) {
+        final int i = x - offset;
         if (x > sup.get()) return sup.get();
         return contents.prevSetBit(i - 1) + offset;
     }
@@ -269,7 +269,7 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
      * Checks if the value has a following value.
      */
 
-    public boolean hasNextValue(int x) {
+    public boolean hasNextValue(final int x) {
         //int i = x - offset;
         return x < sup.get();
         //return (contents.nextSetBit(i + 1) != -1);
@@ -280,7 +280,7 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
      * Checks if the value has a preceding value.
      */
 
-    public boolean hasPrevValue(int x) {
+    public boolean hasPrevValue(final int x) {
         //int i = x - offset;
         return x > inf.get();
         //return (contents.prevSetBit(i - 1) != -1);
@@ -291,10 +291,10 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
      */
 
     public int getRandomValue() {
-        int size = getSize();
+        final int size = getSize();
         if (size == 1) return this.getInf();
         else {
-            int rand = random.nextInt(size);
+            final int rand = random.nextInt(size);
             int val = this.getInf() - offset;
             for (int o = 0; o < rand; o++) {
                 val = contents.nextSetBit(val + 1);
@@ -314,16 +314,16 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
   protected DisposableIntIterator _cachedDeltaIntDomainIterator = null;
 
     public String toString() {
-        return "{" + getInf() + "..." + getSup() + "}";
+        return "{" + getInf() + "..." + getSup() + '}';
     }
 
     public String pretty() {
-        StringBuffer buf = new StringBuffer("{");
-        int maxDisplay = 15;
+        final StringBuilder buf = new StringBuilder("{");
+        final int maxDisplay = 15;
         int count = 0;
-        DisposableIntIterator it = this.getIterator();
+        final DisposableIntIterator it = this.getIterator();
         for (; (it.hasNext() && count < maxDisplay);) {
-            int val = it.next();
+            final int val = it.next();
             count++;
             if (count > 1) buf.append(", ");
             buf.append(val);
@@ -333,7 +333,7 @@ public final class BitSetIntDomain extends AbstractIntDomain implements IBitSetI
             buf.append("..., ");
             buf.append(this.getSup());
         }
-        buf.append("}");
+        buf.append('}');
         return buf.toString();
     }
 }

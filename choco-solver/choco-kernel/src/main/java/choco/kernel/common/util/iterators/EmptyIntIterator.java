@@ -22,6 +22,8 @@
  **************************************************/
 package choco.kernel.common.util.iterators;
 
+import java.util.NoSuchElementException;
+
 /*
 * User : charles
 * Mail : cprudhom(a)emn.fr
@@ -29,24 +31,74 @@ package choco.kernel.common.util.iterators;
 * Since : Choco 2.1.0
 * Update : Choco 2.1.0
 */
-public class EmptyIntIterator extends DisposableIntIterator {
+public final class EmptyIntIterator extends DisposableIntIterator {
 
-    private EmptyIntIterator(){}
-
-    static EmptyIntIterator _iterator;
-
-    public static EmptyIntIterator getEmptyIntIterator(){
-        if(_iterator == null){
-            _iterator = new EmptyIntIterator();
+    /**
+     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
+     * than the moment that getInstance() is called.
+     * Thus, this solution is thread-safe without requiring special language constructs.
+     * see http://en.wikipedia.org/wiki/Singleton_pattern
+     */
+    private static final class Holder {
+        private Holder() {
         }
-        return _iterator;
-    }
-    
-    public boolean hasNext() {
-      return false;
+
+        private static EmptyIntIterator instance = EmptyIntIterator.build();
+
+        private static void set(final EmptyIntIterator iterator) {
+            instance = iterator;
+        }
     }
 
+    private EmptyIntIterator() {
+    }
+
+    private static EmptyIntIterator build() {
+        return new EmptyIntIterator();
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public static synchronized EmptyIntIterator getIterator() {
+        EmptyIntIterator it = Holder.instance;
+        if (!it.isReusable()) {
+            it = build();
+        }
+        it.init();
+        return it;
+    }
+
+    /**
+     * Returns <tt>true</tt> if the iteration has more elements. (In other
+     * words, returns <tt>true</tt> if <tt>next</tt> would return an element
+     * rather than throwing an exception.)
+     *
+     * @return <tt>true</tt> if the iterator has more elements.
+     */
+    @Override
+    public boolean hasNext() {
+        return false;
+    }
+
+    /**
+     * Returns the next element in the iteration.
+     *
+     * @return the next element in the iteration.
+     * @throws java.util.NoSuchElementException
+     *          iteration has no more elements.
+     */
+    @Override
     public int next() {
-      return 0;
+        throw new NoSuchElementException();
+    }
+
+
+    /**
+     * This method allows to declare that the iterator is not used anymoure. It
+     * can be reused by another object.
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        Holder.set(this);
     }
   }

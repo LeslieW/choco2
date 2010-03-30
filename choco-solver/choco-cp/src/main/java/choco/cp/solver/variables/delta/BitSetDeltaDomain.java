@@ -22,6 +22,7 @@
 **************************************************/
 package choco.cp.solver.variables.delta;
 
+import choco.cp.solver.variables.delta.iterators.BitSetIterator;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.variables.delta.IDeltaDomain;
 
@@ -34,7 +35,7 @@ import java.util.BitSet;
 * Since : Choco 2.1.1
 * Update : Choco 2.1.1
 */
-public class BitSetDeltaDomain implements IDeltaDomain {
+public final class BitSetDeltaDomain implements IDeltaDomain {
 
     private BitSet removedValues;
 
@@ -43,12 +44,12 @@ public class BitSetDeltaDomain implements IDeltaDomain {
     private int offset;
 
 
-    BitSetDeltaDomain() {}
+    private BitSetDeltaDomain() {}
 
-    public BitSetDeltaDomain(int size, int offset) {
+    public BitSetDeltaDomain(final int size, final int theOffset) {
         this.removedValues = new BitSet(size);
         this.removedValuesToPropagate = new BitSet(size);
-        this.offset = offset;
+        this.offset = theOffset;
     }
 
     /**
@@ -67,7 +68,7 @@ public class BitSetDeltaDomain implements IDeltaDomain {
      * @param value removed
      */
     @Override
-    public void remove(int value) {
+    public void remove(final int value) {
         removedValues.set(value-offset);
     }
 
@@ -100,11 +101,9 @@ public class BitSetDeltaDomain implements IDeltaDomain {
     @Override
     public boolean release() {
         removedValues.andNot(removedValuesToPropagate);
-        boolean empty = removedValues.isEmpty();
+        final boolean empty = removedValues.isEmpty();
         removedValuesToPropagate.clear();
         return empty;
-//        removedValues.clear();
-//        return true;
     }
 
     /**
@@ -114,51 +113,12 @@ public class BitSetDeltaDomain implements IDeltaDomain {
      */
     @Override
     public DisposableIntIterator iterator() {
-        BitSetIntDeltaDomainIterator iter = _deltaIterator;
-        if (iter != null && iter.isReusable()) {
-            iter.init();
-            return iter;
-        }
-        _deltaIterator = new BitSetIntDeltaDomainIterator();
-        return _deltaIterator;
+        return BitSetIterator.getIterator(offset, removedValuesToPropagate);
       }
-
-    private BitSetIntDeltaDomainIterator _deltaIterator = null;
-
-    class BitSetIntDeltaDomainIterator extends DisposableIntIterator {
-        protected int currentIndex = 0;
-
-        private BitSetIntDeltaDomainIterator() {
-            init();
-        }
-
-        @Override
-        public void init() {
-            currentIndex = removedValuesToPropagate.nextSetBit(0);
-        }
-
-        public boolean hasNext() {
-            return currentIndex != -1;
-        }
-
-        public int next() {
-            int v = currentIndex;
-            currentIndex = removedValuesToPropagate.nextSetBit(currentIndex+1);
-            return v+offset;
-        }
-
-        public void remove() {
-            if (currentIndex == -1) {
-                throw new IllegalStateException();
-            } else {
-                throw new UnsupportedOperationException();
-            }
-        }
-    }
 
     @Override
     public BitSetDeltaDomain copy(){
-        BitSetDeltaDomain dom =new BitSetDeltaDomain();
+        final BitSetDeltaDomain dom =new BitSetDeltaDomain();
         dom.removedValues = (BitSet)this.removedValues.clone();
         dom.removedValuesToPropagate = (BitSet)this.removedValuesToPropagate.clone();
         dom.offset = this.offset;

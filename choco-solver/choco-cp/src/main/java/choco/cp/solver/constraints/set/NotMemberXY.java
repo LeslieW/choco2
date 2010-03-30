@@ -41,7 +41,7 @@ import choco.kernel.solver.variables.set.SetVar;
  */
 public final class NotMemberXY extends AbstractBinSetIntSConstraint {
 
-	public NotMemberXY(SetVar set, IntDomainVar iv) {
+	public NotMemberXY(final SetVar set, final IntDomainVar iv) {
 		super(iv, set);
 	}
 
@@ -51,7 +51,7 @@ public final class NotMemberXY extends AbstractBinSetIntSConstraint {
 	 * @throws ContradictionException
 	 */
 	public void filter() throws ContradictionException {
-        DisposableIntIterator it = v0.getDomain().getIterator();
+        final DisposableIntIterator it = v0.getDomain().getIterator();
             try{
             int count = 0, val = Integer.MAX_VALUE;
             while (it.hasNext()) {
@@ -72,32 +72,32 @@ public final class NotMemberXY extends AbstractBinSetIntSConstraint {
         }
 	}
 
-	public void awakeOnInf(int idx) throws ContradictionException {
+	public void awakeOnInf(final int idx) throws ContradictionException {
 		filter();
 	}
 
-	public void awakeOnSup(int idx) throws ContradictionException {
+	public void awakeOnSup(final int idx) throws ContradictionException {
 		filter();
 	}
 
-	public void awakeOnRem(int idx, int x) throws ContradictionException {
+	public void awakeOnRem(final int idx, final int x) throws ContradictionException {
 		filter();
 	}
 
-	public void awakeOnKer(int varIdx, int x) throws ContradictionException {
+	public void awakeOnKer(final int varIdx, final int x) throws ContradictionException {
 		v0.removeVal(x, this, false);
 		filter();
 	}
 
-	public void awakeOnEnv(int varIdx, int x) throws ContradictionException {
+	public void awakeOnEnv(final int varIdx, final int x) throws ContradictionException {
 		filter();
 	}
 
-	public void awakeOnInst(int varIdx) throws ContradictionException {
+	public void awakeOnInst(final int varIdx) throws ContradictionException {
 		if (varIdx == 0)
 			v1.remFromEnveloppe(v0.getVal(), this, false);
 		else {
-			DisposableIntIterator it = v1.getDomain().getKernelIterator();
+			final DisposableIntIterator it = v1.getDomain().getKernelIterator();
 			try{
                 while (it.hasNext()) {
                     v0.removeVal(it.next(), this, false);
@@ -111,7 +111,7 @@ public final class NotMemberXY extends AbstractBinSetIntSConstraint {
 
 
 	public void propagate() throws ContradictionException {
-		DisposableIntIterator it = v1.getDomain().getKernelIterator();
+		final DisposableIntIterator it = v1.getDomain().getKernelIterator();
 		try{
             while (it.hasNext()) {
                 v0.removeVal(it.next(), this, false);
@@ -127,7 +127,7 @@ public final class NotMemberXY extends AbstractBinSetIntSConstraint {
 	}
 
 	public boolean isConsistent() {
-		DisposableIntIterator it = v0.getDomain().getIterator();
+		final DisposableIntIterator it = v0.getDomain().getIterator();
 		while (it.hasNext()) {
 			if (v1.isInDomainKernel(it.next())) {
                 it.dispose();
@@ -149,9 +149,9 @@ public final class NotMemberXY extends AbstractBinSetIntSConstraint {
 	public Boolean isEntailed() {
 		boolean allInKernel = true;
         boolean allOutEnv = true;
-        DisposableIntIterator it = v0.getDomain().getIterator();
+        final DisposableIntIterator it = v0.getDomain().getIterator();
         while(it.hasNext()){
-            int val = it.next();
+            final int val = it.next();
             if(!v1.isInDomainKernel(val)){
                 allInKernel = false;
             }
@@ -159,6 +159,7 @@ public final class NotMemberXY extends AbstractBinSetIntSConstraint {
                 allOutEnv = false;
             }
         }
+        it.dispose();
         if(allInKernel){
             return Boolean.FALSE;
         }else if(allOutEnv){

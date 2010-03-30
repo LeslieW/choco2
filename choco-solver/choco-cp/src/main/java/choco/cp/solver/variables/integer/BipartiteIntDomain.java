@@ -98,7 +98,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
      * @param environment
      * @param propagationEngine
      */
-    public BipartiteIntDomain(IntDomainVarImpl v, int[] sortedValues, IEnvironment environment, PropagationEngine propagationEngine) {
+    public BipartiteIntDomain(final IntDomainVarImpl v, final int[] sortedValues, final IEnvironment environment, final PropagationEngine propagationEngine) {
         super(propagationEngine);
         assert(v!=null);
         assert(sortedValues!=null);
@@ -114,24 +114,24 @@ public class BipartiteIntDomain extends AbstractIntDomain {
      * @param environment
      * @param propagationEngine
      */
-    public BipartiteIntDomain(IntDomainVarImpl v, int low, int up, IEnvironment environment, PropagationEngine propagationEngine) {
+    public BipartiteIntDomain(final IntDomainVarImpl v, final int low, final int up, final IEnvironment environment, final PropagationEngine propagationEngine) {
         super(propagationEngine);
         // Pre-condition
         assert(v!=null);
         assert(low <= up);
-        int[] sortedValues = new int[up - low + 1];
+        final int[] sortedValues = new int[up - low + 1];
         for (int i = 0; i < sortedValues.length; i++) {
             sortedValues[i] = low + i;
         }
         init(v, sortedValues, environment);
     }
 
-    public void init(IntDomainVarImpl v, int[] sortedValues, IEnvironment environment) {
+    public void init(final IntDomainVarImpl v, final int[] sortedValues, final IEnvironment environment) {
         // Constructor
         variable = v;
-        int low = sortedValues[0];
-        int up = sortedValues[sortedValues.length - 1];
-        int size = sortedValues.length;
+        final int low = sortedValues[0];
+        final int up = sortedValues[sortedValues.length - 1];
+        final int size = sortedValues.length;
         // Initial lower bound is recorded as an offset 
         offset = low;
         // Initialisation of values
@@ -170,7 +170,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
      *
      * @return true if the value is still in the domain
      */
-    public boolean contains(int x) {
+    public boolean contains(final int x) {
         return indices[x - offset] <= valuesInDomainNumber.get();
     }
 
@@ -187,7 +187,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
      * @param x the previous value in the list
      * @return the next value after x
      */
-    public int getNextValue(int x) {
+    public int getNextValue(final int x) {
         if (x >= getSup()) return Integer.MAX_VALUE;
         int nextval = Integer.MAX_VALUE;//x + 1;
         for (int i = valuesInDomainNumber.get(); i >= 0; i--) {
@@ -203,7 +203,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
      * @param x a value in the list
      * @return the previous value before x
      */
-    public int getPrevValue(int x) {
+    public int getPrevValue(final int x) {
         if (x <= getInf()) return Integer.MAX_VALUE;
         int prevval = Integer.MIN_VALUE;
         for (int i = valuesInDomainNumber.get(); i >= 0; i--) {
@@ -214,16 +214,16 @@ public class BipartiteIntDomain extends AbstractIntDomain {
     }
 
     //warning : this is not the usual semantic of hasNextValue...
-    public boolean hasNextValue(int x) {
+    public boolean hasNextValue(final int x) {
         return x < getSup();
     }
 
     //warning : this is not the usual semantic of hasPrevValue...
-    public boolean hasPrevValue(int x) {
+    public boolean hasPrevValue(final int x) {
         return x > getInf();
     }
 
-    public boolean removeInterval(int a, int b, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+    public boolean removeInterval(final int a, final int b, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
         if (a <= getInf())
             return updateInf(b + 1, cause, forceAwake);
         else if (getSup() <= b)
@@ -231,7 +231,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
         else {
             boolean anyChange = false;
             for (int i = valuesInDomainNumber.get(); i >= 0; i--) {
-                int v = values[i];
+                final int v = values[i];
                 if (v >= a && v <= b)
                     anyChange |= removeVal(v, cause, forceAwake);
             }
@@ -250,12 +250,13 @@ public class BipartiteIntDomain extends AbstractIntDomain {
      * @return wether the removal has been done
      * @throws ContradictionException contradiction excpetion
      */
-    protected boolean _removeVal(int x, final SConstraint cause) throws ContradictionException {
-        int infv = getInf(), supv = getSup();
+    protected boolean _removeVal(final int x, final SConstraint cause) throws ContradictionException {
+        final int infv = getInf();
+        final int supv = getSup();
         if (infv <= x && x <= supv) {
-            boolean b = remove(x);
+            final boolean b = remove(x);
             if (x == infv) {
-                int possibleninf = x + 1;
+                final int possibleninf = x + 1;
                 if (possibleninf > supv) {
                     propagationEngine.raiseContradiction(cause);
                 }
@@ -269,7 +270,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
                 inf.set(min);
                 return b;
             } else if (x == supv) {
-                int possiblesup = x - 1;
+                final int possiblesup = x - 1;
                 if (possiblesup < infv) {
                     propagationEngine.raiseContradiction(cause);
                 }
@@ -290,12 +291,12 @@ public class BipartiteIntDomain extends AbstractIntDomain {
         }
     }
 
-    public boolean remove(int x) {
-        int i = x - offset;
-        int mark = valuesInDomainNumber.get();
+    public boolean remove(final int x) {
+        final int i = x - offset;
+        final int mark = valuesInDomainNumber.get();
         if (indices[i] <= mark) {
             if (indices[i] < mark) {
-                int tempval = values[mark];
+                final int tempval = values[mark];
                 values[mark] = x;
                 values[indices[i]] = tempval;
                 indices[tempval - offset] = indices[i];
@@ -309,9 +310,9 @@ public class BipartiteIntDomain extends AbstractIntDomain {
     }
 
 
-    public void restrict(int x) {
-        int i = x - offset;
-        int tempval = values[0];
+    public void restrict(final int x) {
+        final int i = x - offset;
+        final int tempval = values[0];
         values[0] = x;
         values[indices[i]] = tempval;
         indices[tempval - offset] = indices[i];
@@ -323,7 +324,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
     }
 
 
-    public int updateInf(int x) {
+    public int updateInf(final int x) {
         int min = Integer.MAX_VALUE;
         for (int i = valuesInDomainNumber.get(); i >= 0; i--) {
             if (values[i] < x) {
@@ -336,7 +337,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
         return min;
     }
 
-    public int updateSup(int x) {
+    public int updateSup(final int x) {
         int max = Integer.MIN_VALUE;
         for (int i = valuesInDomainNumber.get(); i >= 0; i--) {
             if (values[i] > x) {
@@ -356,7 +357,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
     }
 
     public DisposableIntIterator getIterator() {
-        if(getSize() == 1) return OneValueIterator.getOneValueIterator(getInf());
+        if(getSize() == 1) return OneValueIterator.getIterator(getInf());
         return BipartiteIntDomainIterator.getIterator(valuesInDomainNumber.get(), values);
     }
 
@@ -370,8 +371,8 @@ public class BipartiteIntDomain extends AbstractIntDomain {
     }
 
     public String pretty() {
-        StringBuffer buf = new StringBuffer("{");
-        int maxDisplay = 15;
+        final StringBuilder buf = new StringBuilder("{");
+        final int maxDisplay = 15;
         int count = 1;
 
         int current = this.getInf();
@@ -386,7 +387,7 @@ public class BipartiteIntDomain extends AbstractIntDomain {
             buf.append(", ..., ");
             buf.append(this.getSup());
         }
-        buf.append("}");
+        buf.append('}');
         return buf.toString();
     }
 }

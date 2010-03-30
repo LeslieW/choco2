@@ -23,6 +23,7 @@
 package choco.cp.solver.variables.delta;
 
 import choco.kernel.common.util.iterators.DisposableIntIterator;
+import choco.kernel.common.util.iterators.IntArrayIterator;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.variables.delta.IDeltaDomain;
 
@@ -33,7 +34,7 @@ import choco.kernel.solver.variables.delta.IDeltaDomain;
 * Since : Choco 2.1.1
 * Update : Choco 2.1.1
 */
-public class BipartiteDeltaDomain implements IDeltaDomain {
+public final class BipartiteDeltaDomain implements IDeltaDomain {
 
     /**
      * A pointer to the first removed value to be propagated.
@@ -50,18 +51,18 @@ public class BipartiteDeltaDomain implements IDeltaDomain {
     /**
      * The number of values currently in the domain.
      */
-    IStateInt valuesInDomainNumber;
+    private final IStateInt valuesInDomainNumber;
 
     /**
      * The values (not ordered) contained in the domain.
      */
-    protected int[] values;
+    private final int[] values;
 
-    public BipartiteDeltaDomain(int size, int[] values, IStateInt valuesInDomainNumber) {
+    public BipartiteDeltaDomain(final int size, final int[] theValues, final IStateInt theValuesInDomainNumber) {
         this.endOfDeltaDomain = size;
         this.beginningOfDeltaDomain = size;
-        this.values = values;
-        this.valuesInDomainNumber = valuesInDomainNumber;
+        this.values = theValues;
+        this.valuesInDomainNumber = theValuesInDomainNumber;
     }
 
     /**
@@ -80,7 +81,7 @@ public class BipartiteDeltaDomain implements IDeltaDomain {
      * @param value removed
      */
     @Override
-    public void remove(int value) {
+    public void remove(final int value) {
         if (endOfDeltaDomain <= value) {
             endOfDeltaDomain = value + 1;
         }
@@ -127,39 +128,7 @@ public class BipartiteDeltaDomain implements IDeltaDomain {
      */
     @Override
     public DisposableIntIterator iterator() {
-        DeltaBipartiteIterator iter = (DeltaBipartiteIterator) _cachedDeltaIntDomainIterator;
-        if (iter != null && iter.isReusable()) {
-            iter.init();
-            return iter;
-        }
-        _cachedDeltaIntDomainIterator = new DeltaBipartiteIterator();
-        return _cachedDeltaIntDomainIterator;
-    }
-
-    private DisposableIntIterator _cachedDeltaIntDomainIterator = null;
-
-
-    class DeltaBipartiteIterator extends DisposableIntIterator {
-        protected int currentIndex = -1;
-
-        private DeltaBipartiteIterator() {
-            init();
-        }
-
-        public void init() {
-            super.init();
-            currentIndex = beginningOfDeltaDomain;
-        }
-
-
-        public boolean hasNext() {
-            return currentIndex < endOfDeltaDomain;
-        }
-
-        public int next() {
-            return values[currentIndex++];
-        }
-
+        return IntArrayIterator.getIterator(values, beginningOfDeltaDomain, endOfDeltaDomain);
     }
 
     @Override

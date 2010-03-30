@@ -42,33 +42,33 @@ import java.util.Random;
 * Since : Choco 2.0.1
 * Update : Choco 2.0.1
 */
-public class BooleanDomain extends AbstractIntDomain {
+public final class BooleanDomain extends AbstractIntDomain {
 
     /**
      * A random generator for random value from the domain
      */
 
-    protected static Random random = new Random(System.currentTimeMillis());
+    private static final Random random = new Random(System.currentTimeMillis());
 
     /**
      * The offset, that is the minimal value of the domain (stored at index 0).
      * Thus the entry at index i corresponds to x=i+offset).
      */
 
-    protected final int offset;
+    private final int offset;
 
 
     /**
      * indicate the value of the domain : false = 0, true = 1
      */
-    protected int value;
+    private int value;
 
     /**
      * A bi partite set indicating for each value whether it is present or not.
      * If the set contains the domain, the variable is not instanciated.
      */
 
-    protected StoredIndexedBipartiteSet notInstanciated;
+    private final StoredIndexedBipartiteSet notInstanciated;
 
     /**
      * Constructs a new domain for the specified variable and bounds.
@@ -78,13 +78,13 @@ public class BooleanDomain extends AbstractIntDomain {
      * @param propagationEngine
      */
 
-    public BooleanDomain(IntDomainVarImpl v, IEnvironment environment, PropagationEngine propagationEngine) {
+    public BooleanDomain(final IntDomainVarImpl v, final IEnvironment environment, final PropagationEngine propagationEngine) {
         super(propagationEngine);
         variable = v;
         notInstanciated = (StoredIndexedBipartiteSet) environment.getSharedBipartiteSetForBooleanVars();
         this.offset = environment.getNextOffset();
         value = 0;
-        deltaDom = new BooleanDeltaDomain(this, 0,1);
+        deltaDom = new BooleanDeltaDomain();
     }
 
 
@@ -111,7 +111,7 @@ public class BooleanDomain extends AbstractIntDomain {
      */
     public final int getInf() {
         if (!notInstanciated.contain(offset)) {
-            return getValueIfInst();
+            return value;
         }
         return 0;
     }
@@ -122,7 +122,7 @@ public class BooleanDomain extends AbstractIntDomain {
      */
     public final int getSup() {
         if (!notInstanciated.contain(offset)) {
-            return getValueIfInst();
+            return value;
         }
         return 1;
     }
@@ -134,7 +134,7 @@ public class BooleanDomain extends AbstractIntDomain {
      * @param x New bound value.
      */
 
-    public int updateInf(int x) {
+    public int updateInf(final int x) {
         throw new SolverException("Unexpected call of updateInf");
     }
 
@@ -144,7 +144,7 @@ public class BooleanDomain extends AbstractIntDomain {
      * @param x New bound value.
      */
 
-    public int updateSup(int x) {
+    public int updateSup(final int x) {
         throw new SolverException("Unexpected call of updateSup");
     }
 
@@ -156,7 +156,7 @@ public class BooleanDomain extends AbstractIntDomain {
 
     public final boolean contains(final int x) {
         if(!notInstanciated.contain(offset)){
-            return getValueIfInst()==x;
+            return value ==x;
         }
         return x==0||x==1;
     }
@@ -164,7 +164,7 @@ public class BooleanDomain extends AbstractIntDomain {
     /**
      * Removes a value.
      */
-    public boolean remove(int x) {
+    public boolean remove(final int x) {
         throw new SolverException("Unexpected call of remove");
     }
 
@@ -172,8 +172,9 @@ public class BooleanDomain extends AbstractIntDomain {
      * Removes all the value but the specified one.
      */
 
-    public final void restrict(int x) {
+    public final void restrict(final int x) {
         notInstanciated.remove(offset);
+        deltaDom.remove(1-x);
         value = x;
     }
 
@@ -186,7 +187,7 @@ public class BooleanDomain extends AbstractIntDomain {
     }
 
     public DisposableIntIterator getIterator() {
-        if(getSize() == 1) return OneValueIterator.getOneValueIterator(getInf());
+        if(getSize() == 1) return OneValueIterator.getIterator(getInf());
         return BooleanDomainIterator.getIterator(this);
     }
 
@@ -197,7 +198,7 @@ public class BooleanDomain extends AbstractIntDomain {
 
     public final int getNextValue(final int x) {
         if (!notInstanciated.contain(offset)) {
-            int val = getValueIfInst();
+            final int val = value;
             return (val > x) ? val : Integer.MAX_VALUE;
         } else {
             if (x < 0) return 0;
@@ -211,7 +212,7 @@ public class BooleanDomain extends AbstractIntDomain {
      * Returns the value preceding <code>x</code>
      */
 
-    public final int getPrevValue(int x) {
+    public final int getPrevValue(final int x) {
         if(x > getSup())return getSup();
         if(x > getInf())return getInf();
         return Integer.MIN_VALUE;
@@ -222,7 +223,7 @@ public class BooleanDomain extends AbstractIntDomain {
      * Checks if the value has a following value.
      */
 
-    public final boolean hasNextValue(int x) {
+    public final boolean hasNextValue(final int x) {
         return (x < getSup());
     }
 
@@ -231,7 +232,7 @@ public class BooleanDomain extends AbstractIntDomain {
      * Checks if the value has a preceding value.
      */
 
-    public final boolean hasPrevValue(int x) {
+    public final boolean hasPrevValue(final int x) {
         return (x > getInf());
     }
 
@@ -242,7 +243,7 @@ public class BooleanDomain extends AbstractIntDomain {
 
     public final int getRandomValue() {
         if (!notInstanciated.contain(offset)) {
-            return getValueIfInst();
+            return value;
         } else {
             return random.nextInt(2);
         }
@@ -257,7 +258,7 @@ public class BooleanDomain extends AbstractIntDomain {
     }
 
     public String toString() {
-        return "[" + getInf() + "," + getSup() + "]";
+        return "[" + getInf() + ',' + getSup() + ']';
     }
 
     public String pretty() {
@@ -276,7 +277,7 @@ public class BooleanDomain extends AbstractIntDomain {
      * @return a boolean indicating whether the call indeed added new information.
      * @throws ContradictionException contradiction exception
      */
-    public boolean updateSup(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+    public boolean updateSup(final int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
         if (_updateSup(x, cause)) {
             propagationEngine.postInstInt(variable, cause, forceAwake);
 
@@ -297,7 +298,7 @@ public class BooleanDomain extends AbstractIntDomain {
      * @throws ContradictionException contradiction exception
      */
 
-    public boolean updateInf(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+    public boolean updateInf(final int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
         if (_updateInf(x, cause)) {
             propagationEngine.postInstInt(variable, cause, forceAwake);
             return true;
@@ -322,7 +323,7 @@ public class BooleanDomain extends AbstractIntDomain {
      * @throws ContradictionException contradiction exception
      */
 
-    public final boolean removeVal(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+    public final boolean removeVal(final int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
         if (_removeVal(x, cause)) {
             propagationEngine.postInstInt(variable, cause, forceAwake);
             return true;
@@ -341,7 +342,7 @@ public class BooleanDomain extends AbstractIntDomain {
      * @throws ContradictionException contradiction exception
      */
 
-    public final boolean instantiate(int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
+    public final boolean instantiate(final int x, final SConstraint cause, final boolean forceAwake) throws ContradictionException {
         if (_instantiate(x, cause)) {
             propagationEngine.postInstInt(variable, cause, forceAwake);
             return true;
@@ -365,7 +366,7 @@ public class BooleanDomain extends AbstractIntDomain {
      *          contradiction exception
      */
     @Override
-       protected final boolean _instantiate(int x, final SConstraint cause) throws ContradictionException {
+       protected final boolean _instantiate(final int x, final SConstraint cause) throws ContradictionException {
         if (!notInstanciated.contain(offset)) {
             if (value != x) {
                 failOnIndex(cause);
@@ -393,9 +394,9 @@ public class BooleanDomain extends AbstractIntDomain {
      *          contradiction exception
      */
     @Override
-    protected final boolean _updateInf(int x, final SConstraint cause) throws ContradictionException {
+    protected final boolean _updateInf(final int x, final SConstraint cause) throws ContradictionException {
         if (isInstantiated()) {
-           if (getValueIfInst() < x) {
+           if (value < x) {
             failOnIndex(cause);
            }
            return false;
@@ -422,9 +423,9 @@ public class BooleanDomain extends AbstractIntDomain {
       *          contradiction exception
       */
      @Override
-     protected final boolean _updateSup(int x, final SConstraint cause) throws ContradictionException {
+     protected final boolean _updateSup(final int x, final SConstraint cause) throws ContradictionException {
          if (isInstantiated()) {
-            if (getValueIfInst() > x) {
+            if (value > x) {
              failOnIndex(cause);
             }
             return false;
@@ -452,9 +453,9 @@ public class BooleanDomain extends AbstractIntDomain {
       *          contradiction excpetion
       */
      @Override
-     protected final boolean _removeVal(int x, final SConstraint cause) throws ContradictionException {
+     protected final boolean _removeVal(final int x, final SConstraint cause) throws ContradictionException {
         if (isInstantiated()) {
-            if (getValueIfInst() == x) {
+            if (value == x) {
              failOnIndex(cause);
             }
             return false;
@@ -472,11 +473,7 @@ public class BooleanDomain extends AbstractIntDomain {
          return false;
      }
 
-     public final StoredIndexedBipartiteSet getStoredList() {
-         return notInstanciated;
-     }
-
-     public final int getOffset() {
+    public final int getOffset() {
          return offset;
      }
 }

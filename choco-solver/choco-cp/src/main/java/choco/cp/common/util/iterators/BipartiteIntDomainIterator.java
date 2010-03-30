@@ -30,44 +30,88 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
  * Date : 1 mars 2010<br/>
  * Since : Choco 2.1.1<br/>
  */
-public class BipartiteIntDomainIterator extends DisposableIntIterator {
+public final class BipartiteIntDomainIterator extends DisposableIntIterator {
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////// STATIC ///////////////////////////////////////////////////////////////
-    static BipartiteIntDomainIterator _cachedIterator;
-
-    public static DisposableIntIterator getIterator(int firstIdx, int[] values) {
-        BipartiteIntDomainIterator iter = _cachedIterator;
-        if (iter != null && iter.isReusable()) {
-            iter.init(firstIdx, values);
-            return iter;
+    /**
+     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
+     * than the moment that getInstance() is called.
+     * Thus, this solution is thread-safe without requiring special language constructs.
+     * see http://en.wikipedia.org/wiki/Singleton_pattern
+     */
+    private static final class Holder {
+        private Holder() {
         }
-        _cachedIterator = new BipartiteIntDomainIterator(firstIdx, values);
-        return _cachedIterator;
-    }
-    ////////////////////////////////////////////\ STATIC ///////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    protected int nextIdx;
-    int[] values;
+        private static BipartiteIntDomainIterator instance = BipartiteIntDomainIterator.build();
 
-    private BipartiteIntDomainIterator(int firstIdx, int[] values) {
-        init(firstIdx, values);
+        private static void set(final BipartiteIntDomainIterator iterator) {
+            instance = iterator;
+        }
     }
 
-    public void init(int firstIdx, int[] values) {
+    private int nextIdx;
+    private int[] values;
+
+    private BipartiteIntDomainIterator() {
+    }
+
+    private static BipartiteIntDomainIterator build() {
+        return new BipartiteIntDomainIterator();
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public synchronized static BipartiteIntDomainIterator getIterator(final int firstIdx, final int[] someValues) {
+        BipartiteIntDomainIterator it = Holder.instance;
+        if (!it.isReusable()) {
+            it = build();
+        }
+        it.init(firstIdx, someValues);
+        return it;
+    }
+
+    /**
+     * Freeze the iterator, cannot be reused.
+     */
+    public void init(final int firstIdx, final int[] someValues) {
         super.init();
         nextIdx = firstIdx;
-        this.values = values;
+        this.values = someValues;
     }
 
+    /**
+     * Returns <tt>true</tt> if the iteration has more elements. (In other
+     * words, returns <tt>true</tt> if <tt>next</tt> would return an element
+     * rather than throwing an exception.)
+     *
+     * @return <tt>true</tt> if the iterator has more elements.
+     */
+    @Override
     public boolean hasNext() {
         return nextIdx >= 0;
     }
 
+    /**
+     * Returns the next element in the iteration.
+     *
+     * @return the next element in the iteration.
+     * @throws java.util.NoSuchElementException
+     *          iteration has no more elements.
+     */
+    @Override
     public int next() {
-        int v = nextIdx;
+        final int v = nextIdx;
         nextIdx--;
         return values[v];
+    }
+
+
+    /**
+     * This method allows to declare that the iterator is not used anymoure. It
+     * can be reused by another object.
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        Holder.set(this);
     }
 }

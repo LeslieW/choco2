@@ -31,46 +31,94 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
  * Date : 1 mars 2010<br/>
  * Since : Choco 2.1.1<br/>
  */
-public class BooleanDomainIterator extends DisposableIntIterator {
+public final class BooleanDomainIterator extends DisposableIntIterator {
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////// STATIC ///////////////////////////////////////////////////////////////
-    static BooleanDomainIterator _cachedIterator;
-
-    public static DisposableIntIterator getIterator(BooleanDomain domain) {
-        BooleanDomainIterator iter = _cachedIterator;
-        if (iter != null && iter.isReusable()) {
-            iter.init(domain);
-            return iter;
+    /**
+     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
+     * than the moment that getInstance() is called.
+     * Thus, this solution is thread-safe without requiring special language constructs.
+     * see http://en.wikipedia.org/wiki/Singleton_pattern
+     */
+    private static final class Holder {
+        private Holder() {
         }
-        _cachedIterator = new BooleanDomainIterator(domain);
-        return _cachedIterator;
-    }
-    ////////////////////////////////////////////\ STATIC ///////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    protected BooleanDomain domain;
-    protected int nextValue;
+        private static BooleanDomainIterator instance = BooleanDomainIterator.build();
 
-    private BooleanDomainIterator(BooleanDomain domain) {
-        init(domain);
+        private static void set(final BooleanDomainIterator iterator) {
+            instance = iterator;
+        }
     }
 
-    public void init(BooleanDomain domain) {
+    private BooleanDomain domain;
+    private int nextValue;
+
+
+    private BooleanDomainIterator() {
+    }
+
+    private static BooleanDomainIterator build() {
+        return new BooleanDomainIterator();
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public synchronized static BooleanDomainIterator getIterator(final BooleanDomain aDomain) {
+        BooleanDomainIterator it = Holder.instance;
+        if (!it.isReusable()) {
+            it = build();
+        }
+        it.init(aDomain);
+        return it;
+    }
+
+    /**
+     * Freeze the iterator, cannot be reused.
+     */
+    public void init(final BooleanDomain aDomain) {
         super.init();
-        this.domain = domain;
-        nextValue = domain.getInf();
+        this.domain = aDomain;
+        nextValue = aDomain.getInf();
     }
 
+    /**
+     * Returns <tt>true</tt> if the iteration has more elements. (In other
+     * words, returns <tt>true</tt> if <tt>next</tt> would return an element
+     * rather than throwing an exception.)
+     *
+     * @return <tt>true</tt> if the iterator has more elements.
+     */
+    @Override
     public boolean hasNext() {
         return nextValue <= 1;
     }
 
+    /**
+     * Returns the next element in the iteration.
+     *
+     * @return the next element in the iteration.
+     * @throws java.util.NoSuchElementException
+     *          iteration has no more elements.
+     */
+    @Override
     public int next() {
-        int v = nextValue;
-        if (v == 0 && domain.contains(1))
+        final int v = nextValue;
+        if (v == 0 && domain.contains(1)){
             nextValue = 1;
-        else nextValue = 2;
+        }
+        else {
+            nextValue = 2;
+        }
         return v;
+    }
+
+
+    /**
+     * This method allows to declare that the iterator is not used anymoure. It
+     * can be reused by another object.
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        Holder.set(this);
     }
 }

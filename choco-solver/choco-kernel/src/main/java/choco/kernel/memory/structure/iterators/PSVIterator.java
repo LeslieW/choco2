@@ -1,7 +1,8 @@
-package choco.kernel.memory.structure;
+package choco.kernel.memory.structure.iterators;
 
 import static choco.kernel.common.Constant.STORED_OFFSET;
 import choco.kernel.common.util.iterators.DisposableIterator;
+import choco.kernel.memory.IStateInt;
 
 import java.util.NoSuchElementException;
 
@@ -24,19 +25,26 @@ public final class PSVIterator<E> extends DisposableIterator<E> {
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <E> DisposableIterator getIterator(final PartiallyStoredVector vector) {
+    public static <E> DisposableIterator getIterator(final int theNStaticObjects, final E[] theStaticObjects,
+                    final IStateInt theNStoredObjects,final E[] theStoredObjects) {
         PSVIterator<E> it = Holder.instance;
         if (!it.isReusable()) {
             it = build();
         }
-        it.init(vector);
+        it.init(theNStaticObjects, theStaticObjects, theNStoredObjects, theStoredObjects);
         return it;
 
     }
 
-    private int idx;
+    private int nStaticObjects;
 
-    private PartiallyStoredVector<E> vector;
+    private int nStoredObjects;
+
+    private E[] staticObjects;
+
+    private E[] storedObjects;
+
+    private int idx;
 
     private PSVIterator() {}
 
@@ -47,38 +55,43 @@ public final class PSVIterator<E> extends DisposableIterator<E> {
     /**
      * Freeze the iterator, cannot be reused.
      */
-    public void init(final PartiallyStoredVector<E> aVector) {
+    public void init(final int theNStaticObjects, final E[] theStaticObjects,
+                    final IStateInt theNStoredObjects,final E[] theStoredObjects) {
         super.init();
-        this.vector = aVector;
         idx = -1;
+        this.nStaticObjects = theNStaticObjects;
+        this.staticObjects = theStaticObjects;
+        this.nStoredObjects = theNStoredObjects.get();
+        this.storedObjects =  theStoredObjects;
     }
 
     public boolean hasNext() {
         if (idx < STORED_OFFSET) {
-            return idx + 1 < vector.nStaticObjects || vector.nStoredObjects.get() > 0;
+            return idx + 1 < nStaticObjects || nStoredObjects > 0;
         } else {
-            return idx + 1 < STORED_OFFSET + vector.nStoredObjects.get();
+            return idx + 1 < STORED_OFFSET + nStoredObjects;
         }
     }
 
     public E next() {
         if (idx < STORED_OFFSET) {
-            if (idx + 1 < vector.nStaticObjects) {
+            if (idx + 1 < nStaticObjects) {
                 idx++;
-                while (vector.staticObjects[idx] == null && idx < vector.nStaticObjects) {
+                while (staticObjects[idx] == null && idx < nStaticObjects) {
                     idx++;
                 }
-            } else if (vector.nStoredObjects.get() > 0) {
+                return staticObjects[idx];
+            } else if (nStoredObjects > 0) {
                 idx = STORED_OFFSET;
+                return storedObjects[0];
             } else {
                 throw new NoSuchElementException();
             }
-        } else if (idx + 1 < STORED_OFFSET + vector.nStoredObjects.get()) {
-            idx++;
+        } else if (idx + 1 < STORED_OFFSET + nStoredObjects) {
+            return storedObjects[++idx - STORED_OFFSET];
         } else {
             throw new NoSuchElementException();
         }
-        return vector.get(idx);
     }
 
     /**

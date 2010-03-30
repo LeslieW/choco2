@@ -31,42 +31,86 @@ import choco.kernel.common.util.iterators.DisposableIntIterator;
  * Date : 1 mars 2010<br/>
  * Since : Choco 2.1.1<br/>
  */
-public class IntervalIntDomainIterator extends DisposableIntIterator {
+public final class IntervalIntDomainIterator extends DisposableIntIterator {
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////// STATIC ///////////////////////////////////////////////////////////////
-    static IntervalIntDomainIterator _iterator;
-
-    public static DisposableIntIterator getIterator(IntervalIntDomain domain) {
-        IntervalIntDomainIterator iter = _iterator;
-        if (iter != null && iter.isReusable()) {
-            iter.init(domain);
-            return iter;
+    /**
+     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
+     * than the moment that getInstance() is called.
+     * Thus, this solution is thread-safe without requiring special language constructs.
+     * see http://en.wikipedia.org/wiki/Singleton_pattern
+     */
+    private static final class Holder {
+        private Holder() {
         }
-        _iterator = new IntervalIntDomainIterator(domain);
-        return _iterator;
-    }
-    ////////////////////////////////////////////\ STATIC ///////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    IntervalIntDomain domain;
-    int x;
+        private static IntervalIntDomainIterator instance = IntervalIntDomainIterator.build();
 
-    public IntervalIntDomainIterator(IntervalIntDomain domain) {
-        init(domain);
+        private static void set(final IntervalIntDomainIterator iterator) {
+            instance = iterator;
+        }
     }
 
-    public void init(IntervalIntDomain domain) {
+    private IntervalIntDomain domain;
+    private int value;
+    
+    private IntervalIntDomainIterator() {
+    }
+
+    private static IntervalIntDomainIterator build() {
+        return new IntervalIntDomainIterator();
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public synchronized static IntervalIntDomainIterator getIterator(final IntervalIntDomain aDomain) {
+        IntervalIntDomainIterator it = Holder.instance;
+        if (!it.isReusable()) {
+            it = build();
+        }
+        it.init(aDomain);
+        return it;
+    }
+
+    /**
+     * Freeze the iterator, cannot be reused.
+     */
+    public void init(final IntervalIntDomain aDomain) {
         super.init();
-        this.domain = domain;
-        x = domain.getInf() - 1;
+        this.domain = aDomain;
+        value = aDomain.getInf() - 1;
     }
 
+    /**
+     * Returns <tt>true</tt> if the iteration has more elements. (In other
+     * words, returns <tt>true</tt> if <tt>next</tt> would return an element
+     * rather than throwing an exception.)
+     *
+     * @return <tt>true</tt> if the iterator has more elements.
+     */
+    @Override
     public boolean hasNext() {
-        return x < domain.getSup();
+        return value < domain.getSup();
     }
 
+    /**
+     * Returns the next element in the iteration.
+     *
+     * @return the next element in the iteration.
+     * @throws java.util.NoSuchElementException
+     *          iteration has no more elements.
+     */
+    @Override
     public int next() {
-        return ++x;
+        return ++value;
+    }
+
+
+    /**
+     * This method allows to declare that the iterator is not used anymoure. It
+     * can be reused by another object.
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        Holder.set(this);
     }
 }

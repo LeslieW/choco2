@@ -29,30 +29,51 @@ package choco.kernel.common.util.iterators;
 * Since : Choco 2.1.0
 * Update : Choco 2.1.0
 */
-public class OneValueIterator extends DisposableIntIterator {
+public final class OneValueIterator extends DisposableIntIterator {
 
-    static OneValueIterator _cachedOnevalueiterator;
-
-    int value;
-    boolean next;
-
-    private OneValueIterator(int value) {
-        init(value);
-    }
-
-    public static OneValueIterator getOneValueIterator(int value) {
-        if (_cachedOnevalueiterator != null && _cachedOnevalueiterator.isReusable()) {
-            _cachedOnevalueiterator.init(value);
-            return _cachedOnevalueiterator;
+    /**
+     * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
+     * than the moment that getInstance() is called.
+     * Thus, this solution is thread-safe without requiring special language constructs.
+     * see http://en.wikipedia.org/wiki/Singleton_pattern
+     */
+    private static final class Holder {
+        private Holder() {
         }
-        _cachedOnevalueiterator = new OneValueIterator(value);
-        return _cachedOnevalueiterator;
+
+        private static OneValueIterator instance = OneValueIterator.build();
+
+        private static void set(final OneValueIterator iterator) {
+            instance = iterator;
+        }
     }
 
+    private int value;
+    private boolean next;
 
-    public void init(int value) {
+    private OneValueIterator() {
+    }
+
+    private static OneValueIterator build() {
+        return new OneValueIterator();
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public synchronized static OneValueIterator getIterator(final int aValue) {
+        OneValueIterator it = Holder.instance;
+        if (!it.isReusable()) {
+            it = build();
+        }
+        it.init(aValue);
+        return it;
+    }
+
+    /**
+     * Freeze the iterator, cannot be reused.
+     */
+    public void init(final int aValue) {
         super.init();
-        this.value = value;
+        this.value = aValue;
         next = true;
     }
 
@@ -61,7 +82,7 @@ public class OneValueIterator extends DisposableIntIterator {
      * words, returns <tt>true</tt> if <tt>next</tt> would return an element
      * rather than throwing an exception.)
      *
-     * @return <tt>true</tt> if the getIterator has more elements.
+     * @return <tt>true</tt> if the iterator has more elements.
      */
     @Override
     public boolean hasNext() {
@@ -79,5 +100,16 @@ public class OneValueIterator extends DisposableIntIterator {
     public int next() {
         next = false;
         return value;
+    }
+
+
+    /**
+     * This method allows to declare that the iterator is not used anymoure. It
+     * can be reused by another object.
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        Holder.set(this);
     }
 }
