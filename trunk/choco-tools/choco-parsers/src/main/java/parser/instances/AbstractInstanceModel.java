@@ -98,7 +98,7 @@ public abstract class AbstractInstanceModel {
 		}
 		return null;
 	}
-	
+
 	public void initialize() {
 		parser.cleanup();
 		Arrays.fill(time, 0);
@@ -240,8 +240,9 @@ public abstract class AbstractInstanceModel {
 	}
 
 	//*****************************************************************//
-	//*******************    ********************************//
 	//***************************************************************//
+
+
 	/**
 	 * Solve the csp given by file {@code file}
 	 *
@@ -268,7 +269,7 @@ public abstract class AbstractInstanceModel {
 				initialObjective = objective; 
 				logOnPP();
 				time[2] = System.currentTimeMillis();
-				if( status == UNKNOWN || ( doMaximize != null && status == SAT) ) {
+				if( needCP() ) {
 					//try to solve the problem using CP.
 					model = buildModel();
 					logOnModel();
@@ -343,7 +344,7 @@ public abstract class AbstractInstanceModel {
 		//check with isSatisfied(int[])
 		if(solver != null && solver.existsSolution()) Solver.DEFAULT_SOLUTION_CHECKER.checkSolution(solver);
 	}
-	
+
 	protected final void checkStatus() throws SolutionCheckerException {
 		//Request status checker from factory
 		final IStatusChecker scheck = SCheckFactory.makeStatusChecker(this);
@@ -372,6 +373,9 @@ public abstract class AbstractInstanceModel {
 		else return UNKNOWN;
 	}
 
+	public boolean needCP() {
+		return status == UNKNOWN || ( doMaximize != null && status == SAT);
+	}
 	/**
 	 * compute the resolution status after the cp search (solver is not null).
 	 */

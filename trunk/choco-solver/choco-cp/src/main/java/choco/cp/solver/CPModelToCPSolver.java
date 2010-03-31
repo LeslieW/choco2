@@ -228,7 +228,7 @@ public class CPModelToCPSolver {
 			cpsolver.setObjective(var);
 		}
 		if(v.getOptions().contains(CPOptions.V_MAKESPAN)){
-			cpsolver.getSchedulerConfiguration().setMakespan( (IntDomainVar) var);
+			cpsolver.setMakespan(var);
 		}
 	}
 	/**
@@ -302,7 +302,8 @@ public class CPModelToCPSolver {
         for (final SConstraint ppc : postponedConstraint) {
             cpsolver.post(ppc);
         }
-		cpsolver.postRedundantTaskConstraints();
+		cpsolver.postTaskConsistencyConstraints();
+		cpsolver.postMakespanConstraint();
 
 	}
 

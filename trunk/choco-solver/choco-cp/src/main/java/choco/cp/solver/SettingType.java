@@ -96,13 +96,6 @@ public enum SettingType {
 	SINGLE_RULE_FILTERING("A single filtering rule (Debug only)", "srF","cp:unary:srf"),
 
 
-	//////////////////////// PRECEDENCE ////////////////////////
-
-	/**
-	 * pert constraint settings. computes shortest path of the entire PERT graph instead of the subgraph touched by events.
-	 */
-	NOT_INCREMENTAL_PERT("basic pert propagation","NIP","cp:pert:noincr"),
-
 	//////////////////////// ////////////////////////
 
 	DECOMP("Decomposition Of Global Constraint","DGC", CPOptions.E_DECOMP),

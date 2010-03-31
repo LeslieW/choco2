@@ -331,14 +331,10 @@ public class XmlModel {
 		if (forcerestart != null) {
 			if (forcerestart) {
 				s.setGeometricRestart(base, growth);
-				//should investigate the effect of reinitializing branching in more details
-				//it seemed useful with restartFromSol and useless with a restart policy.
-				s.getRestartConfig().setInitializeSearchAfterRestart(false);
 			}
 		} else {
 			if (s.restartMode) {
 				s.setGeometricRestart(10, 1.3);                                
-				s.getRestartConfig().setInitializeSearchAfterRestart(false);
 				//s.setGeometricRestart(Math.min(Math.max(s.getNbIntVars(), 200), 400), 1.4d);
 			}
 		}

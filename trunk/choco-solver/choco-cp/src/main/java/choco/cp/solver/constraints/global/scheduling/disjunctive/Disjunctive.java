@@ -62,7 +62,13 @@ public class Disjunctive extends AbstractResourceSConstraint {
 		super(solver, name, taskvars, makespan);
 		this.rules = new DisjRules(rtasks, this.makespan);
 	}
+	
 
+	@Override
+	public boolean isTaskConsistencyEnforced() {
+		return true;
+	}
+	
 	public final void setSingleRule(final Rule rule) {
 		flags.unset(DEFAULT_FILTERING, VILIM_FILTERING);
 		flags.set(SINGLE_RULE_FILTERING);

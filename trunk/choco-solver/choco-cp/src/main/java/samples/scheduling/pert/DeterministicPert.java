@@ -128,7 +128,7 @@ public class DeterministicPert {
 	}
 
 	public void draw() {
-		VizFactory.toDotty(solver.getSchedulerConfiguration().getPrecedenceNetwork());
+		//FIXME VizFactory.toDotty(solver.getSchedulerConfiguration().getPrecedenceNetwork());
 	}
 
 	protected void criticalPathMethod(CPSolver solver) {

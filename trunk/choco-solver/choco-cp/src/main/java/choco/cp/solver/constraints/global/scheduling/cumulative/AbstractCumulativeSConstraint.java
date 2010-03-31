@@ -69,6 +69,11 @@ public abstract class AbstractCumulativeSConstraint extends AbstractResourceSCon
 
 	}
 	
+	@Override
+	public boolean isTaskConsistencyEnforced() {
+		return true;
+	}
+	
 	public final boolean updateMinCapacity(final int val) throws ContradictionException {
 		return vars[indexCapacity].updateInf(val, this, false);
 	}

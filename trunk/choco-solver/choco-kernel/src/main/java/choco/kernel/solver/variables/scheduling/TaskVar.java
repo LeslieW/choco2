@@ -3,6 +3,7 @@
  */
 package choco.kernel.solver.variables.scheduling;
 
+import choco.Choco;
 import choco.kernel.common.IIndex;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.memory.structure.APartiallyStoredCstrList;
@@ -16,6 +17,8 @@ import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.Extension;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.constraints.SConstraintType;
+import choco.kernel.solver.constraints.global.scheduling.AbstractTaskSConstraint;
 import choco.kernel.solver.propagation.PropagationEngine;
 import choco.kernel.solver.propagation.event.TaskVarEvent;
 import choco.kernel.solver.propagation.event.VarEvent;
@@ -36,16 +39,16 @@ public final class TaskVar<C extends AbstractSConstraint & TaskPropagator> exten
 
 	protected final IntDomainVar duration;
 
-    private long index;
+	private long index;
 	/**
 	 * The list of constraints (listeners) observing the variable.
 	 */
 	protected APartiallyStoredCstrList<C> constraints;
 
-    protected final VarEvent<? extends Var> event;
+	protected final VarEvent<? extends Var> event;
 
-    private final PropagationEngine propagationEngine;
-	
+	private final PropagationEngine propagationEngine;
+
 	/**
 	 * Initializes a new variable.
 	 * @param solver The model this variable belongs to
@@ -57,27 +60,27 @@ public final class TaskVar<C extends AbstractSConstraint & TaskPropagator> exten
 		this.end = end;
 		this.duration = duration;
 		constraints = new PartiallyStoredTaskCstrList<C>(solver.getEnvironment());
-        index = solver.getIndexfactory().getIndex();
-        this.event = new TaskVarEvent<C>(this);
-        this.propagationEngine = solver.getPropagationEngine();
+		index = solver.getIndexfactory().getIndex();
+		this.event = new TaskVarEvent<C>(this);
+		this.propagationEngine = solver.getPropagationEngine();
 	}
 
 
-    /**
-     * Unique index of an object in the master object
-     * (Different from hashCode, can change from one execution to another one)
-     *
-     * @return
-     */
-    @Override
-    public long getIndex() {
-        return index;
-    }
+	/**
+	 * Unique index of an object in the master object
+	 * (Different from hashCode, can change from one execution to another one)
+	 *
+	 * @return
+	 */
+	@Override
+	public long getIndex() {
+		return index;
+	}
 
-    //*****************************************************************//
+	//*****************************************************************//
 	//*******************  TaskVariable  ********************************//
 	//***************************************************************//
-	
+
 	public final IntDomainVar start() {
 		return start;
 	}
@@ -89,14 +92,14 @@ public final class TaskVar<C extends AbstractSConstraint & TaskPropagator> exten
 	public final IntDomainVar duration() {
 		return duration;
 	}
-	
+
 	//*****************************************************************//
 	//*******************  ITask  ********************************//
 	//***************************************************************//
-	
 
 
-	
+
+
 	public int getECT() {
 		return end.getInf();
 	}
@@ -129,8 +132,8 @@ public final class TaskVar<C extends AbstractSConstraint & TaskPropagator> exten
 	public boolean isScheduled() {
 		return isInstantiated();
 	}
-	
-	
+
+
 	//*****************************************************************//
 	//*******************  Var  ********************************//
 	//***************************************************************//
@@ -205,19 +208,19 @@ public final class TaskVar<C extends AbstractSConstraint & TaskPropagator> exten
 	// Managing Listeners.
 	// ============================================
 
-	 /**
-	   * Adds a new constraints on the stack of constraints
-	   * the addition can be dynamic (undone upon backtracking) or not.
-	   * @param c the constraint to add
-	   * @param varIdx the variable index accrding to the added constraint
-	   * @param dynamicAddition states if the addition is definitic (cut) or
-	   * subject to backtracking (standard constraint)
-	   * @return the index affected to the constraint according to this variable
-	   */
-	  public int addConstraint(final SConstraint c, final int varIdx,
-	                           final boolean dynamicAddition) {
-	     return constraints.addConstraint(c, varIdx, dynamicAddition);
-	  }
+	/**
+	 * Adds a new constraints on the stack of constraints
+	 * the addition can be dynamic (undone upon backtracking) or not.
+	 * @param c the constraint to add
+	 * @param varIdx the variable index accrding to the added constraint
+	 * @param dynamicAddition states if the addition is definitic (cut) or
+	 * subject to backtracking (standard constraint)
+	 * @return the index affected to the constraint according to this variable
+	 */
+	public int addConstraint(final SConstraint c, final int varIdx,
+			final boolean dynamicAddition) {
+		return constraints.addConstraint(c, varIdx, dynamicAddition);
+	}
 
 	/**
 	 * This methods should be used if one want to access the different constraints
@@ -236,16 +239,16 @@ public final class TaskVar<C extends AbstractSConstraint & TaskPropagator> exten
 		return constraints.getConstraintsIterator();
 	}
 
-    @SuppressWarnings({"unchecked"})
-    public final DisposableIterator<Couple<C>> getActiveConstraints(C cstrCause){
-        return ((PartiallyStoredTaskCstrList)constraints).getActiveConstraint(cstrCause);
-    }
-    
+	@SuppressWarnings({"unchecked"})
+	public final DisposableIterator<Couple<C>> getActiveConstraints(C cstrCause){
+		return ((PartiallyStoredTaskCstrList)constraints).getActiveConstraint(cstrCause);
+	}
+
 	@Override
 	public boolean isInstantiated() {
 		return  start.isInstantiated() && end.isInstantiated() && duration.isInstantiated();
 	}
-	
+
 	public final void updateCompulsoryPart(SConstraint cause) throws ContradictionException {
 		boolean fixPoint;
 		do {
@@ -260,21 +263,54 @@ public final class TaskVar<C extends AbstractSConstraint & TaskPropagator> exten
 	}
 
 
-    /**
-     * Call awake on TaskVar.
-     * @param idx index of the constraint calling #awake().
-     * @param constraint
-     * @param forceAwake
-     */
-    public void updateHypotheticalDomain(int idx, final SConstraint constraint, final boolean forceAwake){
-        propagationEngine.postEvent(this, TaskVarEvent.HYPDOMMOD, constraint, forceAwake);
-    }
+	/**
+	 * Call awake on TaskVar.
+	 * @param idx index of the constraint calling #awake().
+	 * @param constraint
+	 * @param forceAwake
+	 */
+	public void updateHypotheticalDomain(int idx, final SConstraint constraint, final boolean forceAwake){
+		propagationEngine.postEvent(this, TaskVarEvent.HYPDOMMOD, constraint, forceAwake);
+	}
 
 
 	@Override
 	public Extension getExtension(int extensionNumber) {
 		return null;
 	}
-    
-    
+
+	public final boolean detectOrPostConsistencyConstraint(Solver solver) {
+		final DisposableIterator<SConstraint> iter = getConstraintsIterator();
+		while(iter.hasNext()) {
+			final SConstraint<?> c = iter.next();
+			if (c instanceof AbstractTaskSConstraint &&
+					( (AbstractTaskSConstraint) c).isTaskConsistencyEnforced() ) {
+				return true;				
+			}
+		}
+		iter.dispose();
+		postConsistencyConstraint(solver);
+		return false;
+	}
+
+	public final void postConsistencyConstraint(Solver solver) {
+		// we must enforce the task consistency
+		if (duration().isInstantiatedTo(0) && // nil duration
+				! start().equals(end()) ) { // not fictive
+			solver.post(solver.eq(start(), end()));
+		} else {
+			// s + d = e
+			solver.post(solver.eq(solver.plus(start(), duration()), end()));
+		}
+	}
+
+	public final void postHorizonConstraint(Solver solver) {
+		final int h = solver.getHorizon();
+		if(getLCT() > h) {
+			// create makespan constraint : horizon >= end(T)
+			solver.post( solver.leq(end(), h));
+		}
+	}
+
+
 }

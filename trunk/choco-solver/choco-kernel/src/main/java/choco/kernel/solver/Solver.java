@@ -284,6 +284,11 @@ public interface Solver extends IMeasures, IPretty {
 	void setHorizon(int horizon);
 	
 	/**
+	 * get the scheduling horizon.
+	 */
+	int getHorizon();
+	
+	/**
 	 * Get the makespan variable if any
      * @return makespan variable
      */

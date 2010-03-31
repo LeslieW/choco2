@@ -24,12 +24,14 @@ package choco.cp.solver.search.task;
 
 
 import choco.IPretty;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.memory.IEnvironment;
 import choco.kernel.memory.IStateBitSet;
 import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.AbstractLargeIntBranchingStrategy;
+import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.search.task.RandomizedTaskSelector;
 import choco.kernel.solver.search.task.TaskSelector;
@@ -85,44 +87,6 @@ class SetTimesNode implements IPretty {
 
 }
 
-//class SetTimesNode implements IPretty {
-//
-//	public int lastSelected;
-//
-//	public final List<TaskVar> selectables;
-//
-//	public final static int NONE=-1;
-//
-//	public SetTimesNode(final List<TaskVar> selectables) {
-//		super();
-//		lastSelected=NONE;
-//		this.selectables=selectables;
-//	}
-//
-//	public TaskVar removeLastSelected() {
-//		return selectables.remove(lastSelected);
-//	}
-//
-//	public TaskVar getLastSelected() {
-//		return selectables.get(lastSelected);
-//	}
-//
-//	@Override
-//	public String pretty() {
-//		return selectables.get(lastSelected).pretty();
-//	}
-//
-//	@Override
-//	public String toString() {
-//		return getLastSelected().start().pretty();
-//	}
-//
-//
-//
-//
-//}
-
-
 
 /**
  * A search designed to minimize makespan. The search is not complete, so don't try a solveAll.
@@ -169,7 +133,6 @@ public class SetTimes extends AbstractLargeIntBranchingStrategy {
 		this.selector=selector;
 		final IEnvironment env=solver.getEnvironment();
 		select=env.makeBitSet(tasks.size());
-		select.set(0, this.tasksL.size());
 		nselect=env.makeBitSet(tasks.size());
 		flags=new IStateInt[this.tasksL.size()];
 		for (int i = 0; i < flags.length; i++) {
@@ -177,7 +140,16 @@ public class SetTimes extends AbstractLargeIntBranchingStrategy {
 			taskIndexM.put(this.tasksL.get(i), i);
 		}
 	}
+	
+	
 
+	@Override
+	public void initBranching() {
+		super.initBranching();
+		select.set(0, this.tasksL.size());
+		nselect.clear();
+	}
+	
 	/**
 	 * Finished branching.
 	 *
@@ -195,7 +167,6 @@ public class SetTimes extends AbstractLargeIntBranchingStrategy {
 	private TaskVar reuseTask;
 
 	private int reuseIndex;
-
 
 	@Override
 	public void setFirstBranch(final IntBranchingDecision decision) {
@@ -236,7 +207,12 @@ public class SetTimes extends AbstractLargeIntBranchingStrategy {
 				l.add(tasksL.get(i));
 			}
 		}
-		return l.isEmpty() ? null : new SetTimesNode(l);
+		if(l.isEmpty()) {
+			if( ! nselect.isEmpty()) {
+				manager.getSolver().getPropagationEngine().raiseContradiction(this);
+			} 
+			return null;
+		}else return new SetTimesNode(l);
 	}
 
 

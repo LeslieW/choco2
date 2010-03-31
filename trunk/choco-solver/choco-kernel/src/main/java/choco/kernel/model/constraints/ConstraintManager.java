@@ -22,13 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.constraints;
 
+import java.util.Set;
+
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.Set;
 
 public abstract class ConstraintManager <V extends Variable> implements ExpressionManager{
 
@@ -81,6 +81,7 @@ public abstract class ConstraintManager <V extends Variable> implements Expressi
 	protected final static boolean checkParameter(Object[] o, int idx) {
 		return o.length>idx && o[idx] != null;
 	}
+	
     protected final static SConstraint fail() {
     	return fail("?");
     }

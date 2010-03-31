@@ -116,7 +116,10 @@ public final class BranchingFactory {
 		Arrays.sort(tasks,TaskComparators.makeRMinDurationCmp()); 
 		return new SetTimes(solver,Arrays.asList(tasks) , TaskComparators.makeEarliestStartingTimeCmp(), false);
 	}
-
+	
+	public static SetTimes setTimes(final Solver solver, final Comparator<ITask> comparator, final boolean randomized) {
+		return setTimes(solver,getTaskVars(solver), comparator, randomized);
+	}
 	//FIXME set array in constructor
 	public static SetTimes setTimes(final Solver solver, final TaskVar[] tasks, final Comparator<ITask> comparator, final boolean randomized) {
 		return new SetTimes(solver, Arrays.asList(tasks), comparator, randomized);

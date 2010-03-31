@@ -134,6 +134,9 @@ public abstract class AbstractTaskSConstraint extends AbstractLargeIntSConstrain
 		return pretty(this.getClass().getSimpleName());
 	}
 
+	public boolean isTaskConsistencyEnforced() {
+		return false;
+	}
 
 	@Override
 	public void awakeOnHypDomMod(int varIdx) throws ContradictionException {

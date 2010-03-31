@@ -22,26 +22,37 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.scheduling;
 
+import static choco.Choco.constant;
+import static choco.Choco.endsBeforeBegin;
+import static choco.Choco.makeBooleanVar;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.makeTaskVar;
+import static choco.Choco.makeTaskVarArray;
+import static choco.Choco.precedenceDisjoint;
+import static choco.Choco.precedenceImplied;
+import static choco.Choco.precedenceReified;
+import static choco.Choco.startsAfterEnd;
+import static choco.Choco.startsBeforeBegin;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.junit.Ignore;
+import org.junit.Test;
+
+import samples.scheduling.pert.DeterministicPert;
 import choco.Choco;
-import static choco.Choco.*;
 import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.configure.SchedulerConfiguration;
 import choco.cp.solver.constraints.global.scheduling.precedence.VariablePrecedenceDisjoint;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import org.junit.Ignore;
-import org.junit.Test;
-import samples.scheduling.pert.DeterministicPert;
-
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 
@@ -60,30 +71,13 @@ public class TestPrecedences {
 
 
 	public void solve(int nbSol,String label) {
-		long seed= SchedUtilities.RANDOM.nextLong();
-		int n = 3;
-		CPSolver[] solvers= new CPSolver[n];
-		for (int i = 0; i < solvers.length; i++) {
-			solvers[i] = new CPSolver();
-			solvers[i].getSchedulerConfiguration().setForceMakespan(true);
-			//solvers[i].setHorizon(Choco.MAX_UPPER_BOUND);
-		}
-		int cpt =0;
-		SchedulerConfiguration cnf = solvers[cpt].getSchedulerConfiguration();
-		cnf.setPrecedenceNetwork(true);
-		cnf.setIncrementalPert(false);
-		cpt++;
-		cnf = solvers[cpt].getSchedulerConfiguration();
-		cnf.setPrecedenceNetwork(true);
-		cnf.setIncrementalPert(true);
-		
-		//LOGGER.setLevel(Level.INFO);
-		for (CPSolver s : solvers) {
+		for (int i = 0; i < 5; i++) {
+			long seed= SchedUtilities.RANDOM.nextLong();
+			s = new CPSolver();
 			s.read(m);
-			//LOGGER.info(s.pretty());
 			s.setRandomSelectors(seed);
+			SchedUtilities.solveRandom(s, nbSol, -1, "Pert");
 		}
-		SchedUtilities.compare(nbSol, SchedUtilities.CHECK_NODES, label, solvers);
 	}
 
 	@Test
@@ -94,6 +88,7 @@ public class TestPrecedences {
 		s = new CPSolver();
 		s.setHorizon(15);
 		s.read(m);
+		s.setRandomSelectors(0);
 		s.solveAll();
 		assertEquals("nbsols with horizon", 11, s.getSolutionCount());
 	}
@@ -286,26 +281,26 @@ public class TestPrecedences {
 	@Test
 	public void testIlogExample() {
 		DeterministicPert ex=new DeterministicPert(17);
-//		m=ex.getModel();
-//		solve(0,"Ilog ex.");
-//
-//		ex=new DeterministicPert(18);
-//		m=ex.getModel();
-//		solve(154,"Ilog ex.");
+		//		m=ex.getModel();
+		//		solve(0,"Ilog ex.");
+		//
+		//		ex=new DeterministicPert(18);
+		//		m=ex.getModel();
+		//		solve(154,"Ilog ex.");
 
 		ex=new DeterministicPert(19);
 		m=ex.getModel();
 		solve(1764,"Ilog ex.");
 
-//		ex=new DeterministicPert(28);
-//		ex.requireUnaryResource();
-//		m=ex.getModel();
-//		solve(0,"Ilog ex.");
-//
-//		ex=new DeterministicPert(29);
-//		ex.requireUnaryResource();
-//		m=ex.getModel();
-//		solve(112,"Ilog ex.");
+		//		ex=new DeterministicPert(28);
+		//		ex.requireUnaryResource();
+		//		m=ex.getModel();
+		//		solve(0,"Ilog ex.");
+		//
+		//		ex=new DeterministicPert(29);
+		//		ex.requireUnaryResource();
+		//		m=ex.getModel();
+		//		solve(112,"Ilog ex.");
 	}
 
 

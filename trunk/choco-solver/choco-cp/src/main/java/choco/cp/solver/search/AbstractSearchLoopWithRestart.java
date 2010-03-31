@@ -38,11 +38,6 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 
 	protected int moveAfterSolution = UP_BRANCH;
 
-	//It seems that it is important to reinit the branching when restarting after each solution with DWDeg.
-	//If you only set up an OPEN_NODE, it really decreases performance
-	//So we have to check the combinatin of DWDeg an a restart strategy.
-	protected int moveAfterRestart=  INIT_SEARCH;
-
 	protected int previousNbSolutions;
 
 	protected IKickRestart kickRestart;
@@ -70,10 +65,6 @@ public abstract class AbstractSearchLoopWithRestart extends AbstractSearchLoop {
 		return kickRestart;
 	}
 
-
-	public final void setInitializeSearchAfterRestart(boolean reinit) {
-		moveAfterRestart = reinit ? INIT_SEARCH : OPEN_NODE; 
-	}
 	
 	public final void setRestartAfterEachSolution(boolean restart) {
 		moveAfterSolution = restart ? RESTART : UP_BRANCH; 
@@ -277,7 +268,7 @@ public void restart() {
 		searchStrategy.postDynamicCut();
 		searchStrategy.solver.propagate();
 		ctx = searchStrategy.getReusableInitialTrace();
-		searchStrategy.nextMove = moveAfterRestart;
+		searchStrategy.nextMove = INIT_SEARCH;
 		if( searchStrategy.limitManager.newRestart()) {
 			LOGGER.config("- Limit reached: stop restarting");
 			setRestartAfterEachSolution(false);

@@ -1,6 +1,7 @@
 package choco.kernel.common.util.tools;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -26,12 +27,11 @@ public final class PropertyUtils {
 	}
 
 	private static void logOnFailure(String resource) {
-		LOGGER.log(Level.SEVERE, "properties...[load-properties:{0}][FAIL]", resource);
+		System.err.println("properties...[load-properties:"+resource+"][FAIL]");
 	}
 
 	private static void logOnSuccess(String resource) {
 		LOGGER.log(Level.CONFIG, "properties...[load-properties:{0}]", resource);
-		ChocoLogging.flushLogs();
 	}
 
 
@@ -51,7 +51,7 @@ public final class PropertyUtils {
 	public final static void loadProperties(Properties properties, String... resources) {
 		for (String resource : resources) {
 		try {
-			properties.load(new InputStreamReader(properties.getClass().getResourceAsStream(resource)));
+			properties.load(new InputStreamReader(properties.getClass().getResourceAsStream(resource), "ISO-8859-1"));
 			logOnSuccess(resource);
 		} catch (IOException e) {
 			logOnFailure(resource);

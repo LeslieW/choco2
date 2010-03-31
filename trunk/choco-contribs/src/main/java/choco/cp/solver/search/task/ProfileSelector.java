@@ -32,17 +32,14 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.global.scheduling.IResource;
 import choco.kernel.solver.search.integer.IntVarValPair;
-import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.search.integer.VarValPairSelector;
 import choco.kernel.solver.variables.scheduling.ITask;
 
 
 
-public class ProfileSelector implements VarValPairSelector {
+public final class ProfileSelector implements VarValPairSelector {
 
-	protected ValSelector valSelector;
-
-	protected PrecValSelector precSelector;
+	private final OrderingValSelector precSelector;
 
 	private final IPrecedenceStore precStore;
 
@@ -50,17 +47,19 @@ public class ProfileSelector implements VarValPairSelector {
 
 	public final IResource<?>[] rscL;
 
-	protected ProfileSelector(Solver solver, IResource<?>[] resources, IPrecedenceStore precStore) {
+	public ProfileSelector(Solver solver, IResource<?>[] resources, IPrecedenceStore precStore, OrderingValSelector precSelector) {
 		super();
 		this.precStore = precStore;
+		this.precSelector = precSelector;
 		profiles = new ProbabilisticProfile(solver);
 		profiles.precStore = precStore;
 		rscL = resources;
 	}
 	
-	protected ProfileSelector(Solver solver, IPrecedenceStore precStore) {
+	public ProfileSelector(Solver solver, IPrecedenceStore precStore, OrderingValSelector precSelector) {
 		super();
 		this.precStore = precStore;
+		this.precSelector = precSelector;
 		profiles = new ProbabilisticProfile(solver);
 		profiles.precStore = precStore;
 		rscL = new IResource<?>[solver.getModel().getNbConstraintByType(ConstraintType.DISJUNCTIVE)];
@@ -69,26 +68,6 @@ public class ProfileSelector implements VarValPairSelector {
 		while(iter.hasNext()) {
 			rscL[cpt++] = (IResource<?>) solver.getCstr(iter.next());
 		}
-	}
-
-	public ProfileSelector(Solver solver, IPrecedenceStore precStore, ValSelector valSelector) {
-		this(solver, precStore);
-		this.valSelector = valSelector;
-	}
-
-	public ProfileSelector(Solver solver, IPrecedenceStore precStore, PrecValSelector precSelector) {
-		this(solver, precStore);
-		this.precSelector = precSelector;
-	}
-
-	public ProfileSelector(Solver solver,  IResource<?>[] resources, IPrecedenceStore precStore, ValSelector valSelector) {
-		this(solver, resources, precStore);
-		this.valSelector = valSelector;
-	}
-
-	public ProfileSelector(Solver solver,  IResource<?>[] resources, IPrecedenceStore precStore, PrecValSelector precSelector) {
-		this(solver, resources, precStore);
-		this.precSelector = precSelector;
 	}
 	
 	@Override
@@ -116,12 +95,8 @@ public class ProfileSelector implements VarValPairSelector {
 				}
 			}
 			if(st1 != null) {
-				IPrecedence prec = precStore.getStoredPrecedence(st1, st2);
-				if(precSelector == null) {
-					return new IntVarValPair(prec.getBoolVar(), valSelector.getBestVal(prec.getBoolVar()));
-				}else {
-					return new IntVarValPair(prec.getBoolVar(), precSelector.getBestVal(prec));
-				}
+				final IPrecedence prec = precStore.getStoredPrecedence(st1, st2);
+				return new IntVarValPair(prec.getBoolVar(), precSelector.getBestVal(prec));
 			}
 		}
         assert(!precStore.containsReifiedPrecedence());

@@ -86,7 +86,6 @@ public class DbExample implements Example {
 		}
 		dbConnector.setUp();
 		executeBenchmark();
-		executeBenchmark();
 		dbConnector.getDatabaseManager().printTable(DbTables.T_SOLVERS);
 		dbConnector.tearDown();
 		ChocoLogging.flushLogs();

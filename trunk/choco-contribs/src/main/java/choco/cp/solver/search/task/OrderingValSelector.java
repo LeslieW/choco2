@@ -23,11 +23,14 @@
 package choco.cp.solver.search.task;
 
 import choco.cp.solver.constraints.global.scheduling.precedence.IPrecedence;
+import choco.kernel.solver.variables.scheduling.TaskVar;
 
 
 
-public interface PrecValSelector {
+public interface OrderingValSelector {
 
 	int getBestVal(IPrecedence precedence);
+	
+	int getBestVal(TaskVar t1, TaskVar t2);
 
 }
