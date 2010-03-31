@@ -121,7 +121,7 @@ public class RehearsalProblem extends PatternExample {
 			_m.addConstraint(Choco.disjunctive(musicPieces));
 		}else {
 			//define all possible precedence between tasks
-			_m.addConstraints( Choco.precedenceDisjoint(musicPieces, isPrecOnlyDecision ? CPOptions.V_DECISION :""));
+			_m.addConstraints( Choco.precedenceDisjoint(musicPieces, isPrecOnlyDecision ? CPOptions.NO_OPTION :CPOptions.V_NO_DECISION));
 		}
 	}
 

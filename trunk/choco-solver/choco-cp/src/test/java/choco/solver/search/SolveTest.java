@@ -527,8 +527,6 @@ public class SolveTest {
         IntegerVariable V17 = makeIntVar("V17", 1, 20);
         IntegerVariable V18 = makeIntVar("V18", 1, 20);
         IntegerVariable V19 = makeIntVar("V19", 1, 20);
-        IntegerVariable[] vars = new IntegerVariable[]{V0, V1, V2, V3, V4, V5, V6, V7, V8, V9, V10, V11, V12, V13, V14, V15, V16, V17, V18, V19};
-        m.addVariables(CPOptions.V_DECISION,vars);
 
         m.addConstraint(and(neq(V14,V19),neq(abs(minus(V14,V19)),5)));
         m.addConstraint(and(neq(V3,V11), neq(abs(minus(V3,V11)),8)));

@@ -72,17 +72,12 @@ public class CPModelToCPSolver {
 
 	protected final ExpressionDetector expDetect;
 
-	private final THashSet<IntDomainVar> intDecisionVar = new THashSet<IntDomainVar>();
-	
 	private final THashSet<IntDomainVar> intNoDecisionVar = new THashSet<IntDomainVar>();
 
-	private final THashSet<SetVar> setDecisionVar = new THashSet<SetVar>();
 	private final THashSet<SetVar> setNoDecisionVar = new THashSet<SetVar>();
 
-	private final THashSet<RealVar> realDecisionVar = new THashSet<RealVar>();
 	private final THashSet<RealVar> realNoDecisionVar = new THashSet<RealVar>();
 
-	private final THashSet<TaskVar> taskDecisionVar = new THashSet<TaskVar>();
 	private final THashSet<TaskVar> taskNoDecisionVar = new THashSet<TaskVar>();
 
     private final List<SConstraint> postponedConstraint = new ArrayList<SConstraint>(8);
@@ -96,13 +91,9 @@ public class CPModelToCPSolver {
      * Clear datastructures for safe reuses
      */
     public void clear(){
-        this.intDecisionVar.clear();
         this.intNoDecisionVar.clear();
-        this.setDecisionVar.clear();
         this.setNoDecisionVar.clear();
-        this.realDecisionVar.clear();
         this.realNoDecisionVar.clear();
-        this.taskDecisionVar.clear();
         this.taskNoDecisionVar.clear();
     }
 	//************************************************* CONCERNING VARIABLES ***********************************************
@@ -228,9 +219,10 @@ public class CPModelToCPSolver {
 	 */
 	private void checkOptions(final Variable v, final Var var) {
 		if (v.getOptions().contains(CPOptions.V_DECISION)) {
-			checkDecision(var, true);
-		}else if (v.getOptions().contains(CPOptions.V_NO_DECISION)) {
-			checkDecision(var, false);
+			LOGGER.warning("CPOptions.V_DECISION or \"cp:decision\" option are deprecated and have no longer effect on decision variables pool!");
+		}else
+        if (v.getOptions().contains(CPOptions.V_NO_DECISION)) {
+			removeFromDecisionPool(var);
 		}
 		if(v.getOptions().contains(CPOptions.V_OBJECTIVE)){
 			cpsolver.setObjective(var);
@@ -243,17 +235,16 @@ public class CPModelToCPSolver {
 	 * Add decision or non decision variable to the correct list
 	 *
 	 * @param v        the variable to add
-	 * @param decision wether it is a decisionnal variable or not
-	 */
-	private void checkDecision(final Var v, final boolean decision) {
+     */
+	private void removeFromDecisionPool(final Var v) {
 		if (v instanceof IntDomainVar) {
-			(decision ? intDecisionVar : intNoDecisionVar).add((IntDomainVar) v);
+			intNoDecisionVar.add((IntDomainVar) v);
 		} else if (v instanceof SetVar) {
-			(decision ? setDecisionVar : setNoDecisionVar).add((SetVar) v);
+			setNoDecisionVar.add((SetVar) v);
 		} else if (v instanceof RealVar) {
-			(decision ? realDecisionVar : realNoDecisionVar).add((RealVar) v);
+			realNoDecisionVar.add((RealVar) v);
 		} else if (v instanceof TaskVar) {
-			(decision ? taskDecisionVar : taskNoDecisionVar).add((TaskVar) v);
+			taskNoDecisionVar.add((TaskVar) v);
 		}
 
 	}
@@ -262,33 +253,25 @@ public class CPModelToCPSolver {
 	 */
 	protected void readDecisionVariables() {
 		// Integer decision variables
-		if (!intDecisionVar.isEmpty()) {
-			cpsolver.intDecisionVars.addAll(intDecisionVar);
-		} else if (!intNoDecisionVar.isEmpty()) {
-			cpsolver.intDecisionVars.addAll(cpsolver.intVars.toList());
+        cpsolver.intDecisionVars.addAll(cpsolver.intVars.toList());
+        if (!intNoDecisionVar.isEmpty()) {
 			cpsolver.intDecisionVars.removeAll(intNoDecisionVar);
 			cpsolver.intDecisionVars.removeAll(cpsolver.getIntConstantSet());
 		}
 		// Set decision variables
-		if (!setDecisionVar.isEmpty()) {
-			cpsolver.setDecisionVars.addAll(setDecisionVar);
-		} else if (!setNoDecisionVar.isEmpty()) {
-			cpsolver.setDecisionVars.addAll(cpsolver.setVars.toList());
-			cpsolver.setDecisionVars.removeAll(setNoDecisionVar);
-		}
-		// Real decision variables
-		if (!realDecisionVar.isEmpty()) {
-			cpsolver.floatDecisionVars.addAll(realDecisionVar);
-		} else if (!realNoDecisionVar.isEmpty()) {
-			cpsolver.floatDecisionVars.addAll(cpsolver.floatVars.toList());
+        cpsolver.setDecisionVars.addAll(cpsolver.setVars.toList());
+        if (!setNoDecisionVar.isEmpty()) {
+            cpsolver.setDecisionVars.removeAll(setNoDecisionVar);
+        }
+        // Real decision variables
+        cpsolver.floatDecisionVars.addAll(cpsolver.floatVars.toList());
+        if (!realNoDecisionVar.isEmpty()) {
 			cpsolver.floatDecisionVars.removeAll(realNoDecisionVar);
 			cpsolver.intDecisionVars.removeAll(cpsolver.getRealConstantSet());
 		}
 		// Task decision variables
-		if (!taskDecisionVar.isEmpty()) {
-			cpsolver.taskDecisionVars.addAll(taskDecisionVar);
-		} else if (!taskNoDecisionVar.isEmpty()) {
-			cpsolver.taskDecisionVars.addAll(cpsolver.taskVars.toList());
+        cpsolver.taskDecisionVars.addAll(cpsolver.taskVars.toList());
+        if (!taskNoDecisionVar.isEmpty()) {
 			cpsolver.taskDecisionVars.removeAll(taskNoDecisionVar);
 		}
 	}

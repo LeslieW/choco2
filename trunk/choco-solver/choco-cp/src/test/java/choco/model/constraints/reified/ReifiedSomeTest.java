@@ -667,7 +667,7 @@ public class ReifiedSomeTest {
             LOGGER.info("Prescription Unacceptable");
             DisposableIterator<SConstraint> it = s.getConstraintIterator();
             while (it.hasNext()) {
-                SConstraint c = (SConstraint) it.next();
+                SConstraint c = it.next();
                 //LOGGER.info(""  + c);
                 if (!c.isSatisfied()) {
                     LOGGER.info(format("Failed: {0}", cardioConstraints.get(c)));
@@ -1124,7 +1124,6 @@ public class ReifiedSomeTest {
             IntegerVariable[] svars = new IntegerVariable[n];
             for (int i = 0; i < n; i++) {
                 IntegerVariable sv = makeIntVar("..", 0, numStates, CPOptions.V_ENUM);
-                model.addVariable(CPOptions.V_DECISION, sv);
                 svars[i] = sv;
             }
 
@@ -1135,7 +1134,6 @@ public class ReifiedSomeTest {
             IntegerVariable[] lvars = new IntegerVariable[n - 1];
             for (int i = 0; i < n - 1; i++) {
                 IntegerVariable lv = makeIntVar("..", 0, numLabels, CPOptions.V_ENUM);
-                model.addVariable(CPOptions.V_DECISION, lv);
                 lvars[i] = lv;
             }
 
@@ -1192,7 +1190,6 @@ public class ReifiedSomeTest {
             IntegerVariable[] svars = new IntegerVariable[n];
             for (int i = 0; i < n; i++) {
                 IntegerVariable sv = makeIntVar("..", 0, numStates, CPOptions.V_ENUM);
-                model.addVariable(CPOptions.V_DECISION, sv);
                 svars[i] = sv;
             }
 

@@ -47,6 +47,7 @@ import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+import gnu.trove.THashSet;
 import gnu.trove.TIntObjectHashMap;
 
 import java.util.*;
@@ -58,31 +59,31 @@ import java.util.*;
  *
  * Black box solver
  */
-public class PreProcessCPSolver extends CPSolver {
+public final class PreProcessCPSolver extends CPSolver {
 
-    protected HashSet<String> options;
+    private THashSet<String> options;
 
     /**
      * Allow preprocessing on expressions to extract
      * intensional constraints
      */
-    protected ExpressionDetector cleverExp;
+    private ExpressionDetector cleverExp;
 
     /**
      * Allow preprocessing on relations to extract
      * intensional constraints
      */
-    protected RelationDetector cleverRel;
+    private RelationDetector cleverRel;
 
     /**
      * A component with simple rules for symetry breaking
      */
-    protected SymBreaking symb;
+    private SymBreaking symb;
 
     /**
      * Search component
      */
-    protected PPSearch ppsearch;
+    private PPSearch ppsearch;
 
     /**
      * The ratio of holes within domains to which
@@ -95,7 +96,7 @@ public class PreProcessCPSolver extends CPSolver {
      * singleton and restarts). If propagation is too heavy, we will avoid
      * restarting
      */
-    public int proptime;
+    private int proptime;
 
     /**
      * Do we perform restart or not
@@ -108,16 +109,16 @@ public class PreProcessCPSolver extends CPSolver {
         init();
     }
 
-    public PreProcessCPSolver(IEnvironment env) {
+    public PreProcessCPSolver(final IEnvironment env) {
         super(env);
         init();
     }
 
-    public void init() {
+    void init() {
         this.cleverExp = new ExpressionDetector();
         this.cleverRel = new RelationDetector();
         this.symb = new SymBreaking();
-        this.options = new HashSet<String>();
+        this.options = new THashSet<String>();
         this.mod2sol = new PPModelToCPSolver(this);
         this.ppsearch = new PPSearch();
     }
@@ -126,12 +127,12 @@ public class PreProcessCPSolver extends CPSolver {
         return (PPModelToCPSolver) mod2sol;
     }
 
-    public void addOption(String opt) {
+    public void addOption(final String opt) {
         options.add(opt);
     }
 
 
-    public void setAllProcessing() {
+    void setAllProcessing() {
         options.add("bb:exp");
         options.add("bb:cliques");
         options.add("bb:exttoint");
@@ -139,7 +140,7 @@ public class PreProcessCPSolver extends CPSolver {
         options.add("bb:breaksym");
     }
 
-    public void setRandomValueOrdering(int seed) {
+    public void setRandomValueOrdering(final int seed) {
         ppsearch.setRandomValueHeuristic(seed);
     }
 
@@ -148,20 +149,20 @@ public class PreProcessCPSolver extends CPSolver {
      * to nodes of the constraint graph
      * @param m model
      */
-    public void associateIndexes(Model m) {
+    private static void associateIndexes(final Model m) {
         Iterator it = m.getIntVarIterator();
         int cpt = 0;
         while (it.hasNext()) {
-            IntegerVariable iv = (IntegerVariable) it.next();
+            final IntegerVariable iv = (IntegerVariable) it.next();
             iv.setHook(cpt);
             cpt++;
         }
         it = m.getMultipleVarIterator();
         cpt = 0;
         while (it.hasNext()) {
-            MultipleVariables iv = (MultipleVariables) it.next();
+            final MultipleVariables iv = (MultipleVariables) it.next();
             if(iv instanceof TaskVariable){
-                ((TaskVariable)iv).setHook(cpt);
+                iv.setHook(cpt);
                 cpt++;
             }
         }
@@ -172,7 +173,7 @@ public class PreProcessCPSolver extends CPSolver {
      *
      * @param m model
      */
-    public void read(Model m) {
+    public void read(final Model m) {
         this.model = (CPModel) m;
         ppsearch.setModel(model);
 
@@ -217,7 +218,7 @@ public class PreProcessCPSolver extends CPSolver {
      * @param inittime init time
      * @return true if the problem is still feasible
      */
-    public boolean setVersatile(CPSolver s, int inittime) {
+    public boolean setVersatile(final CPSolver s, final int inittime) {
        return ppsearch.setVersatile(s,inittime);
     }
 
@@ -227,7 +228,7 @@ public class PreProcessCPSolver extends CPSolver {
      * @param s solver
      * @return true if the problem was not detected infeasible in the process
      */
-    public boolean setDomOverDeg(CPSolver s) {
+    public boolean setDomOverDeg(final CPSolver s) {
         return ppsearch.setDomOverDeg(s);
     }
 
@@ -238,7 +239,7 @@ public class PreProcessCPSolver extends CPSolver {
      * @param inittime init time
      * @return true if the problem was not detected infeasible in the process
      */
-    public boolean setDomOverWeg(CPSolver s, int inittime) {
+    public boolean setDomOverWeg(final CPSolver s, final int inittime) {
        return ppsearch.setDomOverWeg(s, inittime);
     }
 
@@ -249,7 +250,7 @@ public class PreProcessCPSolver extends CPSolver {
      * @param initialisationtime init time
      * @return true if the problem was not detected infeasible in the process
      */
-    public boolean setImpact(CPSolver s, int initialisationtime) {
+    public boolean setImpact(final CPSolver s, final int initialisationtime) {
          return ppsearch.setImpact(s, initialisationtime);
     }
 
@@ -257,7 +258,7 @@ public class PreProcessCPSolver extends CPSolver {
      * return true if contains at least one disjunctive
      * @return a boolean
      */
-    public boolean isScheduling() {
+    boolean isScheduling() {
         if (model == null) {
             throw new SolverException("you must read the model before !");
         } else return ppsearch.isScheduling();
@@ -279,15 +280,15 @@ public class PreProcessCPSolver extends CPSolver {
      *
      * @return a boolean
      */
-    public boolean isBinaryExtensionnal() {
+    boolean isBinaryExtensionnal() {
         if (model == null) {
             throw new SolverException("you must read the model before !");
         } else {
             if (model.getNbConstraintByType(ConstraintType.TABLE) == 0)
                 return false;
-            Iterator<Constraint> it = model.getConstraintIterator();
+            final Iterator<Constraint> it = model.getConstraintIterator();
             while(it.hasNext()) {
-                Constraint ct = it.next();
+                final Constraint ct = it.next();
                 if (ct.getNbVars() > 2) return false;
             }
             return true;
@@ -302,7 +303,7 @@ public class PreProcessCPSolver extends CPSolver {
     // ######                   Symetry breaking                                            ###
     // ############################################################################################################
 
-    public void breakSymetries(Model m) {
+    void breakSymetries(final Model m) {
         symb.addSymBreakingConstraint((CPModel) m);
     }
 
@@ -310,7 +311,7 @@ public class PreProcessCPSolver extends CPSolver {
     // ######                   Expressions Detection                                            ###
     // ############################################################################################################
 
-    public boolean isAValidExpression(Constraint ic) {
+    private static boolean isAValidExpression(final Constraint ic) {
         return ic instanceof MetaConstraint ||
                 (ic instanceof ComponentConstraint &&
                  (ic.getConstraintType() == ConstraintType.EQ ||
@@ -321,27 +322,27 @@ public class PreProcessCPSolver extends CPSolver {
                  ic.getConstraintType() == ConstraintType.LT));
     }
 
-    public void detectExpression(Model m) {
-        Iterator<Constraint> it = m.getConstraintIterator();
-        List<Constraint> neqToAdd = new LinkedList<Constraint>();
+    void detectExpression(final Model m) {
+        final Iterator<Constraint> it = m.getConstraintIterator();
+        final List<Constraint> neqToAdd = new LinkedList<Constraint>();
         while (it.hasNext()) {
-            Constraint ic = it.next();
+            final Constraint ic = it.next();
             if (!this.mapconstraints.containsKey(ic.getIndex()) && isAValidExpression(ic)) {
-                ExpressionSConstraint c = new ExpressionSConstraint(getMod2Sol().buildNode(ic));
+                final ExpressionSConstraint c = new ExpressionSConstraint(getMod2Sol().buildNode(ic));
                 c.setScope(this);
                 getMod2Sol().storeExpressionSConstraint(ic, c);
-                SConstraint intensional = cleverExp.getIntentionalConstraint(c, this);
+                final SConstraint intensional = ExpressionDetector.getIntentionalConstraint(c, this);
                 if (intensional != null) {
                     c.setKnownIntensionalConstraint(intensional);
                 } else {
-                    if (cleverExp.encompassDiff(c)) {
-                       IntegerVariable[] vars = ((AbstractConstraint) ic).getIntVariableScope();
+                    if (ExpressionDetector.encompassDiff(c)) {
+                       final IntegerVariable[] vars = ((AbstractConstraint) ic).getIntVariableScope();
                        neqToAdd.add(Choco.neq(vars[0],vars[1]));
                     }
                 }
             }
         }
-        for (Constraint aNeqToAdd : neqToAdd) {
+        for (final Constraint aNeqToAdd : neqToAdd) {
             m.addConstraint(aNeqToAdd);
         }
     }
@@ -351,12 +352,12 @@ public class PreProcessCPSolver extends CPSolver {
     // ############################################################################################################
 
 
-    public void detectCliques(Model m) {
-        CliqueDetector cdetect = new CliqueDetector((CPModel) m);
+    void detectCliques(final Model m) {
+        final CliqueDetector cdetect = new CliqueDetector((CPModel) m);
         if (cdetect.addAllNeqEdges()) {
-            CliqueDetector.CliqueIterator it = cdetect.cliqueIterator();
+            final CliqueDetector.CliqueIterator it = cdetect.cliqueIterator();
             while (it.hasNext()) {
-                IntegerVariable[] cl = it.next();
+                final IntegerVariable[] cl = it.next();
                 if (cl.length > 2) {
                     m.addConstraint(CPOptions.C_ALLDIFFERENT_BC, allDifferent(cl));
                     symb.setMaxClique(cl);
@@ -371,28 +372,29 @@ public class PreProcessCPSolver extends CPSolver {
     // ############################################################################################################
 
 
-    public int[] getVarIndexes(IntegerVariable[] vs) {
-        int[] idxs = new int[vs.length];
+    private static int[] getVarIndexes(final IntegerVariable[] vs) {
+        final int[] idxs = new int[vs.length];
         for (int i = 0; i < idxs.length; i++) {
             idxs[i] = vs[i].getHook();
         }
         return idxs;
     }
 
-    public void detectDisjonctives(Model m) {
-        CliqueDetector cdetect = new CliqueDetector((CPModel) m);
-        int[] durations = cdetect.addAllDisjunctiveEdges(cleverExp, this);
+    void detectDisjonctives(final Model m) {
+        final CliqueDetector cdetect = new CliqueDetector((CPModel) m);
+        final int[] durations = cdetect.addAllDisjunctiveEdges(cleverExp, this);
         if (durations != null) {
-            BitSet[] precedenceAlreadyAdded = new BitSet[m.getNbIntVars()];
-            for (int i = 0; i < m.getNbIntVars(); i++)
+            final BitSet[] precedenceAlreadyAdded = new BitSet[m.getNbIntVars()];
+            for (int i = 0; i < m.getNbIntVars(); i++){
                 precedenceAlreadyAdded[i] = new BitSet();
+            }
 
-            CliqueDetector.CliqueIterator it = cdetect.cliqueIterator();
+            final CliqueDetector.CliqueIterator it = cdetect.cliqueIterator();
             while (it.hasNext()) {
-                IntegerVariable[] cl = it.next();
-                int[] idxs = getVarIndexes(cl);
-                int[] dur = new int[cl.length];
-                TaskVariable[] tasks = new TaskVariable[cl.length];
+                final IntegerVariable[] cl = it.next();
+                final int[] idxs = getVarIndexes(cl);
+                final int[] dur = new int[cl.length];
+                final TaskVariable[] tasks = new TaskVariable[cl.length];
                 for (int i = 0; i < cl.length; i++) {
                     dur[i] = durations[idxs[i]];
                     tasks[i] = Choco.makeTaskVar("", cl[i], constant(dur[i]));
@@ -401,7 +403,7 @@ public class PreProcessCPSolver extends CPSolver {
                 for (int j = 0; j < cl.length; j++) {
                     for (int k = j + 1; k < cl.length; k++) {
                         if (!precedenceAlreadyAdded[idxs[j]].get(idxs[k])) {
-                            IntegerVariable b = makeIntVar("" + (dur[j] + dur[k]), 0, 1);
+                            final IntegerVariable b = makeIntVar(String.format("%d", (dur[j] + dur[k])), 0, 1);
                             m.addConstraint(Choco.precedenceDisjoint(cl[j], dur[j], cl[k], dur[k], b));
                             precedenceAlreadyAdded[idxs[j]].set(idxs[k]);
                             precedenceAlreadyAdded[idxs[k]].set(idxs[j]);
@@ -419,16 +421,16 @@ public class PreProcessCPSolver extends CPSolver {
     // ######                   Merge equalities                                             ###
     // ############################################################################################################
 
-    private void detectEqualitiesOnIntegers(Model m) {
-        int n = m.getNbIntVars();
-        ISparseMatrix matrix = new BooleanSparseMatrix(n);
-        Iterator<Constraint> iteq = m.getConstraintByType(ConstraintType.EQ);
+    private void detectEqualitiesOnIntegers(final Model m) {
+        final int n = m.getNbIntVars();
+        final ISparseMatrix matrix = new BooleanSparseMatrix(n);
+        final Iterator<Constraint> iteq = m.getConstraintByType(ConstraintType.EQ);
         Constraint c;
         // Run over equalities constraints, and create edges
         while(iteq.hasNext()){
             c = iteq.next();
-            Variable v1 = c.getVariables()[0];
-            Variable v2 = c.getVariables()[1];
+            final Variable v1 = c.getVariables()[0];
+            final Variable v2 = c.getVariables()[1];
             if(v1.getVariableType()== VariableType.INTEGER
                     && v2.getVariableType()== VariableType.INTEGER){
             	matrix.add(v1.getHook(), v2.getHook());
@@ -438,23 +440,23 @@ public class PreProcessCPSolver extends CPSolver {
         if(matrix.getNbElement()> 0){
             matrix.prepare();
             // Detect connex components
-            int[] color = new int[n];
+            final int[] color = new int[n];
             Arrays.fill(color, -1);
-            TIntObjectHashMap<Domain> domainByColor = new TIntObjectHashMap<Domain>();
+            final TIntObjectHashMap<Domain> domainByColor = new TIntObjectHashMap<Domain>();
             int k = -1;
             Domain dtmp = new Domain();
-            Iterator<Long> it = matrix.iterator();
+            final Iterator<Long> it = matrix.iterator();
             while(it.hasNext()){
-                long v = it.next();
-                int i = (int)(v / n);
-                int j = (int)(v % n);
+                final long v = it.next();
+                final int i = (int)(v / n);
+                final int j = (int)(v % n);
 
                 if (color[i]==-1){
                     k++;
                     color[i]=k;
                     domainByColor.put(k, new Domain(m.getIntVar(i)));
                 }
-                Domain d = domainByColor.get(color[i]);
+                final Domain d = domainByColor.get(color[i]);
                 //backup
                 dtmp.copy(d);
                 if(d.intersection(m.getIntVar(j))){
@@ -471,12 +473,12 @@ public class PreProcessCPSolver extends CPSolver {
                     }
                 }
             }
-            IntDomainVar[] var = new IntDomainVar[k+1];
+            final IntDomainVar[] var = new IntDomainVar[k+1];
             IntegerVariable vtmp;
             for(int i = 0; i < n; i++){
-                int col = color[i];
+                final int col = color[i];
                 if(col !=-1){
-                    IntegerVariable v = m.getIntVar(i);
+                    final IntegerVariable v = m.getIntVar(i);
                     if(var[col] == null){
                         dtmp = domainByColor.get(col);
                         if(dtmp.values != null){
@@ -494,9 +496,9 @@ public class PreProcessCPSolver extends CPSolver {
         }
     }
 
-    private void detectEqualitiesOnTasks(Model m) {
-        int n = m.getNbStoredMultipleVars();
-        ISparseMatrix matrix = new BooleanSparseMatrix(n);
+    private void detectEqualitiesOnTasks(final Model m) {
+        final int n = m.getNbStoredMultipleVars();
+        final ISparseMatrix matrix = new BooleanSparseMatrix(n);
         MultipleVariables m1, m2;
         // Run over equalities constraints, and create edges
         for(int i = 0; i < n-1; i++){
@@ -516,34 +518,34 @@ public class PreProcessCPSolver extends CPSolver {
         if(matrix.getNbElement()> 0){
             matrix.prepare();
             // Detect connex components
-            int[] color = new int[n];
+            final int[] color = new int[n];
             Arrays.fill(color, -1);
-            TIntObjectHashMap<TaskObjects> domainByColor = new TIntObjectHashMap<TaskObjects>();
+            final TIntObjectHashMap<TaskObjects> domainByColor = new TIntObjectHashMap<TaskObjects>();
             int k = -1;
             TaskObjects dtmp = new TaskObjects();
-            Iterator<Long> it = matrix.iterator();
+            final Iterator<Long> it = matrix.iterator();
             while(it.hasNext()){
-                long v = it.next();
-                int i = (int)(v / n);
-                int j = (int)(v % n);
+                final long v = it.next();
+                final int i = (int)(v / n);
+                final int j = (int)(v % n);
 
                 if (color[i]==-1){
                     k++;
                     color[i]=k;
                     domainByColor.put(k, new TaskObjects((TaskVariable)m.getStoredMultipleVar(i)));
                 }
-                TaskObjects d = domainByColor.get(color[i]);
+                final TaskObjects d = domainByColor.get(color[i]);
                 //backup
                 d.merge((TaskVariable)m.getStoredMultipleVar(j));
                 color[j] = color[i];
                 domainByColor.put(color[i], d);
             }
-            TaskVar[] var = new TaskVar[k+1];
+            final TaskVar[] var = new TaskVar[k+1];
             TaskVariable vtmp;
             for(int i = 0; i < n; i++){
-                int col = color[i];
+                final int col = color[i];
                 if(col !=-1){
-                    TaskVariable v = (TaskVariable)m.getStoredMultipleVar(i);
+                    final TaskVariable v = (TaskVariable)m.getStoredMultipleVar(i);
                     if(var[col] == null){
                         dtmp = domainByColor.get(col);
                         vtmp = new TaskVariable(v.getName(), dtmp.start, dtmp.duration, dtmp.end);
@@ -561,24 +563,24 @@ public class PreProcessCPSolver extends CPSolver {
 
 
     private static class Domain{
-        protected int low;
-        protected int upp;
+        int low;
+        int upp;
         // values is null if domain is bounded
         int[] values;
         Set<String> options;
 
         private Domain() {
-            options = new HashSet<String>();
+            options = new THashSet<String>();
         }
 
-        private Domain(IntegerVariable v) {
+        private Domain(final IntegerVariable v) {
             this();
             low = v.getLowB();
             upp = v.getUppB();
-            options = v.getOptions();
+            options.addAll(v.getOptions());
         }
 
-        public void copy(Domain d){
+        public void copy(final Domain d){
             low = d.low;
             upp = d.upp;
             if(d.values != null){
@@ -595,7 +597,7 @@ public class PreProcessCPSolver extends CPSolver {
                 }
                 return values;
             }else{
-                int[] val = new int[upp-low+1];
+                final int[] val = new int[upp-low+1];
                 for(int i = 0; i < val.length; i++){
                     val[i] = low+i;
                 }
@@ -608,7 +610,7 @@ public class PreProcessCPSolver extends CPSolver {
          * @param v the variable to intersect with
          * @return true if the two domains intersect
          */
-        public boolean intersection(IntegerVariable v){
+        public boolean intersection(final IntegerVariable v){
             if(v.getValues() == null && this.values == null){
                 this.low = Math.max(this.low, v.getLowB());
                 this.upp = Math.min(this.upp, v.getUppB());
@@ -616,12 +618,12 @@ public class PreProcessCPSolver extends CPSolver {
                     return false;
                 }
             }else{
-                int[] val = new int[Math.min((this.upp-this.low+1), v.getDomainSize())];
+                final int[] val = new int[Math.min((this.upp-this.low+1), v.getDomainSize())];
                 int size = 0;
-                int[] ev1 = this.enumVal();
-                int[] ev2 = v.enumVal();
-                for (int anEv1 : ev1) {
-                    for (int anEv2 : ev2) {
+                final int[] ev1 = this.enumVal();
+                final int[] ev2 = v.enumVal();
+                for (final int anEv1 : ev1) {
+                    for (final int anEv2 : ev2) {
                         if (anEv1 == anEv2) {
                             val[size++] = anEv1;
                         }
@@ -637,10 +639,14 @@ public class PreProcessCPSolver extends CPSolver {
                     return false;
                 }
             }
-            HashSet<String> tOptions = new HashSet<String>();
+            final THashSet<String> tOptions = new THashSet<String>();
             if(v.getOptions().contains(CPOptions.V_DECISION)
                     || options.contains(CPOptions.V_DECISION)){
                 tOptions.add(CPOptions.V_DECISION);
+            }
+            if(v.getOptions().contains(CPOptions.V_NO_DECISION)
+                    || options.contains(CPOptions.V_NO_DECISION)){
+                tOptions.add(CPOptions.V_NO_DECISION);
             }
             if(v.getOptions().contains(CPOptions.V_OBJECTIVE)
                     || options.contains(CPOptions.V_OBJECTIVE)){
@@ -671,25 +677,25 @@ public class PreProcessCPSolver extends CPSolver {
 
 
     private static class TaskObjects{
-        protected IntegerVariable start;
-        protected IntegerVariable duration;
-        protected IntegerVariable end;
+        IntegerVariable start;
+        IntegerVariable duration;
+        IntegerVariable end;
 
         private Set<String> options;
 
         private TaskObjects() {
-            options = new HashSet<String>();
+            options = new THashSet<String>();
         }
 
-        private TaskObjects(TaskVariable v) {
+        private TaskObjects(final TaskVariable v) {
             this();
             start = v.start();
             duration = v.duration();
             end = v.end();
-            options = v.getOptions();
+            options.addAll(v.getOptions());
         }
 
-        public void merge(TaskVariable d){
+        public void merge(final TaskVariable d){
             if(start  == null){
                 start = d.start();
             }
@@ -699,10 +705,14 @@ public class PreProcessCPSolver extends CPSolver {
             if(end == null){
                 end = d.end();
             }
-            HashSet<String> tOptions = new HashSet<String>();
+            final THashSet<String> tOptions = new THashSet<String>();
             if(d.getOptions().contains(CPOptions.V_DECISION)
                     || options.contains(CPOptions.V_DECISION)){
                 tOptions.add(CPOptions.V_DECISION);
+            }
+            if(d.getOptions().contains(CPOptions.V_NO_DECISION)
+                    || options.contains(CPOptions.V_NO_DECISION)){
+                tOptions.add(CPOptions.V_NO_DECISION);
             }
             if(d.getOptions().contains(CPOptions.V_OBJECTIVE)
                     || options.contains(CPOptions.V_OBJECTIVE)){
@@ -739,21 +749,21 @@ public class PreProcessCPSolver extends CPSolver {
      * @param timelimit the time limit to respect
      * @return boolean
      */
-	public boolean rootNodeSingleton(boolean doSingleton, int timelimit) {
+	public boolean rootNodeSingleton(final boolean doSingleton, final int timelimit) {
 		if (!doSingleton) return true;
-        boolean sched = isScheduling();
-        int time = (int) System.currentTimeMillis();
+        final boolean sched = isScheduling();
+        final int time = (int) System.currentTimeMillis();
         if (proptime <= 1500) {
 			int nbvrem = 0;
 		    int nbvtried = 0;
-			int threshold = 100;
+			final int threshold = 100;
 			worldPush();
 			for (int i = 0; i < getNbIntVars(); i++) {
-				IntDomainVar v = (IntDomainVar) getIntVar(i);
-				DisposableIntIterator it = v.getDomain().getIterator();
+				final IntDomainVar v = (IntDomainVar) getIntVar(i);
+				final DisposableIntIterator it = v.getDomain().getIterator();
 				if ((sched && v.getDomainSize() == 2) || (!sched && v.hasEnumeratedDomain())) {
 					while (it.hasNext()) {
-						int val = it.next();
+						final int val = it.next();
 						nbvtried ++;
 						boolean cont = false;
 						worldPush();
