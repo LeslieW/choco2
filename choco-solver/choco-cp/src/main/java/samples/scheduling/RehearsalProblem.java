@@ -16,8 +16,6 @@ import java.util.logging.Logger;
 
 public class RehearsalProblem extends PatternExample {
 
-    protected final static Logger LOGGER = ChocoLogging.getMainLogger();
-
 	public final static int[] CSPLIB_DURATIONS = {2, 4, 1, 3, 3, 2, 5, 7, 6};
 
 	public final static int[][] CSPLIB_REQUIREMENTS = {
@@ -128,7 +126,6 @@ public class RehearsalProblem extends PatternExample {
 	@Override
 	public void buildSolver() {
 		CPSolver s = new CPSolver();
-		s.getSchedulerConfiguration().setPrecedenceNetwork(true);
 		s.read(_m);
 		_s = s;
 	}

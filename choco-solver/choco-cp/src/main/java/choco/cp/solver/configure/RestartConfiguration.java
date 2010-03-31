@@ -53,12 +53,6 @@ public class RestartConfiguration implements IPretty {
 	public boolean restartAfterEachSolution = false;
 
 	/**
-	 * should we reinitialize the search (branching) after a restart. 
-	 * For example, this is relevant with Dom/WDeg search heuristics.
-	 */
-	public boolean initializeSearchAfterRestart = true;
-
-	/**
 	 * Do we want to apply a universal restart policy.
 	 * @see Luby; Sinclair & Zuckerman <br>
 	 * Optimal Speedup of Las Vegas Algorithms <br>
@@ -102,15 +96,6 @@ public class RestartConfiguration implements IPretty {
 
 
 
-	public final boolean isInitializingSearchAfterRestart() {
-		return initializeSearchAfterRestart;
-	}
-
-	public final void setInitializeSearchAfterRestart(
-			boolean reintializeSearchAfterRestart) {
-		this.initializeSearchAfterRestart = reintializeSearchAfterRestart;
-	}
-
 	public final UniversalRestartStrategy getRestartStrategy() {
 		return restartStrategy;
 	}
@@ -118,7 +103,6 @@ public class RestartConfiguration implements IPretty {
 	public final void cancelRestarts() {
 		restartStrategy = null;
 		restartAfterEachSolution = false;
-		initializeSearchAfterRestart = true;
 		setRecordNogoodFromRestart(false);
 	}
 

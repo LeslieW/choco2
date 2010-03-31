@@ -108,7 +108,7 @@ public abstract class AbstractResourceManager extends MixedConstraintManager {
 	}
 
 	private IntDomainVar getUppBound(CPSolver s, RscData p) {
-		return  p.getUppBound() == null ? s.getSchedulerConfiguration().createMakespan(s) : s.getVar( p.getUppBound());
+		return  p.getUppBound() == null ? s.createMakespan() : s.getVar( p.getUppBound());
 	}
 
 

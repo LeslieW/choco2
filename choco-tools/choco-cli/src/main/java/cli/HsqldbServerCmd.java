@@ -34,9 +34,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.hsqldb.Server;
@@ -121,8 +123,8 @@ public class HsqldbServerCmd extends AbstractCmdLine {
 			try {
 				Enumeration<NetworkInterface> en =	NetworkInterface.getNetworkInterfaces();
 				while(en.hasMoreElements()) {
-					final String inet_adress = en.nextElement().getInterfaceAddresses().get(1).getAddress().toString();
-					b.append("\n\t\t").append(makeNetworkURL(inet_adress, dbName));
+					final List<InterfaceAddress> inetAdresses = en.nextElement().getInterfaceAddresses();
+					b.append("\n\t\t").append(makeNetworkURL(inetAdresses.get(inetAdresses.size()-1).getAddress().toString(), dbName));
 				}
 			} catch (SocketException e) {
 				LOGGER.log(Level.WARNING, "cant display network connection urls",e);

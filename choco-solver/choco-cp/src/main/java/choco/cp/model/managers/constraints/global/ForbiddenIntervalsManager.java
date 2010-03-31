@@ -31,7 +31,7 @@ public class ForbiddenIntervalsManager extends MixedConstraintManager {
 				uppBound = s.getVar((IntegerVariable) variables[ubIdx]);
 				taskvars = VariableUtils.getTaskVar(s, variables, 0, ubIdx);
 			} else {
-				uppBound = s.getSchedulerConfiguration().createMakespan(s);
+				uppBound = s.createMakespan();
 				taskvars = VariableUtils.getTaskVar(s, variables, 0, variables.length);
 			}
 			return new ForbiddenIntervals(solver, name, taskvars, uppBound);

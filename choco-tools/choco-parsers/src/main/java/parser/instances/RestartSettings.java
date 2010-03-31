@@ -95,8 +95,6 @@ public class RestartSettings extends BasicSettings {
 			throw new SolverException("cant configure restart policy");
 		}
 		s.setRecordNogoodFromRestart(nogoodRecording);
-		//by default, do not restart after each solution
-		s.getRestartConfig().setInitializeSearchAfterRestart(false); 
 	}
 
 	@Override

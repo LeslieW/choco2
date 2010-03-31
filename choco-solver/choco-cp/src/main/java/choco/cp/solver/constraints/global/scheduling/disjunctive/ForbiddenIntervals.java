@@ -67,7 +67,6 @@ public class ForbiddenIntervals extends AbstractResourceSConstraint {
 	}
 
 
-
 	private boolean checkHead(final int head, final int ub) {
 		if(!forbidden.get(head)) {
 			final int before=forbidden.prevSetBit(head);
