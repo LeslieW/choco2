@@ -22,14 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model;
 
-import choco.Choco;
 import static choco.Choco.*;
 import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.DomOverWDegBranching2;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
-import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.Model;
@@ -58,61 +56,16 @@ public class ModelTest {
     protected final static Logger LOGGER = ChocoLogging.getTestLogger();
 
 	@Test
-	public void testOnDecisionVariables() {
-		int n = 8;
-		Model m = new CPModel();
-
-		IntegerVariable[] queens = new IntegerVariable[n];
-		IntegerVariable[] queensdual = new IntegerVariable[n];
-		
-		for (int i = 0; i < n; i++) {
-			queens[i] = makeIntVar("Q" + i, 1, n);
-			queensdual[i] = makeIntVar("QD" + i, 1, n);
-		}
-
-		for (int i = 0; i < n; i++) {
-			for (int j = i + 1; j < n; j++) {
-				int k = j - i;
-				m.addConstraint(neq(queens[i], queens[j]));
-				m.addConstraint(neq(queens[i], plus(queens[j], k)));  // diagonal constraints
-				m.addConstraint(neq(queens[i], minus(queens[j], k))); // diagonal constraints
-			}
-		}
-		for (int i = 0; i < n; i++) {
-			for (int j = i + 1; j < n; j++) {
-				int k = j - i;
-				m.addConstraint(neq(queensdual[i], queensdual[j]));
-				m.addConstraint(neq(queensdual[i], plus(queensdual[j], k)));  // diagonal constraints
-				m.addConstraint(neq(queensdual[i], minus(queensdual[j], k))); // diagonal constraints
-			}
-		}
-		m.addConstraint(inverseChanneling(queens, queensdual));
-
-		CPSolver s1 = new CPSolver();
-		s1.read(m);
-		s1.setVarIntSelector(new MinDomain(s1, s1.getVar(queens)));
-
-
-		m.addVariables(CPOptions.V_DECISION, queens);
-		Solver s2 = new CPSolver();
-		s2.read(m);
-		s1.solveAll();
-		s2.solveAll();
-		Assert.assertEquals("No same number of solutions", s1.getNbSolutions(), s2.getNbSolutions());
-		//Assert.assertEquals("No same number of nodes", s1.getSearchStrategy().getNodeCount(), s2.getSearchStrategy().getNodeCount());
-	}
-
-	@Test
 	public void testOnNonDecisionVariables() {
-		int n = 8;
-		Model m = new CPModel();
+		final int n = 8;
+		final Model m = new CPModel();
 
-		IntegerVariable[] queens = new IntegerVariable[n];
-		IntegerVariable[] queensdual = new IntegerVariable[n];
-		
+		final IntegerVariable[] queens = new IntegerVariable[n];
+		final IntegerVariable[] queensdual = new IntegerVariable[n];
+
 		for (int i = 0; i < n; i++) {
-			queens[i] = makeIntVar("Q" + i, 1, n);
-			queensdual[i] = makeIntVar("QD" + i, 1, n);
+			queens[i] = makeIntVar(String.format("Q_%d", i), 1, n);
+			queensdual[i] = makeIntVar(String.format("QD_%d", i), 1, n);
 		}
 
 		for (int i = 0; i < n; i++) {

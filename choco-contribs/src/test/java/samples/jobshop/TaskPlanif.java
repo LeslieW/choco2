@@ -125,7 +125,7 @@ public class TaskPlanif {
         IntegerVariable[] dureeTache = makeIntVarArray("dureeTache", NBTACHES, 0, NBPERIODES);
         IntegerVariable[] finTache = makeIntVarArray("finTache", NBTACHES, 0, NBPERIODES);
 
-        TaskVariable[] tasks = makeTaskVarArray("t", debutTache, finTache, dureeTache, CPOptions.V_DECISION);
+        TaskVariable[] tasks = makeTaskVarArray("t", debutTache, finTache, dureeTache);
 
         IntegerVariable[] FinMinTachePeriodeCourante =
                 makeIntVarArray("FinMinTachePeriodeCourante", NBTACHES, 0, NBPERIODES);
@@ -166,7 +166,8 @@ public class TaskPlanif {
             }
         }
 
-        IntegerVariable objectiveMission = makeIntVar("objectiveMission", 0, NBPERIODES, CPOptions.V_BOUND); // OK;
+        IntegerVariable objectiveMission = makeIntVar("objectiveMission", 0, NBPERIODES, CPOptions.V_BOUND/*,
+                CPOptions.V_NO_DECISION*/); // OK;
 
         IntegerExpressionVariable objectiveMissionExpression;
 

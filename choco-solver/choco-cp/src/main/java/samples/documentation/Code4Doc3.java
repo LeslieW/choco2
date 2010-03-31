@@ -287,7 +287,6 @@ public class Code4Doc3 {
             }
         }
         m.addConstraint(inverseChanneling(queens, queensdual));
-        m.addVariables(CPOptions.V_DECISION, queens);
         Solver s = new CPSolver();
         s.read(m);
         s.solveAll();

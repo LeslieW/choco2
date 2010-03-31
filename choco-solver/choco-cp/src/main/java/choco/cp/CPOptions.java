@@ -86,6 +86,8 @@ public class CPOptions {
      * Scope: {@link choco.kernel.model.variables.integer.IntegerVariable},
      * {@link choco.kernel.model.variables.set.SetVariable}
      * and {@link choco.kernel.model.variables.real.RealVariable}.<br/>
+     * @deprecated This option has no longer effect
+     * as by default every variables are put in the decision variable pool.
      */
     public static final String V_DECISION = "cp:decision";
 

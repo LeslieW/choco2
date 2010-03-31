@@ -445,11 +445,11 @@ public class ExpressionTest {
     public void testExpression17() {
         m  = new CPModel();
         final IntegerVariable[] v = new IntegerVariable[5];
-        v[0] = Choco.makeIntVar("v1", 1,1, CPOptions.V_BTREE, CPOptions.V_DECISION);
-        v[1] = Choco.makeIntVar("v2", 0,2, CPOptions.V_BTREE, CPOptions.V_DECISION);
-        v[2] = Choco.makeIntVar("v3", 0,1,CPOptions.V_DECISION);
-        v[3] = Choco.makeIntVar("v4", -5,4, CPOptions.V_BTREE, CPOptions.V_DECISION);
-        v[4] = Choco.makeIntVar("v5", -3,5, CPOptions.V_BTREE, CPOptions.V_DECISION);
+        v[0] = Choco.makeIntVar("v1", 1,1, CPOptions.V_BTREE);
+        v[1] = Choco.makeIntVar("v2", 0,2, CPOptions.V_BTREE);
+        v[2] = Choco.makeIntVar("v3", 0,1);
+        v[3] = Choco.makeIntVar("v4", -5,4, CPOptions.V_BTREE);
+        v[4] = Choco.makeIntVar("v5", -3,5, CPOptions.V_BTREE);
 
         m.addConstraint(
                         neq(
