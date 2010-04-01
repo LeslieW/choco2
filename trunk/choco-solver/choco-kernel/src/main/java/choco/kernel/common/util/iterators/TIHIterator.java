@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
- *         |  °(..)  |                           *
+ *         |   (..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -22,15 +22,17 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.common.util.iterators;
 
-import java.util.NoSuchElementException;
+import choco.kernel.common.IIndex;
+import choco.kernel.common.util.objects.DeterministicIndicedList;
+import gnu.trove.TIntHashSet;
 
 /**
- * User : cprudhom
- * Mail : cprudhom(a)emn.fr
- * Date : 28 janv. 2010
- * Since : Choco 2.1.1
+ * User : cprudhom<br/>
+ * Mail : cprudhom(a)emn.fr<br/>
+ * Date : 1 avr. 2010br/>
+ * Since : Choco 2.1.1<br/>
  */
-public final class EmptyIterator extends DisposableIterator<Object> {
+public final class TIHIterator<E extends IIndex> extends DisposableIterator<E> {
 
     /**
      * The inner class is referenced no earlier (and therefore loaded no earlier by the class loader)
@@ -39,25 +41,46 @@ public final class EmptyIterator extends DisposableIterator<Object> {
      * see http://en.wikipedia.org/wiki/Singleton_pattern
      */
     private static final class Holder {
-        private Holder() {}
+        private Holder() {
+        }
 
-        private final static EmptyIterator instance = EmptyIterator.build();
+        private static TIHIterator instance = TIHIterator.build();
+
+        private static void set(final TIHIterator iterator) {
+            instance = iterator;
+        }
+    }
+
+    private int current;
+    private int[] indices;
+    private DeterministicIndicedList<E> elements;
+
+    private TIHIterator() {
+    }
+
+    private static TIHIterator build() {
+        return new TIHIterator();
     }
 
     @SuppressWarnings({"unchecked"})
-    public static <T> DisposableIterator <T> getIterator() {
-        EmptyIterator it = Holder.instance;
+    public static synchronized <E extends IIndex> TIHIterator <E> getIterator(final TIntHashSet indices,
+                                                               final DeterministicIndicedList<E> elements) {
+        TIHIterator it = Holder.instance;
         if (!it.isReusable()) {
             it = build();
         }
-        it.init();
-        return (DisposableIterator<T>)it;
+        it.init(indices, elements);
+        return it;
     }
 
-    private EmptyIterator() {}
-
-    private static EmptyIterator build(){
-        return new EmptyIterator();
+    /**
+     * Freeze the iterator, cannot be reused.
+     */
+    public void init(final TIntHashSet theIndices, final DeterministicIndicedList<E> theElements) {
+        super.init();
+        current = 0;
+        indices = theIndices.toArray();
+        elements = theElements;
     }
 
     /**
@@ -69,7 +92,7 @@ public final class EmptyIterator extends DisposableIterator<Object> {
      */
     @Override
     public boolean hasNext() {
-        return false;
+        return current < indices.length;
     }
 
     /**
@@ -80,7 +103,18 @@ public final class EmptyIterator extends DisposableIterator<Object> {
      *          iteration has no more elements.
      */
     @Override
-    public Object next() {
-        throw new NoSuchElementException();
+    public E next() {
+        return elements.get(indices[current++]);
+    }
+
+
+    /**
+     * This method allows to declare that the iterator is not used anymoure. It
+     * can be reused by another object.
+     */
+    @Override
+    public void dispose() {
+        super.dispose();
+        Holder.set(this);
     }
 }

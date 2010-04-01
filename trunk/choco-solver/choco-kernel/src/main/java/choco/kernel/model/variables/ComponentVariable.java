@@ -22,12 +22,6 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.variables;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-
 import choco.kernel.model.IConstraintList;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
@@ -35,6 +29,8 @@ import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintManager;
 import choco.kernel.model.constraints.ExpressionManager;
 import choco.kernel.model.constraints.ManagerFactory;
+
+import java.util.*;
 
 /*
  * User:    charles
@@ -150,7 +146,7 @@ public abstract class ComponentVariable extends AbstractVariable {
 
 		public ConstraintsDataStructure() {
 			super();
-			constraints = new LinkedList<Constraint>();
+			constraints = new ArrayList<Constraint>();
 		}
 
 		@Override
@@ -223,8 +219,8 @@ public abstract class ComponentVariable extends AbstractVariable {
 		@Override
 		public int getNbConstraint(Model m) {
 			int sum = 0;
-			for(Constraint c: constraints){
-				if(Boolean.TRUE.equals(m.contains(c))){
+			for(int i = 0; i < constraints.size(); i++){
+				if(Boolean.TRUE.equals(m.contains(constraints.get(i)))){
 					sum++;
 				}
 			}

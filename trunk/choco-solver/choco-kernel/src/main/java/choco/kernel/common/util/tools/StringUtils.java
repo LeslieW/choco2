@@ -23,13 +23,14 @@
 package choco.kernel.common.util.tools;
 
 import choco.IPretty;
+import choco.kernel.common.util.iterators.DisposableIterator;
+import choco.kernel.common.util.iterators.EmptyIterator;
 import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.solver.search.limit.Limit;
 import choco.kernel.solver.search.measure.ISearchMeasures;
 import choco.kernel.solver.variables.scheduling.ITask;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 
 /*
@@ -65,9 +66,9 @@ public class StringUtils {
 	}
 
 
-	public static Iterator<String> getOptionIterator(final String options) {
+	public static DisposableIterator<String> getOptionIterator(final String options) {
 		if(options != null && options.length() > 0) {
-			return new Iterator<String>() {
+			return new DisposableIterator<String>() {
 
 				int b, e = -1;
 
@@ -96,7 +97,7 @@ public class StringUtils {
 
 			};
 		} else {
-			return Collections.<String>emptySet().iterator();
+			return EmptyIterator.getIterator();
 		}
 
 	}

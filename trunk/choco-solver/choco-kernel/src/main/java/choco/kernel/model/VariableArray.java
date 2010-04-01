@@ -1,5 +1,6 @@
 package choco.kernel.model;
 
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.IteratorUtils;
 import choco.kernel.common.util.tools.StringUtils;
@@ -37,7 +38,7 @@ public class VariableArray implements IVariableArray, Serializable {
 	}
 
 	@Override
-	public final Iterator<Variable> getVariableIterator() {
+	public final DisposableIterator<Variable> getVariableIterator() {
 		return IteratorUtils.iterator(extractVariables());
 	}
 
@@ -56,6 +57,15 @@ public class VariableArray implements IVariableArray, Serializable {
 		extractedVariables = null;
 	}
 
+    public final void replaceBy(final Variable outVar, final Variable inVar){
+        final long idx = outVar.getIndex();
+        for(int i = 0; i < variables.length; i++){
+            if(variables[i].getIndex() == idx){
+                variables[i] = inVar;
+            }
+        }
+    }
+
 	protected Variable[] doExtractVariables() {
 		return ArrayUtils.getNonRedundantObjects(Variable.class, variables);
 	}
@@ -67,8 +77,8 @@ public class VariableArray implements IVariableArray, Serializable {
 		}
 		return extractedVariables;
 	}
-	
-	protected final class VConstraintsDataStructure implements IConstraintList {
+
+    protected final class VConstraintsDataStructure implements IConstraintList {
 
 		
 

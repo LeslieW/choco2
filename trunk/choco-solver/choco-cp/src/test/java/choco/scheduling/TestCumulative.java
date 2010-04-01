@@ -38,7 +38,6 @@ import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.ContradictionException;
-import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import org.junit.Assert;
 import static org.junit.Assert.*;
@@ -654,7 +653,7 @@ public class TestCumulative {
         // Build model
 		Model model = new CPModel();
 		// Build a solver
-		Solver s = new CPSolver();
+		CPSolver s = new CPSolver(CPOptions.S_MULTIPLE_READINGS);
 
 		// init DATA
 
@@ -716,6 +715,8 @@ public class TestCumulative {
 
     	model.addConstraint(cumY);
         s.read(model);
+        s.postTaskConsistencyConstraints();
+		s.postMakespanConstraint();
        	try {                                              // Propagate
     		s.propagate();
     	} catch (ContradictionException e) {

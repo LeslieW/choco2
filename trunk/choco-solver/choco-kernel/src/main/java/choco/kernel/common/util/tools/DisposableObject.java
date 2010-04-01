@@ -42,7 +42,7 @@ public abstract class DisposableObject<E> {
     }
 
     public void dispose(){
-        reusable = false;
+        reusable = true;
     }
 
     public boolean isReusable() {
