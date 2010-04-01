@@ -1,6 +1,6 @@
-/* * * * * * * * * * * * * * * * * * * * * * * * * 
+/* * * * * * * * * * * * * * * * * * * * * * * * *
  *          _       _                            *
- *         |  °(..)  |                           *
+ *         |  �(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -18,19 +18,23 @@
  *    + support : choco@emn.fr                   *
  *                                               *
  *    Copyright (C) F. Laburthe,                 *
- *                  N. Jussien    1999-2008      *
+ *                  N. Jussien    1999-2010      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.search.task;
 
-import choco.cp.solver.constraints.global.scheduling.precedence.IPrecedence;
+package choco.cp.solver.search.task.ordering;
+
+import static choco.kernel.common.util.tools.TaskUtils.getCentroidMultByTwo;
 import choco.kernel.solver.variables.scheduling.TaskVar;
+public class CentroidOrdering extends RandomOrdering {
 
 
+	public CentroidOrdering(long seed) {
+		super(seed);
+	}
 
-public interface OrderingValSelector {
-
-	int getBestVal(IPrecedence precedence);
-	
-	int getBestVal(TaskVar t1, TaskVar t2);
+	@Override
+	public int getBestVal(TaskVar t1, TaskVar t2) {
+		return getMaxVal(getCentroidMultByTwo(t1), getCentroidMultByTwo(t2));
+	}
 
 }

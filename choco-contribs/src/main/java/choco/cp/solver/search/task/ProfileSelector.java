@@ -25,11 +25,11 @@ package choco.cp.solver.search.task;
 import java.util.Iterator;
 import java.util.List;
 
-import choco.cp.solver.constraints.global.scheduling.precedence.IPrecedence;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
+import choco.kernel.solver.constraints.global.scheduling.IPrecedence;
 import choco.kernel.solver.constraints.global.scheduling.IResource;
 import choco.kernel.solver.search.integer.IntVarValPair;
 import choco.kernel.solver.search.integer.VarValPairSelector;

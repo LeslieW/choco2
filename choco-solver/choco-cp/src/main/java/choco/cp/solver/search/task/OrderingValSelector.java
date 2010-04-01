@@ -20,35 +20,17 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.search.integer.varselector;
+package choco.cp.solver.search.task;
 
-import choco.cp.solver.search.BranchingFactory;
-import choco.kernel.solver.Solver;
-import choco.kernel.solver.search.integer.DoubleHeuristicIntVarSelector;
-import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.constraints.global.scheduling.IPrecedence;
+import choco.kernel.solver.variables.scheduling.TaskVar;
 
-/**
- * A heuristic selecting the {@link choco.cp.solver.variables.integer.IntDomainVarImpl} with smallest ration (domainSize / degree)
- * (the degree of a variable is the number of constraints linked to it)
- * @deprecated @see {@link BranchingFactory}
- */
-@Deprecated
-public final class DomOverDeg extends DoubleHeuristicIntVarSelector {
-  public DomOverDeg(Solver solver) {
-    super(solver);
 
-  }
 
-  public DomOverDeg(Solver solver, IntDomainVar[] vs) {
-    super(solver, vs);
-  }
+public interface OrderingValSelector {
 
-  public double getHeuristic(IntDomainVar v) {
-    int dsize = v.getDomainSize();
-    int deg = v.getNbConstraints();
-    if (deg == 0)
-      return Double.POSITIVE_INFINITY;
-    else
-      return (double) dsize / (double) deg;
-  }
+	int getBestVal(IPrecedence precedence);
+	
+	int getBestVal(TaskVar t1, TaskVar t2);
+
 }
