@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.varselector;
 
+import choco.cp.solver.search.BranchingFactory;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.constraints.AbstractSConstraint;
@@ -35,6 +36,10 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * Since : Choco 2.0.0
  *
  */
+/**
+ * @deprecated @see {@link BranchingFactory}
+ */
+@Deprecated
 public final class DomOverDynDeg extends DoubleHeuristicIntVarSelector {
 	public DomOverDynDeg(Solver solver) {
 		super(solver);

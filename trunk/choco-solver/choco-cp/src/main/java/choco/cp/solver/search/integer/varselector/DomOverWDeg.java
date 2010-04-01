@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.varselector;
 
+import choco.cp.solver.search.BranchingFactory;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.solver.ContradictionException;
@@ -36,7 +37,9 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 /**
  * History:
  * 2007-12-07 : FR_1873619 CPRU: DomOverDeg+DomOverWDeg
+ * @deprecated @see {@link BranchingFactory}
  */
+@Deprecated
 public class DomOverWDeg extends DoubleHeuristicIntVarSelector implements PropagationEngineListener {
 
     private AbstractSConstraint reuseCstr;

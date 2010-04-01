@@ -28,6 +28,9 @@ import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.comparator.TaskComparators;
+import choco.kernel.common.util.tools.TaskUtils;
+import choco.kernel.solver.Solver;
+import choco.kernel.solver.variables.integer.IntDomainVar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
@@ -37,6 +40,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
+
+import junit.framework.Assert;
 
 
 public class TestTask {
@@ -97,6 +102,18 @@ public class TestTask {
 		assertTrue(solver.getVar(t3).start().getDomain().isEnumerated());
 	}
 	
+
+	@Test
+	public void testPreserved() {
+		final Solver s = new CPSolver();
+		final IntDomainVar x = s.createBoundIntVar("x", 1, 6);
+		final IntDomainVar y = s.createBoundIntVar("y", 3, 7);
+		Assert.assertEquals(30, TaskUtils.getA(x, y));
+		Assert.assertEquals(56, TaskUtils.getB(x, y));
+		Assert.assertEquals(6, TaskUtils.getCmin(x, y));
+		Assert.assertEquals(2, TaskUtils.getCmax(x, y));
+		Assert.assertEquals( 24.0/30, TaskUtils.getPreserved(x, y));
+	}
 
 
 }

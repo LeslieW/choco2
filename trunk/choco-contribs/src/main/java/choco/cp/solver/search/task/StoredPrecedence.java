@@ -1,7 +1,7 @@
 package choco.cp.solver.search.task;
 
-import choco.cp.solver.constraints.global.scheduling.precedence.IPrecedence;
 import choco.kernel.common.util.tools.TaskUtils;
+import choco.kernel.solver.constraints.global.scheduling.IPrecedence;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.ITask;
 import choco.kernel.solver.variables.scheduling.TaskVar;

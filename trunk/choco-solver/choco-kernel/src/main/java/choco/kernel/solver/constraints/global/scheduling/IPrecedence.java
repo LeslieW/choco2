@@ -1,4 +1,4 @@
-package choco.cp.solver.constraints.global.scheduling.precedence;
+package choco.kernel.solver.constraints.global.scheduling;
 
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
