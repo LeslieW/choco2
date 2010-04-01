@@ -282,18 +282,20 @@ public final class ArrayUtils {
 
     @SuppressWarnings({"unchecked"})
     public static <V extends IIndex> V[] getNonRedundantObjects(V[] all) {
-        DLongHashSet hashSet = getHashSet();
-        DArrayList list = getArrayList();
+        final DLongHashSet hashSet = getHashSet();
+        final DArrayList list = getArrayList();
+        final TLongHashSet thashset = hashSet.get();
+        final ArrayList alist = list.get();
         try {
             for (V v : all) {
-                if (!hashSet.get().contains(v.getIndex())) {
-                    list.get().add(v);
-                    hashSet.get().add(v.getIndex());
+                if (!thashset.contains(v.getIndex())) {
+                    alist.add(v);
+                    thashset.add(v.getIndex());
                 }
             }
-            if (list.get().size() != all.length) {
-                V[] a = (V[]) java.lang.reflect.Array.newInstance((Class<? extends V[]>) all.getClass().getComponentType(), list.get().size());
-                list.get().toArray(a);
+            if (alist.size() != all.length) {
+                V[] a = (V[]) java.lang.reflect.Array.newInstance((Class<? extends V[]>) all.getClass().getComponentType(), alist.size());
+                alist.toArray(a);
                 return a;
             }
             return all;
@@ -305,26 +307,26 @@ public final class ArrayUtils {
 
     @SuppressWarnings({"unchecked"})
     public static <V extends IIndex> V[] getNonRedundantObjects(Class classe, V[] all) {
-        DLongHashSet hashSet = getHashSet();
-        DArrayList list = getArrayList();
+        final DLongHashSet hashSet = getHashSet();
+        final DArrayList list = getArrayList();
+        final TLongHashSet thashset = hashSet.get();
+        final ArrayList alist = list.get();
         try{
-            hashSet.get().clear();
-            list.get().clear();
             for (V v : all) {
-                if (!hashSet.get().contains(v.getIndex())) {
-                    list.get().add(v);
-                    hashSet.get().add(v.getIndex());
+                if (!thashset.contains(v.getIndex())) {
+                    alist.add(v);
+                    thashset.add(v.getIndex());
                 }
             }
-            if (list.get().size() != all.length) {
-                V[] a = (V[]) java.lang.reflect.Array.newInstance(classe, list.get().size());
-                list.get().toArray(a);
+            if (alist.size() != all.length) {
+                V[] a = (V[]) java.lang.reflect.Array.newInstance(classe, alist.size());
+                alist.toArray(a);
                 return a;
             }
             return all;
         }finally {
             hashSet.dispose();
-
+            list.dispose();
         }
     }
 
@@ -363,7 +365,7 @@ public final class ArrayUtils {
 
     }
 
-    private static class DLongHashSet extends DisposableObject<TLongHashSet>{
+    private static final class DLongHashSet extends DisposableObject<TLongHashSet>{
         private final TLongHashSet hashset;
 
         private DLongHashSet() {
@@ -382,7 +384,7 @@ public final class ArrayUtils {
         }
     }
 
-    private static class DArrayList extends DisposableObject<ArrayList<Object>>{
+    private static final class DArrayList extends DisposableObject<ArrayList<Object>>{
         private final ArrayList<Object> arrayList;
 
         private DArrayList() {

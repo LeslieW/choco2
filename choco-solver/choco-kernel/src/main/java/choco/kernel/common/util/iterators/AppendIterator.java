@@ -33,7 +33,7 @@ public class AppendIterator<E> extends DisposableIterator<E> {
 	@SuppressWarnings({"unchecked"})
     public AppendIterator(final Iterator<? extends E>... iterators) {
 		super();
-		master=ArrayIterator.getIterator(iterators, iterators.length);
+		master=ArrayIterator.getIterator(iterators);
 	}
 
 	/**

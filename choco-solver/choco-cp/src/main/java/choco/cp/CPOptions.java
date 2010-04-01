@@ -41,69 +41,69 @@ public class CPOptions {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Goal : force Solver to create bounded domain variable.<br/>
-     * Scope: {@link choco.kernel.model.variables.integer.IntegerVariable},
-     * {@link choco.kernel.model.variables.set.SetVariable}'s cardinality variable.<br/>
+     * <br/><b>Goal</b> : force Solver to create bounded domain variable.
+     * <br/><b>Scope</b>: {@link choco.kernel.model.variables.integer.IntegerVariable},
+     * {@link choco.kernel.model.variables.set.SetVariable}'s cardinality variable.
      */
    public static final String V_BOUND = "cp:bound";
 
     /**
-     * Goal : force Solver to create enumerated domain variable (default options if options is empty).<br/>
-     * Scope: {@link choco.kernel.model.variables.integer.IntegerVariable},
+     * <br/><b>Goal</b> : force Solver to create enumerated domain variable (default options if options is empty).
+     * <br/><b>Scope</b>: {@link choco.kernel.model.variables.integer.IntegerVariable},
      * {@link choco.kernel.model.variables.set.SetVariable}'s cardinality variable
-     * and {@link choco.kernel.model.variables.real.RealVariable}.<br/>
+     * and {@link choco.kernel.model.variables.real.RealVariable}.
      * (default option)
      */
     public static final String V_ENUM = "cp:enum";
 
     /**
-     * Goal : force Solver to create binary tree domain variable.<br/>
-     * Scope: {@link choco.kernel.model.variables.integer.IntegerVariable}.<br/>
+     * <br/><b>Goal</b> : force Solver to create binary tree domain variable.
+     * <br/><b>Scope</b>: {@link choco.kernel.model.variables.integer.IntegerVariable}.
      */
     public static final String V_BTREE = "cp:btree";
 
     /**
-     * Goal : force Solver to create bipartite list domain variable.<br/>
-     * Scope: {@link choco.kernel.model.variables.integer.IntegerVariable}.<br/>
+     * <br/><b>Goal</b> : force Solver to create bipartite list domain variable.
+     * <br/><b>Scope</b>: {@link choco.kernel.model.variables.integer.IntegerVariable}.
      */
     public static final String V_BLIST = "cp:blist";
 
 
     /**
-     * Goal : force Solver to create linked list domain variable.<br/>
-     * Scope: {@link choco.kernel.model.variables.integer.IntegerVariable}.<br/>
+     * <br/><b>Goal</b> : force Solver to create linked list domain variable.
+     * <br/><b>Scope</b>: {@link choco.kernel.model.variables.integer.IntegerVariable}.
      */
     public static final String V_LINK = "cp:link";
 
     /**
-     * Goal : declare the current variable as makespan.<br/>
-     * Scope: {@link choco.kernel.model.variables.integer.IntegerVariable}.<br/>
+     * <br/><b>Goal</b> : declare the current variable as makespan.
+     * <br/><b>Scope</b>: {@link choco.kernel.model.variables.integer.IntegerVariable}.
      */
     public static final String V_MAKESPAN = "cp:makespan";
 
     /**
-     * Goal : declare variable as a decisional one.<br/>
-     * Scope: {@link choco.kernel.model.variables.integer.IntegerVariable},
+     * <br/><b>Goal</b> : declare variable as a decisional one.
+     * <br/><b>Scope</b>: {@link choco.kernel.model.variables.integer.IntegerVariable},
      * {@link choco.kernel.model.variables.set.SetVariable}
-     * and {@link choco.kernel.model.variables.real.RealVariable}.<br/>
+     * and {@link choco.kernel.model.variables.real.RealVariable}.
      * @deprecated This option has no longer effect
      * as by default every variables are put in the decision variable pool.
      */
     public static final String V_DECISION = "cp:decision";
 
     /**
-     * Goal : force variable to be removed from the pool of decisionnal variables.<br/>
-     * Scope: {@link choco.kernel.model.variables.integer.IntegerVariable},
+     * <br/><b>Goal</b> : force variable to be removed from the pool of decisionnal variables.
+     * <br/><b>Scope</b>: {@link choco.kernel.model.variables.integer.IntegerVariable},
      * {@link choco.kernel.model.variables.set.SetVariable}
-     * and {@link choco.kernel.model.variables.real.RealVariable}.<br/>
+     * and {@link choco.kernel.model.variables.real.RealVariable}.
      */
     public static final String V_NO_DECISION = "cp:no_decision";
 
     /**
-     * Goal : declare objective variable.<br/>
-     * Scope: {@link choco.kernel.model.variables.integer.IntegerVariable},
+     * <br/><b>Goal</b> : declare objective variable.
+     * <br/><b>Scope</b>: {@link choco.kernel.model.variables.integer.IntegerVariable},
      * {@link choco.kernel.model.variables.set.SetVariable}
-     * and {@link choco.kernel.model.variables.real.RealVariable}.<br/>
+     * and {@link choco.kernel.model.variables.real.RealVariable}.
      */
     public static final String V_OBJECTIVE = "cp:objective";
 
@@ -112,8 +112,8 @@ public class CPOptions {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Goal : force decomposition of the scoped expression.<br/>
-     * Scope : {@link choco.kernel.model.variables.integer.IntegerExpressionVariable}.
+     * <br/><b>Goal</b> : force decomposition of the <br/><b>Scope</b>d expression.
+     * <br/><b>Scope</b> : {@link choco.kernel.model.variables.integer.IntegerExpressionVariable}.
      */
     public static final String E_DECOMP = "cp:decomp";
 
@@ -122,8 +122,8 @@ public class CPOptions {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * Goal : to get AC3 algorithm (searching from scratch for supports on all values).<br/>
-     * Scope :
+     * <br/><b>Goal</b> : to get AC3 algorithm (searching from scratch for supports on all values).
+     * <br/><b>Scope</b> :
      * {@link choco.Choco#feasPairAC(String, choco.kernel.model.variables.integer.IntegerVariable,
      * choco.kernel.model.variables.integer.IntegerVariable, java.util.List)},
      * {@link choco.Choco#infeasPairAC(String, choco.kernel.model.variables.integer.IntegerVariable,
@@ -137,8 +137,8 @@ public class CPOptions {
     public static final String C_EXT_AC3 = "cp:ac3";
 
     /**
-     * Goal : to get AC3rm algorithm (maintaining the current support of each value in a non backtrackable way).<br/>
-     * Scope :
+     * <br/><b>Goal</b> : to get AC3rm algorithm (maintaining the current support of each value in a non backtrackable way).
+     * <br/><b>Scope</b> :
      * {@link choco.Choco#feasPairAC(String, choco.kernel.model.variables.integer.IntegerVariable,
      * choco.kernel.model.variables.integer.IntegerVariable, java.util.List)},
      * {@link choco.Choco#feasTupleAC(String, java.util.List, choco.kernel.model.variables.integer.IntegerVariable[])},
@@ -155,8 +155,8 @@ public class CPOptions {
     public static final String C_EXT_AC32 = "cp:ac32";
 
     /**
-     * Goal : to get AC3 with the used of {@link java.util.BitSet} to know if a support still exists.<br/>
-     * Scope :
+     * <br/><b>Goal</b> : to get AC3 with the used of {@link java.util.BitSet} to know if a support still exists.
+     * <br/><b>Scope</b> :
      * {@link choco.Choco#feasPairAC(String, choco.kernel.model.variables.integer.IntegerVariable,
      * choco.kernel.model.variables.integer.IntegerVariable, java.util.List)},
      * {@link choco.Choco#infeasPairAC(String, choco.kernel.model.variables.integer.IntegerVariable,
@@ -170,8 +170,8 @@ public class CPOptions {
     public static final String C_EXT_AC322 = "cp:ac322";
 
     /**
-     * Goal : to get AC2001 algorithm (maintaining the current support of each value).<br/>
-     * Scope :
+     * <br/><b>Goal</b> : to get AC2001 algorithm (maintaining the current support of each value).
+     * <br/><b>Scope</b> :
      * {@link choco.Choco#feasPairAC(String, choco.kernel.model.variables.integer.IntegerVariable,
      * choco.kernel.model.variables.integer.IntegerVariable, java.util.List)},
      * {@link choco.Choco#feasTupleAC(String, java.util.List, choco.kernel.model.variables.integer.IntegerVariable[])},
@@ -188,8 +188,8 @@ public class CPOptions {
     public static final String C_EXT_AC2001 = "cp:ac2001";
 
     /**
-     * Goal : to get AC2008 algorithm (maintained by STR).<br/>
-     * Scope :
+     * <br/><b>Goal</b> : to get AC2008 algorithm (maintained by STR).
+     * <br/><b>Scope</b> :
      * {@link choco.Choco#feasTupleAC(String, java.util.List, choco.kernel.model.variables.integer.IntegerVariable[])},
      * {@link choco.Choco#infeasTupleAC(String, java.util.List, choco.kernel.model.variables.integer.IntegerVariable[])},
      * {@link choco.Choco#relationTupleAC(String, choco.kernel.model.variables.integer.IntegerVariable[],
@@ -198,8 +198,8 @@ public class CPOptions {
     public static final String C_EXT_AC2008 = "cp:ac2008";
 
     /**
-     * Goal : set filter policy to forward checking.<br/>
-     * Scope :
+     * <br/><b>Goal</b> : set filter policy to forward checking.
+     * <br/><b>Scope</b> :
      * {@link choco.Choco#feasTupleAC(String, java.util.List, choco.kernel.model.variables.integer.IntegerVariable[])},
      * {@link choco.Choco#infeasTupleAC(String, java.util.List, choco.kernel.model.variables.integer.IntegerVariable[])},
      * {@link choco.Choco#relationTupleAC(String, choco.kernel.model.variables.integer.IntegerVariable[],
@@ -208,66 +208,66 @@ public class CPOptions {
     public static final String C_EXT_FC = "cp:fc";
 
     /**
-     * Goal : for Regin implementation.<br/>
-     * Scope: {@link choco.Choco#allDifferent(String, choco.kernel.model.variables.integer.IntegerVariable[])} .
+     * <br/><b>Goal</b> : for Regin implementation.
+     * <br/><b>Scope</b>: {@link choco.Choco#allDifferent(String, choco.kernel.model.variables.integer.IntegerVariable[])} .
      */
     public static final String C_ALLDIFFERENT_AC = "cp:ac";
 
         /**
-     * Goal : for bound all different using the propagator of
+     * <br/><b>Goal</b> : for bound all different using the propagator of
 	 * A. Lopez-Ortiz, C.-G. Quimper, J. Tromp, and P. van Beek.
 	 * A fast and simple algorithm for bounds consistency of the alldifferent
-	 * constraint. IJCAI-2003.<br/>
-     * Scope: {@link choco.Choco#allDifferent(String, choco.kernel.model.variables.integer.IntegerVariable[])} .
+	 * constraint. IJCAI-2003.
+     * <br/><b>Scope</b>: {@link choco.Choco#allDifferent(String, choco.kernel.model.variables.integer.IntegerVariable[])} .
      */
     public static final String C_ALLDIFFERENT_BC = "cp:bc";
 
     /**
-     * Goal : propagate on the clique of differences.<br/>
-     * Scope: {@link choco.Choco#allDifferent(String, choco.kernel.model.variables.integer.IntegerVariable[])} .
+     * <br/><b>Goal</b> : propagate on the clique of differences.
+     * <br/><b>Scope</b>: {@link choco.Choco#allDifferent(String, choco.kernel.model.variables.integer.IntegerVariable[])} .
      */
     public static final String C_ALLDIFFERENT_CLIQUE = "cp:clique";
 
 
     /**
-     * Goal : for Regin implementation.<br/>
-     * Scope: {@link choco.Choco#globalCardinality(String, choco.kernel.model.variables.integer.IntegerVariable[],
-     * int[], int[], int)} . 
+     * <br/><b>Goal</b> : for Regin implementation.
+     * <br/><b>Scope</b>: {@link choco.Choco#globalCardinality(String, choco.kernel.model.variables.integer.IntegerVariable[],
+     * int[], int[], int)} .
      */
     public static final String C_GCC_AC = "cp:ac";
 
     /**
-     * Goal : for Quimper implementation.<br/>
-     * Scope: {@link choco.Choco#globalCardinality(String, choco.kernel.model.variables.integer.IntegerVariable[],
+     * <br/><b>Goal</b> : for Quimper implementation.
+     * <br/><b>Scope</b>: {@link choco.Choco#globalCardinality(String, choco.kernel.model.variables.integer.IntegerVariable[],
      * int[], int[], int)} .
      */
     public static final String C_GCC_BC = "cp:bc";
 
     /**
-     * Goal : set filtering policy to filter on lower bound only.<br/>
-     * Scope: {@link choco.Choco#increasing_nvalue(String, choco.kernel.model.variables.integer.IntegerVariable,
+     * <br/><b>Goal</b> : set filtering policy to filter on lower bound only.
+     * <br/><b>Scope</b>: {@link choco.Choco#increasing_nvalue(String, choco.kernel.model.variables.integer.IntegerVariable,
      * choco.kernel.model.variables.integer.IntegerVariable[])} .
      */
     public static final String C_INCREASING_NVALUE_ATLEAST = "cp:atleast";
 
     /**
-     * Goal : set filtering policy to filter on upper bound only.<br/>
-     * Scope: {@link choco.Choco#increasing_nvalue(String, choco.kernel.model.variables.integer.IntegerVariable,
+     * <br/><b>Goal</b> : set filtering policy to filter on upper bound only.
+     * <br/><b>Scope</b>: {@link choco.Choco#increasing_nvalue(String, choco.kernel.model.variables.integer.IntegerVariable,
      * choco.kernel.model.variables.integer.IntegerVariable[])} .
      */
     public static final String C_INCREASING_NVALUE_ATMOST = "cp:atmost";
 
     /**
-     * Goal : set filtering policy to filter on lower and upper bound only.<br/>
-     * Scope: {@link choco.Choco#increasing_nvalue(String, choco.kernel.model.variables.integer.IntegerVariable,
+     * <br/><b>Goal</b> : set filtering policy to filter on lower and upper bound only.
+     * <br/><b>Scope</b>: {@link choco.Choco#increasing_nvalue(String, choco.kernel.model.variables.integer.IntegerVariable,
      * choco.kernel.model.variables.integer.IntegerVariable[])} .
      */
     public static final String C_INCREASING_NVALUE_BOTH = "cp:both";
 
 
     /**
-     * Goal : global consistency.
-     * Scope : {@link choco.Choco#nth(String, choco.kernel.model.variables.integer.IntegerVariable, int[],
+     * <br/><b>Goal</b> : global consistency.
+     * <br/><b>Scope</b> : {@link choco.Choco#nth(String, choco.kernel.model.variables.integer.IntegerVariable, int[],
      * choco.kernel.model.variables.integer.IntegerVariable)},
      * {@link choco.Choco#nth(String, choco.kernel.model.variables.integer.IntegerVariable, int[],
      * choco.kernel.model.variables.integer.IntegerVariable, int)}
@@ -276,17 +276,27 @@ public class CPOptions {
 
 
     /**
-     * Goal: Ensure quick entailment tests.
-     * Scope : {@link choco.Choco#clause(choco.kernel.model.variables.integer.IntegerVariable[],
+     * <br/><b>Goal</b>: Ensure quick entailment tests.
+     * <br/><b>Scope</b> : {@link choco.Choco#clause(choco.kernel.model.variables.integer.IntegerVariable[],
      * choco.kernel.model.variables.integer.IntegerVariable[])}
      */
     public static final String C_CLAUSES_ENTAIL = "cp:entail";
 
     /**
-     * Goal: postponed a constraint.
-     * Scope : {@link choco.kernel.solver.constraints.SConstraint}.
+     * <br/><b>Goal</b>: postponed a constraint.
+     * <br/><b>Scope</b> : {@link choco.kernel.solver.constraints.SConstraint}.
      */
     public static final String C_POST_PONED = "cp:postponed";
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////// SOLVER ////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * <br/><b>Goal</b>: Allow a solver to read a model more than one time.
+     * <br/><i>In that case, the redundant constraints for schedunling must be posted explicitly</i>.
+     * <br/><b>Scope</b> : {@link choco.kernel.solver.constraints.SConstraint}.
+     */
+    public static final String S_MULTIPLE_READINGS = "cp:multiple_readings";
 
 }

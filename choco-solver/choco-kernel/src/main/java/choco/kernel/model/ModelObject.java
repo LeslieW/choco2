@@ -1,15 +1,15 @@
 package choco.kernel.model;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
 import choco.kernel.common.HashCoding;
 import choco.kernel.common.IIndex;
 import choco.kernel.common.IndexFactory;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.common.util.tools.CollectionUtils;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.variables.Variable;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class ModelObject extends VariableArray implements IOptions, IIndex {
 
@@ -34,7 +34,7 @@ public class ModelObject extends VariableArray implements IOptions, IIndex {
 	
 	@Override
 	public final int hashCode() {
-		return HashCoding.hashCodeMe(this);
+		return HashCoding.hashCodeMe(indice);
 	}
 	
 	@Override
@@ -44,9 +44,11 @@ public class ModelObject extends VariableArray implements IOptions, IIndex {
 		
 	@Override
 	public final void addOptions(String options) {
-		Iterator<String> iter = StringUtils.getOptionIterator(options);
-		while(iter.hasNext()) addOption(iter.next());
-		
+		DisposableIterator<String> iter = StringUtils.getOptionIterator(options);
+		while(iter.hasNext()){
+            addOption(iter.next());
+        }
+        iter.dispose();
 	}
 
 	@Override

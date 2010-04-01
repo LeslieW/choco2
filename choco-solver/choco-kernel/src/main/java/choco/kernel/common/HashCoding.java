@@ -124,16 +124,20 @@ public class HashCoding {
         return aObject.getClass().isArray();
     }
 
-    public static final int hashCodeMe(Object field) {
+    public static int hashCodeMe(Object field) {
     	return hashCodeMe(new Object[]{field});
     }
 
-    public static final int hashCodeMe(Object[] fields) {
+    public static int hashCodeMe(Object[] fields) {
         int result = SEED;
         for(int field = 0; field < fields.length; field++){
             result = hash(result, field);
         }
         return result;
+    }
+
+    public static int hashCodeMe(long field) {
+    	return hash(SEED, field);
     }
 
 }

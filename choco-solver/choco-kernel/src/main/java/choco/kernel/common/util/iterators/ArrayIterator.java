@@ -55,12 +55,22 @@ public final class ArrayIterator<E> extends DisposableIterator<E> {
     }
 
     @SuppressWarnings({"unchecked"})
-    public synchronized static <E> ArrayIterator getIterator(final E[] elements, final int size) {
+    public synchronized static <E> ArrayIterator <E> getIterator(final E[] elements, final int size) {
         ArrayIterator<E> it = Holder.instance;
         if (!it.isReusable()) {
             it = build();
         }
         it.init(elements, size);
+        return it;
+    }
+
+    @SuppressWarnings({"unchecked"})
+    public synchronized static <E> ArrayIterator <E> getIterator(final E[] elements) {
+        ArrayIterator<E> it = Holder.instance;
+        if (!it.isReusable()) {
+            it = build();
+        }
+        it.init(elements, elements.length);
         return it;
     }
 

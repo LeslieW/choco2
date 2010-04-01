@@ -279,7 +279,7 @@ public class CPModelToCPSolver {
 	//************************************************* CONCERNING CONSTRAINTS *********************************************
 
 
-	public void readConstraints(final CPModel model) {
+	public void readConstraints(final CPModel model, final boolean uniqueReading) {
 		Constraint ic;
 		SConstraint c;
 		Boolean decomp = model.getDefaultExpressionDecomposition();
@@ -302,9 +302,10 @@ public class CPModelToCPSolver {
         for (final SConstraint ppc : postponedConstraint) {
             cpsolver.post(ppc);
         }
-		cpsolver.postTaskConsistencyConstraints();
-		cpsolver.postMakespanConstraint();
-
+        if(uniqueReading){
+		    cpsolver.postTaskConsistencyConstraints();
+		    cpsolver.postMakespanConstraint();
+        }
 	}
 
 	public void readConstraint(final Constraint ic, final Boolean decomp) {

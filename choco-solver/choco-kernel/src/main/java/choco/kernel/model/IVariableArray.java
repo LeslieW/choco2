@@ -1,13 +1,12 @@
 package choco.kernel.model;
 
-import java.util.Iterator;
-
 import choco.IPretty;
+import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.model.variables.Variable;
 
 public interface IVariableArray extends IPretty {
 
-	Iterator<Variable> getVariableIterator();
+	DisposableIterator<Variable> getVariableIterator();
 
 	Variable getVariable(int i);
 
@@ -19,6 +18,13 @@ public interface IVariableArray extends IPretty {
 	 * Extract a non-redundant variables.
 	 */
 	public Variable[] extractVariables();
+
+    /**
+     * Substitute {@code outVar} by {@code inVar} in every constraint involving {@code outVar}.
+     * @param outVar variable to replace
+     * @param inVar substitute variable
+     */
+    public void replaceBy(final Variable outVar, final Variable inVar);
 
 }
 

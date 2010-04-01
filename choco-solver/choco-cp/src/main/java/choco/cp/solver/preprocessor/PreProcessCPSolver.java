@@ -25,6 +25,8 @@ package choco.cp.solver.preprocessor;
 import choco.Choco;
 import static choco.Choco.*;
 import choco.cp.CPOptions;
+import choco.cp.common.util.detector.DomainMerger;
+import choco.cp.common.util.detector.TaskMerger;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
@@ -47,7 +49,6 @@ import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
-import gnu.trove.THashSet;
 import gnu.trove.TIntObjectHashMap;
 
 import java.util.*;
@@ -59,9 +60,7 @@ import java.util.*;
  *
  * Black box solver
  */
-public final class PreProcessCPSolver extends CPSolver {
-
-    private THashSet<String> options;
+public class PreProcessCPSolver extends CPSolver {
 
     /**
      * Allow preprocessing on expressions to extract
@@ -104,13 +103,13 @@ public final class PreProcessCPSolver extends CPSolver {
     public boolean restartMode = false;
 
 
-    public PreProcessCPSolver() {
-        super();
+    public PreProcessCPSolver(String... options) {
+        super(options);
         init();
     }
 
-    public PreProcessCPSolver(final IEnvironment env) {
-        super(env);
+    public PreProcessCPSolver(final IEnvironment env, String ... options) {
+        super(env, options);
         init();
     }
 
@@ -118,7 +117,6 @@ public final class PreProcessCPSolver extends CPSolver {
         this.cleverExp = new ExpressionDetector();
         this.cleverRel = new RelationDetector();
         this.symb = new SymBreaking();
-        this.options = new THashSet<String>();
         this.mod2sol = new PPModelToCPSolver(this);
         this.ppsearch = new PPSearch();
     }
@@ -128,16 +126,16 @@ public final class PreProcessCPSolver extends CPSolver {
     }
 
     public void addOption(final String opt) {
-        options.add(opt);
+        optionsSet.add(opt);
     }
 
 
     void setAllProcessing() {
-        options.add("bb:exp");
-        options.add("bb:cliques");
-        options.add("bb:exttoint");
-        options.add("bb:disjunctive");
-        options.add("bb:breaksym");
+        optionsSet.add("bb:exp");
+        optionsSet.add("bb:cliques");
+        optionsSet.add("bb:exttoint");
+        optionsSet.add("bb:disjunctive");
+        optionsSet.add("bb:breaksym");
     }
 
     public void setRandomValueOrdering(final int seed) {
@@ -194,22 +192,22 @@ public final class PreProcessCPSolver extends CPSolver {
         mod2sol.readMultipleVariables(model);
         mod2sol.readParameters(model);
 
-        if (options.contains("bb:disjunctive"))
+        if (optionsSet.contains("bb:disjunctive"))
             detectDisjonctives(m);
 
-        if (options.contains("bb:exp"))
+        if (optionsSet.contains("bb:exp"))
             detectExpression(m);
 
-        if (options.contains("bb:cliques"))
+        if (optionsSet.contains("bb:cliques"))
             detectCliques(m);
 
         mod2sol.readVariables(model);
 
-        if (options.contains("bb:breaksym"))
+        if (optionsSet.contains("bb:breaksym"))
             breakSymetries(m);
 
         getMod2Sol().readBBDecisionVariables();
-        getMod2Sol().readConstraints(model);
+        getMod2Sol().readConstraints(model, !optionsSet.contains(CPOptions.S_MULTIPLE_READINGS));
     }
 
     /**
@@ -442,9 +440,9 @@ public final class PreProcessCPSolver extends CPSolver {
             // Detect connex components
             final int[] color = new int[n];
             Arrays.fill(color, -1);
-            final TIntObjectHashMap<Domain> domainByColor = new TIntObjectHashMap<Domain>();
+            final TIntObjectHashMap<DomainMerger> domainByColor = new TIntObjectHashMap<DomainMerger>();
             int k = -1;
-            Domain dtmp = new Domain();
+            DomainMerger dtmp = new DomainMerger();
             final Iterator<Long> it = matrix.iterator();
             while(it.hasNext()){
                 final long v = it.next();
@@ -454,9 +452,9 @@ public final class PreProcessCPSolver extends CPSolver {
                 if (color[i]==-1){
                     k++;
                     color[i]=k;
-                    domainByColor.put(k, new Domain(m.getIntVar(i)));
+                    domainByColor.put(k, new DomainMerger(m.getIntVar(i)));
                 }
-                final Domain d = domainByColor.get(color[i]);
+                final DomainMerger d = domainByColor.get(color[i]);
                 //backup
                 dtmp.copy(d);
                 if(d.intersection(m.getIntVar(j))){
@@ -469,7 +467,7 @@ public final class PreProcessCPSolver extends CPSolver {
                     if (color[j]==-1){
                         k++;
                         color[j]=k;
-                        domainByColor.put(k, new Domain(m.getIntVar(j)));
+                        domainByColor.put(k, new DomainMerger(m.getIntVar(j)));
                     }
                 }
             }
@@ -486,7 +484,7 @@ public final class PreProcessCPSolver extends CPSolver {
                         }else{
                             vtmp = new IntegerVariable(v.getName(), dtmp.low, dtmp.upp);
                         }
-                        vtmp.addOptions(dtmp.options);
+                        vtmp.addOptions(dtmp.optionsSet);
                         vtmp.findManager(model.properties);
                         var[col] = (IntDomainVar)mod2sol.readModelVariable(vtmp);
                     }
@@ -520,9 +518,9 @@ public final class PreProcessCPSolver extends CPSolver {
             // Detect connex components
             final int[] color = new int[n];
             Arrays.fill(color, -1);
-            final TIntObjectHashMap<TaskObjects> domainByColor = new TIntObjectHashMap<TaskObjects>();
+            final TIntObjectHashMap<TaskMerger> domainByColor = new TIntObjectHashMap<TaskMerger>();
             int k = -1;
-            TaskObjects dtmp = new TaskObjects();
+            TaskMerger dtmp = new TaskMerger();
             final Iterator<Long> it = matrix.iterator();
             while(it.hasNext()){
                 final long v = it.next();
@@ -532,9 +530,9 @@ public final class PreProcessCPSolver extends CPSolver {
                 if (color[i]==-1){
                     k++;
                     color[i]=k;
-                    domainByColor.put(k, new TaskObjects((TaskVariable)m.getStoredMultipleVar(i)));
+                    domainByColor.put(k, new TaskMerger((TaskVariable)m.getStoredMultipleVar(i)));
                 }
-                final TaskObjects d = domainByColor.get(color[i]);
+                final TaskMerger d = domainByColor.get(color[i]);
                 //backup
                 d.merge((TaskVariable)m.getStoredMultipleVar(j));
                 color[j] = color[i];
@@ -557,168 +555,6 @@ public final class PreProcessCPSolver extends CPSolver {
                     v.resetHook();
                 }
             }
-        }
-    }
-
-
-
-    private static class Domain{
-        int low;
-        int upp;
-        // values is null if domain is bounded
-        int[] values;
-        Set<String> options;
-
-        private Domain() {
-            options = new THashSet<String>();
-        }
-
-        private Domain(final IntegerVariable v) {
-            this();
-            low = v.getLowB();
-            upp = v.getUppB();
-            options.addAll(v.getOptions());
-        }
-
-        public void copy(final Domain d){
-            low = d.low;
-            upp = d.upp;
-            if(d.values != null){
-                values = new int[d.values.length];
-                System.arraycopy(d.values, 0, values, 0, values.length);
-            }
-            options = d.options;
-        }
-
-        private int[] enumVal(){
-            if(values != null){
-                if(values.length==2 && values[0]==values[1]){
-                    return new int[]{values[0]};
-                }
-                return values;
-            }else{
-                final int[] val = new int[upp-low+1];
-                for(int i = 0; i < val.length; i++){
-                    val[i] = low+i;
-                }
-                return val;
-            }
-        }
-
-        /**
-         * intersection of the current domain and v
-         * @param v the variable to intersect with
-         * @return true if the two domains intersect
-         */
-        public boolean intersection(final IntegerVariable v){
-            if(v.getValues() == null && this.values == null){
-                this.low = Math.max(this.low, v.getLowB());
-                this.upp = Math.min(this.upp, v.getUppB());
-                if(low>upp){
-                    return false;
-                }
-            }else{
-                final int[] val = new int[Math.min((this.upp-this.low+1), v.getDomainSize())];
-                int size = 0;
-                final int[] ev1 = this.enumVal();
-                final int[] ev2 = v.enumVal();
-                for (final int anEv1 : ev1) {
-                    for (final int anEv2 : ev2) {
-                        if (anEv1 == anEv2) {
-                            val[size++] = anEv1;
-                        }
-                    }
-                }
-                //<cpru> bidouille...
-                if(size>0){
-                    values = new int[size];
-                    System.arraycopy(val, 0, values, 0, size--);
-                    this.low = values[0];
-                    this.upp = values[size];
-                }else{
-                    return false;
-                }
-            }
-            final THashSet<String> tOptions = new THashSet<String>();
-            if(v.getOptions().contains(CPOptions.V_DECISION)
-                    || options.contains(CPOptions.V_DECISION)){
-                tOptions.add(CPOptions.V_DECISION);
-            }
-            if(v.getOptions().contains(CPOptions.V_NO_DECISION)
-                    || options.contains(CPOptions.V_NO_DECISION)){
-                tOptions.add(CPOptions.V_NO_DECISION);
-            }
-            if(v.getOptions().contains(CPOptions.V_OBJECTIVE)
-                    || options.contains(CPOptions.V_OBJECTIVE)){
-                tOptions.add(CPOptions.V_OBJECTIVE);
-            }
-            // Type copy
-            if(v.getOptions().contains(CPOptions.V_BTREE)
-                    || options.contains(CPOptions.V_BTREE)){
-                tOptions.add(CPOptions.V_BTREE);
-            }else if(v.getOptions().contains(CPOptions.V_ENUM)
-                    || options.contains(CPOptions.V_ENUM)){
-                tOptions.add(CPOptions.V_ENUM);
-            }else if(v.getOptions().contains(CPOptions.V_BLIST)
-                    || options.contains(CPOptions.V_BLIST)){
-                tOptions.add(CPOptions.V_BLIST);
-            }else if(v.getOptions().contains(CPOptions.V_LINK)
-                    || options.contains(CPOptions.V_LINK)){
-                tOptions.add(CPOptions.V_LINK);
-            }else if(v.getOptions().contains(CPOptions.V_BOUND)
-                    || options.contains(CPOptions.V_BOUND)){
-                tOptions.add(CPOptions.V_BOUND);
-            }
-            this.options = tOptions;
-            return true;
-        }
-
-    }
-
-
-    private static class TaskObjects{
-        IntegerVariable start;
-        IntegerVariable duration;
-        IntegerVariable end;
-
-        private Set<String> options;
-
-        private TaskObjects() {
-            options = new THashSet<String>();
-        }
-
-        private TaskObjects(final TaskVariable v) {
-            this();
-            start = v.start();
-            duration = v.duration();
-            end = v.end();
-            options.addAll(v.getOptions());
-        }
-
-        public void merge(final TaskVariable d){
-            if(start  == null){
-                start = d.start();
-            }
-            if(duration == null){
-                duration = d.duration();
-            }
-            if(end == null){
-                end = d.end();
-            }
-            final THashSet<String> tOptions = new THashSet<String>();
-            if(d.getOptions().contains(CPOptions.V_DECISION)
-                    || options.contains(CPOptions.V_DECISION)){
-                tOptions.add(CPOptions.V_DECISION);
-            }
-            if(d.getOptions().contains(CPOptions.V_NO_DECISION)
-                    || options.contains(CPOptions.V_NO_DECISION)){
-                tOptions.add(CPOptions.V_NO_DECISION);
-            }
-            if(d.getOptions().contains(CPOptions.V_OBJECTIVE)
-                    || options.contains(CPOptions.V_OBJECTIVE)){
-                tOptions.add(CPOptions.V_OBJECTIVE);
-            }
-            this.options = tOptions;
         }
     }
 

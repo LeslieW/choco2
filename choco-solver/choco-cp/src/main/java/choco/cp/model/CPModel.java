@@ -24,6 +24,9 @@
 package choco.cp.model;
 
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.iterators.DisposableIterator;
+import choco.kernel.common.util.iterators.EmptyIterator;
+import choco.kernel.common.util.iterators.TIHIterator;
 import choco.kernel.common.util.objects.DeterministicIndicedList;
 import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.IOptions;
@@ -45,13 +48,13 @@ import choco.kernel.model.variables.set.SetExpressionVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.integer.IntVar;
-import gnu.trove.TIntHashSet;
-import gnu.trove.TIntIterator;
-import gnu.trove.TLongHashSet;
-import gnu.trove.TLongObjectIterator;
+import gnu.trove.*;
 
 import java.io.*;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Logger;
 
 
@@ -107,7 +110,7 @@ public class CPModel implements Model {
 	/**
 	 * Map that gives for type of contraints, a list of contraints of that type
 	 */
-	private final EnumMap<ConstraintType, TIntHashSet> constraintsByType;
+	private final THashMap<ConstraintType, TIntHashSet> constraintsByType;
 
 	/**
 	 * Maximization / Minimization model
@@ -154,7 +157,7 @@ public class CPModel implements Model {
 		storedMultipleVariables = new DeterministicIndicedList<MultipleVariables>(MultipleVariables.class, nbMultVars);
 		constraints = new DeterministicIndicedList<Constraint>(Constraint.class, nbCstrs);
 
-		constraintsByType = new EnumMap<ConstraintType, TIntHashSet>(ConstraintType.class);
+		constraintsByType = new THashMap<ConstraintType, TIntHashSet>();
 		properties = new Properties();
 		try {
 			final InputStream is = getClass().getResourceAsStream( "/application.properties" );
@@ -376,58 +379,12 @@ public class CPModel implements Model {
 	}
 
 
-	public Iterator<Constraint> getConstraintByType(final ConstraintType t) {
+	public DisposableIterator<Constraint> getConstraintByType(final ConstraintType t) {
 		final TIntHashSet hs = constraintsByType.get(t);
 		if (hs != null) {
-			return new Iterator<Constraint>(){
-				final TIntIterator it = hs.iterator();
-				/**
-				 * Returns <tt>true</tt> if the iteration has more elements. (In other
-				 * words, returns <tt>true</tt> if <tt>next</tt> would return an element
-				 * rather than throwing an exception.)
-				 *
-				 * @return <tt>true</tt> if the iterator has more elements.
-				 */
-				@Override
-				public boolean hasNext() {
-					return it.hasNext();
-				}
-
-				/**
-				 * Returns the next element in the iteration.
-				 *
-				 * @return the next element in the iteration.
-				 * @throws java.util.NoSuchElementException
-				 *          iteration has no more elements.
-				 */
-				@Override
-				public Constraint next() {
-					return constraints.get(it.next());
-				}
-
-				/**
-				 * Removes from the underlying collection the last element returned by the
-				 * iterator (optional operation).  This method can be called only once per
-				 * call to <tt>next</tt>.  The behavior of an iterator is unspecified if
-				 * the underlying collection is modified while the iteration is in
-				 * progress in any way other than by calling this method.
-				 *
-				 * @throws UnsupportedOperationException if the <tt>remove</tt>
-				 *                                       operation is not supported by this Iterator.
-				 * @throws IllegalStateException         if the <tt>next</tt> method has not
-				 *                                       yet been called, or the <tt>remove</tt> method has already
-				 *                                       been called after the last call to the <tt>next</tt>
-				 *                                       method.
-				 */
-				@Override
-				public void remove() {
-					it.remove();
-//                    throw new UnsupportedOperationException();
-				}
-			};
-		} else {
-		}
-		return new EmptyIterator();
+            return TIHIterator.getIterator(hs, constraints);
+        }
+		return EmptyIterator.getIterator();
 	}
 
 	public int getNbConstraintByType(final ConstraintType t) {
@@ -451,12 +408,13 @@ public class CPModel implements Model {
 	private final Set<String> reuseOptions = new HashSet<String>(3);
 
 	public void addOptions(final String options, final IOptions... element) {
-		final Iterator<String> iter = StringUtils.getOptionIterator(options);
+		final DisposableIterator<String> iter = StringUtils.getOptionIterator(options);
 		while(iter.hasNext()) {
 			for (final IOptions anElement : element) {
 				anElement.addOption(iter.next());
 			}
 		}
+        iter.dispose();
 	}
 
 	/**
@@ -713,22 +671,26 @@ public class CPModel implements Model {
 		}
 	}
 
-	public void remove(final Object ob) {
+
+    // Liste des contraintes à supprimer
+    private final TLongHashSet conSet = new TLongHashSet();
+    // Liste des variables à supprimer
+    private final TLongHashSet varSet  = new TLongHashSet();
+
+    // Liste des contraintes à supprimer
+    private final TLongObjectHashMap<Constraint> conQueue  = new TLongObjectHashMap<Constraint>();
+    // Liste des variables à supprimer
+    private final TLongObjectHashMap<Variable> varQueue  = new TLongObjectHashMap<Variable>();
+
+
+    public void remove(final Object ob) {
 		Constraint c;
 		Variable v;
-		// Liste des contraintes à supprimer
-		final TLongHashSet conSet = new TLongHashSet();
-		// Liste des variables à supprimer
-		final TLongHashSet varSet  = new TLongHashSet();
 
-		// Liste des contraintes à supprimer
-		final Queue<Constraint> conQueue  = new ArrayDeque<Constraint>();
-		// Liste des variables à supprimer
-		final Queue<Variable> varQueue  = new ArrayDeque<Variable>();
 
 		if(ob instanceof Constraint){
 			c = (Constraint)ob;
-			conQueue.add(c);
+			conQueue.put(c.getIndex(), c);
 			final Constraint clast = constraints.getLast();
 			final int id = constraints.remove(c);
 			TIntHashSet hs = constraintsByType.get(c.getConstraintType());
@@ -740,32 +702,33 @@ public class CPModel implements Model {
 			}
 		}else if(ob instanceof Variable){
 			v = (Variable)ob;
-			varQueue.add(v);
+			varQueue.put(v.getIndex(), v);
 			remVariable(v);
 		}
-		Iterator<Variable> itv;
+		DisposableIterator<Variable> itv;
 		Iterator<Constraint> itc;
 		while(!(varQueue.isEmpty() && conQueue.isEmpty())){
-			if(!conQueue.isEmpty()){
-				c = conQueue.remove();
+            for(long key : conQueue.keys()){
+				c = conQueue.remove(key);
 				itv = c.getVariableIterator();
 				while(itv.hasNext()){
 					v= itv.next();
 					v._removeConstraint(c);
 					if(v.getNbConstraint(this) == 0 && !varSet.contains(v.getIndex())){
 						remVariable(v);
-						varQueue.add(v);
+						varQueue.put(v.getIndex(), v);
 					}
 				}
+                itv.dispose();
 				conSet.add(c.getIndex());
 			}
-			if(!varQueue.isEmpty()){
-				v = varQueue.remove();
+			for(long key : varQueue.keys()){
+				v = varQueue.remove(key);
 				itc= v.getConstraintIterator(this);
 				while(itc.hasNext()){
 					c = itc.next();
 					if(!conSet.contains(c.getIndex())){
-						conQueue.add(c);
+						conQueue.put(c.getIndex(), c);
 						final Constraint clast = constraints.getLast();
 						final int id = constraints.remove(c);
 						TIntHashSet hs = constraintsByType.get(c.getConstraintType());
@@ -927,7 +890,7 @@ public class CPModel implements Model {
 				break;
 			}
 			updateConstraintByType(c.getConstraintType(), c);
-			final Iterator<Variable> it = c.getVariableIterator();
+			final DisposableIterator<Variable> it = c.getVariableIterator();
 			while (it.hasNext()) {
 				final Variable v = it.next();
 				if (v == null) {
@@ -939,6 +902,7 @@ public class CPModel implements Model {
 					v._addConstraint(c);
 				}
 			}
+            it.dispose();
 		}
 	}
 
@@ -983,19 +947,6 @@ public class CPModel implements Model {
 		return storedMultipleVariables.iterator();
 	}
 
-	static class EmptyIterator implements Iterator<Constraint> {
-		public boolean hasNext() {
-			return false;
-		}
-
-		public Constraint next() {
-			return null;
-		}
-
-		public void remove() {
-			throw new UnsupportedOperationException();
-		}
-	}
 	static class TroveIterator implements Iterator<Constraint>{
 		private final TLongObjectIterator<Constraint> iterator;
 
