@@ -30,12 +30,12 @@ public final class DomainChanneling extends AbstractLargeIntSConstraint {
 	/**
 	 * The last lower bounds of the assignment var.
 	 */
-	private IStateInt oldinf;
+	private final IStateInt oldinf;
 
 	/**
 	 * The last upper bounds of the assignment var.
 	 */
-	private IStateInt oldsup;
+	private final IStateInt oldsup;
 
 	/**
 	 * Make a new Channeling.
@@ -68,7 +68,7 @@ public final class DomainChanneling extends AbstractLargeIntSConstraint {
 		vars[dsize].updateInf(0, this, false);
 		vars[dsize].updateSup(dsize - 1, this, false);
 		super.awake();
-		//Set oldinf & oldsup equals to the current bounds of the assignment var
+		//Set oldinf & oldsup equals to the nt bounds of the assignment var
 		oldinf.set(vars[dsize].getInf());
 		oldsup.set(vars[dsize].getSup());
 	}
@@ -78,12 +78,20 @@ public final class DomainChanneling extends AbstractLargeIntSConstraint {
 	 */
 	public void propagate() throws ContradictionException {
 		for (int i = 0; i < dsize; i++) {
-			if (vars[i].isInstantiated()) {
-				clearBooleanExcept(vars[i].getVal());
-			} else if (! vars[dsize].canBeInstantiatedTo(i)) {
+            if (vars[i].isInstantiatedTo(0)) {
+                vars[dsize].removeVal(i, this, false);
+            }else if (vars[i].isInstantiatedTo(1)) {
+                vars[dsize].instantiate(i, this, false);
+                clearBooleanExcept(i);
+            }else if (! vars[dsize].canBeInstantiatedTo(i)) {
 				clearBoolean(i);
 			}
 		}
+        if (vars[dsize].isInstantiated()) {
+            final int value = vars[dsize].getVal();
+            clearBooleanExcept(value);
+            vars[value].instantiate(1, this, false);
+        }
 	}
 
 	/**
@@ -105,12 +113,12 @@ public final class DomainChanneling extends AbstractLargeIntSConstraint {
 		oldsup.set(vars[i].getSup());
 	}
 
-	private final void clearBoolean(int val) throws ContradictionException {
+	private void clearBoolean(int val) throws ContradictionException {
 		vars[val].instantiate(0, this, false);
 	}
 	
 
-	private final void clearBoolean(int begin, int end) throws ContradictionException {
+	private void clearBoolean(int begin, int end) throws ContradictionException {
 		for (int i = begin; i < end; i++) {
 			clearBoolean(i);
 		}
@@ -121,7 +129,7 @@ public final class DomainChanneling extends AbstractLargeIntSConstraint {
 	 * @param val The index of the variable to keep
 	 * @throws ContradictionException if an error occured
 	 */
-	private final void clearBooleanExcept(int val) throws ContradictionException {
+	private void clearBooleanExcept(int val) throws ContradictionException {
 		clearBoolean(oldinf.get(), val);
 		clearBoolean(val+1, oldsup.get());
 	}
@@ -156,6 +164,9 @@ public final class DomainChanneling extends AbstractLargeIntSConstraint {
 				clearBooleanExcept(idx);
 			} else {
 				vars[dsize].removeVal(idx, this, false);
+                if(vars[dsize].isInstantiated()){
+                    vars[vars[dsize].getVal()].instantiate(1, this, false);    
+                }
 			}
 		}
 	}
@@ -173,11 +184,8 @@ public final class DomainChanneling extends AbstractLargeIntSConstraint {
 				return false;
 			} 
 		}
-		if (val < 0 || val > tuple.length - 1) {
-			return false;
-		}
-		return true;
-	}
+        return !(val < 0 || val > tuple.length - 1);
+    }
 
 
 	@Override
