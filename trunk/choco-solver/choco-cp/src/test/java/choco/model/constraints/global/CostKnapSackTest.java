@@ -5,7 +5,6 @@ import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -41,7 +40,6 @@ public class CostKnapSackTest {
 
     @Test
     public void test20711762960952(){
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         long seed= 20711762960952L;
         Random r = new Random(seed);
         for (int taille =10; taille <= 200 ; taille+=10)
