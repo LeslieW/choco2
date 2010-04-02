@@ -345,6 +345,24 @@ public class FiniteAutomaton {
 
     }
 
+    public int[] getOutSymbolsArray(int source) {
+        try {
+            checkState(source);
+        } catch (StateNotInAutomatonException e) {
+            LOGGER.severe("Unable to get outgoing transition, state not in automaton : "+e);
+        }        TIntHashSet set = new TIntHashSet();
+        State s = states.get(source);
+        for (Transition t : s.getTransitions())
+        {
+            for (char c =  t.getMin() ; c <= t.getMax() ; c++)
+            {
+                set.add(getIntFromChar(c));
+            }
+        }
+        return set.toArray();
+
+    }
+
     public void addToAlphabet(int a) {
         alphabet.add(a);
     }

@@ -38,6 +38,7 @@ import choco.kernel.model.constraints.pack.PackModeler;
 import choco.kernel.model.variables.ConstantFactory;
 import choco.kernel.model.variables.Operator;
 import choco.kernel.model.variables.Variable;
+import choco.kernel.model.variables.flow.CapaEdge;
 import choco.kernel.model.variables.geost.GeostObject;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
@@ -59,10 +60,11 @@ import choco.kernel.solver.constraints.integer.extension.*;
 import gnu.trove.TIntArrayList;
 import org.jgrapht.graph.DirectedMultigraph;
 
-import static java.lang.System.arraycopy;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static java.lang.System.arraycopy;
 
 /**
  * Created by IntelliJ IDEA.
@@ -3645,7 +3647,8 @@ public class Choco{
 	 * @return  a instance of the constraint
 	 */
 	public static Constraint multiCostRegular(IntegerVariable[] vars, IntegerVariable[] cvar, FiniteAutomaton auto, int[][][][] costs){
-		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,costs},
+                int[][][][] copy = ArrayUtils.swallowCopy(costs);
+		return new ComponentConstraint(ConstraintType.MULTICOSTREGULAR, new Object[]{vars.length,auto,copy},
 				ArrayUtils.append(vars, cvar));
 	}
 
@@ -3655,6 +3658,16 @@ public class Choco{
 	public static Constraint tree(TreeParametersObject param){
 		return new ComponentConstraint(ConstraintType.TREE, param, param.extractVariables());
 	}
+
+
+
+        public static Constraint flow(CapaEdge[][] graph, IntegerVariable flow)
+        {
+                throw new UnsupportedOperationException();
+                // TODO : Julien : Need correction and license agreement from Bouygues e-lab
+                //return new ComponentConstraint(ConstraintType.FLOW,null,ArrayUtils.append(ArrayUtils.flatten(graph),new Variable[]{flow}));
+        }
+
 
 	/**
 	 * State a constraint to enforce GAC on Sum_i coeffs[i] * vars[i] = val.
