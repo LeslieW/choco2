@@ -27,11 +27,14 @@ import static choco.Choco.*;
 import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.BranchingFactory;
+import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.scheduling.SchedUtilities;
 import org.junit.After;
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
@@ -161,6 +164,58 @@ public class ChannelingTest {
 		s.read(m);
 		s.solveAll();
 		assertEquals(6, s.getSolutionCount());
+    }
+
+    @Test
+	public void test7() {
+        for(int i = 0; i < 1000; i++){
+            m = new CPModel();
+            s= new CPSolver();
+            final int n = 5;
+            final IntegerVariable[] bv = Choco.makeBooleanVarArray("n", n+1, CPOptions.V_NO_DECISION);
+            final IntegerVariable vm = Choco.makeIntVar("vm", 0, n, CPOptions.V_ENUM);
+            m.addConstraint( Choco.domainConstraint(vm, bv));
+            m.addConstraint( Choco.eq(vm, n-1));
+            s.read(m);
+            BranchingFactory.randomSearch(s, s.getVar(new IntegerVariable[]{vm}), i);
+            s.solveAll();
+            Assert.assertEquals(1, s.getSolutionCount());
+        }
+	}
+
+    @Test
+    public void testFHER(){
+
+        CPModel model = new CPModel();
+        int nbVMs = 4;
+        int nbNodes = 4;
+        IntegerVariable [] assigns = new IntegerVariable[4];
+        IntegerVariable [][] bools = new IntegerVariable[nbVMs][nbNodes + 2];
+        IntegerVariable [][] invBools = new IntegerVariable[nbNodes + 2][nbVMs];
+
+        int i = 0;
+        for (i = 0; i < assigns.length; i++) {
+            assigns[i] = Choco.makeIntVar("VM" + i, 0, nbNodes + 1, CPOptions.V_ENUM);
+        }
+        for (i = 0; i < nbVMs; i++) {
+            for (int j = 0; j < nbNodes + 2; j++) {
+                bools[i][j] = Choco.makeBooleanVar("VM" + i + " on N" + j);
+                invBools[j][i] = bools[i][j];
+            }
+        }
+
+        for (i = 0; i < nbVMs; i++) {
+            model.addConstraint(Choco.neq(assigns[i], 4));
+            model.addConstraint(Choco.neq(assigns[i], 5));
+            model.addConstraint(Choco.domainConstraint(assigns[i], bools[i]));
+        }
+        CPSolver solver = new CPSolver();
+        for (int j = 0; j < nbNodes; j++) {
+            model.addConstraint(Choco.leq(Choco.sum(invBools[j]), 1));
+        }
+        solver.read(model);
+         solver.setVarIntSelector(new StaticVarOrder(solver, solver.getVar(assigns[0],assigns[1], assigns[2], assigns[3])));
+        solver.solve();
     }
 
 }
