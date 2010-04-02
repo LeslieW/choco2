@@ -24,22 +24,21 @@
 // TP 16/02/2007
 // --------------------------------------
 
-package choco.cp.solver.preprocessor.graph;
+package choco.cp.common.util.preprocessor.graph;
 
-import choco.cp.model.CPModel;
 import choco.kernel.model.constraints.Constraint;
+import gnu.trove.THashMap;
 
 import java.util.BitSet;
-import java.util.HashMap;
 
 /**
  * A simple representation of a graph as both matrix/list of adjacency  to
  * perform clique detection among binary constraints
  */
-public class ArrayGraph {
+public final class ArrayGraph {
 
     //matrix of adjacency
-    private BitSet[] mat;
+    private final BitSet[] mat;
 
     //lists of adjacency
     private int[][] adjmat;
@@ -51,7 +50,7 @@ public class ArrayGraph {
     public int nbEdges = 0;
 
     //associate the constraint that gave rise to the edge
-    public HashMap<Edge,Constraint> storeEdges;
+    public THashMap<Edge,Constraint> storeEdges;
 
     public ArrayGraph(int n) {
 		mat = new BitSet[n]; // default is false
@@ -60,7 +59,7 @@ public class ArrayGraph {
 			mat[i] = new BitSet(n);
 		}
 		nbNode = n;
-        storeEdges = new HashMap<Edge,Constraint>();
+        storeEdges = new THashMap<Edge,Constraint>();
     }
 
 	public void addEdge(int i, int j) {
@@ -118,7 +117,7 @@ public class ArrayGraph {
                     s.append(". ");
                 }
             }
-            s.append("\n");
+            s.append('\n');
         }
 		return s.toString();
 	}
@@ -127,11 +126,16 @@ public class ArrayGraph {
         storeEdges.put(new Edge(a,b),c);
     }
 
-    public void deleteConstraintEdge(CPModel mod, int a, int b) {
+    public Constraint getConstraintEdge(int a, int b) {
         Constraint c = storeEdges.get(new Edge(a,b));
         Constraint c2 = storeEdges.get(new Edge(b,a));
-        if (c != null) mod.removeConstraint(c);
-        else if (c2 != null) mod.removeConstraint(c2);
+        if (c != null){
+            return c;
+        }
+        else if (c2 != null) {
+            return c2;
+        }
+        return null;
     }
 
     public static class Edge {
@@ -148,7 +152,7 @@ public class ArrayGraph {
         }
 
         public boolean equals(Object obj) {
-            return  ((Edge) obj).a == a && ((Edge) obj).b == b; 
+            return Edge.class.isInstance(obj) && ((Edge) obj).a == a && ((Edge) obj).b == b;
         }
     }
 

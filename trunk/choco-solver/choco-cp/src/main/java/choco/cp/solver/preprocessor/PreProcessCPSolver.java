@@ -22,36 +22,25 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.preprocessor;
 
-import choco.Choco;
-import static choco.Choco.*;
 import choco.cp.CPOptions;
-import choco.cp.common.util.detector.DomainMerger;
-import choco.cp.common.util.detector.TaskMerger;
 import choco.cp.model.CPModel;
+import choco.cp.model.preprocessor.ModelDetectorFactory;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.constraints.reified.ExpressionSConstraint;
-import choco.cp.solver.preprocessor.detectors.CliqueDetector;
-import choco.cp.solver.preprocessor.detectors.ExpressionDetector;
 import choco.cp.solver.preprocessor.detectors.RelationDetector;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
-import choco.kernel.common.util.objects.BooleanSparseMatrix;
-import choco.kernel.common.util.objects.ISparseMatrix;
 import choco.kernel.memory.IEnvironment;
+import choco.kernel.memory.trailing.EnvironmentTrailing;
 import choco.kernel.model.Model;
-import choco.kernel.model.constraints.*;
-import choco.kernel.model.variables.MultipleVariables;
+import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.model.variables.Variable;
-import choco.kernel.model.variables.VariableType;
-import choco.kernel.model.variables.integer.IntegerVariable;
-import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.scheduling.TaskVar;
-import gnu.trove.TIntObjectHashMap;
 
-import java.util.*;
+import java.util.Iterator;
 
 /*
  *
@@ -66,29 +55,23 @@ public class PreProcessCPSolver extends CPSolver {
      * Allow preprocessing on expressions to extract
      * intensional constraints
      */
-    private ExpressionDetector cleverExp;
 
     /**
      * Allow preprocessing on relations to extract
      * intensional constraints
      */
-    private RelationDetector cleverRel;
-
-    /**
-     * A component with simple rules for symetry breaking
-     */
-    private SymBreaking symb;
+    private final RelationDetector cleverRel;
 
     /**
      * Search component
      */
-    private PPSearch ppsearch;
+    private final PPSearch ppsearch;
 
     /**
      * The ratio of holes within domains to which
      * decision are performed to switch from BC to AC
      */
-    public static float ratioHole = 0.7f;
+    public final static float ratioHole = 0.7f;
 
     /**
      * initial propagation time (to decide whether to perform or not
@@ -102,24 +85,17 @@ public class PreProcessCPSolver extends CPSolver {
      */
     public boolean restartMode = false;
 
-
     public PreProcessCPSolver(String... options) {
-        super(options);
-        init();
+        this(new EnvironmentTrailing(), options);
     }
 
     public PreProcessCPSolver(final IEnvironment env, String ... options) {
         super(env, options);
-        init();
-    }
-
-    void init() {
-        this.cleverExp = new ExpressionDetector();
         this.cleverRel = new RelationDetector();
-        this.symb = new SymBreaking();
         this.mod2sol = new PPModelToCPSolver(this);
         this.ppsearch = new PPSearch();
     }
+
 
     public PPModelToCPSolver getMod2Sol() {
         return (PPModelToCPSolver) mod2sol;
@@ -143,30 +119,6 @@ public class PreProcessCPSolver extends CPSolver {
     }
 
     /**
-     * Add an index to the variables to be able to map them easily
-     * to nodes of the constraint graph
-     * @param m model
-     */
-    private static void associateIndexes(final Model m) {
-        Iterator it = m.getIntVarIterator();
-        int cpt = 0;
-        while (it.hasNext()) {
-            final IntegerVariable iv = (IntegerVariable) it.next();
-            iv.setHook(cpt);
-            cpt++;
-        }
-        it = m.getMultipleVarIterator();
-        cpt = 0;
-        while (it.hasNext()) {
-            final MultipleVariables iv = (MultipleVariables) it.next();
-            if(iv instanceof TaskVariable){
-                iv.setHook(cpt);
-                cpt++;
-            }
-        }
-    }
-
-    /**
      * read of the black box solver
      *
      * @param m model
@@ -179,32 +131,33 @@ public class PreProcessCPSolver extends CPSolver {
 
         setAllProcessing();
 
-        associateIndexes(m);
+        SolverDetectorFactory.associateIndexes(model);
 
-        detectEqualitiesOnIntegers(m);
+        SolverDetectorFactory.intVarEqDet(model, this).applyThenCommit();
         mod2sol.readIntegerVariables(model);
 
         mod2sol.readRealVariables(model);
         mod2sol.readSetVariables(model);
         mod2sol.readConstants(model);
 
-        detectEqualitiesOnTasks(m);
+        SolverDetectorFactory.taskVarEqDet(model, this).applyThenCommit();
+
         mod2sol.readMultipleVariables(model);
         mod2sol.readParameters(model);
 
-        if (optionsSet.contains("bb:disjunctive"))
-            detectDisjonctives(m);
+        if (optionsSet.contains("bb:disjunctive")){
+            SolverDetectorFactory.disjunctionDetector(model, this).applyThenCommit();
+        }
 
-        if (optionsSet.contains("bb:exp"))
-            detectExpression(m);
+        if (optionsSet.contains("bb:exp")){
+            SolverDetectorFactory.expressionDetector(model, this).applyThenCommit();
+        }
 
-        if (optionsSet.contains("bb:cliques"))
-            detectCliques(m);
+        if (optionsSet.contains("bb:cliques")){
+            ModelDetectorFactory.cliqueDetector(model, true).applyThenCommit();
+        }
 
         mod2sol.readVariables(model);
-
-        if (optionsSet.contains("bb:breaksym"))
-            breakSymetries(m);
 
         getMod2Sol().readBBDecisionVariables();
         getMod2Sol().readConstraints(model, !optionsSet.contains(CPOptions.S_MULTIPLE_READINGS));
@@ -297,265 +250,16 @@ public class PreProcessCPSolver extends CPSolver {
         return ppsearch;
     }
 
-    // ############################################################################################################
-    // ######                   Symetry breaking                                            ###
-    // ############################################################################################################
-
-    void breakSymetries(final Model m) {
-        symb.addSymBreakingConstraint((CPModel) m);
+    public final <MV extends Variable, SV extends Var> void setVar(MV v, SV sv){
+        mapvariables.put(v.getIndex(), sv);
     }
 
-    // ############################################################################################################
-    // ######                   Expressions Detection                                            ###
-    // ############################################################################################################
-
-    private static boolean isAValidExpression(final Constraint ic) {
-        return ic instanceof MetaConstraint ||
-                (ic instanceof ComponentConstraint &&
-                 (ic.getConstraintType() == ConstraintType.EQ ||
-                 ic.getConstraintType() == ConstraintType.NEQ ||
-                 ic.getConstraintType() == ConstraintType.LEQ ||
-                 ic.getConstraintType() == ConstraintType.GEQ ||
-                 ic.getConstraintType() == ConstraintType.GT ||
-                 ic.getConstraintType() == ConstraintType.LT));
+    public final <MC extends Constraint, SC extends SConstraint> void setCstr(MC c, SC sc){
+        mapconstraints.put(c.getIndex(), sc);
     }
 
-    void detectExpression(final Model m) {
-        final Iterator<Constraint> it = m.getConstraintIterator();
-        final List<Constraint> neqToAdd = new LinkedList<Constraint>();
-        while (it.hasNext()) {
-            final Constraint ic = it.next();
-            if (!this.mapconstraints.containsKey(ic.getIndex()) && isAValidExpression(ic)) {
-                final ExpressionSConstraint c = new ExpressionSConstraint(getMod2Sol().buildNode(ic));
-                c.setScope(this);
-                getMod2Sol().storeExpressionSConstraint(ic, c);
-                final SConstraint intensional = ExpressionDetector.getIntentionalConstraint(c, this);
-                if (intensional != null) {
-                    c.setKnownIntensionalConstraint(intensional);
-                } else {
-                    if (ExpressionDetector.encompassDiff(c)) {
-                       final IntegerVariable[] vars = ((AbstractConstraint) ic).getIntVariableScope();
-                       neqToAdd.add(Choco.neq(vars[0],vars[1]));
-                    }
-                }
-            }
-        }
-        for (final Constraint aNeqToAdd : neqToAdd) {
-            m.addConstraint(aNeqToAdd);
-        }
-    }
-
-    // ############################################################################################################
-    // ######                   Cliques of NEQ Detection                                           ###
-    // ############################################################################################################
-
-
-    void detectCliques(final Model m) {
-        final CliqueDetector cdetect = new CliqueDetector((CPModel) m);
-        if (cdetect.addAllNeqEdges()) {
-            final CliqueDetector.CliqueIterator it = cdetect.cliqueIterator();
-            while (it.hasNext()) {
-                final IntegerVariable[] cl = it.next();
-                if (cl.length > 2) {
-                    m.addConstraint(CPOptions.C_ALLDIFFERENT_BC, allDifferent(cl));
-                    symb.setMaxClique(cl);
-                    it.remove();
-                } else m.addConstraint(Choco.neq(cl[0],cl[1]));
-            }
-        }
-    }
-
-    // ############################################################################################################
-    // ######                   Cliques of Disjonction                                            ###
-    // ############################################################################################################
-
-
-    private static int[] getVarIndexes(final IntegerVariable[] vs) {
-        final int[] idxs = new int[vs.length];
-        for (int i = 0; i < idxs.length; i++) {
-            idxs[i] = vs[i].getHook();
-        }
-        return idxs;
-    }
-
-    void detectDisjonctives(final Model m) {
-        final CliqueDetector cdetect = new CliqueDetector((CPModel) m);
-        final int[] durations = cdetect.addAllDisjunctiveEdges(cleverExp, this);
-        if (durations != null) {
-            final BitSet[] precedenceAlreadyAdded = new BitSet[m.getNbIntVars()];
-            for (int i = 0; i < m.getNbIntVars(); i++){
-                precedenceAlreadyAdded[i] = new BitSet();
-            }
-
-            final CliqueDetector.CliqueIterator it = cdetect.cliqueIterator();
-            while (it.hasNext()) {
-                final IntegerVariable[] cl = it.next();
-                final int[] idxs = getVarIndexes(cl);
-                final int[] dur = new int[cl.length];
-                final TaskVariable[] tasks = new TaskVariable[cl.length];
-                for (int i = 0; i < cl.length; i++) {
-                    dur[i] = durations[idxs[i]];
-                    tasks[i] = Choco.makeTaskVar("", cl[i], constant(dur[i]));
-                }
-                //automatically add reified precedences to make branching easier
-                for (int j = 0; j < cl.length; j++) {
-                    for (int k = j + 1; k < cl.length; k++) {
-                        if (!precedenceAlreadyAdded[idxs[j]].get(idxs[k])) {
-                            final IntegerVariable b = makeIntVar(String.format("%d", (dur[j] + dur[k])), 0, 1);
-                            m.addConstraint(Choco.precedenceDisjoint(cl[j], dur[j], cl[k], dur[k], b));
-                            precedenceAlreadyAdded[idxs[j]].set(idxs[k]);
-                            precedenceAlreadyAdded[idxs[k]].set(idxs[j]);
-                        }
-                    }
-                }
-                m.addConstraint(Choco.disjunctive(tasks));
-                //delete the disjunctions
-                it.remove();
-            }
-        }
-    }
-
-    // ############################################################################################################
-    // ######                   Merge equalities                                             ###
-    // ############################################################################################################
-
-    private void detectEqualitiesOnIntegers(final Model m) {
-        final int n = m.getNbIntVars();
-        final ISparseMatrix matrix = new BooleanSparseMatrix(n);
-        final Iterator<Constraint> iteq = m.getConstraintByType(ConstraintType.EQ);
-        Constraint c;
-        // Run over equalities constraints, and create edges
-        while(iteq.hasNext()){
-            c = iteq.next();
-            final Variable v1 = c.getVariables()[0];
-            final Variable v2 = c.getVariables()[1];
-            if(v1.getVariableType()== VariableType.INTEGER
-                    && v2.getVariableType()== VariableType.INTEGER){
-            	matrix.add(v1.getHook(), v2.getHook());
-                this.mapconstraints.put(c.getIndex(), null);
-            }
-        }
-        if(matrix.getNbElement()> 0){
-            matrix.prepare();
-            // Detect connex components
-            final int[] color = new int[n];
-            Arrays.fill(color, -1);
-            final TIntObjectHashMap<DomainMerger> domainByColor = new TIntObjectHashMap<DomainMerger>();
-            int k = -1;
-            DomainMerger dtmp = new DomainMerger();
-            final Iterator<Long> it = matrix.iterator();
-            while(it.hasNext()){
-                final long v = it.next();
-                final int i = (int)(v / n);
-                final int j = (int)(v % n);
-
-                if (color[i]==-1){
-                    k++;
-                    color[i]=k;
-                    domainByColor.put(k, new DomainMerger(m.getIntVar(i)));
-                }
-                final DomainMerger d = domainByColor.get(color[i]);
-                //backup
-                dtmp.copy(d);
-                if(d.intersection(m.getIntVar(j))){
-                    color[j] = color[i];
-                    domainByColor.put(color[i], d);
-                }else{
-                    m.addConstraint(Choco.eq(m.getIntVar(i), m.getIntVar(j)));
-                    //rollback
-                    d.copy(dtmp);
-                    if (color[j]==-1){
-                        k++;
-                        color[j]=k;
-                        domainByColor.put(k, new DomainMerger(m.getIntVar(j)));
-                    }
-                }
-            }
-            final IntDomainVar[] var = new IntDomainVar[k+1];
-            IntegerVariable vtmp;
-            for(int i = 0; i < n; i++){
-                final int col = color[i];
-                if(col !=-1){
-                    final IntegerVariable v = m.getIntVar(i);
-                    if(var[col] == null){
-                        dtmp = domainByColor.get(col);
-                        if(dtmp.values != null){
-                            vtmp = new IntegerVariable(v.getName(), dtmp.values);
-                        }else{
-                            vtmp = new IntegerVariable(v.getName(), dtmp.low, dtmp.upp);
-                        }
-                        vtmp.addOptions(dtmp.optionsSet);
-                        vtmp.findManager(model.properties);
-                        var[col] = (IntDomainVar)mod2sol.readModelVariable(vtmp);
-                    }
-                    this.mapvariables.put(v.getIndex(), var[col]);
-                }
-            }
-        }
-    }
-
-    private void detectEqualitiesOnTasks(final Model m) {
-        final int n = m.getNbStoredMultipleVars();
-        final ISparseMatrix matrix = new BooleanSparseMatrix(n);
-        MultipleVariables m1, m2;
-        // Run over equalities constraints, and create edges
-        for(int i = 0; i < n-1; i++){
-            m1 = m.getStoredMultipleVar(i);
-            if(m1 instanceof TaskVariable){
-                for(int j = i+1; j < n; j++){
-                    m2 = m.getStoredMultipleVar(j);
-                    if(m2 instanceof TaskVariable){
-                        if(m1.isEquivalentTo(m2)){
-                        	matrix.add(m1.getHook(), m2.getHook());
-                        }
-                    }
-
-                }
-            }
-        }
-        if(matrix.getNbElement()> 0){
-            matrix.prepare();
-            // Detect connex components
-            final int[] color = new int[n];
-            Arrays.fill(color, -1);
-            final TIntObjectHashMap<TaskMerger> domainByColor = new TIntObjectHashMap<TaskMerger>();
-            int k = -1;
-            TaskMerger dtmp = new TaskMerger();
-            final Iterator<Long> it = matrix.iterator();
-            while(it.hasNext()){
-                final long v = it.next();
-                final int i = (int)(v / n);
-                final int j = (int)(v % n);
-
-                if (color[i]==-1){
-                    k++;
-                    color[i]=k;
-                    domainByColor.put(k, new TaskMerger((TaskVariable)m.getStoredMultipleVar(i)));
-                }
-                final TaskMerger d = domainByColor.get(color[i]);
-                //backup
-                d.merge((TaskVariable)m.getStoredMultipleVar(j));
-                color[j] = color[i];
-                domainByColor.put(color[i], d);
-            }
-            final TaskVar[] var = new TaskVar[k+1];
-            TaskVariable vtmp;
-            for(int i = 0; i < n; i++){
-                final int col = color[i];
-                if(col !=-1){
-                    final TaskVariable v = (TaskVariable)m.getStoredMultipleVar(i);
-                    if(var[col] == null){
-                        dtmp = domainByColor.get(col);
-                        vtmp = new TaskVariable(v.getName(), dtmp.start, dtmp.duration, dtmp.end);
-                        vtmp.addOptions(vtmp.getOptions());
-                        vtmp.findManager(model.properties);
-                        var[col] = (TaskVar)mod2sol.readModelVariable(vtmp);
-                    }
-                    this.mapvariables.put(v.getIndex(), var[col]);
-                    v.resetHook();
-                }
-            }
-        }
+    public final boolean contains(final Constraint c){
+        return mapconstraints.containsKey(c.getIndex());
     }
 
 

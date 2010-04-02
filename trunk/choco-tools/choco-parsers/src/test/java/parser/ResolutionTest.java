@@ -90,7 +90,8 @@ public class ResolutionTest {
         String directory = args[1]; 
         int nbpb=Integer.parseInt((String) properties.get("pb.nbpb"));
         for(int i = 1; i < nbpb+1; i++){
-            args[1] = directory + "/"+ properties.get("pb."+i+".name")+".xml";
+            args[1] = String.format("%s/%s.xml", directory,
+                    properties.get(String.format("pb.%d.name", i)));
             XmlModel xm = new XmlModel();
             try {
                 xm.generate(args);
@@ -108,13 +109,15 @@ public class ResolutionTest {
             }finally {
                 System.setSecurityManager(null);
             }
-            int time = Integer.valueOf((String) properties.get("pb."+i+".buildtime"));
-            LOGGER.info(xm.getBuildTime()  + " > " + time + "?" + " for " + "pb."+i);
-            Assert.assertTrue(properties.get("pb."+i+".name")+": too much time spending in reading problem... (excepted : < "+time+")", xm.getBuildTime() < time);
+            int time = Integer.valueOf((String) properties.get(String.format("pb.%d.buildtime", i)));
+            LOGGER.info(String.format("%d > %d? for pb.%d", xm.getBuildTime(), time, i));
+            Assert.assertTrue(String.format("%s: too much time spending in reading problem... (excepted : < %d)",
+                    properties.get(String.format("pb.%d.name", i)), time), xm.getBuildTime() < time);
 
-            time = Integer.valueOf((String) properties.get("pb."+i+".conftime"));
-            LOGGER.info(xm.getConfTime()  + " > " + time + "?" + " for " + "pb."+i);
-            Assert.assertTrue(properties.get("pb."+i+".name")+": too much time spending in preprocessing problem...(excepted : < "+time+")", xm.getConfTime() < time);
+            time = Integer.valueOf((String) properties.get(String.format("pb.%d.conftime", i)));
+            LOGGER.info(String.format("%d > %d? for pb.%d", xm.getConfTime(), time, i));
+            Assert.assertTrue(String.format("%s: too much time spending in preprocessing problem...(excepted : < %d)",
+                    properties.get(String.format("pb.%d.name", i)), time), xm.getConfTime() < time);
         }
     }
 
@@ -197,12 +200,12 @@ public class ResolutionTest {
 	 * @author Fabien Hermenier
 	 *
 	 */
-	class ExitException extends SecurityException {
+    private static class ExitException extends SecurityException {
 
 		/**
 		 * The exit status.
 		 */
-		private int status;
+		private final int status;
 
 		/**
 		 * A new exception.
@@ -228,7 +231,7 @@ public class ResolutionTest {
 	 * @author Fabien Hermenier
 	 *
 	 */
-	class NoExitSecurityManager extends SecurityManager {
+    private static class NoExitSecurityManager extends SecurityManager {
 
 		/**
 		 * {@inheritDoc}

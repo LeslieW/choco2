@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
- *         |  °(..)  |                           *
+ *         |   (..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -18,9 +18,9 @@
  *    + support : choco@emn.fr                   *
  *                                               *
  *    Copyright (C) F. Laburthe,                 *
- *                  N. Jussien    1999-2008      *
+ *                  N. Jussien    1999-2010      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.cp.solver.preprocessor.detectors;
+package choco.cp.common.util.preprocessor;
 
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.integer.*;
@@ -37,12 +37,16 @@ import choco.kernel.solver.constraints.reified.NodeType;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
 /**
- * User:    hcambaza
- * Date:    19 août 2008
+ * User : cprudhom<br/>
+ * Mail : cprudhom(a)emn.fr<br/>
+ * Date : 2 avr. 2010br/>
+ * Since : Choco 2.1.1<br/>
+ *
+ * An class providing expression tools. 
  */
-public final class ExpressionDetector {
+public final class ExpressionTools {
 
-    private ExpressionDetector() {}
+    private ExpressionTools(){}
 
     /**
      * If the expression can be matched to a known intensional constraint, then
@@ -477,7 +481,7 @@ public final class ExpressionDetector {
         } else {
             IntDomainVar v1 = ic.getVars()[0];
             IntDomainVar v2 = ic.getVars()[1];
-            if (v2.getDomainSize() < v1.getDomainSize()) { //pick the smallest domain 
+            if (v2.getDomainSize() < v1.getDomainSize()) { //pick the smallest domain
                 final IntDomainVar temp = v1;
                 v1 = v2;
                 v2 = temp;
@@ -557,6 +561,4 @@ public final class ExpressionDetector {
             return false;
         }
     }
-
-
 }

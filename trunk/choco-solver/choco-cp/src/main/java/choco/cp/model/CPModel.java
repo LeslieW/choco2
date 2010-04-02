@@ -665,6 +665,7 @@ public class CPModel implements Model {
 			while (it.hasNext()) {
 				this.removeVariable(it.next());
 			}
+            storedMultipleVariables.remove(mv);
 			break;
 		default:
 			throw new ModelException("unknown variable type :" + v.getVariableType());

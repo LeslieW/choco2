@@ -23,6 +23,7 @@
 package choco.cp.solver.preprocessor;
 
 import choco.Choco;
+import choco.cp.common.util.preprocessor.AbstractDetector;
 import choco.cp.model.CPModel;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.model.constraints.Constraint;
@@ -35,9 +36,13 @@ import java.util.Iterator;
 /**
  * Simple symetry detection.
  */
-public class SymBreaking {
+public class SymetryBreakingModelDetector extends AbstractDetector{
 
-    protected IntegerVariable[] maxclique = null;
+    private IntegerVariable[] maxclique = null;
+
+    public SymetryBreakingModelDetector(final CPModel model) {
+        super(model);
+    }
 
     public void setMaxClique(IntegerVariable[] clique) {
         if (maxclique == null || maxclique.length < clique.length) {
@@ -49,25 +54,25 @@ public class SymBreaking {
      * Break symetries in graph coloring by instantiating
      * the largest clique. Conditions are :
      * - a unique domain and only difference constraints
-     * @param m the cp model
+     * @param model the cp model
      */
-    public void addSymBreakingConstraint(CPModel m) {
-        if (maxclique != null && checkOnlyOneDomain(m) && checkOnlyDiff(m)) {
-            DisposableIntIterator it = m.getIntVar(0).getDomainIterator();
+    @Override
+    public final void apply() {
+        if (maxclique != null && checkOnlyOneDomain(model) && checkOnlyDiff(model)) {
+            DisposableIntIterator it = model.getIntVar(0).getDomainIterator();
             for (int i = 0; i < maxclique.length && it.hasNext(); i++) {
-                m.addConstraint(Choco.eq(maxclique[i], it.next()));
+                model.addConstraint(Choco.eq(maxclique[i], it.next()));
             }
             it.dispose();
         }
     }
-
 
     /**
      * Are all domains identical ?
      * @param m the cpmodel
      * @return boolean
      */
-    public boolean checkOnlyOneDomain(CPModel m) {
+    private static boolean checkOnlyOneDomain(CPModel m) {
         Iterator<IntegerVariable> it = m.getIntVarIterator();
         if (it.hasNext()) {
             IntegerVariable v = it.next();
@@ -92,7 +97,7 @@ public class SymBreaking {
      * @param m the cp model
      * @return boolean
      */
-    public boolean checkOnlyDiff(CPModel m) {
+    private static boolean checkOnlyDiff(CPModel m) {
         Iterator<Constraint> it = m.getConstraintIterator();
         for (; it.hasNext();) {
             Constraint ct =  it.next();
@@ -111,7 +116,7 @@ public class SymBreaking {
      * @param ct the constraint
      * @return false if it is a simple neq constraint
      */
-    private boolean isComplexNeq(Constraint ct) {
+    private static boolean isComplexNeq(Constraint ct) {
         if(ct.getConstraintType().equals(ConstraintType.NEQ)){
             Iterator<Variable> it = ct.getVariableIterator();
             while(it.hasNext()){
@@ -123,4 +128,18 @@ public class SymBreaking {
         return false;
     }
 
+    /**
+     * Fake Symetry detector, do not do anything
+     */
+    public static final class EmptySymetryBreakingModelDetector extends SymetryBreakingModelDetector{
+
+        public EmptySymetryBreakingModelDetector(final CPModel model) {
+            super(model);
+        }
+
+        @Override
+        public void setMaxClique(final IntegerVariable[] clique) {
+            //nothing to do
+        }
+    }
 }

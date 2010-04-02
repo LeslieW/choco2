@@ -20,7 +20,7 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2010      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.model.detector;
+package choco.cp.common.util.preprocessor;
 
 import choco.cp.model.CPModel;
 import choco.kernel.common.logging.ChocoLogging;
@@ -34,26 +34,21 @@ import java.util.logging.Logger;
 /**
  * User : cprudhom<br/>
  * Mail : cprudhom(a)emn.fr<br/>
- * Date : 1 avr. 2010br/>
+ * Date : 2 avr. 2010br/>
  * Since : Choco 2.1.1<br/>
- *
- * A factory to apply detectors on a model.
  */
-public final class DetectorFactory {
-
-
+public abstract class DetectorFactory {
     /**
      * Logger
      */
     protected static final Logger LOGGER = ChocoLogging.getEngineLogger();
-
 
     /**
      * Add an index to the variables to be able to map them easily
      * to nodes of the constraint graph
      * @param m model
      */
-    private static void associateIndexes(final CPModel m) {
+    public static void associateIndexes(final CPModel m) {
         Iterator it = m.getIntVarIterator();
         int cpt = 0;
         while (it.hasNext()) {
@@ -77,7 +72,7 @@ public final class DetectorFactory {
      * to nodes of the constraint graph
      * @param m model
      */
-    private static void resetIndexes(final CPModel m) {
+    public static void resetIndexes(final CPModel m) {
         Iterator it = m.getIntVarIterator();
         while (it.hasNext()) {
             final IntegerVariable iv = (IntegerVariable) it.next();
@@ -90,36 +85,5 @@ public final class DetectorFactory {
                 iv.resetHook();
             }
         }
-    }
-
-    /**
-     * Run {@link AbstractDetector#apply()} and {@link AbstractDetector#commit()} for each {@code detectors}.
-     * @param detectors list of detectors to run
-     */
-    public static void run(final CPModel model, final AbstractDetector ... detectors){
-        associateIndexes(model);
-        for(AbstractDetector detector : detectors){
-            detector.apply();
-            detector.commit();
-        }
-        resetIndexes(model);
-    }
-
-    /**
-     * Detect equalities between {@link IntegerVariable} within a model
-     * @param m model
-     * @return new instance of {@link IntegerVariableEqualitiesDetector}
-     */
-    public static IntegerVariableEqualitiesDetector intVarEqDet(final CPModel m){
-        return new IntegerVariableEqualitiesDetector(m);
-    }
-
-    /**
-     * Detect equalities between {@link TaskVariable} within a model
-     * @param m model
-     * @return new instance of {@link TaskVariableEqualitiesDetector}
-     */
-    public static TaskVariableEqualitiesDetector taskVarEqDet(final CPModel m){
-        return new TaskVariableEqualitiesDetector(m);
     }
 }

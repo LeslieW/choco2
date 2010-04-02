@@ -24,7 +24,8 @@
 // TP 16/02/2007
 // -------------------------------------
 
-package choco.cp.solver.preprocessor.graph;
+package choco.cp.common.util.preprocessor.graph;
+
 import choco.kernel.common.logging.ChocoLogging;
 
 import java.util.Random;
@@ -33,11 +34,11 @@ import java.util.logging.Logger; // main de test
 /**
  * 	Algorithme de Bron and Kerbosch 197 to find maxumum cliques
  */
-public class MaxCliques {
+public final class MaxCliques {
 
     protected final static Logger LOGGER = ChocoLogging.getEngineLogger();
 
-	private ArrayGraph graph; 
+	private final ArrayGraph graph;
 	private int[][]  cliques;
 	
 	public MaxCliques(ArrayGraph g) {
@@ -173,10 +174,10 @@ public class MaxCliques {
 		for(int i=0; i<array.length; i++) {
 			s.append(array[i]);
 			if(i<array.length-1) { 
-				s.append(",");
+				s.append(',');
 			}
 		}
-		s.append("]");
+		s.append(']');
 		return s.toString();
 	}
 	
@@ -184,7 +185,7 @@ public class MaxCliques {
 		StringBuilder s = new StringBuilder();
 		for(int i=0; i<array.length; i++) {
 			s.append(display(array[i]));
-			s.append("\n");
+			s.append('\n');
 		}
 		return s.toString();
 	}
@@ -206,42 +207,8 @@ public class MaxCliques {
 	    	}
 	    	g.addEdge(v1,v2);
 	    }	
-	    LOGGER.info("done " + "(" + (System.currentTimeMillis()-start) + " ms).\n");
+	    LOGGER.info("done " + '(' + (System.currentTimeMillis()-start) + " ms).\n");
 	    return g;
 	}
-	
-	public static void test(int n, int m, int seed) {
-		double start = System.currentTimeMillis();	
-		ArrayGraph g = generateGraph(n,m,seed,start); 
-	    MaxCliques myCliques = new MaxCliques(g);
-	    LOGGER.info("cliques : \n" + display(myCliques.getMaxCliques()));
-	    LOGGER.info("Total time : " + (System.currentTimeMillis()-start) + " ms.\n");
-	    if(n<=16) { 
-	    	LOGGER.info(g.toString());
-	    }
-	}
-	
-	public static void testEmptyGraph241108() {
-		LOGGER.info("Graph without edges");
-		test(6,0,1986);
-	}
-	
-	public static void main(String[] args) {
-		int n = 6;
-		int m = 10;
-		int seed = 1986; 
-		if(args.length>=1) {
-		    n = Integer.parseInt(args[0]);
-		    if(args.length>=2) {
-		    	m = Integer.parseInt(args[1]);
-		    	if(args.length>=3) {
-		    		seed = Integer.parseInt(args[2]);
-		    	}
-		    }
-		}
-		test(n,m,seed); 
-		testEmptyGraph241108();
-	}
-
 }
 
