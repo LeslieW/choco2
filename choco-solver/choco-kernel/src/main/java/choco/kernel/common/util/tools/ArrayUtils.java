@@ -343,6 +343,50 @@ public final class ArrayUtils {
         }
     }
 
+public static int[][][][] swallowCopy(int[][][][] arr)
+{
+	int s0 = arr.length;
+	int[][][][] copy = new int[s0][][][];
+	for (int i = s0 -1 ; i >= 0 ; i--)
+	{
+		int s1 = arr[i].length;
+		copy[i] = new int[s1][][];
+		for (int j = s1-1 ; j >= 0 ; j--)
+		{
+			int s2 = arr[i][j].length;
+			copy[i][j] = new int[s2][];
+			for (int k = s2-1 ; k >=0 ; k--)
+			{
+				int s3 = arr[i][j][k].length;
+				copy[i][j][k] = new int[s3];
+				System.arraycopy(arr[i][j][k],0,copy[i][j][k],0,s3);
+			}
+		}
+	}
+	return copy;
+
+}
+
+public static int[][][] swallowCopy(int[][][] arr)
+{
+	int s0 = arr.length;
+	int[][][] copy = new int[s0][][];
+	for (int i = s0 -1 ; i >= 0 ; i--)
+	{
+		int s1 = arr[i].length;
+		copy[i] = new int[s1][];
+		for (int j = s1-1 ; j >= 0 ; j--)
+		{
+			int s2 = arr[i][j].length;
+			copy[i][j] = new int[s2];
+
+		       System.arraycopy(arr[i][j],0,copy[i][j],0,s2);
+		}
+	}
+	return copy;
+
+}
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
