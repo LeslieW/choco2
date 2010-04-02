@@ -5,6 +5,7 @@ import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -38,7 +39,19 @@ public class CostKnapSackTest {
         }
     }
 
-    public void simpleKnapSackTest(long seed, int n)
+    @Test
+    public void test20711762960952(){
+        ChocoLogging.setVerbosity(Verbosity.SEARCH);
+        long seed= 20711762960952L;
+        Random r = new Random(seed);
+        for (int taille =10; taille <= 200 ; taille+=10)
+        {
+            for (int test =0 ; test <= 5 ; test++)
+                simpleKnapSackTest(r.nextLong(),taille);
+        }
+    }
+
+    public static void simpleKnapSackTest(long seed, int n)
     {
         Model m = new CPModel();
         Solver s = new CPSolver();
@@ -71,7 +84,7 @@ public class CostKnapSackTest {
             StringBuffer buffer = new StringBuffer();
             for (IntegerVariable v : vars)
             {
-                buffer.append(s.getVar(v).getVal()).append(" ");
+                buffer.append(s.getVar(v).getVal()).append(' ');
             }
             buffer.append(System.getProperty("line.separator" ));
 
