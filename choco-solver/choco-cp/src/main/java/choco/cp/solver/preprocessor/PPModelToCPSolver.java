@@ -22,6 +22,7 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.preprocessor;
 
+import choco.cp.common.util.preprocessor.ExpressionTools;
 import choco.cp.solver.CPModelToCPSolver;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.reified.ExpressionSConstraint;
@@ -80,9 +81,9 @@ public class PPModelToCPSolver extends CPModelToCPSolver {
         c.setScope(cpsolver);
         c.setDecomposeExp(false); //todo: check default value of decomp ?
         //c.setDecomposeExp(decomp);
-        if (expDetect.toBeDecomposed(c)) {
+        if (ExpressionTools.toBeDecomposed(c)) {
             c.setDecomposeExp(true);
-        } else if (expDetect.isVeryBinaryHeavy(c)) {
+        } else if (ExpressionTools.isVeryBinaryHeavy(c)) {
             nbHeavyBin ++;
         }
         if (nbHeavyBin > 2000) {
@@ -91,7 +92,7 @@ public class PPModelToCPSolver extends CPModelToCPSolver {
 
         SConstraint intensional = c.getKnownIntensionalConstraint();
         if (intensional == null)
-            intensional = expDetect.getIntentionalConstraint(c, cpsolver);
+            intensional = ExpressionTools.getIntentionalConstraint(c, cpsolver);
         if (intensional != null)
             return intensional;
         else return c;

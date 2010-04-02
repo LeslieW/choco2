@@ -100,7 +100,17 @@ public class VariableArray implements IVariableArray, Serializable {
 			}			
 		}
 
-		@Override
+        @Override
+        public boolean _contains(final Constraint c) {
+            for(final Variable v : variables){
+				if(!v._contains(c)){
+                    return false;
+                }
+		    }
+            return true;
+        }
+
+        @Override
 		public void removeConstraints() {
 			for(final Variable v : variables){
 				v.removeConstraints();

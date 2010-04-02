@@ -146,13 +146,13 @@ public abstract class ComponentVariable extends AbstractVariable {
 
 		public ConstraintsDataStructure() {
 			super();
-			constraints = new ArrayList<Constraint>();
+			constraints = new ArrayList<Constraint>(10);
 		}
 
 		@Override
 		public void _addConstraint(Constraint c) {
 			reuseConstraints=null;
-			constraints.add(c);
+            constraints.add(c);
 		}
 
 		@Override
@@ -160,7 +160,12 @@ public abstract class ComponentVariable extends AbstractVariable {
 			if(constraints.remove(c)) reuseConstraints=null;			
 		}
 
-		@Override
+        @Override
+        public boolean _contains(final Constraint c) {
+            return constraints.contains(c);
+        }
+
+        @Override
 		public void removeConstraints() {
 			constraints.clear();
 			reuseConstraints=null;
@@ -236,7 +241,12 @@ public abstract class ComponentVariable extends AbstractVariable {
 		@Override
 		public void _removeConstraint(Constraint c) {}
 
-		@Override
+        @Override
+        public boolean _contains(final Constraint c) {
+            return false;
+        }
+
+        @Override
 		public void removeConstraints() {}
 
 		@Override

@@ -22,15 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.model.variables;
 
-import java.util.Iterator;
-import java.util.Properties;
-
 import choco.kernel.model.IConstraintList;
 import choco.kernel.model.Model;
 import choco.kernel.model.ModelException;
 import choco.kernel.model.ModelObject;
 import choco.kernel.model.constraints.Constraint;
-import choco.kernel.model.constraints.ExpressionManager;
+
+import java.util.Iterator;
 
 
 /**
@@ -67,7 +65,7 @@ public abstract class AbstractVariable extends ModelObject implements Variable, 
 		this.constraints = new VConstraintsDataStructure();
 	}
 
-	protected final void throwConstantException() {
+	protected static void throwConstantException() {
 		throw new ModelException("Constant are immutable.");
 	}
 	public final String getName() {
@@ -153,7 +151,12 @@ public abstract class AbstractVariable extends ModelObject implements Variable, 
 		constraints._removeConstraint(c);
 	}
 
-	@Deprecated
+    @Override
+    public boolean _contains(final Constraint c) {
+        return constraints._contains(c);
+    }
+
+    @Deprecated
 	public Iterator<Constraint> getConstraintIterator() {
 		throw new UnsupportedOperationException("deprecated");
 	}

@@ -70,8 +70,6 @@ public class CPModelToCPSolver {
 
 	protected final CPSolver cpsolver;
 
-	protected final ExpressionDetector expDetect;
-
 	private final THashSet<IntDomainVar> intNoDecisionVar = new THashSet<IntDomainVar>();
 
 	private final THashSet<SetVar> setNoDecisionVar = new THashSet<SetVar>();
@@ -84,7 +82,6 @@ public class CPModelToCPSolver {
 
 	public CPModelToCPSolver(final CPSolver cpsolver) {
 		this.cpsolver = cpsolver;
-		this.expDetect = new ExpressionDetector();
 	}
 
     /**

@@ -1,30 +1,31 @@
-package choco.cp.common.util.detector;
+package choco.cp.common.util.preprocessor.merger;
 
 import choco.cp.CPOptions;
+import choco.kernel.common.util.tools.StringUtils;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import gnu.trove.THashSet;
 
 import java.util.Set;
 
-public final class DomainMerger {
+public final class IntegerVariableMerger {
     public int low;
     public int upp;
     // values is null if domain is bounded
     public int[] values;
     public Set<String> optionsSet;
 
-    public DomainMerger() {
+    public IntegerVariableMerger() {
         optionsSet = new THashSet<String>();
     }
 
-    public DomainMerger(final IntegerVariable v) {
+    public IntegerVariableMerger(final IntegerVariable v) {
         this();
         low = v.getLowB();
         upp = v.getUppB();
         optionsSet.addAll(v.getOptions());
     }
 
-    public void copy(final DomainMerger d) {
+    public void copy(final IntegerVariableMerger d) {
         low = d.low;
         upp = d.upp;
         if (d.values != null) {
@@ -32,6 +33,14 @@ public final class DomainMerger {
             System.arraycopy(d.values, 0, values, 0, values.length);
         }
         optionsSet = d.optionsSet;
+    }
+
+    public IntegerVariable create(){
+        if(values != null){
+           return new IntegerVariable(StringUtils.randomName(), values);
+        }else{
+            return new IntegerVariable(StringUtils.randomName(), low, upp);
+        }
     }
 
     private int[] enumVal() {
@@ -70,6 +79,7 @@ public final class DomainMerger {
                 for (final int anEv2 : ev2) {
                     if (anEv1 == anEv2) {
                         val[size++] = anEv1;
+                        break;
                     }
                 }
             }

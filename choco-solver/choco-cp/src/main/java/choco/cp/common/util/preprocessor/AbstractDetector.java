@@ -20,7 +20,7 @@
  *    Copyright (C) F. Laburthe,                 *
  *                  N. Jussien    1999-2010      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
-package choco.kernel.model.detector;
+package choco.cp.common.util.preprocessor;
 
 import choco.cp.model.CPModel;
 import choco.kernel.common.logging.ChocoLogging;
@@ -57,27 +57,27 @@ public abstract class AbstractDetector {
     /**
      * Internal structure to store constraint addition instructions
      */
-    protected TLongObjectHashMap<Constraint> constraintsToAdd;
+    protected final TLongObjectHashMap<Constraint> constraintsToAdd;
 
     /**
      * Internal structure to store constraint deletion instructions
      */
-    protected TLongObjectHashMap<Constraint> constraintsToDelete;
+    protected final TLongObjectHashMap<Constraint> constraintsToDelete;
 
     /**
      * Internal structure to store variable addition instructions
      */
-    protected TLongObjectHashMap<Variable> variablesToAdd;
+    protected final TLongObjectHashMap<Variable> variablesToAdd;
 
     /**
      * Internal structure to store variable deletion instructions
      */
-    protected TLongObjectHashMap<Variable> variablesToDelete;
+    protected final TLongObjectHashMap<Variable> variablesToDelete;
 
     /**
      * Internal structure to store variable deletion instructions
      */
-    protected THashMap<Variable, Variable> variablesToReplace;
+    protected final THashMap<Variable, Variable> variablesToReplace;
 
     protected AbstractDetector(final CPModel model) {
         this.model = model;
@@ -177,41 +177,45 @@ public abstract class AbstractDetector {
         for(long l : variablesToAdd.keys()){
             final Variable v = variablesToAdd.get(l);
             model.addVariables(v);
-            if(LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.info(String.format("..add variable : %s", v.pretty()));
+            if(LOGGER.isLoggable(Level.CONFIG)) {
+                LOGGER.config(String.format("..add variable : %s", v.pretty()));
             }
         }
         for(long l : constraintsToAdd.keys()){
             final Constraint c = constraintsToAdd.get(l);
             model.addConstraint(c);
-            if(LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.info(String.format("..add constraint : %s", c.pretty()));
+            if(LOGGER.isLoggable(Level.CONFIG)) {
+                LOGGER.config(String.format("..add constraint : %s", c.pretty()));
             }
         }
         for(long l : constraintsToDelete.keys()){
             final Constraint c = constraintsToDelete.get(l);
             model.removeConstraint(c);
-            if(LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.info(String.format("..delete constraint : %s", c.pretty()));
+            if(LOGGER.isLoggable(Level.CONFIG)) {
+                LOGGER.config(String.format("..delete constraint : %s", c.pretty()));
             }
         }
         for(Variable outVar : variablesToReplace.keySet()){
             final Variable inVar = variablesToReplace.get(outVar);
             for(Constraint c : outVar.getConstraints()){
                 c.replaceBy(outVar, inVar);
+                if(!inVar._contains(c)){
+                    inVar._addConstraint(c);
+                }
+                outVar._removeConstraint(c);
             }
             if( inVar.getHook() == IHook.NO_HOOK) {
                 inVar.setHook(outVar.getHook());
             }
-            if(LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.info(String.format("..%s replaced by : %s", outVar.getName(), inVar.getName()));
+            if(LOGGER.isLoggable(Level.CONFIG)) {
+                LOGGER.config(String.format("..%s replaced by : %s", outVar.getName(), inVar.getName()));
             }
         }
         for(long l : variablesToDelete.keys()){
             final Variable v = variablesToDelete.get(l);
             model.removeVariable(v);
-            if(LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.info(String.format("..delete variable : %s", v.pretty()));
+            if(LOGGER.isLoggable(Level.CONFIG)) {
+                LOGGER.config(String.format("..delete variable : %s", v.pretty()));
             }
         } 
     }
@@ -227,4 +231,12 @@ public abstract class AbstractDetector {
         variablesToReplace.clear();
     }
 
+
+    /**
+     * Run apply() and commit()
+     */
+    public final void applyThenCommit(){
+        apply();
+        commit();
+    }
 }
