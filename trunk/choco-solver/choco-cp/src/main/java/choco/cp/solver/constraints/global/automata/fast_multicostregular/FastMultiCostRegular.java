@@ -43,6 +43,7 @@ import gnu.trove.TObjectIntHashMap;
 import org.jgrapht.graph.DirectedMultigraph;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashSet;
 
@@ -100,11 +101,15 @@ public final class FastMultiCostRegular extends AbstractLargeIntSConstraint
      * The last computed Shortest Path
      */
     public int[] lastSp;
+public double lastSpValue;
+
 
     /**
      * The last computed Longest Path
      */
     public int[] lastLp;
+public double lastLpValue;
+
 
 
     /**
@@ -177,7 +182,7 @@ public final class FastMultiCostRegular extends AbstractLargeIntSConstraint
 
     private final IEnvironment environment;
 
-    /**
+/**
      * Constructs a multi-cost-regular constraint propagator
      * @param vars  decision variables
      * @param CR    cost variables
@@ -246,6 +251,9 @@ public final class FastMultiCostRegular extends AbstractLargeIntSConstraint
             this.map.put(vars[i],i);
         }
         this.toRemove = environment.makeIntVector();
+        System.out.println("NB STATES : "+auto.getNbStates());
+            System.out.println("NB ARCS : "+auto.getTransitions().size());
+
 
 
 
@@ -478,7 +486,7 @@ public final class FastMultiCostRegular extends AbstractLargeIntSConstraint
         int nbNSig = 0;
         int nbNSig2 = 0;
         double bestVal = Double.POSITIVE_INFINITY;
-        // Arrays.fill(uUb,0.0);
+        Arrays.fill(uUb,0.0);
         do {
             coeff = 0.0;
             for (int i = 0 ; i < nbR ; i++)
@@ -546,6 +554,7 @@ public final class FastMultiCostRegular extends AbstractLargeIntSConstraint
 
         } while (modif && nbNSig2 < MAXNONIMPROVEITER && k < MAXBOUNDITER);
         this.lastLp = P;
+            this.lastLpValue = lp+coeff;
 
     }
 
@@ -571,7 +580,8 @@ public final class FastMultiCostRegular extends AbstractLargeIntSConstraint
         double bestVal = Double.NEGATIVE_INFINITY;
         int nbNSig = 0;
         int nbNSig2 = 0;
-        //  Arrays.fill(uLb,0.0);
+        Arrays.fill(uLb,0.0);
+        int[] bestPath = new int[vs.length+1];
         do
         {
             coeff = 0.0;
@@ -609,6 +619,7 @@ public final class FastMultiCostRegular extends AbstractLargeIntSConstraint
             if (sp-coeff > bestVal)
             {
                 bestVal = sp-coeff;
+                    System.arraycopy(P,0,bestPath,0,P.length);
             }
 
 
@@ -643,7 +654,8 @@ public final class FastMultiCostRegular extends AbstractLargeIntSConstraint
             }
             k++;
         } while(modif && nbNSig2 < MAXNONIMPROVEITER && k < MAXBOUNDITER);
-        this.lastSp =P;
+        this.lastSp =bestPath;
+            this.lastSpValue = bestVal;
     }
 
 

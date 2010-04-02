@@ -1,6 +1,5 @@
 package choco.model.constraints.global;
 
-import static choco.Choco.*;
 import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -8,13 +7,15 @@ import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static choco.Choco.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by IntelliJ IDEA.

@@ -55,6 +55,7 @@ public enum ConstraintType {
     FASTCOSTREGULAR("fastcostregular", "constraint.fastcostregular", false),
     FASTREGULAR("fastregular", "constraint.fastregular", false),
     FORBIDDEN_INTERVALS("forbidden intervals", "constraint.forbiddenIntervals", false),
+    FLOW("flow constraint","constraint.flow",false),
     GEOST("geost", "constraint.geost", false),
     GEQ("geq", "constraint.geq", true),
     GLOBALCARDINALITY("globalCardinaly", "constraint.globalCardinaly", false),
@@ -119,7 +120,8 @@ public enum ConstraintType {
     public final String property;
     public final boolean canContainExpression;
 
-    ConstraintType(String name, String property, boolean canContainExpression) {
+
+ConstraintType(String name, String property, boolean canContainExpression) {
         this.property = property;
         this.name = name;
         this.canContainExpression = canContainExpression;
