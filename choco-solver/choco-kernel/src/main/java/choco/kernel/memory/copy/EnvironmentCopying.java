@@ -92,6 +92,7 @@ public class EnvironmentCopying extends AbstractEnvironment {
 		}
 		this.saveEnv();
 		currentWorld++;
+        timestamp++;
 	}
 
 	private void saveEnv() {
@@ -111,6 +112,7 @@ public class EnvironmentCopying extends AbstractEnvironment {
     @Override
 	public void worldPop() {
 		save.restore(--currentWorld);
+        timestamp++;
 		clonedWorldIdxStack.pop();
 	}
 

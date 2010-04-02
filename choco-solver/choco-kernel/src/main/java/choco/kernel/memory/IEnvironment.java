@@ -22,16 +22,12 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.memory;
 
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.memory.structure.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Logger;
-
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.memory.structure.IndexedObject;
-import choco.kernel.memory.structure.IntInterval;
-import choco.kernel.memory.structure.PartiallyStoredIntVector;
-import choco.kernel.memory.structure.PartiallyStoredVector;
-import choco.kernel.memory.structure.StoredBipartiteSet;
 
 /* ************************************************
 *           _       _                            *
@@ -61,52 +57,6 @@ public interface IEnvironment {
 	 * Reference to an object for logging trace statements related memory & backtrack (using the java.util.logging package)
 	 */
 	final static Logger LOGGER = ChocoLogging.getEngineLogger();
-	
-//    /**
-//     * Index of the {@link choco.kernel.memory.trailing.trail.StoredBoolTrail} for storing booleans.
-//     */
-//
-//    final int BOOL_TRAIL = 0;
-//    /**
-//     * Index of the {@link choco.kernel.memory.trailing.trail.StoredIntTrail} for storing integers.
-//     */
-//
-//    final int INT_TRAIL = 1;
-//    /**
-//     * Index of the {@link choco.kernel.memory.trailing.trail.StoredVectorTrail} for storing vectors.
-//     */
-//
-//    final int VECTOR_TRAIL = 2;
-//    /**
-//     * Index of the {@link choco.kernel.memory.trailing.trail.StoredIntVectorTrail} for storing
-//     * integer vectors.
-//     *
-//     */
-//
-//    final int INT_VECTOR_TRAIL = 3;
-//    /**
-//     * Index of the {@link choco.kernel.memory.trailing.trail.StoredDoubleTrail} for storing
-//     * integer vectors.
-//     *
-//     */
-//
-//    final int FLOAT_TRAIL = 4;
-//    /**
-//     * Index of the {@link choco.kernel.memory.trailing.trail.StoredLongTrail} for storing
-//     * integer vectors.
-//     *
-//     */
-//
-//    final int LONG_TRAIL = 5;
-//
-//
-//    /**
-//     * Index of the {@link choco.kernel.memory.trailing.StoredBinaryTree} for storing
-//     * integer vectors.
-//     *
-//     */
-//    final int BTREE_TRAIL = 6;
-
 
     /**
      * Returns the world number.
@@ -115,6 +65,12 @@ public interface IEnvironment {
      */
 
     int getWorldIndex();
+
+    /**
+     * Returns the time stamp of the world (only change during worldPush.
+     * @return
+     */
+    long getWorldTimeStamp();
 
     /**
      * Starts a new branch in the search tree.
@@ -134,40 +90,6 @@ public interface IEnvironment {
 	 * Not used yet.
 	 */
     void worldCommit();
-
-
-//    /**
-//     *  Record the last branching choice in the Environment.
-//     */
-//
-//    void pushContext(IntBranchingTrace ctx);
-//
-//    /**
-//     *  Attaches a given search solver to this Environment
-//     */
-//
-//    void setSearchSolver(AbstractGlobalSearchSolver solver);
-//
-//    /**
-//     *  Record the last world index where the search failed
-//     */
-//
-//    void setLastFail(int worldIndex);
-//
-//    /**
-//     *  For recomputation, get how many times worlds have been saved
-//     */
-//
-//    int getHowManySaves();
-//
-//    /**
-//     *  Return the index of the last saved world
-//     */
-//
-//    int getLastSavedWorldIndex();
-//
-
-
 
     /**
      * Factory pattern: new IStateInt objects are created by the environment

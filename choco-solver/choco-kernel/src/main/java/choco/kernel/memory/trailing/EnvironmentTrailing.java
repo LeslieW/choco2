@@ -98,6 +98,7 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 		longTrail.worldPush();
 		btreeTrail.worldPush();
 		currentWorld++;
+        timestamp++;
 		if (currentWorld + 1 == maxWorld) {
 			resizeWorldCapacity(maxWorld * 3 / 2);
 		}
@@ -116,6 +117,7 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 		longTrail.worldPop();
 		btreeTrail.worldPop();
 		currentWorld--;
+        timestamp++;
 	}
 
 	@Override
@@ -133,6 +135,7 @@ public final class EnvironmentTrailing extends AbstractEnvironment {
 		longTrail.worldCommit();
 		btreeTrail.worldCommit();
 		currentWorld--;
+        timestamp++;
 	}
 
 	@Override
