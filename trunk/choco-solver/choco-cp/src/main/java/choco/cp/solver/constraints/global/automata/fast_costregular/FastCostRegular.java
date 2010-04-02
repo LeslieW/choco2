@@ -35,6 +35,7 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
     TIntStack toRemove;
     IStateBool boundChange;
     int lastWorld = -1;
+    long lastWorldStamp = -1;
     protected final IEnvironment environment;
 
 
@@ -435,7 +436,8 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
     protected void checkWorld()
     {
         int current = environment.getWorldIndex();
-        if (current < lastWorld)
+        long currentstamp = environment.getWorldTimeStamp();
+        if (current < lastWorld || (current == lastWorld && currentstamp != lastWorldStamp))
         {
             this.toRemove.reset();
             this.graph.inStack.clear();
@@ -443,6 +445,7 @@ public class FastCostRegular extends AbstractLargeIntSConstraint{
             this.graph.toUpdateRight.reset();
         }
         lastWorld = current;
+        lastWorldStamp = currentstamp;
     }
 
 
