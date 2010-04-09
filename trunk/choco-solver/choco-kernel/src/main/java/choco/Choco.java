@@ -38,7 +38,6 @@ import choco.kernel.model.constraints.pack.PackModeler;
 import choco.kernel.model.variables.ConstantFactory;
 import choco.kernel.model.variables.Operator;
 import choco.kernel.model.variables.Variable;
-import choco.kernel.model.variables.flow.CapaEdge;
 import choco.kernel.model.variables.geost.GeostObject;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.model.variables.integer.IntegerConstantVariable;
@@ -3660,13 +3659,13 @@ public class Choco{
 	}
 
 
-
+       /*     Commented, waiting pending license auhtorization
         public static Constraint flow(CapaEdge[][] graph, IntegerVariable flow)
         {
                 throw new UnsupportedOperationException();
                 // TODO : Julien : Need correction and license agreement from Bouygues e-lab
-                //return new ComponentConstraint(ConstraintType.FLOW,null,ArrayUtils.append(ArrayUtils.flatten(graph),new Variable[]{flow}));
-        }
+               //return new ComponentConstraint(ConstraintType.FLOW,null,ArrayUtils.append(ArrayUtils.flatten(graph),new Variable[]{flow}));
+        } */
 
 
 	/**
