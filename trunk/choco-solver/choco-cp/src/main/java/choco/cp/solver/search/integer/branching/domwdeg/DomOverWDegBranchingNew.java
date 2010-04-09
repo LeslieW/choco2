@@ -37,9 +37,10 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
  * WARNING ! This implementation suppose that the variables will not change. It copies all variables in an array
  * at the beginning !!
  */
-public class DomOverWDegBranchingNew extends AbstractDomOverWDegBranching {
+public final class DomOverWDegBranchingNew extends AbstractDomOverWDegBranching {
 
 	private final ValIterator valIterator;
+
 
 	// Le constructeur avec :
 	// * le solver pour fournir les variables
@@ -50,26 +51,19 @@ public class DomOverWDegBranchingNew extends AbstractDomOverWDegBranching {
 	}
 
 	@Override
-	public boolean finishedBranching(IntBranchingDecision decision) {
-		final IntDomainVar var = decision.getBranchingIntVar();
-		if (valIterator.hasNextVal(var, decision.getBranchingValue())) {
-			return false;
-		} else {
-			updateVarWeights(var, false);
-			return true;
-		}
-	}
-
-	@Override
 	public String getDecisionLogMessage(IntBranchingDecision decision) {
 		return getDefaultAssignMsg(decision);
+	}
+	
+	@Override
+	protected int getExpectedUpdateWeightsCount() {
+		return solver.getSearchStrategy().getSearchLoop().getDepthCount();
 	}
 
 	@Override
 	public void goDownBranch(IntBranchingDecision decision)
 	throws ContradictionException {
 		decision.setIntVal();
-
 	}
 
 	@Override
@@ -83,7 +77,7 @@ public class DomOverWDegBranchingNew extends AbstractDomOverWDegBranching {
 	@Override
 	public void setFirstBranch(IntBranchingDecision decision) {
 		final IntDomainVar var = decision.getBranchingIntVar();
-		updateVarWeights(var, true);
+		decreaseVarWeights(var);
 		decision.setBranchingValue( valIterator.getFirstVal(var));
 	}
 
@@ -93,6 +87,18 @@ public class DomOverWDegBranchingNew extends AbstractDomOverWDegBranching {
 				valIterator.getNextVal(decision.getBranchingIntVar(), decision.getBranchingValue()) 
 		);
 	}
+	
+	@Override
+	public boolean finishedBranching(IntBranchingDecision decision) {
+		final IntDomainVar var = decision.getBranchingIntVar();
+		if (valIterator.hasNextVal(var, decision.getBranchingValue())) {
+			return false;
+		} else {
+			increaseVarWeights(var);
+			return true;
+		}
+	}
+
 }
 
 

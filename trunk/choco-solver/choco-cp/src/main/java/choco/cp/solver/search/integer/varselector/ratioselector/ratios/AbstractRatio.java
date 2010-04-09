@@ -37,7 +37,7 @@ public abstract class AbstractRatio implements IntRatio {
 
 	@Override
 	public String toString() {
-		return getIntVar().toString();
+		return getIntVar().toString()+"->"+getDividend()+"/"+getDivisor();
 	}
 
 	@Override

@@ -31,9 +31,9 @@ import choco.kernel.solver.constraints.global.scheduling.IPrecedence;
 import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public class TaskOverWDegBinBranching extends AbstractDomOverWDegBinBranching {
+public final class TaskOverWDegBinBranching extends AbstractDomOverWDegBinBranching {
 	
-	protected OrderingValSelector precValSelector;
+	private final OrderingValSelector precValSelector;
 	
 	public TaskOverWDegBinBranching(Solver solver, IPrecedenceRatio[] varRatios, OrderingValSelector valHeuri, Number seed) {
 		super(solver, varRatios, seed);
@@ -41,28 +41,38 @@ public class TaskOverWDegBinBranching extends AbstractDomOverWDegBinBranching {
 	}
 		
 	public void setFirstBranch(final IntBranchingDecision decision) {
-		decision.setBranchingValue(precValSelector.getBestVal( (IPrecedence) decision.getBranchingObject()));
+		final IPrecedence brObj =  (IPrecedence) decision.getBranchingObject();
+		decision.setBranchingValue(precValSelector.getBestVal( brObj));
+		decreaseVarWeights( brObj.getBoolVar());
 	}
+
+	@Override
+	public void setNextBranch(IntBranchingDecision decision) {
+		if( updateWeightsCount == getExpectedUpdateWeightsCount() ) {
+			increaseVarWeights( ((IPrecedence) decision.getBranchingObject()).getBoolVar());
+		} else updateWeightsCount = Integer.MIN_VALUE;
+		super.setNextBranch(decision);
+	}
+
+	
 
 	@Override
 	public void goDownBranch(final IntBranchingDecision decision) throws ContradictionException {
 		final IntDomainVar v = ( (IPrecedence) decision.getBranchingObject()).getBoolVar();
 		if (decision.getBranchIndex() == 0) {
-			updateVarWeights( v, true);
 			v.setVal(decision.getBranchingValue());
 		} else {
 			assert decision.getBranchIndex() == 1;
-			updateVarWeights( v, false);
 			v.remVal(decision.getBranchingValue());
 		}
 	}
 
 	@Override
 	public Object selectBranchingObject() throws ContradictionException {
+		reinitBranching();
 		IntRatio best = getRatioSelector().selectIntRatio();
 		return best == null ? null :  ( (IPrecedenceRatio) best).getPrecedence();
 	}
-	
-	
+
 	
 }

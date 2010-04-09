@@ -81,5 +81,12 @@ public final class SimpleRatio extends AbstractRatio {
 	public final void setDivisor(int divisor) {
 		assert divisor >= 0;
 		this.divisor = divisor;
-	}	
+	}
+
+	@Override
+	public String toString() {
+		return getDividend()+"/"+getDivisor();
+	}
+	
+	
 }

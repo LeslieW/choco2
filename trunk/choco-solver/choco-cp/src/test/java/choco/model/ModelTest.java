@@ -22,11 +22,28 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model;
 
-import static choco.Choco.*;
+import static choco.Choco.eq;
+import static choco.Choco.inverseChanneling;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.makeIntVarArray;
+import static choco.Choco.minus;
+import static choco.Choco.neq;
+import static choco.Choco.plus;
+import static java.lang.System.currentTimeMillis;
+
+import java.text.MessageFormat;
+import java.util.Iterator;
+import java.util.logging.Logger;
+
+import junit.framework.Assert;
+
+import org.junit.Ignore;
+import org.junit.Test;
+
 import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.cp.solver.search.integer.branching.DomOverWDegBranching2;
+import choco.cp.solver.search.BranchingFactory;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.common.util.tools.StringUtils;
@@ -35,14 +52,6 @@ import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import junit.framework.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import static java.lang.System.currentTimeMillis;
-import java.text.MessageFormat;
-import java.util.Iterator;
-import java.util.logging.Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -89,7 +98,7 @@ public class ModelTest {
 		CPSolver s1 = new CPSolver();
 		s1.read(m);
 		//        s1.setVarIntSelector(new DomOverWDeg(s1, s1.getVar(queens)));
-		s1.attachGoal(new DomOverWDegBranching2(s1, new IncreasingDomain(), s1.getVar(queens)));
+		s1.attachGoal(BranchingFactory.incDomWDeg(s1, s1.getVar(queens), new IncreasingDomain()));
 
 		m.addOptions(CPOptions.V_NO_DECISION, queensdual);
 		Solver s2 = new CPSolver();

@@ -29,7 +29,7 @@ import choco.kernel.solver.search.IntBranchingDecision;
 import choco.kernel.solver.search.integer.ValSelector;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 
-public class DomOverWDegBinBranchingNew extends AbstractDomOverWDegBinBranching {
+public final class DomOverWDegBinBranchingNew extends AbstractDomOverWDegBinBranching {
 
 	// L'heuristique pour le valeurs
 	protected final ValSelector valSelector;
@@ -42,20 +42,27 @@ public class DomOverWDegBinBranchingNew extends AbstractDomOverWDegBinBranching 
 
 	public void setFirstBranch(final IntBranchingDecision decision) {
 		decision.setBranchingValue(valSelector.getBestVal(decision.getBranchingIntVar()));
+		decreaseVarWeights(decision.getBranchingIntVar());
 	}
+
+	@Override
+	public void setNextBranch(IntBranchingDecision decision) {
+		logOnWeightsCount();
+		if( updateWeightsCount == getExpectedUpdateWeightsCount() + 1 ) increaseVarWeights(decision.getBranchingIntVar());
+		else updateWeightsCount = Integer.MIN_VALUE;
+		super.setNextBranch(decision);
+	}
+
 
 	@Override
 	public void goDownBranch(final IntBranchingDecision decision) throws ContradictionException {
 		if (decision.getBranchIndex() == 0) {
-			updateVarWeights( decision.getBranchingIntVar(), true);
 			decision.setIntVal();
 		} else {
 			assert decision.getBranchIndex() == 1;
-			updateVarWeights( decision.getBranchingIntVar(), false);
 			decision.remIntVal();
 		}
 	}
-
 
 
 }

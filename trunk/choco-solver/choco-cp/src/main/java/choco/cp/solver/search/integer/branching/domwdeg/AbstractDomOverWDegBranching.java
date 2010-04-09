@@ -23,6 +23,7 @@
 package choco.cp.solver.search.integer.branching.domwdeg;
 
 import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.addConstraintExtension;
+import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.addFailure;
 import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.addIncFailure;
 import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.computeWeightedDegreeFromScratch;
 import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.getConstraintExtension;
@@ -40,6 +41,7 @@ import choco.cp.solver.search.integer.varselector.ratioselector.IntVarRatioSelec
 import choco.cp.solver.search.integer.varselector.ratioselector.MinRatioSelector;
 import choco.cp.solver.search.integer.varselector.ratioselector.RandMinRatioSelector;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.IntRatio;
+import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.AbstractLargeIntBranchingStrategy;
@@ -55,9 +57,12 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 	protected final Solver solver;
 
 	protected final IntRatio[] varRatios;
-	
+
 	private IntVarRatioSelector ratioSelector;
 	
+	//helps to synchronize incremental weights
+	protected int updateWeightsCount;
+
 	public AbstractDomOverWDegBranching(Solver solver, IntRatio[] varRatios, Number seed) {
 		super();
 		this.solver = solver;
@@ -74,9 +79,10 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 		return solver;
 	}
 
-	protected final IntVarRatioSelector getRatioSelector() {
+	public final IntVarRatioSelector getRatioSelector() {
 		return ratioSelector;
 	}
+	
 
 	@Override
 	public void cancelRandomBreakTies() {
@@ -87,7 +93,7 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 	@Override
 	public void setRandomBreakTies(long seed) {
 		ratioSelector = new RandMinRatioSelector(solver, varRatios, seed);
-		
+
 	}
 
 
@@ -97,40 +103,83 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 
 	@Override
 	public void initConstraintForBranching(SConstraint c) {
-		//FIXME already called in the constructor ?
 		addConstraintExtension(c);
 	}
 
+	protected final void logOnWeightsCount() {
+		//LOGGER.info(updateWeightsCount +" == "+getExpectedUpdateWeightsCount());
+		//ChocoLogging.flushLogs();
+	}
+	protected abstract int getExpectedUpdateWeightsCount();
 	
 	@Override
-	public void initBranching() {
-		for (int i = 0; i < solver.getNbIntVars(); i++) {
-			// Pour etre sur, on verifie toutes les contraintes... au cas ou une d'entre elle serait deja instantiee !!
+	public final void initBranching() {
+		final int n = solver.getNbIntVars();
+		for (int i = 0; i < n; i++) {
 			final Var v = solver.getIntVar(i);
 			getVarExtension(v).set(computeWeightedDegreeFromScratch(v));
 		}
+		updateWeightsCount =  getExpectedUpdateWeightsCount();
 	}
 
-	protected final void updateVarWeights(Var currentVar, boolean assign) {
-		for (Iterator<SConstraint> iter = currentVar.getConstraintsIterator(); iter.hasNext();) {
-			final SConstraint cstr = iter.next();
-			if (SConstraintType.INTEGER.equals(cstr.getConstraintType()) && hasTwoNotInstVars(cstr) ) {
-				int delta = assign ? -getConstraintExtension(cstr).get() : getConstraintExtension(cstr).get();
-				//System.out.println("branching "+reuseCstr.pretty()+" "+getConstraintExtension(reuseCstr).getNbFailure());
-				for (int k = 0; k < cstr.getNbVars(); k++) {
-					AbstractVar var = (AbstractVar) cstr.getVar(k);
-					if (var != currentVar && !var.isInstantiated()) {
-						getVarExtension(var).add(delta);
-					}
+	protected final void reinitBranching() {
+		logOnWeightsCount();
+		if( updateWeightsCount != getExpectedUpdateWeightsCount()) initBranching();
+	}
+
+	private void updateVarWeights(final Var currentVar, final SConstraint<?> cstr, final int delta) {
+		//TODO retrieve index of the variable and duplicate loop ?
+		if(delta != 0) {
+			final int n = cstr.getNbVars();
+			for (int k = 0; k < n; k++) {
+				final AbstractVar var = (AbstractVar) cstr.getVarQuick(k);
+				if (var != currentVar && ! var.isInstantiated()) {
+					getVarExtension(var).add(delta);
+					assert getVarExtension(var).get() >= 0; //check robustness of the incremental weights
 				}
 			}
 		}
 	}
 
-	public final void contradictionOccured(ContradictionException e) {
-		addIncFailure(e.getDomOverDegContradictionCause());
+
+	private boolean isDisconnected(SConstraint<?> cstr) {
+		return SConstraintType.INTEGER.equals(cstr.getConstraintType()) && hasTwoNotInstVars(cstr); 
 	}
 
+	protected final void increaseVarWeights(final Var currentVar) {
+		updateWeightsCount--;
+		final Iterator<SConstraint> iter = currentVar.getConstraintsIterator();
+		while(iter.hasNext()) {
+			final SConstraint cstr = iter.next();
+			if (isDisconnected(cstr) ) {
+				updateVarWeights(currentVar, cstr, getConstraintExtension(cstr).get());
+			}
+		}
+	}
+
+	protected final void decreaseVarWeights(final Var currentVar) {
+		updateWeightsCount++;
+		final Iterator<SConstraint> iter = currentVar.getConstraintsIterator();
+		while(iter.hasNext()) {
+			final SConstraint cstr = iter.next();
+			if (isDisconnected(cstr) ) {
+				updateVarWeights(currentVar, cstr, getConstraintExtension(cstr).get());
+			}
+		}
+	}
+
+	@Override
+	public final void contradictionOccured(ContradictionException e) {
+		logOnWeightsCount();
+		if( updateWeightsCount == getExpectedUpdateWeightsCount() ) {
+			addIncFailure(e.getDomOverDegContradictionCause());
+		} else {
+			//weights are already out-of-date
+			addFailure(e.getDomOverDegContradictionCause());
+		}
+	}
+
+	
 	@Override
 	public final void safeDelete() {
 		solver.getPropagationEngine().removePropagationEngineListener(this);
@@ -139,16 +188,16 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 	//*******************  Variable Selection *************************//
 	//***************************************************************//
 
-
 	public Object selectBranchingObject() throws ContradictionException {
+		reinitBranching();
 		return ratioSelector.selectIntVar();
 	}
-
+	
 	@Override
 	public String toString() {
 		return getVariableIncWDeg(solver) + "\n" + getConstraintFailures(solver);
 	}
 
-	
+
 
 }

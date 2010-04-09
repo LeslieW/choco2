@@ -23,18 +23,12 @@
 package choco.cp.solver.search.integer.varselector.ratioselector;
 
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.IntRatio;
-import choco.cp.solver.search.integer.varselector.ratioselector.ratios.SimpleRatio;
 import choco.kernel.solver.Solver;
 
 public class RandMinRatioSelector extends AbstractRandomizedRatioSelector {
 
 	public RandMinRatioSelector(Solver solver, IntRatio[] ratios, long seed) {
 		super(solver, ratios, seed);
-	}
-
-	@Override
-	protected final void reset(SimpleRatio bestR) {
-		bestR.setMaxRatioValue();	
 	}
 
 	@Override

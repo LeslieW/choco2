@@ -22,8 +22,17 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.integer;
 
+import static choco.Choco.eq;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.minus;
+import static choco.Choco.plus;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import choco.Choco;
-import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.model.Model;
@@ -31,10 +40,6 @@ import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * Created by IntelliJ IDEA.
@@ -104,7 +109,7 @@ public class EqTest {
 
     @Test
     public void test5(){
-        IntegerVariable v = Choco.makeIntVar("v", -2, 0);
+    	IntegerVariable v = Choco.makeIntVar("v", -2, 0);
         Constraint c = eq(v, plus(v,0));
         m.addConstraint(c);
         s.read(m);

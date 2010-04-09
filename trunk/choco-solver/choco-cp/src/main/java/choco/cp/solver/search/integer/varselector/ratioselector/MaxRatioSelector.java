@@ -23,7 +23,6 @@
 package choco.cp.solver.search.integer.varselector.ratioselector;
 
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.IntRatio;
-import choco.cp.solver.search.integer.varselector.ratioselector.ratios.SimpleRatio;
 import choco.kernel.solver.Solver;
 
 
@@ -31,11 +30,6 @@ public class MaxRatioSelector extends AbstractIntVarRatioSelector {
 	
 	public MaxRatioSelector(Solver solver, IntRatio[] ratios) {
 		super(solver, ratios);
-	}
-	
-	@Override
-	protected final void reset(SimpleRatio bestR) {
-		bestR.setZeroRatioValue();	
 	}
 
 	@Override
