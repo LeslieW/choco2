@@ -22,8 +22,42 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.visu;
 
+import static choco.Choco.allDifferent;
+import static choco.Choco.eq;
+import static choco.Choco.leq;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.makeIntVarArray;
+import static choco.Choco.minus;
+import static choco.Choco.neq;
+import static choco.Choco.plus;
+import static choco.Choco.scalar;
+import static choco.Choco.sum;
+import static choco.visu.components.papplets.ChocoPApplet.FULLDOMAIN;
+import static choco.visu.components.papplets.ChocoPApplet.GRID;
+import static choco.visu.components.papplets.ChocoPApplet.SUDOKU;
+import static choco.visu.components.papplets.ChocoPApplet.TREESEARCH;
+import static samples.seminar.ExDonaldGeraldRobert._a;
+import static samples.seminar.ExDonaldGeraldRobert._b;
+import static samples.seminar.ExDonaldGeraldRobert._d;
+import static samples.seminar.ExDonaldGeraldRobert._e;
+import static samples.seminar.ExDonaldGeraldRobert._g;
+import static samples.seminar.ExDonaldGeraldRobert._l;
+import static samples.seminar.ExDonaldGeraldRobert._n;
+import static samples.seminar.ExDonaldGeraldRobert._o;
+import static samples.seminar.ExDonaldGeraldRobert._r;
+import static samples.seminar.ExDonaldGeraldRobert._t;
+import static samples.seminar.ExDonaldGeraldRobert.modelIt2;
+import gnu.trove.TIntObjectHashMap;
+import gnu.trove.TObjectIntHashMap;
+
+import java.awt.GraphicsEnvironment;
+import java.util.logging.Logger;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import samples.Picross;
 import choco.Choco;
-import static choco.Choco.*;
 import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -37,17 +71,11 @@ import choco.kernel.model.variables.Variable;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.visu.components.panels.VarChocoPanel;
-import static choco.visu.components.papplets.ChocoPApplet.*;
-import choco.visu.papplet.*;
-import gnu.trove.TIntObjectHashMap;
-import gnu.trove.TObjectIntHashMap;
-import org.junit.Before;
-import org.junit.Test;
-import samples.Picross;
-import static samples.seminar.ExDonaldGeraldRobert.*;
-
-import java.awt.*;
-import java.util.logging.Logger;
+import choco.visu.papplet.ColoringPApplet;
+import choco.visu.papplet.DonaldAndFriendsPApplet;
+import choco.visu.papplet.KnapsackPApplet;
+import choco.visu.papplet.PicrossPApplet;
+import choco.visu.papplet.QueenBoardPApplet;
 
 /*
  * Created by IntelliJ IDEA.

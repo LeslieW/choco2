@@ -23,7 +23,6 @@
 package choco.cp.solver.search.integer.varselector.ratioselector;
 
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.IntRatio;
-import choco.cp.solver.search.integer.varselector.ratioselector.ratios.SimpleRatio;
 import choco.kernel.solver.Solver;
 
 
@@ -34,11 +33,6 @@ public class MinRatioSelector extends AbstractIntVarRatioSelector {
 	}
 	
 	
-	@Override
-	protected void reset(SimpleRatio bestR) {
-		bestR.setMaxRatioValue();	
-	}
-
 	@Override
 	protected boolean isUp(long leftM, long rightM) {
 		return leftM > rightM;

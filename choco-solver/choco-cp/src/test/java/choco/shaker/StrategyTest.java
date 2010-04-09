@@ -22,6 +22,19 @@
  **************************************************/
 package choco.shaker;
 
+import java.util.List;
+import java.util.Random;
+import java.util.logging.Logger;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import samples.Examples.GolombRuler;
+import samples.Examples.MagicSquare;
+import samples.Examples.PatternExample;
+import samples.Examples.Queen;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valiterator.DecreasingDomain;
@@ -31,18 +44,6 @@ import choco.cp.solver.search.integer.varselector.MaxValueDomain;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.shaker.tools.search.IntBranchingFactory;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import samples.Examples.GolombRuler;
-import samples.Examples.MagicSquare;
-import samples.Examples.PatternExample;
-import samples.Examples.Queen;
-
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Logger;
 
 /*
 * User : charles

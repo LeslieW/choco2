@@ -42,6 +42,7 @@ import choco.cp.solver.constraints.BitFlags;
 import choco.cp.solver.constraints.global.scheduling.disjunctive.Disjunctive;
 import choco.cp.solver.constraints.global.scheduling.disjunctive.Disjunctive.Rule;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
@@ -241,6 +242,7 @@ public class TestDisjunctive {
 	
 	@Test
 	public void testExampleDisjunctiveWebSite() {
+		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
 		final DisjunctiveWebEx cwe = new DisjunctiveWebEx();
 		cwe.execute(Boolean.FALSE);
 		final Number obj = cwe._s.getObjectiveValue();

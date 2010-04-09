@@ -23,6 +23,8 @@
 package choco.cp.solver.search.integer.branching.domwdeg;
 
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.IntRatio;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.memory.IStateInt;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.IntBranchingDecision;
@@ -30,13 +32,21 @@ import choco.kernel.solver.search.IntBranchingDecision;
 public abstract class AbstractDomOverWDegBinBranching extends
 		AbstractDomOverWDegBranching {
 
+	protected final IStateInt nbRightBranches;
+
 	public AbstractDomOverWDegBinBranching(Solver solver, IntRatio[] varRatios, Number seed) {
 		super(solver, varRatios, seed);
+		nbRightBranches = solver.getEnvironment().makeInt();
+	}
+	
+	
+	@Override
+	protected int getExpectedUpdateWeightsCount() {
+		return solver.getSearchStrategy().getSearchLoop().getDepthCount() - nbRightBranches.get();
 	}
 
 	public final void getNextBranch(final IntBranchingDecision decision) {
 		assert decision.getBranchIndex() == 0;
-	
 	}
 
 	public final boolean finishedBranching(final IntBranchingDecision decision) {
@@ -60,8 +70,9 @@ public abstract class AbstractDomOverWDegBinBranching extends
 	 * nothing to do
 	 */
 	@Override
-	public final void setNextBranch(IntBranchingDecision decision) {
-		//nothing to do
+	public void setNextBranch(IntBranchingDecision decision) {
+		assert decision.getBranchIndex() == 0;
+		nbRightBranches.add(1);
 	}
-
+	
 }

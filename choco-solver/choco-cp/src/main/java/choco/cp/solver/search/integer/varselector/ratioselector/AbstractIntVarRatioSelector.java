@@ -66,7 +66,7 @@ public abstract class AbstractIntVarRatioSelector extends AbstractSearchHeuristi
 		return ratios;
 	}
 
-	
+
 	private long getLeftMember(int idx) {
 		return bestRatio.getLeftMember(ratios[idx]);
 	}
@@ -75,58 +75,63 @@ public abstract class AbstractIntVarRatioSelector extends AbstractSearchHeuristi
 		return bestRatio.getRightMember(ratios[idx]);
 	}
 
-	protected abstract void reset(SimpleRatio bestR);
-	
 	protected abstract boolean isUp(long leftM, long rightM);
-	
+
 	private void initialize() {
 		reuseIdx =begin.get();
 		while(reuseIdx < ratios.length && ! ratios[reuseIdx].isActive()) {reuseIdx++;}
 		begin.set(reuseIdx);
-		reset(bestRatio);
 	}
+
 
 	protected final int selectRandIntRatioIndex(final Random randomBreakTies, final TIntArrayList canWriteList) {
 		initialize();
-		canWriteList.resetQuick();
-		while(reuseIdx < ratios.length) {
-			if( ratios[reuseIdx].isActive() ) {
-				final long leftM = getLeftMember(reuseIdx);
-				final long rightM = getRightMember(reuseIdx);
-				if(isUp(leftM, rightM)) {
-					canWriteList.resetQuick();
-					canWriteList.add(reuseIdx);
-					bestRatio.setRatio(ratios[reuseIdx]);
-				}else if( leftM == rightM) {
-					canWriteList.add(reuseIdx);
-				}
-			}
+		if(reuseIdx < ratios.length) {
+			canWriteList.resetQuick();
+			canWriteList.add(reuseIdx);
+			bestRatio.setRatio(ratios[reuseIdx]);
 			reuseIdx++;
+			while(reuseIdx < ratios.length) {
+				if( ratios[reuseIdx].isActive() ) {
+					final long leftM = getLeftMember(reuseIdx);
+					final long rightM = getRightMember(reuseIdx);
+					if(isUp(leftM, rightM)) {
+						canWriteList.resetQuick();
+						canWriteList.add(reuseIdx);
+						bestRatio.setRatio(ratios[reuseIdx]);
+					}else if( leftM == rightM) {
+						canWriteList.add(reuseIdx);
+					}
+				}
+				reuseIdx++;
+			}
+			final int n = canWriteList.size();
+			switch (canWriteList.size()) {
+			case 1:return canWriteList.get(0);
+			default: return canWriteList.get( randomBreakTies.nextInt(n));
+			}
 		}
-		final int n = canWriteList.size();
-		switch (canWriteList.size()) {
-		case 0:return NULL;
-		case 1:return canWriteList.get(0);
-		default: return canWriteList.get( randomBreakTies.nextInt(n));
-		}
+		return NULL;
 	}
-	
+
 	@Override
 	public int selectIntRatioIndex() {
 		initialize();
 		int bestIdx = NULL;
-		while(reuseIdx < ratios.length) {
-			if( ratios[reuseIdx].isActive() ) {
-				//ChocoLogging.getMainLogger().info( ""+( ( (double) ratios[reuseIdx].getDividend()) / ratios[reuseIdx].getDivisor()));	
-				//ChocoLogging.flushLogs();
-				if( isUp(getLeftMember(reuseIdx), getRightMember(reuseIdx))) {
-					bestIdx = reuseIdx;
-					bestRatio.setRatio(ratios[reuseIdx]);
-				}
-			}
+		if(reuseIdx < ratios.length) {
+			bestIdx = reuseIdx;
+			bestRatio.setRatio(ratios[reuseIdx]);
 			reuseIdx++;
+			while(reuseIdx < ratios.length) {
+				if( ratios[reuseIdx].isActive() ) {
+					if( isUp(getLeftMember(reuseIdx), getRightMember(reuseIdx))) {
+						bestIdx = reuseIdx;
+						bestRatio.setRatio(ratios[reuseIdx]);
+					}
+				}
+				reuseIdx++;
+			}
 		}
-		//if( bestIdx >=0) ChocoLogging.getMainLogger().info( "best "+( ( (double) ratios[bestIdx].getDividend()) / ratios[bestIdx].getDivisor()));
 		return bestIdx;
 	}
 
@@ -154,20 +159,24 @@ public abstract class AbstractIntVarRatioSelector extends AbstractSearchHeuristi
 	public final List<IntDomainVar> selectTiedIntVars() {
 		initialize();
 		final List<IntDomainVar> vars = new LinkedList<IntDomainVar>();
-		initialize();
-		while(reuseIdx < ratios.length) {
-			if( ratios[reuseIdx].isActive() ) {
-				final long leftM = getLeftMember(reuseIdx);
-				final long rightM = getRightMember(reuseIdx);
-				if(isUp(leftM, rightM)) {
-					vars.clear();
-					bestRatio.setRatio(ratios[reuseIdx]);
-					vars.add(ratios[reuseIdx].getIntVar());
-				}else if( leftM == rightM) {
-					vars.add(ratios[reuseIdx].getIntVar());
-				}
-			}
+		if(reuseIdx < ratios.length) {
+			vars.add(ratios[reuseIdx].getIntVar());
+			bestRatio.setRatio(ratios[reuseIdx]);
 			reuseIdx++;
+			while(reuseIdx < ratios.length) {
+				if( ratios[reuseIdx].isActive() ) {
+					final long leftM = getLeftMember(reuseIdx);
+					final long rightM = getRightMember(reuseIdx);
+					if(isUp(leftM, rightM)) {
+						vars.clear();
+						bestRatio.setRatio(ratios[reuseIdx]);
+						vars.add(ratios[reuseIdx].getIntVar());
+					}else if( leftM == rightM) {
+						vars.add(ratios[reuseIdx].getIntVar());
+					}
+				}
+				reuseIdx++;
+			}
 		}
 		return vars;
 	}
@@ -194,7 +203,7 @@ abstract class AbstractRandomizedRatioSelector extends AbstractIntVarRatioSelect
 		return super.selectRandIntRatioIndex(randomBreakTies, reuseList);
 	}
 
-	
+
 }
 
 

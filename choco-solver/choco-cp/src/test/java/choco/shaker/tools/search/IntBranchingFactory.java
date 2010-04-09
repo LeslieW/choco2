@@ -22,6 +22,7 @@
  **************************************************/
 package choco.shaker.tools.search;
 
+import choco.cp.solver.search.BranchingFactory;
 import choco.cp.solver.search.integer.branching.*;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
@@ -124,11 +125,11 @@ public class IntBranchingFactory {
                 }
                 break;
             case DOMOWERWDEG:
-                ib = new DomOverWDegBranching2(s, valif.make(r), vars);
+                ib = BranchingFactory.incDomWDeg(s, vars, valif.make(r));
                 break;
 
             case DOMOWERWDEGBIN:
-                ib = new DomOverWDegBinBranching2(s, valsf.make(r), vars);
+                ib = BranchingFactory.incDomWDegBin(s, vars, valsf.make(r));
                 break;
             case IMPACT:
                 ib = new ImpactBasedBranching(s, vars);

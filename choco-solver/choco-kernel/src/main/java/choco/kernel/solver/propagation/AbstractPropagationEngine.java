@@ -103,7 +103,8 @@ public abstract class AbstractPropagationEngine implements PropagationEngine {
     }
 
     public final void addPropagationEngineListener(PropagationEngineListener listener) {
-		propagationEngineListeners.add(listener);
+		assert ! propagationEngineListeners.contains(listener);
+    	propagationEngineListeners.add(listener);
 	}
 
 	/**
