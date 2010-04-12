@@ -27,7 +27,6 @@ import choco.cp.solver.search.integer.branching.AssignOrForbidIntVarVal;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.MinDomain;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import static choco.kernel.common.util.tools.StringUtils.pad;
 import choco.kernel.memory.copy.EnvironmentCopying;
 import choco.kernel.model.Model;
@@ -48,15 +47,14 @@ public class RecomputationTest {
 
         @Test
         public void donaldGeraldRobert(){
-           //ChocoLogging.setVerbosity(Verbosity.SOLUTION);
         	Model m = ExDonaldGeraldRobert.modelIt1();
             CPSolver s = new CPSolver();
             s.setRecomputation(true);
             s.setRecomputationGap(10);
-            s.attachGoal(new AssignOrForbidIntVarVal(new MinDomain(s), new MinVal()));
             Solver _s = new CPSolver();
             // Read the model
             s.read(m);
+            s.attachGoal(new AssignOrForbidIntVarVal(new MinDomain(s), new MinVal()));
             _s.read(m);
 
            // ChocoLogging.setVerbosity(Verbosity.SOLUTION);
