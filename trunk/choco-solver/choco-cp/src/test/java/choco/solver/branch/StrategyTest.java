@@ -30,8 +30,6 @@ import choco.cp.solver.search.integer.branching.AssignVar;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
@@ -104,7 +102,6 @@ public class StrategyTest {
 
     @Test
     public void testB2986005(){
-        ChocoLogging.setVerbosity(Verbosity.SEARCH);
         CPSolver s = new CPSolver();
         IntDomainVar v = s.createEnumIntVar("v", 1, 2);
         s.attachGoal(new AssignVar(new StaticVarOrder(s, new IntDomainVar[]{v}), new IncreasingDomain()));
