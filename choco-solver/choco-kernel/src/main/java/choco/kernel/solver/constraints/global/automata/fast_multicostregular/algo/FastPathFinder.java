@@ -446,7 +446,8 @@ public class FastPathFinder {
     double[][] spft;// = new double[graph.GNodes.spfs.length][graph.nbR+1];
     double[][] lpfs;// = new double[graph.GNodes.spfs.length][graph.nbR+1];
     double[][] lpft;// = new double[graph.GNodes.spfs.length][graph.nbR+1];
-    public void computeShortestAndLongestPath(IStateIntVector removed, IntDomainVar[] z) throws ContradictionException {
+    boolean[] modified = new boolean[2];
+    public boolean[] computeShortestAndLongestPath(IStateIntVector removed, IntDomainVar[] z) throws ContradictionException {
 
         int nbr = z.length;
 
@@ -555,14 +556,18 @@ public class FastPathFinder {
             origIter.dispose();
             if (!update) this.graph.constraint.fail();
         }
-        for (int i = 0  ;i < nbr ;i++)
+
+        modified[0] = z[0].updateInf((int)Math.ceil(spft[graph.sourceIndex][0]),this.graph.constraint,false);
+        modified[1] = z[0].updateSup((int)Math.floor(lpft[graph.sourceIndex][0]),this.graph.constraint,false);
+
+
+        for (int i = 1  ;i < nbr ;i++)
         {
-            z[i].updateInf((int)Math.ceil(spft[graph.sourceIndex][i]),this.graph.constraint,true);
-            z[i].updateSup((int)Math.floor(lpft[graph.sourceIndex][i]),this.graph.constraint,true);
+            z[i].updateInf((int)Math.ceil(spft[graph.sourceIndex][i]),this.graph.constraint,false);
+            z[i].updateSup((int)Math.floor(lpft[graph.sourceIndex][i]),this.graph.constraint,false);
+        }  
 
-        }
-
-
+        return modified;
     }
 
     private static double[] addArray(double[] spf, double[] cost) {

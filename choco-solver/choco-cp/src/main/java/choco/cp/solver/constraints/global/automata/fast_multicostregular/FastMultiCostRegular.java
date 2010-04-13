@@ -662,19 +662,22 @@ protected void updateLowerBound() throws ContradictionException {
  * Performs cost based filtering w.r.t. each cost dimension.
  * @throws ContradictionException if a domain is emptied
  */
-protected void prefilter() throws ContradictionException {
+protected boolean prefilter() throws ContradictionException {
         FastPathFinder p = this.graph.getPathFinder();
-        p.computeShortestAndLongestPath(toRemove,z);
-        /*  for (int i = 0 ; i <nbR+1 ; i++)
-{
-int bsup = z[i].getSup();
-int binf = z[i].getInf();
-p.resetNodeShortestandLongestPathValues();
-p.computeShortestAndLongestPath(toRemove,binf,bsup,null,false,false,i);
-z[i].updateInf((int)Math.ceil(p.getShortestPathValue()), this, false);
-z[i].updateSup((int)Math.floor(p.getLongestPathValue()), this, false);
-}                         */
-        this.delayedGraphUpdate();
+
+        boolean cont = true;
+        boolean[] modified;
+        while (cont)
+        {
+                modified = p.computeShortestAndLongestPath(toRemove,z);
+                cont = !toRemove.isEmpty();
+                modifiedBound[0] |= modified[0];
+                modifiedBound[1] |= modified[1];
+                this.delayedGraphUpdate();
+             //   if (modifiedBound[0] || modifiedBound[1])
+                    //    return true;
+        }
+        return (modifiedBound[0] || modifiedBound[1]);
 }
 
 
@@ -838,6 +841,8 @@ protected void delayedGraphUpdate() throws ContradictionException {
  */
 public void computeSharpBounds() throws ContradictionException
 {
+        do
+        {
         while (modifiedBound[0] || modifiedBound[1])
         {
                 if (modifiedBound[1])
@@ -851,10 +856,7 @@ public void computeSharpBounds() throws ContradictionException
                         updateUpperBound();
                 }
                 this.delayedGraphUpdate();
-                this.prefilter();
-
-
-        }
+     }   } while(this.prefilter());
 }
 
 
