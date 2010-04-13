@@ -680,7 +680,7 @@ public ArrayList<int[]> _removeSymbolFromAutomaton(int alpha)
 
         }
         alphabet.remove(alpha);
-        this.removeDeadTransitions();
+       // this.removeDeadTransitions();
         ArrayList<int[]> couple = new ArrayList<int[]>();
         for (int i  = 0 ; i < states.size() ; i++)
         {
@@ -706,6 +706,32 @@ public ArrayList<int[]> _removeSymbolFromAutomaton(int alpha)
         // this.syncStates();
 
 
+}
+
+public FiniteAutomaton clone() throws CloneNotSupportedException
+{
+        FiniteAutomaton auto = (FiniteAutomaton) super.clone();
+        auto.representedBy = new Automaton();
+        auto.states = new ArrayList<State>();
+        auto.stateToIndex = new TObjectIntHashMap<State>();
+        auto.alphabet = new TIntHashSet();
+        auto.nbStates = this.nbStates;
+        for (int i = 0 ; i < this.nbStates ; i++)
+        {
+                State s = new State();
+                auto.states.add(s);
+                auto.stateToIndex.put(s,i);
+                if (this.isFinal(i))
+                        s.setAccept(true);
+                if (this.getInitialState() == i)
+                        auto.representedBy.setInitialState(s);
+        }
+        List<int[]> transitions = this.getTransitions();
+        for (int[] t : transitions)
+        {
+                auto.addTransition(t[0],t[1],t[2]);
+        }
+        return auto;
 }
 
 
