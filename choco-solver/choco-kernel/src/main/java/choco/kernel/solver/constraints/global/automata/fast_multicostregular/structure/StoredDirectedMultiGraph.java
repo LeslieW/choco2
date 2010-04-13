@@ -360,4 +360,35 @@ public class StoredDirectedMultiGraph {
         inStack.clear(idx);
     }
 
+    public int getRegret(int layer, int value, int... resources)
+{
+        int result  = Integer.MAX_VALUE;
+        StoredIndexedBipartiteSetWithOffset arcs = this.getSupport(layer,value);
+        DisposableIntIterator it = arcs.getIterator();
+
+        while (it.hasNext())
+        {
+                int arcId = it.next();
+                int origId = GArcs.origs[arcId];
+                int destId = GArcs.dests[arcId];
+                int cost = 0;
+                for (int r : resources)
+                {
+                        cost+=pf.spfs[origId][r] + GArcs.originalCost[arcId][r] + pf.spft[destId][r];
+                }
+                if (cost < result)
+                        result = cost;
+
+
+
+        }
+        it.dispose();
+        for (int r : resources)
+        {
+                result -= pf.spft[sourceIndex][r];
+        }
+
+        return result;
+}
+
 }
