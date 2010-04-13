@@ -995,6 +995,11 @@ public final StoredDirectedMultiGraph getGraph()
         return graph;
 }
 
+public final int getRegret(int layer, int value, int... resources)
+{
+        return this.graph.getRegret(layer,value,resources);
+}
+
 public int[][][][] getCosts()
 {
         return costs;

@@ -442,8 +442,8 @@ public class FastPathFinder {
 
     }
 
-    double[][] spfs;// = new double[graph.GNodes.spfs.length][graph.nbR+1];
-    double[][] spft;// = new double[graph.GNodes.spfs.length][graph.nbR+1];
+    public double[][] spfs;// = new double[graph.GNodes.spfs.length][graph.nbR+1];
+    public double[][] spft;// = new double[graph.GNodes.spfs.length][graph.nbR+1];
     double[][] lpfs;// = new double[graph.GNodes.spfs.length][graph.nbR+1];
     double[][] lpft;// = new double[graph.GNodes.spfs.length][graph.nbR+1];
     boolean[] modified = new boolean[2];
