@@ -557,8 +557,8 @@ public class FastPathFinder {
         }
         for (int i = 0  ;i < nbr ;i++)
         {
-            z[i].updateInf((int)Math.ceil(spft[graph.sourceIndex][i]),this.graph.constraint,false);
-            z[i].updateSup((int)Math.floor(lpft[graph.sourceIndex][i]),this.graph.constraint,false);
+            z[i].updateInf((int)Math.ceil(spft[graph.sourceIndex][i]),this.graph.constraint,true);
+            z[i].updateSup((int)Math.floor(lpft[graph.sourceIndex][i]),this.graph.constraint,true);
 
         }
 
