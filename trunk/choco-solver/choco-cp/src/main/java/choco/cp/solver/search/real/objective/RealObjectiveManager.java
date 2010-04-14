@@ -24,27 +24,34 @@ package choco.cp.solver.search.real.objective;
 
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
+import choco.kernel.solver.SolverException;
 import choco.kernel.solver.search.IObjectiveManager;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.real.RealIntervalConstant;
 import choco.kernel.solver.variables.real.RealVar;
 
 public abstract class RealObjectiveManager implements IObjectiveManager {
-	
+
 	public final RealVar objective;
-	
+
 	protected RealIntervalConstant boundInterval;
-	
+
 	protected double bound;
-	
+
+	protected double floorBound;
+
 	protected double targetBound;
-	
-	protected double oppositeBound;
-	
+
 	public RealObjectiveManager(RealVar objective) {
 		super();
 		this.objective = objective;
 	}
+
+	public abstract double getInitialBoundValue();
+
+	public abstract double getFloorValue();
+
+	public abstract double getCeilValue();
 
 	@Override
 	public final Var getObjective() {
@@ -53,12 +60,7 @@ public abstract class RealObjectiveManager implements IObjectiveManager {
 
 	@Override
 	public final Number getObjectiveValue() {
-		return Double.valueOf(getObjectiveRealValue());
-	}
-	
-	@Override
-	public final int getObjectiveIntValue() {
-		return getObjectiveValue().intValue();
+		return Double.valueOf(getFloorValue());
 	}
 
 	@Override
@@ -71,15 +73,40 @@ public abstract class RealObjectiveManager implements IObjectiveManager {
 		return Double.valueOf(targetBound);
 	}
 
+	@Override
+	public final Number getObjectiveFloor() {
+		return Double.valueOf(floorBound);
+	}
 	
 	@Override
-	public void postTargetBound() throws ContradictionException {
+	public final void initBounds() {
+		bound = getInitialBoundValue();
+		floorBound = getFloorValue();
+		targetBound = getCeilValue();
+	}
+	@Override
+	public final void postTargetBound() throws ContradictionException {
 		objective.intersect(boundInterval);
 	}
 
 	@Override
-	public final void writeObjective(Solution sol) {
-		sol.recordRealObjective(getObjectiveRealValue());
+	public final void postFloorBound() throws ContradictionException {
+		throw new SolverException("not yet implemented");
 	}
-	
+
+	@Override
+	public final void postIncFloorBound() throws ContradictionException {
+		throw new SolverException("not yet implemented");
+	}
+
+
+	@Override
+	public final void incrementFloorBound() {
+		throw new SolverException("not yet implemented");
+	}
+
+	@Override
+	public final void writeObjective(Solution sol) {
+		sol.recordRealObjective(getFloorValue());
+	}
 }

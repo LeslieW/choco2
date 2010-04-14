@@ -47,7 +47,7 @@ public interface ISolutionCheckerEngine {
      * @param c constraint to check
      * @throws SolutionCheckerException if {@code c} is not satisfied
      */
-	void checkConstraint(SConstraint c) throws SolutionCheckerException;
+	void checkConstraint(SConstraint<?> c) throws SolutionCheckerException;
 
     /**
      * Inspect the current solution of {@code solver}.
@@ -84,7 +84,7 @@ public interface ISolutionCheckerEngine {
      * @param c contraint to check
      * @return false if the constraint is not satisfied.
      */
-	boolean inspectConstraint(SConstraint c);
+	boolean inspectConstraint(SConstraint<?> c);
 
 
 }

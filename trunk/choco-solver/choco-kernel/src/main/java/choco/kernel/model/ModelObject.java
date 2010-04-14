@@ -13,6 +13,7 @@ import java.util.Set;
 
 public class ModelObject extends VariableArray implements IOptions, IIndex {
 
+	private static final long serialVersionUID = 1700344707758777464L;
 	private final long indice;
 	private final Set<String> options;
 	
@@ -68,6 +69,11 @@ public class ModelObject extends VariableArray implements IOptions, IIndex {
 	@Override
 	public final Set<String> getOptions() {
 		return options;
+	}
+	
+	@Override
+	public boolean containsOption(String option) {
+		return options.contains(option);
 	}
 
 	@Override

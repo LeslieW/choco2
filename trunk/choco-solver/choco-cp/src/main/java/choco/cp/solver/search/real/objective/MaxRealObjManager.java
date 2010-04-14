@@ -22,50 +22,55 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.real.objective;
 
+import choco.kernel.solver.Solution;
 import choco.kernel.solver.variables.real.RealIntervalConstant;
 import choco.kernel.solver.variables.real.RealMath;
 import choco.kernel.solver.variables.real.RealVar;
 
 public final class MaxRealObjManager extends RealObjectiveManager {
 
-	
+
 	public MaxRealObjManager(RealVar objective) {
 		super(objective);
 	}
 
 	@Override
-	public double getObjectiveRealValue() {
+	public double getInitialBoundValue() {
+		return Double.POSITIVE_INFINITY;
+	}
+
+	@Override
+	public double getFloorValue() {
 		return objective.getSup();
 	}
 
+	@Override
+	public double getCeilValue() {
+		return objective.getInf();
+	}
+
+	
 	private void setBoundInterval() {
 		boundInterval = new RealIntervalConstant(targetBound, Double.POSITIVE_INFINITY);
 	}
 
 	@Override
-	public void initBounds() {
-		bound = Double.NEGATIVE_INFINITY;
-		oppositeBound = objective.getSup();
-		targetBound = objective.getInf();
-		setBoundInterval();
-	}
-
-	@Override
 	public void setBound() {
-		final double v = objective.getSup();
+		final double v = getFloorValue();
 		if( v > bound) { bound = v;}
 	}
-	
+
 
 	@Override
 	public void setTargetBound() {
-		targetBound = RealMath.nextFloat(objective.getSup());
+		targetBound = RealMath.nextFloat(getFloorValue());
 		setBoundInterval();
-		
 	}
-	
+
+
 	@Override
 	public boolean isTargetInfeasible() {
-		return targetBound > oppositeBound;
+		return targetBound > floorBound;
 	}
+
 }

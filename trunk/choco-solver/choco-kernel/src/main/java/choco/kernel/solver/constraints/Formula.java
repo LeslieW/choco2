@@ -160,4 +160,11 @@ public class Formula implements SConstraint {
      */
     @Override
     public void addExtension(final int extensionNumber) {}
+
+	@Override
+	public int getFineDegree(int idx) {
+		return 1;
+	}
+    
+    
 }

@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
- *         |  °(..)  |                           *
+ *         |  ï¿½(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -294,8 +294,8 @@ public class CPOptions {
     /**
      * <br/><b>Goal</b>: Allow a solver to read a model more than one time.
      * <br/><i>In that case, the redundant constraints for scheduling must be posted explicitly</i>.
-     * <br/><b>Scope</b> : {@link choco.cp.solver.CPSolver}.
+     * <br/><b>Scope</b> : {@link choco.kernel.solver.Solver}.
      */
     public static final String S_MULTIPLE_READINGS = "cp:multiple_readings";
-
+    
 }

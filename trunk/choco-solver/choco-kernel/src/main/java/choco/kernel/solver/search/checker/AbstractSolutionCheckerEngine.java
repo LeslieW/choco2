@@ -92,14 +92,14 @@ public abstract class AbstractSolutionCheckerEngine implements ISolutionCheckerE
      */
 	@Override
 	public boolean inspectSolution(Solver solver) {
-		LOGGER.log(Level.INFO, "- Check solution: {0}", this.getClass().getSimpleName());
+		LOGGER.log(Level.CONFIG, "- Check solution: {0}", this.getClass().getSimpleName());
 		boolean isOk = true;
-		if ( inspectVariables(solver) ) LOGGER.info("- Check solution: Every variables are instantiated.");
+		if ( inspectVariables(solver) ) LOGGER.config("- Check solution: Every variables are instantiated.");
 		else {
 			isOk = false;
 			LOGGER.severe("- Check solution: Some variables are not instantiated.");
 		}
-		if(inspectConstraints(solver)) LOGGER.info("- Check solution: Every constraints are satisfied.");
+		if(inspectConstraints(solver)) LOGGER.config("- Check solution: Every constraints are satisfied.");
 		else {
 			isOk= false;
 			LOGGER.severe("- Check solution: Some constraints are not satisfied.");

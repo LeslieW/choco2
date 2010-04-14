@@ -27,44 +27,55 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public final class MinIntObjManager extends IntObjectiveManager {
 
-
-
 	public MinIntObjManager(IntDomainVar objective) {
 		super(objective);
 	}
 
 	@Override
-	public int getObjectiveIntValue() {
-		return objective.getInf();
+	public int getInitialBoundValue() {
+		return Integer.MAX_VALUE;
 	}
 
 	@Override
-	public void initBounds() {
-		bound = Integer.MAX_VALUE;
-		oppositeBound = objective.getInf();
-		targetBound = objective.getSup();
+	public int getFloorValue() {
+		return objective.getInf();
 	}
-
+	
+	@Override
+	public int getCeilValue() {
+		return objective.getSup();
+	}
+		
 	@Override
 	public void postTargetBound() throws ContradictionException {
 		objective.setSup(targetBound);
+	}
+	
 		
+	@Override
+	public void incrementFloorBound() {
+		floorBound++;		
+	}
+
+	@Override
+	public void postFloorBound() throws ContradictionException {
+		objective.setInf(floorBound);
 	}
 
 	@Override
 	public void setBound() {
-		final int v = objective.getInf();
+		final int v = getFloorValue();
 		if( v < bound) { bound = v;}
 	}
 	
-
 	@Override
 	public void setTargetBound() {
-		targetBound = objective.getSup() - 1;
+		targetBound = getCeilValue() - 1;
 	}
-	
+		
 	@Override
 	public boolean isTargetInfeasible() {
-		return targetBound < oppositeBound;
+		return targetBound < floorBound;
 	}
+	
 }

@@ -27,6 +27,7 @@ import static choco.Choco.*;
 import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.search.BranchingFactory;
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.model.variables.scheduling.TaskVariable;
@@ -144,9 +145,10 @@ public class AirPlaneLanding {
 		solver = new CPSolver();
 		solver.setHorizon(horizon);
 		solver.read(model);
-		LOGGER.info(model.pretty());
-		LOGGER.info(solver.pretty());
+		//LOGGER.info(model.pretty());
+		//LOGGER.info(solver.pretty());
 		//TODO add (find !) a good search strategy
+		solver.attachGoal(BranchingFactory.setTimes(solver));
 		solver.minimize(false);
 		solver.printRuntimeStatistics();
 
@@ -155,7 +157,6 @@ public class AirPlaneLanding {
 		int n = 5;
 		AirPlaneLanding apl = generateInstanceSmall(n);
 		apl.createModel();
-		LOGGER.info(apl.model.pretty());
 		apl.createSolver();
 
 	}

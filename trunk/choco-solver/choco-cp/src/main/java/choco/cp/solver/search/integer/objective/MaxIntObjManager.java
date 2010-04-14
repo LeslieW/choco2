@@ -27,46 +27,58 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public final class MaxIntObjManager extends IntObjectiveManager {
 
-	
+
 	public MaxIntObjManager(IntDomainVar objective) {
 		super(objective);
 	}
 
 	@Override
-	public int getObjectiveIntValue() {
+	public int getInitialBoundValue() {
+		return Integer.MIN_VALUE;
+	}
+	
+	@Override
+	public int getFloorValue() {
 		return objective.getSup();
 	}
-
+	
 	@Override
-	public void initBounds() {
-		bound = Integer.MIN_VALUE;
-		oppositeBound = objective.getSup();
-		targetBound = objective.getInf();
-	}
-
-	@Override
-	public void postTargetBound() throws ContradictionException {
-		objective.setInf(targetBound);
-		
-	}
-
-	@Override
-	public void setBound() {
-		final int v = objective.getSup();
-		if( v > bound) { bound = v;}
+	public int getCeilValue() {
+		return objective.getInf();
 	}
 	
 
 	@Override
+	public void setBound() {
+		final int v = getFloorValue();
+		if( v > bound) { bound = v;}
+	}
+		
+	@Override
 	public void setTargetBound() {
-		targetBound = objective.getInf() + 1;
+		targetBound = getCeilValue() + 1;
+	}
+	
+	
+	@Override
+	public void postTargetBound() throws ContradictionException {
+		objective.setInf(targetBound);
+	}
+	
+	@Override
+	public void incrementFloorBound() {
+		floorBound--;		
+	}
+
+	@Override
+	public void postFloorBound() throws ContradictionException {
+		objective.setSup(floorBound);
 	}
 
 	@Override
 	public boolean isTargetInfeasible() {
-		return targetBound > oppositeBound;
+		return targetBound > floorBound;
 	}
-	
-	
-	
+
+
 }

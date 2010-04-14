@@ -22,12 +22,15 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.constraints.global.pack;
 
-import choco.cp.solver.SettingType;
 import static choco.cp.solver.SettingType.DYNAMIC_LB;
+import gnu.trove.TIntArrayList;
+import gnu.trove.TIntProcedure;
+
+import java.util.Arrays;
+
+import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.BitFlags;
 import choco.kernel.common.opres.nosum.NoSumList;
-import choco.kernel.common.opres.pack.AbstractHeurisic1BP;
-import choco.kernel.common.opres.pack.BestFit1BP;
 import choco.kernel.common.opres.pack.LowerBoundFactory;
 import choco.kernel.common.util.iterators.DisposableIntIterator;
 import choco.kernel.common.util.tools.ArrayUtils;
@@ -38,10 +41,8 @@ import choco.kernel.solver.SolverException;
 import choco.kernel.solver.constraints.set.AbstractLargeSetIntSConstraint;
 import choco.kernel.solver.variables.integer.IntDomainVar;
 import choco.kernel.solver.variables.set.SetVar;
-import gnu.trove.TIntArrayList;
-import gnu.trove.TIntProcedure;
 
-import java.util.Arrays;
+import com.sun.xml.internal.bind.v2.runtime.reflect.Lister.Pack;
 
 /**
  * <b>{@link Pack} which maintains a primal-dual packing model.</b><br>
@@ -224,6 +225,7 @@ public final class PackSConstraint extends AbstractLargeSetIntSConstraint implem
 	public final boolean updateNbNonEmpty(int min, int max) throws ContradictionException {
 		boolean res = false;
 		final int idx = ivars.length-1;
+		//LOGGER.info(min+ " "+max + " -> "+ivars[idx].pretty());
 		ivars[idx].updateInf( min, this, false);
 		if( ivars[idx].updateSup(max, this, false)
 				&& flags.contains(SettingType.LAST_BINS_EMPTY)) {
@@ -418,7 +420,10 @@ public final class PackSConstraint extends AbstractLargeSetIntSConstraint implem
 		do {
 			filtering.propagate();
 			//feasibility test (DDFF)
-			if ( ! bounds.computeBounds(flags.contains(DYNAMIC_LB)) ) fail();
+			if ( ! bounds.computeBounds(flags.contains(DYNAMIC_LB)) ) {
+				bounds.computeBounds(flags.contains(DYNAMIC_LB));
+				fail();
+			}
 		}while( updateNbNonEmpty(bounds.getMinimumNumberOfBins(), bounds.getMaximumNumberOfBins()));
 
 
@@ -449,9 +454,7 @@ public final class PackSConstraint extends AbstractLargeSetIntSConstraint implem
 
 		private final int[] remainingSpace;
 
-		private final int[] itemsMLB;
-
-		private int sizeMLB;
+		private final TIntArrayList itemsMLB;
 
 		protected int capacityMLB;
 
@@ -486,7 +489,7 @@ public final class PackSConstraint extends AbstractLargeSetIntSConstraint implem
 		
 		public BoundNumberOfBins() {
 			super();
-			itemsMLB=new int[getNbBins() + getNbItems()];
+			itemsMLB=new TIntArrayList(getNbBins() + getNbItems());
 			binsMLB = new TIntArrayList(getNbBins());
 			binsCLB = new TIntArrayList(getNbBins());
 			remainingSpace = new int[getNbBins()];
@@ -495,7 +498,7 @@ public final class PackSConstraint extends AbstractLargeSetIntSConstraint implem
 
 		public void reset() {
 			Arrays.fill(remainingSpace, 0);
-			sizeMLB = 0;
+			itemsMLB.resetQuick();
 			capacityMLB=0;
 			binsMLB.resetQuick();
 			totalSizeCLB = 0;
@@ -517,10 +520,10 @@ public final class PackSConstraint extends AbstractLargeSetIntSConstraint implem
 					remainingSpace[bins[i].getVal()] -= size;
 				}else {
 					totalSizeCLB += size;
-					itemsMLB[sizeMLB++] = size;
+					itemsMLB.add(size);
 				}
 			}
-			sizeIMLB = sizeMLB;
+			sizeIMLB = itemsMLB.size();
 		}
 
 
@@ -560,7 +563,7 @@ public final class PackSConstraint extends AbstractLargeSetIntSConstraint implem
 			final int n = binsMLB.size();
 			for (int i = 0; i < n; i++) {
 				final int size = capacityMLB - remainingSpace[ binsMLB.getQuick(i)];
-				if( size > 0) itemsMLB[sizeMLB++]  = size;
+				if( size > 0) itemsMLB.add(size);
 			}
 		}
 
@@ -579,7 +582,7 @@ public final class PackSConstraint extends AbstractLargeSetIntSConstraint implem
 			//the order of the following calls is important
 			handleItems();
 			handleBins();
-			if( sizeMLB > 0) {
+			if( ! itemsMLB.isEmpty() ) {
 				//if( sizeMLB < maximumNumberOfNewBins.get() ) maximumNumberOfNewBins.set(sizeMLB); 
 				//there is unpacked items
 				//handleBins();
@@ -591,22 +594,18 @@ public final class PackSConstraint extends AbstractLargeSetIntSConstraint implem
 				if( getMinimumNumberOfBins() > ivars[ivars.length - 1].getSup()) return false; //the continous bound prove infeasibility
 				if( useDDFF) {	
 					createFakeItems(); 
-					int[] items = getItems();
-					final int ub=new BestFit1BP(items,capacityMLB,AbstractHeurisic1BP.SORT).computeUB();
-					if( ub > binsMLB.size()) {
-						//the heuristics solution is infeasible
-						//so, the lower bound could also be infeasible
-						final int lb = LowerBoundFactory.computeL_DFF_1BP(items, capacityMLB,ub);
-						if( lb > binsMLB.size()) return false;
-					}//otherwise, the modified instance is feasible with best fit heuristics
+					return LowerBoundFactory.consistencyTestLDFF(itemsMLB, capacityMLB, binsMLB.size());
+//					int[] items = getItems();
+//					final int ub=new BestFit1BP(items,capacityMLB,AbstractHeurisic1BP.SORT).computeUB();
+//					if( ub > binsMLB.size()) {
+//						//the heuristics solution is infeasible
+//						//so, the lower bound could also be infeasible
+//						final int lb = LowerBoundFactory.computeL_DFF_1BP(items, capacityMLB ,ub);
+//						if( lb > binsMLB.size()) return false;
+//					}//otherwise, the modified instance is feasible with best fit heuristics
 				}
 			}
 			return true;
-		}
-
-
-		public int[] getItems() {
-			return Arrays.copyOf(itemsMLB, sizeMLB);
 		}
 
 		public int getMaximumNumberOfBins() {

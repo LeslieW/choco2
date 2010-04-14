@@ -22,7 +22,14 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package samples.pack;
 
-import static choco.Choco.*;
+import static choco.Choco.geq;
+import static choco.Choco.leq;
+import static choco.Choco.pack;
+import gnu.trove.TIntArrayList;
+
+import java.util.Arrays;
+import java.util.logging.Logger;
+
 import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -34,7 +41,6 @@ import choco.cp.solver.search.integer.valselector.BestFit;
 import choco.cp.solver.search.integer.valselector.MinVal;
 import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.opres.pack.AbstractHeurisic1BP;
 import choco.kernel.common.opres.pack.BestFit1BP;
 import choco.kernel.common.opres.pack.LowerBoundFactory;
 import choco.kernel.model.constraints.Constraint;
@@ -43,9 +49,6 @@ import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.VarSelector;
 import choco.kernel.solver.search.integer.ValSelector;
-
-import java.util.Arrays;
-import java.util.logging.Logger;
 
 /**
  * @author Arnaud Malapert</br>
@@ -134,7 +137,10 @@ public class CPpack {
 	 * @return
 	 */
 	public int computeHeuristicSolution() {
-		return  new BestFit1BP(sizes,capacity,AbstractHeurisic1BP.DECREASING).computeUB();
+		final BestFit1BP bf = new BestFit1BP(capacity);
+		TIntArrayList items = new TIntArrayList(sizes);
+		items.reverse();
+		return  bf.computeUB(items);
 
 	}
 

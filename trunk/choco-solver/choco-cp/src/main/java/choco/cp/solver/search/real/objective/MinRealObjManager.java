@@ -22,6 +22,8 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.real.objective;
 
+import choco.cp.solver.constraints.reified.leaves.bool.OppSignNode;
+import choco.kernel.solver.Solution;
 import choco.kernel.solver.variables.real.RealIntervalConstant;
 import choco.kernel.solver.variables.real.RealMath;
 import choco.kernel.solver.variables.real.RealVar;
@@ -34,40 +36,42 @@ public final class MinRealObjManager extends RealObjectiveManager {
 	}
 
 	@Override
-	public double getObjectiveRealValue() {
-		return objective.getInf();
+	public double getInitialBoundValue() {
+		return Double.POSITIVE_INFINITY;
 	}
 
+	@Override
+	public double getFloorValue() {
+		return objective.getInf();
+	}
+	
+	@Override
+	public double getCeilValue() {
+		return objective.getSup();
+	}
+	
 	private void setBoundInterval() {
 		boundInterval = new RealIntervalConstant(Double.NEGATIVE_INFINITY, targetBound);
 	}
 
-	@Override
-	public void initBounds() {
-		bound = Double.POSITIVE_INFINITY;
-		oppositeBound = objective.getInf();
-		targetBound = objective.getSup();
-		setBoundInterval();
-	}
-
+	
+	
 	@Override
 	public void setBound() {
-		final double v = objective.getInf();
+		final double v = getFloorValue();
 		if( v < bound) { bound = v;}
 	}
 	
 
 	@Override
 	public void setTargetBound() {
-		targetBound = RealMath.prevFloat(objective.getInf());
+		targetBound = RealMath.prevFloat(getFloorValue());
 		setBoundInterval();
-		
 	}
-	
+			
 	@Override
 	public boolean isTargetInfeasible() {
-		return targetBound < objective.getInf();
+		return targetBound < floorBound;
 	}
-	
 	
 }

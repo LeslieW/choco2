@@ -81,7 +81,7 @@ public class BranchingWithLoggingStatements extends AbstractIntBranchingStrategy
 	throws ContradictionException {
 		if(LOGGER.isLoggable(Level.INFO)) {
 			if(manager.getNodeCount() >= nextInformationNode) {
-				LOGGER.log(Level.INFO, "- Partial Seach - {0}.", manager.partialRuntimeStatistics(true));
+				LOGGER.log(Level.INFO, "- Partial Seach - {0}.", manager.partialRuntimeStatistics(false));
 				nextInformationNode = manager.getNodeCount() + ChocoLogging.getEveryXNodes();
 				ChocoLogging.flushLogs();
 			}  

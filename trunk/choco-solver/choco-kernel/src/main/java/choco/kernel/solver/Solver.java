@@ -250,6 +250,16 @@ public interface Solver extends IMeasures, IPretty {
 	public PropagationEngine getPropagationEngine();
 
 	/**
+	 * apply a simple singloton consistency algorithm before starting the search (at the root node)
+	 */
+	void setRootSinglotonConsistency(boolean b);
+	
+	/**
+	 * apply a destructive lower bound before starting the search (at the root node)
+	 */
+	void setDestructiveLowerBound(boolean b);
+		
+	/**
 	 * set the optimization strategy:
 	 * - restart or not after each solution found
 	 *
@@ -331,7 +341,7 @@ public interface Solver extends IMeasures, IPretty {
 
 	public IntDomainVar getIntVar(int i);
 	
-	IntDomainVar quickGetIntVar(int i);
+	IntDomainVar getIntVarQuick(int i);
 
 	public int getIntVarIndex(IntVar c);
 
@@ -385,7 +395,7 @@ public interface Solver extends IMeasures, IPretty {
 	 */
 	public RealVar getRealVar(int i);
 	
-	RealVar quickGetRealVar(int i);
+	RealVar getRealVarQuick(int i);
 
 	/**
 	 * Returns the number of variables modelling real numbers.
@@ -401,7 +411,7 @@ public interface Solver extends IMeasures, IPretty {
 	 */
 	public SetVar getSetVar(int i);
 	
-	SetVar quickGetSetVar(int i);
+	SetVar getSetVarQuick(int i);
 
 	/**
 	 * Returns the number of variables modelling real numbers.
@@ -418,7 +428,7 @@ public interface Solver extends IMeasures, IPretty {
 	 */
 	public TaskVar getTaskVar(int i);
 	
-	TaskVar quickGetTaskVar(int i);
+	TaskVar getTaskVarQuick(int i);
 
 	/**
 	 * Returns the number of variables modelling tasks.

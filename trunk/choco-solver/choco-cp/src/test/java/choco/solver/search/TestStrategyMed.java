@@ -30,6 +30,12 @@ public class TestStrategyMed {
 	private boolean nogoodFromRestart = false;
 
 	private boolean randomSelectors = false;
+	
+	private boolean topDown = false;
+	
+	private boolean rootSinglotonConsistency = false;
+	
+	private boolean destructiveLowerBound = false;
 
 	/**
 	 * shake a little bit the optimization options.

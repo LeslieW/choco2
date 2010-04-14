@@ -40,7 +40,7 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 	 * the objective variable
 	 */
 	public final Var objective;
-	
+
 	/**
 	 * the bounding object, record objective value and compute target bound.
 	 */
@@ -49,8 +49,8 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 	/**
 	 * constructor
 	 * @param solver the solver
-     * @param maximize maximization or minimization ?
-     */
+	 * @param maximize maximization or minimization ?
+	 */
 	protected AbstractOptimize(Solver solver, IObjectiveManager bounds, boolean maximize) {
 		super(solver);
 		this.bounds = bounds;
@@ -58,16 +58,16 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 		doMaximize = maximize;
 	}
 
-	
+
 	public Var getObjective() {
 		return objective;
 	}
-	
+
 	public final Number getObjectiveValue() {
 		return existsSolution() ? bounds.getObjectiveValue() : (Number) null;
 	}
-	
-	
+
+
 	public final IObjectiveManager getObjectiveManager() {
 		return bounds;
 	}
@@ -85,7 +85,7 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 		super.writeSolution(sol);
 		bounds.writeObjective(sol);
 	}
-	
+
 	@Override
 	public void recordSolution() {
 		super.recordSolution();
@@ -93,13 +93,21 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 		bounds.setTargetBound();
 	}
 
-	
+
 	/**
 	 * we use  targetBound data structures for the optimization cuts
 	 */
 	@Override
 	public void postDynamicCut() throws ContradictionException {
 		bounds.postTargetBound();
+	}
+
+
+
+	@Override
+	protected void advancedInitialPropagation() throws ContradictionException {
+//		if(configuration.isDestructiveLowerBound() || configuration.isBottomUpSearch() ) shavingTools.destructiveLowerBound(bounds);
+//		else super.advancedInitialPropagation();
 	}
 
 	@Override
@@ -113,16 +121,41 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 		}
 	}
 
-	
-	
+
+	protected final void bottomUpSearch() {
+		while( shavingTools.nextBottomUp(bounds) == Boolean.FALSE) {
+			//The current upper bound is infeasible, try next
+			bounds.incrementFloorBound();
+			if(bounds.isTargetInfeasible() ) return; //problem is infeasible
+			else {
+				//partially initialize a new search tree
+				clearTrace();
+				solver.worldPopUntil(baseWorld+1);
+				nextMove = INIT_SEARCH;
+			} 
+		}
+	}
+
+//	@Override
+//	public void incrementalRun() {
+//		initialPropagation();
+//		if(isFeasibleRootState()) {
+//			assert(solver.getWorldIndex() > baseWorld);
+//			if( configuration.isTopDownSearch() ) topDownSearch();
+//			else bottomUpSearch();
+//		}
+//		endTreeSearch();
+//	}
+
+
 	@Override
 	public String partialRuntimeStatistics(boolean logOnSolution) {
 		if( logOnSolution) {
-            return "Objective: "+bounds.getBestObjectiveValue()+", "+super.partialRuntimeStatistics(logOnSolution);
-        }else {
-            return "Upper-bound: "+bounds.getObjectiveIntValue()+", "+super.partialRuntimeStatistics(logOnSolution);
+			return "Objective: "+bounds.getObjectiveValue()+", "+super.partialRuntimeStatistics(logOnSolution);
+		}else {
+			return "Upper-bound: "+bounds.getBestObjectiveValue()+", "+super.partialRuntimeStatistics(logOnSolution);
 		}
-		
+
 	}
 
 
@@ -131,7 +164,7 @@ public abstract class AbstractOptimize extends AbstractGlobalSearchStrategy {
 		return "  "+ (doMaximize ? "Maximize: " : "Minimize: ") + getObjective() + "\n" +super.runtimeStatistics();
 	}
 
-	
 
-	
+
+
 }

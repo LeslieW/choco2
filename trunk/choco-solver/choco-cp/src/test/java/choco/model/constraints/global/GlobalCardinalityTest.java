@@ -22,8 +22,31 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.model.constraints.global;
 
+import static choco.Choco.allDifferent;
+import static choco.Choco.eq;
+import static choco.Choco.globalCardinality;
+import static choco.Choco.makeIntVar;
+import static choco.Choco.makeIntVarArray;
+import static choco.Choco.minus;
+import static choco.Choco.neq;
+import static choco.Choco.or;
+import static choco.Choco.plus;
+import static choco.Choco.sum;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.text.MessageFormat;
+import java.util.Date;
+import java.util.Random;
+import java.util.logging.Logger;
+
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import choco.Choco;
-import static choco.Choco.*;
 import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
@@ -42,15 +65,6 @@ import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.SolverException;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-import org.junit.Assert;
-import static org.junit.Assert.*;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import java.text.MessageFormat;
-import java.util.Date;
-import java.util.Random;
-import java.util.logging.Logger;
 
 /**
  * Tests for the GlobalCardinality constraint.

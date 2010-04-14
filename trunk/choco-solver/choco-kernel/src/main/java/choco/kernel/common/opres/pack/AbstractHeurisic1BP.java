@@ -22,159 +22,105 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.common.opres.pack;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import gnu.trove.TIntArrayList;
+import gnu.trove.TIntProcedure;
+import gnu.trove.TLinkableAdapter;
+import gnu.trove.TLinkedList;
+import gnu.trove.TObjectProcedure;
 
-/**
- * The Class Bin represent a 1BP bin.
- */
-class Bin {
+final class TLinkedBin extends TLinkableAdapter {
+
+	private static final long serialVersionUID = -808638405297420985L;
 
 	/**remaining area in the bin*/
 	public int remainingArea;
 
-	/** list of item index packed into the bin*/
-	public final List<Integer> itemIndexL=new LinkedList<Integer>();
-
-	/**
-	 * @param capacity inital capacity
-	 */
-	public Bin(final int capacity) {
+	public TLinkedBin(int remainingArea) {
 		super();
-		this.remainingArea = capacity;
+		this.remainingArea = remainingArea;
+	}
+
+	public final int getRemainingArea() {
+		return remainingArea;
+	}
+
+	public final void setRemainingArea(int remainingArea) {
+		this.remainingArea = remainingArea;
+	}
+
+	public void pack(final int size) {
+		remainingArea -= size;
 	}
 
 	public boolean isPackable(final int size) {
 		return size<=remainingArea;
 	}
 
-	public boolean fit(final int size) {
+	public boolean isFit(final int size) {
 		return size==remainingArea;
 	}
 
-
-	public final void pack(final int idx,final int size) {
-		remainingArea-=size;
-		itemIndexL.add(Integer.valueOf(idx));
-	}
-
-	/**
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
 		return String.valueOf(remainingArea);
 	}
 
-
 }
-
 /**
  * The Class AbstractHeurisic1BP.
  */
-public abstract class AbstractHeurisic1BP {
-
-	/** The Constant COPY_AND_SORT. */
-	public static final int COPY_AND_SORT=0;
-
-	/** The Constant SORT. */
-	public static final int SORT=1;
-
-	/** The Constant INCREASING. */
-	public static final int INCREASING=2;
-
-	/** The Constant DECREASING. */
-	public static final int DECREASING=3;
-
-	/** The sizes of the items. */
-	public final int[] sizes;
+public abstract class AbstractHeurisic1BP implements TIntProcedure, TObjectProcedure<TLinkedBin> {
 
 	/** The capacity of the bins. */
-	public final int capacity;
+	public int capacity;
+
+	private int nbBins;
+
+	protected int reuseSize;
+
+	protected TLinkedBin reuseBin;
 
 	/** The available bins. */
-	protected final List<Bin> available=new LinkedList<Bin>();
+	private final TLinkedList<TLinkedBin> bins;
 
-	/** The filled bins. */
-	protected final List<Bin> filled=new LinkedList<Bin>();
-
-	/** sort order of the sizes. */
-	private final boolean increasing;
-
-	/** The smallest item index. */
-	private final int siIndex;
-
-
-	/**
-	 *
-	 * @param sizes the sizes of the item
-	 * @param capacity the capacity of the bins
-	 */
-	public AbstractHeurisic1BP(final int[] sizes,final int capacity) {
-		this(sizes,capacity,COPY_AND_SORT);
-	}
-
-
-	/**
-	 * @param sizes the sizes of the item
-	 * @param capacity the capacity of the bins
-	 * @param mode the mode of instantiation
-	 */
-	public AbstractHeurisic1BP(final int[] sizes,final int capacity,final int mode) {
-		this.sizes = mode==COPY_AND_SORT ? Arrays.copyOf(sizes,sizes.length) : sizes;
-		if(mode==SORT || mode==COPY_AND_SORT) {
-			Arrays.sort(this.sizes);
-		}
-		increasing= mode!=DECREASING;
-		this.capacity=capacity;
-		siIndex=initialize();
-	}
-
-
-	/**
-	 * Initialize the smallest item index.
-	 */
-	private int initialize() {
-		int k;
-		if(increasing) {
-			k=0;
-			while(k<sizes.length && sizes[k]==0) {k++;}
-		}else {
-			k=sizes.length-1;
-			while(k>=0 && sizes[k]==0) {k--;}
-		}
-		return k;
-
+	public AbstractHeurisic1BP(final int capacity) {
+		bins = new TLinkedList<TLinkedBin>();
+		this.capacity = capacity;
 	}
 
 	/**
 	 * Reset.
 	 */
 	public void reset() {
-		this.available.clear();
-		this.filled.clear();
+		bins.clear();
+		nbBins = 0;
 	}
 
-	/**
-	 * Extract the bin where the item will be packed into.
-	 *
-	 * @param item the item index
-	 *
-	 * @return the bin
-	 */
-	public abstract Bin extract(int item);
+	@Override
+	public boolean execute(int size) {
+		if(size > 0) {
+			reuseSize = size;
+			reuseBin = null;
+			bins.forEachValue(this);
+			if(reuseBin == null) {
+				bins.add(new TLinkedBin(capacity - size));
+			}else if(reuseBin.isFit(size)) {
+				bins.remove(reuseBin);
+				nbBins++;
+			}else reuseBin.pack(size);
+			return true;
+		} else return false;
+	}
 
-	/**
-	 * Pack an item into a bin.
-	 *
-	 * @param item the item index
-	 * @param bin the concerned bin
-	 */
-	protected final void pack(final int item,final Bin bin) {
-		bin.pack(item, sizes[item]);
-		if(bin.isPackable(sizes[siIndex])) {available.add(bin);}
-		else {filled.add(bin);}
+
+	protected abstract boolean handleInsertion(TLinkedBin bin);
+
+	@Override
+	public boolean execute(TLinkedBin bin) {
+		if(bin.remainingArea >= reuseSize) {
+			return handleInsertion(bin);
+		}
+		return true;
 	}
 
 
@@ -183,19 +129,14 @@ public abstract class AbstractHeurisic1BP {
 	 *
 	 * @return the UB
 	 */
-	public final int computeUB() {
+	public final int computeUB(TIntArrayList items) {
 		reset();
-		if(increasing) {
-			for(int item = sizes.length-1; item >=siIndex; item--) {
-				pack(item,extract(item));
-			}
-		}else {
-			for(int item = 0; item <siIndex; item++) {
-				pack(item,extract(item));
-			}
-		}
-		return filled.size()+available.size();
+		items.forEachDescending(this);
+		nbBins += bins.size();
+		return nbBins; 
 	}
+
+
 }
 
 
