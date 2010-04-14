@@ -103,7 +103,7 @@ public class AmongSetTest {
                     m.addConstraints(Reformulation.among(vars, S, N));
                     break;
                 case 1:
-                    m.addConstraint(among(vars, S, N));
+                    m.addConstraint(among(N, vars, S));
                     break;
             }
             ms[i] = m;
@@ -145,7 +145,7 @@ public class AmongSetTest {
         IntegerVariable n = Choco.makeIntVar("N", 2, 2);
 
         CPModel m = new CPModel();
-        m.addConstraint(among(xs, s, n));
+        m.addConstraint(among(n, xs, s));
         m.addConstraint(Choco.member(s, 2));
         m.addConstraint(Choco.member(s, 3));
 
@@ -195,7 +195,7 @@ public class AmongSetTest {
 
         CPModel m = new CPModel();
 //        m.addConstraints(among_ref(xs, s, n));
-        m.addConstraint(among(xs, s, n));
+        m.addConstraint(among(n, xs, s));
 
         CPSolver so = new CPSolver();
 
@@ -215,7 +215,7 @@ public class AmongSetTest {
 
         CPModel m = new CPModel();
 //        m.addConstraints(among_ref(xs, s, n));
-        m.addConstraint(among(xs, s, n));
+        m.addConstraint(among(n, xs, s));
 //        m.addConstraint(Choco.member(s, 5));
 
         CPSolver so = new CPSolver();
@@ -241,7 +241,7 @@ public class AmongSetTest {
         IntegerVariable n = Choco.makeIntVar("N", 5, 8);
 
         CPModel m = new CPModel();
-        m.addConstraint(among(xs, s, n));
+        m.addConstraint(among(n, xs, s));
         m.addConstraint(Choco.member(s, 1));
         m.addConstraint(Choco.member(s, 2));
 
@@ -273,7 +273,7 @@ public class AmongSetTest {
         IntegerVariable n = Choco.makeIntVar("N", 2, 3);
 
         CPModel m = new CPModel();
-        m.addConstraint(among(xs, s, n));
+        m.addConstraint(among(n, xs, s));
         m.addConstraint(Choco.member(s, 1));
         m.addConstraint(Choco.member(s, 2));
 

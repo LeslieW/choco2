@@ -1,0 +1,40 @@
+\section{reifiedConstraint (constraint)}\label{reifiedconstraint:reifiedconstraintconstraint}\hypertarget{reifiedconstraint:reifiedconstraintconstraint}{}
+\begin{notedef}
+  \begin{itemize}
+  \item \texttt{reifiedConstraint}$(b,c)$ states that boolean $b$ is true if and only if constraint $c$ holds:
+  $$b\ \iff\ c$$
+  \item \texttt{reifiedConstraint}$(b,c_1,c_2)$ states that boolean $b$ is true if and only if $c_1$ holds, and $b$ is false if and only if $c_2$ holds ($c_2$ must be the opposite constraint of $c_1$):
+$$(b\land c_1) \lor (\neg b \land c_2)$$
+  \end{itemize}
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} :
+	\begin{itemize}
+		\item \mylst{reifiedConstraint(IntegerVariable b, Constraint c)}
+		\item \mylst{reifiedConstraint(IntegerVariable b, Constraint c1, Constraint c2)}
+	\end{itemize}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : \emph{n/a}
+\end{itemize}
+
+Parameter \emph{b} is a boolean variable (enumerated domain with two values $\{0,1\}$) and \emph{c} is a constraint over Integer variables or Set variables.
+
+The constraint $c$ to reify has to provide its opposite (the opposite is needed for propagation). Most basic constraints of Choco provides their opposite by default, and can then be reified using the first API.
+The second API attends to reify user-defined constraints as it allows the user to directly specify the \textbf{opposite} constraint. 
+
+{\tt  reifiedConstraint} filter algorithm:
+\begin{enumerate}
+	\item if $b$ is instantiated to 1 (resp. to 0), then $c$ (resp. $\neg c$) is propagated
+	\item otehrwise
+	\begin{enumerate}
+		\item if $c$ is entailed, $b$ is set to 1
+		\item else $b$ is set to 0.
+	\end{enumerate}
+\end{enumerate}
+
+
+\textbf{Example}:
+\lstinputlisting{java/creifiedintconstraint.j2t}
+

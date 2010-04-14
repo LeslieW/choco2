@@ -442,7 +442,7 @@ public class ElementTest {
         IntegerVariable val = Choco.makeBooleanVar("val");
         int[] values = new int[]{0,0,1};
 
-        m.addConstraint(nth(option, index, values, val, 1));
+        m.addConstraint(nth(index, values, val, 1));
         s.read(m);
 
         s.solveAll();

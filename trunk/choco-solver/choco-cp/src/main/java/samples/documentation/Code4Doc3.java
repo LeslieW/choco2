@@ -22,6 +22,7 @@
  **************************************************/
 package samples.documentation;
 
+import choco.Choco;
 import static choco.Choco.*;
 import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
@@ -178,7 +179,7 @@ public class Code4Doc3 {
 
     public static void main(String[] args) {
 //        ChocoLogging.setVerbosity(Verbosity.SEARCH);
-        new Code4Doc3().cincreasingnvalue();
+        new Code4Doc3().cknapsack();
     }
 
     public void cincreasingnvalue(){
@@ -331,6 +332,30 @@ public class Code4Doc3 {
         s.solveAll();
         //totex
     }
+
+    public void cknapsack() {
+        //totex cknapsack
+        CPModel m = new CPModel();
+        IntegerVariable[] items = new IntegerVariable[3];
+        items[0] = makeIntVar("item_1", 0, 5);
+        items[1] = makeIntVar("item_2", 0, 7);
+        items[2] = makeIntVar("item_3", 0, 10);
+
+        IntegerVariable sumWeight = makeIntVar("sumWeight", 0, 40, CPOptions.V_BOUND);
+        IntegerVariable sumValue = makeIntVar("sumValue", 0, 34, CPOptions.V_OBJECTIVE);
+
+        int[] weights = new int[]{7, 5, 3};
+        int[] values = new int[]{6, 4, 2};
+
+        Constraint knapsack = Choco.knapsackProblem(items, sumWeight, sumValue, weights, values);
+        m.addConstraint(knapsack);
+
+        Solver s = new CPSolver();
+        s.read(m);
+        s.maximize(true);
+        //totex
+    }
+
 
     public void cleq(){
         //totex cleq

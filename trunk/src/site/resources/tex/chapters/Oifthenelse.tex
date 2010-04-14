@@ -1,33 +1,13 @@
 
 \section{ifThenElse (operator)}\label{ifthenelse:ifthenelseoperator}\hypertarget{ifthenelse:ifthenelseoperator}{}
+\texttt{ifThenElse}$(c,v_1,v_2)$ states that if the constraint $c$ is satisfied, it returns the second parameter $v_1$, otherwise it returns the third one $v_2$.
 
-\emph{To complete}
+\begin{itemize}
+	\item \textbf{API} : \mylst{ifThenElse(Constraint c, IntegerExpressionVariable v1, IntegerExpressionVariable v2)}
+	\item \textbf{return type} : IntegerExpressionVariable
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : unknown
+\end{itemize}
 
-% \todo{verify...}
-% Returns the second argument if the first argument is satisfied, and returns the third argument otherwise.
-
-% \begin{itemize}
-% \item \textbf{API}: \mylst{ifThenElse(Constraint c1, IntegerExpressionVariable c2, IntegerExpressionVariable c3)}
-% \item \textbf{return type} : IntegerExpressionVariable
-% \item \textbf{options} : \emph{n/a}
-% \item \textbf{favorite domain} : \emph{n/a}
-% \end{itemize}
-
-% \textbf{Example}:
-% \begin{lstlisting}
-% 	CPModel m = new CPModel();
-% 	CPSolver s = new CPSolver();
-	
-% 	IntegerVariable x = makeIntVar("x", 1, 3);
-% 	IntegerVariable y = makeIntVar("y", 1, 3);
-% 	IntegerVariable z = makeIntVar("z", 1, 3);
-	
-	
-% 	s.read(m);
-% 	s.solveAll();
-% \end{lstlisting}
-
-%%% Local Variables: 
-%%% mode: latex
-%%% TeX-master: t
-%%% End: 
+\textbf{Example}:
+\lstinputlisting{java/oifthenelse.j2t}

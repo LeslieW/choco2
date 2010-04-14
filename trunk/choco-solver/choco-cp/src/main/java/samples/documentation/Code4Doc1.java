@@ -29,6 +29,7 @@ import choco.cp.solver.CPSolver;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.model.variables.real.RealVariable;
 import choco.kernel.solver.Solver;
 
 /*
@@ -56,7 +57,7 @@ import choco.kernel.solver.Solver;
 public class Code4Doc1 {
 
     public static void main(String[] args) {
-        new Code4Doc1().oabs();
+        new Code4Doc1().osin();
     }
 
     public void oabs() {
@@ -65,6 +66,17 @@ public class Code4Doc1 {
         IntegerVariable x = makeIntVar("x", 1, 5, CPOptions.V_ENUM);
         IntegerVariable y = makeIntVar("y", -5, 5, CPOptions.V_ENUM);
         m.addConstraint(eq(abs(x), y));
+        Solver s = new CPSolver();
+        s.read(m);
+        s.solve();
+        //totex
+    }
+
+    public void ocos() {
+        //totex ocos
+        Model m = new CPModel();
+        RealVariable x = makeRealVar("x", -Math.PI/2, Math.PI);
+        m.addConstraint(eq(cos(x), 2/3));
         Solver s = new CPSolver();
         s.read(m);
         s.solve();
@@ -81,6 +93,18 @@ public class Code4Doc1 {
         m.addConstraint(eq(z, div(w, x)));
         s.read(m);
         s.solve();
+        //totex
+    }
+
+    public void oifthenelse() {
+        //totex oifthenelse
+        Model m = new CPModel();
+        IntegerVariable x = makeIntVar("x", 1, 5);
+        IntegerVariable y = makeIntVar("y", 0, 10);
+        m.addConstraint(eq(y, ifThenElse(gt(x,2), mult(x,x), x)));
+        Solver s = new CPSolver();
+        s.read(m);
+        s.solveAll();
         //totex
     }
 
@@ -208,6 +232,17 @@ public class Code4Doc1 {
             System.out.print(" + (" + coefficients[i] + "*" + s.getVar(vars[i]).getVal()+")");
         }
         System.out.println();
+        //totex
+    }
+
+    public void osin() {
+        //totex osin
+        Model m = new CPModel();
+        RealVariable x = makeRealVar("x", 0, Math.PI);
+        m.addConstraint(eq(sin(x), 1));
+        Solver s = new CPSolver();
+        s.read(m);
+        s.solve();
         //totex
     }
 

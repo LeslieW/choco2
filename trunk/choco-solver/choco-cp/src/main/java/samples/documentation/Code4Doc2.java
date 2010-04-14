@@ -27,17 +27,20 @@ import static choco.Choco.*;
 import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.cp.solver.SettingType;
 import choco.cp.solver.constraints.global.geost.Constants;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.RandomIntVarSelector;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
+import choco.kernel.model.constraints.automaton.FA.FiniteAutomaton;
 import choco.kernel.model.constraints.geost.externalConstraints.IExternalConstraint;
 import choco.kernel.model.constraints.geost.externalConstraints.NonOverlappingModel;
 import choco.kernel.model.variables.geost.GeostObject;
 import choco.kernel.model.variables.geost.ShiftedBox;
 import choco.kernel.model.variables.integer.IntegerExpressionVariable;
 import choco.kernel.model.variables.integer.IntegerVariable;
+import choco.kernel.model.variables.scheduling.TaskVariable;
 import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
@@ -58,7 +61,7 @@ import java.util.Vector;
 public class Code4Doc2 {
 
     public static void main(String[] args) {
-        new Code4Doc2().catmostnvalue();
+        new Code4Doc2().ccumulative();
     }
 
     public void cabs() {
@@ -99,6 +102,44 @@ public class Code4Doc2 {
         s.solveAll();
         System.out.println("tps nreines1 " + (System.currentTimeMillis() - tps) + " nbNode " + s.
                 getNodeCount());
+        //totex
+    }
+
+    public void camong1() {
+        //totex camong1
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+        IntegerVariable var = makeIntVar("v1", 0, 100, CPOptions.V_BOUND);
+        int[] values = new int[]{0, 25, 50, 75, 100};
+        m.addConstraint(among(var, values));
+        s.read(m);
+        s.solve();
+        //totex
+    }
+
+    public void camong2() {
+        //totex camong2
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+        IntegerVariable nvar = makeIntVar("v1", 1, 2);
+        IntegerVariable[] vars = Choco.makeIntVarArray("var", 10, 0, 10);
+        int[] values = new int[]{2, 3, 5};
+        m.addConstraint(among(nvar, vars, values));
+        s.read(m);
+        s.solve();
+        //totex
+    }
+
+    public void camong3() {
+        //totex camong3
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+        IntegerVariable nvar = makeIntVar("v1", 1, 2);
+        IntegerVariable[] vars = Choco.makeIntVarArray("var", 10, 0, 10);
+        SetVariable values = Choco.makeSetVar("s", 2, 6);
+        m.addConstraint(among(nvar, vars, values));
+        s.read(m);
+        s.solve();
         //totex
     }
 
@@ -153,6 +194,60 @@ public class Code4Doc2 {
         //totex
     }
 
+    public void cclause() {
+        //totex cclause
+        CPModel mod = new CPModel();
+        CPSolver s = new CPSolver();
+        IntegerVariable[] vars = makeBooleanVarArray("b", 8);
+
+        IntegerVariable[] plits1 = new IntegerVariable[]{vars[0], vars[3], vars[4]};
+        IntegerVariable[] nlits1 = new IntegerVariable[]{vars[1], vars[2], vars[6]};
+        mod.addConstraint(clause(plits1, nlits1));
+
+        IntegerVariable[] plits2 = new IntegerVariable[]{vars[5], vars[3]};
+        IntegerVariable[] nlits2 = new IntegerVariable[]{vars[1], vars[4], vars[7]};
+        mod.addConstraint(clause(plits2, nlits2));
+
+        s.read(mod);
+        s.solveAll();
+        //totex
+    }
+
+    public void ccostregular(){
+        ////totex ccostregular
+        int n = 10;
+        IntegerVariable[] vars = makeIntVarArray("x",n,0,2,CPOptions.V_ENUM);
+        IntegerVariable z = makeIntVar("z",3,4, CPOptions.V_BOUND);
+
+        FiniteAutomaton auto = new FiniteAutomaton();
+        int start = auto.addState();
+        int end = auto.addState();
+        auto.setInitialState(start);
+        auto.setFinal(start);
+        auto.setFinal(end);
+
+        auto.addTransition(start,start, 0,1);
+        auto.addTransition(start,end,2);
+
+        auto.addTransition(end,start,2);
+        auto.addTransition(end,start, 0,1);
+
+        int[][][] costs = new int[n][3][2];
+        for (int i = 0 ; i < costs.length ; i++)
+        {
+            costs[i][0][1] = 1;
+            costs[i][1][1] = 1;
+        }
+
+        CPModel m = new CPModel();
+        m.addConstraint(costRegular(vars,z,auto,costs));
+
+        CPSolver s= new CPSolver();
+        s.read(m);
+        s.solveAll();
+        //totex
+    }
+
     public void ccumulative() {
         //totex ccumulative
         CPModel m = new CPModel();
@@ -170,10 +265,13 @@ public class Code4Doc2 {
             duration[i] = constant(durations_data[i]);
             height[i] = makeIntVar("height " + i, new int[]{0, heights_data[i]});
         }
+        TaskVariable[] tasks = Choco.makeTaskVarArray("Task", starts, ends, duration);
+
         IntegerVariable[] bool = makeIntVarArray("taskIn?", n, 0, 1);
         IntegerVariable obj = makeIntVar("obj", 0, n, CPOptions.V_BOUND, CPOptions.V_OBJECTIVE);
         //post the cumulative
-        m.addConstraint(cumulative(starts, ends, duration, height, capa, ""));
+        m.addConstraint(cumulative("cumulative", tasks, height, constant(0), capa,
+                SettingType.TASK_INTERVAL.getOptionName()));
         //post the channeling to know if the task is scheduled or not
         for (int i = 0; i < n; i++) {
             m.addConstraint(boolChanneling(bool[i], height[i], heights_data[i]));
@@ -259,7 +357,31 @@ public class Code4Doc2 {
         //totex
     }
 
-    public void cdomainconstraint(){
+    public void cdisjoint1(){
+        //totex cdisjoint1
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+        IntegerVariable var = makeIntVar("v1", 0, 100, CPOptions.V_BOUND);
+        int[] values = new int[]{10,20,30,40,50,60,70,80,90};
+        m.addConstraint(disjoint(var, values));
+        s.read(m);
+        s.solve();
+        //totex
+    }
+
+    public void cdisjoint2(){
+        //totex cdisjoint2
+        Model m = new CPModel();
+        Solver s = new CPSolver();
+        TaskVariable[] tasks1 = Choco.makeTaskVarArray("Task1", 0, 10, new int[]{2,5});
+        TaskVariable[] tasks2 = Choco.makeTaskVarArray("Task2", 0, 10, new int[]{3,4});
+        m.addConstraints(disjoint(tasks1, tasks2));
+        s.read(m);
+        s.solve();
+        //totex
+    }
+
+    public void cdomainconstraint() {
         //totex cdomainconstraint
         Model m = new CPModel();
         Solver s = new CPSolver();

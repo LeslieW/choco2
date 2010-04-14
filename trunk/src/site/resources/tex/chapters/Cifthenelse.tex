@@ -8,18 +8,12 @@
   $$(c_1\land c_2) \lor (\neg c_1 \land c_3)$$
 \end{notedef}
 
-\texttt{ifThenElse}$(c_1,c_2,c_3)$ can also state that if the first constraint is satisfied, it returns the second parameter, otherwise it returns the the third one.
-
 \begin{itemize}
-	\item \textbf{API} :
-	\begin{itemize}
-		\item \mylst{ifThenElse(Constraint c1, Constraint c2, Constraint c3)}
-	\end{itemize}
+	\item \textbf{API} :\mylst{ifThenElse(Constraint c1, Constraint c2, Constraint c3)}
 	\item \textbf{return type} : \texttt{Constraint}
 	\item \textbf{options} : \emph{n/a}
 	\item \textbf{favorite domain} : \emph{n/a}
 \end{itemize}
 
 \textbf{Example}:
-
 \lstinputlisting{java/cifthenelse.j2t}

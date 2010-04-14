@@ -7,6 +7,6 @@
         }
         int[] LB2 = {0, 1, 1, 0, 3};
         int[] UB2 = {0, 1, 1, 0, 3};
-        m.addConstraint("cp:bc", globalCardinality(vars, LB2, UB2, 1));
+        m.addConstraint(CPOptions.C_GCC_BC, globalCardinality(vars, LB2, UB2, 1));
         s.read(m);
         s.solve();

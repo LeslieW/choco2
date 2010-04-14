@@ -7,7 +7,7 @@ For any requests send a mail to \url{choco@emn.fr}.
 
 \noindent This document is organized as follows:
 \begin{itemize}
-\item \hyperlink{ch:doc}{Documentation} is the user-guide of Choco. After a short \hypertarget{doc:introduction}{introduction} to constraint programming and to the Choco solver, it presents the basics of \hyperlink{doc:model}{modeling} and \hyperlink{doc:solver}{solving} with Choco, the \hyperlink{doc:advanced}{advanced usages} (customizing propagation and search), some examples of \hyperlink{doc:applications}{Applications}, and a \hyperlink{faq:frequentlyaskedquestions}{FAQ} section.
+\item \hyperlink{ch:doc}{Documentation} is the user-guide of Choco. After a short \hypertarget{doc:introduction}{introduction} to constraint programming and to the Choco solver, it presents the basics of \hyperlink{doc:model}{modeling} and \hyperlink{doc:solver}{solving} with Choco, the \hyperlink{doc:advanced}{advanced usages} (customizing propagation and search) and some examples of \hyperlink{doc:applications}{Applications}.
 \item \hyperlink{part:elements}{Elements of Choco} gives a detailed description of the \hyperlink{ch:vars}{variables}, \hyperlink{ch:operators}{operators}, \hyperlink{ch:constraints}{constraints} currently available in Choco.
 \item \hyperlink{ch:tut}{Tutorials} provides a \hyperlink{gettingstarted:gettingstarted:welcometochoco}{fast how-to} write a Choco program, a detailed example of a \hyperlink{gettingstarted:firstexample:magicsquare}{simple program}, and several \hyperlink{exercises}{exercises} with their \hyperlink{solutions}{solutions}.
 \item \hyperlink{ch:extra}{Extras} presents future works, only available on the beta version or extension of the current jar, such as the \hyperlink{chocoandvisu:chocoandvisu}{visualization module of Choco}. The section dedicated to \hyperlink{sudokuandcp:sudokuandconstraintprogramming}{Sudoku} aims at explaining the basic principles of Constraint Programming (propagation and search) on this famous game.
@@ -18,7 +18,6 @@ For any requests send a mail to \url{choco@emn.fr}.
 \end{itemize}
 
 \input{chapters/documentation.tex}
-\input{chapters/faq.tex}
 
 %\chapter{Variables}\label{ch:vars}\hypertarget{ch:vars}{}
 %\input{chapters/integervariable.tex}
@@ -27,16 +26,21 @@ For any requests send a mail to \url{choco@emn.fr}.
 
 \part{Elements of Choco}\label{part:elements}\hypertarget{part:elements}{}
 \chapter{Variables (Model)}\label{ch:vars}\hypertarget{ch:vars}{}
-This section describes the three kinds of \hyperlink{model:variables}{variables} that can be used within a Choco Model.
-\input{chapters/integervariable.tex}
-\input{chapters/realvariable.tex}
-\input{chapters/setvariable.tex}
-\chapter{Operators}\label{ch:operators}\hypertarget{ch:operators}{}
+This section describes the three kinds of \hyperlink{model:variables}{variables} that can be used within a Choco Model, and an object-variable.
+\input{chapters/Vintegervariable.tex}
+\input{chapters/Vrealvariable.tex}
+\input{chapters/Vsetvariable.tex}
+\input{chapters/Vtaskvariable.tex}
+\chapter{Operators (Model)}\label{ch:operators}\hypertarget{ch:operators}{}
 This section lists and details the \hyperlink{model:expressionvariables}{operators} that can be used within a Choco Model to combine variables in expressions.
 \input{chapters/Oabs.tex}
 \input{chapters/Ocos.tex}
+\input{chapters/Odisteq.tex}
+\input{chapters/Odistgt.tex}
+\input{chapters/Odistlt.tex}
+\input{chapters/Odistneq.tex}
 \input{chapters/Odiv.tex}
-\input{chapters/Ofalse.tex}
+%\input{chapters/Ofalse.tex}
 \input{chapters/Oifthenelse.tex}
 \input{chapters/Omax.tex}
 \input{chapters/Omin.tex}
@@ -49,30 +53,44 @@ This section lists and details the \hyperlink{model:expressionvariables}{operato
 \input{chapters/Oscalar.tex}
 \input{chapters/Osin.tex}
 \input{chapters/Osum.tex}
-\input{chapters/Otrue.tex}
-\chapter{Constraints}\label{ch:constraints}\hypertarget{ch:constraints}{}
+%\input{chapters/Otrue.tex}
+\chapter{Constraints (Model)}\label{ch:constraints}\hypertarget{ch:constraints}{}
 This section lists and details the \hyperlink{model:constraints}{constraints} currently available in Choco.
 \input{chapters/Cabs.tex}
 \input{chapters/Calldifferent.tex}
+\input{chapters/Camong.tex}
 \input{chapters/Cand.tex}
 \input{chapters/Catmostnvalue.tex}
 \input{chapters/Cboolchanneling.tex}
-%\input{chapters/Ccos.tex}
+\input{chapters/Cclause.tex}
+\input{chapters/Ccostregular.tex}
 \input{chapters/Ccumulative.tex}
+\input{chapters/Ccumulativemax.tex}
+\input{chapters/Ccumulativemin.tex}
+\input{chapters/Cdisjoint.tex}
 \input{chapters/Cdisjunctive.tex}
 \input{chapters/Cdistanceeq.tex}
 \input{chapters/Cdistancegt.tex}
 \input{chapters/Cdistancelt.tex}
 \input{chapters/Cdistanceneq.tex}
-%\input{chapters/Cdiv.tex}
 \input{chapters/Cdomainconstraint.tex}
+\input{chapters/Celement.tex}
+\input{chapters/Cendsafter.tex}
+\input{chapters/Cendsafterbegin.tex}
+\input{chapters/Cendsafterend.tex}
+\input{chapters/Cendsbefore.tex}
+\input{chapters/Cendsbeforebegin.tex}
+\input{chapters/Cendsbeforeend.tex}
+\input{chapters/Cendsbetween.tex}
 \input{chapters/Ceq.tex}
 \input{chapters/Ceqcard.tex}
 \input{chapters/Cequation.tex}
+\input{chapters/Cexactly.tex}
 \input{chapters/Cfalse.tex}
 \input{chapters/Cfeaspairac.tex}
 \input{chapters/Cfeastupleac.tex}
 \input{chapters/Cfeastuplefc.tex}
+\input{chapters/Cforbiddeninterval.tex}
 \input{chapters/Cgeost.tex}
 \input{chapters/Cgeq.tex}
 \input{chapters/Cgeqcard.tex}
@@ -90,6 +108,7 @@ This section lists and details the \hyperlink{model:constraints}{constraints} cu
 \input{chapters/Cinverseset.tex}
 \input{chapters/Cisincluded.tex}
 \input{chapters/Cisnotincluded.tex}
+\input{chapters/Cknapsackproblem.tex}
 \input{chapters/Cleq.tex}
 \input{chapters/Cleqcard.tex}
 \input{chapters/Clex.tex}
@@ -101,11 +120,8 @@ This section lists and details the \hyperlink{model:constraints}{constraints} cu
 \input{chapters/Cmax.tex}
 \input{chapters/Cmember.tex}
 \input{chapters/Cmin.tex}
-%\input{chapters/Cminus.tex}
 \input{chapters/Cmod.tex}
-%\input{chapters/Cmult.tex}
 \input{chapters/Cmulticostregular.tex}
-%\input{chapters/Cneg.tex}
 \input{chapters/Cneq.tex}
 \input{chapters/Cneqcard.tex}
 \input{chapters/Cnot.tex}
@@ -117,29 +133,45 @@ This section lists and details the \hyperlink{model:constraints}{constraints} cu
 \input{chapters/Coppositesign.tex}
 \input{chapters/Cor.tex}
 \input{chapters/Cpack.tex}
-%\input{chapters/Cplus.tex}
-%\input{chapters/Cpower.tex}
 \input{chapters/Cprecedencereified.tex}
+\input{chapters/Cprecedenceimplied.tex}
+\input{chapters/Cprecedence.tex}
+\input{chapters/Cprecedencedisjoint.tex}
 \input{chapters/Cregular.tex}
-\input{chapters/Creifiedintconstraint.tex}
+\input{chapters/Creifiedand.tex}
+\input{chapters/Creifiedconstraint.tex}
+%\input{chapters/Creifiedintconstraint.tex}
+\input{chapters/Creifiedleftimp.tex}
+\input{chapters/Creifiednot.tex}
+\input{chapters/Creifiedor.tex}
+\input{chapters/Creifiedrightimp.tex}
+\input{chapters/Creifiedxnor.tex}
+\input{chapters/Creifiedxor.tex}
 \input{chapters/Crelationpairac.tex}
 \input{chapters/Crelationtupleac.tex}
 \input{chapters/Crelationtuplefc.tex}
 \input{chapters/Csamesign.tex}
-%\input{chapters/Cscalar.tex}
 \input{chapters/Csetdisjoint.tex}
 \input{chapters/Csetinter.tex}
 \input{chapters/Csetunion.tex}
-%\input{chapters/Csin.tex}
 \input{chapters/Csorting.tex}
-%\input{chapters/Cstretchcyclic.tex}
+\input{chapters/Cstartsafter.tex}
+\input{chapters/Cstartsafterbegin.tex}
+\input{chapters/Cstartsafterend.tex}
+\input{chapters/Cstartsbefore.tex}
+\input{chapters/Cstartsbeforebegin.tex}
+\input{chapters/Cstartsbeforeend.tex}
+\input{chapters/Cstartsbetween.tex}
 \input{chapters/Cstretchpath.tex}
-%\input{chapters/Csum.tex}
 \input{chapters/Ctimes.tex}
 \input{chapters/Ctree.tex}
 \input{chapters/Ctrue.tex}
 \input{chapters/Cxnor.tex}
 \input{chapters/Cxor.tex}
+
+\chapter{Options (Model)}\label{ch:options}\hypertarget{ch:options}{}
+This section lists and details the options that can be declared on variables or constraints within a Choco Model .
+\input{chapters/options.tex}
 
 \part{Tutorials}\label{ch:tut}\hypertarget{ch:tut}{}
 If you look for an easy step-by-step program in CHOCO, \hyperlink{gettingstarted}{getting\ started} is for you! It introduces to basic concepts of a CHOCO program (Model, Solver, variables and constraints...).

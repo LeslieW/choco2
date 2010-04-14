@@ -7,11 +7,11 @@
 
 %\section{How to create a solver}\label{solver:howtocreateasolver}\hypertarget{solver:howtocreateasolver}{}
 
-To create a solver, one just needs to create a new object as follow:
+To create a {\tt Solver}, one just needs to create a new object as follow:
 \begin{lstlisting}
 Solver solver = new CPSolver();
 \end{lstlisting}
-By this, a Solver for Constraint Programming is created. 
+By this, a Constraint Programming (CP) {\tt Solver} object is created. 
 
 %\section{Read a model}\label{solver:readamodel}\hypertarget{solver:readamodel}{}
 The solver gives an API to read a model. The reading of a model is compulsory and must be done after the entire definition of the model. 
@@ -289,7 +289,7 @@ The second way to do it is to compute the following value at each call. It can b
 
 You might want to apply different heuristics to different set of variables of the problem. In that case, the search is viewed as a sequence of branching objects (or goals). Up to now, we only had one branching or one goal including all the variables of the problem but several goals can be used.
 
-Adding a new goal is made through the solver with the \texttt{addGoal(AbstractBranching b)} method. As for the addition of your own limit, don´t call the \texttt{solve()} method, but instead: build the solver by yourself, add your sequence of branching, and call the \texttt{launch()} method of the solver. 
+Adding a new goal is made through the solver with the \texttt{addGoal(AbstractBranching b)} method. As for the addition of your own limit, dont call the \texttt{solve()} method, but instead: build the solver by yourself, add your sequence of branching, and call the \texttt{launch()} method of the solver. 
 
 The following example add three branching objects on integer variables \emph{vars1}, \emph{vars2} and set variables \emph{svars} to solver \emph{s}. The first two branchings are both \texttt{AssignVar} but use two different variable/values selection strategies:
 \begin{lstlisting}

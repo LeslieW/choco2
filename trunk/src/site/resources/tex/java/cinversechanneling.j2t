@@ -23,7 +23,6 @@
             }
         }
         m.addConstraint(inverseChanneling(queens, queensdual));
-        m.addVariables("cp:decision", queens);
         Solver s = new CPSolver();
         s.read(m);
         s.solveAll();

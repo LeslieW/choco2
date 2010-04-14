@@ -44,102 +44,36 @@ Download CHOCO
    Snapshot are available for development versions. They contain additional features or fixes
    that are not as mature to be considered as a release.
 
-** <all-in-one> jars
+** jars
 
-*---+---+---*---+---*
-| <<Id>> |  <<Archive>> | | <<Sources>> | |
-*---*---*---*---*---*
-| <<<20100302>>> | | | | |
-| | {{{mvn/repository/choco/choco-solver/2.1.1-SNAPSHOT/choco-solver-2.1.1-20100302.120235-8.jar}choco-solver-2.1.1-20100302.120235-8.jar}}| {{{mvn/repository/choco/choco-solver/2.1.1-SNAPSHOT/choco-solver-2.1.1-20100302.120235-8.jar.md5}md5}}| {{{mvn/repository/choco/choco-solver/2.1.1-SNAPSHOT/choco-solver-2.1.1-20100302.120235-8-src.jar}choco-solver-2.1.1-20100302.120235-8-src.jar}}| {{{mvn/repository/choco/choco-solver2.1.1-SNAPSHOT/choco-solver-2.1.1-20100302.120235-8-src.jar.md5}md5}}| 
-*---*---*---*---*---*
-| | {{{mvn/repository/choco/choco/2.1.1-SNAPSHOT/choco-2.1.1-20100302.120623-6.jar}choco-2.1.1-20100302.120623-6.jar}}| {{{mvn/repository/choco/choco/2.1.1-SNAPSHOT/choco-2.1.1-20100302.120623-6.jar.md5}md5}}| {{{mvn/repository/choco/choco/2.1.1-SNAPSHOT/choco-2.1.1-20100302.120623-6-src.jar}choco-2.1.1-20100302.120623-6-src.jar}}| {{{mvn/repository/choco/choco2.1.1-SNAPSHOT/choco-2.1.1-20100302.120623-6-src.jar.md5}md5}}| 
-*---*---*---*---*---*
-| <<<20091218>>> | | | | |
-*---*---*---*---*---*
-| | {{{mvn/repository/choco/choco-solver/2.1.1-SNAPSHOT/choco-solver-2.1.1-20091218.152832-4.jar}choco-solver-2.1.1-20091218.152832-4.jar}}| {{{mvn/repository/choco/choco-solver/2.1.1-SNAPSHOT/choco-solver-2.1.1-20091218.152832-4.jar.md5}md5}}| {{{mvn/repository/choco/choco-solver/2.1.1-SNAPSHOT/choco-solver-2.1.1-20091218.152832-4-src.jar}choco-solver-2.1.1-20091218.152832-4-src.jar}}| {{{mvn/repository/choco/choco-solver2.1.1-SNAPSHOT/choco-solver-2.1.1-20091218.152832-4-src.jar.md5}md5}}| 
-*---*---*---*---*---*
-| | {{{mvn/repository/choco/choco/2.1.1-SNAPSHOT/choco-2.1.1-20091218.152953-3.jar}choco-2.1.1-20091218.152953-3.jar}}| {{{mvn/repository/choco/choco/2.1.1-SNAPSHOT/choco-2.1.1-20091218.152953-3.jar.md5}md5}}| {{{mvn/repository/choco/choco/2.1.1-SNAPSHOT/choco-2.1.1-20091218.152953-3-src.jar}choco-2.1.1-20091218.152953-3-src.jar}}| {{{mvn/repository/choco/choco2.1.1-SNAPSHOT/choco-2.1.1-20091218.152953-3-src.jar.md5}md5}}| 
-*---*---*---*---*---*
-| <<<20091106>>> | | | | |
-*---*---*---*---*---*
-| | {{{mvn/repository/choco/choco-solver/2.1.1-SNAPSHOT/choco-solver-2.1.1-SNAPSHOT.jar}choco-solver-2.1.1-SNAPSHOT.jar}}| {{{mvn/repository/choco/choco-solver/2.1.1-SNAPSHOT/choco-solver-2.1.1-SNAPSHOT.jar.md5}md5}}| {{{mvn/repository/choco/choco-solver/2.1.1-SNAPSHOT/choco-solver-2.1.1-SNAPSHOT-src.jar}choco-solver-2.1.1-SNAPSHOT-src.jar}}| {{{mvn/repository/choco/choco-solver2.1.1-SNAPSHOT/choco-solver-2.1.1-SNAPSHOT-src.jar.md5}md5}}| 
-*---*---*---*---*---*
-| | {{{mvn/repository/choco/choco/2.1.1-SNAPSHOT/choco-2.1.1-SNAPSHOT.jar}choco-2.1.1-SNAPSHOT.jar}}| {{{mvn/repository/choco/choco/2.1.1-SNAPSHOT/choco-2.1.1-SNAPSHOT.jar.md5}md5}}| {{{mvn/repository/choco/choco/2.1.1-SNAPSHOT/choco-2.1.1-SNAPSHOT-src.jar}choco-2.1.1-SNAPSHOT-src.jar}}| {{{mvn/repository/choco/choco2.1.1-SNAPSHOT/choco-2.1.1-SNAPSHOT-src.jar.md5}md5}}| 
-*---*---*---*---*---*
+*---+---*
+| <<Id>> |  <<Archive>> |
+*---*---*
+| <<<20100402>>> | |
+| | {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20100402/}jars}}|
+*---*---*
+| | {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20100402/md5}md5}}|
+*---*---*
+| | {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20100402/sources}sources}}|
+*---*---*
+| <<<20100331>>> | |
+| | {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20100331/}jars}}|
+*---*---*
+| | {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20100331/md5}md5}}|
+*---*---*
+| | {{{http://sourceforge.net/projects/choco/files/choco/2.1.1/SNAPSHOT/20100331/sources}sources}}|
+*---*---*
 
-** module jars
-
-*---+---+---+---*---*
-| <<Id>> | <<Type>> | <<Archive>> | |
-*---*---*---*---*---*
-| <<<20100302>>> | | |
-| | <kernel> | {{{mvn/repository/choco/choco-kernel/2.1.1-SNAPSHOT/choco-kernel-2.1.1-20100302.120235-9.jar}choco-kernel-2.1.1-20100302.120235-9.jar}}| {{{mvn/repository/choco/choco-kernel/2.1.1-SNAPSHOT/choco-kernel-2.1.1-20100302.120235-9.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <cp> | {{{mvn/repository/choco/choco-cp/2.1.1-SNAPSHOT/choco-cp-2.1.1-20100302.120235-9.jar}choco-cp-2.1.1-20100302.120235-9.jar}}| {{{mvn/repository/choco/choco-cp/2.1.1-SNAPSHOT/choco-cp-2.1.1-20100302.120235-9.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <db> | {{{mvn/repository/choco/choco-db/2.1.1-SNAPSHOT/choco-db-2.1.1-20100302.120623-6.jar}choco-db-2.1.1-20100302.120623-6.jar}}| {{{mvn/repository/choco/choco-db/2.1.1-SNAPSHOT/choco-db-2.1.1-20100302.120623-6.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <parsers> | {{{mvn/repository/choco/choco-parsers/2.1.1-SNAPSHOT/choco-parsers-2.1.1-20100302.120623-6.jar}choco-parsers-2.1.1-20100302.120623-6.jar}}| {{{mvn/repository/choco/choco-parsers/2.1.1-SNAPSHOT/choco-parsers-2.1.1-20100302.120623-6.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <cli> | {{{mvn/repository/choco/choco-cli/2.1.1-SNAPSHOT/choco-cli-2.1.1-20100302.120623-5.jar}choco-cli-2.1.1-20100302.120623-5.jar}}| {{{mvn/repository/choco/choco-cli/2.1.1-SNAPSHOT/choco-cli-2.1.1-20100302.120623-5.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <visu> | {{{mvn/repository/choco/choco-visu/2.1.1-SNAPSHOT/choco-visu-2.1.1-20100302.120623-6.jar}choco-visu-2.1.1-20100302.120623-6.jar}}| {{{mvn/repository/choco/choco-visu/2.1.1-SNAPSHOT/choco-visu-2.1.1-20100302.120623-6.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <contribs> | {{{mvn/repository/choco/choco-contribs/2.1.1-SNAPSHOT/choco-contribs-2.1.1-20100302.120623-6.jar}choco-contribs-2.1.1-20100302.120623-6.jar}}| {{{mvn/repository/choco/choco-contribs/2.1.1-SNAPSHOT/choco-contribs-2.1.1-20100302.120623-6.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <samples> | {{{mvn/repository/choco/samples/2.1.1-SNAPSHOT/samples-2.1.1-20100302.120623-5.jar}samples-2.1.1-20100302.120623-5.jar}}| {{{mvn/repository/choco/samples/2.1.1-SNAPSHOT/samples-2.1.1-20100302.120623-5.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <dadcop-tracer> | {{{mvn/repository/choco/dadcop-tracer/2.1.1-SNAPSHOT/dadcop-tracer-2.1.1-20100302.120623-2.jar}dadcop-tracer-2.1.1-20100302.120623-2.jar}}| {{{mvn/repository/choco/dadcop-tracer/2.1.1-SNAPSHOT/dadcop-tracer-2.1.1-20100302.120623-2.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| <<<20091218>>> | | |
-*---*---*---*---*---*
-| | <kernel> | {{{mvn/repository/choco/choco-kernel/2.1.1-SNAPSHOT/choco-kernel-2.1.1-20091218.152832-4.jar}choco-kernel-2.1.1-20091218.152832-4.jar}}| {{{mvn/repository/choco/choco-kernel/2.1.1-SNAPSHOT/choco-kernel-2.1.1-20091218.152832-4.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <cp> | {{{mvn/repository/choco/choco-cp/2.1.1-SNAPSHOT/choco-cp-2.1.1-20091218.152832-4.jar}choco-cp-2.1.1-20091218.152832-4.jar}}| {{{mvn/repository/choco/choco-cp/2.1.1-SNAPSHOT/choco-cp-2.1.1-20091218.152832-4.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <db> | {{{mvn/repository/choco/choco-db/2.1.1-SNAPSHOT/choco-db-2.1.1-20091218.152953-3.jar}choco-db-2.1.1-20091218.152953-3.jar}}| {{{mvn/repository/choco/choco-db/2.1.1-SNAPSHOT/choco-db-2.1.1-20091218.152953-3.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <parsers> | {{{mvn/repository/choco/choco-parsers/2.1.1-SNAPSHOT/choco-parsers-2.1.1-20091218.152953-3.jar}choco-parsers-2.1.1-20091218.152953-3.jar}}| {{{mvn/repository/choco/choco-parsers/2.1.1-SNAPSHOT/choco-parsers-2.1.1-20091218.152953-3.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <cli> | {{{mvn/repository/choco/choco-cli/2.1.1-SNAPSHOT/choco-cli-2.1.1-20091218.152953-2.jar}choco-cli-2.1.1-20091218.152953-2.jar}}| {{{mvn/repository/choco/choco-cli/2.1.1-SNAPSHOT/choco-cli-2.1.1-20091218.152953-2.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <visu> | {{{mvn/repository/choco/choco-visu/2.1.1-SNAPSHOT/choco-visu-2.1.1-20091218.152953-3.jar}choco-visu-2.1.1-20091218.152953-3.jar}}| {{{mvn/repository/choco/choco-visu/2.1.1-SNAPSHOT/choco-visu-2.1.1-20091218.152953-3.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <contribs> | {{{mvn/repository/choco/choco-contribs/2.1.1-SNAPSHOT/choco-contribs-2.1.1-20091218.152953-3.jar}choco-contribs-2.1.1-20091218.152953-3.jar}}| {{{mvn/repository/choco/choco-contribs/2.1.1-SNAPSHOT/choco-contribs-2.1.1-20091218.152953-3.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <samples> | {{{mvn/repository/choco/samples/2.1.1-SNAPSHOT/samples-2.1.1-20091218.152953-2.jar}samples-2.1.1-20091218.152953-2.jar}}| {{{mvn/repository/choco/samples/2.1.1-SNAPSHOT/samples-2.1.1-20091218.152953-2.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| <<<20091106>>> | | | |
-*---*---*---*---*---*
-| | <kernel> | {{{mvn/repository/choco/choco-kernel/2.1.1-SNAPSHOT/choco-kernel-2.1.1-SNAPSHOT.jar}choco-kernel-2.1.1-SNAPSHOT.jar}}| {{{mvn/repository/choco/choco-kernel/2.1.1-SNAPSHOT/choco-kernel-2.1.1-SNAPSHOT.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <cp> | {{{mvn/repository/choco/choco-cp/2.1.1-SNAPSHOT/choco-cp-2.1.1-SNAPSHOT.jar}choco-cp-2.1.1-SNAPSHOT.jar}}| {{{mvn/repository/choco/choco-cp/2.1.1-SNAPSHOT/choco-cp-2.1.1-SNAPSHOT.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <db> | {{{mvn/repository/choco/choco-db/2.1.1-SNAPSHOT/choco-db-2.1.1-SNAPSHOT.jar}choco-db-2.1.1-SNAPSHOT.jar}}| {{{mvn/repository/choco/choco-db/2.1.1-SNAPSHOT/choco-db-2.1.1-SNAPSHOT.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <parsers> | {{{mvn/repository/choco/choco-parsers/2.1.1-SNAPSHOT/choco-parsers-2.1.1-SNAPSHOT.jar}choco-parsers-2.1.1-SNAPSHOT.jar}}| {{{mvn/repository/choco/choco-parsers/2.1.1-SNAPSHOT/choco-parsers-2.1.1-SNAPSHOT.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <cli> | {{{mvn/repository/choco/choco-cli/2.1.1-SNAPSHOT/choco-cli-2.1.1-SNAPSHOT.jar}choco-cli-2.1.1-SNAPSHOT.jar}}| {{{mvn/repository/choco/choco-cli/2.1.1-SNAPSHOT/choco-cli-2.1.1-SNAPSHOT.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <visu> | {{{mvn/repository/choco/choco-visu/2.1.1-SNAPSHOT/choco-visu-2.1.1-SNAPSHOT.jar}choco-visu-2.1.1-SNAPSHOT.jar}}| {{{mvn/repository/choco/choco-visu/2.1.1-SNAPSHOT/choco-visu-2.1.1-SNAPSHOT.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <contribs> | {{{mvn/repository/choco/choco-contribs/2.1.1-SNAPSHOT/choco-contribs-2.1.1-SNAPSHOT.jar}choco-contribs-2.1.1-SNAPSHOT.jar}}| {{{mvn/repository/choco/choco-contribs/2.1.1-SNAPSHOT/choco-contribs-2.1.1-SNAPSHOT.jar.md5}md5}}| | 
-*---*---*---*---*---*
-| | <samples> | {{{mvn/repository/choco/samples/2.1.1-SNAPSHOT/samples-2.1.1-SNAPSHOT.jar}samples-2.1.1-SNAPSHOT.jar}}| {{{mvn/repository/choco/samples/2.1.1-SNAPSHOT/samples-2.1.1-SNAPSHOT.jar.md5}md5}}| | 
-*---*---*---*---*---*
 
    All the previous snapshots are available on the {{{mvn/repository/choco} snapshot repository}}.
 
-* Building from the sources
+** Old files
 
-   You can build <<<choco>>> from sources using the repository. The methods to download the sources
-   are described on the {{{source-repository.html} repository page}}. <<<choco>>> uses {{{http://maven.apache.org} Maven}} as the software project management system, it
-  is necessary to install it to build easily <<<choco>>>.
+    You can download older files
 
-  You can build the artifacts (the jar files)
-  with the command "<mvn assembly:assembly>" in the root directory of the sources (this directory
-  should contain a file named <pom.xml>). If the compilation succeed, artifacts will be available
-  in the directory <target>.
+* Building from the sources on {{{https://sourceforge.net/projects/choco/files/}Sourceforge}}.
+
+   You can build <<<choco>>> from sources using the repository. See {{{choco-build.html} Build CHOCO}} page for more details.
 
 
 * System Requirements

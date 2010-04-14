@@ -1,0 +1,24 @@
+\section{knapsackProblem (constraint)}\label{knapsackproblem:knapsackproblemconstraint}\hypertarget{knapsackproblem:knapsackproblemconstraint}{}
+\begin{notedef}
+  \texttt{knapsackProblem}$(x, W, V, w, v)$ states that :
+$$\sum_{i=1}^{n}x_{i}w_{i}=W \wedge \sum_{i=1}^{n}x_{i}v_{i}=V$$
+$x_i$ is the number of copies of the item $i$, each kind of item $i$ has a value $v_i$ and a weight $w_i$.
+\end{notedef}
+It constructs a knapsack problem constraint with an underlying costregular constraint, where it simulates M. Triks dynamic programming approach.
+
+\begin{itemize}
+	\item \textbf{API} :\item \mylst{knapsackProblem(IntegerVariable[] vars, IntegerVariable cVar1, IntegerVariable cVar2, int[] costs1, int[] costs2)}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : \emph{n/a}
+	\item \textbf{references} : 
+	\begin{itemize}
+		\item \cite{DemasseyC06}: \emph{A \texttt{Cost-Regular} based hybrid column generation approach}
+		\item \cite{TrickAOR03}: \emph{A Dynamic Programming Approach for Consistency and Propagation for Knapsack Constraints}
+		\item \hyperlink{costregular:costregularconstraint}{costRegular}
+	\end{itemize}
+\end{itemize}
+
+\textbf{Example}:
+\lstinputlisting{java/cknapsack.j2t}
+

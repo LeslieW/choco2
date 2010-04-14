@@ -1,0 +1,22 @@
+\section{costRegular (constraint)}\label{costregular:costregularconstraint}\hypertarget{costregular:costregularconstraint}{}
+\begin{notedef}
+  \texttt{costRegular}$(x, cx, d, c)$ ensures that the sequence of variables values of $x$ will follow a pattern defined by a DFA $d$ and that this sequence has a cost defined by $$\sum_{i=1}^{n} c_{i}^{x_i}=cx$$.
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} :
+	\begin{itemize}
+		\item \mylst{costRegular(IntegerVariable[] vars, IntegerVariable cvar, FiniteAutomaton auto, int[][] costs)}
+		\item \mylst{costRegular(IntegerVariable[] vars, IntegerVariable cvar, FiniteAutomaton auto, int[][][] costs)}
+		\item \mylst{costRegular(IntegerVariable[] vars, IntegerVariable cvar, DirectedMultigraph<Node, Arc> graph, Node source)}
+	\end{itemize}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} : \emph{n/a}
+	\item \textbf{favorite domain} : \emph{n/a}
+	\item \textbf{references} : \cite{DemasseyC06}: \emph{A \texttt{Cost-Regular} based hybrid column generation approach}
+\end{itemize}
+
+
+
+\textbf{Example}:
+\lstinputlisting{java/ccostregular.j2t}
