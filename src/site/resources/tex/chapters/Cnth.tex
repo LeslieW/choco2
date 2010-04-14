@@ -17,13 +17,20 @@ Several APIs are available:
 	\item \textbf{API} :
 	\begin{itemize}
 		\item \mylst{nth(IntegerVariable i, int[] x, IntegerVariable y)}
+		\item \mylst{nth(String option, IntegerVariable i, int[] x, IntegerVariable y)}
 		\item \mylst{nth(IntegerVariable i, IntegerVariable[] x, IntegerVariable y)}
 		\item \mylst{nth(IntegerVariable i, int[] x, IntegerVariable y, int offset)}
+		\item \mylst{nth(String option, IntegerVariable i, int[] x, IntegerVariable y, int offset)}		
 		\item \mylst{nth(IntegerVariable i, IntegerVariable[] x, IntegerVariable y, int offset)}
+		\item \mylst{nth(String option, IntegerVariable i, IntegerVariable[] x, IntegerVariable y, int offset)}
 		\item \mylst{nth(IntegerVariable i, IntegerVariable j, int[][] x, IntegerVariable y)}
 	\end{itemize}
 	\item \textbf{return type} : \texttt{Constraint}
-	\item \textbf{options} :\emph{n/a}
+	\item \textbf{options} :
+	\begin{itemize}
+		\item \emph{no option} 
+		\item \hyperlink{cnthg:cnthgoptions}{\tt CPOptions.C\_NTH\_G} for global consistency
+	\end{itemize}
 	\item \textbf{favorite domain} : \emph{to complete}
 	\item \textbf{references} :\\
       global constraint catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Celement.html}{element}

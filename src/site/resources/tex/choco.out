@@ -20,11 +20,11 @@
 \BOOKMARK [0][-]{chapter.2}{The model}{part.1}
 \BOOKMARK [1][-]{section.2.1}{Variables}{chapter.2}
 \BOOKMARK [2][-]{subsection.2.1.1}{Simple Variables}{section.2.1}
-\BOOKMARK [2][-]{subsection.2.1.2}{Expression variables and operators}{section.2.1}
-\BOOKMARK [2][-]{subsection.2.1.3}{Constant variables}{section.2.1}
-\BOOKMARK [2][-]{subsection.2.1.4}{Decision/non-decision variables}{section.2.1}
-\BOOKMARK [2][-]{subsection.2.1.5}{Objective variable}{section.2.1}
-\BOOKMARK [2][-]{subsection.2.1.6}{Examples with variables}{section.2.1}
+\BOOKMARK [2][-]{subsection.2.1.2}{Constants}{section.2.1}
+\BOOKMARK [2][-]{subsection.2.1.3}{Expression variables and operators}{section.2.1}
+\BOOKMARK [2][-]{subsection.2.1.4}{MultipleVariables}{section.2.1}
+\BOOKMARK [2][-]{subsection.2.1.5}{Decision/non-decision variables}{section.2.1}
+\BOOKMARK [2][-]{subsection.2.1.6}{Objective variable}{section.2.1}
 \BOOKMARK [1][-]{section.2.2}{Constraints}{chapter.2}
 \BOOKMARK [2][-]{subsection.2.2.1}{Binary constraints}{section.2.2}
 \BOOKMARK [2][-]{subsection.2.2.2}{Ternary constraints}{section.2.2}
@@ -76,123 +76,159 @@
 \BOOKMARK [1][-]{section.5.2}{Placement and use of the Geost constraint}{chapter.5}
 \BOOKMARK [2][-]{subsection.5.2.1}{Example and way to implement it}{section.5.2}
 \BOOKMARK [2][-]{subsection.5.2.2}{Support for Greedy Assignment within the geost Kernel}{section.5.2}
-\BOOKMARK [0][-]{chapter.6}{Frequently Asked Questions}{part.1}
-\BOOKMARK [1][-]{section.6.1}{Where can I find Choco ?}{chapter.6}
-\BOOKMARK [1][-]{section.6.2}{What is the required Java version to run Choco ?}{chapter.6}
-\BOOKMARK [1][-]{section.6.3}{How to add the Choco library to my project?}{chapter.6}
-\BOOKMARK [1][-]{section.6.4}{Why can't I see the Choco API?}{chapter.6}
-\BOOKMARK [1][-]{section.6.5}{How to know the value of my variable in the Solver ?}{chapter.6}
-\BOOKMARK [1][-]{section.6.6}{How do I use constant value inside constraint ?}{chapter.6}
-\BOOKMARK [1][-]{section.6.7}{How can I use Choco to solve CSP'08 benchmark ?}{chapter.6}
-\BOOKMARK [1][-]{section.6.8}{How do I use the build.xml file ?}{chapter.6}
-\BOOKMARK [1][-]{section.6.9}{Why do I have a error when I add my constraint ?}{chapter.6}
-\BOOKMARK [1][-]{section.6.10}{How do I upgrade my program to Choco2.0 ?}{chapter.6}
-\BOOKMARK [1][-]{section.6.11}{Are bounds with positive and negative infinity supported within Choco?}{chapter.6}
 \BOOKMARK [-1][-]{part.2}{II Elements of Choco}{}
-\BOOKMARK [0][-]{chapter.7}{Variables \(Model\)}{part.2}
-\BOOKMARK [1][-]{section.7.1}{Integer variables}{chapter.7}
-\BOOKMARK [1][-]{section.7.2}{Real variables}{chapter.7}
-\BOOKMARK [1][-]{section.7.3}{Set variables}{chapter.7}
-\BOOKMARK [0][-]{chapter.8}{Operators}{part.2}
-\BOOKMARK [1][-]{section.8.1}{abs \(operator\)}{chapter.8}
-\BOOKMARK [1][-]{section.8.2}{cos \(operator\)}{chapter.8}
-\BOOKMARK [1][-]{section.8.3}{div \(operator\)}{chapter.8}
-\BOOKMARK [1][-]{section.8.4}{FALSE \(operator\)}{chapter.8}
-\BOOKMARK [1][-]{section.8.5}{ifThenElse \(operator\)}{chapter.8}
-\BOOKMARK [1][-]{section.8.6}{max \(operator\)}{chapter.8}
-\BOOKMARK [1][-]{section.8.7}{min \(operator\)}{chapter.8}
-\BOOKMARK [1][-]{section.8.8}{minus \(operator\)}{chapter.8}
-\BOOKMARK [1][-]{section.8.9}{mod \(operator\)}{chapter.8}
-\BOOKMARK [1][-]{section.8.10}{mult \(operator\)}{chapter.8}
-\BOOKMARK [1][-]{section.8.11}{neg \(operator\)}{chapter.8}
-\BOOKMARK [1][-]{section.8.12}{plus \(operator\)}{chapter.8}
-\BOOKMARK [1][-]{section.8.13}{power \(operator\)}{chapter.8}
-\BOOKMARK [1][-]{section.8.14}{scalar \(operator\)}{chapter.8}
-\BOOKMARK [1][-]{section.8.15}{sin \(operator\)}{chapter.8}
-\BOOKMARK [1][-]{section.8.16}{sum \(operator\)}{chapter.8}
-\BOOKMARK [1][-]{section.8.17}{TRUE \(operator\)}{chapter.8}
-\BOOKMARK [0][-]{chapter.9}{Constraints}{part.2}
-\BOOKMARK [1][-]{section.9.1}{abs \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.2}{allDifferent \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.3}{and \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.4}{atMostNValue \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.5}{boolChanneling \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.6}{cumulative \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.7}{disjunctive \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.8}{distanceEQ \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.9}{distanceGT \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.10}{distanceLT \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.11}{distanceNEQ \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.12}{domainconstraint \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.13}{eq \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.14}{eqCard \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.15}{equation \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.16}{FALSE \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.17}{feasPairAC \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.18}{feasTupleAC \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.19}{feasTupleFC \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.20}{geost \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.21}{geq \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.22}{geqCard \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.23}{globalCardinality \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.24}{gt \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.25}{ifOnlyIf \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.26}{ifThenElse \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.27}{implies \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.28}{increasingnvalue \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.29}{infeasPairAC \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.30}{infeasTupleAC \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.31}{infeasTupleFC \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.32}{intDiv \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.33}{inverseChanneling \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.34}{inverseset \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.35}{isIncluded \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.36}{isNotIncluded \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.37}{leq \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.38}{leqCard \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.39}{lex \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.40}{lexChain \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.41}{lexChainEq \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.42}{lexeq \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.43}{leximin \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.44}{lt \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.45}{max \(constraint\)}{chapter.9}
-\BOOKMARK [2][-]{subsection.9.45.1}{max of a list}{section.9.45}
-\BOOKMARK [2][-]{subsection.9.45.2}{max of a set}{section.9.45}
-\BOOKMARK [1][-]{section.9.46}{member \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.47}{min \(constraint\)}{chapter.9}
-\BOOKMARK [2][-]{subsection.9.47.1}{min of a list}{section.9.47}
-\BOOKMARK [2][-]{subsection.9.47.2}{min of a set}{section.9.47}
-\BOOKMARK [1][-]{section.9.48}{mod \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.49}{multiCostRegular \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.50}{neq \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.51}{neqCard \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.52}{not \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.53}{notMember \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.54}{nth \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.55}{occurrence \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.56}{occurrenceMax \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.57}{occurrenceMin \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.58}{oppositeSign \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.59}{or \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.60}{pack \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.61}{precedenceReified \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.62}{regular \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.63}{reifiedIntConstraint \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.64}{relationPairAC \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.65}{relationTupleAC \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.66}{relationTupleFC \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.67}{sameSign \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.68}{setDisjoint \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.69}{setInter \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.70}{setUnion \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.71}{sorting \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.72}{stretchPath \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.73}{times \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.74}{tree \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.75}{TRUE \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.76}{xnor \(constraint\)}{chapter.9}
-\BOOKMARK [1][-]{section.9.77}{xor \(constraint\)}{chapter.9}
+\BOOKMARK [0][-]{chapter.6}{Variables \(Model\)}{part.2}
+\BOOKMARK [1][-]{section.6.1}{Integer variables}{chapter.6}
+\BOOKMARK [1][-]{section.6.2}{Real variables}{chapter.6}
+\BOOKMARK [1][-]{section.6.3}{Set variables}{chapter.6}
+\BOOKMARK [1][-]{section.6.4}{Task variables}{chapter.6}
+\BOOKMARK [0][-]{chapter.7}{Operators \(Model\)}{part.2}
+\BOOKMARK [1][-]{section.7.1}{abs \(operator\)}{chapter.7}
+\BOOKMARK [1][-]{section.7.2}{cos \(operator\)}{chapter.7}
+\BOOKMARK [1][-]{section.7.3}{distEq \(operator\)}{chapter.7}
+\BOOKMARK [1][-]{section.7.4}{distGt \(operator\)}{chapter.7}
+\BOOKMARK [1][-]{section.7.5}{distLt \(operator\)}{chapter.7}
+\BOOKMARK [1][-]{section.7.6}{distNeq \(operator\)}{chapter.7}
+\BOOKMARK [1][-]{section.7.7}{div \(operator\)}{chapter.7}
+\BOOKMARK [1][-]{section.7.8}{ifThenElse \(operator\)}{chapter.7}
+\BOOKMARK [1][-]{section.7.9}{max \(operator\)}{chapter.7}
+\BOOKMARK [1][-]{section.7.10}{min \(operator\)}{chapter.7}
+\BOOKMARK [1][-]{section.7.11}{minus \(operator\)}{chapter.7}
+\BOOKMARK [1][-]{section.7.12}{mod \(operator\)}{chapter.7}
+\BOOKMARK [1][-]{section.7.13}{mult \(operator\)}{chapter.7}
+\BOOKMARK [1][-]{section.7.14}{neg \(operator\)}{chapter.7}
+\BOOKMARK [1][-]{section.7.15}{plus \(operator\)}{chapter.7}
+\BOOKMARK [1][-]{section.7.16}{power \(operator\)}{chapter.7}
+\BOOKMARK [1][-]{section.7.17}{scalar \(operator\)}{chapter.7}
+\BOOKMARK [1][-]{section.7.18}{sin \(operator\)}{chapter.7}
+\BOOKMARK [1][-]{section.7.19}{sum \(operator\)}{chapter.7}
+\BOOKMARK [0][-]{chapter.8}{Constraints \(Model\)}{part.2}
+\BOOKMARK [1][-]{section.8.1}{abs \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.2}{allDifferent \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.3}{among \(constraint\)}{chapter.8}
+\BOOKMARK [2][-]{subsection.8.3.1}{among values}{section.8.3}
+\BOOKMARK [2][-]{subsection.8.3.2}{among values with counter}{section.8.3}
+\BOOKMARK [2][-]{subsection.8.3.3}{among values with counter and set}{section.8.3}
+\BOOKMARK [1][-]{section.8.4}{and \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.5}{atMostNValue \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.6}{boolChanneling \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.7}{clause \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.8}{costRegular \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.9}{cumulative \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.10}{cumulativeMax \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.11}{cumulativeMin \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.12}{disjoint \(constraint\)}{chapter.8}
+\BOOKMARK [2][-]{subsection.8.12.1}{disjoint values}{section.8.12}
+\BOOKMARK [2][-]{subsection.8.12.2}{disjoint tasks}{section.8.12}
+\BOOKMARK [1][-]{section.8.13}{disjunctive \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.14}{distanceEQ \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.15}{distanceGT \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.16}{distanceLT \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.17}{distanceNEQ \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.18}{domainConstraint \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.19}{element \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.20}{endsAfter \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.21}{endsAfterBegin \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.22}{endsAfterEnd \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.23}{endsBefore \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.24}{endsBeforeBegin \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.25}{endsBeforeEnd \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.26}{endsBetween \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.27}{eq \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.28}{eqCard \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.29}{equation \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.30}{exactly \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.31}{FALSE \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.32}{feasPairAC \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.33}{feasTupleAC \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.34}{feasTupleFC \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.35}{forbiddenInterval \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.36}{geost \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.37}{geq \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.38}{geqCard \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.39}{globalCardinality \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.40}{gt \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.41}{ifOnlyIf \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.42}{ifThenElse \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.43}{implies \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.44}{increasingnvalue \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.45}{infeasPairAC \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.46}{infeasTupleAC \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.47}{infeasTupleFC \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.48}{intDiv \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.49}{inverseChanneling \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.50}{inverseset \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.51}{isIncluded \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.52}{isNotIncluded \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.53}{knapsackProblem \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.54}{leq \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.55}{leqCard \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.56}{lex \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.57}{lexChain \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.58}{lexChainEq \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.59}{lexeq \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.60}{leximin \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.61}{lt \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.62}{max \(constraint\)}{chapter.8}
+\BOOKMARK [2][-]{subsection.8.62.1}{max of a list}{section.8.62}
+\BOOKMARK [2][-]{subsection.8.62.2}{max of a set}{section.8.62}
+\BOOKMARK [1][-]{section.8.63}{member \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.64}{min \(constraint\)}{chapter.8}
+\BOOKMARK [2][-]{subsection.8.64.1}{min of a list}{section.8.64}
+\BOOKMARK [2][-]{subsection.8.64.2}{min of a set}{section.8.64}
+\BOOKMARK [1][-]{section.8.65}{mod \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.66}{multiCostRegular \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.67}{neq \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.68}{neqCard \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.69}{not \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.70}{notMember \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.71}{nth \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.72}{occurrence \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.73}{occurrenceMax \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.74}{occurrenceMin \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.75}{oppositeSign \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.76}{or \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.77}{pack \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.78}{precedenceReified \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.79}{precedenceimplied \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.80}{precedence \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.81}{precedencedisjoint \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.82}{regular \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.83}{reifiedAnd \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.84}{reifiedConstraint \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.85}{reifiedLeftImp \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.86}{reifiedNot \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.87}{reifiedOr \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.88}{reifiedRightImp \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.89}{reifiedXnor \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.90}{reifiedXor \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.91}{relationPairAC \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.92}{relationTupleAC \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.93}{relationTupleFC \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.94}{sameSign \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.95}{setDisjoint \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.96}{setInter \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.97}{setUnion \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.98}{sorting \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.99}{startsAfter \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.100}{startsAfterBegin \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.101}{startsAfterEnd \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.102}{startsBefore \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.103}{startsBeforeBegin \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.104}{startsBeforeEnd \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.105}{startsBetween \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.106}{stretchPath \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.107}{times \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.108}{tree \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.109}{TRUE \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.110}{xnor \(constraint\)}{chapter.8}
+\BOOKMARK [1][-]{section.8.111}{xor \(constraint\)}{chapter.8}
+\BOOKMARK [0][-]{chapter.9}{Options \(Model\)}{part.2}
+\BOOKMARK [1][-]{section.9.1}{Options and settings}{chapter.9}
+\BOOKMARK [2][-]{subsection.9.1.1}{Options for variables:}{section.9.1}
+\BOOKMARK [2][-]{subsection.9.1.2}{Options for expressions:}{section.9.1}
+\BOOKMARK [2][-]{subsection.9.1.3}{Options and settings for constraints:}{section.9.1}
+\BOOKMARK [2][-]{subsection.9.1.4}{Options for solvers:}{section.9.1}
 \BOOKMARK [-1][-]{part.3}{III Tutorials}{}
 \BOOKMARK [0][-]{chapter.10}{Getting started: welcome to Choco}{part.3}
 \BOOKMARK [1][-]{section.10.1}{Before starting}{chapter.10}

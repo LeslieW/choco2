@@ -51,7 +51,6 @@ public class CPOptions {
      * <br/><b>Goal</b> : force Solver to create enumerated domain variable (default options if options is empty).
      * <br/><b>Scope</b>: {@link choco.kernel.model.variables.integer.IntegerVariable},
      * {@link choco.kernel.model.variables.set.SetVariable}'s cardinality variable
-     * and {@link choco.kernel.model.variables.real.RealVariable}.
      * (default option)
      */
     public static final String V_ENUM = "cp:enum";
@@ -112,7 +111,7 @@ public class CPOptions {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
-     * <br/><b>Goal</b> : force decomposition of the <br/><b>Scope</b>d expression.
+     * <br/><b>Goal</b> : force decomposition of the <b>scoped</b> expression.
      * <br/><b>Scope</b> : {@link choco.kernel.model.variables.integer.IntegerExpressionVariable}.
      */
     public static final String E_DECOMP = "cp:decomp";
@@ -284,7 +283,7 @@ public class CPOptions {
 
     /**
      * <br/><b>Goal</b>: postponed a constraint.
-     * <br/><b>Scope</b> : {@link choco.kernel.solver.constraints.SConstraint}.
+     * <br/><b>Scope</b> : {@link choco.kernel.model.constraints.Constraint}.
      */
     public static final String C_POST_PONED = "cp:postponed";
 
@@ -294,8 +293,8 @@ public class CPOptions {
 
     /**
      * <br/><b>Goal</b>: Allow a solver to read a model more than one time.
-     * <br/><i>In that case, the redundant constraints for schedunling must be posted explicitly</i>.
-     * <br/><b>Scope</b> : {@link choco.kernel.solver.constraints.SConstraint}.
+     * <br/><i>In that case, the redundant constraints for scheduling must be posted explicitly</i>.
+     * <br/><b>Scope</b> : {@link choco.cp.solver.CPSolver}.
      */
     public static final String S_MULTIPLE_READINGS = "cp:multiple_readings";
 

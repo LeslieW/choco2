@@ -30,8 +30,10 @@ $$ i\in\mathtt{items}[b]\ \iff\ \mathtt{bin}[i]=b,\quad\forall \text{ bin } b,\ 
 	\item \textbf{return type} : \texttt{Constraint}
 	\item \textbf{options} : 	
       \begin{itemize}
-      \item \texttt{SettingType.ADDITIONAL\_RULES}: additional filtering rules \emph{recommended}
-      \item \texttt{SettingType.DYNAMIC\_LB}: feasibility tests based on dynamic lower bounds for 1D-bin packing
+      \item \hyperlink{cpackar:cpackaroptions}{SettingType.ADDITIONAL\_RULES.getOptionName()}: additional filtering rules \emph{recommended}
+      \item \hyperlink{cpackdlb:cpackdlboptions}{SettingType.DYNAMIC\_LB.getOptionName()}: feasibility tests based on dynamic lower bounds for 1D-bin packing
+      \item \hyperlink{cpackfill:cpackfilloptions}{SettingType.FILL\_BIN.getOptionName()}: dominance rule: fill a bin when an item fit into pertfectly equal-sized items and bins must be equivalent
+      \item \hyperlink{cpacklbe:cpacklbeoptions}{SettingType.LAST\_BINS\_EMPTY.getOptionName()}: empty bins are the last ones 
       \end{itemize}
 	\item \textbf{favorite domain} : \emph{to complete}
 	\item \textbf{references} :

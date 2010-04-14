@@ -1,0 +1,2 @@
+        Model m = new CPModel();
+        m.setPrecision(0.01);        

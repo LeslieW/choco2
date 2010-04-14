@@ -59,11 +59,10 @@ import choco.kernel.solver.constraints.integer.extension.*;
 import gnu.trove.TIntArrayList;
 import org.jgrapht.graph.DirectedMultigraph;
 
+import static java.lang.System.arraycopy;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static java.lang.System.arraycopy;
 
 /**
  * Created by IntelliJ IDEA.
@@ -74,7 +73,7 @@ import static java.lang.System.arraycopy;
  * This class must contain every current variable constructors and constraint constructors.
  * The class must be uptodate permanently, because, it is the way common users declare Model.
  */
-public class Choco{
+public class Choco {
 
     Choco() {}
 
@@ -124,9 +123,8 @@ public class Choco{
 	 *                <li><b> cp:link</b> to force Solver to create linked list variables</li>
 	 *                </ul>
 	 *                <p/>
-	 *                Options for decisionnal/undecisionnal variables
+	 *                Options for undecisionnal variables
 	 *                <ul>
-	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
 	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
@@ -155,9 +153,8 @@ public class Choco{
 	 * <p/>
 	 *                Options of CPModel must be prefix with "cp:".
 	 *                For IntegerVariable, available options are :
-	 *                Options for decisionnal/undecisionnal variables
+	 *                Options for undecisionnal variables
 	 *                <ul>
-	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
 	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
@@ -200,9 +197,8 @@ public class Choco{
 	 *                <li><b> cp:link</b> to force Solver to create linked list variables</li>
 	 *                </ul>
 	 *                <p/>
-	 *                Options for decisionnal/undecisionnal variables
+	 *                Options for undecisionnal variables
 	 *                <ul>
-	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
 	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
@@ -238,9 +234,8 @@ public class Choco{
 	 *                <li><b> cp:link</b> to force Solver to create linked list variables</li>
 	 *                </ul>
 	 *                <p/>
-	 *                Options for decisionnal/undecisionnal variables
+	 *                Options for undecisionnal variables
 	 *                <ul>
-	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
 	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
@@ -263,9 +258,8 @@ public class Choco{
 	 * <p/>
 	 *                Options of CPModel must be prefix with "cp:".
 	 *                For IntegerVariable, available options are :
-	 *                Options for decisionnal/undecisionnal variables
+	 *                Options for undecisionnal variables
 	 *                <ul>
-	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
 	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
@@ -292,9 +286,8 @@ public class Choco{
 	 * <p/>
 	 *                Options of CPModel must be prefix with "cp:".
 	 *                For IntegerVariable, available options are :
-	 *                Options for decisionnal/undecisionnal variables
+	 *                Options for undecisionnal variables
 	 *                <ul>
-	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
 	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
@@ -330,9 +323,8 @@ public class Choco{
 	 *                <li><b> cp:link</b> to force Solver to create linked list variables</li>
 	 *                </ul>
 	 *                <p/>
-	 *                Options for decisionnal/undecisionnal variables
+	 *                Options for undecisionnal variables
 	 *                <ul>
-	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
 	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
@@ -361,9 +353,8 @@ public class Choco{
 	 * <p/>
 	 *                Options of CPModel must be prefix with "cp:".
 	 *                For IntegerVariable, available options are :
-	 *                Options for decisionnal/undecisionnal variables
+	 *                Options for undecisionnal variables
 	 *                <ul>
-	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
 	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
@@ -395,9 +386,8 @@ public class Choco{
 	 *                <li><b> cp:link</b> to force Solver to create linked list variables</li>
 	 *                </ul>
 	 *                <p/>
-	 *                Options for decisionnal/undecisionnal variables
+	 *                Options for undecisionnal variables
 	 *                <ul>
-	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
 	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
@@ -436,9 +426,8 @@ public class Choco{
 	 *                <li><b> cp:link</b> to force Solver to create linked list variables</li>
 	 *                </ul>
 	 *                <p/>
-	 *                Options for decisionnal/undecisionnal variables
+	 *                Options for undecisionnal variables
 	 *                <ul>
-	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
 	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
@@ -468,9 +457,8 @@ public class Choco{
 	 * <p/>
 	 *                Options of CPModel must be prefix with "cp:".
 	 *                For IntegerVariable, available options are :
-	 *                Options for decisionnal/undecisionnal variables
+	 *                Options for undecisionnal variables
 	 *                <ul>
-	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
 	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
@@ -503,9 +491,8 @@ public class Choco{
 	 *                <li><b> cp:link</b> to force Solver to create linked list variables</li>
 	 *                </ul>
 	 *                <p/>
-	 *                Options for decisionnal/undecisionnal variables
+	 *                Options for undecisionnal variables
 	 *                <ul>
-	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
 	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
@@ -543,9 +530,8 @@ public class Choco{
 	 *                <li><b> cp:bound </b>to force Solver to create set variables with bounded cardinality</li>
 	 *                </ul>
 	 *                <p/>
-	 *                Options for decisionnal/undecisionnal variables
+	 *                Options for undecisionnal variables
 	 *                <ul>
-	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
 	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
@@ -555,7 +541,7 @@ public class Choco{
 	 */
 	public static SetVariable makeSetVar(String name, int lowB, int uppB, String... options) {
 		int c = uppB - lowB + 1;
-		IntegerVariable card = makeIntVar(name, 0, c, options);
+		IntegerVariable card = makeIntVar("|"+name+"|", 0, c, options);
 		SetVariable var = new SetVariable(name, lowB, uppB, card);
 		for (String option : options) {
 			var.addOption(option);
@@ -579,9 +565,8 @@ public class Choco{
 	 *                <li><b> cp:bound</b> to force Solver to create set variables with bounded cardinality</li>
 	 *                </ul>
 	 *                <p/>
-	 *                Options for decisionnal/undecisionnal variables
+	 *                Options for undecisionnal variables
 	 *                <ul>
-	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
 	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
@@ -621,9 +606,8 @@ public class Choco{
 	 *                <li><b> cp:bound</b> to force Solver to create set variables with bounded cardinality</li>
 	 *                </ul>
 	 *                <p/>
-	 *                Options for decisionnal/undecisionnal variables
+	 *                Options for undecisionnal variables
 	 *                <ul>
-	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
 	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
@@ -651,9 +635,8 @@ public class Choco{
 	 * <p/>
 	 *                Options of CPModel must be prefix with "cp:".
 	 *                For RealVariable, available options are :
-	 *                Options for decisionnal/undecisionnal variables
+	 *                Options for undecisionnal variables
 	 *                <ul>
-	 *                <li><b>cp:decision</b> to force variable to be a decisional one</li>
 	 *                <li><b>cp:no_decision</b> to force variable to be removed from the pool of decisionnal variables</li>
 	 *                </ul>
 	 *                Options for optimization
@@ -1669,7 +1652,7 @@ public class Choco{
      * @param svar set variable
      * @return AMONG constraint
      */
-    public static Constraint among(IntegerVariable[] variables, SetVariable svar, IntegerVariable nvar){
+    public static Constraint among(IntegerVariable nvar, IntegerVariable[] variables, SetVariable svar){
         if(nvar.getLowB()<0){
             throw new ModelException("AMONG requirement: nvar >=0 ");
         }
@@ -2044,8 +2027,8 @@ public class Choco{
 	}
 
 	/**
-	 * Ensures that the lower bound of occurrence is at least equal to the number of occurrences
-	 * size{forall v in vars | v = value} <= occurence
+	 * Ensures that the lower bound of occurrence is at most equal to the number of occurrences
+	 * size{forall v in vars | v = value} >= occurence
 	 * @param value the observed value
 	 * @param occurrence the variable that should contain the occurence numbre
 	 * @param vars list of variable where the value can appear
@@ -2060,8 +2043,8 @@ public class Choco{
 	}
 
 	/**
-	 * Ensures that the upper bound of occurrence is at most equal to the number of occurrences
-	 * size{forall v in vars | v = value} >= occurence
+	 * Ensures that the upper bound of occurrence is at least equal to the number of occurrences
+	 * size{forall v in vars | v = value} <= occurence
 	 * @param value the observed value
 	 * @param occurrence the variable that should contain the occurence numbre
 	 * @param vars list of variable where the value can appear
@@ -2117,22 +2100,6 @@ public class Choco{
 		vars[vars.length-1] = val;
 		return new ComponentConstraint(ConstraintType.NTH, offset, vars);
 	}
-
-    /**
-	 * subscript constraint: accessing an array with a variable index
-	 * The offset can be used when the index variable needs to be shifted of a given value (the offset)
-	 * @param index the index variable
-	 * @param values the possible value
-	 * @param offset the offset value
-	 * @param val the indexth value
-	 * @return Constraint
-	 */
-	public static Constraint nth(String options, IntegerVariable index, int[] values, IntegerVariable val, int offset) {
-		Constraint c = nth(index, values, val, offset);
-        c.addOption(options);
-        return c;
-	}
-
 
 	/**
 	 * subscript constraint: accessing an array of variables with a variable index
@@ -2259,12 +2226,12 @@ public class Choco{
 	 * v1 != v2, v1 != v3, v2 != v3 ... For each (i,j), v_i != v_j
 	 * The options can contain the folowing options :
 	 * <ul>
-	 * <li><b> cp:ac for Regin implementation
-	 * <li><b> cp:bc for bound all different using the propagator of
+	 * <li><b> cp:ac</b> for Regin implementation
+	 * <li><b> cp:bc</b> for bound all different using the propagator of
 	 * A. Lopez-Ortiz, C.-G. Quimper, J. Tromp, and P. van Beek.
 	 * A fast and simple algorithm for bounds consistency of the alldifferent
 	 * constraint. IJCAI-2003.
-	 * <li><b> cp:clique for propagating the clique of differences
+	 * <li><b> cp:clique</b> for propagating the clique of differences
 	 * </ul>
 	 * @param options options of the constraint
 	 * @param vars list of variables
@@ -2344,8 +2311,8 @@ public class Choco{
 	 * <p/>
 	 * Available options are:
 	 * <ul>
-	 * <li><b>cp:ac for Regin impelmentation</li>
-	 * <li><b>cp:bc for bound consistency</li>
+	 * <li><b>cp:ac</b> for Regin impelmentation</li>
+	 * <li><b>cp:bc</b> for bound consistency</li>
 	 * </ul>
 	 * @param options options of the constraint
 	 * @param vars list of variables
@@ -2383,8 +2350,8 @@ public class Choco{
 	 * <p/>
 	 * Available options are:
 	 * <ul>
-	 * <li><b>cp:ac for Regin impelmentation</li>
-	 * <li><b>cp:bc for bound consistency</li>
+	 * <li><b>cp:ac</b> for Regin impelmentation</li>
+	 * <li><b>cp:bc</b> for bound consistency</li>
 	 * </ul>
 	 * @param vars list of variables
 	 * @param low array of lower occurence
@@ -2832,8 +2799,8 @@ public class Choco{
 	/**
 	 * 
 	 * <ul>
-	 * <li><b> direction = 1 => v1 + dur1 <= v2 (T1 << T2);
-	 * <li><b> direction = 0 => v2 + dur2 <= v1 (T2 << T1);
+	 * <li> direction = 1 => v1 + dur1 <= v2 (T1 << T2);
+	 * <li> direction = 0 => v2 + dur2 <= v1 (T2 << T1);
 	 * </ul>  
 	 */
 	public static Constraint precedenceDisjoint(IntegerVariable v1, int dur1, IntegerVariable v2, int dur2, IntegerVariable bool) {
@@ -2865,8 +2832,8 @@ public class Choco{
 	/**
 	 * precedence disjoint with setup times:
 	 * <ul>
-	 * <li><b> direction = 1 => t1.end() + forwardSetup <= t2.start() (T1 << T2);
-	 * <li><b> direction = 0 => t2.end() + backwardSetup <= t1.start() (T2 << T1);
+	 * <li> direction = 1 => t1.end() + forwardSetup <= t2.start() (T1 << T2);
+	 * <li> direction = 0 => t2.end() + backwardSetup <= t1.start() (T2 << T1);
 	 * </ul>  
 	 * @param t1 a task
 	 * @param t2 the other task
@@ -2897,8 +2864,8 @@ public class Choco{
 	/**
 	 * represents a reidied precedence: 
 	 * <ul>
-	 * <li><b> b = 1 => x1 + k1 <= x2
-	 * <li><b> b = 0 => x1 + k1 > x2
+	 * <li> b = 1 => x1 + k1 <= x2
+	 * <li> b = 0 => x1 + k1 > x2
 	 * </ul>  
 	 * @param x1 the first integer variable.
 	 * @param k1 the duration of the precedence.
@@ -2913,8 +2880,8 @@ public class Choco{
 	/**
 	 * represents a reidied precedence with setup times between a pair of tasks: 
 	 * <ul>
-	 * <li><b> b = 1 => e1 + k1 <= s2
-	 * <li><b> b = 0 => e1 + k1 > s2
+	 * <li> b = 1 => e1 + k1 <= s2
+	 * <li> b = 0 => e1 + k1 > s2
 	 * </ul>  
 	 */
 	public static Constraint precedenceReified(TaskVariable t1, int k1, TaskVariable t2, IntegerVariable b) {
@@ -2924,8 +2891,8 @@ public class Choco{
 	/**
 	 * represents an implied precedence: 
 	 * <ul>
-	 * <li><b> b = 1 => x1 + k1 <= x2
-	 * <li><b> b = 0 => TRUE
+	 * <li> b = 1 => x1 + k1 <= x2
+	 * <li> b = 0 => TRUE
 	 * </ul>  
 	 */
 	public static Constraint precedenceImplied(IntegerVariable x1, int k1, IntegerVariable x2, IntegerVariable b) {
@@ -2935,8 +2902,8 @@ public class Choco{
 	/**
 	 * represents a reidied precedence with setup times between a pair of tasks: 
 	 * <ul>
-	 * <li><b> b = 1 => e1 + k1 <= s2
-	 * <li><b> b = 0 => TRUE;
+	 * <li> b = 1 => e1 + k1 <= s2
+	 * <li> b = 0 => TRUE;
 	 * </ul>  
 	 */
 	public static Constraint precedenceImplied(TaskVariable t1, int k1, TaskVariable t2, IntegerVariable b) {
@@ -3572,7 +3539,7 @@ public class Choco{
 				ArrayUtils.append(vars, new IntegerVariable[]{cvar}));
 	}
 
-    	/**
+    /**
 	 * Constructs a new CostRegular constraint
 	 * This constraint ensures that the sequence of variables values
 	 * will follow a pattern defined by a DFA and that this sequence has a cost bounded by the cost variable
@@ -3587,7 +3554,7 @@ public class Choco{
 				ArrayUtils.append(vars, new IntegerVariable[]{cvar}));
 	}
 
-      	/**
+    /**
 	 * Constructs a new CostRegular constraint
 	 * This constraint ensures that the sequence of variables values
 	 * will follow a pattern defined by a DFA and that this sequence has a cost bounded by the cost variable
@@ -3722,6 +3689,26 @@ public class Choco{
 	public static Constraint clause(IntegerVariable[] positiveLiterals, IntegerVariable[] negativeLiterals){
 		IntegerVariable[] literals = ArrayUtils.append(positiveLiterals, negativeLiterals);
 		return new ComponentConstraint(ConstraintType.CLAUSES, positiveLiterals.length, literals);
+
+	}
+
+    /**
+	 * A global constraint to store and propagate all clauses
+     * The option can contain the folowing String :
+	 * <ul>
+	 * <li><b> cp:entail</b> ensure quick entailment tests
+	 * </ul>
+     * @param option option of the constraint
+	 * @param positiveLiterals list of positive literals
+	 * @param negativeLiterals list of negative lliterals
+	 * @return Constraint
+     *
+     *
+	 */
+	public static Constraint clause(String option, IntegerVariable[] positiveLiterals, IntegerVariable[] negativeLiterals){
+		Constraint c = clause(positiveLiterals, negativeLiterals);
+		c.addOption(option);
+		return c;
 
 	}
 
@@ -4228,7 +4215,7 @@ public class Choco{
 	 * @param max the maximum ending time
 	 * @return Constraint
 	 */
-	public static  Constraint endsBetween(final TaskVariable t, final int min, final int max) 	{
+	public static Constraint endsBetween(final TaskVariable t, final int min, final int max) 	{
 		return timeWindow(t.end(), min, max);
 	}
 

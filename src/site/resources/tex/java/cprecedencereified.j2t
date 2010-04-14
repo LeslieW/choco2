@@ -2,7 +2,7 @@
         Model m = new CPModel();
 		IntegerVariable x = makeIntVar("x", 1, 10);
 		IntegerVariable y = makeIntVar("y", 1, 10);
-		m.addVariables("cp:bound", x, y);
+		m.addVariables(CPOptions.V_BOUND, x, y);
 		IntegerVariable z = makeIntVar("z", 0, 1);
 		m.addConstraint(precedenceReified(x,k1,y,z));
         Solver s = new CPSolver();

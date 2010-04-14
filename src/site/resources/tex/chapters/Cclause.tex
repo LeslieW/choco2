@@ -1,0 +1,29 @@
+\label{clause}
+\hypertarget{clause}{}
+
+\section{clause (constraint)}\label{clause:clauseconstraint}\hypertarget{clause:clauseconstraint}{}
+\begin{notedef}
+  \texttt{clause}$(px, nx)$ enforces :
+ $$(px_1 \vee px_2 \vee \dots \vee px_n) \vee (\neg nx_1 \vee \neg nx_2 \vee \dots \vee \neg nx_n)$$  
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API} :
+	\begin{itemize}
+		\item \mylst{clause(IntegerVariable... x)}
+		\item \mylst{clause(String options, IntegerVariable... x)}
+	\end{itemize}
+	\item \textbf{return type} : \texttt{Constraint}
+	\item \textbf{options} :
+	\begin{itemize}
+		\item \emph{no option} default filtering
+		\item \hyperlink{cclause:cclauseoptions}{\tt CPOptions.C\_CLAUSES\_ENTAIL} ensures quick entailment tests
+	\end{itemize}
+	\item \textbf{favorite domain} : \emph{n/a}.
+	\item \textbf{references} :global constraint catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Cclause_or.html}{\tt clause\_or}
+\end{itemize}
+
+
+
+\textbf{Example}:
+\lstinputlisting{java/cclause.j2t}

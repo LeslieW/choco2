@@ -450,7 +450,7 @@ public final class PConstraint {
             IntegerVariable[] vars = exps.get(1).toIntVarArray();
             SetVariable svar = exps.get(2).setVarValue();
 
-            c = among(vars, svar, nvar);
+            c = among(nvar, vars, svar);
         }else
         if(name.contains(_cumulative)){
             IntegerVariable[] starts = exps.get(0).toIntVarArray();

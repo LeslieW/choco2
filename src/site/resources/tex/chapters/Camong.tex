@@ -1,0 +1,54 @@
+\label{among}
+\hypertarget{among}{}
+
+\section{among (constraint)}\label{among:amongconstraint}\hypertarget{among:amongconstraint}{}
+
+\subsection{among values}\label{among:amongvalues}\hypertarget{among:amongvalues}{}
+
+\begin{notedef}
+  \texttt{among}$(x, V)$ states that the variable $x$ takes its value in $V$:
+ $$x \subseteq V$$  
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API}: \mylst{among(IntegerVariable x, int[] v)}
+	\item \textbf{return type}: \texttt{Constraint}
+\end{itemize}
+
+\textbf{Example}:
+\lstinputlisting{java/camong1.j2t}
+
+\subsection{among values with counter}\label{among:amongvaluescounter}\hypertarget{among:amongvaluescounter}{}
+
+\begin{notedef}
+  \texttt{among}$(z, x, V)$ states that $z$ is the number of variables $x$ that take their value in $V$:
+ $$ z = \vert\lbrace i | x_i \in V \rbrace\vert $$  
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API}: \mylst{among(IntegerVariable z, IntegerVariable[] x, int[] v)}
+	\item \textbf{return type}: \texttt{Constraint}
+	\item  \cite{Bessiere05ERCIM}: \emph{\textit{Among}, \textit{common} and \textit{disjoint} Constraints}
+	\item  \cite{Bessiere06ERCIM}: \emph{\textit{Among}, \textit{common} and \textit{disjoint} Constraints}
+	\item global constraint catalog: \href{http://www.emn.fr/x-info/sdemasse/gccat/Camong.html}{\tt among}
+\end{itemize}
+
+\textbf{Example}:
+\lstinputlisting{java/camong2.j2t}
+
+\subsection{among values with counter and set}\label{among:amongvaluesset}\hypertarget{among:amongvaluesset}{}
+
+\begin{notedef}
+  \texttt{among}$(z, x, s)$ states that $z$ is the number of variables $x$ that take their value in the set variable $s$:
+ $$ z = \vert\lbrace i | x_i \in s \rbrace\vert $$  
+\end{notedef}
+
+\begin{itemize}
+	\item \textbf{API}: \mylst{among(IntegerVariable z, IntegerVariable[] x, SetVariable s)}
+	\item \textbf{return type}: \texttt{Constraint}
+	\item  \cite{Bessiere05ERCIM}: \emph{\textit{Among}, \textit{common} and \textit{disjoint} Constraints}
+	\item  \cite{Bessiere06ERCIM}: \emph{\textit{Among}, \textit{common} and \textit{disjoint} Constraints}
+\end{itemize}
+
+\textbf{Example}:
+\lstinputlisting{java/camong3.j2t}
