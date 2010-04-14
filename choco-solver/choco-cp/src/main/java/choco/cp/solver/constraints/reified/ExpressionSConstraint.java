@@ -408,4 +408,11 @@ public final class ExpressionSConstraint extends TuplesTest implements SConstrai
      */
     @Override
     public void addExtension(final int extensionNumber) {}
+
+	@Override
+	public int getFineDegree(int idx) {
+		return 1;
+	}
+    
+    
 }

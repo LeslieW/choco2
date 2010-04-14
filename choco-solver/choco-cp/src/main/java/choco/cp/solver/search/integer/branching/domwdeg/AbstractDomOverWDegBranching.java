@@ -23,6 +23,7 @@
 package choco.cp.solver.search.integer.branching.domwdeg;
 
 import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.addConstraintExtension;
+import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.addConstraintToVarWeights;
 import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.addFailure;
 import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.addIncFailure;
 import static choco.cp.solver.search.integer.branching.domwdeg.DomWDegUtils.computeWeightedDegreeFromScratch;
@@ -41,7 +42,6 @@ import choco.cp.solver.search.integer.varselector.ratioselector.IntVarRatioSelec
 import choco.cp.solver.search.integer.varselector.ratioselector.MinRatioSelector;
 import choco.cp.solver.search.integer.varselector.ratioselector.RandMinRatioSelector;
 import choco.cp.solver.search.integer.varselector.ratioselector.ratios.IntRatio;
-import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.branch.AbstractLargeIntBranchingStrategy;
@@ -104,12 +104,10 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 	@Override
 	public void initConstraintForBranching(SConstraint c) {
 		addConstraintExtension(c);
+		addConstraintToVarWeights(c);
 	}
 
-	protected final void logOnWeightsCount() {
-		//LOGGER.info(updateWeightsCount +" == "+getExpectedUpdateWeightsCount());
-		//ChocoLogging.flushLogs();
-	}
+
 	protected abstract int getExpectedUpdateWeightsCount();
 	
 	@Override
@@ -123,7 +121,6 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 	}
 
 	protected final void reinitBranching() {
-		logOnWeightsCount();
 		if( updateWeightsCount != getExpectedUpdateWeightsCount()) initBranching();
 	}
 
@@ -135,6 +132,11 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 				final AbstractVar var = (AbstractVar) cstr.getVarQuick(k);
 				if (var != currentVar && ! var.isInstantiated()) {
 					getVarExtension(var).add(delta);
+					if(getVarExtension(var).get() < 0) {
+						System.out.println(DomWDegUtils.getVariableWDeg(solver));
+						System.out.println();
+						System.out.println(this);
+					}
 					assert getVarExtension(var).get() >= 0; //check robustness of the incremental weights
 				}
 			}
@@ -163,14 +165,13 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 		while(iter.hasNext()) {
 			final SConstraint cstr = iter.next();
 			if (isDisconnected(cstr) ) {
-				updateVarWeights(currentVar, cstr, getConstraintExtension(cstr).get());
+				updateVarWeights(currentVar, cstr, - getConstraintExtension(cstr).get());
 			}
 		}
 	}
 
 	@Override
 	public final void contradictionOccured(ContradictionException e) {
-		logOnWeightsCount();
 		if( updateWeightsCount == getExpectedUpdateWeightsCount() ) {
 			addIncFailure(e.getDomOverDegContradictionCause());
 		} else {
@@ -195,7 +196,7 @@ AbstractLargeIntBranchingStrategy implements PropagationEngineListener, IRandomB
 	
 	@Override
 	public String toString() {
-		return getVariableIncWDeg(solver) + "\n" + getConstraintFailures(solver);
+		return "nbUpdates: "+updateWeightsCount+"\n"+getVariableIncWDeg(solver) + "\n" + getConstraintFailures(solver);
 	}
 
 

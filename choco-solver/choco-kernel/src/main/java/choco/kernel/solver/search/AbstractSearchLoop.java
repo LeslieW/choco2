@@ -35,21 +35,21 @@ public abstract class AbstractSearchLoop implements ISearchLoop {
 	public final AbstractGlobalSearchStrategy searchStrategy;
 
 	private int nodeCount;
-	
+
 	private int backtrackCount;
-	
+
 	private int restartCount;
-	
+
 	private int depthCount;
 
 	protected boolean stop;
 
-	
+
 	public AbstractSearchLoop(AbstractGlobalSearchStrategy searchStrategy) {
 		this.searchStrategy = searchStrategy;
 	}
 
-	
+
 
 	public final AbstractGlobalSearchStrategy getSearchStrategy() {
 		return searchStrategy;
@@ -86,7 +86,7 @@ public abstract class AbstractSearchLoop implements ISearchLoop {
 		backtrackCount = 0;
 		restartCount = 0;
 		depthCount = 0;
-		
+
 	}
 
 
@@ -140,17 +140,17 @@ public abstract class AbstractSearchLoop implements ISearchLoop {
 	}
 
 	public abstract void initLoop();
-	
+
 	public abstract void openNode();
-	
+
 	public abstract void upBranch();
-	
+
 	public abstract void downBranch();
-	
+
 	public abstract void restart();
-	
+
 	public abstract void initSearch();
-	
+
 	public abstract Boolean endLoop();
 
 

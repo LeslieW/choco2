@@ -22,19 +22,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.kernel.solver.search;
 
+import java.util.List;
+import java.util.logging.Logger;
+
 import choco.kernel.common.logging.ChocoLogging;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.search.measure.ISolutionMeasures;
-import choco.kernel.solver.variables.integer.IntDomainVar;
-import choco.kernel.solver.variables.integer.IntVar;
-import choco.kernel.solver.variables.real.RealVar;
-import choco.kernel.solver.variables.set.SetVar;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -130,27 +124,9 @@ public abstract class AbstractSearchStrategy implements ISolutionMeasures {
 		sol.setSolver(solver);
 		sol.recordSolutionCount(nbSolutions);
 		//record values
-		int nb = solver.getNbIntVars();
-		for (int i = 0; i < nb; i++) {
-			final IntVar vari = solver.quickGetIntVar(i);
-			sol.recordIntValue(i, vari.isInstantiated() ? vari.getVal() : Integer.MAX_VALUE);
-
-		}
-		nb = solver.getNbSetVars();
-		for (int i = 0; i < nb; i++) {
-			final SetVar vari = solver.quickGetSetVar(i);
-			sol.recordSetValue(i, vari.isInstantiated() ? vari.getValue() : null);
-		}
-		nb = solver.getNbRealVars();
-		for (int i = 0; i < nb; i++) {
-			final RealVar vari = solver.quickGetRealVar(i);
-			// if (vari.isInstantiated()) { // Not always "instantiated" : for
-			// instance, if the branching
-			// does not contain the variable, the precision can not be
-			// reached....
-			sol.recordRealValue(i, vari.getValue());
-			// }
-		}
+		sol.recordIntValues();
+		sol.recordSetValues();
+		sol.recordRealValues();
 	}
 
 

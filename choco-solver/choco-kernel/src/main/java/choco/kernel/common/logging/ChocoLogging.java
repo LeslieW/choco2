@@ -359,13 +359,14 @@ public final class ChocoLogging {
 				break;
 			}
 			case SOLUTION: { 
-				setLevel(Level.INFO, getEngineLogger(), getBranchingLogger());
-				setLevel(Level.CONFIG, getTestLogger());
+				setLevel(Level.INFO, getBranchingLogger());
+				setLevel(Level.CONFIG,getEngineLogger(), getTestLogger());
 				setLevel(Level.FINER, getMainLogger(), getSearchLogger());
 				break;
 			}
 			case SEARCH: {
-				setLevel(Level.CONFIG, getEngineLogger(), getBranchingLogger(), getTestLogger());
+				setLevel(Level.CONFIG, getBranchingLogger(), getTestLogger());
+				setLevel(Level.FINER, getEngineLogger());
 				setLevel(Level.FINEST, getMainLogger(), getSearchLogger());
 				break;
 			}

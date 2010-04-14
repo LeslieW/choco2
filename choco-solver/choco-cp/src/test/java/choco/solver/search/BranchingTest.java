@@ -118,8 +118,6 @@ public class BranchingTest {
 		case 12:s.attachGoal(domDDeg(s, valsel));break;
 		default: s.attachGoal(minDomMinVal(s));break;
 		}
-		//ChocoLogging.setVerbosity(Verbosity.DEFAULT);
-		//s.attachGoal(incDomWDegBin(s));
 	}
 
 	private void testQueen(int n) {

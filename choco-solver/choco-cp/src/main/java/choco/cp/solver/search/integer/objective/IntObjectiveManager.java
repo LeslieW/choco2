@@ -21,7 +21,8 @@
  *                  N. Jussien    1999-2008      *
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.search.integer.objective;
-
+import static java.lang.Integer.valueOf;
+import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.search.IObjectiveManager;
 import choco.kernel.solver.variables.Var;
@@ -31,9 +32,9 @@ public abstract class IntObjectiveManager implements IObjectiveManager {
 	
 	public final IntDomainVar objective;
 	
-	protected int oppositeBound;
-	
 	protected int bound;
+	
+	protected int floorBound;
 	
 	protected int targetBound;
 	
@@ -43,34 +44,52 @@ public abstract class IntObjectiveManager implements IObjectiveManager {
 		this.objective = objective;
 	}
 
+	public abstract int getInitialBoundValue();
+	
+	public abstract int getFloorValue();
+	
+	public abstract int getCeilValue();
+	
 	@Override
 	public final Var getObjective() {
 		return objective;
 	}
-
+	
 	@Override
 	public final Number getObjectiveValue() {
-		return Integer.valueOf(getObjectiveIntValue());
+		return Integer.valueOf(getFloorValue());
 	}
 	
 	@Override
-	public final double getObjectiveRealValue() {
-		return getObjectiveValue().doubleValue();
-	}
-
-	@Override
 	public final Number getBestObjectiveValue() {
-		return Integer.valueOf(bound);
+		return valueOf(bound);
 	}
 
 	@Override
 	public final Number getObjectiveTarget() {
-		return Integer.valueOf(targetBound);
+		return valueOf(targetBound);
+	}
+
+	@Override
+	public final Number getObjectiveFloor() {
+		return valueOf(floorBound);
+	}
+	
+	@Override
+	public final void initBounds() {
+		bound = getInitialBoundValue();
+		floorBound = getFloorValue();
+		targetBound = getCeilValue();
+	}
+	
+	@Override
+	public final void postIncFloorBound() throws ContradictionException {
+		objective.setVal(floorBound);
 	}
 
 	@Override
 	public final void writeObjective(Solution sol) {
-		sol.recordIntObjective(getObjectiveIntValue());
+		sol.recordIntObjective(getFloorValue());		
 	}
-	
+
 }

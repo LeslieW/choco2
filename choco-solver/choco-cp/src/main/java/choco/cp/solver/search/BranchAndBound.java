@@ -32,7 +32,7 @@ import choco.kernel.solver.variables.integer.IntDomainVar;
 
 public class BranchAndBound extends AbstractOptimize {
 
-	public final IntDomainVar objective;
+	public final IntDomainVar obj;
 
 	/**
 	 * Builds a new optimizing strategy with the specified variable.
@@ -41,20 +41,21 @@ public class BranchAndBound extends AbstractOptimize {
 	 */
 	public BranchAndBound(Solver solver, IntDomainVar objective, boolean maximize) {
 		super(solver, makeDefaultObjManager(objective, maximize), maximize);
-		this.objective = objective;
+		this.obj = objective;
 	}
 
 	protected static IObjectiveManager makeDefaultObjManager(IntDomainVar objective, boolean maximize) {
 		return maximize ? new MaxIntObjManager(objective) : new MinIntObjManager(objective);
 	}
+	
 
 	@Override
 	public final Var getObjective() {
-		return objective;
+		return obj;
 	}
 
 	public final IntDomainVar getIntObjective() {
-		return objective;
+		return obj;
 	}
 
 

@@ -122,5 +122,16 @@ public interface SConstraint<V extends Var> extends Cloneable,IPretty, IExtensio
      * @return
      */
     public SConstraintType getConstraintType();
+    
+	/**
+	 * Some global constraint might be able to provide
+	 * some fine grained information about the "real" degree of a variables.
+	 * For example the global constraint on clauses can give the real number of
+	 * clauses on each variable
+	 *
+	 * @param idx index of the variable in the constraint
+	 * @return a weight given to the variable by the constraint
+	 */
+	int getFineDegree(int idx);
 
 }

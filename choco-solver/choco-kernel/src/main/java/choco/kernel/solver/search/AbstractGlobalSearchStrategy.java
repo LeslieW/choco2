@@ -28,20 +28,23 @@
 //**************************************************
 package choco.kernel.solver.search;
 
-import choco.kernel.common.logging.ChocoLogging;
 import static choco.kernel.common.util.tools.StringUtils.pretty;
 import static choco.kernel.common.util.tools.StringUtils.prettyOnePerLine;
+
+import java.util.logging.Level;
+
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.util.tools.VariableUtils;
 import choco.kernel.solver.ContradictionException;
 import choco.kernel.solver.Solution;
 import choco.kernel.solver.Solver;
-import choco.kernel.solver.SolverException;
 import choco.kernel.solver.branch.AbstractBranchingStrategy;
 import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
+import choco.kernel.solver.configure.StrategyConfiguration;
 import choco.kernel.solver.constraints.SConstraint;
+import choco.kernel.solver.propagation.ShavingTools;
 import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.measure.ISearchMeasures;
-
-import java.util.logging.Level;
 
 /**
  * An abstract class for controlling tree search in various ways
@@ -100,7 +103,10 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	public int baseWorld = 0;
 
+	public StrategyConfiguration configuration;
 
+	public ShavingTools shavingTools;
+	
 	public GlobalSearchLimitManager limitManager;
 
 	public AbstractSearchLoop searchLoop;
@@ -110,6 +116,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 		traceStack = new IntBranchingTrace[solver.getNbIntVars() + solver.getNbSetVars()];
 		nextMove = INIT_SEARCH;
 	}
+
 
 	public void initMainGoal(SConstraint c) {
 		if (mainGoal != null) {
@@ -123,6 +130,16 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	}
 
 
+
+	public final StrategyConfiguration getConfiguration() {
+		return configuration;
+	}
+
+	public final void setConfiguration(StrategyConfiguration configuration) {
+		this.configuration = configuration;
+	}
+
+
 	public final GlobalSearchLimitManager getLimitManager() {
 		return limitManager;
 	}
@@ -130,6 +147,16 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 
 	public final AbstractSearchLoop getSearchLoop() {
 		return searchLoop;
+	}
+
+
+	public final ShavingTools getShavingTools() {
+		return shavingTools;
+	}
+
+
+	public final void setShavingTools(ShavingTools shavingTools) {
+		this.shavingTools = shavingTools;
 	}
 
 
@@ -173,39 +200,74 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
     endTreeSearch();
   }*/
 
+	protected final boolean isFeasibleRootState() {
+		return solver.isFeasible() != Boolean.FALSE;
+	}
 
+	public final void initialPropagation() {
+		try {
+			newTreeSearch();
+			//initializeDegreeOfVariables();
+			solver.propagate();
+			advancedInitialPropagation();
+			newFeasibleRootState();
+		} catch (ContradictionException e) {
+			solver.setFeasible(Boolean.FALSE);
+		}
+	}
+
+
+	protected void advancedInitialPropagation() throws ContradictionException {
+		//if(configuration.shavingTools != null) shavingTools.shaving();
+	}
+
+
+	protected final void topDownSearch() {
+		if (stopAtFirstSol) {
+			nextSolution();
+		} else {
+			//noinspection StatementWithEmptyBody
+			while (nextSolution() == Boolean.TRUE){}
+		}
+	}
 	/**
 	 * main entry point: searching for one solution
 	 * Note: the initial propagation must be done before pushing any world level.
 	 * It is therefore kept before restoring a solution
 	 */
 	public void incrementalRun() {
-		baseWorld = solver.getWorldIndex();
-		boolean feasibleRootState = true;
-		try {
-			newTreeSearch();
-			//initializeDegreeOfVariables();
-			solver.propagate();
-		} catch (ContradictionException e) {
-			feasibleRootState = false;
-		}
-		if (feasibleRootState) {
-			newFeasibleRootState();
-			if (stopAtFirstSol) {
-				nextSolution();
-			} else {
-				//noinspection StatementWithEmptyBody
-				while (nextSolution() == Boolean.TRUE){}
-			}
-			if (  ! solutionPool.isEmpty() && (!stopAtFirstSol)) {
-				solver.worldPopUntil(baseWorld);
-				restoreBestSolution();
-			}
-			if (!isEncounteredLimit() && !existsSolution()) {
-				solver.setFeasible(Boolean.FALSE);
-			}
-		} else {
-			solver.setFeasible(Boolean.FALSE);
+		//		baseWorld = solver.getWorldIndex();
+		//		boolean feasibleRootState = true;
+		//		try {
+		//			newTreeSearch();
+		//			//initializeDegreeOfVariables();
+		//			solver.propagate();
+		//		} catch (ContradictionException e) {
+		//			feasibleRootState = false;
+		//		}
+		//		if (feasibleRootState) {
+		//			newFeasibleRootState();
+		//			if (stopAtFirstSol) {
+		//				nextSolution();
+		//			} else {
+		//				//noinspection StatementWithEmptyBody
+		//				while (nextSolution() == Boolean.TRUE){}
+		//			}
+		//			if (  ! solutionPool.isEmpty() && (!stopAtFirstSol)) {
+		//				solver.worldPopUntil(baseWorld);
+		//				restoreBestSolution();
+		//			}
+		//			if (!isEncounteredLimit() && !existsSolution()) {
+		//				solver.setFeasible(Boolean.FALSE);
+		//			}
+		//		} else {
+		//			solver.setFeasible(Boolean.FALSE);
+		//		}
+		initialPropagation();
+		if(isFeasibleRootState()) {
+			//System.out.println(solver.getWorldIndex() +">"+ baseWorld);
+			assert(solver.getWorldIndex() > baseWorld);
+			topDownSearch();
 		}
 		endTreeSearch();
 	}
@@ -217,13 +279,14 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 */
 	public void newTreeSearch() throws ContradictionException {
 		assert(solver.getSearchStrategy() == this);
-		resetSolutions();
 		LOGGER.info(ChocoLogging.START_MESSAGE);
 		baseWorld = solver.getWorldIndex();
+		resetSolutions();
 		initialTrace.setBranching(this.mainGoal);
 		limitManager.initialize();
 		searchLoop.initialize();
 		solver.getFailMeasure().safeReset();
+		if(shavingTools == null) shavingTools = new ShavingTools(solver);
 	}
 
 	/**
@@ -232,10 +295,18 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	public void newFeasibleRootState() {
 		solver.worldPush();
 	}
+
 	/**
 	 * called before a new search tree is explored
 	 */
 	public void endTreeSearch() {
+		if ( ! solutionPool.isEmpty() && (!stopAtFirstSol)) {
+			solver.worldPopUntil(baseWorld);
+			restoreBestSolution();
+		}
+		if (!isEncounteredLimit() && !existsSolution()) {
+			solver.setFeasible(Boolean.FALSE);
+		}
 		limitManager.endTreeSearch();
 		if (LOGGER.isLoggable(Level.INFO)) {
 			if( isEncounteredLimit() ) {
@@ -248,7 +319,6 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 			}else {
 				LOGGER.log(Level.INFO, "- Search stopped ?\n{1}", runtimeStatistics()); 
 			}
-
 		}
 	}
 
@@ -287,9 +357,6 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 				LOGGER.log(Level.FINER,"  {0}", solver.solutionToString());
 			}
 		}
-		//		}else{
-		//			throw new SolverException("Bug in solution :one or more decisions variables is not instantiated");
-		//		}
 	}
 
 
@@ -297,9 +364,7 @@ public abstract class AbstractGlobalSearchStrategy extends AbstractSearchStrateg
 	 * called before going down into each branch of the choice point
 	 * @throws choco.kernel.solver.ContradictionException
 	 */
-	public void postDynamicCut() throws ContradictionException {
-	}
-
+	public void postDynamicCut() throws ContradictionException {}
 
 
 	public final IntBranchingTrace pushTrace() {

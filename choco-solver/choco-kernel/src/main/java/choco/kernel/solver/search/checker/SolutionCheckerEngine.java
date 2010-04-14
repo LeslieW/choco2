@@ -83,10 +83,10 @@ public class SolutionCheckerEngine extends AbstractSolutionCheckerEngine {
      * @param c contraint to check
      * @return false if the constraint is not satisfied.
      */
-	public boolean inspectConstraint(final SConstraint c) {
+	public boolean inspectConstraint(final SConstraint<?> c) {
 		if( isSatisfied(c)) {
-			if(LOGGER.isLoggable(Level.CONFIG)) {
-				LOGGER.log(Level.CONFIG, "  {0}: {1}", new Object[]{reuseLabel, c.pretty()});
+			if(LOGGER.isLoggable(Level.FINE)) {
+				LOGGER.log(Level.FINE, "  {0}: {1}", new Object[]{reuseLabel, c.pretty()});
 			}
 			return true;
 		}else if(LOGGER.isLoggable(Level.INFO)) {
@@ -100,7 +100,7 @@ public class SolutionCheckerEngine extends AbstractSolutionCheckerEngine {
      * @param c constraint to check.
      * @return false if the {@code c} is not satisfied.
      */
-	protected boolean isSatisfied(final SConstraint c) {
+	protected boolean isSatisfied(final SConstraint<?> c) {
 		boolean isOk;
 		if(c instanceof AbstractIntSConstraint){
 			try{

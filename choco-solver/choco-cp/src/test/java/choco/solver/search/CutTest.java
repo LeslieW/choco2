@@ -26,6 +26,7 @@ import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.variables.integer.IntegerVariable;
 import choco.kernel.solver.constraints.SConstraint;
@@ -170,7 +171,7 @@ public class CutTest {
     @Test
     public void test6() {
         LOGGER.info("test6");
-        LOGGER.finer("test6");
+        //ChocoLogging.setVerbosity(Verbosity.SEARCH);
         IntegerVariable v3 = makeIntVar("v3", 0, 1);
         m.addVariable(v3);
         s.read(m);
@@ -182,19 +183,14 @@ public class CutTest {
 //        }
         Boolean nxt;
         nxt = s.nextSolution();
-        LOGGER.info(s.pretty());
         assertEquals(nxt, Boolean.TRUE);
         nxt = s.nextSolution();
-        LOGGER.info(s.pretty());
         assertEquals(nxt, Boolean.TRUE);
         nxt = s.nextSolution();
-        LOGGER.info(s.pretty());
         assertEquals(nxt, Boolean.TRUE);
         nxt = s.nextSolution();
-        LOGGER.info(s.pretty());
         assertEquals(nxt, Boolean.TRUE);
         nxt = s.nextSolution();
-        LOGGER.info(s.pretty());
         assertEquals(nxt, Boolean.FALSE);
     }
 

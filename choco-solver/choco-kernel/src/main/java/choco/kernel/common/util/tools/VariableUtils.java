@@ -346,21 +346,20 @@ public final class VariableUtils {
     //*****************************************************************//
 	//*******************  Branching Utils ***************************//
 	//***************************************************************//
-    //FIXME temporary implementation: decision vars should be given by the solver !
-	public static IntDomainVar[] getIntVars(Solver solver) {
+ 	public static IntDomainVar[] getIntVars(Solver solver) {
 		final int n = solver.getNbIntVars();
-		IntDomainVar[] vars = new IntDomainVar[n];
+		final IntDomainVar[] vars = new IntDomainVar[n];
 		for (int i = 0; i < n; i++) {
-			vars[i] = solver.getIntVar(i);
+			vars[i] = solver.getIntVarQuick(i);
 		}
 		return vars;
 	}
 
 	public static SetVar[] getSetVars(Solver solver) {
 		final int n = solver.getNbSetVars();
-		SetVar[] vars = new SetVar[n];
+		final SetVar[] vars = new SetVar[n];
 		for (int i = 0; i < n; i++) {
-			vars[i] = solver.getSetVar(i);
+			vars[i] = solver.getSetVarQuick(i);
 		}
 		return vars;
 	}
@@ -376,9 +375,9 @@ public final class VariableUtils {
 
 	public static TaskVar[] getTaskVars(Solver solver) {
 		final int n = solver.getNbTaskVars();
-		TaskVar[] vars = new TaskVar[n];
+		final TaskVar[] vars = new TaskVar[n];
 		for (int i = 0; i < n; i++) {
-			vars[i] = solver.getTaskVar(i);
+			vars[i] = solver.getTaskVarQuick(i);
 		}
 		return vars;
 	}

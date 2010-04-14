@@ -56,8 +56,7 @@ public final class DomWDegUtils {
 		super();
 	}
 
-	public static void addConstraintExtension(SConstraint c) {
-		//FIXME Extension only for IntegerConstraint ?
+	public static void addConstraintExtension(SConstraint<?> c) {
 		c.addExtension(ABSTRACTCONTRAINT_EXTENSION);
 	}
 
@@ -65,7 +64,7 @@ public final class DomWDegUtils {
 		v.addExtension(ABSTRACTVAR_EXTENSION);
 	}
 
-	public static Extension getConstraintExtension(SConstraint c) {
+	public static Extension getConstraintExtension(SConstraint<?> c) {
 		return 	c.getExtension(ABSTRACTCONTRAINT_EXTENSION);
 	}
 
@@ -74,9 +73,8 @@ public final class DomWDegUtils {
 	}
 
 	public static int getFineDegree(Var v, SConstraint<?> c, int cIdx) {
-		return ( (AbstractSConstraint<?>) c).getFineDegree(v.getVarIndex(cIdx));
+		return c.getFineDegree(v.getVarIndex(cIdx));
 	}
-
 
 	public static void initConstraintExtensions(Solver s) {
 		DisposableIterator<SConstraint> iter = s.getConstraintIterator();
@@ -97,7 +95,7 @@ public final class DomWDegUtils {
 		}
 	}
 
-	public static boolean hasAtLeastTwoNotInstVars(SConstraint c) {
+	public static boolean hasAtLeastTwoNotInstVars(SConstraint<?> c) {
 		final int n = c.getNbVars();
 		boolean hasNotInst = false;
 		for (int i = 0; i < n; i++) {
@@ -111,7 +109,7 @@ public final class DomWDegUtils {
 		return false;
 	}
 
-	protected static boolean hasTwoNotInstVars(SConstraint c) {
+	protected static boolean hasTwoNotInstVars(SConstraint<?> c) {
 		final int n = c.getNbVars();
 		int cpt = -2;
 		for (int i = 0; i < n; i++) {
@@ -128,7 +126,7 @@ public final class DomWDegUtils {
 		final DisposableIntIterator iter= var.getIndexVector().getIndexIterator();
 		while (iter.hasNext()) {
 			final int idx = iter.next();
-			final SConstraint c = var.getConstraint(idx);
+			final SConstraint<?> c = var.getConstraint(idx);
 			if ( INTEGER.isTypeOf(c)  && hasAtLeastTwoNotInstVars(c)) {
 				try {
 					weight+= getConstraintExtension(c).get() + getFineDegree(var, c, idx);
@@ -143,21 +141,29 @@ public final class DomWDegUtils {
 		return weight;
 	}
 
-	public static void addFailure(SConstraint cause) {
+	public static void addFailure(SConstraint<?> cause) {
 		if(cause != null) {
 			if(INTEGER.isTypeOf(cause)) {
 				try {
 					getConstraintExtension(cause).add(1);
 				} catch (NullPointerException npe) {
 					// If there was a postCut, the extension has not been generated at the Branching creation
-					addConstraintExtension((AbstractSConstraint) cause);
+					addConstraintExtension(cause);
 					getConstraintExtension(cause).add(1);
 				}
 			}
 		}
 	}
 
-	public static void addIncFailure(SConstraint cause) {
+	public static void addConstraintToVarWeights(SConstraint<?> c) {
+		final int nbF = getConstraintExtension(c).get();
+		final int n = c.getNbVars();
+		for (int k = 0; k < n; k++) {
+			getVarExtension(c.getVarQuick(k)).add( c.getFineDegree(k) + nbF);
+		}
+	}
+	
+	public static void addIncFailure(SConstraint<?> cause) {
 		if(cause != null) {
 			if( INTEGER.isTypeOf(cause)) {
 				try {
@@ -168,13 +174,10 @@ public final class DomWDegUtils {
 					}
 				} catch (NullPointerException npe) {
 					// If there was a postCut, the extension has not been generated at the Branching creation
-					final AbstractSConstraint reuseCstr = (AbstractSConstraint) cause;
-					addConstraintExtension(reuseCstr);
-					getConstraintExtension(reuseCstr).add(1);
-					final int n = cause.getNbVars();
-					for (int k = 0; k < n; k++) {
-						getVarExtension(cause.getVarQuick(k)).add(1 + reuseCstr.getFineDegree(k));
-					}
+					//final AbstractSConstraint reuseCstr = (AbstractSConstraint) cause;
+					addConstraintExtension(cause);
+					getConstraintExtension(cause).add(1);
+					addConstraintToVarWeights(cause);
 				}
 			}
 		}
@@ -184,7 +187,7 @@ public final class DomWDegUtils {
 		final StringBuilder b = new StringBuilder();
 		final DisposableIterator<SConstraint> iter = solver.getConstraintIterator();
 		while(iter.hasNext() ) {
-			final SConstraint cstr = iter.next();
+			final SConstraint<?> cstr = iter.next();
 			b.append("failures=").append(getConstraintExtension(cstr).get());
 			b.append("\t").append(cstr.pretty());
 			b.append('\n');

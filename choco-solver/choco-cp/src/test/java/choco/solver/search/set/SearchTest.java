@@ -22,15 +22,19 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.solver.search.set;
 
+import static choco.Choco.eq;
 import static choco.Choco.eqCard;
+import static choco.Choco.geq;
 import static choco.Choco.geqCard;
 import static choco.Choco.isIncluded;
 import static choco.Choco.leqCard;
 import static choco.Choco.makeIntVar;
 import static choco.Choco.makeSetVar;
 import static choco.Choco.member;
+import static choco.Choco.mult;
 import static choco.Choco.neq;
 import static choco.Choco.notMember;
+import static choco.Choco.plus;
 import static choco.Choco.setDisjoint;
 import static choco.Choco.setInter;
 import static choco.Choco.setUnion;
@@ -77,7 +81,6 @@ public class SearchTest {
 
 	@Before
 	public void setUp() {
-		LOGGER.fine("EqualXC Testing...");
 		m = new CPModel();
 		s = new CPSolver();
 	}
@@ -134,26 +137,24 @@ public class SearchTest {
 	}
 
 	@Test
-	public void test1() {
+	public void test1() throws ContradictionException {
 		x = makeSetVar("X", 1, 5);
 		c1 = member(x, 3);
 		c2 = member(x, 5);
 		c3 = notMember(x, 2);
 		LOGGER.finer("test1");
-		try {
-			m.addConstraint(c1);
-			m.addConstraint(c2);
-			m.addConstraint(c3);
-			s.read(m);
-			s.propagate();
-		} catch (ContradictionException e) {
-			assertTrue(false);
-		}
+		m.addConstraint(c1);
+		m.addConstraint(c2);
+		m.addConstraint(c3);
+		s.read(m);
+		s.propagate();
 		assertTrue(s.getVar(x).isInDomainKernel(3));
 		assertTrue(s.getVar(x).isInDomainKernel(5));
 		assertTrue(!s.getVar(x).isInDomainKernel(2));
 		s.setVarSetSelector(new MinDomSet(s));
 		s.setValSetSelector(new MinEnv());
+		System.out.println(s.pretty());
+		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
 		s.solveAll();
 
 		assertEquals(4, s.getNbSolutions());
@@ -234,7 +235,7 @@ public class SearchTest {
 			Propagator prop = (Propagator) it.next();
 			prop.constAwake(true);
 		}
-        it.dispose();
+		it.dispose();
 		s.solve();
 		assertFalse(s.isFeasible());
 	}
@@ -340,7 +341,7 @@ public class SearchTest {
 	}
 
 	private int capa = 0;
-	 
+
 	class PoolSwitcher extends MinimumEdgeDeletion {
 
 		@Override
@@ -352,7 +353,7 @@ public class SearchTest {
 			_s.setSolutionPoolCapacity(capa);
 			_s.setValIntSelector(new MinVal());
 			//_s.generateSearchStrategy();
-			
+
 		}
 
 		@Override
@@ -360,9 +361,9 @@ public class SearchTest {
 			super.execute();
 			assertEquals(Math.min( capa, _s.getNbSolutions()),  _s.getSearchStrategy().getSolutionPool().size());
 		}
-						
+
 	}
-	
+
 	@Test
 	public void testSolutionPool() {
 		//ChocoLogging.setVerbosity(Verbosity.SEARCH);
@@ -374,7 +375,52 @@ public class SearchTest {
 		pl.execute();
 	}
 
+	private void buildLP(int v) {
+		int k = 10;
+		final IntegerVariable x = makeIntVar("x", 0,k);
+		IntegerVariable y = makeIntVar("y", 0,k);
+		IntegerVariable z = makeIntVar("z", 0, 2*k, CPOptions.V_OBJECTIVE);
+		m.addConstraints(
+				eq ( plus(x,y), z),
+				geq ( plus(x,mult(2, y)), v)
+		);
+		s.read(m);
+	}
 
+	private void testLP(int nbN) {
+		//ChocoLogging.setVerbosity(Verbosity.SOLUTION);
+		s.minimize(false);
+		assertEquals(Boolean.TRUE, s.isFeasible());
+		assertEquals(nbN, s.getNodeCount());
+	}
+	@Test
+	public void testInitialPropagation1() {
+		buildLP(1);
+		s.setDestructiveLowerBound(true);
+		testLP(3);
+	}
+
+	@Test
+	public void testInitialPropagation2() {
+		buildLP(2);
+		s.setDestructiveLowerBound(true);
+		testLP(1);
+	}
+
+
+	@Test
+	public void testInitialPropagation3() {
+		buildLP(3);
+		s.setDestructiveLowerBound(true);
+		testLP(3);
+	}
+
+	@Test
+	public void testInitialPropagation4() {
+		buildLP(4);
+		s.setDestructiveLowerBound(true);
+		testLP(1);
+	}
 
 }
 

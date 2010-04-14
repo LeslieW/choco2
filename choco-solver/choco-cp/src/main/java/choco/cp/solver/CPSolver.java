@@ -100,6 +100,7 @@ import choco.kernel.solver.SolverException;
 import choco.kernel.solver.branch.AbstractIntBranchingStrategy;
 import choco.kernel.solver.branch.BranchingWithLoggingStatements;
 import choco.kernel.solver.branch.VarSelector;
+import choco.kernel.solver.configure.StrategyConfiguration;
 import choco.kernel.solver.constraints.AbstractSConstraint;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.global.MetaSConstraint;
@@ -300,7 +301,7 @@ public class CPSolver implements Solver {
 	 * propNogoodWorld give the world above which the nogood constraint
 	 * need to be propagated
 	 */
-	private int propNogoodWorld;
+	private int propNogoodWorld = -1;
 
 
     @Deprecated
@@ -388,6 +389,8 @@ public class CPSolver implements Solver {
 	private FailMeasure failMeasure;
 
 	private final RestartConfiguration restartConfig = new RestartConfiguration();
+	
+	private final StrategyConfiguration strategyConfig = new StrategyConfiguration();
 
 	protected CPModelToCPSolver mod2sol;
 
@@ -796,7 +799,7 @@ public class CPSolver implements Solver {
 		strategy.setSolutionPool(makeDefaultSolutionPool(strategy, solutionPoolCapacity));
 		generateSearchLoop();
 		generateLimitManager();
-
+		strategy.setConfiguration(strategyConfig);
 
 
         if(ilogGoal==null){
@@ -831,7 +834,8 @@ public class CPSolver implements Solver {
 	}
 
 	protected void generateSearchLoop() {
-		IKickRestart kickRestart = (
+		final IKickRestart kickRestart = (
+
 				restartConfig.isRecordNogoodFromRestart() ?
 						new NogoodKickRestart(strategy) :
 							new BasicKickRestart(strategy)
@@ -1471,6 +1475,24 @@ public class CPSolver implements Solver {
 		this.doMaximize = maximize;
 	}
 
+	
+	
+	public final StrategyConfiguration getStrategyConfiguration() {
+		return strategyConfig;
+	}
+
+	@Override
+	public void setDestructiveLowerBound(boolean isDestructiveLowerBound) {
+		strategyConfig.setDestructiveLowerBound(isDestructiveLowerBound);
+		
+	}
+
+	@Override
+	public void setRootSinglotonConsistency(boolean isSinglotonConsistent) {
+		strategyConfig.setRootSinglotonConsistency(isSinglotonConsistent);
+		
+	}
+
 	/**
 	 * Set the variable to optimize
 	 *
@@ -1653,7 +1675,8 @@ public class CPSolver implements Solver {
 		return intVars.get(i);
 	}
 
-	public final IntDomainVar quickGetIntVar(int i) {
+
+	public final IntDomainVar getIntVarQuick(int i) {
 		return intVars.getQuick(i);
 	}
 
@@ -1731,7 +1754,7 @@ public class CPSolver implements Solver {
 		return floatVars.get(i);
 	}
 
-	public final RealVar quickGetRealVar(int i) {
+	public final RealVar getRealVarQuick(int i) {
 		return floatVars.getQuick(i);
 	}
 	/**
@@ -1762,7 +1785,7 @@ public class CPSolver implements Solver {
 		return setVars.get(i);
 	}
 
-	public final SetVar quickGetSetVar(int i) {
+	public final SetVar getSetVarQuick(int i) {
 		return setVars.getQuick(i);
 	}
 
@@ -1793,7 +1816,7 @@ public class CPSolver implements Solver {
 		return taskVars.get(i);
 	}
 
-	public final TaskVar quickGetTaskVar(int i) {
+	public final TaskVar getTaskVarQuick(int i) {
 		return taskVars.getQuick(i);
 	}
 
@@ -2152,9 +2175,7 @@ public class CPSolver implements Solver {
 				c.constAwake(true);
 			}
 		}
-		//        indexOfLastInitializedStaticConstraint.set(environment.getWorldIndex());
-		//TODO avoid first conditions and test only propNogoodWorld
-		if (nogoodStore != null && propNogoodWorld > this.getWorldIndex()) {
+		if (propNogoodWorld > this.getWorldIndex()) {
 			nogoodStore.setActiveSilently();
 			nogoodStore.constAwake(false);
 			propNogoodWorld = this.getWorldIndex();
@@ -2480,26 +2501,23 @@ public class CPSolver implements Solver {
 			// Integer variables
 			int nbv = getNbIntVars();
 			for (int i = 0; i < nbv; i++) {
-				if (sol.getIntValue(i) != Integer.MAX_VALUE) {
-					getIntVar(i).setVal(sol.getIntValue(i));
+				if (sol.getIntValue(i) != Solution.NULL) {
+					getIntVarQuick(i).setVal(sol.getIntValue(i));
 				}
 			}
-
 			// Set variables
 			nbv = getNbSetVars();
 			for (int i = 0; i < nbv; i++) {
-				getSetVar(i).setVal(sol.getSetValue(i));
+				getSetVarQuick(i).setVal(sol.getSetValue(i));
 			}
 
 			// Real variables
 			nbv = getNbRealVars();
 			for (int i = 0; i < nbv; i++) {
-				getRealVar(i).intersect(sol.getRealValue(i));
+				getRealVarQuick(i).intersect(sol.getRealValue(i));
 			}
 
-           //assert(checkWithPropagate());
-           // assert(checkWithIsSatisfied());
-
+          
 		} catch (ContradictionException e) {
             // TODO : see how to deal with error
             LOGGER.severe("BUG in restoring solution !!");

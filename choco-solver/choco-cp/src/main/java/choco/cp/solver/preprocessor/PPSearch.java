@@ -22,6 +22,10 @@
  * * * * * * * * * * * * * * * * * * * * * * * * */
 package choco.cp.solver.preprocessor;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.constraints.global.BoundAllDiff;
@@ -39,16 +43,11 @@ import choco.cp.solver.search.integer.branching.domwdeg.DomOverWDegBranchingNew;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.DomOverDynDeg;
-import choco.cp.solver.search.integer.varselector.TabuVarSelector;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.variables.AbstractVar;
 import choco.kernel.solver.variables.integer.IntDomainVar;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 /**
  * Created by IntelliJ IDEA.
@@ -152,8 +151,8 @@ public class PPSearch {
                         s.attachGoal(dwd);
                     }
                 } else {                        //general case
-//                    AssignVar dwd = BranchingFactory.domWDeg(s,new RandomIntValSelector(randvalseed));
-                    AssignVar dwd = new AssignVar(new TabuVarSelector(s), new RandomIntValSelector(randvalseed));
+                	AssignVar dwd = BranchingFactory.domWDeg(s,new RandomIntValSelector(randvalseed));
+                    //AssignVar dwd = new AssignVar(new TabuVarSelector(s), new RandomIntValSelector(randvalseed));
                     s.attachGoal(dwd);
                 }
             } else {

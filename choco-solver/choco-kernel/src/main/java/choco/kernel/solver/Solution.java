@@ -29,13 +29,17 @@ import choco.kernel.solver.search.limit.AbstractGlobalSearchLimit;
 import choco.kernel.solver.search.measure.IMeasures;
 import choco.kernel.solver.search.measure.ISearchMeasures;
 import choco.kernel.solver.search.measure.MeasuresBean;
+import choco.kernel.solver.variables.integer.IntVar;
 import choco.kernel.solver.variables.real.RealInterval;
+import choco.kernel.solver.variables.real.RealVar;
+import choco.kernel.solver.variables.set.SetVar;
 
 /**
  * A class storing a state of the model
  */
 public class Solution {
 
+	public final static int NULL = Integer.MAX_VALUE;
 	/**
 	 * the solver owning the solution
 	 */
@@ -99,7 +103,34 @@ public class Solution {
 		this.measures.setSolutionCount(solutionCount);
 	}
 
-
+	public final void recordIntValues() {
+		final int n = solver.getNbIntVars();
+		for (int i = 0; i < n; i++) {
+			final IntVar v = solver.getIntVarQuick(i);
+			intVarValues[i] = v.isInstantiated() ? v.getVal() : NULL;
+		}
+	}
+	
+	public final void recordSetValues() {
+		final int n = solver.getNbSetVars();
+		for (int i = 0; i < n; i++) {
+			final SetVar v = solver.getSetVarQuick(i);
+			setVarValues[i] = v.isInstantiated() ? v.getValue() : null;
+		}
+	}
+	
+	public final void recordRealValues() {
+		final int n = solver.getNbRealVars();
+		for (int i = 0; i < n; i++) {
+			// Not always "instantiated" : for
+			// instance, if the branching
+			// does not contain the variable, the precision can not be
+			// reached....
+			final RealVar v = solver.getRealVarQuick(i);
+			realVarValues[i] = v.getValue();
+		}
+	}
+	
 	public final void recordIntValue(int intVarIndex, int intVarValue) {
 		intVarValues[intVarIndex] = intVarValue;
 	}
@@ -113,7 +144,7 @@ public class Solution {
 	}
 
 	public final void recordIntObjective(int objectiveIntValue) {
-		measures.setObjectiveIntValue( objectiveIntValue);
+		measures.setObjectiveIntValue(objectiveIntValue);
 	}
 
 	public final void recordRealObjective(double objectiveRealValue) {

@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * 
  *          _       _                            *
- *         |  °(..)  |                           *
+ *         |  ï¿½(..)  |                           *
  *         |_  J||L _|        CHOCO solver       *
  *                                               *
  *    Choco is a java library for constraint     *
@@ -25,6 +25,8 @@ package choco.model.variables.real;
 import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
+import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.Model;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.real.RealExpressionVariable;
@@ -35,7 +37,7 @@ import org.junit.Test;
 /**
  * User : cprudhom
  * Mail : cprudhom(a)emn.fr
- * Date : 24 févr. 2010
+ * Date : 24 fï¿½vr. 2010
  * Since : Choco 2.1.1
  */
 public class RealVarTest {
@@ -89,6 +91,7 @@ public class RealVarTest {
 
         final Solver s = new CPSolver();
 
+        //ChocoLogging.setVerbosity(Verbosity.SEARCH);
         s.read(m);
 
         s.maximize(s.getVar(obj), true);

@@ -66,4 +66,10 @@ public interface IOptions {
      * @return set of options
      */
     Set<String> getOptions();
+   
+    /**
+     * check if the option is activated
+     * @return <code>true</code> if the set contains the option
+     */
+    boolean containsOption(String option);
 }

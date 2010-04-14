@@ -47,7 +47,6 @@ public final class DomOverWDegBinBranchingNew extends AbstractDomOverWDegBinBran
 
 	@Override
 	public void setNextBranch(IntBranchingDecision decision) {
-		logOnWeightsCount();
 		if( updateWeightsCount == getExpectedUpdateWeightsCount() + 1 ) increaseVarWeights(decision.getBranchingIntVar());
 		else updateWeightsCount = Integer.MIN_VALUE;
 		super.setNextBranch(decision);

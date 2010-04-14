@@ -27,8 +27,13 @@ import static choco.Choco.*;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.cp.solver.SettingType;
+import choco.cp.solver.constraints.global.pack.PackSConstraint;
+import choco.cp.solver.search.integer.branching.PackDynRemovals;
+import choco.cp.solver.search.integer.valselector.BestFit;
 import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.cp.solver.search.integer.varselector.StaticVarOrder;
 import choco.kernel.common.logging.ChocoLogging;
+import choco.kernel.common.logging.Verbosity;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.common.util.tools.MathUtils;
 import choco.kernel.model.ModelException;
@@ -254,8 +259,8 @@ public class PackTest {
 		initializeModels(modeler.getEqualSizedItemsSBC(0));
 		initializeModels(new Constraint[]{modeler.getAllDiffLargeItemsRC("")});
 	}
-	
-	
+
+
 
 	protected void testRandom() {
 		LOGGER.info("%%%%%%%% TEST RANDOM %%%%%%%%");
@@ -287,4 +292,30 @@ public class PackTest {
 		}
 	}
 
+	private final static int[] SIZES = new int[]{
+		495, 493, 492, 492, 481, 470, 450, 447,
+		409, 399, 398, 396, 395, 392, 391, 389,
+		385, 381, 378, 372, 370, 369, 352, 352,
+		336, 331, 331, 327, 323, 313, 313, 307,
+		296, 295, 288, 284, 284, 283, 280, 278,
+		278, 270, 268, 268, 267, 266, 266, 258,
+		257, 256, 256, 255, 253, 253, 253, 253,
+		252, 252, 251, 251};
+
+	@Test
+	public void testHadrien() {
+		final CPModel m = new CPModel();
+		final PackModeler packM = new PackModeler(SIZES, 20, 1000);
+		final Constraint pc = Choco.pack(packM
+				,SettingType.ADDITIONAL_RULES.getOptionName(),
+				SettingType.DYNAMIC_LB.getOptionName(), 
+				SettingType.FILL_BIN.getOptionName());
+		m.addConstraint(pc);
+		final CPSolver s = new CPSolver();
+		s.read(m);
+
+		final PackSConstraint spc = (PackSConstraint) s.getCstr(pc);
+		s.attachGoal(new PackDynRemovals(new StaticVarOrder(s,s.getVar(packM.bins)), new BestFit(spc), spc));
+		assertEquals(Boolean.TRUE, s.solve());
+	}
 }
