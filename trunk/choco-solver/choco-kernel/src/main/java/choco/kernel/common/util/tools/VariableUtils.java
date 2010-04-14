@@ -9,6 +9,7 @@ import choco.kernel.model.variables.set.SetVariable;
 import choco.kernel.solver.Solver;
 import choco.kernel.solver.variables.Var;
 import choco.kernel.solver.variables.integer.IntDomainVar;
+import choco.kernel.solver.variables.real.RealVar;
 import choco.kernel.solver.variables.scheduling.TaskVar;
 import choco.kernel.solver.variables.set.SetVar;
 
@@ -350,7 +351,7 @@ public final class VariableUtils {
 		final int n = solver.getNbIntVars();
 		IntDomainVar[] vars = new IntDomainVar[n];
 		for (int i = 0; i < n; i++) {
-			vars[i] = (IntDomainVar) solver.getIntVar(i);
+			vars[i] = solver.getIntVar(i);
 		}
 		return vars;
 	}
@@ -360,6 +361,15 @@ public final class VariableUtils {
 		SetVar[] vars = new SetVar[n];
 		for (int i = 0; i < n; i++) {
 			vars[i] = solver.getSetVar(i);
+		}
+		return vars;
+	}
+
+    public static RealVar[] getRealVars(Solver solver) {
+		final int n = solver.getNbRealVars();
+		RealVar[] vars = new RealVar[n];
+		for (int i = 0; i < n; i++) {
+			vars[i] = solver.getRealVar(i);
 		}
 		return vars;
 	}

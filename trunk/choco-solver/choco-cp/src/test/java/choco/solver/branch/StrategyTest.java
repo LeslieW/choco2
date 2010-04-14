@@ -106,7 +106,8 @@ public class StrategyTest {
         IntDomainVar v = s.createEnumIntVar("v", 1, 2);
         s.attachGoal(new AssignVar(new StaticVarOrder(s, new IntDomainVar[]{v}), new IncreasingDomain()));
         s.solveAll();
-        Assert.assertEquals("incorrect nb of nodes", 1, s.getNodeCount());
+        // one ROOT node  + 1 node (v=1) + 1 node (v=2)
+        Assert.assertEquals("incorrect nb of nodes", 3, s.getNodeCount());
     }
 
 

@@ -200,4 +200,9 @@ public final class IntLinComb extends AbstractLargeIntSConstraint {
     public AbstractSConstraint opposite(final Solver solver) {
         return intlincomb.opposite(solver);
     }
+
+    @Override
+    public String pretty() {
+        return intlincomb.pretty();
+    }
 }

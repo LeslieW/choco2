@@ -5,8 +5,6 @@ import static choco.Choco.*;
 import choco.cp.CPOptions;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
-import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.variables.integer.IntegerVariable;
 
 import java.util.Arrays;
@@ -123,7 +121,6 @@ public class MinimumEdgeDeletion extends PatternExample {
 	}
 
 	public static void main(String[] args) {
-		ChocoLogging.setVerbosity(Verbosity.VERBOSE);
 		new MinimumEdgeDeletion().execute();
 	}
 }

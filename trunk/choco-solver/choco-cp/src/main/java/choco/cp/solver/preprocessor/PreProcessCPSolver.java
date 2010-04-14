@@ -299,7 +299,7 @@ public class PreProcessCPSolver extends CPSolver {
 			final int threshold = 100;
 			worldPush();
 			for (int i = 0; i < getNbIntVars(); i++) {
-				final IntDomainVar v = (IntDomainVar) getIntVar(i);
+				final IntDomainVar v = getIntVar(i);
 				final DisposableIntIterator it = v.getDomain().getIterator();
 				if ((sched && v.getDomainSize() == 2) || (!sched && v.hasEnumeratedDomain())) {
 					while (it.hasNext()) {

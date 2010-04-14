@@ -47,7 +47,7 @@ public class DomOverWDegRPC extends DoubleHeuristicIntVarSelector implements
         DisposableIterator<SConstraint> iter = solver.getConstraintIterator();
         for (; iter
                 .hasNext();) {
-            ((AbstractSConstraint) iter.next()).addExtension(
+            iter.next().addExtension(
                     ABSTRACTCONTRAINT_EXTENSION
             );
         }
@@ -60,7 +60,7 @@ public class DomOverWDegRPC extends DoubleHeuristicIntVarSelector implements
         DisposableIterator<SConstraint> iter = solver.getConstraintIterator();
         for (; iter
                 .hasNext();) {
-            ((AbstractSConstraint) iter.next()).addExtension(
+            iter.next().addExtension(
                     ABSTRACTCONTRAINT_EXTENSION
             );
         }

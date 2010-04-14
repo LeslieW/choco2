@@ -264,7 +264,7 @@ public class CPModelToCPSolver {
         cpsolver.floatDecisionVars.addAll(cpsolver.floatVars.toList());
         if (!realNoDecisionVar.isEmpty()) {
 			cpsolver.floatDecisionVars.removeAll(realNoDecisionVar);
-			cpsolver.intDecisionVars.removeAll(cpsolver.getRealConstantSet());
+			cpsolver.floatDecisionVars.removeAll(cpsolver.getRealConstantSet());
 		}
 		// Task decision variables
         cpsolver.taskDecisionVars.addAll(cpsolver.taskVars.toList());

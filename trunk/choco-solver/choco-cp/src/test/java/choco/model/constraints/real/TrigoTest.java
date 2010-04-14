@@ -32,13 +32,12 @@ import choco.cp.solver.search.real.AssignInterval;
 import choco.cp.solver.search.real.CyclicRealVarSelector;
 import choco.cp.solver.search.real.RealIncreasingDomain;
 import choco.kernel.common.logging.ChocoLogging;
-import choco.kernel.common.logging.Verbosity;
 import choco.kernel.model.constraints.Constraint;
 import choco.kernel.model.variables.real.RealVariable;
 import choco.kernel.solver.constraints.SConstraint;
 import choco.kernel.solver.constraints.real.RealExp;
 import choco.kernel.solver.variables.real.RealVar;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import java.util.logging.Logger;

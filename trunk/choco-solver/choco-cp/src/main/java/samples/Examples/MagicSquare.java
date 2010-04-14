@@ -1,13 +1,13 @@
 package samples.Examples;
 
-import java.text.MessageFormat;
-import java.util.logging.Level;
-
 import choco.Choco;
 import choco.cp.model.CPModel;
 import choco.cp.solver.CPSolver;
 import choco.kernel.common.util.tools.ArrayUtils;
 import choco.kernel.model.variables.integer.IntegerVariable;
+
+import java.text.MessageFormat;
+import java.util.logging.Level;
 
 public class MagicSquare extends PatternExample {
 	/** order of the magic square */
@@ -87,6 +87,11 @@ public class MagicSquare extends PatternExample {
 	@Override
 	public void solve() {
 		_s.solve();
+	}
+
+    	@Override
+	public void execute() {
+		execute(5);
 	}
 
 	public static void main(String[] args) {

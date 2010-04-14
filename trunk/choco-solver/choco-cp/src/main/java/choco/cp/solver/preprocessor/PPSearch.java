@@ -32,14 +32,14 @@ import choco.cp.solver.constraints.integer.DistanceXYZ;
 import choco.cp.solver.constraints.integer.IntLinComb;
 import choco.cp.solver.constraints.integer.bool.BoolIntLinComb;
 import choco.cp.solver.constraints.integer.channeling.ReifiedIntSConstraint;
+import choco.cp.solver.search.BranchingFactory;
 import choco.cp.solver.search.integer.branching.AssignVar;
-import choco.cp.solver.search.integer.branching.DomOverWDegBranching;
 import choco.cp.solver.search.integer.branching.ImpactBasedBranching;
+import choco.cp.solver.search.integer.branching.domwdeg.DomOverWDegBranchingNew;
 import choco.cp.solver.search.integer.valiterator.IncreasingDomain;
 import choco.cp.solver.search.integer.valselector.RandomIntValSelector;
 import choco.cp.solver.search.integer.varselector.DomOverDynDeg;
-import choco.cp.solver.search.integer.varselector.DomOverWDeg;
-import choco.cp.solver.search.integer.varselector.MinDomain;
+import choco.cp.solver.search.integer.varselector.TabuVarSelector;
 import choco.kernel.common.util.iterators.DisposableIterator;
 import choco.kernel.model.constraints.ConstraintType;
 import choco.kernel.solver.constraints.SConstraint;
@@ -142,33 +142,34 @@ public class PPSearch {
             if (randval) {
                 if (isScheduling()) {
                     if (!isMixedScheduling()) { //pure scheduling
-                        AssignVar dwd = new AssignVar(new DomOverWDeg(s,getBooleanVars(s)),new RandomIntValSelector(randvalseed));
+                        AssignVar dwd = BranchingFactory.domWDeg(s,getBooleanVars(s), new RandomIntValSelector(randvalseed));
                         s.attachGoal(dwd);
-                        AssignVar dwd2 = new AssignVar(new MinDomain(s, getOtherVars(s)), new IncreasingDomain());
+                        AssignVar dwd2 = BranchingFactory.minDomIncDom(s, getOtherVars(s));
                         s.addGoal(dwd2);
                     } else {                    //side constraints added
-                        AssignVar dwd = new AssignVar(new DomOverWDeg(s,concat(getBooleanVars(s), getOtherVars(s))),new RandomIntValSelector(randvalseed));
+                        AssignVar dwd = BranchingFactory.domWDeg(s,concat(getBooleanVars(s), getOtherVars(s)),
+                                new RandomIntValSelector(randvalseed));
                         s.attachGoal(dwd);
                     }
                 } else {                        //general case
-                    AssignVar dwd = new AssignVar(new DomOverWDeg(s),new RandomIntValSelector(randvalseed));
+//                    AssignVar dwd = BranchingFactory.domWDeg(s,new RandomIntValSelector(randvalseed));
+                    AssignVar dwd = new AssignVar(new TabuVarSelector(s), new RandomIntValSelector(randvalseed));
                     s.attachGoal(dwd);
                 }
             } else {
                 if (isScheduling()) {
                     if (!isMixedScheduling()) { //pure scheduling
-                        DomOverWDegBranching dwd = new DomOverWDegBranching(s, new IncreasingDomain());
-                        dwd.setBranchingVars(getBooleanVars(s));
+                        DomOverWDegBranchingNew dwd = BranchingFactory.incDomWDeg(s, getBooleanVars(s), new IncreasingDomain());
                         s.attachGoal(dwd);
-                        AssignVar dwd2 = new AssignVar(new MinDomain(s, getOtherVars(s)), new IncreasingDomain());
+                        AssignVar dwd2 = BranchingFactory.minDomIncDom(s, getOtherVars(s));
                         s.addGoal(dwd2);
                     } else {                    //side constraints added
-                        DomOverWDegBranching dwd = new DomOverWDegBranching(s, new IncreasingDomain());
-                        dwd.setBranchingVars(concat(getBooleanVars(s), getOtherVars(s)));
+                        DomOverWDegBranchingNew dwd = BranchingFactory.incDomWDeg(s,
+                                concat(getBooleanVars(s), getOtherVars(s)), new IncreasingDomain());
                         s.attachGoal(dwd);
                     }
                 } else {                        //general case
-                    DomOverWDegBranching dwd = new DomOverWDegBranching(s, new IncreasingDomain());
+                    DomOverWDegBranchingNew dwd = BranchingFactory.incDomWDeg(s, new IncreasingDomain());
                     s.attachGoal(dwd);
                 }
             }
@@ -194,7 +195,7 @@ public class PPSearch {
                     return false;
                 s.attachGoal(ibb);
                 if (randval) ibb.setRandomValueChoice(randvalseed);
-                AssignVar dwd2 = new AssignVar(new MinDomain(s, ovs), new IncreasingDomain());
+                AssignVar dwd2 = BranchingFactory.minDomIncDom(s, ovs);
                 s.addGoal(dwd2);
             } else {                    //side constraints added
                 ibb = new ImpactBasedBranching(s, concat(getBooleanVars(s), getOtherVars(s)));
@@ -238,7 +239,7 @@ public class PPSearch {
     public IntDomainVar[] getBooleanVars(CPSolver s) {
         List<IntDomainVar> ldvs = new ArrayList<IntDomainVar>();
         for (int i = 0; i < s.getNbIntVars(); i++) {
-            IntDomainVar v = (IntDomainVar) s.getIntVar(i);
+            IntDomainVar v = s.getIntVar(i);
             if (v.hasBooleanDomain()) {
                 ldvs.add(v);
             }
@@ -253,7 +254,7 @@ public class PPSearch {
     public IntDomainVar[] getOtherVars(CPSolver s) {
         List<IntDomainVar> ldvs = new ArrayList<IntDomainVar>();
         for (int i = 0; i < s.getNbIntVars(); i++) {
-            IntDomainVar v = (IntDomainVar) s.getIntVar(i);
+            IntDomainVar v = s.getIntVar(i);
             if (v.getDomainSize() > 2) {
                 ldvs.add(v);
             }
@@ -317,7 +318,7 @@ public class PPSearch {
     public int getSumOfDomains(CPSolver s) {
         int sum = 0;
         for (int i = 0; i < s.getNbIntVars(); i++) {
-            sum += ((IntDomainVar) s.getIntVar(i)).getDomainSize();
+            sum += s.getIntVar(i).getDomainSize();
 
         }
         return sum;

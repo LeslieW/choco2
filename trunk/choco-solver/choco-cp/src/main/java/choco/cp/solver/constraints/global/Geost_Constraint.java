@@ -160,7 +160,7 @@ public final class Geost_Constraint extends AbstractLargeIntSConstraint {
                 // idx = -1 means/**/ that it is not a variable but a constant
                 // and we do not need to record it
                 //if(idx != -1){
-                    sol.recordIntValue(i, ((IntDomainVar) s.getIntVar(i)).getVal());
+                    sol.recordIntValue(i, s.getIntVar(i).getVal());
 
                 //}
             }
